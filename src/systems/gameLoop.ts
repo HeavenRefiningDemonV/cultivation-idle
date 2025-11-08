@@ -1,0 +1,324 @@
+import { useGameStore, initializeGameStore } from '../stores/gameStore';
+import { useCombatStore } from '../stores/combatStore';
+import { saveGame, loadGame, hasSave } from '../utils/saveload';
+import { applyOfflineProgress } from './offline';
+
+/**
+ * Game loop constants
+ */
+const CULTIVATION_TICK_INTERVAL = 1000;  // 1 second in milliseconds
+const AUTOSAVE_INTERVAL = 60000;         // 60 seconds in milliseconds
+const MAX_DELTA_TIME = 1000;             // Max 1 second delta to prevent time exploits
+
+/**
+ * Main game loop managing all game ticking and updates
+ */
+class GameLoop {
+  private lastTick: number = Date.now();
+  private rafId: number | null = null;
+  private cultivationIntervalId: number | null = null;
+  private autosaveIntervalId: number | null = null;
+  private isRunning: boolean = false;
+
+  /**
+   * Start the game loop
+   * Initializes RAF loop, cultivation tick, and autosave
+   */
+  public start(): void {
+    if (this.isRunning) {
+      console.warn('[GameLoop] Already running');
+      return;
+    }
+
+    console.log('[GameLoop] Starting game loop...');
+
+    this.isRunning = true;
+    this.lastTick = Date.now();
+
+    // Start RAF loop for smooth updates
+    this.startRafLoop();
+
+    // Start cultivation tick (1 second interval)
+    this.startCultivationTick();
+
+    // Start autosave (60 second interval)
+    this.startAutosave();
+
+    console.log('[GameLoop] Game loop started');
+  }
+
+  /**
+   * Stop the game loop
+   * Cleans up all intervals and RAF
+   */
+  public stop(): void {
+    if (!this.isRunning) {
+      console.warn('[GameLoop] Already stopped');
+      return;
+    }
+
+    console.log('[GameLoop] Stopping game loop...');
+
+    this.isRunning = false;
+
+    // Stop RAF loop
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
+    // Stop cultivation tick
+    if (this.cultivationIntervalId !== null) {
+      clearInterval(this.cultivationIntervalId);
+      this.cultivationIntervalId = null;
+    }
+
+    // Stop autosave
+    if (this.autosaveIntervalId !== null) {
+      clearInterval(this.autosaveIntervalId);
+      this.autosaveIntervalId = null;
+    }
+
+    console.log('[GameLoop] Game loop stopped');
+  }
+
+  /**
+   * Start the RAF (requestAnimationFrame) loop
+   */
+  private startRafLoop(): void {
+    const loop = () => {
+      if (!this.isRunning) return;
+
+      this.tick();
+      this.rafId = requestAnimationFrame(loop);
+    };
+
+    this.rafId = requestAnimationFrame(loop);
+  }
+
+  /**
+   * Main tick function called by RAF (~60fps)
+   * Updates all stores with delta time
+   */
+  private tick(): void {
+    const now = Date.now();
+    let deltaTime = now - this.lastTick;
+
+    // Clamp delta time to prevent time exploits
+    if (deltaTime > MAX_DELTA_TIME) {
+      console.warn(`[GameLoop] Delta time clamped from ${deltaTime}ms to ${MAX_DELTA_TIME}ms`);
+      deltaTime = MAX_DELTA_TIME;
+    }
+
+    // Prevent negative delta time
+    if (deltaTime < 0) {
+      console.warn('[GameLoop] Negative delta time detected, resetting');
+      deltaTime = 0;
+      this.lastTick = now;
+      return;
+    }
+
+    // Update last tick time
+    this.lastTick = now;
+
+    // Update all stores
+    try {
+      // Update game store (HP regen, etc.)
+      const gameState = useGameStore.getState();
+      gameState.tick(deltaTime);
+
+      // Update combat store (attacks, cooldowns)
+      const combatState = useCombatStore.getState();
+      combatState.tick(deltaTime);
+    } catch (error) {
+      console.error('[GameLoop] Error in tick:', error);
+    }
+  }
+
+  /**
+   * Start cultivation tick interval
+   * Called every 1 second to add Qi
+   */
+  private startCultivationTick(): void {
+    this.cultivationIntervalId = window.setInterval(() => {
+      this.cultivationTick();
+    }, CULTIVATION_TICK_INTERVAL);
+  }
+
+  /**
+   * Cultivation tick function
+   * Adds Qi based on Qi/s every second
+   */
+  private cultivationTick(): void {
+    try {
+      // The actual Qi addition is handled in gameStore.tick()
+      // This is just a heartbeat to ensure regular updates
+
+      // We could add additional cultivation logic here in the future
+      // For now, the gameStore.tick() handles Qi generation
+    } catch (error) {
+      console.error('[GameLoop] Error in cultivation tick:', error);
+    }
+  }
+
+  /**
+   * Start autosave interval
+   * Saves game every 60 seconds
+   */
+  private startAutosave(): void {
+    this.autosaveIntervalId = window.setInterval(() => {
+      this.autosaveTick();
+    }, AUTOSAVE_INTERVAL);
+  }
+
+  /**
+   * Autosave tick function
+   * Called every 60 seconds to save game
+   */
+  private autosaveTick(): void {
+    try {
+      const success = saveGame();
+      if (success) {
+        console.log('[GameLoop] Game autosaved');
+      } else {
+        console.warn('[GameLoop] Autosave failed');
+      }
+    } catch (error) {
+      console.error('[GameLoop] Error in autosave:', error);
+    }
+  }
+
+  /**
+   * Check if game loop is running
+   */
+  public isActive(): boolean {
+    return this.isRunning;
+  }
+}
+
+/**
+ * Singleton game loop instance
+ */
+export const gameLoop = new GameLoop();
+
+/**
+ * Initialize the game
+ * Loads save data, applies offline progress, starts game loop
+ *
+ * @returns True if initialization successful, false otherwise
+ */
+export function initializeGame(): boolean {
+  try {
+    console.log('[GameLoop] Initializing game...');
+
+    // Initialize game store (calculate derived values)
+    initializeGameStore();
+
+    // Check if save exists
+    const saveExists = hasSave();
+
+    if (saveExists) {
+      console.log('[GameLoop] Save found, loading...');
+
+      // Load save data
+      const loadSuccess = loadGame();
+
+      if (loadSuccess) {
+        console.log('[GameLoop] Save loaded successfully');
+
+        // Apply offline progress
+        const offlineProgress = applyOfflineProgress();
+
+        if (offlineProgress) {
+          console.log('[GameLoop] Offline progress applied:');
+          console.log(`  - Duration: ${offlineProgress.offlineDuration}`);
+          console.log(`  - Qi gained: ${offlineProgress.qiGained}`);
+          console.log(`  - Efficiency: ${offlineProgress.efficiency * 100}%`);
+          if (offlineProgress.wasCapped) {
+            console.log('  - Offline time was capped at 12 hours');
+          }
+
+          // TODO: Show offline progress modal to player
+        } else {
+          console.log('[GameLoop] No offline progress to apply');
+        }
+      } else {
+        console.warn('[GameLoop] Failed to load save, starting fresh');
+      }
+    } else {
+      console.log('[GameLoop] No save found, starting new game');
+    }
+
+    // Start the game loop
+    gameLoop.start();
+
+    // Set up save on page unload
+    setupBeforeUnload();
+
+    console.log('[GameLoop] Game initialized successfully');
+    return true;
+  } catch (error) {
+    console.error('[GameLoop] Failed to initialize game:', error);
+    return false;
+  }
+}
+
+/**
+ * Set up window.onbeforeunload to save game when player closes tab
+ */
+function setupBeforeUnload(): void {
+  window.addEventListener('beforeunload', () => {
+    console.log('[GameLoop] Page unloading, saving game...');
+
+    try {
+      // Save the game
+      const success = saveGame();
+
+      if (success) {
+        console.log('[GameLoop] Game saved on exit');
+      } else {
+        console.warn('[GameLoop] Failed to save on exit');
+      }
+
+      // Stop the game loop
+      gameLoop.stop();
+    } catch (error) {
+      console.error('[GameLoop] Error saving on exit:', error);
+    }
+
+    // Note: Modern browsers ignore custom messages in beforeunload
+  });
+}
+
+/**
+ * Clean shutdown of the game
+ * Saves and stops the game loop
+ */
+export function shutdownGame(): void {
+  console.log('[GameLoop] Shutting down game...');
+
+  try {
+    // Save the game
+    saveGame();
+
+    // Stop the game loop
+    gameLoop.stop();
+
+    console.log('[GameLoop] Game shut down successfully');
+  } catch (error) {
+    console.error('[GameLoop] Error during shutdown:', error);
+  }
+}
+
+/**
+ * Reset the game loop
+ * Stops and restarts the loop
+ */
+export function resetGameLoop(): void {
+  console.log('[GameLoop] Resetting game loop...');
+
+  gameLoop.stop();
+  gameLoop.start();
+
+  console.log('[GameLoop] Game loop reset');
+}
