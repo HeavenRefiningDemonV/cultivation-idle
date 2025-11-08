@@ -3,7 +3,8 @@ import { immer } from 'zustand/middleware/immer';
 import type { CombatState, EnemyDefinition, CombatLogEntry } from '../types';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
-import { D, subtract, greaterThan, lessThanOrEqualTo } from '../utils/numbers';
+import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
+import { BossMechanics } from '../systems/bossMechanics';
 
 /**
  * Defense constant for damage calculation
@@ -17,6 +18,11 @@ const DEFENSE_CONSTANT_K = 100;
 const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
 const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
 const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
+
+/**
+ * Boss mechanics instance (single instance per combat)
+ */
+let bossMechanics: BossMechanics | null = null;
 
 /**
  * Combat store managing all combat state and actions
@@ -37,12 +43,24 @@ export const useCombatStore = create<CombatState>()(
     lastAttackTime: 0,
     lastEnemyAttackTime: 0,
     techniquesCooldowns: {},
+    isBoss: false,
+    combatStartTime: 0,
 
     /**
      * Enter combat with an enemy
      */
     enterCombat: (zone: string, enemy: EnemyDefinition) => {
       const playerStats = useGameStore.getState().stats;
+      const now = Date.now();
+
+      // Initialize boss mechanics if this is a boss
+      const isBoss = enemy.isBoss || false;
+      if (isBoss) {
+        bossMechanics = new BossMechanics();
+        console.log('[CombatStore] Boss mechanics initialized for', enemy.name);
+      } else {
+        bossMechanics = null;
+      }
 
       set((state) => {
         state.inCombat = true;
@@ -59,18 +77,29 @@ export const useCombatStore = create<CombatState>()(
         state.combatLog = [];
 
         // Reset timing
-        state.lastAttackTime = Date.now();
-        state.lastEnemyAttackTime = Date.now();
+        state.lastAttackTime = now;
+        state.lastEnemyAttackTime = now;
+
+        // Boss tracking
+        state.isBoss = isBoss;
+        state.combatStartTime = now;
       });
 
       // Add entry to log
-      get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
+      if (isBoss) {
+        get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+      } else {
+        get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
+      }
     },
 
     /**
      * Exit combat and clean up state
      */
     exitCombat: () => {
+      // Clean up boss mechanics
+      bossMechanics = null;
+
       set((state) => {
         state.inCombat = false;
         state.currentZone = null;
@@ -81,6 +110,8 @@ export const useCombatStore = create<CombatState>()(
         state.enemyMaxHP = '0';
         state.lastAttackTime = 0;
         state.lastEnemyAttackTime = 0;
+        state.isBoss = false;
+        state.combatStartTime = 0;
       });
     },
 
@@ -173,7 +204,16 @@ export const useCombatStore = create<CombatState>()(
       }
 
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
-      const atk = D(enemy.atk);
+      let atk = D(enemy.atk);
+
+      // Apply boss enrage multiplier
+      if (state.isBoss && bossMechanics) {
+        const enrageMultiplier = bossMechanics.getEnrageMultiplier();
+        if (enrageMultiplier > 1) {
+          atk = atk.times(enrageMultiplier);
+        }
+      }
+
       const def = D(playerStats.def);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
       const baseDamage = atk.times(D(1).minus(defReduction));
@@ -223,9 +263,14 @@ export const useCombatStore = create<CombatState>()(
 
       const enemy = state.currentEnemy;
       const currentZone = state.currentZone;
+      const isBoss = state.isBoss;
 
       // Add victory message
-      get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
+      if (isBoss) {
+        get().addLogEntry('victory', `🏆 BOSS DEFEATED! ${enemy.name} has fallen!`, '#fbbf24');
+      } else {
+        get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
+      }
 
       // Add reward messages
       get().addLogEntry(
@@ -236,7 +281,11 @@ export const useCombatStore = create<CombatState>()(
 
       // Record enemy defeat in zone progression
       if (currentZone) {
-        useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
+        if (isBoss) {
+          useZoneStore.getState().recordBossDefeat(currentZone);
+        } else {
+          useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
+        }
       }
 
       // TODO: Actually add rewards to game state (gold, exp)
@@ -310,12 +359,101 @@ export const useCombatStore = create<CombatState>()(
 
       const now = Date.now();
 
+      // Process boss mechanics
+      if (state.isBoss && bossMechanics) {
+        const combatTime = (now - state.combatStartTime) / 1000; // Convert to seconds
+        const currentHP = D(state.enemyHP);
+        const maxHP = D(state.enemyMaxHP);
+
+        const mechanics = bossMechanics.update(deltaTime, currentHP, maxHP, combatTime);
+
+        // Handle enrage trigger
+        if (mechanics.enrageTriggered) {
+          get().addLogEntry(
+            'system',
+            `🔥 ${state.currentEnemy.name} has ENRAGED! Attack power increased by 50%!`,
+            '#ef4444'
+          );
+        }
+
+        // Handle heal trigger
+        if (mechanics.healTriggered && mechanics.healAmount) {
+          const healedHP = add(state.enemyHP, mechanics.healAmount.toString());
+          const cappedHP = greaterThan(healedHP, state.enemyMaxHP) ? state.enemyMaxHP : healedHP.toString();
+
+          set((state) => {
+            state.enemyHP = cappedHP;
+          });
+
+          get().addLogEntry(
+            'system',
+            `💚 ${state.currentEnemy.name} heals for ${mechanics.healAmount.toFixed(0)} HP!`,
+            '#22c55e'
+          );
+        }
+
+        // Handle ultimate trigger
+        if (mechanics.ultimateTriggered && mechanics.ultimateDamageMultiplier) {
+          // Apply massive damage to player
+          const playerStats = useGameStore.getState().stats;
+          const enemy = state.currentEnemy;
+
+          // Calculate base damage with ultimate multiplier
+          let atk = D(enemy.atk).times(mechanics.ultimateDamageMultiplier);
+
+          // Apply enrage if active
+          const enrageMultiplier = bossMechanics.getEnrageMultiplier();
+          if (enrageMultiplier > 1) {
+            atk = atk.times(enrageMultiplier);
+          }
+
+          const def = D(playerStats.def);
+          const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
+          const ultimateDamage = atk.times(D(1).minus(defReduction));
+
+          get().addLogEntry(
+            'damage',
+            `⚡ ${enemy.name} unleashes ULTIMATE ATTACK! Takes ${ultimateDamage.toFixed(0)} damage!`,
+            '#a855f7'
+          );
+
+          // Apply damage to player
+          set((state) => {
+            const newHP = subtract(state.playerHP, ultimateDamage.toString());
+            state.playerHP = newHP.toString();
+          });
+
+          // Check if player is defeated
+          if (lessThanOrEqualTo(get().playerHP, 0)) {
+            setTimeout(() => {
+              get().playerDefeat();
+            }, 500);
+          }
+
+          // Reset ultimate triggered flag so it can trigger again
+          bossMechanics.resetUltimateTriggered();
+        }
+
+        // Handle ultimate warning
+        if (mechanics.ultimateWarning && !mechanics.ultimateTriggered) {
+          const progress = bossMechanics.getUltimateWarningProgress();
+          if (progress === 0) {
+            // Just started warning
+            get().addLogEntry(
+              'system',
+              `⚠️ ${state.currentEnemy.name} is charging a powerful attack! (3s)`,
+              '#f59e0b'
+            );
+          }
+        }
+      }
+
       // Auto-attack if enabled
       if (state.autoAttack && now - state.lastAttackTime >= PLAYER_ATTACK_COOLDOWN) {
         get().playerAttack();
       }
 
-      // Enemy auto-attacks
+      // Enemy auto-attacks (skip if ultimate just triggered)
       if (now - state.lastEnemyAttackTime >= ENEMY_ATTACK_COOLDOWN) {
         // Check if enemy is still alive before attacking
         if (greaterThan(state.enemyHP, 0)) {

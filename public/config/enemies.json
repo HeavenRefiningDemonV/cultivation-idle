@@ -127,6 +127,40 @@
       "goldReward": "150",
       "expReward": "75",
       "lootTable": []
+    },
+    {
+      "id": "forest_guardian",
+      "name": "Forest Guardian",
+      "level": 5,
+      "zone": "training_forest",
+      "hp": "500",
+      "atk": "20",
+      "def": "15",
+      "crit": 5,
+      "critDmg": 150,
+      "dodge": 5,
+      "speed": 1.0,
+      "goldReward": "100",
+      "expReward": "50",
+      "lootTable": [],
+      "isBoss": true
+    },
+    {
+      "id": "shadow_spider_queen",
+      "name": "Shadow Spider Queen",
+      "level": 10,
+      "zone": "spirit_cavern",
+      "hp": "1000",
+      "atk": "40",
+      "def": "20",
+      "crit": 15,
+      "critDmg": 180,
+      "dodge": 10,
+      "speed": 1.2,
+      "goldReward": "200",
+      "expReward": "100",
+      "lootTable": [],
+      "isBoss": true
     }
   ]
 }

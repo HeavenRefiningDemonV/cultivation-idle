@@ -180,14 +180,22 @@ export function AdventureTab() {
     // Enter zone
     enterZone(zone.id);
 
-    // Get random enemy from zone
-    const enemyIds = zone.enemyIds;
-    if (enemyIds.length === 0) {
-      console.warn('[AdventureTab] No enemies in zone');
+    // Get available enemies from zone (filter out bosses unless available)
+    const bossAvailable = isBossAvailable(zone.id);
+    const availableEnemyIds = zone.enemyIds.filter((enemyId) => {
+      const enemy = enemies[enemyId];
+      if (!enemy) return false;
+
+      // Include non-boss enemies, or bosses if they're available
+      return !enemy.isBoss || bossAvailable;
+    });
+
+    if (availableEnemyIds.length === 0) {
+      console.warn('[AdventureTab] No available enemies in zone');
       return;
     }
 
-    const randomEnemyId = enemyIds[Math.floor(Math.random() * enemyIds.length)];
+    const randomEnemyId = availableEnemyIds[Math.floor(Math.random() * availableEnemyIds.length)];
     const enemy = enemies[randomEnemyId];
 
     if (!enemy) {

@@ -182,6 +182,7 @@ export interface EnemyDefinition {
   goldReward: string;      // Gold dropped on defeat (Decimal string)
   expReward: string;       // Experience gained (Decimal string)
   lootTable?: LootDrop[];  // Possible item drops
+  isBoss?: boolean;        // Is this a boss enemy
 }
 
 /**
@@ -230,6 +231,10 @@ export interface CombatState {
   lastAttackTime: number;
   lastEnemyAttackTime: number;
   techniquesCooldowns: Record<string, number>;
+
+  // Boss mechanics
+  isBoss: boolean;
+  combatStartTime: number;
 
   // Actions
   enterCombat: (zone: string, enemy: EnemyDefinition) => void;
