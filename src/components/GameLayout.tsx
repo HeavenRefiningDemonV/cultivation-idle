@@ -6,6 +6,7 @@ import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
 import { AdventureScreen } from './screens/AdventureScreen';
 import { DungeonScreen } from './screens/DungeonScreen';
+import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 
 /**
@@ -25,13 +26,6 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
       </div>
     </div>
   );
-}
-
-/**
- * Inventory tab content (placeholder for now)
- */
-function InventoryTab() {
-  return <PlaceholderContent tabName="Inventory" />;
 }
 
 /**
@@ -66,9 +60,10 @@ export function GameLayout() {
       case 'dungeon':
         return <DungeonScreen />;
       case 'inventory':
-        return <InventoryTab />;
+        return <InventoryScreen />;
       case 'techniques':
         return <TechniquesTab />;
+
       case 'prestige':
         return <PrestigeScreen />;
       case 'settings':

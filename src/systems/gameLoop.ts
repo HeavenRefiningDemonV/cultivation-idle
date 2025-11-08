@@ -235,6 +235,18 @@ export function initializeGame(): boolean {
     );
     console.log('[GameLoop] Technique store dependencies set');
 
+    // Add starter items for testing (only if inventory is empty)
+    const { useInventoryStore } = require('../stores/inventoryStore');
+    const inventoryStore = useInventoryStore.getState();
+    if (inventoryStore.items.length === 0) {
+      inventoryStore.addItem('rusty_sword', 1);
+      inventoryStore.addItem('worn_talisman', 1);
+      inventoryStore.addItem('health_pill', 5);
+      inventoryStore.addItem('spirit_stone', 10);
+      inventoryStore.addGold('1000');
+      console.log('[GameLoop] Added starter items to inventory');
+    }
+
     // Check if save exists
     const saveExists = hasSave();
 
