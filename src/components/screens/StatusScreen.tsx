@@ -3,7 +3,7 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber } from '../../utils/numbers';
-import { REALMS } from '../../config/realms';
+import { REALMS } from '../../constants';
 
 /**
  * Stat Row Component for displaying key-value pairs

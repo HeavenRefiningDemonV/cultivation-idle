@@ -1,6 +1,6 @@
 import { useGameStore } from '../../stores/gameStore';
 import { formatNumber } from '../../utils/numbers';
-import { REALMS } from '../../config/realms';
+import { REALMS } from '../../constants';
 
 /**
  * Mountain Background SVG
