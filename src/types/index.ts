@@ -131,3 +131,83 @@ export interface SaveData {
   upgradeTiers: UpgradeTiers;
   lastSaveTime: number;
 }
+
+/**
+ * Enemy definition
+ */
+export interface EnemyDefinition {
+  id: string;
+  name: string;
+  level: number;
+  zone: string;
+  hp: string;              // Max HP (Decimal string)
+  atk: string;             // Attack power (Decimal string)
+  def: string;             // Defense (Decimal string)
+  crit: number;            // Critical hit chance (0-100)
+  critDmg: number;         // Critical damage multiplier (%)
+  dodge: number;           // Dodge chance (0-100)
+  speed: number;           // Attack speed
+  goldReward: string;      // Gold dropped on defeat (Decimal string)
+  expReward: string;       // Experience gained (Decimal string)
+  lootTable?: LootDrop[];  // Possible item drops
+}
+
+/**
+ * Loot drop definition
+ */
+export interface LootDrop {
+  itemId: string;
+  dropChance: number;      // Probability (0-100)
+  minAmount: number;
+  maxAmount: number;
+}
+
+/**
+ * Combat log entry
+ */
+export interface CombatLogEntry {
+  type: 'player' | 'enemy' | 'system' | 'damage' | 'heal' | 'loot' | 'victory' | 'defeat';
+  text: string;
+  timestamp: number;
+  color: string;
+}
+
+/**
+ * Combat state
+ */
+export interface CombatState {
+  // Combat status
+  inCombat: boolean;
+  currentZone: string | null;
+  currentEnemy: EnemyDefinition | null;
+
+  // HP tracking
+  playerHP: string;        // Current player HP (Decimal string)
+  playerMaxHP: string;     // Max player HP (Decimal string)
+  enemyHP: string;         // Current enemy HP (Decimal string)
+  enemyMaxHP: string;      // Max enemy HP (Decimal string)
+
+  // Combat log
+  combatLog: CombatLogEntry[];
+
+  // Settings
+  autoAttack: boolean;
+  autoCombatAI: boolean;
+
+  // Timing
+  lastAttackTime: number;
+  lastEnemyAttackTime: number;
+  techniquesCooldowns: Record<string, number>;
+
+  // Actions
+  enterCombat: (zone: string, enemy: EnemyDefinition) => void;
+  exitCombat: () => void;
+  playerAttack: () => void;
+  enemyAttack: () => void;
+  defeatEnemy: () => void;
+  playerDefeat: () => void;
+  tick: (deltaTime: number) => void;
+  addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
+  setAutoAttack: (enabled: boolean) => void;
+  setAutoCombatAI: (enabled: boolean) => void;
+}
