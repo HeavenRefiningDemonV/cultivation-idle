@@ -10,7 +10,6 @@ interface PerkSelectionModalProps {
 
 export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalProps) {
   const { selectedPath, selectPerk, pathPerks: currentPerks } = useGameStore();
-  const [selectedPerkId, setSelectedPerkId] = useState<string | null>(null);
   const [hoveredPerk, setHoveredPerk] = useState<string | null>(null);
 
   // Get available perks for this path and realm

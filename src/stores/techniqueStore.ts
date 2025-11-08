@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
 import type { CultivationPath } from '../types';
-import { D, multiply, add, subtract, greaterThanOrEqualTo, lessThanOrEqualTo } from '../utils/numbers';
+import { D, multiply, subtract, greaterThanOrEqualTo, lessThanOrEqualTo } from '../utils/numbers';
 
 /**
  * Technique definition
