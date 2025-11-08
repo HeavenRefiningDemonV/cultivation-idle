@@ -87,6 +87,10 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
   const zoneProgress = useZoneStore((state) => state.getZoneProgress(zone.id));
   const enterCombat = useCombatStore((state) => state.enterCombat);
 
+  if (!realm) {
+    return null;
+  }
+
   const isLocked = realm.index < zone.minRealm || !isUnlocked;
 
   const handleFightEnemies = () => {
@@ -127,7 +131,7 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
               Suggested: {zone.suggestedStats.dps} DPS • {zone.suggestedStats.hp} HP
             </div>
             <div className="text-xs text-qi-blue">
-              Enemies defeated: {zoneProgress.enemiesDefeated}
+              Enemies defeated: {zoneProgress?.enemiesDefeated || 0}
             </div>
           </div>
 
@@ -175,10 +179,20 @@ function CombatView() {
 
   const stats = useGameStore((state) => state.stats);
 
-  if (!currentEnemy) return null;
+  if (!currentEnemy) {
+    return (
+      <div className="text-center text-slate-400 py-12">
+        No enemy in combat. Please select a zone to fight.
+      </div>
+    );
+  }
 
-  const playerHPPercent = (Number(playerHP) / Number(playerMaxHP)) * 100;
-  const enemyHPPercent = (Number(enemyHP) / Number(enemyMaxHP)) * 100;
+  const playerHPPercent = playerMaxHP && Number(playerMaxHP) > 0
+    ? (Number(playerHP) / Number(playerMaxHP)) * 100
+    : 0;
+  const enemyHPPercent = enemyMaxHP && Number(enemyMaxHP) > 0
+    ? (Number(enemyHP) / Number(enemyMaxHP)) * 100
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -268,22 +282,22 @@ function CombatView() {
             <div>
               <div className="text-slate-400">ATK</div>
               <div className="font-semibold text-white font-mono">
-                {formatNumber(stats.atk)}
+                {stats?.atk ? formatNumber(stats.atk) : '0'}
               </div>
             </div>
             <div>
               <div className="text-slate-400">DEF</div>
               <div className="font-semibold text-white font-mono">
-                {formatNumber(stats.def)}
+                {stats?.def ? formatNumber(stats.def) : '0'}
               </div>
             </div>
             <div>
               <div className="text-slate-400">Crit</div>
-              <div className="font-semibold text-white font-mono">{stats.crit}%</div>
+              <div className="font-semibold text-white font-mono">{stats?.crit || 0}%</div>
             </div>
             <div>
               <div className="text-slate-400">Dodge</div>
-              <div className="font-semibold text-white font-mono">{stats.dodge}%</div>
+              <div className="font-semibold text-white font-mono">{stats?.dodge || 0}%</div>
             </div>
           </div>
         </div>
@@ -339,46 +353,60 @@ function CombatView() {
  * Main Adventure Screen Component
  */
 export function AdventureScreen() {
-  const inCombat = useCombatStore((state) => state.inCombat);
+  try {
+    const inCombat = useCombatStore((state) => state.inCombat);
 
-  return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 30% 50%, rgba(239, 68, 68, 0.3) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(251, 191, 36, 0.3) 0%, transparent 50%)',
-          }}
-        />
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-2">
-            {inCombat ? 'Combat' : 'Adventure Zones'}
-          </h1>
-          <p className="text-slate-400 text-sm">
-            {inCombat
-              ? 'Defeat your enemy to claim rewards'
-              : 'Explore dangerous territories and battle fearsome enemies'}
-          </p>
+    return (
+      <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 30% 50%, rgba(239, 68, 68, 0.3) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(251, 191, 36, 0.3) 0%, transparent 50%)',
+            }}
+          />
         </div>
 
-        {/* Zone Selection or Combat View */}
-        {!inCombat ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {ZONES.map((zone) => (
-              <ZoneCard key={zone.id} zone={zone} />
-            ))}
+        {/* Main Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-2">
+              {inCombat ? 'Combat' : 'Adventure Zones'}
+            </h1>
+            <p className="text-slate-400 text-sm">
+              {inCombat
+                ? 'Defeat your enemy to claim rewards'
+                : 'Explore dangerous territories and battle fearsome enemies'}
+            </p>
           </div>
-        ) : (
-          <CombatView />
-        )}
+
+          {/* Zone Selection or Combat View */}
+          {!inCombat ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {ZONES.map((zone) => (
+                <ZoneCard key={zone.id} zone={zone} />
+              ))}
+            </div>
+          ) : (
+            <CombatView />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('[AdventureScreen] Error:', error);
+    return (
+      <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg p-8">
+        <div className="text-center text-red-400">
+          <h2 className="text-2xl font-bold mb-2">Error Loading Adventure</h2>
+          <p className="text-sm text-slate-400">
+            {error instanceof Error ? error.message : 'Unknown error occurred'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 }
