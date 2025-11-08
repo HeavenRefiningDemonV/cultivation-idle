@@ -338,8 +338,8 @@ function CombatView() {
           {combatLog.length === 0 ? (
             <p className="text-slate-500 italic">No messages yet...</p>
           ) : (
-            combatLog.slice(-20).reverse().map((log) => (
-              <div key={log.id} className={log.color || 'text-slate-300'}>
+            combatLog.slice(-20).reverse().map((log, idx) => (
+              <div key={`${log.timestamp}-${idx}`} className={log.color || 'text-slate-300'}>
                 {log.text}
               </div>
             ))

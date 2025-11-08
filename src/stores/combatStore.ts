@@ -4,6 +4,7 @@ import type { CombatState, EnemyDefinition, CombatLogEntry } from '../types';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
+import { useDungeonStore } from './dungeonStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, updatePityCounters, formatLootMessage, getRarityColor } from '../systems/loot';
@@ -27,13 +28,22 @@ const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
 let bossMechanics: BossMechanics | null = null;
 
 /**
+ * Extended Combat State with dungeon support
+ */
+interface ExtendedCombatState extends CombatState {
+  currentDungeon: string | null;
+  startDungeonCombat: (dungeonId: string, boss: any, dungeonData: any) => void;
+}
+
+/**
  * Combat store managing all combat state and actions
  */
-export const useCombatStore = create<CombatState>()(
+export const useCombatStore = create<ExtendedCombatState>()(
   immer((set, get) => ({
     // Initial state
     inCombat: false,
     currentZone: null,
+    currentDungeon: null,
     currentEnemy: null,
     playerHP: '0',
     playerMaxHP: '0',
@@ -96,15 +106,82 @@ export const useCombatStore = create<CombatState>()(
     },
 
     /**
+     * Start dungeon combat with a boss
+     */
+    startDungeonCombat: (dungeonId: string, boss: any, dungeonData: any) => {
+      const playerStats = useGameStore.getState().stats;
+      const now = Date.now();
+
+      // Create enemy definition from dungeon boss
+      const enemy: EnemyDefinition = {
+        id: boss.id,
+        name: boss.name,
+        level: dungeonData.tier * 10 + 10,
+        zone: dungeonId,
+        hp: boss.hp.toString(),
+        atk: boss.atk.toString(),
+        def: boss.def.toString(),
+        crit: boss.crit || 5,
+        critDmg: boss.critDmg || 150,
+        dodge: boss.dodge || 5,
+        speed: boss.speed || 1.0,
+        goldReward: '0', // Dungeon rewards handled separately
+        expReward: '0',
+        isBoss: true,
+      };
+
+      // Initialize boss mechanics
+      bossMechanics = new BossMechanics();
+      console.log('[CombatStore] Dungeon boss mechanics initialized for', boss.name);
+
+      // Start dungeon in dungeon store
+      useDungeonStore.getState().startDungeon(dungeonId);
+
+      set((state) => {
+        state.inCombat = true;
+        state.currentZone = null; // Not a zone fight
+        state.currentDungeon = dungeonId;
+        state.currentEnemy = enemy;
+
+        // Initialize HP
+        state.playerHP = playerStats.hp;
+        state.playerMaxHP = playerStats.maxHp;
+        state.enemyHP = enemy.hp;
+        state.enemyMaxHP = enemy.hp;
+
+        // Clear combat log
+        state.combatLog = [];
+
+        // Reset timing
+        state.lastAttackTime = now;
+        state.lastEnemyAttackTime = now;
+
+        // Boss tracking
+        state.isBoss = true;
+        state.combatStartTime = now;
+      });
+
+      // Add entry to log
+      get().addLogEntry('system', `⚠️ DUNGEON TRIAL: ${dungeonData.name}!`, '#f59e0b');
+      get().addLogEntry('system', `⚔️ BOSS: ${enemy.name}!`, '#ef4444');
+    },
+
+    /**
      * Exit combat and clean up state
      */
     exitCombat: () => {
       // Clean up boss mechanics
       bossMechanics = null;
 
+      // Exit dungeon if in one
+      if (get().currentDungeon) {
+        useDungeonStore.getState().exitDungeon();
+      }
+
       set((state) => {
         state.inCombat = false;
         state.currentZone = null;
+        state.currentDungeon = null;
         state.currentEnemy = null;
         state.playerHP = '0';
         state.playerMaxHP = '0';
@@ -265,62 +342,107 @@ export const useCombatStore = create<CombatState>()(
 
       const enemy = state.currentEnemy;
       const currentZone = state.currentZone;
+      const currentDungeon = state.currentDungeon;
       const isBoss = state.isBoss;
+      const combatTime = (Date.now() - state.combatStartTime) / 1000; // Time in seconds
 
       // Add victory message
-      if (isBoss) {
+      if (currentDungeon) {
+        get().addLogEntry('victory', `🏆 DUNGEON TRIAL COMPLETE! ${enemy.name} has been vanquished!`, '#fbbf24');
+      } else if (isBoss) {
         get().addLogEntry('victory', `🏆 BOSS DEFEATED! ${enemy.name} has fallen!`, '#fbbf24');
       } else {
         get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
       }
 
-      // Get loot system data from game store
       const gameStore = useGameStore.getState();
       const inventoryStore = useInventoryStore.getState();
 
-      // Generate loot
-      const lootResult = generateLoot(
-        enemy,
-        gameStore.playerLuck,
-        gameStore.pityState,
-        isBoss
-      );
+      // Handle dungeon rewards
+      if (currentDungeon) {
+        // Load dungeon data
+        fetch('/config/dungeons.json')
+          .then(res => res.json())
+          .then(data => {
+            const dungeon = data.dungeons.find((d: any) => d.id === currentDungeon);
+            if (!dungeon) return;
 
-      // Add gold to inventory
-      inventoryStore.addGold(lootResult.gold);
+            const dungeonStore = useDungeonStore.getState();
+            const isFirstClear = dungeonStore.isFirstClear(currentDungeon);
 
-      // Add items to inventory
-      for (const lootItem of lootResult.items) {
-        const success = inventoryStore.addItem(lootItem.itemId, lootItem.quantity);
-        if (!success) {
-          get().addLogEntry('system', '⚠️ Inventory full! Some items were lost.', '#ef4444');
-          break;
+            // Award gold
+            if (dungeon.rewards.gold) {
+              inventoryStore.addGold(dungeon.rewards.gold.toString());
+              get().addLogEntry('loot', `💰 Received ${dungeon.rewards.gold} Gold!`, '#fbbf24');
+            }
+
+            // Award guaranteed first-clear drop
+            if (isFirstClear && dungeon.rewards.guaranteedDrop) {
+              const drop = dungeon.rewards.guaranteedDrop;
+              const success = inventoryStore.addItem(drop.itemId, 1);
+              if (success) {
+                get().addLogEntry('loot', `✨ FIRST CLEAR REWARD: ${drop.name}!`, '#a855f7');
+              } else {
+                get().addLogEntry('system', '⚠️ Inventory full! First clear reward was lost.', '#ef4444');
+              }
+            }
+
+            // Complete dungeon in dungeon store
+            dungeonStore.completeDungeon(currentDungeon, combatTime);
+
+            // Display completion stats
+            const totalClears = dungeonStore.getTotalClears(currentDungeon);
+            get().addLogEntry('system', `📊 Total Clears: ${totalClears} | Time: ${combatTime.toFixed(1)}s`, '#60a5fa');
+          })
+          .catch(err => {
+            console.error('[CombatStore] Error loading dungeon rewards:', err);
+          });
+      } else {
+        // Regular combat rewards (zone/enemy)
+        // Generate loot
+        const lootResult = generateLoot(
+          enemy,
+          gameStore.playerLuck,
+          gameStore.pityState,
+          isBoss
+        );
+
+        // Add gold to inventory
+        inventoryStore.addGold(lootResult.gold);
+
+        // Add items to inventory
+        for (const lootItem of lootResult.items) {
+          const success = inventoryStore.addItem(lootItem.itemId, lootItem.quantity);
+          if (!success) {
+            get().addLogEntry('system', '⚠️ Inventory full! Some items were lost.', '#ef4444');
+            break;
+          }
         }
-      }
 
-      // Format and display loot messages
-      const lootMessages = formatLootMessage(lootResult);
-      for (const message of lootMessages) {
-        if (message.includes('RARE') || message.includes('EPIC') || message.includes('LEGENDARY')) {
-          get().addLogEntry('loot', message, '#a855f7');
-        } else {
-          get().addLogEntry('loot', message, '#fbbf24');
+        // Format and display loot messages
+        const lootMessages = formatLootMessage(lootResult);
+        for (const message of lootMessages) {
+          if (message.includes('RARE') || message.includes('EPIC') || message.includes('LEGENDARY')) {
+            get().addLogEntry('loot', message, '#a855f7');
+          } else {
+            get().addLogEntry('loot', message, '#fbbf24');
+          }
         }
-      }
 
-      // Update pity counters
-      const droppedRarities = lootResult.items.map(item => item.rarity);
-      const newPityState = updatePityCounters(gameStore.pityState, droppedRarities);
-      useGameStore.setState({
-        pityState: newPityState,
-      });
+        // Update pity counters
+        const droppedRarities = lootResult.items.map(item => item.rarity);
+        const newPityState = updatePityCounters(gameStore.pityState, droppedRarities);
+        useGameStore.setState({
+          pityState: newPityState,
+        });
 
-      // Record enemy defeat in zone progression
-      if (currentZone) {
-        if (isBoss) {
-          useZoneStore.getState().recordBossDefeat(currentZone);
-        } else {
-          useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
+        // Record enemy defeat in zone progression
+        if (currentZone) {
+          if (isBoss) {
+            useZoneStore.getState().recordBossDefeat(currentZone);
+          } else {
+            useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
+          }
         }
       }
 

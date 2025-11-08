@@ -1,0 +1,130 @@
+{
+  "dungeons": [
+    {
+      "id": "novice_clearing",
+      "name": "Novice's Clearing",
+      "tier": 0,
+      "description": "A peaceful clearing where novice cultivators prove their worth.",
+      "minRealm": 0,
+      "suggestedDPS": 50,
+      "suggestedHP": 800,
+      "boss": {
+        "id": "novice_guardian",
+        "name": "Novice Guardian",
+        "hp": 1500,
+        "atk": 80,
+        "def": 30,
+        "mechanics": [
+          {
+            "type": "shield",
+            "trigger": { "hpPercent": 50 },
+            "effect": { "shieldAmount": 500 },
+            "description": "Stone Barrier"
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 5000,
+        "exp": 1000,
+        "guaranteedDrop": {
+          "itemId": "foundation_pill",
+          "name": "Foundation Pill",
+          "firstClearOnly": true
+        }
+      },
+      "unlocked": true
+    },
+    {
+      "id": "stone_core_sanctum",
+      "name": "Stone Core Sanctum",
+      "tier": 1,
+      "description": "Ancient stones guard the path to Core Formation.",
+      "minRealm": 1,
+      "suggestedDPS": 200,
+      "suggestedHP": 3000,
+      "boss": {
+        "id": "stone_guardian",
+        "name": "Stone Guardian",
+        "hp": 8000,
+        "atk": 300,
+        "def": 150,
+        "mechanics": [
+          {
+            "type": "shield",
+            "trigger": { "hpPercent": 66 },
+            "effect": { "shieldAmount": 2000 },
+            "description": "Ancient Shell"
+          },
+          {
+            "type": "shield",
+            "trigger": { "hpPercent": 33 },
+            "effect": { "shieldAmount": 2000 },
+            "description": "Ancient Shell"
+          },
+          {
+            "type": "aura",
+            "trigger": { "hpPercent": 25 },
+            "effect": { "auraDamagePerSec": 50 },
+            "description": "Crushing Pressure"
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 20000,
+        "exp": 5000,
+        "guaranteedDrop": {
+          "itemId": "core_catalyst",
+          "name": "Core Catalyst",
+          "firstClearOnly": true
+        }
+      },
+      "unlocked": false
+    },
+    {
+      "id": "nascent_soul_chamber",
+      "name": "Nascent Soul Chamber",
+      "tier": 2,
+      "description": "Where souls are forged and tested by ancient trials.",
+      "minRealm": 2,
+      "suggestedDPS": 800,
+      "suggestedHP": 10000,
+      "boss": {
+        "id": "soul_warden",
+        "name": "Soul Warden",
+        "hp": 30000,
+        "atk": 1000,
+        "def": 500,
+        "mechanics": [
+          {
+            "type": "shield",
+            "trigger": { "hpPercent": 75 },
+            "effect": { "shieldAmount": 5000 },
+            "description": "Soul Barrier"
+          },
+          {
+            "type": "aura",
+            "trigger": { "hpPercent": 50 },
+            "effect": { "auraDamagePerSec": 150 },
+            "description": "Soul Drain"
+          },
+          {
+            "type": "shield",
+            "trigger": { "hpPercent": 25 },
+            "effect": { "shieldAmount": 7500 },
+            "description": "Final Ward"
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 50000,
+        "exp": 15000,
+        "guaranteedDrop": {
+          "itemId": "soul_fragment",
+          "name": "Soul Fragment",
+          "firstClearOnly": true
+        }
+      },
+      "unlocked": false
+    }
+  ]
+}
