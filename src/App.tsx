@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { GameLayout } from './components/GameLayout';
 import { initializeGame } from './systems/gameLoop';
+import { OfflineProgressModal } from './components/modals/OfflineProgressModal';
+import type { OfflineProgressSummary } from './systems/offline';
 
 /**
  * Main App component
@@ -8,17 +10,23 @@ import { initializeGame } from './systems/gameLoop';
 function App() {
   const [gameInitialized, setGameInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
+  const [offlineProgress, setOfflineProgress] = useState<OfflineProgressSummary | null>(null);
 
   // Initialize game on mount
   useEffect(() => {
     console.log('[App] Initializing game...');
 
     try {
-      const success = initializeGame();
+      const result = initializeGame();
 
-      if (success) {
+      if (result.success) {
         console.log('[App] Game initialized successfully');
         setGameInitialized(true);
+
+        // Show offline progress modal if player was offline
+        if (result.offlineProgress) {
+          setOfflineProgress(result.offlineProgress);
+        }
       } else {
         console.error('[App] Game initialization failed');
         setInitError('Failed to initialize game. Please refresh the page.');
@@ -66,7 +74,19 @@ function App() {
   }
 
   // Render game layout once initialized
-  return <GameLayout />;
+  return (
+    <>
+      <GameLayout />
+
+      {/* Offline Progress Modal */}
+      {offlineProgress && (
+        <OfflineProgressModal
+          progress={offlineProgress}
+          onClose={() => setOfflineProgress(null)}
+        />
+      )}
+    </>
+  );
 }
 
 export default App;

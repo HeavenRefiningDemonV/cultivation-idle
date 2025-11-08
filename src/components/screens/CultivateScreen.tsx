@@ -350,27 +350,77 @@ export function CultivateScreen() {
               </h3>
 
               <div className="space-y-3">
-                {(['balanced', 'body', 'spirit'] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setFocusMode(mode)}
-                    className={`
-                      w-full p-3 rounded-lg border-2 transition-all text-left
-                      ${
-                        focusMode === mode
-                          ? 'border-qi-blue bg-qi-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.4)]'
-                          : 'border-slate-600 bg-slate-800/30 hover:border-slate-500'
-                      }
-                    `}
-                  >
-                    <div className="font-bold text-white capitalize">{mode}</div>
-                    <div className="text-xs text-slate-400">
-                      {mode === 'balanced' && 'Equal focus on all aspects'}
-                      {mode === 'body' && 'Enhance physical cultivation'}
-                      {mode === 'spirit' && 'Focus on spiritual energy'}
+                {/* Balanced Mode */}
+                <button
+                  onClick={() => setFocusMode('balanced')}
+                  className={`
+                    w-full p-3 rounded-lg border-2 transition-all text-left
+                    ${
+                      focusMode === 'balanced'
+                        ? 'border-qi-blue bg-qi-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.4)]'
+                        : 'border-slate-600 bg-slate-800/30 hover:border-slate-500'
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">⚖️</span>
+                      <div className="font-bold text-white">Balanced</div>
                     </div>
-                  </button>
-                ))}
+                    {focusMode === 'balanced' && <span className="text-qi-blue">✓</span>}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    All stats at base values
+                  </div>
+                </button>
+
+                {/* Body Focus Mode */}
+                <button
+                  onClick={() => setFocusMode('body')}
+                  className={`
+                    w-full p-3 rounded-lg border-2 transition-all text-left
+                    ${
+                      focusMode === 'body'
+                        ? 'border-qi-blue bg-qi-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.4)]'
+                        : 'border-slate-600 bg-slate-800/30 hover:border-slate-500'
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">💪</span>
+                      <div className="font-bold text-white">Body Focus</div>
+                    </div>
+                    {focusMode === 'body' && <span className="text-qi-blue">✓</span>}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    +50% HP, +30% DEF, +20% ATK, -20% Qi/s
+                  </div>
+                </button>
+
+                {/* Spirit Focus Mode */}
+                <button
+                  onClick={() => setFocusMode('spirit')}
+                  className={`
+                    w-full p-3 rounded-lg border-2 transition-all text-left
+                    ${
+                      focusMode === 'spirit'
+                        ? 'border-qi-blue bg-qi-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.4)]'
+                        : 'border-slate-600 bg-slate-800/30 hover:border-slate-500'
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">✨</span>
+                      <div className="font-bold text-white">Spirit Focus</div>
+                    </div>
+                    {focusMode === 'spirit' && <span className="text-qi-blue">✓</span>}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">
+                    +50% Qi/s, -20% HP, -10% ATK, -10% DEF
+                  </div>
+                </button>
               </div>
             </div>
 
