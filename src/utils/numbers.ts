@@ -227,6 +227,38 @@ export function min(a: Decimal.Value, b: Decimal.Value): Decimal {
 }
 
 /**
+ * Checks if the first value is less than or equal to the second.
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @returns True if a <= b
+ *
+ * @example
+ * lessThanOrEqualTo(10, 20) // Returns true
+ * lessThanOrEqualTo(20, 20) // Returns true
+ * lessThanOrEqualTo(30, 20) // Returns false
+ */
+export function lessThanOrEqualTo(a: Decimal.Value, b: Decimal.Value): boolean {
+  return D(a).lessThanOrEqualTo(b);
+}
+
+/**
+ * Checks if the first value is greater than or equal to the second.
+ *
+ * @param a - First value
+ * @param b - Second value
+ * @returns True if a >= b
+ *
+ * @example
+ * greaterThanOrEqualTo(20, 10) // Returns true
+ * greaterThanOrEqualTo(20, 20) // Returns true
+ * greaterThanOrEqualTo(10, 20) // Returns false
+ */
+export function greaterThanOrEqualTo(a: Decimal.Value, b: Decimal.Value): boolean {
+  return D(a).greaterThanOrEqualTo(b);
+}
+
+/**
  * Clamps a value between a minimum and maximum.
  *
  * @param value - Value to clamp
