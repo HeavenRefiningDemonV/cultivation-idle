@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
+import { useTechniqueStore } from '../../stores/techniqueStore';
 import type { CultivationPath } from '../../types';
 
 interface PathSelectionModalProps {
@@ -8,6 +9,7 @@ interface PathSelectionModalProps {
 
 export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
   const { selectPath } = useGameStore();
+  const { unlockTechnique, techniques } = useTechniqueStore();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   const paths = [
@@ -72,7 +74,19 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
   ];
 
   const handleSelectPath = (pathId: CultivationPath) => {
+    // Select the path
     selectPath(pathId);
+
+    // Auto-unlock the tier 1 technique for this path
+    const tier1Technique = Object.values(techniques).find(
+      (tech) => tech.path === pathId && tech.tier === 1
+    );
+
+    if (tier1Technique) {
+      unlockTechnique(tier1Technique.id);
+      console.log(`[PathSelection] Auto-unlocked tier 1 technique: ${tier1Technique.name}`);
+    }
+
     onClose();
   };
 

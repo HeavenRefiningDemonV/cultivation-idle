@@ -1,6 +1,7 @@
 import { useGameStore, initializeGameStore } from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
 import { usePrestigeStore } from '../stores/prestigeStore';
+import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 
@@ -131,6 +132,10 @@ class GameLoop {
       // Update combat store (attacks, cooldowns)
       const combatState = useCombatStore.getState();
       combatState.tick(deltaTime);
+
+      // Update technique store (intent regen, auto-cast)
+      const techniqueState = useTechniqueStore.getState();
+      techniqueState.updateTechniques(deltaTime);
     } catch (error) {
       console.error('[GameLoop] Error in tick:', error);
     }
@@ -218,6 +223,17 @@ export function initializeGame(): boolean {
     // Initialize prestige store upgrades
     usePrestigeStore.getState().initializeUpgrades();
     console.log('[GameLoop] Prestige store initialized');
+
+    // Initialize technique store
+    useTechniqueStore.getState().initializeTechniques();
+    console.log('[GameLoop] Technique store initialized');
+
+    // Set up technique store dependencies
+    setTechniqueStoreDependencies(
+      () => useCombatStore.getState(),
+      () => useGameStore.getState()
+    );
+    console.log('[GameLoop] Technique store dependencies set');
 
     // Check if save exists
     const saveExists = hasSave();
