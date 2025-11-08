@@ -17,6 +17,7 @@ import {
   ELEMENT_BONUSES,
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
+import { setGameStoreGetter } from './prestigeStore';
 
 /**
  * Lazy getter for inventory store to avoid circular dependency
@@ -60,6 +61,7 @@ export const useGameStore = create<GameState>()(
     },
     playerLuck: 0,
     lastTickTime: Date.now(),
+    runStartTime: Date.now(),
 
     /**
      * Main game tick - called regularly to update Qi and state
@@ -442,10 +444,25 @@ export const useGameStore = create<GameState>()(
           hp: 0,
         };
         state.lastTickTime = Date.now();
+        state.runStartTime = Date.now();
         // Note: totalAuras is NOT reset - it's a prestige currency
       });
 
       // Recalculate everything
+      get().calculateQiPerSecond();
+      get().calculatePlayerStats();
+    },
+
+    /**
+     * Perform a prestige reset with AP upgrades support
+     */
+    performPrestigeReset: () => {
+      // Reset game progression
+      get().resetRun();
+
+      // Prestige-specific logic handled in prestige store
+      // Apply prestige bonuses (they're automatically applied through getters in prestigeStore)
+      // Recalculate everything to apply prestige multipliers
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
     },
@@ -460,4 +477,7 @@ export const initializeGameStore = () => {
   const store = useGameStore.getState();
   store.calculateQiPerSecond();
   store.calculatePlayerStats();
+
+  // Register game store with prestige store
+  setGameStoreGetter(() => useGameStore.getState());
 };

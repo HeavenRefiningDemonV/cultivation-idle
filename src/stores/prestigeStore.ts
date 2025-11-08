@@ -1,202 +1,281 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { PrestigeState, SpiritRoot } from '../types';
-import { useGameStore, setPrestigeStoreGetter } from './gameStore';
-import { D, add } from '../utils/numbers';
-import {
-  PRESTIGE_AP_BASE,
-  PRESTIGE_AP_PER_REALM,
-  PRESTIGE_AP_PER_BOSS,
-  PRESTIGE_AP_TIME_BONUS_BASE,
-  PRESTIGE_AP_TIME_BONUS_DECAY,
-  PRESTIGE_AP_AURA_DIVISOR,
-  SPIRIT_ROOT_MULTIPLIERS,
-} from '../constants';
+import type { GameState } from '../types';
 
 /**
- * Prestige store managing rebirth, spirit roots, and AP upgrades
+ * Lazy getter for game store to avoid circular dependency
  */
+let _getGameStore: (() => GameState) | null = null;
+export function setGameStoreGetter(getter: () => GameState) {
+  _getGameStore = getter;
+}
+
+export interface PrestigeUpgrade {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  maxLevel: number;
+  currentLevel: number;
+  effect: {
+    type: 'multiplier' | 'unlock' | 'flat_bonus';
+    stat?: string;
+    value?: number;
+    valuePerLevel?: number;
+  };
+}
+
+export interface PrestigeRun {
+  runNumber: number;
+  realmReached: number;
+  apGained: number;
+  timeSpent: number;
+  timestamp: number;
+}
+
+interface PrestigeState {
+  totalAP: number;
+  lifetimeAP: number;
+  currentRunAP: number;
+  prestigeCount: number;
+  prestigeRuns: PrestigeRun[];
+  upgrades: Record<string, PrestigeUpgrade>;
+
+  calculateAPGain: () => number;
+  canPrestige: () => boolean;
+  performPrestige: () => void;
+  purchaseUpgrade: (upgradeId: string) => boolean;
+  getUpgradeEffect: (upgradeId: string) => number;
+  initializeUpgrades: () => void;
+}
+
 export const usePrestigeStore = create<PrestigeState>()(
   immer((set, get) => ({
-    // Initial state
-    totalRebirths: 0,
-    availableAP: 0,
+    totalAP: 0,
     lifetimeAP: 0,
-    spiritRoot: null,
-    apUpgrades: {
-      qiGain: 0,
-      combatPower: 0,
-      cultivation: 0,
-      luckBonus: 0,
-    },
-    runStartTime: Date.now(),
-    highestRealmReached: 0,
-    bossesDefeated: 0,
+    currentRunAP: 0,
+    prestigeCount: 0,
+    prestigeRuns: [],
+    upgrades: {},
 
-    /**
-     * Calculate AP gained from current run
-     */
     calculateAPGain: () => {
-      const gameState = useGameStore.getState();
-      const state = get();
+      if (!_getGameStore) return 0;
+      const gameStore = _getGameStore();
+      const currentRealm = gameStore.realm?.index || 0;
 
-      // Base AP
-      let apGain = PRESTIGE_AP_BASE;
+      // Exponential realm bonus
+      const realmBonus = Math.pow(2, currentRealm) * 30;
 
-      // Realm bonus
-      apGain += state.highestRealmReached * PRESTIGE_AP_PER_REALM;
+      // Time bonus (logarithmic to prevent idle farming)
+      const runStartTime = gameStore.runStartTime || Date.now();
+      const runTimeHours = (Date.now() - runStartTime) / (1000 * 60 * 60);
+      const timeBonus = Math.floor(Math.log(runTimeHours + 1) * 10);
 
-      // Boss bonus
-      apGain += state.bossesDefeated * PRESTIGE_AP_PER_BOSS;
-
-      // Time bonus (decays over time)
-      const runDuration = Date.now() - state.runStartTime;
-      const hoursElapsed = runDuration / (1000 * 60 * 60);
-      const timeBonus = Math.max(
-        0,
-        PRESTIGE_AP_TIME_BONUS_BASE - hoursElapsed * PRESTIGE_AP_TIME_BONUS_DECAY
-      );
-      apGain += Math.floor(timeBonus);
-
-      // Aura bonus
-      const auraBonus = Math.floor(gameState.totalAuras / PRESTIGE_AP_AURA_DIVISOR);
-      apGain += auraBonus;
-
-      return Math.floor(apGain);
+      return Math.floor(realmBonus + timeBonus);
     },
 
-    /**
-     * Perform a rebirth (prestige)
-     */
-    rebirth: () => {
+    canPrestige: () => {
+      if (!_getGameStore) return false;
+      const gameStore = _getGameStore();
+      const currentRealm = gameStore.realm?.index || 0;
+      return currentRealm >= 2; // Core Formation (realm 2)
+    },
+
+    performPrestige: () => {
       const state = get();
+      if (!_getGameStore) return;
+      const gameStore = _getGameStore();
+
+      if (!state.canPrestige()) return;
+
       const apGained = state.calculateAPGain();
+      const runStartTime = gameStore.runStartTime || Date.now();
+      const runTime = (Date.now() - runStartTime) / 1000;
+      const currentRealm = gameStore.realm?.index || 0;
+
+      const newRun: PrestigeRun = {
+        runNumber: state.prestigeCount + 1,
+        realmReached: currentRealm,
+        apGained,
+        timeSpent: runTime,
+        timestamp: Date.now(),
+      };
 
       set((state) => {
-        state.totalRebirths += 1;
-        state.availableAP += apGained;
+        state.totalAP += apGained;
         state.lifetimeAP += apGained;
-        state.runStartTime = Date.now();
-        state.highestRealmReached = 0;
-        state.bossesDefeated = 0;
+        state.currentRunAP = 0;
+        state.prestigeCount += 1;
+        state.prestigeRuns = [...state.prestigeRuns, newRun].slice(-10); // Keep last 10 runs
       });
 
-      // Reset the game state
-      useGameStore.getState().resetRun();
-
-      return apGained;
+      // Trigger game reset
+      gameStore.performPrestigeReset();
     },
 
-    /**
-     * Purchase an AP upgrade
-     */
-    purchaseAPUpgrade: (type: keyof PrestigeState['apUpgrades']) => {
+    purchaseUpgrade: (upgradeId: string) => {
       const state = get();
-      const currentLevel = state.apUpgrades[type];
+      const upgrade = state.upgrades[upgradeId];
 
-      // Cost increases exponentially
-      const cost = Math.floor(10 * Math.pow(1.5, currentLevel));
-
-      if (state.availableAP < cost) {
-        return false;
-      }
+      if (!upgrade) return false;
+      if (upgrade.currentLevel >= upgrade.maxLevel) return false;
+      if (state.totalAP < upgrade.cost) return false;
 
       set((state) => {
-        state.availableAP -= cost;
-        state.apUpgrades[type] += 1;
+        state.totalAP -= upgrade.cost;
+        const upg = state.upgrades[upgradeId];
+        upg.currentLevel += 1;
+        upg.cost = Math.floor(upg.cost * 1.5); // Exponential cost scaling
       });
 
       return true;
     },
 
-    /**
-     * Set spirit root (only once per rebirth)
-     */
-    setSpiritRoot: (spiritRoot: SpiritRoot) => {
-      const state = get();
+    getUpgradeEffect: (upgradeId: string) => {
+      const upgrade = get().upgrades[upgradeId];
+      if (!upgrade || upgrade.currentLevel === 0) return 0;
 
-      if (state.spiritRoot !== null) {
-        console.warn('Spirit root already set for this rebirth');
-        return false;
+      if (upgrade.effect.type === 'multiplier' && upgrade.effect.valuePerLevel) {
+        return upgrade.effect.valuePerLevel * upgrade.currentLevel;
       }
 
+      if (upgrade.effect.type === 'flat_bonus' && upgrade.effect.value) {
+        return upgrade.effect.value * upgrade.currentLevel;
+      }
+
+      return 0;
+    },
+
+    initializeUpgrades: () => {
       set((state) => {
-        state.spiritRoot = spiritRoot;
-      });
-
-      // Recalculate Qi generation
-      useGameStore.getState().calculateQiPerSecond();
-
-      return true;
-    },
-
-    /**
-     * Get total Qi multiplier from prestige upgrades
-     */
-    getQiMultiplier: () => {
-      const state = get();
-      let multiplier = 1;
-
-      // AP upgrade bonus
-      multiplier += state.apUpgrades.qiGain * 0.1; // +10% per level
-
-      // Spirit root bonus
-      if (state.spiritRoot) {
-        const spiritRootMultiplier = SPIRIT_ROOT_MULTIPLIERS[state.spiritRoot.grade] || 1;
-        multiplier *= spiritRootMultiplier;
-      }
-
-      return multiplier;
-    },
-
-    /**
-     * Get total combat power multiplier from prestige upgrades
-     */
-    getCombatMultiplier: () => {
-      const state = get();
-      return 1 + state.apUpgrades.combatPower * 0.15; // +15% per level
-    },
-
-    /**
-     * Get cultivation speed multiplier from prestige upgrades
-     */
-    getCultivationMultiplier: () => {
-      const state = get();
-      return 1 + state.apUpgrades.cultivation * 0.12; // +12% per level
-    },
-
-    /**
-     * Get luck bonus from prestige upgrades
-     */
-    getLuckBonus: () => {
-      const state = get();
-      return state.apUpgrades.luckBonus * 5; // +5 luck per level
-    },
-
-    /**
-     * Update highest realm reached
-     */
-    updateHighestRealm: (realmIndex: number) => {
-      const state = get();
-      if (realmIndex > state.highestRealmReached) {
-        set((state) => {
-          state.highestRealmReached = realmIndex;
-        });
-      }
-    },
-
-    /**
-     * Increment boss defeat counter
-     */
-    incrementBossesDefeated: () => {
-      set((state) => {
-        state.bossesDefeated += 1;
+        state.upgrades = {
+          root_floor: {
+            id: 'root_floor',
+            name: 'Spirit Root Foundation',
+            description: 'Start each run with a better spirit root quality',
+            cost: 50,
+            maxLevel: 5,
+            currentLevel: 0,
+            effect: {
+              type: 'flat_bonus',
+              stat: 'spirit_root_floor',
+              value: 1,
+            },
+          },
+          idle_mult: {
+            id: 'idle_mult',
+            name: 'Cultivation Enhancement',
+            description: 'Increase idle Qi generation',
+            cost: 30,
+            maxLevel: 10,
+            currentLevel: 0,
+            effect: {
+              type: 'multiplier',
+              stat: 'idle_rate',
+              valuePerLevel: 0.1,
+            },
+          },
+          damage_mult: {
+            id: 'damage_mult',
+            name: 'Martial Prowess',
+            description: 'Increase damage dealt in combat',
+            cost: 40,
+            maxLevel: 10,
+            currentLevel: 0,
+            effect: {
+              type: 'multiplier',
+              stat: 'damage_percent',
+              valuePerLevel: 0.05,
+            },
+          },
+          hp_mult: {
+            id: 'hp_mult',
+            name: 'Body Tempering',
+            description: 'Increase maximum HP',
+            cost: 40,
+            maxLevel: 10,
+            currentLevel: 0,
+            effect: {
+              type: 'multiplier',
+              stat: 'max_hp',
+              valuePerLevel: 0.08,
+            },
+          },
+          offline_mult: {
+            id: 'offline_mult',
+            name: 'Timeless Meditation',
+            description: 'Increase offline progress efficiency',
+            cost: 60,
+            maxLevel: 5,
+            currentLevel: 0,
+            effect: {
+              type: 'multiplier',
+              stat: 'offline_rate',
+              valuePerLevel: 0.1,
+            },
+          },
+          starter_tech: {
+            id: 'starter_tech',
+            name: 'Inherited Technique',
+            description: 'Start with a basic combat technique',
+            cost: 100,
+            maxLevel: 1,
+            currentLevel: 0,
+            effect: {
+              type: 'unlock',
+              stat: 'starter_technique',
+            },
+          },
+          early_gear: {
+            id: 'early_gear',
+            name: 'Ancestral Equipment',
+            description: 'Start with a basic weapon and accessory',
+            cost: 80,
+            maxLevel: 1,
+            currentLevel: 0,
+            effect: {
+              type: 'unlock',
+              stat: 'starter_gear',
+            },
+          },
+          auto_retry: {
+            id: 'auto_retry',
+            name: 'Persistent Will',
+            description: 'Automatically retry dungeons on defeat',
+            cost: 120,
+            maxLevel: 1,
+            currentLevel: 0,
+            effect: {
+              type: 'unlock',
+              stat: 'auto_retry_dungeons',
+            },
+          },
+          dungeon_scout: {
+            id: 'dungeon_scout',
+            name: 'Dungeon Insight',
+            description: 'Preview dungeon bosses and mechanics before entering',
+            cost: 90,
+            maxLevel: 1,
+            currentLevel: 0,
+            effect: {
+              type: 'unlock',
+              stat: 'dungeon_preview',
+            },
+          },
+          dual_path: {
+            id: 'dual_path',
+            name: 'Dual Cultivation',
+            description: 'Unlock the ability to cultivate two paths simultaneously (LOCKED)',
+            cost: 500,
+            maxLevel: 1,
+            currentLevel: 0,
+            effect: {
+              type: 'unlock',
+              stat: 'dual_path',
+            },
+          },
+        };
       });
     },
   }))
 );
-
-/**
- * Register prestige store with game store for cross-store integration
- */
-setPrestigeStoreGetter(() => usePrestigeStore.getState());

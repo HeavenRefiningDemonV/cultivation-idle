@@ -6,6 +6,7 @@ import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
 import { AdventureScreen } from './screens/AdventureScreen';
 import { DungeonScreen } from './screens/DungeonScreen';
+import { PrestigeScreen } from './screens/PrestigeScreen';
 
 /**
  * Placeholder content for tabs
@@ -41,13 +42,6 @@ function TechniquesTab() {
 }
 
 /**
- * Prestige tab content (placeholder for now)
- */
-function PrestigeTab() {
-  return <PlaceholderContent tabName="Prestige" />;
-}
-
-/**
  * Settings tab content (placeholder for now)
  */
 function SettingsTab() {
@@ -76,7 +70,7 @@ export function GameLayout() {
       case 'techniques':
         return <TechniquesTab />;
       case 'prestige':
-        return <PrestigeTab />;
+        return <PrestigeScreen />;
       case 'settings':
         return <SettingsTab />;
       default:

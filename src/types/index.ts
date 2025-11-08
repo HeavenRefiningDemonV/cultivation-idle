@@ -121,6 +121,7 @@ export interface GameState {
 
   // Time management
   lastTickTime: number;                 // Timestamp of last tick
+  runStartTime: number;                 // Timestamp when current run started (for prestige)
 
   // Actions
   tick: (deltaTime: number) => void;
@@ -130,6 +131,7 @@ export interface GameState {
   calculateQiPerSecond: () => void;
   calculatePlayerStats: () => void;
   resetRun: () => void;
+  performPrestigeReset: () => void;
   purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
   getBreakthroughRequirement: () => string;
 }

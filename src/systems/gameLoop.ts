@@ -1,5 +1,6 @@
 import { useGameStore, initializeGameStore } from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
+import { usePrestigeStore } from '../stores/prestigeStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 
@@ -213,6 +214,10 @@ export function initializeGame(): boolean {
 
     // Initialize game store (calculate derived values)
     initializeGameStore();
+
+    // Initialize prestige store upgrades
+    usePrestigeStore.getState().initializeUpgrades();
+    console.log('[GameLoop] Prestige store initialized');
 
     // Check if save exists
     const saveExists = hasSave();
