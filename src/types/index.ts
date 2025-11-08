@@ -123,13 +123,33 @@ export interface GameState {
  * Save data structure
  */
 export interface SaveData {
-  realm: Realm;
-  qi: string;
-  selectedPath: CultivationPath | null;
-  focusMode: FocusMode;
-  totalAuras: number;
-  upgradeTiers: UpgradeTiers;
-  lastSaveTime: number;
+  version: string;              // Save format version
+  timestamp: number;            // When save was created
+
+  // Game state
+  gameState: {
+    realm: Realm;
+    qi: string;
+    selectedPath: CultivationPath | null;
+    focusMode: FocusMode;
+    totalAuras: number;
+    upgradeTiers: UpgradeTiers;
+  };
+
+  // Inventory state
+  inventoryState: {
+    items: InventoryItem[];
+    equippedWeapon: ItemDefinition | null;
+    equippedAccessory: ItemDefinition | null;
+    gold: string;
+    maxSlots: number;
+  };
+
+  // Combat settings (not combat state, just settings)
+  combatSettings: {
+    autoAttack: boolean;
+    autoCombatAI: boolean;
+  };
 }
 
 /**
