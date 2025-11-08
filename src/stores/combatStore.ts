@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { CombatState, EnemyDefinition, CombatLogEntry } from '../types';
 import { useGameStore } from './gameStore';
+import { useZoneStore } from './zoneStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo } from '../utils/numbers';
 
 /**
@@ -221,6 +222,7 @@ export const useCombatStore = create<CombatState>()(
       if (!state.currentEnemy) return;
 
       const enemy = state.currentEnemy;
+      const currentZone = state.currentZone;
 
       // Add victory message
       get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
@@ -231,6 +233,11 @@ export const useCombatStore = create<CombatState>()(
         `Gained ${enemy.goldReward} gold and ${enemy.expReward} experience!`,
         '#fbbf24'
       );
+
+      // Record enemy defeat in zone progression
+      if (currentZone) {
+        useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
+      }
 
       // TODO: Actually add rewards to game state (gold, exp)
       // This will be implemented when we have economy/progression systems

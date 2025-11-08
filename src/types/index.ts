@@ -150,6 +150,18 @@ export interface SaveData {
     autoAttack: boolean;
     autoCombatAI: boolean;
   };
+
+  // Zone progression
+  zoneState: {
+    unlockedZones: string[];
+    zoneProgress: Record<string, {
+      enemiesDefeated: number;
+      enemyKills: Record<string, number>;
+      bossDefeated: boolean;
+      completed: boolean;
+      firstClearTime?: number;
+    }>;
+  };
 }
 
 /**

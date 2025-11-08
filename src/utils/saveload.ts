@@ -3,6 +3,7 @@ import type { SaveData } from '../types';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
+import { useZoneStore } from '../stores/zoneStore';
 
 /**
  * Save system constants
@@ -26,6 +27,7 @@ function gatherGameState(): SaveData {
   const gameState = useGameStore.getState();
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();
+  const zoneState = useZoneStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -52,6 +54,11 @@ function gatherGameState(): SaveData {
       autoAttack: combatState.autoAttack,
       autoCombatAI: combatState.autoCombatAI,
     },
+
+    zoneState: {
+      unlockedZones: zoneState.unlockedZones,
+      zoneProgress: zoneState.zoneProgress,
+    },
   };
 
   return saveData;
@@ -75,6 +82,12 @@ function validateSaveData(data: any): data is SaveData {
 
     const cs = data.combatSettings;
     if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
+
+    // Zone state validation (optional for backward compatibility)
+    if (data.zoneState) {
+      const zs = data.zoneState;
+      if (!Array.isArray(zs.unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
+    }
 
     return true;
   } catch (error) {
@@ -212,6 +225,14 @@ function applySaveData(saveData: SaveData): void {
       autoAttack: saveData.combatSettings.autoAttack,
       autoCombatAI: saveData.combatSettings.autoCombatAI,
     });
+
+    // Apply zone state (if exists)
+    if (saveData.zoneState) {
+      useZoneStore.setState({
+        unlockedZones: saveData.zoneState.unlockedZones,
+        zoneProgress: saveData.zoneState.zoneProgress,
+      });
+    }
 
     console.log('[SaveLoad] Save data applied successfully');
   } catch (error) {

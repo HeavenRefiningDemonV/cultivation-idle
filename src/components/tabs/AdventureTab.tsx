@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useCombatStore } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
+import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber, divide, D } from '../../utils/numbers';
 import type { EnemyDefinition } from '../../types';
 import { CombatCanvas } from '../combat/CombatCanvas';
@@ -122,11 +123,17 @@ export function AdventureTab() {
   const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
 
   // Game store
-  const realm = useGameStore((state) => state.realm);
   const stats = useGameStore((state) => state.stats);
 
   // Inventory store
   const gold = useInventoryStore((state) => state.gold);
+
+  // Zone store
+  const isZoneUnlocked = useZoneStore((state) => state.isZoneUnlocked);
+  const isZoneCompleted = useZoneStore((state) => state.isZoneCompleted);
+  const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
+  const isBossAvailable = useZoneStore((state) => state.isBossAvailable);
+  const enterZone = useZoneStore((state) => state.enterZone);
 
   // Load zones and enemies data
   useEffect(() => {
@@ -161,25 +168,17 @@ export function AdventureTab() {
     loadData();
   }, []);
 
-  // Check if zone is unlocked
-  const isZoneUnlocked = (zone: Zone): boolean => {
-    if (zone.locked) return false;
-
-    const reqRealm = zone.realmRequirement;
-    if (realm.index > reqRealm.index) return true;
-    if (realm.index === reqRealm.index && realm.substage >= reqRealm.substage) return true;
-
-    return false;
-  };
-
   // Handle zone selection and enter combat
   const handleZoneClick = (zone: Zone) => {
-    if (!isZoneUnlocked(zone)) {
+    if (!isZoneUnlocked(zone.id)) {
       console.warn('[AdventureTab] Zone is locked');
       return;
     }
 
     setSelectedZoneId(zone.id);
+
+    // Enter zone
+    enterZone(zone.id);
 
     // Get random enemy from zone
     const enemyIds = zone.enemyIds;
@@ -237,8 +236,11 @@ export function AdventureTab() {
           </h2>
           <div className="space-y-3">
             {zones.map((zone) => {
-              const unlocked = isZoneUnlocked(zone);
+              const unlocked = isZoneUnlocked(zone.id);
               const isSelected = selectedZoneId === zone.id;
+              const completed = isZoneCompleted(zone.id);
+              const enemiesDefeated = getTotalEnemiesDefeated(zone.id);
+              const bossAvailable = isBossAvailable(zone.id);
 
               return (
                 <motion.button
@@ -258,7 +260,10 @@ export function AdventureTab() {
                   whileHover={unlocked ? { scale: 1.02 } : {}}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <div className="font-bold text-white">{zone.name}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-bold text-white">{zone.name}</div>
+                      {completed && <div className="text-xs text-green-400">✓</div>}
+                    </div>
                     <div className="text-xs text-slate-400">
                       Lv. {zone.levelRange.min}-{zone.levelRange.max}
                     </div>
@@ -266,10 +271,17 @@ export function AdventureTab() {
                   <div className="text-sm text-slate-300 mb-2">
                     {zone.description}
                   </div>
+                  {unlocked && enemiesDefeated > 0 && (
+                    <div className="text-xs text-slate-400 mb-1">
+                      Enemies defeated: {enemiesDefeated}
+                      {bossAvailable && (
+                        <span className="ml-2 text-yellow-400">⚡ Boss available!</span>
+                      )}
+                    </div>
+                  )}
                   {!unlocked && (
                     <div className="text-xs text-red-400">
-                      🔒 Requires Realm {zone.realmRequirement.index} Substage{' '}
-                      {zone.realmRequirement.substage + 1}
+                      🔒 Defeat previous zone boss to unlock
                     </div>
                   )}
                 </motion.button>
