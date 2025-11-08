@@ -84,7 +84,8 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
   const realm = useGameStore((state) => state.realm);
   const isUnlocked = useZoneStore((state) => state.isZoneUnlocked(zone.id));
   const isBossAvailable = useZoneStore((state) => state.isBossAvailable(zone.id));
-  const zoneProgress = useZoneStore((state) => state.getZoneProgress(zone.id));
+  // Select the zoneProgress directly from the store to avoid function call in selector
+  const zoneProgress = useZoneStore((state) => state.zoneProgress[zone.id]);
   const enterCombat = useCombatStore((state) => state.enterCombat);
 
   if (!realm) {
