@@ -211,3 +211,107 @@ export interface CombatState {
   setAutoAttack: (enabled: boolean) => void;
   setAutoCombatAI: (enabled: boolean) => void;
 }
+
+/**
+ * Item type categories
+ */
+export type ItemType = 'weapon' | 'accessory' | 'consumable' | 'material' | 'treasure';
+
+/**
+ * Item rarity tiers
+ */
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+
+/**
+ * Item definition (blueprint)
+ */
+export interface ItemDefinition {
+  id: string;
+  name: string;
+  description: string;
+  type: ItemType;
+  rarity: ItemRarity;
+  level: number;
+
+  // Equipment stats (if applicable)
+  stats?: {
+    hp?: string;           // Bonus HP (Decimal string)
+    atk?: string;          // Bonus attack (Decimal string)
+    def?: string;          // Bonus defense (Decimal string)
+    crit?: number;         // Bonus crit chance (0-100)
+    critDmg?: number;      // Bonus crit damage (%)
+    dodge?: number;        // Bonus dodge (0-100)
+    qiGain?: number;       // Qi gain multiplier (%)
+  };
+
+  // Consumable effects (if applicable)
+  consumable?: {
+    healHP?: string;       // HP to restore (Decimal string)
+    healPercent?: number;  // HP to restore (% of max)
+    buffDuration?: number; // Buff duration in seconds
+    buffStats?: {
+      atk?: number;        // Temporary attack % bonus
+      def?: number;        // Temporary defense % bonus
+      crit?: number;       // Temporary crit % bonus
+    };
+  };
+
+  // Value and usage
+  value: string;           // Sell price (Decimal string)
+  stackable: boolean;
+  maxStack: number;
+}
+
+/**
+ * Inventory item instance
+ */
+export interface InventoryItem {
+  id: string;              // Unique instance ID
+  itemId: string;          // Reference to ItemDefinition
+  quantity: number;
+}
+
+/**
+ * Equipment bonus stats
+ */
+export interface EquipmentStats {
+  hp: string;
+  atk: string;
+  def: string;
+  crit: number;
+  critDmg: number;
+  dodge: number;
+  qiGain: number;
+}
+
+/**
+ * Inventory state
+ */
+export interface InventoryState {
+  // Items
+  items: InventoryItem[];
+
+  // Equipment
+  equippedWeapon: ItemDefinition | null;
+  equippedAccessory: ItemDefinition | null;
+
+  // Currency
+  gold: string;            // Gold amount (Decimal string)
+
+  // Capacity
+  maxSlots: number;
+
+  // Actions
+  addItem: (itemId: string, quantity: number) => boolean;
+  removeItem: (itemId: string, quantity: number) => boolean;
+  equipWeapon: (itemId: string) => boolean;
+  unequipWeapon: () => boolean;
+  equipAccessory: (itemId: string) => boolean;
+  unequipAccessory: () => boolean;
+  useConsumable: (itemId: string) => boolean;
+  addGold: (amount: string) => void;
+  removeGold: (amount: string) => boolean;
+  getEquipmentStats: () => EquipmentStats;
+  getItemCount: (itemId: string) => number;
+  hasItem: (itemId: string, quantity?: number) => boolean;
+}

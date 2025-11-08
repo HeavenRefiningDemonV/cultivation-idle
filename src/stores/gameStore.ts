@@ -18,6 +18,14 @@ import {
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 
 /**
+ * Lazy getter for inventory store to avoid circular dependency
+ */
+let _getInventoryStore: (() => any) | null = null;
+export function setInventoryStoreGetter(getter: () => any) {
+  _getInventoryStore = getter;
+}
+
+/**
  * Main game store managing cultivation progression
  */
 export const useGameStore = create<GameState>()(
@@ -221,6 +229,25 @@ export const useGameStore = create<GameState>()(
         D(UPGRADE_COSTS.damage.effectPerTier).times(state.upgradeTiers.damage)
       );
       atk = multiply(atk, damageUpgradeMultiplier);
+
+      // Apply equipment bonuses
+      if (_getInventoryStore) {
+        try {
+          const inventoryStore = _getInventoryStore();
+          const equipmentStats = inventoryStore.getEquipmentStats();
+
+          hp = add(hp, equipmentStats.hp);
+          atk = add(atk, equipmentStats.atk);
+          def = add(def, equipmentStats.def);
+          crit += equipmentStats.crit;
+          critDmg += equipmentStats.critDmg;
+          dodge += equipmentStats.dodge;
+
+          // Qi gain bonus is applied in calculateQiPerSecond
+        } catch (error) {
+          // Equipment stats not available, skip
+        }
+      }
 
       set((state) => {
         state.stats = {
