@@ -162,9 +162,9 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
 }
 
 /**
- * Combat View Component
+ * Combat View Component (exported for reuse in dungeons)
  */
-function CombatView() {
+export function CombatView() {
   const {
     currentEnemy,
     playerHP,

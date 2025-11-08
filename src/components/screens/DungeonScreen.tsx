@@ -3,6 +3,7 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
 import { formatNumber } from '../../utils/numbers';
+import { CombatView } from './AdventureScreen';
 
 /**
  * Dungeon definition from config
@@ -438,17 +439,34 @@ export function DungeonScreen() {
     const dungeon = dungeons.find((d) => d.id === currentDungeon);
     return (
       <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
+        {/* Background decoration - dungeon themed */}
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.4) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(239, 68, 68, 0.4) 0%, transparent 50%)',
+            }}
+          />
+        </div>
+
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+          {/* Dungeon Header */}
           <div className="text-center mb-8">
+            <div className="inline-block bg-purple-600/20 border border-purple-400/50 rounded-lg px-4 py-2 mb-3">
+              <span className="text-purple-300 font-semibold text-sm">🏛️ DUNGEON TRIAL</span>
+            </div>
             <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-2">
               {dungeon?.name || 'Dungeon Trial'}
             </h1>
             <p className="text-slate-400 text-sm">
-              Defeat the boss to claim your rewards
+              Defeat <span className="text-red-400 font-semibold">{dungeon?.boss.name}</span> to claim your rewards
             </p>
           </div>
-          <div className="text-center text-slate-400 py-8">
-            Combat UI will be shown here (using existing CombatView from AdventureScreen)
+
+          {/* Combat UI */}
+          <div className="max-w-4xl mx-auto">
+            <CombatView />
           </div>
         </div>
       </div>
