@@ -278,3 +278,51 @@ export function clamp(
 ): Decimal {
   return max(minValue, min(value, maxValue));
 }
+
+/**
+ * Format time duration (seconds to human readable)
+ *
+ * @param seconds - Duration in seconds
+ * @returns Formatted duration string
+ *
+ * @example
+ * formatDuration(45) // "45s"
+ * formatDuration(90) // "1m 30s"
+ * formatDuration(3665) // "1h 1m"
+ * formatDuration(90000) // "1d 1h"
+ */
+export function formatDuration(seconds: number): string {
+  if (seconds < 60) {
+    return `${Math.floor(seconds)}s`;
+  }
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) {
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}m ${secs}s`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.floor(minutes % 60);
+  if (hours < 24) {
+    return `${hours}h ${mins}m`;
+  }
+
+  const days = Math.floor(hours / 24);
+  const hrs = Math.floor(hours % 24);
+  return `${days}d ${hrs}h`;
+}
+
+/**
+ * Raises base to the power of exponent
+ *
+ * @param base - Base value
+ * @param exponent - Exponent value
+ * @returns base ^ exponent
+ *
+ * @example
+ * power(2, 10) // Returns Decimal(1024)
+ */
+export function power(base: Decimal.Value, exponent: Decimal.Value): Decimal {
+  return D(base).pow(exponent);
+}

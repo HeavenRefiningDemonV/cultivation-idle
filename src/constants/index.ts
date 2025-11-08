@@ -281,3 +281,86 @@ export const TICK_RATE = 100; // 100ms = 10 ticks per second
  * Prevents excessive calculations for very long offline periods
  */
 export const MAX_OFFLINE_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * Game information
+ */
+export const GAME_VERSION = '1.0.0';
+export const GAME_TITLE = 'Cultivation Idle';
+
+/**
+ * Save system constants
+ */
+export const SAVE_KEY = 'cultivation-idle-save-v3';
+export const SAVE_ENCRYPTION_KEY = 'ImmortalCultivationSecretKey2025';
+export const NUM_BACKUP_SAVES = 3;
+export const AUTOSAVE_INTERVAL = 60000; // 60 seconds
+
+/**
+ * Offline progress constants
+ */
+export const MAX_OFFLINE_HOURS = 12;
+export const DEFAULT_OFFLINE_EFFICIENCY = 0.5;
+
+/**
+ * Combat constants
+ */
+export const DEFENSE_CONSTANT_K = 100; // For damage reduction formula
+export const BOSS_CHEST_COOLDOWN = 60; // seconds
+export const MAX_COMBAT_LOG_ENTRIES = 100;
+export const BASE_ATTACK_INTERVAL = 1000; // ms
+export const ENEMY_ATTACK_INTERVAL = 1500; // ms
+
+/**
+ * Inventory constants
+ */
+export const MAX_INVENTORY_SLOTS = 20;
+
+/**
+ * Substage names
+ */
+export const SUBSTAGE_NAMES = ['Early', 'Middle', 'Late'] as const;
+
+/**
+ * Spirit Root multipliers by grade
+ */
+export const SPIRIT_ROOT_MULTIPLIERS: Record<number, number> = {
+  1: 1.0,   // Mortal - no bonus
+  2: 1.25,  // Common - +25% Qi/s
+  3: 1.5,   // Uncommon - +50% Qi/s
+  4: 2.0,   // Rare - +100% Qi/s
+  5: 3.0,   // Legendary - +200% Qi/s
+};
+
+/**
+ * Element stat bonuses
+ */
+export const ELEMENT_BONUSES = {
+  fire: { atk: 0.2, def: -0.1 },
+  water: { hp: 0.2, dodge: 0.1 },
+  earth: { def: 0.3, critRate: -0.1 },
+  metal: { critRate: 0.2, atk: 0.1 },
+  wood: { hpRegen: 0.1, qiPerSecond: 0.1 },
+} as const;
+
+/**
+ * Prestige AP calculation constants
+ */
+export const PRESTIGE_AP_BASE = 20;
+export const PRESTIGE_AP_PER_REALM = 10;
+export const PRESTIGE_AP_PER_BOSS = 5;
+export const PRESTIGE_AP_TIME_BONUS_BASE = 50;
+export const PRESTIGE_AP_TIME_BONUS_DECAY = 2; // Per hour
+export const PRESTIGE_AP_AURA_DIVISOR = 10;
+
+/**
+ * Item rarity colors (for UI)
+ */
+export const RARITY_COLORS = {
+  common: '#9ca3af',     // Gray
+  uncommon: '#22c55e',   // Green
+  rare: '#3b82f6',       // Blue
+  epic: '#a855f7',       // Purple
+  legendary: '#f59e0b',  // Orange/Gold
+  mythic: '#ef4444',     // Red
+} as const;
