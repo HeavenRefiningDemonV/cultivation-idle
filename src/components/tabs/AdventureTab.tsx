@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { useCombatStore } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
-import { formatNumber, divide } from '../../utils/numbers';
+import { formatNumber, divide, D } from '../../utils/numbers';
 import type { EnemyDefinition } from '../../types';
+import { CombatCanvas } from '../combat/CombatCanvas';
 
 /**
  * Zone definition from JSON
@@ -326,6 +327,17 @@ export function AdventureTab() {
         ) : (
           // In combat - show combat interface
           <>
+            {/* Combat Canvas */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 flex justify-center">
+              <CombatCanvas
+                width={800}
+                height={400}
+                inCombat={inCombat}
+                playerHP={D(playerHP).toNumber()}
+                enemyHP={D(enemyHP).toNumber()}
+              />
+            </div>
+
             {/* Enemy Info */}
             <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
               <div className="flex justify-between items-center mb-4">
