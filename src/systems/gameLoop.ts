@@ -2,6 +2,7 @@ import { useGameStore, initializeGameStore } from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
+import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 
@@ -236,7 +237,6 @@ export function initializeGame(): boolean {
     console.log('[GameLoop] Technique store dependencies set');
 
     // Add starter items for testing (only if inventory is empty)
-    const { useInventoryStore } = require('../stores/inventoryStore');
     const inventoryStore = useInventoryStore.getState();
     if (inventoryStore.items.length === 0) {
       inventoryStore.addItem('rusty_sword', 1);

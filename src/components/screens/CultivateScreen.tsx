@@ -170,7 +170,9 @@ function OrnateProgressBar({
 
 /**
  * Upgrade Card Component
+ * (Currently unused - kept for future upgrades feature)
  */
+/*
 function UpgradeCard({
   title,
   description,
@@ -207,6 +209,7 @@ function UpgradeCard({
     </button>
   );
 }
+*/
 
 /**
  * Main Cultivate Screen Component

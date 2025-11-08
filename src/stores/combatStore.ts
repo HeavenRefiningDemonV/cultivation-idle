@@ -7,7 +7,7 @@ import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
-import { generateLoot, updatePityCounters, formatLootMessage, getRarityColor } from '../systems/loot';
+import { generateLoot, updatePityCounters, formatLootMessage } from '../systems/loot';
 
 /**
  * Defense constant for damage calculation

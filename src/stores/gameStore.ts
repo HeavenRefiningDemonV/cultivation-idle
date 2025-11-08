@@ -334,30 +334,30 @@ export const useGameStore = create<GameState>()(
           const prestigeStore = _getPrestigeStore();
           const spiritRoot = prestigeStore.spiritRoot;
 
-          if (spiritRoot && spiritRoot.element) {
-            const elementBonus = ELEMENT_BONUSES[spiritRoot.element];
+          if (spiritRoot && spiritRoot.element && spiritRoot.element in ELEMENT_BONUSES) {
+            const elementBonus = ELEMENT_BONUSES[spiritRoot.element as keyof typeof ELEMENT_BONUSES];
             const purityMultiplier = spiritRoot.purity / 100; // Scale by purity (0-100 -> 0-1)
 
-            if (elementBonus.hp) {
+            if ('hp' in elementBonus && elementBonus.hp) {
               const hpBonus = D(1).plus(D(elementBonus.hp).times(purityMultiplier));
               hp = multiply(hp, hpBonus);
             }
-            if (elementBonus.atk) {
+            if ('atk' in elementBonus && elementBonus.atk) {
               const atkBonus = D(1).plus(D(elementBonus.atk).times(purityMultiplier));
               atk = multiply(atk, atkBonus);
             }
-            if (elementBonus.def) {
+            if ('def' in elementBonus && elementBonus.def) {
               const defBonus = D(1).plus(D(elementBonus.def).times(purityMultiplier));
               def = multiply(def, defBonus);
             }
-            if (elementBonus.hpRegen) {
+            if ('hpRegen' in elementBonus && elementBonus.hpRegen) {
               const regenBonus = D(1).plus(D(elementBonus.hpRegen).times(purityMultiplier));
               regen = multiply(regen, regenBonus);
             }
-            if (elementBonus.critRate) {
+            if ('critRate' in elementBonus && elementBonus.critRate) {
               crit += elementBonus.critRate * purityMultiplier;
             }
-            if (elementBonus.dodge) {
+            if ('dodge' in elementBonus && elementBonus.dodge) {
               dodge += elementBonus.dodge * purityMultiplier;
             }
           }

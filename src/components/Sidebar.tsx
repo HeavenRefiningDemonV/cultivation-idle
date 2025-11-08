@@ -10,7 +10,7 @@ interface NavButtonProps {
   onClick: () => void;
 }
 
-function NavButton({ tab, label, active, onClick }: NavButtonProps) {
+function NavButton({ label, active, onClick }: NavButtonProps) {
   return (
     <button
       onClick={onClick}

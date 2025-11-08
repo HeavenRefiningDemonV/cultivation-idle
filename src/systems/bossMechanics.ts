@@ -1,5 +1,4 @@
 import Decimal from 'decimal.js';
-import { D } from '../utils/numbers';
 
 /**
  * Boss mechanic types
@@ -70,7 +69,7 @@ export class BossMechanics {
     deltaTime: number,
     currentHP: Decimal,
     maxHP: Decimal,
-    combatTime: number
+    _combatTime: number
   ): {
     enrageTriggered: boolean;
     healTriggered: boolean;
