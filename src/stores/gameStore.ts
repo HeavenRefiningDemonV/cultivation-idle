@@ -43,6 +43,13 @@ export const useGameStore = create<GameState>()(
       damage: 0,
       hp: 0,
     },
+    pityState: {
+      killsSinceUncommon: 0,
+      killsSinceRare: 0,
+      killsSinceEpic: 0,
+      killsSinceLegendary: 0,
+    },
+    playerLuck: 0,
     lastTickTime: Date.now(),
 
     /**

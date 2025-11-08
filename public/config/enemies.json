@@ -14,7 +14,26 @@
       "speed": 1.0,
       "goldReward": "10",
       "expReward": "5",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "boar_hide",
+          "dropChance": 50,
+          "minAmount": 1,
+          "maxAmount": 2
+        },
+        {
+          "itemId": "raw_meat",
+          "dropChance": 30,
+          "minAmount": 1,
+          "maxAmount": 3
+        },
+        {
+          "itemId": "lesser_health_potion",
+          "dropChance": 10,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "forest_rabbit",
@@ -30,7 +49,20 @@
       "speed": 1.2,
       "goldReward": "8",
       "expReward": "4",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "rabbit_pelt",
+          "dropChance": 60,
+          "minAmount": 1,
+          "maxAmount": 2
+        },
+        {
+          "itemId": "lucky_foot",
+          "dropChance": 15,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "wild_wolf",
@@ -46,7 +78,26 @@
       "speed": 1.1,
       "goldReward": "20",
       "expReward": "10",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "wolf_fang",
+          "dropChance": 45,
+          "minAmount": 1,
+          "maxAmount": 2
+        },
+        {
+          "itemId": "wolf_pelt",
+          "dropChance": 40,
+          "minAmount": 1,
+          "maxAmount": 1
+        },
+        {
+          "itemId": "lesser_spirit_stone",
+          "dropChance": 12,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "cave_spider",
@@ -62,7 +113,26 @@
       "speed": 1.3,
       "goldReward": "40",
       "expReward": "20",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "spider_silk",
+          "dropChance": 55,
+          "minAmount": 1,
+          "maxAmount": 3
+        },
+        {
+          "itemId": "venom_sac",
+          "dropChance": 35,
+          "minAmount": 1,
+          "maxAmount": 1
+        },
+        {
+          "itemId": "health_potion",
+          "dropChance": 20,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "stone_golem",
@@ -78,7 +148,26 @@
       "speed": 0.8,
       "goldReward": "60",
       "expReward": "30",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "stone_core",
+          "dropChance": 50,
+          "minAmount": 1,
+          "maxAmount": 2
+        },
+        {
+          "itemId": "iron_ore",
+          "dropChance": 40,
+          "minAmount": 2,
+          "maxAmount": 4
+        },
+        {
+          "itemId": "spirit_stone",
+          "dropChance": 15,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "spirit_bat",
@@ -94,7 +183,26 @@
       "speed": 1.5,
       "goldReward": "50",
       "expReward": "25",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "bat_wing",
+          "dropChance": 50,
+          "minAmount": 1,
+          "maxAmount": 2
+        },
+        {
+          "itemId": "spirit_essence",
+          "dropChance": 25,
+          "minAmount": 1,
+          "maxAmount": 1
+        },
+        {
+          "itemId": "lesser_spirit_stone",
+          "dropChance": 30,
+          "minAmount": 1,
+          "maxAmount": 2
+        }
+      ]
     },
     {
       "id": "mountain_tiger",
@@ -110,7 +218,26 @@
       "speed": 1.2,
       "goldReward": "100",
       "expReward": "50",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "tiger_claw",
+          "dropChance": 45,
+          "minAmount": 1,
+          "maxAmount": 2
+        },
+        {
+          "itemId": "beast_core",
+          "dropChance": 30,
+          "minAmount": 1,
+          "maxAmount": 1
+        },
+        {
+          "itemId": "greater_spirit_stone",
+          "dropChance": 18,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "frost_serpent",
@@ -126,7 +253,26 @@
       "speed": 1.0,
       "goldReward": "150",
       "expReward": "75",
-      "lootTable": []
+      "lootTable": [
+        {
+          "itemId": "frost_scale",
+          "dropChance": 50,
+          "minAmount": 1,
+          "maxAmount": 3
+        },
+        {
+          "itemId": "celestial_jade",
+          "dropChance": 25,
+          "minAmount": 1,
+          "maxAmount": 1
+        },
+        {
+          "itemId": "cultivation_manual",
+          "dropChance": 15,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ]
     },
     {
       "id": "forest_guardian",

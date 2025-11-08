@@ -3,8 +3,10 @@ import { immer } from 'zustand/middleware/immer';
 import type { CombatState, EnemyDefinition, CombatLogEntry } from '../types';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
+import { useInventoryStore } from './inventoryStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
+import { generateLoot, updatePityCounters, formatLootMessage, getRarityColor } from '../systems/loot';
 
 /**
  * Defense constant for damage calculation
@@ -272,12 +274,46 @@ export const useCombatStore = create<CombatState>()(
         get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
       }
 
-      // Add reward messages
-      get().addLogEntry(
-        'loot',
-        `Gained ${enemy.goldReward} gold and ${enemy.expReward} experience!`,
-        '#fbbf24'
+      // Get loot system data from game store
+      const gameStore = useGameStore.getState();
+      const inventoryStore = useInventoryStore.getState();
+
+      // Generate loot
+      const lootResult = generateLoot(
+        enemy,
+        gameStore.playerLuck,
+        gameStore.pityState,
+        isBoss
       );
+
+      // Add gold to inventory
+      inventoryStore.addGold(lootResult.gold);
+
+      // Add items to inventory
+      for (const lootItem of lootResult.items) {
+        const success = inventoryStore.addItem(lootItem.itemId, lootItem.quantity);
+        if (!success) {
+          get().addLogEntry('system', '⚠️ Inventory full! Some items were lost.', '#ef4444');
+          break;
+        }
+      }
+
+      // Format and display loot messages
+      const lootMessages = formatLootMessage(lootResult);
+      for (const message of lootMessages) {
+        if (message.includes('RARE') || message.includes('EPIC') || message.includes('LEGENDARY')) {
+          get().addLogEntry('loot', message, '#a855f7');
+        } else {
+          get().addLogEntry('loot', message, '#fbbf24');
+        }
+      }
+
+      // Update pity counters
+      const droppedRarities = lootResult.items.map(item => item.rarity);
+      const newPityState = updatePityCounters(gameStore.pityState, droppedRarities);
+      useGameStore.setState({
+        pityState: newPityState,
+      });
 
       // Record enemy defeat in zone progression
       if (currentZone) {
@@ -286,27 +322,6 @@ export const useCombatStore = create<CombatState>()(
         } else {
           useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
         }
-      }
-
-      // TODO: Actually add rewards to game state (gold, exp)
-      // This will be implemented when we have economy/progression systems
-
-      // Roll for loot drops
-      if (enemy.lootTable && enemy.lootTable.length > 0) {
-        enemy.lootTable.forEach((drop) => {
-          const dropRoll = Math.random() * 100;
-          if (dropRoll < drop.dropChance) {
-            const amount = Math.floor(
-              Math.random() * (drop.maxAmount - drop.minAmount + 1) + drop.minAmount
-            );
-            get().addLogEntry(
-              'loot',
-              `Obtained ${amount}x ${drop.itemId}!`,
-              '#a78bfa'
-            );
-            // TODO: Add item to inventory
-          }
-        });
       }
 
       // Exit combat after a short delay

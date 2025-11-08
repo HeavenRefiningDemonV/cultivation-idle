@@ -86,6 +86,16 @@ export interface FocusModeModifiers {
 }
 
 /**
+ * Pity system state for loot drops
+ */
+export interface PityState {
+  killsSinceUncommon: number;
+  killsSinceRare: number;
+  killsSinceEpic: number;
+  killsSinceLegendary: number;
+}
+
+/**
  * Main game state
  */
 export interface GameState {
@@ -104,6 +114,10 @@ export interface GameState {
   // Progression tracking
   totalAuras: number;                   // Total breakthroughs achieved
   upgradeTiers: UpgradeTiers;
+
+  // Loot system
+  pityState: PityState;                 // Pity counter for guaranteed drops
+  playerLuck: number;                   // Luck stat for loot drop chance
 
   // Time management
   lastTickTime: number;                 // Timestamp of last tick
@@ -134,6 +148,8 @@ export interface SaveData {
     focusMode: FocusMode;
     totalAuras: number;
     upgradeTiers: UpgradeTiers;
+    pityState: PityState;
+    playerLuck: number;
   };
 
   // Inventory state

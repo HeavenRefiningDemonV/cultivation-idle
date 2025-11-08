@@ -40,6 +40,8 @@ function gatherGameState(): SaveData {
       focusMode: gameState.focusMode,
       totalAuras: gameState.totalAuras,
       upgradeTiers: gameState.upgradeTiers,
+      pityState: gameState.pityState,
+      playerLuck: gameState.playerLuck,
     },
 
     inventoryState: {
@@ -205,6 +207,13 @@ function applySaveData(saveData: SaveData): void {
       focusMode: saveData.gameState.focusMode,
       totalAuras: saveData.gameState.totalAuras,
       upgradeTiers: saveData.gameState.upgradeTiers,
+      pityState: saveData.gameState.pityState || {
+        killsSinceUncommon: 0,
+        killsSinceRare: 0,
+        killsSinceEpic: 0,
+        killsSinceLegendary: 0,
+      },
+      playerLuck: saveData.gameState.playerLuck || 0,
     });
 
     // Recalculate derived values
