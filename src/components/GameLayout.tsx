@@ -1,6 +1,7 @@
 import { useUIStore } from '../stores/uiStore';
 import { Header } from './Header';
 import { TabNav } from './TabNav';
+import { CultivationTab } from './tabs/CultivationTab';
 
 /**
  * Placeholder content for tabs
@@ -19,13 +20,6 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
       </div>
     </div>
   );
-}
-
-/**
- * Cultivation tab content (placeholder for now)
- */
-function CultivationTab() {
-  return <PlaceholderContent tabName="Cultivation" />;
 }
 
 /**
