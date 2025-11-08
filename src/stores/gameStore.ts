@@ -14,6 +14,7 @@ import {
   INITIAL_STATS,
   BREAKTHROUGH_QI_MULTIPLIER,
   UPGRADE_COSTS,
+  ELEMENT_BONUSES,
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 
@@ -23,6 +24,14 @@ import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 let _getInventoryStore: (() => any) | null = null;
 export function setInventoryStoreGetter(getter: () => any) {
   _getInventoryStore = getter;
+}
+
+/**
+ * Lazy getter for prestige store to avoid circular dependency
+ */
+let _getPrestigeStore: (() => any) | null = null;
+export function setPrestigeStoreGetter(getter: () => any) {
+  _getPrestigeStore = getter;
 }
 
 /**
@@ -112,10 +121,8 @@ export const useGameStore = create<GameState>()(
       const state = get();
       const currentRealm = REALMS[state.realm.index];
 
-      // Calculate Qi requirement for current substage
-      const baseRequirement = D(currentRealm.qiRequirement);
-      const substageMultiplier = D(BREAKTHROUGH_QI_MULTIPLIER).pow(state.realm.substage - 1);
-      const requiredQi = multiply(baseRequirement, substageMultiplier);
+      // Get Qi requirement (includes prestige multipliers)
+      const requiredQi = get().getBreakthroughRequirement();
 
       // Check if player has enough Qi
       if (!greaterThanOrEqualTo(state.qi, requiredQi)) {
@@ -145,6 +152,16 @@ export const useGameStore = create<GameState>()(
           state.realm.substage += 1;
         }
       });
+
+      // Update highest realm in prestige store
+      if (_getPrestigeStore) {
+        try {
+          const prestigeStore = _getPrestigeStore();
+          prestigeStore.updateHighestRealm(get().realm.index);
+        } catch (error) {
+          // Prestige store not available
+        }
+      }
 
       // Recalculate stats and Qi generation
       get().calculateQiPerSecond();
@@ -182,6 +199,31 @@ export const useGameStore = create<GameState>()(
         D(UPGRADE_COSTS.idle.effectPerTier).times(state.upgradeTiers.idle)
       );
       qiPerSec = multiply(qiPerSec, idleUpgradeMultiplier);
+
+      // Apply prestige Qi multiplier
+      if (_getPrestigeStore) {
+        try {
+          const prestigeStore = _getPrestigeStore();
+          const prestigeMultiplier = prestigeStore.getQiMultiplier();
+          qiPerSec = multiply(qiPerSec, prestigeMultiplier);
+        } catch (error) {
+          // Prestige store not available
+        }
+      }
+
+      // Apply equipment Qi gain bonus
+      if (_getInventoryStore) {
+        try {
+          const inventoryStore = _getInventoryStore();
+          const equipmentStats = inventoryStore.getEquipmentStats();
+          if (equipmentStats.qiGain > 0) {
+            const equipmentMultiplier = D(1).plus(D(equipmentStats.qiGain).dividedBy(100));
+            qiPerSec = multiply(qiPerSec, equipmentMultiplier);
+          }
+        } catch (error) {
+          // Equipment stats not available
+        }
+      }
 
       set((state) => {
         state.qiPerSecond = qiPerSec.toString();
@@ -236,6 +278,57 @@ export const useGameStore = create<GameState>()(
         D(UPGRADE_COSTS.damage.effectPerTier).times(state.upgradeTiers.damage)
       );
       atk = multiply(atk, damageUpgradeMultiplier);
+
+      // Apply prestige combat multiplier
+      if (_getPrestigeStore) {
+        try {
+          const prestigeStore = _getPrestigeStore();
+          const combatMultiplier = prestigeStore.getCombatMultiplier();
+          hp = multiply(hp, combatMultiplier);
+          atk = multiply(atk, combatMultiplier);
+          def = multiply(def, combatMultiplier);
+        } catch (error) {
+          // Prestige store not available
+        }
+      }
+
+      // Apply spirit root element bonuses
+      if (_getPrestigeStore) {
+        try {
+          const prestigeStore = _getPrestigeStore();
+          const spiritRoot = prestigeStore.spiritRoot;
+
+          if (spiritRoot && spiritRoot.element) {
+            const elementBonus = ELEMENT_BONUSES[spiritRoot.element];
+            const purityMultiplier = spiritRoot.purity / 100; // Scale by purity (0-100 -> 0-1)
+
+            if (elementBonus.hp) {
+              const hpBonus = D(1).plus(D(elementBonus.hp).times(purityMultiplier));
+              hp = multiply(hp, hpBonus);
+            }
+            if (elementBonus.atk) {
+              const atkBonus = D(1).plus(D(elementBonus.atk).times(purityMultiplier));
+              atk = multiply(atk, atkBonus);
+            }
+            if (elementBonus.def) {
+              const defBonus = D(1).plus(D(elementBonus.def).times(purityMultiplier));
+              def = multiply(def, defBonus);
+            }
+            if (elementBonus.hpRegen) {
+              const regenBonus = D(1).plus(D(elementBonus.hpRegen).times(purityMultiplier));
+              regen = multiply(regen, regenBonus);
+            }
+            if (elementBonus.critRate) {
+              crit += elementBonus.critRate * purityMultiplier;
+            }
+            if (elementBonus.dodge) {
+              dodge += elementBonus.dodge * purityMultiplier;
+            }
+          }
+        } catch (error) {
+          // Prestige store not available
+        }
+      }
 
       // Apply equipment bonuses
       if (_getInventoryStore) {
@@ -304,6 +397,32 @@ export const useGameStore = create<GameState>()(
       }
 
       return true;
+    },
+
+    /**
+     * Get Qi requirement for next breakthrough
+     */
+    getBreakthroughRequirement: () => {
+      const state = get();
+      const currentRealm = REALMS[state.realm.index];
+
+      // Calculate Qi requirement for current substage
+      const baseRequirement = D(currentRealm.qiRequirement);
+      const substageMultiplier = D(BREAKTHROUGH_QI_MULTIPLIER).pow(state.realm.substage - 1);
+      const requiredQi = multiply(baseRequirement, substageMultiplier);
+
+      // Apply prestige cultivation multiplier (reduces cost)
+      if (_getPrestigeStore) {
+        try {
+          const prestigeStore = _getPrestigeStore();
+          const cultivationMultiplier = prestigeStore.getCultivationMultiplier();
+          return requiredQi.dividedBy(cultivationMultiplier).toString();
+        } catch (error) {
+          // Prestige store not available, return base requirement
+        }
+      }
+
+      return requiredQi.toString();
     },
 
     /**

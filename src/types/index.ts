@@ -131,6 +131,7 @@ export interface GameState {
   calculatePlayerStats: () => void;
   resetRun: () => void;
   purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
+  getBreakthroughRequirement: () => string;
 }
 
 /**
@@ -367,4 +368,66 @@ export interface InventoryState {
   getEquipmentStats: () => EquipmentStats;
   getItemCount: (itemId: string) => number;
   hasItem: (itemId: string, quantity?: number) => boolean;
+}
+
+/**
+ * Spirit root element types
+ */
+export type SpiritRootElement = 'fire' | 'water' | 'earth' | 'metal' | 'wood';
+
+/**
+ * Spirit root quality grade
+ */
+export type SpiritRootGrade = 1 | 2 | 3 | 4 | 5; // 1=Mortal, 2=Common, 3=Uncommon, 4=Rare, 5=Legendary
+
+/**
+ * Spirit root definition
+ */
+export interface SpiritRoot {
+  grade: SpiritRootGrade;
+  element: SpiritRootElement;
+  purity: number;          // 0-100, affects stat bonuses
+}
+
+/**
+ * AP (Ascension Points) upgrades
+ */
+export interface APUpgrades {
+  qiGain: number;          // Increases Qi generation
+  combatPower: number;     // Increases combat stats
+  cultivation: number;     // Reduces breakthrough costs
+  luckBonus: number;       // Increases item drop rates
+}
+
+/**
+ * Prestige state
+ */
+export interface PrestigeState {
+  // Prestige progress
+  totalRebirths: number;
+  availableAP: number;     // Available Ascension Points
+  lifetimeAP: number;      // Total AP ever earned
+
+  // Spirit root (set once per rebirth)
+  spiritRoot: SpiritRoot | null;
+
+  // AP upgrades
+  apUpgrades: APUpgrades;
+
+  // Run tracking
+  runStartTime: number;
+  highestRealmReached: number;
+  bossesDefeated: number;
+
+  // Actions
+  calculateAPGain: () => number;
+  rebirth: () => number;
+  purchaseAPUpgrade: (type: keyof APUpgrades) => boolean;
+  setSpiritRoot: (spiritRoot: SpiritRoot) => boolean;
+  getQiMultiplier: () => number;
+  getCombatMultiplier: () => number;
+  getCultivationMultiplier: () => number;
+  getLuckBonus: () => number;
+  updateHighestRealm: (realmIndex: number) => void;
+  incrementBossesDefeated: () => void;
 }
