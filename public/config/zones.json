@@ -1,0 +1,52 @@
+{
+  "zones": [
+    {
+      "id": "training_forest",
+      "name": "Training Forest",
+      "description": "A peaceful forest filled with weak beasts. Perfect for beginners to test their cultivation.",
+      "levelRange": {
+        "min": 1,
+        "max": 5
+      },
+      "realmRequirement": {
+        "index": 0,
+        "substage": 0
+      },
+      "backgroundImage": null,
+      "enemyIds": ["forest_boar", "forest_rabbit", "wild_wolf"],
+      "locked": false
+    },
+    {
+      "id": "spirit_cavern",
+      "name": "Spirit Cavern",
+      "description": "A dark cavern infested with spirit beasts. Only cultivators who have advanced their realm should venture here.",
+      "levelRange": {
+        "min": 6,
+        "max": 10
+      },
+      "realmRequirement": {
+        "index": 0,
+        "substage": 5
+      },
+      "backgroundImage": null,
+      "enemyIds": ["cave_spider", "stone_golem", "spirit_bat"],
+      "locked": false
+    },
+    {
+      "id": "mystic_mountains",
+      "name": "Mystic Mountains",
+      "description": "Towering peaks shrouded in mist. Powerful beasts guard ancient treasures here.",
+      "levelRange": {
+        "min": 11,
+        "max": 20
+      },
+      "realmRequirement": {
+        "index": 1,
+        "substage": 0
+      },
+      "backgroundImage": null,
+      "enemyIds": ["mountain_tiger", "frost_serpent"],
+      "locked": true
+    }
+  ]
+}
