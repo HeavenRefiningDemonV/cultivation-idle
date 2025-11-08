@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { GameState } from '../types';
+import type { GameState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -8,6 +8,14 @@ import type { GameState } from '../types';
 let _getGameStore: (() => GameState) | null = null;
 export function setGameStoreGetter(getter: () => GameState) {
   _getGameStore = getter;
+}
+
+/**
+ * Lazy getter for inventory store to avoid circular dependency
+ */
+let _getInventoryStore: (() => any) | null = null;
+export function setInventoryStoreGetter(getter: () => any) {
+  _getInventoryStore = getter;
 }
 
 export interface PrestigeUpgrade {
@@ -41,13 +49,34 @@ interface PrestigeState {
   prestigeRuns: PrestigeRun[];
   upgrades: Record<string, PrestigeUpgrade>;
 
+  // Spirit root
+  spiritRoot: SpiritRoot | null;
+
+  // Methods
   calculateAPGain: () => number;
   canPrestige: () => boolean;
   performPrestige: () => void;
   purchaseUpgrade: (upgradeId: string) => boolean;
   getUpgradeEffect: (upgradeId: string) => number;
   initializeUpgrades: () => void;
+
+  // Spirit root methods
+  generateSpiritRoot: () => void;
+  rerollSpiritRoot: () => boolean;
+  getSpiritRootQualityMultiplier: () => number;
+  getSpiritRootPurityMultiplier: () => number;
+  getSpiritRootTotalMultiplier: () => number;
 }
+
+/**
+ * Spirit root quality names
+ */
+const QUALITY_NAMES = ['', 'Mortal', 'Common', 'Uncommon', 'Rare', 'Legendary'];
+
+/**
+ * Available elements
+ */
+const ELEMENTS: SpiritRootElement[] = ['fire', 'water', 'earth', 'metal', 'wood'];
 
 export const usePrestigeStore = create<PrestigeState>()(
   immer((set, get) => ({
@@ -57,6 +86,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     prestigeCount: 0,
     prestigeRuns: [],
     upgrades: {},
+    spiritRoot: null,
 
     calculateAPGain: () => {
       if (!_getGameStore) return 0;
@@ -276,6 +306,106 @@ export const usePrestigeStore = create<PrestigeState>()(
           },
         };
       });
+    },
+
+    /**
+     * Generate a new spirit root based on prestige upgrades
+     */
+    generateSpiritRoot: () => {
+      const state = get();
+      const floor = state.getUpgradeEffect('root_floor');
+
+      // Quality roll (1-5: Mortal, Common, Uncommon, Rare, Legendary)
+      // Base: 60% Mortal, 25% Common, 10% Uncommon, 4% Rare, 1% Legendary
+      const qualityRoll = Math.random();
+      let grade: SpiritRootGrade = 1;
+
+      if (qualityRoll < 0.01) grade = 5; // Legendary - 1%
+      else if (qualityRoll < 0.05) grade = 4; // Rare - 4%
+      else if (qualityRoll < 0.15) grade = 3; // Uncommon - 10%
+      else if (qualityRoll < 0.40) grade = 2; // Common - 25%
+      else grade = 1; // Mortal - 60%
+
+      // Apply floor (minimum quality from prestige)
+      grade = Math.max(grade, Math.min(floor, 5)) as SpiritRootGrade;
+
+      // Element roll (equal chances)
+      const element = ELEMENTS[Math.floor(Math.random() * ELEMENTS.length)];
+
+      // Purity roll (30-100, bell curve weighted towards middle-high)
+      const purity = Math.floor(
+        30 + Math.random() * 35 + Math.random() * 35
+      );
+
+      set((state) => {
+        state.spiritRoot = { grade, element, purity };
+      });
+
+      console.log(`[SpiritRoot] Generated: ${QUALITY_NAMES[grade]} ${element} (${purity}% purity)`);
+
+      // Recalculate player stats with new spirit root
+      if (_getGameStore) {
+        const gameStore = _getGameStore();
+        gameStore.calculatePlayerStats();
+        gameStore.calculateQiPerSecond();
+      }
+    },
+
+    /**
+     * Reroll spirit root using gold
+     * Cost scales with current quality
+     */
+    rerollSpiritRoot: () => {
+      const state = get();
+      if (!state.spiritRoot || !_getInventoryStore) return false;
+
+      // Cost: 1000 * 2^(grade-1) gold
+      const cost = 1000 * Math.pow(2, state.spiritRoot.grade - 1);
+      const inventoryStore = _getInventoryStore();
+
+      // Check if player has enough gold
+      if (inventoryStore.gold.lt(cost)) {
+        console.log(`[SpiritRoot] Not enough gold to reroll (need ${cost})`);
+        return false;
+      }
+
+      // Deduct gold
+      if (!inventoryStore.removeGold(cost.toString())) {
+        return false;
+      }
+
+      // Generate new spirit root
+      get().generateSpiritRoot();
+      console.log(`[SpiritRoot] Rerolled for ${cost} gold`);
+
+      return true;
+    },
+
+    /**
+     * Get quality multiplier (1.0 to 2.6)
+     * Grade 1 = 1.0x, Grade 2 = 1.4x, Grade 3 = 1.8x, Grade 4 = 2.2x, Grade 5 = 2.6x
+     */
+    getSpiritRootQualityMultiplier: () => {
+      const state = get();
+      if (!state.spiritRoot) return 1.0;
+      return 1.0 + (state.spiritRoot.grade - 1) * 0.4;
+    },
+
+    /**
+     * Get purity multiplier (1.0 to 2.0)
+     */
+    getSpiritRootPurityMultiplier: () => {
+      const state = get();
+      if (!state.spiritRoot) return 1.0;
+      return 1.0 + state.spiritRoot.purity / 100;
+    },
+
+    /**
+     * Get total spirit root multiplier (quality * purity)
+     */
+    getSpiritRootTotalMultiplier: () => {
+      const state = get();
+      return state.getSpiritRootQualityMultiplier() * state.getSpiritRootPurityMultiplier();
     },
   }))
 );

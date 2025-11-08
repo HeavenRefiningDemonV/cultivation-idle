@@ -4,6 +4,7 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
+import { SpiritRootDisplay } from '../SpiritRootDisplay';
 
 /**
  * Stat Row Component for displaying key-value pairs
@@ -129,6 +130,9 @@ export function StatusScreen() {
 
           {/* RIGHT COLUMN */}
           <div className="space-y-6">
+            {/* Spirit Root Display */}
+            <SpiritRootDisplay />
+
             {/* Resources */}
             <StatCard title="Resources">
               <StatRow label="Gold" value={formatNumber(gold)} color="text-yellow-400" />

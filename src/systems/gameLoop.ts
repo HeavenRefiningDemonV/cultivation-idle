@@ -1,6 +1,6 @@
 import { useGameStore, initializeGameStore } from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
-import { usePrestigeStore } from '../stores/prestigeStore';
+import { usePrestigeStore, setInventoryStoreGetter } from '../stores/prestigeStore';
 import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
@@ -235,6 +235,17 @@ export function initializeGame(): boolean {
       () => useGameStore.getState()
     );
     console.log('[GameLoop] Technique store dependencies set');
+
+    // Set up prestige store dependency on inventory store
+    setInventoryStoreGetter(() => useInventoryStore.getState());
+    console.log('[GameLoop] Prestige store dependencies set');
+
+    // Generate spirit root if none exists
+    const prestigeStore = usePrestigeStore.getState();
+    if (!prestigeStore.spiritRoot) {
+      prestigeStore.generateSpiritRoot();
+      console.log('[GameLoop] Generated initial spirit root');
+    }
 
     // Add starter items for testing (only if inventory is empty)
     const inventoryStore = useInventoryStore.getState();
