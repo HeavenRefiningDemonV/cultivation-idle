@@ -15,7 +15,7 @@ export interface UINotification {
 /**
  * Available game tabs
  */
-export type GameTab = 'cultivation' | 'adventure' | 'inventory' | 'techniques' | 'prestige' | 'settings';
+export type GameTab = 'cultivation' | 'status' | 'adventure' | 'dungeon' | 'inventory' | 'techniques' | 'prestige' | 'settings';
 
 /**
  * UI state interface

@@ -2,8 +2,10 @@ import { useUIStore } from '../stores/uiStore';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { InkWashBackground } from './InkWashBackground';
-import { CultivationTab } from './tabs/CultivationTab';
-import { AdventureTab } from './tabs/AdventureTab';
+import { CultivateScreen } from './screens/CultivateScreen';
+import { StatusScreen } from './screens/StatusScreen';
+import { AdventureScreen } from './screens/AdventureScreen';
+import { DungeonScreen } from './screens/DungeonScreen';
 
 /**
  * Placeholder content for tabs
@@ -62,9 +64,13 @@ export function GameLayout() {
   const renderContent = () => {
     switch (activeTab) {
       case 'cultivation':
-        return <CultivationTab />;
+        return <CultivateScreen />;
+      case 'status':
+        return <StatusScreen />;
       case 'adventure':
-        return <AdventureTab />;
+        return <AdventureScreen />;
+      case 'dungeon':
+        return <DungeonScreen />;
       case 'inventory':
         return <InventoryTab />;
       case 'techniques':
