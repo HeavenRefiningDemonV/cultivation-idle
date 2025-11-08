@@ -53,51 +53,29 @@ export function Header() {
   }, []);
 
   return (
-    <header className="bg-slate-900 border-b border-slate-700 px-6 py-4 shadow-lg">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-        {/* Left side - Title */}
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-white tracking-wide">
-            Cultivation Idle
-          </h1>
-          <div className="h-6 w-px bg-slate-600" />
-          <div className="text-sm">
-            <div className="text-slate-300 font-medium">
-              {realm.name}
-            </div>
-            <div className="text-slate-500 text-xs">
-              Substage {realm.substage + 1}
-            </div>
+    <header className="fixed top-0 left-0 right-0 h-20 bg-ink-darkest border-b-2 border-ink-dark z-40">
+      <div className="h-full px-6 flex items-center justify-between">
+        {/* Left side - Qi & Realm */}
+        <div className="flex flex-col gap-1">
+          <div className="text-qi-blue text-sm font-mono">
+            Qi: <span className="text-xl font-bold text-qi-glow">{formatNumber(qi)}</span>
+            <span className="ml-2 text-xs text-ink-light">({formatNumber(qiPerSecond)}/s)</span>
+          </div>
+          <div className="text-ink-paper text-xs">
+            REALM: <span className="text-gold-accent font-semibold">{realm.name}</span>
+            <span className="ml-2 text-ink-light">Substage {realm.substage + 1}</span>
           </div>
         </div>
 
-        {/* Center - Qi Display */}
-        <div className="flex items-center gap-8">
-          <div className="text-center">
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-              Qi
+        {/* Right side - Save indicator & actions */}
+        <div className="flex items-center gap-4">
+          <div className="text-right">
+            <div className="text-xs text-ink-light uppercase tracking-wide">
+              Last Saved
             </div>
-            <div className="text-3xl font-bold text-cyan-400">
-              {formatNumber(qi)}
+            <div className={`text-sm font-medium ${lastSavedColor}`}>
+              {lastSavedText}
             </div>
-          </div>
-          <div className="text-center">
-            <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-              Qi/s
-            </div>
-            <div className="text-xl font-semibold text-cyan-300">
-              {formatNumber(qiPerSecond)}
-            </div>
-          </div>
-        </div>
-
-        {/* Right side - Save indicator */}
-        <div className="text-right">
-          <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">
-            Last Saved
-          </div>
-          <div className={`text-sm font-medium ${lastSavedColor}`}>
-            {lastSavedText}
           </div>
         </div>
       </div>

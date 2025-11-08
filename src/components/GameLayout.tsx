@@ -1,6 +1,7 @@
 import { useUIStore } from '../stores/uiStore';
 import { Header } from './Header';
-import { TabNav } from './TabNav';
+import { Sidebar } from './Sidebar';
+import { InkWashBackground } from './InkWashBackground';
 import { CultivationTab } from './tabs/CultivationTab';
 import { AdventureTab } from './tabs/AdventureTab';
 
@@ -12,10 +13,10 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
     <div className="flex items-center justify-center h-full min-h-[400px]">
       <div className="text-center">
         <div className="text-6xl mb-4">🚧</div>
-        <h2 className="text-2xl font-bold text-slate-300 mb-2">
+        <h2 className="text-2xl font-bold text-ink-paper mb-2">
           {tabName} - Coming Soon
         </h2>
-        <p className="text-slate-400">
+        <p className="text-ink-light">
           This feature is under development
         </p>
       </div>
@@ -78,15 +79,13 @@ export function GameLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Header */}
+    <div className="min-h-screen bg-ink-black text-ink-paper font-inter">
+      <InkWashBackground />
       <Header />
+      <Sidebar />
 
-      {/* Tab Navigation */}
-      <TabNav />
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      {/* Main Content Area */}
+      <main className="ml-56 mt-20 min-h-screen p-8 relative z-10">
         {renderContent()}
       </main>
     </div>

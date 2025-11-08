@@ -30,12 +30,29 @@ export interface UIState {
   // Notifications
   notifications: UINotification[];
 
+  // Modals
+  showPrestigeModal: boolean;
+  showPathSelectionModal: boolean;
+  showBreakthroughAnimation: boolean;
+
+  // Tooltips
+  tooltipVisible: boolean;
+  tooltipContent: string;
+  tooltipPosition: { x: number; y: number };
+
   // Actions
   setActiveTab: (tab: GameTab) => void;
   toggleSidePanel: () => void;
   addNotification: (type: UINotification['type'], message: string, duration?: number) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  showPrestige: () => void;
+  hidePrestige: () => void;
+  showPathSelection: () => void;
+  hidePathSelection: () => void;
+  triggerBreakthroughAnimation: () => void;
+  showTooltip: (content: string, x: number, y: number) => void;
+  hideTooltip: () => void;
 }
 
 /**
@@ -54,6 +71,12 @@ export const useUIStore = create<UIState>()(
     activeTab: 'cultivation',
     showSidePanel: false,
     notifications: [],
+    showPrestigeModal: false,
+    showPathSelectionModal: false,
+    showBreakthroughAnimation: false,
+    tooltipVisible: false,
+    tooltipContent: '',
+    tooltipPosition: { x: 0, y: 0 },
 
     /**
      * Set the active tab
@@ -125,6 +148,77 @@ export const useUIStore = create<UIState>()(
       });
 
       console.log('[UI] All notifications cleared');
+    },
+
+    /**
+     * Show prestige modal
+     */
+    showPrestige: () => {
+      set((state) => {
+        state.showPrestigeModal = true;
+      });
+    },
+
+    /**
+     * Hide prestige modal
+     */
+    hidePrestige: () => {
+      set((state) => {
+        state.showPrestigeModal = false;
+      });
+    },
+
+    /**
+     * Show path selection modal
+     */
+    showPathSelection: () => {
+      set((state) => {
+        state.showPathSelectionModal = true;
+      });
+    },
+
+    /**
+     * Hide path selection modal
+     */
+    hidePathSelection: () => {
+      set((state) => {
+        state.showPathSelectionModal = false;
+      });
+    },
+
+    /**
+     * Trigger breakthrough animation
+     */
+    triggerBreakthroughAnimation: () => {
+      set((state) => {
+        state.showBreakthroughAnimation = true;
+      });
+
+      setTimeout(() => {
+        set((state) => {
+          state.showBreakthroughAnimation = false;
+        });
+      }, 2000);
+    },
+
+    /**
+     * Show tooltip
+     */
+    showTooltip: (content: string, x: number, y: number) => {
+      set((state) => {
+        state.tooltipVisible = true;
+        state.tooltipContent = content;
+        state.tooltipPosition = { x, y };
+      });
+    },
+
+    /**
+     * Hide tooltip
+     */
+    hideTooltip: () => {
+      set((state) => {
+        state.tooltipVisible = false;
+      });
     },
   }))
 );
