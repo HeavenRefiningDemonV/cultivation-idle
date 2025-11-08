@@ -67,7 +67,6 @@ export function StatusScreen() {
 
   // Calculate some derived stats
   const currentRealm = REALMS[realm.index];
-  const currentSubstage = currentRealm.substages[realm.substage - 1];
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
 
   return (
@@ -106,7 +105,7 @@ export function StatusScreen() {
               <StatRow label="Current Realm" value={currentRealm.name} color="text-gold-accent" />
               <StatRow
                 label="Substage"
-                value={`${currentSubstage?.name || 'Unknown'} (${realm.substage}/${currentRealm.substages.length})`}
+                value={`Stage ${realm.substage}/${currentRealm.substages}`}
                 color="text-qi-blue"
               />
               <StatRow label="Current Qi" value={formatNumber(qi)} color="text-qi-blue" />
@@ -120,10 +119,10 @@ export function StatusScreen() {
               <StatRow label="Max HP" value={formatNumber(stats.hp)} color="text-green-400" />
               <StatRow label="Attack Power" value={formatNumber(stats.atk)} color="text-red-400" />
               <StatRow label="Defense" value={formatNumber(stats.def)} color="text-blue-400" />
-              <StatRow label="HP Regen/s" value={formatNumber(stats.hpRegen)} color="text-green-300" />
-              <StatRow label="Critical Rate" value={`${(stats.critRate * 100).toFixed(1)}%`} color="text-yellow-400" />
-              <StatRow label="Critical Damage" value={`${(stats.critDamage * 100).toFixed(0)}%`} color="text-yellow-400" />
-              <StatRow label="Dodge Chance" value={`${(stats.dodge * 100).toFixed(1)}%`} color="text-cyan-400" />
+              <StatRow label="HP Regen/s" value={formatNumber(stats.regen)} color="text-green-300" />
+              <StatRow label="Critical Rate" value={`${(stats.crit / 100).toFixed(1)}%`} color="text-yellow-400" />
+              <StatRow label="Critical Damage" value={`${stats.critDmg}%`} color="text-yellow-400" />
+              <StatRow label="Dodge Chance" value={`${(stats.dodge / 100).toFixed(1)}%`} color="text-cyan-400" />
               <StatRow label="Total Enemies Defeated" value={totalEnemiesDefeated} color="text-red-300" />
             </StatCard>
           </div>
@@ -147,16 +146,15 @@ export function StatusScreen() {
                   <div className="bg-slate-800/50 rounded-lg p-3 border border-purple-500/50">
                     <div className="font-bold text-purple-400">{equippedWeapon.name}</div>
                     <div className="text-xs text-slate-400 mt-1">
-                      {equippedWeapon.rarity.charAt(0).toUpperCase() + equippedWeapon.rarity.slice(1)} •{' '}
-                      {equippedWeapon.itemType}
+                      {equippedWeapon.rarity.charAt(0).toUpperCase() + equippedWeapon.rarity.slice(1)} Weapon
                     </div>
                     {equippedWeapon.stats && (
                       <div className="text-xs text-slate-300 mt-2">
                         {equippedWeapon.stats.atk && (
                           <div>ATK: +{formatNumber(equippedWeapon.stats.atk)}</div>
                         )}
-                        {equippedWeapon.stats.critRate && (
-                          <div>Crit Rate: +{(equippedWeapon.stats.critRate * 100).toFixed(1)}%</div>
+                        {equippedWeapon.stats.crit && (
+                          <div>Crit Rate: +{equippedWeapon.stats.crit}%</div>
                         )}
                       </div>
                     )}
@@ -175,8 +173,7 @@ export function StatusScreen() {
                   <div className="bg-slate-800/50 rounded-lg p-3 border border-cyan-500/50">
                     <div className="font-bold text-cyan-400">{equippedAccessory.name}</div>
                     <div className="text-xs text-slate-400 mt-1">
-                      {equippedAccessory.rarity.charAt(0).toUpperCase() + equippedAccessory.rarity.slice(1)} •{' '}
-                      {equippedAccessory.itemType}
+                      {equippedAccessory.rarity.charAt(0).toUpperCase() + equippedAccessory.rarity.slice(1)} Accessory
                     </div>
                     {equippedAccessory.stats && (
                       <div className="text-xs text-slate-300 mt-2">

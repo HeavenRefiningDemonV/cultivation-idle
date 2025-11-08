@@ -213,16 +213,19 @@ export function CultivateScreen() {
   const qi = useGameStore((state) => state.qi);
   const qiPerSecond = useGameStore((state) => state.qiPerSecond);
   const focusMode = useGameStore((state) => state.focusMode);
-  const canBreakthrough = useGameStore((state) => state.canBreakthrough);
   const breakthroughCost = useGameStore((state) => state.getBreakthroughRequirement());
 
   const breakthrough = useGameStore((state) => state.breakthrough);
   const setFocusMode = useGameStore((state) => state.setFocusMode);
-  const buyUpgrade = useGameStore((state) => state.buyUpgrade);
 
   const currentRealm = REALMS[realm.index];
   const nextSubstage = realm.substage + 1;
-  const isLastSubstage = nextSubstage > currentRealm.substages.length;
+  const isLastSubstage = nextSubstage > currentRealm.substages;
+
+  // Check if can breakthrough
+  const canBreakthrough = () => {
+    return Number(qi) >= Number(breakthroughCost);
+  };
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
@@ -334,36 +337,25 @@ export function CultivateScreen() {
               </div>
             </div>
 
-            {/* Upgrades */}
+            {/* Cultivation Info */}
             <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
               <h3 className="font-cinzel text-lg font-bold text-gold-accent mb-4">
-                Cultivation Methods
+                Cultivation Info
               </h3>
 
-              <div className="space-y-3">
-                <UpgradeCard
-                  title="Idle Cultivation"
-                  description="Increase passive Qi generation"
-                  cost="100"
-                  onClick={() => buyUpgrade('idle')}
-                  disabled={Number(qi) < 100}
-                />
-
-                <UpgradeCard
-                  title="Combat Prowess"
-                  description="Enhance attack power"
-                  cost="150"
-                  onClick={() => buyUpgrade('damage')}
-                  disabled={Number(qi) < 150}
-                />
-
-                <UpgradeCard
-                  title="Body Tempering"
-                  description="Increase maximum HP"
-                  cost="200"
-                  onClick={() => buyUpgrade('hp')}
-                  disabled={Number(qi) < 200}
-                />
+              <div className="space-y-3 text-sm text-slate-300">
+                <div>
+                  <div className="text-slate-400 mb-1">Current Path</div>
+                  <div className="text-white font-bold capitalize">
+                    {useGameStore.getState().selectedPath || 'None'}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-slate-400 mb-1">Total Auras</div>
+                  <div className="text-pink-400 font-bold">
+                    {formatNumber(useGameStore.getState().totalAuras)}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
