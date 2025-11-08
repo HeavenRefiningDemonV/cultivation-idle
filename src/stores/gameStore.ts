@@ -18,6 +18,7 @@ import {
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 import { setGameStoreGetter } from './prestigeStore';
+import { getPerkById } from '../data/pathPerks';
 
 /**
  * Lazy getter for inventory store to avoid circular dependency
@@ -47,6 +48,7 @@ export const useGameStore = create<GameState>()(
     stats: { ...INITIAL_STATS },
     selectedPath: null,
     focusMode: 'balanced',
+    pathPerks: [],
     totalAuras: 0,
     upgradeTiers: {
       idle: 0,
@@ -114,6 +116,29 @@ export const useGameStore = create<GameState>()(
       // Recalculate derived values
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+    },
+
+    /**
+     * Select a path perk (adds to player's perk collection)
+     */
+    selectPerk: (perkId: string) => {
+      const state = get();
+
+      // Check if perk is already selected
+      if (state.pathPerks.includes(perkId)) {
+        console.warn('Perk already selected!');
+        return false;
+      }
+
+      set((state) => {
+        state.pathPerks.push(perkId);
+      });
+
+      // Recalculate derived values with new perk
+      get().calculateQiPerSecond();
+      get().calculatePlayerStats();
+
+      return true;
     },
 
     /**
@@ -224,6 +249,15 @@ export const useGameStore = create<GameState>()(
           }
         } catch (error) {
           // Equipment stats not available
+        }
+      }
+
+      // Apply path perk bonuses
+      for (const perkId of state.pathPerks) {
+        const perk = getPerkById(perkId);
+        if (perk && perk.effect.stat === 'qiMultiplier') {
+          const perkMultiplier = D(1).plus(perk.effect.value);
+          qiPerSec = multiply(qiPerSec, perkMultiplier);
         }
       }
 
@@ -351,6 +385,37 @@ export const useGameStore = create<GameState>()(
         }
       }
 
+      // Apply path perk bonuses
+      for (const perkId of state.pathPerks) {
+        const perk = getPerkById(perkId);
+        if (!perk) continue;
+
+        switch (perk.effect.stat) {
+          case 'hpMultiplier':
+            hp = multiply(hp, D(1).plus(perk.effect.value));
+            break;
+          case 'atkMultiplier':
+            atk = multiply(atk, D(1).plus(perk.effect.value));
+            break;
+          case 'defMultiplier':
+            def = multiply(def, D(1).plus(perk.effect.value));
+            break;
+          case 'regenMultiplier':
+            regen = multiply(regen, D(1).plus(perk.effect.value));
+            break;
+          case 'crit':
+            crit += perk.effect.value;
+            break;
+          case 'critDmg':
+            critDmg += perk.effect.value;
+            break;
+          case 'dodge':
+            dodge += perk.effect.value;
+            break;
+          // qiMultiplier is handled in calculateQiPerSecond
+        }
+      }
+
       set((state) => {
         state.stats = {
           hp: hp.toString(),
@@ -438,6 +503,7 @@ export const useGameStore = create<GameState>()(
         state.stats = { ...INITIAL_STATS };
         state.selectedPath = null;
         state.focusMode = 'balanced';
+        state.pathPerks = [];
         state.upgradeTiers = {
           idle: 0,
           damage: 0,

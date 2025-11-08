@@ -38,6 +38,7 @@ function gatherGameState(): SaveData {
       qi: gameState.qi,
       selectedPath: gameState.selectedPath,
       focusMode: gameState.focusMode,
+      pathPerks: gameState.pathPerks,
       totalAuras: gameState.totalAuras,
       upgradeTiers: gameState.upgradeTiers,
       pityState: gameState.pityState,
@@ -205,6 +206,7 @@ function applySaveData(saveData: SaveData): void {
       qi: saveData.gameState.qi,
       selectedPath: saveData.gameState.selectedPath,
       focusMode: saveData.gameState.focusMode,
+      pathPerks: saveData.gameState.pathPerks || [],
       totalAuras: saveData.gameState.totalAuras,
       upgradeTiers: saveData.gameState.upgradeTiers,
       pityState: saveData.gameState.pityState || {

@@ -110,6 +110,7 @@ export interface GameState {
   // Cultivation choices
   selectedPath: CultivationPath | null;
   focusMode: FocusMode;
+  pathPerks: string[];                  // Selected path perk IDs
 
   // Progression tracking
   totalAuras: number;                   // Total breakthroughs achieved
@@ -127,6 +128,7 @@ export interface GameState {
   tick: (deltaTime: number) => void;
   setFocusMode: (mode: FocusMode) => void;
   selectPath: (path: CultivationPath) => void;
+  selectPerk: (perkId: string) => boolean;
   breakthrough: () => boolean;
   calculateQiPerSecond: () => void;
   calculatePlayerStats: () => void;
@@ -149,6 +151,7 @@ export interface SaveData {
     qi: string;
     selectedPath: CultivationPath | null;
     focusMode: FocusMode;
+    pathPerks: string[];
     totalAuras: number;
     upgradeTiers: UpgradeTiers;
     pityState: PityState;

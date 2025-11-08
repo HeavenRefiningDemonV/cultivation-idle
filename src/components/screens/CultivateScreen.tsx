@@ -1,6 +1,9 @@
+import { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
+import { PathSelectionModal } from '../modals/PathSelectionModal';
+import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 
 /**
  * Mountain Background SVG
@@ -213,18 +216,49 @@ export function CultivateScreen() {
   const qi = useGameStore((state) => state.qi);
   const qiPerSecond = useGameStore((state) => state.qiPerSecond);
   const focusMode = useGameStore((state) => state.focusMode);
+  const selectedPath = useGameStore((state) => state.selectedPath);
   const breakthroughCost = useGameStore((state) => state.getBreakthroughRequirement());
 
   const breakthrough = useGameStore((state) => state.breakthrough);
   const setFocusMode = useGameStore((state) => state.setFocusMode);
 
+  const [showPathSelection, setShowPathSelection] = useState(false);
+  const [showPerkSelection, setShowPerkSelection] = useState(false);
+  const [perkRealmIndex, setPerkRealmIndex] = useState<number>(0);
+
+  // Track previous realm index to detect realm breakthroughs
+  const previousRealmIndex = useRef(realm.index);
+
   const currentRealm = REALMS[realm.index];
   const nextSubstage = realm.substage + 1;
   const isLastSubstage = nextSubstage > currentRealm.substages;
 
+  // Show path selection when player reaches Foundation (realm 1) and hasn't chosen
+  useEffect(() => {
+    if (realm.index >= 1 && !selectedPath) {
+      setShowPathSelection(true);
+    }
+  }, [realm.index, selectedPath]);
+
+  // Detect realm breakthrough and show perk selection
+  useEffect(() => {
+    // Check if realm index increased
+    if (realm.index > previousRealmIndex.current && selectedPath) {
+      // Realm breakthrough occurred - show perk selection for the NEW realm
+      setPerkRealmIndex(realm.index);
+      setShowPerkSelection(true);
+      previousRealmIndex.current = realm.index;
+    }
+  }, [realm.index, selectedPath]);
+
   // Check if can breakthrough
   const canBreakthrough = () => {
     return Number(qi) >= Number(breakthroughCost);
+  };
+
+  // Handle breakthrough button click
+  const handleBreakthrough = () => {
+    breakthrough();
   };
 
   return (
@@ -287,7 +321,7 @@ export function CultivateScreen() {
 
               {/* Breakthrough Button */}
               <button
-                onClick={breakthrough}
+                onClick={handleBreakthrough}
                 disabled={!canBreakthrough()}
                 className={`
                   w-full mt-6 py-4 px-6 rounded-lg font-cinzel font-bold text-lg
@@ -392,6 +426,19 @@ export function CultivateScreen() {
           animation-delay: 0.5s;
         }
       `}</style>
+
+      {/* Path Selection Modal */}
+      {showPathSelection && (
+        <PathSelectionModal onClose={() => setShowPathSelection(false)} />
+      )}
+
+      {/* Perk Selection Modal */}
+      {showPerkSelection && (
+        <PerkSelectionModal
+          onClose={() => setShowPerkSelection(false)}
+          realmIndex={perkRealmIndex}
+        />
+      )}
     </div>
   );
 }
