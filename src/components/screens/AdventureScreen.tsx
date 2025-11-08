@@ -9,7 +9,7 @@
  */
 export function AdventureScreen() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-10">
         <div

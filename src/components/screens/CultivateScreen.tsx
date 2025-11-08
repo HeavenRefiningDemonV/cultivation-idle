@@ -225,7 +225,7 @@ export function CultivateScreen() {
   const isLastSubstage = nextSubstage > currentRealm.substages.length;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
       {/* Mountain background */}
       <MountainBackground />
 

@@ -91,7 +91,7 @@ export function GameLayout() {
       <Sidebar />
 
       {/* Main Content Area */}
-      <main className="ml-56 mt-20 min-h-screen p-8 relative z-10">
+      <main className="ml-56 mt-20 min-h-screen p-4 relative z-10">
         {renderContent()}
       </main>
     </div>
