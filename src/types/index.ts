@@ -381,17 +381,17 @@ export interface InventoryState {
 export type SpiritRootElement = 'fire' | 'water' | 'earth' | 'metal' | 'wood';
 
 /**
- * Spirit root quality grade
+ * Spirit root quality tier (0-4)
+ * 0 = Mortal, 1 = Earth, 2 = Heaven, 3 = Mystic, 4 = Divine
  */
-export type SpiritRootGrade = 1 | 2 | 3 | 4 | 5; // 1=Mortal, 2=Common, 3=Uncommon, 4=Rare, 5=Legendary
+export type SpiritRootQuality = 0 | 1 | 2 | 3 | 4;
 
 /**
  * Spirit root definition
  */
 export interface SpiritRoot {
-  grade: SpiritRootGrade;
+  quality: SpiritRootQuality;
   element: SpiritRootElement;
-  purity: number;          // 0-100, affects stat bonuses
 }
 
 /**
@@ -423,6 +423,7 @@ export interface PrestigeState {
   runStartTime: number;
   highestRealmReached: number;
   bossesDefeated: number;
+  totalQiEarned: string;    // Lifetime Qi earned (Decimal string) for AP calculation
 
   // Actions
   calculateAPGain: () => number;
@@ -435,4 +436,5 @@ export interface PrestigeState {
   getLuckBonus: () => number;
   updateHighestRealm: (realmIndex: number) => void;
   incrementBossesDefeated: () => void;
+  addQiEarned: (amount: string) => void;
 }

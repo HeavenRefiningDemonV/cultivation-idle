@@ -1,28 +1,39 @@
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { formatNumber, D } from '../utils/numbers';
-import type { SpiritRootElement, SpiritRootGrade } from '../types';
+import type { SpiritRootElement, SpiritRootQuality } from '../types';
 
 /**
- * Quality names for display
+ * Quality names for display (0-4)
  */
-const QUALITY_NAMES: Record<SpiritRootGrade, string> = {
-  1: 'Mortal',
-  2: 'Common',
-  3: 'Uncommon',
-  4: 'Rare',
-  5: 'Legendary',
+const QUALITY_NAMES: Record<SpiritRootQuality, string> = {
+  0: 'Mortal',
+  1: 'Earth',
+  2: 'Heaven',
+  3: 'Mystic',
+  4: 'Divine',
 };
 
 /**
  * Quality colors (Tailwind classes)
  */
-const QUALITY_COLORS: Record<SpiritRootGrade, string> = {
-  1: 'text-gray-400',
-  2: 'text-green-500',
-  3: 'text-blue-500',
-  4: 'text-purple-500',
-  5: 'text-orange-500',
+const QUALITY_COLORS: Record<SpiritRootQuality, string> = {
+  0: 'text-gray-400',
+  1: 'text-green-500',
+  2: 'text-blue-500',
+  3: 'text-purple-500',
+  4: 'text-orange-500',
+};
+
+/**
+ * Quality multipliers (0-4)
+ */
+const QUALITY_MULTIPLIERS: Record<SpiritRootQuality, number> = {
+  0: 1.0,
+  1: 1.25,
+  2: 1.5,
+  3: 2.0,
+  4: 3.0,
 };
 
 /**
@@ -49,14 +60,12 @@ const ELEMENT_BONUS_DESCRIPTIONS: Record<SpiritRootElement, string> = {
 
 /**
  * Spirit Root Display Component
- * Shows the player's spirit root quality, element, purity, and bonuses
+ * Shows the player's spirit root quality, element, and bonuses
  */
 export function SpiritRootDisplay() {
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const rerollSpiritRoot = usePrestigeStore((state) => state.rerollSpiritRoot);
-  const getQualityMultiplier = usePrestigeStore((state) => state.getSpiritRootQualityMultiplier);
-  const getPurityMultiplier = usePrestigeStore((state) => state.getSpiritRootPurityMultiplier);
-  const getTotalMultiplier = usePrestigeStore((state) => state.getSpiritRootTotalMultiplier);
+  const getSpiritRootMultiplier = usePrestigeStore((state) => state.getSpiritRootMultiplier);
 
   const gold = useInventoryStore((state) => state.gold);
 
@@ -75,13 +84,11 @@ export function SpiritRootDisplay() {
     );
   }
 
-  // Calculate multipliers
-  const qualityMult = getQualityMultiplier();
-  const purityMult = getPurityMultiplier();
-  const totalMult = getTotalMultiplier();
+  // Calculate multiplier
+  const totalMult = getSpiritRootMultiplier();
 
-  // Calculate reroll cost
-  const rerollCost = 1000 * Math.pow(2, spiritRoot.grade - 1);
+  // Calculate reroll cost: 1000 * 2^quality
+  const rerollCost = 1000 * Math.pow(2, spiritRoot.quality);
   const canAfford = D(gold).gte(rerollCost);
 
   // Handle reroll
@@ -104,8 +111,8 @@ export function SpiritRootDisplay() {
       <div className={`bg-gradient-to-r ${ELEMENT_COLORS[spiritRoot.element]} rounded-lg p-4 mb-4 shadow-lg`}>
         <div className="text-center space-y-2">
           {/* Quality */}
-          <div className={`text-3xl font-bold ${QUALITY_COLORS[spiritRoot.grade]} drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
-            {QUALITY_NAMES[spiritRoot.grade]}
+          <div className={`text-3xl font-bold ${QUALITY_COLORS[spiritRoot.quality]} drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
+            {QUALITY_NAMES[spiritRoot.quality]}
           </div>
 
           {/* Element */}
@@ -113,9 +120,9 @@ export function SpiritRootDisplay() {
             {spiritRoot.element} Element
           </div>
 
-          {/* Purity */}
+          {/* Multiplier */}
           <div className="text-lg text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            {spiritRoot.purity}% Purity
+            {QUALITY_MULTIPLIERS[spiritRoot.quality]}x All Stats
           </div>
         </div>
       </div>
@@ -124,21 +131,9 @@ export function SpiritRootDisplay() {
       <div className="bg-slate-800/50 border-2 border-slate-700/50 rounded-lg p-4 mb-4">
         <h4 className="font-semibold text-slate-300 mb-3 text-sm">Bonuses:</h4>
         <div className="space-y-2 text-sm">
-          {/* Quality Bonus */}
+          {/* Quality Multiplier */}
           <div className="flex justify-between items-center">
             <span className="text-slate-400">Quality Multiplier:</span>
-            <span className="text-green-400 font-bold">{qualityMult.toFixed(2)}x</span>
-          </div>
-
-          {/* Purity Bonus */}
-          <div className="flex justify-between items-center">
-            <span className="text-slate-400">Purity Multiplier:</span>
-            <span className="text-blue-400 font-bold">{purityMult.toFixed(2)}x</span>
-          </div>
-
-          {/* Total Multiplier */}
-          <div className="flex justify-between items-center pt-2 border-t border-slate-700">
-            <span className="text-slate-300 font-semibold">Total Multiplier:</span>
             <span className="text-gold-accent font-bold text-lg">{totalMult.toFixed(2)}x</span>
           </div>
 
@@ -156,8 +151,9 @@ export function SpiritRootDisplay() {
       <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4 mb-4">
         <p className="text-xs text-amber-200/80 leading-relaxed">
           <span className="font-semibold">About Spirit Roots:</span> Your spirit root determines
-          your cultivation potential. Higher quality and purity provide greater stat multipliers
+          your cultivation potential. Higher quality provides greater stat multipliers
           that apply to all your stats. Each element grants unique bonuses to specific abilities.
+          Upgrade Root Purification in the Prestige Shop to start with better roots!
         </p>
       </div>
 

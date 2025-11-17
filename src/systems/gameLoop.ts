@@ -1,8 +1,9 @@
 import { useGameStore, initializeGameStore } from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
-import { usePrestigeStore, setInventoryStoreGetter } from '../stores/prestigeStore';
+import { usePrestigeStore, setInventoryStoreGetter, setDungeonStoreGetter } from '../stores/prestigeStore';
 import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
 import { useInventoryStore } from '../stores/inventoryStore';
+import { useDungeonStore } from '../stores/dungeonStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress, type OfflineProgressSummary } from './offline';
 
@@ -244,8 +245,9 @@ export function initializeGame(): GameInitResult {
     );
     console.log('[GameLoop] Technique store dependencies set');
 
-    // Set up prestige store dependency on inventory store
+    // Set up prestige store dependencies
     setInventoryStoreGetter(() => useInventoryStore.getState());
+    setDungeonStoreGetter(() => useDungeonStore.getState());
     console.log('[GameLoop] Prestige store dependencies set');
 
     // Generate spirit root if none exists
