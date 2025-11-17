@@ -199,6 +199,7 @@ export const useGameStore = create<GameState>()(
 
     /**
      * Calculate Qi per second based on realm, path, focus, and upgrades
+     * Formula: BaseQi * SubstageMultiplier * FocusMultiplier * PathMultiplier * IdleUpgrades * AuraMultiplier * RootMultiplier
      */
     calculateQiPerSecond: () => {
       const state = get();
@@ -207,9 +208,10 @@ export const useGameStore = create<GameState>()(
       // Base Qi/s from realm
       let qiPerSec = D(currentRealm.qiPerSecond);
 
-      // Substage multiplier (each substage increases base slightly)
-      const substageBonus = D(1).plus(D(0.2).times(state.realm.substage - 1));
-      qiPerSec = multiply(qiPerSec, substageBonus);
+      // Substage multiplier: 1.12^(substage-1) compound 12% per substage
+      // Substage 1 = 1.0x, Substage 2 = 1.12x, Substage 3 = 1.2544x
+      const substageMultiplier = D(1.12).pow(state.realm.substage - 1);
+      qiPerSec = multiply(qiPerSec, substageMultiplier);
 
       // Apply focus mode multiplier
       const focusMod = FOCUS_MODE_MODIFIERS[state.focusMode];
@@ -252,6 +254,23 @@ export const useGameStore = create<GameState>()(
         }
       }
 
+      // Apply aura multiplier: 1.6^auraCount
+      if (state.totalAuras > 0) {
+        const auraMultiplier = D(1.6).pow(state.totalAuras);
+        qiPerSec = multiply(qiPerSec, auraMultiplier);
+      }
+
+      // Apply spirit root multiplier from prestige store
+      if (_getPrestigeStore) {
+        try {
+          const prestigeStore = _getPrestigeStore();
+          const rootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
+          qiPerSec = multiply(qiPerSec, rootMultiplier);
+        } catch (error) {
+          // Prestige store not available
+        }
+      }
+
       // Apply path perk bonuses
       for (const perkId of state.pathPerks) {
         const perk = getPerkById(perkId);
@@ -274,8 +293,9 @@ export const useGameStore = create<GameState>()(
       const currentRealm = REALMS[state.realm.index];
       const baseStats = currentRealm.baseStats;
 
-      // Substage multiplier for stats
-      const substageMultiplier = D(1).plus(D(0.15).times(state.realm.substage - 1));
+      // Substage multiplier: 1.12^(substage-1) compound 12% per substage (same as Qi formula)
+      // Substage 1 = 1.0x, Substage 2 = 1.12x, Substage 3 = 1.2544x
+      const substageMultiplier = D(1.12).pow(state.realm.substage - 1);
 
       // Calculate base stats with substage multiplier
       let hp = multiply(baseStats.hp, substageMultiplier);
