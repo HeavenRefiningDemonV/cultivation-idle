@@ -184,6 +184,23 @@ export interface SaveData {
       firstClearTime?: number;
     }>;
   };
+
+  // Prestige/Rebirth state
+  prestigeState?: {
+    totalAP: number;
+    lifetimeAP: number;
+    prestigeCount: number;
+    spiritRoot: SpiritRoot | null;
+    rootFloorTier: number;
+    highestRealmReached: number;
+    bossesDefeated: number;
+    totalQiEarned: string;
+    upgrades: Record<string, {
+      id: string;
+      currentLevel: number;
+      cost: number;
+    }>;
+  };
 }
 
 /**
