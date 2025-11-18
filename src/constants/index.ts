@@ -2,17 +2,16 @@ import type { RealmDefinition, PathModifiers, FocusModeModifiers } from '../type
 
 /**
  * Realm definitions for cultivation progression
- * Each realm has 3 substages: Early, Mid, Late
- * Substages occur at 33% and 66% of the realm's Qi cap
+ * Each realm has substages (typically 9 for early realms, 3-6 for later ones)
  */
 export const REALMS: RealmDefinition[] = [
   {
     index: 0,
     name: 'Qi Condensation',
     majorRealm: 'Mortal',
-    substages: 3,
-    qiRequirement: '10000',        // 10k Qi cap
-    qiPerSecond: '1',              // Base 1 Qi/s
+    substages: 9,
+    qiRequirement: '100',
+    qiPerSecond: '1000',        // TESTING: 1000x faster (was 1)
     baseStats: {
       hp: '100',
       atk: '10',
@@ -28,9 +27,9 @@ export const REALMS: RealmDefinition[] = [
     index: 1,
     name: 'Foundation Establishment',
     majorRealm: 'Mortal',
-    substages: 3,
-    qiRequirement: '250000',       // 250k Qi cap
-    qiPerSecond: '10',             // Base 10 Qi/s (10x previous)
+    substages: 9,
+    qiRequirement: '1000',
+    qiPerSecond: '10000',       // TESTING: 1000x faster (was 10)
     baseStats: {
       hp: '500',
       atk: '50',
@@ -44,11 +43,11 @@ export const REALMS: RealmDefinition[] = [
   },
   {
     index: 2,
-    name: 'Core Formation',
+    name: 'Golden Core',
     majorRealm: 'Spiritual',
-    substages: 3,
-    qiRequirement: '10000000',     // 10M Qi cap
-    qiPerSecond: '100',            // Base 100 Qi/s (10x previous)
+    substages: 9,
+    qiRequirement: '10000',
+    qiPerSecond: '100000',      // TESTING: 1000x faster (was 100)
     baseStats: {
       hp: '2500',
       atk: '250',
@@ -64,9 +63,9 @@ export const REALMS: RealmDefinition[] = [
     index: 3,
     name: 'Nascent Soul',
     majorRealm: 'Spiritual',
-    substages: 3,
-    qiRequirement: '1000000000',   // 1B Qi cap
-    qiPerSecond: '1000',           // Base 1k Qi/s (10x previous)
+    substages: 6,
+    qiRequirement: '100000',
+    qiPerSecond: '1000000',     // TESTING: 1000x faster (was 1000)
     baseStats: {
       hp: '12500',
       atk: '1250',
@@ -80,11 +79,11 @@ export const REALMS: RealmDefinition[] = [
   },
   {
     index: 4,
-    name: 'Soul Formation',
+    name: 'Soul Transformation',
     majorRealm: 'Spiritual',
-    substages: 3,
-    qiRequirement: '100000000000', // 100B Qi cap
-    qiPerSecond: '10000',          // Base 10k Qi/s (10x previous)
+    substages: 6,
+    qiRequirement: '1000000',
+    qiPerSecond: '10000000',    // TESTING: 1000x faster (was 10000)
     baseStats: {
       hp: '62500',
       atk: '6250',
@@ -100,9 +99,9 @@ export const REALMS: RealmDefinition[] = [
     index: 5,
     name: 'Void Refinement',
     majorRealm: 'Immortal',
-    substages: 3,
-    qiRequirement: '10000000000000', // 10T Qi cap
-    qiPerSecond: '100000',         // Base 100k Qi/s (10x previous)
+    substages: 6,
+    qiRequirement: '10000000',
+    qiPerSecond: '100000000',   // TESTING: 1000x faster (was 100000)
     baseStats: {
       hp: '312500',
       atk: '31250',
@@ -119,8 +118,8 @@ export const REALMS: RealmDefinition[] = [
     name: 'Dao Integration',
     majorRealm: 'Immortal',
     substages: 3,
-    qiRequirement: '1000000000000000', // 1Q Qi cap
-    qiPerSecond: '1000000',        // Base 1M Qi/s (10x previous)
+    qiRequirement: '100000000',
+    qiPerSecond: '1000000000',  // TESTING: 1000x faster (was 1000000)
     baseStats: {
       hp: '1562500',
       atk: '156250',
@@ -137,8 +136,8 @@ export const REALMS: RealmDefinition[] = [
     name: 'Mahayana',
     majorRealm: 'Immortal',
     substages: 3,
-    qiRequirement: '100000000000000000', // 100Q Qi cap
-    qiPerSecond: '10000000',       // Base 10M Qi/s (10x previous)
+    qiRequirement: '1000000000',
+    qiPerSecond: '10000000000', // TESTING: 1000x faster (was 10000000)
     baseStats: {
       hp: '7812500',
       atk: '781250',
@@ -154,9 +153,9 @@ export const REALMS: RealmDefinition[] = [
     index: 8,
     name: 'Tribulation',
     majorRealm: 'Transcendent',
-    substages: 3,
-    qiRequirement: '10000000000000000000', // 10Qi Qi cap (quintillion)
-    qiPerSecond: '100000000',      // Base 100M Qi/s (10x previous)
+    substages: 9,
+    qiRequirement: '10000000000',
+    qiPerSecond: '100000000000', // TESTING: 1000x faster (was 100000000)
     baseStats: {
       hp: '39062500',
       atk: '3906250',
