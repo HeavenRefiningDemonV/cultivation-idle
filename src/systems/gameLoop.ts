@@ -5,7 +5,7 @@ import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/tech
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useDungeonStore } from '../stores/dungeonStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
-import { applyOfflineProgress, type OfflineProgressSummary } from './offline';
+import { applyOfflineProgress } from './offline';
 
 /**
  * Game loop constants
@@ -210,20 +210,12 @@ class GameLoop {
 export const gameLoop = new GameLoop();
 
 /**
- * Game initialization result
- */
-export interface GameInitResult {
-  success: boolean;
-  offlineProgress?: OfflineProgressSummary;
-}
-
-/**
  * Initialize the game
  * Loads save data, applies offline progress, starts game loop
  *
- * @returns Initialization result with offline progress if applicable
+ * @returns True if initialization successful, false otherwise
  */
-export function initializeGame(): GameInitResult {
+export function initializeGame(): boolean {
   try {
     console.log('[GameLoop] Initializing game...');
 
@@ -278,7 +270,6 @@ export function initializeGame(): GameInitResult {
 
     // Check if save exists
     const saveExists = hasSave();
-    let offlineProgressToShow: OfflineProgressSummary | undefined;
 
     if (saveExists) {
       console.log('[GameLoop] Save found, loading...');
@@ -301,8 +292,7 @@ export function initializeGame(): GameInitResult {
             console.log('  - Offline time was capped at 12 hours');
           }
 
-          // Store offline progress to show modal
-          offlineProgressToShow = offlineProgress;
+          // TODO: Show offline progress modal to player
         } else {
           console.log('[GameLoop] No offline progress to apply');
         }
@@ -320,13 +310,10 @@ export function initializeGame(): GameInitResult {
     setupBeforeUnload();
 
     console.log('[GameLoop] Game initialized successfully');
-    return {
-      success: true,
-      offlineProgress: offlineProgressToShow,
-    };
+    return true;
   } catch (error) {
     console.error('[GameLoop] Failed to initialize game:', error);
-    return { success: false };
+    return false;
   }
 }
 

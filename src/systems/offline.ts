@@ -1,6 +1,5 @@
 import Decimal from 'decimal.js';
 import { useGameStore } from '../stores/gameStore';
-import { usePrestigeStore } from '../stores/prestigeStore';
 import { D, multiply, formatNumber } from '../utils/numbers';
 
 /**
@@ -72,22 +71,17 @@ export function calculateOfflineProgress(
   const gameState = useGameStore.getState();
   const qiPerSecond = D(gameState.qiPerSecond);
 
-  // Get prestige offline multiplier
-  const prestigeStore = usePrestigeStore.getState();
-  const offlineUpgradeBonus = prestigeStore.getUpgradeEffect('offline_mult');
-  const totalEfficiency = DEFAULT_OFFLINE_EFFICIENCY * (1 + offlineUpgradeBonus);
-
   // Calculate offline Qi gain with efficiency multiplier
-  // Formula: Qi/s * offline seconds * efficiency * prestige bonus
+  // Formula: Qi/s * offline seconds * efficiency
   const qiGained = multiply(
     multiply(qiPerSecond, offlineSeconds),
-    totalEfficiency
+    DEFAULT_OFFLINE_EFFICIENCY
   );
 
   return {
     offlineSeconds,
     qiGained,
-    efficiency: totalEfficiency,
+    efficiency: DEFAULT_OFFLINE_EFFICIENCY,
     wasFullyOptimal,
     wasCapped,
   };
@@ -231,15 +225,10 @@ export function previewOfflineGains(hours: number): string {
   const gameState = useGameStore.getState();
   const qiPerSecond = D(gameState.qiPerSecond);
 
-  // Get prestige offline multiplier
-  const prestigeStore = usePrestigeStore.getState();
-  const offlineUpgradeBonus = prestigeStore.getUpgradeEffect('offline_mult');
-  const totalEfficiency = DEFAULT_OFFLINE_EFFICIENCY * (1 + offlineUpgradeBonus);
-
   const seconds = Math.min(hours * 3600, MAX_OFFLINE_SECONDS);
   const qiGained = multiply(
     multiply(qiPerSecond, seconds),
-    totalEfficiency
+    DEFAULT_OFFLINE_EFFICIENCY
   );
 
   return formatNumber(qiGained);
