@@ -74,16 +74,6 @@ export const useGameStore = create<GameState>()(
         const qiGain = multiply(state.qiPerSecond, deltaTime / 1000);
         state.qi = add(state.qi, qiGain).toString();
 
-        // Track Qi earned for prestige AP calculation
-        if (_getPrestigeStore) {
-          try {
-            const prestigeStore = _getPrestigeStore();
-            prestigeStore.addQiEarned(qiGain.toString());
-          } catch (error) {
-            // Prestige store not available
-          }
-        }
-
         // Regenerate HP (if needed for combat)
         const currentHp = D(state.stats.hp);
         const maxHp = D(state.stats.maxHp);
@@ -274,7 +264,7 @@ export const useGameStore = create<GameState>()(
       if (_getPrestigeStore) {
         try {
           const prestigeStore = _getPrestigeStore();
-          const rootMultiplier = prestigeStore.getSpiritRootMultiplier();
+          const rootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
           qiPerSec = multiply(qiPerSec, rootMultiplier);
         } catch (error) {
           // Prestige store not available
