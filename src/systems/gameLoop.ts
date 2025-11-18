@@ -226,14 +226,6 @@ export function initializeGame(): boolean {
     usePrestigeStore.getState().initializeUpgrades();
     console.log('[GameLoop] Prestige store initialized');
 
-    // Initialize prestige tracking with current game state
-    const gameStore = useGameStore.getState();
-    let prestigeStore = usePrestigeStore.getState();
-    if (prestigeStore.highestRealmReached < gameStore.realm.index) {
-      prestigeStore.updateHighestRealm(gameStore.realm.index);
-      console.log(`[GameLoop] Initialized highest realm to: ${gameStore.realm.index}`);
-    }
-
     // Initialize technique store
     useTechniqueStore.getState().initializeTechniques();
     console.log('[GameLoop] Technique store initialized');
@@ -251,7 +243,7 @@ export function initializeGame(): boolean {
     console.log('[GameLoop] Prestige store dependencies set');
 
     // Generate spirit root if none exists
-    prestigeStore = usePrestigeStore.getState();
+    const prestigeStore = usePrestigeStore.getState();
     if (!prestigeStore.spiritRoot) {
       prestigeStore.generateSpiritRoot();
       console.log('[GameLoop] Generated initial spirit root');

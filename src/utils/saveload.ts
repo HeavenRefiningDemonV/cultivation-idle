@@ -4,7 +4,6 @@ import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
 import { useZoneStore } from '../stores/zoneStore';
-import { usePrestigeStore } from '../stores/prestigeStore';
 
 /**
  * Save system constants
@@ -29,17 +28,6 @@ function gatherGameState(): SaveData {
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();
   const zoneState = useZoneStore.getState();
-  const prestigeState = usePrestigeStore.getState();
-
-  // Collect only essential upgrade data (id, currentLevel, cost)
-  const upgradesData: Record<string, { id: string; currentLevel: number; cost: number }> = {};
-  Object.values(prestigeState.upgrades).forEach(upgrade => {
-    upgradesData[upgrade.id] = {
-      id: upgrade.id,
-      currentLevel: upgrade.currentLevel,
-      cost: upgrade.cost,
-    };
-  });
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -73,18 +61,6 @@ function gatherGameState(): SaveData {
     zoneState: {
       unlockedZones: zoneState.unlockedZones,
       zoneProgress: zoneState.zoneProgress,
-    },
-
-    prestigeState: {
-      totalAP: prestigeState.totalAP,
-      lifetimeAP: prestigeState.lifetimeAP,
-      prestigeCount: prestigeState.prestigeCount,
-      spiritRoot: prestigeState.spiritRoot,
-      rootFloorTier: prestigeState.rootFloorTier,
-      highestRealmReached: prestigeState.highestRealmReached,
-      bossesDefeated: prestigeState.bossesDefeated,
-      totalQiEarned: prestigeState.totalQiEarned,
-      upgrades: upgradesData,
     },
   };
 
@@ -267,36 +243,6 @@ function applySaveData(saveData: SaveData): void {
         unlockedZones: saveData.zoneState.unlockedZones,
         zoneProgress: saveData.zoneState.zoneProgress,
       });
-    }
-
-    // Apply prestige state (if exists)
-    if (saveData.prestigeState) {
-      const prestigeStore = usePrestigeStore.getState();
-
-      // Restore core prestige data
-      usePrestigeStore.setState({
-        totalAP: saveData.prestigeState.totalAP,
-        lifetimeAP: saveData.prestigeState.lifetimeAP,
-        prestigeCount: saveData.prestigeState.prestigeCount,
-        spiritRoot: saveData.prestigeState.spiritRoot,
-        rootFloorTier: Math.min(saveData.prestigeState.rootFloorTier || 0, 4) as 0 | 1 | 2 | 3 | 4,
-        highestRealmReached: saveData.prestigeState.highestRealmReached,
-        bossesDefeated: saveData.prestigeState.bossesDefeated,
-        totalQiEarned: saveData.prestigeState.totalQiEarned,
-      });
-
-      // Restore upgrade levels and costs
-      if (saveData.prestigeState.upgrades) {
-        Object.values(saveData.prestigeState.upgrades).forEach(savedUpgrade => {
-          const upgrade = prestigeStore.upgrades[savedUpgrade.id];
-          if (upgrade) {
-            upgrade.currentLevel = savedUpgrade.currentLevel;
-            upgrade.cost = savedUpgrade.cost;
-          }
-        });
-      }
-
-      console.log('[SaveLoad] Prestige data restored');
     }
 
     console.log('[SaveLoad] Save data applied successfully');
