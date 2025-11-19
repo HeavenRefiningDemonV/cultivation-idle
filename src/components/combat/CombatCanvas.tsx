@@ -316,7 +316,9 @@ export function CombatCanvas({
         }
       }
     }
-  }, [combatLog, inCombat]);
+  },
+  /* eslint-disable-next-line react-hooks/exhaustive-deps -- animation helpers are singletons managed outside React */
+  [combatLog, inCombat]);
 
   /**
    * Main render loop
@@ -407,7 +409,9 @@ export function CombatCanvas({
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [
+  },
+  /* eslint-disable-next-line react-hooks/exhaustive-deps -- canvas drawing utilities are stable singletons */
+  [
     width,
     height,
     inCombat,
@@ -432,7 +436,9 @@ export function CombatCanvas({
       enemyAnimRef.current = null;
       lastLogLengthRef.current = 0;
     }
-  }, [inCombat]);
+  },
+  /* eslint-disable-next-line react-hooks/exhaustive-deps -- cleanup only depends on combat status */
+  [inCombat]);
 
   return (
     <canvas

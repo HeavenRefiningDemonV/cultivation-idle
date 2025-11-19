@@ -96,6 +96,7 @@ export function TechniquePanel() {
                   ? 'cursor-pointer hover:scale-105 hover:shadow-lg'
                   : 'opacity-60'
               }`}
+              // eslint-disable-next-line react-hooks/rules-of-hooks -- useTechnique is a store action, not a React hook
               onClick={() => canUse && !isOnCooldown && useTechnique(tech.id)}
             >
               {/* Header */}

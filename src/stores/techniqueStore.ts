@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { CultivationPath } from '../types';
+import type { CombatState, CultivationPath, GameState } from '../types';
 import { D, multiply, subtract, greaterThanOrEqualTo, lessThanOrEqualTo } from '../utils/numbers';
 
 /**
@@ -49,10 +49,13 @@ interface TechniqueState {
 /**
  * Lazy getters for stores to avoid circular dependencies
  */
-let _getCombatStore: any = null;
-let _getGameStore: any = null;
+let _getCombatStore: (() => CombatState) | null = null;
+let _getGameStore: (() => GameState) | null = null;
 
-export function setTechniqueStoreDependencies(getCombatStore: any, getGameStore: any) {
+export function setTechniqueStoreDependencies(
+  getCombatStore: () => CombatState,
+  getGameStore: () => GameState
+) {
   _getCombatStore = getCombatStore;
   _getGameStore = getGameStore;
 }
@@ -395,11 +398,12 @@ export const useTechniqueStore = create<TechniqueState>()(
      * Update techniques (regenerate intent and auto-cast)
      */
     updateTechniques: (deltaTime: number) => {
-      if (!_getCombatStore) return;
+      const combatStoreGetter = _getCombatStore;
+      if (!combatStoreGetter) return;
 
       // Regenerate intent
       set((state) => {
-        const combatStore = _getCombatStore();
+        const combatStore = combatStoreGetter();
 
         // Intent regen is 2x faster in combat
         const regenMultiplier = combatStore.inCombat ? 2 : 1;
@@ -415,7 +419,7 @@ export const useTechniqueStore = create<TechniqueState>()(
       });
 
       // Auto-cast techniques if in combat
-      const combatStore = _getCombatStore();
+      const combatStore = combatStoreGetter();
       if (combatStore.inCombat) {
         get().autocastTechniques();
       }

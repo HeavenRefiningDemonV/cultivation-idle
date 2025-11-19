@@ -80,6 +80,7 @@ export class BossMechanics {
     healAmount: Decimal | null;
     ultimateDamageMultiplier: number | null;
   } {
+    void _combatTime;
     const hpPercent = currentHP.dividedBy(maxHP).toNumber();
 
     // Check enrage (50% HP threshold)

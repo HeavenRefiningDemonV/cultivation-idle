@@ -70,25 +70,28 @@ function gatherGameState(): SaveData {
 /**
  * Validate save data structure
  */
-function validateSaveData(data: any): data is SaveData {
+function validateSaveData(data: unknown): data is SaveData {
   try {
     if (!data || typeof data !== 'object') return false;
-    if (!data.version || !data.timestamp) return false;
-    if (!data.gameState || !data.inventoryState || !data.combatSettings) return false;
+
+    const candidate = data as Partial<SaveData> & Record<string, unknown>;
+
+    if (!candidate.version || !candidate.timestamp) return false;
+    if (!candidate.gameState || !candidate.inventoryState || !candidate.combatSettings) return false;
 
     // Basic structure validation
-    const gs = data.gameState;
+    const gs = candidate.gameState as Partial<SaveData['gameState']> & Record<string, unknown>;
     if (!gs.realm || typeof gs.qi !== 'string') return false;
 
-    const is = data.inventoryState;
+    const is = candidate.inventoryState as Partial<SaveData['inventoryState']> & Record<string, unknown>;
     if (!Array.isArray(is.items) || typeof is.gold !== 'string') return false;
 
-    const cs = data.combatSettings;
+    const cs = candidate.combatSettings as Partial<SaveData['combatSettings']> & Record<string, unknown>;
     if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
 
     // Zone state validation (optional for backward compatibility)
-    if (data.zoneState) {
-      const zs = data.zoneState;
+    if (candidate.zoneState) {
+      const zs = candidate.zoneState as Partial<SaveData['zoneState']> & Record<string, unknown>;
       if (!Array.isArray(zs.unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
     }
 

@@ -3,11 +3,17 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
 import { formatNumber } from '../../utils/numbers';
+import type { PlayerStats } from '../../types';
 import { CombatView } from './AdventureScreen';
 
 /**
  * Dungeon definition from config
  */
+interface BossMechanicEffect {
+  shieldAmount?: number;
+  auraDamagePerSec?: number;
+}
+
 interface Dungeon {
   id: string;
   name: string;
@@ -23,9 +29,9 @@ interface Dungeon {
     atk: number;
     def: number;
     mechanics: Array<{
-      type: string;
+      type: 'shield' | 'aura' | 'enrage';
       trigger: { hpPercent: number };
-      effect: any;
+      effect: BossMechanicEffect;
       description: string;
     }>;
   };
@@ -143,6 +149,7 @@ function BossPreviewModal({
                       </div>
                       <div className="text-sm text-slate-300">
                         {mechanic.type === 'shield' &&
+                          mechanic.effect.shieldAmount !== undefined &&
                           `Gains ${formatNumber(mechanic.effect.shieldAmount)} shield`}
                         {mechanic.type === 'aura' &&
                           `Deals ${mechanic.effect.auraDamagePerSec} damage per second`}
@@ -261,7 +268,7 @@ function BossPreviewModal({
 /**
  * Dungeon Card Component
  */
-function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: any }) {
+function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: PlayerStats }) {
   const [showPreview, setShowPreview] = useState(false);
   const realm = useGameStore((state) => state.realm);
   const startDungeonCombat = useCombatStore((state) => state.startDungeonCombat);
