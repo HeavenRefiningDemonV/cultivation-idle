@@ -253,7 +253,7 @@ export function InventoryScreen() {
     unequipWeapon,
     equipAccessory,
     unequipAccessory,
-    useConsumable,
+    useConsumable: consumeItem,
   } = useInventoryStore();
 
   // Filter items based on active tab
@@ -291,7 +291,7 @@ export function InventoryScreen() {
 
   // Handle use consumable
   const handleUse = (itemId: string) => {
-    useConsumable(itemId);
+    consumeItem(itemId);
   };
 
   return (

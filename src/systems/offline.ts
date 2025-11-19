@@ -43,7 +43,7 @@ export function calculateOfflineProgress(
   currentUtc: number
 ): OfflineProgressResult {
   // Calculate time difference in seconds
-  let timeDiffMs = currentUtc - lastOnlineUtc;
+  const timeDiffMs = currentUtc - lastOnlineUtc;
   let offlineSeconds = Math.floor(timeDiffMs / 1000);
 
   // Handle clock anomalies

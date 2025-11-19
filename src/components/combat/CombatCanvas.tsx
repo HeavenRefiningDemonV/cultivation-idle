@@ -316,8 +316,9 @@ export function CombatCanvas({
         }
       }
     }
-  }, [combatLog, inCombat]);
+  }, [combatLog, inCombat]); // eslint-disable-line react-hooks/exhaustive-deps -- helper singletons are stable
 
+  /* eslint-disable react-hooks/exhaustive-deps -- animation helpers are intentionally excluded */
   /**
    * Main render loop
    */
@@ -421,6 +422,7 @@ export function CombatCanvas({
     enemyX,
   ]);
 
+  /* eslint-enable react-hooks/exhaustive-deps */
   // Reset when combat ends
   useEffect(() => {
     if (!inCombat) {
@@ -432,7 +434,7 @@ export function CombatCanvas({
       enemyAnimRef.current = null;
       lastLogLengthRef.current = 0;
     }
-  }, [inCombat]);
+  }, [inCombat]); // eslint-disable-line react-hooks/exhaustive-deps -- helper singletons do not change between renders
 
   return (
     <canvas

@@ -23,9 +23,12 @@ interface Dungeon {
     atk: number;
     def: number;
     mechanics: Array<{
-      type: string;
+      type: 'shield' | 'aura' | 'enrage';
       trigger: { hpPercent: number };
-      effect: any;
+      effect: {
+        shieldAmount?: number;
+        auraDamagePerSec?: number;
+      };
       description: string;
     }>;
   };
@@ -143,8 +146,10 @@ function BossPreviewModal({
                       </div>
                       <div className="text-sm text-slate-300">
                         {mechanic.type === 'shield' &&
+                          mechanic.effect.shieldAmount !== undefined &&
                           `Gains ${formatNumber(mechanic.effect.shieldAmount)} shield`}
                         {mechanic.type === 'aura' &&
+                          mechanic.effect.auraDamagePerSec !== undefined &&
                           `Deals ${mechanic.effect.auraDamagePerSec} damage per second`}
                         {mechanic.type === 'enrage' && 'Increases attack power'}
                       </div>
@@ -261,7 +266,13 @@ function BossPreviewModal({
 /**
  * Dungeon Card Component
  */
-function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: any }) {
+function DungeonCard({
+  dungeon,
+  playerStats,
+}: {
+  dungeon: Dungeon;
+  playerStats: { atk: string; hp: string };
+}) {
   const [showPreview, setShowPreview] = useState(false);
   const realm = useGameStore((state) => state.realm);
   const startDungeonCombat = useCombatStore((state) => state.startDungeonCombat);

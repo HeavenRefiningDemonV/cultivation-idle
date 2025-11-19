@@ -3,8 +3,13 @@ import { useGameStore } from '../stores/gameStore';
 import { D } from '../utils/numbers';
 
 export function TechniquePanel() {
-  const { techniques, currentIntent, maxIntent, useTechnique, canUseTechnique } =
-    useTechniqueStore();
+  const {
+    techniques,
+    currentIntent,
+    maxIntent,
+    useTechnique: triggerTechnique,
+    canUseTechnique,
+  } = useTechniqueStore();
   const selectedPath = useGameStore((state) => state.selectedPath);
 
   if (!selectedPath) return null;
@@ -96,7 +101,7 @@ export function TechniquePanel() {
                   ? 'cursor-pointer hover:scale-105 hover:shadow-lg'
                   : 'opacity-60'
               }`}
-              onClick={() => canUse && !isOnCooldown && useTechnique(tech.id)}
+              onClick={() => canUse && !isOnCooldown && triggerTechnique(tech.id)}
             >
               {/* Header */}
               <div className="flex items-center justify-between mb-1">
