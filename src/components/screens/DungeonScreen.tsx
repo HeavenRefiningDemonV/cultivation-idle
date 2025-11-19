@@ -4,10 +4,26 @@ import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
 import { formatNumber } from '../../utils/numbers';
 import { CombatView } from './AdventureScreen';
+import type { PlayerStats } from '../../types';
 
 /**
  * Dungeon definition from config
  */
+type BossMechanicType = 'shield' | 'aura' | 'enrage';
+
+interface BossMechanicEffect {
+  shieldAmount?: number;
+  auraDamagePerSec?: number;
+  [key: string]: number | undefined;
+}
+
+interface BossMechanic {
+  type: BossMechanicType;
+  trigger: { hpPercent: number };
+  effect: BossMechanicEffect;
+  description: string;
+}
+
 interface Dungeon {
   id: string;
   name: string;
@@ -22,15 +38,7 @@ interface Dungeon {
     hp: number;
     atk: number;
     def: number;
-    mechanics: Array<{
-      type: 'shield' | 'aura' | 'enrage';
-      trigger: { hpPercent: number };
-      effect: {
-        shieldAmount?: number;
-        auraDamagePerSec?: number;
-      };
-      description: string;
-    }>;
+    mechanics: BossMechanic[];
   };
   rewards: {
     gold: number;
@@ -78,7 +86,7 @@ function BossPreviewModal({
   dungeon: Dungeon;
   onClose: () => void;
   onEnter: () => void;
-  playerStats: { atk: string; hp: string };
+  playerStats: Pick<PlayerStats, 'atk' | 'hp'>;
 }) {
   const playerDPS = Number(playerStats.atk);
   const playerHP = Number(playerStats.hp);
@@ -146,11 +154,9 @@ function BossPreviewModal({
                       </div>
                       <div className="text-sm text-slate-300">
                         {mechanic.type === 'shield' &&
-                          mechanic.effect.shieldAmount !== undefined &&
-                          `Gains ${formatNumber(mechanic.effect.shieldAmount)} shield`}
+                          `Gains ${formatNumber(mechanic.effect.shieldAmount as number)} shield`}
                         {mechanic.type === 'aura' &&
-                          mechanic.effect.auraDamagePerSec !== undefined &&
-                          `Deals ${mechanic.effect.auraDamagePerSec} damage per second`}
+                          `Deals ${mechanic.effect.auraDamagePerSec as number} damage per second`}
                         {mechanic.type === 'enrage' && 'Increases attack power'}
                       </div>
                     </div>
@@ -271,7 +277,7 @@ function DungeonCard({
   playerStats,
 }: {
   dungeon: Dungeon;
-  playerStats: { atk: string; hp: string };
+  playerStats: Pick<PlayerStats, 'atk' | 'hp'>;
 }) {
   const [showPreview, setShowPreview] = useState(false);
   const realm = useGameStore((state) => state.realm);

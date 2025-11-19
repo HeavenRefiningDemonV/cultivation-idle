@@ -73,45 +73,30 @@ function gatherGameState(): SaveData {
 function validateSaveData(data: unknown): data is SaveData {
   try {
     if (!data || typeof data !== 'object') return false;
-    const record = data as Record<string, unknown>;
 
-    if (typeof record.version !== 'string' || typeof record.timestamp !== 'number') {
-      return false;
-    }
+    const record = data as Partial<SaveData> & {
+      zoneState?: SaveData['zoneState'];
+      gameState?: SaveData['gameState'];
+      inventoryState?: SaveData['inventoryState'];
+      combatSettings?: SaveData['combatSettings'];
+    };
 
-    if (
-      !('gameState' in record) ||
-      !record.gameState ||
-      typeof record.gameState !== 'object' ||
-      !('inventoryState' in record) ||
-      !record.inventoryState ||
-      typeof record.inventoryState !== 'object' ||
-      !('combatSettings' in record) ||
-      !record.combatSettings ||
-      typeof record.combatSettings !== 'object'
-    ) {
-      return false;
-    }
+    if (!record.version || !record.timestamp) return false;
+    if (!record.gameState || !record.inventoryState || !record.combatSettings) return false;
 
     // Basic structure validation
-    const gs = record.gameState as Record<string, unknown>;
-    if (!('realm' in gs) || typeof gs.qi !== 'string') return false;
+    const gs = record.gameState;
+    if (!gs.realm || typeof gs.qi !== 'string') return false;
 
-    const inventoryState = record.inventoryState as Record<string, unknown>;
-    if (!Array.isArray(inventoryState.items) || typeof inventoryState.gold !== 'string') return false;
+    const is = record.inventoryState;
+    if (!Array.isArray(is.items) || typeof is.gold !== 'string') return false;
 
-    const combatSettings = record.combatSettings as Record<string, unknown>;
-    if (
-      typeof combatSettings.autoAttack !== 'boolean' ||
-      typeof combatSettings.autoCombatAI !== 'boolean'
-    ) {
-      return false;
-    }
+    const cs = record.combatSettings;
+    if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
 
     // Zone state validation (optional for backward compatibility)
-    if ('zoneState' in record && record.zoneState) {
-      if (typeof record.zoneState !== 'object') return false;
-      const zs = record.zoneState as Record<string, unknown>;
+    if (record.zoneState) {
+      const zs = record.zoneState;
       if (!Array.isArray(zs.unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
     }
 
