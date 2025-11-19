@@ -26,7 +26,7 @@ export interface ZoneState {
   enterZone: (zoneId: string) => void;
   exitZone: () => void;
   recordEnemyDefeat: (zoneId: string, enemyId: string) => void;
-  recordBossDefeat: (zoneId: string) => void;
+  recordBossDefeat: (zoneId: string, realmIndex: number) => void;
   isBossAvailable: (zoneId: string) => boolean;
   isZoneUnlocked: (zoneId: string) => boolean;
   isZoneCompleted: (zoneId: string) => boolean;
@@ -58,10 +58,16 @@ const BOSS_UNLOCK_THRESHOLD = 10;
 /**
  * Zone unlock requirements (zone ID -> previous zone that must be completed)
  */
-const ZONE_UNLOCK_REQUIREMENTS: Record<string, string> = {
+export const ZONE_UNLOCK_REQUIREMENTS: Record<string, string> = {
   training_forest: '', // Always unlocked
   spirit_cavern: 'training_forest',
   mystic_mountains: 'spirit_cavern',
+};
+
+export const ZONE_REALM_REQUIREMENTS: Record<string, number> = {
+  training_forest: 0,
+  spirit_cavern: 1,
+  mystic_mountains: 2,
 };
 
 /**
@@ -167,7 +173,7 @@ export const useZoneStore = create<ZoneState>()(
     /**
      * Record a boss defeat
      */
-    recordBossDefeat: (zoneId: string) => {
+    recordBossDefeat: (zoneId: string, realmIndex: number) => {
       set((state) => {
         // Initialize zone progress if not exists
         if (!state.zoneProgress[zoneId]) {
@@ -194,7 +200,16 @@ export const useZoneStore = create<ZoneState>()(
       );
 
       if (nextZoneId) {
-        get().unlockZone(nextZoneId);
+        const requiredRealm = ZONE_REALM_REQUIREMENTS[nextZoneId] ?? 0;
+        const currentRealmIndex = realmIndex;
+
+        if (currentRealmIndex >= requiredRealm) {
+          get().unlockZone(nextZoneId);
+        } else {
+          console.log(
+            `[ZoneStore] ${nextZoneId} requires realm ${requiredRealm} before unlocking.`
+          );
+        }
       }
     },
 

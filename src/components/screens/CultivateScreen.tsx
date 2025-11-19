@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useGameStore } from '../../stores/gameStore';
+import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
+import { GATE_ITEMS } from '../../systems/loot';
 
 /**
  * Mountain Background SVG
@@ -224,6 +226,7 @@ export function CultivateScreen() {
 
   const breakthrough = useGameStore((state) => state.breakthrough);
   const setFocusMode = useGameStore((state) => state.setFocusMode);
+  const inventoryItems = useInventoryStore((state) => state.items);
 
   const [showPathSelection, setShowPathSelection] = useState(false);
   const [showPerkSelection, setShowPerkSelection] = useState(false);
@@ -235,6 +238,38 @@ export function CultivateScreen() {
   const currentRealm = REALMS[realm.index];
   const nextSubstage = realm.substage + 1;
   const isLastSubstage = nextSubstage > currentRealm.substages;
+
+  const requiredGateItem = useMemo(() => {
+    const willAdvanceRealm =
+      realm.substage >= currentRealm.substages && realm.index < REALMS.length - 1;
+
+    if (willAdvanceRealm) {
+      return GATE_ITEMS[realm.index] || null;
+    }
+
+    return null;
+  }, [currentRealm.substages, realm.index, realm.substage]);
+
+  const requiredGateItemDefinition = useMemo(() => {
+    if (!requiredGateItem) return null;
+    return getItemDefinition(requiredGateItem) || null;
+  }, [requiredGateItem]);
+
+  const gateItemCount = useMemo(() => {
+    if (!requiredGateItem) return 0;
+    const matchingItem = inventoryItems.find(
+      (item) => item.itemId === requiredGateItem
+    );
+    return matchingItem?.quantity ?? 0;
+  }, [inventoryItems, requiredGateItem]);
+
+  const hasRequiredToken = useMemo(() => {
+    if (!requiredGateItem) return true;
+    return gateItemCount > 0;
+  }, [gateItemCount, requiredGateItem]);
+
+  const hasEnoughQi = Number(qi) >= Number(breakthroughCost);
+  const canBreakthrough = hasEnoughQi && hasRequiredToken;
 
   // Show path selection when player reaches Foundation (realm 1) and hasn't chosen
   useEffect(() => {
@@ -254,13 +289,9 @@ export function CultivateScreen() {
     }
   }, [realm.index, selectedPath]);
 
-  // Check if can breakthrough
-  const canBreakthrough = () => {
-    return Number(qi) >= Number(breakthroughCost);
-  };
-
   // Handle breakthrough button click
   const handleBreakthrough = () => {
+    if (!canBreakthrough) return;
     breakthrough();
   };
 
@@ -322,21 +353,42 @@ export function CultivateScreen() {
 
               <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
 
+              {requiredGateItem && (
+                <div className="mt-4 rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3 text-sm text-slate-300">
+                  {hasRequiredToken ? (
+                    <span className="text-emerald-300 font-semibold">
+                      ✅ {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
+                    </span>
+                  ) : (
+                    <span className="text-rose-300 font-semibold">
+                      🔒 Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
+                    </span>
+                  )}
+                  <p className="mt-1 text-xs text-slate-500">
+                    Obtained from dungeon bosses. Consume this to advance to the next realm.
+                  </p>
+                </div>
+              )}
+
               {/* Breakthrough Button */}
               <button
                 onClick={handleBreakthrough}
-                disabled={!canBreakthrough()}
+                disabled={!canBreakthrough}
                 className={`
                   w-full mt-6 py-4 px-6 rounded-lg font-cinzel font-bold text-lg
                   transition-all duration-300
                   ${
-                    canBreakthrough()
+                    canBreakthrough
                       ? 'bg-gradient-to-r from-red-600 via-pink-600 to-red-600 text-white hover:from-red-500 hover:via-pink-500 hover:to-red-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] cursor-pointer'
                       : 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50'
                   }
                 `}
               >
-                {canBreakthrough() ? '✨ Break Through! ✨' : '🔒 Insufficient Qi'}
+                {canBreakthrough
+                  ? '✨ Break Through! ✨'
+                  : !hasRequiredToken && requiredGateItem
+                    ? `🔒 Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
+                    : '🔒 Insufficient Qi'}
               </button>
             </div>
           </div>

@@ -19,6 +19,12 @@ import {
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 import { setGameStoreGetter } from './prestigeStore';
 import { getPerkById } from '../data/pathPerks';
+import { GATE_ITEMS } from '../systems/loot';
+import {
+  useZoneStore,
+  ZONE_REALM_REQUIREMENTS,
+  ZONE_UNLOCK_REQUIREMENTS,
+} from './zoneStore';
 
 /**
  * Lazy getter for inventory store to avoid circular dependency
@@ -34,6 +40,35 @@ export function setInventoryStoreGetter(getter: () => any) {
 let _getPrestigeStore: (() => any) | null = null;
 export function setPrestigeStoreGetter(getter: () => any) {
   _getPrestigeStore = getter;
+}
+
+const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
+  .filter(([zoneId]) => zoneId !== 'training_forest')
+  .map(([zoneId, realmIndex]) => ({
+    realmIndex: Number(realmIndex),
+    zoneId,
+    prerequisiteZone: ZONE_UNLOCK_REQUIREMENTS[zoneId],
+  }));
+
+function unlockContentForRealm(realmIndex: number) {
+  try {
+    const zoneStore = useZoneStore.getState();
+
+    for (const unlock of REALM_ZONE_UNLOCKS) {
+      const prerequisiteMet =
+        !unlock.prerequisiteZone || zoneStore.isZoneCompleted(unlock.prerequisiteZone);
+
+      if (
+        realmIndex >= unlock.realmIndex &&
+        prerequisiteMet &&
+        !zoneStore.isZoneUnlocked(unlock.zoneId)
+      ) {
+        zoneStore.unlockZone(unlock.zoneId);
+      }
+    }
+  } catch (error) {
+    console.warn('[GameStore] Failed to unlock realm progression content', error);
+  }
 }
 
 /**
@@ -147,6 +182,8 @@ export const useGameStore = create<GameState>()(
     breakthrough: () => {
       const state = get();
       const currentRealm = REALMS[state.realm.index];
+      const isFinalSubstage = state.realm.substage >= currentRealm.substages;
+      const canAdvanceToNextRealm = isFinalSubstage && state.realm.index < REALMS.length - 1;
 
       // Get Qi requirement (includes prestige multipliers)
       const requiredQi = get().getBreakthroughRequirement();
@@ -156,6 +193,33 @@ export const useGameStore = create<GameState>()(
         return false;
       }
 
+      // Check breakthrough gate item when advancing realms
+      const gateItemId = canAdvanceToNextRealm ? GATE_ITEMS[state.realm.index] : undefined;
+      let inventoryStore: any = null;
+
+      if (gateItemId) {
+        if (_getInventoryStore) {
+          try {
+            inventoryStore = _getInventoryStore();
+          } catch (error) {
+            console.warn('[GameStore] Inventory store unavailable for breakthrough', error);
+          }
+        }
+
+        if (!inventoryStore || !inventoryStore.hasItem(gateItemId)) {
+          console.warn(`[GameStore] Missing required breakthrough item: ${gateItemId}`);
+          return false;
+        }
+
+        const removed = inventoryStore.removeItem(gateItemId, 1);
+        if (!removed) {
+          console.warn(`[GameStore] Failed to consume breakthrough item: ${gateItemId}`);
+          return false;
+        }
+      }
+
+      const previousRealmIndex = state.realm.index;
+
       set((state) => {
         // Deduct Qi
         state.qi = D(state.qi).minus(requiredQi).toString();
@@ -164,16 +228,13 @@ export const useGameStore = create<GameState>()(
         state.totalAuras += 1;
 
         // Check if advancing to next realm or just next substage
-        if (state.realm.substage >= currentRealm.substages) {
-          // Advance to next realm
-          if (state.realm.index < REALMS.length - 1) {
-            state.realm.index += 1;
-            state.realm.substage = 1;
-            state.realm.name = REALMS[state.realm.index].name;
-          } else {
-            // Max realm reached, just increment substage
-            state.realm.substage += 1;
-          }
+        if (canAdvanceToNextRealm) {
+          state.realm.index += 1;
+          state.realm.substage = 1;
+          state.realm.name = REALMS[state.realm.index].name;
+        } else if (isFinalSubstage) {
+          // Max realm reached, just increment substage
+          state.realm.substage += 1;
         } else {
           // Advance substage
           state.realm.substage += 1;
@@ -188,6 +249,11 @@ export const useGameStore = create<GameState>()(
         } catch (error) {
           // Prestige store not available
         }
+      }
+
+      const newRealmIndex = get().realm.index;
+      if (newRealmIndex > previousRealmIndex) {
+        unlockContentForRealm(newRealmIndex);
       }
 
       // Recalculate stats and Qi generation
