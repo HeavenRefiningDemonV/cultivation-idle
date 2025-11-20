@@ -9,6 +9,7 @@ import { DungeonScreen } from './screens/DungeonScreen';
 import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
+import { SettingsTab } from './tabs/SettingsTab';
 
 /**
  * Placeholder content for tabs
@@ -34,13 +35,6 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
  */
 function TechniquesTab() {
   return <PlaceholderContent tabName="Techniques" />;
-}
-
-/**
- * Settings tab content (placeholder for now)
- */
-function SettingsTab() {
-  return <PlaceholderContent tabName="Settings" />;
 }
 
 /**
