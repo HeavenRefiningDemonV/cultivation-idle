@@ -367,6 +367,9 @@ export interface ItemDefinition {
   consumable?: {
     healHP?: string;       // HP to restore (Decimal string)
     healPercent?: number;  // HP to restore (% of max)
+    restoreQi?: string;    // Qi to restore (Decimal string)
+    restoreQiPercent?: number; // Qi to restore (% of breakthrough requirement)
+    triggerBreakthrough?: boolean; // If true, attempts a breakthrough when used
     buffDuration?: number; // Buff duration in seconds
     buffStats?: {
       atk?: number;        // Temporary attack % bonus
@@ -430,6 +433,7 @@ export interface InventoryState {
   useConsumable: (itemId: string) => boolean;
   addGold: (amount: string) => void;
   removeGold: (amount: string) => boolean;
+  sellItem: (itemId: string, quantity?: number) => boolean;
   getEquipmentStats: () => EquipmentStats;
   getItemCount: (itemId: string) => number;
   hasItem: (itemId: string, quantity?: number) => boolean;

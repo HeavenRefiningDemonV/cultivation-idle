@@ -135,9 +135,10 @@ interface ItemCardProps {
   quantity: number;
   onEquip: (itemId: string) => void;
   onUse: (itemId: string) => void;
+  onSell: (itemId: string, quantity: number) => void;
 }
 
-function ItemCard({ itemId, quantity, onEquip, onUse }: ItemCardProps) {
+function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
   const itemDef = getItemDefinition(itemId);
 
   if (!itemDef) {
@@ -227,6 +228,7 @@ function ItemCard({ itemId, quantity, onEquip, onUse }: ItemCardProps) {
           </button>
         )}
         <button
+          onClick={() => onSell(itemId, quantity)}
           className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
           title={`Sell for ${formatNumber(itemDef.value)} gold`}
         >
@@ -254,6 +256,7 @@ export function InventoryScreen() {
     equipAccessory,
     unequipAccessory,
     useConsumable: consumeItem,
+    sellItem,
   } = useInventoryStore();
 
   // Filter items based on active tab
@@ -292,6 +295,10 @@ export function InventoryScreen() {
   // Handle use consumable
   const handleUse = (itemId: string) => {
     consumeItem(itemId);
+  };
+
+  const handleSell = (itemId: string, quantity: number) => {
+    sellItem(itemId, quantity);
   };
 
   return (
@@ -366,6 +373,7 @@ export function InventoryScreen() {
                 quantity={item.quantity}
                 onEquip={handleEquip}
                 onUse={handleUse}
+                onSell={handleSell}
               />
             ))}
           </div>

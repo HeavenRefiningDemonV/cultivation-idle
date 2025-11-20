@@ -131,24 +131,27 @@ export const useInventoryStore = create<InventoryState>()(
 
       const state = get();
 
-      // Check if player has the item
       if (!state.hasItem(itemId)) {
         console.warn(`${itemId} not found in inventory`);
         return false;
       }
 
-      // Unequip current weapon first
-      if (state.equippedWeapon) {
+      // Return currently equipped weapon to inventory before swapping
+      const currentlyEquipped = state.equippedWeapon;
+      if (currentlyEquipped) {
         state.unequipWeapon();
       }
 
-      // Remove from inventory and equip
+      const removed = state.removeItem(itemId, 1);
+      if (!removed) {
+        console.warn(`Unable to remove ${itemId} from inventory to equip`);
+        return false;
+      }
+
       set((state) => {
-        state.removeItem(itemId, 1);
         state.equippedWeapon = itemDef;
       });
 
-      // Recalculate player stats
       useGameStore.getState().calculatePlayerStats();
 
       return true;
@@ -169,10 +172,7 @@ export const useInventoryStore = create<InventoryState>()(
         state.equippedWeapon = null;
       });
 
-      // Add back to inventory
       state.addItem(weaponId, 1);
-
-      // Recalculate player stats
       useGameStore.getState().calculatePlayerStats();
 
       return true;
@@ -190,24 +190,25 @@ export const useInventoryStore = create<InventoryState>()(
 
       const state = get();
 
-      // Check if player has the item
       if (!state.hasItem(itemId)) {
         console.warn(`${itemId} not found in inventory`);
         return false;
       }
 
-      // Unequip current accessory first
       if (state.equippedAccessory) {
         state.unequipAccessory();
       }
 
-      // Remove from inventory and equip
+      const removed = state.removeItem(itemId, 1);
+      if (!removed) {
+        console.warn(`Unable to remove ${itemId} from inventory to equip`);
+        return false;
+      }
+
       set((state) => {
-        state.removeItem(itemId, 1);
         state.equippedAccessory = itemDef;
       });
 
-      // Recalculate player stats
       useGameStore.getState().calculatePlayerStats();
 
       return true;
@@ -296,14 +297,63 @@ export const useInventoryStore = create<InventoryState>()(
         }
       }
 
+      // Restore Qi resource (adds flat amount or percentage of current breakthrough requirement)
+      if (consumable.restoreQi || consumable.restoreQiPercent) {
+        const gameStore = useGameStore.getState();
+        const restoreAmount = (() => {
+          if (consumable.restoreQi) return D(consumable.restoreQi);
+          const required = D(gameStore.getBreakthroughRequirement());
+          return required.times((consumable.restoreQiPercent ?? 0) / 100);
+        })();
+
+        useGameStore.setState((state) => {
+          state.qi = add(state.qi, restoreAmount).toString();
+        });
+      }
+
+      // Attempt breakthrough if the consumable is designed for it
+      if (consumable.triggerBreakthrough) {
+        useGameStore.getState().breakthrough();
+      }
+
       // TODO: Apply buff effects (would need a buff system)
       if (consumable.buffDuration && consumable.buffStats) {
-        console.log(`Applied buffs from ${itemDef.name} for ${consumable.buffDuration}s`);
-        // This would be implemented with a buff system
+        const buffDurationMs = consumable.buffDuration * 1000;
+        const gameStore = useGameStore.getState();
+
+        if (consumable.buffStats.atk) {
+          gameStore.addBuff({
+            id: `${itemId}_atk_buff`,
+            stat: 'atk',
+            value: consumable.buffStats.atk / 100,
+            duration: buffDurationMs,
+          });
+        }
+
+        if (consumable.buffStats.def) {
+          gameStore.addBuff({
+            id: `${itemId}_def_buff`,
+            stat: 'def',
+            value: consumable.buffStats.def / 100,
+            duration: buffDurationMs,
+          });
+        }
+
+        if (consumable.buffStats.crit) {
+          gameStore.addBuff({
+            id: `${itemId}_crit_buff`,
+            stat: 'crit_chance',
+            value: consumable.buffStats.crit / 100,
+            duration: buffDurationMs,
+          });
+        }
       }
 
       // Remove item from inventory
       state.removeItem(itemId, 1);
+
+      // Refresh stats after consumable effects are applied
+      useGameStore.getState().calculatePlayerStats();
 
       return true;
     },
@@ -330,6 +380,40 @@ export const useInventoryStore = create<InventoryState>()(
 
       set((state) => {
         state.gold = subtract(state.gold, amount).toString();
+      });
+
+      return true;
+    },
+
+    /**
+     * Sell items for gold
+     */
+    sellItem: (itemId: string, quantity: number = 1) => {
+      const itemDef = getItemDefinition(itemId);
+      if (!itemDef) {
+        console.warn(`${itemId} is not a valid item to sell`);
+        return false;
+      }
+
+      if (quantity <= 0) {
+        return false;
+      }
+
+      const state = get();
+      if (!state.hasItem(itemId, quantity)) {
+        console.warn(`Not enough ${itemId} to sell`);
+        return false;
+      }
+
+      const removed = state.removeItem(itemId, quantity);
+      if (!removed) {
+        return false;
+      }
+
+      const saleValue = D(itemDef.value).times(quantity);
+
+      set((state) => {
+        state.gold = add(state.gold, saleValue).toString();
       });
 
       return true;
