@@ -1,31 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { BuffStat, CultivationPath, CombatLogEntry } from '../types';
+import type { BuffStat, CultivationPath, CombatLogEntry, Technique } from '../types';
 import { D, multiply, subtract, greaterThanOrEqualTo, lessThanOrEqualTo } from '../utils/numbers';
-
-/**
- * Technique definition
- */
-export interface Technique {
-  id: string;
-  name: string;
-  description: string;
-  path: CultivationPath;
-  tier: number;
-  intentCost: number;
-  cooldown: number;
-  lastUsed: number;
-  proficiency: number;
-  level: number;
-  unlocked: boolean;
-  effect: {
-    type: 'damage' | 'heal' | 'buff' | 'debuff';
-    value: number;
-    duration?: number;
-    stat?: BuffStat;
-  };
-}
 
 /**
  * Technique store state
@@ -39,6 +16,7 @@ interface TechniqueState {
   // Actions
   initializeTechniques: () => void;
   unlockTechnique: (techniqueId: string) => void;
+  unlockTechniqueByPathAndTier: (path: CultivationPath, tier: number) => void;
   useTechnique: (techniqueId: string) => boolean;
   canUseTechnique: (techniqueId: string) => boolean;
   updateTechniques: (deltaTime: number) => void;
@@ -53,6 +31,7 @@ interface TechniqueState {
 interface CombatStoreDeps {
   currentEnemy: { id: string; name: string } | null;
   inCombat: boolean;
+  autoCombatAI: boolean;
   enemyHP: string;
   addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
   defeatEnemy: () => void;
@@ -271,6 +250,20 @@ export const useTechniqueStore = create<TechniqueState>()(
     },
 
     /**
+     * Unlock the technique for a given path/tier combo
+     */
+    unlockTechniqueByPathAndTier: (path: CultivationPath, tier: number) => {
+      const state = get();
+      const target = Object.values(state.techniques).find(
+        (tech) => tech.path === path && tech.tier === tier
+      );
+
+      if (target) {
+        state.unlockTechnique(target.id);
+      }
+    },
+
+    /**
      * Check if a technique can be used
      */
     canUseTechnique: (techniqueId: string) => {
@@ -365,12 +358,14 @@ export const useTechniqueStore = create<TechniqueState>()(
         const tech = state.techniques[techniqueId];
         if (!tech) return;
 
-        const newProficiency = tech.proficiency + amount;
         const proficiencyPerLevel = 1000;
-        const newLevel = Math.floor(newProficiency / proficiencyPerLevel) + 1;
+        let newProficiency = tech.proficiency + amount;
+        const levelUps = Math.floor(newProficiency / proficiencyPerLevel);
+
+        newProficiency = newProficiency % proficiencyPerLevel;
 
         state.techniques[techniqueId].proficiency = newProficiency;
-        state.techniques[techniqueId].level = newLevel;
+        state.techniques[techniqueId].level = tech.level + levelUps;
       });
     },
 

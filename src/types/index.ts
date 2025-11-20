@@ -42,6 +42,26 @@ export interface ActiveBuff {
   remainingShield?: string;
 }
 
+export interface Technique {
+  id: string;
+  name: string;
+  description: string;
+  path: CultivationPath;
+  tier: number;
+  intentCost: number;
+  cooldown: number;
+  lastUsed: number;
+  proficiency: number;
+  level: number;
+  unlocked: boolean;
+  effect: {
+    type: 'damage' | 'heal' | 'buff' | 'debuff';
+    value: number;
+    duration?: number;
+    stat?: BuffStat;
+  };
+}
+
 /**
  * Upgrade tier levels
  */
@@ -204,6 +224,14 @@ export interface SaveData {
       completed: boolean;
       firstClearTime?: number;
     }>;
+  };
+
+  // Technique progression
+  techniqueState: {
+    currentIntent: string;
+    maxIntent: string;
+    intentRegenRate: string;
+    techniques: Record<string, Technique>;
   };
 }
 

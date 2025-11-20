@@ -3,6 +3,7 @@ import type { SaveData } from '../types';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
+import { useTechniqueStore } from '../stores/techniqueStore';
 import { useZoneStore } from '../stores/zoneStore';
 
 /**
@@ -28,6 +29,7 @@ function gatherGameState(): SaveData {
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();
   const zoneState = useZoneStore.getState();
+  const techniqueState = useTechniqueStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -62,6 +64,13 @@ function gatherGameState(): SaveData {
       unlockedZones: zoneState.unlockedZones,
       zoneProgress: zoneState.zoneProgress,
     },
+
+    techniqueState: {
+      currentIntent: techniqueState.currentIntent,
+      maxIntent: techniqueState.maxIntent,
+      intentRegenRate: techniqueState.intentRegenRate,
+      techniques: techniqueState.techniques,
+    },
   };
 
   return saveData;
@@ -91,6 +100,12 @@ function validateSaveData(data: unknown): data is SaveData {
     if ('zoneState' in record && record.zoneState) {
       const zs = record.zoneState as Record<string, unknown>;
       if (!Array.isArray((zs as { unlockedZones?: unknown }).unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
+    }
+
+    if ('techniqueState' in record && record.techniqueState) {
+      const ts = record.techniqueState as Record<string, unknown>;
+      if (typeof ts.currentIntent !== 'string' || typeof ts.maxIntent !== 'string') return false;
+      if (typeof ts.intentRegenRate !== 'string' || typeof ts.techniques !== 'object') return false;
     }
 
     return true;
@@ -244,6 +259,33 @@ function applySaveData(saveData: SaveData): void {
         unlockedZones: saveData.zoneState.unlockedZones,
         zoneProgress: saveData.zoneState.zoneProgress,
       });
+    }
+
+    if (saveData.techniqueState) {
+      useTechniqueStore.setState({
+        currentIntent: saveData.techniqueState.currentIntent,
+        maxIntent: saveData.techniqueState.maxIntent,
+        intentRegenRate: saveData.techniqueState.intentRegenRate,
+        techniques: saveData.techniqueState.techniques,
+      });
+    }
+
+    const selectedPath = saveData.gameState.selectedPath;
+    if (selectedPath) {
+      try {
+        const techniqueStore = useTechniqueStore.getState();
+        techniqueStore.unlockTechniqueByPathAndTier(selectedPath, 1);
+
+        if (saveData.gameState.realm.index >= 1) {
+          techniqueStore.unlockTechniqueByPathAndTier(selectedPath, 2);
+        }
+
+        if (saveData.gameState.realm.index >= 2) {
+          techniqueStore.unlockTechniqueByPathAndTier(selectedPath, 3);
+        }
+      } catch {
+        // Technique store unavailable during load
+      }
     }
 
     console.log('[SaveLoad] Save data applied successfully');

@@ -184,6 +184,12 @@ export const useGameStore = create<GameState>()(
         state.selectedPath = path;
       });
 
+      try {
+        useTechniqueStore.getState().unlockTechniqueByPathAndTier(path, 1);
+      } catch {
+        // Technique store may not be initialized yet
+      }
+
       // Recalculate derived values
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
@@ -383,6 +389,21 @@ export const useGameStore = create<GameState>()(
       const newRealmIndex = get().realm.index;
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
+      }
+
+      const path = get().selectedPath;
+      if (path) {
+        try {
+          const techniqueStore = useTechniqueStore.getState();
+          if (newRealmIndex >= 1) {
+            techniqueStore.unlockTechniqueByPathAndTier(path, 2);
+          }
+          if (newRealmIndex >= 2) {
+            techniqueStore.unlockTechniqueByPathAndTier(path, 3);
+          }
+        } catch {
+          // Technique store unavailable
+        }
       }
 
       // Recalculate stats and Qi generation
