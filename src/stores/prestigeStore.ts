@@ -70,6 +70,7 @@ interface PrestigeState {
   getCombatMultiplier: () => number;
   getCultivationMultiplier: () => number;
   initializeUpgrades: () => void;
+  resetRunProgress: () => void;
 
   // Spirit root methods
   generateSpiritRoot: (resetRerollCount?: boolean) => void;
@@ -172,6 +173,17 @@ export const usePrestigeStore = create<PrestigeState>()(
       gameStore.performPrestigeReset();
 
       // Start next run with a fresh spirit root
+      get().generateSpiritRoot();
+    },
+
+    resetRunProgress: () => {
+      set((state) => {
+        state.currentRunAP = 0;
+        state.highestRealmReached = 0;
+        state.runStartTime = Date.now();
+        state.rerollCount = 0;
+      });
+
       get().generateSpiritRoot();
     },
 

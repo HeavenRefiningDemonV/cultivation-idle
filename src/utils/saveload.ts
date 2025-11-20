@@ -5,6 +5,8 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
 import { useTechniqueStore } from '../stores/techniqueStore';
 import { useZoneStore } from '../stores/zoneStore';
+import { useDungeonStore } from '../stores/dungeonStore';
+import { usePrestigeStore } from '../stores/prestigeStore';
 
 /**
  * Save system constants
@@ -357,37 +359,92 @@ export function loadGame(): boolean {
 }
 
 /**
- * Delete all saves and reset game
- * Returns true if successful, false otherwise
+ * Delete all saves and reset game state to a fresh run
+ */
+export function deleteSaveAndResetGame(): void {
+  console.log('[SaveLoad] Deleting all saves and resetting game...');
+
+  const saveKeys = [SAVE_KEY, BACKUP_A_KEY, BACKUP_B_KEY, BACKUP_C_KEY];
+
+  for (const key of saveKeys) {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(`[SaveLoad] Failed to remove save key ${key}:`, error);
+    }
+  }
+
+  try {
+    useGameStore.getState().resetRun();
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting game store:', error);
+  }
+
+  try {
+    useInventoryStore.getState().resetInventory();
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting inventory store:', error);
+  }
+
+  try {
+    const combatStore = useCombatStore.getState();
+    if (combatStore.resetCombat) {
+      combatStore.resetCombat();
+    } else {
+      combatStore.exitCombat();
+    }
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting combat store:', error);
+  }
+
+  try {
+    useZoneStore.getState().resetAllZones();
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting zone store:', error);
+  }
+
+  try {
+    useDungeonStore.getState().resetDungeons();
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting dungeon store:', error);
+  }
+
+  try {
+    useTechniqueStore.getState().resetTechniques();
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting technique store:', error);
+  }
+
+  try {
+    const prestigeStore = usePrestigeStore.getState();
+    if (prestigeStore.resetRunProgress) {
+      prestigeStore.resetRunProgress();
+    }
+  } catch (error) {
+    console.error('[SaveLoad] Error resetting prestige store:', error);
+  }
+
+  try {
+    const gameStore = useGameStore.getState();
+    gameStore.calculateQiPerSecond();
+    gameStore.calculatePlayerStats();
+  } catch (error) {
+    console.error('[SaveLoad] Error recalculating game state after reset:', error);
+  }
+
+  console.log('[SaveLoad] All saves deleted and game reset to fresh state');
+
+  if (typeof window !== 'undefined') {
+    window.location.reload();
+  }
+}
+
+/**
+ * Legacy delete function retained for backward compatibility
  */
 export function deleteSave(): boolean {
   try {
-    console.log('[SaveLoad] Deleting all saves...');
-
-    // Remove all save slots
-    localStorage.removeItem(SAVE_KEY);
-    localStorage.removeItem(BACKUP_A_KEY);
-    localStorage.removeItem(BACKUP_B_KEY);
-    localStorage.removeItem(BACKUP_C_KEY);
-
-    // Reset all stores to initial state
-    const gameStore = useGameStore.getState();
-    gameStore.resetRun();
-
-    useInventoryStore.setState({
-      items: [],
-      equippedWeapon: null,
-      equippedAccessory: null,
-      gold: '0',
-      maxSlots: 20,
-    });
-
-    useCombatStore.setState({
-      autoAttack: false,
-      autoCombatAI: false,
-    });
-
-    console.log('[SaveLoad] All saves deleted and game reset');
+    deleteSaveAndResetGame();
     return true;
   } catch (error) {
     console.error('[SaveLoad] Delete save failed:', error);
