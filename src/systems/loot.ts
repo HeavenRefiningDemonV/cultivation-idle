@@ -59,12 +59,16 @@ const PITY_DROP_POOLS: Record<string, { itemId: string; rarity: ItemRarity }[]> 
 
 /**
  * Gate items required for realm breakthroughs
+ * Key corresponds to the realm index the player is LEAVING
+ *
+ * Early breakthroughs are intentionally tied to dungeon rewards to force
+ * players to complete the associated challenge before advancing.
  */
 export const GATE_ITEMS: Record<number, string> = {
-  0: 'mortal_gate_token',      // Mortal Realm → Qi Condensation
-  1: 'qi_gate_token',          // Qi Condensation → Foundation
-  2: 'foundation_gate_token',  // Foundation → Core Formation
-  3: 'core_gate_token',        // Core Formation → Nascent Soul
+  0: 'foundation_pill',        // Qi Condensation → Foundation Establishment
+  1: 'core_catalyst',          // Foundation Establishment → Golden Core
+  2: 'soul_fragment',          // Golden Core → Nascent Soul
+  3: 'core_gate_token',        // Nascent Soul → higher realms (placeholder)
 };
 
 /**
@@ -147,28 +151,25 @@ function generateBossLoot(
   // Determine boss tier based on level
   const bossLevel = enemy.level;
 
-  // Training Forest Boss (Lv 5) - drops Mortal Gate Token
+  // Gate bosses now drop the same materials required for breakthroughs so
+  // Adventure progression mirrors the dungeon rewards.
   if (bossLevel <= 5) {
     items.push({
-      itemId: 'mortal_gate_token',
+      itemId: 'foundation_pill',
       quantity: 1,
       rarity: 'rare',
     });
-  }
-  // Spirit Cavern Boss (Lv 10) - drops Qi Gate Token
-  else if (bossLevel <= 10) {
+  } else if (bossLevel <= 10) {
     items.push({
-      itemId: 'qi_gate_token',
-      quantity: 1,
-      rarity: 'rare',
-    });
-  }
-  // Higher level bosses - drop higher tier tokens
-  else if (bossLevel <= 20) {
-    items.push({
-      itemId: 'foundation_gate_token',
+      itemId: 'core_catalyst',
       quantity: 1,
       rarity: 'epic',
+    });
+  } else if (bossLevel <= 20) {
+    items.push({
+      itemId: 'soul_fragment',
+      quantity: 1,
+      rarity: 'legendary',
     });
   } else {
     items.push({

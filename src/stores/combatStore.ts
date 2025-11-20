@@ -463,7 +463,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Record enemy defeat in zone progression
         if (currentZone) {
           if (isBoss) {
-            useZoneStore.getState().recordBossDefeat(currentZone);
+            useZoneStore
+              .getState()
+              .recordBossDefeat(currentZone, gameStore.realm.index);
           } else {
             useZoneStore.getState().recordEnemyDefeat(currentZone, enemy.id);
           }
