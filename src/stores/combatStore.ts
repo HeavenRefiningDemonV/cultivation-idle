@@ -7,7 +7,7 @@ import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
-import { generateLoot, updatePityCounters, formatLootMessage } from '../systems/loot';
+import { generateLoot, formatLootMessage } from '../systems/loot';
 
 interface DungeonBoss {
   id: string;
@@ -448,11 +448,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
       } else {
         // Regular combat rewards (zone/enemy)
         // Generate loot
+        const zoneProgress = currentZone
+          ? useZoneStore.getState().getZoneProgress(currentZone)
+          : null;
+        const isFirstBossKill = isBoss && zoneProgress ? !zoneProgress.bossDefeated : false;
+
         const lootResult = generateLoot(
           enemy,
           gameStore.playerLuck,
           gameStore.pityState,
-          isBoss
+          isBoss,
+          isFirstBossKill
         );
 
         // Add gold to inventory
@@ -478,10 +484,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
 
         // Update pity counters
-        const droppedRarities = lootResult.items.map(item => item.rarity);
-        const newPityState = updatePityCounters(gameStore.pityState, droppedRarities);
         useGameStore.setState({
-          pityState: newPityState,
+          pityState: lootResult.updatedPityState,
         });
 
         // Record enemy defeat in zone progression

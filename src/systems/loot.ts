@@ -1,4 +1,5 @@
-import type { EnemyDefinition, LootDrop, ItemRarity } from '../types';
+import type { EnemyDefinition, LootDrop, ItemRarity, PityState } from '../types';
+import { ITEMS_DATABASE } from '../constants/itemsDatabase';
 
 /**
  * Loot generation result
@@ -11,16 +12,7 @@ export interface LootResult {
   }[];
   gold: string;
   pityTriggered: boolean;
-}
-
-/**
- * Pity system state
- */
-export interface PityState {
-  killsSinceUncommon: number;
-  killsSinceRare: number;
-  killsSinceEpic: number;
-  killsSinceLegendary: number;
+  updatedPityState: PityState;
 }
 
 /**
@@ -71,6 +63,11 @@ export const GATE_ITEMS: Record<number, string> = {
   3: 'core_gate_token',        // Nascent Soul → higher realms (placeholder)
 };
 
+function getItemRarity(itemId: string): ItemRarity {
+  const item = ITEMS_DATABASE[itemId];
+  return item?.rarity || 'common';
+}
+
 /**
  * Generate loot from an enemy defeat
  */
@@ -78,34 +75,46 @@ export function generateLoot(
   enemy: EnemyDefinition,
   playerLuck: number,
   pityState: PityState,
-  isBoss: boolean = false
+  isBoss: boolean = false,
+  isFirstBossKill: boolean = false
 ): LootResult {
   const result: LootResult = {
     items: [],
     gold: enemy.goldReward,
     pityTriggered: false,
+    updatedPityState: { ...pityState },
   };
+
+  const droppedRarities: ItemRarity[] = [];
 
   // Process loot table if exists
   if (enemy.lootTable && enemy.lootTable.length > 0) {
     for (const drop of enemy.lootTable) {
       const lootItems = rollLoot(drop, playerLuck);
       result.items.push(...lootItems);
+      droppedRarities.push(...lootItems.map((item) => item.rarity));
     }
   }
 
   // Boss guaranteed drops
   if (isBoss) {
-    const bossDrops = generateBossLoot(enemy);
+    const bossDrops = generateBossLoot(enemy, isFirstBossKill);
     result.items.push(...bossDrops);
+    droppedRarities.push(...bossDrops.map((item) => item.rarity));
   }
 
-  // Check pity system
-  const pityDrop = checkPity(pityState);
+  // Update pity counters for this kill based on natural drops
+  let pityStateAfterKill = updatePityCounters(pityState, droppedRarities);
+
+  // Check pity system after applying counters
+  const pityDrop = checkPity(pityStateAfterKill);
   if (pityDrop) {
     result.items.push(pityDrop);
     result.pityTriggered = true;
+    pityStateAfterKill = resetPityAfterDrop(pityStateAfterKill, pityDrop.rarity);
   }
+
+  result.updatedPityState = pityStateAfterKill;
 
   return result;
 }
@@ -133,7 +142,7 @@ export function rollLoot(
     items.push({
       itemId: drop.itemId,
       quantity,
-      rarity: 'common', // Default rarity, should be defined in item definition
+      rarity: getItemRarity(drop.itemId),
     });
   }
 
@@ -144,7 +153,8 @@ export function rollLoot(
  * Generate boss-specific loot
  */
 function generateBossLoot(
-  enemy: EnemyDefinition
+  enemy: EnemyDefinition,
+  isFirstKill: boolean
 ): { itemId: string; quantity: number; rarity: ItemRarity }[] {
   const items: { itemId: string; quantity: number; rarity: ItemRarity }[] = [];
 
@@ -153,30 +163,32 @@ function generateBossLoot(
 
   // Gate bosses now drop the same materials required for breakthroughs so
   // Adventure progression mirrors the dungeon rewards.
-  if (bossLevel <= 5) {
-    items.push({
-      itemId: 'foundation_pill',
-      quantity: 1,
-      rarity: 'rare',
-    });
-  } else if (bossLevel <= 10) {
-    items.push({
-      itemId: 'core_catalyst',
-      quantity: 1,
-      rarity: 'epic',
-    });
-  } else if (bossLevel <= 20) {
-    items.push({
-      itemId: 'soul_fragment',
-      quantity: 1,
-      rarity: 'legendary',
-    });
-  } else {
-    items.push({
-      itemId: 'core_gate_token',
-      quantity: 1,
-      rarity: 'legendary',
-    });
+  if (isFirstKill) {
+    if (bossLevel <= 5) {
+      items.push({
+        itemId: 'foundation_pill',
+        quantity: 1,
+        rarity: 'rare',
+      });
+    } else if (bossLevel <= 10) {
+      items.push({
+        itemId: 'core_catalyst',
+        quantity: 1,
+        rarity: 'epic',
+      });
+    } else if (bossLevel <= 20) {
+      items.push({
+        itemId: 'soul_fragment',
+        quantity: 1,
+        rarity: 'legendary',
+      });
+    } else {
+      items.push({
+        itemId: 'core_gate_token',
+        quantity: 1,
+        rarity: 'legendary',
+      });
+    }
   }
 
   // Bosses always drop a rare material
@@ -284,6 +296,28 @@ export function updatePityCounters(
       // Uncommon resets only uncommon
       newState.killsSinceUncommon = 0;
     }
+  }
+
+  return newState;
+}
+
+function resetPityAfterDrop(pityState: PityState, rarity: ItemRarity): PityState {
+  const newState = { ...pityState };
+
+  if (rarity === 'legendary' || rarity === 'mythic') {
+    newState.killsSinceUncommon = 0;
+    newState.killsSinceRare = 0;
+    newState.killsSinceEpic = 0;
+    newState.killsSinceLegendary = 0;
+  } else if (rarity === 'epic') {
+    newState.killsSinceUncommon = 0;
+    newState.killsSinceRare = 0;
+    newState.killsSinceEpic = 0;
+  } else if (rarity === 'rare') {
+    newState.killsSinceUncommon = 0;
+    newState.killsSinceRare = 0;
+  } else if (rarity === 'uncommon') {
+    newState.killsSinceUncommon = 0;
   }
 
   return newState;
