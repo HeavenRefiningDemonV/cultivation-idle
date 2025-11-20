@@ -45,6 +45,8 @@ function gatherGameState(): SaveData {
       upgradeTiers: gameState.upgradeTiers,
       pityState: gameState.pityState,
       playerLuck: gameState.playerLuck,
+      lastTickTime: gameState.lastTickTime,
+      lastActiveTime: gameState.lastActiveTime,
     },
 
     inventoryState: {
@@ -232,6 +234,8 @@ function applySaveData(saveData: SaveData): void {
         killsSinceLegendary: 0,
       },
       playerLuck: saveData.gameState.playerLuck || 0,
+      lastTickTime: saveData.gameState.lastTickTime || saveData.timestamp,
+      lastActiveTime: saveData.gameState.lastActiveTime || saveData.timestamp,
     });
 
     // Recalculate derived values

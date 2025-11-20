@@ -1,5 +1,6 @@
 import Decimal from 'decimal.js';
 import { useGameStore } from '../stores/gameStore';
+import { usePrestigeStore } from '../stores/prestigeStore';
 import { D, multiply, formatNumber } from '../utils/numbers';
 
 /**
@@ -9,6 +10,7 @@ const MAX_OFFLINE_HOURS = 12;                    // Maximum offline time to calc
 const DEFAULT_OFFLINE_EFFICIENCY = 0.5;          // Offline Qi gain is 50% of normal rate
 const MAX_OFFLINE_SECONDS = MAX_OFFLINE_HOURS * 60 * 60;  // 43200 seconds
 const ONE_WEEK_SECONDS = 7 * 24 * 60 * 60;       // 604800 seconds
+const MIN_OFFLINE_SECONDS = 5 * 60;              // Minimum time offline to show modal/apply gains
 
 /**
  * Offline progress result
@@ -40,7 +42,9 @@ export interface OfflineProgressSummary {
  */
 export function calculateOfflineProgress(
   lastOnlineUtc: number,
-  currentUtc: number
+  currentUtc: number,
+  efficiency = getOfflineEfficiency(),
+  maxOfflineSeconds = getMaxOfflineTime()
 ): OfflineProgressResult {
   // Calculate time difference in seconds
   const timeDiffMs = currentUtc - lastOnlineUtc;
@@ -58,13 +62,13 @@ export function calculateOfflineProgress(
   }
 
   // Determine if we need to cap
-  const wasCapped = offlineSeconds > MAX_OFFLINE_SECONDS;
+  const wasCapped = offlineSeconds > maxOfflineSeconds;
   const wasFullyOptimal = !wasCapped;
 
   // Cap offline time to maximum
   if (wasCapped) {
-    console.log(`[Offline] Capping offline time from ${offlineSeconds}s to ${MAX_OFFLINE_SECONDS}s`);
-    offlineSeconds = MAX_OFFLINE_SECONDS;
+    console.log(`[Offline] Capping offline time from ${offlineSeconds}s to ${maxOfflineSeconds}s`);
+    offlineSeconds = maxOfflineSeconds;
   }
 
   // Get player's current Qi/s from game store
@@ -75,13 +79,13 @@ export function calculateOfflineProgress(
   // Formula: Qi/s * offline seconds * efficiency
   const qiGained = multiply(
     multiply(qiPerSecond, offlineSeconds),
-    DEFAULT_OFFLINE_EFFICIENCY
+    efficiency
   );
 
   return {
     offlineSeconds,
     qiGained,
-    efficiency: DEFAULT_OFFLINE_EFFICIENCY,
+    efficiency,
     wasFullyOptimal,
     wasCapped,
   };
@@ -102,7 +106,7 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
 
     // Get last online time from game store
     const gameState = useGameStore.getState();
-    const lastOnlineUtc = gameState.lastTickTime || currentUtc;
+    const lastOnlineUtc = gameState.lastActiveTime || gameState.lastTickTime || currentUtc;
 
     // If last online time is in the future or same as current, no offline progress
     if (lastOnlineUtc >= currentUtc) {
@@ -113,9 +117,13 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
     // Calculate offline progress
     const progress = calculateOfflineProgress(lastOnlineUtc, currentUtc);
 
-    // If no time passed, return null
-    if (progress.offlineSeconds <= 0) {
-      console.log('[Offline] No offline time to process');
+    // If not enough time passed, skip processing but update last active time
+    if (progress.offlineSeconds < MIN_OFFLINE_SECONDS) {
+      console.log('[Offline] Offline duration below threshold, skipping gains');
+      useGameStore.setState({
+        lastTickTime: currentUtc,
+        lastActiveTime: currentUtc,
+      });
       return null;
     }
 
@@ -126,6 +134,7 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
     useGameStore.setState({
       qi: newQi.toString(),
       lastTickTime: currentUtc,
+      lastActiveTime: currentUtc,
     });
 
     // Create summary
@@ -199,8 +208,14 @@ export function formatOfflineDuration(seconds: number): string {
  * @returns Current offline efficiency (0.0 to 1.0)
  */
 export function getOfflineEfficiency(): number {
-  // TODO: Check for upgrades that improve offline efficiency
-  return DEFAULT_OFFLINE_EFFICIENCY;
+  try {
+    const prestigeStore = usePrestigeStore.getState();
+    const bonus = prestigeStore.getUpgradeEffect('offline_mult');
+    return DEFAULT_OFFLINE_EFFICIENCY * (1 + bonus);
+  } catch {
+    // Prestige store may not be initialized yet
+    return DEFAULT_OFFLINE_EFFICIENCY;
+  }
 }
 
 /**
@@ -210,7 +225,6 @@ export function getOfflineEfficiency(): number {
  * @returns Maximum offline time in seconds
  */
 export function getMaxOfflineTime(): number {
-  // TODO: Check for upgrades that increase offline cap
   return MAX_OFFLINE_SECONDS;
 }
 
@@ -228,7 +242,7 @@ export function previewOfflineGains(hours: number): string {
   const seconds = Math.min(hours * 3600, MAX_OFFLINE_SECONDS);
   const qiGained = multiply(
     multiply(qiPerSecond, seconds),
-    DEFAULT_OFFLINE_EFFICIENCY
+    getOfflineEfficiency()
   );
 
   return formatNumber(qiGained);

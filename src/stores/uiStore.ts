@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import type { OfflineProgressSummary } from '../systems/offline';
 
 /**
  * UI notification types
@@ -36,6 +37,8 @@ export interface UIState {
   showPerkSelectionModal: boolean;
   perkSelectionRealm: number | null;
   showBreakthroughAnimation: boolean;
+  showOfflineProgressModal: boolean;
+  offlineProgressSummary: OfflineProgressSummary | null;
 
   // Tooltips
   tooltipVisible: boolean;
@@ -55,6 +58,8 @@ export interface UIState {
   showPerkSelection: (realmIndex: number) => void;
   hidePerkSelection: () => void;
   triggerBreakthroughAnimation: () => void;
+  showOfflineProgress: (summary: OfflineProgressSummary) => void;
+  hideOfflineProgress: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
 }
@@ -80,6 +85,8 @@ export const useUIStore = create<UIState>()(
     showPerkSelectionModal: false,
     perkSelectionRealm: null,
     showBreakthroughAnimation: false,
+    showOfflineProgressModal: false,
+    offlineProgressSummary: null,
     tooltipVisible: false,
     tooltipContent: '',
     tooltipPosition: { x: 0, y: 0 },
@@ -225,6 +232,26 @@ export const useUIStore = create<UIState>()(
           state.showBreakthroughAnimation = false;
         });
       }, 2000);
+    },
+
+    /**
+     * Show offline progress modal
+     */
+    showOfflineProgress: (summary: OfflineProgressSummary) => {
+      set((state) => {
+        state.showOfflineProgressModal = true;
+        state.offlineProgressSummary = summary;
+      });
+    },
+
+    /**
+     * Hide offline progress modal
+     */
+    hideOfflineProgress: () => {
+      set((state) => {
+        state.showOfflineProgressModal = false;
+        state.offlineProgressSummary = null;
+      });
     },
 
     /**

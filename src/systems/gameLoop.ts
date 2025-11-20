@@ -3,6 +3,7 @@ import { useCombatStore } from '../stores/combatStore';
 import { usePrestigeStore, setInventoryStoreGetter } from '../stores/prestigeStore';
 import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
 import { useInventoryStore } from '../stores/inventoryStore';
+import { useUIStore } from '../stores/uiStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 
@@ -288,7 +289,7 @@ export function initializeGame(): boolean {
             console.log('  - Offline time was capped at 12 hours');
           }
 
-          // TODO: Show offline progress modal to player
+          useUIStore.getState().showOfflineProgress(offlineProgress);
         } else {
           console.log('[GameLoop] No offline progress to apply');
         }
@@ -304,6 +305,7 @@ export function initializeGame(): boolean {
 
     // Set up save on page unload
     setupBeforeUnload();
+    setupVisibilityTracking();
 
     console.log('[GameLoop] Game initialized successfully');
     return true;
@@ -321,6 +323,13 @@ function setupBeforeUnload(): void {
     console.log('[GameLoop] Page unloading, saving game...');
 
     try {
+      // Update last active timestamp
+      const now = Date.now();
+      useGameStore.setState({
+        lastTickTime: now,
+        lastActiveTime: now,
+      });
+
       // Save the game
       const success = saveGame();
 
@@ -337,6 +346,21 @@ function setupBeforeUnload(): void {
     }
 
     // Note: Modern browsers ignore custom messages in beforeunload
+  });
+}
+
+/**
+ * Track when the page is hidden so offline progress is accurate
+ */
+function setupVisibilityTracking(): void {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      const now = Date.now();
+      useGameStore.setState({
+        lastTickTime: now,
+        lastActiveTime: now,
+      });
+    }
   });
 }
 
