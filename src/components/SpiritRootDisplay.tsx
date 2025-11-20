@@ -57,6 +57,7 @@ export function SpiritRootDisplay() {
   const getQualityMultiplier = usePrestigeStore((state) => state.getSpiritRootQualityMultiplier);
   const getPurityMultiplier = usePrestigeStore((state) => state.getSpiritRootPurityMultiplier);
   const getTotalMultiplier = usePrestigeStore((state) => state.getSpiritRootTotalMultiplier);
+  const rerollCost = usePrestigeStore((state) => state.getSpiritRootRerollCost());
 
   const gold = useInventoryStore((state) => state.gold);
 
@@ -80,8 +81,6 @@ export function SpiritRootDisplay() {
   const purityMult = getPurityMultiplier();
   const totalMult = getTotalMultiplier();
 
-  // Calculate reroll cost
-  const rerollCost = 1000 * Math.pow(2, spiritRoot.grade - 1);
   const canAfford = D(gold).gte(rerollCost);
 
   // Handle reroll

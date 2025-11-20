@@ -53,6 +53,9 @@ interface PrestigeState {
   highestRealmReached: number;
   runStartTime: number;
 
+  // Spirit root reroll tracking
+  rerollCount: number;
+
   // Spirit root
   spiritRoot: SpiritRoot | null;
 
@@ -69,7 +72,8 @@ interface PrestigeState {
   initializeUpgrades: () => void;
 
   // Spirit root methods
-  generateSpiritRoot: () => void;
+  generateSpiritRoot: (resetRerollCount?: boolean) => void;
+  getSpiritRootRerollCost: () => number;
   rerollSpiritRoot: () => boolean;
   getSpiritRootQualityMultiplier: () => number;
   getSpiritRootPurityMultiplier: () => number;
@@ -94,9 +98,10 @@ export const usePrestigeStore = create<PrestigeState>()(
     prestigeCount: 0,
     prestigeRuns: [],
     upgrades: {},
-    highestRealmReached: 0,
-    runStartTime: Date.now(),
-    spiritRoot: null,
+  highestRealmReached: 0,
+  runStartTime: Date.now(),
+  rerollCount: 0,
+  spiritRoot: null,
 
     calculateAPGain: () => {
       if (!_getGameStore) return 0;
@@ -354,7 +359,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     /**
      * Generate a new spirit root based on prestige upgrades
      */
-    generateSpiritRoot: () => {
+    generateSpiritRoot: (resetRerollCount = true) => {
       const state = get();
       const floor = state.getUpgradeEffect('root_floor');
 
@@ -382,6 +387,9 @@ export const usePrestigeStore = create<PrestigeState>()(
 
       set((state) => {
         state.spiritRoot = { grade, element, purity };
+        if (resetRerollCount) {
+          state.rerollCount = 0;
+        }
       });
 
       console.log(`[SpiritRoot] Generated: ${QUALITY_NAMES[grade]} ${element} (${purity}% purity)`);
@@ -398,12 +406,20 @@ export const usePrestigeStore = create<PrestigeState>()(
      * Reroll spirit root using gold
      * Cost scales with current quality
      */
+    getSpiritRootRerollCost: () => {
+      const state = get();
+      if (!state.spiritRoot) return 0;
+
+      const baseCost = 1000 * Math.pow(2, state.spiritRoot.grade - 1);
+      return baseCost * Math.pow(2, state.rerollCount);
+    },
+
     rerollSpiritRoot: () => {
       const state = get();
       if (!state.spiritRoot || !_getInventoryStore) return false;
 
-      // Cost: 1000 * 2^(grade-1) gold
-      const cost = 1000 * Math.pow(2, state.spiritRoot.grade - 1);
+      // Cost scales with grade and reroll attempts
+      const cost = state.getSpiritRootRerollCost();
       const inventoryStore = _getInventoryStore();
 
       // Check if player has enough gold
@@ -417,8 +433,12 @@ export const usePrestigeStore = create<PrestigeState>()(
         return false;
       }
 
-      // Generate new spirit root
-      get().generateSpiritRoot();
+      set((state) => {
+        state.rerollCount += 1;
+      });
+
+      // Generate new spirit root without resetting reroll count
+      get().generateSpiritRoot(false);
       console.log(`[SpiritRoot] Rerolled for ${cost} gold`);
 
       return true;

@@ -44,6 +44,7 @@ interface PrestigeStoreDeps {
   getQiMultiplier: () => Decimal.Value;
   getCombatMultiplier: () => Decimal.Value;
   getCultivationMultiplier: () => Decimal.Value;
+  getSpiritRootTotalMultiplier: () => number;
   spiritRoot: { element?: string | null; purity: number } | null;
 }
 
@@ -478,6 +479,21 @@ export const useGameStore = create<GameState>()(
           const prestigeStore = _getPrestigeStore();
           const prestigeMultiplier = prestigeStore.getQiMultiplier();
           qiPerSec = multiply(qiPerSec, prestigeMultiplier);
+
+          // Apply spirit root multipliers to cultivation gains
+          const spiritRootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
+          qiPerSec = multiply(qiPerSec, spiritRootMultiplier);
+
+          // Apply spirit root element Qi bonus (scaled by purity)
+          const spiritRoot = prestigeStore.spiritRoot;
+          if (spiritRoot && spiritRoot.element && spiritRoot.element in ELEMENT_BONUSES) {
+            const elementBonus = ELEMENT_BONUSES[spiritRoot.element as keyof typeof ELEMENT_BONUSES];
+            if ('qiPerSecond' in elementBonus && elementBonus.qiPerSecond) {
+              const purityMultiplier = spiritRoot.purity / 100;
+              const qiBonus = D(1).plus(D(elementBonus.qiPerSecond).times(purityMultiplier));
+              qiPerSec = multiply(qiPerSec, qiBonus);
+            }
+          }
         } catch {
           // Prestige store not available
         }
@@ -581,6 +597,13 @@ export const useGameStore = create<GameState>()(
           hp = multiply(hp, combatMultiplier);
           atk = multiply(atk, combatMultiplier);
           def = multiply(def, combatMultiplier);
+
+          // Apply spirit root quality/purity bonuses to core stats
+          const spiritRootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
+          hp = multiply(hp, spiritRootMultiplier);
+          atk = multiply(atk, spiritRootMultiplier);
+          def = multiply(def, spiritRootMultiplier);
+          regen = multiply(regen, spiritRootMultiplier);
         } catch {
           // Prestige store not available
         }
@@ -619,10 +642,10 @@ export const useGameStore = create<GameState>()(
               dodge += elementBonus.dodge * purityMultiplier;
             }
           }
-          } catch {
-            // Prestige store not available
-          }
+        } catch {
+          // Prestige store not available
         }
+      }
 
       // Apply equipment bonuses
       if (_getInventoryStore) {
