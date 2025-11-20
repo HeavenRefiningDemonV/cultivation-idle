@@ -386,7 +386,8 @@ export function CultivateScreen() {
                     </span>
                   )}
                   <p className="mt-1 text-xs text-slate-500">
-                    Obtained from dungeon bosses. Consume this to advance to the next realm.
+                    Obtained from key bosses and trials. One will be consumed when breaking through to the
+                    next realm.
                   </p>
                 </div>
               )}

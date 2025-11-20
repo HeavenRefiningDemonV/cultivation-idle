@@ -57,10 +57,10 @@ const PITY_DROP_POOLS: Record<string, { itemId: string; rarity: ItemRarity }[]> 
  * players to complete the associated challenge before advancing.
  */
 export const GATE_ITEMS: Record<number, string> = {
-  0: 'foundation_pill',        // Qi Condensation → Foundation Establishment
-  1: 'core_catalyst',          // Foundation Establishment → Golden Core
-  2: 'soul_fragment',          // Golden Core → Nascent Soul
-  3: 'core_gate_token',        // Nascent Soul → higher realms (placeholder)
+  0: 'foundation_pill', // Qi Condensation → Foundation Establishment
+  1: 'core_catalyst', // Foundation Establishment → Golden Core
+  2: 'core_stabilizer', // Golden Core → Nascent Soul
+  3: 'soul_condensate', // Nascent Soul → Soul Formation
 };
 
 function getItemRarity(itemId: string): ItemRarity {
@@ -158,35 +158,19 @@ function generateBossLoot(
 ): { itemId: string; quantity: number; rarity: ItemRarity }[] {
   const items: { itemId: string; quantity: number; rarity: ItemRarity }[] = [];
 
-  // Determine boss tier based on level
-  const bossLevel = enemy.level;
-
   // Gate bosses now drop the same materials required for breakthroughs so
-  // Adventure progression mirrors the dungeon rewards.
+  // adventure progression mirrors the intended gate milestones.
   if (isFirstKill) {
-    if (bossLevel <= 5) {
+    const gateDropsByBoss: Record<string, string> = {
+      shadow_spider_queen: GATE_ITEMS[2], // Spirit Cavern boss -> Core → Nascent gate
+    };
+
+    const gateItemId = gateDropsByBoss[enemy.id];
+    if (gateItemId) {
       items.push({
-        itemId: 'foundation_pill',
+        itemId: gateItemId,
         quantity: 1,
-        rarity: 'rare',
-      });
-    } else if (bossLevel <= 10) {
-      items.push({
-        itemId: 'core_catalyst',
-        quantity: 1,
-        rarity: 'epic',
-      });
-    } else if (bossLevel <= 20) {
-      items.push({
-        itemId: 'soul_fragment',
-        quantity: 1,
-        rarity: 'legendary',
-      });
-    } else {
-      items.push({
-        itemId: 'core_gate_token',
-        quantity: 1,
-        rarity: 'legendary',
+        rarity: getItemRarity(gateItemId),
       });
     }
   }

@@ -119,8 +119,8 @@
         "gold": 50000,
         "exp": 15000,
         "guaranteedDrop": {
-          "itemId": "soul_fragment",
-          "name": "Soul Fragment",
+          "itemId": "soul_condensate",
+          "name": "Soul Condensate",
           "firstClearOnly": true
         }
       },
