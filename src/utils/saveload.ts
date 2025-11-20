@@ -413,35 +413,51 @@ export function deleteSaveAndHardReset(): void {
 
   try {
     useGameStore.getState().hardResetGameState();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset game state', error);
+  }
 
   try {
     useInventoryStore.getState().hardResetInventory();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset inventory', error);
+  }
 
   try {
     useCombatStore.getState().hardResetCombat();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset combat', error);
+  }
 
   try {
     useZoneStore.getState().hardResetZones();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset zones', error);
+  }
 
   try {
     useDungeonStore.getState().hardResetDungeons();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset dungeons', error);
+  }
 
   try {
     useTechniqueStore.getState().hardResetTechniques();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset techniques', error);
+  }
 
   try {
     usePrestigeStore.getState().hardResetPrestige();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset prestige', error);
+  }
 
   try {
     useUIStore.getState().hardResetUI();
-  } catch {}
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset UI state', error);
+  }
 
   window.location.reload();
 }
