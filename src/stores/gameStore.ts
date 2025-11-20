@@ -562,6 +562,7 @@ export const useGameStore = create<GameState>()(
       let atk = multiply(baseStats.atk, substageMultiplier);
       let def = multiply(baseStats.def, substageMultiplier);
       let regen = multiply(baseStats.regen, substageMultiplier);
+      let regenPercentBonus = D(0);
 
       let crit = baseStats.crit;
       let critDmg = baseStats.critDmg;
@@ -707,6 +708,7 @@ export const useGameStore = create<GameState>()(
       for (const buff of activeBuffs) {
         switch (buff.stat) {
           case 'atk':
+          case 'atkMultiplier':
             atk = multiply(atk, D(1).plus(buff.value));
             break;
           case 'def':
@@ -715,7 +717,20 @@ export const useGameStore = create<GameState>()(
           case 'crit_chance':
             crit += buff.value * 100;
             break;
+          case 'critDamageMultiplier':
+            critDmg = D(critDmg).times(D(1).plus(buff.value)).toNumber();
+            break;
+          case 'hpRegenPercent':
+            regenPercentBonus = regenPercentBonus.plus(buff.value);
+            break;
+          case 'reflectPercent':
+            // Reflection handled in combat store during enemy attacks
+            break;
         }
+      }
+
+      if (regenPercentBonus.greaterThan(0)) {
+        regen = regen.plus(D(hp).times(regenPercentBonus));
       }
 
       const newHpValue = Decimal.min(hp, hp.times(hpRatio));

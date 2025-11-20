@@ -394,6 +394,33 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastEnemyAttackTime = now;
       });
 
+      // Reflect damage back to the attacker if any reflection buffs are active
+      const reflectPercent = useGameStore
+        .getState()
+        .activeBuffs.filter((buff) => buff.stat === 'reflectPercent' && buff.expiresAt > now)
+        .reduce((total, buff) => total.plus(buff.value), D(0));
+
+      if (reflectPercent.greaterThan(0) && damageAfterShield.greaterThan(0)) {
+        const reflectedDamage = damageAfterShield.times(reflectPercent);
+
+        set((state) => {
+          const newEnemyHP = subtract(state.enemyHP, reflectedDamage.toString());
+          state.enemyHP = newEnemyHP.toString();
+        });
+
+        get().addLogEntry(
+          'player',
+          `${enemy.name} takes ${reflectedDamage.toFixed(0)} reflected damage!`,
+          '#22c55e'
+        );
+
+        if (lessThanOrEqualTo(get().enemyHP, 0)) {
+          setTimeout(() => {
+            get().defeatEnemy();
+          }, 200);
+        }
+      }
+
       // Check if player is defeated
       if (lessThanOrEqualTo(get().playerHP, 0)) {
         setTimeout(() => {
