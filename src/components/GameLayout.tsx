@@ -8,6 +8,7 @@ import { AdventureScreen } from './screens/AdventureScreen';
 import { DungeonScreen } from './screens/DungeonScreen';
 import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
+import { OfflineProgressModal } from './modals/OfflineProgressModal';
 
 /**
  * Placeholder content for tabs
@@ -46,7 +47,10 @@ function SettingsTab() {
  * Main game layout component
  */
 export function GameLayout() {
-  const activeTab = useUIStore((state) => state.activeTab);
+  const { activeTab, showOfflineProgressModal } = useUIStore((state) => ({
+    activeTab: state.activeTab,
+    showOfflineProgressModal: state.showOfflineProgressModal,
+  }));
 
   // Render content based on active tab
   const renderContent = () => {
@@ -83,6 +87,8 @@ export function GameLayout() {
       <main className="ml-56 mt-20 min-h-screen p-4 relative z-10">
         {renderContent()}
       </main>
+
+      {showOfflineProgressModal && <OfflineProgressModal />}
     </div>
   );
 }

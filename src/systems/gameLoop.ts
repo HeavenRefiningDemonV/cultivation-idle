@@ -5,6 +5,7 @@ import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/tech
 import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
+import { useUIStore } from '../stores/uiStore';
 
 /**
  * Game loop constants
@@ -287,8 +288,13 @@ export function initializeGame(): boolean {
           if (offlineProgress.wasCapped) {
             console.log('  - Offline time was capped at 12 hours');
           }
-
-          // TODO: Show offline progress modal to player
+          if (offlineProgress.offlineSeconds >= 5 * 60) {
+            try {
+              useUIStore.getState().showOfflineProgress(offlineProgress);
+            } catch (error) {
+              console.warn('[GameLoop] Unable to show offline progress modal', error);
+            }
+          }
         } else {
           console.log('[GameLoop] No offline progress to apply');
         }
@@ -304,6 +310,7 @@ export function initializeGame(): boolean {
 
     // Set up save on page unload
     setupBeforeUnload();
+    setupVisibilityTracking();
 
     console.log('[GameLoop] Game initialized successfully');
     return true;
@@ -321,6 +328,9 @@ function setupBeforeUnload(): void {
     console.log('[GameLoop] Page unloading, saving game...');
 
     try {
+      const now = Date.now();
+      useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
+
       // Save the game
       const success = saveGame();
 
@@ -337,6 +347,22 @@ function setupBeforeUnload(): void {
     }
 
     // Note: Modern browsers ignore custom messages in beforeunload
+  });
+}
+
+/**
+ * Track tab visibility to keep last active time accurate
+ */
+function setupVisibilityTracking(): void {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      const now = Date.now();
+      useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
+      saveGame();
+    } else {
+      const now = Date.now();
+      useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
+    }
   });
 }
 

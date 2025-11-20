@@ -45,6 +45,8 @@ function gatherGameState(): SaveData {
       upgradeTiers: gameState.upgradeTiers,
       pityState: gameState.pityState,
       playerLuck: gameState.playerLuck,
+      lastTickTime: gameState.lastTickTime,
+      lastActiveTime: gameState.lastActiveTime,
     },
 
     inventoryState: {
@@ -89,6 +91,8 @@ function validateSaveData(data: unknown): data is SaveData {
     // Basic structure validation
     const gs = record.gameState as Record<string, unknown>;
     if (!('realm' in gs) || typeof gs.qi !== 'string') return false;
+    if ('lastActiveTime' in gs && typeof gs.lastActiveTime !== 'number') return false;
+    if ('lastTickTime' in gs && typeof gs.lastTickTime !== 'number') return false;
 
     const is = record.inventoryState as Record<string, unknown>;
     if (!Array.isArray((is as { items?: unknown }).items) || typeof is.gold !== 'string') return false;
@@ -232,6 +236,8 @@ function applySaveData(saveData: SaveData): void {
         killsSinceLegendary: 0,
       },
       playerLuck: saveData.gameState.playerLuck || 0,
+      lastTickTime: saveData.gameState.lastTickTime || saveData.timestamp,
+      lastActiveTime: saveData.gameState.lastActiveTime || saveData.timestamp,
     });
 
     // Recalculate derived values
