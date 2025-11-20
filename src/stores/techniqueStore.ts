@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { CultivationPath, CombatLogEntry } from '../types';
+import type { BuffStat, CultivationPath, CombatLogEntry } from '../types';
 import { D, multiply, subtract, greaterThanOrEqualTo, lessThanOrEqualTo } from '../utils/numbers';
 
 /**
@@ -23,7 +23,7 @@ export interface Technique {
     type: 'damage' | 'heal' | 'buff' | 'debuff';
     value: number;
     duration?: number;
-    stat?: string;
+    stat?: BuffStat;
   };
 }
 
@@ -61,6 +61,7 @@ interface CombatStoreDeps {
 interface GameStoreDeps {
   stats: { atk: string };
   selectedPath: CultivationPath | null;
+  addBuff: (buff: { id: string; stat: BuffStat; value: number; duration: number }) => void;
 }
 
 let _getCombatStore: (() => CombatStoreDeps) | null = null;
@@ -334,10 +335,18 @@ export const useTechniqueStore = create<TechniqueState>()(
           }
         }
       } else if (tech.effect.type === 'buff') {
-        // Apply buff (for now just log it - full buff system would be more complex)
+        if (tech.effect.stat && tech.effect.duration) {
+          gameStore.addBuff({
+            id: tech.id,
+            stat: tech.effect.stat,
+            value: tech.effect.value,
+            duration: tech.effect.duration,
+          });
+        }
+
         combatStore.addLogEntry(
           'system',
-          `Used ${tech.name}! Gained ${(tech.effect.value * 100).toFixed(0)}% ${tech.effect.stat} for ${((tech.effect.duration || 0) / 1000).toFixed(0)}s!`,
+          `Used ${tech.name}! Gained ${(tech.effect.value * 100).toFixed(0)}% ${tech.effect.stat} for ${((tech.effect.duration ?? 0) / 1000).toFixed(0)}s!`,
           '#22c55e'
         );
       }

@@ -23,7 +23,7 @@ interface Dungeon {
     atk: number;
     def: number;
     mechanics: Array<{
-      type: string;
+      type: 'shield' | 'aura' | 'enrage';
       trigger: { hpPercent: number };
       effect: { shieldAmount?: number; auraDamagePerSec?: number };
       description: string;

@@ -32,6 +32,16 @@ export interface PlayerStats {
   speed: number;        // Attack speed
 }
 
+export type BuffStat = 'atk' | 'def' | 'crit_chance' | 'absorption';
+
+export interface ActiveBuff {
+  id: string;
+  stat: BuffStat;
+  value: number;
+  expiresAt: number;
+  remainingShield?: string;
+}
+
 /**
  * Upgrade tier levels
  */
@@ -106,6 +116,9 @@ export interface GameState {
 
   // Player stats
   stats: PlayerStats;
+  activeBuffs: ActiveBuff[];
+  absorptionShield: string;
+  absorptionExpiresAt: number | null;
 
   // Cultivation choices
   selectedPath: CultivationPath | null;
@@ -132,6 +145,14 @@ export interface GameState {
   breakthrough: () => boolean;
   calculateQiPerSecond: () => void;
   calculatePlayerStats: () => void;
+  addBuff: (buff: { id: string; stat: BuffStat; value: number; duration: number }) => void;
+  removeExpiredBuffs: () => void;
+  applyAbsorptionShield: (
+    damage: string
+  ) => {
+    remainingDamage: string;
+    absorbed: string;
+  };
   resetRun: () => void;
   performPrestigeReset: () => void;
   purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
@@ -207,6 +228,13 @@ export interface EnemyDefinition {
   isBoss?: boolean;        // Is this a boss enemy
 }
 
+export interface EnemyMechanic {
+  type: 'shield' | 'aura' | 'enrage';
+  trigger: { hpPercent: number };
+  effect: { shieldAmount?: number; auraDamagePerSec?: number };
+  description?: string;
+}
+
 /**
  * Loot drop definition
  */
@@ -257,6 +285,10 @@ export interface CombatState {
   // Boss mechanics
   isBoss: boolean;
   combatStartTime: number;
+
+  // Enemy mechanics
+  enemyMechanics: EnemyMechanic[];
+  activeAura: { damagePerSec: number; description?: string } | null;
 
   // Actions
   enterCombat: (zone: string, enemy: EnemyDefinition) => void;

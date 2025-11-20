@@ -6,6 +6,8 @@ import type {
   FocusMode,
   CultivationPath,
   EquipmentStats,
+  ActiveBuff,
+  BuffStat,
 } from '../types';
 import {
   REALMS,
@@ -31,6 +33,8 @@ import { useTechniqueStore } from './techniqueStore';
 
 interface InventoryStoreDeps {
   getEquipmentStats: () => EquipmentStats;
+  hasItem: (itemId: string, quantity?: number) => boolean;
+  removeItem: (itemId: string, quantity: number) => boolean;
   resetInventory: () => void;
 }
 
@@ -107,6 +111,9 @@ export const useGameStore = create<GameState>()(
     qi: '0',
     qiPerSecond: '1',
     stats: { ...INITIAL_STATS },
+    activeBuffs: [],
+    absorptionShield: '0',
+    absorptionExpiresAt: null,
     selectedPath: null,
     focusMode: 'balanced',
     pathPerks: [],
@@ -130,6 +137,8 @@ export const useGameStore = create<GameState>()(
      * Main game tick - called regularly to update Qi and state
      */
     tick: (deltaTime: number) => {
+      get().removeExpiredBuffs();
+
       set((state) => {
         // Calculate Qi gained this tick
         const qiGain = multiply(state.qiPerSecond, deltaTime / 1000);
@@ -200,6 +209,99 @@ export const useGameStore = create<GameState>()(
       get().calculatePlayerStats();
 
       return true;
+    },
+
+    addBuff: (buff: { id: string; stat: BuffStat; value: number; duration: number }) => {
+      const now = Date.now();
+
+      set((state) => {
+        // Remove expired buffs and replace any existing buff of the same type/id
+        state.activeBuffs = state.activeBuffs
+          .filter((existing) => existing.expiresAt > now)
+          .filter((existing) => !(existing.id === buff.id && existing.stat === buff.stat));
+
+        const expiresAt = now + buff.duration;
+        const newBuff: ActiveBuff = {
+          id: buff.id,
+          stat: buff.stat,
+          value: buff.value,
+          expiresAt,
+        };
+
+        if (buff.stat === 'absorption') {
+          const shieldAmount = multiply(state.stats.maxHp, buff.value).toString();
+          newBuff.remainingShield = shieldAmount;
+          state.absorptionShield = shieldAmount;
+          state.absorptionExpiresAt = expiresAt;
+        }
+
+        state.activeBuffs.push(newBuff);
+      });
+
+      get().calculatePlayerStats();
+    },
+
+    removeExpiredBuffs: () => {
+      const now = Date.now();
+      let buffsChanged = false;
+
+      set((state) => {
+        const filtered = state.activeBuffs.filter((buff) => buff.expiresAt > now);
+        buffsChanged = filtered.length !== state.activeBuffs.length;
+        state.activeBuffs = filtered;
+
+        const activeShield = filtered.find(
+          (buff) => buff.stat === 'absorption' && buff.remainingShield && buff.expiresAt > now
+        );
+
+        if (activeShield) {
+          state.absorptionShield = activeShield.remainingShield ?? '0';
+          state.absorptionExpiresAt = activeShield.expiresAt;
+        } else {
+          state.absorptionShield = '0';
+          state.absorptionExpiresAt = null;
+        }
+      });
+
+      if (buffsChanged) {
+        get().calculatePlayerStats();
+      }
+    },
+
+    applyAbsorptionShield: (damage: string) => {
+      let remainingDamage = D(damage);
+      let absorbed = D(0);
+
+      set((state) => {
+        const now = Date.now();
+        const shieldBuff = state.activeBuffs.find(
+          (buff) => buff.stat === 'absorption' && buff.expiresAt > now && buff.remainingShield
+        );
+
+        if (shieldBuff && shieldBuff.remainingShield) {
+          const shieldRemaining = D(shieldBuff.remainingShield);
+          const absorbAmount = Decimal.min(shieldRemaining, remainingDamage);
+          absorbed = absorbAmount;
+          remainingDamage = remainingDamage.minus(absorbAmount);
+
+          const newShieldValue = shieldRemaining.minus(absorbAmount).toString();
+          shieldBuff.remainingShield = newShieldValue;
+          state.absorptionShield = newShieldValue;
+          state.absorptionExpiresAt = shieldBuff.expiresAt;
+
+          if (D(newShieldValue).lessThanOrEqualTo(0)) {
+            state.activeBuffs = state.activeBuffs.filter((buff) => buff !== shieldBuff);
+          }
+        } else {
+          state.absorptionShield = '0';
+          state.absorptionExpiresAt = null;
+        }
+      });
+
+      return {
+        remainingDamage: remainingDamage.toString(),
+        absorbed: absorbed.toString(),
+      };
     },
 
     /**
@@ -366,6 +468,19 @@ export const useGameStore = create<GameState>()(
       const currentRealm = REALMS[state.realm.index];
       const baseStats = currentRealm.baseStats;
 
+      const now = Date.now();
+      const activeBuffs = state.activeBuffs.filter((buff) => buff.expiresAt > now);
+      const hpRatio = (() => {
+        try {
+          const currentHp = D(state.stats.hp);
+          const currentMax = D(state.stats.maxHp);
+          if (currentMax.lessThanOrEqualTo(0)) return D(1);
+          return Decimal.min(D(1), currentHp.dividedBy(currentMax));
+        } catch {
+          return D(1);
+        }
+      })();
+
       // Substage multiplier for stats
       const substageMultiplier = D(1).plus(D(0.15).times(state.realm.substage - 1));
 
@@ -508,9 +623,29 @@ export const useGameStore = create<GameState>()(
         }
       }
 
+      // Apply active buffs
+      for (const buff of activeBuffs) {
+        switch (buff.stat) {
+          case 'atk':
+            atk = multiply(atk, D(1).plus(buff.value));
+            break;
+          case 'def':
+            def = multiply(def, D(1).plus(buff.value));
+            break;
+          case 'crit_chance':
+            crit += buff.value * 100;
+            break;
+        }
+      }
+
+      const newHpValue = Decimal.min(hp, hp.times(hpRatio));
+      const activeShield = activeBuffs.find(
+        (buff) => buff.stat === 'absorption' && buff.expiresAt > now && buff.remainingShield
+      );
+
       set((state) => {
         state.stats = {
-          hp: hp.toString(),
+          hp: newHpValue.toString(),
           maxHp: hp.toString(),
           atk: atk.toString(),
           def: def.toString(),
@@ -520,6 +655,17 @@ export const useGameStore = create<GameState>()(
           regen: regen.toString(),
           speed,
         };
+
+        // Keep only valid buffs (drop expired)
+        state.activeBuffs = activeBuffs;
+
+        if (activeShield) {
+          state.absorptionShield = activeShield.remainingShield ?? '0';
+          state.absorptionExpiresAt = activeShield.expiresAt;
+        } else {
+          state.absorptionShield = '0';
+          state.absorptionExpiresAt = null;
+        }
       });
     },
 
@@ -593,6 +739,9 @@ export const useGameStore = create<GameState>()(
         state.qi = '0';
         state.qiPerSecond = '1';
         state.stats = { ...INITIAL_STATS };
+        state.activeBuffs = [];
+        state.absorptionShield = '0';
+        state.absorptionExpiresAt = null;
         state.selectedPath = null;
         state.focusMode = 'balanced';
         state.pathPerks = [];

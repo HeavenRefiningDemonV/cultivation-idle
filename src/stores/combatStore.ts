@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { CombatState, EnemyDefinition, CombatLogEntry } from '../types';
+import type { CombatState, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
 import { useGameStore, setCombatStoreGetter } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
@@ -19,6 +19,7 @@ interface DungeonBoss {
   critDmg?: number;
   dodge?: number;
   speed?: number;
+  mechanics?: EnemyMechanic[];
 }
 
 interface DungeonData {
@@ -82,6 +83,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
     techniquesCooldowns: {},
     isBoss: false,
     combatStartTime: 0,
+    enemyMechanics: [],
+    activeAura: null,
 
     /**
      * Enter combat with an enemy
@@ -103,6 +106,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.inCombat = true;
         state.currentZone = zone;
         state.currentEnemy = enemy;
+        state.enemyMechanics = (enemy as EnemyDefinition & { mechanics?: EnemyMechanic[] }).mechanics || [];
+        state.activeAura = null;
 
         // Initialize HP
         state.playerHP = playerStats.hp;
@@ -167,6 +172,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.currentZone = null; // Not a zone fight
         state.currentDungeon = dungeonId;
         state.currentEnemy = enemy;
+        state.enemyMechanics = dungeonData.boss.mechanics || [];
+        state.activeAura = null;
 
         // Initialize HP
         state.playerHP = playerStats.hp;
@@ -216,6 +223,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastEnemyAttackTime = 0;
         state.isBoss = false;
         state.combatStartTime = 0;
+        state.enemyMechanics = [];
+        state.activeAura = null;
       });
     },
 
@@ -239,6 +248,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.techniquesCooldowns = {};
         state.isBoss = false;
         state.combatStartTime = 0;
+        state.enemyMechanics = [];
+        state.activeAura = null;
       });
     },
 
@@ -252,7 +263,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const now = Date.now();
       if (now - state.lastAttackTime < PLAYER_ATTACK_COOLDOWN) return;
 
-      const playerStats = useGameStore.getState().stats;
+      const gameStore = useGameStore.getState();
+      const playerStats = gameStore.stats;
       const enemy = state.currentEnemy;
 
       // Check if enemy dodges
@@ -317,7 +329,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const now = Date.now();
       if (now - state.lastEnemyAttackTime < ENEMY_ATTACK_COOLDOWN) return;
 
-      const playerStats = useGameStore.getState().stats;
+      const gameStore = useGameStore.getState();
+      const playerStats = gameStore.stats;
       const enemy = state.currentEnemy;
 
       // Check if player dodges
@@ -353,22 +366,35 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (isCrit) {
         const critMultiplier = D(enemy.critDmg).dividedBy(100);
         finalDamage = baseDamage.times(critMultiplier);
+      }
+
+      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(finalDamage.toString());
+      const damageAfterShield = D(remainingDamage);
+      const absorbedAmount = D(absorbed);
+
+      if (damageAfterShield.lessThanOrEqualTo(0)) {
         get().addLogEntry(
-          'damage',
-          `${enemy.name} lands a critical hit! Takes ${finalDamage.toFixed(0)} damage!`,
-          '#ef4444'
+          'system',
+          `${enemy.name}'s attack was absorbed by your shield!`,
+          '#22c55e'
         );
       } else {
+        const absorptionNote = absorbedAmount.greaterThan(0)
+          ? ` (${absorbedAmount.toFixed(0)} absorbed)`
+          : '';
+
         get().addLogEntry(
-          'enemy',
-          `${enemy.name} deals ${finalDamage.toFixed(0)} damage.`,
-          '#f87171'
+          isCrit ? 'damage' : 'enemy',
+          isCrit
+            ? `${enemy.name} lands a critical hit! Takes ${damageAfterShield.toFixed(0)} damage!${absorptionNote}`
+            : `${enemy.name} deals ${damageAfterShield.toFixed(0)} damage.${absorptionNote}`,
+          isCrit ? '#ef4444' : '#f87171'
         );
       }
 
       // Apply damage to player
       set((state) => {
-        const newHP = subtract(state.playerHP, finalDamage.toString());
+        const newHP = subtract(state.playerHP, damageAfterShield.toString());
         state.playerHP = newHP.toString();
         state.lastEnemyAttackTime = now;
       });
@@ -548,15 +574,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const state = get();
       if (!state.inCombat || !state.currentEnemy) return;
 
+      const gameStore = useGameStore.getState();
+      gameStore.removeExpiredBuffs();
+
       const now = Date.now();
+      const currentEnemyHP = D(state.enemyHP);
+      const currentEnemyMaxHP = D(state.enemyMaxHP);
 
       // Process boss mechanics
       if (state.isBoss && bossMechanics) {
         const combatTime = (now - state.combatStartTime) / 1000; // Convert to seconds
-        const currentHP = D(state.enemyHP);
-        const maxHP = D(state.enemyMaxHP);
-
-        const mechanics = bossMechanics.update(deltaTime, currentHP, maxHP, combatTime);
+        const mechanics = bossMechanics.update(deltaTime, currentEnemyHP, currentEnemyMaxHP, combatTime);
 
         // Handle enrage trigger
         if (mechanics.enrageTriggered) {
@@ -602,15 +630,25 @@ export const useCombatStore = create<ExtendedCombatState>()(
           const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
           const ultimateDamage = atk.times(D(1).minus(defReduction));
 
+          const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(
+            ultimateDamage.toString()
+          );
+          const damageAfterShield = D(remainingDamage);
+          const absorbedAmount = D(absorbed);
+
+          const absorptionNote = absorbedAmount.greaterThan(0)
+            ? ` (${absorbedAmount.toFixed(0)} absorbed)`
+            : '';
+
           get().addLogEntry(
             'damage',
-            `⚡ ${enemy.name} unleashes ULTIMATE ATTACK! Takes ${ultimateDamage.toFixed(0)} damage!`,
+            `⚡ ${enemy.name} unleashes ULTIMATE ATTACK! Takes ${damageAfterShield.toFixed(0)} damage!${absorptionNote}`,
             '#a855f7'
           );
 
           // Apply damage to player
           set((state) => {
-            const newHP = subtract(state.playerHP, ultimateDamage.toString());
+            const newHP = subtract(state.playerHP, damageAfterShield.toString());
             state.playerHP = newHP.toString();
           });
 
@@ -635,6 +673,57 @@ export const useCombatStore = create<ExtendedCombatState>()(
               `⚠️ ${state.currentEnemy.name} is charging a powerful attack! (3s)`,
               '#f59e0b'
             );
+          }
+        }
+      }
+
+      // Handle aura mechanics
+      const hpPercentRemaining = currentEnemyMaxHP.greaterThan(0)
+        ? currentEnemyHP.dividedBy(currentEnemyMaxHP).times(100).toNumber()
+        : 0;
+
+      const auraMechanic = state.enemyMechanics.find((mechanic) => mechanic.type === 'aura');
+      if (auraMechanic && !state.activeAura && hpPercentRemaining <= auraMechanic.trigger.hpPercent) {
+        set((state) => {
+          state.activeAura = {
+            damagePerSec: auraMechanic.effect.auraDamagePerSec || 0,
+            description: auraMechanic.description,
+          };
+        });
+
+        get().addLogEntry(
+          'system',
+          `☠️ ${state.currentEnemy.name}'s ${auraMechanic.description || 'aura'} activates!`,
+          '#ef4444'
+        );
+      }
+
+      if (state.activeAura && state.activeAura.damagePerSec > 0) {
+        const auraDamage = D(state.activeAura.damagePerSec).times(deltaTime / 1000);
+        const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(auraDamage.toString());
+        const damageAfterShield = D(remainingDamage);
+        const absorbedAmount = D(absorbed);
+
+        if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+          set((state) => {
+            const newHP = subtract(state.playerHP, damageAfterShield.toString());
+            state.playerHP = newHP.toString();
+          });
+
+          const absorptionNote = absorbedAmount.greaterThan(0)
+            ? ` (${absorbedAmount.toFixed(0)} absorbed by shield)`
+            : '';
+
+          get().addLogEntry(
+            'damage',
+            `${state.currentEnemy.name}'s aura deals ${damageAfterShield.toFixed(0)} damage${absorptionNote}.`,
+            '#ef4444'
+          );
+
+          if (lessThanOrEqualTo(get().playerHP, 0)) {
+            setTimeout(() => {
+              get().playerDefeat();
+            }, 500);
           }
         }
       }
