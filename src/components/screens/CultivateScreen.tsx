@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
+import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { GATE_ITEMS } from '../../systems/loot';
+import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 
 /**
  * Mountain Background SVG
@@ -222,18 +224,21 @@ export function CultivateScreen() {
   const qiPerSecond = useGameStore((state) => state.qiPerSecond);
   const focusMode = useGameStore((state) => state.focusMode);
   const selectedPath = useGameStore((state) => state.selectedPath);
+  const pathPerks = useGameStore((state) => state.pathPerks);
   const breakthroughCost = useGameStore((state) => state.getBreakthroughRequirement());
 
   const breakthrough = useGameStore((state) => state.breakthrough);
   const setFocusMode = useGameStore((state) => state.setFocusMode);
   const inventoryItems = useInventoryStore((state) => state.items);
-
-  const [showPathSelection, setShowPathSelection] = useState(false);
-  const [showPerkSelection, setShowPerkSelection] = useState(false);
-  const [perkRealmIndex, setPerkRealmIndex] = useState<number>(0);
-
-  // Track previous realm index to detect realm breakthroughs
-  const previousRealmIndex = useRef(realm.index);
+  const {
+    showPathSelectionModal,
+    showPerkSelectionModal,
+    perkSelectionRealm,
+    showPathSelection,
+    hidePathSelection,
+    showPerkSelection,
+    hidePerkSelection,
+  } = useUIStore();
 
   const currentRealm = REALMS[realm.index];
   const nextSubstage = realm.substage + 1;
@@ -271,23 +276,39 @@ export function CultivateScreen() {
   const hasEnoughQi = Number(qi) >= Number(breakthroughCost);
   const canBreakthrough = hasEnoughQi && hasRequiredToken;
 
+  const hasPerkForRealm = useCallback(
+    (realmIndex: number) =>
+      pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
+    [pathPerks]
+  );
+
   // Show path selection when player reaches Foundation (realm 1) and hasn't chosen
   useEffect(() => {
     if (realm.index >= 1 && !selectedPath) {
-      setShowPathSelection(true);
+      showPathSelection();
     }
-  }, [realm.index, selectedPath]);
+  }, [realm.index, selectedPath, showPathSelection]);
 
-  // Detect realm breakthrough and show perk selection
+  // Show perk selection when entering a new major realm without a perk for it
   useEffect(() => {
-    // Check if realm index increased
-    if (realm.index > previousRealmIndex.current && selectedPath) {
-      // Realm breakthrough occurred - show perk selection for the NEW realm
-      setPerkRealmIndex(realm.index);
-      setShowPerkSelection(true);
-      previousRealmIndex.current = realm.index;
+    if (!selectedPath || realm.index < 1) return;
+
+    const hasRealmPerk = hasPerkForRealm(realm.index);
+    const availablePerks = getAvailablePerks(selectedPath, realm.index);
+    const perkModalAlreadyOpen =
+      showPerkSelectionModal && perkSelectionRealm === realm.index;
+
+    if (availablePerks.length > 0 && !hasRealmPerk && !perkModalAlreadyOpen) {
+      showPerkSelection(realm.index);
     }
-  }, [realm.index, selectedPath]);
+  }, [
+    realm.index,
+    selectedPath,
+    hasPerkForRealm,
+    showPerkSelection,
+    showPerkSelectionModal,
+    perkSelectionRealm,
+  ]);
 
   // Handle breakthrough button click
   const handleBreakthrough = () => {
@@ -483,15 +504,15 @@ export function CultivateScreen() {
       `}</style>
 
       {/* Path Selection Modal */}
-      {showPathSelection && (
-        <PathSelectionModal onClose={() => setShowPathSelection(false)} />
+      {showPathSelectionModal && (
+        <PathSelectionModal onClose={hidePathSelection} />
       )}
 
       {/* Perk Selection Modal */}
-      {showPerkSelection && (
+      {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal
-          onClose={() => setShowPerkSelection(false)}
-          realmIndex={perkRealmIndex}
+          onClose={hidePerkSelection}
+          realmIndex={perkSelectionRealm}
         />
       )}
     </div>

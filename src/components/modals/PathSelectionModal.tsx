@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { useTechniqueStore } from '../../stores/techniqueStore';
+import { useUIStore } from '../../stores/uiStore';
+import { getAvailablePerks } from '../../data/pathPerks';
 import type { CultivationPath } from '../../types';
 
 interface PathSelectionModalProps {
@@ -8,8 +10,9 @@ interface PathSelectionModalProps {
 }
 
 export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
-  const { selectPath } = useGameStore();
+  const { selectPath, realm, pathPerks } = useGameStore();
   const { unlockTechnique, techniques } = useTechniqueStore();
+  const { showPerkSelection, hidePathSelection } = useUIStore();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   const paths = [
@@ -87,6 +90,14 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
       console.log(`[PathSelection] Auto-unlocked tier 1 technique: ${tier1Technique.name}`);
     }
 
+    const availablePerks = getAvailablePerks(pathId, realm.index);
+    const hasRealmPerk = availablePerks.some((perk) => pathPerks.includes(perk.id));
+
+    if (!hasRealmPerk && availablePerks.length > 0) {
+      showPerkSelection(realm.index);
+    }
+
+    hidePathSelection();
     onClose();
   };
 

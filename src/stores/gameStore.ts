@@ -21,7 +21,7 @@ import {
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 import { setGameStoreGetter } from './prestigeStore';
-import { getPerkById } from '../data/pathPerks';
+import { getAvailablePerks, getPerkById } from '../data/pathPerks';
 import { GATE_ITEMS } from '../systems/loot';
 import {
   useZoneStore,
@@ -30,6 +30,7 @@ import {
 } from './zoneStore';
 import { useDungeonStore } from './dungeonStore';
 import { useTechniqueStore } from './techniqueStore';
+import { useUIStore } from './uiStore';
 
 interface InventoryStoreDeps {
   getEquipmentStats: () => EquipmentStats;
@@ -387,6 +388,35 @@ export const useGameStore = create<GameState>()(
       // Recalculate stats and Qi generation
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+
+      // Trigger path selection at Foundation if no path chosen
+      if (newRealmIndex >= 1 && !get().selectedPath) {
+        try {
+          useUIStore.getState().showPathSelection();
+        } catch {
+          // UI store unavailable
+        }
+      }
+
+      // Trigger perk selection for newly reached realms when a path is selected
+      const selectedPath = get().selectedPath;
+
+      if (selectedPath) {
+        const hasRealmPerk = get().pathPerks.some((perkId) => {
+          const perk = getPerkById(perkId);
+          return perk?.requiredRealm === newRealmIndex;
+        });
+
+        const availablePerks = getAvailablePerks(selectedPath, newRealmIndex);
+
+        if (!hasRealmPerk && availablePerks.length > 0) {
+          try {
+            useUIStore.getState().showPerkSelection(newRealmIndex);
+          } catch {
+            // UI store unavailable
+          }
+        }
+      }
 
       return true;
     },

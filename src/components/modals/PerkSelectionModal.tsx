@@ -12,6 +12,11 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
   const { selectedPath, selectPerk, pathPerks: currentPerks } = useGameStore();
   const [hoveredPerk, setHoveredPerk] = useState<string | null>(null);
 
+  if (!selectedPath) {
+    onClose();
+    return null;
+  }
+
   // Get available perks for this path and realm
   const availablePerks = getAvailablePerks(selectedPath, realmIndex).filter(
     (perk) => !currentPerks.includes(perk.id)

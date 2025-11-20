@@ -33,6 +33,8 @@ export interface UIState {
   // Modals
   showPrestigeModal: boolean;
   showPathSelectionModal: boolean;
+  showPerkSelectionModal: boolean;
+  perkSelectionRealm: number | null;
   showBreakthroughAnimation: boolean;
 
   // Tooltips
@@ -50,6 +52,8 @@ export interface UIState {
   hidePrestige: () => void;
   showPathSelection: () => void;
   hidePathSelection: () => void;
+  showPerkSelection: (realmIndex: number) => void;
+  hidePerkSelection: () => void;
   triggerBreakthroughAnimation: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
@@ -73,6 +77,8 @@ export const useUIStore = create<UIState>()(
     notifications: [],
     showPrestigeModal: false,
     showPathSelectionModal: false,
+    showPerkSelectionModal: false,
+    perkSelectionRealm: null,
     showBreakthroughAnimation: false,
     tooltipVisible: false,
     tooltipContent: '',
@@ -183,6 +189,26 @@ export const useUIStore = create<UIState>()(
     hidePathSelection: () => {
       set((state) => {
         state.showPathSelectionModal = false;
+      });
+    },
+
+    /**
+     * Show perk selection modal for the given realm
+     */
+    showPerkSelection: (realmIndex: number) => {
+      set((state) => {
+        state.showPerkSelectionModal = true;
+        state.perkSelectionRealm = realmIndex;
+      });
+    },
+
+    /**
+     * Hide perk selection modal
+     */
+    hidePerkSelection: () => {
+      set((state) => {
+        state.showPerkSelectionModal = false;
+        state.perkSelectionRealm = null;
       });
     },
 
