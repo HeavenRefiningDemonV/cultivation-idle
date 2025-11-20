@@ -32,7 +32,15 @@ export interface PlayerStats {
   speed: number;        // Attack speed
 }
 
-export type BuffStat = 'atk' | 'def' | 'crit_chance' | 'absorption';
+export type BuffStat =
+  | 'atk'
+  | 'atkMultiplier'
+  | 'def'
+  | 'crit_chance'
+  | 'critDamageMultiplier'
+  | 'hpRegenPercent'
+  | 'reflectPercent'
+  | 'absorption';
 
 export interface ActiveBuff {
   id: string;

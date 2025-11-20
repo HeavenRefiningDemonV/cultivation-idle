@@ -151,7 +151,7 @@ export const useTechniqueStore = create<TechniqueState>()(
           iron_body: {
             id: 'iron_body',
             name: 'Iron Body',
-            description: 'Harden your body, gaining +50% defense for 15 seconds',
+            description: 'Harden your body, gaining defense, regeneration, and damage reflection for 15 seconds',
             path: 'earth',
             tier: 2,
             intentCost: 25,
@@ -189,7 +189,7 @@ export const useTechniqueStore = create<TechniqueState>()(
           blade_rush: {
             id: 'blade_rush',
             name: 'Blade Rush',
-            description: 'Rapid slashes dealing 180% damage',
+            description: 'Rapid slashes hitting twice for heavy damage',
             path: 'martial',
             tier: 1,
             intentCost: 15,
@@ -206,7 +206,7 @@ export const useTechniqueStore = create<TechniqueState>()(
           battle_focus: {
             id: 'battle_focus',
             name: 'Battle Focus',
-            description: 'Enter a focused state, gaining +30% crit chance for 12 seconds',
+            description: 'Enter a focused state, boosting ATK and crits for 12 seconds',
             path: 'martial',
             tier: 2,
             intentCost: 30,
@@ -306,11 +306,9 @@ export const useTechniqueStore = create<TechniqueState>()(
         state.techniques[techniqueId].lastUsed = Date.now();
       });
 
-      // Apply technique effect
-      if (tech.effect.type === 'damage') {
+      const applyTechniqueDamage = (multiplier: Decimal.Value, hitLabel?: string) => {
         const baseAtk = D(gameStore.stats.atk);
-        const damageMultiplier = D(tech.effect.value);
-        const damage = multiply(baseAtk, damageMultiplier);
+        const damage = multiply(baseAtk, multiplier);
 
         // Apply damage to current enemy
         if (combatStore.currentEnemy && combatStore.inCombat) {
@@ -318,12 +316,12 @@ export const useTechniqueStore = create<TechniqueState>()(
 
           combatStore.addLogEntry(
             'player',
-            `Used ${tech.name}! Dealt ${damage.toFixed(0)} damage!`,
+            `${tech.name}${hitLabel ? ` (${hitLabel})` : ''}! Dealt ${damage.toFixed(0)} damage!`,
             '#3b82f6'
           );
 
           // Update enemy HP
-          if (!_getCombatStore) return false;
+          if (!_getCombatStore) return;
           const combat = _getCombatStore();
           combat.enemyHP = newEnemyHP.toString();
 
@@ -332,6 +330,88 @@ export const useTechniqueStore = create<TechniqueState>()(
             combatStore.defeatEnemy();
           }
         }
+      };
+
+      // Apply technique effect
+      if (tech.id === 'iron_body' && tech.effect.type === 'buff') {
+        if (tech.effect.stat && tech.effect.duration) {
+          gameStore.addBuff({
+            id: tech.id,
+            stat: tech.effect.stat,
+            value: tech.effect.value,
+            duration: tech.effect.duration,
+          });
+
+          gameStore.addBuff({
+            id: `${tech.id}_regen`,
+            stat: 'hpRegenPercent',
+            value: 0.02,
+            duration: tech.effect.duration,
+          });
+
+          gameStore.addBuff({
+            id: `${tech.id}_reflect`,
+            stat: 'reflectPercent',
+            value: 0.08,
+            duration: tech.effect.duration,
+          });
+        }
+
+        combatStore.addLogEntry(
+          'system',
+          `Used ${tech.name}! Body becomes unyielding: +${(tech.effect.value * 100).toFixed(0)}% DEF, regeneration, and damage reflection for ${((tech.effect.duration ?? 0) / 1000).toFixed(0)}s!`,
+          '#22c55e'
+        );
+      } else if (tech.id === 'battle_focus' && tech.effect.type === 'buff') {
+        if (tech.effect.duration) {
+          gameStore.addBuff({
+            id: tech.id,
+            stat: 'crit_chance',
+            value: tech.effect.value,
+            duration: tech.effect.duration,
+          });
+
+          gameStore.addBuff({
+            id: `${tech.id}_atk`,
+            stat: 'atkMultiplier',
+            value: 0.2,
+            duration: tech.effect.duration,
+          });
+
+          gameStore.addBuff({
+            id: `${tech.id}_crit_dmg`,
+            stat: 'critDamageMultiplier',
+            value: 0.25,
+            duration: tech.effect.duration,
+          });
+        }
+
+        combatStore.addLogEntry(
+          'system',
+          `Used ${tech.name}! Enter a deadly stance: +20% ATK, +30% crit chance, +25% crit damage for ${((tech.effect.duration ?? 0) / 1000).toFixed(0)}s!`,
+          '#22c55e'
+        );
+      } else if (tech.id === 'blade_rush' && tech.effect.type === 'damage') {
+        const baseMultiplier = D(tech.effect.value);
+        const perHitMultiplier = baseMultiplier.times(0.5);
+        const hasBattleFocus = gameStore.activeBuffs.some(
+          (buff) => buff.id === 'battle_focus' && buff.expiresAt > Date.now()
+        );
+        const finalHitMultiplier = hasBattleFocus
+          ? perHitMultiplier.times(1.1)
+          : perHitMultiplier;
+
+        applyTechniqueDamage(finalHitMultiplier, 'Hit 1');
+
+        // Stop if the enemy has already fallen from the first strike
+        if (combatStore.currentEnemy && lessThanOrEqualTo(combatStore.enemyHP, 0)) {
+          get().gainProficiency(techniqueId, 10);
+          return true;
+        }
+
+        applyTechniqueDamage(finalHitMultiplier, 'Hit 2');
+      } else if (tech.effect.type === 'damage') {
+        applyTechniqueDamage(tech.effect.value);
       } else if (tech.effect.type === 'buff') {
         if (tech.effect.stat && tech.effect.duration) {
           gameStore.addBuff({
