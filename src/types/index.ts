@@ -155,6 +155,7 @@ export interface GameState {
 
   // Time management
   lastTickTime: number;                 // Timestamp of last tick
+  lastActiveTime: number;               // Timestamp of last known active play state
   runStartTime: number;                 // Timestamp when current run started (for prestige)
 
   // Actions
@@ -197,6 +198,8 @@ export interface SaveData {
     upgradeTiers: UpgradeTiers;
     pityState: PityState;
     playerLuck: number;
+    lastTickTime: number;
+    lastActiveTime: number;
   };
 
   // Inventory state

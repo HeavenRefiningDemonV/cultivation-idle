@@ -213,7 +213,7 @@ export const FOCUS_MODE_MODIFIERS: Record<string, FocusModeModifiers> = {
     qiMultiplier: 0.8,       // 20% less Qi generation
     hpMultiplier: 1.5,       // 50% more HP
     atkMultiplier: 1.2,      // 20% more attack
-    defMultiplier: 1.3,      // 30% more defense
+    defMultiplier: 1.5,      // 50% more defense to emphasize resilience
   },
   spirit: {
     qiMultiplier: 1.5,       // 50% more Qi generation

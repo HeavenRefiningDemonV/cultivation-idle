@@ -36,6 +36,14 @@ export interface UIState {
   showPerkSelectionModal: boolean;
   perkSelectionRealm: number | null;
   showBreakthroughAnimation: boolean;
+  showOfflineProgressModal: boolean;
+  offlineProgressSummary: {
+    offlineDuration: string;
+    qiGained: string;
+    efficiency: number;
+    wasCapped: boolean;
+    offlineSeconds: number;
+  } | null;
 
   // Tooltips
   tooltipVisible: boolean;
@@ -55,6 +63,14 @@ export interface UIState {
   showPerkSelection: (realmIndex: number) => void;
   hidePerkSelection: () => void;
   triggerBreakthroughAnimation: () => void;
+  showOfflineProgress: (summary: {
+    offlineDuration: string;
+    qiGained: string;
+    efficiency: number;
+    wasCapped: boolean;
+    offlineSeconds: number;
+  }) => void;
+  hideOfflineProgress: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
 }
@@ -80,6 +96,8 @@ export const useUIStore = create<UIState>()(
     showPerkSelectionModal: false,
     perkSelectionRealm: null,
     showBreakthroughAnimation: false,
+    showOfflineProgressModal: false,
+    offlineProgressSummary: null,
     tooltipVisible: false,
     tooltipContent: '',
     tooltipPosition: { x: 0, y: 0 },
@@ -209,6 +227,20 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.showPerkSelectionModal = false;
         state.perkSelectionRealm = null;
+      });
+    },
+
+    showOfflineProgress: (summary) => {
+      set((state) => {
+        state.showOfflineProgressModal = true;
+        state.offlineProgressSummary = summary;
+      });
+    },
+
+    hideOfflineProgress: () => {
+      set((state) => {
+        state.showOfflineProgressModal = false;
+        state.offlineProgressSummary = null;
       });
     },
 
