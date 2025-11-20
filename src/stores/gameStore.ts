@@ -5,6 +5,7 @@ import type {
   GameState,
   FocusMode,
   CultivationPath,
+  EquipmentStats,
 } from '../types';
 import {
   REALMS,
@@ -20,19 +21,31 @@ import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 import { setGameStoreGetter } from './prestigeStore';
 import { getPerkById } from '../data/pathPerks';
 
+interface InventoryStoreDeps {
+  getEquipmentStats: () => EquipmentStats;
+}
+
+interface PrestigeStoreDeps {
+  updateHighestRealm: (index: number) => void;
+  getQiMultiplier: () => Decimal.Value;
+  getCombatMultiplier: () => Decimal.Value;
+  getCultivationMultiplier: () => Decimal.Value;
+  spiritRoot: { element?: string | null; purity: number } | null;
+}
+
 /**
  * Lazy getter for inventory store to avoid circular dependency
  */
-let _getInventoryStore: (() => any) | null = null;
-export function setInventoryStoreGetter(getter: () => any) {
+let _getInventoryStore: (() => InventoryStoreDeps) | null = null;
+export function setInventoryStoreGetter(getter: () => InventoryStoreDeps) {
   _getInventoryStore = getter;
 }
 
 /**
  * Lazy getter for prestige store to avoid circular dependency
  */
-let _getPrestigeStore: (() => any) | null = null;
-export function setPrestigeStoreGetter(getter: () => any) {
+let _getPrestigeStore: (() => PrestigeStoreDeps) | null = null;
+export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
   _getPrestigeStore = getter;
 }
 
@@ -185,7 +198,7 @@ export const useGameStore = create<GameState>()(
         try {
           const prestigeStore = _getPrestigeStore();
           prestigeStore.updateHighestRealm(get().realm.index);
-        } catch (error) {
+        } catch {
           // Prestige store not available
         }
       }
@@ -233,7 +246,7 @@ export const useGameStore = create<GameState>()(
           const prestigeStore = _getPrestigeStore();
           const prestigeMultiplier = prestigeStore.getQiMultiplier();
           qiPerSec = multiply(qiPerSec, prestigeMultiplier);
-        } catch (error) {
+        } catch {
           // Prestige store not available
         }
       }
@@ -247,7 +260,7 @@ export const useGameStore = create<GameState>()(
             const equipmentMultiplier = D(1).plus(D(equipmentStats.qiGain).dividedBy(100));
             qiPerSec = multiply(qiPerSec, equipmentMultiplier);
           }
-        } catch (error) {
+        } catch {
           // Equipment stats not available
         }
       }
@@ -286,7 +299,7 @@ export const useGameStore = create<GameState>()(
       let crit = baseStats.crit;
       let critDmg = baseStats.critDmg;
       let dodge = baseStats.dodge;
-      let speed = baseStats.speed;
+      const speed = baseStats.speed;
 
       // Apply focus mode modifiers
       const focusMod = FOCUS_MODE_MODIFIERS[state.focusMode];
@@ -323,7 +336,7 @@ export const useGameStore = create<GameState>()(
           hp = multiply(hp, combatMultiplier);
           atk = multiply(atk, combatMultiplier);
           def = multiply(def, combatMultiplier);
-        } catch (error) {
+        } catch {
           // Prestige store not available
         }
       }
@@ -361,10 +374,10 @@ export const useGameStore = create<GameState>()(
               dodge += elementBonus.dodge * purityMultiplier;
             }
           }
-        } catch (error) {
-          // Prestige store not available
+          } catch {
+            // Prestige store not available
+          }
         }
-      }
 
       // Apply equipment bonuses
       if (_getInventoryStore) {
@@ -380,7 +393,7 @@ export const useGameStore = create<GameState>()(
           dodge += equipmentStats.dodge;
 
           // Qi gain bonus is applied in calculateQiPerSecond
-        } catch (error) {
+        } catch {
           // Equipment stats not available, skip
         }
       }
@@ -484,10 +497,10 @@ export const useGameStore = create<GameState>()(
           const prestigeStore = _getPrestigeStore();
           const cultivationMultiplier = prestigeStore.getCultivationMultiplier();
           return requiredQi.dividedBy(cultivationMultiplier).toString();
-        } catch (error) {
-          // Prestige store not available, return base requirement
+          } catch {
+            // Prestige store not available, return base requirement
+          }
         }
-      }
 
       return requiredQi.toString();
     },

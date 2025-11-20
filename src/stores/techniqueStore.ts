@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { CultivationPath } from '../types';
+import type { CultivationPath, CombatLogEntry } from '../types';
 import { D, multiply, subtract, greaterThanOrEqualTo, lessThanOrEqualTo } from '../utils/numbers';
 
 /**
@@ -49,10 +49,26 @@ interface TechniqueState {
 /**
  * Lazy getters for stores to avoid circular dependencies
  */
-let _getCombatStore: any = null;
-let _getGameStore: any = null;
+interface CombatStoreDeps {
+  currentEnemy: { id: string; name: string } | null;
+  inCombat: boolean;
+  enemyHP: string;
+  addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
+  defeatEnemy: () => void;
+}
 
-export function setTechniqueStoreDependencies(getCombatStore: any, getGameStore: any) {
+interface GameStoreDeps {
+  stats: { atk: string };
+  selectedPath: CultivationPath | null;
+}
+
+let _getCombatStore: (() => CombatStoreDeps) | null = null;
+let _getGameStore: (() => GameStoreDeps) | null = null;
+
+export function setTechniqueStoreDependencies(
+  getCombatStore: () => CombatStoreDeps,
+  getGameStore: () => GameStoreDeps
+) {
   _getCombatStore = getCombatStore;
   _getGameStore = getGameStore;
 }
@@ -396,10 +412,12 @@ export const useTechniqueStore = create<TechniqueState>()(
      */
     updateTechniques: (deltaTime: number) => {
       if (!_getCombatStore) return;
+      const combatStoreGetter = _getCombatStore;
 
       // Regenerate intent
       set((state) => {
-        const combatStore = _getCombatStore();
+        const combatStore = combatStoreGetter?.();
+        if (!combatStore) return;
 
         // Intent regen is 2x faster in combat
         const regenMultiplier = combatStore.inCombat ? 2 : 1;
@@ -416,6 +434,8 @@ export const useTechniqueStore = create<TechniqueState>()(
 
       // Auto-cast techniques if in combat
       const combatStore = _getCombatStore();
+      if (!combatStore) return;
+
       if (combatStore.inCombat) {
         get().autocastTechniques();
       }

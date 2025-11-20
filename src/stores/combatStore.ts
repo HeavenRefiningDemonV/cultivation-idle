@@ -9,6 +9,30 @@ import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbe
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, updatePityCounters, formatLootMessage } from '../systems/loot';
 
+interface DungeonBoss {
+  id: string;
+  name: string;
+  hp: number;
+  atk: number;
+  def: number;
+  crit?: number;
+  critDmg?: number;
+  dodge?: number;
+  speed?: number;
+}
+
+interface DungeonData {
+  id: string;
+  name: string;
+  tier: number;
+  rewards: {
+    gold?: number;
+    exp?: number;
+    guaranteedDrop?: { itemId: string; name: string };
+  };
+  boss: DungeonBoss;
+}
+
 /**
  * Defense constant for damage calculation
  * Damage = ATK * (1 - DEF/(DEF + K))
@@ -32,7 +56,7 @@ let bossMechanics: BossMechanics | null = null;
  */
 interface ExtendedCombatState extends CombatState {
   currentDungeon: string | null;
-  startDungeonCombat: (dungeonId: string, boss: any, dungeonData: any) => void;
+  startDungeonCombat: (dungeonId: string, boss: DungeonBoss, dungeonData: DungeonData) => void;
 }
 
 /**
@@ -108,7 +132,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
     /**
      * Start dungeon combat with a boss
      */
-    startDungeonCombat: (dungeonId: string, boss: any, dungeonData: any) => {
+    startDungeonCombat: (dungeonId: string, boss: DungeonBoss, dungeonData: DungeonData) => {
       const playerStats = useGameStore.getState().stats;
       const now = Date.now();
 
@@ -362,9 +386,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (currentDungeon) {
         // Load dungeon data
         fetch('/config/dungeons.json')
-          .then(res => res.json())
-          .then(data => {
-            const dungeon = data.dungeons.find((d: any) => d.id === currentDungeon);
+          .then(res => res.json() as Promise<{ dungeons: DungeonData[] }>)
+          .then((data) => {
+            const dungeon = data.dungeons.find((d) => d.id === currentDungeon);
             if (!dungeon) return;
 
             const dungeonStore = useDungeonStore.getState();

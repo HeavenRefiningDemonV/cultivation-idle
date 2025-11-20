@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { GameState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
+import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
+import { D } from '../utils/numbers';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -13,8 +14,8 @@ export function setGameStoreGetter(getter: () => GameState) {
 /**
  * Lazy getter for inventory store to avoid circular dependency
  */
-let _getInventoryStore: (() => any) | null = null;
-export function setInventoryStoreGetter(getter: () => any) {
+let _getInventoryStore: (() => InventoryState) | null = null;
+export function setInventoryStoreGetter(getter: () => InventoryState) {
   _getInventoryStore = getter;
 }
 
@@ -364,7 +365,7 @@ export const usePrestigeStore = create<PrestigeState>()(
       const inventoryStore = _getInventoryStore();
 
       // Check if player has enough gold
-      if (inventoryStore.gold.lt(cost)) {
+      if (D(inventoryStore.gold).lt(cost)) {
         console.log(`[SpiritRoot] Not enough gold to reroll (need ${cost})`);
         return false;
       }

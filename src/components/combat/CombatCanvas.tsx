@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCombatStore } from '../../stores/combatStore';
 import { ParticlePool, DamageNumberPool } from './particles';
 import { createAnimation, updateAnimation, ScreenShake, FlashEffect, Easing } from './animations';
@@ -64,30 +64,30 @@ export function CombatCanvas({
   /**
    * Get background colors for current zone
    */
-  const getBackground = () => {
-    const zoneKey = currentZone || 'default';
-    return ZONE_BACKGROUNDS[zoneKey] || ZONE_BACKGROUNDS.default;
-  };
+    const getBackground = useCallback(() => {
+      const zoneKey = currentZone || 'default';
+      return ZONE_BACKGROUNDS[zoneKey] || ZONE_BACKGROUNDS.default;
+    }, [currentZone]);
 
   /**
    * Draw background
    */
-  const drawBackground = (ctx: CanvasRenderingContext2D) => {
-    const bg = getBackground();
-    const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, bg.top);
+    const drawBackground = useCallback((ctx: CanvasRenderingContext2D) => {
+      const bg = getBackground();
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      gradient.addColorStop(0, bg.top);
     gradient.addColorStop(1, bg.bottom);
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
     // Ground line
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, height - 50);
-    ctx.lineTo(width, height - 50);
-    ctx.stroke();
-  };
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, height - 50);
+      ctx.lineTo(width, height - 50);
+      ctx.stroke();
+    }, [getBackground, height, width]);
 
   /**
    * Draw entity (player or enemy)
@@ -208,9 +208,9 @@ export function CombatCanvas({
   /**
    * Handle combat log updates and trigger animations
    */
-  useEffect(() => {
-    if (!inCombat || combatLog.length === 0) {
-      lastLogLengthRef.current = 0;
+    useEffect(() => {
+      if (!inCombat || combatLog.length === 0) {
+        lastLogLengthRef.current = 0;
       return;
     }
 
@@ -316,14 +316,14 @@ export function CombatCanvas({
         }
       }
     }
-  }, [combatLog, inCombat]);
+    }, [combatLog, damageNumbers, entityY, flashEffect, inCombat, particlePool, screenShake]);
 
   /**
    * Main render loop
    */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -407,32 +407,44 @@ export function CombatCanvas({
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [
-    width,
-    height,
-    inCombat,
-    currentEnemy,
-    currentZone,
-    playerHP,
-    enemyHP,
-    playerMaxHP,
-    enemyMaxHP,
-    playerX,
-    enemyX,
-  ]);
+    }, [
+      width,
+      height,
+      inCombat,
+      currentEnemy,
+      currentZone,
+      playerHP,
+      enemyHP,
+      playerMaxHP,
+      enemyMaxHP,
+      playerX,
+      enemyX,
+      damageNumbers,
+      drawBackground,
+      entityY,
+      flashEffect,
+      particlePool,
+      screenShake,
+    ]);
 
   // Reset when combat ends
-  useEffect(() => {
-    if (!inCombat) {
-      particlePool.clear();
-      damageNumbers.clear();
-      setPlayerX(basePlayerX);
-      setEnemyX(baseEnemyX);
-      playerAnimRef.current = null;
-      enemyAnimRef.current = null;
-      lastLogLengthRef.current = 0;
-    }
-  }, [inCombat]);
+    useEffect(() => {
+      if (!inCombat) {
+        particlePool.clear();
+        damageNumbers.clear();
+        setPlayerX(basePlayerX);
+        setEnemyX(baseEnemyX);
+        playerAnimRef.current = null;
+        enemyAnimRef.current = null;
+        lastLogLengthRef.current = 0;
+      }
+    }, [
+      baseEnemyX,
+      basePlayerX,
+      damageNumbers,
+      inCombat,
+      particlePool,
+    ]);
 
   return (
     <canvas

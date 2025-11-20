@@ -70,26 +70,27 @@ function gatherGameState(): SaveData {
 /**
  * Validate save data structure
  */
-function validateSaveData(data: any): data is SaveData {
+function validateSaveData(data: unknown): data is SaveData {
   try {
     if (!data || typeof data !== 'object') return false;
-    if (!data.version || !data.timestamp) return false;
-    if (!data.gameState || !data.inventoryState || !data.combatSettings) return false;
+    const record = data as Record<string, unknown>;
+    if (!('version' in record) || !('timestamp' in record)) return false;
+    if (!('gameState' in record) || !('inventoryState' in record) || !('combatSettings' in record)) return false;
 
     // Basic structure validation
-    const gs = data.gameState;
-    if (!gs.realm || typeof gs.qi !== 'string') return false;
+    const gs = record.gameState as Record<string, unknown>;
+    if (!('realm' in gs) || typeof gs.qi !== 'string') return false;
 
-    const is = data.inventoryState;
-    if (!Array.isArray(is.items) || typeof is.gold !== 'string') return false;
+    const is = record.inventoryState as Record<string, unknown>;
+    if (!Array.isArray((is as { items?: unknown }).items) || typeof is.gold !== 'string') return false;
 
-    const cs = data.combatSettings;
+    const cs = record.combatSettings as Record<string, unknown>;
     if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
 
     // Zone state validation (optional for backward compatibility)
-    if (data.zoneState) {
-      const zs = data.zoneState;
-      if (!Array.isArray(zs.unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
+    if ('zoneState' in record && record.zoneState) {
+      const zs = record.zoneState as Record<string, unknown>;
+      if (!Array.isArray((zs as { unlockedZones?: unknown }).unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
     }
 
     return true;
