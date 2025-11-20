@@ -26,9 +26,12 @@ import {
   ZONE_REALM_REQUIREMENTS,
   ZONE_UNLOCK_REQUIREMENTS,
 } from './zoneStore';
+import { useDungeonStore } from './dungeonStore';
+import { useTechniqueStore } from './techniqueStore';
 
 interface InventoryStoreDeps {
   getEquipmentStats: () => EquipmentStats;
+  resetInventory: () => void;
 }
 
 interface PrestigeStoreDeps {
@@ -37,6 +40,11 @@ interface PrestigeStoreDeps {
   getCombatMultiplier: () => Decimal.Value;
   getCultivationMultiplier: () => Decimal.Value;
   spiritRoot: { element?: string | null; purity: number } | null;
+}
+
+interface CombatStoreDeps {
+  resetCombat: () => void;
+  exitCombat: () => void;
 }
 
 /**
@@ -53,6 +61,11 @@ export function setInventoryStoreGetter(getter: () => InventoryStoreDeps) {
 let _getPrestigeStore: (() => PrestigeStoreDeps) | null = null;
 export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
   _getPrestigeStore = getter;
+}
+
+let _getCombatStore: (() => CombatStoreDeps) | null = null;
+export function setCombatStoreGetter(getter: () => CombatStoreDeps) {
+  _getCombatStore = getter;
 }
 
 const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
@@ -208,7 +221,7 @@ export const useGameStore = create<GameState>()(
 
       // Check breakthrough gate item when advancing realms
       const gateItemId = canAdvanceToNextRealm ? GATE_ITEMS[state.realm.index] : undefined;
-      let inventoryStore: any = null;
+        let inventoryStore: InventoryStoreDeps | null = null;
 
       if (gateItemId) {
         if (_getInventoryStore) {
@@ -604,6 +617,51 @@ export const useGameStore = create<GameState>()(
     performPrestigeReset: () => {
       // Reset game progression
       get().resetRun();
+
+      // Clear inventory and equipment
+      if (_getInventoryStore) {
+        try {
+          const inventoryStore = _getInventoryStore();
+          inventoryStore.resetInventory();
+        } catch {
+          // Inventory store not available
+        }
+      }
+
+      // Exit and reset combat state
+      if (_getCombatStore) {
+        try {
+          const combatStore = _getCombatStore();
+          if (combatStore.resetCombat) {
+            combatStore.resetCombat();
+          } else {
+            combatStore.exitCombat();
+          }
+        } catch {
+          // Combat store not available
+        }
+      }
+
+      // Reset world progression
+      try {
+        useZoneStore.getState().resetAllZones();
+      } catch {
+        // Zone store not available
+      }
+
+      // Reset dungeon progression
+      try {
+        useDungeonStore.getState().resetDungeons();
+      } catch {
+        // Dungeon store not available
+      }
+
+      // Reset techniques and intent
+      try {
+        useTechniqueStore.getState().resetTechniques();
+      } catch {
+        // Technique store not available
+      }
 
       // Prestige-specific logic handled in prestige store
       // Apply prestige bonuses (they're automatically applied through getters in prestigeStore)

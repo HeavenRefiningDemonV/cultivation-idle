@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { CombatState, EnemyDefinition, CombatLogEntry } from '../types';
-import { useGameStore } from './gameStore';
+import { useGameStore, setCombatStoreGetter } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
@@ -57,6 +57,7 @@ let bossMechanics: BossMechanics | null = null;
 interface ExtendedCombatState extends CombatState {
   currentDungeon: string | null;
   startDungeonCombat: (dungeonId: string, boss: DungeonBoss, dungeonData: DungeonData) => void;
+  resetCombat: () => void;
 }
 
 /**
@@ -213,6 +214,29 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.enemyMaxHP = '0';
         state.lastAttackTime = 0;
         state.lastEnemyAttackTime = 0;
+        state.isBoss = false;
+        state.combatStartTime = 0;
+      });
+    },
+
+    resetCombat: () => {
+      bossMechanics = null;
+
+      set((state) => {
+        state.inCombat = false;
+        state.currentZone = null;
+        state.currentDungeon = null;
+        state.currentEnemy = null;
+        state.playerHP = '0';
+        state.playerMaxHP = '0';
+        state.enemyHP = '0';
+        state.enemyMaxHP = '0';
+        state.combatLog = [];
+        state.autoAttack = false;
+        state.autoCombatAI = false;
+        state.lastAttackTime = 0;
+        state.lastEnemyAttackTime = 0;
+        state.techniquesCooldowns = {};
         state.isBoss = false;
         state.combatStartTime = 0;
       });
@@ -689,3 +713,5 @@ export const useCombatStore = create<ExtendedCombatState>()(
     },
   }))
 );
+
+setCombatStoreGetter(() => useCombatStore.getState());

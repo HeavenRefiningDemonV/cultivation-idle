@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
+import { REALMS } from '../constants';
 import { D } from '../utils/numbers';
 
 /**
@@ -49,6 +50,8 @@ interface PrestigeState {
   prestigeCount: number;
   prestigeRuns: PrestigeRun[];
   upgrades: Record<string, PrestigeUpgrade>;
+  highestRealmReached: number;
+  runStartTime: number;
 
   // Spirit root
   spiritRoot: SpiritRoot | null;
@@ -59,6 +62,10 @@ interface PrestigeState {
   performPrestige: () => void;
   purchaseUpgrade: (upgradeId: string) => boolean;
   getUpgradeEffect: (upgradeId: string) => number;
+  updateHighestRealm: (realmIndex: number) => void;
+  getQiMultiplier: () => number;
+  getCombatMultiplier: () => number;
+  getCultivationMultiplier: () => number;
   initializeUpgrades: () => void;
 
   // Spirit root methods
@@ -87,29 +94,44 @@ export const usePrestigeStore = create<PrestigeState>()(
     prestigeCount: 0,
     prestigeRuns: [],
     upgrades: {},
+    highestRealmReached: 0,
+    runStartTime: Date.now(),
     spiritRoot: null,
 
     calculateAPGain: () => {
       if (!_getGameStore) return 0;
       const gameStore = _getGameStore();
-      const currentRealm = gameStore.realm?.index || 0;
+      const state = get();
+      const currentRealm = gameStore.realm;
 
-      // Exponential realm bonus
-      const realmBonus = Math.pow(2, currentRealm) * 30;
+      const realmIndex = Math.max(state.highestRealmReached, currentRealm?.index ?? 0);
+      const realmDefinition = REALMS[realmIndex] || REALMS[0];
+      const substageProgress = Math.max(
+        0,
+        ((currentRealm?.substage ?? 1) - 1) / Math.max(1, realmDefinition.substages)
+      );
 
-      // Time bonus (logarithmic to prevent idle farming)
-      const runStartTime = gameStore.runStartTime || Date.now();
-      const runTimeHours = (Date.now() - runStartTime) / (1000 * 60 * 60);
-      const timeBonus = Math.floor(Math.log(runTimeHours + 1) * 10);
+      const realmBonus = Math.max(0, realmIndex - 1) * 10; // Only award AP after Foundation
+      const substageBonus = Math.floor(substageProgress * 5);
 
-      return Math.floor(realmBonus + timeBonus);
+      const runTimeHours = (Date.now() - state.runStartTime) / (1000 * 60 * 60);
+      const timeBonus = Math.max(0, Math.floor(runTimeHours));
+
+      return Math.max(0, Math.floor(realmBonus + substageBonus + timeBonus));
     },
 
     canPrestige: () => {
       if (!_getGameStore) return false;
       const gameStore = _getGameStore();
       const currentRealm = gameStore.realm?.index || 0;
-      return currentRealm >= 2; // Core Formation (realm 2)
+      const highestRealm = get().highestRealmReached;
+      return Math.max(currentRealm, highestRealm) >= 2; // Core Formation (realm 2)
+    },
+
+    updateHighestRealm: (realmIndex: number) => {
+      set((state) => {
+        state.highestRealmReached = Math.max(state.highestRealmReached, realmIndex);
+      });
     },
 
     performPrestige: () => {
@@ -119,14 +141,13 @@ export const usePrestigeStore = create<PrestigeState>()(
 
       if (!state.canPrestige()) return;
 
-      const apGained = state.calculateAPGain();
-      const runStartTime = gameStore.runStartTime || Date.now();
-      const runTime = (Date.now() - runStartTime) / 1000;
-      const currentRealm = gameStore.realm?.index || 0;
+      const trackedRealm = Math.max(state.highestRealmReached, gameStore.realm?.index || 0);
+      const apGained = Math.max(0, state.calculateAPGain());
+      const runTime = (Date.now() - state.runStartTime) / 1000;
 
       const newRun: PrestigeRun = {
         runNumber: state.prestigeCount + 1,
-        realmReached: currentRealm,
+        realmReached: trackedRealm,
         apGained,
         timeSpent: runTime,
         timestamp: Date.now(),
@@ -138,10 +159,15 @@ export const usePrestigeStore = create<PrestigeState>()(
         state.currentRunAP = 0;
         state.prestigeCount += 1;
         state.prestigeRuns = [...state.prestigeRuns, newRun].slice(-10); // Keep last 10 runs
+        state.highestRealmReached = 0;
+        state.runStartTime = Date.now();
       });
 
       // Trigger game reset
       gameStore.performPrestigeReset();
+
+      // Start next run with a fresh spirit root
+      get().generateSpiritRoot();
     },
 
     purchaseUpgrade: (upgradeId: string) => {
@@ -175,6 +201,22 @@ export const usePrestigeStore = create<PrestigeState>()(
       }
 
       return 0;
+    },
+
+    getQiMultiplier: () => {
+      const idleBonus = get().getUpgradeEffect('idle_mult');
+      return 1 + idleBonus;
+    },
+
+    getCombatMultiplier: () => {
+      const damageBonus = get().getUpgradeEffect('damage_mult');
+      const hpBonus = get().getUpgradeEffect('hp_mult');
+      return 1 + damageBonus + hpBonus;
+    },
+
+    getCultivationMultiplier: () => {
+      const cultivationBonus = get().getUpgradeEffect('offline_mult');
+      return 1 + cultivationBonus;
     },
 
     initializeUpgrades: () => {

@@ -21,6 +21,7 @@ interface DungeonState {
   unlockDungeon: (dungeonId: string) => void;
   isDungeonUnlocked: (dungeonId: string) => boolean;
   exitDungeon: () => void;
+  resetDungeons: () => void;
 }
 
 export const useDungeonStore = create<DungeonState>()(
@@ -95,6 +96,18 @@ export const useDungeonStore = create<DungeonState>()(
       set((state) => {
         state.currentDungeon = null;
       });
+    },
+
+    resetDungeons: () => {
+      set((state) => {
+        state.dungeonProgress = {};
+        state.currentDungeon = null;
+        state.unlockedDungeons = {
+          novice_clearing: true,
+        };
+      });
+
+      console.log('[DungeonStore] Dungeon progress reset for new run');
     },
   }))
 );

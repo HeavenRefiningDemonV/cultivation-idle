@@ -1,4 +1,4 @@
-import { useGameStore, initializeGameStore } from '../stores/gameStore';
+import { useGameStore, initializeGameStore, setPrestigeStoreGetter } from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
 import { usePrestigeStore, setInventoryStoreGetter } from '../stores/prestigeStore';
 import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
@@ -224,6 +224,12 @@ export function initializeGame(): boolean {
     // Initialize prestige store upgrades
     usePrestigeStore.getState().initializeUpgrades();
     console.log('[GameLoop] Prestige store initialized');
+
+    // Register prestige store with game store
+    setPrestigeStoreGetter(() => usePrestigeStore.getState());
+
+    // Align prestige run timer with current run state
+    usePrestigeStore.setState({ runStartTime: useGameStore.getState().runStartTime });
 
     // Initialize technique store
     useTechniqueStore.getState().initializeTechniques();

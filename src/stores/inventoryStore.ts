@@ -706,6 +706,19 @@ export const useInventoryStore = create<InventoryState>()(
       const state = get();
       return state.getItemCount(itemId) >= quantity;
     },
+
+    /**
+     * Reset all inventory progress for a new run
+     */
+    resetInventory: () => {
+      set((state) => {
+        state.items = [];
+        state.equippedWeapon = null;
+        state.equippedAccessory = null;
+        state.gold = '0';
+        state.maxSlots = 20;
+      });
+    },
   }))
 );
 

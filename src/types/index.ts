@@ -373,6 +373,7 @@ export interface InventoryState {
   getEquipmentStats: () => EquipmentStats;
   getItemCount: (itemId: string) => number;
   hasItem: (itemId: string, quantity?: number) => boolean;
+  resetInventory: () => void;
 }
 
 /**

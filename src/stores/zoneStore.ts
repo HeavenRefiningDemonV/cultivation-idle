@@ -33,6 +33,7 @@ export interface ZoneState {
   getZoneProgress: (zoneId: string) => ZoneProgress;
   getTotalEnemiesDefeated: (zoneId: string) => number;
   resetZoneProgress: (zoneId: string) => void;
+  resetAllZones: () => void;
 }
 
 /**
@@ -271,6 +272,19 @@ export const useZoneStore = create<ZoneState>()(
       });
 
       console.log(`[ZoneStore] Zone progress reset: ${zoneId}`);
+    },
+
+    /**
+     * Reset all zones to starting state (used during prestige)
+     */
+    resetAllZones: () => {
+      set((state) => {
+        state.unlockedZones = [...INITIAL_UNLOCKED_ZONES];
+        state.currentZone = null;
+        state.zoneProgress = {};
+      });
+
+      console.log('[ZoneStore] All zones reset to initial state');
     },
   }))
 );

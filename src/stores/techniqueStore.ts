@@ -44,6 +44,7 @@ interface TechniqueState {
   updateTechniques: (deltaTime: number) => void;
   gainProficiency: (techniqueId: string, amount: number) => void;
   autocastTechniques: () => void;
+  resetTechniques: () => void;
 }
 
 /**
@@ -439,6 +440,19 @@ export const useTechniqueStore = create<TechniqueState>()(
       if (combatStore.inCombat) {
         get().autocastTechniques();
       }
+    },
+
+    /**
+     * Reset techniques to their initial state for a new run
+     */
+    resetTechniques: () => {
+      set((state) => {
+        state.currentIntent = '0';
+        state.maxIntent = '100';
+        state.intentRegenRate = '5';
+      });
+
+      get().initializeTechniques();
     },
   }))
 );
