@@ -1,6 +1,7 @@
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { useGameStore } from '../../stores/gameStore';
+import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import { D } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
@@ -180,6 +181,7 @@ export function CombatView() {
   } = useCombatStore();
 
   const stats = useGameStore((state) => state.stats);
+  const showCombatLog = useUIStore((state) => state.settings.showCombatLog);
 
   if (!currentEnemy) {
     return (
@@ -333,25 +335,26 @@ export function CombatView() {
       </div>
 
       {/* Techniques and Combat Log Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid grid-cols-1 ${showCombatLog ? 'lg:grid-cols-2' : ''} gap-6`}>
         {/* Technique Panel */}
         <TechniquePanel />
 
-        {/* Combat Log */}
-        <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-cinzel font-bold text-gold-accent mb-3">Combat Log</h3>
-          <div className="max-h-64 overflow-y-auto space-y-1 font-mono text-sm">
-            {combatLog.length === 0 ? (
-              <p className="text-slate-500 italic">No messages yet...</p>
-            ) : (
-              combatLog.slice(-20).reverse().map((log, idx) => (
-                <div key={`${log.timestamp}-${idx}`} className={log.color || 'text-slate-300'}>
-                  {log.text}
-                </div>
-              ))
-            )}
+        {showCombatLog && (
+          <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-4 backdrop-blur-sm">
+            <h3 className="text-lg font-cinzel font-bold text-gold-accent mb-3">Combat Log</h3>
+            <div className="max-h-64 overflow-y-auto space-y-1 font-mono text-sm">
+              {combatLog.length === 0 ? (
+                <p className="text-slate-500 italic">No messages yet...</p>
+              ) : (
+                combatLog.slice(-20).reverse().map((log, idx) => (
+                  <div key={`${log.timestamp}-${idx}`} className={log.color || 'text-slate-300'}>
+                    {log.text}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

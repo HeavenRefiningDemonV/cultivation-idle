@@ -22,15 +22,20 @@ interface DungeonState {
   isDungeonUnlocked: (dungeonId: string) => boolean;
   exitDungeon: () => void;
   resetDungeons: () => void;
+  hardResetDungeons: () => void;
 }
+
+const createInitialDungeonState = () => ({
+  dungeonProgress: {} as Record<string, DungeonProgress>,
+  currentDungeon: null as string | null,
+  unlockedDungeons: {
+    novice_clearing: true,
+  } as Record<string, boolean>,
+});
 
 export const useDungeonStore = create<DungeonState>()(
   immer((set, get) => ({
-    dungeonProgress: {},
-    currentDungeon: null,
-    unlockedDungeons: {
-      novice_clearing: true, // First dungeon is unlocked by default
-    },
+    ...createInitialDungeonState(),
 
     startDungeon: (dungeonId: string) => {
       set((state) => {
@@ -100,14 +105,16 @@ export const useDungeonStore = create<DungeonState>()(
 
     resetDungeons: () => {
       set((state) => {
-        state.dungeonProgress = {};
-        state.currentDungeon = null;
-        state.unlockedDungeons = {
-          novice_clearing: true,
-        };
+        Object.assign(state, createInitialDungeonState());
       });
 
       console.log('[DungeonStore] Dungeon progress reset for new run');
+    },
+
+    hardResetDungeons: () => {
+      set((state) => {
+        Object.assign(state, createInitialDungeonState());
+      });
     },
   }))
 );

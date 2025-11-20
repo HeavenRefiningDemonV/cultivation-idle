@@ -16,12 +16,23 @@ export interface UINotification {
 /**
  * Available game tabs
  */
-export type GameTab = 'cultivation' | 'status' | 'adventure' | 'dungeon' | 'inventory' | 'techniques' | 'prestige' | 'settings';
+export type GameTab =
+  | 'cultivation'
+  | 'status'
+  | 'adventure'
+  | 'dungeon'
+  | 'inventory'
+  | 'techniques'
+  | 'prestige'
+  | 'settings';
 
-/**
- * UI state interface
- */
-export interface UIState {
+export interface UISettingsState {
+  showOfflineModal: boolean;
+  showCombatLog: boolean;
+  requirePrestigeConfirm: boolean;
+}
+
+interface UIStateBase {
   // Active tab
   activeTab: GameTab;
 
@@ -40,12 +51,19 @@ export interface UIState {
   showOfflineProgressModal: boolean;
   offlineProgressSummary: OfflineProgressSummary | null;
 
+  // UI Settings
+  settings: UISettingsState;
+
   // Tooltips
   tooltipVisible: boolean;
   tooltipContent: string;
   tooltipPosition: { x: number; y: number };
+}
 
-  // Actions
+/**
+ * UI state interface
+ */
+export interface UIState extends UIStateBase {
   setActiveTab: (tab: GameTab) => void;
   toggleSidePanel: () => void;
   addNotification: (type: UINotification['type'], message: string, duration?: number) => void;
@@ -62,7 +80,30 @@ export interface UIState {
   hideOfflineProgress: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
+  setSettings: (partial: Partial<UISettingsState>) => void;
+  hardResetUI: () => void;
 }
+
+const INITIAL_UI_STATE: UIStateBase = {
+  activeTab: 'cultivation',
+  showSidePanel: false,
+  notifications: [],
+  showPrestigeModal: false,
+  showPathSelectionModal: false,
+  showPerkSelectionModal: false,
+  perkSelectionRealm: null,
+  showBreakthroughAnimation: false,
+  showOfflineProgressModal: false,
+  offlineProgressSummary: null,
+  settings: {
+    showOfflineModal: true,
+    showCombatLog: true,
+    requirePrestigeConfirm: true,
+  },
+  tooltipVisible: false,
+  tooltipContent: '',
+  tooltipPosition: { x: 0, y: 0 },
+};
 
 /**
  * Generate unique notification ID
@@ -76,20 +117,7 @@ function generateNotificationId(): string {
  */
 export const useUIStore = create<UIState>()(
   immer((set, get) => ({
-    // Initial state
-    activeTab: 'cultivation',
-    showSidePanel: false,
-    notifications: [],
-    showPrestigeModal: false,
-    showPathSelectionModal: false,
-    showPerkSelectionModal: false,
-    perkSelectionRealm: null,
-    showBreakthroughAnimation: false,
-    showOfflineProgressModal: false,
-    offlineProgressSummary: null,
-    tooltipVisible: false,
-    tooltipContent: '',
-    tooltipPosition: { x: 0, y: 0 },
+    ...INITIAL_UI_STATE,
 
     /**
      * Set the active tab
@@ -196,6 +224,7 @@ export const useUIStore = create<UIState>()(
     hidePathSelection: () => {
       set((state) => {
         state.showPathSelectionModal = false;
+        state.perkSelectionRealm = null;
       });
     },
 
@@ -271,6 +300,24 @@ export const useUIStore = create<UIState>()(
     hideTooltip: () => {
       set((state) => {
         state.tooltipVisible = false;
+      });
+    },
+
+    /**
+     * Update UI settings
+     */
+    setSettings: (partial: Partial<UISettingsState>) => {
+      set((state) => {
+        state.settings = { ...state.settings, ...partial };
+      });
+    },
+
+    /**
+     * Hard reset all UI state
+     */
+    hardResetUI: () => {
+      set((state) => {
+        Object.assign(state, INITIAL_UI_STATE);
       });
     },
   }))

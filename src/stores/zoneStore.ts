@@ -34,6 +34,7 @@ export interface ZoneState {
   getTotalEnemiesDefeated: (zoneId: string) => number;
   resetZoneProgress: (zoneId: string) => void;
   resetAllZones: () => void;
+  hardResetZones: () => void;
 }
 
 /**
@@ -71,15 +72,19 @@ export const ZONE_REALM_REQUIREMENTS: Record<string, number> = {
   mystic_mountains: 2,
 };
 
+const createInitialZoneState = () => ({
+  unlockedZones: [...INITIAL_UNLOCKED_ZONES],
+  currentZone: null as string | null,
+  zoneProgress: {} as Record<string, ZoneProgress>,
+});
+
 /**
  * Zone store for tracking progression and unlocks
  */
 export const useZoneStore = create<ZoneState>()(
   immer((set, get) => ({
     // Initial state
-    unlockedZones: INITIAL_UNLOCKED_ZONES,
-    currentZone: null,
-    zoneProgress: {},
+    ...createInitialZoneState(),
 
     /**
      * Unlock a zone
@@ -279,12 +284,16 @@ export const useZoneStore = create<ZoneState>()(
      */
     resetAllZones: () => {
       set((state) => {
-        state.unlockedZones = [...INITIAL_UNLOCKED_ZONES];
-        state.currentZone = null;
-        state.zoneProgress = {};
+        Object.assign(state, createInitialZoneState());
       });
 
       console.log('[ZoneStore] All zones reset to initial state');
+    },
+
+    hardResetZones: () => {
+      set((state) => {
+        Object.assign(state, createInitialZoneState());
+      });
     },
   }))
 );

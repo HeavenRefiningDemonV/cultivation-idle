@@ -9,6 +9,7 @@ import { DungeonScreen } from './screens/DungeonScreen';
 import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
+import { SettingsScreen } from './screens/SettingsScreen';
 
 /**
  * Placeholder content for tabs
@@ -37,18 +38,12 @@ function TechniquesTab() {
 }
 
 /**
- * Settings tab content (placeholder for now)
- */
-function SettingsTab() {
-  return <PlaceholderContent tabName="Settings" />;
-}
-
-/**
  * Main game layout component
  */
 export function GameLayout() {
   const activeTab = useUIStore((state) => state.activeTab);
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
+  const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
 
   // Render content based on active tab
   const renderContent = () => {
@@ -69,7 +64,7 @@ export function GameLayout() {
       case 'prestige':
         return <PrestigeScreen />;
       case 'settings':
-        return <SettingsTab />;
+        return <SettingsScreen />;
       default:
         return <PlaceholderContent tabName="Unknown" />;
     }
@@ -86,7 +81,7 @@ export function GameLayout() {
         {renderContent()}
       </main>
 
-      {showOfflineProgressModal && <OfflineProgressModal />}
+      {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
     </div>
   );
 }

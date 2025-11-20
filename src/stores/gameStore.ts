@@ -82,6 +82,35 @@ const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
     prerequisiteZone: ZONE_UNLOCK_REQUIREMENTS[zoneId],
   }));
 
+const createInitialGameState = () => ({
+  realm: { ...INITIAL_REALM },
+  qi: '0',
+  qiPerSecond: '1',
+  stats: { ...INITIAL_STATS },
+  activeBuffs: [],
+  absorptionShield: '0',
+  absorptionExpiresAt: null as number | null,
+  selectedPath: null as CultivationPath | null,
+  focusMode: 'balanced' as FocusMode,
+  pathPerks: [] as string[],
+  totalAuras: 0,
+  upgradeTiers: {
+    idle: 0,
+    damage: 0,
+    hp: 0,
+  },
+  pityState: {
+    killsSinceUncommon: 0,
+    killsSinceRare: 0,
+    killsSinceEpic: 0,
+    killsSinceLegendary: 0,
+  },
+  playerLuck: 0,
+  lastTickTime: Date.now(),
+  lastActiveTime: Date.now(),
+  runStartTime: Date.now(),
+});
+
 function unlockContentForRealm(realmIndex: number) {
   try {
     const zoneStore = useZoneStore.getState();
@@ -109,32 +138,7 @@ function unlockContentForRealm(realmIndex: number) {
 export const useGameStore = create<GameState>()(
   immer((set, get) => ({
     // Initial state
-    realm: { ...INITIAL_REALM },
-    qi: '0',
-    qiPerSecond: '1',
-    stats: { ...INITIAL_STATS },
-    activeBuffs: [],
-    absorptionShield: '0',
-    absorptionExpiresAt: null,
-    selectedPath: null,
-    focusMode: 'balanced',
-    pathPerks: [],
-    totalAuras: 0,
-    upgradeTiers: {
-      idle: 0,
-      damage: 0,
-      hp: 0,
-    },
-    pityState: {
-      killsSinceUncommon: 0,
-      killsSinceRare: 0,
-      killsSinceEpic: 0,
-      killsSinceLegendary: 0,
-    },
-    playerLuck: 0,
-    lastTickTime: Date.now(),
-    lastActiveTime: Date.now(),
-    runStartTime: Date.now(),
+    ...createInitialGameState(),
 
     /**
      * Main game tick - called regularly to update Qi and state
@@ -810,29 +814,24 @@ export const useGameStore = create<GameState>()(
      * Reset the current run (for prestige systems)
      */
     resetRun: () => {
+      const baseState = createInitialGameState();
       set((state) => {
-        state.realm = { ...INITIAL_REALM };
-        state.qi = '0';
-        state.qiPerSecond = '1';
-        state.stats = { ...INITIAL_STATS };
-        state.activeBuffs = [];
-        state.absorptionShield = '0';
-        state.absorptionExpiresAt = null;
-        state.selectedPath = null;
-        state.focusMode = 'balanced';
-        state.pathPerks = [];
-        state.upgradeTiers = {
-          idle: 0,
-          damage: 0,
-          hp: 0,
-        };
-        state.lastTickTime = Date.now();
-        state.runStartTime = Date.now();
-        state.lastActiveTime = Date.now();
-        // Note: totalAuras is NOT reset - it's a prestige currency
+        const preservedAuras = state.totalAuras;
+        Object.assign(state, baseState);
+        state.totalAuras = preservedAuras; // Prestige currency persists through run resets
       });
 
       // Recalculate everything
+      get().calculateQiPerSecond();
+      get().calculatePlayerStats();
+    },
+
+    hardResetGameState: () => {
+      const baseState = createInitialGameState();
+      set((state) => {
+        Object.assign(state, baseState);
+      });
+
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
     },

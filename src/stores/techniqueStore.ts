@@ -23,6 +23,7 @@ interface TechniqueState {
   gainProficiency: (techniqueId: string, amount: number) => void;
   autocastTechniques: () => void;
   resetTechniques: () => void;
+  hardResetTechniques: () => void;
 }
 
 /**
@@ -54,15 +55,19 @@ export function setTechniqueStoreDependencies(
   _getGameStore = getGameStore;
 }
 
+const createInitialTechniqueState = () => ({
+  techniques: {} as Record<string, Technique>,
+  currentIntent: '0',
+  maxIntent: '100',
+  intentRegenRate: '5',
+});
+
 /**
  * Technique store managing combat techniques, intent, and proficiency
  */
 export const useTechniqueStore = create<TechniqueState>()(
   immer((set, get) => ({
-    techniques: {},
-    currentIntent: '0',
-    maxIntent: '100',
-    intentRegenRate: '5', // per second
+    ...createInitialTechniqueState(),
 
     /**
      * Initialize all techniques with default values
@@ -456,6 +461,13 @@ export const useTechniqueStore = create<TechniqueState>()(
         state.intentRegenRate = '5';
       });
 
+      get().initializeTechniques();
+    },
+
+    hardResetTechniques: () => {
+      set((state) => {
+        Object.assign(state, createInitialTechniqueState());
+      });
       get().initializeTechniques();
     },
   }))

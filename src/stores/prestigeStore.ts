@@ -78,6 +78,7 @@ interface PrestigeState {
   getSpiritRootQualityMultiplier: () => number;
   getSpiritRootPurityMultiplier: () => number;
   getSpiritRootTotalMultiplier: () => number;
+  hardResetPrestige: () => void;
 }
 
 /**
@@ -90,18 +91,22 @@ const QUALITY_NAMES = ['', 'Mortal', 'Common', 'Uncommon', 'Rare', 'Legendary'];
  */
 const ELEMENTS: SpiritRootElement[] = ['fire', 'water', 'earth', 'metal', 'wood'];
 
-export const usePrestigeStore = create<PrestigeState>()(
-  immer((set, get) => ({
-    totalAP: 0,
-    lifetimeAP: 0,
-    currentRunAP: 0,
-    prestigeCount: 0,
-    prestigeRuns: [],
-    upgrades: {},
+const createInitialPrestigeState = () => ({
+  totalAP: 0,
+  lifetimeAP: 0,
+  currentRunAP: 0,
+  prestigeCount: 0,
+  prestigeRuns: [] as PrestigeRun[],
+  upgrades: {} as Record<string, PrestigeUpgrade>,
   highestRealmReached: 0,
   runStartTime: Date.now(),
   rerollCount: 0,
-  spiritRoot: null,
+  spiritRoot: null as SpiritRoot | null,
+});
+
+export const usePrestigeStore = create<PrestigeState>()(
+  immer((set, get) => ({
+    ...createInitialPrestigeState(),
 
     calculateAPGain: () => {
       if (!_getGameStore) return 0;
@@ -469,6 +474,13 @@ export const usePrestigeStore = create<PrestigeState>()(
     getSpiritRootTotalMultiplier: () => {
       const state = get();
       return state.getSpiritRootQualityMultiplier() * state.getSpiritRootPurityMultiplier();
+    },
+
+    hardResetPrestige: () => {
+      set((state) => {
+        Object.assign(state, createInitialPrestigeState());
+      });
+      get().initializeUpgrades();
     },
   }))
 );

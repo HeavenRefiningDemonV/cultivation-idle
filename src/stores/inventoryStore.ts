@@ -25,17 +25,21 @@ function generateItemId(): string {
   return `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
+const createInitialInventoryState = () => ({
+  items: [] as InventoryState['items'],
+  equippedWeapon: null as ItemDefinition | null,
+  equippedAccessory: null as ItemDefinition | null,
+  gold: '0',
+  maxSlots: 20,
+});
+
 /**
  * Inventory store managing items, equipment, and gold
  */
 export const useInventoryStore = create<InventoryState>()(
   immer((set, get) => ({
     // Initial state
-    items: [],
-    equippedWeapon: null,
-    equippedAccessory: null,
-    gold: '0',
-    maxSlots: 20,
+    ...createInitialInventoryState(),
 
     /**
      * Add item to inventory
@@ -484,11 +488,13 @@ export const useInventoryStore = create<InventoryState>()(
      */
     resetInventory: () => {
       set((state) => {
-        state.items = [];
-        state.equippedWeapon = null;
-        state.equippedAccessory = null;
-        state.gold = '0';
-        state.maxSlots = 20;
+        Object.assign(state, createInitialInventoryState());
+      });
+    },
+
+    hardResetInventory: () => {
+      set((state) => {
+        Object.assign(state, createInitialInventoryState());
       });
     },
   }))

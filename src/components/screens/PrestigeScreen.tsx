@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useGameStore } from '../../stores/gameStore';
+import { useUIStore } from '../../stores/uiStore';
 
 export function PrestigeScreen() {
   const {
@@ -20,11 +21,17 @@ export function PrestigeScreen() {
 
   const apGain = calculateAPGain();
   const canPrestigeNow = canPrestige();
+  const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
 
   const handlePrestige = () => {
-    if (canPrestigeNow) {
+    if (!canPrestigeNow) return;
+
+    if (requirePrestigeConfirm) {
       setShowConfirmation(true);
+      return;
     }
+
+    performPrestige();
   };
 
   const confirmPrestige = () => {

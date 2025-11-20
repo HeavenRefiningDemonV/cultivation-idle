@@ -59,7 +59,29 @@ interface ExtendedCombatState extends CombatState {
   currentDungeon: string | null;
   startDungeonCombat: (dungeonId: string, boss: DungeonBoss, dungeonData: DungeonData) => void;
   resetCombat: () => void;
+  hardResetCombat: () => void;
 }
+
+const createInitialCombatState = () => ({
+  inCombat: false,
+  currentZone: null as string | null,
+  currentDungeon: null as string | null,
+  currentEnemy: null as EnemyDefinition | null,
+  playerHP: '0',
+  playerMaxHP: '0',
+  enemyHP: '0',
+  enemyMaxHP: '0',
+  combatLog: [] as CombatLogEntry[],
+  autoAttack: false,
+  autoCombatAI: false,
+  lastAttackTime: 0,
+  lastEnemyAttackTime: 0,
+  techniquesCooldowns: {} as Record<string, number>,
+  isBoss: false,
+  combatStartTime: 0,
+  enemyMechanics: [] as EnemyMechanic[],
+  activeAura: null as ExtendedCombatState['activeAura'],
+});
 
 /**
  * Combat store managing all combat state and actions
@@ -67,24 +89,7 @@ interface ExtendedCombatState extends CombatState {
 export const useCombatStore = create<ExtendedCombatState>()(
   immer((set, get) => ({
     // Initial state
-    inCombat: false,
-    currentZone: null,
-    currentDungeon: null,
-    currentEnemy: null,
-    playerHP: '0',
-    playerMaxHP: '0',
-    enemyHP: '0',
-    enemyMaxHP: '0',
-    combatLog: [],
-    autoAttack: false,
-    autoCombatAI: false,
-    lastAttackTime: 0,
-    lastEnemyAttackTime: 0,
-    techniquesCooldowns: {},
-    isBoss: false,
-    combatStartTime: 0,
-    enemyMechanics: [],
-    activeAura: null,
+    ...createInitialCombatState(),
 
     /**
      * Enter combat with an enemy
@@ -232,24 +237,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
       bossMechanics = null;
 
       set((state) => {
-        state.inCombat = false;
-        state.currentZone = null;
-        state.currentDungeon = null;
-        state.currentEnemy = null;
-        state.playerHP = '0';
-        state.playerMaxHP = '0';
-        state.enemyHP = '0';
-        state.enemyMaxHP = '0';
-        state.combatLog = [];
-        state.autoAttack = false;
-        state.autoCombatAI = false;
-        state.lastAttackTime = 0;
-        state.lastEnemyAttackTime = 0;
-        state.techniquesCooldowns = {};
-        state.isBoss = false;
-        state.combatStartTime = 0;
-        state.enemyMechanics = [];
-        state.activeAura = null;
+        Object.assign(state, createInitialCombatState());
+      });
+    },
+
+    hardResetCombat: () => {
+      bossMechanics = null;
+      set((state) => {
+        Object.assign(state, createInitialCombatState());
       });
     },
 

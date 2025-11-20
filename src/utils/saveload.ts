@@ -5,6 +5,9 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
 import { useTechniqueStore } from '../stores/techniqueStore';
 import { useZoneStore } from '../stores/zoneStore';
+import { useDungeonStore } from '../stores/dungeonStore';
+import { usePrestigeStore } from '../stores/prestigeStore';
+import { useUIStore } from '../stores/uiStore';
 
 /**
  * Save system constants
@@ -393,6 +396,54 @@ export function deleteSave(): boolean {
     console.error('[SaveLoad] Delete save failed:', error);
     return false;
   }
+}
+
+/**
+ * Delete all save data and fully reset the game to a fresh install state.
+ */
+export function deleteSaveAndHardReset(): void {
+  try {
+    localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(BACKUP_A_KEY);
+    localStorage.removeItem(BACKUP_B_KEY);
+    localStorage.removeItem(BACKUP_C_KEY);
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to remove save keys', error);
+  }
+
+  try {
+    useGameStore.getState().hardResetGameState();
+  } catch {}
+
+  try {
+    useInventoryStore.getState().hardResetInventory();
+  } catch {}
+
+  try {
+    useCombatStore.getState().hardResetCombat();
+  } catch {}
+
+  try {
+    useZoneStore.getState().hardResetZones();
+  } catch {}
+
+  try {
+    useDungeonStore.getState().hardResetDungeons();
+  } catch {}
+
+  try {
+    useTechniqueStore.getState().hardResetTechniques();
+  } catch {}
+
+  try {
+    usePrestigeStore.getState().hardResetPrestige();
+  } catch {}
+
+  try {
+    useUIStore.getState().hardResetUI();
+  } catch {}
+
+  window.location.reload();
 }
 
 /**

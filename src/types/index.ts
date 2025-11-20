@@ -178,6 +178,7 @@ export interface GameState {
   performPrestigeReset: () => void;
   purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
   getBreakthroughRequirement: () => string;
+  hardResetGameState: () => void;
 }
 
 /**
@@ -293,6 +294,7 @@ export interface CombatState {
   // Combat status
   inCombat: boolean;
   currentZone: string | null;
+  currentDungeon: string | null;
   currentEnemy: EnemyDefinition | null;
 
   // HP tracking
@@ -332,6 +334,8 @@ export interface CombatState {
   addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
   setAutoAttack: (enabled: boolean) => void;
   setAutoCombatAI: (enabled: boolean) => void;
+  resetCombat: () => void;
+  hardResetCombat: () => void;
 }
 
 /**
@@ -441,6 +445,7 @@ export interface InventoryState {
   getItemCount: (itemId: string) => number;
   hasItem: (itemId: string, quantity?: number) => boolean;
   resetInventory: () => void;
+  hardResetInventory: () => void;
 }
 
 /**
