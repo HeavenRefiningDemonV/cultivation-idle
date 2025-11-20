@@ -5,6 +5,7 @@ import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/tech
 import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
+import { useUIStore } from '../stores/uiStore';
 
 /**
  * Game loop constants
@@ -12,6 +13,7 @@ import { applyOfflineProgress } from './offline';
 const CULTIVATION_TICK_INTERVAL = 1000;  // 1 second in milliseconds
 const AUTOSAVE_INTERVAL = 60000;         // 60 seconds in milliseconds
 const MAX_DELTA_TIME = 1000;             // Max 1 second delta to prevent time exploits
+const OFFLINE_MODAL_THRESHOLD = 60 * 5;  // Minimum seconds offline before showing modal
 
 /**
  * Main game loop managing all game ticking and updates
@@ -288,7 +290,13 @@ export function initializeGame(): boolean {
             console.log('  - Offline time was capped at 12 hours');
           }
 
-          // TODO: Show offline progress modal to player
+          if (offlineProgress.offlineSeconds >= OFFLINE_MODAL_THRESHOLD) {
+            try {
+              useUIStore.getState().showOfflineProgress(offlineProgress);
+            } catch {
+              console.warn('[GameLoop] Unable to show offline progress modal');
+            }
+          }
         } else {
           console.log('[GameLoop] No offline progress to apply');
         }
@@ -304,6 +312,7 @@ export function initializeGame(): boolean {
 
     // Set up save on page unload
     setupBeforeUnload();
+    setupActivityTracking();
 
     console.log('[GameLoop] Game initialized successfully');
     return true;
@@ -321,6 +330,11 @@ function setupBeforeUnload(): void {
     console.log('[GameLoop] Page unloading, saving game...');
 
     try {
+      useGameStore.setState({
+        lastActiveTime: Date.now(),
+        lastTickTime: Date.now(),
+      });
+
       // Save the game
       const success = saveGame();
 
@@ -338,6 +352,26 @@ function setupBeforeUnload(): void {
 
     // Note: Modern browsers ignore custom messages in beforeunload
   });
+}
+
+/**
+ * Track when the page becomes hidden to accurately record last active time
+ */
+function setupActivityTracking(): void {
+  const updateLastActive = () => {
+    useGameStore.setState({
+      lastActiveTime: Date.now(),
+      lastTickTime: Date.now(),
+    });
+  };
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      updateLastActive();
+    }
+  });
+
+  window.addEventListener('pagehide', updateLastActive);
 }
 
 /**

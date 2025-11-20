@@ -133,6 +133,7 @@ export const useGameStore = create<GameState>()(
     },
     playerLuck: 0,
     lastTickTime: Date.now(),
+    lastActiveTime: Date.now(),
     runStartTime: Date.now(),
 
     /**
@@ -156,6 +157,7 @@ export const useGameStore = create<GameState>()(
         }
 
         state.lastTickTime = Date.now();
+        state.lastActiveTime = state.lastTickTime;
       });
     },
 
@@ -826,6 +828,7 @@ export const useGameStore = create<GameState>()(
         };
         state.lastTickTime = Date.now();
         state.runStartTime = Date.now();
+        state.lastActiveTime = Date.now();
         // Note: totalAuras is NOT reset - it's a prestige currency
       });
 
