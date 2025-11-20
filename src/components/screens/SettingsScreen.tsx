@@ -3,15 +3,16 @@ import { deleteSaveAndHardReset } from '../../utils/saveload';
 import { useUIStore } from '../../stores/uiStore';
 
 export function SettingsScreen() {
-  const { settings, setSettings } = useUIStore((state) => ({
-    settings: state.settings,
-    setSettings: state.setSettings,
-  }));
+  const showOfflineModal = useUIStore((state) => state.settings.showOfflineModal);
+  const showCombatLog = useUIStore((state) => state.settings.showCombatLog);
+  const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
+  const setSettings = useUIStore((state) => state.setSettings);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const toggleSetting = (key: keyof typeof settings) => {
-    setSettings({ [key]: !settings[key] });
-  };
+  const toggleOfflineModal = () => setSettings({ showOfflineModal: !showOfflineModal });
+  const toggleCombatLog = () => setSettings({ showCombatLog: !showCombatLog });
+  const togglePrestigeConfirm = () =>
+    setSettings({ requirePrestigeConfirm: !requirePrestigeConfirm });
 
   const handleDeleteSave = () => {
     setShowDeleteModal(false);
@@ -44,8 +45,8 @@ export function SettingsScreen() {
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.showOfflineModal}
-                  onChange={() => toggleSetting('showOfflineModal')}
+                  checked={showOfflineModal}
+                  onChange={toggleOfflineModal}
                   className="mt-1 h-4 w-4"
                 />
                 <div>
@@ -57,8 +58,8 @@ export function SettingsScreen() {
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.showCombatLog}
-                  onChange={() => toggleSetting('showCombatLog')}
+                  checked={showCombatLog}
+                  onChange={toggleCombatLog}
                   className="mt-1 h-4 w-4"
                 />
                 <div>
@@ -70,8 +71,8 @@ export function SettingsScreen() {
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.requirePrestigeConfirm}
-                  onChange={() => toggleSetting('requirePrestigeConfirm')}
+                  checked={requirePrestigeConfirm}
+                  onChange={togglePrestigeConfirm}
                   className="mt-1 h-4 w-4"
                 />
                 <div>

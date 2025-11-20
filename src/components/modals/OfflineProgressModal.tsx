@@ -1,7 +1,8 @@
 import { useUIStore } from '../../stores/uiStore';
 
 export function OfflineProgressModal() {
-  const { offlineProgressSummary, hideOfflineProgress } = useUIStore();
+  const offlineProgressSummary = useUIStore((state) => state.offlineProgressSummary);
+  const hideOfflineProgress = useUIStore((state) => state.hideOfflineProgress);
 
   if (!offlineProgressSummary) return null;
 
