@@ -151,28 +151,25 @@ function generateBossLoot(
   // Determine boss tier based on level
   const bossLevel = enemy.level;
 
-  // Training Forest Boss (Lv 5) - drops Mortal Gate Token
+  // Gate bosses now drop the same materials required for breakthroughs so
+  // Adventure progression mirrors the dungeon rewards.
   if (bossLevel <= 5) {
     items.push({
-      itemId: 'mortal_gate_token',
+      itemId: 'foundation_pill',
       quantity: 1,
       rarity: 'rare',
     });
-  }
-  // Spirit Cavern Boss (Lv 10) - drops Qi Gate Token
-  else if (bossLevel <= 10) {
+  } else if (bossLevel <= 10) {
     items.push({
-      itemId: 'qi_gate_token',
-      quantity: 1,
-      rarity: 'rare',
-    });
-  }
-  // Higher level bosses - drop higher tier tokens
-  else if (bossLevel <= 20) {
-    items.push({
-      itemId: 'foundation_gate_token',
+      itemId: 'core_catalyst',
       quantity: 1,
       rarity: 'epic',
+    });
+  } else if (bossLevel <= 20) {
+    items.push({
+      itemId: 'soul_fragment',
+      quantity: 1,
+      rarity: 'legendary',
     });
   } else {
     items.push({
