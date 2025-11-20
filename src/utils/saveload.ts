@@ -5,6 +5,8 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
 import { useTechniqueStore } from '../stores/techniqueStore';
 import { useZoneStore } from '../stores/zoneStore';
+import { usePrestigeStore } from '../stores/prestigeStore';
+import { useDungeonStore } from '../stores/dungeonStore';
 
 /**
  * Save system constants
@@ -357,37 +359,90 @@ export function loadGame(): boolean {
 }
 
 /**
+ * Delete all save slots and reset the game to a fresh run
+ */
+export function deleteSaveAndResetGame(): void {
+  console.log('[SaveLoad] Deleting all saves and resetting game...');
+
+  const saveKeys = [SAVE_KEY, BACKUP_A_KEY, BACKUP_B_KEY, BACKUP_C_KEY];
+
+  // Remove all save data from storage
+  for (const key of saveKeys) {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error(`[SaveLoad] Failed to remove save key ${key}:`, error);
+    }
+  }
+
+  // Stop autosave to prevent saving stale state
+  try {
+    stopAutosave();
+  } catch (error) {
+    console.warn('[SaveLoad] Unable to stop autosave:', error);
+  }
+
+  // Reset in-memory stores to initial run state
+  try {
+    const gameStore = useGameStore.getState();
+    if (gameStore.performPrestigeReset) {
+      gameStore.performPrestigeReset();
+    } else {
+      gameStore.resetRun();
+    }
+  } catch (error) {
+    console.error('[SaveLoad] Failed to reset game store:', error);
+  }
+
+  try {
+    usePrestigeStore.getState().resetRunProgress();
+  } catch (error) {
+    console.error('[SaveLoad] Failed to reset prestige run progress:', error);
+  }
+
+  try {
+    useCombatStore.getState().resetCombat();
+  } catch (error) {
+    console.warn('[SaveLoad] Failed to reset combat store:', error);
+  }
+
+  try {
+    useInventoryStore.getState().resetInventory();
+  } catch (error) {
+    console.warn('[SaveLoad] Failed to reset inventory store:', error);
+  }
+
+  try {
+    useZoneStore.getState().resetAllZones();
+  } catch (error) {
+    console.warn('[SaveLoad] Failed to reset zone store:', error);
+  }
+
+  try {
+    useDungeonStore.getState().resetDungeons();
+  } catch (error) {
+    console.warn('[SaveLoad] Failed to reset dungeon store:', error);
+  }
+
+  try {
+    useTechniqueStore.getState().resetTechniques();
+  } catch (error) {
+    console.warn('[SaveLoad] Failed to reset technique store:', error);
+  }
+
+  // Force a reload to ensure the UI matches the fresh state
+  if (typeof window !== 'undefined') {
+    window.location.reload();
+  }
+}
+
+/**
  * Delete all saves and reset game
  * Returns true if successful, false otherwise
  */
 export function deleteSave(): boolean {
   try {
-    console.log('[SaveLoad] Deleting all saves...');
-
-    // Remove all save slots
-    localStorage.removeItem(SAVE_KEY);
-    localStorage.removeItem(BACKUP_A_KEY);
-    localStorage.removeItem(BACKUP_B_KEY);
-    localStorage.removeItem(BACKUP_C_KEY);
-
-    // Reset all stores to initial state
-    const gameStore = useGameStore.getState();
-    gameStore.resetRun();
-
-    useInventoryStore.setState({
-      items: [],
-      equippedWeapon: null,
-      equippedAccessory: null,
-      gold: '0',
-      maxSlots: 20,
-    });
-
-    useCombatStore.setState({
-      autoAttack: false,
-      autoCombatAI: false,
-    });
-
-    console.log('[SaveLoad] All saves deleted and game reset');
+    deleteSaveAndResetGame();
     return true;
   } catch (error) {
     console.error('[SaveLoad] Delete save failed:', error);

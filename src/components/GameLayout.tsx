@@ -8,6 +8,7 @@ import { AdventureScreen } from './screens/AdventureScreen';
 import { DungeonScreen } from './screens/DungeonScreen';
 import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
+import { SettingsScreen } from './screens/SettingsScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 
 /**
@@ -37,13 +38,6 @@ function TechniquesTab() {
 }
 
 /**
- * Settings tab content (placeholder for now)
- */
-function SettingsTab() {
-  return <PlaceholderContent tabName="Settings" />;
-}
-
-/**
  * Main game layout component
  */
 export function GameLayout() {
@@ -69,7 +63,7 @@ export function GameLayout() {
       case 'prestige':
         return <PrestigeScreen />;
       case 'settings':
-        return <SettingsTab />;
+        return <SettingsScreen />;
       default:
         return <PlaceholderContent tabName="Unknown" />;
     }
