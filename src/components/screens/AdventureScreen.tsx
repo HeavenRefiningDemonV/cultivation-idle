@@ -5,6 +5,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import { D } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
+import { HpBar } from '../ui/Bar';
 
 /**
  * Zone definitions (move to constants later if needed)
@@ -191,9 +192,6 @@ export function CombatView() {
     );
   }
 
-  const playerHPPercent = playerMaxHP && Number(playerMaxHP) > 0
-    ? (Number(playerHP) / Number(playerMaxHP)) * 100
-    : 0;
   const enemyHPPercent = enemyMaxHP && Number(enemyMaxHP) > 0
     ? (Number(enemyHP) / Number(enemyMaxHP)) * 100
     : 0;
@@ -262,24 +260,11 @@ export function CombatView() {
           <h3 className="text-xl font-cinzel font-bold text-green-400">Your Status</h3>
 
           {/* Player HP Bar */}
-          <div>
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-slate-300">Your HP</span>
-              <span className="font-mono text-green-400">
-                {formatNumber(playerHP)} / {formatNumber(playerMaxHP)}
-              </span>
-            </div>
-            <div className="h-8 bg-slate-800 rounded-full overflow-hidden border-2 border-green-500/30">
-              <div
-                className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-300 flex items-center justify-center"
-                style={{ width: `${playerHPPercent}%` }}
-              >
-                <span className="text-xs font-bold text-white drop-shadow-lg">
-                  {playerHPPercent.toFixed(1)}%
-                </span>
-              </div>
-            </div>
-          </div>
+          <HpBar
+            label="Your HP"
+            current={Number(playerHP) || 0}
+            max={Number(playerMaxHP) || 0}
+          />
 
           {/* Player Stats */}
           <div className="grid grid-cols-4 gap-3 text-sm">

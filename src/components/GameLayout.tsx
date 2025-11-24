@@ -1,6 +1,5 @@
 import { useUIStore } from '../stores/uiStore';
 import { Header } from './Header';
-import { Sidebar } from './Sidebar';
 import { InkWashBackground } from './InkWashBackground';
 import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
@@ -10,6 +9,7 @@ import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { SidebarLayout } from './ui/SidebarLayout';
 
 /**
  * Placeholder content for tabs
@@ -42,6 +42,7 @@ function TechniquesTab() {
  */
 export function GameLayout() {
   const activeTab = useUIStore((state) => state.activeTab);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
   const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
 
@@ -74,12 +75,10 @@ export function GameLayout() {
     <div className="min-h-screen bg-ink-black text-ink-paper font-inter">
       <InkWashBackground />
       <Header />
-      <Sidebar />
 
-      {/* Main Content Area */}
-      <main className="ml-56 mt-20 min-h-screen p-4 relative z-10">
-        {renderContent()}
-      </main>
+      <SidebarLayout activeTab={activeTab} onSelectTab={setActiveTab}>
+        <div className="relative z-10">{renderContent()}</div>
+      </SidebarLayout>
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
     </div>

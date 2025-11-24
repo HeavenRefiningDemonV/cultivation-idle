@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
 import { formatNumber } from '../../utils/numbers';
 import type { ItemDefinition, ItemRarity } from '../../types';
+import { RarityBadge } from '../ui/RarityBadge';
 
 /**
  * Tab type for inventory sections
@@ -156,8 +157,11 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
           <h3 className={`font-semibold font-cinzel ${getRarityTextColor(itemDef.rarity)}`}>
             {itemDef.name}
           </h3>
-          <div className="text-xs text-slate-600 mt-1 capitalize">
-            {itemDef.rarity} • Lv {itemDef.level}
+          <div className="text-xs text-slate-600 mt-1 capitalize flex items-center gap-2">
+            <RarityBadge rarity={itemDef.rarity} />
+            <span>
+              {itemDef.rarity} • Lv {itemDef.level}
+            </span>
           </div>
         </div>
         {quantity > 1 && (
