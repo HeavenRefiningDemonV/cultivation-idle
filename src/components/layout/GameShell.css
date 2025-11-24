@@ -15,15 +15,6 @@
   background: #1f2933;
 }
 
-.game-shell-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-
 .game-shell-foreground {
   position: relative;
   z-index: 1;

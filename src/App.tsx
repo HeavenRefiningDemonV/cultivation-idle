@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GameLayout } from './components/GameLayout';
 import { GameShell } from './components/layout/GameShell';
-import { images } from './assets/images';
 import { initializeGame } from './systems/gameLoop';
 
 /**
@@ -69,7 +68,7 @@ function App() {
 
   // Render game layout once initialized
   return (
-    <GameShell background={images.backgrounds.cultivation}>
+    <GameShell>
       <GameLayout />
     </GameShell>
   );

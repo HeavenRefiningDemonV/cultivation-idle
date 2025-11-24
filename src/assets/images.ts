@@ -1,8 +1,8 @@
-import bgAdventure from '../../assets/Adventure Screen.png';
-import bgInsideDungeon from '../../assets/Inside Dungeon.png';
-import bgCultivation from '../../assets/Cultivation Screen.png';
-import bgCultivationOld from '../../assets/Cultivation Screen (Old).png';
-import bgPrestigeShop from '../../assets/Prestige Shop (doodle).png';
+import bgAdventureMock from '../../assets/Adventure Screen.png';
+import bgDungeonMock from '../../assets/Inside Dungeon.png';
+import bgCultivationMock from '../../assets/Cultivation Screen.png';
+import bgCultivationOldMock from '../../assets/Cultivation Screen (Old).png';
+import bgPrestigeShopMock from '../../assets/Prestige Shop (doodle).png';
 import barLong from '../../assets/bar_long.png';
 import barShort from '../../assets/bar_short.png';
 import block from '../../assets/block 1.png';
@@ -36,10 +36,10 @@ import groupOne from '../../assets/Group 1.png';
 
 export const images = {
   backgrounds: {
-    cultivation: bgCultivation,
-    adventure: bgAdventure,
-    dungeon: bgInsideDungeon,
-    prestigeShop: bgPrestigeShop,
+    // Pure environment backdrops for in-game scenes
+    cultivation: mountainsStyle1Gray,
+    adventure: mountainBig,
+    dungeon: mountainBig,
   },
   sprites: {
     cultivatorFront,
@@ -79,10 +79,12 @@ export const images = {
     treeGray,
   },
   layouts: {
-    cultivationOld: bgCultivationOld,
-    insideDungeon: bgInsideDungeon,
-    adventureMock: bgAdventure,
-    prestigeShopMock: bgPrestigeShop,
+    // Reference-only mocks; do not use directly in UI
+    cultivationMock: bgCultivationMock,
+    adventureMock: bgAdventureMock,
+    dungeonMock: bgDungeonMock,
+    cultivationOldMock: bgCultivationOldMock,
+    prestigeShopMock: bgPrestigeShopMock,
   },
   misc: {
     groupOne,
