@@ -4,6 +4,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
 import type { GameTab } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
+import './SidebarLayout.css';
 
 export type SidebarLayoutProps = {
   activeTab: GameTab;
@@ -19,23 +20,20 @@ type SidebarButtonProps = {
 };
 
 function SidebarButton({ label, tabId, isActive, onClick }: SidebarButtonProps) {
-  const background = images.ui.blockFancy ?? images.ui.block;
-
   return (
     <button
-      key={tabId}
+      type="button"
       onClick={onClick}
-      className={`relative w-full h-12 flex items-center justify-center font-cinzel text-lg tracking-wide transition-all duration-200 ${
-        isActive ? 'text-qi-glow ring-2 ring-qi-blue shadow-qi-glow' : 'text-ink-paper hover:translate-x-0.5'
-      }`}
+      data-tab-id={tabId}
+      aria-pressed={isActive}
+      className={`sidebar-btn ${isActive ? 'sidebar-btn-active' : ''} font-cinzel text-lg tracking-wide text-ink-paper`}
       style={{
-        backgroundImage: `url(${background})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
+        backgroundImage: `url(${images.ui.block})`,
       }}
     >
-      <span className={`drop-shadow ${isActive ? 'font-semibold' : ''}`}>{label}</span>
+      <span className="sidebar-btn-arrow sidebar-btn-arrow-left">◀</span>
+      <span className={`sidebar-btn-label ${isActive ? 'font-semibold text-qi-glow' : 'drop-shadow'}`}>{label}</span>
+      <span className="sidebar-btn-arrow sidebar-btn-arrow-right">▶</span>
     </button>
   );
 }
@@ -72,7 +70,7 @@ export function SidebarLayout({ activeTab, onSelectTab, children }: SidebarLayou
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col">
             {TABS.map((tab) => (
               <SidebarButton
                 key={tab.id}

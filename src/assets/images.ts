@@ -7,6 +7,8 @@ import barLong from '../../assets/bar_long.png';
 import barShort from '../../assets/bar_short.png';
 import block from '../../assets/block 1.png';
 import blockFancy from '../../assets/block_fancy 1.png';
+import cultivationBg from '../../assets/cultivation_bg.png';
+import cultivationFigure from '../../assets/cultivation_figure.png';
 import common from '../../assets/common.png';
 import rare from '../../assets/rare.png';
 import epic from '../../assets/epic.png';
@@ -57,6 +59,10 @@ export const images = {
     platform,
     platformBare,
     qiSign,
+  },
+  cultivation: {
+    background: cultivationBg,
+    figure: cultivationFigure,
   },
   rarity: {
     common,

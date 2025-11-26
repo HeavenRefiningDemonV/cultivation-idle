@@ -1,0 +1,202 @@
+.cultivation-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.cultivation-bg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cultivation-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.95;
+}
+
+.cultivation-main-grid {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 60%) minmax(320px, 40%);
+  gap: 1.5rem;
+  padding: 1.75rem 2.5rem 0 2.5rem;
+}
+
+.cultivation-center {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.cultivation-figure {
+  width: min(60%, 540px);
+  max-height: 75%;
+  height: auto;
+  transform: translateY(-10px);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.45));
+}
+
+.cultivation-info-panel {
+  backdrop-filter: blur(8px);
+  background: rgba(10, 10, 20, 0.85);
+  border-radius: 16px;
+  padding: 1.5rem 1.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.cultivation-info-header {
+  margin-bottom: 0.5rem;
+}
+
+.cultivation-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.cultivation-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.cultivation-info-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.cultivation-stat-card {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.stat-subvalue {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.cultivation-focus-section {
+  margin-top: 0.5rem;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.focus-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.focus-button {
+  width: 100%;
+  text-align: left;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.6rem 0.8rem;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+
+.focus-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.focus-button-active {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.25);
+}
+
+.focus-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.focus-description {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.cultivation-breakthrough-row {
+  position: relative;
+  z-index: 1;
+  padding: 0 2.5rem 1.75rem 2.5rem;
+}
+
+.cultivation-breakthrough-card {
+  backdrop-filter: blur(8px);
+  background: rgba(5, 8, 18, 0.9);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.cultivation-breakthrough-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cultivation-breakthrough-requirement {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.cultivation-gate-note {
+  font-size: 0.85rem;
+}
+
+.cultivation-breakthrough-button {
+  text-align: center;
+  width: 100%;
+}
+
+@media (max-width: 960px) {
+  .cultivation-main-grid {
+    grid-template-columns: 1fr;
+    padding: 1.25rem 1.25rem 0 1.25rem;
+  }
+
+  .cultivation-center {
+    min-height: 320px;
+  }
+
+  .cultivation-breakthrough-row {
+    padding: 0 1.25rem 1.5rem 1.25rem;
+  }
+}
