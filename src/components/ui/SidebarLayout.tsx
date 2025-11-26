@@ -4,6 +4,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
 import type { GameTab } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
+import './SidebarLayout.css';
 
 export type SidebarLayoutProps = {
   activeTab: GameTab;
@@ -19,23 +20,23 @@ type SidebarButtonProps = {
 };
 
 function SidebarButton({ label, tabId, isActive, onClick }: SidebarButtonProps) {
-  const background = images.ui.blockFancy ?? images.ui.block;
-
   return (
     <button
+      type="button"
       key={tabId}
       onClick={onClick}
-      className={`relative w-full h-12 flex items-center justify-center font-cinzel text-lg tracking-wide transition-all duration-200 ${
-        isActive ? 'text-qi-glow ring-2 ring-qi-blue shadow-qi-glow' : 'text-ink-paper hover:translate-x-0.5'
-      }`}
+      className={isActive ? 'sidebar-btn sidebar-btn-active' : 'sidebar-btn'}
       style={{
-        backgroundImage: `url(${background})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
+        backgroundImage: `url(${images.ui.block})`,
       }}
     >
-      <span className={`drop-shadow ${isActive ? 'font-semibold' : ''}`}>{label}</span>
+      <span className="sidebar-btn-arrow sidebar-btn-arrow-left" aria-hidden>
+        ◀
+      </span>
+      <span className="sidebar-btn-label">{label}</span>
+      <span className="sidebar-btn-arrow sidebar-btn-arrow-right" aria-hidden>
+        ▶
+      </span>
     </button>
   );
 }

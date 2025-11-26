@@ -3,6 +3,8 @@ import bgDungeonMock from '../../assets/Inside Dungeon.png';
 import bgCultivationMock from '../../assets/Cultivation Screen.png';
 import bgCultivationOldMock from '../../assets/Cultivation Screen (Old).png';
 import bgPrestigeShopMock from '../../assets/Prestige Shop (doodle).png';
+import cultivationBg from '../../assets/cultivation_bg.png';
+import cultivationFigure from '../../assets/cultivation_figure.png';
 import barLong from '../../assets/bar_long.png';
 import barShort from '../../assets/bar_short.png';
 import block from '../../assets/block 1.png';
@@ -40,6 +42,10 @@ export const images = {
     cultivation: mountainsStyle1Gray,
     adventure: mountainBig,
     dungeon: mountainBig,
+  },
+  cultivation: {
+    background: cultivationBg,
+    figure: cultivationFigure,
   },
   sprites: {
     cultivatorFront,
