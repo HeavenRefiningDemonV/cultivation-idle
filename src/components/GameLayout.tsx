@@ -61,7 +61,6 @@ export function GameLayout() {
         return <InventoryScreen />;
       case 'techniques':
         return <TechniquesTab />;
-
       case 'prestige':
         return <PrestigeScreen />;
       case 'settings':
@@ -72,7 +71,7 @@ export function GameLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-black text-ink-paper font-inter">
+    <div className="w-full h-full bg-ink-black text-ink-paper font-inter">
       <InkWashBackground />
       <Header />
 
