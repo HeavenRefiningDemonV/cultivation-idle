@@ -9,74 +9,6 @@ import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { GATE_ITEMS } from '../../systems/loot';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 
-/**
- * Mountain Background SVG
- */
-function MountainBackground() {
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full opacity-30"
-      viewBox="0 0 1200 600"
-      preserveAspectRatio="xMidYMid slice"
-    >
-      {/* Far mountains */}
-      <path
-        d="M0,400 Q200,300 400,350 T800,320 L1200,380 L1200,600 L0,600 Z"
-        fill="currentColor"
-        className="text-slate-700/50"
-      />
-      {/* Near mountains */}
-      <path
-        d="M0,450 Q150,350 300,400 T600,380 Q750,360 900,420 T1200,440 L1200,600 L0,600 Z"
-        fill="currentColor"
-        className="text-slate-600/70"
-      />
-    </svg>
-  );
-}
-
-/**
- * Pine Tree SVG (corner decoration)
- */
-function PineTree() {
-  return (
-    <svg
-      className="absolute bottom-4 right-4 w-24 h-32 opacity-40"
-      viewBox="0 0 100 120"
-    >
-      {/* Tree trunk */}
-      <rect x="45" y="80" width="10" height="40" fill="currentColor" className="text-slate-600" />
-      {/* Tree layers */}
-      <polygon points="50,20 30,50 70,50" fill="currentColor" className="text-slate-700" />
-      <polygon points="50,40 25,70 75,70" fill="currentColor" className="text-slate-700" />
-      <polygon points="50,60 20,90 80,90" fill="currentColor" className="text-slate-700" />
-    </svg>
-  );
-}
-
-/**
- * Qi Orb (glowing blue circle)
- */
-function QiOrb({ size = 80, intensity = 1 }: { size?: number; intensity?: number }) {
-  return (
-    <div
-      className="relative rounded-full animate-pulse"
-      style={{
-        width: size,
-        height: size,
-        background: `radial-gradient(circle, rgba(59, 130, 246, ${0.8 * intensity}) 0%, rgba(59, 130, 246, ${0.3 * intensity}) 50%, transparent 70%)`,
-        boxShadow: `0 0 ${20 * intensity}px rgba(59, 130, 246, ${0.6 * intensity}), 0 0 ${40 * intensity}px rgba(59, 130, 246, ${0.3 * intensity})`,
-      }}
-    >
-      <div
-        className="absolute inset-2 rounded-full"
-        style={{
-          background: `radial-gradient(circle, rgba(147, 197, 253, ${0.9 * intensity}) 0%, transparent 70%)`,
-        }}
-      />
-    </div>
-  );
-}
 
 /**
  * Meditating Character with Qi Aura
@@ -91,21 +23,10 @@ function MeditatingCharacter() {
         <div className="absolute w-32 h-32 rounded-full border border-blue-200/50" />
       </div>
 
-      {/* Meditating emoji */}
       <div className="relative z-10 text-8xl filter drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">
         🧘
       </div>
 
-      {/* Floating qi orbs */}
-      <div className="absolute top-0 left-1/4 animate-float">
-        <QiOrb size={40} intensity={0.6} />
-      </div>
-      <div className="absolute top-8 right-1/4 animate-float-delayed">
-        <QiOrb size={30} intensity={0.5} />
-      </div>
-      <div className="absolute bottom-0 left-1/3 animate-float-slow">
-        <QiOrb size={35} intensity={0.7} />
-      </div>
     </div>
   );
 }
@@ -317,18 +238,11 @@ export function CultivateScreen() {
   };
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
-      {/* Mountain background */}
-      <MountainBackground />
+    <div className="rbg">
 
-      {/* Pine tree decoration */}
-      <PineTree />
-
-      {/* Main content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-2">
+          <h1 className="">
             Cultivation Chamber
           </h1>
           <p className="text-slate-400 text-sm">

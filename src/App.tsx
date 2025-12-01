@@ -32,7 +32,7 @@ function App() {
   // Show error screen if initialization failed
   if (initError) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <div className="">
         <div className="text-center max-w-md p-8">
           <div className="text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold text-red-400 mb-4">
@@ -53,10 +53,10 @@ function App() {
   // Show loading screen while initializing
   if (!gameInitialized) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <div className="">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-pulse">⚡</div>
-          <h1 className="text-2xl font-bold text-cyan-400 mb-2">
+          <h1 className="">
             Cultivation Idle
           </h1>
           <p className="text-slate-400">Loading...</p>

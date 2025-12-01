@@ -1,7 +1,6 @@
 import { useUIStore } from '../stores/uiStore';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import { InkWashBackground } from './InkWashBackground';
 import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
 import { AdventureScreen } from './screens/AdventureScreen';
@@ -10,6 +9,7 @@ import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 import { SettingsScreen } from './screens/SettingsScreen';
+import "./test.css";
 
 /**
  * Placeholder content for tabs
@@ -71,13 +71,10 @@ export function GameLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-black text-ink-paper font-inter">
-      <InkWashBackground />
+    <div className="rbg">
       <Header />
       <Sidebar />
-
-      {/* Main Content Area */}
-      <main className="ml-56 mt-20 min-h-screen p-4 relative z-10">
+      <main className="">
         {renderContent()}
       </main>
 
