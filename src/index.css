@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Julee", cursive;
+  color: black;
 }
 
 body {
@@ -9,4 +10,8 @@ body {
   margin: 0;
   background-color: #0f172a;
   color: #f1f5f9;
+}
+
+.title {
+  font-family: "Protest Revolution", sans-serif;
 }
