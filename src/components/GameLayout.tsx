@@ -16,15 +16,11 @@ import styles from './GameLayout.module.css';
  */
 function PlaceholderContent({ tabName }: { tabName: string }) {
   return (
-    <div className="flex items-center justify-center h-full min-h-[400px]">
-      <div className="text-center">
-        <div className="text-6xl mb-4">🚧</div>
-        <h2 className="text-2xl font-bold text-ink-paper mb-2">
-          {tabName} - Coming Soon
-        </h2>
-        <p className="text-ink-light">
-          This feature is under development
-        </p>
+    <div className={styles.placeholder}>
+      <div className={styles.placeholderCard}>
+        <div className={styles.placeholderIcon}>🚧</div>
+        <h2 className={styles.placeholderTitle}>{tabName} - Coming Soon</h2>
+        <p className={styles.placeholderText}>This feature is under development</p>
       </div>
     </div>
   );

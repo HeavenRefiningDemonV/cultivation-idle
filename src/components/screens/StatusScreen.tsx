@@ -5,15 +5,43 @@ import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
+import styles from './StatusScreen.module.css';
+
+type StatTone =
+  | 'gold'
+  | 'qi'
+  | 'green'
+  | 'red'
+  | 'blue'
+  | 'yellow'
+  | 'cyan'
+  | 'pink'
+  | 'muted'
+  | 'none';
+
+const toneClassMap: Record<StatTone, string> = {
+  gold: styles.statGold,
+  qi: styles.statQi,
+  green: styles.statGreen,
+  red: styles.statRed,
+  blue: styles.statBlue,
+  yellow: styles.statYellow,
+  cyan: styles.statCyan,
+  pink: styles.statPink,
+  muted: styles.statMuted,
+  none: '',
+};
 
 /**
  * Stat Row Component for displaying key-value pairs
  */
-function StatRow({ label, value, color = 'text-white' }: { label: string; value: string | number; color?: string }) {
+function StatRow({ label, value, tone = 'muted' }: { label: string; value: string | number; tone?: StatTone }) {
+  const toneClass = toneClassMap[tone];
+
   return (
-    <div className="flex justify-between items-center py-2 border-b border-slate-700/50">
-      <span className="text-slate-400 text-sm">{label}</span>
-      <span className={`font-bold ${color}`}>{value}</span>
+    <div className={styles.statRow}>
+      <span className={styles.statLabel}>{label}</span>
+      <span className={`${styles.statValue} ${toneClass}`}>{value}</span>
     </div>
   );
 }
@@ -23,9 +51,9 @@ function StatRow({ label, value, color = 'text-white' }: { label: string; value:
  */
 function SectionHeader({ icon, title }: { icon: string; title: string }) {
   return (
-    <div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-gold-accent/30">
-      <span className="text-2xl">{icon}</span>
-      <h2 className="font-cinzel text-xl font-bold text-gold-accent">{title}</h2>
+    <div className={styles.sectionHeader}>
+      <span className={styles.sectionIcon}>{icon}</span>
+      <h2 className={styles.sectionTitle}>{title}</h2>
     </div>
   );
 }
@@ -35,9 +63,9 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
  */
 function StatCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
-      <h3 className="font-cinzel font-bold text-gold-accent mb-4">{title}</h3>
-      <div className="space-y-1">{children}</div>
+    <div className={styles.statCard}>
+      <h3 className={styles.statCardTitle}>{title}</h3>
+      <div className={styles.statList}>{children}</div>
     </div>
   );
 }
@@ -71,89 +99,79 @@ export function StatusScreen() {
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
 
   return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
+    <div className={styles.root}>
       {/* Background decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(236, 72, 153, 0.3) 0%, transparent 50%)',
-          }}
-        />
+      <div className={styles.backgroundGlow}>
+        <div className={styles.glowPattern} />
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+      <div className={styles.content}>
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-2">
-            Character Status
-          </h1>
-          <p className="text-slate-400 text-sm">
-            View your cultivation progress and combat statistics
-          </p>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Character Status</h1>
+          <p className={styles.subtitle}>View your cultivation progress and combat statistics</p>
         </div>
 
         {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className={styles.grid}>
           {/* LEFT COLUMN */}
-          <div className="space-y-6">
+          <div className={styles.column}>
             {/* Cultivation Progress Section */}
-            <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
+            <div className={styles.panel}>
               <SectionHeader icon="⚡" title="Cultivation Progress" />
 
-              <StatRow label="Current Realm" value={currentRealm.name} color="text-gold-accent" />
+              <StatRow label="Current Realm" value={currentRealm.name} tone="gold" />
               <StatRow
                 label="Substage"
                 value={`Stage ${realm.substage}/${currentRealm.substages}`}
-                color="text-qi-blue"
+                tone="qi"
               />
-              <StatRow label="Current Qi" value={formatNumber(qi)} color="text-qi-blue" />
-              <StatRow label="Qi per Second" value={`${formatNumber(qiPerSecond)}/s`} color="text-qi-blue" />
-              <StatRow label="Focus Mode" value={focusMode.toUpperCase()} color="text-purple-400" />
-              <StatRow label="Total Auras" value={formatNumber(totalAuras)} color="text-pink-400" />
+              <StatRow label="Current Qi" value={formatNumber(qi)} tone="qi" />
+              <StatRow label="Qi per Second" value={`${formatNumber(qiPerSecond)}/s`} tone="qi" />
+              <StatRow label="Focus Mode" value={focusMode.toUpperCase()} tone="pink" />
+              <StatRow label="Total Auras" value={formatNumber(totalAuras)} tone="pink" />
             </div>
 
             {/* Combat Statistics */}
             <StatCard title="Combat Statistics">
-              <StatRow label="Max HP" value={formatNumber(stats.hp)} color="text-green-400" />
-              <StatRow label="Attack Power" value={formatNumber(stats.atk)} color="text-red-400" />
-              <StatRow label="Defense" value={formatNumber(stats.def)} color="text-blue-400" />
-              <StatRow label="HP Regen/s" value={formatNumber(stats.regen)} color="text-green-300" />
-              <StatRow label="Critical Rate" value={`${(stats.crit / 100).toFixed(1)}%`} color="text-yellow-400" />
-              <StatRow label="Critical Damage" value={`${stats.critDmg}%`} color="text-yellow-400" />
-              <StatRow label="Dodge Chance" value={`${(stats.dodge / 100).toFixed(1)}%`} color="text-cyan-400" />
-              <StatRow label="Total Enemies Defeated" value={totalEnemiesDefeated} color="text-red-300" />
+              <StatRow label="Max HP" value={formatNumber(stats.hp)} tone="green" />
+              <StatRow label="Attack Power" value={formatNumber(stats.atk)} tone="red" />
+              <StatRow label="Defense" value={formatNumber(stats.def)} tone="blue" />
+              <StatRow label="HP Regen/s" value={formatNumber(stats.regen)} tone="green" />
+              <StatRow label="Critical Rate" value={`${(stats.crit / 100).toFixed(1)}%`} tone="yellow" />
+              <StatRow label="Critical Damage" value={`${stats.critDmg}%`} tone="yellow" />
+              <StatRow label="Dodge Chance" value={`${(stats.dodge / 100).toFixed(1)}%`} tone="cyan" />
+              <StatRow label="Total Enemies Defeated" value={totalEnemiesDefeated} tone="red" />
             </StatCard>
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="space-y-6">
+          <div className={styles.column}>
             {/* Spirit Root Display */}
             <SpiritRootDisplay />
 
             {/* Resources */}
             <StatCard title="Resources">
-              <StatRow label="Gold" value={formatNumber(gold)} color="text-yellow-400" />
-              <StatRow label="Inventory Items" value={items.length} color="text-slate-300" />
+              <StatRow label="Gold" value={formatNumber(gold)} tone="gold" />
+              <StatRow label="Inventory Items" value={items.length} tone="muted" />
             </StatCard>
 
             {/* Equipment Section */}
-            <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
+            <div className={styles.equipmentSection}>
               <SectionHeader icon="⚔️" title="Equipment" />
 
               {/* Weapon */}
-              <div className="mb-4">
-                <div className="text-sm text-slate-400 mb-2">Weapon</div>
+              <div className={styles.equipmentBlock}>
+                <div className={styles.equipmentLabel}>Weapon</div>
                 {equippedWeapon ? (
-                  <div className="bg-slate-800/50 rounded-lg p-3 border border-purple-500/50">
-                    <div className="font-bold text-purple-400">{equippedWeapon.name}</div>
-                    <div className="text-xs text-slate-400 mt-1">
+                  <div className={styles.equipmentCard}>
+                    <div className={styles.equipmentNamePurple}>{equippedWeapon.name}</div>
+                    <div className={styles.equipmentMeta}>
                       {equippedWeapon.rarity.charAt(0).toUpperCase() + equippedWeapon.rarity.slice(1)} Weapon
                     </div>
                     {equippedWeapon.stats && (
-                      <div className="text-xs text-slate-300 mt-2">
+                      <div className={styles.equipmentStats}>
                         {equippedWeapon.stats.atk && (
                           <div>ATK: +{formatNumber(equippedWeapon.stats.atk)}</div>
                         )}
@@ -164,23 +182,21 @@ export function StatusScreen() {
                     )}
                   </div>
                 ) : (
-                  <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700 text-slate-500 text-sm">
-                    No weapon equipped
-                  </div>
+                  <div className={styles.equipmentEmpty}>No weapon equipped</div>
                 )}
               </div>
 
               {/* Accessory */}
               <div>
-                <div className="text-sm text-slate-400 mb-2">Accessory</div>
+                <div className={styles.equipmentLabel}>Accessory</div>
                 {equippedAccessory ? (
-                  <div className="bg-slate-800/50 rounded-lg p-3 border border-cyan-500/50">
-                    <div className="font-bold text-cyan-400">{equippedAccessory.name}</div>
-                    <div className="text-xs text-slate-400 mt-1">
+                  <div className={`${styles.equipmentCard} ${styles.equipmentCardAccessory}`}>
+                    <div className={styles.equipmentNameCyan}>{equippedAccessory.name}</div>
+                    <div className={styles.equipmentMeta}>
                       {equippedAccessory.rarity.charAt(0).toUpperCase() + equippedAccessory.rarity.slice(1)} Accessory
                     </div>
                     {equippedAccessory.stats && (
-                      <div className="text-xs text-slate-300 mt-2">
+                      <div className={styles.equipmentStats}>
                         {equippedAccessory.stats.hp && (
                           <div>HP: +{formatNumber(equippedAccessory.stats.hp)}</div>
                         )}
@@ -191,18 +207,22 @@ export function StatusScreen() {
                     )}
                   </div>
                 ) : (
-                  <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700 text-slate-500 text-sm">
-                    No accessory equipped
-                  </div>
+                  <div className={styles.equipmentEmpty}>No accessory equipped</div>
                 )}
               </div>
             </div>
 
             {/* Additional Info */}
-            <StatCard title="Miscellaneous">
-              <StatRow label="Combat Logs" value={combatLog.length} color="text-slate-300" />
-              <StatRow label="Player Luck" value={formatNumber(useGameStore.getState().playerLuck || 0)} color="text-pink-400" />
-            </StatCard>
+            <div className={styles.miscPanel}>
+              <StatCard title="Miscellaneous">
+                <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
+                <StatRow
+                  label="Player Luck"
+                  value={formatNumber(useGameStore.getState().playerLuck || 0)}
+                  tone="pink"
+                />
+              </StatCard>
+            </div>
           </div>
         </div>
       </div>
