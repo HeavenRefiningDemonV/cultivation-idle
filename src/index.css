@@ -1,17 +1,14 @@
-@import "tailwindcss";
+@import './styles/global.css';
 
 :root {
-  font-family: "Julee", cursive;
-  color: black;
+  font-family: var(--font-julee);
+  color: var(--color-ink-white);
 }
 
 body {
-  min-height: 100vh;
-  margin: 0;
-  background-color: #0f172a;
-  color: #f1f5f9;
+  line-height: 1.6;
 }
 
 .title {
-  font-family: "Protest Revolution", sans-serif;
+  font-family: var(--font-title);
 }

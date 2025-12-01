@@ -2,6 +2,7 @@ import type { GameTab } from '../stores/uiStore';
 import { useUIStore } from '../stores/uiStore';
 import { useGameStore } from '../stores/gameStore';
 import { formatNumber } from '../utils/numbers';
+import styles from './Sidebar.module.css';
 
 interface NavButtonProps {
   tab: GameTab;
@@ -14,15 +15,7 @@ function NavButton({ label, active, onClick }: NavButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`
-        w-full py-3 px-4 text-left font-cinzel text-lg
-        border-2 transition-all duration-200
-        ${
-          active
-            ? 'bg-qi-dark border-qi-blue text-qi-glow shadow-qi-glow'
-            : 'bg-ink-dark border-ink-medium text-ink-paper hover:border-ink-light hover:bg-ink-medium'
-        }
-      `}
+      className={`${styles.navButton} ${active ? styles.navButtonActive : ''}`}
     >
       {label}
     </button>
@@ -37,8 +30,8 @@ export function Sidebar() {
   const { totalAuras } = useGameStore();
 
   return (
-    <aside className="fixed left-0 top-20 bottom-0 w-56 bg-ink-darkest border-r-2 border-ink-dark z-30">
-      <nav className="flex flex-col gap-3 p-4">
+    <aside className={styles.sidebar}>
+      <nav className={styles.navList}>
         <NavButton
           tab="cultivation"
           label="Cultivate"
@@ -84,13 +77,13 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Section - Prestige */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t-2 border-ink-dark">
-        <div className="text-gold-accent text-sm font-mono mb-3 text-center">
-          Auras: <span className="font-bold text-gold-bright">{formatNumber(totalAuras)}</span>
+      <div className={styles.footer}>
+        <div className={styles.auraText}>
+          Auras: <span className={styles.auraValue}>{formatNumber(totalAuras)}</span>
         </div>
         <button
           onClick={showPrestige}
-          className="w-full py-3 px-4 bg-breakthrough-red hover:bg-breakthrough-pink border-2 border-breakthrough-pink text-ink-white font-cinzel text-lg transition-all shadow-breakthrough"
+          className={styles.prestigeButton}
         >
           Rebirth
         </button>

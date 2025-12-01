@@ -1,0 +1,62 @@
+.appShell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.messageCard {
+  max-width: 520px;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.heroIcon {
+  font-size: 64px;
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-3);
+}
+
+.subtext {
+  color: var(--color-ink-light);
+  margin-bottom: var(--space-4);
+}
+
+.primaryButton {
+  border: 2px solid var(--color-qi-glow);
+  background: linear-gradient(135deg, var(--color-qi-dark), var(--color-qi-blue));
+  color: var(--color-ink-white);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-qi);
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(125, 211, 252, 0.45);
+}
+
+.loader {
+  color: var(--color-qi-glow);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}

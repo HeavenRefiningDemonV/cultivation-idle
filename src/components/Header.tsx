@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { formatNumber } from '../utils/numbers';
 import { getSaveInfo } from '../utils/saveload';
+import styles from './Header.module.css';
 
 /**
  * Header component - Top bar with game stats and save indicator
@@ -12,7 +13,7 @@ export function Header() {
   const realm = useGameStore((state) => state.realm);
 
   const [lastSavedText, setLastSavedText] = useState<string>('Never');
-  const [lastSavedColor, setLastSavedColor] = useState<string>('text-gray-400');
+  const [lastSavedTone, setLastSavedTone] = useState<'neutral' | 'fresh' | 'warn' | 'old'>('neutral');
 
   // Update "Last saved" indicator every second
   useEffect(() => {
@@ -21,7 +22,7 @@ export function Header() {
 
       if (!saveInfo) {
         setLastSavedText('Never');
-        setLastSavedColor('text-gray-400');
+        setLastSavedTone('neutral');
         return;
       }
 
@@ -31,15 +32,15 @@ export function Header() {
 
       if (secondsAgo < 60) {
         setLastSavedText(`${secondsAgo}s ago`);
-        setLastSavedColor('text-green-400');
+        setLastSavedTone('fresh');
       } else if (secondsAgo < 3600) {
         const minutesAgo = Math.floor(secondsAgo / 60);
         setLastSavedText(`${minutesAgo}m ago`);
-        setLastSavedColor('text-yellow-400');
+        setLastSavedTone('warn');
       } else {
         const hoursAgo = Math.floor(secondsAgo / 3600);
         setLastSavedText(`${hoursAgo}h ago`);
-        setLastSavedColor('text-orange-400');
+        setLastSavedTone('old');
       }
     };
 
@@ -53,29 +54,27 @@ export function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-20 bg-ink-darkest border-b-2 border-ink-dark z-40">
-      <div className="h-full px-6 flex items-center justify-between">
+    <header className={styles.header}>
+      <div className={styles.bar}>
         {/* Left side - Qi & Realm */}
-        <div className="flex flex-col gap-1">
-          <div className="text-qi-blue text-sm font-mono">
-            Qi: <span className="text-xl font-bold text-qi-glow">{formatNumber(qi)}</span>
-            <span className="ml-2 text-xs text-ink-light">({formatNumber(qiPerSecond)}/s)</span>
+        <div className={styles.statBlock}>
+          <div className={styles.qiLine}>
+            Qi: <span className={styles.qiValue}>{formatNumber(qi)}</span>
+            <span className={styles.qiRate}>({formatNumber(qiPerSecond)}/s)</span>
           </div>
-          <div className="text-ink-paper text-xs">
-            REALM: <span className="text-gold-accent font-semibold">{realm.name}</span>
-            <span className="ml-2 text-ink-light">Substage {realm.substage + 1}</span>
+          <div className={styles.realmLine}>
+            REALM:<span className={styles.realmAccent}>{realm.name}</span>
+            <span className={styles.realmSubstage}>Substage {realm.substage + 1}</span>
           </div>
         </div>
 
         {/* Right side - Save indicator & actions */}
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-xs text-ink-light uppercase tracking-wide">
-              Last Saved
-            </div>
-            <div className={`text-sm font-medium ${lastSavedColor}`}>
-              {lastSavedText}
-            </div>
+        <div className={styles.saveBlock}>
+          <div className={styles.saveLabel}>
+            Last Saved
+          </div>
+          <div className={`${styles.saveTime} ${styles[lastSavedTone]}`}>
+            {lastSavedText}
           </div>
         </div>
       </div>

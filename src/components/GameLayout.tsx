@@ -9,7 +9,7 @@ import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 import { SettingsScreen } from './screens/SettingsScreen';
-import "./test.css";
+import styles from './GameLayout.module.css';
 
 /**
  * Placeholder content for tabs
@@ -71,11 +71,13 @@ export function GameLayout() {
   };
 
   return (
-    <div className="rbg">
+    <div className={styles.root}>
       <Header />
       <Sidebar />
-      <main className="">
-        {renderContent()}
+      <main className={styles.main}>
+        <div className={styles.content}>
+          {renderContent()}
+        </div>
       </main>
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}

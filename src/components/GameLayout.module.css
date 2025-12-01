@@ -1,0 +1,25 @@
+.root {
+  position: relative;
+  min-height: 100vh;
+  background: url('../assets/background/cbg_bg.png') no-repeat;
+  background-size: cover;
+  color: var(--color-ink-white);
+}
+
+.main {
+  margin-left: 14rem;
+  padding: var(--space-5);
+  padding-top: calc(var(--space-7) + 20px);
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+  .main {
+    margin-left: 0;
+    padding-top: calc(var(--space-7) + 20px);
+  }
+}
