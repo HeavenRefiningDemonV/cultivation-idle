@@ -2,6 +2,7 @@ import { usePrestigeStore } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { formatNumber, D } from '../utils/numbers';
 import type { SpiritRootElement, SpiritRootGrade } from '../types';
+import styles from './SpiritRootDisplay.module.css';
 
 /**
  * Quality names for display
@@ -15,25 +16,25 @@ const QUALITY_NAMES: Record<SpiritRootGrade, string> = {
 };
 
 /**
- * Quality colors (Tailwind classes)
+ * Quality colors mapped to CSS module classes
  */
 const QUALITY_COLORS: Record<SpiritRootGrade, string> = {
-  1: 'text-gray-400',
-  2: 'text-green-500',
-  3: 'text-blue-500',
-  4: 'text-purple-500',
-  5: 'text-orange-500',
+  1: styles.quality1,
+  2: styles.quality2,
+  3: styles.quality3,
+  4: styles.quality4,
+  5: styles.quality5,
 };
 
 /**
  * Element colors (background gradients)
  */
 const ELEMENT_COLORS: Record<SpiritRootElement, string> = {
-  fire: 'from-red-600 to-orange-500',
-  water: 'from-blue-600 to-cyan-500',
-  earth: 'from-yellow-700 to-amber-600',
-  metal: 'from-gray-500 to-slate-600',
-  wood: 'from-green-600 to-emerald-700',
+  fire: styles.elementFire,
+  water: styles.elementWater,
+  earth: styles.elementEarth,
+  metal: styles.elementMetal,
+  wood: styles.elementWood,
 };
 
 /**
@@ -64,12 +65,12 @@ export function SpiritRootDisplay() {
   // If no spirit root exists yet, show placeholder
   if (!spiritRoot) {
     return (
-      <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
-        <h3 className="font-cinzel text-xl font-bold text-gold-accent mb-4 flex items-center gap-2">
+      <div className={styles.root}>
+        <h3 className={styles.header}>
           <span>🌟</span>
           <span>Spirit Root</span>
         </h3>
-        <p className="text-slate-400 text-sm text-center py-4">
+        <p className={styles.placeholderText}>
           Your spirit root is being awakened...
         </p>
       </div>
@@ -92,94 +93,68 @@ export function SpiritRootDisplay() {
   };
 
   return (
-    <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
-      {/* Header */}
-      <h3 className="font-cinzel text-xl font-bold text-gold-accent mb-4 flex items-center gap-2">
+    <div className={styles.root}>
+      <h3 className={styles.header}>
         <span>🌟</span>
         <span>Spirit Root</span>
       </h3>
 
-      {/* Spirit Root Display Card */}
-      <div className={`bg-gradient-to-r ${ELEMENT_COLORS[spiritRoot.element]} rounded-lg p-4 mb-4 shadow-lg`}>
-        <div className="text-center space-y-2">
-          {/* Quality */}
-          <div className={`text-3xl font-bold ${QUALITY_COLORS[spiritRoot.grade]} drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]`}>
+      <div className={`${styles.spiritCard} ${ELEMENT_COLORS[spiritRoot.element]}`}>
+        <div className={styles.spiritContent}>
+          <div className={`${styles.qualityText} ${QUALITY_COLORS[spiritRoot.grade]}`}>
             {QUALITY_NAMES[spiritRoot.grade]}
           </div>
 
-          {/* Element */}
-          <div className="text-xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] capitalize">
-            {spiritRoot.element} Element
+          <div className={styles.elementLabel}>{spiritRoot.element} Element</div>
+
+          <div className={styles.purityText}>{spiritRoot.purity}% Purity</div>
+        </div>
+      </div>
+
+      <div className={styles.bonusCard}>
+        <h4 className={styles.bonusHeader}>Bonuses:</h4>
+        <div className={styles.bonusList}>
+          <div className={styles.bonusRow}>
+            <span className={styles.bonusLabel}>Quality Multiplier:</span>
+            <span className={styles.bonusValueGreen}>{qualityMult.toFixed(2)}x</span>
           </div>
 
-          {/* Purity */}
-          <div className="text-lg text-white/90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-            {spiritRoot.purity}% Purity
+          <div className={styles.bonusRow}>
+            <span className={styles.bonusLabel}>Purity Multiplier:</span>
+            <span className={styles.bonusValueBlue}>{purityMult.toFixed(2)}x</span>
+          </div>
+
+          <div className={`${styles.bonusRow} ${styles.bonusTotal}`}>
+            <span className={styles.bonusHeader}>Total Multiplier:</span>
+            <span className={styles.bonusTotalValue}>{totalMult.toFixed(2)}x</span>
+          </div>
+
+          <div className={styles.elementBonus}>
+            <span>Element Bonus:</span>
+            <div>{ELEMENT_BONUS_DESCRIPTIONS[spiritRoot.element]}</div>
           </div>
         </div>
       </div>
 
-      {/* Bonuses Section */}
-      <div className="bg-slate-800/50 border-2 border-slate-700/50 rounded-lg p-4 mb-4">
-        <h4 className="font-semibold text-slate-300 mb-3 text-sm">Bonuses:</h4>
-        <div className="space-y-2 text-sm">
-          {/* Quality Bonus */}
-          <div className="flex justify-between items-center">
-            <span className="text-slate-400">Quality Multiplier:</span>
-            <span className="text-green-400 font-bold">{qualityMult.toFixed(2)}x</span>
-          </div>
-
-          {/* Purity Bonus */}
-          <div className="flex justify-between items-center">
-            <span className="text-slate-400">Purity Multiplier:</span>
-            <span className="text-blue-400 font-bold">{purityMult.toFixed(2)}x</span>
-          </div>
-
-          {/* Total Multiplier */}
-          <div className="flex justify-between items-center pt-2 border-t border-slate-700">
-            <span className="text-slate-300 font-semibold">Total Multiplier:</span>
-            <span className="text-gold-accent font-bold text-lg">{totalMult.toFixed(2)}x</span>
-          </div>
-
-          {/* Element Bonus */}
-          <div className="pt-2 border-t border-slate-700">
-            <span className="text-slate-400">Element Bonus:</span>
-            <div className="text-cyan-400 font-semibold mt-1">
-              {ELEMENT_BONUS_DESCRIPTIONS[spiritRoot.element]}
-            </div>
-          </div>
-        </div>
+      <div className={styles.infoBox}>
+        <span className={styles.infoHighlight}>About Spirit Roots:</span> Your spirit root determines
+        your cultivation potential. Higher quality and purity provide greater stat multipliers that apply to all
+        your stats. Each element grants unique bonuses to specific abilities.
       </div>
 
-      {/* Info Section */}
-      <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4 mb-4">
-        <p className="text-xs text-amber-200/80 leading-relaxed">
-          <span className="font-semibold">About Spirit Roots:</span> Your spirit root determines
-          your cultivation potential. Higher quality and purity provide greater stat multipliers
-          that apply to all your stats. Each element grants unique bonuses to specific abilities.
-        </p>
-      </div>
-
-      {/* Reroll Button */}
       <button
         onClick={handleReroll}
         disabled={!canAfford}
-        className={`w-full font-bold py-3 px-4 rounded-lg transition-all font-cinzel ${
-          canAfford
-            ? 'bg-purple-600 hover:bg-purple-700 text-white hover:scale-105 shadow-lg hover:shadow-purple-500/50'
-            : 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50'
-        }`}
+        className={styles.rerollButton}
         title={!canAfford ? `Need ${formatNumber(rerollCost.toString())} gold` : 'Reroll your spirit root'}
       >
         {canAfford
           ? `🔄 Reroll Spirit Root (${formatNumber(rerollCost.toString())}g)`
-          : `🔒 Not Enough Gold (${formatNumber(rerollCost.toString())}g)`
-        }
+          : `🔒 Not Enough Gold (${formatNumber(rerollCost.toString())}g)`}
       </button>
 
-      {/* Warning text */}
       {!canAfford && (
-        <p className="text-sm text-red-400 text-center mt-2">
+        <p className={styles.warningText}>
           Need {formatNumber(D(rerollCost).minus(gold).toString())} more gold
         </p>
       )}

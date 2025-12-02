@@ -31,6 +31,15 @@
   --color-border: #374151;
   --color-border-strong: #4b5563;
 
+  /* Status colors */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #ef4444;
+  --color-info: #60a5fa;
+  --color-purple: #a855f7;
+  --color-amber: #f59e0b;
+  --color-muted-surface: rgba(100, 116, 139, 0.35);
+
   /* Typography */
   --font-cinzel: 'Cinzel', serif;
   --font-inter: 'Inter', sans-serif;

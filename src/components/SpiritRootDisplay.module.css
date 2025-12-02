@@ -1,0 +1,182 @@
+.root {
+  background: var(--color-bg-panel);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-soft);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-cinzel);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0 0 var(--space-4);
+}
+
+.placeholderText {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+.spiritCard {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-strong);
+}
+
+.elementFire {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.elementWater {
+  background: linear-gradient(90deg, #2563eb, #22d3ee);
+}
+
+.elementEarth {
+  background: linear-gradient(90deg, #b45309, #f59e0b);
+}
+
+.elementMetal {
+  background: linear-gradient(90deg, #9ca3af, #475569);
+}
+
+.elementWood {
+  background: linear-gradient(90deg, #22c55e, #047857);
+}
+
+.spiritContent {
+  text-align: center;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.qualityText {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.quality1 { color: #9ca3af; }
+.quality2 { color: var(--color-success); }
+.quality3 { color: var(--color-info); }
+.quality4 { color: var(--color-purple); }
+.quality5 { color: #fb923c; }
+
+.elementLabel {
+  font-size: var(--text-xl);
+  color: var(--color-text-primary);
+  text-transform: capitalize;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.purityText {
+  font-size: var(--text-lg);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.bonusCard {
+  background: rgba(30, 41, 59, 0.5);
+  border: 2px solid rgba(71, 85, 105, 0.5);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.bonusHeader {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.bonusList {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.bonusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bonusLabel { color: var(--color-text-muted); }
+
+.bonusValueGreen { color: var(--color-success); }
+
+.bonusValueBlue { color: var(--color-info); }
+
+.bonusTotal {
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(71, 85, 105, 0.8);
+}
+
+.bonusTotalValue {
+  color: var(--color-gold-accent);
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
+
+.elementBonus {
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(71, 85, 105, 0.8);
+  color: #22d3ee;
+  font-weight: 600;
+  margin-top: var(--space-1);
+}
+
+.infoBox {
+  background: rgba(120, 53, 15, 0.2);
+  border: 1px solid rgba(146, 64, 14, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: rgba(253, 230, 138, 0.85);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+.infoHighlight { font-weight: 700; }
+
+.rerollButton {
+  width: 100%;
+  font-weight: 700;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: none;
+  font-family: var(--font-cinzel);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  background: linear-gradient(90deg, #9333ea, #7c3aed);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+
+.rerollButton:hover:enabled {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.5);
+}
+
+.rerollButton:disabled {
+  background: #475569;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.warningText {
+  margin-top: var(--space-2);
+  text-align: center;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}

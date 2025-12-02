@@ -1,0 +1,192 @@
+.root {
+  background: rgba(30, 41, 59, 0.5);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  backdrop-filter: blur(8px);
+}
+
+.title {
+  font-family: var(--font-cinzel);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0 0 var(--space-3);
+}
+
+.intentSection {
+  margin-bottom: var(--space-4);
+}
+
+.intentHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.intentLabel {
+  color: var(--color-purple);
+  font-weight: 600;
+}
+
+.intentValue {
+  font-family: var(--font-mono);
+  color: #d8b4fe;
+}
+
+.intentBar {
+  height: 12px;
+  border-radius: 999px;
+  background: #0f172a;
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  overflow: hidden;
+}
+
+.intentFill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #7c3aed);
+  transition: width 0.3s ease;
+}
+
+.techniqueList {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.techniqueCard {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+}
+
+.techniqueCard.disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.techniqueCard:hover:not(.disabled) {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-soft);
+}
+
+.techniqueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.techniqueName {
+  font-family: var(--font-cinzel);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.levelBadge {
+  font-size: var(--text-xs);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.techniqueDescription {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2);
+  line-height: 1.5;
+}
+
+.techniqueStats {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-2);
+}
+
+.intentCost { color: var(--color-purple); }
+
+.cooldownLabel { color: var(--color-text-muted); }
+
+.cooldownBar,
+.proficiencyBar {
+  height: 8px;
+  border-radius: 999px;
+  background: #0f172a;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  margin-bottom: var(--space-2);
+}
+
+.cooldownFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  transition: width 0.1s ease;
+}
+
+.proficiencyHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.proficiencyValue {
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+}
+
+.proficiencyFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold-accent), var(--color-gold-bright));
+  transition: width 0.2s ease;
+}
+
+.footerNote {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.tier1 {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(30, 64, 175, 0.35);
+}
+
+.tier1 .techniqueName { color: #bfdbfe; }
+.tier1 .levelBadge { background: #3b82f6; }
+.tier1 .intentCost { color: #93c5fd; }
+
+.tier2 {
+  border-color: rgba(168, 85, 247, 0.6);
+  background: rgba(76, 29, 149, 0.35);
+}
+
+.tier2 .techniqueName { color: #e9d5ff; }
+.tier2 .levelBadge { background: #a855f7; }
+.tier2 .intentCost { color: #d8b4fe; }
+
+.tier3 {
+  border-color: rgba(251, 146, 60, 0.7);
+  background: rgba(124, 45, 18, 0.35);
+}
+
+.tier3 .techniqueName { color: #fed7aa; }
+.tier3 .levelBadge { background: #fb923c; }
+.tier3 .intentCost { color: #fb923c; }
+
+.tierDefault {
+  border-color: rgba(148, 163, 184, 0.6);
+  background: rgba(30, 41, 59, 0.35);
+}
+
+.tierDefault .techniqueName { color: var(--color-text-primary); }
+.tierDefault .levelBadge { background: var(--color-border); }

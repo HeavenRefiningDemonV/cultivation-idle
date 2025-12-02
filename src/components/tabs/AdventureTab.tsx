@@ -78,17 +78,15 @@ function CombatLog() {
   }, [combatLog]);
 
   return (
-    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700 h-64 overflow-y-auto">
-      <div className="space-y-1">
+    <div className={styles.combatLogContainer}>
+      <div className={styles.combatLogList}>
         {combatLog.length === 0 ? (
-          <div className="text-slate-500 text-sm text-center py-8">
-            Combat log is empty
-          </div>
+          <div className={styles.combatLogEmpty}>Combat log is empty</div>
         ) : (
           combatLog.map((entry, index) => (
             <div
               key={index}
-              className="text-sm"
+              className={styles.combatLogEntry}
               style={{ color: entry.color }}
             >
               {entry.text}
