@@ -2,55 +2,21 @@ import { useState } from 'react';
 import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
 import { formatNumber } from '../../utils/numbers';
 import type { ItemDefinition, ItemRarity } from '../../types';
+import styles from './InventoryScreen.module.css';
 
 /**
  * Tab type for inventory sections
  */
 type InventoryTabType = 'all' | 'weapons' | 'accessories' | 'consumables' | 'materials';
 
-/**
- * Get rarity-specific styling
- */
-function getRarityColor(rarity: ItemRarity): string {
-  switch (rarity) {
-    case 'common':
-      return 'border-gray-400 bg-gray-50';
-    case 'uncommon':
-      return 'border-green-500 bg-green-50';
-    case 'rare':
-      return 'border-blue-500 bg-blue-50';
-    case 'epic':
-      return 'border-purple-500 bg-purple-50';
-    case 'legendary':
-      return 'border-orange-500 bg-orange-50';
-    case 'mythic':
-      return 'border-red-500 bg-red-50';
-    default:
-      return 'border-gray-400 bg-gray-50';
-  }
-}
-
-/**
- * Get rarity text color
- */
-function getRarityTextColor(rarity: ItemRarity): string {
-  switch (rarity) {
-    case 'common':
-      return 'text-gray-700';
-    case 'uncommon':
-      return 'text-green-700';
-    case 'rare':
-      return 'text-blue-700';
-    case 'epic':
-      return 'text-purple-700';
-    case 'legendary':
-      return 'text-orange-700';
-    case 'mythic':
-      return 'text-red-700';
-    default:
-      return 'text-gray-700';
-  }
-}
+const rarityVisuals: Record<ItemRarity, { border: string; tagClass: string; text: string; fill: string }> = {
+  common: { border: '#9ca3af', tagClass: styles.rarityCommon, text: '#374151', fill: '#f3f4f6' },
+  uncommon: { border: '#22c55e', tagClass: styles.rarityUncommon, text: '#166534', fill: '#ecfdf3' },
+  rare: { border: '#3b82f6', tagClass: styles.rarityRare, text: '#1d4ed8', fill: '#eff6ff' },
+  epic: { border: '#a855f7', tagClass: styles.rarityEpic, text: '#6b21a8', fill: '#f5ebff' },
+  legendary: { border: '#f97316', tagClass: styles.rarityLegendary, text: '#c2410c', fill: '#fff7ed' },
+  mythic: { border: '#ef4444', tagClass: styles.rarityMythic, text: '#b91c1c', fill: '#fef2f2' },
+};
 
 /**
  * Equipment Slot Component
@@ -63,64 +29,43 @@ interface EquipmentSlotProps {
 
 function EquipmentSlot({ slotType, item, onUnequip }: EquipmentSlotProps) {
   return (
-    <div className="bg-slate-800/50 border-2 border-gold-accent/30 rounded-lg p-4">
-      <h3 className="text-lg font-cinzel font-bold text-gold-accent mb-3 capitalize">
-        {slotType}
-      </h3>
+    <div className={styles.slotCard}>
+      <h3 className={styles.slotTitle}>{slotType}</h3>
 
       {item ? (
-        <div className="space-y-3">
-          {/* Item Name */}
-          <div className={`font-semibold ${getRarityTextColor(item.rarity)}`}>
-            {item.name}
-          </div>
+        <div className={styles.slotContent}>
+          <div className={`${styles.rarityTag} ${rarityVisuals[item.rarity].tagClass}`}>{item.name}</div>
 
-          {/* Item Description */}
-          <p className="text-sm text-slate-400">{item.description}</p>
+          <p className={styles.description}>{item.description}</p>
 
-          {/* Stats */}
           {item.stats && (
-            <div className="bg-green-900/20 border border-green-500/30 rounded p-2">
-              <div className="text-xs space-y-1">
-                {item.stats.atk && (
-                  <div className="text-green-400">⚔️ ATK: +{formatNumber(item.stats.atk)}</div>
-                )}
-                {item.stats.def && (
-                  <div className="text-green-400">🛡️ DEF: +{formatNumber(item.stats.def)}</div>
-                )}
-                {item.stats.hp && (
-                  <div className="text-green-400">❤️ HP: +{formatNumber(item.stats.hp)}</div>
-                )}
-                {item.stats.crit && item.stats.crit > 0 && (
-                  <div className="text-green-400">💥 Crit: +{item.stats.crit}%</div>
-                )}
-                {item.stats.critDmg && item.stats.critDmg > 0 && (
-                  <div className="text-green-400">⚡ Crit Dmg: +{item.stats.critDmg}%</div>
-                )}
-                {item.stats.dodge && item.stats.dodge > 0 && (
-                  <div className="text-green-400">🌀 Dodge: +{item.stats.dodge}%</div>
-                )}
-                {item.stats.qiGain && item.stats.qiGain > 0 && (
-                  <div className="text-green-400">✨ Qi Gain: +{item.stats.qiGain}%</div>
-                )}
-              </div>
+            <div className={styles.statBlock}>
+              {item.stats.atk && <div className={styles.statLine}>⚔️ ATK: +{formatNumber(item.stats.atk)}</div>}
+              {item.stats.def && <div className={styles.statLine}>🛡️ DEF: +{formatNumber(item.stats.def)}</div>}
+              {item.stats.hp && <div className={styles.statLine}>❤️ HP: +{formatNumber(item.stats.hp)}</div>}
+              {item.stats.crit && item.stats.crit > 0 && (
+                <div className={styles.statLine}>💥 Crit: +{item.stats.crit}%</div>
+              )}
+              {item.stats.critDmg && item.stats.critDmg > 0 && (
+                <div className={styles.statLine}>⚡ Crit Dmg: +{item.stats.critDmg}%</div>
+              )}
+              {item.stats.dodge && item.stats.dodge > 0 && (
+                <div className={styles.statLine}>🌀 Dodge: +{item.stats.dodge}%</div>
+              )}
+              {item.stats.qiGain && item.stats.qiGain > 0 && (
+                <div className={styles.statLine}>✨ Qi Gain: +{item.stats.qiGain}%</div>
+              )}
             </div>
           )}
 
-          {/* Unequip Button */}
-          <button
-            onClick={onUnequip}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-all"
-          >
+          <button onClick={onUnequip} className={`${styles.button} ${styles.buttonDanger}`}>
             Unequip
           </button>
         </div>
       ) : (
-        <div className="text-center py-8">
-          <div className="text-4xl text-slate-600 mb-2">
-            {slotType === 'weapon' ? '⚔️' : '💎'}
-          </div>
-          <div className="text-sm text-slate-500 italic">Empty Slot</div>
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>{slotType === 'weapon' ? '⚔️' : '💍'}</div>
+          <div className={styles.emptySubtitle}>Empty Slot</div>
         </div>
       )}
     </div>
@@ -145,91 +90,75 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
     return null;
   }
 
+  const rarity = rarityVisuals[itemDef.rarity];
   const isEquipment = itemDef.type === 'weapon' || itemDef.type === 'accessory';
   const isConsumable = itemDef.type === 'consumable';
 
   return (
-    <div className={`border-2 rounded-lg p-4 transition-all hover:scale-105 ${getRarityColor(itemDef.rarity)}`}>
+    <div
+      className={styles.itemCard}
+      style={{ borderColor: rarity.border, background: `linear-gradient(180deg, rgba(12,18,32,0.9), ${rarity.fill})` }}
+    >
       {/* Header */}
-      <div className="flex items-start justify-between mb-2">
+      <div className={styles.itemHeader}>
         <div>
-          <h3 className={`font-semibold font-cinzel ${getRarityTextColor(itemDef.rarity)}`}>
+          <h3 className={styles.itemTitle} style={{ color: rarity.text }}>
             {itemDef.name}
           </h3>
-          <div className="text-xs text-slate-600 mt-1 capitalize">
+          <div className={styles.itemMeta}>
             {itemDef.rarity} • Lv {itemDef.level}
           </div>
         </div>
-        {quantity > 1 && (
-          <div className="bg-slate-700 text-white text-xs px-2 py-1 rounded font-bold">
-            x{quantity}
-          </div>
-        )}
+        {quantity > 1 && <div className={styles.quantityBadge}>x{quantity}</div>}
       </div>
 
       {/* Description */}
-      <p className="text-xs text-slate-700 mb-3 leading-relaxed">{itemDef.description}</p>
+      <p className={styles.itemDescription}>{itemDef.description}</p>
 
       {/* Stats for Equipment */}
       {itemDef.stats && (
-        <div className="bg-green-50 border border-green-300 rounded p-2 mb-3">
-          <div className="text-xs space-y-1">
-            {itemDef.stats.atk && (
-              <div className="text-green-800">⚔️ ATK: +{formatNumber(itemDef.stats.atk)}</div>
-            )}
-            {itemDef.stats.def && (
-              <div className="text-green-800">🛡️ DEF: +{formatNumber(itemDef.stats.def)}</div>
-            )}
-            {itemDef.stats.hp && (
-              <div className="text-green-800">❤️ HP: +{formatNumber(itemDef.stats.hp)}</div>
-            )}
-            {itemDef.stats.crit && itemDef.stats.crit > 0 && (
-              <div className="text-green-800">💥 Crit: +{itemDef.stats.crit}%</div>
-            )}
-            {itemDef.stats.critDmg && itemDef.stats.critDmg > 0 && (
-              <div className="text-green-800">⚡ Crit Dmg: +{itemDef.stats.critDmg}%</div>
-            )}
-            {itemDef.stats.dodge && itemDef.stats.dodge > 0 && (
-              <div className="text-green-800">🌀 Dodge: +{itemDef.stats.dodge}%</div>
-            )}
-            {itemDef.stats.qiGain && itemDef.stats.qiGain > 0 && (
-              <div className="text-green-800">✨ Qi Gain: +{itemDef.stats.qiGain}%</div>
-            )}
-          </div>
+        <div className={styles.statBlock}>
+          {itemDef.stats.atk && <div className={styles.statLine}>⚔️ ATK: +{formatNumber(itemDef.stats.atk)}</div>}
+          {itemDef.stats.def && <div className={styles.statLine}>🛡️ DEF: +{formatNumber(itemDef.stats.def)}</div>}
+          {itemDef.stats.hp && <div className={styles.statLine}>❤️ HP: +{formatNumber(itemDef.stats.hp)}</div>}
+          {itemDef.stats.crit && itemDef.stats.crit > 0 && (
+            <div className={styles.statLine}>💥 Crit: +{itemDef.stats.crit}%</div>
+          )}
+          {itemDef.stats.critDmg && itemDef.stats.critDmg > 0 && (
+            <div className={styles.statLine}>⚡ Crit Dmg: +{itemDef.stats.critDmg}%</div>
+          )}
+          {itemDef.stats.dodge && itemDef.stats.dodge > 0 && (
+            <div className={styles.statLine}>🌀 Dodge: +{itemDef.stats.dodge}%</div>
+          )}
+          {itemDef.stats.qiGain && itemDef.stats.qiGain > 0 && (
+            <div className={styles.statLine}>✨ Qi Gain: +{itemDef.stats.qiGain}%</div>
+          )}
         </div>
       )}
 
       {/* Consumable Effects */}
       {itemDef.consumable && (
-        <div className="bg-blue-50 border border-blue-300 rounded p-2 mb-3">
-          <div className="text-xs text-blue-800">
-            {itemDef.consumable.healHP && `Heals ${formatNumber(itemDef.consumable.healHP)} HP`}
-            {itemDef.consumable.healPercent && `Heals ${itemDef.consumable.healPercent}% HP`}
-          </div>
+        <div className={styles.consumableBlock}>
+          {itemDef.consumable.healHP && `Heals ${formatNumber(itemDef.consumable.healHP)} HP`}
+          {itemDef.consumable.healPercent && `Heals ${itemDef.consumable.healPercent}% HP`}
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-2">
+      <div className={styles.actionsRow}>
         {isEquipment && (
-          <button
-            onClick={() => onEquip(itemId)}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
-          >
+          <button onClick={() => onEquip(itemId)} className={`${styles.button} ${styles.buttonPrimary}`}>
             Equip
           </button>
         )}
         {isConsumable && (
-          <button
-            onClick={() => onUse(itemId)}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
-          >
+          <button onClick={() => onUse(itemId)} className={`${styles.button} ${styles.buttonSuccess}`}>
             Use
           </button>
         )}
         <button
           onClick={() => onSell(itemId, quantity)}
-          className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-lg transition-all text-sm"
+          className={`${styles.button} ${styles.buttonGold}`}
           title={`Sell for ${formatNumber(itemDef.value)} gold`}
         >
           Sell
@@ -302,50 +231,34 @@ export function InventoryScreen() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className={styles.root}>
       {/* Header */}
-      <div className="text-center">
-        <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-2">
-          Inventory
-        </h1>
-        <div className="text-lg text-gold-accent/80">
-          Gold: <span className="font-bold">{formatNumber(gold)}</span> 💰
+      <div className={styles.header}>
+        <h1 className={styles.title}>Inventory</h1>
+        <div className={styles.goldText}>
+          Gold: <span className={styles.panelTitle}>{formatNumber(gold)}</span> 💰
         </div>
-        <div className="text-sm text-slate-400 mt-1">
+        <div className={styles.subtitle}>
           {items.length} / {maxSlots} slots used
         </div>
       </div>
 
       {/* Equipment Slots */}
-      <div className="bg-slate-900/50 rounded-lg border-2 border-gold-accent/30 p-6">
-        <h2 className="text-2xl font-cinzel font-bold text-gold-accent mb-4">
-          Equipped
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <EquipmentSlot
-            slotType="weapon"
-            item={equippedWeapon}
-            onUnequip={unequipWeapon}
-          />
-          <EquipmentSlot
-            slotType="accessory"
-            item={equippedAccessory}
-            onUnequip={unequipAccessory}
-          />
+      <div className={styles.panel}>
+        <h2 className={styles.panelTitle}>Equipped</h2>
+        <div className={styles.equipmentGrid}>
+          <EquipmentSlot slotType="weapon" item={equippedWeapon} onUnequip={unequipWeapon} />
+          <EquipmentSlot slotType="accessory" item={equippedAccessory} onUnequip={unequipAccessory} />
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b-2 border-gold-accent/30">
+      <div className={styles.tabs}>
         {(['all', 'weapons', 'accessories', 'consumables', 'materials'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 font-semibold font-cinzel capitalize transition-all ${
-              activeTab === tab
-                ? 'text-gold-accent border-b-4 border-gold-accent'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+            className={`${styles.tabButton} ${activeTab === tab ? styles.tabButtonActive : ''}`}
           >
             {tab}
           </button>
@@ -353,19 +266,15 @@ export function InventoryScreen() {
       </div>
 
       {/* Inventory Grid */}
-      <div className="min-h-[400px]">
+      <div className={styles.inventoryArea}>
         {filteredItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <div className="text-6xl text-slate-600 mb-4">📦</div>
-            <h3 className="text-xl font-semibold text-slate-400 mb-2">
-              No Items in {activeTab}
-            </h3>
-            <p className="text-slate-500 text-sm">
-              Defeat enemies to find loot!
-            </p>
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>📦</div>
+            <div className={styles.emptyTitle}>No Items in {activeTab}</div>
+            <div className={styles.emptySubtitle}>Defeat enemies to find loot!</div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className={styles.inventoryGrid}>
             {filteredItems.map((item) => (
               <ItemCard
                 key={item.id}

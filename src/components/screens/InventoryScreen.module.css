@@ -1,0 +1,346 @@
+.root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-text-primary);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.title {
+  font-family: var(--font-cinzel);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin-bottom: var(--space-2);
+}
+
+.goldText {
+  color: rgba(251, 191, 36, 0.9);
+  font-size: var(--text-lg);
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.panel {
+  background: var(--color-bg-panel);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: var(--space-5);
+}
+
+.panelTitle {
+  font-family: var(--font-cinzel);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin-bottom: var(--space-3);
+}
+
+.equipmentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .equipmentGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.slotCard {
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.slotTitle {
+  font-family: var(--font-cinzel);
+  font-size: var(--text-lg);
+  color: var(--color-gold-accent);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+  text-transform: capitalize;
+}
+
+.slotContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rarityTag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.rarityCommon {
+  border: 1px solid #9ca3af;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.rarityUncommon {
+  border: 1px solid #22c55e;
+  background: #ecfdf3;
+  color: #166534;
+}
+
+.rarityRare {
+  border: 1px solid #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.rarityEpic {
+  border: 1px solid #a855f7;
+  background: #f5ebff;
+  color: #6b21a8;
+}
+
+.rarityLegendary {
+  border: 1px solid #f97316;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.rarityMythic {
+  border: 1px solid #ef4444;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.statBlock {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  font-size: var(--text-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLine {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.consumableBlock {
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  color: #1d4ed8;
+  font-size: var(--text-xs);
+}
+
+.actionsRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.button {
+  flex: 1;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 700;
+  color: var(--color-ink-white);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+}
+
+.buttonPrimary {
+  background: #2563eb;
+  box-shadow: var(--shadow-soft);
+}
+
+.buttonPrimary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.buttonSuccess {
+  background: #16a34a;
+  box-shadow: var(--shadow-soft);
+}
+
+.buttonSuccess:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.buttonGold {
+  background: #f59e0b;
+  color: #1f2937;
+  box-shadow: var(--shadow-soft);
+}
+
+.buttonGold:hover {
+  background: #d97706;
+}
+
+.buttonDanger {
+  background: #dc2626;
+  box-shadow: var(--shadow-soft);
+}
+
+.buttonDanger:hover {
+  background: #b91c1c;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-6) 0;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-2);
+  color: #475569;
+}
+
+.emptyTitle {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.emptySubtitle {
+  font-size: var(--text-sm);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+  margin-bottom: var(--space-4);
+}
+
+.tabButton {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-cinzel);
+  font-weight: 700;
+  text-transform: capitalize;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tabButtonActive {
+  color: var(--color-gold-accent);
+  border-bottom-color: var(--color-gold-accent);
+}
+
+.inventoryArea {
+  min-height: 400px;
+}
+
+.inventoryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .inventoryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .inventoryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .inventoryGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.itemCard {
+  border: 2px solid #94a3b8;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  background: var(--color-bg-panel);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.itemCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.itemTitle {
+  font-family: var(--font-cinzel);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.itemMeta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+.quantityBadge {
+  background: #334155;
+  color: var(--color-ink-white);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: var(--text-xs);
+}
+
+.itemDescription {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.rewardBlock {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: #1d4ed8;
+  font-size: var(--text-xs);
+}
