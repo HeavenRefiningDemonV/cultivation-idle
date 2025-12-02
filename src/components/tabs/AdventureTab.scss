@@ -1,0 +1,381 @@
+.adventureTabRoot {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 1024px) {
+  .adventureTabRoot {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+.adventureTabPanel {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+}
+
+.adventureTabLeftColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.adventureTabPanelTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-4);
+}
+
+.adventureTabZoneList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.adventureTabZoneButton {
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  background: rgba(55, 65, 81, 0.35);
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  color: var(--color-ink-white);
+}
+
+.adventureTabZoneButton:hover {
+  border-color: var(--color-border-strong);
+}
+
+.adventureTabZoneSelected {
+  border-color: var(--color-qi-blue);
+  background: rgba(125, 211, 252, 0.1);
+  box-shadow: 0 0 18px rgba(125, 211, 252, 0.15);
+}
+
+.adventureTabZoneLocked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.adventureTabZoneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-2);
+  gap: var(--space-2);
+}
+
+.adventureTabZoneTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.adventureTabZoneName {
+  font-weight: 700;
+  color: var(--color-ink-white);
+}
+
+.adventureTabZoneCompleted {
+  font-size: var(--text-xs);
+  color: var(--color-element-wood);
+}
+
+.adventureTabZoneLevel {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.adventureTabZoneDescription {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.adventureTabZoneMeta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.adventureTabZoneBoss {
+  margin-left: var(--space-2);
+  color: var(--color-gold-accent);
+}
+
+.adventureTabZoneLockedNote {
+  font-size: var(--text-xs);
+  color: var(--color-breakthrough-red);
+}
+
+.adventureTabRightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.adventureTabEmptyPanel {
+  padding: var(--space-7);
+  text-align: center;
+}
+
+.adventureTabEmptyContent {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.adventureTabEmptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-3);
+}
+
+.adventureTabEmptyTitle {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-2);
+}
+
+.adventureTabEmptyDescription {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.adventureTabQuickStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.adventureTabQuickStatCard {
+  background: rgba(55, 65, 81, 0.4);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.adventureTabQuickStatLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.adventureTabQuickStatValueGreen {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-element-wood);
+}
+
+.adventureTabQuickStatValueRed {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-breakthrough-red);
+}
+
+.adventureTabQuickStatValueBlue {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-element-water);
+}
+
+.adventureTabQuickStatValueGold {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.adventureTabCanvasPanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4);
+}
+
+.adventureTabEnemyPanel {
+  padding: var(--space-5);
+}
+
+.adventureTabEnemyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.adventureTabEnemyName {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin: 0;
+}
+
+.adventureTabEnemyLevel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.adventureTabEnemyReward {
+  text-align: right;
+}
+
+.adventureTabEnemyRewardLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.adventureTabEnemyRewardValue {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.adventureTabHpBar {
+  margin-bottom: var(--space-4);
+}
+
+.adventureTabHpLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
+}
+
+.adventureTabHpLabel {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.adventureTabHpValue {
+  color: var(--color-text-muted);
+}
+
+.adventureTabHpTrack {
+  height: 24px;
+  background: rgba(55, 65, 81, 0.6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.adventureTabHpFill {
+  height: 100%;
+  border-radius: var(--radius-md);
+}
+
+.adventureTabHpFillRed {
+  background: linear-gradient(90deg, #b91c1c, #ef4444);
+}
+
+.adventureTabHpFillGreen {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.adventureTabCombatControls {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .adventureTabCombatControls {
+    flex-direction: column;
+  }
+}
+
+.adventureTabActionButton {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.adventureTabPrimaryAction {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.25);
+}
+
+.adventureTabSecondaryAction {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.adventureTabAutoActive {
+  background: linear-gradient(90deg, var(--color-qi-dark), #0ea5e9);
+}
+
+.adventureTabAutoInactive {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.adventureTabCombatLogPanel {
+  padding: var(--space-5);
+}
+
+.adventureTabCombatLogTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-3);
+}
+
+.adventureTabCombatLogContainer {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  height: 256px;
+  overflow-y: auto;
+}
+
+.adventureTabCombatLogList {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.adventureTabCombatLogEmpty {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-5) 0;
+}
+
+.adventureTabCombatLogEntry {
+  font-size: var(--text-sm);
+}
+
+.adventureTabLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+
+.adventureTabLoadingCard {
+  text-align: center;
+  color: var(--color-ink-white);
+}
+
+.adventureTabLoadingIcon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-3);
+}
+
+.adventureTabLoadingText {
+  color: var(--color-text-muted);
+}

@@ -8,6 +8,7 @@ import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { GATE_ITEMS } from '../../systems/loot';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
+import './CultivateScreen.scss';
 
 
 /**
@@ -15,15 +16,15 @@ import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
  */
 function MeditatingCharacter() {
   return (
-    <div className="relative flex items-center justify-center">
+    <div className={'cultivateScreenMeditationCharacter'}>
       {/* Qi aura rings */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="absolute w-48 h-48 rounded-full border-2 border-blue-400/30 animate-ping" />
-        <div className="absolute w-40 h-40 rounded-full border-2 border-blue-300/40 animate-pulse" />
-        <div className="absolute w-32 h-32 rounded-full border border-blue-200/50" />
+      <div className={'cultivateScreenAuraLayer'}>
+        <div className={'cultivateScreenAuraRingLarge'} />
+        <div className={'cultivateScreenAuraRingMedium'} />
+        <div className={'cultivateScreenAuraRingSmall'} />
       </div>
 
-      <div className="relative z-10 text-8xl filter drop-shadow-[0_0_20px_rgba(59,130,246,0.6)]">
+      <div className={'cultivateScreenMeditator'}>
         🧘
       </div>
 
@@ -46,95 +47,30 @@ function OrnateProgressBar({
   const percent = Math.min(100, parseFloat((Number(current) / Number(max) * 100).toFixed(2)));
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center text-sm">
-        <span className="text-gold-accent font-cinzel font-semibold">{label}</span>
-        <span className="text-slate-300">
+    <div className={'cultivateScreenProgressSection'}>
+      <div className={'cultivateScreenProgressBlock'}>
+        <span className={'cultivateScreenProgressLabel'}>{label}</span>
+        <span className={'cultivateScreenProgressValue'}>
           {formatNumber(current)} / {formatNumber(max)}
         </span>
       </div>
 
       {/* Ornate container */}
-      <div className="relative h-8 bg-ink-dark rounded-lg border-2 border-gold-accent/30 overflow-hidden shadow-inner">
+      <div className={'cultivateScreenProgressContainer'}>
         {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="h-full w-full" style={{
-            backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)'
-          }} />
-        </div>
+        <div className={'cultivateScreenProgressPattern'} />
 
         {/* Gradient fill */}
-        <div
-          className="absolute inset-0 transition-all duration-500 ease-out"
-          style={{
-            width: `${percent}%`,
-            background: 'linear-gradient(90deg, rgba(59,130,246,0.8) 0%, rgba(147,197,253,0.9) 50%, rgba(59,130,246,0.8) 100%)',
-            boxShadow: '0 0 20px rgba(59,130,246,0.5)',
-          }}
-        >
-          {/* Shimmer effect */}
-          <div
-            className="absolute inset-0 opacity-50"
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-              animation: 'shimmer 2s infinite',
-            }}
-          />
+        <div className={'cultivateScreenProgressFill'} style={{ width: `${percent}%` }}>
+          <div className={'cultivateScreenProgressShimmer'} />
         </div>
 
         {/* Percentage text */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-bold text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]">
-            {percent.toFixed(1)}%
-          </span>
-        </div>
+        <div className={'cultivateScreenProgressText'}>{percent.toFixed(1)}%</div>
       </div>
     </div>
   );
 }
-
-/**
- * Upgrade Card Component
- * (Currently unused - kept for future upgrades feature)
- */
-/*
-function UpgradeCard({
-  title,
-  description,
-  cost,
-  onClick,
-  disabled,
-}: {
-  title: string;
-  description: string;
-  cost: string;
-  onClick: () => void;
-  disabled: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`
-        relative p-4 rounded-lg border-2 transition-all text-left
-        ${
-          disabled
-            ? 'border-slate-700 bg-slate-800/30 opacity-50 cursor-not-allowed'
-            : 'border-gold-accent/50 bg-ink-dark/50 hover:border-gold-accent hover:bg-ink-dark/70 hover:scale-105 cursor-pointer'
-        }
-      `}
-    >
-      <div className="font-cinzel font-bold text-gold-accent mb-1">{title}</div>
-      <div className="text-xs text-slate-400 mb-3">{description}</div>
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-qi-blue">Cost:</span>
-        <span className="text-white font-bold">{formatNumber(cost)}</span>
-        <span className="text-qi-blue">Qi</span>
-      </div>
-    </button>
-  );
-}
-*/
 
 /**
  * Main Cultivate Screen Component
@@ -238,68 +174,57 @@ export function CultivateScreen() {
   };
 
   return (
-    <div className="rbg">
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
-        <div className="text-center mb-8">
-          <h1 className="">
-            Cultivation Chamber
-          </h1>
-          <p className="text-slate-400 text-sm">
-            Meditate and gather Qi to advance your cultivation
-          </p>
+    <div className={'cultivateScreenRoot'}>
+      <div className={'cultivateScreenContent'}>
+        <div className={'cultivateScreenHeader'}>
+          <h1 className={'cultivateScreenTitle'}>Cultivation Chamber</h1>
+          <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
         </div>
 
         {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={'cultivateScreenGrid'}>
           {/* LEFT: Meditation Display */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={'cultivateScreenLeftColumn'}>
             {/* Meditating Character */}
-            <div className="relative bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-8 backdrop-blur-sm">
+            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
               <MeditatingCharacter />
 
               {/* Qi Stats */}
-              <div className="mt-8 grid grid-cols-2 gap-4">
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-qi-blue/30">
-                  <div className="text-xs text-slate-400 uppercase mb-1">Current Qi</div>
-                  <div className="text-2xl font-bold text-qi-blue">{formatNumber(qi)}</div>
+              <div className={'cultivateScreenStatsGrid'}>
+                <div className={'cultivateScreenStatCard'}>
+                  <div className={'cultivateScreenStatLabel'}>Current Qi</div>
+                  <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-4 border border-qi-blue/30">
-                  <div className="text-xs text-slate-400 uppercase mb-1">Qi per Second</div>
-                  <div className="text-2xl font-bold text-qi-blue">
-                    {formatNumber(qiPerSecond)}
-                  </div>
+                <div className={'cultivateScreenStatCard'}>
+                  <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
+                  <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
                 </div>
               </div>
             </div>
 
             {/* Breakthrough Progress */}
-            <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
-              <div className="mb-4">
-                <div className="font-cinzel text-xl font-bold text-gold-accent mb-1">
-                  {currentRealm.name}
-                </div>
-                <div className="text-sm text-slate-400">
-                  {isLastSubstage
-                    ? 'Maximum stage reached'
-                    : `Stage ${realm.substage} → ${nextSubstage}`}
+            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+              <div className={'cultivateScreenProgressHeader'}>
+                <div className={'cultivateScreenProgressTitle'}>{currentRealm.name}</div>
+                <div className={'cultivateScreenProgressSubtitle'}>
+                  {isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`}
                 </div>
               </div>
 
               <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
 
               {requiredGateItem && (
-                <div className="mt-4 rounded-lg border border-slate-700 bg-slate-900/40 px-4 py-3 text-sm text-slate-300">
+                <div className={'cultivateScreenGateRequirement'}>
                   {hasRequiredToken ? (
-                    <span className="text-emerald-300 font-semibold">
+                    <span className={'cultivateScreenGateReady'}>
                       ✅ {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
                     </span>
                   ) : (
-                    <span className="text-rose-300 font-semibold">
+                    <span className={'cultivateScreenGateMissing'}>
                       🔒 Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
                     </span>
                   )}
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className={'cultivateScreenGateNote'}>
                     Obtained from key bosses and trials. One will be consumed when breaking through to the
                     next realm.
                   </p>
@@ -310,15 +235,7 @@ export function CultivateScreen() {
               <button
                 onClick={handleBreakthrough}
                 disabled={!canBreakthrough}
-                className={`
-                  w-full mt-6 py-4 px-6 rounded-lg font-cinzel font-bold text-lg
-                  transition-all duration-300
-                  ${
-                    canBreakthrough
-                      ? 'bg-gradient-to-r from-red-600 via-pink-600 to-red-600 text-white hover:from-red-500 hover:via-pink-500 hover:to-red-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] cursor-pointer'
-                      : 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50'
-                  }
-                `}
+                className={'cultivateScreenBreakthroughButton'}
               >
                 {canBreakthrough
                   ? '✨ Break Through! ✨'
@@ -330,54 +247,44 @@ export function CultivateScreen() {
           </div>
 
           {/* RIGHT: Focus & Upgrades */}
-          <div className="space-y-6">
+          <div className={'cultivateScreenRightColumn'}>
             {/* Focus Mode Selector */}
-            <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
-              <h3 className="font-cinzel text-lg font-bold text-gold-accent mb-4">
-                Cultivation Focus
-              </h3>
+            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+              <h3 className={'cultivateScreenPanelHeader'}>Cultivation Focus</h3>
 
-              <div className="space-y-3">
-                {(['balanced', 'body', 'spirit'] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setFocusMode(mode)}
-                    className={`
-                      w-full p-3 rounded-lg border-2 transition-all text-left
-                      ${
-                        focusMode === mode
-                          ? 'border-qi-blue bg-qi-blue/20 shadow-[0_0_15px_rgba(59,130,246,0.4)]'
-                          : 'border-slate-600 bg-slate-800/30 hover:border-slate-500'
-                      }
-                    `}
-                  >
-                    <div className="font-bold text-white capitalize">{mode}</div>
-                    <div className="text-xs text-slate-400">
-                      {mode === 'balanced' && 'Equal focus on all aspects'}
-                      {mode === 'body' && 'Enhance physical cultivation'}
-                      {mode === 'spirit' && 'Focus on spiritual energy'}
-                    </div>
-                  </button>
-                ))}
+              <div className={'cultivateScreenFocusList'}>
+                {(['balanced', 'body', 'spirit'] as const).map((mode) => {
+                  const isActive = focusMode === mode;
+                  return (
+                    <button
+                      key={mode}
+                      onClick={() => setFocusMode(mode)}
+                      className={`${'cultivateScreenFocusButton'} ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
+                    >
+                      <div className={'cultivateScreenFocusTitle'}>{mode}</div>
+                      <div className={'cultivateScreenFocusDescription'}>
+                        {mode === 'balanced' && 'Equal focus on all aspects'}
+                        {mode === 'body' && 'Enhance physical cultivation'}
+                        {mode === 'spirit' && 'Focus on spiritual energy'}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Cultivation Info */}
-            <div className="bg-ink-dark/50 rounded-lg border-2 border-gold-accent/30 p-6 backdrop-blur-sm">
-              <h3 className="font-cinzel text-lg font-bold text-gold-accent mb-4">
-                Cultivation Info
-              </h3>
+            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+              <h3 className={'cultivateScreenPanelHeader'}>Cultivation Info</h3>
 
-              <div className="space-y-3 text-sm text-slate-300">
+              <div className={'cultivateScreenInfoList'}>
                 <div>
-                  <div className="text-slate-400 mb-1">Current Path</div>
-                  <div className="text-white font-bold capitalize">
-                    {useGameStore.getState().selectedPath || 'None'}
-                  </div>
+                  <div className={'cultivateScreenInfoLabel'}>Current Path</div>
+                  <div className={'cultivateScreenInfoValue'}>{useGameStore.getState().selectedPath || 'None'}</div>
                 </div>
                 <div>
-                  <div className="text-slate-400 mb-1">Total Auras</div>
-                  <div className="text-pink-400 font-bold">
+                  <div className={'cultivateScreenInfoLabel'}>Total Auras</div>
+                  <div className={`${'cultivateScreenInfoValue'} ${'cultivateScreenInfoHighlight'}`}>
                     {formatNumber(useGameStore.getState().totalAuras)}
                   </div>
                 </div>
@@ -387,48 +294,12 @@ export function CultivateScreen() {
         </div>
       </div>
 
-      {/* Shimmer keyframes (add to global CSS or use Tailwind plugin) */}
-      <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-        }
-        @keyframes float-delayed {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        .animate-float-delayed {
-          animation: float-delayed 4s ease-in-out infinite;
-          animation-delay: 1s;
-        }
-        .animate-float-slow {
-          animation: float-slow 5s ease-in-out infinite;
-          animation-delay: 0.5s;
-        }
-      `}</style>
-
       {/* Path Selection Modal */}
-      {showPathSelectionModal && (
-        <PathSelectionModal onClose={hidePathSelection} />
-      )}
+      {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
 
       {/* Perk Selection Modal */}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
-        <PerkSelectionModal
-          onClose={hidePerkSelection}
-          realmIndex={perkSelectionRealm}
-        />
+        <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
       )}
     </div>
   );

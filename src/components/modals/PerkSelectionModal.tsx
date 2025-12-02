@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { getAvailablePerks } from '../../data/pathPerks';
 import type { PathPerk } from '../../data/pathPerks';
+import './PerkSelectionModal.scss';
 
 interface PerkSelectionModalProps {
   onClose: () => void;
@@ -33,31 +34,23 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
     switch (selectedPath) {
       case 'heaven':
         return {
-          gradient: 'from-blue-400 to-purple-500',
-          border: 'border-blue-500',
-          text: 'text-blue-400',
-          glow: 'shadow-blue-500/50',
+          highlight: 'perkSelectionModalPathHeaven',
+          text: 'perkSelectionModalPathTextHeaven',
         };
       case 'earth':
         return {
-          gradient: 'from-green-600 to-yellow-700',
-          border: 'border-green-600',
-          text: 'text-green-400',
-          glow: 'shadow-green-600/50',
+          highlight: 'perkSelectionModalPathEarth',
+          text: 'perkSelectionModalPathTextEarth',
         };
       case 'martial':
         return {
-          gradient: 'from-red-500 to-orange-600',
-          border: 'border-red-500',
-          text: 'text-red-400',
-          glow: 'shadow-red-500/50',
+          highlight: 'perkSelectionModalPathMartial',
+          text: 'perkSelectionModalPathTextMartial',
         };
       default:
         return {
-          gradient: 'from-gray-400 to-gray-600',
-          border: 'border-gray-500',
-          text: 'text-gray-400',
-          glow: 'shadow-gray-500/50',
+          highlight: 'perkSelectionModalPathNeutral',
+          text: 'perkSelectionModalPathTextNeutral',
         };
     }
   };
@@ -109,19 +102,14 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
 
   if (availablePerks.length === 0) {
     return (
-      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-        <div className="bg-slate-900 border-4 border-gold-accent rounded-lg max-w-md w-full p-8">
-          <div className="text-center">
-            <h1 className="font-cinzel text-2xl font-bold text-gold-accent mb-4">
-              No Perks Available
-            </h1>
-            <p className="text-slate-300 mb-6">
+      <div className={'perkSelectionModalOverlay'}>
+        <div className={'perkSelectionModalEmptyModal'}>
+          <div className={'perkSelectionModalHeader'}>
+            <h1 className={'perkSelectionModalEmptyTitle'}>No Perks Available</h1>
+            <p className={'perkSelectionModalEmptyText'}>
               You have already selected all available perks for this realm.
             </p>
-            <button
-              onClick={onClose}
-              className="w-full bg-gradient-to-r from-gold-accent to-yellow-600 text-ink-dark font-bold py-3 px-4 rounded-lg hover:shadow-lg transition-all"
-            >
+            <button onClick={onClose} className={'perkSelectionModalButtonPrimary'}>
               Continue
             </button>
           </div>
@@ -131,88 +119,63 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <div className="bg-slate-900 border-4 border-gold-accent rounded-lg max-w-4xl w-full max-h-[95vh] overflow-y-auto p-8">
-        <div className="text-center mb-8">
-          <h1 className="font-cinzel text-4xl font-bold text-gold-accent mb-3">
-            Choose Your Path Perk
-          </h1>
-          <p className="text-lg text-slate-300 capitalize">
+    <div className={'perkSelectionModalOverlay'}>
+      <div className={'perkSelectionModalModal'}>
+        <div className={'perkSelectionModalHeader'}>
+          <h1 className={'perkSelectionModalTitle'}>Choose Your Path Perk</h1>
+          <p className={'perkSelectionModalSubtitle'}>
             {selectedPath} Path • Realm {realmIndex}
           </p>
-          <p className="text-sm text-slate-400 mt-2">
+          <p className={'perkSelectionModalHelperText'}>
             Select one perk to enhance your cultivation journey
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className={'perkSelectionModalGrid'}>
           {availablePerks.map((perk) => (
             <div
               key={perk.id}
               onMouseEnter={() => setHoveredPerk(perk.id)}
               onMouseLeave={() => setHoveredPerk(null)}
-              className={`bg-slate-800/50 border-4 rounded-lg p-6 cursor-pointer transition-all transform backdrop-blur-sm ${
-                hoveredPerk === perk.id
-                  ? `${pathColors.border} scale-105 shadow-2xl ${pathColors.glow}`
-                  : 'border-slate-600 hover:border-slate-500'
+              className={`${'perkSelectionModalPerkCard'} ${
+                hoveredPerk === perk.id ? `${'perkSelectionModalPerkCardActive'} ${pathColors.highlight}` : ''
               }`}
               onClick={() => handleSelectPerk(perk)}
             >
-              {/* Perk Icon */}
-              <div className="text-center mb-4">
-                <div
-                  className={`inline-block text-6xl ${
-                    hoveredPerk === perk.id ? 'animate-bounce' : ''
-                  }`}
-                >
+              <div className={'perkSelectionModalIconRow'}>
+                <div className={hoveredPerk === perk.id ? 'perkSelectionModalPathTextNeutral' : ''}>
                   {selectedPath === 'heaven' && '☁️'}
                   {selectedPath === 'earth' && '⛰️'}
                   {selectedPath === 'martial' && '⚔️'}
                 </div>
               </div>
 
-              {/* Perk Name */}
-              <div
-                className={`bg-gradient-to-r ${pathColors.gradient} text-white text-center py-3 px-4 rounded-lg mb-4`}
-              >
-                <h2 className="text-xl font-bold font-cinzel">{perk.name}</h2>
+              <div className={`${'perkSelectionModalPerkName'} ${pathColors.highlight}`}>
+                <h2 className={'perkSelectionModalPerkTitle'}>{perk.name}</h2>
               </div>
 
-              {/* Description */}
-              <p className="text-sm text-slate-300 mb-4 leading-relaxed min-h-[3rem]">
-                {perk.description}
-              </p>
+              <p className={'perkSelectionModalPerkDescription'}>{perk.description}</p>
 
-              {/* Effect Details */}
-              <div className="bg-purple-900/30 border-2 border-purple-500/50 rounded-lg p-4 mb-4">
-                <h3 className="text-sm font-semibold text-purple-300 mb-2">
-                  Effect:
-                </h3>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-purple-200">
-                    {formatStatName(perk.effect.stat)}
-                  </span>
-                  <span className={`text-lg font-bold ${pathColors.text}`}>
+              <div className={'perkSelectionModalEffectBox'}>
+                <h3 className={'perkSelectionModalEffectTitle'}>Effect:</h3>
+                <div className={'perkSelectionModalEffectContent'}>
+                  <span>{formatStatName(perk.effect.stat)}</span>
+                  <span className={`${'perkSelectionModalEffectValue'} ${pathColors.text}`}>
                     {formatStatValue(perk.effect.stat, perk.effect.value)}
                   </span>
                 </div>
               </div>
 
-              {/* Select Button */}
-              <button
-                className={`w-full bg-gradient-to-r ${pathColors.gradient} text-white font-bold py-3 px-4 rounded-lg transition-all hover:shadow-lg`}
-              >
+              <button className={`${'perkSelectionModalSelectButton'} ${pathColors.highlight}`}>
                 Choose This Perk
               </button>
             </div>
           ))}
         </div>
 
-        <div className="mt-8 text-center">
-          <p className="text-sm text-slate-400 italic">
-            💡 Tip: Choose perks that complement your playstyle!
-          </p>
-          <p className="text-xs text-slate-500 mt-2">
+        <div className={'perkSelectionModalFooter'}>
+          <p>💡 Tip: Choose perks that complement your playstyle!</p>
+          <p className={'perkSelectionModalFooterSmall'}>
             Perks are permanent for this run and stack with your path bonuses
           </p>
         </div>

@@ -1,0 +1,8 @@
+{
+  "name": "sass",
+  "version": "1.80.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "description": "Local stub Sass compiler for offline builds.",
+  "license": "MIT"
+}

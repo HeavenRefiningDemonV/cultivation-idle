@@ -1,0 +1,192 @@
+.techniquePanelRoot {
+  background: rgba(30, 41, 59, 0.5);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  backdrop-filter: blur(8px);
+}
+
+.techniquePanelTitle {
+  font-family: var(--font-cinzel);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0 0 var(--space-3);
+}
+
+.techniquePanelIntentSection {
+  margin-bottom: var(--space-4);
+}
+
+.techniquePanelIntentHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.techniquePanelIntentLabel {
+  color: var(--color-purple);
+  font-weight: 600;
+}
+
+.techniquePanelIntentValue {
+  font-family: var(--font-mono);
+  color: #d8b4fe;
+}
+
+.techniquePanelIntentBar {
+  height: 12px;
+  border-radius: 999px;
+  background: #0f172a;
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  overflow: hidden;
+}
+
+.techniquePanelIntentFill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #7c3aed);
+  transition: width 0.3s ease;
+}
+
+.techniquePanelTechniqueList {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.techniquePanelTechniqueCard {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+}
+
+.techniquePanelTechniqueCard.techniquePanelDisabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.techniquePanelTechniqueCard:hover:not(.techniquePanelDisabled) {
+  transform: scale(1.03);
+  box-shadow: var(--shadow-soft);
+}
+
+.techniquePanelTechniqueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.techniquePanelTechniqueName {
+  font-family: var(--font-cinzel);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.techniquePanelLevelBadge {
+  font-size: var(--text-xs);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.techniquePanelTechniqueDescription {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-2);
+  line-height: 1.5;
+}
+
+.techniquePanelTechniqueStats {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-2);
+}
+
+.techniquePanelIntentCost { color: var(--color-purple); }
+
+.techniquePanelCooldownLabel { color: var(--color-text-muted); }
+
+.techniquePanelCooldownBar,
+.techniquePanelProficiencyBar {
+  height: 8px;
+  border-radius: 999px;
+  background: #0f172a;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  margin-bottom: var(--space-2);
+}
+
+.techniquePanelCooldownFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  transition: width 0.1s ease;
+}
+
+.techniquePanelProficiencyHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.techniquePanelProficiencyValue {
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+}
+
+.techniquePanelProficiencyFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-gold-accent), var(--color-gold-bright));
+  transition: width 0.2s ease;
+}
+
+.techniquePanelFooterNote {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.techniquePanelTier1 {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(30, 64, 175, 0.35);
+}
+
+.techniquePanelTier1 .techniquePanelTechniqueName { color: #bfdbfe; }
+.techniquePanelTier1 .techniquePanelLevelBadge { background: #3b82f6; }
+.techniquePanelTier1 .techniquePanelIntentCost { color: #93c5fd; }
+
+.techniquePanelTier2 {
+  border-color: rgba(168, 85, 247, 0.6);
+  background: rgba(76, 29, 149, 0.35);
+}
+
+.techniquePanelTier2 .techniquePanelTechniqueName { color: #e9d5ff; }
+.techniquePanelTier2 .techniquePanelLevelBadge { background: #a855f7; }
+.techniquePanelTier2 .techniquePanelIntentCost { color: #d8b4fe; }
+
+.techniquePanelTier3 {
+  border-color: rgba(251, 146, 60, 0.7);
+  background: rgba(124, 45, 18, 0.35);
+}
+
+.techniquePanelTier3 .techniquePanelTechniqueName { color: #fed7aa; }
+.techniquePanelTier3 .techniquePanelLevelBadge { background: #fb923c; }
+.techniquePanelTier3 .techniquePanelIntentCost { color: #fb923c; }
+
+.techniquePanelTierDefault {
+  border-color: rgba(148, 163, 184, 0.6);
+  background: rgba(30, 41, 59, 0.35);
+}
+
+.techniquePanelTierDefault .techniquePanelTechniqueName { color: var(--color-text-primary); }
+.techniquePanelTierDefault .techniquePanelLevelBadge { background: var(--color-border); }

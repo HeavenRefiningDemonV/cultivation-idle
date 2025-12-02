@@ -1,0 +1,501 @@
+.dungeonScreenOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  padding: var(--space-4);
+}
+
+.dungeonScreenModal {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #0f172a, #111827);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  box-shadow: var(--shadow-strong);
+  overflow: hidden;
+}
+
+.dungeonScreenModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.dungeonScreenModalTitle {
+  margin: 0 0 var(--space-2) 0;
+  font-family: var(--font-cinzel);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.dungeonScreenModalSubtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenCloseButton {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-2xl);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.dungeonScreenCloseButton:hover {
+  color: #fff;
+}
+
+.dungeonScreenModalBody {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.dungeonScreenPanel {
+  background: rgba(26, 26, 26, 0.65);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-soft);
+}
+
+.dungeonScreenPanelAccentRed {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.dungeonScreenSectionTitle {
+  margin: 0 0 var(--space-3) 0;
+  font-family: var(--font-cinzel);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  text-align: center;
+}
+
+.dungeonScreenStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+}
+
+.dungeonScreenStatsCell {
+  text-align: center;
+}
+
+.dungeonScreenStatsLabel {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenStatsValue {
+  color: var(--color-text-primary);
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+
+.dungeonScreenMechanicsList {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.dungeonScreenMechanicCard {
+  background: rgba(51, 65, 85, 0.45);
+  border: 1px solid rgba(100, 116, 139, 0.5);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.dungeonScreenMechanicHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.dungeonScreenMechanicTitle {
+  color: #c084fc;
+  font-weight: 700;
+}
+
+.dungeonScreenMechanicMeta {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.dungeonScreenMechanicBody {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenProgressGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.dungeonScreenProgressLabelRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.dungeonScreenProgressBar {
+  height: 10px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.dungeonScreenProgressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.dungeonScreenProgressFillWarning {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.dungeonScreenProgressFillDanger {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.dungeonScreenReadinessBlock {
+  text-align: center;
+}
+
+.dungeonScreenReadinessLabel {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.dungeonScreenReadinessValue {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.dungeonScreenReadinessReady {
+  color: #4ade80;
+}
+
+.dungeonScreenReadinessCaution {
+  color: #fbbf24;
+}
+
+.dungeonScreenReadinessDanger {
+  color: #ef4444;
+}
+
+.dungeonScreenRewardList {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.dungeonScreenRewardRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dungeonScreenRewardValue {
+  color: var(--color-gold-accent);
+  font-weight: 700;
+}
+
+.dungeonScreenPrimaryButton {
+  width: 100%;
+  padding: var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.dungeonScreenPrimaryButton:hover {
+  filter: brightness(1.05);
+}
+
+.dungeonScreenFooterActions {
+  display: flex;
+  gap: var(--space-3);
+  border-top: 1px solid rgba(251, 191, 36, 0.3);
+  padding: var(--space-4);
+}
+
+.dungeonScreenSecondaryButton,
+.dungeonScreenDangerButton {
+  flex: 1;
+  padding: var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.dungeonScreenSecondaryButton {
+  background: #475569;
+}
+
+.dungeonScreenSecondaryButton:hover {
+  filter: brightness(1.05);
+}
+
+.dungeonScreenDangerButton {
+  background: linear-gradient(90deg, #ef4444, #fca5a5);
+  box-shadow: var(--shadow-soft);
+}
+
+.dungeonScreenDangerButton:hover {
+  filter: brightness(1.05);
+}
+
+.dungeonScreenScreenRoot {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f172a, #111827);
+  border-radius: var(--radius-lg);
+}
+
+.dungeonScreenScreenBackground {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image: radial-gradient(circle at 40% 50%, rgba(168, 85, 247, 0.35) 0%, transparent 50%),
+    radial-gradient(circle at 60% 50%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+}
+
+.dungeonScreenScreenContent {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.dungeonScreenScreenHeader {
+  text-align: center;
+}
+
+.dungeonScreenScreenTitle {
+  margin: 0 0 var(--space-2) 0;
+  font-family: var(--font-cinzel);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.dungeonScreenScreenSubtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenDungeonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.dungeonScreenDungeonCard {
+  background: rgba(26, 26, 26, 0.65);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.dungeonScreenDungeonCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.6);
+}
+
+.dungeonScreenDungeonHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.dungeonScreenDungeonTitle {
+  margin: 0;
+  font-family: var(--font-cinzel);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.dungeonScreenDungeonTier {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.dungeonScreenTagRow {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.dungeonScreenTagPurple {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #e9d5ff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.dungeonScreenTagMuted {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(71, 85, 105, 0.5);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+}
+
+.dungeonScreenDungeonDescription {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenReadinessRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenBadge {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.dungeonScreenBadgeReady {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.dungeonScreenBadgeCaution {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+.dungeonScreenBadgeDanger {
+  background: rgba(248, 113, 113, 0.15);
+  color: #ef4444;
+}
+
+.dungeonScreenRewardPanel {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.dungeonScreenRewardHighlight {
+  color: var(--color-gold-accent);
+  font-weight: 700;
+}
+
+.dungeonScreenCardActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.dungeonScreenActionGhost,
+.dungeonScreenActionPrimary {
+  flex: 1;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.dungeonScreenActionGhost {
+  background: rgba(71, 85, 105, 0.6);
+  color: var(--color-text-primary);
+}
+
+.dungeonScreenActionGhost:hover {
+  filter: brightness(1.05);
+}
+
+.dungeonScreenActionPrimary {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.dungeonScreenActionPrimary:hover {
+  filter: brightness(1.05);
+}
+
+.dungeonScreenButtonDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dungeonScreenLoadingCard,
+.dungeonScreenErrorCard,
+.dungeonScreenEmptyCard {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f172a, #111827);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.dungeonScreenLoadingIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-2);
+  color: var(--color-gold-accent);
+}
+
+.dungeonScreenErrorTitle {
+  margin: 0 0 var(--space-2) 0;
+  color: #f87171;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.dungeonScreenErrorMessage {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}

@@ -1,0 +1,171 @@
+.pathSelectionModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+.pathSelectionModalModal {
+  width: 100%;
+  max-width: 1200px;
+  max-height: 95vh;
+  background: linear-gradient(180deg, #0f172a, #111827);
+  border: 4px solid rgba(251, 191, 36, 0.6);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-strong);
+  overflow: auto;
+  padding: var(--space-6);
+}
+
+.pathSelectionModalHeader {
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+.pathSelectionModalTitle {
+  margin: 0 0 var(--space-2) 0;
+  font-family: var(--font-cinzel);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.pathSelectionModalSubtitle {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-lg);
+}
+
+.pathSelectionModalHelperText {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.pathSelectionModalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+}
+
+.pathSelectionModalCard {
+  background: rgba(26, 26, 26, 0.6);
+  border: 4px solid rgba(100, 116, 139, 0.6);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(6px);
+}
+
+.pathSelectionModalCardActive {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-soft);
+}
+
+.pathSelectionModalIcon {
+  font-size: 3.5rem;
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+
+.pathSelectionModalGradientHeader {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: #fff;
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+
+.pathSelectionModalPathName {
+  margin: 0;
+  font-family: var(--font-cinzel);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.pathSelectionModalPathTheme {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--text-sm);
+}
+
+.pathSelectionModalDescription {
+  margin: 0 0 var(--space-3) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.pathSelectionModalBonusBox {
+  background: rgba(16, 185, 129, 0.12);
+  border: 2px solid rgba(74, 222, 128, 0.45);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.pathSelectionModalBonusTitle {
+  margin: 0 0 var(--space-2) 0;
+  color: #34d399;
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.pathSelectionModalBonusList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  color: #bbf7d0;
+  font-size: var(--text-xs);
+}
+
+.pathSelectionModalPlaystyleBox {
+  background: rgba(59, 130, 246, 0.12);
+  border: 2px solid rgba(59, 130, 246, 0.45);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  color: #bfdbfe;
+  font-size: var(--text-xs);
+}
+
+.pathSelectionModalSelectButton {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #38bdf8, #a855f7);
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.pathSelectionModalSelectButton:hover {
+  filter: brightness(1.05);
+}
+
+.pathSelectionModalFooter {
+  margin-top: var(--space-5);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.pathSelectionModalFooterTip {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+.pathSelectionModalFooterNote {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xs);
+}

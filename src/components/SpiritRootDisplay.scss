@@ -1,0 +1,182 @@
+.spiritRootDisplayRoot {
+  background: var(--color-bg-panel);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-soft);
+}
+
+.spiritRootDisplayHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-cinzel);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0 0 var(--space-4);
+}
+
+.spiritRootDisplayPlaceholderText {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+.spiritRootDisplaySpiritCard {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-strong);
+}
+
+.spiritRootDisplayElementFire {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.spiritRootDisplayElementWater {
+  background: linear-gradient(90deg, #2563eb, #22d3ee);
+}
+
+.spiritRootDisplayElementEarth {
+  background: linear-gradient(90deg, #b45309, #f59e0b);
+}
+
+.spiritRootDisplayElementMetal {
+  background: linear-gradient(90deg, #9ca3af, #475569);
+}
+
+.spiritRootDisplayElementWood {
+  background: linear-gradient(90deg, #22c55e, #047857);
+}
+
+.spiritRootDisplaySpiritContent {
+  text-align: center;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.spiritRootDisplayQualityText {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.spiritRootDisplayQuality1 { color: #9ca3af; }
+.spiritRootDisplayQuality2 { color: var(--color-success); }
+.spiritRootDisplayQuality3 { color: var(--color-info); }
+.spiritRootDisplayQuality4 { color: var(--color-purple); }
+.spiritRootDisplayQuality5 { color: #fb923c; }
+
+.spiritRootDisplayElementLabel {
+  font-size: var(--text-xl);
+  color: var(--color-text-primary);
+  text-transform: capitalize;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.spiritRootDisplayPurityText {
+  font-size: var(--text-lg);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.spiritRootDisplayBonusCard {
+  background: rgba(30, 41, 59, 0.5);
+  border: 2px solid rgba(71, 85, 105, 0.5);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.spiritRootDisplayBonusHeader {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.spiritRootDisplayBonusList {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.spiritRootDisplayBonusRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spiritRootDisplayBonusLabel { color: var(--color-text-muted); }
+
+.spiritRootDisplayBonusValueGreen { color: var(--color-success); }
+
+.spiritRootDisplayBonusValueBlue { color: var(--color-info); }
+
+.spiritRootDisplayBonusTotal {
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(71, 85, 105, 0.8);
+}
+
+.spiritRootDisplayBonusTotalValue {
+  color: var(--color-gold-accent);
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
+
+.spiritRootDisplayElementBonus {
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(71, 85, 105, 0.8);
+  color: #22d3ee;
+  font-weight: 600;
+  margin-top: var(--space-1);
+}
+
+.spiritRootDisplayInfoBox {
+  background: rgba(120, 53, 15, 0.2);
+  border: 1px solid rgba(146, 64, 14, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: rgba(253, 230, 138, 0.85);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+.spiritRootDisplayInfoHighlight { font-weight: 700; }
+
+.spiritRootDisplayRerollButton {
+  width: 100%;
+  font-weight: 700;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: none;
+  font-family: var(--font-cinzel);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  background: linear-gradient(90deg, #9333ea, #7c3aed);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+
+.spiritRootDisplayRerollButton:hover:enabled {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.5);
+}
+
+.spiritRootDisplayRerollButton:disabled {
+  background: #475569;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.spiritRootDisplayWarningText {
+  margin-top: var(--space-2);
+  text-align: center;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}

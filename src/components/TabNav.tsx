@@ -1,5 +1,6 @@
 import { useUIStore } from '../stores/uiStore';
 import type { GameTab } from '../stores/uiStore';
+import './TabNav.scss';
 
 /**
  * Tab definition
@@ -30,9 +31,9 @@ export function TabNav() {
   const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   return (
-    <nav className="bg-slate-800 border-b border-slate-700 shadow-md">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex gap-1">
+    <nav className={'tabNavNav'}>
+      <div className={'tabNavInner'}>
+        <div className={'tabNavList'}>
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
 
@@ -40,19 +41,11 @@ export function TabNav() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`
-                  px-6 py-3 font-medium text-sm transition-all duration-200
-                  border-b-2 relative
-                  ${
-                    isActive
-                      ? 'text-cyan-400 border-cyan-400 bg-slate-700/50'
-                      : 'text-slate-400 border-transparent hover:text-slate-300 hover:bg-slate-700/30'
-                  }
-                `}
+                className={`${'tabNavTab'} ${isActive ? 'tabNavTabActive' : ''}`}
               >
                 {tab.label}
                 {isActive && (
-                  <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500" />
+                  <div className={'tabNavActiveUnderline'} />
                 )}
               </button>
             );

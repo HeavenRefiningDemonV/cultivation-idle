@@ -1,0 +1,55 @@
+.gameLayoutRoot {
+  position: relative;
+  min-height: 100vh;
+  background: url('../assets/background/cbg_bg.gameLayoutPng') no-repeat;
+  background-size: cover;
+  color: var(--color-ink-white);
+}
+
+.gameLayoutMain {
+  margin-left: 14rem;
+  padding: var(--space-5);
+  padding-top: calc(var(--space-7) + 20px);
+}
+
+.gameLayoutContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gameLayoutPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  height: 100%;
+}
+
+.gameLayoutPlaceholderCard {
+  text-align: center;
+  color: var(--color-ink-white);
+}
+
+.gameLayoutPlaceholderIcon {
+  font-size: 3.5rem;
+  margin-bottom: var(--space-4);
+}
+
+.gameLayoutPlaceholderTitle {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-paper);
+  margin-bottom: var(--space-3);
+}
+
+.gameLayoutPlaceholderText {
+  color: var(--color-ink-light);
+  font-size: var(--text-base);
+}
+
+@media (max-width: 1024px) {
+  .gameLayoutMain {
+    margin-left: 0;
+    padding-top: calc(var(--space-7) + 20px);
+  }
+}

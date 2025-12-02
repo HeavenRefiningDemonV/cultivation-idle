@@ -4,6 +4,7 @@ import { ParticlePool, DamageNumberPool } from './particles';
 import { createAnimation, updateAnimation, ScreenShake, FlashEffect, Easing } from './animations';
 import type { Animation } from './animations';
 import { D } from '../../utils/numbers';
+import './CombatCanvas.scss';
 
 interface CombatCanvasProps {
   width?: number;
@@ -449,8 +450,8 @@ export function CombatCanvas({
   return (
     <canvas
       ref={canvasRef}
-      className="rounded-lg border-2 border-slate-700 bg-slate-900"
-      style={{ maxWidth: '100%', height: 'auto' }}
+      className={'combatCanvasCanvas'}
+      style={{ maxWidth: '100%' }}
     />
   );
 }

@@ -1,0 +1,453 @@
+.prestigeScreenRoot {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f172a, #111827);
+  border-radius: var(--radius-lg);
+}
+
+.prestigeScreenBackground {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image: radial-gradient(circle at 40% 50%, rgba(168, 85, 247, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 60% 50%, rgba(236, 72, 153, 0.35) 0%, transparent 50%);
+}
+
+.prestigeScreenContent {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.prestigeScreenHeader {
+  text-align: center;
+}
+
+.prestigeScreenTitle {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.prestigeScreenSubtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.prestigeScreenApCard {
+  background: linear-gradient(90deg, rgba(88, 28, 135, 0.6), rgba(190, 24, 93, 0.5));
+  border: 2px solid rgba(168, 85, 247, 0.45);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-align: center;
+  box-shadow: var(--shadow-strong);
+}
+
+.prestigeScreenApValue {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #e9d5ff;
+}
+
+.prestigeScreenApLabel {
+  color: #e0e7ff;
+  font-size: var(--text-xl);
+}
+
+.prestigeScreenApMeta {
+  color: #c084fc;
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.prestigeScreenInfoCard {
+  background: rgba(26, 26, 26, 0.55);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-soft);
+}
+
+.prestigeScreenInfoTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.prestigeScreenInfoRows {
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenInfoRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.prestigeScreenInfoLabel {
+  color: var(--color-text-muted);
+}
+
+.prestigeScreenInfoValue {
+  color: var(--color-ink-white);
+  font-weight: 600;
+}
+
+.prestigeScreenInfoValueAccent {
+  color: #c084fc;
+  font-weight: 700;
+}
+
+.prestigeScreenInfoLabelMuted {
+  color: var(--color-text-muted);
+  margin-left: var(--space-2);
+}
+
+.prestigeScreenBenefitsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenPrestigeSection {
+  background: linear-gradient(90deg, rgba(88, 28, 135, 0.45), rgba(190, 24, 93, 0.35));
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.prestigeScreenPrestigeTitle {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0;
+}
+
+.prestigeScreenPrestigeText {
+  color: var(--color-text-secondary);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.prestigeScreenPrestigeButton {
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-lg);
+  border: none;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.prestigeScreenPrestigeReady {
+  background: linear-gradient(90deg, #9333ea, #db2777);
+  color: var(--color-ink-white);
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.35);
+  cursor: pointer;
+}
+
+.prestigeScreenPrestigeLocked {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.prestigeScreenPrestigeHint {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.prestigeScreenShopSection {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.prestigeScreenShopTitle {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  margin: 0;
+}
+
+.prestigeScreenShopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.prestigeScreenShopCard {
+  background: rgba(17, 24, 39, 0.7);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.prestigeScreenShopAffordable {
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
+}
+
+.prestigeScreenShopMaxed {
+  border-color: rgba(52, 211, 153, 0.6);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.prestigeScreenShopLocked {
+  border-color: rgba(148, 163, 184, 0.6);
+  opacity: 0.7;
+}
+
+.prestigeScreenShopHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.prestigeScreenShopName {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin: 0;
+}
+
+.prestigeScreenShopTagMax,
+.prestigeScreenShopTagLocked {
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  color: var(--color-ink-white);
+}
+
+.prestigeScreenShopTagMax {
+  background: var(--color-element-wood);
+}
+
+.prestigeScreenShopTagLocked {
+  background: var(--color-border);
+}
+
+.prestigeScreenShopDescription {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenShopLevel {
+  margin-bottom: var(--space-3);
+}
+
+.prestigeScreenShopLevelRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenShopProgress {
+  height: 8px;
+  background: rgba(55, 65, 81, 0.8);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.prestigeScreenShopProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #ec4899);
+  transition: width 0.2s ease;
+}
+
+.prestigeScreenShopEffect {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenShopEffectLabel {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.prestigeScreenShopEffectValue {
+  color: #86efac;
+}
+
+.prestigeScreenShopActions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.prestigeScreenShopCost {
+  text-align: center;
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenShopCostValue {
+  font-weight: 700;
+  font-size: var(--text-lg);
+}
+
+.prestigeScreenShopCostReady {
+  color: #c084fc;
+}
+
+.prestigeScreenShopCostMissing {
+  color: var(--color-breakthrough-red);
+}
+
+.prestigeScreenShopButton {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 700;
+  transition: filter 0.2s ease;
+}
+
+.prestigeScreenShopButtonReady {
+  background: linear-gradient(90deg, #9333ea, #c026d3);
+  color: var(--color-ink-white);
+  cursor: pointer;
+}
+
+.prestigeScreenShopButtonDisabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.prestigeScreenLockedNote {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.prestigeScreenHistory {
+  background: rgba(26, 26, 26, 0.55);
+  border: 2px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  backdrop-filter: blur(4px);
+}
+
+.prestigeScreenHistorySummary {
+  font-weight: 700;
+  color: var(--color-gold-accent);
+  cursor: pointer;
+}
+
+.prestigeScreenHistoryList {
+  margin-top: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.prestigeScreenHistoryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-sm);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-2);
+}
+
+.prestigeScreenHistoryGain {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.prestigeScreenModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 50;
+  backdrop-filter: blur(6px);
+}
+
+.prestigeScreenModalCard {
+  background: var(--color-bg-panel-strong);
+  border: 3px solid var(--color-breakthrough-red);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  max-width: 500px;
+  width: 100%;
+  box-shadow: var(--shadow-strong);
+}
+
+.prestigeScreenModalTitle {
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-breakthrough-red);
+}
+
+.prestigeScreenModalText {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-4) 0;
+}
+
+.prestigeScreenModalHighlight {
+  color: #c084fc;
+}
+
+.prestigeScreenModalActions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.prestigeScreenModalButton {
+  flex: 1;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 700;
+  color: var(--color-ink-white);
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.prestigeScreenModalCancel {
+  background: var(--color-border);
+}
+
+.prestigeScreenModalConfirm {
+  background: linear-gradient(90deg, #ef4444, #b91c1c);
+}
+
+@media (max-width: 640px) {
+  .prestigeScreenContent {
+    padding: var(--space-4);
+  }
+
+  .prestigeScreenModalActions {
+    flex-direction: column;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GameLayout } from './components/GameLayout';
 import { initializeGame } from './systems/gameLoop';
+import './App.scss';
 
 /**
  * Main App component
@@ -32,16 +33,14 @@ function App() {
   // Show error screen if initialization failed
   if (initError) {
     return (
-      <div className="">
-        <div className="text-center max-w-md p-8">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold text-red-400 mb-4">
-            Initialization Error
-          </h1>
-          <p className="text-slate-300 mb-6">{initError}</p>
+      <div className={'appShell'}>
+        <div className={'appMessageCard'}>
+          <div className={'appHeroIcon'}>⚠️</div>
+          <h1 className={'appTitle'}>Initialization Error</h1>
+          <p className={'appSubtext'}>{initError}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition-colors"
+            className={'appPrimaryButton'}
           >
             Reload Page
           </button>
@@ -53,13 +52,11 @@ function App() {
   // Show loading screen while initializing
   if (!gameInitialized) {
     return (
-      <div className="">
-        <div className="text-center">
-          <div className="text-6xl mb-4 animate-pulse">⚡</div>
-          <h1 className="">
-            Cultivation Idle
-          </h1>
-          <p className="text-slate-400">Loading...</p>
+      <div className={'appShell'}>
+        <div className={'appMessageCard'}>
+          <div className={`${'appHeroIcon'} ${'appLoader'}`}>⚡</div>
+          <h1 className={'appTitle'}>Cultivation Idle</h1>
+          <p className={'appSubtext'}>Loading...</p>
         </div>
       </div>
     );

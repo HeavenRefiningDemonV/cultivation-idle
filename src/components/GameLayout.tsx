@@ -9,22 +9,18 @@ import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 import { SettingsScreen } from './screens/SettingsScreen';
-import "./test.css";
+import './GameLayout.scss';
 
 /**
  * Placeholder content for tabs
  */
 function PlaceholderContent({ tabName }: { tabName: string }) {
   return (
-    <div className="flex items-center justify-center h-full min-h-[400px]">
-      <div className="text-center">
-        <div className="text-6xl mb-4">🚧</div>
-        <h2 className="text-2xl font-bold text-ink-paper mb-2">
-          {tabName} - Coming Soon
-        </h2>
-        <p className="text-ink-light">
-          This feature is under development
-        </p>
+    <div className={'gameLayoutPlaceholder'}>
+      <div className={'gameLayoutPlaceholderCard'}>
+        <div className={'gameLayoutPlaceholderIcon'}>🚧</div>
+        <h2 className={'gameLayoutPlaceholderTitle'}>{tabName} - Coming Soon</h2>
+        <p className={'gameLayoutPlaceholderText'}>This feature is under development</p>
       </div>
     </div>
   );
@@ -71,11 +67,13 @@ export function GameLayout() {
   };
 
   return (
-    <div className="rbg">
+    <div className={'gameLayoutRoot'}>
       <Header />
       <Sidebar />
-      <main className="">
-        {renderContent()}
+      <main className={'gameLayoutMain'}>
+        <div className={'gameLayoutContent'}>
+          {renderContent()}
+        </div>
       </main>
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}

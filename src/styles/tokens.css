@@ -1,0 +1,83 @@
+:root {
+  /* Ink wash grayscale palette */
+  --color-ink-black: #0a0a0a;
+  --color-ink-darkest: #1a1a1a;
+  --color-ink-dark: #2d2d2d;
+  --color-ink-medium: #4a4a4a;
+  --color-ink-light: #6b6b6b;
+  --color-ink-paper: #e8e8e8;
+  --color-ink-white: #f5f5f5;
+
+  /* Accent colors */
+  --color-qi-blue: #7dd3fc;
+  --color-qi-glow: #bae6fd;
+  --color-qi-dark: #0284c7;
+  --color-breakthrough-red: #ff6b6b;
+  --color-breakthrough-pink: #fca5a5;
+  --color-gold-accent: #fbbf24;
+  --color-gold-bright: #fcd34d;
+
+  /* Elements */
+  --color-element-fire: #ef4444;
+  --color-element-water: #3b82f6;
+  --color-element-earth: #92400e;
+  --color-element-metal: #9ca3af;
+  --color-element-wood: #22c55e;
+
+  /* Backgrounds and surfaces */
+  --color-bg-main: #0f172a;
+  --color-bg-panel: rgba(26, 26, 26, 0.85);
+  --color-bg-panel-strong: #111827;
+  --color-border: #374151;
+  --color-border-strong: #4b5563;
+
+  /* Status colors */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #ef4444;
+  --color-info: #60a5fa;
+  --color-purple: #a855f7;
+  --color-amber: #f59e0b;
+  --color-muted-surface: rgba(100, 116, 139, 0.35);
+
+  /* Typography */
+  --font-cinzel: 'Cinzel', serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-julee: 'Julee', cursive;
+  --font-title: 'Protest Revolution', sans-serif;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+
+  /* Font sizes */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Shadows */
+  --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.25);
+  --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-qi: 0 0 20px rgba(125, 211, 252, 0.5);
+  --shadow-breakthrough: 0 0 30px rgba(252, 165, 165, 0.6);
+}

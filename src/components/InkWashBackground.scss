@@ -1,0 +1,51 @@
+.inkWashBackgroundBackground {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.inkWashBackgroundBase {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #2d2d2d 0%, #0a0a0a 100%);
+  opacity: 0.3;
+}
+
+.inkWashBackgroundMountains {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 33%;
+  opacity: 0.1;
+}
+
+.inkWashBackgroundTrees {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  width: 8rem;
+  height: 12rem;
+  opacity: 0.2;
+}
+
+.inkWashBackgroundFullSize {
+  width: 100%;
+  height: 100%;
+}
+
+.inkWashBackgroundMist {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+  opacity: 0.05;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}

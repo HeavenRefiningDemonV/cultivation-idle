@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { D, formatNumber, greaterThanOrEqualTo, divide } from '../../utils/numbers';
 import type { FocusMode } from '../../types';
 import { REALMS, FOCUS_MODE_MODIFIERS } from '../../constants';
+import './CultivationTab.scss';
 
 /**
  * Calculate upgrade cost based on tier
@@ -37,7 +38,7 @@ function ProgressRing({
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <svg width={size} height={size} className="transform -rotate-90">
+    <svg width={size} height={size} className={'cultivationTabProgressRing'}>
       {/* Background circle */}
       <circle
         cx={size / 2}
@@ -46,7 +47,7 @@ function ProgressRing({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         fill="none"
-        className="text-slate-700"
+        className={'cultivationTabProgressTrack'}
       />
       {/* Progress circle */}
       <motion.circle
@@ -163,91 +164,56 @@ export function CultivationTab() {
   };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className={'cultivationTabRoot'}>
       {/* TOP SECTION - Realm Progress */}
-      <div className="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
-        <div className="flex flex-col lg:flex-row items-center gap-8">
+      <div className={`${'cultivationTabPanel'} ${'cultivationTabTopPanel'}`}>
+        <div className={'cultivationTabTopContent'}>
           {/* Progress Ring */}
-          <div className="relative flex-shrink-0">
+          <div className={'cultivationTabProgressWrapper'}>
             <ProgressRing progress={progressPercent} size={220} strokeWidth={14} />
-            <div className="absolute inset-0 flex items-center justify-center flex-col">
-              <div className="text-4xl font-bold text-cyan-400">
-                {progressPercent.toFixed(1)}%
-              </div>
-              <div className="text-sm text-slate-400 mt-1">
-                Progress
-              </div>
+            <div className={'cultivationTabProgressOverlay'}>
+              <div className={'cultivationTabProgressValue'}>{progressPercent.toFixed(1)}%</div>
+              <div className={'cultivationTabProgressLabel'}>Progress</div>
             </div>
           </div>
 
           {/* Realm Info */}
-          <div className="flex-1 text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-white mb-2">
-              {realm.name}
-            </h2>
-            <p className="text-lg text-slate-300 mb-4">
+          <div className={'cultivationTabRealmInfo'}>
+            <h2 className={'cultivationTabRealmTitle'}>{realm.name}</h2>
+            <p className={'cultivationTabRealmSubtitle'}>
               Substage {realm.substage + 1} / {currentRealmDef?.substages || 10}
             </p>
-            <div className="text-slate-400 mb-4">
-              {currentRealmDef?.majorRealm || 'Mortal Realm'}
-            </div>
-            <div className="flex items-center gap-4 justify-center lg:justify-start">
-              <div className="text-sm text-slate-400">
-                Total Breakthroughs:
-              </div>
-              <div className="text-2xl font-bold text-yellow-400">
-                {totalAuras}
-              </div>
+            <div className={'cultivationTabRealmMajor'}>{currentRealmDef?.majorRealm || 'Mortal Realm'}</div>
+            <div className={'cultivationTabRealmStats'}>
+              <div className={'cultivationTabStatLabel'}>Total Breakthroughs:</div>
+              <div className={'cultivationTabStatHighlight'}>{totalAuras}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* MIDDLE SECTION - Qi Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <motion.div
-          className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="text-sm text-slate-400 uppercase tracking-wide mb-2">
-            Current Qi
-          </div>
-          <div className="text-3xl font-bold text-cyan-400">
-            {formatNumber(qi)}
-          </div>
+      <div className={'cultivationTabStatGrid'}>
+        <motion.div className={'cultivationTabStatCard'} whileHover={{ scale: 1.02 }}>
+          <div className={'cultivationTabStatCardLabel'}>Current Qi</div>
+          <div className={'cultivationTabStatCardValue'}>{formatNumber(qi)}</div>
         </motion.div>
 
-        <motion.div
-          className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="text-sm text-slate-400 uppercase tracking-wide mb-2">
-            Qi per Second
-          </div>
-          <div className="text-3xl font-bold text-cyan-400">
-            {formatNumber(qiPerSecond)}
-          </div>
+        <motion.div className={'cultivationTabStatCard'} whileHover={{ scale: 1.02 }}>
+          <div className={'cultivationTabStatCardLabel'}>Qi per Second</div>
+          <div className={'cultivationTabStatCardValue'}>{formatNumber(qiPerSecond)}</div>
         </motion.div>
 
-        <motion.div
-          className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="text-sm text-slate-400 uppercase tracking-wide mb-2">
-            Time to Breakthrough
-          </div>
-          <div className="text-3xl font-bold text-yellow-400">
-            {formatTime(secondsToBreakthrough)}
-          </div>
+        <motion.div className={'cultivationTabStatCard'} whileHover={{ scale: 1.02 }}>
+          <div className={'cultivationTabStatCardLabel'}>Time to Breakthrough</div>
+          <div className={'cultivationTabStatCardValueAlt'}>{formatTime(secondsToBreakthrough)}</div>
         </motion.div>
       </div>
 
       {/* FOCUS MODE SELECTOR */}
-      <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-xl font-bold text-white mb-4">
-          Cultivation Focus
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={`${'cultivationTabPanel'} ${'cultivationTabFocusPanel'}`}>
+        <h3 className={'cultivationTabSectionTitle'}>Cultivation Focus</h3>
+        <div className={'cultivationTabFocusGrid'}>
           {(['balanced', 'body', 'spirit'] as FocusMode[]).map((mode) => {
             const isActive = focusMode === mode;
             const modifiers = FOCUS_MODE_MODIFIERS[mode];
@@ -257,27 +223,16 @@ export function CultivationTab() {
               <motion.button
                 key={mode}
                 onClick={() => setFocusMode(mode)}
-                className={`
-                  p-4 rounded-lg border-2 transition-all text-left
-                  ${
-                    isActive
-                      ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
-                      : 'border-slate-600 bg-slate-700/30 hover:border-slate-500'
-                  }
-                `}
+                className={`${'cultivationTabFocusCard'} ${isActive ? 'cultivationTabFocusCardActive' : ''}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="text-lg font-bold text-white mb-2 capitalize">
-                  {mode === 'balanced' ? 'Balanced' : `${mode} Focus`}
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="text-slate-300">
-                    Qi/s: <span className="text-cyan-400 font-semibold">
-                      {formatNumber(projectedQiPerSecond)}
-                    </span>
+                <div className={'cultivationTabFocusTitle'}>{mode === 'balanced' ? 'Balanced' : `${mode} Focus`}</div>
+                <div className={'cultivationTabFocusStats'}>
+                  <div className={'cultivationTabFocusQi'}>
+                    Qi/s: <span className={'cultivationTabFocusQiValue'}>{formatNumber(projectedQiPerSecond)}</span>
                   </div>
-                  <div className="text-slate-400 text-xs">
+                  <div className={'cultivationTabFocusModifiers'}>
                     {modifiers.qiMultiplier !== 1 && (
                       <div>Qi: {modifiers.qiMultiplier > 1 ? '+' : ''}{((modifiers.qiMultiplier - 1) * 100).toFixed(0)}%</div>
                     )}
@@ -300,22 +255,24 @@ export function CultivationTab() {
 
       {/* BREAKTHROUGH BUTTON */}
       <motion.div
-        className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-        animate={canBreakthrough ? {
-          boxShadow: [
-            '0 0 20px rgba(6, 182, 212, 0.3)',
-            '0 0 40px rgba(6, 182, 212, 0.5)',
-            '0 0 20px rgba(6, 182, 212, 0.3)',
-          ],
-        } : {}}
+        className={`${'cultivationTabPanel'} ${'cultivationTabBreakthroughPanel'}`}
+        animate={
+          canBreakthrough
+            ? {
+                boxShadow: [
+                  '0 0 20px rgba(6, 182, 212, 0.3)',
+                  '0 0 40px rgba(6, 182, 212, 0.5)',
+                  '0 0 20px rgba(6, 182, 212, 0.3)',
+                ],
+              }
+            : {}
+        }
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-center">
-            <div className="text-sm text-slate-400 mb-2">
-              Breakthrough Requirement
-            </div>
-            <div className="text-lg text-slate-300">
+        <div className={'cultivationTabBreakthroughContent'}>
+          <div className={'cultivationTabBreakthroughInfo'}>
+            <div className={'cultivationTabBreakthroughLabel'}>Breakthrough Requirement</div>
+            <div className={'cultivationTabBreakthroughValue'}>
               {formatNumber(qi)} / {formatNumber(qiRequired)}
             </div>
           </div>
@@ -323,14 +280,9 @@ export function CultivationTab() {
           <motion.button
             onClick={handleBreakthrough}
             disabled={!canBreakthrough}
-            className={`
-              px-12 py-4 rounded-lg text-xl font-bold transition-all
-              ${
-                canBreakthrough
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-400 hover:to-blue-400 shadow-lg'
-                  : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-              }
-            `}
+            className={`${'cultivationTabBreakthroughButton'} ${
+              canBreakthrough ? 'cultivationTabBreakthroughReady' : 'cultivationTabBreakthroughDisabled'
+            }`}
             whileHover={canBreakthrough ? { scale: 1.05 } : {}}
             whileTap={canBreakthrough ? { scale: 0.95 } : {}}
           >
@@ -340,96 +292,58 @@ export function CultivationTab() {
       </motion.div>
 
       {/* UPGRADES SECTION */}
-      <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-xl font-bold text-white mb-4">
-          Cultivation Upgrades
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={`${'cultivationTabPanel'} ${'cultivationTabUpgradePanel'}`}>
+        <h3 className={'cultivationTabSectionTitle'}>Cultivation Upgrades</h3>
+        <div className={'cultivationTabUpgradeGrid'}>
           {/* Idle Efficiency */}
-          <motion.div
-            className="bg-slate-700/50 rounded-lg p-4 border border-slate-600"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-lg font-bold text-cyan-400 mb-2">
-              ⚡ Idle Efficiency
-            </div>
-            <div className="text-sm text-slate-300 mb-3">
-              Increases Qi generation by 10%
-            </div>
-            <div className="text-xs text-slate-400 mb-3">
-              Current Tier: <span className="text-white font-semibold">{upgradeTiers.idle}</span>
+          <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabIdleCard'}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabIdleTitle'}`}>⚡ Idle Efficiency</div>
+            <div className={'cultivationTabUpgradeDescription'}>Increases Qi generation by 10%</div>
+            <div className={'cultivationTabUpgradeTier'}>
+              Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.idle}</span>
             </div>
             <button
               onClick={() => handleUpgrade('idle')}
               disabled={!canAffordIdle}
-              className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-all
-                ${
-                  canAffordIdle
-                    ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                }
-              `}
+              className={`${'cultivationTabUpgradeButton'} ${
+                canAffordIdle ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
+              }`}
             >
               Cost: {formatNumber(idleCost)} Qi
             </button>
           </motion.div>
 
           {/* Damage Boost */}
-          <motion.div
-            className="bg-slate-700/50 rounded-lg p-4 border border-slate-600"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-lg font-bold text-red-400 mb-2">
-              ⚔️ Damage Boost
-            </div>
-            <div className="text-sm text-slate-300 mb-3">
-              Increases attack power by 5%
-            </div>
-            <div className="text-xs text-slate-400 mb-3">
-              Current Tier: <span className="text-white font-semibold">{upgradeTiers.damage}</span>
+          <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabDamageCard'}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabDamageTitle'}`}>⚔️ Damage Boost</div>
+            <div className={'cultivationTabUpgradeDescription'}>Increases attack power by 5%</div>
+            <div className={'cultivationTabUpgradeTier'}>
+              Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.damage}</span>
             </div>
             <button
               onClick={() => handleUpgrade('damage')}
               disabled={!canAffordDamage}
-              className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-all
-                ${
-                  canAffordDamage
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                }
-              `}
+              className={`${'cultivationTabUpgradeButton'} ${
+                canAffordDamage ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
+              }`}
             >
               Cost: {formatNumber(damageCost)} Qi
             </button>
           </motion.div>
 
           {/* HP Boost */}
-          <motion.div
-            className="bg-slate-700/50 rounded-lg p-4 border border-slate-600"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-lg font-bold text-green-400 mb-2">
-              ❤️ HP Boost
-            </div>
-            <div className="text-sm text-slate-300 mb-3">
-              Increases max HP by 5%
-            </div>
-            <div className="text-xs text-slate-400 mb-3">
-              Current Tier: <span className="text-white font-semibold">{upgradeTiers.hp}</span>
+          <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabHpCard'}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabHpTitle'}`}>❤️ HP Boost</div>
+            <div className={'cultivationTabUpgradeDescription'}>Increases max HP by 5%</div>
+            <div className={'cultivationTabUpgradeTier'}>
+              Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.hp}</span>
             </div>
             <button
               onClick={() => handleUpgrade('hp')}
               disabled={!canAffordHp}
-              className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-all
-                ${
-                  canAffordHp
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                }
-              `}
+              className={`${'cultivationTabUpgradeButton'} ${
+                canAffordHp ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
+              }`}
             >
               Cost: {formatNumber(hpCost)} Qi
             </button>

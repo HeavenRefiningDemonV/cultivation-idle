@@ -7,6 +7,7 @@ import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber, divide, D } from '../../utils/numbers';
 import type { EnemyDefinition } from '../../types';
 import { CombatCanvas } from '../combat/CombatCanvas';
+import './AdventureTab.scss';
 
 /**
  * Zone definition from JSON
@@ -34,26 +35,27 @@ function HPBar({
   current,
   max,
   label,
-  color = 'bg-red-500'
+  variant = 'red'
 }: {
   current: string;
   max: string;
   label: string;
-  color?: string;
+  variant?: 'red' | 'green';
 }) {
   const percent = Math.min(100, parseFloat(divide(current, max).times(100).toFixed(2)));
+  const barClass = variant === 'green' ? 'adventureTabHpFillGreen' : 'adventureTabHpFillRed';
 
   return (
-    <div className="mb-4">
-      <div className="flex justify-between text-sm mb-1">
-        <span className="text-slate-300 font-medium">{label}</span>
-        <span className="text-slate-400">
+    <div className={'adventureTabHpBar'}>
+      <div className={'adventureTabHpLabels'}>
+        <span className={'adventureTabHpLabel'}>{label}</span>
+        <span className={'adventureTabHpValue'}>
           {formatNumber(current)} / {formatNumber(max)}
         </span>
       </div>
-      <div className="h-6 bg-slate-700 rounded-lg overflow-hidden border border-slate-600">
+      <div className={'adventureTabHpTrack'}>
         <motion.div
-          className={`h-full ${color}`}
+          className={`${'adventureTabHpFill'} ${barClass}`}
           initial={{ width: '100%' }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 0.3 }}
@@ -76,17 +78,15 @@ function CombatLog() {
   }, [combatLog]);
 
   return (
-    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700 h-64 overflow-y-auto">
-      <div className="space-y-1">
+    <div className={'adventureTabCombatLogContainer'}>
+      <div className={'adventureTabCombatLogList'}>
         {combatLog.length === 0 ? (
-          <div className="text-slate-500 text-sm text-center py-8">
-            Combat log is empty
-          </div>
+          <div className={'adventureTabCombatLogEmpty'}>Combat log is empty</div>
         ) : (
           combatLog.map((entry, index) => (
             <div
               key={index}
-              className="text-sm"
+              className={'adventureTabCombatLogEntry'}
               style={{ color: entry.color }}
             >
               {entry.text}
@@ -225,24 +225,22 @@ export function AdventureTab() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="text-4xl mb-4 animate-pulse">⚔️</div>
-          <div className="text-slate-400">Loading adventure zones...</div>
+      <div className={'adventureTabLoading'}>
+        <div className={'adventureTabLoadingCard'}>
+          <div className={'adventureTabLoadingIcon'}>⚔️</div>
+          <div className={'adventureTabLoadingText'}>Loading adventure zones...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className={'adventureTabRoot'}>
       {/* LEFT PANEL - Zone Selection */}
-      <div className="lg:col-span-1">
-        <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-          <h2 className="text-xl font-bold text-white mb-4">
-            🗺️ Adventure Zones
-          </h2>
-          <div className="space-y-3">
+      <div className={'adventureTabLeftColumn'}>
+        <div className={'adventureTabPanel'}>
+          <h2 className={'adventureTabPanelTitle'}>🗺️ Adventure Zones</h2>
+          <div className={'adventureTabZoneList'}>
             {zones.map((zone) => {
               const unlocked = isZoneUnlocked(zone.id);
               const isSelected = selectedZoneId === zone.id;
@@ -255,43 +253,26 @@ export function AdventureTab() {
                   key={zone.id}
                   onClick={() => handleZoneClick(zone)}
                   disabled={!unlocked}
-                  className={`
-                    w-full p-4 rounded-lg border-2 transition-all text-left
-                    ${
-                      isSelected
-                        ? 'border-cyan-400 bg-cyan-400/10'
-                        : unlocked
-                        ? 'border-slate-600 bg-slate-700/50 hover:border-slate-500'
-                        : 'border-slate-700 bg-slate-800/30 opacity-50 cursor-not-allowed'
-                    }
-                  `}
+                  className={`${'adventureTabZoneButton'} ${isSelected ? 'adventureTabZoneSelected' : ''} ${
+                    unlocked ? '' : 'adventureTabZoneLocked'
+                  }`}
                   whileHover={unlocked ? { scale: 1.02 } : {}}
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="font-bold text-white">{zone.name}</div>
-                      {completed && <div className="text-xs text-green-400">✓</div>}
+                  <div className={'adventureTabZoneHeader'}>
+                    <div className={'adventureTabZoneTitleRow'}>
+                      <div className={'adventureTabZoneName'}>{zone.name}</div>
+                      {completed && <div className={'adventureTabZoneCompleted'}>✓</div>}
                     </div>
-                    <div className="text-xs text-slate-400">
-                      Lv. {zone.levelRange.min}-{zone.levelRange.max}
-                    </div>
+                    <div className={'adventureTabZoneLevel'}>Lv. {zone.levelRange.min}-{zone.levelRange.max}</div>
                   </div>
-                  <div className="text-sm text-slate-300 mb-2">
-                    {zone.description}
-                  </div>
+                  <div className={'adventureTabZoneDescription'}>{zone.description}</div>
                   {unlocked && enemiesDefeated > 0 && (
-                    <div className="text-xs text-slate-400 mb-1">
+                    <div className={'adventureTabZoneMeta'}>
                       Enemies defeated: {enemiesDefeated}
-                      {bossAvailable && (
-                        <span className="ml-2 text-yellow-400">⚡ Boss available!</span>
-                      )}
+                      {bossAvailable && <span className={'adventureTabZoneBoss'}>⚡ Boss available!</span>}
                     </div>
                   )}
-                  {!unlocked && (
-                    <div className="text-xs text-red-400">
-                      🔒 Defeat previous zone boss to unlock
-                    </div>
-                  )}
+                  {!unlocked && <div className={'adventureTabZoneLockedNote'}>🔒 Defeat previous zone boss to unlock</div>}
                 </motion.button>
               );
             })}
@@ -300,46 +281,36 @@ export function AdventureTab() {
       </div>
 
       {/* RIGHT PANEL - Combat Area */}
-      <div className="lg:col-span-2 space-y-4">
+      <div className={'adventureTabRightColumn'}>
         {!inCombat ? (
           // Not in combat - show selection message
-          <div className="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
-            <div className="text-center">
-              <div className="text-6xl mb-4">⚔️</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}
-              </h2>
-              <p className="text-slate-400 mb-6">
+          <div className={`${'adventureTabPanel'} ${'adventureTabEmptyPanel'}`}>
+            <div className={'adventureTabEmptyContent'}>
+              <div className={'adventureTabEmptyIcon'}>⚔️</div>
+              <h2 className={'adventureTabEmptyTitle'}>{selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}</h2>
+              <p className={'adventureTabEmptyDescription'}>
                 {selectedZoneId
                   ? 'Click on the zone again to find an enemy'
                   : 'Choose an adventure zone from the list to begin'}
               </p>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">HP</div>
-                  <div className="text-lg font-bold text-green-400">
-                    {formatNumber(stats.hp)}
-                  </div>
+              <div className={'adventureTabQuickStats'}>
+                <div className={'adventureTabQuickStatCard'}>
+                  <div className={'adventureTabQuickStatLabel'}>HP</div>
+                  <div className={'adventureTabQuickStatValueGreen'}>{formatNumber(stats.hp)}</div>
                 </div>
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">ATK</div>
-                  <div className="text-lg font-bold text-red-400">
-                    {formatNumber(stats.atk)}
-                  </div>
+                <div className={'adventureTabQuickStatCard'}>
+                  <div className={'adventureTabQuickStatLabel'}>ATK</div>
+                  <div className={'adventureTabQuickStatValueRed'}>{formatNumber(stats.atk)}</div>
                 </div>
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">DEF</div>
-                  <div className="text-lg font-bold text-blue-400">
-                    {formatNumber(stats.def)}
-                  </div>
+                <div className={'adventureTabQuickStatCard'}>
+                  <div className={'adventureTabQuickStatLabel'}>DEF</div>
+                  <div className={'adventureTabQuickStatValueBlue'}>{formatNumber(stats.def)}</div>
                 </div>
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">Gold</div>
-                  <div className="text-lg font-bold text-yellow-400">
-                    {formatNumber(gold)}
-                  </div>
+                <div className={'adventureTabQuickStatCard'}>
+                  <div className={'adventureTabQuickStatLabel'}>Gold</div>
+                  <div className={'adventureTabQuickStatValueGold'}>{formatNumber(gold)}</div>
                 </div>
               </div>
             </div>
@@ -348,7 +319,7 @@ export function AdventureTab() {
           // In combat - show combat interface
           <>
             {/* Combat Canvas */}
-            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 flex justify-center">
+            <div className={`${'adventureTabPanel'} ${'adventureTabCanvasPanel'}`}>
               <CombatCanvas
                 width={800}
                 height={400}
@@ -359,45 +330,29 @@ export function AdventureTab() {
             </div>
 
             {/* Enemy Info */}
-            <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-              <div className="flex justify-between items-center mb-4">
+            <div className={`${'adventureTabPanel'} ${'adventureTabEnemyPanel'}`}>
+              <div className={'adventureTabEnemyHeader'}>
                 <div>
-                  <h2 className="text-2xl font-bold text-white">
-                    {currentEnemy?.name || 'Unknown Enemy'}
-                  </h2>
-                  <div className="text-sm text-slate-400">
-                    Level {currentEnemy?.level || 1}
-                  </div>
+                  <h2 className={'adventureTabEnemyName'}>{currentEnemy?.name || 'Unknown Enemy'}</h2>
+                  <div className={'adventureTabEnemyLevel'}>Level {currentEnemy?.level || 1}</div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-slate-400 uppercase mb-1">Gold Reward</div>
-                  <div className="text-lg font-bold text-yellow-400">
-                    {formatNumber(currentEnemy?.goldReward || '0')}
-                  </div>
+                <div className={'adventureTabEnemyReward'}>
+                  <div className={'adventureTabEnemyRewardLabel'}>Gold Reward</div>
+                  <div className={'adventureTabEnemyRewardValue'}>{formatNumber(currentEnemy?.goldReward || '0')}</div>
                 </div>
               </div>
 
               {/* Enemy HP Bar */}
-              <HPBar
-                current={enemyHP}
-                max={enemyMaxHP}
-                label="Enemy HP"
-                color="bg-red-500"
-              />
+              <HPBar current={enemyHP} max={enemyMaxHP} label="Enemy HP" variant="red" />
 
               {/* Player HP Bar */}
-              <HPBar
-                current={playerHP}
-                max={playerMaxHP}
-                label="Your HP"
-                color="bg-green-500"
-              />
+              <HPBar current={playerHP} max={playerMaxHP} label="Your HP" variant="green" />
 
               {/* Combat Controls */}
-              <div className="flex gap-3 mt-6">
+              <div className={'adventureTabCombatControls'}>
                 <motion.button
                   onClick={handleAttack}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-lg hover:from-red-500 hover:to-red-600 transition-all"
+                  className={`${'adventureTabActionButton'} ${'adventureTabPrimaryAction'}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -406,14 +361,9 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleAutoAttackToggle}
-                  className={`
-                    px-6 py-3 font-bold rounded-lg transition-all
-                    ${
-                      autoAttack
-                        ? 'bg-cyan-600 text-white hover:bg-cyan-700'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }
-                  `}
+                  className={`${'adventureTabActionButton'} ${
+                    autoAttack ? 'adventureTabAutoActive' : 'adventureTabAutoInactive'
+                  }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -422,7 +372,7 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleFlee}
-                  className="px-6 py-3 bg-slate-700 text-slate-300 font-bold rounded-lg hover:bg-slate-600 transition-all"
+                  className={`${'adventureTabActionButton'} ${'adventureTabSecondaryAction'}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -432,8 +382,8 @@ export function AdventureTab() {
             </div>
 
             {/* Combat Log */}
-            <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-              <h3 className="text-lg font-bold text-white mb-3">Combat Log</h3>
+            <div className={`${'adventureTabPanel'} ${'adventureTabCombatLogPanel'}`}>
+              <h3 className={'adventureTabCombatLogTitle'}>Combat Log</h3>
               <CombatLog />
             </div>
           </>
