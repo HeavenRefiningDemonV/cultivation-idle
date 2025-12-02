@@ -1,0 +1,6 @@
+{
+  "name": "sass-embedded",
+  "version": "1.80.4",
+  "type": "module",
+  "main": "index.js"
+}
