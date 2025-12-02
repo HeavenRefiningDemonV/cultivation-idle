@@ -1,0 +1,356 @@
+.root {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 1024px) {
+  .root {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+.panel {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.panelTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-4);
+}
+
+.zoneList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.zoneButton {
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  background: rgba(55, 65, 81, 0.35);
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  color: var(--color-ink-white);
+}
+
+.zoneButton:hover {
+  border-color: var(--color-border-strong);
+}
+
+.zoneSelected {
+  border-color: var(--color-qi-blue);
+  background: rgba(125, 211, 252, 0.1);
+  box-shadow: 0 0 18px rgba(125, 211, 252, 0.15);
+}
+
+.zoneLocked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.zoneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-2);
+  gap: var(--space-2);
+}
+
+.zoneTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.zoneName {
+  font-weight: 700;
+  color: var(--color-ink-white);
+}
+
+.zoneCompleted {
+  font-size: var(--text-xs);
+  color: var(--color-element-wood);
+}
+
+.zoneLevel {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.zoneDescription {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.zoneMeta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.zoneBoss {
+  margin-left: var(--space-2);
+  color: var(--color-gold-accent);
+}
+
+.zoneLockedNote {
+  font-size: var(--text-xs);
+  color: var(--color-breakthrough-red);
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.emptyPanel {
+  padding: var(--space-7);
+  text-align: center;
+}
+
+.emptyContent {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-3);
+}
+
+.emptyTitle {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-2);
+}
+
+.emptyDescription {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.quickStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.quickStatCard {
+  background: rgba(55, 65, 81, 0.4);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.quickStatLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.quickStatValueGreen {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-element-wood);
+}
+
+.quickStatValueRed {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-breakthrough-red);
+}
+
+.quickStatValueBlue {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-element-water);
+}
+
+.quickStatValueGold {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.canvasPanel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4);
+}
+
+.enemyPanel {
+  padding: var(--space-5);
+}
+
+.enemyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.enemyName {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin: 0;
+}
+
+.enemyLevel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.enemyReward {
+  text-align: right;
+}
+
+.enemyRewardLabel {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.enemyRewardValue {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.hpBar {
+  margin-bottom: var(--space-4);
+}
+
+.hpLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
+}
+
+.hpLabel {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.hpValue {
+  color: var(--color-text-muted);
+}
+
+.hpTrack {
+  height: 24px;
+  background: rgba(55, 65, 81, 0.6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.hpFill {
+  height: 100%;
+  border-radius: var(--radius-md);
+}
+
+.hpFillRed {
+  background: linear-gradient(90deg, #b91c1c, #ef4444);
+}
+
+.hpFillGreen {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.combatControls {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .combatControls {
+    flex-direction: column;
+  }
+}
+
+.actionButton {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.primaryAction {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.25);
+}
+
+.secondaryAction {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.autoActive {
+  background: linear-gradient(90deg, var(--color-qi-dark), #0ea5e9);
+}
+
+.autoInactive {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.combatLogPanel {
+  padding: var(--space-5);
+}
+
+.combatLogTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-3);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+
+.loadingCard {
+  text-align: center;
+  color: var(--color-ink-white);
+}
+
+.loadingIcon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-3);
+}
+
+.loadingText {
+  color: var(--color-text-muted);
+}

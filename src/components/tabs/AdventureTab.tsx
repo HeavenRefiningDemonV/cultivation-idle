@@ -7,6 +7,7 @@ import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber, divide, D } from '../../utils/numbers';
 import type { EnemyDefinition } from '../../types';
 import { CombatCanvas } from '../combat/CombatCanvas';
+import styles from './AdventureTab.module.css';
 
 /**
  * Zone definition from JSON
@@ -34,26 +35,27 @@ function HPBar({
   current,
   max,
   label,
-  color = 'bg-red-500'
+  variant = 'red'
 }: {
   current: string;
   max: string;
   label: string;
-  color?: string;
+  variant?: 'red' | 'green';
 }) {
   const percent = Math.min(100, parseFloat(divide(current, max).times(100).toFixed(2)));
+  const barClass = variant === 'green' ? styles.hpFillGreen : styles.hpFillRed;
 
   return (
-    <div className="mb-4">
-      <div className="flex justify-between text-sm mb-1">
-        <span className="text-slate-300 font-medium">{label}</span>
-        <span className="text-slate-400">
+    <div className={styles.hpBar}>
+      <div className={styles.hpLabels}>
+        <span className={styles.hpLabel}>{label}</span>
+        <span className={styles.hpValue}>
           {formatNumber(current)} / {formatNumber(max)}
         </span>
       </div>
-      <div className="h-6 bg-slate-700 rounded-lg overflow-hidden border border-slate-600">
+      <div className={styles.hpTrack}>
         <motion.div
-          className={`h-full ${color}`}
+          className={`${styles.hpFill} ${barClass}`}
           initial={{ width: '100%' }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 0.3 }}
@@ -225,24 +227,22 @@ export function AdventureTab() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="text-4xl mb-4 animate-pulse">⚔️</div>
-          <div className="text-slate-400">Loading adventure zones...</div>
+      <div className={styles.loading}>
+        <div className={styles.loadingCard}>
+          <div className={styles.loadingIcon}>⚔️</div>
+          <div className={styles.loadingText}>Loading adventure zones...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className={styles.root}>
       {/* LEFT PANEL - Zone Selection */}
-      <div className="lg:col-span-1">
-        <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-          <h2 className="text-xl font-bold text-white mb-4">
-            🗺️ Adventure Zones
-          </h2>
-          <div className="space-y-3">
+      <div className={styles.leftColumn}>
+        <div className={styles.panel}>
+          <h2 className={styles.panelTitle}>🗺️ Adventure Zones</h2>
+          <div className={styles.zoneList}>
             {zones.map((zone) => {
               const unlocked = isZoneUnlocked(zone.id);
               const isSelected = selectedZoneId === zone.id;
@@ -255,43 +255,26 @@ export function AdventureTab() {
                   key={zone.id}
                   onClick={() => handleZoneClick(zone)}
                   disabled={!unlocked}
-                  className={`
-                    w-full p-4 rounded-lg border-2 transition-all text-left
-                    ${
-                      isSelected
-                        ? 'border-cyan-400 bg-cyan-400/10'
-                        : unlocked
-                        ? 'border-slate-600 bg-slate-700/50 hover:border-slate-500'
-                        : 'border-slate-700 bg-slate-800/30 opacity-50 cursor-not-allowed'
-                    }
-                  `}
+                  className={`${styles.zoneButton} ${isSelected ? styles.zoneSelected : ''} ${
+                    unlocked ? '' : styles.zoneLocked
+                  }`}
                   whileHover={unlocked ? { scale: 1.02 } : {}}
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="font-bold text-white">{zone.name}</div>
-                      {completed && <div className="text-xs text-green-400">✓</div>}
+                  <div className={styles.zoneHeader}>
+                    <div className={styles.zoneTitleRow}>
+                      <div className={styles.zoneName}>{zone.name}</div>
+                      {completed && <div className={styles.zoneCompleted}>✓</div>}
                     </div>
-                    <div className="text-xs text-slate-400">
-                      Lv. {zone.levelRange.min}-{zone.levelRange.max}
-                    </div>
+                    <div className={styles.zoneLevel}>Lv. {zone.levelRange.min}-{zone.levelRange.max}</div>
                   </div>
-                  <div className="text-sm text-slate-300 mb-2">
-                    {zone.description}
-                  </div>
+                  <div className={styles.zoneDescription}>{zone.description}</div>
                   {unlocked && enemiesDefeated > 0 && (
-                    <div className="text-xs text-slate-400 mb-1">
+                    <div className={styles.zoneMeta}>
                       Enemies defeated: {enemiesDefeated}
-                      {bossAvailable && (
-                        <span className="ml-2 text-yellow-400">⚡ Boss available!</span>
-                      )}
+                      {bossAvailable && <span className={styles.zoneBoss}>⚡ Boss available!</span>}
                     </div>
                   )}
-                  {!unlocked && (
-                    <div className="text-xs text-red-400">
-                      🔒 Defeat previous zone boss to unlock
-                    </div>
-                  )}
+                  {!unlocked && <div className={styles.zoneLockedNote}>🔒 Defeat previous zone boss to unlock</div>}
                 </motion.button>
               );
             })}
@@ -300,46 +283,36 @@ export function AdventureTab() {
       </div>
 
       {/* RIGHT PANEL - Combat Area */}
-      <div className="lg:col-span-2 space-y-4">
+      <div className={styles.rightColumn}>
         {!inCombat ? (
           // Not in combat - show selection message
-          <div className="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
-            <div className="text-center">
-              <div className="text-6xl mb-4">⚔️</div>
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}
-              </h2>
-              <p className="text-slate-400 mb-6">
+          <div className={`${styles.panel} ${styles.emptyPanel}`}>
+            <div className={styles.emptyContent}>
+              <div className={styles.emptyIcon}>⚔️</div>
+              <h2 className={styles.emptyTitle}>{selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}</h2>
+              <p className={styles.emptyDescription}>
                 {selectedZoneId
                   ? 'Click on the zone again to find an enemy'
                   : 'Choose an adventure zone from the list to begin'}
               </p>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">HP</div>
-                  <div className="text-lg font-bold text-green-400">
-                    {formatNumber(stats.hp)}
-                  </div>
+              <div className={styles.quickStats}>
+                <div className={styles.quickStatCard}>
+                  <div className={styles.quickStatLabel}>HP</div>
+                  <div className={styles.quickStatValueGreen}>{formatNumber(stats.hp)}</div>
                 </div>
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">ATK</div>
-                  <div className="text-lg font-bold text-red-400">
-                    {formatNumber(stats.atk)}
-                  </div>
+                <div className={styles.quickStatCard}>
+                  <div className={styles.quickStatLabel}>ATK</div>
+                  <div className={styles.quickStatValueRed}>{formatNumber(stats.atk)}</div>
                 </div>
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">DEF</div>
-                  <div className="text-lg font-bold text-blue-400">
-                    {formatNumber(stats.def)}
-                  </div>
+                <div className={styles.quickStatCard}>
+                  <div className={styles.quickStatLabel}>DEF</div>
+                  <div className={styles.quickStatValueBlue}>{formatNumber(stats.def)}</div>
                 </div>
-                <div className="bg-slate-700/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 uppercase mb-1">Gold</div>
-                  <div className="text-lg font-bold text-yellow-400">
-                    {formatNumber(gold)}
-                  </div>
+                <div className={styles.quickStatCard}>
+                  <div className={styles.quickStatLabel}>Gold</div>
+                  <div className={styles.quickStatValueGold}>{formatNumber(gold)}</div>
                 </div>
               </div>
             </div>
@@ -348,7 +321,7 @@ export function AdventureTab() {
           // In combat - show combat interface
           <>
             {/* Combat Canvas */}
-            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700 flex justify-center">
+            <div className={`${styles.panel} ${styles.canvasPanel}`}>
               <CombatCanvas
                 width={800}
                 height={400}
@@ -359,45 +332,29 @@ export function AdventureTab() {
             </div>
 
             {/* Enemy Info */}
-            <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-              <div className="flex justify-between items-center mb-4">
+            <div className={`${styles.panel} ${styles.enemyPanel}`}>
+              <div className={styles.enemyHeader}>
                 <div>
-                  <h2 className="text-2xl font-bold text-white">
-                    {currentEnemy?.name || 'Unknown Enemy'}
-                  </h2>
-                  <div className="text-sm text-slate-400">
-                    Level {currentEnemy?.level || 1}
-                  </div>
+                  <h2 className={styles.enemyName}>{currentEnemy?.name || 'Unknown Enemy'}</h2>
+                  <div className={styles.enemyLevel}>Level {currentEnemy?.level || 1}</div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-slate-400 uppercase mb-1">Gold Reward</div>
-                  <div className="text-lg font-bold text-yellow-400">
-                    {formatNumber(currentEnemy?.goldReward || '0')}
-                  </div>
+                <div className={styles.enemyReward}>
+                  <div className={styles.enemyRewardLabel}>Gold Reward</div>
+                  <div className={styles.enemyRewardValue}>{formatNumber(currentEnemy?.goldReward || '0')}</div>
                 </div>
               </div>
 
               {/* Enemy HP Bar */}
-              <HPBar
-                current={enemyHP}
-                max={enemyMaxHP}
-                label="Enemy HP"
-                color="bg-red-500"
-              />
+              <HPBar current={enemyHP} max={enemyMaxHP} label="Enemy HP" variant="red" />
 
               {/* Player HP Bar */}
-              <HPBar
-                current={playerHP}
-                max={playerMaxHP}
-                label="Your HP"
-                color="bg-green-500"
-              />
+              <HPBar current={playerHP} max={playerMaxHP} label="Your HP" variant="green" />
 
               {/* Combat Controls */}
-              <div className="flex gap-3 mt-6">
+              <div className={styles.combatControls}>
                 <motion.button
                   onClick={handleAttack}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-lg hover:from-red-500 hover:to-red-600 transition-all"
+                  className={`${styles.actionButton} ${styles.primaryAction}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -406,14 +363,9 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleAutoAttackToggle}
-                  className={`
-                    px-6 py-3 font-bold rounded-lg transition-all
-                    ${
-                      autoAttack
-                        ? 'bg-cyan-600 text-white hover:bg-cyan-700'
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }
-                  `}
+                  className={`${styles.actionButton} ${
+                    autoAttack ? styles.autoActive : styles.autoInactive
+                  }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -422,7 +374,7 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleFlee}
-                  className="px-6 py-3 bg-slate-700 text-slate-300 font-bold rounded-lg hover:bg-slate-600 transition-all"
+                  className={`${styles.actionButton} ${styles.secondaryAction}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -432,8 +384,8 @@ export function AdventureTab() {
             </div>
 
             {/* Combat Log */}
-            <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-              <h3 className="text-lg font-bold text-white mb-3">Combat Log</h3>
+            <div className={`${styles.panel} ${styles.combatLogPanel}`}>
+              <h3 className={styles.combatLogTitle}>Combat Log</h3>
               <CombatLog />
             </div>
           </>

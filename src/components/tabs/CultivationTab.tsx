@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { D, formatNumber, greaterThanOrEqualTo, divide } from '../../utils/numbers';
 import type { FocusMode } from '../../types';
 import { REALMS, FOCUS_MODE_MODIFIERS } from '../../constants';
+import styles from './CultivationTab.module.css';
 
 /**
  * Calculate upgrade cost based on tier
@@ -37,7 +38,7 @@ function ProgressRing({
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <svg width={size} height={size} className="transform -rotate-90">
+    <svg width={size} height={size} className={styles.progressRing}>
       {/* Background circle */}
       <circle
         cx={size / 2}
@@ -46,7 +47,7 @@ function ProgressRing({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         fill="none"
-        className="text-slate-700"
+        className={styles.progressTrack}
       />
       {/* Progress circle */}
       <motion.circle
@@ -163,91 +164,56 @@ export function CultivationTab() {
   };
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className={styles.root}>
       {/* TOP SECTION - Realm Progress */}
-      <div className="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
-        <div className="flex flex-col lg:flex-row items-center gap-8">
+      <div className={`${styles.panel} ${styles.topPanel}`}>
+        <div className={styles.topContent}>
           {/* Progress Ring */}
-          <div className="relative flex-shrink-0">
+          <div className={styles.progressWrapper}>
             <ProgressRing progress={progressPercent} size={220} strokeWidth={14} />
-            <div className="absolute inset-0 flex items-center justify-center flex-col">
-              <div className="text-4xl font-bold text-cyan-400">
-                {progressPercent.toFixed(1)}%
-              </div>
-              <div className="text-sm text-slate-400 mt-1">
-                Progress
-              </div>
+            <div className={styles.progressOverlay}>
+              <div className={styles.progressValue}>{progressPercent.toFixed(1)}%</div>
+              <div className={styles.progressLabel}>Progress</div>
             </div>
           </div>
 
           {/* Realm Info */}
-          <div className="flex-1 text-center lg:text-left">
-            <h2 className="text-3xl font-bold text-white mb-2">
-              {realm.name}
-            </h2>
-            <p className="text-lg text-slate-300 mb-4">
+          <div className={styles.realmInfo}>
+            <h2 className={styles.realmTitle}>{realm.name}</h2>
+            <p className={styles.realmSubtitle}>
               Substage {realm.substage + 1} / {currentRealmDef?.substages || 10}
             </p>
-            <div className="text-slate-400 mb-4">
-              {currentRealmDef?.majorRealm || 'Mortal Realm'}
-            </div>
-            <div className="flex items-center gap-4 justify-center lg:justify-start">
-              <div className="text-sm text-slate-400">
-                Total Breakthroughs:
-              </div>
-              <div className="text-2xl font-bold text-yellow-400">
-                {totalAuras}
-              </div>
+            <div className={styles.realmMajor}>{currentRealmDef?.majorRealm || 'Mortal Realm'}</div>
+            <div className={styles.realmStats}>
+              <div className={styles.statLabel}>Total Breakthroughs:</div>
+              <div className={styles.statHighlight}>{totalAuras}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* MIDDLE SECTION - Qi Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <motion.div
-          className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="text-sm text-slate-400 uppercase tracking-wide mb-2">
-            Current Qi
-          </div>
-          <div className="text-3xl font-bold text-cyan-400">
-            {formatNumber(qi)}
-          </div>
+      <div className={styles.statGrid}>
+        <motion.div className={styles.statCard} whileHover={{ scale: 1.02 }}>
+          <div className={styles.statCardLabel}>Current Qi</div>
+          <div className={styles.statCardValue}>{formatNumber(qi)}</div>
         </motion.div>
 
-        <motion.div
-          className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="text-sm text-slate-400 uppercase tracking-wide mb-2">
-            Qi per Second
-          </div>
-          <div className="text-3xl font-bold text-cyan-400">
-            {formatNumber(qiPerSecond)}
-          </div>
+        <motion.div className={styles.statCard} whileHover={{ scale: 1.02 }}>
+          <div className={styles.statCardLabel}>Qi per Second</div>
+          <div className={styles.statCardValue}>{formatNumber(qiPerSecond)}</div>
         </motion.div>
 
-        <motion.div
-          className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-          whileHover={{ scale: 1.02 }}
-        >
-          <div className="text-sm text-slate-400 uppercase tracking-wide mb-2">
-            Time to Breakthrough
-          </div>
-          <div className="text-3xl font-bold text-yellow-400">
-            {formatTime(secondsToBreakthrough)}
-          </div>
+        <motion.div className={styles.statCard} whileHover={{ scale: 1.02 }}>
+          <div className={styles.statCardLabel}>Time to Breakthrough</div>
+          <div className={styles.statCardValueAlt}>{formatTime(secondsToBreakthrough)}</div>
         </motion.div>
       </div>
 
       {/* FOCUS MODE SELECTOR */}
-      <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-xl font-bold text-white mb-4">
-          Cultivation Focus
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={`${styles.panel} ${styles.focusPanel}`}>
+        <h3 className={styles.sectionTitle}>Cultivation Focus</h3>
+        <div className={styles.focusGrid}>
           {(['balanced', 'body', 'spirit'] as FocusMode[]).map((mode) => {
             const isActive = focusMode === mode;
             const modifiers = FOCUS_MODE_MODIFIERS[mode];
@@ -257,27 +223,16 @@ export function CultivationTab() {
               <motion.button
                 key={mode}
                 onClick={() => setFocusMode(mode)}
-                className={`
-                  p-4 rounded-lg border-2 transition-all text-left
-                  ${
-                    isActive
-                      ? 'border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-400/20'
-                      : 'border-slate-600 bg-slate-700/30 hover:border-slate-500'
-                  }
-                `}
+                className={`${styles.focusCard} ${isActive ? styles.focusCardActive : ''}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="text-lg font-bold text-white mb-2 capitalize">
-                  {mode === 'balanced' ? 'Balanced' : `${mode} Focus`}
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="text-slate-300">
-                    Qi/s: <span className="text-cyan-400 font-semibold">
-                      {formatNumber(projectedQiPerSecond)}
-                    </span>
+                <div className={styles.focusTitle}>{mode === 'balanced' ? 'Balanced' : `${mode} Focus`}</div>
+                <div className={styles.focusStats}>
+                  <div className={styles.focusQi}>
+                    Qi/s: <span className={styles.focusQiValue}>{formatNumber(projectedQiPerSecond)}</span>
                   </div>
-                  <div className="text-slate-400 text-xs">
+                  <div className={styles.focusModifiers}>
                     {modifiers.qiMultiplier !== 1 && (
                       <div>Qi: {modifiers.qiMultiplier > 1 ? '+' : ''}{((modifiers.qiMultiplier - 1) * 100).toFixed(0)}%</div>
                     )}
@@ -300,22 +255,24 @@ export function CultivationTab() {
 
       {/* BREAKTHROUGH BUTTON */}
       <motion.div
-        className="bg-slate-800/50 rounded-lg p-6 border border-slate-700"
-        animate={canBreakthrough ? {
-          boxShadow: [
-            '0 0 20px rgba(6, 182, 212, 0.3)',
-            '0 0 40px rgba(6, 182, 212, 0.5)',
-            '0 0 20px rgba(6, 182, 212, 0.3)',
-          ],
-        } : {}}
+        className={`${styles.panel} ${styles.breakthroughPanel}`}
+        animate={
+          canBreakthrough
+            ? {
+                boxShadow: [
+                  '0 0 20px rgba(6, 182, 212, 0.3)',
+                  '0 0 40px rgba(6, 182, 212, 0.5)',
+                  '0 0 20px rgba(6, 182, 212, 0.3)',
+                ],
+              }
+            : {}
+        }
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-center">
-            <div className="text-sm text-slate-400 mb-2">
-              Breakthrough Requirement
-            </div>
-            <div className="text-lg text-slate-300">
+        <div className={styles.breakthroughContent}>
+          <div className={styles.breakthroughInfo}>
+            <div className={styles.breakthroughLabel}>Breakthrough Requirement</div>
+            <div className={styles.breakthroughValue}>
               {formatNumber(qi)} / {formatNumber(qiRequired)}
             </div>
           </div>
@@ -323,14 +280,9 @@ export function CultivationTab() {
           <motion.button
             onClick={handleBreakthrough}
             disabled={!canBreakthrough}
-            className={`
-              px-12 py-4 rounded-lg text-xl font-bold transition-all
-              ${
-                canBreakthrough
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-400 hover:to-blue-400 shadow-lg'
-                  : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-              }
-            `}
+            className={`${styles.breakthroughButton} ${
+              canBreakthrough ? styles.breakthroughReady : styles.breakthroughDisabled
+            }`}
             whileHover={canBreakthrough ? { scale: 1.05 } : {}}
             whileTap={canBreakthrough ? { scale: 0.95 } : {}}
           >
@@ -340,96 +292,58 @@ export function CultivationTab() {
       </motion.div>
 
       {/* UPGRADES SECTION */}
-      <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-xl font-bold text-white mb-4">
-          Cultivation Upgrades
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={`${styles.panel} ${styles.upgradePanel}`}>
+        <h3 className={styles.sectionTitle}>Cultivation Upgrades</h3>
+        <div className={styles.upgradeGrid}>
           {/* Idle Efficiency */}
-          <motion.div
-            className="bg-slate-700/50 rounded-lg p-4 border border-slate-600"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-lg font-bold text-cyan-400 mb-2">
-              ⚡ Idle Efficiency
-            </div>
-            <div className="text-sm text-slate-300 mb-3">
-              Increases Qi generation by 10%
-            </div>
-            <div className="text-xs text-slate-400 mb-3">
-              Current Tier: <span className="text-white font-semibold">{upgradeTiers.idle}</span>
+          <motion.div className={`${styles.upgradeCard} ${styles.idleCard}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${styles.upgradeTitle} ${styles.idleTitle}`}>⚡ Idle Efficiency</div>
+            <div className={styles.upgradeDescription}>Increases Qi generation by 10%</div>
+            <div className={styles.upgradeTier}>
+              Current Tier: <span className={styles.upgradeTierValue}>{upgradeTiers.idle}</span>
             </div>
             <button
               onClick={() => handleUpgrade('idle')}
               disabled={!canAffordIdle}
-              className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-all
-                ${
-                  canAffordIdle
-                    ? 'bg-cyan-600 hover:bg-cyan-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                }
-              `}
+              className={`${styles.upgradeButton} ${
+                canAffordIdle ? styles.upgradeButtonActive : styles.upgradeButtonDisabled
+              }`}
             >
               Cost: {formatNumber(idleCost)} Qi
             </button>
           </motion.div>
 
           {/* Damage Boost */}
-          <motion.div
-            className="bg-slate-700/50 rounded-lg p-4 border border-slate-600"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-lg font-bold text-red-400 mb-2">
-              ⚔️ Damage Boost
-            </div>
-            <div className="text-sm text-slate-300 mb-3">
-              Increases attack power by 5%
-            </div>
-            <div className="text-xs text-slate-400 mb-3">
-              Current Tier: <span className="text-white font-semibold">{upgradeTiers.damage}</span>
+          <motion.div className={`${styles.upgradeCard} ${styles.damageCard}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${styles.upgradeTitle} ${styles.damageTitle}`}>⚔️ Damage Boost</div>
+            <div className={styles.upgradeDescription}>Increases attack power by 5%</div>
+            <div className={styles.upgradeTier}>
+              Current Tier: <span className={styles.upgradeTierValue}>{upgradeTiers.damage}</span>
             </div>
             <button
               onClick={() => handleUpgrade('damage')}
               disabled={!canAffordDamage}
-              className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-all
-                ${
-                  canAffordDamage
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                }
-              `}
+              className={`${styles.upgradeButton} ${
+                canAffordDamage ? styles.upgradeButtonActive : styles.upgradeButtonDisabled
+              }`}
             >
               Cost: {formatNumber(damageCost)} Qi
             </button>
           </motion.div>
 
           {/* HP Boost */}
-          <motion.div
-            className="bg-slate-700/50 rounded-lg p-4 border border-slate-600"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-lg font-bold text-green-400 mb-2">
-              ❤️ HP Boost
-            </div>
-            <div className="text-sm text-slate-300 mb-3">
-              Increases max HP by 5%
-            </div>
-            <div className="text-xs text-slate-400 mb-3">
-              Current Tier: <span className="text-white font-semibold">{upgradeTiers.hp}</span>
+          <motion.div className={`${styles.upgradeCard} ${styles.hpCard}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${styles.upgradeTitle} ${styles.hpTitle}`}>❤️ HP Boost</div>
+            <div className={styles.upgradeDescription}>Increases max HP by 5%</div>
+            <div className={styles.upgradeTier}>
+              Current Tier: <span className={styles.upgradeTierValue}>{upgradeTiers.hp}</span>
             </div>
             <button
               onClick={() => handleUpgrade('hp')}
               disabled={!canAffordHp}
-              className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-all
-                ${
-                  canAffordHp
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                }
-              `}
+              className={`${styles.upgradeButton} ${
+                canAffordHp ? styles.upgradeButtonActive : styles.upgradeButtonDisabled
+              }`}
             >
               Cost: {formatNumber(hpCost)} Qi
             </button>

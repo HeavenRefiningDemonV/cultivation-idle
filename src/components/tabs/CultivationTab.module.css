@@ -1,0 +1,363 @@
+.root {
+  max-width: 1152px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.panel {
+  background-color: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-soft);
+}
+
+.topPanel {
+  padding: var(--space-7);
+}
+
+.topContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .topContent {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.progressWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.progressRing {
+  transform: rotate(-90deg);
+  color: var(--color-border);
+}
+
+.progressTrack {
+  color: var(--color-border-strong);
+}
+
+.progressOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.progressValue {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-qi-blue);
+}
+
+.progressLabel {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.realmInfo {
+  flex: 1;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .realmInfo {
+    text-align: left;
+  }
+}
+
+.realmTitle {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-2);
+}
+
+.realmSubtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.realmMajor {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.realmStats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .realmStats {
+    justify-content: flex-start;
+  }
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.statHighlight {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.statCard {
+  background-color: var(--color-bg-panel-strong);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+}
+
+.statCardLabel {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.statCardValue {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-qi-blue);
+}
+
+.statCardValueAlt {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--color-gold-accent);
+}
+
+.sectionTitle {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-4);
+}
+
+.focusPanel {
+  padding: var(--space-5);
+}
+
+.focusGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.focusCard {
+  padding: var(--space-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(45, 55, 72, 0.35);
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.focusCardActive {
+  border-color: var(--color-qi-blue);
+  background: rgba(125, 211, 252, 0.08);
+  box-shadow: 0 0 20px rgba(125, 211, 252, 0.25);
+}
+
+.focusTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-ink-white);
+  margin-bottom: var(--space-2);
+  text-transform: capitalize;
+}
+
+.focusStats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.focusQi {
+  color: var(--color-text-secondary);
+}
+
+.focusQiValue {
+  color: var(--color-qi-blue);
+  font-weight: 600;
+}
+
+.focusModifiers {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  display: grid;
+  gap: var(--space-1);
+}
+
+.breakthroughPanel {
+  padding: var(--space-5);
+}
+
+.breakthroughContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.breakthroughInfo {
+  text-align: center;
+}
+
+.breakthroughLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.breakthroughValue {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+}
+
+.breakthroughButton {
+  padding: var(--space-4) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.breakthroughReady {
+  background: linear-gradient(90deg, var(--color-qi-dark), #3b82f6);
+  color: var(--color-ink-white);
+  box-shadow: var(--shadow-qi);
+  cursor: pointer;
+}
+
+.breakthroughDisabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.upgradePanel {
+  padding: var(--space-5);
+}
+
+.upgradeGrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.upgradeCard {
+  background: rgba(55, 65, 81, 0.35);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-soft);
+}
+
+.idleCard {
+  border-color: rgba(125, 211, 252, 0.5);
+}
+
+.damageCard {
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.hpCard {
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.upgradeTitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.idleTitle {
+  color: var(--color-qi-blue);
+}
+
+.damageTitle {
+  color: var(--color-breakthrough-red);
+}
+
+.hpTitle {
+  color: var(--color-element-wood);
+}
+
+.upgradeDescription {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.upgradeTier {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.upgradeTierValue {
+  color: var(--color-ink-white);
+  font-weight: 600;
+}
+
+.upgradeButton {
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  border: none;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.upgradeButtonActive {
+  background: linear-gradient(90deg, var(--color-qi-dark), #0ea5e9);
+  color: var(--color-ink-white);
+  cursor: pointer;
+}
+
+.upgradeButtonDisabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .panel,
+  .topPanel,
+  .focusPanel,
+  .upgradePanel,
+  .breakthroughPanel {
+    padding: var(--space-4);
+  }
+}
