@@ -4,13 +4,14 @@
   min-height: 100vh;
   background: url('../assets/background/cbg_bg.png') no-repeat;
   background-size: cover;
+  background-attachment: fixed;
 }
 
 .gameLayoutMain {
   margin-left: 14rem;
   padding: var(--space-5);
   padding-top: calc(var(--space-7) + 20px);
-  
+
 }
 
 .gameLayoutContent {
