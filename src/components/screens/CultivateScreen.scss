@@ -22,10 +22,14 @@
   text-align: center;
 }
 
-.cultivator {
+.cultivator-container {
   position: absolute;
   width: 100%;
   top: -3rem;
+}
+
+.cultivator {
+  width: 100%;
   transform: translateX(-15.5%) scale(0.9);
 }
 
@@ -33,8 +37,8 @@
   position: absolute;
   height: 6rem;
   width: 6rem;
-  left: 50%;
-  top: 58%;
+  left: calc(39% - 2.5rem);
+  top: 43%;
   opacity: 80%;
   animation: spinCentered 5s linear infinite;
 }

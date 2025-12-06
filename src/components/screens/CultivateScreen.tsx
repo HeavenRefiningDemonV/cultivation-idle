@@ -160,8 +160,11 @@ export function CultivateScreen() {
         <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
       </div> */}
 
-      <img className='cultivator' src={cultivatorImage}/>
-      <img className='dantian' src={dantianImage}/>
+      <div className="cultivator-container">
+        <img className='cultivator' src={cultivatorImage} />
+        <img className='dantian' src={dantianImage} />
+      </div>
+
 
 
       <div className={'cultivateScreenGrid'}>
