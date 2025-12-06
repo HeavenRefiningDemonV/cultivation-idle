@@ -1,16 +1,7 @@
 .settingsScreenRoot {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #0f172a, #111827);
   border-radius: var(--radius-lg);
-}
-
-.settingsScreenBackground {
-  position: absolute;
-  inset: 0;
-  opacity: 0.12;
-  background-image: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 0.35) 0%, transparent 45%),
-    radial-gradient(circle at 70% 70%, rgba(248, 113, 113, 0.25) 0%, transparent 45%);
 }
 
 .settingsScreenContent {

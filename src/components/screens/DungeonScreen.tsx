@@ -375,7 +375,6 @@ export function DungeonScreen() {
     const dungeon = dungeons.find((d) => d.id === currentDungeon);
     return (
       <div className={'dungeonScreenScreenRoot'}>
-        <div className={'dungeonScreenScreenBackground'} />
         <div className={'dungeonScreenScreenContent'}>
           <div className={'dungeonScreenScreenHeader'}>
             <div className={'dungeonScreenTagPurple'}>🏛️ DUNGEON TRIAL</div>

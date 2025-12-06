@@ -324,12 +324,8 @@ export function AdventureScreen() {
 
     return (
       <div className={'adventureScreenRoot'}>
-        {/* Background decoration */}
-        <div className={'adventureScreenBackground'} />
 
-        {/* Main Content */}
         <div className={'adventureScreenContent'}>
-          {/* Header */}
           <div className={'adventureScreenHeader'}>
             <h1 className={'adventureScreenTitle'}>{inCombat ? 'Combat' : 'Adventure Zones'}</h1>
             <p className={'adventureScreenSubtitle'}>

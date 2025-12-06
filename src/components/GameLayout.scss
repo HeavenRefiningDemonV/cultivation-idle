@@ -1,15 +1,16 @@
 .gameLayoutRoot {
   position: relative;
+  min-width: 100vh;
   min-height: 100vh;
-  background: url('../assets/background/cbg_bg.gameLayoutPng') no-repeat;
+  background: url('../assets/background/cbg_bg.png') no-repeat;
   background-size: cover;
-  color: var(--color-ink-white);
 }
 
 .gameLayoutMain {
   margin-left: 14rem;
   padding: var(--space-5);
   padding-top: calc(var(--space-7) + 20px);
+  
 }
 
 .gameLayoutContent {
@@ -27,7 +28,6 @@
 
 .gameLayoutPlaceholderCard {
   text-align: center;
-  color: var(--color-ink-white);
 }
 
 .gameLayoutPlaceholderIcon {
