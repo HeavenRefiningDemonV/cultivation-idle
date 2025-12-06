@@ -24,12 +24,12 @@
 .appTitle {
   font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--color-ink-white);
+  color: #000000;
   margin-bottom: var(--space-3);
 }
 
 .appSubtext {
-  color: var(--color-ink-light);
+  color: #000000;
   margin-bottom: var(--space-4);
 }
 
@@ -49,7 +49,7 @@
 }
 
 .appLoader {
-  color: var(--color-qi-glow);
+  color: #000000;
   animation: pulse 1.4s ease-in-out infinite;
 }
 
