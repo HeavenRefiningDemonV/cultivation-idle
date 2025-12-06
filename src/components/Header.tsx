@@ -54,35 +54,34 @@ export function Header() {
   }, []);
 
   return (
-    <header className={'header'}>
-      <div className={'headerBar'}>
+    <header className='header'>
+      <div className='headerBar'>
         {/* Left side - Qi & Realm */}
-        <div className={'headerStatBlock'}>
-          <div className={'headerQiLine'}>
-            Qi: <span className={'headerQiValue'}>{formatNumber(qi)}</span>
-            <span className={'headerQiRate'}>({formatNumber(qiPerSecond)}/s)</span>
+        <div className='headerStatBlock'>
+          <div className='headerQiLine'>
+            Qi: <span className='headerQiValue'>{formatNumber(qi)}</span>
+            <span className='headerQiRate'>({formatNumber(qiPerSecond)}/s)</span>
           </div>
-          <div className={'headerRealmLine'}>
-            REALM:<span className={'headerRealmAccent'}>{realm.name}</span>
-            <span className={'headerRealmSubstage'}>Substage {realm.substage + 1}</span>
+          <div className='headerRealmLine'>
+            REALM:<span className='headerRealmAccent'>{realm.name}</span>
+            <span className='headerRealmSubstage'>Substage {realm.substage + 1}</span>
           </div>
         </div>
 
         {/* Right side - Save indicator & actions */}
-        <div className={'headerSaveBlock'}>
-          <div className={'headerSaveLabel'}>
+        <div className='headerSaveBlock'>
+          <div className='headerSaveLabel'>
             Last Saved
           </div>
           <div
-            className={`headerSaveTime ${
-              lastSavedTone === 'fresh'
+            className={`headerSaveTime ${lastSavedTone === 'fresh'
                 ? 'headerFresh'
                 : lastSavedTone === 'warn'
                   ? 'headerWarn'
                   : lastSavedTone === 'old'
                     ? 'headerOld'
                     : 'headerNeutral'
-            }`}
+              }`}
           >
             {lastSavedText}
           </div>

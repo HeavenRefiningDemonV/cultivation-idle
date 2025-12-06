@@ -10,6 +10,7 @@ import { GATE_ITEMS } from '../../systems/loot';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import cultivatorImage from "../../assets/onscreen/cbg_full.png";
 import dantianImage from "../../assets/onscreen/qisign.png";
+import longBar from "../../assets/menus/bar_long.png";
 import './CultivateScreen.scss';
 
 /**
@@ -18,7 +19,6 @@ import './CultivateScreen.scss';
 function OrnateProgressBar({
   current,
   max,
-  label,
 }: {
   current: string;
   max: string;
@@ -28,12 +28,6 @@ function OrnateProgressBar({
 
   return (
     <div className={'cultivateScreenProgressSection'}>
-      <div className={'cultivateScreenProgressBlock'}>
-        <span className={'cultivateScreenProgressLabel'}>{label}</span>
-        <span className={'cultivateScreenProgressValue'}>
-          {formatNumber(current)} / {formatNumber(max)}
-        </span>
-      </div>
 
       {/* Ornate container */}
       <div className={'cultivateScreenProgressContainer'}>
@@ -195,7 +189,18 @@ export function CultivateScreen() {
               </div>
             </div>
 
-            <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
+
+            <div className={'cultivateScreenProgressBlock'}>
+              <span className={'cultivateScreenProgressLabel'}>Breakthrough Progress</span>
+              <span className={'cultivateScreenProgressValue'}>
+                {formatNumber(qi)} / {formatNumber(breakthroughCost)}
+              </span>
+            </div>
+
+            <div className="progress-bar">
+              <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
+              <img className='bar-container' src={longBar} />
+            </div>
 
             {requiredGateItem && (
               <div className={'cultivateScreenGateRequirement'}>
