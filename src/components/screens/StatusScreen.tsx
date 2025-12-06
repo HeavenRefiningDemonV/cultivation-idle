@@ -100,10 +100,6 @@ export function StatusScreen() {
 
   return (
     <div className={'statusScreenRoot'}>
-      {/* Background decoration */}
-      <div className={'statusScreenBackgroundGlow'}>
-        <div className={'statusScreenGlowPattern'} />
-      </div>
 
       {/* Main Content */}
       <div className={'statusScreenContent'}>

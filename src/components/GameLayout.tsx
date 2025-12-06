@@ -67,14 +67,14 @@ export function GameLayout() {
   };
 
   return (
-    <div className={'gameLayoutRoot'}>
+    <div className='gameLayoutRoot'>
       <Header />
-      <Sidebar />
-      <main className={'gameLayoutMain'}>
-        <div className={'gameLayoutContent'}>
+      <div className="nonheader">
+        <Sidebar />
+        <div className='gameLayoutContent'>
           {renderContent()}
         </div>
-      </main>
+      </div>
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
     </div>

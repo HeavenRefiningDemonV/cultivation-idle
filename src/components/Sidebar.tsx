@@ -30,8 +30,8 @@ export function Sidebar() {
   const { totalAuras } = useGameStore();
 
   return (
-    <aside className={'sidebar'}>
-      <nav className={'sidebarNavList'}>
+    <aside className='sidebar'>
+      <nav className='sidebarNavList'>
         <NavButton
           tab="cultivation"
           label="Cultivate"

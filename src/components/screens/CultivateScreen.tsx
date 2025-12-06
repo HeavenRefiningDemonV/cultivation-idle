@@ -8,29 +8,9 @@ import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { GATE_ITEMS } from '../../systems/loot';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
+import cultivatorImage from "../../assets/onscreen/cbg_full.png";
+import dantianImage from "../../assets/onscreen/qisign.png";
 import './CultivateScreen.scss';
-
-
-/**
- * Meditating Character with Qi Aura
- */
-function MeditatingCharacter() {
-  return (
-    <div className={'cultivateScreenMeditationCharacter'}>
-      {/* Qi aura rings */}
-      <div className={'cultivateScreenAuraLayer'}>
-        <div className={'cultivateScreenAuraRingLarge'} />
-        <div className={'cultivateScreenAuraRingMedium'} />
-        <div className={'cultivateScreenAuraRingSmall'} />
-      </div>
-
-      <div className={'cultivateScreenMeditator'}>
-        🧘
-      </div>
-
-    </div>
-  );
-}
 
 /**
  * Ornate Progress Bar with gradient fill
@@ -175,118 +155,118 @@ export function CultivateScreen() {
 
   return (
     <div className={'cultivateScreenRoot'}>
-      <div className={'cultivateScreenContent'}>
-        <div className={'cultivateScreenHeader'}>
-          <h1 className={'cultivateScreenTitle'}>Cultivation Chamber</h1>
-          <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
-        </div>
+      {/* <div className={'cultivateScreenHeader'}>
+        <h1 className={'cultivateScreenTitle'}>Cultivation Chamber</h1>
+        <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
+      </div> */}
 
-        {/* Main Grid Layout */}
-        <div className={'cultivateScreenGrid'}>
-          {/* LEFT: Meditation Display */}
-          <div className={'cultivateScreenLeftColumn'}>
-            {/* Meditating Character */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <MeditatingCharacter />
+      <img className='cultivator' src={cultivatorImage}/>
+      <img className='dantian' src={dantianImage}/>
 
-              {/* Qi Stats */}
-              <div className={'cultivateScreenStatsGrid'}>
-                <div className={'cultivateScreenStatCard'}>
-                  <div className={'cultivateScreenStatLabel'}>Current Qi</div>
-                  <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
-                </div>
-                <div className={'cultivateScreenStatCard'}>
-                  <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
-                  <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
-                </div>
+
+      <div className={'cultivateScreenGrid'}>
+        {/* LEFT: Meditation Display */}
+        <div className={'cultivateScreenLeftColumn'}>
+
+          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+
+            {/* Qi Stats */}
+            <div className={'cultivateScreenStatsGrid'}>
+              <div className={'cultivateScreenStatCard'}>
+                <div className={'cultivateScreenStatLabel'}>Current Qi</div>
+                <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
               </div>
-            </div>
-
-            {/* Breakthrough Progress */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <div className={'cultivateScreenProgressHeader'}>
-                <div className={'cultivateScreenProgressTitle'}>{currentRealm.name}</div>
-                <div className={'cultivateScreenProgressSubtitle'}>
-                  {isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`}
-                </div>
+              <div className={'cultivateScreenStatCard'}>
+                <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
+                <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
               </div>
-
-              <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
-
-              {requiredGateItem && (
-                <div className={'cultivateScreenGateRequirement'}>
-                  {hasRequiredToken ? (
-                    <span className={'cultivateScreenGateReady'}>
-                      ✅ {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
-                    </span>
-                  ) : (
-                    <span className={'cultivateScreenGateMissing'}>
-                      🔒 Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
-                    </span>
-                  )}
-                  <p className={'cultivateScreenGateNote'}>
-                    Obtained from key bosses and trials. One will be consumed when breaking through to the
-                    next realm.
-                  </p>
-                </div>
-              )}
-
-              {/* Breakthrough Button */}
-              <button
-                onClick={handleBreakthrough}
-                disabled={!canBreakthrough}
-                className={'cultivateScreenBreakthroughButton'}
-              >
-                {canBreakthrough
-                  ? '✨ Break Through! ✨'
-                  : !hasRequiredToken && requiredGateItem
-                    ? `🔒 Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
-                    : '🔒 Insufficient Qi'}
-              </button>
             </div>
           </div>
 
-          {/* RIGHT: Focus & Upgrades */}
-          <div className={'cultivateScreenRightColumn'}>
-            {/* Focus Mode Selector */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <h3 className={'cultivateScreenPanelHeader'}>Cultivation Focus</h3>
-
-              <div className={'cultivateScreenFocusList'}>
-                {(['balanced', 'body', 'spirit'] as const).map((mode) => {
-                  const isActive = focusMode === mode;
-                  return (
-                    <button
-                      key={mode}
-                      onClick={() => setFocusMode(mode)}
-                      className={`${'cultivateScreenFocusButton'} ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
-                    >
-                      <div className={'cultivateScreenFocusTitle'}>{mode}</div>
-                      <div className={'cultivateScreenFocusDescription'}>
-                        {mode === 'balanced' && 'Equal focus on all aspects'}
-                        {mode === 'body' && 'Enhance physical cultivation'}
-                        {mode === 'spirit' && 'Focus on spiritual energy'}
-                      </div>
-                    </button>
-                  );
-                })}
+          {/* Breakthrough Progress */}
+          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+            <div className={'cultivateScreenProgressHeader'}>
+              <div className={'cultivateScreenProgressTitle'}>{currentRealm.name}</div>
+              <div className={'cultivateScreenProgressSubtitle'}>
+                {isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`}
               </div>
             </div>
 
-            {/* Cultivation Info */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <h3 className={'cultivateScreenPanelHeader'}>Cultivation Info</h3>
+            <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
 
-              <div className={'cultivateScreenInfoList'}>
-                <div>
-                  <div className={'cultivateScreenInfoLabel'}>Current Path</div>
-                  <div className={'cultivateScreenInfoValue'}>{useGameStore.getState().selectedPath || 'None'}</div>
-                </div>
-                <div>
-                  <div className={'cultivateScreenInfoLabel'}>Total Auras</div>
-                  <div className={`${'cultivateScreenInfoValue'} ${'cultivateScreenInfoHighlight'}`}>
-                    {formatNumber(useGameStore.getState().totalAuras)}
-                  </div>
+            {requiredGateItem && (
+              <div className={'cultivateScreenGateRequirement'}>
+                {hasRequiredToken ? (
+                  <span className={'cultivateScreenGateReady'}>
+                    ✅ {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
+                  </span>
+                ) : (
+                  <span className={'cultivateScreenGateMissing'}>
+                    🔒 Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
+                  </span>
+                )}
+                <p className={'cultivateScreenGateNote'}>
+                  Obtained from key bosses and trials. One will be consumed when breaking through to the
+                  next realm.
+                </p>
+              </div>
+            )}
+
+            {/* Breakthrough Button */}
+            <button
+              onClick={handleBreakthrough}
+              disabled={!canBreakthrough}
+              className={'cultivateScreenBreakthroughButton'}
+            >
+              {canBreakthrough
+                ? '✨ Break Through! ✨'
+                : !hasRequiredToken && requiredGateItem
+                  ? `🔒 Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
+                  : '🔒 Insufficient Qi'}
+            </button>
+          </div>
+        </div>
+
+        {/* RIGHT: Focus & Upgrades */}
+        <div className={'cultivateScreenRightColumn'}>
+          {/* Focus Mode Selector */}
+          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+            <h3 className={'cultivateScreenPanelHeader'}>Cultivation Focus</h3>
+
+            <div className={'cultivateScreenFocusList'}>
+              {(['balanced', 'body', 'spirit'] as const).map((mode) => {
+                const isActive = focusMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setFocusMode(mode)}
+                    className={`${'cultivateScreenFocusButton'} ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
+                  >
+                    <div className={'cultivateScreenFocusTitle'}>{mode}</div>
+                    <div className={'cultivateScreenFocusDescription'}>
+                      {mode === 'balanced' && 'Equal focus on all aspects'}
+                      {mode === 'body' && 'Enhance physical cultivation'}
+                      {mode === 'spirit' && 'Focus on spiritual energy'}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Cultivation Info */}
+          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+            <h3 className={'cultivateScreenPanelHeader'}>Cultivation Info</h3>
+
+            <div className={'cultivateScreenInfoList'}>
+              <div>
+                <div className={'cultivateScreenInfoLabel'}>Current Path</div>
+                <div className={'cultivateScreenInfoValue'}>{useGameStore.getState().selectedPath || 'None'}</div>
+              </div>
+              <div>
+                <div className={'cultivateScreenInfoLabel'}>Total Auras</div>
+                <div className={`${'cultivateScreenInfoValue'} ${'cultivateScreenInfoHighlight'}`}>
+                  {formatNumber(useGameStore.getState().totalAuras)}
                 </div>
               </div>
             </div>
