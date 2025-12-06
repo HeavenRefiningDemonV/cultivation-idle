@@ -29,6 +29,20 @@ h1, h2, h3, h4, h5, h6 {
 
 button {
   font-family: var(--font-inter);
+  background: #dddddd !important;
+  border: 1px solid #000000 !important;
+  border-radius: 5px !important;
+  color: #000000 !important;
+}
+
+button:hover,
+button:active,
+button:focus {
+  background: #dddddd !important;
+  border: 1px solid #000000 !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .buttonStandard {
