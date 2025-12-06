@@ -2,7 +2,7 @@
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #0f172a, #111827);
-  border-radius: var(--radius-lg);
+  border-radius: 14px;
 }
 
 .prestigeScreenBackground {
@@ -16,10 +16,10 @@
   z-index: 1;
   max-width: 1100px;
   margin: 0 auto;
-  padding: var(--space-6);
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: 24px;
 }
 
 .prestigeScreenHeader {
@@ -27,24 +27,24 @@
 }
 
 .prestigeScreenTitle {
-  margin: 0 0 var(--space-2) 0;
-  font-size: var(--text-4xl);
+  margin: 0 0 8px 0;
+  font-size: 36px;
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
 }
 
 .prestigeScreenSubtitle {
   margin: 0;
-  color: var(--color-text-muted);
+  color: #000000;
 }
 
 .prestigeScreenApCard {
   background: linear-gradient(90deg, rgba(88, 28, 135, 0.6), rgba(190, 24, 93, 0.5));
   border: 2px solid rgba(168, 85, 247, 0.45);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  border-radius: 14px;
+  padding: 24px;
   text-align: center;
-  box-shadow: var(--shadow-strong);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .prestigeScreenApValue {
@@ -55,39 +55,39 @@
 
 .prestigeScreenApLabel {
   color: #e0e7ff;
-  font-size: var(--text-xl);
+  font-size: 20px;
 }
 
 .prestigeScreenApMeta {
   color: #c084fc;
-  font-size: var(--text-sm);
+  font-size: 14px;
 }
 
 .prestigeScreenInfoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-4);
+  gap: 16px;
 }
 
 .prestigeScreenInfoCard {
   background: rgba(26, 26, 26, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  box-shadow: var(--shadow-soft);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .prestigeScreenInfoTitle {
-  font-size: var(--text-lg);
+  font-size: 18px;
   font-weight: 700;
-  color: var(--color-gold-accent);
-  margin: 0 0 var(--space-3) 0;
+  color: #fbbf24;
+  margin: 0 0 12px 0;
 }
 
 .prestigeScreenInfoRows {
   display: grid;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
+  gap: 8px;
+  font-size: 14px;
 }
 
 .prestigeScreenInfoRow {
@@ -96,11 +96,11 @@
 }
 
 .prestigeScreenInfoLabel {
-  color: var(--color-text-muted);
+  color: #000000;
 }
 
 .prestigeScreenInfoValue {
-  color: var(--color-ink-white);
+  color: #000000;
   font-weight: 600;
 }
 
@@ -110,8 +110,8 @@
 }
 
 .prestigeScreenInfoLabelMuted {
-  color: var(--color-text-muted);
-  margin-left: var(--space-2);
+  color: #000000;
+  margin-left: 8px;
 }
 
 .prestigeScreenBenefitsList {
@@ -120,84 +120,84 @@
   padding: 0;
   display: grid;
   gap: 4px;
-  color: var(--color-text-secondary);
-  font-size: var(--text-sm);
+  color: #000000;
+  font-size: 14px;
 }
 
 .prestigeScreenPrestigeSection {
   background: linear-gradient(90deg, rgba(88, 28, 135, 0.45), rgba(190, 24, 93, 0.35));
   border: 2px solid rgba(168, 85, 247, 0.4);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  border-radius: 14px;
+  padding: 24px;
   text-align: center;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   display: grid;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
 .prestigeScreenPrestigeTitle {
-  font-size: var(--text-3xl);
+  font-size: 30px;
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
   margin: 0;
 }
 
 .prestigeScreenPrestigeText {
-  color: var(--color-text-secondary);
+  color: #000000;
   max-width: 720px;
   margin: 0 auto;
 }
 
 .prestigeScreenPrestigeButton {
-  padding: var(--space-4) var(--space-6);
-  border-radius: var(--radius-lg);
+  padding: 16px 32px;
+  border-radius: 14px;
   border: none;
-  font-size: var(--text-xl);
+  font-size: 20px;
   font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .prestigeScreenPrestigeReady {
   background: linear-gradient(90deg, #9333ea, #db2777);
-  color: var(--color-ink-white);
+  color: #000000;
   box-shadow: 0 12px 30px rgba(168, 85, 247, 0.35);
   cursor: pointer;
 }
 
 .prestigeScreenPrestigeLocked {
-  background: var(--color-border);
-  color: var(--color-text-muted);
+  background: #374151;
+  color: #000000;
   cursor: not-allowed;
 }
 
 .prestigeScreenPrestigeHint {
-  color: var(--color-text-muted);
+  color: #000000;
   margin: 0;
 }
 
 .prestigeScreenShopSection {
   display: grid;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
 .prestigeScreenShopTitle {
-  font-size: var(--text-3xl);
+  font-size: 30px;
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
   margin: 0;
 }
 
 .prestigeScreenShopGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-4);
+  gap: 16px;
 }
 
 .prestigeScreenShopCard {
   background: rgba(17, 24, 39, 0.7);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  border: 2px solid #374151;
+  border-radius: 14px;
+  padding: 16px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   backdrop-filter: blur(4px);
 }
@@ -221,55 +221,55 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .prestigeScreenShopName {
-  font-size: var(--text-lg);
+  font-size: 18px;
   font-weight: 700;
-  color: var(--color-ink-white);
+  color: #000000;
   margin: 0;
 }
 
 .prestigeScreenShopTagMax,
 .prestigeScreenShopTagLocked {
-  font-size: var(--text-xs);
+  font-size: 12px;
   padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   font-weight: 700;
-  color: var(--color-ink-white);
+  color: #000000;
 }
 
 .prestigeScreenShopTagMax {
-  background: var(--color-element-wood);
+  background: #22c55e;
 }
 
 .prestigeScreenShopTagLocked {
-  background: var(--color-border);
+  background: #374151;
 }
 
 .prestigeScreenShopDescription {
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--space-3) 0;
-  font-size: var(--text-sm);
+  color: #000000;
+  margin: 0 0 12px 0;
+  font-size: 14px;
 }
 
 .prestigeScreenShopLevel {
-  margin-bottom: var(--space-3);
+  margin-bottom: 12px;
 }
 
 .prestigeScreenShopLevelRow {
   display: flex;
   justify-content: space-between;
-  margin-bottom: var(--space-2);
-  font-size: var(--text-sm);
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .prestigeScreenShopProgress {
   height: 8px;
   background: rgba(55, 65, 81, 0.8);
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   overflow: hidden;
 }
 
@@ -280,8 +280,8 @@
 }
 
 .prestigeScreenShopEffect {
-  margin-bottom: var(--space-3);
-  font-size: var(--text-sm);
+  margin-bottom: 12px;
+  font-size: 14px;
 }
 
 .prestigeScreenShopEffectLabel {
@@ -295,17 +295,17 @@
 
 .prestigeScreenShopActions {
   display: grid;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
 .prestigeScreenShopCost {
   text-align: center;
-  font-size: var(--text-sm);
+  font-size: 14px;
 }
 
 .prestigeScreenShopCostValue {
   font-weight: 700;
-  font-size: var(--text-lg);
+  font-size: 18px;
 }
 
 .prestigeScreenShopCostReady {
@@ -313,13 +313,13 @@
 }
 
 .prestigeScreenShopCostMissing {
-  color: var(--color-breakthrough-red);
+  color: #ff6b6b;
 }
 
 .prestigeScreenShopButton {
   width: 100%;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  border-radius: 10px;
   border: none;
   font-weight: 700;
   transition: filter 0.2s ease;
@@ -327,54 +327,54 @@
 
 .prestigeScreenShopButtonReady {
   background: linear-gradient(90deg, #9333ea, #c026d3);
-  color: var(--color-ink-white);
+  color: #000000;
   cursor: pointer;
 }
 
 .prestigeScreenShopButtonDisabled {
-  background: var(--color-border);
-  color: var(--color-text-muted);
+  background: #374151;
+  color: #000000;
   cursor: not-allowed;
 }
 
 .prestigeScreenLockedNote {
   text-align: center;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  color: #000000;
+  font-size: 14px;
 }
 
 .prestigeScreenHistory {
   background: rgba(26, 26, 26, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  border-radius: 14px;
+  padding: 16px;
   backdrop-filter: blur(4px);
 }
 
 .prestigeScreenHistorySummary {
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
   cursor: pointer;
 }
 
 .prestigeScreenHistoryList {
-  margin-top: var(--space-3);
+  margin-top: 12px;
   display: grid;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
 .prestigeScreenHistoryRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--text-sm);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--space-2);
+  font-size: 14px;
+  border-bottom: 1px solid #374151;
+  padding-bottom: 8px;
 }
 
 .prestigeScreenHistoryGain {
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
   align-items: center;
 }
 
@@ -385,31 +385,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
+  padding: 16px;
   z-index: 50;
   backdrop-filter: blur(6px);
 }
 
 .prestigeScreenModalCard {
-  background: var(--color-bg-panel-strong);
-  border: 3px solid var(--color-breakthrough-red);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  background: #111827;
+  border: 3px solid #ff6b6b;
+  border-radius: 14px;
+  padding: 24px;
   max-width: 500px;
   width: 100%;
-  box-shadow: var(--shadow-strong);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .prestigeScreenModalTitle {
-  margin: 0 0 var(--space-3) 0;
-  font-size: var(--text-2xl);
+  margin: 0 0 12px 0;
+  font-size: 24px;
   font-weight: 700;
-  color: var(--color-breakthrough-red);
+  color: #ff6b6b;
 }
 
 .prestigeScreenModalText {
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--space-4) 0;
+  color: #000000;
+  margin: 0 0 16px 0;
 }
 
 .prestigeScreenModalHighlight {
@@ -418,22 +418,22 @@
 
 .prestigeScreenModalActions {
   display: flex;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
 .prestigeScreenModalButton {
   flex: 1;
-  padding: var(--space-3);
-  border-radius: var(--radius-md);
+  padding: 12px;
+  border-radius: 10px;
   border: none;
   font-weight: 700;
-  color: var(--color-ink-white);
+  color: #000000;
   cursor: pointer;
   transition: filter 0.2s ease;
 }
 
 .prestigeScreenModalCancel {
-  background: var(--color-border);
+  background: #374151;
 }
 
 .prestigeScreenModalConfirm {
@@ -442,7 +442,7 @@
 
 @media (max-width: 640px) {
   .prestigeScreenContent {
-    padding: var(--space-4);
+    padding: 16px;
   }
 
   .prestigeScreenModalActions {

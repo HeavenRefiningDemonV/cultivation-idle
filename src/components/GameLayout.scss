@@ -39,24 +39,24 @@
 
 .gameLayoutPlaceholderIcon {
   font-size: 3.5rem;
-  margin-bottom: var(--space-4);
+  margin-bottom: 16px;
 }
 
 .gameLayoutPlaceholderTitle {
-  font-size: var(--text-2xl);
+  font-size: 24px;
   font-weight: 700;
-  color: var(--color-ink-paper);
-  margin-bottom: var(--space-3);
+  color: #e8e8e8;
+  margin-bottom: 12px;
 }
 
 .gameLayoutPlaceholderText {
-  color: var(--color-ink-light);
-  font-size: var(--text-base);
+  color: #6b6b6b;
+  font-size: 16px;
 }
 
 @media (max-width: 1024px) {
   .gameLayoutMain {
     margin-left: 0;
-    padding-top: calc(var(--space-7) + 20px);
+    padding-top: calc(40px + 20px);
   }
 }

@@ -7,7 +7,7 @@
 .tabNavInner {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 0 var(--space-5);
+  padding: 0 24px;
 }
 
 .tabNavList {
@@ -17,9 +17,9 @@
 
 .tabNavTab {
   position: relative;
-  padding: var(--space-3) var(--space-5);
+  padding: 12px 24px;
   font-weight: 600;
-  font-size: var(--text-sm);
+  font-size: 14px;
   color: #9ca3af;
   border: none;
   background: transparent;
@@ -34,8 +34,8 @@
 }
 
 .tabNavTabActive {
-  color: var(--color-qi-blue);
-  border-bottom-color: var(--color-qi-blue);
+  color: #7dd3fc;
+  border-bottom-color: #7dd3fc;
   background: rgba(55, 65, 81, 0.5);
 }
 

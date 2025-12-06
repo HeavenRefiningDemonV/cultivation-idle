@@ -3,7 +3,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: 24px;
 }
 
 .inventoryScreenHeader {
@@ -11,65 +11,65 @@
 }
 
 .inventoryScreenTitle {
-  margin: 0 0 var(--space-2) 0;
-  font-family: var(--font-cinzel);
-  font-size: var(--text-4xl);
+  margin: 0 0 8px 0;
+  font-family: 'Julee', cursive;
+  font-size: 36px;
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
 }
 
 .inventoryScreenGoldRow {
   color: rgba(251, 191, 36, 0.9);
-  font-size: var(--text-lg);
+  font-size: 18px;
 }
 
 .inventoryScreenSlotInfo {
   margin-top: 4px;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  color: #000000;
+  font-size: 14px;
 }
 
 .inventoryScreenEquipmentPanel {
   background: rgba(15, 23, 42, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  border-radius: 14px;
+  padding: 24px;
 }
 
 .inventoryScreenSectionTitle {
-  margin: 0 0 var(--space-3) 0;
-  font-family: var(--font-cinzel);
-  font-size: var(--text-2xl);
+  margin: 0 0 12px 0;
+  font-family: 'Julee', cursive;
+  font-size: 24px;
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
 }
 
 .inventoryScreenEquipmentGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-4);
+  gap: 16px;
 }
 
 .inventoryScreenSlotCard {
   background: rgba(30, 41, 59, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.25);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  border-radius: 14px;
+  padding: 16px;
 }
 
 .inventoryScreenSlotTitle {
-  margin: 0 0 var(--space-3) 0;
-  font-family: var(--font-cinzel);
-  font-size: var(--text-lg);
+  margin: 0 0 12px 0;
+  font-family: 'Julee', cursive;
+  font-size: 18px;
   font-weight: 700;
-  color: var(--color-gold-accent);
+  color: #fbbf24;
   text-transform: capitalize;
 }
 
 .inventoryScreenSlotContent {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 12px;
 }
 
 .inventoryScreenSlotName {
@@ -78,16 +78,16 @@
 
 .inventoryScreenSlotDescription {
   margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  color: #000000;
+  font-size: 14px;
 }
 
 .inventoryScreenStatBlock {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(74, 222, 128, 0.35);
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
-  font-size: var(--text-xs);
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 12px;
   display: grid;
   gap: 4px;
 }
@@ -98,21 +98,21 @@
 
 .inventoryScreenSlotEmpty {
   text-align: center;
-  padding: var(--space-6) 0;
-  color: var(--color-text-muted);
+  padding: 32px 0;
+  color: #000000;
 }
 
 .inventoryScreenSlotEmptyIcon {
   font-size: 2.5rem;
   color: #475569;
-  margin-bottom: var(--space-2);
+  margin-bottom: 8px;
 }
 
 .inventoryScreenActionButton {
   width: 100%;
-  padding: var(--space-3);
+  padding: 12px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   font-weight: 700;
   color: #fff;
   background: #dc2626;
@@ -126,16 +126,16 @@
 
 .inventoryScreenTabs {
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
   border-bottom: 2px solid rgba(251, 191, 36, 0.3);
 }
 
 .inventoryScreenTabButton {
-  padding: var(--space-2) var(--space-3);
-  font-family: var(--font-cinzel);
+  padding: 8px 12px;
+  font-family: 'Julee', cursive;
   font-weight: 700;
   text-transform: capitalize;
-  color: var(--color-text-muted);
+  color: #000000;
   background: transparent;
   border: none;
   border-bottom: 4px solid transparent;
@@ -144,12 +144,12 @@
 }
 
 .inventoryScreenTabButton:hover {
-  color: var(--color-text-primary);
+  color: #000000;
 }
 
 .inventoryScreenTabButtonActive {
-  color: var(--color-gold-accent);
-  border-color: var(--color-gold-accent);
+  color: #fbbf24;
+  border-color: #fbbf24;
 }
 
 .inventoryScreenInventorySection {
@@ -161,9 +161,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-6) 0;
-  color: var(--color-text-muted);
+  gap: 8px;
+  padding: 32px 0;
+  color: #000000;
 }
 
 .inventoryScreenEmptyIcon {
@@ -173,20 +173,20 @@
 
 .inventoryScreenEmptyTitle {
   margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--text-xl);
+  color: #000000;
+  font-size: 20px;
 }
 
 .inventoryScreenCardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-4);
+  gap: 16px;
 }
 
 .inventoryScreenItemCard {
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  border: 2px solid #374151;
+  border-radius: 14px;
+  padding: 16px;
   background: rgba(248, 250, 252, 0.9);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -200,21 +200,21 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .inventoryScreenItemTitle {
   margin: 0;
-  font-family: var(--font-cinzel);
-  font-size: var(--text-lg);
+  font-family: 'Julee', cursive;
+  font-size: 18px;
   font-weight: 700;
 }
 
 .inventoryScreenItemMeta {
   margin-top: 4px;
   color: #475569;
-  font-size: var(--text-xs);
+  font-size: 12px;
   text-transform: capitalize;
 }
 
@@ -222,55 +222,55 @@
   background: #334155;
   color: #fff;
   padding: 4px 8px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   font-weight: 700;
-  font-size: var(--text-xs);
+  font-size: 12px;
 }
 
 .inventoryScreenItemDescription {
-  margin: 0 0 var(--space-3) 0;
+  margin: 0 0 12px 0;
   color: #475569;
-  font-size: var(--text-xs);
+  font-size: 12px;
   line-height: 1.5;
 }
 
 .inventoryScreenEquipmentStats {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(74, 222, 128, 0.3);
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
-  margin-bottom: var(--space-3);
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 12px;
   display: grid;
   gap: 4px;
   color: #166534;
-  font-size: var(--text-xs);
+  font-size: 12px;
 }
 
 .inventoryScreenConsumableStats {
   background: rgba(59, 130, 246, 0.12);
   border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
-  margin-bottom: var(--space-3);
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 12px;
   color: #1d4ed8;
-  font-size: var(--text-xs);
+  font-size: 12px;
 }
 
 .inventoryScreenItemActions {
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
 }
 
 .inventoryScreenItemButton {
   flex: 1;
-  padding: var(--space-3);
+  padding: 12px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
   transition: filter 0.15s ease, transform 0.15s ease;
-  font-size: var(--text-sm);
+  font-size: 14px;
 }
 
 .inventoryScreenItemButton:hover {
