@@ -178,9 +178,10 @@
   position: relative;
   bottom: 10%;
   height: 1rem;
-  width: calc(75% + 1rem);
+  align-self: center;
+  width: calc(60% + 12rem);
 
-  margin-left: calc(8% + 2rem);
+
   overflow: hidden;
     box-shadow: 0 0 10px 10px #ddd;
 }
