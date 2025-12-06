@@ -20,15 +20,15 @@ type StatTone =
   | 'none';
 
 const toneClassMap: Record<StatTone, string> = {
-  gold: 'statusScreenStatGold',
-  qi: 'statusScreenStatQi',
-  green: 'statusScreenStatGreen',
-  red: 'statusScreenStatRed',
-  blue: 'statusScreenStatBlue',
-  yellow: 'statusScreenStatYellow',
-  cyan: 'statusScreenStatCyan',
-  pink: 'statusScreenStatPink',
-  muted: 'statusScreenStatMuted',
+  gold: 'status-screen__stat-gold',
+  qi: 'status-screen__stat-qi',
+  green: 'status-screen__stat-green',
+  red: 'status-screen__stat-red',
+  blue: 'status-screen__stat-blue',
+  yellow: 'status-screen__stat-yellow',
+  cyan: 'status-screen__stat-cyan',
+  pink: 'status-screen__stat-pink',
+  muted: 'status-screen__stat-muted',
   none: '',
 };
 
@@ -39,9 +39,9 @@ function StatRow({ label, value, tone = 'muted' }: { label: string; value: strin
   const toneClass = toneClassMap[tone];
 
   return (
-    <div className={'statusScreenStatRow'}>
-      <span className={'statusScreenStatLabel'}>{label}</span>
-      <span className={`${'statusScreenStatValue'} ${toneClass}`}>{value}</span>
+    <div className={'status-screen__stat-row'}>
+      <span className={'status-screen__stat-label'}>{label}</span>
+      <span className={`${'status-screen__stat-value'} ${toneClass}`}>{value}</span>
     </div>
   );
 }
@@ -51,9 +51,9 @@ function StatRow({ label, value, tone = 'muted' }: { label: string; value: strin
  */
 function SectionHeader({ icon, title }: { icon: string; title: string }) {
   return (
-    <div className={'statusScreenSectionHeader'}>
-      <span className={'statusScreenSectionIcon'}>{icon}</span>
-      <h2 className={'statusScreenSectionTitle'}>{title}</h2>
+    <div className={'status-screen__section-header'}>
+      <span className={'status-screen__section-icon'}>{icon}</span>
+      <h2 className={'status-screen__section-title'}>{title}</h2>
     </div>
   );
 }
@@ -63,9 +63,9 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
  */
 function StatCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className={'statusScreenStatCard'}>
-      <h3 className={'statusScreenStatCardTitle'}>{title}</h3>
-      <div className={'statusScreenStatList'}>{children}</div>
+    <div className={'status-screen__stat-card'}>
+      <h3 className={'status-screen__stat-card-title'}>{title}</h3>
+      <div className={'status-screen__stat-list'}>{children}</div>
     </div>
   );
 }
@@ -99,26 +99,26 @@ export function StatusScreen() {
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
 
   return (
-    <div className={'statusScreenRoot'}>
+    <div className={'status-screen'}>
       {/* Background decoration */}
-      <div className={'statusScreenBackgroundGlow'}>
-        <div className={'statusScreenGlowPattern'} />
+      <div className={'status-screen__background-glow'}>
+        <div className={'status-screen__glow-pattern'} />
       </div>
 
       {/* Main Content */}
-      <div className={'statusScreenContent'}>
+      <div className={'status-screen__content'}>
         {/* Header */}
-        <div className={'statusScreenHeader'}>
-          <h1 className={'statusScreenTitle'}>Character Status</h1>
-          <p className={'statusScreenSubtitle'}>View your cultivation progress and combat statistics</p>
+        <div className={'status-screen__header'}>
+          <h1 className={'status-screen__title'}>Character Status</h1>
+          <p className={'status-screen__subtitle'}>View your cultivation progress and combat statistics</p>
         </div>
 
         {/* Main Grid Layout */}
-        <div className={'statusScreenGrid'}>
+        <div className={'status-screen__grid'}>
           {/* LEFT COLUMN */}
-          <div className={'statusScreenColumn'}>
+          <div className={'status-screen__column'}>
             {/* Cultivation Progress Section */}
-            <div className={'statusScreenPanel'}>
+            <div className={'status-screen__panel'}>
               <SectionHeader icon="⚡" title="Cultivation Progress" />
 
               <StatRow label="Current Realm" value={currentRealm.name} tone="gold" />
@@ -147,7 +147,7 @@ export function StatusScreen() {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className={'statusScreenColumn'}>
+          <div className={'status-screen__column'}>
             {/* Spirit Root Display */}
             <SpiritRootDisplay />
 
@@ -158,20 +158,20 @@ export function StatusScreen() {
             </StatCard>
 
             {/* Equipment Section */}
-            <div className={'statusScreenEquipmentSection'}>
+            <div className={'status-screen__equipment-section'}>
               <SectionHeader icon="⚔️" title="Equipment" />
 
               {/* Weapon */}
-              <div className={'statusScreenEquipmentBlock'}>
-                <div className={'statusScreenEquipmentLabel'}>Weapon</div>
+              <div className={'status-screen__equipment-block'}>
+                <div className={'status-screen__equipment-label'}>Weapon</div>
                 {equippedWeapon ? (
-                  <div className={'statusScreenEquipmentCard'}>
-                    <div className={'statusScreenEquipmentNamePurple'}>{equippedWeapon.name}</div>
-                    <div className={'statusScreenEquipmentMeta'}>
+                  <div className={'status-screen__equipment-card'}>
+                    <div className={'status-screen__equipment-name-purple'}>{equippedWeapon.name}</div>
+                    <div className={'status-screen__equipment-meta'}>
                       {equippedWeapon.rarity.charAt(0).toUpperCase() + equippedWeapon.rarity.slice(1)} Weapon
                     </div>
                     {equippedWeapon.stats && (
-                      <div className={'statusScreenEquipmentStats'}>
+                      <div className={'status-screen__equipment-stats'}>
                         {equippedWeapon.stats.atk && (
                           <div>ATK: +{formatNumber(equippedWeapon.stats.atk)}</div>
                         )}
@@ -182,21 +182,21 @@ export function StatusScreen() {
                     )}
                   </div>
                 ) : (
-                  <div className={'statusScreenEquipmentEmpty'}>No weapon equipped</div>
+                  <div className={'status-screen__equipment-empty'}>No weapon equipped</div>
                 )}
               </div>
 
               {/* Accessory */}
               <div>
-                <div className={'statusScreenEquipmentLabel'}>Accessory</div>
+                <div className={'status-screen__equipment-label'}>Accessory</div>
                 {equippedAccessory ? (
-                  <div className={`${'statusScreenEquipmentCard'} ${'statusScreenEquipmentCardAccessory'}`}>
-                    <div className={'statusScreenEquipmentNameCyan'}>{equippedAccessory.name}</div>
-                    <div className={'statusScreenEquipmentMeta'}>
+                  <div className={`${'status-screen__equipment-card'} ${'status-screen__equipment-card-accessory'}`}>
+                    <div className={'status-screen__equipment-name-cyan'}>{equippedAccessory.name}</div>
+                    <div className={'status-screen__equipment-meta'}>
                       {equippedAccessory.rarity.charAt(0).toUpperCase() + equippedAccessory.rarity.slice(1)} Accessory
                     </div>
                     {equippedAccessory.stats && (
-                      <div className={'statusScreenEquipmentStats'}>
+                      <div className={'status-screen__equipment-stats'}>
                         {equippedAccessory.stats.hp && (
                           <div>HP: +{formatNumber(equippedAccessory.stats.hp)}</div>
                         )}
@@ -207,13 +207,13 @@ export function StatusScreen() {
                     )}
                   </div>
                 ) : (
-                  <div className={'statusScreenEquipmentEmpty'}>No accessory equipped</div>
+                  <div className={'status-screen__equipment-empty'}>No accessory equipped</div>
                 )}
               </div>
             </div>
 
             {/* Additional Info */}
-            <div className={'statusScreenMiscPanel'}>
+            <div className={'status-screen__misc-panel'}>
               <StatCard title="Miscellaneous">
                 <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
                 <StatRow

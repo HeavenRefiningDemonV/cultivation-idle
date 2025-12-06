@@ -108,35 +108,35 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
   };
 
   return (
-    <div className={`${'adventureScreenZoneCard'} ${isLocked ? 'adventureScreenZoneCardLocked' : ''}`}>
-      <h3 className={'adventureScreenZoneTitle'}>{zone.name}</h3>
-      <p className={'adventureScreenZoneDescription'}>{zone.description}</p>
+    <div className={`${'adventure-screen__zone-card'} ${isLocked ? 'adventure-screen__zone-card-locked' : ''}`}>
+      <h3 className={'adventure-screen__zone-title'}>{zone.name}</h3>
+      <p className={'adventure-screen__zone-description'}>{zone.description}</p>
 
       {isLocked ? (
-        <div className={'adventureScreenZoneBoss'}>🔒 Requires Realm {zone.minRealm}</div>
+        <div className={'adventure-screen__zone-boss'}>🔒 Requires Realm {zone.minRealm}</div>
       ) : (
-        <div className={'adventureScreenZoneDetails'}>
+        <div className={'adventure-screen__zone-details'}>
           <div>Min Realm: {zone.minRealm}</div>
           <div>
             Gold/hr: {zone.goldPerHour.min.toLocaleString()} - {zone.goldPerHour.max.toLocaleString()}
           </div>
-          <div className={'adventureScreenZoneBoss'}>Boss: {zone.boss}</div>
-          <div className={'adventureScreenZoneHint'}>
+          <div className={'adventure-screen__zone-boss'}>Boss: {zone.boss}</div>
+          <div className={'adventure-screen__zone-hint'}>
             Suggested: {zone.suggestedStats.dps} DPS • {zone.suggestedStats.hp} HP
           </div>
-          <div className={'adventureScreenZoneProgress'}>Enemies defeated: {zoneProgress?.enemiesDefeated || 0}</div>
+          <div className={'adventure-screen__zone-progress'}>Enemies defeated: {zoneProgress?.enemiesDefeated || 0}</div>
         </div>
       )}
 
       {!isLocked && (
-        <div className={'adventureScreenZoneButtons'}>
-          <button onClick={handleFightEnemies} className={'adventureScreenButton'}>
+        <div className={'adventure-screen__zone-buttons'}>
+          <button onClick={handleFightEnemies} className={'adventure-screen__button'}>
             Fight Enemies
           </button>
           <button
             onClick={handleFightBoss}
             disabled={!isBossAvailable}
-            className={`${'adventureScreenButton'} ${'adventureScreenButtonDanger'} ${!isBossAvailable ? 'adventureScreenButtonDisabled' : ''}`}
+            className={`${'adventure-screen__button'} ${'adventure-screen__button-danger'} ${!isBossAvailable ? 'adventure-screen__button-disabled' : ''}`}
           >
             {isBossAvailable ? 'Fight Boss' : 'Boss (10 kills needed)'}
           </button>
@@ -168,7 +168,7 @@ export function CombatView() {
 
   if (!currentEnemy) {
     return (
-      <div className={'adventureScreenCombatLogEmpty'}>
+      <div className={'adventure-screen__combat-log-empty'}>
         No enemy in combat. Please select a zone to fight.
       </div>
     );
@@ -182,127 +182,127 @@ export function CombatView() {
     : 0;
 
   return (
-    <div className={'adventureScreenCombatWrapper'}>
+    <div className={'adventure-screen__combat-wrapper'}>
       {/* Enemy Display */}
-      <div className={'adventureScreenEnemyCard'}>
-        <div className={'adventureScreenCombatWrapper'}>
+      <div className={'adventure-screen__enemy-card'}>
+        <div className={'adventure-screen__combat-wrapper'}>
           <div>
-            <h2 className={'adventureScreenEnemyTitle'}>{currentEnemy.name}</h2>
-            {currentEnemy.isBoss && <div className={'adventureScreenEnemyBadge'}>⚔️ BOSS ENEMY ⚔️</div>}
+            <h2 className={'adventure-screen__enemy-title'}>{currentEnemy.name}</h2>
+            {currentEnemy.isBoss && <div className={'adventure-screen__enemy-badge'}>⚔️ BOSS ENEMY ⚔️</div>}
           </div>
 
           {/* Enemy HP Bar */}
-          <div className={'adventureScreenBarGroup'}>
-            <div className={'adventureScreenBarLabelRow'}>
+          <div className={'adventure-screen__bar-group'}>
+            <div className={'adventure-screen__bar-label-row'}>
               <span>Enemy HP</span>
-              <span className={'adventureScreenEnemyBadge'}>
+              <span className={'adventure-screen__enemy-badge'}>
                 {formatNumber(enemyHP)} / {formatNumber(enemyMaxHP)}
               </span>
             </div>
-            <div className={'adventureScreenBarContainer'}>
-              <div className={'adventureScreenBarFill'} style={{ width: `${enemyHPPercent}%` }}>
+            <div className={'adventure-screen__bar-container'}>
+              <div className={'adventure-screen__bar-fill'} style={{ width: `${enemyHPPercent}%` }}>
                 {enemyHPPercent.toFixed(1)}%
               </div>
             </div>
           </div>
 
           {/* Enemy Stats */}
-          <div className={'adventureScreenStatGrid'}>
+          <div className={'adventure-screen__stat-grid'}>
             <div>
-              <div className={'adventureScreenStatLabel'}>ATK</div>
-              <div className={'adventureScreenEnemyBadge'}>{formatNumber(currentEnemy.atk)}</div>
+              <div className={'adventure-screen__stat-label'}>ATK</div>
+              <div className={'adventure-screen__enemy-badge'}>{formatNumber(currentEnemy.atk)}</div>
             </div>
             <div>
-              <div className={'adventureScreenStatLabel'}>DEF</div>
-              <div className={'adventureScreenEnemyBadge'}>{formatNumber(currentEnemy.def)}</div>
+              <div className={'adventure-screen__stat-label'}>DEF</div>
+              <div className={'adventure-screen__enemy-badge'}>{formatNumber(currentEnemy.def)}</div>
             </div>
             <div>
-              <div className={'adventureScreenStatLabel'}>Level</div>
-              <div className={'adventureScreenEnemyBadge'}>{currentEnemy.level}</div>
+              <div className={'adventure-screen__stat-label'}>Level</div>
+              <div className={'adventure-screen__enemy-badge'}>{currentEnemy.level}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Player Display */}
-      <div className={'adventureScreenPlayerCard'}>
-        <div className={'adventureScreenCombatWrapper'}>
-          <h3 className={'adventureScreenPlayerTitle'}>Your Status</h3>
+      <div className={'adventure-screen__player-card'}>
+        <div className={'adventure-screen__combat-wrapper'}>
+          <h3 className={'adventure-screen__player-title'}>Your Status</h3>
 
           {/* Player HP Bar */}
-          <div className={'adventureScreenBarGroup'}>
-            <div className={'adventureScreenBarLabelRow'}>
+          <div className={'adventure-screen__bar-group'}>
+            <div className={'adventure-screen__bar-label-row'}>
               <span>Your HP</span>
-              <span className={'adventureScreenEnemyBadge'}>
+              <span className={'adventure-screen__enemy-badge'}>
                 {formatNumber(playerHP)} / {formatNumber(playerMaxHP)}
               </span>
             </div>
-            <div className={'adventureScreenBarContainer'}>
-              <div className={`${'adventureScreenBarFill'} ${'adventureScreenBarFillPlayer'}`} style={{ width: `${playerHPPercent}%` }}>
+            <div className={'adventure-screen__bar-container'}>
+              <div className={`${'adventure-screen__bar-fill'} ${'adventure-screen__bar-fill-player'}`} style={{ width: `${playerHPPercent}%` }}>
                 {playerHPPercent.toFixed(1)}%
               </div>
             </div>
           </div>
 
           {/* Player Stats */}
-          <div className={'adventureScreenStatGrid'}>
+          <div className={'adventure-screen__stat-grid'}>
             <div>
-              <div className={'adventureScreenStatLabel'}>ATK</div>
-              <div className={'adventureScreenPlayerTitle'}>{stats?.atk ? formatNumber(stats.atk) : '0'}</div>
+              <div className={'adventure-screen__stat-label'}>ATK</div>
+              <div className={'adventure-screen__player-title'}>{stats?.atk ? formatNumber(stats.atk) : '0'}</div>
             </div>
             <div>
-              <div className={'adventureScreenStatLabel'}>DEF</div>
-              <div className={'adventureScreenPlayerTitle'}>{stats?.def ? formatNumber(stats.def) : '0'}</div>
+              <div className={'adventure-screen__stat-label'}>DEF</div>
+              <div className={'adventure-screen__player-title'}>{stats?.def ? formatNumber(stats.def) : '0'}</div>
             </div>
             <div>
-              <div className={'adventureScreenStatLabel'}>Crit</div>
-              <div className={'adventureScreenPlayerTitle'}>{stats?.crit || 0}%</div>
+              <div className={'adventure-screen__stat-label'}>Crit</div>
+              <div className={'adventure-screen__player-title'}>{stats?.crit || 0}%</div>
             </div>
             <div>
-              <div className={'adventureScreenStatLabel'}>Dodge</div>
-              <div className={'adventureScreenPlayerTitle'}>{stats?.dodge || 0}%</div>
+              <div className={'adventure-screen__stat-label'}>Dodge</div>
+              <div className={'adventure-screen__player-title'}>{stats?.dodge || 0}%</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Combat Controls */}
-      <div className={'adventureScreenCombatControls'}>
+      <div className={'adventure-screen__combat-controls'}>
         <button
           onClick={playerAttack}
           disabled={autoAttack}
-          className={`${'adventureScreenControlButton'} ${'adventureScreenButton'} ${autoAttack ? 'adventureScreenControlMuted' : ''}`}
+          className={`${'adventure-screen__control-button'} ${'adventure-screen__button'} ${autoAttack ? 'adventure-screen__control-muted' : ''}`}
         >
           ⚔️ Attack
         </button>
         <button
           onClick={() => setAutoAttack(!autoAttack)}
-          className={`${'adventureScreenControlButton'} ${'adventureScreenControlSecondary'} ${autoAttack ? '' : 'adventureScreenButtonDisabled'}`}
+          className={`${'adventure-screen__control-button'} ${'adventure-screen__control-secondary'} ${autoAttack ? '' : 'adventure-screen__button-disabled'}`}
         >
           {autoAttack ? '⏸️ Auto (ON)' : '▶️ Auto (OFF)'}
         </button>
         <button
           onClick={exitCombat}
-          className={`${'adventureScreenControlButton'} ${'adventureScreenControlDanger'}`}
+          className={`${'adventure-screen__control-button'} ${'adventure-screen__control-danger'}`}
         >
           🏃 Retreat
         </button>
       </div>
 
       {/* Techniques and Combat Log Grid */}
-      <div className={'adventureScreenTechniquesGrid'}>
+      <div className={'adventure-screen__techniques-grid'}>
         {/* Technique Panel */}
         <TechniquePanel />
 
         {showCombatLog && (
-          <div className={'adventureScreenCombatLogCard'}>
-            <h3 className={'adventureScreenCombatLogTitle'}>Combat Log</h3>
-            <div className={'adventureScreenCombatLogBody'}>
+          <div className={'adventure-screen__combat-log-card'}>
+            <h3 className={'adventure-screen__combat-log-title'}>Combat Log</h3>
+            <div className={'adventure-screen__combat-log-body'}>
               {combatLog.length === 0 ? (
-                <p className={'adventureScreenCombatLogEmpty'}>No messages yet...</p>
+                <p className={'adventure-screen__combat-log-empty'}>No messages yet...</p>
               ) : (
                 combatLog.slice(-20).reverse().map((log, idx) => (
-                  <div key={`${log.timestamp}-${idx}`} className={log.color || 'adventureScreenCombatLogDefault'}>
+                  <div key={`${log.timestamp}-${idx}`} className={log.color || 'adventure-screen__combat-log-default'}>
                     {log.text}
                   </div>
                 ))
@@ -323,16 +323,16 @@ export function AdventureScreen() {
     const inCombat = useCombatStore((state) => state.inCombat);
 
     return (
-      <div className={'adventureScreenRoot'}>
+      <div className={'adventure-screen'}>
         {/* Background decoration */}
-        <div className={'adventureScreenBackground'} />
+        <div className={'adventure-screen__background'} />
 
         {/* Main Content */}
-        <div className={'adventureScreenContent'}>
+        <div className={'adventure-screen__content'}>
           {/* Header */}
-          <div className={'adventureScreenHeader'}>
-            <h1 className={'adventureScreenTitle'}>{inCombat ? 'Combat' : 'Adventure Zones'}</h1>
-            <p className={'adventureScreenSubtitle'}>
+          <div className={'adventure-screen__header'}>
+            <h1 className={'adventure-screen__title'}>{inCombat ? 'Combat' : 'Adventure Zones'}</h1>
+            <p className={'adventure-screen__subtitle'}>
               {inCombat
                 ? 'Defeat your enemy to claim rewards'
                 : 'Explore dangerous territories and battle fearsome enemies'}
@@ -341,7 +341,7 @@ export function AdventureScreen() {
 
           {/* Zone Selection or Combat View */}
           {!inCombat ? (
-            <div className={'adventureScreenZoneGrid'}>
+            <div className={'adventure-screen__zone-grid'}>
               {ZONES.map((zone) => (
                 <ZoneCard key={zone.id} zone={zone} />
               ))}
@@ -355,10 +355,10 @@ export function AdventureScreen() {
   } catch (error) {
     console.error('[AdventureScreen] Error:', error);
     return (
-      <div className={'adventureScreenErrorCard'}>
-        <div className={'adventureScreenHeader'}>
-          <h2 className={'adventureScreenErrorTitle'}>Error Loading Adventure</h2>
-          <p className={'adventureScreenErrorMessage'}>
+      <div className={'adventure-screen__error-card'}>
+        <div className={'adventure-screen__header'}>
+          <h2 className={'adventure-screen__error-title'}>Error Loading Adventure</h2>
+          <p className={'adventure-screen__error-message'}>
             {error instanceof Error ? error.message : 'Unknown error occurred'}
           </p>
         </div>

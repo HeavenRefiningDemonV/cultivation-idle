@@ -15,7 +15,7 @@ function NavButton({ label, active, onClick }: NavButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`${'sidebarNavButton'} ${active ? 'sidebarNavButtonActive' : ''}`}
+      className={`game-sidebar__nav-button${active ? ' game-sidebar__nav-button--active' : ''}`}
     >
       {label}
     </button>
@@ -30,8 +30,8 @@ export function Sidebar() {
   const { totalAuras } = useGameStore();
 
   return (
-    <aside className={'sidebar'}>
-      <nav className={'sidebarNavList'}>
+    <aside className="game-sidebar">
+      <nav className="game-sidebar__nav-list">
         <NavButton
           tab="cultivation"
           label="Cultivate"
@@ -77,13 +77,13 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Section - Prestige */}
-      <div className={'sidebarFooter'}>
-        <div className={'sidebarAuraText'}>
-          Auras: <span className={'sidebarAuraValue'}>{formatNumber(totalAuras)}</span>
+      <div className="game-sidebar__footer">
+        <div className="game-sidebar__aura-text">
+          Auras: <span className="game-sidebar__aura-value">{formatNumber(totalAuras)}</span>
         </div>
         <button
           onClick={showPrestige}
-          className={'sidebarPrestigeButton'}
+          className="game-sidebar__prestige-button"
         >
           Rebirth
         </button>

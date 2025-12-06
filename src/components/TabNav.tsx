@@ -31,9 +31,9 @@ export function TabNav() {
   const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   return (
-    <nav className={'tabNavNav'}>
-      <div className={'tabNavInner'}>
-        <div className={'tabNavList'}>
+    <nav className="tab-nav">
+      <div className="tab-nav__inner">
+        <div className="tab-nav__list">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
 
@@ -41,11 +41,11 @@ export function TabNav() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`${'tabNavTab'} ${isActive ? 'tabNavTabActive' : ''}`}
+                className={`tab-nav__tab ${isActive ? 'tab-nav__tab--active' : ''}`}
               >
                 {tab.label}
                 {isActive && (
-                  <div className={'tabNavActiveUnderline'} />
+                  <div className="tab-nav__underline" />
                 )}
               </button>
             );

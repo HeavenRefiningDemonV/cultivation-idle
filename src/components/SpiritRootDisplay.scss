@@ -1,4 +1,4 @@
-.spiritRootDisplayRoot {
+.spirit-root {
   background: var(--color-bg-panel);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -7,7 +7,7 @@
   box-shadow: var(--shadow-soft);
 }
 
-.spiritRootDisplayHeader {
+.spirit-root__header {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -18,72 +18,72 @@
   margin: 0 0 var(--space-4);
 }
 
-.spiritRootDisplayPlaceholderText {
+.spirit-root__placeholder {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   text-align: center;
   padding: var(--space-4) 0;
 }
 
-.spiritRootDisplaySpiritCard {
+.spirit-root__card {
   border-radius: var(--radius-lg);
   padding: var(--space-4);
   margin-bottom: var(--space-4);
   box-shadow: var(--shadow-strong);
 }
 
-.spiritRootDisplayElementFire {
+.spirit-root--fire {
   background: linear-gradient(90deg, #ef4444, #f97316);
 }
 
-.spiritRootDisplayElementWater {
+.spirit-root--water {
   background: linear-gradient(90deg, #2563eb, #22d3ee);
 }
 
-.spiritRootDisplayElementEarth {
+.spirit-root--earth {
   background: linear-gradient(90deg, #b45309, #f59e0b);
 }
 
-.spiritRootDisplayElementMetal {
+.spirit-root--metal {
   background: linear-gradient(90deg, #9ca3af, #475569);
 }
 
-.spiritRootDisplayElementWood {
+.spirit-root--wood {
   background: linear-gradient(90deg, #22c55e, #047857);
 }
 
-.spiritRootDisplaySpiritContent {
+.spirit-root__card-content {
   text-align: center;
   display: grid;
   gap: var(--space-2);
 }
 
-.spiritRootDisplayQualityText {
+.spirit-root__quality {
   font-size: var(--text-3xl);
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.spiritRootDisplayQuality1 { color: #9ca3af; }
-.spiritRootDisplayQuality2 { color: var(--color-success); }
-.spiritRootDisplayQuality3 { color: var(--color-info); }
-.spiritRootDisplayQuality4 { color: var(--color-purple); }
-.spiritRootDisplayQuality5 { color: #fb923c; }
+.spirit-root__quality--grade1 { color: #9ca3af; }
+.spirit-root__quality--grade2 { color: var(--color-success); }
+.spirit-root__quality--grade3 { color: var(--color-info); }
+.spirit-root__quality--grade4 { color: var(--color-purple); }
+.spirit-root__quality--grade5 { color: #fb923c; }
 
-.spiritRootDisplayElementLabel {
+.spirit-root__element-label {
   font-size: var(--text-xl);
   color: var(--color-text-primary);
   text-transform: capitalize;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.spiritRootDisplayPurityText {
+.spirit-root__purity {
   font-size: var(--text-lg);
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.spiritRootDisplayBonusCard {
+.spirit-root__bonus-card {
   background: rgba(30, 41, 59, 0.5);
   border: 2px solid rgba(71, 85, 105, 0.5);
   border-radius: var(--radius-lg);
@@ -91,43 +91,43 @@
   margin-bottom: var(--space-4);
 }
 
-.spiritRootDisplayBonusHeader {
+.spirit-root__bonus-title {
   font-weight: 600;
   color: var(--color-text-secondary);
   margin-bottom: var(--space-3);
   font-size: var(--text-sm);
 }
 
-.spiritRootDisplayBonusList {
+.spirit-root__bonus-list {
   display: grid;
   gap: var(--space-2);
   font-size: var(--text-sm);
 }
 
-.spiritRootDisplayBonusRow {
+.spirit-root__bonus-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.spiritRootDisplayBonusLabel { color: var(--color-text-muted); }
+.spirit-root__bonus-label { color: var(--color-text-muted); }
 
-.spiritRootDisplayBonusValueGreen { color: var(--color-success); }
+.spirit-root__bonus-value--green { color: var(--color-success); }
 
-.spiritRootDisplayBonusValueBlue { color: var(--color-info); }
+.spirit-root__bonus-value--blue { color: var(--color-info); }
 
-.spiritRootDisplayBonusTotal {
+.spirit-root__bonus-row--total {
   padding-top: var(--space-2);
   border-top: 1px solid rgba(71, 85, 105, 0.8);
 }
 
-.spiritRootDisplayBonusTotalValue {
+.spirit-root__bonus-row--totalValue {
   color: var(--color-gold-accent);
   font-weight: 700;
   font-size: var(--text-lg);
 }
 
-.spiritRootDisplayElementBonus {
+.spirit-root__element-bonus {
   padding-top: var(--space-2);
   border-top: 1px solid rgba(71, 85, 105, 0.8);
   color: #22d3ee;
@@ -135,7 +135,7 @@
   margin-top: var(--space-1);
 }
 
-.spiritRootDisplayInfoBox {
+.spirit-root__info {
   background: rgba(120, 53, 15, 0.2);
   border: 1px solid rgba(146, 64, 14, 0.3);
   border-radius: var(--radius-lg);
@@ -146,9 +146,9 @@
   line-height: 1.6;
 }
 
-.spiritRootDisplayInfoHighlight { font-weight: 700; }
+.spirit-root__info-highlight { font-weight: 700; }
 
-.spiritRootDisplayRerollButton {
+.spirit-root__reroll {
   width: 100%;
   font-weight: 700;
   padding: var(--space-3) var(--space-4);
@@ -162,19 +162,19 @@
   cursor: pointer;
 }
 
-.spiritRootDisplayRerollButton:hover:enabled {
+.spirit-root__reroll:hover:enabled {
   transform: scale(1.03);
   box-shadow: 0 10px 25px rgba(124, 58, 237, 0.5);
 }
 
-.spiritRootDisplayRerollButton:disabled {
+.spirit-root__reroll:disabled {
   background: #475569;
   color: #94a3b8;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.spiritRootDisplayWarningText {
+.spirit-root__warning {
   margin-top: var(--space-2);
   text-align: center;
   color: var(--color-danger);

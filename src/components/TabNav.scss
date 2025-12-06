@@ -1,21 +1,21 @@
-.tabNavNav {
+.tab-nav {
   background: #1f2937;
   border-bottom: 1px solid #374151;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
-.tabNavInner {
+.tab-nav__inner {
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 var(--space-5);
 }
 
-.tabNavList {
+.tab-nav__list {
   display: flex;
   gap: 4px;
 }
 
-.tabNavTab {
+.tab-nav__tab {
   position: relative;
   padding: var(--space-3) var(--space-5);
   font-weight: 600;
@@ -26,20 +26,18 @@
   border-bottom: 2px solid transparent;
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
-}
-
-.tabNavTab:hover {
+.tab-nav__tab:hover {
   color: #e5e7eb;
   background: rgba(55, 65, 81, 0.3);
 }
 
-.tabNavTabActive {
+.tab-nav__tab--active {
   color: var(--color-qi-blue);
   border-bottom-color: var(--color-qi-blue);
   background: rgba(55, 65, 81, 0.5);
 }
 
-.tabNavActiveUnderline {
+.tab-nav__underline {
   position: absolute;
   inset: auto 0 0 0;
   height: 4px;

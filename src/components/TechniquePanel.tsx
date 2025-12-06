@@ -25,24 +25,24 @@ export function TechniquePanel() {
   const intentPercent = D(currentIntent).dividedBy(D(maxIntent)).times(100).toNumber();
 
   return (
-    <div className={'techniquePanelRoot'}>
-      <h3 className={'techniquePanelTitle'}>Techniques</h3>
+    <div className="technique-panel">
+      <h3 className="technique-panel__title">Techniques</h3>
 
       {/* Intent Bar */}
-      <div className={'techniquePanelIntentSection'}>
-        <div className={'techniquePanelIntentHeader'}>
-          <span className={'techniquePanelIntentLabel'}>Intent</span>
-          <span className={'techniquePanelIntentValue'}>
+      <div className="technique-panel__intent">
+        <div className="technique-panel__intent-header">
+          <span className="technique-panel__intent-label">Intent</span>
+          <span className="technique-panel__intent-value">
             {D(currentIntent).toFixed(0)} / {D(maxIntent).toFixed(0)}
           </span>
         </div>
-        <div className={'techniquePanelIntentBar'}>
-          <div className={'techniquePanelIntentFill'} style={{ width: `${intentPercent}%` }} />
+        <div className="technique-panel__intent-bar">
+          <div className="technique-panel__intent-fill" style={{ width: `${intentPercent}%` }} />
         </div>
       </div>
 
       {/* Techniques List */}
-      <div className={'techniquePanelTechniqueList'}>
+      <div className="technique-panel__list">
         {pathTechniques.map((tech) => {
           const canUse = canUseTechnique(tech.id);
           const cooldownPercent = Math.min(
@@ -57,13 +57,13 @@ export function TechniquePanel() {
           const getTierClass = () => {
             switch (tech.tier) {
               case 1:
-                return 'techniquePanelTier1';
+                return 'technique-panel__card--tier1';
               case 2:
-                return 'techniquePanelTier2';
+                return 'technique-panel__card--tier2';
               case 3:
-                return 'techniquePanelTier3';
+                return 'technique-panel__card--tier3';
               default:
-                return 'techniquePanelTierDefault';
+                return 'technique-panel__card--tier-default';
             }
           };
 
@@ -72,53 +72,53 @@ export function TechniquePanel() {
           return (
             <div
               key={tech.id}
-              className={`${'techniquePanelTechniqueCard'} ${tierClass} ${
-                canUse && !isOnCooldown ? '' : 'techniquePanelDisabled'
+              className={`technique-panel__card ${tierClass} ${
+                canUse && !isOnCooldown ? '' : 'technique-panel__card--disabled'
               }`}
               onClick={() => canUse && !isOnCooldown && executeTechnique(tech.id)}
             >
               {/* Header */}
-              <div className={'techniquePanelTechniqueHeader'}>
-                <div className={'techniquePanelTechniqueName'}>
+              <div className="technique-panel__card-header">
+                <div className="technique-panel__card-name">
                   {tech.name}
                 </div>
-                <div className={'techniquePanelLevelBadge'}>
+                <div className="technique-panel__level-badge">
                   Lv {tech.level}
                 </div>
               </div>
 
               {/* Description */}
-              <p className={'techniquePanelTechniqueDescription'}>
+              <p className="technique-panel__description">
                 {tech.description}
               </p>
 
               {/* Stats */}
-              <div className={'techniquePanelTechniqueStats'}>
-                <span className={'techniquePanelIntentCost'}>
+              <div className="technique-panel__stats">
+                <span className="technique-panel__intent-cost">
                   💫 {tech.intentCost} Intent
                 </span>
-                <span className={'techniquePanelCooldownLabel'}>
+                <span className="technique-panel__cooldown-label">
                   ⏱️ CD: {(tech.cooldown / 1000).toFixed(1)}s
                 </span>
               </div>
 
               {/* Cooldown Bar */}
               {isOnCooldown && (
-                <div className={'techniquePanelCooldownBar'}>
-                  <div className={'techniquePanelCooldownFill'} style={{ width: `${cooldownPercent}%` }} />
+                <div className="technique-panel__cooldown-bar">
+                  <div className="technique-panel__cooldown-fill" style={{ width: `${cooldownPercent}%` }} />
                 </div>
               )}
 
               {/* Proficiency Bar */}
               <div>
-                <div className={'techniquePanelProficiencyHeader'}>
+                <div className="technique-panel__proficiency-header">
                   <span>Proficiency</span>
-                  <span className={'techniquePanelProficiencyValue'}>
+                  <span className="technique-panel__proficiency-value">
                     {tech.proficiency % 1000} / 1000
                   </span>
                 </div>
-                <div className={'techniquePanelProficiencyBar'}>
-                  <div className={'techniquePanelProficiencyFill'} style={{ width: `${proficiencyPercent}%` }} />
+                <div className="technique-panel__proficiency-bar">
+                  <div className="technique-panel__proficiency-fill" style={{ width: `${proficiencyPercent}%` }} />
                 </div>
               </div>
             </div>
@@ -127,7 +127,7 @@ export function TechniquePanel() {
       </div>
 
       {/* Auto-cast Indicator */}
-      <div className={'techniquePanelFooterNote'}>
+      <div className="technique-panel__footer">
         ✨ Techniques auto-cast in combat
       </div>
     </div>

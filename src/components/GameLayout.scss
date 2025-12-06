@@ -1,4 +1,4 @@
-.gameLayoutRoot {
+.game-layout {
   position: relative;
   min-height: 100vh;
   background: url('../assets/background/cbg_bg.gameLayoutPng') no-repeat;
@@ -6,18 +6,18 @@
   color: var(--color-ink-white);
 }
 
-.gameLayoutMain {
+.game-layout__main {
   margin-left: 14rem;
   padding: var(--space-5);
   padding-top: calc(var(--space-7) + 20px);
 }
 
-.gameLayoutContent {
+.game-layout__content {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.gameLayoutPlaceholder {
+.game-layout__placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,30 +25,30 @@
   height: 100%;
 }
 
-.gameLayoutPlaceholderCard {
+.game-layout__placeholder-card {
   text-align: center;
   color: var(--color-ink-white);
 }
 
-.gameLayoutPlaceholderIcon {
+.game-layout__placeholder-icon {
   font-size: 3.5rem;
   margin-bottom: var(--space-4);
 }
 
-.gameLayoutPlaceholderTitle {
+.game-layout__placeholder-title {
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-ink-paper);
   margin-bottom: var(--space-3);
 }
 
-.gameLayoutPlaceholderText {
+.game-layout__placeholder-text {
   color: var(--color-ink-light);
   font-size: var(--text-base);
 }
 
 @media (max-width: 1024px) {
-  .gameLayoutMain {
+  .game-layout__main {
     margin-left: 0;
     padding-top: calc(var(--space-7) + 20px);
   }

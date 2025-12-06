@@ -53,36 +53,37 @@ export function Header() {
     return () => clearInterval(interval);
   }, []);
 
+  const saveToneClass =
+    lastSavedTone === 'fresh'
+      ? 'game-header__save-time--fresh'
+      : lastSavedTone === 'warn'
+        ? 'game-header__save-time--warn'
+        : lastSavedTone === 'old'
+          ? 'game-header__save-time--old'
+          : 'game-header__save-time--neutral';
+
   return (
-    <header className={'header'}>
-      <div className={'headerBar'}>
+    <header className="game-header">
+      <div className="game-header__bar">
         {/* Left side - Qi & Realm */}
-        <div className={'headerStatBlock'}>
-          <div className={'headerQiLine'}>
-            Qi: <span className={'headerQiValue'}>{formatNumber(qi)}</span>
-            <span className={'headerQiRate'}>({formatNumber(qiPerSecond)}/s)</span>
+        <div className="game-header__stat-block">
+          <div className="game-header__qi-line">
+            Qi: <span className="game-header__qi-value">{formatNumber(qi)}</span>
+            <span className="game-header__qi-rate">({formatNumber(qiPerSecond)}/s)</span>
           </div>
-          <div className={'headerRealmLine'}>
-            REALM:<span className={'headerRealmAccent'}>{realm.name}</span>
-            <span className={'headerRealmSubstage'}>Substage {realm.substage + 1}</span>
+          <div className="game-header__realm-line">
+            REALM:<span className="game-header__realm-accent">{realm.name}</span>
+            <span className="game-header__realm-substage">Substage {realm.substage + 1}</span>
           </div>
         </div>
 
         {/* Right side - Save indicator & actions */}
-        <div className={'headerSaveBlock'}>
-          <div className={'headerSaveLabel'}>
+        <div className="game-header__save-block">
+          <div className="game-header__save-label">
             Last Saved
           </div>
           <div
-            className={`headerSaveTime ${
-              lastSavedTone === 'fresh'
-                ? 'headerFresh'
-                : lastSavedTone === 'warn'
-                  ? 'headerWarn'
-                  : lastSavedTone === 'old'
-                    ? 'headerOld'
-                    : 'headerNeutral'
-            }`}
+            className={`game-header__save-time ${saveToneClass}`}
           >
             {lastSavedText}
           </div>

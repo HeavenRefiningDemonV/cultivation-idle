@@ -1,4 +1,4 @@
-.techniquePanelRoot {
+.technique-panel {
   background: rgba(30, 41, 59, 0.5);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -6,7 +6,7 @@
   backdrop-filter: blur(8px);
 }
 
-.techniquePanelTitle {
+.technique-panel__title {
   font-family: var(--font-cinzel);
   font-size: var(--text-xl);
   font-weight: 700;
@@ -14,11 +14,11 @@
   margin: 0 0 var(--space-3);
 }
 
-.techniquePanelIntentSection {
+.technique-panel__intent {
   margin-bottom: var(--space-4);
 }
 
-.techniquePanelIntentHeader {
+.technique-panel__intent-header {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-sm);
@@ -26,17 +26,17 @@
   color: var(--color-text-secondary);
 }
 
-.techniquePanelIntentLabel {
+.technique-panel__intent-label {
   color: var(--color-purple);
   font-weight: 600;
 }
 
-.techniquePanelIntentValue {
+.technique-panel__intent-value {
   font-family: var(--font-mono);
   color: #d8b4fe;
 }
 
-.techniquePanelIntentBar {
+.technique-panel__intent-bar {
   height: 12px;
   border-radius: 999px;
   background: #0f172a;
@@ -44,18 +44,18 @@
   overflow: hidden;
 }
 
-.techniquePanelIntentFill {
+.technique-panel__intent-fill {
   height: 100%;
   background: linear-gradient(90deg, #a855f7, #7c3aed);
   transition: width 0.3s ease;
 }
 
-.techniquePanelTechniqueList {
+.technique-panel__list {
   display: grid;
   gap: var(--space-2);
 }
 
-.techniquePanelTechniqueCard {
+.technique-panel__card {
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-3);
@@ -64,30 +64,30 @@
   cursor: pointer;
 }
 
-.techniquePanelTechniqueCard.techniquePanelDisabled {
+.technique-panel__card.technique-panel__card--disabled {
   opacity: 0.6;
   cursor: default;
 }
 
-.techniquePanelTechniqueCard:hover:not(.techniquePanelDisabled) {
+.technique-panel__card:hover:not(.technique-panel__card--disabled) {
   transform: scale(1.03);
   box-shadow: var(--shadow-soft);
 }
 
-.techniquePanelTechniqueHeader {
+.technique-panel__card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-1);
 }
 
-.techniquePanelTechniqueName {
+.technique-panel__card-name {
   font-family: var(--font-cinzel);
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.techniquePanelLevelBadge {
+.technique-panel__level-badge {
   font-size: var(--text-xs);
   color: #fff;
   padding: 4px 8px;
@@ -95,26 +95,26 @@
   font-weight: 700;
 }
 
-.techniquePanelTechniqueDescription {
+.technique-panel__description {
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-2);
   line-height: 1.5;
 }
 
-.techniquePanelTechniqueStats {
+.technique-panel__stats {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-xs);
   margin-bottom: var(--space-2);
 }
 
-.techniquePanelIntentCost { color: var(--color-purple); }
+.technique-panel__intent-cost { color: var(--color-purple); }
 
-.techniquePanelCooldownLabel { color: var(--color-text-muted); }
+.technique-panel__cooldown-label { color: var(--color-text-muted); }
 
-.techniquePanelCooldownBar,
-.techniquePanelProficiencyBar {
+.technique-panel__cooldown-bar,
+.technique-panel__proficiency-bar {
   height: 8px;
   border-radius: 999px;
   background: #0f172a;
@@ -123,13 +123,13 @@
   margin-bottom: var(--space-2);
 }
 
-.techniquePanelCooldownFill {
+.technique-panel__cooldown-fill {
   height: 100%;
   background: linear-gradient(90deg, #ef4444, #f87171);
   transition: width 0.1s ease;
 }
 
-.techniquePanelProficiencyHeader {
+.technique-panel__proficiency-header {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-xs);
@@ -137,18 +137,18 @@
   color: var(--color-text-muted);
 }
 
-.techniquePanelProficiencyValue {
+.technique-panel__proficiency-value {
   color: var(--color-text-secondary);
   font-family: var(--font-mono);
 }
 
-.techniquePanelProficiencyFill {
+.technique-panel__proficiency-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--color-gold-accent), var(--color-gold-bright));
   transition: width 0.2s ease;
 }
 
-.techniquePanelFooterNote {
+.technique-panel__footer {
   margin-top: var(--space-3);
   font-size: var(--text-xs);
   text-align: center;
@@ -156,37 +156,37 @@
   font-style: italic;
 }
 
-.techniquePanelTier1 {
+.technique-panel__card--tier1 {
   border-color: rgba(59, 130, 246, 0.6);
   background: rgba(30, 64, 175, 0.35);
 }
 
-.techniquePanelTier1 .techniquePanelTechniqueName { color: #bfdbfe; }
-.techniquePanelTier1 .techniquePanelLevelBadge { background: #3b82f6; }
-.techniquePanelTier1 .techniquePanelIntentCost { color: #93c5fd; }
+.technique-panel__card--tier1 .technique-panel__card-name { color: #bfdbfe; }
+.technique-panel__card--tier1 .technique-panel__level-badge { background: #3b82f6; }
+.technique-panel__card--tier1 .technique-panel__intent-cost { color: #93c5fd; }
 
-.techniquePanelTier2 {
+.technique-panel__card--tier2 {
   border-color: rgba(168, 85, 247, 0.6);
   background: rgba(76, 29, 149, 0.35);
 }
 
-.techniquePanelTier2 .techniquePanelTechniqueName { color: #e9d5ff; }
-.techniquePanelTier2 .techniquePanelLevelBadge { background: #a855f7; }
-.techniquePanelTier2 .techniquePanelIntentCost { color: #d8b4fe; }
+.technique-panel__card--tier2 .technique-panel__card-name { color: #e9d5ff; }
+.technique-panel__card--tier2 .technique-panel__level-badge { background: #a855f7; }
+.technique-panel__card--tier2 .technique-panel__intent-cost { color: #d8b4fe; }
 
-.techniquePanelTier3 {
+.technique-panel__card--tier3 {
   border-color: rgba(251, 146, 60, 0.7);
   background: rgba(124, 45, 18, 0.35);
 }
 
-.techniquePanelTier3 .techniquePanelTechniqueName { color: #fed7aa; }
-.techniquePanelTier3 .techniquePanelLevelBadge { background: #fb923c; }
-.techniquePanelTier3 .techniquePanelIntentCost { color: #fb923c; }
+.technique-panel__card--tier3 .technique-panel__card-name { color: #fed7aa; }
+.technique-panel__card--tier3 .technique-panel__level-badge { background: #fb923c; }
+.technique-panel__card--tier3 .technique-panel__intent-cost { color: #fb923c; }
 
-.techniquePanelTierDefault {
+.technique-panel__card--tier-default {
   border-color: rgba(148, 163, 184, 0.6);
   background: rgba(30, 41, 59, 0.35);
 }
 
-.techniquePanelTierDefault .techniquePanelTechniqueName { color: var(--color-text-primary); }
-.techniquePanelTierDefault .techniquePanelLevelBadge { background: var(--color-border); }
+.technique-panel__card--tier-default .technique-panel__card-name { color: var(--color-text-primary); }
+.technique-panel__card--tier-default .technique-panel__level-badge { background: var(--color-border); }

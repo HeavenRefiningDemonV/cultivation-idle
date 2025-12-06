@@ -52,44 +52,44 @@ export function PrestigeScreen() {
   ];
 
   return (
-    <div className={'prestigeScreenRoot'}>
-      <div className={'prestigeScreenBackground'} />
+    <div className={'prestige-screen'}>
+      <div className={'prestige-screen__background'} />
 
-      <div className={'prestigeScreenContent'}>
+      <div className={'prestige-screen__content'}>
         {/* Header */}
-        <div className={'prestigeScreenHeader'}>
-          <h1 className={'prestigeScreenTitle'}>Reincarnation</h1>
-          <p className={'prestigeScreenSubtitle'}>Restart your cultivation journey with powerful blessings</p>
+        <div className={'prestige-screen__header'}>
+          <h1 className={'prestige-screen__title'}>Reincarnation</h1>
+          <p className={'prestige-screen__subtitle'}>Restart your cultivation journey with powerful blessings</p>
         </div>
 
         {/* AP Display */}
-        <div className={'prestigeScreenApCard'}>
-          <div className={'prestigeScreenApValue'}>{totalAP}</div>
-          <div className={'prestigeScreenApLabel'}>Ascension Points Available</div>
-          <div className={'prestigeScreenApMeta'}>
+        <div className={'prestige-screen__ap-card'}>
+          <div className={'prestige-screen__ap-value'}>{totalAP}</div>
+          <div className={'prestige-screen__ap-label'}>Ascension Points Available</div>
+          <div className={'prestige-screen__ap-meta'}>
             {lifetimeAP} Total Earned • {prestigeCount} Reincarnations
           </div>
         </div>
 
         {/* Current Run & Benefits */}
-        <div className={'prestigeScreenInfoGrid'}>
-          <div className={'prestigeScreenInfoCard'}>
-            <h3 className={'prestigeScreenInfoTitle'}>Current Run</h3>
-            <div className={'prestigeScreenInfoRows'}>
-              <div className={'prestigeScreenInfoRow'}>
-                <span className={'prestigeScreenInfoLabel'}>Current Realm:</span>
-                <span className={'prestigeScreenInfoValue'}>{realmNames[realm?.index || 0] || 'Unknown'}</span>
+        <div className={'prestige-screen__info-grid'}>
+          <div className={'prestige-screen__info-card'}>
+            <h3 className={'prestige-screen__info-title'}>Current Run</h3>
+            <div className={'prestige-screen__info-rows'}>
+              <div className={'prestige-screen__info-row'}>
+                <span className={'prestige-screen__info-label'}>Current Realm:</span>
+                <span className={'prestige-screen__info-value'}>{realmNames[realm?.index || 0] || 'Unknown'}</span>
               </div>
-              <div className={'prestigeScreenInfoRow'}>
-                <span className={'prestigeScreenInfoLabel'}>Potential AP Gain:</span>
-                <span className={'prestigeScreenInfoValueAccent'}>+{apGain} AP</span>
+              <div className={'prestige-screen__info-row'}>
+                <span className={'prestige-screen__info-label'}>Potential AP Gain:</span>
+                <span className={'prestige-screen__info-value-accent'}>+{apGain} AP</span>
               </div>
             </div>
           </div>
 
-          <div className={'prestigeScreenInfoCard'}>
-            <h3 className={'prestigeScreenInfoTitle'}>Reincarnation Benefits</h3>
-            <ul className={'prestigeScreenBenefitsList'}>
+          <div className={'prestige-screen__info-card'}>
+            <h3 className={'prestige-screen__info-title'}>Reincarnation Benefits</h3>
+            <ul className={'prestige-screen__benefits-list'}>
               <li>✓ Keep all Ascension Points</li>
               <li>✓ Keep all AP upgrades</li>
               <li>✓ Keep spirit root floor level</li>
@@ -101,65 +101,65 @@ export function PrestigeScreen() {
         </div>
 
         {/* Prestige Action */}
-        <div className={'prestigeScreenPrestigeSection'}>
-          <h2 className={'prestigeScreenPrestigeTitle'}>Reincarnate &amp; Grow Stronger</h2>
-          <p className={'prestigeScreenPrestigeText'}>
+        <div className={'prestige-screen__prestige-section'}>
+          <h2 className={'prestige-screen__prestige-title'}>Reincarnate &amp; Grow Stronger</h2>
+          <p className={'prestige-screen__prestige-text'}>
             Each reincarnation grants Ascension Points to unlock permanent upgrades. You'll return to the mortal realm but
             with newfound power and potential.
           </p>
           <button
             onClick={handlePrestige}
             disabled={!canPrestigeNow}
-            className={`${'prestigeScreenPrestigeButton'} ${canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'}`}
+            className={`${'prestige-screen__prestige-button'} ${canPrestigeNow ? 'prestige-screen__prestige-ready' : 'prestige-screen__prestige-locked'}`}
           >
             {canPrestigeNow ? 'Reincarnate Now' : 'Not Ready Yet'}
           </button>
-          {!canPrestigeNow && <p className={'prestigeScreenPrestigeHint'}>Reach Soul Formation 8/10 to reincarnate.</p>}
+          {!canPrestigeNow && <p className={'prestige-screen__prestige-hint'}>Reach Soul Formation 8/10 to reincarnate.</p>}
         </div>
 
         {/* Ascension Shop */}
-        <div className={'prestigeScreenShopSection'}>
-          <h2 className={'prestigeScreenShopTitle'}>Ascension Shop</h2>
+        <div className={'prestige-screen__shop-section'}>
+          <h2 className={'prestige-screen__shop-title'}>Ascension Shop</h2>
 
-          <div className={'prestigeScreenShopGrid'}>
+          <div className={'prestige-screen__shop-grid'}>
             {Object.values(upgrades).map((upgrade) => {
               const isMaxed = upgrade.currentLevel >= upgrade.maxLevel;
               const canAfford = totalAP >= upgrade.cost;
               const isLocked = upgrade.id === 'dual_path';
-              const cardClasses = ['prestigeScreenShopCard'];
+              const cardClasses = ['prestige-screen__shop-card'];
 
-              if (isMaxed) cardClasses.push('prestigeScreenShopMaxed');
-              else if (isLocked) cardClasses.push('prestigeScreenShopLocked');
-              else if (canAfford) cardClasses.push('prestigeScreenShopAffordable');
+              if (isMaxed) cardClasses.push('prestige-screen__shop-maxed');
+              else if (isLocked) cardClasses.push('prestige-screen__shop-locked');
+              else if (canAfford) cardClasses.push('prestige-screen__shop-affordable');
 
               return (
                 <div key={upgrade.id} className={cardClasses.join(' ')}>
-                  <div className={'prestigeScreenShopHeader'}>
-                    <h3 className={'prestigeScreenShopName'}>{upgrade.name}</h3>
-                    {isMaxed && <span className={'prestigeScreenShopTagMax'}>MAX</span>}
-                    {isLocked && <span className={'prestigeScreenShopTagLocked'}>LOCKED</span>}
+                  <div className={'prestige-screen__shop-header'}>
+                    <h3 className={'prestige-screen__shop-name'}>{upgrade.name}</h3>
+                    {isMaxed && <span className={'prestige-screen__shop-tag-max'}>MAX</span>}
+                    {isLocked && <span className={'prestige-screen__shop-tag-locked'}>LOCKED</span>}
                   </div>
-                  <p className={'prestigeScreenShopDescription'}>{upgrade.description}</p>
+                  <p className={'prestige-screen__shop-description'}>{upgrade.description}</p>
 
-                  <div className={'prestigeScreenShopLevel'}>
-                    <div className={'prestigeScreenShopLevelRow'}>
-                      <span className={'prestigeScreenInfoLabel'}>Level</span>
-                      <span className={'prestigeScreenInfoValue'}>
+                  <div className={'prestige-screen__shop-level'}>
+                    <div className={'prestige-screen__shop-level-row'}>
+                      <span className={'prestige-screen__info-label'}>Level</span>
+                      <span className={'prestige-screen__info-value'}>
                         {upgrade.currentLevel} / {upgrade.maxLevel}
                       </span>
                     </div>
-                    <div className={'prestigeScreenShopProgress'}>
+                    <div className={'prestige-screen__shop-progress'}>
                       <div
-                        className={'prestigeScreenShopProgressFill'}
+                        className={'prestige-screen__shop-progress-fill'}
                         style={{ width: `${(upgrade.currentLevel / upgrade.maxLevel) * 100}%` }}
                       />
                     </div>
                   </div>
 
                   {upgrade.currentLevel > 0 && (
-                    <div className={'prestigeScreenShopEffect'}>
-                      <div className={'prestigeScreenShopEffectLabel'}>Current Effect:</div>
-                      <div className={'prestigeScreenShopEffectValue'}>
+                    <div className={'prestige-screen__shop-effect'}>
+                      <div className={'prestige-screen__shop-effect-label'}>Current Effect:</div>
+                      <div className={'prestige-screen__shop-effect-value'}>
                         {upgrade.effect.type === 'multiplier' && upgrade.effect.valuePerLevel
                           ? `+${(upgrade.effect.valuePerLevel * upgrade.currentLevel * 100).toFixed(0)}% ${upgrade.effect.stat}`
                           : upgrade.effect.type === 'flat_bonus' && upgrade.effect.value
@@ -170,24 +170,24 @@ export function PrestigeScreen() {
                   )}
 
                   {!isMaxed && !isLocked && (
-                    <div className={'prestigeScreenShopActions'}>
-                      <div className={'prestigeScreenShopCost'}>
-                        <span className={'prestigeScreenInfoLabel'}>Cost: </span>
-                        <span className={`${'prestigeScreenShopCostValue'} ${canAfford ? 'prestigeScreenShopCostReady' : 'prestigeScreenShopCostMissing'}`}>
+                    <div className={'prestige-screen__shop-actions'}>
+                      <div className={'prestige-screen__shop-cost'}>
+                        <span className={'prestige-screen__info-label'}>Cost: </span>
+                        <span className={`${'prestige-screen__shop-cost-value'} ${canAfford ? 'prestige-screen__shop-cost-ready' : 'prestige-screen__shop-cost-missing'}`}>
                           {upgrade.cost} AP
                         </span>
                       </div>
                       <button
                         onClick={() => purchaseUpgrade(upgrade.id)}
                         disabled={!canAfford}
-                        className={`${'prestigeScreenShopButton'} ${canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'}`}
+                        className={`${'prestige-screen__shop-button'} ${canAfford ? 'prestige-screen__shop-button-ready' : 'prestige-screen__shop-button-disabled'}`}
                       >
                         Purchase
                       </button>
                     </div>
                   )}
 
-                  {isLocked && <div className={'prestigeScreenLockedNote'}>Unlock condition not met</div>}
+                  {isLocked && <div className={'prestige-screen__locked-note'}>Unlock condition not met</div>}
                 </div>
               );
             })}
@@ -196,23 +196,23 @@ export function PrestigeScreen() {
 
         {/* Prestige History */}
         {prestigeRuns.length > 0 && (
-          <details className={'prestigeScreenHistory'}>
-            <summary className={'prestigeScreenHistorySummary'}>
+          <details className={'prestige-screen__history'}>
+            <summary className={'prestige-screen__history-summary'}>
               Reincarnation History ({prestigeRuns.length} runs)
             </summary>
-            <div className={'prestigeScreenHistoryList'}>
+            <div className={'prestige-screen__history-list'}>
               {prestigeRuns
                 .slice()
                 .reverse()
                 .map((run) => (
-                  <div key={run.runNumber} className={'prestigeScreenHistoryRow'}>
+                  <div key={run.runNumber} className={'prestige-screen__history-row'}>
                     <div>
-                      <span className={'prestigeScreenInfoValue'}>Run #{run.runNumber}</span>
-                      <span className={'prestigeScreenInfoLabelMuted'}>{realmNames[run.realmReached]}</span>
+                      <span className={'prestige-screen__info-value'}>Run #{run.runNumber}</span>
+                      <span className={'prestige-screen__info-label-muted'}>{realmNames[run.realmReached]}</span>
                     </div>
-                    <div className={'prestigeScreenHistoryGain'}>
-                      <span className={'prestigeScreenInfoValueAccent'}>+{run.apGained} AP</span>
-                      <span className={'prestigeScreenInfoLabelMuted'}>{Math.floor(run.timeSpent / 60)}m</span>
+                    <div className={'prestige-screen__history-gain'}>
+                      <span className={'prestige-screen__info-value-accent'}>+{run.apGained} AP</span>
+                      <span className={'prestige-screen__info-label-muted'}>{Math.floor(run.timeSpent / 60)}m</span>
                     </div>
                   </div>
                 ))}
@@ -222,21 +222,21 @@ export function PrestigeScreen() {
 
         {/* Confirmation Modal */}
         {showConfirmation && (
-          <div className={'prestigeScreenModalOverlay'}>
-            <div className={'prestigeScreenModalCard'}>
-              <h2 className={'prestigeScreenModalTitle'}>Confirm Reincarnation</h2>
-              <p className={'prestigeScreenModalText'}>
+          <div className={'prestige-screen__modal-overlay'}>
+            <div className={'prestige-screen__modal-card'}>
+              <h2 className={'prestige-screen__modal-title'}>Confirm Reincarnation</h2>
+              <p className={'prestige-screen__modal-text'}>
                 Are you sure you want to reincarnate? This will reset your cultivation progress, but you'll gain{' '}
-                <strong className={'prestigeScreenModalHighlight'}>{apGain} AP</strong> to purchase permanent upgrades.
+                <strong className={'prestige-screen__modal-highlight'}>{apGain} AP</strong> to purchase permanent upgrades.
               </p>
-              <div className={'prestigeScreenModalActions'}>
+              <div className={'prestige-screen__modal-actions'}>
                 <button
                   onClick={() => setShowConfirmation(false)}
-                  className={`${'prestigeScreenModalButton'} ${'prestigeScreenModalCancel'}`}
+                  className={`${'prestige-screen__modal-button'} ${'prestige-screen__modal-cancel'}`}
                 >
                   Cancel
                 </button>
-                <button onClick={confirmPrestige} className={`${'prestigeScreenModalButton'} ${'prestigeScreenModalConfirm'}`}>
+                <button onClick={confirmPrestige} className={`${'prestige-screen__modal-button'} ${'prestige-screen__modal-confirm'}`}>
                   Reincarnate
                 </button>
               </div>

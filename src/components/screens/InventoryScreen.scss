@@ -1,4 +1,4 @@
-.inventoryScreenRoot {
+.inventory-screen {
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
@@ -6,11 +6,11 @@
   gap: var(--space-5);
 }
 
-.inventoryScreenHeader {
+.inventory-screen__header {
   text-align: center;
 }
 
-.inventoryScreenTitle {
+.inventory-screen__title {
   margin: 0 0 var(--space-2) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-4xl);
@@ -18,25 +18,25 @@
   color: var(--color-gold-accent);
 }
 
-.inventoryScreenGoldRow {
+.inventory-screen__gold-row {
   color: rgba(251, 191, 36, 0.9);
   font-size: var(--text-lg);
 }
 
-.inventoryScreenSlotInfo {
+.inventory-screen__slot-info {
   margin-top: var(--space-1);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.inventoryScreenEquipmentPanel {
+.inventory-screen__equipment-panel {
   background: rgba(15, 23, 42, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
 }
 
-.inventoryScreenSectionTitle {
+.inventory-screen__section-title {
   margin: 0 0 var(--space-3) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-2xl);
@@ -44,20 +44,20 @@
   color: var(--color-gold-accent);
 }
 
-.inventoryScreenEquipmentGrid {
+.inventory-screen__equipment-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-4);
 }
 
-.inventoryScreenSlotCard {
+.inventory-screen__slot-card {
   background: rgba(30, 41, 59, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.25);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
 
-.inventoryScreenSlotTitle {
+.inventory-screen__slot-title {
   margin: 0 0 var(--space-3) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-lg);
@@ -66,23 +66,23 @@
   text-transform: capitalize;
 }
 
-.inventoryScreenSlotContent {
+.inventory-screen__slot-content {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.inventoryScreenSlotName {
+.inventory-screen__slot-name {
   font-weight: 700;
 }
 
-.inventoryScreenSlotDescription {
+.inventory-screen__slot-description {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.inventoryScreenStatBlock {
+.inventory-screen__stat-block {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(74, 222, 128, 0.35);
   border-radius: var(--radius-md);
@@ -92,23 +92,23 @@
   gap: 4px;
 }
 
-.inventoryScreenStatLine {
+.inventory-screen__stat-line {
   color: #4ade80;
 }
 
-.inventoryScreenSlotEmpty {
+.inventory-screen__slot-empty {
   text-align: center;
   padding: var(--space-6) 0;
   color: var(--color-text-muted);
 }
 
-.inventoryScreenSlotEmptyIcon {
+.inventory-screen__slot-empty-icon {
   font-size: 2.5rem;
   color: #475569;
   margin-bottom: var(--space-2);
 }
 
-.inventoryScreenActionButton {
+.inventory-screen__action-button {
   width: 100%;
   padding: var(--space-3);
   border: none;
@@ -120,17 +120,17 @@
   transition: filter 0.15s ease, transform 0.15s ease;
 }
 
-.inventoryScreenActionButton:hover {
+.inventory-screen__action-button:hover {
   filter: brightness(1.05);
 }
 
-.inventoryScreenTabs {
+.inventory-screen__tabs {
   display: flex;
   gap: var(--space-2);
   border-bottom: 2px solid rgba(251, 191, 36, 0.3);
 }
 
-.inventoryScreenTabButton {
+.inventory-screen__tab-button {
   padding: var(--space-2) var(--space-3);
   font-family: var(--font-cinzel);
   font-weight: 700;
@@ -143,20 +143,20 @@
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.inventoryScreenTabButton:hover {
+.inventory-screen__tab-button:hover {
   color: var(--color-text-primary);
 }
 
-.inventoryScreenTabButtonActive {
+.inventory-screen__tab-button-active {
   color: var(--color-gold-accent);
   border-color: var(--color-gold-accent);
 }
 
-.inventoryScreenInventorySection {
+.inventory-screen__inventory-section {
   min-height: 400px;
 }
 
-.inventoryScreenEmptyState {
+.inventory-screen__empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -166,24 +166,24 @@
   color: var(--color-text-muted);
 }
 
-.inventoryScreenEmptyIcon {
+.inventory-screen__empty-icon {
   font-size: 3rem;
   color: #475569;
 }
 
-.inventoryScreenEmptyTitle {
+.inventory-screen__empty-title {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-xl);
 }
 
-.inventoryScreenCardGrid {
+.inventory-screen__card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-4);
 }
 
-.inventoryScreenItemCard {
+.inventory-screen__item-card {
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
@@ -191,12 +191,12 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.inventoryScreenItemCard:hover {
+.inventory-screen__item-card:hover {
   transform: translateY(-2px) scale(1.01);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
 }
 
-.inventoryScreenItemHeader {
+.inventory-screen__item-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -204,21 +204,21 @@
   margin-bottom: var(--space-2);
 }
 
-.inventoryScreenItemTitle {
+.inventory-screen__item-title {
   margin: 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-lg);
   font-weight: 700;
 }
 
-.inventoryScreenItemMeta {
+.inventory-screen__item-meta {
   margin-top: var(--space-1);
   color: #475569;
   font-size: var(--text-xs);
   text-transform: capitalize;
 }
 
-.inventoryScreenQuantityBadge {
+.inventory-screen__quantity-badge {
   background: #334155;
   color: #fff;
   padding: 4px 8px;
@@ -227,14 +227,14 @@
   font-size: var(--text-xs);
 }
 
-.inventoryScreenItemDescription {
+.inventory-screen__item-description {
   margin: 0 0 var(--space-3) 0;
   color: #475569;
   font-size: var(--text-xs);
   line-height: 1.5;
 }
 
-.inventoryScreenEquipmentStats {
+.inventory-screen__equipment-stats {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(74, 222, 128, 0.3);
   border-radius: var(--radius-md);
@@ -246,7 +246,7 @@
   font-size: var(--text-xs);
 }
 
-.inventoryScreenConsumableStats {
+.inventory-screen__consumable-stats {
   background: rgba(59, 130, 246, 0.12);
   border: 1px solid rgba(59, 130, 246, 0.35);
   border-radius: var(--radius-md);
@@ -256,12 +256,12 @@
   font-size: var(--text-xs);
 }
 
-.inventoryScreenItemActions {
+.inventory-screen__item-actions {
   display: flex;
   gap: var(--space-2);
 }
 
-.inventoryScreenItemButton {
+.inventory-screen__item-button {
   flex: 1;
   padding: var(--space-3);
   border: none;
@@ -273,72 +273,72 @@
   font-size: var(--text-sm);
 }
 
-.inventoryScreenItemButton:hover {
+.inventory-screen__item-button:hover {
   filter: brightness(1.05);
 }
 
-.inventoryScreenButtonEquip {
+.inventory-screen__button-equip {
   background: #2563eb;
 }
 
-.inventoryScreenButtonUse {
+.inventory-screen__button-use {
   background: #16a34a;
 }
 
-.inventoryScreenButtonSell {
+.inventory-screen__button-sell {
   background: #ca8a04;
 }
 
-.inventoryScreenRarityCommon {
+.inventory-screen__rarity-common {
   border-color: #9ca3af;
   background: #f8fafc;
 }
 
-.inventoryScreenRarityUncommon {
+.inventory-screen__rarity-uncommon {
   border-color: #22c55e;
   background: #f0fdf4;
 }
 
-.inventoryScreenRarityRare {
+.inventory-screen__rarity-rare {
   border-color: #3b82f6;
   background: #eff6ff;
 }
 
-.inventoryScreenRarityEpic {
+.inventory-screen__rarity-epic {
   border-color: #a855f7;
   background: #f5f3ff;
 }
 
-.inventoryScreenRarityLegendary {
+.inventory-screen__rarity-legendary {
   border-color: #ea580c;
   background: #fff7ed;
 }
 
-.inventoryScreenRarityMythic {
+.inventory-screen__rarity-mythic {
   border-color: #ef4444;
   background: #fef2f2;
 }
 
-.inventoryScreenTextCommon {
+.inventory-screen__text-common {
   color: #334155;
 }
 
-.inventoryScreenTextUncommon {
+.inventory-screen__text-uncommon {
   color: #166534;
 }
 
-.inventoryScreenTextRare {
+.inventory-screen__text-rare {
   color: #1d4ed8;
 }
 
-.inventoryScreenTextEpic {
+.inventory-screen__text-epic {
   color: #7e22ce;
 }
 
-.inventoryScreenTextLegendary {
+.inventory-screen__text-legendary {
   color: #9a3412;
 }
 
-.inventoryScreenTextMythic {
+.inventory-screen__text-mythic {
   color: #b91c1c;
 }

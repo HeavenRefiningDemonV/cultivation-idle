@@ -1,4 +1,4 @@
-.perkSelectionModalOverlay {
+.perk-selection-modal__overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
@@ -10,7 +10,7 @@
   backdrop-filter: blur(6px);
 }
 
-.perkSelectionModalModal {
+.perk-selection-modal__modal {
   background: #0f172a;
   border: 4px solid var(--color-gold-accent);
   border-radius: var(--radius-lg);
@@ -22,12 +22,12 @@
   box-shadow: var(--shadow-strong);
 }
 
-.perkSelectionModalHeader {
+.perk-selection-modal__header {
   text-align: center;
   margin-bottom: var(--space-6);
 }
 
-.perkSelectionModalTitle {
+.perk-selection-modal__title {
   font-family: var(--font-cinzel);
   font-size: var(--text-4xl);
   font-weight: 700;
@@ -35,25 +35,25 @@
   margin: 0 0 var(--space-3);
 }
 
-.perkSelectionModalSubtitle {
+.perk-selection-modal__subtitle {
   font-size: var(--text-lg);
   color: var(--color-gold-accent);
   text-transform: capitalize;
 }
 
-.perkSelectionModalHelperText {
+.perk-selection-modal__helper-text {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   margin-top: var(--space-2);
 }
 
-.perkSelectionModalGrid {
+.perk-selection-modal__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--space-4);
 }
 
-.perkSelectionModalEmptyModal {
+.perk-selection-modal__empty-modal {
   background: #0f172a;
   border: 4px solid var(--color-gold-accent);
   border-radius: var(--radius-lg);
@@ -63,7 +63,7 @@
   box-shadow: var(--shadow-strong);
 }
 
-.perkSelectionModalEmptyTitle {
+.perk-selection-modal__empty-title {
   font-family: var(--font-cinzel);
   font-size: var(--text-2xl);
   font-weight: 700;
@@ -71,12 +71,12 @@
   margin: 0 0 var(--space-3);
 }
 
-.perkSelectionModalEmptyText {
+.perk-selection-modal__empty-text {
   color: var(--color-text-secondary);
   margin-bottom: var(--space-5);
 }
 
-.perkSelectionModalButtonPrimary {
+.perk-selection-modal__button-primary {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   border: none;
@@ -88,12 +88,12 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.perkSelectionModalButtonPrimary:hover {
+.perk-selection-modal__button-primary:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-soft);
 }
 
-.perkSelectionModalPerkCard {
+.perk-selection-modal__perk-card {
   background: rgba(15, 23, 42, 0.7);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
@@ -103,23 +103,23 @@
   backdrop-filter: blur(6px);
 }
 
-.perkSelectionModalPerkCard:hover {
+.perk-selection-modal__perk-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-soft);
 }
 
-.perkSelectionModalPerkCardActive {
+.perk-selection-modal__perk-card-active {
   border-color: var(--color-gold-accent);
   box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
 }
 
-.perkSelectionModalIconRow {
+.perk-selection-modal__icon-row {
   text-align: center;
   margin-bottom: var(--space-4);
   font-size: 3rem;
 }
 
-.perkSelectionModalPerkName {
+.perk-selection-modal__perk-name {
   background: linear-gradient(90deg, rgba(251, 191, 36, 0.85), rgba(234, 179, 8, 0.9));
   color: #0f172a;
   text-align: center;
@@ -128,14 +128,14 @@
   margin-bottom: var(--space-4);
 }
 
-.perkSelectionModalPerkTitle {
+.perk-selection-modal__perk-title {
   font-family: var(--font-cinzel);
   margin: 0;
   font-size: var(--text-xl);
   font-weight: 700;
 }
 
-.perkSelectionModalPerkDescription {
+.perk-selection-modal__perk-description {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-4);
@@ -143,7 +143,7 @@
   line-height: 1.6;
 }
 
-.perkSelectionModalEffectBox {
+.perk-selection-modal__effect-box {
   background: rgba(88, 28, 135, 0.2);
   border: 2px solid rgba(168, 85, 247, 0.5);
   border-radius: var(--radius-md);
@@ -151,14 +151,14 @@
   margin-bottom: var(--space-4);
 }
 
-.perkSelectionModalEffectTitle {
+.perk-selection-modal__effect-title {
   font-size: var(--text-sm);
   color: #e9d5ff;
   font-weight: 600;
   margin: 0 0 var(--space-2);
 }
 
-.perkSelectionModalEffectContent {
+.perk-selection-modal__effect-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -166,12 +166,12 @@
   font-size: var(--text-xs);
 }
 
-.perkSelectionModalEffectValue {
+.perk-selection-modal__effect-value {
   font-size: var(--text-lg);
   font-weight: 700;
 }
 
-.perkSelectionModalSelectButton {
+.perk-selection-modal__select-button {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   border: none;
@@ -182,49 +182,49 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.perkSelectionModalSelectButton:hover {
+.perk-selection-modal__select-button:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-soft);
 }
 
-.perkSelectionModalFooter {
+.perk-selection-modal__footer {
   margin-top: var(--space-8);
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.perkSelectionModalFooterSmall {
+.perk-selection-modal__footer-small {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   margin-top: var(--space-2);
 }
 
-.perkSelectionModalPathHeaven {
+.perk-selection-modal__path-heaven {
   background: linear-gradient(90deg, #60a5fa, #a855f7);
   border-color: #60a5fa;
   box-shadow: 0 0 20px rgba(96, 165, 250, 0.35);
 }
 
-.perkSelectionModalPathEarth {
+.perk-selection-modal__path-earth {
   background: linear-gradient(90deg, #22c55e, #f59e0b);
   border-color: #16a34a;
   box-shadow: 0 0 20px rgba(34, 197, 94, 0.35);
 }
 
-.perkSelectionModalPathMartial {
+.perk-selection-modal__path-martial {
   background: linear-gradient(90deg, #ef4444, #f97316);
   border-color: #dc2626;
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.35);
 }
 
-.perkSelectionModalPathNeutral {
+.perk-selection-modal__path-neutral {
   background: linear-gradient(90deg, #94a3b8, #475569);
   border-color: #94a3b8;
   box-shadow: 0 0 20px rgba(148, 163, 184, 0.35);
 }
 
-.perkSelectionModalPathTextHeaven { color: #bfdbfe; }
-.perkSelectionModalPathTextEarth { color: #bbf7d0; }
-.perkSelectionModalPathTextMartial { color: #fecdd3; }
-.perkSelectionModalPathTextNeutral { color: var(--color-text-secondary); }
+.perk-selection-modal__path-text-heaven { color: #bfdbfe; }
+.perk-selection-modal__path-text-earth { color: #bbf7d0; }
+.perk-selection-modal__path-text-martial { color: #fecdd3; }
+.perk-selection-modal__path-text-neutral { color: var(--color-text-secondary); }

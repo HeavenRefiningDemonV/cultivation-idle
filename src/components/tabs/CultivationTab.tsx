@@ -38,7 +38,7 @@ function ProgressRing({
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <svg width={size} height={size} className={'cultivationTabProgressRing'}>
+    <svg width={size} height={size} className={'cultivation-tab__progress-ring'}>
       {/* Background circle */}
       <circle
         cx={size / 2}
@@ -47,7 +47,7 @@ function ProgressRing({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         fill="none"
-        className={'cultivationTabProgressTrack'}
+        className={'cultivation-tab__progress-track'}
       />
       {/* Progress circle */}
       <motion.circle
@@ -164,56 +164,56 @@ export function CultivationTab() {
   };
 
   return (
-    <div className={'cultivationTabRoot'}>
+    <div className={'cultivation-tab'}>
       {/* TOP SECTION - Realm Progress */}
-      <div className={`${'cultivationTabPanel'} ${'cultivationTabTopPanel'}`}>
-        <div className={'cultivationTabTopContent'}>
+      <div className={`${'cultivation-tab__panel'} ${'cultivation-tab__top-panel'}`}>
+        <div className={'cultivation-tab__top-content'}>
           {/* Progress Ring */}
-          <div className={'cultivationTabProgressWrapper'}>
+          <div className={'cultivation-tab__progress-wrapper'}>
             <ProgressRing progress={progressPercent} size={220} strokeWidth={14} />
-            <div className={'cultivationTabProgressOverlay'}>
-              <div className={'cultivationTabProgressValue'}>{progressPercent.toFixed(1)}%</div>
-              <div className={'cultivationTabProgressLabel'}>Progress</div>
+            <div className={'cultivation-tab__progress-overlay'}>
+              <div className={'cultivation-tab__progress-value'}>{progressPercent.toFixed(1)}%</div>
+              <div className={'cultivation-tab__progress-label'}>Progress</div>
             </div>
           </div>
 
           {/* Realm Info */}
-          <div className={'cultivationTabRealmInfo'}>
-            <h2 className={'cultivationTabRealmTitle'}>{realm.name}</h2>
-            <p className={'cultivationTabRealmSubtitle'}>
+          <div className={'cultivation-tab__realm-info'}>
+            <h2 className={'cultivation-tab__realm-title'}>{realm.name}</h2>
+            <p className={'cultivation-tab__realm-subtitle'}>
               Substage {realm.substage + 1} / {currentRealmDef?.substages || 10}
             </p>
-            <div className={'cultivationTabRealmMajor'}>{currentRealmDef?.majorRealm || 'Mortal Realm'}</div>
-            <div className={'cultivationTabRealmStats'}>
-              <div className={'cultivationTabStatLabel'}>Total Breakthroughs:</div>
-              <div className={'cultivationTabStatHighlight'}>{totalAuras}</div>
+            <div className={'cultivation-tab__realm-major'}>{currentRealmDef?.majorRealm || 'Mortal Realm'}</div>
+            <div className={'cultivation-tab__realm-stats'}>
+              <div className={'cultivation-tab__stat-label'}>Total Breakthroughs:</div>
+              <div className={'cultivation-tab__stat-highlight'}>{totalAuras}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* MIDDLE SECTION - Qi Statistics */}
-      <div className={'cultivationTabStatGrid'}>
-        <motion.div className={'cultivationTabStatCard'} whileHover={{ scale: 1.02 }}>
-          <div className={'cultivationTabStatCardLabel'}>Current Qi</div>
-          <div className={'cultivationTabStatCardValue'}>{formatNumber(qi)}</div>
+      <div className={'cultivation-tab__stat-grid'}>
+        <motion.div className={'cultivation-tab__stat-card'} whileHover={{ scale: 1.02 }}>
+          <div className={'cultivation-tab__stat-card-label'}>Current Qi</div>
+          <div className={'cultivation-tab__stat-card-value'}>{formatNumber(qi)}</div>
         </motion.div>
 
-        <motion.div className={'cultivationTabStatCard'} whileHover={{ scale: 1.02 }}>
-          <div className={'cultivationTabStatCardLabel'}>Qi per Second</div>
-          <div className={'cultivationTabStatCardValue'}>{formatNumber(qiPerSecond)}</div>
+        <motion.div className={'cultivation-tab__stat-card'} whileHover={{ scale: 1.02 }}>
+          <div className={'cultivation-tab__stat-card-label'}>Qi per Second</div>
+          <div className={'cultivation-tab__stat-card-value'}>{formatNumber(qiPerSecond)}</div>
         </motion.div>
 
-        <motion.div className={'cultivationTabStatCard'} whileHover={{ scale: 1.02 }}>
-          <div className={'cultivationTabStatCardLabel'}>Time to Breakthrough</div>
-          <div className={'cultivationTabStatCardValueAlt'}>{formatTime(secondsToBreakthrough)}</div>
+        <motion.div className={'cultivation-tab__stat-card'} whileHover={{ scale: 1.02 }}>
+          <div className={'cultivation-tab__stat-card-label'}>Time to Breakthrough</div>
+          <div className={'cultivation-tab__stat-card-value-alt'}>{formatTime(secondsToBreakthrough)}</div>
         </motion.div>
       </div>
 
       {/* FOCUS MODE SELECTOR */}
-      <div className={`${'cultivationTabPanel'} ${'cultivationTabFocusPanel'}`}>
-        <h3 className={'cultivationTabSectionTitle'}>Cultivation Focus</h3>
-        <div className={'cultivationTabFocusGrid'}>
+      <div className={`${'cultivation-tab__panel'} ${'cultivation-tab__focus-panel'}`}>
+        <h3 className={'cultivation-tab__section-title'}>Cultivation Focus</h3>
+        <div className={'cultivation-tab__focus-grid'}>
           {(['balanced', 'body', 'spirit'] as FocusMode[]).map((mode) => {
             const isActive = focusMode === mode;
             const modifiers = FOCUS_MODE_MODIFIERS[mode];
@@ -223,16 +223,16 @@ export function CultivationTab() {
               <motion.button
                 key={mode}
                 onClick={() => setFocusMode(mode)}
-                className={`${'cultivationTabFocusCard'} ${isActive ? 'cultivationTabFocusCardActive' : ''}`}
+                className={`${'cultivation-tab__focus-card'} ${isActive ? 'cultivation-tab__focus-card-active' : ''}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className={'cultivationTabFocusTitle'}>{mode === 'balanced' ? 'Balanced' : `${mode} Focus`}</div>
-                <div className={'cultivationTabFocusStats'}>
-                  <div className={'cultivationTabFocusQi'}>
-                    Qi/s: <span className={'cultivationTabFocusQiValue'}>{formatNumber(projectedQiPerSecond)}</span>
+                <div className={'cultivation-tab__focus-title'}>{mode === 'balanced' ? 'Balanced' : `${mode} Focus`}</div>
+                <div className={'cultivation-tab__focus-stats'}>
+                  <div className={'cultivation-tab__focus-qi'}>
+                    Qi/s: <span className={'cultivation-tab__focus-qi-value'}>{formatNumber(projectedQiPerSecond)}</span>
                   </div>
-                  <div className={'cultivationTabFocusModifiers'}>
+                  <div className={'cultivation-tab__focus-modifiers'}>
                     {modifiers.qiMultiplier !== 1 && (
                       <div>Qi: {modifiers.qiMultiplier > 1 ? '+' : ''}{((modifiers.qiMultiplier - 1) * 100).toFixed(0)}%</div>
                     )}
@@ -255,7 +255,7 @@ export function CultivationTab() {
 
       {/* BREAKTHROUGH BUTTON */}
       <motion.div
-        className={`${'cultivationTabPanel'} ${'cultivationTabBreakthroughPanel'}`}
+        className={`${'cultivation-tab__panel'} ${'cultivation-tab__breakthrough-panel'}`}
         animate={
           canBreakthrough
             ? {
@@ -269,10 +269,10 @@ export function CultivationTab() {
         }
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <div className={'cultivationTabBreakthroughContent'}>
-          <div className={'cultivationTabBreakthroughInfo'}>
-            <div className={'cultivationTabBreakthroughLabel'}>Breakthrough Requirement</div>
-            <div className={'cultivationTabBreakthroughValue'}>
+        <div className={'cultivation-tab__breakthrough-content'}>
+          <div className={'cultivation-tab__breakthrough-info'}>
+            <div className={'cultivation-tab__breakthrough-label'}>Breakthrough Requirement</div>
+            <div className={'cultivation-tab__breakthrough-value'}>
               {formatNumber(qi)} / {formatNumber(qiRequired)}
             </div>
           </div>
@@ -280,8 +280,8 @@ export function CultivationTab() {
           <motion.button
             onClick={handleBreakthrough}
             disabled={!canBreakthrough}
-            className={`${'cultivationTabBreakthroughButton'} ${
-              canBreakthrough ? 'cultivationTabBreakthroughReady' : 'cultivationTabBreakthroughDisabled'
+            className={`${'cultivation-tab__breakthrough-button'} ${
+              canBreakthrough ? 'cultivation-tab__breakthrough-ready' : 'cultivation-tab__breakthrough-disabled'
             }`}
             whileHover={canBreakthrough ? { scale: 1.05 } : {}}
             whileTap={canBreakthrough ? { scale: 0.95 } : {}}
@@ -292,21 +292,21 @@ export function CultivationTab() {
       </motion.div>
 
       {/* UPGRADES SECTION */}
-      <div className={`${'cultivationTabPanel'} ${'cultivationTabUpgradePanel'}`}>
-        <h3 className={'cultivationTabSectionTitle'}>Cultivation Upgrades</h3>
-        <div className={'cultivationTabUpgradeGrid'}>
+      <div className={`${'cultivation-tab__panel'} ${'cultivation-tab__upgrade-panel'}`}>
+        <h3 className={'cultivation-tab__section-title'}>Cultivation Upgrades</h3>
+        <div className={'cultivation-tab__upgrade-grid'}>
           {/* Idle Efficiency */}
-          <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabIdleCard'}`} whileHover={{ scale: 1.02 }}>
-            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabIdleTitle'}`}>⚡ Idle Efficiency</div>
-            <div className={'cultivationTabUpgradeDescription'}>Increases Qi generation by 10%</div>
-            <div className={'cultivationTabUpgradeTier'}>
-              Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.idle}</span>
+          <motion.div className={`${'cultivation-tab__upgrade-card'} ${'cultivation-tab__idle-card'}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${'cultivation-tab__upgrade-title'} ${'cultivation-tab__idle-title'}`}>⚡ Idle Efficiency</div>
+            <div className={'cultivation-tab__upgrade-description'}>Increases Qi generation by 10%</div>
+            <div className={'cultivation-tab__upgrade-tier'}>
+              Current Tier: <span className={'cultivation-tab__upgrade-tier-value'}>{upgradeTiers.idle}</span>
             </div>
             <button
               onClick={() => handleUpgrade('idle')}
               disabled={!canAffordIdle}
-              className={`${'cultivationTabUpgradeButton'} ${
-                canAffordIdle ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
+              className={`${'cultivation-tab__upgrade-button'} ${
+                canAffordIdle ? 'cultivation-tab__upgrade-button-active' : 'cultivation-tab__upgrade-button-disabled'
               }`}
             >
               Cost: {formatNumber(idleCost)} Qi
@@ -314,17 +314,17 @@ export function CultivationTab() {
           </motion.div>
 
           {/* Damage Boost */}
-          <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabDamageCard'}`} whileHover={{ scale: 1.02 }}>
-            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabDamageTitle'}`}>⚔️ Damage Boost</div>
-            <div className={'cultivationTabUpgradeDescription'}>Increases attack power by 5%</div>
-            <div className={'cultivationTabUpgradeTier'}>
-              Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.damage}</span>
+          <motion.div className={`${'cultivation-tab__upgrade-card'} ${'cultivation-tab__damage-card'}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${'cultivation-tab__upgrade-title'} ${'cultivation-tab__damage-title'}`}>⚔️ Damage Boost</div>
+            <div className={'cultivation-tab__upgrade-description'}>Increases attack power by 5%</div>
+            <div className={'cultivation-tab__upgrade-tier'}>
+              Current Tier: <span className={'cultivation-tab__upgrade-tier-value'}>{upgradeTiers.damage}</span>
             </div>
             <button
               onClick={() => handleUpgrade('damage')}
               disabled={!canAffordDamage}
-              className={`${'cultivationTabUpgradeButton'} ${
-                canAffordDamage ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
+              className={`${'cultivation-tab__upgrade-button'} ${
+                canAffordDamage ? 'cultivation-tab__upgrade-button-active' : 'cultivation-tab__upgrade-button-disabled'
               }`}
             >
               Cost: {formatNumber(damageCost)} Qi
@@ -332,17 +332,17 @@ export function CultivationTab() {
           </motion.div>
 
           {/* HP Boost */}
-          <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabHpCard'}`} whileHover={{ scale: 1.02 }}>
-            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabHpTitle'}`}>❤️ HP Boost</div>
-            <div className={'cultivationTabUpgradeDescription'}>Increases max HP by 5%</div>
-            <div className={'cultivationTabUpgradeTier'}>
-              Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.hp}</span>
+          <motion.div className={`${'cultivation-tab__upgrade-card'} ${'cultivation-tab__hp-card'}`} whileHover={{ scale: 1.02 }}>
+            <div className={`${'cultivation-tab__upgrade-title'} ${'cultivation-tab__hp-title'}`}>❤️ HP Boost</div>
+            <div className={'cultivation-tab__upgrade-description'}>Increases max HP by 5%</div>
+            <div className={'cultivation-tab__upgrade-tier'}>
+              Current Tier: <span className={'cultivation-tab__upgrade-tier-value'}>{upgradeTiers.hp}</span>
             </div>
             <button
               onClick={() => handleUpgrade('hp')}
               disabled={!canAffordHp}
-              className={`${'cultivationTabUpgradeButton'} ${
-                canAffordHp ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
+              className={`${'cultivation-tab__upgrade-button'} ${
+                canAffordHp ? 'cultivation-tab__upgrade-button-active' : 'cultivation-tab__upgrade-button-disabled'
               }`}
             >
               Cost: {formatNumber(hpCost)} Qi
