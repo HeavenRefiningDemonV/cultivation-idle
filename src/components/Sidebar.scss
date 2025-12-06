@@ -24,10 +24,6 @@
   text-align: left;
   font-family: var(--font-cinzel);
   font-size: var(--text-lg);
-  border: 2px solid var(--color-ink-medium);
-  border-radius: var(--radius-md);
-  background: var(--color-ink-dark);
-  color: var(--color-ink-paper);
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
   cursor: pointer;
 }
@@ -66,12 +62,8 @@
 .sidebarPrestigeButton {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  background: var(--color-breakthrough-red);
-  border: 2px solid var(--color-breakthrough-pink);
-  color: var(--color-ink-white);
   font-family: var(--font-cinzel);
   font-size: var(--text-lg);
-  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
   box-shadow: var(--shadow-breakthrough);

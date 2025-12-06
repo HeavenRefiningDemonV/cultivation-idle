@@ -31,6 +31,13 @@ button {
   font-family: var(--font-inter);
 }
 
+.buttonStandard {
+  background: #dddddd;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  color: #000000;
+}
+
 .text-mono {
   font-family: var(--font-mono);
 }

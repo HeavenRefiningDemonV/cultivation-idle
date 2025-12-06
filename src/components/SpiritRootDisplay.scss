@@ -151,13 +151,12 @@
   width: 100%;
   font-weight: 700;
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-lg);
-  border: none;
+  border-radius: 5px;
+  border: 1px solid #000000;
   font-family: var(--font-cinzel);
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  background: linear-gradient(90deg, #9333ea, #7c3aed);
-  color: #fff;
-  box-shadow: var(--shadow-soft);
+  background: #dddddd;
+  color: #000000;
   cursor: pointer;
 }
 

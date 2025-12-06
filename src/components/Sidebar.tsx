@@ -15,7 +15,7 @@ function NavButton({ label, active, onClick }: NavButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`${'sidebarNavButton'} ${active ? 'sidebarNavButtonActive' : ''}`}
+      className={`buttonStandard sidebarNavButton ${active ? 'sidebarNavButtonActive' : ''}`}
     >
       {label}
     </button>
@@ -83,7 +83,7 @@ export function Sidebar() {
         </div>
         <button
           onClick={showPrestige}
-          className={'sidebarPrestigeButton'}
+          className={'buttonStandard sidebarPrestigeButton'}
         >
           Rebirth
         </button>
