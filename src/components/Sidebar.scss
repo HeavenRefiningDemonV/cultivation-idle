@@ -1,4 +1,4 @@
-.sidebar {
+.game-sidebar {
   position: fixed;
   left: 0;
   top: 80px;
@@ -13,13 +13,13 @@
   z-index: 30;
 }
 
-.sidebarNavList {
+.game-sidebar__nav-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.sidebarNavButton {
+.game-sidebar__nav-button {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   text-align: left;
@@ -33,25 +33,25 @@
   cursor: pointer;
 }
 
-.sidebarNavButton:hover {
+.game-sidebar__nav-button:hover {
   border-color: var(--color-ink-light);
   background: var(--color-ink-medium);
 }
 
-.sidebarNavButtonActive {
+.game-sidebar__nav-button--active {
   background: var(--color-qi-dark);
   border-color: var(--color-qi-blue);
   color: var(--color-qi-glow);
   box-shadow: var(--shadow-qi);
 }
 
-.sidebarFooter {
+.game-sidebar__footer {
   margin-top: auto;
   padding-top: var(--space-4);
   border-top: 2px solid var(--color-ink-dark);
 }
 
-.sidebarAuraText {
+.game-sidebar__aura-text {
   color: var(--color-gold-accent);
   font-size: var(--text-sm);
   font-family: var(--font-mono);
@@ -59,12 +59,12 @@
   text-align: center;
 }
 
-.sidebarAuraValue {
+.game-sidebar__aura-value {
   color: var(--color-gold-bright);
   font-weight: 700;
 }
 
-.sidebarPrestigeButton {
+.game-sidebar__prestige-button {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   background: var(--color-breakthrough-red);
@@ -78,12 +78,12 @@
   box-shadow: var(--shadow-breakthrough);
 }
 
-.sidebarPrestigeButton:hover {
+.game-sidebar__prestige-button:hover {
   background: var(--color-breakthrough-pink);
 }
 
 @media (max-width: 1024px) {
-  .sidebar {
+  .game-sidebar {
     position: static;
     width: auto;
     flex-direction: row;
@@ -92,19 +92,19 @@
     padding: var(--space-3);
   }
 
-  .sidebarNavList {
+  .game-sidebar__nav-list {
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--space-2);
   }
 
-  .sidebarNavButton {
+  .game-sidebar__nav-button {
     flex: 1;
     text-align: center;
     min-width: 120px;
   }
 
-  .sidebarFooter {
+  .game-sidebar__footer {
     width: 100%;
   }
 }

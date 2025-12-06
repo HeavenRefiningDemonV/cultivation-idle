@@ -1,11 +1,11 @@
-.prestigeScreenRoot {
+.prestige-screen {
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #0f172a, #111827);
   border-radius: var(--radius-lg);
 }
 
-.prestigeScreenBackground {
+.prestige-screen__background {
   position: absolute;
   inset: 0;
   opacity: 0.12;
@@ -13,7 +13,7 @@
     radial-gradient(circle at 60% 50%, rgba(236, 72, 153, 0.35) 0%, transparent 50%);
 }
 
-.prestigeScreenContent {
+.prestige-screen__content {
   position: relative;
   z-index: 1;
   max-width: 1100px;
@@ -24,23 +24,23 @@
   gap: var(--space-5);
 }
 
-.prestigeScreenHeader {
+.prestige-screen__header {
   text-align: center;
 }
 
-.prestigeScreenTitle {
+.prestige-screen__title {
   margin: 0 0 var(--space-2) 0;
   font-size: var(--text-4xl);
   font-weight: 700;
   color: var(--color-gold-accent);
 }
 
-.prestigeScreenSubtitle {
+.prestige-screen__subtitle {
   margin: 0;
   color: var(--color-text-muted);
 }
 
-.prestigeScreenApCard {
+.prestige-screen__ap-card {
   background: linear-gradient(90deg, rgba(88, 28, 135, 0.6), rgba(190, 24, 93, 0.5));
   border: 2px solid rgba(168, 85, 247, 0.45);
   border-radius: var(--radius-lg);
@@ -49,29 +49,29 @@
   box-shadow: var(--shadow-strong);
 }
 
-.prestigeScreenApValue {
+.prestige-screen__ap-value {
   font-size: 3rem;
   font-weight: 700;
   color: #e9d5ff;
 }
 
-.prestigeScreenApLabel {
+.prestige-screen__ap-label {
   color: #e0e7ff;
   font-size: var(--text-xl);
 }
 
-.prestigeScreenApMeta {
+.prestige-screen__ap-meta {
   color: #c084fc;
   font-size: var(--text-sm);
 }
 
-.prestigeScreenInfoGrid {
+.prestige-screen__info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-4);
 }
 
-.prestigeScreenInfoCard {
+.prestige-screen__info-card {
   background: rgba(26, 26, 26, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -79,44 +79,44 @@
   box-shadow: var(--shadow-soft);
 }
 
-.prestigeScreenInfoTitle {
+.prestige-screen__info-title {
   font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-gold-accent);
   margin: 0 0 var(--space-3) 0;
 }
 
-.prestigeScreenInfoRows {
+.prestige-screen__info-rows {
   display: grid;
   gap: var(--space-2);
   font-size: var(--text-sm);
 }
 
-.prestigeScreenInfoRow {
+.prestige-screen__info-row {
   display: flex;
   justify-content: space-between;
 }
 
-.prestigeScreenInfoLabel {
+.prestige-screen__info-label {
   color: var(--color-text-muted);
 }
 
-.prestigeScreenInfoValue {
+.prestige-screen__info-value {
   color: var(--color-ink-white);
   font-weight: 600;
 }
 
-.prestigeScreenInfoValueAccent {
+.prestige-screen__info-value-accent {
   color: #c084fc;
   font-weight: 700;
 }
 
-.prestigeScreenInfoLabelMuted {
+.prestige-screen__info-label-muted {
   color: var(--color-text-muted);
   margin-left: var(--space-2);
 }
 
-.prestigeScreenBenefitsList {
+.prestige-screen__benefits-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -126,7 +126,7 @@
   font-size: var(--text-sm);
 }
 
-.prestigeScreenPrestigeSection {
+.prestige-screen__prestige-section {
   background: linear-gradient(90deg, rgba(88, 28, 135, 0.45), rgba(190, 24, 93, 0.35));
   border: 2px solid rgba(168, 85, 247, 0.4);
   border-radius: var(--radius-lg);
@@ -137,20 +137,20 @@
   gap: var(--space-3);
 }
 
-.prestigeScreenPrestigeTitle {
+.prestige-screen__prestige-title {
   font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--color-gold-accent);
   margin: 0;
 }
 
-.prestigeScreenPrestigeText {
+.prestige-screen__prestige-text {
   color: var(--color-text-secondary);
   max-width: 720px;
   margin: 0 auto;
 }
 
-.prestigeScreenPrestigeButton {
+.prestige-screen__prestige-button {
   padding: var(--space-4) var(--space-6);
   border-radius: var(--radius-lg);
   border: none;
@@ -159,43 +159,43 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-.prestigeScreenPrestigeReady {
+.prestige-screen__prestige-ready {
   background: linear-gradient(90deg, #9333ea, #db2777);
   color: var(--color-ink-white);
   box-shadow: 0 12px 30px rgba(168, 85, 247, 0.35);
   cursor: pointer;
 }
 
-.prestigeScreenPrestigeLocked {
+.prestige-screen__prestige-locked {
   background: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.prestigeScreenPrestigeHint {
+.prestige-screen__prestige-hint {
   color: var(--color-text-muted);
   margin: 0;
 }
 
-.prestigeScreenShopSection {
+.prestige-screen__shop-section {
   display: grid;
   gap: var(--space-3);
 }
 
-.prestigeScreenShopTitle {
+.prestige-screen__shop-title {
   font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--color-gold-accent);
   margin: 0;
 }
 
-.prestigeScreenShopGrid {
+.prestige-screen__shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--space-4);
 }
 
-.prestigeScreenShopCard {
+.prestige-screen__shop-card {
   background: rgba(17, 24, 39, 0.7);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -204,22 +204,22 @@
   backdrop-filter: blur(4px);
 }
 
-.prestigeScreenShopAffordable {
+.prestige-screen__shop-affordable {
   border-color: rgba(168, 85, 247, 0.6);
   box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
 }
 
-.prestigeScreenShopMaxed {
+.prestige-screen__shop-maxed {
   border-color: rgba(52, 211, 153, 0.6);
   background: rgba(16, 185, 129, 0.1);
 }
 
-.prestigeScreenShopLocked {
+.prestige-screen__shop-locked {
   border-color: rgba(148, 163, 184, 0.6);
   opacity: 0.7;
 }
 
-.prestigeScreenShopHeader {
+.prestige-screen__shop-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -227,15 +227,15 @@
   margin-bottom: var(--space-2);
 }
 
-.prestigeScreenShopName {
+.prestige-screen__shop-name {
   font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-ink-white);
   margin: 0;
 }
 
-.prestigeScreenShopTagMax,
-.prestigeScreenShopTagLocked {
+.prestige-screen__shop-tag-max,
+.prestige-screen__shop-tag-locked {
   font-size: var(--text-xs);
   padding: 2px 8px;
   border-radius: var(--radius-sm);
@@ -243,82 +243,82 @@
   color: var(--color-ink-white);
 }
 
-.prestigeScreenShopTagMax {
+.prestige-screen__shop-tag-max {
   background: var(--color-element-wood);
 }
 
-.prestigeScreenShopTagLocked {
+.prestige-screen__shop-tag-locked {
   background: var(--color-border);
 }
 
-.prestigeScreenShopDescription {
+.prestige-screen__shop-description {
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-3) 0;
   font-size: var(--text-sm);
 }
 
-.prestigeScreenShopLevel {
+.prestige-screen__shop-level {
   margin-bottom: var(--space-3);
 }
 
-.prestigeScreenShopLevelRow {
+.prestige-screen__shop-level-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: var(--space-2);
   font-size: var(--text-sm);
 }
 
-.prestigeScreenShopProgress {
+.prestige-screen__shop-progress {
   height: 8px;
   background: rgba(55, 65, 81, 0.8);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
-.prestigeScreenShopProgressFill {
+.prestige-screen__shop-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #a855f7, #ec4899);
   transition: width 0.2s ease;
 }
 
-.prestigeScreenShopEffect {
+.prestige-screen__shop-effect {
   margin-bottom: var(--space-3);
   font-size: var(--text-sm);
 }
 
-.prestigeScreenShopEffectLabel {
+.prestige-screen__shop-effect-label {
   color: #34d399;
   font-weight: 700;
 }
 
-.prestigeScreenShopEffectValue {
+.prestige-screen__shop-effect-value {
   color: #86efac;
 }
 
-.prestigeScreenShopActions {
+.prestige-screen__shop-actions {
   display: grid;
   gap: var(--space-2);
 }
 
-.prestigeScreenShopCost {
+.prestige-screen__shop-cost {
   text-align: center;
   font-size: var(--text-sm);
 }
 
-.prestigeScreenShopCostValue {
+.prestige-screen__shop-cost-value {
   font-weight: 700;
   font-size: var(--text-lg);
 }
 
-.prestigeScreenShopCostReady {
+.prestige-screen__shop-cost-ready {
   color: #c084fc;
 }
 
-.prestigeScreenShopCostMissing {
+.prestige-screen__shop-cost-missing {
   color: var(--color-breakthrough-red);
 }
 
-.prestigeScreenShopButton {
+.prestige-screen__shop-button {
   width: 100%;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
@@ -327,25 +327,25 @@
   transition: filter 0.2s ease;
 }
 
-.prestigeScreenShopButtonReady {
+.prestige-screen__shop-button-ready {
   background: linear-gradient(90deg, #9333ea, #c026d3);
   color: var(--color-ink-white);
   cursor: pointer;
 }
 
-.prestigeScreenShopButtonDisabled {
+.prestige-screen__shop-button-disabled {
   background: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.prestigeScreenLockedNote {
+.prestige-screen__locked-note {
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.prestigeScreenHistory {
+.prestige-screen__history {
   background: rgba(26, 26, 26, 0.55);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -353,19 +353,19 @@
   backdrop-filter: blur(4px);
 }
 
-.prestigeScreenHistorySummary {
+.prestige-screen__history-summary {
   font-weight: 700;
   color: var(--color-gold-accent);
   cursor: pointer;
 }
 
-.prestigeScreenHistoryList {
+.prestige-screen__history-list {
   margin-top: var(--space-3);
   display: grid;
   gap: var(--space-2);
 }
 
-.prestigeScreenHistoryRow {
+.prestige-screen__history-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -374,13 +374,13 @@
   padding-bottom: var(--space-2);
 }
 
-.prestigeScreenHistoryGain {
+.prestige-screen__history-gain {
   display: flex;
   gap: var(--space-2);
   align-items: center;
 }
 
-.prestigeScreenModalOverlay {
+.prestige-screen__modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.8);
@@ -392,7 +392,7 @@
   backdrop-filter: blur(6px);
 }
 
-.prestigeScreenModalCard {
+.prestige-screen__modal-card {
   background: var(--color-bg-panel-strong);
   border: 3px solid var(--color-breakthrough-red);
   border-radius: var(--radius-lg);
@@ -402,28 +402,28 @@
   box-shadow: var(--shadow-strong);
 }
 
-.prestigeScreenModalTitle {
+.prestige-screen__modal-title {
   margin: 0 0 var(--space-3) 0;
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-breakthrough-red);
 }
 
-.prestigeScreenModalText {
+.prestige-screen__modal-text {
   color: var(--color-text-secondary);
   margin: 0 0 var(--space-4) 0;
 }
 
-.prestigeScreenModalHighlight {
+.prestige-screen__modal-highlight {
   color: #c084fc;
 }
 
-.prestigeScreenModalActions {
+.prestige-screen__modal-actions {
   display: flex;
   gap: var(--space-3);
 }
 
-.prestigeScreenModalButton {
+.prestige-screen__modal-button {
   flex: 1;
   padding: var(--space-3);
   border-radius: var(--radius-md);
@@ -434,20 +434,20 @@
   transition: filter 0.2s ease;
 }
 
-.prestigeScreenModalCancel {
+.prestige-screen__modal-cancel {
   background: var(--color-border);
 }
 
-.prestigeScreenModalConfirm {
+.prestige-screen__modal-confirm {
   background: linear-gradient(90deg, #ef4444, #b91c1c);
 }
 
 @media (max-width: 640px) {
-  .prestigeScreenContent {
+  .prestige-screen__content {
     padding: var(--space-4);
   }
 
-  .prestigeScreenModalActions {
+  .prestige-screen__modal-actions {
     flex-direction: column;
   }
 }

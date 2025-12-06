@@ -43,19 +43,19 @@ function HPBar({
   variant?: 'red' | 'green';
 }) {
   const percent = Math.min(100, parseFloat(divide(current, max).times(100).toFixed(2)));
-  const barClass = variant === 'green' ? 'adventureTabHpFillGreen' : 'adventureTabHpFillRed';
+  const barClass = variant === 'green' ? 'adventure-tab__hp-fill-green' : 'adventure-tab__hp-fill-red';
 
   return (
-    <div className={'adventureTabHpBar'}>
-      <div className={'adventureTabHpLabels'}>
-        <span className={'adventureTabHpLabel'}>{label}</span>
-        <span className={'adventureTabHpValue'}>
+    <div className={'adventure-tab__hp-bar'}>
+      <div className={'adventure-tab__hp-labels'}>
+        <span className={'adventure-tab__hp-label'}>{label}</span>
+        <span className={'adventure-tab__hp-value'}>
           {formatNumber(current)} / {formatNumber(max)}
         </span>
       </div>
-      <div className={'adventureTabHpTrack'}>
+      <div className={'adventure-tab__hp-track'}>
         <motion.div
-          className={`${'adventureTabHpFill'} ${barClass}`}
+          className={`${'adventure-tab__hp-fill'} ${barClass}`}
           initial={{ width: '100%' }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 0.3 }}
@@ -78,15 +78,15 @@ function CombatLog() {
   }, [combatLog]);
 
   return (
-    <div className={'adventureTabCombatLogContainer'}>
-      <div className={'adventureTabCombatLogList'}>
+    <div className={'adventure-tab__combat-log-container'}>
+      <div className={'adventure-tab__combat-log-list'}>
         {combatLog.length === 0 ? (
-          <div className={'adventureTabCombatLogEmpty'}>Combat log is empty</div>
+          <div className={'adventure-tab__combat-log-empty'}>Combat log is empty</div>
         ) : (
           combatLog.map((entry, index) => (
             <div
               key={index}
-              className={'adventureTabCombatLogEntry'}
+              className={'adventure-tab__combat-log-entry'}
               style={{ color: entry.color }}
             >
               {entry.text}
@@ -225,22 +225,22 @@ export function AdventureTab() {
 
   if (loading) {
     return (
-      <div className={'adventureTabLoading'}>
-        <div className={'adventureTabLoadingCard'}>
-          <div className={'adventureTabLoadingIcon'}>⚔️</div>
-          <div className={'adventureTabLoadingText'}>Loading adventure zones...</div>
+      <div className={'adventure-tab__loading'}>
+        <div className={'adventure-tab__loading-card'}>
+          <div className={'adventure-tab__loading-icon'}>⚔️</div>
+          <div className={'adventure-tab__loading-text'}>Loading adventure zones...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={'adventureTabRoot'}>
+    <div className={'adventure-tab'}>
       {/* LEFT PANEL - Zone Selection */}
-      <div className={'adventureTabLeftColumn'}>
-        <div className={'adventureTabPanel'}>
-          <h2 className={'adventureTabPanelTitle'}>🗺️ Adventure Zones</h2>
-          <div className={'adventureTabZoneList'}>
+      <div className={'adventure-tab__left-column'}>
+        <div className={'adventure-tab__panel'}>
+          <h2 className={'adventure-tab__panel-title'}>🗺️ Adventure Zones</h2>
+          <div className={'adventure-tab__zone-list'}>
             {zones.map((zone) => {
               const unlocked = isZoneUnlocked(zone.id);
               const isSelected = selectedZoneId === zone.id;
@@ -253,26 +253,26 @@ export function AdventureTab() {
                   key={zone.id}
                   onClick={() => handleZoneClick(zone)}
                   disabled={!unlocked}
-                  className={`${'adventureTabZoneButton'} ${isSelected ? 'adventureTabZoneSelected' : ''} ${
-                    unlocked ? '' : 'adventureTabZoneLocked'
+                  className={`${'adventure-tab__zone-button'} ${isSelected ? 'adventure-tab__zone-selected' : ''} ${
+                    unlocked ? '' : 'adventure-tab__zone-locked'
                   }`}
                   whileHover={unlocked ? { scale: 1.02 } : {}}
                 >
-                  <div className={'adventureTabZoneHeader'}>
-                    <div className={'adventureTabZoneTitleRow'}>
-                      <div className={'adventureTabZoneName'}>{zone.name}</div>
-                      {completed && <div className={'adventureTabZoneCompleted'}>✓</div>}
+                  <div className={'adventure-tab__zone-header'}>
+                    <div className={'adventure-tab__zone-title-row'}>
+                      <div className={'adventure-tab__zone-name'}>{zone.name}</div>
+                      {completed && <div className={'adventure-tab__zone-completed'}>✓</div>}
                     </div>
-                    <div className={'adventureTabZoneLevel'}>Lv. {zone.levelRange.min}-{zone.levelRange.max}</div>
+                    <div className={'adventure-tab__zone-level'}>Lv. {zone.levelRange.min}-{zone.levelRange.max}</div>
                   </div>
-                  <div className={'adventureTabZoneDescription'}>{zone.description}</div>
+                  <div className={'adventure-tab__zone-description'}>{zone.description}</div>
                   {unlocked && enemiesDefeated > 0 && (
-                    <div className={'adventureTabZoneMeta'}>
+                    <div className={'adventure-tab__zone-meta'}>
                       Enemies defeated: {enemiesDefeated}
-                      {bossAvailable && <span className={'adventureTabZoneBoss'}>⚡ Boss available!</span>}
+                      {bossAvailable && <span className={'adventure-tab__zone-boss'}>⚡ Boss available!</span>}
                     </div>
                   )}
-                  {!unlocked && <div className={'adventureTabZoneLockedNote'}>🔒 Defeat previous zone boss to unlock</div>}
+                  {!unlocked && <div className={'adventure-tab__zone-locked-note'}>🔒 Defeat previous zone boss to unlock</div>}
                 </motion.button>
               );
             })}
@@ -281,36 +281,36 @@ export function AdventureTab() {
       </div>
 
       {/* RIGHT PANEL - Combat Area */}
-      <div className={'adventureTabRightColumn'}>
+      <div className={'adventure-tab__right-column'}>
         {!inCombat ? (
           // Not in combat - show selection message
-          <div className={`${'adventureTabPanel'} ${'adventureTabEmptyPanel'}`}>
-            <div className={'adventureTabEmptyContent'}>
-              <div className={'adventureTabEmptyIcon'}>⚔️</div>
-              <h2 className={'adventureTabEmptyTitle'}>{selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}</h2>
-              <p className={'adventureTabEmptyDescription'}>
+          <div className={`${'adventure-tab__panel'} ${'adventure-tab__empty-panel'}`}>
+            <div className={'adventure-tab__empty-content'}>
+              <div className={'adventure-tab__empty-icon'}>⚔️</div>
+              <h2 className={'adventure-tab__empty-title'}>{selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}</h2>
+              <p className={'adventure-tab__empty-description'}>
                 {selectedZoneId
                   ? 'Click on the zone again to find an enemy'
                   : 'Choose an adventure zone from the list to begin'}
               </p>
 
               {/* Quick Stats */}
-              <div className={'adventureTabQuickStats'}>
-                <div className={'adventureTabQuickStatCard'}>
-                  <div className={'adventureTabQuickStatLabel'}>HP</div>
-                  <div className={'adventureTabQuickStatValueGreen'}>{formatNumber(stats.hp)}</div>
+              <div className={'adventure-tab__quick-stats'}>
+                <div className={'adventure-tab__quick-stat-card'}>
+                  <div className={'adventure-tab__quick-stat-label'}>HP</div>
+                  <div className={'adventure-tab__quick-stat-value-green'}>{formatNumber(stats.hp)}</div>
                 </div>
-                <div className={'adventureTabQuickStatCard'}>
-                  <div className={'adventureTabQuickStatLabel'}>ATK</div>
-                  <div className={'adventureTabQuickStatValueRed'}>{formatNumber(stats.atk)}</div>
+                <div className={'adventure-tab__quick-stat-card'}>
+                  <div className={'adventure-tab__quick-stat-label'}>ATK</div>
+                  <div className={'adventure-tab__quick-stat-value-red'}>{formatNumber(stats.atk)}</div>
                 </div>
-                <div className={'adventureTabQuickStatCard'}>
-                  <div className={'adventureTabQuickStatLabel'}>DEF</div>
-                  <div className={'adventureTabQuickStatValueBlue'}>{formatNumber(stats.def)}</div>
+                <div className={'adventure-tab__quick-stat-card'}>
+                  <div className={'adventure-tab__quick-stat-label'}>DEF</div>
+                  <div className={'adventure-tab__quick-stat-value-blue'}>{formatNumber(stats.def)}</div>
                 </div>
-                <div className={'adventureTabQuickStatCard'}>
-                  <div className={'adventureTabQuickStatLabel'}>Gold</div>
-                  <div className={'adventureTabQuickStatValueGold'}>{formatNumber(gold)}</div>
+                <div className={'adventure-tab__quick-stat-card'}>
+                  <div className={'adventure-tab__quick-stat-label'}>Gold</div>
+                  <div className={'adventure-tab__quick-stat-value-gold'}>{formatNumber(gold)}</div>
                 </div>
               </div>
             </div>
@@ -319,7 +319,7 @@ export function AdventureTab() {
           // In combat - show combat interface
           <>
             {/* Combat Canvas */}
-            <div className={`${'adventureTabPanel'} ${'adventureTabCanvasPanel'}`}>
+            <div className={`${'adventure-tab__panel'} ${'adventure-tab__canvas-panel'}`}>
               <CombatCanvas
                 width={800}
                 height={400}
@@ -330,15 +330,15 @@ export function AdventureTab() {
             </div>
 
             {/* Enemy Info */}
-            <div className={`${'adventureTabPanel'} ${'adventureTabEnemyPanel'}`}>
-              <div className={'adventureTabEnemyHeader'}>
+            <div className={`${'adventure-tab__panel'} ${'adventure-tab__enemy-panel'}`}>
+              <div className={'adventure-tab__enemy-header'}>
                 <div>
-                  <h2 className={'adventureTabEnemyName'}>{currentEnemy?.name || 'Unknown Enemy'}</h2>
-                  <div className={'adventureTabEnemyLevel'}>Level {currentEnemy?.level || 1}</div>
+                  <h2 className={'adventure-tab__enemy-name'}>{currentEnemy?.name || 'Unknown Enemy'}</h2>
+                  <div className={'adventure-tab__enemy-level'}>Level {currentEnemy?.level || 1}</div>
                 </div>
-                <div className={'adventureTabEnemyReward'}>
-                  <div className={'adventureTabEnemyRewardLabel'}>Gold Reward</div>
-                  <div className={'adventureTabEnemyRewardValue'}>{formatNumber(currentEnemy?.goldReward || '0')}</div>
+                <div className={'adventure-tab__enemy-reward'}>
+                  <div className={'adventure-tab__enemy-reward-label'}>Gold Reward</div>
+                  <div className={'adventure-tab__enemy-reward-value'}>{formatNumber(currentEnemy?.goldReward || '0')}</div>
                 </div>
               </div>
 
@@ -349,10 +349,10 @@ export function AdventureTab() {
               <HPBar current={playerHP} max={playerMaxHP} label="Your HP" variant="green" />
 
               {/* Combat Controls */}
-              <div className={'adventureTabCombatControls'}>
+              <div className={'adventure-tab__combat-controls'}>
                 <motion.button
                   onClick={handleAttack}
-                  className={`${'adventureTabActionButton'} ${'adventureTabPrimaryAction'}`}
+                  className={`${'adventure-tab__action-button'} ${'adventure-tab__primary-action'}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -361,8 +361,8 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleAutoAttackToggle}
-                  className={`${'adventureTabActionButton'} ${
-                    autoAttack ? 'adventureTabAutoActive' : 'adventureTabAutoInactive'
+                  className={`${'adventure-tab__action-button'} ${
+                    autoAttack ? 'adventure-tab__auto-active' : 'adventure-tab__auto-inactive'
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -372,7 +372,7 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleFlee}
-                  className={`${'adventureTabActionButton'} ${'adventureTabSecondaryAction'}`}
+                  className={`${'adventure-tab__action-button'} ${'adventure-tab__secondary-action'}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -382,8 +382,8 @@ export function AdventureTab() {
             </div>
 
             {/* Combat Log */}
-            <div className={`${'adventureTabPanel'} ${'adventureTabCombatLogPanel'}`}>
-              <h3 className={'adventureTabCombatLogTitle'}>Combat Log</h3>
+            <div className={`${'adventure-tab__panel'} ${'adventure-tab__combat-log-panel'}`}>
+              <h3 className={'adventure-tab__combat-log-title'}>Combat Log</h3>
               <CombatLog />
             </div>
           </>

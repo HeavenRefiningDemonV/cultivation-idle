@@ -19,22 +19,22 @@ const QUALITY_NAMES: Record<SpiritRootGrade, string> = {
  * Quality colors mapped to CSS module classes
  */
 const QUALITY_COLORS: Record<SpiritRootGrade, string> = {
-  1: 'spiritRootDisplayQuality1',
-  2: 'spiritRootDisplayQuality2',
-  3: 'spiritRootDisplayQuality3',
-  4: 'spiritRootDisplayQuality4',
-  5: 'spiritRootDisplayQuality5',
+  1: 'spirit-root__quality--grade1',
+  2: 'spirit-root__quality--grade2',
+  3: 'spirit-root__quality--grade3',
+  4: 'spirit-root__quality--grade4',
+  5: 'spirit-root__quality--grade5',
 };
 
 /**
  * Element colors (background gradients)
  */
 const ELEMENT_COLORS: Record<SpiritRootElement, string> = {
-  fire: 'spiritRootDisplayElementFire',
-  water: 'spiritRootDisplayElementWater',
-  earth: 'spiritRootDisplayElementEarth',
-  metal: 'spiritRootDisplayElementMetal',
-  wood: 'spiritRootDisplayElementWood',
+  fire: 'spirit-root--fire',
+  water: 'spirit-root--water',
+  earth: 'spirit-root--earth',
+  metal: 'spirit-root--metal',
+  wood: 'spirit-root--wood',
 };
 
 /**
@@ -65,12 +65,12 @@ export function SpiritRootDisplay() {
   // If no spirit root exists yet, show placeholder
   if (!spiritRoot) {
     return (
-      <div className={'spiritRootDisplayRoot'}>
-        <h3 className={'spiritRootDisplayHeader'}>
+      <div className="spirit-root">
+        <h3 className="spirit-root__header">
           <span>🌟</span>
           <span>Spirit Root</span>
         </h3>
-        <p className={'spiritRootDisplayPlaceholderText'}>
+        <p className="spirit-root__placeholder">
           Your spirit root is being awakened...
         </p>
       </div>
@@ -93,51 +93,51 @@ export function SpiritRootDisplay() {
   };
 
   return (
-    <div className={'spiritRootDisplayRoot'}>
-      <h3 className={'spiritRootDisplayHeader'}>
+    <div className="spirit-root">
+      <h3 className="spirit-root__header">
         <span>🌟</span>
         <span>Spirit Root</span>
       </h3>
 
-      <div className={`${'spiritRootDisplaySpiritCard'} ${ELEMENT_COLORS[spiritRoot.element]}`}>
-        <div className={'spiritRootDisplaySpiritContent'}>
-          <div className={`${'spiritRootDisplayQualityText'} ${QUALITY_COLORS[spiritRoot.grade]}`}>
+      <div className={`spirit-root__card ${ELEMENT_COLORS[spiritRoot.element]}`}>
+        <div className="spirit-root__card-content">
+          <div className={`spirit-root__quality ${QUALITY_COLORS[spiritRoot.grade]}`}>
             {QUALITY_NAMES[spiritRoot.grade]}
           </div>
 
-          <div className={'spiritRootDisplayElementLabel'}>{spiritRoot.element} Element</div>
+          <div className="spirit-root__element-label">{spiritRoot.element} Element</div>
 
-          <div className={'spiritRootDisplayPurityText'}>{spiritRoot.purity}% Purity</div>
+          <div className="spirit-root__purity">{spiritRoot.purity}% Purity</div>
         </div>
       </div>
 
-      <div className={'spiritRootDisplayBonusCard'}>
-        <h4 className={'spiritRootDisplayBonusHeader'}>Bonuses:</h4>
-        <div className={'spiritRootDisplayBonusList'}>
-          <div className={'spiritRootDisplayBonusRow'}>
-            <span className={'spiritRootDisplayBonusLabel'}>Quality Multiplier:</span>
-            <span className={'spiritRootDisplayBonusValueGreen'}>{qualityMult.toFixed(2)}x</span>
+      <div className="spirit-root__bonus-card">
+        <h4 className="spirit-root__bonus-title">Bonuses:</h4>
+        <div className="spirit-root__bonus-list">
+          <div className="spirit-root__bonus-row">
+            <span className="spirit-root__bonus-label">Quality Multiplier:</span>
+            <span className="spirit-root__bonus-value--green">{qualityMult.toFixed(2)}x</span>
           </div>
 
-          <div className={'spiritRootDisplayBonusRow'}>
-            <span className={'spiritRootDisplayBonusLabel'}>Purity Multiplier:</span>
-            <span className={'spiritRootDisplayBonusValueBlue'}>{purityMult.toFixed(2)}x</span>
+          <div className="spirit-root__bonus-row">
+            <span className="spirit-root__bonus-label">Purity Multiplier:</span>
+            <span className="spirit-root__bonus-value--blue">{purityMult.toFixed(2)}x</span>
           </div>
 
-          <div className={`${'spiritRootDisplayBonusRow'} ${'spiritRootDisplayBonusTotal'}`}>
-            <span className={'spiritRootDisplayBonusHeader'}>Total Multiplier:</span>
-            <span className={'spiritRootDisplayBonusTotalValue'}>{totalMult.toFixed(2)}x</span>
+          <div className="spirit-root__bonus-row spirit-root__bonus-row--total">
+            <span className="spirit-root__bonus-title">Total Multiplier:</span>
+            <span className="spirit-root__bonus-total">{totalMult.toFixed(2)}x</span>
           </div>
 
-          <div className={'spiritRootDisplayElementBonus'}>
+          <div className="spirit-root__element-bonus">
             <span>Element Bonus:</span>
             <div>{ELEMENT_BONUS_DESCRIPTIONS[spiritRoot.element]}</div>
           </div>
         </div>
       </div>
 
-      <div className={'spiritRootDisplayInfoBox'}>
-        <span className={'spiritRootDisplayInfoHighlight'}>About Spirit Roots:</span> Your spirit root determines
+      <div className="spirit-root__info">
+        <span className="spirit-root__info-highlight">About Spirit Roots:</span> Your spirit root determines
         your cultivation potential. Higher quality and purity provide greater stat multipliers that apply to all
         your stats. Each element grants unique bonuses to specific abilities.
       </div>
@@ -145,7 +145,7 @@ export function SpiritRootDisplay() {
       <button
         onClick={handleReroll}
         disabled={!canAfford}
-        className={'spiritRootDisplayRerollButton'}
+        className="spirit-root__reroll"
         title={!canAfford ? `Need ${formatNumber(rerollCost.toString())} gold` : 'Reroll your spirit root'}
       >
         {canAfford
@@ -154,7 +154,7 @@ export function SpiritRootDisplay() {
       </button>
 
       {!canAfford && (
-        <p className={'spiritRootDisplayWarningText'}>
+        <p className="spirit-root__warning">
           Need {formatNumber(D(rerollCost).minus(gold).toString())} more gold
         </p>
       )}

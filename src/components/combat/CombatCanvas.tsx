@@ -450,7 +450,7 @@ export function CombatCanvas({
   return (
     <canvas
       ref={canvasRef}
-      className={'combatCanvasCanvas'}
+      className="combat-canvas__canvas"
       style={{ maxWidth: '100%' }}
     />
   );

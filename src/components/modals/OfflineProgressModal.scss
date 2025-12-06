@@ -1,4 +1,4 @@
-.offlineProgressModalOverlay {
+.offline-progress-modal__overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
@@ -9,7 +9,7 @@
   z-index: 50;
 }
 
-.offlineProgressModalModal {
+.offline-progress-modal__modal {
   background: var(--color-bg-panel-strong);
   border: 1px solid rgba(125, 211, 252, 0.4);
   border-radius: var(--radius-lg);
@@ -19,25 +19,25 @@
   padding: var(--space-5);
 }
 
-.offlineProgressModalHeader {
+.offline-progress-modal__header {
   text-align: center;
   margin-bottom: var(--space-4);
 }
 
-.offlineProgressModalTitle {
+.offline-progress-modal__title {
   margin: 0 0 var(--space-2) 0;
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-ink-white);
 }
 
-.offlineProgressModalSubtitle {
+.offline-progress-modal__subtitle {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
 }
 
-.offlineProgressModalSummaryCard {
+.offline-progress-modal__summary-card {
   background: rgba(45, 55, 72, 0.5);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -46,29 +46,29 @@
   gap: var(--space-2);
 }
 
-.offlineProgressModalSummaryRow {
+.offline-progress-modal__summary-row {
   display: flex;
   justify-content: space-between;
   color: var(--color-ink-white);
   font-size: var(--text-base);
 }
 
-.offlineProgressModalSummarySmall {
+.offline-progress-modal__summary-small {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
 }
 
-.offlineProgressModalEmphasis {
+.offline-progress-modal__emphasis {
   color: var(--color-qi-blue);
   font-weight: 600;
 }
 
-.offlineProgressModalGain {
+.offline-progress-modal__gain {
   color: var(--color-element-wood);
   font-weight: 600;
 }
 
-.offlineProgressModalCappedNotice {
+.offline-progress-modal__capped-notice {
   font-size: var(--text-xs);
   color: #facc15;
   background: rgba(250, 204, 21, 0.08);
@@ -77,12 +77,12 @@
   padding: var(--space-2);
 }
 
-.offlineProgressModalActions {
+.offline-progress-modal__actions {
   margin-top: var(--space-5);
   text-align: center;
 }
 
-.offlineProgressModalContinueButton {
+.offline-progress-modal__continue-button {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   border: none;
@@ -93,6 +93,6 @@
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.offlineProgressModalContinueButton:hover {
+.offline-progress-modal__continue-button:hover {
   filter: brightness(1.1);
 }

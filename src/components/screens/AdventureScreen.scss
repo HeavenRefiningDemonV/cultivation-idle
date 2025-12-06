@@ -1,11 +1,11 @@
-.adventureScreenRoot {
+.adventure-screen {
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #0f172a, #111827);
   border-radius: var(--radius-lg);
 }
 
-.adventureScreenBackground {
+.adventure-screen__background {
   position: absolute;
   inset: 0;
   opacity: 0.12;
@@ -13,7 +13,7 @@
     radial-gradient(circle at 70% 50%, rgba(251, 191, 36, 0.35) 0%, transparent 50%);
 }
 
-.adventureScreenContent {
+.adventure-screen__content {
   position: relative;
   z-index: 1;
   max-width: 1100px;
@@ -24,11 +24,11 @@
   gap: var(--space-5);
 }
 
-.adventureScreenHeader {
+.adventure-screen__header {
   text-align: center;
 }
 
-.adventureScreenTitle {
+.adventure-screen__title {
   margin: 0 0 var(--space-2) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-4xl);
@@ -36,19 +36,19 @@
   color: var(--color-gold-accent);
 }
 
-.adventureScreenSubtitle {
+.adventure-screen__subtitle {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.adventureScreenZoneGrid {
+.adventure-screen__zone-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--space-4);
 }
 
-.adventureScreenZoneCard {
+.adventure-screen__zone-card {
   background: rgba(26, 26, 26, 0.65);
   border: 2px solid rgba(251, 191, 36, 0.35);
   border-radius: var(--radius-lg);
@@ -57,17 +57,17 @@
   transition: transform 0.15s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
-.adventureScreenZoneCard:hover {
+.adventure-screen__zone-card:hover {
   transform: translateY(-2px);
   border-color: rgba(251, 191, 36, 0.6);
 }
 
-.adventureScreenZoneCardLocked {
+.adventure-screen__zone-card-locked {
   opacity: 0.5;
   border-color: #334155;
 }
 
-.adventureScreenZoneTitle {
+.adventure-screen__zone-title {
   margin: 0 0 var(--space-1) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-xl);
@@ -75,13 +75,13 @@
   color: var(--color-gold-accent);
 }
 
-.adventureScreenZoneDescription {
+.adventure-screen__zone-description {
   margin: 0 0 var(--space-3) 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.adventureScreenZoneDetails {
+.adventure-screen__zone-details {
   display: grid;
   gap: var(--space-1);
   font-size: var(--text-sm);
@@ -89,27 +89,27 @@
   margin-bottom: var(--space-3);
 }
 
-.adventureScreenZoneBoss {
+.adventure-screen__zone-boss {
   color: var(--color-gold-accent);
   font-weight: 700;
 }
 
-.adventureScreenZoneHint {
+.adventure-screen__zone-hint {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
 
-.adventureScreenZoneProgress {
+.adventure-screen__zone-progress {
   color: var(--color-qi-blue);
   font-size: var(--text-xs);
 }
 
-.adventureScreenZoneButtons {
+.adventure-screen__zone-buttons {
   display: flex;
   gap: var(--space-2);
 }
 
-.adventureScreenButton {
+.adventure-screen__button {
   flex: 1;
   padding: var(--space-3) var(--space-4);
   border: none;
@@ -121,27 +121,27 @@
   cursor: pointer;
 }
 
-.adventureScreenButton:hover {
+.adventure-screen__button:hover {
   filter: brightness(1.05);
 }
 
-.adventureScreenButtonDanger {
+.adventure-screen__button-danger {
   background: var(--color-breakthrough-red);
 }
 
-.adventureScreenButtonDisabled {
+.adventure-screen__button-disabled {
   background: #475569;
   color: #cbd5e1;
   cursor: not-allowed;
 }
 
-.adventureScreenCombatWrapper {
+.adventure-screen__combat-wrapper {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.adventureScreenEnemyCard {
+.adventure-screen__enemy-card {
   background: rgba(26, 26, 26, 0.65);
   border: 2px solid rgba(248, 113, 113, 0.5);
   border-radius: var(--radius-lg);
@@ -150,7 +150,7 @@
   backdrop-filter: blur(6px);
 }
 
-.adventureScreenEnemyTitle {
+.adventure-screen__enemy-title {
   margin: 0 0 var(--space-1) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-2xl);
@@ -158,28 +158,28 @@
   color: #f87171;
 }
 
-.adventureScreenEnemyBadge {
+.adventure-screen__enemy-badge {
   color: #fbbf24;
   font-weight: 700;
   font-size: var(--text-sm);
   margin-bottom: var(--space-2);
 }
 
-.adventureScreenBarGroup {
+.adventure-screen__bar-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   text-align: left;
 }
 
-.adventureScreenBarLabelRow {
+.adventure-screen__bar-label-row {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
 }
 
-.adventureScreenBarContainer {
+.adventure-screen__bar-container {
   height: 32px;
   background: rgba(30, 41, 59, 0.6);
   border-radius: 9999px;
@@ -187,7 +187,7 @@
   border: 2px solid rgba(248, 113, 113, 0.35);
 }
 
-.adventureScreenBarFill {
+.adventure-screen__bar-fill {
   height: 100%;
   display: flex;
   align-items: center;
@@ -200,12 +200,12 @@
   background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
-.adventureScreenBarFillPlayer {
+.adventure-screen__bar-fill-player {
   border-color: rgba(74, 222, 128, 0.35);
   background: linear-gradient(90deg, #22c55e, #16a34a);
 }
 
-.adventureScreenStatGrid {
+.adventure-screen__stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--space-3);
@@ -213,12 +213,12 @@
   color: var(--color-text-primary);
 }
 
-.adventureScreenStatLabel {
+.adventure-screen__stat-label {
   color: var(--color-text-muted);
   margin-bottom: 2px;
 }
 
-.adventureScreenPlayerCard {
+.adventure-screen__player-card {
   background: rgba(26, 26, 26, 0.65);
   border: 2px solid rgba(74, 222, 128, 0.5);
   border-radius: var(--radius-lg);
@@ -226,7 +226,7 @@
   backdrop-filter: blur(6px);
 }
 
-.adventureScreenPlayerTitle {
+.adventure-screen__player-title {
   margin: 0 0 var(--space-2) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-xl);
@@ -234,12 +234,12 @@
   color: #4ade80;
 }
 
-.adventureScreenCombatControls {
+.adventure-screen__combat-controls {
   display: flex;
   gap: var(--space-2);
 }
 
-.adventureScreenControlButton {
+.adventure-screen__control-button {
   flex: 1;
   padding: var(--space-3);
   border: none;
@@ -250,31 +250,31 @@
   cursor: pointer;
 }
 
-.adventureScreenControlButton:hover {
+.adventure-screen__control-button:hover {
   filter: brightness(1.05);
 }
 
-.adventureScreenControlSecondary {
+.adventure-screen__control-secondary {
   background: #ca8a04;
 }
 
-.adventureScreenControlMuted {
+.adventure-screen__control-muted {
   background: #475569;
   color: #cbd5e1;
   cursor: not-allowed;
 }
 
-.adventureScreenControlDanger {
+.adventure-screen__control-danger {
   background: #dc2626;
 }
 
-.adventureScreenTechniquesGrid {
+.adventure-screen__techniques-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-4);
 }
 
-.adventureScreenCombatLogCard {
+.adventure-screen__combat-log-card {
   background: rgba(26, 26, 26, 0.65);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -282,7 +282,7 @@
   backdrop-filter: blur(6px);
 }
 
-.adventureScreenCombatLogTitle {
+.adventure-screen__combat-log-title {
   margin: 0 0 var(--space-2) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-lg);
@@ -290,7 +290,7 @@
   color: var(--color-gold-accent);
 }
 
-.adventureScreenCombatLogBody {
+.adventure-screen__combat-log-body {
   max-height: 260px;
   overflow-y: auto;
   display: grid;
@@ -300,16 +300,16 @@
   color: var(--color-text-secondary);
 }
 
-.adventureScreenCombatLogDefault {
+.adventure-screen__combat-log-default {
   color: var(--color-text-secondary);
 }
 
-.adventureScreenCombatLogEmpty {
+.adventure-screen__combat-log-empty {
   color: var(--color-text-muted);
   font-style: italic;
 }
 
-.adventureScreenErrorCard {
+.adventure-screen__error-card {
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #0f172a, #111827);
@@ -318,21 +318,21 @@
   text-align: center;
 }
 
-.adventureScreenErrorTitle {
+.adventure-screen__error-title {
   margin: 0 0 var(--space-2) 0;
   color: #f87171;
   font-size: var(--text-2xl);
   font-weight: 700;
 }
 
-.adventureScreenErrorMessage {
+.adventure-screen__error-message {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
 @media (min-width: 1024px) {
-  .adventureScreenTechniquesGrid {
+  .adventure-screen__techniques-grid {
     grid-template-columns: 1fr 1fr;
   }
 }

@@ -16,15 +16,15 @@ import './CultivateScreen.scss';
  */
 function MeditatingCharacter() {
   return (
-    <div className={'cultivateScreenMeditationCharacter'}>
+    <div className={'cultivate-screen__meditation'}>
       {/* Qi aura rings */}
-      <div className={'cultivateScreenAuraLayer'}>
-        <div className={'cultivateScreenAuraRingLarge'} />
-        <div className={'cultivateScreenAuraRingMedium'} />
-        <div className={'cultivateScreenAuraRingSmall'} />
+      <div className={'cultivate-screen__aura'}>
+        <div className={'cultivate-screen__aura-ring--large'} />
+        <div className={'cultivate-screen__aura-ring--medium'} />
+        <div className={'cultivate-screen__aura-ring--small'} />
       </div>
 
-      <div className={'cultivateScreenMeditator'}>
+      <div className={'cultivate-screen__meditator'}>
         🧘
       </div>
 
@@ -47,26 +47,26 @@ function OrnateProgressBar({
   const percent = Math.min(100, parseFloat((Number(current) / Number(max) * 100).toFixed(2)));
 
   return (
-    <div className={'cultivateScreenProgressSection'}>
-      <div className={'cultivateScreenProgressBlock'}>
-        <span className={'cultivateScreenProgressLabel'}>{label}</span>
-        <span className={'cultivateScreenProgressValue'}>
+    <div className={'cultivate-screen__progress-section'}>
+      <div className={'cultivate-screen__progress-block'}>
+        <span className={'cultivate-screen__progress-label'}>{label}</span>
+        <span className={'cultivate-screen__progress-value'}>
           {formatNumber(current)} / {formatNumber(max)}
         </span>
       </div>
 
       {/* Ornate container */}
-      <div className={'cultivateScreenProgressContainer'}>
+      <div className={'cultivate-screen__progress-container'}>
         {/* Background pattern */}
-        <div className={'cultivateScreenProgressPattern'} />
+        <div className={'cultivate-screen__progress-pattern'} />
 
         {/* Gradient fill */}
-        <div className={'cultivateScreenProgressFill'} style={{ width: `${percent}%` }}>
-          <div className={'cultivateScreenProgressShimmer'} />
+        <div className={'cultivate-screen__progress-fill'} style={{ width: `${percent}%` }}>
+          <div className={'cultivate-screen__progress-shimmer'} />
         </div>
 
         {/* Percentage text */}
-        <div className={'cultivateScreenProgressText'}>{percent.toFixed(1)}%</div>
+        <div className={'cultivate-screen__progress-text'}>{percent.toFixed(1)}%</div>
       </div>
     </div>
   );
@@ -174,39 +174,39 @@ export function CultivateScreen() {
   };
 
   return (
-    <div className={'cultivateScreenRoot'}>
-      <div className={'cultivateScreenContent'}>
-        <div className={'cultivateScreenHeader'}>
-          <h1 className={'cultivateScreenTitle'}>Cultivation Chamber</h1>
-          <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
+    <div className={'cultivate-screen'}>
+      <div className={'cultivate-screen__content'}>
+        <div className={'cultivate-screen__header'}>
+          <h1 className={'cultivate-screen__title'}>Cultivation Chamber</h1>
+          <p className={'cultivate-screen__subtitle'}>Meditate and gather Qi to advance your cultivation</p>
         </div>
 
         {/* Main Grid Layout */}
-        <div className={'cultivateScreenGrid'}>
+        <div className={'cultivate-screen__grid'}>
           {/* LEFT: Meditation Display */}
-          <div className={'cultivateScreenLeftColumn'}>
+          <div className={'cultivate-screen__left'}>
             {/* Meditating Character */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+            <div className={`${'cultivate-screen__panel'} ${'cultivate-screen__panelDark'}`}>
               <MeditatingCharacter />
 
               {/* Qi Stats */}
-              <div className={'cultivateScreenStatsGrid'}>
-                <div className={'cultivateScreenStatCard'}>
-                  <div className={'cultivateScreenStatLabel'}>Current Qi</div>
-                  <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
+              <div className={'cultivate-screen__stats'}>
+                <div className={'cultivate-screen__stat-card'}>
+                  <div className={'cultivate-screen__stat-label'}>Current Qi</div>
+                  <div className={'cultivate-screen__stat-value'}>{formatNumber(qi)}</div>
                 </div>
-                <div className={'cultivateScreenStatCard'}>
-                  <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
-                  <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
+                <div className={'cultivate-screen__stat-card'}>
+                  <div className={'cultivate-screen__stat-label'}>Qi per Second</div>
+                  <div className={'cultivate-screen__stat-value'}>{formatNumber(qiPerSecond)}</div>
                 </div>
               </div>
             </div>
 
             {/* Breakthrough Progress */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <div className={'cultivateScreenProgressHeader'}>
-                <div className={'cultivateScreenProgressTitle'}>{currentRealm.name}</div>
-                <div className={'cultivateScreenProgressSubtitle'}>
+            <div className={`${'cultivate-screen__panel'} ${'cultivate-screen__panelDark'}`}>
+              <div className={'cultivate-screen__progress-header'}>
+                <div className={'cultivate-screen__progress-title'}>{currentRealm.name}</div>
+                <div className={'cultivate-screen__progress-subtitle'}>
                   {isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`}
                 </div>
               </div>
@@ -214,17 +214,17 @@ export function CultivateScreen() {
               <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
 
               {requiredGateItem && (
-                <div className={'cultivateScreenGateRequirement'}>
+                <div className={'cultivate-screen__gate-requirement'}>
                   {hasRequiredToken ? (
-                    <span className={'cultivateScreenGateReady'}>
+                    <span className={'cultivate-screen__gate-ready'}>
                       ✅ {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
                     </span>
                   ) : (
-                    <span className={'cultivateScreenGateMissing'}>
+                    <span className={'cultivate-screen__gate-missing'}>
                       🔒 Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
                     </span>
                   )}
-                  <p className={'cultivateScreenGateNote'}>
+                  <p className={'cultivate-screen__gate-note'}>
                     Obtained from key bosses and trials. One will be consumed when breaking through to the
                     next realm.
                   </p>
@@ -235,7 +235,7 @@ export function CultivateScreen() {
               <button
                 onClick={handleBreakthrough}
                 disabled={!canBreakthrough}
-                className={'cultivateScreenBreakthroughButton'}
+                className={'cultivate-screen__breakthrough-button'}
               >
                 {canBreakthrough
                   ? '✨ Break Through! ✨'
@@ -247,22 +247,22 @@ export function CultivateScreen() {
           </div>
 
           {/* RIGHT: Focus & Upgrades */}
-          <div className={'cultivateScreenRightColumn'}>
+          <div className={'cultivate-screen__right'}>
             {/* Focus Mode Selector */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <h3 className={'cultivateScreenPanelHeader'}>Cultivation Focus</h3>
+            <div className={`${'cultivate-screen__panel'} ${'cultivate-screen__panelDark'}`}>
+              <h3 className={'cultivate-screen__panelHeader'}>Cultivation Focus</h3>
 
-              <div className={'cultivateScreenFocusList'}>
+              <div className={'cultivate-screen__focus-list'}>
                 {(['balanced', 'body', 'spirit'] as const).map((mode) => {
                   const isActive = focusMode === mode;
                   return (
                     <button
                       key={mode}
                       onClick={() => setFocusMode(mode)}
-                      className={`${'cultivateScreenFocusButton'} ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
+                      className={`${'cultivate-screen__focus-button'} ${isActive ? 'cultivate-screen__focus-buttonActive' : ''}`}
                     >
-                      <div className={'cultivateScreenFocusTitle'}>{mode}</div>
-                      <div className={'cultivateScreenFocusDescription'}>
+                      <div className={'cultivate-screen__focus-title'}>{mode}</div>
+                      <div className={'cultivate-screen__focus-description'}>
                         {mode === 'balanced' && 'Equal focus on all aspects'}
                         {mode === 'body' && 'Enhance physical cultivation'}
                         {mode === 'spirit' && 'Focus on spiritual energy'}
@@ -274,17 +274,17 @@ export function CultivateScreen() {
             </div>
 
             {/* Cultivation Info */}
-            <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-              <h3 className={'cultivateScreenPanelHeader'}>Cultivation Info</h3>
+            <div className={`${'cultivate-screen__panel'} ${'cultivate-screen__panelDark'}`}>
+              <h3 className={'cultivate-screen__panelHeader'}>Cultivation Info</h3>
 
-              <div className={'cultivateScreenInfoList'}>
+              <div className={'cultivate-screen__info-list'}>
                 <div>
-                  <div className={'cultivateScreenInfoLabel'}>Current Path</div>
-                  <div className={'cultivateScreenInfoValue'}>{useGameStore.getState().selectedPath || 'None'}</div>
+                  <div className={'cultivate-screen__info-label'}>Current Path</div>
+                  <div className={'cultivate-screen__info-value'}>{useGameStore.getState().selectedPath || 'None'}</div>
                 </div>
                 <div>
-                  <div className={'cultivateScreenInfoLabel'}>Total Auras</div>
-                  <div className={`${'cultivateScreenInfoValue'} ${'cultivateScreenInfoHighlight'}`}>
+                  <div className={'cultivate-screen__info-label'}>Total Auras</div>
+                  <div className={`${'cultivate-screen__info-value'} ${'cultivate-screen__info-highlight'}`}>
                     {formatNumber(useGameStore.getState().totalAuras)}
                   </div>
                 </div>

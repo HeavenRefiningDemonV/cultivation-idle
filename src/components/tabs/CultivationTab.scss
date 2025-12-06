@@ -1,4 +1,4 @@
-.cultivationTabRoot {
+.cultivation-tab {
   max-width: 1152px;
   margin: 0 auto;
   display: flex;
@@ -6,7 +6,7 @@
   gap: var(--space-6);
 }
 
-.cultivationTabPanel {
+.cultivation-tab__panel {
   background-color: var(--color-bg-panel);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -14,11 +14,11 @@
   box-shadow: var(--shadow-soft);
 }
 
-.cultivationTabTopPanel {
+.cultivation-tab__top-panel {
   padding: var(--space-7);
 }
 
-.cultivationTabTopContent {
+.cultivation-tab__top-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,27 +26,27 @@
 }
 
 @media (min-width: 1024px) {
-  .cultivationTabTopContent {
+  .cultivation-tab__top-content {
     flex-direction: row;
     align-items: flex-start;
   }
 }
 
-.cultivationTabProgressWrapper {
+.cultivation-tab__progress-wrapper {
   position: relative;
   flex-shrink: 0;
 }
 
-.cultivationTabProgressRing {
+.cultivation-tab__progress-ring {
   transform: rotate(-90deg);
   color: var(--color-border);
 }
 
-.cultivationTabProgressTrack {
+.cultivation-tab__progress-track {
   color: var(--color-border-strong);
 }
 
-.cultivationTabProgressOverlay {
+.cultivation-tab__progress-overlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -56,48 +56,48 @@
   text-align: center;
 }
 
-.cultivationTabProgressValue {
+.cultivation-tab__progress-value {
   font-size: var(--text-4xl);
   font-weight: 700;
   color: var(--color-qi-blue);
 }
 
-.cultivationTabProgressLabel {
+.cultivation-tab__progress-label {
   margin-top: var(--space-1);
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
-.cultivationTabRealmInfo {
+.cultivation-tab__realm-info {
   flex: 1;
   text-align: center;
 }
 
 @media (min-width: 1024px) {
-  .cultivationTabRealmInfo {
+  .cultivation-tab__realm-info {
     text-align: left;
   }
 }
 
-.cultivationTabRealmTitle {
+.cultivation-tab__realm-title {
   font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--color-ink-white);
   margin-bottom: var(--space-2);
 }
 
-.cultivationTabRealmSubtitle {
+.cultivation-tab__realm-subtitle {
   font-size: var(--text-lg);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-3);
 }
 
-.cultivationTabRealmMajor {
+.cultivation-tab__realm-major {
   color: var(--color-text-muted);
   margin-bottom: var(--space-4);
 }
 
-.cultivationTabRealmStats {
+.cultivation-tab__realm-stats {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -105,29 +105,29 @@
 }
 
 @media (min-width: 1024px) {
-  .cultivationTabRealmStats {
+  .cultivation-tab__realm-stats {
     justify-content: flex-start;
   }
 }
 
-.cultivationTabStatLabel {
+.cultivation-tab__stat-label {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
 
-.cultivationTabStatHighlight {
+.cultivation-tab__stat-highlight {
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--color-gold-accent);
 }
 
-.cultivationTabStatGrid {
+.cultivation-tab__stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-4);
 }
 
-.cultivationTabStatCard {
+.cultivation-tab__stat-card {
   background-color: var(--color-bg-panel-strong);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -135,7 +135,7 @@
   box-shadow: var(--shadow-soft);
 }
 
-.cultivationTabStatCardLabel {
+.cultivation-tab__stat-card-label {
   font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -143,36 +143,36 @@
   margin-bottom: var(--space-2);
 }
 
-.cultivationTabStatCardValue {
+.cultivation-tab__stat-card-value {
   font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--color-qi-blue);
 }
 
-.cultivationTabStatCardValueAlt {
+.cultivation-tab__stat-card-value-alt {
   font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--color-gold-accent);
 }
 
-.cultivationTabSectionTitle {
+.cultivation-tab__section-title {
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-ink-white);
   margin-bottom: var(--space-4);
 }
 
-.cultivationTabFocusPanel {
+.cultivation-tab__focus-panel {
   padding: var(--space-5);
 }
 
-.cultivationTabFocusGrid {
+.cultivation-tab__focus-grid {
   display: grid;
   gap: var(--space-4);
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-.cultivationTabFocusCard {
+.cultivation-tab__focus-card {
   padding: var(--space-4);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -181,13 +181,13 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.cultivationTabFocusCardActive {
+.cultivation-tab__focus-card-active {
   border-color: var(--color-qi-blue);
   background: rgba(125, 211, 252, 0.08);
   box-shadow: 0 0 20px rgba(125, 211, 252, 0.25);
 }
 
-.cultivationTabFocusTitle {
+.cultivation-tab__focus-title {
   font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-ink-white);
@@ -195,56 +195,56 @@
   text-transform: capitalize;
 }
 
-.cultivationTabFocusStats {
+.cultivation-tab__focus-stats {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   font-size: var(--text-sm);
 }
 
-.cultivationTabFocusQi {
+.cultivation-tab__focus-qi {
   color: var(--color-text-secondary);
 }
 
-.cultivationTabFocusQiValue {
+.cultivation-tab__focus-qi-value {
   color: var(--color-qi-blue);
   font-weight: 600;
 }
 
-.cultivationTabFocusModifiers {
+.cultivation-tab__focus-modifiers {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   display: grid;
   gap: var(--space-1);
 }
 
-.cultivationTabBreakthroughPanel {
+.cultivation-tab__breakthrough-panel {
   padding: var(--space-5);
 }
 
-.cultivationTabBreakthroughContent {
+.cultivation-tab__breakthrough-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-4);
 }
 
-.cultivationTabBreakthroughInfo {
+.cultivation-tab__breakthrough-info {
   text-align: center;
 }
 
-.cultivationTabBreakthroughLabel {
+.cultivation-tab__breakthrough-label {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   margin-bottom: var(--space-2);
 }
 
-.cultivationTabBreakthroughValue {
+.cultivation-tab__breakthrough-value {
   font-size: var(--text-lg);
   color: var(--color-text-secondary);
 }
 
-.cultivationTabBreakthroughButton {
+.cultivation-tab__breakthrough-button {
   padding: var(--space-4) var(--space-6);
   border: none;
   border-radius: var(--radius-lg);
@@ -253,30 +253,30 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.cultivationTabBreakthroughReady {
+.cultivation-tab__breakthrough-ready {
   background: linear-gradient(90deg, var(--color-qi-dark), #3b82f6);
   color: var(--color-ink-white);
   box-shadow: var(--shadow-qi);
   cursor: pointer;
 }
 
-.cultivationTabBreakthroughDisabled {
+.cultivation-tab__breakthrough-disabled {
   background: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
-.cultivationTabUpgradePanel {
+.cultivation-tab__upgrade-panel {
   padding: var(--space-5);
 }
 
-.cultivationTabUpgradeGrid {
+.cultivation-tab__upgrade-grid {
   display: grid;
   gap: var(--space-4);
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-.cultivationTabUpgradeCard {
+.cultivation-tab__upgrade-card {
   background: rgba(55, 65, 81, 0.35);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -284,54 +284,54 @@
   box-shadow: var(--shadow-soft);
 }
 
-.cultivationTabIdleCard {
+.cultivation-tab__idle-card {
   border-color: rgba(125, 211, 252, 0.5);
 }
 
-.cultivationTabDamageCard {
+.cultivation-tab__damage-card {
   border-color: rgba(248, 113, 113, 0.4);
 }
 
-.cultivationTabHpCard {
+.cultivation-tab__hp-card {
   border-color: rgba(52, 211, 153, 0.4);
 }
 
-.cultivationTabUpgradeTitle {
+.cultivation-tab__upgrade-title {
   font-size: var(--text-lg);
   font-weight: 700;
   margin-bottom: var(--space-2);
 }
 
-.cultivationTabIdleTitle {
+.cultivation-tab__idle-title {
   color: var(--color-qi-blue);
 }
 
-.cultivationTabDamageTitle {
+.cultivation-tab__damage-title {
   color: var(--color-breakthrough-red);
 }
 
-.cultivationTabHpTitle {
+.cultivation-tab__hp-title {
   color: var(--color-element-wood);
 }
 
-.cultivationTabUpgradeDescription {
+.cultivation-tab__upgrade-description {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-3);
 }
 
-.cultivationTabUpgradeTier {
+.cultivation-tab__upgrade-tier {
   font-size: var(--text-xs);
   color: var(--color-text-muted);
   margin-bottom: var(--space-3);
 }
 
-.cultivationTabUpgradeTierValue {
+.cultivation-tab__upgrade-tier-value {
   color: var(--color-ink-white);
   font-weight: 600;
 }
 
-.cultivationTabUpgradeButton {
+.cultivation-tab__upgrade-button {
   width: 100%;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
@@ -340,24 +340,24 @@
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.cultivationTabUpgradeButtonActive {
+.cultivation-tab__upgrade-button-active {
   background: linear-gradient(90deg, var(--color-qi-dark), #0ea5e9);
   color: var(--color-ink-white);
   cursor: pointer;
 }
 
-.cultivationTabUpgradeButtonDisabled {
+.cultivation-tab__upgrade-button-disabled {
   background: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
 }
 
 @media (max-width: 640px) {
-  .cultivationTabPanel,
-  .cultivationTabTopPanel,
-  .cultivationTabFocusPanel,
-  .cultivationTabUpgradePanel,
-  .cultivationTabBreakthroughPanel {
+  .cultivation-tab__panel,
+  .cultivation-tab__top-panel,
+  .cultivation-tab__focus-panel,
+  .cultivation-tab__upgrade-panel,
+  .cultivation-tab__breakthrough-panel {
     padding: var(--space-4);
   }
 }

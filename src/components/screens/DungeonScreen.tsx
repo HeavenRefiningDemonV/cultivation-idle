@@ -58,12 +58,12 @@ function getReadinessLevel(
   const avgRatio = (dpsRatio + hpRatio) / 2;
 
   if (avgRatio >= 1.2) {
-    return { level: 'ready', className: 'dungeonScreenReadinessReady', text: 'READY' };
+    return { level: 'ready', className: 'dungeon-screen__readiness-ready', text: 'READY' };
   }
   if (avgRatio >= 0.8) {
-    return { level: 'caution', className: 'dungeonScreenReadinessCaution', text: 'CAUTION' };
+    return { level: 'caution', className: 'dungeon-screen__readiness-caution', text: 'CAUTION' };
   }
-  return { level: 'danger', className: 'dungeonScreenReadinessDanger', text: 'DANGER' };
+  return { level: 'danger', className: 'dungeon-screen__readiness-danger', text: 'DANGER' };
 }
 
 /**
@@ -85,58 +85,58 @@ function BossPreviewModal({
   const readiness = getReadinessLevel(playerDPS, playerHP, dungeon.suggestedDPS, dungeon.suggestedHP);
 
   const getBarClass = (value: number, target: number) => {
-    if (value >= target) return 'dungeonScreenProgressFill';
-    if (value >= target * 0.8) return `${'dungeonScreenProgressFill'} ${'dungeonScreenProgressFillWarning'}`;
-    return `${'dungeonScreenProgressFill'} ${'dungeonScreenProgressFillDanger'}`;
+    if (value >= target) return 'dungeon-screen__progress-fill';
+    if (value >= target * 0.8) return `${'dungeon-screen__progress-fill'} ${'dungeon-screen__progress-fill-warning'}`;
+    return `${'dungeon-screen__progress-fill'} ${'dungeon-screen__progress-fill-danger'}`;
   };
 
   return (
-    <div className={'dungeonScreenOverlay'}>
-      <div className={'dungeonScreenModal'}>
+    <div className={'dungeon-screen__overlay'}>
+      <div className={'dungeon-screen__modal'}>
         {/* Header */}
-        <div className={'dungeonScreenModalHeader'}>
+        <div className={'dungeon-screen__modal-header'}>
           <div>
-            <h2 className={'dungeonScreenModalTitle'}>{dungeon.name}</h2>
-            <p className={'dungeonScreenModalSubtitle'}>{dungeon.description}</p>
+            <h2 className={'dungeon-screen__modal-title'}>{dungeon.name}</h2>
+            <p className={'dungeon-screen__modal-subtitle'}>{dungeon.description}</p>
           </div>
-          <button onClick={onClose} className={'dungeonScreenCloseButton'} aria-label="Close preview">
+          <button onClick={onClose} className={'dungeon-screen__close-button'} aria-label="Close preview">
             ×
           </button>
         </div>
 
         {/* Content */}
-        <div className={'dungeonScreenModalBody'}>
+        <div className={'dungeon-screen__modal-body'}>
           {/* Boss Info */}
-          <div className={`${'dungeonScreenPanel'} ${'dungeonScreenPanelAccentRed'}`}>
-            <h3 className={'dungeonScreenSectionTitle'}>{dungeon.boss.name}</h3>
+          <div className={`${'dungeon-screen__panel'} ${'dungeon-screen__panel-accent-red'}`}>
+            <h3 className={'dungeon-screen__section-title'}>{dungeon.boss.name}</h3>
 
-            <div className={'dungeonScreenStatsGrid'}>
-              <div className={'dungeonScreenStatsCell'}>
-                <div className={'dungeonScreenStatsLabel'}>HP</div>
-                <div className={'dungeonScreenStatsValue'}>{formatNumber(dungeon.boss.hp)}</div>
+            <div className={'dungeon-screen__stats-grid'}>
+              <div className={'dungeon-screen__stats-cell'}>
+                <div className={'dungeon-screen__stats-label'}>HP</div>
+                <div className={'dungeon-screen__stats-value'}>{formatNumber(dungeon.boss.hp)}</div>
               </div>
-              <div className={'dungeonScreenStatsCell'}>
-                <div className={'dungeonScreenStatsLabel'}>ATK</div>
-                <div className={'dungeonScreenStatsValue'}>{formatNumber(dungeon.boss.atk)}</div>
+              <div className={'dungeon-screen__stats-cell'}>
+                <div className={'dungeon-screen__stats-label'}>ATK</div>
+                <div className={'dungeon-screen__stats-value'}>{formatNumber(dungeon.boss.atk)}</div>
               </div>
-              <div className={'dungeonScreenStatsCell'}>
-                <div className={'dungeonScreenStatsLabel'}>DEF</div>
-                <div className={'dungeonScreenStatsValue'}>{formatNumber(dungeon.boss.def)}</div>
+              <div className={'dungeon-screen__stats-cell'}>
+                <div className={'dungeon-screen__stats-label'}>DEF</div>
+                <div className={'dungeon-screen__stats-value'}>{formatNumber(dungeon.boss.def)}</div>
               </div>
             </div>
 
             {/* Boss Mechanics */}
             {dungeon.boss.mechanics && dungeon.boss.mechanics.length > 0 && (
               <div>
-                <h4 className={'dungeonScreenSectionTitle'}>Boss Mechanics</h4>
-                <div className={'dungeonScreenMechanicsList'}>
+                <h4 className={'dungeon-screen__section-title'}>Boss Mechanics</h4>
+                <div className={'dungeon-screen__mechanics-list'}>
                   {dungeon.boss.mechanics.map((mechanic, idx) => (
-                    <div key={idx} className={'dungeonScreenMechanicCard'}>
-                      <div className={'dungeonScreenMechanicHeader'}>
-                        <span className={'dungeonScreenMechanicTitle'}>{mechanic.description}</span>
-                        <span className={'dungeonScreenMechanicMeta'}>@ {mechanic.trigger.hpPercent}% HP</span>
+                    <div key={idx} className={'dungeon-screen__mechanic-card'}>
+                      <div className={'dungeon-screen__mechanic-header'}>
+                        <span className={'dungeon-screen__mechanic-title'}>{mechanic.description}</span>
+                        <span className={'dungeon-screen__mechanic-meta'}>@ {mechanic.trigger.hpPercent}% HP</span>
                       </div>
-                      <div className={'dungeonScreenMechanicBody'}>
+                      <div className={'dungeon-screen__mechanic-body'}>
                         {mechanic.type === 'shield' && `Gains ${formatNumber(mechanic.effect.shieldAmount ?? 0)} shield`}
                         {mechanic.type === 'aura' && `Deals ${mechanic.effect.auraDamagePerSec} damage per second`}
                         {mechanic.type === 'enrage' && 'Increases attack power'}
@@ -149,18 +149,18 @@ function BossPreviewModal({
           </div>
 
           {/* Stat Comparison */}
-          <div className={'dungeonScreenPanel'}>
-            <h4 className={'dungeonScreenSectionTitle'}>Readiness Check</h4>
+          <div className={'dungeon-screen__panel'}>
+            <h4 className={'dungeon-screen__section-title'}>Readiness Check</h4>
 
-            <div className={'dungeonScreenProgressGroup'}>
-              <div className={'dungeonScreenProgressLabelRow'}>
+            <div className={'dungeon-screen__progress-group'}>
+              <div className={'dungeon-screen__progress-label-row'}>
                 <span>Attack Power</span>
                 <span>
-                  <span className={'dungeonScreenStatsValue'}>{formatNumber(playerDPS)}</span>{' '}
-                  <span className={'dungeonScreenStatsLabel'}>/ {formatNumber(dungeon.suggestedDPS)}</span>
+                  <span className={'dungeon-screen__stats-value'}>{formatNumber(playerDPS)}</span>{' '}
+                  <span className={'dungeon-screen__stats-label'}>/ {formatNumber(dungeon.suggestedDPS)}</span>
                 </span>
               </div>
-              <div className={'dungeonScreenProgressBar'}>
+              <div className={'dungeon-screen__progress-bar'}>
                 <div
                   className={getBarClass(playerDPS, dungeon.suggestedDPS)}
                   style={{ width: `${Math.min(100, (playerDPS / dungeon.suggestedDPS) * 100)}%` }}
@@ -168,15 +168,15 @@ function BossPreviewModal({
               </div>
             </div>
 
-            <div className={'dungeonScreenProgressGroup'}>
-              <div className={'dungeonScreenProgressLabelRow'}>
+            <div className={'dungeon-screen__progress-group'}>
+              <div className={'dungeon-screen__progress-label-row'}>
                 <span>Hit Points</span>
                 <span>
-                  <span className={'dungeonScreenStatsValue'}>{formatNumber(playerHP)}</span>{' '}
-                  <span className={'dungeonScreenStatsLabel'}>/ {formatNumber(dungeon.suggestedHP)}</span>
+                  <span className={'dungeon-screen__stats-value'}>{formatNumber(playerHP)}</span>{' '}
+                  <span className={'dungeon-screen__stats-label'}>/ {formatNumber(dungeon.suggestedHP)}</span>
                 </span>
               </div>
-              <div className={'dungeonScreenProgressBar'}>
+              <div className={'dungeon-screen__progress-bar'}>
                 <div
                   className={getBarClass(playerHP, dungeon.suggestedHP)}
                   style={{ width: `${Math.min(100, (playerHP / dungeon.suggestedHP) * 100)}%` }}
@@ -184,24 +184,24 @@ function BossPreviewModal({
               </div>
             </div>
 
-            <div className={'dungeonScreenReadinessBlock'}>
-              <div className={'dungeonScreenReadinessLabel'}>Overall Readiness</div>
-              <div className={`${'dungeonScreenReadinessValue'} ${readiness.className}`}>{readiness.text}</div>
+            <div className={'dungeon-screen__readiness-block'}>
+              <div className={'dungeon-screen__readiness-label'}>Overall Readiness</div>
+              <div className={`${'dungeon-screen__readiness-value'} ${readiness.className}`}>{readiness.text}</div>
             </div>
           </div>
 
           {/* Rewards */}
-          <div className={'dungeonScreenPanel'}>
-            <h4 className={'dungeonScreenSectionTitle'}>Rewards</h4>
-            <div className={'dungeonScreenRewardList'}>
-              <div className={'dungeonScreenRewardRow'}>
+          <div className={'dungeon-screen__panel'}>
+            <h4 className={'dungeon-screen__section-title'}>Rewards</h4>
+            <div className={'dungeon-screen__reward-list'}>
+              <div className={'dungeon-screen__reward-row'}>
                 <span>Gold:</span>
-                <span className={'dungeonScreenRewardValue'}>{formatNumber(dungeon.rewards.gold)}</span>
+                <span className={'dungeon-screen__reward-value'}>{formatNumber(dungeon.rewards.gold)}</span>
               </div>
               {dungeon.rewards.guaranteedDrop && (
-                <div className={'dungeonScreenRewardRow'}>
+                <div className={'dungeon-screen__reward-row'}>
                   <span>First Clear:</span>
-                  <span className={'dungeonScreenRewardValue'}>{dungeon.rewards.guaranteedDrop.name}</span>
+                  <span className={'dungeon-screen__reward-value'}>{dungeon.rewards.guaranteedDrop.name}</span>
                 </div>
               )}
             </div>
@@ -209,11 +209,11 @@ function BossPreviewModal({
         </div>
 
         {/* Footer Actions */}
-        <div className={'dungeonScreenFooterActions'}>
-          <button onClick={onClose} className={'dungeonScreenSecondaryButton'}>
+        <div className={'dungeon-screen__footer-actions'}>
+          <button onClick={onClose} className={'dungeon-screen__secondary-button'}>
             Cancel
           </button>
-          <button onClick={onEnter} className={'dungeonScreenDangerButton'}>
+          <button onClick={onEnter} className={'dungeon-screen__danger-button'}>
             Enter Dungeon
           </button>
         </div>
@@ -248,62 +248,62 @@ function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: 
 
   const badgeClass =
     readiness.level === 'ready'
-      ? `${'dungeonScreenBadge'} ${'dungeonScreenBadgeReady'}`
+      ? `${'dungeon-screen__badge'} ${'dungeon-screen__badge-ready'}`
       : readiness.level === 'caution'
-        ? `${'dungeonScreenBadge'} ${'dungeonScreenBadgeCaution'}`
-        : `${'dungeonScreenBadge'} ${'dungeonScreenBadgeDanger'}`;
+        ? `${'dungeon-screen__badge'} ${'dungeon-screen__badge-caution'}`
+        : `${'dungeon-screen__badge'} ${'dungeon-screen__badge-danger'}`;
 
   return (
     <>
-      <div className={`${'dungeonScreenDungeonCard'} ${isLocked ? 'dungeonScreenButtonDisabled' : ''}`}>
+      <div className={`${'dungeon-screen__dungeon-card'} ${isLocked ? 'dungeon-screen__button-disabled' : ''}`}>
         {/* Header */}
-        <div className={'dungeonScreenDungeonHeader'}>
+        <div className={'dungeon-screen__dungeon-header'}>
           <div>
-            <h3 className={'dungeonScreenDungeonTitle'}>{dungeon.name}</h3>
-            <div className={'dungeonScreenDungeonTier'}>Tier {dungeon.tier}</div>
+            <h3 className={'dungeon-screen__dungeon-title'}>{dungeon.name}</h3>
+            <div className={'dungeon-screen__dungeon-tier'}>Tier {dungeon.tier}</div>
           </div>
 
           {!isLocked && (
-            <div className={'dungeonScreenTagRow'}>
-              {isFirstClear && <div className={'dungeonScreenTagPurple'}>FIRST CLEAR</div>}
-              {!isFirstClear && <div className={'dungeonScreenTagMuted'}>Clears: {totalClears}</div>}
+            <div className={'dungeon-screen__tag-row'}>
+              {isFirstClear && <div className={'dungeon-screen__tag-purple'}>FIRST CLEAR</div>}
+              {!isFirstClear && <div className={'dungeon-screen__tag-muted'}>Clears: {totalClears}</div>}
             </div>
           )}
         </div>
 
-        <p className={'dungeonScreenDungeonDescription'}>{dungeon.description}</p>
+        <p className={'dungeon-screen__dungeon-description'}>{dungeon.description}</p>
 
         {isLocked ? (
-          <div className={'dungeonScreenReadinessDanger'}>🔒 Requires Realm {dungeon.minRealm}</div>
+          <div className={'dungeon-screen__readiness-danger'}>🔒 Requires Realm {dungeon.minRealm}</div>
         ) : (
-          <div className={'dungeonScreenMechanicsList'}>
-            <div className={'dungeonScreenReadinessRow'}>
-              <span className={'dungeonScreenStatsLabel'}>Readiness:</span>
+          <div className={'dungeon-screen__mechanics-list'}>
+            <div className={'dungeon-screen__readiness-row'}>
+              <span className={'dungeon-screen__stats-label'}>Readiness:</span>
               <span className={badgeClass}>{readiness.text}</span>
             </div>
 
-            <div className={'dungeonScreenStatsLabel'}>
+            <div className={'dungeon-screen__stats-label'}>
               Suggested ATK: {formatNumber(dungeon.suggestedDPS)}
             </div>
-            <div className={'dungeonScreenStatsLabel'}>
+            <div className={'dungeon-screen__stats-label'}>
               Suggested HP: {formatNumber(dungeon.suggestedHP)}
             </div>
 
-            <div className={'dungeonScreenReadinessRow'}>
-              <span className={'dungeonScreenStatsLabel'}>Boss:</span>
-              <span className={'dungeonScreenRewardValue'}>{dungeon.boss.name}</span>
+            <div className={'dungeon-screen__readiness-row'}>
+              <span className={'dungeon-screen__stats-label'}>Boss:</span>
+              <span className={'dungeon-screen__reward-value'}>{dungeon.boss.name}</span>
             </div>
 
             {isFirstClear && dungeon.rewards.guaranteedDrop && (
-              <div className={'dungeonScreenRewardPanel'}>
-                ✨ First Clear: <span className={'dungeonScreenRewardHighlight'}>{dungeon.rewards.guaranteedDrop.name}</span>
+              <div className={'dungeon-screen__reward-panel'}>
+                ✨ First Clear: <span className={'dungeon-screen__reward-highlight'}>{dungeon.rewards.guaranteedDrop.name}</span>
               </div>
             )}
 
-            <div className={'dungeonScreenCardActions'}>
+            <div className={'dungeon-screen__card-actions'}>
               <button
                 onClick={() => setShowPreview(true)}
-                className={`${'dungeonScreenActionPrimary'} ${isLocked ? 'dungeonScreenButtonDisabled' : ''}`}
+                className={`${'dungeon-screen__action-primary'} ${isLocked ? 'dungeon-screen__button-disabled' : ''}`}
                 disabled={isLocked}
               >
                 Preview & Enter
@@ -353,9 +353,9 @@ export function DungeonScreen() {
   // Show loading state
   if (loading) {
     return (
-      <div className={'dungeonScreenLoadingCard'}>
-        <div className={'dungeonScreenLoadingIcon'}>⚔️</div>
-        <div className={'dungeonScreenScreenSubtitle'}>Loading dungeons...</div>
+      <div className={'dungeon-screen__loading-card'}>
+        <div className={'dungeon-screen__loading-icon'}>⚔️</div>
+        <div className={'dungeon-screen__screen-subtitle'}>Loading dungeons...</div>
       </div>
     );
   }
@@ -363,9 +363,9 @@ export function DungeonScreen() {
   // Show error state
   if (error) {
     return (
-      <div className={'dungeonScreenErrorCard'}>
-        <h2 className={'dungeonScreenErrorTitle'}>Error Loading Dungeons</h2>
-        <p className={'dungeonScreenErrorMessage'}>{error}</p>
+      <div className={'dungeon-screen__error-card'}>
+        <h2 className={'dungeon-screen__error-title'}>Error Loading Dungeons</h2>
+        <p className={'dungeon-screen__error-message'}>{error}</p>
       </div>
     );
   }
@@ -374,18 +374,18 @@ export function DungeonScreen() {
   if (inCombat && currentDungeon) {
     const dungeon = dungeons.find((d) => d.id === currentDungeon);
     return (
-      <div className={'dungeonScreenScreenRoot'}>
-        <div className={'dungeonScreenScreenBackground'} />
-        <div className={'dungeonScreenScreenContent'}>
-          <div className={'dungeonScreenScreenHeader'}>
-            <div className={'dungeonScreenTagPurple'}>🏛️ DUNGEON TRIAL</div>
-            <h1 className={'dungeonScreenScreenTitle'}>{dungeon?.name || 'Dungeon Trial'}</h1>
-            <p className={'dungeonScreenScreenSubtitle'}>
-              Defeat <span className={'dungeonScreenReadinessDanger'}>{dungeon?.boss.name}</span> to claim your rewards
+      <div className={'dungeon-screen__screen-root'}>
+        <div className={'dungeon-screen__screen-background'} />
+        <div className={'dungeon-screen__screen-content'}>
+          <div className={'dungeon-screen__screen-header'}>
+            <div className={'dungeon-screen__tag-purple'}>🏛️ DUNGEON TRIAL</div>
+            <h1 className={'dungeon-screen__screen-title'}>{dungeon?.name || 'Dungeon Trial'}</h1>
+            <p className={'dungeon-screen__screen-subtitle'}>
+              Defeat <span className={'dungeon-screen__readiness-danger'}>{dungeon?.boss.name}</span> to claim your rewards
             </p>
           </div>
 
-          <div className={'dungeonScreenPanel'}>
+          <div className={'dungeon-screen__panel'}>
             <CombatView />
           </div>
         </div>
@@ -395,18 +395,18 @@ export function DungeonScreen() {
 
   // Show dungeon selection grid
   return (
-    <div className={'dungeonScreenScreenRoot'}>
-      <div className={'dungeonScreenScreenBackground'} />
-      <div className={'dungeonScreenScreenContent'}>
-        <div className={'dungeonScreenScreenHeader'}>
-          <h1 className={'dungeonScreenScreenTitle'}>Trial Dungeons</h1>
-          <p className={'dungeonScreenScreenSubtitle'}>Challenge powerful bosses to obtain breakthrough materials</p>
+    <div className={'dungeon-screen__screen-root'}>
+      <div className={'dungeon-screen__screen-background'} />
+      <div className={'dungeon-screen__screen-content'}>
+        <div className={'dungeon-screen__screen-header'}>
+          <h1 className={'dungeon-screen__screen-title'}>Trial Dungeons</h1>
+          <p className={'dungeon-screen__screen-subtitle'}>Challenge powerful bosses to obtain breakthrough materials</p>
         </div>
 
         {dungeons.length === 0 ? (
-          <div className={'dungeonScreenEmptyCard'}>No dungeons available</div>
+          <div className={'dungeon-screen__empty-card'}>No dungeons available</div>
         ) : (
-          <div className={'dungeonScreenDungeonGrid'}>
+          <div className={'dungeon-screen__dungeon-grid'}>
             {dungeons.map((dungeon) => (
               <DungeonCard key={dungeon.id} dungeon={dungeon} playerStats={stats} />
             ))}

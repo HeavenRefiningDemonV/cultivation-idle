@@ -106,15 +106,15 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
   };
 
   return (
-    <div className={'pathSelectionModalOverlay'}>
-      <div className={'pathSelectionModalModal'}>
-        <div className={'pathSelectionModalHeader'}>
-          <h1 className={'pathSelectionModalTitle'}>Choose Your Cultivation Path</h1>
-          <p className={'pathSelectionModalSubtitle'}>This choice is permanent and defines your cultivation journey</p>
-          <p className={'pathSelectionModalHelperText'}>Each path grants unique bonuses and playstyle characteristics</p>
+    <div className={'path-selection-modal__overlay'}>
+      <div className={'path-selection-modal__modal'}>
+        <div className={'path-selection-modal__header'}>
+          <h1 className={'path-selection-modal__title'}>Choose Your Cultivation Path</h1>
+          <p className={'path-selection-modal__subtitle'}>This choice is permanent and defines your cultivation journey</p>
+          <p className={'path-selection-modal__helper-text'}>Each path grants unique bonuses and playstyle characteristics</p>
         </div>
 
-        <div className={'pathSelectionModalGrid'}>
+        <div className={'path-selection-modal__grid'}>
           {paths.map((path) => {
             const isActive = hoveredPath === path.id;
             const cardStyle: CSSProperties = {
@@ -127,22 +127,22 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
                 key={path.id}
                 onMouseEnter={() => setHoveredPath(path.id)}
                 onMouseLeave={() => setHoveredPath(null)}
-                className={`${'pathSelectionModalCard'} ${isActive ? 'pathSelectionModalCardActive' : ''}`}
+                className={`${'path-selection-modal__card'} ${isActive ? 'path-selection-modal__card-active' : ''}`}
                 style={cardStyle}
                 onClick={() => handleSelectPath(path.id)}
               >
-                <div className={'pathSelectionModalIcon'}>{path.icon}</div>
+                <div className={'path-selection-modal__icon'}>{path.icon}</div>
 
-                <div className={'pathSelectionModalGradientHeader'} style={{ background: path.gradient }}>
-                  <h2 className={'pathSelectionModalPathName'}>{path.name}</h2>
-                  <p className={'pathSelectionModalPathTheme'}>{path.theme}</p>
+                <div className={'path-selection-modal__gradient-header'} style={{ background: path.gradient }}>
+                  <h2 className={'path-selection-modal__path-name'}>{path.name}</h2>
+                  <p className={'path-selection-modal__path-theme'}>{path.theme}</p>
                 </div>
 
-                <p className={'pathSelectionModalDescription'}>{path.description}</p>
+                <p className={'path-selection-modal__description'}>{path.description}</p>
 
-                <div className={'pathSelectionModalBonusBox'}>
-                  <h3 className={'pathSelectionModalBonusTitle'}>Path Bonuses:</h3>
-                  <ul className={'pathSelectionModalBonusList'}>
+                <div className={'path-selection-modal__bonus-box'}>
+                  <h3 className={'path-selection-modal__bonus-title'}>Path Bonuses:</h3>
+                  <ul className={'path-selection-modal__bonus-list'}>
                     {path.bonuses.map((bonus, idx) => (
                       <li key={idx}>
                         {bonus.includes('-') ? '⚠' : '✓'} {bonus}
@@ -151,12 +151,12 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
                   </ul>
                 </div>
 
-                <div className={'pathSelectionModalPlaystyleBox'}>
-                  <h3 className={'pathSelectionModalBonusTitle'}>Playstyle:</h3>
-                  <p className={'pathSelectionModalPathTheme'}>{path.playstyle}</p>
+                <div className={'path-selection-modal__playstyle-box'}>
+                  <h3 className={'path-selection-modal__bonus-title'}>Playstyle:</h3>
+                  <p className={'path-selection-modal__path-theme'}>{path.playstyle}</p>
                 </div>
 
-                <button className={'pathSelectionModalSelectButton'} style={{ background: path.gradient }}>
+                <button className={'path-selection-modal__select-button'} style={{ background: path.gradient }}>
                   Choose {path.name}
                 </button>
               </div>
@@ -164,9 +164,9 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
           })}
         </div>
 
-        <div className={'pathSelectionModalFooter'}>
-          <p className={'pathSelectionModalFooterTip'}>💡 Tip: All paths are viable! Choose based on your preferred playstyle.</p>
-          <p className={'pathSelectionModalFooterNote'}>You cannot change your path after selection</p>
+        <div className={'path-selection-modal__footer'}>
+          <p className={'path-selection-modal__footer-tip'}>💡 Tip: All paths are viable! Choose based on your preferred playstyle.</p>
+          <p className={'path-selection-modal__footer-note'}>You cannot change your path after selection</p>
         </div>
       </div>
     </div>

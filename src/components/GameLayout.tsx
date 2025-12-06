@@ -16,11 +16,11 @@ import './GameLayout.scss';
  */
 function PlaceholderContent({ tabName }: { tabName: string }) {
   return (
-    <div className={'gameLayoutPlaceholder'}>
-      <div className={'gameLayoutPlaceholderCard'}>
-        <div className={'gameLayoutPlaceholderIcon'}>🚧</div>
-        <h2 className={'gameLayoutPlaceholderTitle'}>{tabName} - Coming Soon</h2>
-        <p className={'gameLayoutPlaceholderText'}>This feature is under development</p>
+    <div className="game-layout__placeholder">
+      <div className="game-layout__placeholder-card">
+        <div className="game-layout__placeholder-icon">🚧</div>
+        <h2 className="game-layout__placeholder-title">{tabName} - Coming Soon</h2>
+        <p className="game-layout__placeholder-text">This feature is under development</p>
       </div>
     </div>
   );
@@ -67,11 +67,11 @@ export function GameLayout() {
   };
 
   return (
-    <div className={'gameLayoutRoot'}>
+    <div className="game-layout">
       <Header />
       <Sidebar />
-      <main className={'gameLayoutMain'}>
-        <div className={'gameLayoutContent'}>
+      <main className="game-layout__main">
+        <div className="game-layout__content">
           {renderContent()}
         </div>
       </main>

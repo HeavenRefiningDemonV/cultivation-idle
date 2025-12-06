@@ -1,4 +1,4 @@
-.dungeonScreenOverlay {
+.dungeon-screen__overlay {
   position: fixed;
   inset: 0;
   z-index: 50;
@@ -10,7 +10,7 @@
   padding: var(--space-4);
 }
 
-.dungeonScreenModal {
+.dungeon-screen__modal {
   position: relative;
   width: 100%;
   max-width: 900px;
@@ -21,7 +21,7 @@
   overflow: hidden;
 }
 
-.dungeonScreenModalHeader {
+.dungeon-screen__modal-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -30,7 +30,7 @@
   border-bottom: 1px solid rgba(251, 191, 36, 0.35);
 }
 
-.dungeonScreenModalTitle {
+.dungeon-screen__modal-title {
   margin: 0 0 var(--space-2) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-3xl);
@@ -38,13 +38,13 @@
   color: var(--color-gold-accent);
 }
 
-.dungeonScreenModalSubtitle {
+.dungeon-screen__modal-subtitle {
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
 }
 
-.dungeonScreenCloseButton {
+.dungeon-screen__close-button {
   background: transparent;
   border: none;
   color: var(--color-text-muted);
@@ -53,18 +53,18 @@
   transition: color 0.15s ease;
 }
 
-.dungeonScreenCloseButton:hover {
+.dungeon-screen__close-button:hover {
   color: #fff;
 }
 
-.dungeonScreenModalBody {
+.dungeon-screen__modal-body {
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
 }
 
-.dungeonScreenPanel {
+.dungeon-screen__panel {
   background: rgba(26, 26, 26, 0.65);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -72,11 +72,11 @@
   box-shadow: var(--shadow-soft);
 }
 
-.dungeonScreenPanelAccentRed {
+.dungeon-screen__panel-accent-red {
   border-color: rgba(239, 68, 68, 0.5);
 }
 
-.dungeonScreenSectionTitle {
+.dungeon-screen__section-title {
   margin: 0 0 var(--space-3) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-2xl);
@@ -85,40 +85,40 @@
   text-align: center;
 }
 
-.dungeonScreenStatsGrid {
+.dungeon-screen__stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--space-3);
 }
 
-.dungeonScreenStatsCell {
+.dungeon-screen__stats-cell {
   text-align: center;
 }
 
-.dungeonScreenStatsLabel {
+.dungeon-screen__stats-label {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.dungeonScreenStatsValue {
+.dungeon-screen__stats-value {
   color: var(--color-text-primary);
   font-size: var(--text-xl);
   font-weight: 700;
 }
 
-.dungeonScreenMechanicsList {
+.dungeon-screen__mechanics-list {
   display: grid;
   gap: var(--space-2);
 }
 
-.dungeonScreenMechanicCard {
+.dungeon-screen__mechanic-card {
   background: rgba(51, 65, 85, 0.45);
   border: 1px solid rgba(100, 116, 139, 0.5);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }
 
-.dungeonScreenMechanicHeader {
+.dungeon-screen__mechanic-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -126,100 +126,100 @@
   margin-bottom: var(--space-2);
 }
 
-.dungeonScreenMechanicTitle {
+.dungeon-screen__mechanic-title {
   color: #c084fc;
   font-weight: 700;
 }
 
-.dungeonScreenMechanicMeta {
+.dungeon-screen__mechanic-meta {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
 
-.dungeonScreenMechanicBody {
+.dungeon-screen__mechanic-body {
   color: var(--color-text-secondary);
   font-size: var(--text-sm);
 }
 
-.dungeonScreenProgressGroup {
+.dungeon-screen__progress-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   margin-bottom: var(--space-4);
 }
 
-.dungeonScreenProgressLabelRow {
+.dungeon-screen__progress-label-row {
   display: flex;
   justify-content: space-between;
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
 }
 
-.dungeonScreenProgressBar {
+.dungeon-screen__progress-bar {
   height: 10px;
   background: rgba(30, 41, 59, 0.6);
   border-radius: 9999px;
   overflow: hidden;
 }
 
-.dungeonScreenProgressFill {
+.dungeon-screen__progress-fill {
   height: 100%;
   transition: width 0.3s ease;
   background: linear-gradient(90deg, #22c55e, #16a34a);
 }
 
-.dungeonScreenProgressFillWarning {
+.dungeon-screen__progress-fill-warning {
   background: linear-gradient(90deg, #f59e0b, #d97706);
 }
 
-.dungeonScreenProgressFillDanger {
+.dungeon-screen__progress-fill-danger {
   background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
-.dungeonScreenReadinessBlock {
+.dungeon-screen__readiness-block {
   text-align: center;
 }
 
-.dungeonScreenReadinessLabel {
+.dungeon-screen__readiness-label {
   color: var(--color-text-muted);
   margin-bottom: var(--space-1);
 }
 
-.dungeonScreenReadinessValue {
+.dungeon-screen__readiness-value {
   font-size: var(--text-2xl);
   font-weight: 700;
 }
 
-.dungeonScreenReadinessReady {
+.dungeon-screen__readiness-ready {
   color: #4ade80;
 }
 
-.dungeonScreenReadinessCaution {
+.dungeon-screen__readiness-caution {
   color: #fbbf24;
 }
 
-.dungeonScreenReadinessDanger {
+.dungeon-screen__readiness-danger {
   color: #ef4444;
 }
 
-.dungeonScreenRewardList {
+.dungeon-screen__reward-list {
   display: grid;
   gap: var(--space-2);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
 }
 
-.dungeonScreenRewardRow {
+.dungeon-screen__reward-row {
   display: flex;
   justify-content: space-between;
 }
 
-.dungeonScreenRewardValue {
+.dungeon-screen__reward-value {
   color: var(--color-gold-accent);
   font-weight: 700;
 }
 
-.dungeonScreenPrimaryButton {
+.dungeon-screen__primary-button {
   width: 100%;
   padding: var(--space-3);
   border: none;
@@ -231,19 +231,19 @@
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
-.dungeonScreenPrimaryButton:hover {
+.dungeon-screen__primary-button:hover {
   filter: brightness(1.05);
 }
 
-.dungeonScreenFooterActions {
+.dungeon-screen__footer-actions {
   display: flex;
   gap: var(--space-3);
   border-top: 1px solid rgba(251, 191, 36, 0.3);
   padding: var(--space-4);
 }
 
-.dungeonScreenSecondaryButton,
-.dungeonScreenDangerButton {
+.dungeon-screen__secondary-button,
+.dungeon-screen__danger-button {
   flex: 1;
   padding: var(--space-3);
   border: none;
@@ -254,31 +254,31 @@
   transition: filter 0.15s ease;
 }
 
-.dungeonScreenSecondaryButton {
+.dungeon-screen__secondary-button {
   background: #475569;
 }
 
-.dungeonScreenSecondaryButton:hover {
+.dungeon-screen__secondary-button:hover {
   filter: brightness(1.05);
 }
 
-.dungeonScreenDangerButton {
+.dungeon-screen__danger-button {
   background: linear-gradient(90deg, #ef4444, #fca5a5);
   box-shadow: var(--shadow-soft);
 }
 
-.dungeonScreenDangerButton:hover {
+.dungeon-screen__danger-button:hover {
   filter: brightness(1.05);
 }
 
-.dungeonScreenScreenRoot {
+.dungeon-screen__screen-root {
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #0f172a, #111827);
   border-radius: var(--radius-lg);
 }
 
-.dungeonScreenScreenBackground {
+.dungeon-screen__screen-background {
   position: absolute;
   inset: 0;
   opacity: 0.12;
@@ -286,7 +286,7 @@
     radial-gradient(circle at 60% 50%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
 }
 
-.dungeonScreenScreenContent {
+.dungeon-screen__screen-content {
   position: relative;
   z-index: 1;
   max-width: 1100px;
@@ -297,11 +297,11 @@
   gap: var(--space-5);
 }
 
-.dungeonScreenScreenHeader {
+.dungeon-screen__screen-header {
   text-align: center;
 }
 
-.dungeonScreenScreenTitle {
+.dungeon-screen__screen-title {
   margin: 0 0 var(--space-2) 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-4xl);
@@ -309,19 +309,19 @@
   color: var(--color-gold-accent);
 }
 
-.dungeonScreenScreenSubtitle {
+.dungeon-screen__screen-subtitle {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.dungeonScreenDungeonGrid {
+.dungeon-screen__dungeon-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--space-4);
 }
 
-.dungeonScreenDungeonCard {
+.dungeon-screen__dungeon-card {
   background: rgba(26, 26, 26, 0.65);
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--radius-lg);
@@ -333,18 +333,18 @@
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
-.dungeonScreenDungeonCard:hover {
+.dungeon-screen__dungeon-card:hover {
   transform: translateY(-2px);
   border-color: rgba(251, 191, 36, 0.6);
 }
 
-.dungeonScreenDungeonHeader {
+.dungeon-screen__dungeon-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.dungeonScreenDungeonTitle {
+.dungeon-screen__dungeon-title {
   margin: 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-xl);
@@ -352,18 +352,18 @@
   color: var(--color-gold-accent);
 }
 
-.dungeonScreenDungeonTier {
+.dungeon-screen__dungeon-tier {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
 }
 
-.dungeonScreenTagRow {
+.dungeon-screen__tag-row {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
 }
 
-.dungeonScreenTagPurple {
+.dungeon-screen__tag-purple {
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   background: rgba(168, 85, 247, 0.15);
@@ -373,7 +373,7 @@
   font-weight: 700;
 }
 
-.dungeonScreenTagMuted {
+.dungeon-screen__tag-muted {
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   background: rgba(71, 85, 105, 0.5);
@@ -381,13 +381,13 @@
   font-size: var(--text-xs);
 }
 
-.dungeonScreenDungeonDescription {
+.dungeon-screen__dungeon-description {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
 
-.dungeonScreenReadinessRow {
+.dungeon-screen__readiness-row {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -395,28 +395,28 @@
   font-size: var(--text-sm);
 }
 
-.dungeonScreenBadge {
+.dungeon-screen__badge {
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   font-weight: 700;
 }
 
-.dungeonScreenBadgeReady {
+.dungeon-screen__badge-ready {
   background: rgba(34, 197, 94, 0.15);
   color: #22c55e;
 }
 
-.dungeonScreenBadgeCaution {
+.dungeon-screen__badge-caution {
   background: rgba(234, 179, 8, 0.15);
   color: #eab308;
 }
 
-.dungeonScreenBadgeDanger {
+.dungeon-screen__badge-danger {
   background: rgba(248, 113, 113, 0.15);
   color: #ef4444;
 }
 
-.dungeonScreenRewardPanel {
+.dungeon-screen__reward-panel {
   background: rgba(168, 85, 247, 0.08);
   border: 1px solid rgba(168, 85, 247, 0.35);
   border-radius: var(--radius-md);
@@ -425,18 +425,18 @@
   font-size: var(--text-sm);
 }
 
-.dungeonScreenRewardHighlight {
+.dungeon-screen__reward-highlight {
   color: var(--color-gold-accent);
   font-weight: 700;
 }
 
-.dungeonScreenCardActions {
+.dungeon-screen__card-actions {
   display: flex;
   gap: var(--space-2);
 }
 
-.dungeonScreenActionGhost,
-.dungeonScreenActionPrimary {
+.dungeon-screen__action-ghost,
+.dungeon-screen__action-primary {
   flex: 1;
   padding: var(--space-3);
   border-radius: var(--radius-md);
@@ -446,33 +446,33 @@
   transition: filter 0.15s ease;
 }
 
-.dungeonScreenActionGhost {
+.dungeon-screen__action-ghost {
   background: rgba(71, 85, 105, 0.6);
   color: var(--color-text-primary);
 }
 
-.dungeonScreenActionGhost:hover {
+.dungeon-screen__action-ghost:hover {
   filter: brightness(1.05);
 }
 
-.dungeonScreenActionPrimary {
+.dungeon-screen__action-primary {
   background: linear-gradient(90deg, #ef4444, #f97316);
   color: #fff;
   box-shadow: var(--shadow-soft);
 }
 
-.dungeonScreenActionPrimary:hover {
+.dungeon-screen__action-primary:hover {
   filter: brightness(1.05);
 }
 
-.dungeonScreenButtonDisabled {
+.dungeon-screen__button-disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.dungeonScreenLoadingCard,
-.dungeonScreenErrorCard,
-.dungeonScreenEmptyCard {
+.dungeon-screen__loading-card,
+.dungeon-screen__error-card,
+.dungeon-screen__empty-card {
   position: relative;
   overflow: hidden;
   background: linear-gradient(180deg, #0f172a, #111827);
@@ -481,20 +481,20 @@
   text-align: center;
 }
 
-.dungeonScreenLoadingIcon {
+.dungeon-screen__loading-icon {
   font-size: 3rem;
   margin-bottom: var(--space-2);
   color: var(--color-gold-accent);
 }
 
-.dungeonScreenErrorTitle {
+.dungeon-screen__error-title {
   margin: 0 0 var(--space-2) 0;
   color: #f87171;
   font-size: var(--text-2xl);
   font-weight: 700;
 }
 
-.dungeonScreenErrorMessage {
+.dungeon-screen__error-message {
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-sm);

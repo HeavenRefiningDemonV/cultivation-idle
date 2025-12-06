@@ -21,70 +21,70 @@ export function SettingsScreen() {
   };
 
   return (
-    <div className={'settingsScreenRoot'}>
-      <div className={'settingsScreenBackground'} />
+    <div className={'settings-screen'}>
+      <div className={'settings-screen__background'} />
 
-      <div className={'settingsScreenContent'}>
-        <div className={'settingsScreenHeader'}>
-          <h1 className={'settingsScreenTitle'}>Settings</h1>
-          <p className={'settingsScreenSubtitle'}>Configure UI behavior and manage your save data.</p>
+      <div className={'settings-screen__content'}>
+        <div className={'settings-screen__header'}>
+          <h1 className={'settings-screen__title'}>Settings</h1>
+          <p className={'settings-screen__subtitle'}>Configure UI behavior and manage your save data.</p>
         </div>
 
-        <div className={'settingsScreenGrid'}>
-          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
-            <h2 className={'settingsScreenPanelTitle'}>Gameplay &amp; UI</h2>
-            <p className={'settingsScreenPanelSubtitle'}>Toggle interface elements and confirmations.</p>
-            <div className={'settingsScreenOptionList'}>
-              <label className={'settingsScreenOptionRow'}>
+        <div className={'settings-screen__grid'}>
+          <div className={`${'settings-screen__panel'} ${'settings-screen__panel-default'}`}>
+            <h2 className={'settings-screen__panel-title'}>Gameplay &amp; UI</h2>
+            <p className={'settings-screen__panel-subtitle'}>Toggle interface elements and confirmations.</p>
+            <div className={'settings-screen__option-list'}>
+              <label className={'settings-screen__option-row'}>
                 <input
                   type="checkbox"
                   checked={showOfflineModal}
                   onChange={toggleOfflineModal}
-                  className={'settingsScreenCheckbox'}
+                  className={'settings-screen__checkbox'}
                 />
                 <div>
-                  <div className={'settingsScreenOptionLabel'}>Show offline progress modal</div>
-                  <p className={'settingsScreenOptionDescription'}>Display rewards earned while away when you return.</p>
+                  <div className={'settings-screen__option-label'}>Show offline progress modal</div>
+                  <p className={'settings-screen__option-description'}>Display rewards earned while away when you return.</p>
                 </div>
               </label>
 
-              <label className={'settingsScreenOptionRow'}>
+              <label className={'settings-screen__option-row'}>
                 <input
                   type="checkbox"
                   checked={showCombatLog}
                   onChange={toggleCombatLog}
-                  className={'settingsScreenCheckbox'}
+                  className={'settings-screen__checkbox'}
                 />
                 <div>
-                  <div className={'settingsScreenOptionLabel'}>Show combat log</div>
-                  <p className={'settingsScreenOptionDescription'}>Hide or reveal the detailed combat event log.</p>
+                  <div className={'settings-screen__option-label'}>Show combat log</div>
+                  <p className={'settings-screen__option-description'}>Hide or reveal the detailed combat event log.</p>
                 </div>
               </label>
 
-              <label className={'settingsScreenOptionRow'}>
+              <label className={'settings-screen__option-row'}>
                 <input
                   type="checkbox"
                   checked={requirePrestigeConfirm}
                   onChange={togglePrestigeConfirm}
-                  className={'settingsScreenCheckbox'}
+                  className={'settings-screen__checkbox'}
                 />
                 <div>
-                  <div className={'settingsScreenOptionLabel'}>Require prestige confirmation</div>
-                  <p className={'settingsScreenOptionDescription'}>Ask for confirmation before reincarnating.</p>
+                  <div className={'settings-screen__option-label'}>Require prestige confirmation</div>
+                  <p className={'settings-screen__option-description'}>Ask for confirmation before reincarnating.</p>
                 </div>
               </label>
             </div>
           </div>
 
-          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDanger'}`}>
-            <h2 className={'settingsScreenPanelTitle'}>Save Management</h2>
-            <p className={'settingsScreenPanelSubtitle'}>
+          <div className={`${'settings-screen__panel'} ${'settings-screen__panel-danger'}`}>
+            <h2 className={'settings-screen__panel-title'}>Save Management</h2>
+            <p className={'settings-screen__panel-subtitle'}>
               Delete all progress and restart as if the game was freshly installed.
             </p>
-            <button onClick={() => setShowDeleteModal(true)} className={'settingsScreenDangerButton'}>
+            <button onClick={() => setShowDeleteModal(true)} className={'settings-screen__danger-button'}>
               Delete Save &amp; Hard Reset
             </button>
-            <p className={'settingsScreenDangerNote'}>
+            <p className={'settings-screen__danger-note'}>
               This will remove all saves, Ascension Points, upgrades, spirit roots, auras, and items. This action
               cannot be undone.
             </p>
@@ -93,17 +93,17 @@ export function SettingsScreen() {
       </div>
 
       {showDeleteModal && (
-        <div className={'settingsScreenModalOverlay'}>
-          <div className={'settingsScreenModalCard'}>
-            <h3 className={'settingsScreenModalTitle'}>Delete All Save Data?</h3>
-            <p className={'settingsScreenModalText'}>
+        <div className={'settings-screen__modal-overlay'}>
+          <div className={'settings-screen__modal-card'}>
+            <h3 className={'settings-screen__modal-title'}>Delete All Save Data?</h3>
+            <p className={'settings-screen__modal-text'}>
               This will delete all save data, including AP, upgrades, auras, items, and progress. This cannot be undone.
             </p>
-            <div className={'settingsScreenModalActions'}>
-              <button onClick={() => setShowDeleteModal(false)} className={`${'settingsScreenModalButton'} ${'settingsScreenModalCancel'}`}>
+            <div className={'settings-screen__modal-actions'}>
+              <button onClick={() => setShowDeleteModal(false)} className={`${'settings-screen__modal-button'} ${'settings-screen__modal-cancel'}`}>
                 Cancel
               </button>
-              <button onClick={handleDeleteSave} className={`${'settingsScreenModalButton'} ${'settingsScreenModalConfirm'}`}>
+              <button onClick={handleDeleteSave} className={`${'settings-screen__modal-button'} ${'settings-screen__modal-confirm'}`}>
                 Delete &amp; Restart
               </button>
             </div>

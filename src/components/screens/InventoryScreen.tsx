@@ -15,19 +15,19 @@ type InventoryTabType = 'all' | 'weapons' | 'accessories' | 'consumables' | 'mat
 function getRarityColor(rarity: ItemRarity): string {
   switch (rarity) {
     case 'common':
-      return 'inventoryScreenRarityCommon';
+      return 'inventory-screen__rarity-common';
     case 'uncommon':
-      return 'inventoryScreenRarityUncommon';
+      return 'inventory-screen__rarity-uncommon';
     case 'rare':
-      return 'inventoryScreenRarityRare';
+      return 'inventory-screen__rarity-rare';
     case 'epic':
-      return 'inventoryScreenRarityEpic';
+      return 'inventory-screen__rarity-epic';
     case 'legendary':
-      return 'inventoryScreenRarityLegendary';
+      return 'inventory-screen__rarity-legendary';
     case 'mythic':
-      return 'inventoryScreenRarityMythic';
+      return 'inventory-screen__rarity-mythic';
     default:
-      return 'inventoryScreenRarityCommon';
+      return 'inventory-screen__rarity-common';
   }
 }
 
@@ -37,19 +37,19 @@ function getRarityColor(rarity: ItemRarity): string {
 function getRarityTextColor(rarity: ItemRarity): string {
   switch (rarity) {
     case 'common':
-      return 'inventoryScreenTextCommon';
+      return 'inventory-screen__text-common';
     case 'uncommon':
-      return 'inventoryScreenTextUncommon';
+      return 'inventory-screen__text-uncommon';
     case 'rare':
-      return 'inventoryScreenTextRare';
+      return 'inventory-screen__text-rare';
     case 'epic':
-      return 'inventoryScreenTextEpic';
+      return 'inventory-screen__text-epic';
     case 'legendary':
-      return 'inventoryScreenTextLegendary';
+      return 'inventory-screen__text-legendary';
     case 'mythic':
-      return 'inventoryScreenTextMythic';
+      return 'inventory-screen__text-mythic';
     default:
-      return 'inventoryScreenTextCommon';
+      return 'inventory-screen__text-common';
   }
 }
 
@@ -64,53 +64,53 @@ interface EquipmentSlotProps {
 
 function EquipmentSlot({ slotType, item, onUnequip }: EquipmentSlotProps) {
   return (
-    <div className={'inventoryScreenSlotCard'}>
-      <h3 className={'inventoryScreenSlotTitle'}>{slotType}</h3>
+    <div className={'inventory-screen__slot-card'}>
+      <h3 className={'inventory-screen__slot-title'}>{slotType}</h3>
 
       {item ? (
-        <div className={'inventoryScreenSlotContent'}>
+        <div className={'inventory-screen__slot-content'}>
           {/* Item Name */}
-          <div className={`${'inventoryScreenSlotName'} ${getRarityTextColor(item.rarity)}`}>
+          <div className={`${'inventory-screen__slot-name'} ${getRarityTextColor(item.rarity)}`}>
             {item.name}
           </div>
 
           {/* Item Description */}
-          <p className={'inventoryScreenSlotDescription'}>{item.description}</p>
+          <p className={'inventory-screen__slot-description'}>{item.description}</p>
 
           {/* Stats */}
           {item.stats && (
-            <div className={'inventoryScreenStatBlock'}>
+            <div className={'inventory-screen__stat-block'}>
               {item.stats.atk && (
-                <div className={'inventoryScreenStatLine'}>⚔️ ATK: +{formatNumber(item.stats.atk)}</div>
+                <div className={'inventory-screen__stat-line'}>⚔️ ATK: +{formatNumber(item.stats.atk)}</div>
               )}
               {item.stats.def && (
-                <div className={'inventoryScreenStatLine'}>🛡️ DEF: +{formatNumber(item.stats.def)}</div>
+                <div className={'inventory-screen__stat-line'}>🛡️ DEF: +{formatNumber(item.stats.def)}</div>
               )}
-              {item.stats.hp && <div className={'inventoryScreenStatLine'}>❤️ HP: +{formatNumber(item.stats.hp)}</div>}
+              {item.stats.hp && <div className={'inventory-screen__stat-line'}>❤️ HP: +{formatNumber(item.stats.hp)}</div>}
               {item.stats.crit && item.stats.crit > 0 && (
-                <div className={'inventoryScreenStatLine'}>💥 Crit: +{item.stats.crit}%</div>
+                <div className={'inventory-screen__stat-line'}>💥 Crit: +{item.stats.crit}%</div>
               )}
               {item.stats.critDmg && item.stats.critDmg > 0 && (
-                <div className={'inventoryScreenStatLine'}>⚡ Crit Dmg: +{item.stats.critDmg}%</div>
+                <div className={'inventory-screen__stat-line'}>⚡ Crit Dmg: +{item.stats.critDmg}%</div>
               )}
               {item.stats.dodge && item.stats.dodge > 0 && (
-                <div className={'inventoryScreenStatLine'}>🌀 Dodge: +{item.stats.dodge}%</div>
+                <div className={'inventory-screen__stat-line'}>🌀 Dodge: +{item.stats.dodge}%</div>
               )}
               {item.stats.qiGain && item.stats.qiGain > 0 && (
-                <div className={'inventoryScreenStatLine'}>✨ Qi Gain: +{item.stats.qiGain}%</div>
+                <div className={'inventory-screen__stat-line'}>✨ Qi Gain: +{item.stats.qiGain}%</div>
               )}
             </div>
           )}
 
           {/* Unequip Button */}
-          <button onClick={onUnequip} className={'inventoryScreenActionButton'}>
+          <button onClick={onUnequip} className={'inventory-screen__action-button'}>
             Unequip
           </button>
         </div>
       ) : (
-        <div className={'inventoryScreenSlotEmpty'}>
-          <div className={'inventoryScreenSlotEmptyIcon'}>{slotType === 'weapon' ? '⚔️' : '💎'}</div>
-          <div className={'inventoryScreenSlotDescription'}>Empty Slot</div>
+        <div className={'inventory-screen__slot-empty'}>
+          <div className={'inventory-screen__slot-empty-icon'}>{slotType === 'weapon' ? '⚔️' : '💎'}</div>
+          <div className={'inventory-screen__slot-description'}>Empty Slot</div>
         </div>
       )}
     </div>
@@ -139,24 +139,24 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
   const isConsumable = itemDef.type === 'consumable';
 
   return (
-    <div className={`${'inventoryScreenItemCard'} ${getRarityColor(itemDef.rarity)}`}>
+    <div className={`${'inventory-screen__item-card'} ${getRarityColor(itemDef.rarity)}`}>
       {/* Header */}
-      <div className={'inventoryScreenItemHeader'}>
+      <div className={'inventory-screen__item-header'}>
         <div>
-          <h3 className={`${'inventoryScreenItemTitle'} ${getRarityTextColor(itemDef.rarity)}`}>{itemDef.name}</h3>
-          <div className={'inventoryScreenItemMeta'}>
+          <h3 className={`${'inventory-screen__item-title'} ${getRarityTextColor(itemDef.rarity)}`}>{itemDef.name}</h3>
+          <div className={'inventory-screen__item-meta'}>
             {itemDef.rarity} • Lv {itemDef.level}
           </div>
         </div>
-        {quantity > 1 && <div className={'inventoryScreenQuantityBadge'}>x{quantity}</div>}
+        {quantity > 1 && <div className={'inventory-screen__quantity-badge'}>x{quantity}</div>}
       </div>
 
       {/* Description */}
-      <p className={'inventoryScreenItemDescription'}>{itemDef.description}</p>
+      <p className={'inventory-screen__item-description'}>{itemDef.description}</p>
 
       {/* Stats for Equipment */}
       {itemDef.stats && (
-        <div className={'inventoryScreenEquipmentStats'}>
+        <div className={'inventory-screen__equipment-stats'}>
           {itemDef.stats.atk && <div>⚔️ ATK: +{formatNumber(itemDef.stats.atk)}</div>}
           {itemDef.stats.def && <div>🛡️ DEF: +{formatNumber(itemDef.stats.def)}</div>}
           {itemDef.stats.hp && <div>❤️ HP: +{formatNumber(itemDef.stats.hp)}</div>}
@@ -169,27 +169,27 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
 
       {/* Consumable Effects */}
       {itemDef.consumable && (
-        <div className={'inventoryScreenConsumableStats'}>
+        <div className={'inventory-screen__consumable-stats'}>
           {itemDef.consumable.healHP && `Heals ${formatNumber(itemDef.consumable.healHP)} HP`}
           {itemDef.consumable.healPercent && `Heals ${itemDef.consumable.healPercent}% HP`}
         </div>
       )}
 
       {/* Action Buttons */}
-      <div className={'inventoryScreenItemActions'}>
+      <div className={'inventory-screen__item-actions'}>
         {isEquipment && (
-          <button onClick={() => onEquip(itemId)} className={`${'inventoryScreenItemButton'} ${'inventoryScreenButtonEquip'}`}>
+          <button onClick={() => onEquip(itemId)} className={`${'inventory-screen__item-button'} ${'inventory-screen__button-equip'}`}>
             Equip
           </button>
         )}
         {isConsumable && (
-          <button onClick={() => onUse(itemId)} className={`${'inventoryScreenItemButton'} ${'inventoryScreenButtonUse'}`}>
+          <button onClick={() => onUse(itemId)} className={`${'inventory-screen__item-button'} ${'inventory-screen__button-use'}`}>
             Use
           </button>
         )}
         <button
           onClick={() => onSell(itemId, quantity)}
-          className={`${'inventoryScreenItemButton'} ${'inventoryScreenButtonSell'}`}
+          className={`${'inventory-screen__item-button'} ${'inventory-screen__button-sell'}`}
           title={`Sell for ${formatNumber(itemDef.value)} gold`}
         >
           Sell
@@ -262,22 +262,22 @@ export function InventoryScreen() {
   };
 
   return (
-    <div className={'inventoryScreenRoot'}>
+    <div className={'inventory-screen'}>
       {/* Header */}
-      <div className={'inventoryScreenHeader'}>
-        <h1 className={'inventoryScreenTitle'}>Inventory</h1>
-        <div className={'inventoryScreenGoldRow'}>
-          Gold: <span className={'inventoryScreenSlotName'}>{formatNumber(gold)}</span> 💰
+      <div className={'inventory-screen__header'}>
+        <h1 className={'inventory-screen__title'}>Inventory</h1>
+        <div className={'inventory-screen__gold-row'}>
+          Gold: <span className={'inventory-screen__slot-name'}>{formatNumber(gold)}</span> 💰
         </div>
-        <div className={'inventoryScreenSlotInfo'}>
+        <div className={'inventory-screen__slot-info'}>
           {items.length} / {maxSlots} slots used
         </div>
       </div>
 
       {/* Equipment Slots */}
-      <div className={'inventoryScreenEquipmentPanel'}>
-        <h2 className={'inventoryScreenSectionTitle'}>Equipped</h2>
-        <div className={'inventoryScreenEquipmentGrid'}>
+      <div className={'inventory-screen__equipment-panel'}>
+        <h2 className={'inventory-screen__section-title'}>Equipped</h2>
+        <div className={'inventory-screen__equipment-grid'}>
           <EquipmentSlot
             slotType="weapon"
             item={equippedWeapon}
@@ -292,12 +292,12 @@ export function InventoryScreen() {
       </div>
 
       {/* Tabs */}
-      <div className={'inventoryScreenTabs'}>
+      <div className={'inventory-screen__tabs'}>
         {(['all', 'weapons', 'accessories', 'consumables', 'materials'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`${'inventoryScreenTabButton'} ${activeTab === tab ? 'inventoryScreenTabButtonActive' : ''}`}
+            className={`${'inventory-screen__tab-button'} ${activeTab === tab ? 'inventory-screen__tab-button-active' : ''}`}
           >
             {tab}
           </button>
@@ -305,15 +305,15 @@ export function InventoryScreen() {
       </div>
 
       {/* Inventory Grid */}
-      <div className={'inventoryScreenInventorySection'}>
+      <div className={'inventory-screen__inventory-section'}>
         {filteredItems.length === 0 ? (
-          <div className={'inventoryScreenEmptyState'}>
-            <div className={'inventoryScreenEmptyIcon'}>📦</div>
-            <h3 className={'inventoryScreenEmptyTitle'}>No Items in {activeTab}</h3>
-            <p className={'inventoryScreenSlotDescription'}>Defeat enemies to find loot!</p>
+          <div className={'inventory-screen__empty-state'}>
+            <div className={'inventory-screen__empty-icon'}>📦</div>
+            <h3 className={'inventory-screen__empty-title'}>No Items in {activeTab}</h3>
+            <p className={'inventory-screen__slot-description'}>Defeat enemies to find loot!</p>
           </div>
         ) : (
-          <div className={'inventoryScreenCardGrid'}>
+          <div className={'inventory-screen__card-grid'}>
             {filteredItems.map((item) => (
               <ItemCard
                 key={item.id}
