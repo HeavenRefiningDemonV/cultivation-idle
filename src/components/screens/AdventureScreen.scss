@@ -1,7 +1,12 @@
 .adventureScreenRoot {
   position: relative;
   overflow: hidden;
+  height: 100%;
+  width: 100%;
   border-radius: var(--radius-lg);
+  background-image: url("../../assets/background/Inside\ Dungeon.png");
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 .adventureScreenContent {
@@ -54,11 +59,11 @@
 }
 
 .adventureScreenZoneCardLocked {
- background-color: #cccccc;
+  background-color: #cccccc;
 }
 
 .adventureScreenZoneTitle {
-  margin: 0 0 var(--space-1) 0;
+  margin: 0 0 4px 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-xl);
   font-weight: 700;
@@ -73,7 +78,7 @@
 
 .adventureScreenZoneDetails {
   display: grid;
-  gap: var(--space-1);
+  gap: 4px;
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   margin-bottom: var(--space-3);
@@ -141,7 +146,7 @@
 }
 
 .adventureScreenEnemyTitle {
-  margin: 0 0 var(--space-1) 0;
+  margin: 0 0 4px 0;
   font-family: var(--font-cinzel);
   font-size: var(--text-2xl);
   font-weight: 700;
@@ -158,7 +163,7 @@
 .adventureScreenBarGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 4px;
   text-align: left;
 }
 

@@ -165,7 +165,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-text-muted);
-  margin-bottom: var(--space-1);
+  margin-bottom: 4px;
 }
 
 .adventureTabQuickStatValueGreen {
@@ -232,7 +232,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
-  margin-bottom: var(--space-1);
+  margin-bottom: 4px;
 }
 
 .adventureTabEnemyRewardValue {
@@ -342,7 +342,7 @@
 
 .adventureTabCombatLogList {
   display: grid;
-  gap: var(--space-1);
+  gap: 4px;
 }
 
 .adventureTabCombatLogEmpty {

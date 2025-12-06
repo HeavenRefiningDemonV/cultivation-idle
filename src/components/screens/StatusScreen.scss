@@ -1,7 +1,7 @@
 .statusScreenRoot {
   position: relative;
-  overflow: hidden;
   border-radius: var(--radius-lg);
+  overflow-y: auto;
 }
 
 .statusScreenContent {
@@ -151,7 +151,7 @@
 .statusScreenEquipmentMeta {
   color: var(--color-ink-light);
   font-size: var(--text-xs);
-  margin-top: var(--space-1);
+  margin-top: 4px;
 }
 
 .statusScreenEquipmentStats {

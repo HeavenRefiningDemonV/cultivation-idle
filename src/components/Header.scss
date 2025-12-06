@@ -20,7 +20,7 @@
 .headerStatBlock {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 4px;
 }
 
 .headerQiLine {
@@ -50,7 +50,7 @@
 .headerRealmAccent {
   color: var(--color-gold-accent);
   font-weight: 600;
-  margin-left: var(--space-1);
+  margin-left: 4px;
 }
 
 .headerRealmSubstage {
