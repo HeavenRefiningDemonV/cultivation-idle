@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useUIStore } from '../stores/uiStore';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
@@ -30,6 +31,12 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
  * Techniques tab content (placeholder for now)
  */
 function TechniquesTab() {
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+
+  useEffect(() => {
+    setHeaderTitles('Techniques', 'Coming soon!');
+  }, [setHeaderTitles]);
+
   return <PlaceholderContent tabName="Techniques" />;
 }
 
