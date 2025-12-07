@@ -29,19 +29,19 @@
   width: calc(100% - 14rem);
   margin-right: 14rem;
   z-index: -2;
-  bottom: -20%;
+  bottom: -25%;
 }
 
 .cultivator {
   width: 100%;
-  transform: translateX(-15.5%);
+  transform: translateX(-15%);
 }
 
 .dantian {
   position: absolute;
   height: 6rem;
   width: 6rem;
-  left: calc(39% - 2.5rem);
+  left: calc(37%);
   top: 43%;
   opacity: 80%;
   animation: spinCentered 5s linear infinite;
