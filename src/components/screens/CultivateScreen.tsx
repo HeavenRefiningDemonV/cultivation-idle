@@ -152,29 +152,23 @@ export function CultivateScreen() {
         <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
       </div> */}
 
-      <div className="cultivator-container">
-        <img className='cultivator' src={cultivatorImage} />
-        <img className='dantian' src={dantianImage} />
-      </div>
+
 
 
 
       <div className={'cultivateScreenGrid'}>
-        {/* LEFT: Meditation Display */}
         <div className={'cultivateScreenLeftColumn'}>
+
+          <div className="cultivator-container">
+            <img className='cultivator' src={cultivatorImage} />
+            <img className='dantian' src={dantianImage} />
+          </div>
 
           <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
 
             {/* Qi Stats */}
             <div className={'cultivateScreenStatsGrid'}>
-              <div className={'cultivateScreenStatCard'}>
-                <div className={'cultivateScreenStatLabel'}>Current Qi</div>
-                <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
-              </div>
-              <div className={'cultivateScreenStatCard'}>
-                <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
-                <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
-              </div>
+
             </div>
           </div>
 
@@ -204,11 +198,11 @@ export function CultivateScreen() {
               <div className={'cultivateScreenGateRequirement'}>
                 {hasRequiredToken ? (
                   <span className={'cultivateScreenGateReady'}>
-                    ✅ {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
+                    {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
                   </span>
                 ) : (
                   <span className={'cultivateScreenGateMissing'}>
-                    🔒 Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
+                    Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
                   </span>
                 )}
                 <p className={'cultivateScreenGateNote'}>
@@ -225,18 +219,18 @@ export function CultivateScreen() {
               className={'button-standard cultivateScreenBreakthroughButton'}
             >
               {canBreakthrough
-                ? '✨ Break Through! ✨'
+                ? 'Break Through!'
                 : !hasRequiredToken && requiredGateItem
-                  ? `🔒 Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
-                  : '🔒 Insufficient Qi'}
+                  ? `Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
+                  : 'Insufficient Qi'}
             </button>
           </div>
         </div>
 
         {/* RIGHT: Focus & Upgrades */}
-        <div className={'cultivateScreenRightColumn'}>
+        <div className={'cultivateScreenRightColumn right-column'}>
           {/* Focus Mode Selector */}
-          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
+          <div className={`cultivateScreenPanel csp-right`}>
             <h3 className={'cultivateScreenPanelHeader'}>Cultivation Focus</h3>
 
             <div className={'cultivateScreenFocusList'}>
@@ -246,9 +240,7 @@ export function CultivateScreen() {
                   <button
                     key={mode}
                     onClick={() => setFocusMode(mode)}
-                    className={`${'button-standard'} ${'cultivateScreenFocusButton'} ${
-                      isActive ? 'cultivateScreenFocusButtonActive' : ''
-                    }`}
+                    className={` cultivateScreenFocusButton ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
                   >
                     <div className={'cultivateScreenFocusTitle'}>{mode}</div>
                     <div className={'cultivateScreenFocusDescription'}>
@@ -276,6 +268,14 @@ export function CultivateScreen() {
                 <div className={`${'cultivateScreenInfoValue'} ${'cultivateScreenInfoHighlight'}`}>
                   {formatNumber(useGameStore.getState().totalAuras)}
                 </div>
+              </div>
+              <div className={'cultivateScreenStatCard'}>
+                <div className={'cultivateScreenStatLabel'}>Current Qi</div>
+                <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
+              </div>
+              <div className={'cultivateScreenStatCard'}>
+                <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
+                <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
               </div>
             </div>
           </div>

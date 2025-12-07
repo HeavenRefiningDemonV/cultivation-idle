@@ -26,14 +26,13 @@
 
 .cultivator-container {
   position: absolute;
-  width: 100%;
-  top: -3rem;
-  overflow: hidden;
+  width: calc(100% - 14rem);
+  margin-right: 14rem;
 }
 
 .cultivator {
   width: 100%;
-  transform: translateX(-15.5%) scale(0.9);
+  transform: translateX(-15.5%);
 }
 
 .dantian {
@@ -63,8 +62,6 @@
 .cultivateScreenGrid {
   display: flex;
   justify-content: flex-end;
-  padding: .75rem;
-  gap: 16px;
   height: 100%;
   width: 100%;
   z-index: 11;
@@ -76,14 +73,11 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 16px;
-  margin-left: 8rem;
 }
 
 .cultivateScreenPanel {
-  border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: 14px;
   padding: 24px;
-  /* backdrop-filter: blur(8px); */
 }
 
 /*
@@ -129,11 +123,9 @@
   gap: 12px;
 }
 
-.cultivateScreenStatCard {
-  border: 1px solid rgba(125, 211, 252, 0.3);
-  border-radius: 10px;
-  padding: 16px;
-}
+/*.cultivateScreenStatCard {
+
+}*/
 
 .cultivateScreenStatLabel {
   color: #000000;
@@ -292,10 +284,10 @@
 .cultivateScreenBreakthroughButton:hover {
   transform: translateY(-2px) scale(1.01);
   filter: brightness(1.05);
+  border: none;
 }
 
 .cultivateScreenBreakthroughButton:disabled {
-  background: #475569;
   color: #94a3b8;
   cursor: not-allowed;
   box-shadow: none;
@@ -308,6 +300,12 @@
   gap: 16px;
   width: 14rem;
   justify-self: center;
+}
+
+.right-column {
+  backdrop-filter: blur(8px);
+  border-left: 2px solid #2d2d2d;
+  background-color: #ddd6;
 }
 
 .cultivateScreenPanelHeader {

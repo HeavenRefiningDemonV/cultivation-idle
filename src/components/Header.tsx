@@ -56,7 +56,7 @@ export function Header() {
   return (
     <header className='header'>
       <div className='headerBar'>
-        {/* Left side - Qi & Realm */}
+
         <div className='headerStatBlock'>
           <div className='headerQiLine'>
             Qi: <span className='headerQiValue'>{formatNumber(qi)}</span>
@@ -68,7 +68,11 @@ export function Header() {
           </div>
         </div>
 
-        {/* Right side - Save indicator & actions */}
+        <div className="titles-container">
+          <div className="big-title"></div>
+          <div className="subtitle"></div>
+        </div>
+
         <div className='headerSaveBlock'>
           <div className='headerSaveLabel'>
             Last Saved

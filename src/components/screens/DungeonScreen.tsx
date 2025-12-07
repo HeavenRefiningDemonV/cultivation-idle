@@ -383,7 +383,7 @@ export function DungeonScreen() {
       <div className={'dungeonScreenScreenRoot'}>
         <div className={'dungeonScreenScreenContent'}>
           <div className={'dungeonScreenScreenHeader'}>
-            <div className={'dungeonScreenTagPurple'}>🏛️ DUNGEON TRIAL</div>
+            <div className={'dungeonScreenTagPurple'}>DUNGEON TRIAL</div>
             <h1 className={'dungeonScreenScreenTitle'}>{dungeon?.name || 'Dungeon Trial'}</h1>
             <p className={'dungeonScreenScreenSubtitle'}>
               Defeat <span className={'dungeonScreenReadinessDanger'}>{dungeon?.boss.name}</span> to claim your rewards
