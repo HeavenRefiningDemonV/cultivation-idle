@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -327,20 +328,21 @@ export function CombatView() {
 export function AdventureScreen() {
   try {
     const inCombat = useCombatStore((state) => state.inCombat);
+    const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+
+    useEffect(() => {
+      const title = inCombat ? 'Combat' : 'Adventure Zones';
+      const subtitle = inCombat
+        ? 'Defeat your enemy to claim rewards'
+        : 'Explore dangerous territories and battle fearsome enemies';
+
+      setHeaderTitles(title, subtitle);
+    }, [inCombat, setHeaderTitles]);
 
     return (
       <div className={'adventureScreenRoot'}>
 
         <div className={'adventureScreenContent'}>
-          <div className={'adventureScreenHeader'}>
-            <h1 className={'adventureScreenTitle'}>{inCombat ? 'Combat' : 'Adventure Zones'}</h1>
-            <p className={'adventureScreenSubtitle'}>
-              {inCombat
-                ? 'Defeat your enemy to claim rewards'
-                : 'Explore dangerous territories and battle fearsome enemies'}
-            </p>
-          </div>
-
           {/* Zone Selection or Combat View */}
           {!inCombat ? (
             <div className={'adventureScreenZoneGrid'}>

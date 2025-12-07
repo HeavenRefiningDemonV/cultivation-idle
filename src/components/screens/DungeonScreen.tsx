@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCombatStore } from '../../stores/combatStore';
 import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
+import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import { CombatView } from './AdventureScreen';
 import './DungeonScreen.scss';
@@ -341,6 +342,19 @@ export function DungeonScreen() {
   const inCombat = useCombatStore((state) => state.inCombat);
   const currentDungeon = useCombatStore((state) => state.currentDungeon);
   const stats = useGameStore((state) => state.stats);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+
+  useEffect(() => {
+    if (inCombat) {
+      const activeDungeon = dungeons.find((dungeon) => dungeon.id === currentDungeon);
+      const bossName = activeDungeon?.boss.name || 'the boss';
+
+      setHeaderTitles(activeDungeon?.name || 'Dungeon Trial', `Defeat ${bossName} to claim your rewards`);
+      return;
+    }
+
+    setHeaderTitles('Trial Dungeons', 'Challenge powerful bosses to obtain breakthrough materials');
+  }, [currentDungeon, dungeons, inCombat, setHeaderTitles]);
 
   useEffect(() => {
     fetch('/config/dungeons.json')
@@ -378,16 +392,11 @@ export function DungeonScreen() {
 
   // Show combat view if in dungeon
   if (inCombat && currentDungeon) {
-    const dungeon = dungeons.find((d) => d.id === currentDungeon);
     return (
       <div className={'dungeonScreenScreenRoot'}>
         <div className={'dungeonScreenScreenContent'}>
           <div className={'dungeonScreenScreenHeader'}>
             <div className={'dungeonScreenTagPurple'}>DUNGEON TRIAL</div>
-            <h1 className={'dungeonScreenScreenTitle'}>{dungeon?.name || 'Dungeon Trial'}</h1>
-            <p className={'dungeonScreenScreenSubtitle'}>
-              Defeat <span className={'dungeonScreenReadinessDanger'}>{dungeon?.boss.name}</span> to claim your rewards
-            </p>
           </div>
 
           <div className={'dungeonScreenPanel'}>
@@ -403,11 +412,6 @@ export function DungeonScreen() {
     <div className={'dungeonScreenScreenRoot'}>
       <div className={'dungeonScreenScreenBackground'} />
       <div className={'dungeonScreenScreenContent'}>
-        <div className={'dungeonScreenScreenHeader'}>
-          <h1 className={'dungeonScreenScreenTitle'}>Trial Dungeons</h1>
-          <p className={'dungeonScreenScreenSubtitle'}>Challenge powerful bosses to obtain breakthrough materials</p>
-        </div>
-
         {dungeons.length === 0 ? (
           <div className={'dungeonScreenEmptyCard'}>No dungeons available</div>
         ) : (

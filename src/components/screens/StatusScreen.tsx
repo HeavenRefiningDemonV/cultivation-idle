@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
+import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
@@ -81,6 +83,7 @@ export function StatusScreen() {
   const stats = useGameStore((state) => state.stats);
   const focusMode = useGameStore((state) => state.focusMode);
   const totalAuras = useGameStore((state) => state.totalAuras);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
   // Inventory Store
   const gold = useInventoryStore((state) => state.gold);
@@ -98,17 +101,15 @@ export function StatusScreen() {
   const currentRealm = REALMS[realm.index];
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
 
+  useEffect(() => {
+    setHeaderTitles('Character Status', 'View your cultivation progress and combat statistics');
+  }, [setHeaderTitles]);
+
   return (
     <div className={'statusScreenRoot'}>
 
       {/* Main Content */}
       <div className={'statusScreenContent'}>
-        {/* Header */}
-        <div className={'statusScreenHeader'}>
-          <h1 className={'statusScreenTitle'}>Character Status</h1>
-          <p className={'statusScreenSubtitle'}>View your cultivation progress and combat statistics</p>
-        </div>
-
         {/* Main Grid Layout */}
         <div className={'statusScreenGrid'}>
           {/* LEFT COLUMN */}

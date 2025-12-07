@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
+import { useUIStore } from '../stores/uiStore';
 import { formatNumber } from '../utils/numbers';
 import { getSaveInfo } from '../utils/saveload';
 import './Header.scss';
@@ -11,6 +12,8 @@ export function Header() {
   const qi = useGameStore((state) => state.qi);
   const qiPerSecond = useGameStore((state) => state.qiPerSecond);
   const realm = useGameStore((state) => state.realm);
+  const headerTitle = useUIStore((state) => state.headerTitle);
+  const headerSubtitle = useUIStore((state) => state.headerSubtitle);
 
   const [lastSavedText, setLastSavedText] = useState<string>('Never');
   const [lastSavedTone, setLastSavedTone] = useState<'neutral' | 'fresh' | 'warn' | 'old'>('neutral');
@@ -69,8 +72,8 @@ export function Header() {
         </div>
 
         <div className="titles-container">
-          <div className="big-title"></div>
-          <div className="subtitle"></div>
+          <div className="big-title">{headerTitle}</div>
+          <div className="subtitle">{headerSubtitle}</div>
         </div>
 
         <div className='headerSaveBlock'>

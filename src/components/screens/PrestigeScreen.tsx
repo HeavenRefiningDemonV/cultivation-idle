@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -19,6 +19,7 @@ export function PrestigeScreen() {
 
   const realm = useGameStore((state) => state.realm);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
   const apGain = calculateAPGain();
   const canPrestigeNow = canPrestige();
@@ -40,6 +41,10 @@ export function PrestigeScreen() {
     setShowConfirmation(false);
   };
 
+  useEffect(() => {
+    setHeaderTitles('Reincarnation', 'Restart your cultivation journey with powerful blessings');
+  }, [setHeaderTitles]);
+
   const realmNames = [
     'Qi Refining',
     'Foundation Establishment',
@@ -56,12 +61,6 @@ export function PrestigeScreen() {
       <div className={'prestigeScreenBackground'} />
 
       <div className={'prestigeScreenContent'}>
-        {/* Header */}
-        <div className={'prestigeScreenHeader'}>
-          <h1 className={'prestigeScreenTitle'}>Reincarnation</h1>
-          <p className={'prestigeScreenSubtitle'}>Restart your cultivation journey with powerful blessings</p>
-        </div>
-
         {/* AP Display */}
         <div className={'prestigeScreenApCard'}>
           <div className={'prestigeScreenApValue'}>{totalAP}</div>

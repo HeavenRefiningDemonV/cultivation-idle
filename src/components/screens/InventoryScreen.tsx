@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
+import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import type { ItemDefinition, ItemRarity } from '../../types';
 import './InventoryScreen.scss';
@@ -210,6 +211,7 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
  */
 export function InventoryScreen() {
   const [activeTab, setActiveTab] = useState<InventoryTabType>('all');
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
   const {
     items,
@@ -267,11 +269,14 @@ export function InventoryScreen() {
     sellItem(itemId, quantity);
   };
 
+  useEffect(() => {
+    setHeaderTitles('Inventory');
+  }, [setHeaderTitles]);
+
   return (
     <div className={'inventoryScreenRoot'}>
       {/* Header */}
       <div className={'inventoryScreenHeader'}>
-        <h1 className={'inventoryScreenTitle'}>Inventory</h1>
         <div className={'inventoryScreenGoldRow'}>
           Gold: <span className={'inventoryScreenSlotName'}>{formatNumber(gold)}</span> 💰
         </div>

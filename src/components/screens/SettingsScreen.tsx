@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { deleteSaveAndHardReset } from '../../utils/saveload';
 import { useUIStore } from '../../stores/uiStore';
 import './SettingsScreen.scss';
@@ -8,6 +8,7 @@ export function SettingsScreen() {
   const showCombatLog = useUIStore((state) => state.settings.showCombatLog);
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const setSettings = useUIStore((state) => state.setSettings);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const toggleOfflineModal = () => setSettings({ showOfflineModal: !showOfflineModal });
@@ -20,16 +21,15 @@ export function SettingsScreen() {
     deleteSaveAndHardReset();
   };
 
+  useEffect(() => {
+    setHeaderTitles('Settings', 'Configure UI behavior and manage your save data.');
+  }, [setHeaderTitles]);
+
   return (
     <div className={'settingsScreenRoot'}>
       <div className={'settingsScreenBackground'} />
 
       <div className={'settingsScreenContent'}>
-        <div className={'settingsScreenHeader'}>
-          <h1 className={'settingsScreenTitle'}>Settings</h1>
-          <p className={'settingsScreenSubtitle'}>Configure UI behavior and manage your save data.</p>
-        </div>
-
         <div className={'settingsScreenGrid'}>
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
             <h2 className={'settingsScreenPanelTitle'}>Gameplay &amp; UI</h2>

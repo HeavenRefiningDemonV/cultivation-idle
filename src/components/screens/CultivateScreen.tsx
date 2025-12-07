@@ -67,6 +67,7 @@ export function CultivateScreen() {
     hidePathSelection,
     showPerkSelection,
     hidePerkSelection,
+    setHeaderTitles,
   } = useUIStore();
 
   const currentRealm = REALMS[realm.index];
@@ -139,6 +140,10 @@ export function CultivateScreen() {
     perkSelectionRealm,
   ]);
 
+  useEffect(() => {
+    setHeaderTitles('Cultivation Chamber', 'Meditate and gather Qi to advance your cultivation');
+  }, [setHeaderTitles]);
+
   // Handle breakthrough button click
   const handleBreakthrough = () => {
     if (!canBreakthrough) return;
@@ -147,15 +152,6 @@ export function CultivateScreen() {
 
   return (
     <div className={'cultivateScreenRoot'}>
-      {/* <div className={'cultivateScreenHeader'}>
-        <h1 className={'cultivateScreenTitle'}>Cultivation Chamber</h1>
-        <p className={'cultivateScreenSubtitle'}>Meditate and gather Qi to advance your cultivation</p>
-      </div> */}
-
-
-
-
-
       <div className={'cultivateScreenGrid'}>
         <div className={'cultivateScreenLeftColumn'}>
 

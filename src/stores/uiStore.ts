@@ -36,6 +36,10 @@ interface UIStateBase {
   // Active tab
   activeTab: GameTab;
 
+  // Header titles
+  headerTitle: string;
+  headerSubtitle: string;
+
   // Side panel visibility
   showSidePanel: boolean;
 
@@ -65,6 +69,7 @@ interface UIStateBase {
  */
 export interface UIState extends UIStateBase {
   setActiveTab: (tab: GameTab) => void;
+  setHeaderTitles: (title: string, subtitle?: string) => void;
   toggleSidePanel: () => void;
   addNotification: (type: UINotification['type'], message: string, duration?: number) => void;
   removeNotification: (id: string) => void;
@@ -86,6 +91,8 @@ export interface UIState extends UIStateBase {
 
 const INITIAL_UI_STATE: UIStateBase = {
   activeTab: 'cultivation',
+  headerTitle: '',
+  headerSubtitle: '',
   showSidePanel: false,
   notifications: [],
   showPrestigeModal: false,
@@ -128,6 +135,16 @@ export const useUIStore = create<UIState>()(
       });
 
       console.log(`[UI] Active tab changed to: ${tab}`);
+    },
+
+    /**
+     * Update the header titles displayed in the top bar
+     */
+    setHeaderTitles: (title: string, subtitle = '') => {
+      set((state) => {
+        state.headerTitle = title;
+        state.headerSubtitle = subtitle;
+      });
     },
 
     /**
