@@ -11,6 +11,7 @@ import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import cultivatorImage from "../../assets/onscreen/cbg_full.png";
 import dantianImage from "../../assets/onscreen/qisign.png";
 import longBar from "../../assets/menus/bar_long.png";
+import fancyBlock from "../../assets/menus/block_fancy.png"
 import './CultivateScreen.scss';
 
 /**
@@ -209,7 +210,9 @@ export function CultivateScreen() {
             )}
 
             {/* Breakthrough Button */}
-            <button
+            <div className="bbdiv">
+              <img className='bback' src={fancyBlock} />
+              <button
               onClick={handleBreakthrough}
               disabled={!canBreakthrough}
               className={'button-standard cultivateScreenBreakthroughButton'}
@@ -220,6 +223,8 @@ export function CultivateScreen() {
                   ? `Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
                   : 'Insufficient Qi'}
             </button>
+            </div>
+            
           </div>
         </div>
 

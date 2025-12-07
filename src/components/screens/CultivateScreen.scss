@@ -28,6 +28,7 @@
   position: absolute;
   width: calc(100% - 14rem);
   margin-right: 14rem;
+  z-index: -2;
 }
 
 .cultivator {
@@ -50,7 +51,6 @@
   font-family: 'Julee', cursive;
   font-size: 30px;
   font-weight: 700;
-  color: #fbbf24;
 }
 
 .cultivateScreenSubtitle {
@@ -64,7 +64,7 @@
   justify-content: flex-end;
   height: 100%;
   width: 100%;
-  z-index: 11;
+  z-index: 9;
 }
 
 .cultivateScreenLeftColumn {
@@ -136,7 +136,6 @@
 }
 
 .cultivateScreenStatValue {
-  color: #7dd3fc;
   font-weight: 700;
   font-size: 24px;
 }
@@ -147,6 +146,7 @@
   position: relative;
   width: 100%;
   transform: translateY(10px) scale(0.8);
+  margin-bottom: 3rem;
 }
 
 .bar-container {
@@ -171,14 +171,15 @@
 
 .cultivateScreenProgressHeader {
   margin-bottom: 12px;
+  text-shadow: 0 0 10px white, 0 0 15px white, 0 0 30px white;
+  padding: 0 5rem;
 }
 
 .cultivateScreenProgressTitle {
-  margin: 0 0 4px 0;
+  margin-bottom: 4px;
   font-family: 'Julee', cursive;
   font-size: 20px;
   font-weight: 700;
-  color: #fbbf24;
 }
 
 .cultivateScreenProgressSubtitle {
@@ -192,6 +193,9 @@
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px white, 0 0 15px white, 0 0 30px white;
+  padding: 0 5rem;
 }
 
 .cultivateScreenProgressLabel {
@@ -203,8 +207,6 @@
 .cultivateScreenProgressValue {
   color: #000000;
 }
-
-
 
 .cultivateScreenProgressPattern {
   position: absolute;
@@ -241,12 +243,16 @@
 }
 
 .cultivateScreenGateRequirement {
+  width: 50%;
+  justify-self: center;
+  background-color: #ddd6;
   margin-top: 12px;
   border: 1px solid #374151;
   border-radius: 10px;
   padding: 12px 16px;
   color: #000000;
   font-size: 14px;
+  backdrop-filter: blur(2px);
 }
 
 .cultivateScreenGateReady {
@@ -255,7 +261,6 @@
 }
 
 .cultivateScreenGateMissing {
-  color: #ef4444;
   font-weight: 700;
 }
 
@@ -265,33 +270,50 @@
   font-size: 12px;
 }
 
-.cultivateScreenBreakthroughButton {
-  width: 100%;
+.bbdiv {
   margin-top: 16px;
-  padding: 16px;
-  border: none;
-  border-radius: 14px;
-  font-family: 'Julee', cursive;
-  font-weight: 700;
-  font-size: 18px;
-  color: black;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-  background-image: url("../../assets/menus/block_fancy.png");
-  background-size: cover;
-}
+  position: relative;
+  display: flex;
+  justify-content: center;
 
-.cultivateScreenBreakthroughButton:hover {
-  transform: translateY(-2px) scale(1.01);
-  filter: brightness(1.05);
-  border: none;
-}
+  .bback {
+    position: absolute;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%) scale(1.5) scaleX(2);
+    z-index: -1;
+  }
 
-.cultivateScreenBreakthroughButton:disabled {
-  color: #94a3b8;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
+  .cultivateScreenBreakthroughButton {
+    background: transparent;
+    width: 20%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Julee', cursive;
+    font-weight: 700;
+    font-size: 18px;
+    color: black;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    /*background-image: url("../../assets/menus/block_fancy.png");*/
+    background-size: cover;
+    z-index: 9;
+  }
+
+  .cultivateScreenBreakthroughButton:hover {
+    transform: translateY(-2px) scale(1.01);
+    filter: brightness(1.05);
+    background: transparent;
+    border: none;
+  }
+
+  .cultivateScreenBreakthroughButton:disabled {
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
 }
 
 .cultivateScreenRightColumn {
@@ -371,10 +393,6 @@
   color: #000000;
   font-weight: 700;
   text-transform: capitalize;
-}
-
-.cultivateScreenInfoHighlight {
-  color: #f472b6;
 }
 
 @keyframes shimmer {
