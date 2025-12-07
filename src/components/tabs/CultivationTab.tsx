@@ -280,7 +280,7 @@ export function CultivationTab() {
           <motion.button
             onClick={handleBreakthrough}
             disabled={!canBreakthrough}
-            className={`${'cultivationTabBreakthroughButton'} ${
+            className={`${'button-standard'} ${'cultivationTabBreakthroughButton'} ${
               canBreakthrough ? 'cultivationTabBreakthroughReady' : 'cultivationTabBreakthroughDisabled'
             }`}
             whileHover={canBreakthrough ? { scale: 1.05 } : {}}
@@ -305,7 +305,7 @@ export function CultivationTab() {
             <button
               onClick={() => handleUpgrade('idle')}
               disabled={!canAffordIdle}
-              className={`${'cultivationTabUpgradeButton'} ${
+              className={`${'button-standard'} ${'cultivationTabUpgradeButton'} ${
                 canAffordIdle ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
               }`}
             >
@@ -323,7 +323,7 @@ export function CultivationTab() {
             <button
               onClick={() => handleUpgrade('damage')}
               disabled={!canAffordDamage}
-              className={`${'cultivationTabUpgradeButton'} ${
+              className={`${'button-standard'} ${'cultivationTabUpgradeButton'} ${
                 canAffordDamage ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
               }`}
             >
@@ -341,7 +341,7 @@ export function CultivationTab() {
             <button
               onClick={() => handleUpgrade('hp')}
               disabled={!canAffordHp}
-              className={`${'cultivationTabUpgradeButton'} ${
+              className={`${'button-standard'} ${'cultivationTabUpgradeButton'} ${
                 canAffordHp ? 'cultivationTabUpgradeButtonActive' : 'cultivationTabUpgradeButtonDisabled'
               }`}
             >

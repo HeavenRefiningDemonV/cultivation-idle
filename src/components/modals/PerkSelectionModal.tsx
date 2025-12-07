@@ -109,7 +109,7 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
             <p className={'perkSelectionModalEmptyText'}>
               You have already selected all available perks for this realm.
             </p>
-            <button onClick={onClose} className={'perkSelectionModalButtonPrimary'}>
+            <button onClick={onClose} className={'button-standard perkSelectionModalButtonPrimary'}>
               Continue
             </button>
           </div>
@@ -166,7 +166,7 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
                 </div>
               </div>
 
-              <button className={`${'perkSelectionModalSelectButton'} ${pathColors.highlight}`}>
+              <button className={`${'button-standard'} ${'perkSelectionModalSelectButton'} ${pathColors.highlight}`}>
                 Choose This Perk
               </button>
             </div>

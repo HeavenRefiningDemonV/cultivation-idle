@@ -222,7 +222,7 @@ export function CultivateScreen() {
             <button
               onClick={handleBreakthrough}
               disabled={!canBreakthrough}
-              className={'cultivateScreenBreakthroughButton'}
+              className={'button-standard cultivateScreenBreakthroughButton'}
             >
               {canBreakthrough
                 ? '✨ Break Through! ✨'
@@ -246,7 +246,9 @@ export function CultivateScreen() {
                   <button
                     key={mode}
                     onClick={() => setFocusMode(mode)}
-                    className={`${'cultivateScreenFocusButton'} ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
+                    className={`${'button-standard'} ${'cultivateScreenFocusButton'} ${
+                      isActive ? 'cultivateScreenFocusButtonActive' : ''
+                    }`}
                   >
                     <div className={'cultivateScreenFocusTitle'}>{mode}</div>
                     <div className={'cultivateScreenFocusDescription'}>

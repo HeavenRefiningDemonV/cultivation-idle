@@ -103,7 +103,7 @@ function EquipmentSlot({ slotType, item, onUnequip }: EquipmentSlotProps) {
           )}
 
           {/* Unequip Button */}
-          <button onClick={onUnequip} className={'inventoryScreenActionButton'}>
+          <button onClick={onUnequip} className={'button-standard inventoryScreenActionButton'}>
             Unequip
           </button>
         </div>
@@ -178,18 +178,24 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
       {/* Action Buttons */}
       <div className={'inventoryScreenItemActions'}>
         {isEquipment && (
-          <button onClick={() => onEquip(itemId)} className={`${'inventoryScreenItemButton'} ${'inventoryScreenButtonEquip'}`}>
+          <button
+            onClick={() => onEquip(itemId)}
+            className={`${'button-standard'} ${'inventoryScreenItemButton'} ${'inventoryScreenButtonEquip'}`}
+          >
             Equip
           </button>
         )}
         {isConsumable && (
-          <button onClick={() => onUse(itemId)} className={`${'inventoryScreenItemButton'} ${'inventoryScreenButtonUse'}`}>
+          <button
+            onClick={() => onUse(itemId)}
+            className={`${'button-standard'} ${'inventoryScreenItemButton'} ${'inventoryScreenButtonUse'}`}
+          >
             Use
           </button>
         )}
         <button
           onClick={() => onSell(itemId, quantity)}
-          className={`${'inventoryScreenItemButton'} ${'inventoryScreenButtonSell'}`}
+          className={`${'button-standard'} ${'inventoryScreenItemButton'} ${'inventoryScreenButtonSell'}`}
           title={`Sell for ${formatNumber(itemDef.value)} gold`}
         >
           Sell

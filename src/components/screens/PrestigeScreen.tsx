@@ -110,7 +110,9 @@ export function PrestigeScreen() {
           <button
             onClick={handlePrestige}
             disabled={!canPrestigeNow}
-            className={`${'prestigeScreenPrestigeButton'} ${canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'}`}
+            className={`${'button-standard'} ${'prestigeScreenPrestigeButton'} ${
+              canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'
+            }`}
           >
             {canPrestigeNow ? 'Reincarnate Now' : 'Not Ready Yet'}
           </button>
@@ -180,7 +182,9 @@ export function PrestigeScreen() {
                       <button
                         onClick={() => purchaseUpgrade(upgrade.id)}
                         disabled={!canAfford}
-                        className={`${'prestigeScreenShopButton'} ${canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'}`}
+                        className={`${'button-standard'} ${'prestigeScreenShopButton'} ${
+                          canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'
+                        }`}
                       >
                         Purchase
                       </button>
@@ -232,11 +236,14 @@ export function PrestigeScreen() {
               <div className={'prestigeScreenModalActions'}>
                 <button
                   onClick={() => setShowConfirmation(false)}
-                  className={`${'prestigeScreenModalButton'} ${'prestigeScreenModalCancel'}`}
+                  className={`${'button-standard'} ${'prestigeScreenModalButton'} ${'prestigeScreenModalCancel'}`}
                 >
                   Cancel
                 </button>
-                <button onClick={confirmPrestige} className={`${'prestigeScreenModalButton'} ${'prestigeScreenModalConfirm'}`}>
+                <button
+                  onClick={confirmPrestige}
+                  className={`${'button-standard'} ${'prestigeScreenModalButton'} ${'prestigeScreenModalConfirm'}`}
+                >
                   Reincarnate
                 </button>
               </div>

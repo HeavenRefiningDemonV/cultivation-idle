@@ -40,7 +40,7 @@ function App() {
           <p className={'appSubtext'}>{initError}</p>
           <button
             onClick={() => window.location.reload()}
-            className={'buttonStandard appPrimaryButton'}
+            className={'button-standard appPrimaryButton'}
           >
             Reload Page
           </button>

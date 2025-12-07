@@ -99,7 +99,11 @@ function BossPreviewModal({
             <h2 className={'dungeonScreenModalTitle'}>{dungeon.name}</h2>
             <p className={'dungeonScreenModalSubtitle'}>{dungeon.description}</p>
           </div>
-          <button onClick={onClose} className={'dungeonScreenCloseButton'} aria-label="Close preview">
+          <button
+            onClick={onClose}
+            className={'button-standard dungeonScreenCloseButton'}
+            aria-label="Close preview"
+          >
             ×
           </button>
         </div>
@@ -210,10 +214,10 @@ function BossPreviewModal({
 
         {/* Footer Actions */}
         <div className={'dungeonScreenFooterActions'}>
-          <button onClick={onClose} className={'dungeonScreenSecondaryButton'}>
+          <button onClick={onClose} className={'button-standard dungeonScreenSecondaryButton'}>
             Cancel
           </button>
-          <button onClick={onEnter} className={'dungeonScreenDangerButton'}>
+          <button onClick={onEnter} className={'button-standard dungeonScreenDangerButton'}>
             Enter Dungeon
           </button>
         </div>
@@ -303,7 +307,9 @@ function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: 
             <div className={'dungeonScreenCardActions'}>
               <button
                 onClick={() => setShowPreview(true)}
-                className={`${'dungeonScreenActionPrimary'} ${isLocked ? 'dungeonScreenButtonDisabled' : ''}`}
+                className={`${'button-standard'} ${'dungeonScreenActionPrimary'} ${
+                  isLocked ? 'dungeonScreenButtonDisabled' : ''
+                }`}
                 disabled={isLocked}
               >
                 Preview & Enter

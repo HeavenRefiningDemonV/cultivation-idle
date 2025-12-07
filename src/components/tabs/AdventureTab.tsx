@@ -253,7 +253,7 @@ export function AdventureTab() {
                   key={zone.id}
                   onClick={() => handleZoneClick(zone)}
                   disabled={!unlocked}
-                  className={`${'buttonStandard'} ${'adventureTabZoneButton'} ${
+                  className={`${'button-standard'} ${'adventureTabZoneButton'} ${
                     isSelected ? 'adventureTabZoneSelected' : ''
                   } ${
                     unlocked ? '' : 'adventureTabZoneLocked'
@@ -354,7 +354,7 @@ export function AdventureTab() {
               <div className={'adventureTabCombatControls'}>
                 <motion.button
                   onClick={handleAttack}
-                  className={`${'buttonStandard'} ${'adventureTabActionButton'} ${'adventureTabPrimaryAction'}`}
+                  className={`${'button-standard'} ${'adventureTabActionButton'} ${'adventureTabPrimaryAction'}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -363,7 +363,7 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleAutoAttackToggle}
-                  className={`${'buttonStandard'} ${'adventureTabActionButton'} ${
+                  className={`${'button-standard'} ${'adventureTabActionButton'} ${
                     autoAttack ? 'adventureTabAutoActive' : 'adventureTabAutoInactive'
                   }`}
                   whileHover={{ scale: 1.05 }}
@@ -374,7 +374,7 @@ export function AdventureTab() {
 
                 <motion.button
                   onClick={handleFlee}
-                  className={`${'buttonStandard'} ${'adventureTabActionButton'} ${'adventureTabSecondaryAction'}`}
+                  className={`${'button-standard'} ${'adventureTabActionButton'} ${'adventureTabSecondaryAction'}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

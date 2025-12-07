@@ -41,7 +41,7 @@ export function TabNav() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`${'tabNavTab'} ${isActive ? 'tabNavTabActive' : ''}`}
+                className={`${'button-standard'} ${'tabNavTab'} ${isActive ? 'tabNavTabActive' : ''}`}
               >
                 {tab.label}
                 {isActive && (

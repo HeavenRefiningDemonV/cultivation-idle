@@ -156,7 +156,10 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
                   <p className={'pathSelectionModalPathTheme'}>{path.playstyle}</p>
                 </div>
 
-                <button className={'pathSelectionModalSelectButton'} style={{ background: path.gradient }}>
+                <button
+                  className={'button-standard pathSelectionModalSelectButton'}
+                  style={{ background: path.gradient }}
+                >
                   Choose {path.name}
                 </button>
               </div>

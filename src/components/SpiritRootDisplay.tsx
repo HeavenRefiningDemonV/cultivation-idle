@@ -145,7 +145,7 @@ export function SpiritRootDisplay() {
       <button
         onClick={handleReroll}
         disabled={!canAfford}
-        className={'buttonStandard spiritRootDisplayRerollButton'}
+        className={'button-standard spiritRootDisplayRerollButton'}
         title={!canAfford ? `Need ${formatNumber(rerollCost.toString())} gold` : 'Reroll your spirit root'}
       >
         {canAfford

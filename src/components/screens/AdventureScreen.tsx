@@ -130,13 +130,15 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
 
       {!isLocked && (
         <div className={'adventureScreenZoneButtons'}>
-          <button onClick={handleFightEnemies} className={'adventureScreenButton'}>
+          <button onClick={handleFightEnemies} className={'button-standard adventureScreenButton'}>
             Fight Enemies
           </button>
           <button
             onClick={handleFightBoss}
             disabled={!isBossAvailable}
-            className={`${'adventureScreenButton'} ${'adventureScreenButtonDanger'} ${!isBossAvailable ? 'adventureScreenButtonDisabled' : ''}`}
+            className={`${'button-standard'} ${'adventureScreenButton'} ${'adventureScreenButtonDanger'} ${
+              !isBossAvailable ? 'adventureScreenButtonDisabled' : ''
+            }`}
           >
             {isBossAvailable ? 'Fight Boss' : 'Boss (10 kills needed)'}
           </button>
@@ -271,19 +273,23 @@ export function CombatView() {
         <button
           onClick={playerAttack}
           disabled={autoAttack}
-          className={`${'adventureScreenControlButton'} ${'adventureScreenButton'} ${autoAttack ? 'adventureScreenControlMuted' : ''}`}
+          className={`${'button-standard'} ${'adventureScreenControlButton'} ${'adventureScreenButton'} ${
+            autoAttack ? 'adventureScreenControlMuted' : ''
+          }`}
         >
           ⚔️ Attack
         </button>
         <button
           onClick={() => setAutoAttack(!autoAttack)}
-          className={`${'adventureScreenControlButton'} ${'adventureScreenControlSecondary'} ${autoAttack ? '' : 'adventureScreenButtonDisabled'}`}
+          className={`${'button-standard'} ${'adventureScreenControlButton'} ${'adventureScreenControlSecondary'} ${
+            autoAttack ? '' : 'adventureScreenButtonDisabled'
+          }`}
         >
           {autoAttack ? '⏸️ Auto (ON)' : '▶️ Auto (OFF)'}
         </button>
         <button
           onClick={exitCombat}
-          className={`${'adventureScreenControlButton'} ${'adventureScreenControlDanger'}`}
+          className={`${'button-standard'} ${'adventureScreenControlButton'} ${'adventureScreenControlDanger'}`}
         >
           🏃 Retreat
         </button>

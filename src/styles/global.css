@@ -56,7 +56,7 @@ button:focus {
   transform: none;
 }
 
-.buttonStandard {
+.button-standard {
   background: #dddddd;
   border: 1px solid #000000;
   border-radius: 5px;

@@ -81,7 +81,10 @@ export function SettingsScreen() {
             <p className={'settingsScreenPanelSubtitle'}>
               Delete all progress and restart as if the game was freshly installed.
             </p>
-            <button onClick={() => setShowDeleteModal(true)} className={'settingsScreenDangerButton'}>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className={'button-standard settingsScreenDangerButton'}
+            >
               Delete Save &amp; Hard Reset
             </button>
             <p className={'settingsScreenDangerNote'}>
@@ -100,10 +103,16 @@ export function SettingsScreen() {
               This will delete all save data, including AP, upgrades, auras, items, and progress. This cannot be undone.
             </p>
             <div className={'settingsScreenModalActions'}>
-              <button onClick={() => setShowDeleteModal(false)} className={`${'settingsScreenModalButton'} ${'settingsScreenModalCancel'}`}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className={`${'button-standard'} ${'settingsScreenModalButton'} ${'settingsScreenModalCancel'}`}
+              >
                 Cancel
               </button>
-              <button onClick={handleDeleteSave} className={`${'settingsScreenModalButton'} ${'settingsScreenModalConfirm'}`}>
+              <button
+                onClick={handleDeleteSave}
+                className={`${'button-standard'} ${'settingsScreenModalButton'} ${'settingsScreenModalConfirm'}`}
+              >
                 Delete &amp; Restart
               </button>
             </div>
