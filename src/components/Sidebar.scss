@@ -16,7 +16,10 @@
 .sidebarNavList {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  width: 100%;
   gap: 12px;
+  justify-content: center;
 }
 
 .sidebarNavButton {

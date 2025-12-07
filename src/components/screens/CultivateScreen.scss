@@ -63,9 +63,11 @@
 .cultivateScreenGrid {
   display: flex;
   justify-content: flex-end;
+  padding: .75rem;
   gap: 16px;
   height: 100%;
   width: 100%;
+  z-index: 11;
 }
 
 .cultivateScreenLeftColumn {
@@ -152,7 +154,7 @@
 .progress-bar {
   position: relative;
   width: 100%;
-  transform: scale(0.8);
+  transform: translateY(10px) scale(0.8);
 }
 
 .bar-container {
@@ -241,7 +243,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
   font-size: 12px;
   font-weight: 700;
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
@@ -281,15 +282,15 @@
   font-family: 'Julee', cursive;
   font-weight: 700;
   font-size: 18px;
-  color: #fff;
-  box-shadow: 0 0 30px rgba(252, 165, 165, 0.6);
+  color: black;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  background-image: url("../../assets/menus/block_fancy.png");
+  background-size: cover;
 }
 
 .cultivateScreenBreakthroughButton:hover {
   transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 0 30px rgba(252, 165, 165, 0.6);
   filter: brightness(1.05);
 }
 

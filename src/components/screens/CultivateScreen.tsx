@@ -27,19 +27,20 @@ function OrnateProgressBar({
   const percent = Math.min(100, parseFloat((Number(current) / Number(max) * 100).toFixed(2)));
 
   return (
+    <>
+      <div className={'cultivateScreenProgressContainer'}>
+        {/* Background pattern */}
+        <div className={'cultivateScreenProgressPattern'} />
 
-    <div className={'cultivateScreenProgressContainer'}>
-      {/* Background pattern */}
-      <div className={'cultivateScreenProgressPattern'} />
+        {/* Gradient fill */}
+        <div className={'cultivateScreenProgressFill'} style={{ width: `${percent}%` }}>
+          <div className={'cultivateScreenProgressShimmer'} />
+        </div>
 
-      {/* Gradient fill */}
-      <div className={'cultivateScreenProgressFill'} style={{ width: `${percent}%` }}>
-        <div className={'cultivateScreenProgressShimmer'} />
+        {/* Percentage text */}
       </div>
-
-      {/* Percentage text */}
       <div className={'cultivateScreenProgressText'}>{percent.toFixed(1)}%</div>
-    </div>
+    </>
   );
 }
 
