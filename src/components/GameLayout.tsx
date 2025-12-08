@@ -78,7 +78,9 @@ export function GameLayout() {
       <Header />
       <div className="nonheader">
         <Sidebar />
-        <div className='gameLayoutContent'>
+        <div
+          className={`gameLayoutContent ${activeTab === 'status' ? 'gameLayoutContent--scrollable' : ''}`}
+        >
           {renderContent()}
         </div>
       </div>

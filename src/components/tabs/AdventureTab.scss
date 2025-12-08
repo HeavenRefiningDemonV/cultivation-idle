@@ -49,6 +49,7 @@
 
 .adventureTabZoneButton:hover {
   border-color: #4b5563;
+  background: var(--button-hover-neutral);
 }
 
 .adventureTabZoneSelected {
@@ -302,6 +303,10 @@
   font-weight: 700;
   color: #000000;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.adventureTabActionButton:hover {
+  background: var(--button-hover-neutral);
 }
 
 .adventureTabPrimaryAction {
