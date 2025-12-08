@@ -22,7 +22,13 @@
   width: 100vw;
   padding-left: 14rem;
   padding-top: 5rem;
+  overflow: hidden;
 
+}
+
+.gameLayoutContent--scrollable {
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
 }
 
 .gameLayoutPlaceholder {

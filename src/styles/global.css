@@ -40,7 +40,7 @@ h6 {
 
 button {
   font-family: 'Julee', cursive;
-  background: #dddddd;
+  background: #d0d0d0;
   border: 1px solid #000000;
   border-radius: 5px;
   color: #000000;
@@ -49,7 +49,7 @@ button {
 button:hover,
 button:active,
 button:focus {
-  background: #dddddd;
+  background: #d8d8d8;
   border: 1px solid #000000;
   color: #000000;
   box-shadow: none;
@@ -57,7 +57,7 @@ button:focus {
 }
 
 .button-standard {
-  background: #dddddd;
+  background: #d0d0d0;
   border: 1px solid #000000;
   border-radius: 5px;
   color: #000000;
@@ -69,4 +69,36 @@ button:focus {
 
 .title-font {
   font-family: 'Julee', cursive;
+}
+
+/* Scrollbar styling - ink-inspired stroke with subtle texture */
+* {
+  scrollbar-color: #41526a #0b1224;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.06), transparent 45%),
+    linear-gradient(180deg, rgba(12, 18, 34, 0.95), rgba(19, 28, 45, 0.9));
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.75), rgba(56, 189, 248, 0.7) 45%, rgba(59, 130, 246, 0.85));
+  border: 2px solid rgba(10, 16, 30, 0.85);
+  border-radius: 12px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(74, 222, 128, 0.85), rgba(14, 165, 233, 0.78) 45%, rgba(99, 102, 241, 0.9));
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(12, 18, 34, 0.9);
 }
