@@ -4,6 +4,14 @@
   left: 0;
   right: 0;
   height: 5rem;
+  background-image:
+    linear-gradient(to right, #ddd 0, rgba(221, 221, 221, 0) 14rem),
+    linear-gradient(to left, #ddd 0, rgba(221, 221, 221, 0) 14rem);
+  background-repeat: no-repeat;
+  background-size: 14rem 100%;
+  background-position: left top, right top;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 2px solid #2d2d2d;
   z-index: 40;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
