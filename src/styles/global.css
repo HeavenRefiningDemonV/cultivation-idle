@@ -15,6 +15,22 @@ body {
   background-image: radial-gradient(ellipse at center, #2d2d2d 0%, #0a0a0a 100%);
   background-attachment: fixed;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+input,
+textarea,
+select,
+option {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 body * {
