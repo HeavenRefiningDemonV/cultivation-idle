@@ -1,7 +1,3 @@
-:root {
-  --button-hover-neutral: #d9d9d9;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -53,7 +49,7 @@ button {
 button:hover,
 button:active,
 button:focus {
-  background: var(--button-hover-neutral);
+  background: #d8d8d8;
   border: 1px solid #000000;
   color: #000000;
   box-shadow: none;
@@ -64,14 +60,6 @@ button:focus {
   background: #d0d0d0;
   border: 1px solid #000000;
   border-radius: 5px;
-  color: #000000;
-}
-
-.button-standard:hover,
-.button-standard:active,
-.button-standard:focus {
-  background: var(--button-hover-neutral);
-  border: 1px solid #000000;
   color: #000000;
 }
 
