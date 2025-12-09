@@ -15,7 +15,7 @@ function NavButton({ label, active, onClick }: NavButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`button-standard sidebarNavButton ${active ? 'sidebarNavButtonActive' : ''}`}
+      className={`sidebarNavButton ${active ? 'sidebarNavButtonActive' : ''}`}
     >
       {label}
     </button>
