@@ -12,7 +12,7 @@
   background-position: left top, right top;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-bottom: 2px solid #2d2d2d;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 0 0 10px 0 /5px;
   z-index: 40;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
