@@ -135,7 +135,7 @@ export const usePrestigeStore = create<PrestigeState>()(
       const gameStore = _getGameStore();
       const currentRealm = gameStore.realm?.index || 0;
       const highestRealm = get().highestRealmReached;
-      return Math.max(currentRealm, highestRealm) >= 2; // Core Formation (realm 2)
+      return Math.max(currentRealm, highestRealm) >= 1; // Foundation Establishment (realm 1)
     },
 
     updateHighestRealm: (realmIndex: number) => {
