@@ -21,6 +21,13 @@ header * {
   color: #000000;
 }
 
+.header--lightTitles .titles-container {
+  .big-title,
+  .subtitle {
+    color: #ffffff;
+  }
+}
+
 .headerBar {
   height: 100%;
   padding: 0 24px;

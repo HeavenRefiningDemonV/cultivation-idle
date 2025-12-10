@@ -14,6 +14,7 @@ export function Header() {
   const realm = useGameStore((state) => state.realm);
   const headerTitle = useUIStore((state) => state.headerTitle);
   const headerSubtitle = useUIStore((state) => state.headerSubtitle);
+  const headerTone = useUIStore((state) => state.headerTone);
 
   const [lastSavedText, setLastSavedText] = useState<string>('Never');
   const [lastSavedTone, setLastSavedTone] = useState<'neutral' | 'fresh' | 'warn' | 'old'>('neutral');
@@ -57,7 +58,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className='header'>
+    <header className={`header ${headerTone === 'light' ? 'header--lightTitles' : ''}`}>
       <div className='headerBar'>
 
         <div className='headerStatBlock'>

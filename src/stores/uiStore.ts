@@ -39,6 +39,7 @@ interface UIStateBase {
   // Header titles
   headerTitle: string;
   headerSubtitle: string;
+  headerTone: 'dark' | 'light';
 
   // Side panel visibility
   showSidePanel: boolean;
@@ -70,6 +71,7 @@ interface UIStateBase {
 export interface UIState extends UIStateBase {
   setActiveTab: (tab: GameTab) => void;
   setHeaderTitles: (title: string, subtitle?: string) => void;
+  setHeaderTone: (tone: UIStateBase['headerTone']) => void;
   toggleSidePanel: () => void;
   addNotification: (type: UINotification['type'], message: string, duration?: number) => void;
   removeNotification: (id: string) => void;
@@ -93,6 +95,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   activeTab: 'cultivation',
   headerTitle: '',
   headerSubtitle: '',
+  headerTone: 'dark',
   showSidePanel: false,
   notifications: [],
   showPrestigeModal: false,
@@ -144,6 +147,15 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.headerTitle = title;
         state.headerSubtitle = subtitle;
+      });
+    },
+
+    /**
+     * Adjust the header tone (e.g., for modal overlays)
+     */
+    setHeaderTone: (tone: UIStateBase['headerTone']) => {
+      set((state) => {
+        state.headerTone = tone;
       });
     },
 

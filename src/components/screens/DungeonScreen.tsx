@@ -237,6 +237,7 @@ function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: 
   const isDungeonUnlocked = useDungeonStore((state) => state.isDungeonUnlocked(dungeon.id));
   const isFirstClear = useDungeonStore((state) => state.isFirstClear(dungeon.id));
   const totalClears = useDungeonStore((state) => state.getTotalClears(dungeon.id));
+  const setHeaderTone = useUIStore((state) => state.setHeaderTone);
 
   if (!realm) return null;
 
@@ -257,6 +258,16 @@ function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: 
       : readiness.level === 'caution'
         ? `${'dungeonScreenBadge'} ${'dungeonScreenBadgeCaution'}`
         : `${'dungeonScreenBadge'} ${'dungeonScreenBadgeDanger'}`;
+
+  useEffect(() => {
+    if (showPreview) {
+      setHeaderTone('light');
+    } else {
+      setHeaderTone('dark');
+    }
+
+    return () => setHeaderTone('dark');
+  }, [setHeaderTone, showPreview]);
 
   return (
     <>
