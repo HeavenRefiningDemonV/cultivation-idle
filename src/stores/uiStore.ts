@@ -221,11 +221,12 @@ export const useUIStore = create<UIState>()(
     },
 
     /**
-     * Show prestige modal
+     * Navigate to prestige tab
      */
     showPrestige: () => {
       set((state) => {
-        state.showPrestigeModal = true;
+        state.activeTab = 'prestige';
+        state.showPrestigeModal = false;
       });
     },
 
