@@ -52,6 +52,20 @@ function gatherGameState(): SaveData {
       playerLuck: gameState.playerLuck,
       lastTickTime: gameState.lastTickTime,
       lastActiveTime: gameState.lastActiveTime,
+      runStartTime: gameState.runStartTime,
+    },
+
+    prestigeState: {
+      totalAP: prestigeState.totalAP,
+      lifetimeAP: prestigeState.lifetimeAP,
+      currentRunAP: prestigeState.currentRunAP,
+      prestigeCount: prestigeState.prestigeCount,
+      prestigeRuns: prestigeState.prestigeRuns,
+      upgrades: prestigeState.upgrades,
+      highestRealmReached: prestigeState.highestRealmReached,
+      runStartTime: prestigeState.runStartTime,
+      rerollCount: prestigeState.rerollCount,
+      spiritRoot: prestigeState.spiritRoot,
     },
 
     inventoryState: {
@@ -109,6 +123,37 @@ function validateSaveData(data: unknown): data is SaveData {
     }
     if ('lastTickTime' in gs && typeof gs.lastTickTime !== 'number') return false;
     if ('lastActiveTime' in gs && typeof gs.lastActiveTime !== 'number') return false;
+    if ('runStartTime' in gs && typeof gs.runStartTime !== 'number') return false;
+
+    if ('prestigeState' in record && record.prestigeState) {
+      const ps = record.prestigeState as Record<string, unknown>;
+
+      const numbersValid =
+        typeof ps.totalAP === 'number' &&
+        typeof ps.lifetimeAP === 'number' &&
+        typeof ps.currentRunAP === 'number' &&
+        typeof ps.prestigeCount === 'number' &&
+        typeof ps.highestRealmReached === 'number' &&
+        typeof ps.runStartTime === 'number' &&
+        typeof ps.rerollCount === 'number';
+
+      if (!numbersValid) return false;
+
+      if (!Array.isArray((ps as { prestigeRuns?: unknown }).prestigeRuns)) return false;
+      if (typeof ps.upgrades !== 'object' || ps.upgrades === null) return false;
+
+      if ('spiritRoot' in ps && ps.spiritRoot !== undefined) {
+        const sr = (ps as { spiritRoot?: unknown }).spiritRoot as
+          | { grade?: unknown; element?: unknown; purity?: unknown }
+          | null;
+        if (
+          sr !== null &&
+          (!sr || typeof sr.grade !== 'number' || typeof sr.element !== 'string' || typeof sr.purity !== 'number')
+        ) {
+          return false;
+        }
+      }
+    }
 
     const is = record.inventoryState as Record<string, unknown>;
     if (!Array.isArray((is as { items?: unknown }).items) || typeof is.gold !== 'string') return false;
@@ -253,11 +298,26 @@ function applySaveData(saveData: SaveData): void {
     const gameStore = useGameStore.getState();
 
     // Restore spirit root (fallback to reroll for old saves)
-    const spiritRoot = saveData.gameState.spiritRoot;
+    const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
     if (spiritRoot && typeof spiritRoot.grade === 'number' && spiritRoot.element) {
-      usePrestigeStore.setState({ spiritRoot, rerollCount: 0 });
+      usePrestigeStore.setState({ spiritRoot, rerollCount: saveData.prestigeState?.rerollCount ?? 0 });
     } else {
       prestigeStore.generateSpiritRoot();
+    }
+
+    if (saveData.prestigeState) {
+      const prestigeState = saveData.prestigeState;
+      usePrestigeStore.setState((state) => {
+        state.totalAP = prestigeState.totalAP;
+        state.lifetimeAP = prestigeState.lifetimeAP;
+        state.currentRunAP = prestigeState.currentRunAP;
+        state.prestigeCount = prestigeState.prestigeCount;
+        state.prestigeRuns = prestigeState.prestigeRuns || [];
+        state.upgrades = { ...state.upgrades, ...(prestigeState.upgrades || {}) };
+        state.highestRealmReached = prestigeState.highestRealmReached;
+        state.runStartTime = prestigeState.runStartTime;
+        state.rerollCount = prestigeState.rerollCount;
+      });
     }
 
     // Apply to game store
@@ -278,6 +338,7 @@ function applySaveData(saveData: SaveData): void {
       playerLuck: saveData.gameState.playerLuck || 0,
       lastTickTime: saveData.gameState.lastTickTime || Date.now(),
       lastActiveTime: saveData.gameState.lastActiveTime || Date.now(),
+      runStartTime: saveData.gameState.runStartTime || prestigeStore.runStartTime,
     });
 
     // Apply to inventory store and re-bind equipped items

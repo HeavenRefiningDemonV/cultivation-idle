@@ -205,6 +205,21 @@ export interface SaveData {
     playerLuck: number;
     lastTickTime?: number;
     lastActiveTime?: number;
+    runStartTime?: number;
+  };
+
+  // Prestige state
+  prestigeState?: {
+    totalAP: number;
+    lifetimeAP: number;
+    currentRunAP: number;
+    prestigeCount: number;
+    prestigeRuns: PrestigeRun[];
+    upgrades: Record<string, PrestigeUpgrade>;
+    highestRealmReached: number;
+    runStartTime: number;
+    rerollCount: number;
+    spiritRoot: SpiritRoot | null;
   };
 
   // Inventory state
@@ -241,6 +256,31 @@ export interface SaveData {
     intentRegenRate: string;
     techniques: Record<string, Technique>;
   };
+}
+
+export interface PrestigeUpgradeEffect {
+  type: 'multiplier' | 'unlock' | 'flat_bonus';
+  stat?: string;
+  value?: number;
+  valuePerLevel?: number;
+}
+
+export interface PrestigeUpgrade {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  maxLevel: number;
+  currentLevel: number;
+  effect: PrestigeUpgradeEffect;
+}
+
+export interface PrestigeRun {
+  runNumber: number;
+  realmReached: number;
+  apGained: number;
+  timeSpent: number;
+  timestamp: number;
 }
 
 /**
