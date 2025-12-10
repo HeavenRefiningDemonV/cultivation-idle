@@ -200,12 +200,12 @@ function BossPreviewModal({
             <h4 className={'dungeonScreenSectionTitle'}>Rewards</h4>
             <div className={'dungeonScreenRewardList'}>
               <div className={'dungeonScreenRewardRow'}>
-                <span>Gold:</span>
+                <span className='white-text'>Gold:</span>
                 <span className={'dungeonScreenRewardValue'}>{formatNumber(dungeon.rewards.gold)}</span>
               </div>
               {dungeon.rewards.guaranteedDrop && (
                 <div className={'dungeonScreenRewardRow'}>
-                  <span>First Clear:</span>
+                  <span className='white-text'>First Clear:</span>
                   <span className={'dungeonScreenRewardValue'}>{dungeon.rewards.guaranteedDrop.name}</span>
                 </div>
               )}
