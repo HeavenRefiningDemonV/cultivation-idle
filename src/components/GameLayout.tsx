@@ -47,7 +47,7 @@ export function GameLayout() {
   const activeTab = useUIStore((state) => state.activeTab);
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
   const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
-  const isScrollable = activeTab === 'status' || activeTab === 'dungeon';
+  const isScrollable = activeTab === 'status' || activeTab === 'dungeon'  || activeTab === 'prestige';
 
   // Render content based on active tab
   const renderContent = () => {

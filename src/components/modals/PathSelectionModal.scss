@@ -37,13 +37,13 @@
 
 .pathSelectionModalSubtitle {
   margin: 0;
-  color: #000000;
+  color: #ffffff;
   font-size: 18px;
 }
 
 .pathSelectionModalHelperText {
   margin-top: 4px;
-  color: #000000;
+  color: #ffffff;
   font-size: 14px;
 }
 
@@ -97,7 +97,7 @@
 
 .pathSelectionModalDescription {
   margin: 0 0 12px 0;
-  color: #000000;
+  color: #ffffff;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -108,6 +108,10 @@
   border-radius: 10px;
   padding: 12px;
   margin-bottom: 12px;
+
+  li {
+    color: white;
+  }
 }
 
 .pathSelectionModalBonusTitle {
@@ -156,16 +160,18 @@
 .pathSelectionModalFooter {
   margin-top: 24px;
   text-align: center;
-  color: #000000;
+  color: #ffffff;
 }
 
 .pathSelectionModalFooterTip {
   margin: 0;
   font-size: 14px;
   font-style: italic;
+  color: white;
 }
 
 .pathSelectionModalFooterNote {
   margin: 4px 0 0;
   font-size: 12px;
+  color: white;
 }

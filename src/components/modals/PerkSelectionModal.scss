@@ -43,7 +43,7 @@
 
 .perkSelectionModalHelperText {
   font-size: 14px;
-  color: #000000;
+  color: #ffffff;
   margin-top: 8px;
 }
 
@@ -72,7 +72,7 @@
 }
 
 .perkSelectionModalEmptyText {
-  color: #000000;
+  color: #ffffff;
   margin-bottom: 24px;
 }
 
@@ -137,7 +137,7 @@
 
 .perkSelectionModalPerkDescription {
   font-size: 14px;
-  color: #000000;
+  color: #5c4cb5;
   margin: 0 0 16px;
   min-height: 48px;
   line-height: 1.6;
@@ -164,6 +164,10 @@
   align-items: center;
   color: #cbd5e1;
   font-size: 12px;
+
+  span{
+    color: #fecdd3
+  }
 }
 
 .perkSelectionModalEffectValue {
@@ -190,13 +194,16 @@
 .perkSelectionModalFooter {
   margin-top: 48px;
   text-align: center;
-  color: #000000;
   font-size: 14px;
+
+  p {
+    color: white;
+  }
 }
 
 .perkSelectionModalFooterSmall {
   font-size: 12px;
-  color: #000000;
+  color: #ffffff;
   margin-top: 8px;
 }
 
