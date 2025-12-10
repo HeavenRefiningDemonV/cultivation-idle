@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
 import { D } from '../utils/numbers';
+import { saveGame } from '../utils/saveload';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -131,11 +132,14 @@ export const usePrestigeStore = create<PrestigeState>()(
     },
 
     canPrestige: () => {
-      if (!_getGameStore) return false;
+      if (!_getGameStore) {
+        console.warn('[Prestige] Game store getter not initialized');
+        return false;
+      }
       const gameStore = _getGameStore();
       const currentRealm = gameStore.realm?.index || 0;
       const highestRealm = get().highestRealmReached;
-      return Math.max(currentRealm, highestRealm) >= 2; // Core Formation (realm 2)
+      return Math.max(currentRealm, highestRealm) >= 1; // Foundation Establishment (realm 1)
     },
 
     updateHighestRealm: (realmIndex: number) => {
@@ -146,7 +150,10 @@ export const usePrestigeStore = create<PrestigeState>()(
 
     performPrestige: () => {
       const state = get();
-      if (!_getGameStore) return;
+      if (!_getGameStore) {
+        console.warn('[Prestige] Game store getter not initialized - cannot prestige');
+        return;
+      }
       const gameStore = _getGameStore();
 
       if (!state.canPrestige()) return;
@@ -178,6 +185,13 @@ export const usePrestigeStore = create<PrestigeState>()(
 
       // Start next run with a fresh spirit root
       get().generateSpiritRoot();
+
+      // Persist progress immediately so prestige isn't lost on refresh
+      try {
+        saveGame();
+      } catch (error) {
+        console.warn('[Prestige] Failed to save after prestige', error);
+      }
     },
 
     purchaseUpgrade: (upgradeId: string) => {

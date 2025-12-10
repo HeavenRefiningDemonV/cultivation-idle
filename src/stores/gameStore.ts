@@ -20,7 +20,6 @@ import {
   ELEMENT_BONUSES,
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
-import { setGameStoreGetter } from './prestigeStore';
 import { getAvailablePerks, getPerkById } from '../data/pathPerks';
 import { GATE_ITEMS } from '../systems/loot';
 import {
@@ -906,7 +905,4 @@ export const initializeGameStore = () => {
   const store = useGameStore.getState();
   store.calculateQiPerSecond();
   store.calculatePlayerStats();
-
-  // Register game store with prestige store
-  setGameStoreGetter(() => useGameStore.getState());
 };

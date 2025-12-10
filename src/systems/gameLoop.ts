@@ -1,6 +1,16 @@
-import { useGameStore, initializeGameStore, setPrestigeStoreGetter } from '../stores/gameStore';
+import {
+  useGameStore,
+  initializeGameStore,
+  setPrestigeStoreGetter,
+  setCombatStoreGetter,
+  setInventoryStoreGetter as setGameInventoryStoreGetter,
+} from '../stores/gameStore';
 import { useCombatStore } from '../stores/combatStore';
-import { usePrestigeStore, setInventoryStoreGetter } from '../stores/prestigeStore';
+import {
+  usePrestigeStore,
+  setInventoryStoreGetter as setPrestigeInventoryStoreGetter,
+  setGameStoreGetter,
+} from '../stores/prestigeStore';
 import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
@@ -223,12 +233,21 @@ export function initializeGame(): boolean {
     // Initialize game store (calculate derived values)
     initializeGameStore();
 
+    // Wire cross-store getters to avoid circular initialization issues
+    setGameStoreGetter(() => useGameStore.getState());
+    setPrestigeStoreGetter(() => usePrestigeStore.getState());
+    setCombatStoreGetter(() => useCombatStore.getState());
+    setGameInventoryStoreGetter(() => useInventoryStore.getState());
+    setPrestigeInventoryStoreGetter(() => useInventoryStore.getState());
+    setTechniqueStoreDependencies(
+      () => useCombatStore.getState(),
+      () => useGameStore.getState()
+    );
+    console.log('[GameLoop] Store dependencies wired');
+
     // Initialize prestige store upgrades
     usePrestigeStore.getState().initializeUpgrades();
     console.log('[GameLoop] Prestige store initialized');
-
-    // Register prestige store with game store
-    setPrestigeStoreGetter(() => usePrestigeStore.getState());
 
     // Align prestige run timer with current run state
     usePrestigeStore.setState({ runStartTime: useGameStore.getState().runStartTime });
@@ -236,17 +255,6 @@ export function initializeGame(): boolean {
     // Initialize technique store
     useTechniqueStore.getState().initializeTechniques();
     console.log('[GameLoop] Technique store initialized');
-
-    // Set up technique store dependencies
-    setTechniqueStoreDependencies(
-      () => useCombatStore.getState(),
-      () => useGameStore.getState()
-    );
-    console.log('[GameLoop] Technique store dependencies set');
-
-    // Set up prestige store dependency on inventory store
-    setInventoryStoreGetter(() => useInventoryStore.getState());
-    console.log('[GameLoop] Prestige store dependencies set');
 
     // Generate spirit root if none exists
     const prestigeStore = usePrestigeStore.getState();

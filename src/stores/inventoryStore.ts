@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { InventoryState, ItemDefinition, InventoryItem, EquipmentStats } from '../types';
-import { useGameStore, setInventoryStoreGetter } from './gameStore';
+import { useGameStore } from './gameStore';
 import { useCombatStore } from './combatStore';
 import { D, add, subtract, greaterThanOrEqualTo } from '../utils/numbers';
 
@@ -524,7 +524,3 @@ export const useInventoryStore = create<InventoryState>()(
  */
 export { getItemDefinition };
 
-/**
- * Register inventory store with game store for equipment stats
- */
-setInventoryStoreGetter(() => useInventoryStore.getState());
