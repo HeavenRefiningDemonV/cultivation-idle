@@ -4,7 +4,7 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { useUIStore } from '../../stores/uiStore';
-import { formatNumber } from '../../utils/numbers';
+import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
 import './StatusScreen.scss';
@@ -136,9 +136,21 @@ export function StatusScreen() {
               <StatRow label="Attack Power" value={formatNumber(stats.atk)} tone="red" />
               <StatRow label="Defense" value={formatNumber(stats.def)} tone="blue" />
               <StatRow label="HP Regen/s" value={formatNumber(stats.regen)} tone="green" />
-              <StatRow label="Critical Rate" value={`${(stats.crit / 100).toFixed(1)}%`} tone="yellow" />
-              <StatRow label="Critical Damage" value={`${stats.critDmg}%`} tone="yellow" />
-              <StatRow label="Dodge Chance" value={`${(stats.dodge / 100).toFixed(1)}%`} tone="cyan" />
+              <StatRow
+                label="Critical Rate"
+                value={formatPercentFromValue(stats.crit)}
+                tone="yellow"
+              />
+              <StatRow
+                label="Critical Damage"
+                value={formatPercentFromValue(stats.critDmg, 0)}
+                tone="yellow"
+              />
+              <StatRow
+                label="Dodge Chance"
+                value={formatPercentFromValue(stats.dodge)}
+                tone="cyan"
+              />
               <StatRow label="Total Enemies Defeated" value={totalEnemiesDefeated} tone="red" />
             </StatCard>
           </div>
@@ -173,7 +185,7 @@ export function StatusScreen() {
                           <div>ATK: +{formatNumber(equippedWeapon.stats.atk)}</div>
                         )}
                         {equippedWeapon.stats.crit && (
-                          <div>Crit Rate: +{equippedWeapon.stats.crit}%</div>
+                          <div>Crit Rate: +{formatPercentFromValue(equippedWeapon.stats.crit, 0)}</div>
                         )}
                       </div>
                     )}

@@ -563,6 +563,7 @@ export const useGameStore = create<GameState>()(
       let def = multiply(baseStats.def, substageMultiplier);
       let regen = multiply(baseStats.regen, substageMultiplier);
 
+      // Percentage-based stats are stored on a 0-100 scale and compared against percentile rolls
       let crit = baseStats.crit;
       let critDmg = baseStats.critDmg;
       let dodge = baseStats.dodge;

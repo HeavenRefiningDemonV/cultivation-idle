@@ -3,8 +3,7 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
-import { formatNumber } from '../../utils/numbers';
-import { D } from '../../utils/numbers';
+import { D, formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
 import './AdventureScreen.scss';
 
@@ -259,11 +258,15 @@ export function CombatView() {
             </div>
             <div>
               <div className={'adventureScreenStatLabel'}>Crit</div>
-              <div className={'adventureScreenPlayerTitle'}>{stats?.crit || 0}%</div>
+              <div className={'adventureScreenPlayerTitle'}>
+                {formatPercentFromValue(stats?.crit ?? 0)}
+              </div>
             </div>
             <div>
               <div className={'adventureScreenStatLabel'}>Dodge</div>
-              <div className={'adventureScreenPlayerTitle'}>{stats?.dodge || 0}%</div>
+              <div className={'adventureScreenPlayerTitle'}>
+                {formatPercentFromValue(stats?.dodge ?? 0)}
+              </div>
             </div>
           </div>
         </div>

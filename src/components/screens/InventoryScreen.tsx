@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
-import { formatNumber } from '../../utils/numbers';
+import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import type { ItemDefinition, ItemRarity } from '../../types';
 import './InventoryScreen.scss';
 
@@ -89,13 +89,19 @@ function EquipmentSlot({ slotType, item, onUnequip }: EquipmentSlotProps) {
               )}
               {item.stats.hp && <div className={'inventoryScreenStatLine'}>❤️ HP: +{formatNumber(item.stats.hp)}</div>}
               {item.stats.crit && item.stats.crit > 0 && (
-                <div className={'inventoryScreenStatLine'}>💥 Crit: +{item.stats.crit}%</div>
+                <div className={'inventoryScreenStatLine'}>
+                  💥 Crit: +{formatPercentFromValue(item.stats.crit, 0)}
+                </div>
               )}
               {item.stats.critDmg && item.stats.critDmg > 0 && (
-                <div className={'inventoryScreenStatLine'}>⚡ Crit Dmg: +{item.stats.critDmg}%</div>
+                <div className={'inventoryScreenStatLine'}>
+                  ⚡ Crit Dmg: +{formatPercentFromValue(item.stats.critDmg, 0)}
+                </div>
               )}
               {item.stats.dodge && item.stats.dodge > 0 && (
-                <div className={'inventoryScreenStatLine'}>🌀 Dodge: +{item.stats.dodge}%</div>
+                <div className={'inventoryScreenStatLine'}>
+                  🌀 Dodge: +{formatPercentFromValue(item.stats.dodge, 0)}
+                </div>
               )}
               {item.stats.qiGain && item.stats.qiGain > 0 && (
                 <div className={'inventoryScreenStatLine'}>✨ Qi Gain: +{item.stats.qiGain}%</div>
@@ -171,9 +177,15 @@ function ItemCard({
           {itemDef.stats.atk && <div>⚔️ ATK: +{formatNumber(itemDef.stats.atk)}</div>}
           {itemDef.stats.def && <div>🛡️ DEF: +{formatNumber(itemDef.stats.def)}</div>}
           {itemDef.stats.hp && <div>❤️ HP: +{formatNumber(itemDef.stats.hp)}</div>}
-          {itemDef.stats.crit && itemDef.stats.crit > 0 && <div>💥 Crit: +{itemDef.stats.crit}%</div>}
-          {itemDef.stats.critDmg && itemDef.stats.critDmg > 0 && <div>⚡ Crit Dmg: +{itemDef.stats.critDmg}%</div>}
-          {itemDef.stats.dodge && itemDef.stats.dodge > 0 && <div>🌀 Dodge: +{itemDef.stats.dodge}%</div>}
+          {itemDef.stats.crit && itemDef.stats.crit > 0 && (
+            <div>💥 Crit: +{formatPercentFromValue(itemDef.stats.crit, 0)}</div>
+          )}
+          {itemDef.stats.critDmg && itemDef.stats.critDmg > 0 && (
+            <div>⚡ Crit Dmg: +{formatPercentFromValue(itemDef.stats.critDmg, 0)}</div>
+          )}
+          {itemDef.stats.dodge && itemDef.stats.dodge > 0 && (
+            <div>🌀 Dodge: +{formatPercentFromValue(itemDef.stats.dodge, 0)}</div>
+          )}
           {itemDef.stats.qiGain && itemDef.stats.qiGain > 0 && <div>✨ Qi Gain: +{itemDef.stats.qiGain}%</div>}
         </div>
       )}

@@ -199,6 +199,31 @@ export function equals(a: Decimal.Value, b: Decimal.Value): boolean {
 }
 
 /**
+ * Formats a fractional value (0-1) as a percentage string.
+ * Safely handles invalid numbers by returning "0%".
+ */
+export function formatPercentFromFraction(value: Decimal.Value, decimals = 1): string {
+  const decimal = D(value);
+  if (!decimal.isFinite()) return '0%';
+
+  const percent = decimal.times(100);
+  const safePercent = percent.isNegative() ? D(0) : percent;
+  return safePercent.toDecimalPlaces(decimals).toString() + '%';
+}
+
+/**
+ * Formats a percentage value stored on a 0-100 scale.
+ * Safely handles invalid numbers by returning "0%".
+ */
+export function formatPercentFromValue(value: Decimal.Value, decimals = 1): string {
+  const decimal = D(value);
+  if (!decimal.isFinite()) return '0%';
+
+  const safeValue = decimal.isNegative() ? D(0) : decimal;
+  return safeValue.toDecimalPlaces(decimals).toString() + '%';
+}
+
+/**
  * Returns the maximum of two Decimal values.
  *
  * @param a - First value

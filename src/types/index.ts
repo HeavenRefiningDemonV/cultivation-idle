@@ -19,6 +19,9 @@ export interface Realm {
 
 /**
  * Player combat and cultivation stats
+ *
+ * Percentage-based values (crit, dodge) are stored on a 0-100 scale.
+ * UI should format them using helpers like formatPercentFromValue to avoid scaling mistakes.
  */
 export interface PlayerStats {
   hp: string;           // Current HP (Decimal string)
