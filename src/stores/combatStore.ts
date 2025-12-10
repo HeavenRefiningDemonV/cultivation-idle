@@ -822,4 +822,5 @@ export const useCombatStore = create<ExtendedCombatState>()(
   }))
 );
 
-setCombatStoreGetter(() => useCombatStore.getState());
+// Defer registration to avoid temporal dead zone issues during module initialization
+queueMicrotask(() => setCombatStoreGetter(() => useCombatStore.getState()));

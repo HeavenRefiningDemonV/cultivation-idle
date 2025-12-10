@@ -115,7 +115,9 @@ export function PrestigeScreen() {
           >
             {canPrestigeNow ? 'Reincarnate Now' : 'Not Ready Yet'}
           </button>
-          {!canPrestigeNow && <p className={'prestigeScreenPrestigeHint'}>Reach Soul Formation 8/10 to reincarnate.</p>}
+          {!canPrestigeNow && (
+            <p className={'prestigeScreenPrestigeHint'}>Reach Foundation Establishment to unlock Reincarnation.</p>
+          )}
         </div>
 
         {/* Ascension Shop */}
