@@ -69,10 +69,13 @@ export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
   _getPrestigeStore = getter;
 }
 
-const combatStoreGetterRef: { getter: (() => CombatStoreDeps) | null } = { getter: null };
-export function setCombatStoreGetter(getter: () => CombatStoreDeps) {
+let combatStoreGetterRef: { getter: (() => CombatStoreDeps) | null } | null = null;
+export const setCombatStoreGetter = (getter: () => CombatStoreDeps) => {
+  if (!combatStoreGetterRef) {
+    combatStoreGetterRef = { getter: null };
+  }
   combatStoreGetterRef.getter = getter;
-}
+};
 
 const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
   .filter(([zoneId]) => zoneId !== 'training_forest')
@@ -855,7 +858,7 @@ export const useGameStore = create<GameState>()(
       }
 
       // Exit and reset combat state
-      if (combatStoreGetterRef.getter) {
+      if (combatStoreGetterRef?.getter) {
         try {
           const combatStore = combatStoreGetterRef.getter();
           if (combatStore.resetCombat) {
