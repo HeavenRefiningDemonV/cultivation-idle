@@ -69,9 +69,9 @@ export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
   _getPrestigeStore = getter;
 }
 
-let _getCombatStore: (() => CombatStoreDeps) | null = null;
+const combatStoreGetterRef: { getter: (() => CombatStoreDeps) | null } = { getter: null };
 export function setCombatStoreGetter(getter: () => CombatStoreDeps) {
-  _getCombatStore = getter;
+  combatStoreGetterRef.getter = getter;
 }
 
 const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
@@ -855,9 +855,9 @@ export const useGameStore = create<GameState>()(
       }
 
       // Exit and reset combat state
-      if (_getCombatStore) {
+      if (combatStoreGetterRef.getter) {
         try {
-          const combatStore = _getCombatStore();
+          const combatStore = combatStoreGetterRef.getter();
           if (combatStore.resetCombat) {
             combatStore.resetCombat();
           } else {
