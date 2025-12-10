@@ -5,7 +5,7 @@ import { useGameStore, setCombatStoreGetter } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
-import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
+import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
 
@@ -258,6 +258,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const now = Date.now();
       if (now - state.lastAttackTime < PLAYER_ATTACK_COOLDOWN) return;
 
+      if (lessThanOrEqualTo(state.enemyHP, 0) || lessThanOrEqualTo(state.playerHP, 0)) return;
+
       const gameStore = useGameStore.getState();
       const playerStats = gameStore.stats;
       const enemy = state.currentEnemy;
@@ -302,7 +304,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Apply damage to enemy
       set((state) => {
         const newHP = subtract(state.enemyHP, finalDamage.toString());
-        state.enemyHP = newHP.toString();
+        const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
+        state.enemyHP = clampedHP.toString();
         state.lastAttackTime = now;
       });
 
@@ -323,6 +326,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const now = Date.now();
       if (now - state.lastEnemyAttackTime < ENEMY_ATTACK_COOLDOWN) return;
+
+      if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0)) return;
 
       const gameStore = useGameStore.getState();
       const playerStats = gameStore.stats;
@@ -390,7 +395,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Apply damage to player
       set((state) => {
         const newHP = subtract(state.playerHP, damageAfterShield.toString());
-        state.playerHP = newHP.toString();
+        const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+        state.playerHP = clampedHP.toString();
         state.lastEnemyAttackTime = now;
       });
 
@@ -569,6 +575,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const state = get();
       if (!state.inCombat || !state.currentEnemy) return;
 
+      if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0)) return;
+
       const gameStore = useGameStore.getState();
       gameStore.removeExpiredBuffs();
 
@@ -644,7 +652,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
           // Apply damage to player
           set((state) => {
             const newHP = subtract(state.playerHP, damageAfterShield.toString());
-            state.playerHP = newHP.toString();
+            const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+            state.playerHP = clampedHP.toString();
           });
 
           // Check if player is defeated
@@ -652,6 +661,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
             setTimeout(() => {
               get().playerDefeat();
             }, 500);
+          }
+
+          if (lessThanOrEqualTo(get().playerHP, 0)) {
+            return;
           }
 
           // Reset ultimate triggered flag so it can trigger again
@@ -702,7 +715,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
           set((state) => {
             const newHP = subtract(state.playerHP, damageAfterShield.toString());
-            state.playerHP = newHP.toString();
+            const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+            state.playerHP = clampedHP.toString();
           });
 
           const absorptionNote = absorbedAmount.greaterThan(0)
@@ -719,6 +733,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             setTimeout(() => {
               get().playerDefeat();
             }, 500);
+            return;
           }
         }
       }

@@ -3,7 +3,7 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
-import { D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers';
+import { clamp, D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
 import './AdventureScreen.scss';
 
@@ -176,12 +176,25 @@ export function CombatView() {
     );
   }
 
-  const playerHpRatio = playerMaxHP && Number(playerMaxHP) > 0
-    ? Math.min(1, Math.max(0, D(playerHP).dividedBy(playerMaxHP).toNumber()))
-    : 0;
-  const enemyHpRatio = enemyMaxHP && Number(enemyMaxHP) > 0
-    ? Math.min(1, Math.max(0, D(enemyHP).dividedBy(enemyMaxHP).toNumber()))
-    : 0;
+  const clampPercent = (hp: string, max: string) => {
+    const maxDecimal = D(max);
+    if (!maxDecimal.isFinite() || maxDecimal.lessThanOrEqualTo(0)) {
+      return D(0);
+    }
+
+    const boundedHp = clamp(D(hp), 0, maxDecimal);
+    const percent = boundedHp.dividedBy(maxDecimal).times(100);
+    return clamp(percent, 0, 100);
+  };
+
+  const playerHpPercent = clampPercent(playerHP, playerMaxHP);
+  const enemyHpPercent = clampPercent(enemyHP, enemyMaxHP);
+
+  const playerHpRatio = playerHpPercent.dividedBy(100).toNumber();
+  const enemyHpRatio = enemyHpPercent.dividedBy(100).toNumber();
+
+  const clampedPlayerHP = clamp(D(playerHP), 0, D(playerMaxHP || '0'));
+  const clampedEnemyHP = clamp(D(enemyHP), 0, D(enemyMaxHP || '0'));
 
   return (
     <div className={'adventureScreenCombatWrapper'}>
@@ -198,11 +211,12 @@ export function CombatView() {
             <div className={'adventureScreenBarLabelRow'}>
               <span>Enemy HP</span>
               <span className={'adventureScreenEnemyBadge'}>
-                {formatNumber(enemyHP)} / {formatNumber(enemyMaxHP)}
+                {formatNumber(clampedEnemyHP)} / {formatNumber(enemyMaxHP)}
               </span>
             </div>
             <div className={'adventureScreenBarContainer'}>
-              <div className={'adventureScreenBarFill'} style={{ width: `${enemyHpRatio * 100}%` }}>
+              <div className={'adventureScreenBarFill'} style={{ width: `${enemyHpRatio * 100}%` }} />
+              <div className={'adventureScreenBarOverlay'}>
                 {formatPercentFromFraction(enemyHpRatio)}
               </div>
             </div>
@@ -236,14 +250,15 @@ export function CombatView() {
             <div className={'adventureScreenBarLabelRow'}>
               <span>Your HP</span>
               <span className={'adventureScreenEnemyBadge'}>
-                {formatNumber(playerHP)} / {formatNumber(playerMaxHP)}
+                {formatNumber(clampedPlayerHP)} / {formatNumber(playerMaxHP)}
               </span>
             </div>
             <div className={'adventureScreenBarContainer'}>
               <div
                 className={`${'adventureScreenBarFill'} ${'adventureScreenBarFillPlayer'}`}
                 style={{ width: `${playerHpRatio * 100}%` }}
-              >
+              />
+              <div className={'adventureScreenBarOverlay'}>
                 {formatPercentFromFraction(playerHpRatio)}
               </div>
             </div>

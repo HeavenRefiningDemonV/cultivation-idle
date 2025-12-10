@@ -180,6 +180,7 @@
   border-radius: 9999px;
   overflow: hidden;
   border: 2px solid rgba(248, 113, 113, 0.35);
+  position: relative;
 }
 
 .adventureScreenBarFill {
@@ -193,6 +194,19 @@
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
   transition: width 0.3s ease;
   background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.adventureScreenBarOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
 .adventureScreenBarFillPlayer {
