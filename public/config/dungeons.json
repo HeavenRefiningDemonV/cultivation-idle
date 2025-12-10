@@ -6,19 +6,19 @@
       "tier": 0,
       "description": "A peaceful clearing where novice cultivators prove their worth.",
       "minRealm": 0,
-      "suggestedDPS": 50,
-      "suggestedHP": 800,
+      "suggestedDPS": 38,
+      "suggestedHP": 500,
       "boss": {
         "id": "novice_guardian",
         "name": "Novice Guardian",
-        "hp": 1500,
-        "atk": 80,
-        "def": 30,
+        "hp": 1100,
+        "atk": 22,
+        "def": 15,
         "mechanics": [
           {
             "type": "shield",
             "trigger": { "hpPercent": 50 },
-            "effect": { "shieldAmount": 500 },
+            "effect": { "shieldAmount": 200 },
             "description": "Stone Barrier"
           }
         ]

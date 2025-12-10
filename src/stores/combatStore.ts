@@ -165,9 +165,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
         isBoss: true,
       };
 
-      // Initialize boss mechanics
-      bossMechanics = new BossMechanics();
-      console.log('[CombatStore] Dungeon boss mechanics initialized for', boss.name);
+      // Initialize boss mechanics (skip global mechanics for tier 0 dungeons to keep early fights fair)
+      if (dungeonData.tier > 0) {
+        bossMechanics = new BossMechanics();
+        console.log('[CombatStore] Dungeon boss mechanics initialized for', boss.name);
+      } else {
+        bossMechanics = null;
+        console.log('[CombatStore] Global boss mechanics disabled for tier 0 dungeon', boss.name);
+      }
 
       // Start dungeon in dungeon store
       useDungeonStore.getState().startDungeon(dungeonId);

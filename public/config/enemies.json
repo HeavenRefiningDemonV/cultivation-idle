@@ -288,7 +288,20 @@
       "speed": 1.0,
       "goldReward": "100",
       "expReward": "50",
-      "lootTable": [],
+      "lootTable": [
+        {
+          "itemId": "basic_sword",
+          "dropChance": 20,
+          "minAmount": 1,
+          "maxAmount": 1
+        },
+        {
+          "itemId": "jade_pendant",
+          "dropChance": 12,
+          "minAmount": 1,
+          "maxAmount": 1
+        }
+      ],
       "isBoss": true
     },
     {
