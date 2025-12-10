@@ -70,12 +70,12 @@ export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
 }
 
 let combatStoreGetterRef: { getter: (() => CombatStoreDeps) | null } | null = null;
-export const setCombatStoreGetter = (getter: () => CombatStoreDeps) => {
+export function setCombatStoreGetter(getter: () => CombatStoreDeps) {
   if (!combatStoreGetterRef) {
     combatStoreGetterRef = { getter: null };
   }
   combatStoreGetterRef.getter = getter;
-};
+}
 
 const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
   .filter(([zoneId]) => zoneId !== 'training_forest')
