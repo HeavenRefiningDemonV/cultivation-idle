@@ -88,8 +88,8 @@ export function StatusScreen() {
   // Inventory Store
   const gold = useInventoryStore((state) => state.gold);
   const items = useInventoryStore((state) => state.items);
-  const equippedWeapon = useInventoryStore((state) => state.equippedWeapon);
-  const equippedAccessory = useInventoryStore((state) => state.equippedAccessory);
+  const equippedWeapon = useInventoryStore((state) => state.getEquippedWeaponDefinition());
+  const equippedAccessory = useInventoryStore((state) => state.getEquippedAccessoryDefinition());
 
   // Combat Store (for statistics)
   const combatLog = useCombatStore((state) => state.combatLog);

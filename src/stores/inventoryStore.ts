@@ -27,8 +27,8 @@ function generateItemId(): string {
 
 const createInitialInventoryState = () => ({
   items: [] as InventoryState['items'],
-  equippedWeapon: null as ItemDefinition | null,
-  equippedAccessory: null as ItemDefinition | null,
+  equippedWeaponId: null as string | null,
+  equippedAccessoryId: null as string | null,
   gold: '0',
   maxSlots: 20,
 });
@@ -53,18 +53,22 @@ export const useInventoryStore = create<InventoryState>()(
 
       const state = get();
 
-      // Check if item is stackable
+      // Check if item is stackable and merge only with non-equipped stacks
       if (itemDef.stackable) {
-        // Find existing stack
-        const existingItem = state.items.find((item) => item.itemId === itemId);
+        const stackTarget = state.items.find(
+          (item) => item.itemId === itemId && !item.equipped && item.quantity < itemDef.maxStack
+        );
 
-        if (existingItem) {
-          // Add to existing stack
+        if (stackTarget) {
           set((state) => {
-            const item = state.items.find((i: InventoryItem) => i.itemId === itemId);
+            const item = state.items.find(
+              (i: InventoryItem) => i.id === stackTarget.id && !i.equipped
+            );
+
             if (item) {
-              const newQuantity = Math.min(item.quantity + quantity, itemDef.maxStack);
-              item.quantity = newQuantity;
+              const availableSpace = itemDef.maxStack - item.quantity;
+              const toAdd = Math.min(quantity, availableSpace);
+              item.quantity += toAdd;
             }
           });
           return true;
@@ -93,32 +97,25 @@ export const useInventoryStore = create<InventoryState>()(
     /**
      * Remove item from inventory
      */
-    removeItem: (itemId: string, quantity: number = 1) => {
-      const state = get();
-      const item = state.items.find((i) => i.itemId === itemId);
+      removeItem: (itemId: string, quantity: number = 1) => {
+        let remaining = quantity;
 
-      if (!item) {
-        console.warn(`Item ${itemId} not found in inventory`);
-        return false;
-      }
+      set((state) => {
+        for (const item of state.items) {
+          if (item.itemId !== itemId || item.equipped || remaining <= 0) continue;
 
-      if (item.quantity < quantity) {
+          const removeCount = Math.min(item.quantity, remaining);
+          item.quantity -= removeCount;
+          remaining -= removeCount;
+        }
+
+        state.items = state.items.filter((item) => item.quantity > 0 || item.equipped);
+      });
+
+      if (remaining > 0) {
         console.warn(`Not enough ${itemId} in inventory`);
         return false;
       }
-
-      set((state) => {
-        const itemIndex = state.items.findIndex((i: InventoryItem) => i.itemId === itemId);
-        if (itemIndex !== -1) {
-          const item = state.items[itemIndex];
-          item.quantity -= quantity;
-
-          // Remove if quantity reaches 0
-          if (item.quantity <= 0) {
-            state.items.splice(itemIndex, 1);
-          }
-        }
-      });
 
       return true;
     },
@@ -126,34 +123,33 @@ export const useInventoryStore = create<InventoryState>()(
     /**
      * Equip a weapon
      */
-    equipWeapon: (itemId: string) => {
-      const itemDef = getItemDefinition(itemId);
-      if (!itemDef || itemDef.type !== 'weapon') {
-        console.warn(`${itemId} is not a valid weapon`);
-        return false;
-      }
-
+    equipWeapon: (inventoryItemId: string) => {
       const state = get();
+      const itemInstance = state.items.find(
+        (i) => i.id === inventoryItemId && !i.equipped
+      );
 
-      if (!state.hasItem(itemId)) {
-        console.warn(`${itemId} not found in inventory`);
+      if (!itemInstance) {
+        console.warn(`${inventoryItemId} not found or already equipped`);
         return false;
       }
 
-      // Return currently equipped weapon to inventory before swapping
-      const currentlyEquipped = state.equippedWeapon;
-      if (currentlyEquipped) {
+      const itemDef = getItemDefinition(itemInstance.itemId);
+      if (!itemDef || itemDef.type !== 'weapon') {
+        console.warn(`${inventoryItemId} is not a valid weapon`);
+        return false;
+      }
+
+      // Unequip current weapon first
+      if (state.equippedWeaponId) {
         state.unequipWeapon();
       }
 
-      const removed = state.removeItem(itemId, 1);
-      if (!removed) {
-        console.warn(`Unable to remove ${itemId} from inventory to equip`);
-        return false;
-      }
-
       set((state) => {
-        state.equippedWeapon = itemDef;
+        const target = state.items.find((i) => i.id === inventoryItemId);
+        if (!target) return;
+        target.equipped = true;
+        state.equippedWeaponId = target.id;
       });
 
       useGameStore.getState().calculatePlayerStats();
@@ -166,17 +162,18 @@ export const useInventoryStore = create<InventoryState>()(
      */
     unequipWeapon: () => {
       const state = get();
-      if (!state.equippedWeapon) {
+      if (!state.equippedWeaponId) {
         return false;
       }
 
-      const weaponId = state.equippedWeapon.id;
-
       set((state) => {
-        state.equippedWeapon = null;
+        const equippedItem = state.items.find((i) => i.id === state.equippedWeaponId);
+        if (equippedItem) {
+          equippedItem.equipped = false;
+        }
+        state.equippedWeaponId = null;
       });
 
-      state.addItem(weaponId, 1);
       useGameStore.getState().calculatePlayerStats();
 
       return true;
@@ -185,32 +182,32 @@ export const useInventoryStore = create<InventoryState>()(
     /**
      * Equip an accessory
      */
-    equipAccessory: (itemId: string) => {
-      const itemDef = getItemDefinition(itemId);
-      if (!itemDef || itemDef.type !== 'accessory') {
-        console.warn(`${itemId} is not a valid accessory`);
-        return false;
-      }
-
+    equipAccessory: (inventoryItemId: string) => {
       const state = get();
+      const itemInstance = state.items.find(
+        (i) => i.id === inventoryItemId && !i.equipped
+      );
 
-      if (!state.hasItem(itemId)) {
-        console.warn(`${itemId} not found in inventory`);
+      if (!itemInstance) {
+        console.warn(`${inventoryItemId} not found or already equipped`);
         return false;
       }
 
-      if (state.equippedAccessory) {
+      const itemDef = getItemDefinition(itemInstance.itemId);
+      if (!itemDef || itemDef.type !== 'accessory') {
+        console.warn(`${inventoryItemId} is not a valid accessory`);
+        return false;
+      }
+
+      if (state.equippedAccessoryId) {
         state.unequipAccessory();
       }
 
-      const removed = state.removeItem(itemId, 1);
-      if (!removed) {
-        console.warn(`Unable to remove ${itemId} from inventory to equip`);
-        return false;
-      }
-
       set((state) => {
-        state.equippedAccessory = itemDef;
+        const target = state.items.find((i) => i.id === inventoryItemId);
+        if (!target) return;
+        target.equipped = true;
+        state.equippedAccessoryId = target.id;
       });
 
       useGameStore.getState().calculatePlayerStats();
@@ -223,18 +220,17 @@ export const useInventoryStore = create<InventoryState>()(
      */
     unequipAccessory: () => {
       const state = get();
-      if (!state.equippedAccessory) {
+      if (!state.equippedAccessoryId) {
         return false;
       }
 
-      const accessoryId = state.equippedAccessory.id;
-
       set((state) => {
-        state.equippedAccessory = null;
+        const equippedItem = state.items.find((i) => i.id === state.equippedAccessoryId);
+        if (equippedItem) {
+          equippedItem.equipped = false;
+        }
+        state.equippedAccessoryId = null;
       });
-
-      // Add back to inventory
-      state.addItem(accessoryId, 1);
 
       // Recalculate player stats
       useGameStore.getState().calculatePlayerStats();
@@ -439,9 +435,12 @@ export const useInventoryStore = create<InventoryState>()(
         qiGain: 0,
       };
 
+      const equippedWeaponDef = state.getEquippedWeaponDefinition();
+      const equippedAccessoryDef = state.getEquippedAccessoryDefinition();
+
       // Add weapon stats
-      if (state.equippedWeapon?.stats) {
-        const weaponStats = state.equippedWeapon.stats;
+      if (equippedWeaponDef?.stats) {
+        const weaponStats = equippedWeaponDef.stats;
         if (weaponStats.hp) stats.hp = add(stats.hp, weaponStats.hp).toString();
         if (weaponStats.atk) stats.atk = add(stats.atk, weaponStats.atk).toString();
         if (weaponStats.def) stats.def = add(stats.def, weaponStats.def).toString();
@@ -452,8 +451,8 @@ export const useInventoryStore = create<InventoryState>()(
       }
 
       // Add accessory stats
-      if (state.equippedAccessory?.stats) {
-        const accessoryStats = state.equippedAccessory.stats;
+      if (equippedAccessoryDef?.stats) {
+        const accessoryStats = equippedAccessoryDef.stats;
         if (accessoryStats.hp) stats.hp = add(stats.hp, accessoryStats.hp).toString();
         if (accessoryStats.atk) stats.atk = add(stats.atk, accessoryStats.atk).toString();
         if (accessoryStats.def) stats.def = add(stats.def, accessoryStats.def).toString();
@@ -466,13 +465,32 @@ export const useInventoryStore = create<InventoryState>()(
       return stats;
     },
 
+    getEquippedWeaponDefinition: () => {
+      const state = get();
+      const equippedItem = state.items.find(
+        (item) => item.id === state.equippedWeaponId && item.equipped
+      );
+      if (!equippedItem) return null;
+      return getItemDefinition(equippedItem.itemId);
+    },
+
+    getEquippedAccessoryDefinition: () => {
+      const state = get();
+      const equippedItem = state.items.find(
+        (item) => item.id === state.equippedAccessoryId && item.equipped
+      );
+      if (!equippedItem) return null;
+      return getItemDefinition(equippedItem.itemId);
+    },
+
     /**
      * Get count of specific item in inventory
      */
     getItemCount: (itemId: string) => {
       const state = get();
-      const item = state.items.find((i) => i.itemId === itemId);
-      return item ? item.quantity : 0;
+      return state.items
+        .filter((i) => i.itemId === itemId && !i.equipped)
+        .reduce((total, item) => total + item.quantity, 0);
     },
 
     /**

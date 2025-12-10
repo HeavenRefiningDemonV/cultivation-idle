@@ -123,13 +123,23 @@ function EquipmentSlot({ slotType, item, onUnequip }: EquipmentSlotProps) {
  */
 interface ItemCardProps {
   itemId: string;
+  itemInstanceId: string;
   quantity: number;
-  onEquip: (itemId: string) => void;
+  isEquipped: boolean;
+  onEquip: (inventoryItemId: string) => void;
   onUse: (itemId: string) => void;
   onSell: (itemId: string, quantity: number) => void;
 }
 
-function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
+function ItemCard({
+  itemId,
+  itemInstanceId,
+  quantity,
+  isEquipped,
+  onEquip,
+  onUse,
+  onSell,
+}: ItemCardProps) {
   const itemDef = getItemDefinition(itemId);
 
   if (!itemDef) {
@@ -180,10 +190,11 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
       <div className={'inventoryScreenItemActions'}>
         {isEquipment && (
           <button
-            onClick={() => onEquip(itemId)}
+            onClick={() => onEquip(itemInstanceId)}
+            disabled={isEquipped}
             className={`${'button-standard'} ${'inventoryScreenItemButton'} ${'inventoryScreenButtonEquip'}`}
           >
-            Equip
+            {isEquipped ? 'Equipped' : 'Equip'}
           </button>
         )}
         {isConsumable && (
@@ -196,10 +207,15 @@ function ItemCard({ itemId, quantity, onEquip, onUse, onSell }: ItemCardProps) {
         )}
         <button
           onClick={() => onSell(itemId, quantity)}
+          disabled={isEquipped}
           className={`${'button-standard'} ${'inventoryScreenItemButton'} ${'inventoryScreenButtonSell'}`}
-          title={`Sell for ${formatNumber(itemDef.value)} gold`}
+          title={
+            isEquipped
+              ? 'Unequip before selling'
+              : `Sell for ${formatNumber(itemDef.value)} gold`
+          }
         >
-          Sell
+          {isEquipped ? 'Equipped' : 'Sell'}
         </button>
       </div>
     </div>
@@ -215,8 +231,6 @@ export function InventoryScreen() {
 
   const {
     items,
-    equippedWeapon,
-    equippedAccessory,
     gold,
     maxSlots,
     equipWeapon,
@@ -225,7 +239,12 @@ export function InventoryScreen() {
     unequipAccessory,
     useConsumable: consumeItem,
     sellItem,
+    getEquippedWeaponDefinition,
+    getEquippedAccessoryDefinition,
   } = useInventoryStore();
+
+  const equippedWeapon = getEquippedWeaponDefinition();
+  const equippedAccessory = getEquippedAccessoryDefinition();
 
   // Filter items based on active tab
   const filteredItems = items.filter((item) => {
@@ -249,14 +268,17 @@ export function InventoryScreen() {
   });
 
   // Handle equip action
-  const handleEquip = (itemId: string) => {
-    const itemDef = getItemDefinition(itemId);
+  const handleEquip = (inventoryItemId: string) => {
+    const item = items.find((i) => i.id === inventoryItemId);
+    if (!item) return;
+
+    const itemDef = getItemDefinition(item.itemId);
     if (!itemDef) return;
 
     if (itemDef.type === 'weapon') {
-      equipWeapon(itemId);
+      equipWeapon(inventoryItemId);
     } else if (itemDef.type === 'accessory') {
-      equipAccessory(itemId);
+      equipAccessory(inventoryItemId);
     }
   };
 
@@ -329,7 +351,9 @@ export function InventoryScreen() {
               <ItemCard
                 key={item.id}
                 itemId={item.itemId}
+                itemInstanceId={item.id}
                 quantity={item.quantity}
+                isEquipped={!!item.equipped}
                 onEquip={handleEquip}
                 onUse={handleUse}
                 onSell={handleSell}

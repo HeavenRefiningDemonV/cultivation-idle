@@ -192,6 +192,7 @@ export interface SaveData {
   gameState: {
     realm: Realm;
     qi: string;
+    spiritRoot?: SpiritRoot | null;
     selectedPath: CultivationPath | null;
     focusMode: FocusMode;
     pathPerks: string[];
@@ -206,8 +207,8 @@ export interface SaveData {
   // Inventory state
   inventoryState: {
     items: InventoryItem[];
-    equippedWeapon: ItemDefinition | null;
-    equippedAccessory: ItemDefinition | null;
+    equippedWeapon: string | null;
+    equippedAccessory: string | null;
     gold: string;
     maxSlots: number;
   };
@@ -398,6 +399,7 @@ export interface InventoryItem {
   id: string;              // Unique instance ID
   itemId: string;          // Reference to ItemDefinition
   quantity: number;
+  equipped?: boolean;      // Marked when item is currently equipped
 }
 
 /**
@@ -421,8 +423,8 @@ export interface InventoryState {
   items: InventoryItem[];
 
   // Equipment
-  equippedWeapon: ItemDefinition | null;
-  equippedAccessory: ItemDefinition | null;
+  equippedWeaponId: string | null;
+  equippedAccessoryId: string | null;
 
   // Currency
   gold: string;            // Gold amount (Decimal string)
@@ -433,9 +435,9 @@ export interface InventoryState {
   // Actions
   addItem: (itemId: string, quantity: number) => boolean;
   removeItem: (itemId: string, quantity: number) => boolean;
-  equipWeapon: (itemId: string) => boolean;
+  equipWeapon: (inventoryItemId: string) => boolean;
   unequipWeapon: () => boolean;
-  equipAccessory: (itemId: string) => boolean;
+  equipAccessory: (inventoryItemId: string) => boolean;
   unequipAccessory: () => boolean;
   useConsumable: (itemId: string) => boolean;
   addGold: (amount: string) => void;
@@ -446,6 +448,8 @@ export interface InventoryState {
   hasItem: (itemId: string, quantity?: number) => boolean;
   resetInventory: () => void;
   hardResetInventory: () => void;
+  getEquippedWeaponDefinition: () => ItemDefinition | null;
+  getEquippedAccessoryDefinition: () => ItemDefinition | null;
 }
 
 /**

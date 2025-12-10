@@ -326,47 +326,33 @@ export function CombatView() {
  * Main Adventure Screen Component
  */
 export function AdventureScreen() {
-  try {
-    const inCombat = useCombatStore((state) => state.inCombat);
-    const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const inCombat = useCombatStore((state) => state.inCombat);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
-    useEffect(() => {
-      const title = inCombat ? 'Combat' : 'Adventure Zones';
-      const subtitle = inCombat
-        ? 'Defeat your enemy to claim rewards'
-        : 'Explore dangerous territories and battle fearsome enemies';
+  useEffect(() => {
+    const title = inCombat ? 'Combat' : 'Adventure Zones';
+    const subtitle = inCombat
+      ? 'Defeat your enemy to claim rewards'
+      : 'Explore dangerous territories and battle fearsome enemies';
 
-      setHeaderTitles(title, subtitle);
-    }, [inCombat, setHeaderTitles]);
+    setHeaderTitles(title, subtitle);
+  }, [inCombat, setHeaderTitles]);
 
-    return (
-      <div className={'adventureScreenRoot'}>
+  return (
+    <div className={'adventureScreenRoot'}>
 
-        <div className={'adventureScreenContent'}>
-          {/* Zone Selection or Combat View */}
-          {!inCombat ? (
-            <div className={'adventureScreenZoneGrid'}>
-              {ZONES.map((zone) => (
-                <ZoneCard key={zone.id} zone={zone} />
-              ))}
-            </div>
-          ) : (
-            <CombatView />
-          )}
-        </div>
+      <div className={'adventureScreenContent'}>
+        {/* Zone Selection or Combat View */}
+        {!inCombat ? (
+          <div className={'adventureScreenZoneGrid'}>
+            {ZONES.map((zone) => (
+              <ZoneCard key={zone.id} zone={zone} />
+            ))}
+          </div>
+        ) : (
+          <CombatView />
+        )}
       </div>
-    );
-  } catch (error) {
-    console.error('[AdventureScreen] Error:', error);
-    return (
-      <div className={'adventureScreenErrorCard'}>
-        <div className={'adventureScreenHeader'}>
-          <h2 className={'adventureScreenErrorTitle'}>Error Loading Adventure</h2>
-          <p className={'adventureScreenErrorMessage'}>
-            {error instanceof Error ? error.message : 'Unknown error occurred'}
-          </p>
-        </div>
-      </div>
-    );
-  }
+    </div>
+  );
 }

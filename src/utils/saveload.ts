@@ -33,6 +33,7 @@ function gatherGameState(): SaveData {
   const combatState = useCombatStore.getState();
   const zoneState = useZoneStore.getState();
   const techniqueState = useTechniqueStore.getState();
+  const prestigeState = usePrestigeStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -41,6 +42,7 @@ function gatherGameState(): SaveData {
     gameState: {
       realm: gameState.realm,
       qi: gameState.qi,
+      spiritRoot: prestigeState.spiritRoot,
       selectedPath: gameState.selectedPath,
       focusMode: gameState.focusMode,
       pathPerks: gameState.pathPerks,
@@ -54,8 +56,8 @@ function gatherGameState(): SaveData {
 
     inventoryState: {
       items: inventoryState.items,
-      equippedWeapon: inventoryState.equippedWeapon,
-      equippedAccessory: inventoryState.equippedAccessory,
+      equippedWeapon: inventoryState.equippedWeaponId,
+      equippedAccessory: inventoryState.equippedAccessoryId,
       gold: inventoryState.gold,
       maxSlots: inventoryState.maxSlots,
     },
@@ -94,11 +96,36 @@ function validateSaveData(data: unknown): data is SaveData {
     // Basic structure validation
     const gs = record.gameState as Record<string, unknown>;
     if (!('realm' in gs) || typeof gs.qi !== 'string') return false;
+    if ('spiritRoot' in gs && gs.spiritRoot !== undefined) {
+      const sr = (gs as { spiritRoot?: unknown }).spiritRoot as
+        | { grade?: unknown; element?: unknown; purity?: unknown }
+        | null;
+      if (
+        sr !== null &&
+        (!sr || typeof sr.grade !== 'number' || typeof sr.element !== 'string' || typeof sr.purity !== 'number')
+      ) {
+        return false;
+      }
+    }
     if ('lastTickTime' in gs && typeof gs.lastTickTime !== 'number') return false;
     if ('lastActiveTime' in gs && typeof gs.lastActiveTime !== 'number') return false;
 
     const is = record.inventoryState as Record<string, unknown>;
     if (!Array.isArray((is as { items?: unknown }).items) || typeof is.gold !== 'string') return false;
+    if (
+      'equippedWeapon' in is &&
+      (typeof (is as { equippedWeapon?: unknown }).equippedWeapon !== 'string' &&
+        (is as { equippedWeapon?: unknown }).equippedWeapon !== null)
+    ) {
+      return false;
+    }
+    if (
+      'equippedAccessory' in is &&
+      (typeof (is as { equippedAccessory?: unknown }).equippedAccessory !== 'string' &&
+        (is as { equippedAccessory?: unknown }).equippedAccessory !== null)
+    ) {
+      return false;
+    }
 
     const cs = record.combatSettings as Record<string, unknown>;
     if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
@@ -222,8 +249,18 @@ export function saveGame(): boolean {
  */
 function applySaveData(saveData: SaveData): void {
   try {
-    // Apply to game store
+    const prestigeStore = usePrestigeStore.getState();
     const gameStore = useGameStore.getState();
+
+    // Restore spirit root (fallback to reroll for old saves)
+    const spiritRoot = saveData.gameState.spiritRoot;
+    if (spiritRoot && typeof spiritRoot.grade === 'number' && spiritRoot.element) {
+      usePrestigeStore.setState({ spiritRoot, rerollCount: 0 });
+    } else {
+      prestigeStore.generateSpiritRoot();
+    }
+
+    // Apply to game store
     useGameStore.setState({
       realm: saveData.gameState.realm,
       qi: saveData.gameState.qi,
@@ -243,17 +280,30 @@ function applySaveData(saveData: SaveData): void {
       lastActiveTime: saveData.gameState.lastActiveTime || Date.now(),
     });
 
-    // Recalculate derived values
-    gameStore.calculateQiPerSecond();
-    gameStore.calculatePlayerStats();
+    // Apply to inventory store and re-bind equipped items
+    useInventoryStore.setState((state) => {
+      state.items = (saveData.inventoryState.items || []).map((item) => ({
+        ...item,
+        equipped: false,
+      }));
+      state.equippedWeaponId = saveData.inventoryState.equippedWeapon ?? null;
+      state.equippedAccessoryId = saveData.inventoryState.equippedAccessory ?? null;
+      state.gold = saveData.inventoryState.gold;
+      state.maxSlots = saveData.inventoryState.maxSlots;
 
-    // Apply to inventory store
-    useInventoryStore.setState({
-      items: saveData.inventoryState.items,
-      equippedWeapon: saveData.inventoryState.equippedWeapon,
-      equippedAccessory: saveData.inventoryState.equippedAccessory,
-      gold: saveData.inventoryState.gold,
-      maxSlots: saveData.inventoryState.maxSlots,
+      const itemMap = new Map(state.items.map((item) => [item.id, item]));
+
+      if (state.equippedWeaponId && itemMap.has(state.equippedWeaponId)) {
+        itemMap.get(state.equippedWeaponId)!.equipped = true;
+      } else {
+        state.equippedWeaponId = null;
+      }
+
+      if (state.equippedAccessoryId && itemMap.has(state.equippedAccessoryId)) {
+        itemMap.get(state.equippedAccessoryId)!.equipped = true;
+      } else {
+        state.equippedAccessoryId = null;
+      }
     });
 
     // Apply combat settings
@@ -296,6 +346,10 @@ function applySaveData(saveData: SaveData): void {
         // Technique store unavailable during load
       }
     }
+
+    // Recalculate derived values after hydration
+    gameStore.calculateQiPerSecond();
+    gameStore.calculatePlayerStats();
 
     console.log('[SaveLoad] Save data applied successfully');
   } catch (error) {
@@ -379,8 +433,8 @@ export function deleteSave(): boolean {
 
     useInventoryStore.setState({
       items: [],
-      equippedWeapon: null,
-      equippedAccessory: null,
+      equippedWeaponId: null,
+      equippedAccessoryId: null,
       gold: '0',
       maxSlots: 20,
     });
