@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { CombatState, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
-import { useGameStore, setCombatStoreGetter } from './gameStore';
+import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
@@ -822,4 +822,3 @@ export const useCombatStore = create<ExtendedCombatState>()(
   }))
 );
 
-setCombatStoreGetter(() => useCombatStore.getState());
