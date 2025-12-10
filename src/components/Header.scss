@@ -12,9 +12,13 @@
   background-position: left top, right top;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 0 0 10px 0 /5px;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 0 0 10px 0 / 5px;
   z-index: 40;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+header * {
+  color: #000000;
 }
 
 .headerBar {
@@ -33,7 +37,6 @@
 }
 
 .headerQiLine {
-  color: #7dd3fc;
   font-family: 'Julee', cursive;
   font-size: 14px;
 }
@@ -41,30 +44,25 @@
 .headerQiValue {
   font-size: 20px;
   font-weight: 700;
-  color: #bae6fd;
   margin-left: 8px;
 }
 
 .headerQiRate {
   margin-left: 8px;
   font-size: 12px;
-  color: #6b6b6b;
 }
 
 .headerRealmLine {
-  color: #e8e8e8;
   font-size: 12px;
 }
 
 .headerRealmAccent {
-  color: #fbbf24;
   font-weight: 600;
   margin-left: 4px;
 }
 
 .headerRealmSubstage {
   margin-left: 8px;
-  color: #6b6b6b;
 }
 
 .headerSaveBlock {
@@ -73,7 +71,6 @@
 }
 
 .headerSaveLabel {
-  color: #6b6b6b;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 12px;
@@ -85,19 +82,19 @@
 }
 
 .headerSaveTime.headerNeutral {
-  color: #9ca3af;
+  color: #565d68;
 }
 
 .headerSaveTime.headerFresh {
-  color: #4ade80;
+  color: #2fab5d;
 }
 
 .headerSaveTime.headerWarn {
-  color: #facc15;
+  color: #b7950d;
 }
 
 .headerSaveTime.headerOld {
-  color: #fb923c;
+  color: #b16527;
 }
 
 .titles-container {

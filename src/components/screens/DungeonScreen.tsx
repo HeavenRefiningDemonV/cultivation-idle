@@ -283,19 +283,19 @@ function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: 
         ) : (
           <div className={'dungeonScreenMechanicsList'}>
             <div className={'dungeonScreenReadinessRow'}>
-              <span className={'dungeonScreenStatsLabel'}>Readiness:</span>
+              <span className={'dungeonScreenStatsLabelOut'}>Readiness:</span>
               <span className={badgeClass}>{readiness.text}</span>
             </div>
 
-            <div className={'dungeonScreenStatsLabel'}>
+            <div className={'dungeonScreenStatsLabelOut'}>
               Suggested ATK: {formatNumber(dungeon.suggestedDPS)}
             </div>
-            <div className={'dungeonScreenStatsLabel'}>
+            <div className={'dungeonScreenStatsLabelOut'}>
               Suggested HP: {formatNumber(dungeon.suggestedHP)}
             </div>
 
             <div className={'dungeonScreenReadinessRow'}>
-              <span className={'dungeonScreenStatsLabel'}>Boss:</span>
+              <span className={'dungeonScreenStatsLabelOut'}>Boss:</span>
               <span className={'dungeonScreenRewardValue'}>{dungeon.boss.name}</span>
             </div>
 

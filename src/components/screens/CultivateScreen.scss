@@ -200,7 +200,6 @@
 }
 
 .cultivateScreenProgressLabel {
-  color: #fbbf24;
   font-family: 'Julee', cursive;
   font-weight: 600;
 }
@@ -336,7 +335,6 @@
   font-family: 'Julee', cursive;
   font-size: 18px;
   font-weight: 700;
-  color: #fbbf24;
 }
 
 .cultivateScreenFocusList {
@@ -354,14 +352,9 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.cultivateScreenFocusButton:hover {
-  border-color: #64748b;
-}
-
 .cultivateScreenFocusButtonActive {
-  border-color: #7dd3fc;
   background: rgba(125, 211, 252, 0.18);
-  box-shadow: 0 0 20px rgba(125, 211, 252, 0.5);
+  box-shadow: 0 0 20px rgba(82, 200, 255, 0.7);
 }
 
 .cultivateScreenFocusTitle {

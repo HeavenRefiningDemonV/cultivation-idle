@@ -12,6 +12,7 @@
 
 .dungeonScreenModal {
   position: relative;
+  margin-top: 14rem;
   width: 100%;
   max-width: 900px;
   border-radius: 14px;
@@ -40,14 +41,14 @@
 
 .dungeonScreenModalSubtitle {
   margin: 0;
-  color: #000000;
+  color: #ffffff;
   font-size: 14px;
 }
 
 .dungeonScreenCloseButton {
   background: transparent;
   border: none;
-  color: #000000;
+  color: #ffffff;
   font-size: 24px;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -96,12 +97,16 @@
 }
 
 .dungeonScreenStatsLabel {
+  color: #888888;
+  font-size: 14px;
+}
+.dungeonScreenStatsLabelOut {
   color: #000000;
   font-size: 14px;
 }
 
 .dungeonScreenStatsValue {
-  color: #000000;
+  color: #ffffff;
   font-size: 20px;
   font-weight: 700;
 }
@@ -132,12 +137,12 @@
 }
 
 .dungeonScreenMechanicMeta {
-  color: #000000;
+  color: #ffffff;
   font-size: 12px;
 }
 
 .dungeonScreenMechanicBody {
-  color: #000000;
+  color: #ffffff;
   font-size: 14px;
 }
 
@@ -152,7 +157,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  color: #000000;
+  color: #ffffff;
 }
 
 .dungeonScreenProgressBar {
@@ -181,7 +186,7 @@
 }
 
 .dungeonScreenReadinessLabel {
-  color: #000000;
+  color: #ffffff;
   margin-bottom: 4px;
 }
 
@@ -206,7 +211,7 @@
   display: grid;
   gap: 8px;
   font-size: 14px;
-  color: #000000;
+  color: #ffffff;
 }
 
 .dungeonScreenRewardRow {
@@ -215,7 +220,7 @@
 }
 
 .dungeonScreenRewardValue {
-  color: #fbbf24;
+  color: #dd9900;
   font-weight: 700;
 }
 
@@ -313,7 +318,7 @@
 }
 
 .dungeonScreenDungeonCard {
-  background: rgba(26, 26, 26, 0.65);
+  background: #ddd;
   border: 2px solid rgba(251, 191, 36, 0.3);
   border-radius: 14px;
   padding: 24px;
@@ -340,7 +345,6 @@
   font-family: 'Julee', cursive;
   font-size: 20px;
   font-weight: 700;
-  color: #fbbf24;
 }
 
 .dungeonScreenDungeonTier {
@@ -359,7 +363,7 @@
   border-radius: 6px;
   background: rgba(168, 85, 247, 0.15);
   border: 1px solid rgba(168, 85, 247, 0.4);
-  color: #e9d5ff;
+  color: #7d51ac;
   font-size: 12px;
   font-weight: 700;
 }
@@ -417,7 +421,7 @@
 }
 
 .dungeonScreenRewardHighlight {
-  color: #fbbf24;
+  color: #dd9900;
   font-weight: 700;
 }
 
