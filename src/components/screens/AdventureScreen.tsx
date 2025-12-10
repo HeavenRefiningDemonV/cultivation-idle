@@ -3,7 +3,7 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
-import { D, formatNumber, formatPercentFromValue } from '../../utils/numbers';
+import { D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
 import './AdventureScreen.scss';
 
@@ -176,11 +176,11 @@ export function CombatView() {
     );
   }
 
-  const playerHPPercent = playerMaxHP && Number(playerMaxHP) > 0
-    ? (Number(playerHP) / Number(playerMaxHP)) * 100
+  const playerHpRatio = playerMaxHP && Number(playerMaxHP) > 0
+    ? Math.min(1, Math.max(0, D(playerHP).dividedBy(playerMaxHP).toNumber()))
     : 0;
-  const enemyHPPercent = enemyMaxHP && Number(enemyMaxHP) > 0
-    ? (Number(enemyHP) / Number(enemyMaxHP)) * 100
+  const enemyHpRatio = enemyMaxHP && Number(enemyMaxHP) > 0
+    ? Math.min(1, Math.max(0, D(enemyHP).dividedBy(enemyMaxHP).toNumber()))
     : 0;
 
   return (
@@ -202,8 +202,8 @@ export function CombatView() {
               </span>
             </div>
             <div className={'adventureScreenBarContainer'}>
-              <div className={'adventureScreenBarFill'} style={{ width: `${enemyHPPercent}%` }}>
-                {enemyHPPercent.toFixed(1)}%
+              <div className={'adventureScreenBarFill'} style={{ width: `${enemyHpRatio * 100}%` }}>
+                {formatPercentFromFraction(enemyHpRatio)}
               </div>
             </div>
           </div>
@@ -240,8 +240,11 @@ export function CombatView() {
               </span>
             </div>
             <div className={'adventureScreenBarContainer'}>
-              <div className={`${'adventureScreenBarFill'} ${'adventureScreenBarFillPlayer'}`} style={{ width: `${playerHPPercent}%` }}>
-                {playerHPPercent.toFixed(1)}%
+              <div
+                className={`${'adventureScreenBarFill'} ${'adventureScreenBarFillPlayer'}`}
+                style={{ width: `${playerHpRatio * 100}%` }}
+              >
+                {formatPercentFromFraction(playerHpRatio)}
               </div>
             </div>
           </div>

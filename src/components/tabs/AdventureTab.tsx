@@ -4,7 +4,7 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useZoneStore } from '../../stores/zoneStore';
-import { formatNumber, divide, D } from '../../utils/numbers';
+import { formatNumber, divide, D, formatPercentFromFraction } from '../../utils/numbers';
 import type { EnemyDefinition } from '../../types';
 import { CombatCanvas } from '../combat/CombatCanvas';
 import './AdventureTab.scss';
@@ -42,7 +42,11 @@ function HPBar({
   label: string;
   variant?: 'red' | 'green';
 }) {
-  const percent = Math.min(100, parseFloat(divide(current, max).times(100).toFixed(2)));
+  const percent = (() => {
+    const ratio = divide(current, max);
+    if (!ratio.isFinite()) return 0;
+    return Math.min(100, Math.max(0, parseFloat(ratio.times(100).toFixed(2))));
+  })();
   const barClass = variant === 'green' ? 'adventureTabHpFillGreen' : 'adventureTabHpFillRed';
 
   return (
@@ -61,6 +65,7 @@ function HPBar({
           transition={{ duration: 0.3 }}
         />
       </div>
+      <div className={'adventureTabHpPercent'}>{formatPercentFromFraction(percent / 100)}</div>
     </div>
   );
 }
