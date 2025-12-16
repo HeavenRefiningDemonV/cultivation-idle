@@ -66,8 +66,9 @@ export function assertUniqueIds(arr: { id: string }[], label: string) {
 }
 
 function validateCities(config: CitiesConfig): CityDef[] {
-  assertObject(config, 'cities');
-  assertArray((config as any).cities, 'cities.cities');
+  assertObject(config, 'cities.json root');
+  assertHasKey(config, 'cities', 'cities.json');
+  assertArray((config as any).cities, 'cities.json.cities');
 
   const cities = (config as any).cities as CityDef[];
   cities.forEach((city, idx) => {
@@ -86,13 +87,14 @@ function validateCities(config: CitiesConfig): CityDef[] {
     );
   });
 
-  assertUniqueIds(cities, 'cities');
+  assertUniqueIds(cities, 'cities.json.cities');
   return cities;
 }
 
 function validateTechniques(config: TechniquesConfig): TechniqueDef[] {
-  assertObject(config, 'techniques');
-  assertArray((config as any).techniques, 'techniques.techniques');
+  assertObject(config, 'techniques.json root');
+  assertHasKey(config, 'techniques', 'techniques.json');
+  assertArray((config as any).techniques, 'techniques.json.techniques');
   const techniques = (config as any).techniques as TechniqueDef[];
 
   techniques.forEach((tech, idx) => {
@@ -102,13 +104,14 @@ function validateTechniques(config: TechniquesConfig): TechniqueDef[] {
     assert(typeof tech.type === 'string', `techniques[${idx}].type must be a string`);
   });
 
-  assertUniqueIds(techniques, 'techniques.techniques');
+  assertUniqueIds(techniques, 'techniques.json.techniques');
   return techniques;
 }
 
 function validateItems(config: ItemsConfig) {
-  assertObject(config, 'items');
-  assertArray((config as any).items, 'items.items');
+  assertObject(config, 'items.json root');
+  assertHasKey(config, 'items', 'items.json');
+  assertArray((config as any).items, 'items.json.items');
   const items = (config as any).items as ItemsConfig['items'];
 
   items.forEach((item, idx) => {
@@ -118,13 +121,14 @@ function validateItems(config: ItemsConfig) {
     assert(typeof item.category === 'string', `items[${idx}].category must be a string`);
   });
 
-  assertUniqueIds(items, 'items.items');
+  assertUniqueIds(items, 'items.json.items');
   return items;
 }
 
 function validatePavilions(config: PavilionsConfig): PavilionDef[] {
-  assertObject(config, 'pavilions');
-  assertArray((config as any).pavilions, 'pavilions.pavilions');
+  assertObject(config, 'pavilions.json root');
+  assertHasKey(config, 'pavilions', 'pavilions.json');
+  assertArray((config as any).pavilions, 'pavilions.json.pavilions');
   const pavilions = (config as any).pavilions as PavilionDef[];
 
   pavilions.forEach((pavilion, idx) => {
@@ -134,13 +138,14 @@ function validatePavilions(config: PavilionsConfig): PavilionDef[] {
     assertObject(pavilion.poolByPath, `pavilions[${idx}].poolByPath`);
   });
 
-  assertUniqueIds(pavilions, 'pavilions.pavilions');
+  assertUniqueIds(pavilions, 'pavilions.json.pavilions');
   return pavilions;
 }
 
 function validateOutskirts(config: OutskirtsConfig) {
-  assertObject(config, 'outskirts');
-  assertArray((config as any).outskirts, 'outskirts.outskirts');
+  assertObject(config, 'outskirts.json root');
+  assertHasKey(config, 'outskirts', 'outskirts.json');
+  assertArray((config as any).outskirts, 'outskirts.json.outskirts');
   const outskirts = (config as any).outskirts as OutskirtsConfig['outskirts'];
 
   outskirts.forEach((outskirt, idx) => {
@@ -152,13 +157,14 @@ function validateOutskirts(config: OutskirtsConfig) {
     assertArray(outskirt.mobPool, `outskirts[${idx}].mobPool`);
   });
 
-  assertUniqueIds(outskirts, 'outskirts.outskirts');
+  assertUniqueIds(outskirts, 'outskirts.json.outskirts');
   return outskirts;
 }
 
 function validateEnemies(config: EnemiesConfig) {
-  assertObject(config, 'enemies');
-  assertArray((config as any).enemies, 'enemies.enemies');
+  assertObject(config, 'enemies.json root');
+  assertHasKey(config, 'enemies', 'enemies.json');
+  assertArray((config as any).enemies, 'enemies.json.enemies');
   const enemies = (config as any).enemies as EnemiesConfig['enemies'];
 
   enemies.forEach((enemy, idx) => {
@@ -167,13 +173,14 @@ function validateEnemies(config: EnemiesConfig) {
     assert(typeof enemy.name === 'string', `enemies[${idx}].name must be a string`);
   });
 
-  assertUniqueIds(enemies, 'enemies.enemies');
+  assertUniqueIds(enemies, 'enemies.json.enemies');
   return enemies;
 }
 
 function validateTrials(config: TrialsConfig) {
-  assertObject(config, 'trials');
-  assertArray((config as any).trials, 'trials.trials');
+  assertObject(config, 'trials.json root');
+  assertHasKey(config, 'trials', 'trials.json');
+  assertArray((config as any).trials, 'trials.json.trials');
   const trials = (config as any).trials as TrialsConfig['trials'];
 
   trials.forEach((trial, idx) => {
@@ -184,13 +191,14 @@ function validateTrials(config: TrialsConfig) {
     assert(typeof trial.gateItemId === 'string', `trials[${idx}].gateItemId must be a string`);
   });
 
-  assertUniqueIds(trials, 'trials.trials');
+  assertUniqueIds(trials, 'trials.json.trials');
   return trials;
 }
 
 function validateRuins(config: RuinsConfig) {
-  assertObject(config, 'ruins');
-  assertArray((config as any).ruins, 'ruins.ruins');
+  assertObject(config, 'ruins.json root');
+  assertHasKey(config, 'ruins', 'ruins.json');
+  assertArray((config as any).ruins, 'ruins.json.ruins');
   const ruins = (config as any).ruins as RuinsConfig['ruins'];
 
   ruins.forEach((ruin, idx) => {
@@ -199,13 +207,14 @@ function validateRuins(config: RuinsConfig) {
     assert(typeof ruin.cityId === 'string', `ruins[${idx}].cityId must be a string`);
   });
 
-  assertUniqueIds(ruins, 'ruins.ruins');
+  assertUniqueIds(ruins, 'ruins.json.ruins');
   return ruins;
 }
 
 function validateRunes(config: RunesConfig) {
-  assertObject(config, 'runes');
-  assertArray((config as any).runes, 'runes.runes');
+  assertObject(config, 'runes.json root');
+  assertHasKey(config, 'runes', 'runes.json');
+  assertArray((config as any).runes, 'runes.json.runes');
   const runes = (config as any).runes as RunesConfig['runes'];
 
   runes.forEach((rune, idx) => {
@@ -213,39 +222,72 @@ function validateRunes(config: RunesConfig) {
     assert(typeof rune.id === 'string', `runes[${idx}].id must be a string`);
   });
 
-  assertUniqueIds(runes, 'runes.runes');
+  assertUniqueIds(runes, 'runes.json.runes');
   return runes;
 }
 
 function validateHeartLaws(config: HeartLawsConfig) {
-  assertObject(config, 'heart_laws');
-  assertArray((config as any).heartLaws, 'heart_laws.heartLaws');
+  assertObject(config, 'heart_laws.json root');
+  assertHasKey(config, 'heartLaws', 'heart_laws.json');
+  assertArray((config as any).heartLaws, 'heart_laws.json.heartLaws');
   const laws = (config as any).heartLaws as HeartLawsConfig['heartLaws'];
-  assertUniqueIds(laws, 'heart_laws.heartLaws');
+  assertUniqueIds(laws, 'heart_laws.json.heartLaws');
   return laws;
 }
 
 function validatePrestige(config: PrestigeStoreConfig) {
-  assertObject(config, 'prestige_store');
-  assertArray((config as any).upgrades, 'prestige_store.upgrades');
+  assertObject(config, 'prestige_store.json root');
+  assertHasKey(config, 'upgrades', 'prestige_store.json');
+  assertArray((config as any).upgrades, 'prestige_store.json.upgrades');
   const upgrades = (config as any).upgrades as PrestigeStoreConfig['upgrades'];
-  assertUniqueIds(upgrades, 'prestige_store.upgrades');
+  assertUniqueIds(upgrades, 'prestige_store.json.upgrades');
   return upgrades;
 }
 
-function validateOtherRequiredArrays(raw: LoadedContentRaw) {
-  const requiredArrays: Array<[unknown, string]> = [
-    [raw.alchemy_recipes?.recipes, 'alchemy_recipes.recipes'],
-    [raw.forge_blueprints?.blueprints, 'forge_blueprints.blueprints'],
-    [raw.talisman_recipes?.talismans, 'talisman_recipes.talismans'],
-    [raw.apothecary_shops?.shops, 'apothecary_shops.shops'],
-    [raw.expeditions?.durations, 'expeditions.durations'],
-    [raw.expeditions?.types, 'expeditions.types'],
-    [raw.expeditions?.cityYields, 'expeditions.cityYields'],
-    [raw.bounties?.templates, 'bounties.templates'],
-  ];
+function validateAlchemy(config: LoadedContentRaw['alchemy_recipes']) {
+  assertObject(config, 'alchemy_recipes.json root');
+  assertHasKey(config, 'recipes', 'alchemy_recipes.json');
+  assertArray(config.recipes, 'alchemy_recipes.json.recipes');
+  return config.recipes;
+}
 
-  requiredArrays.forEach(([value, label]) => assertArray(value, label));
+function validateForge(config: LoadedContentRaw['forge_blueprints']) {
+  assertObject(config, 'forge_blueprints.json root');
+  assertHasKey(config, 'blueprints', 'forge_blueprints.json');
+  assertArray(config.blueprints, 'forge_blueprints.json.blueprints');
+  return config.blueprints;
+}
+
+function validateTalismans(config: LoadedContentRaw['talisman_recipes']) {
+  assertObject(config, 'talisman_recipes.json root');
+  assertHasKey(config, 'talismans', 'talisman_recipes.json');
+  assertArray(config.talismans, 'talisman_recipes.json.talismans');
+  return config.talismans;
+}
+
+function validateApothecary(config: LoadedContentRaw['apothecary_shops']) {
+  assertObject(config, 'apothecary_shops.json root');
+  assertHasKey(config, 'shops', 'apothecary_shops.json');
+  assertArray(config.shops, 'apothecary_shops.json.shops');
+  return config.shops;
+}
+
+function validateExpeditions(config: LoadedContentRaw['expeditions']) {
+  assertObject(config, 'expeditions.json root');
+  assertHasKey(config, 'durations', 'expeditions.json');
+  assertHasKey(config, 'types', 'expeditions.json');
+  assertHasKey(config, 'cityYields', 'expeditions.json');
+  assertArray(config.durations, 'expeditions.json.durations');
+  assertArray(config.types, 'expeditions.json.types');
+  assertArray(config.cityYields, 'expeditions.json.cityYields');
+  return config;
+}
+
+function validateBounties(config: LoadedContentRaw['bounties']) {
+  assertObject(config, 'bounties.json root');
+  assertHasKey(config, 'templates', 'bounties.json');
+  assertArray(config.templates, 'bounties.json.templates');
+  return config.templates;
 }
 
 function buildIdMap<T extends { id: string }>(items: T[]): Record<string, T> {
@@ -264,8 +306,6 @@ function validateRecipeItems(record: Record<string, number> | undefined, items: 
 
 export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   // Basic shape validation
-  validateOtherRequiredArrays(raw);
-
   const cities = validateCities(raw.cities);
   const techniques = validateTechniques(raw.techniques);
   const items = validateItems(raw.items);
@@ -277,6 +317,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const runes = validateRunes(raw.runes);
   const heartLaws = validateHeartLaws(raw.heart_laws);
   const prestige = validatePrestige(raw.prestige_store);
+  const alchemyRecipes = validateAlchemy(raw.alchemy_recipes);
+  const forgeBlueprints = validateForge(raw.forge_blueprints);
+  const talismanRecipes = validateTalismans(raw.talisman_recipes);
+  const apothecaryShops = validateApothecary(raw.apothecary_shops);
+  validateExpeditions(raw.expeditions);
+  const bountyTemplates = validateBounties(raw.bounties);
 
   // Build maps for cross references
   const cityMap = buildIdMap(cities);
@@ -288,9 +334,10 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const ruinMap = buildIdMap(ruins);
   const runeMap = buildIdMap(runes);
   const techniqueMap = buildIdMap(techniques);
-  const apothecaryMap = buildIdMap(raw.apothecary_shops.shops);
+  const apothecaryMap = buildIdMap(apothecaryShops);
   const lawMap = buildIdMap(heartLaws);
   const prestigeMap = buildIdMap(prestige);
+  const bountyTemplateMap = buildIdMap(bountyTemplates);
 
   // Cross references on cities
   cities.forEach((city) => {
@@ -302,7 +349,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     assert(refs.apothecaryId in apothecaryMap, `City ${city.id} refs.apothecaryId missing in apothecary shops`);
   });
 
-  raw.apothecary_shops.shops.forEach((shop, idx) => {
+  apothecaryShops.forEach((shop, idx) => {
     assert(shop.cityId in cityMap, `apothecary_shops.shops[${idx}] cityId does not exist`);
     shop.stock.forEach((stockItem, stockIdx) => {
       assert(stockItem.itemId in itemMap, `apothecary_shops.shops[${idx}].stock[${stockIdx}] missing item`);
@@ -338,24 +385,28 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     assert(ruin.cityId in cityMap, `ruins[${idx}].cityId missing in cities`);
   });
 
-  raw.alchemy_recipes.recipes.forEach((recipe, idx) => {
+  alchemyRecipes.forEach((recipe, idx) => {
     assert(recipe.unlocksAtCityId in cityMap, `alchemy_recipes.recipes[${idx}].unlocksAtCityId missing in cities`);
     validateRecipeItems(recipe.inputs, itemMap, `alchemy_recipes.recipes[${idx}].inputs`);
     validateRecipeItems(recipe.outputs, itemMap, `alchemy_recipes.recipes[${idx}].outputs`);
   });
 
-  raw.forge_blueprints.blueprints.forEach((blueprint, idx) => {
+  forgeBlueprints.forEach((blueprint, idx) => {
     assert(blueprint.unlocksAtCityId in cityMap, `forge_blueprints.blueprints[${idx}].unlocksAtCityId missing in cities`);
     validateRecipeItems(blueprint.inputs, itemMap, `forge_blueprints.blueprints[${idx}].inputs`);
     validateRecipeItems(blueprint.outputs, { ...itemMap, ...runeMap }, `forge_blueprints.blueprints[${idx}].outputs`);
     validateRecipeItems(blueprint.cost, itemMap, `forge_blueprints.blueprints[${idx}].cost`);
   });
 
-  raw.talisman_recipes.talismans.forEach((talisman, idx) => {
+  talismanRecipes.forEach((talisman, idx) => {
     assert(talisman.unlocksAtCityId in cityMap, `talisman_recipes.talismans[${idx}].unlocksAtCityId missing in cities`);
     validateRecipeItems(talisman.inputs, itemMap, `talisman_recipes.talismans[${idx}].inputs`);
     validateRecipeItems(talisman.outputs, itemMap, `talisman_recipes.talismans[${idx}].outputs`);
     validateRecipeItems(talisman.cost, itemMap, `talisman_recipes.talismans[${idx}].cost`);
+  });
+
+  bountyTemplates.forEach((template, idx) => {
+    assert(typeof template.id === 'string', `bounties.templates[${idx}].id must be a string`);
   });
 
   // City pavilion sanity for first 5 cities
@@ -401,6 +452,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   // Additional references for runes and heart laws to ensure maps used
   Object.keys(lawMap);
   Object.keys(prestigeMap);
+  Object.keys(bountyTemplateMap);
 
   return raw;
 }
