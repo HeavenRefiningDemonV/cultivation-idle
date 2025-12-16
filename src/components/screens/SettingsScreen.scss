@@ -189,3 +189,73 @@
     flex-direction: column;
   }
 }
+
+.settingsDebugRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.settingsDebugGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.settingsDebugItem {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.settingsDebugLabel {
+  font-size: 12px;
+  color: #1f2937;
+  opacity: 0.7;
+}
+
+.settingsDebugValue {
+  font-weight: 700;
+  color: #000000;
+}
+
+.settingsDebugError {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #7f1d1d;
+}
+
+.settingsDebugPools {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.settingsDebugPoolRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.settingsDebugPoolCity {
+  font-weight: 600;
+  color: #111827;
+}
+
+.settingsDebugPoolCounts {
+  display: flex;
+  gap: 8px;
+  font-family: 'Courier New', monospace;
+  color: #111827;
+}

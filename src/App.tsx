@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GameLayout } from './components/GameLayout';
+import { ContentInitGate } from './components/system/ContentInitGate';
 import { initializeGame } from './systems/gameLoop';
 import './App.scss';
 
@@ -63,7 +64,11 @@ function App() {
   }
 
   // Render game layout once initialized
-  return <GameLayout />;
+  return (
+    <ContentInitGate>
+      <GameLayout />
+    </ContentInitGate>
+  );
 }
 
 export default App;
