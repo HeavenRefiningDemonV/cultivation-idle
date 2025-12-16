@@ -1,0 +1,316 @@
+{
+  "version": "1.0",
+  "blueprints": [
+    {
+      "id": "forge_refine_rusty_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 0,
+      "service": "refine",
+      "inputs": {
+        "mat_low_grade_ore": 10
+      },
+      "cost": {
+        "gold": 500
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 3
+      }
+    },
+    {
+      "id": "forge_rune_ember_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 120,
+      "inputs": {
+        "mat_rune_dust": 6,
+        "mat_spirit_leaf": 2
+      },
+      "cost": {
+        "gold": 1000
+      },
+      "outputs": {
+        "rune_ember_t1": 1
+      }
+    },
+    {
+      "id": "forge_rune_stone_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 120,
+      "inputs": {
+        "mat_rune_dust": 6,
+        "mat_low_grade_ore": 2
+      },
+      "cost": {
+        "gold": 1000
+      },
+      "outputs": {
+        "rune_stone_t1": 1
+      }
+    },
+    {
+      "id": "forge_rune_fortify_t1",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "forge",
+      "timeSec": 180,
+      "inputs": {
+        "mat_rune_dust": 10,
+        "mat_earth_essence": 1
+      },
+      "cost": {
+        "gold": 12000
+      },
+      "outputs": {
+        "rune_fortify_t1": 1
+      }
+    },
+    {
+      "id": "forge_rune_shatter_t1",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "forge",
+      "timeSec": 180,
+      "inputs": {
+        "mat_rune_dust": 10,
+        "mat_iron_sand": 2
+      },
+      "cost": {
+        "gold": 12000
+      },
+      "outputs": {
+        "rune_shatter_t1": 1
+      }
+    },
+    {
+      "id": "forge_refine_common_t2",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "forge",
+      "timeSec": 0,
+      "service": "refine",
+      "inputs": {
+        "mat_quarry_ore": 12,
+        "reagent_quenching_oil_t1": 1
+      },
+      "cost": {
+        "gold": 8000
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 5
+      }
+    },
+    {
+      "id": "forge_rune_astral_t1",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "forge",
+      "timeSec": 240,
+      "inputs": {
+        "mat_rune_dust": 16,
+        "mat_core_fragment": 2
+      },
+      "cost": {
+        "gold": 60000
+      },
+      "outputs": {
+        "rune_astral_t1": 1
+      }
+    },
+    {
+      "id": "forge_rune_ward_t1",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "forge",
+      "timeSec": 240,
+      "inputs": {
+        "mat_rune_dust": 16,
+        "mat_aura_residue": 2
+      },
+      "cost": {
+        "gold": 60000
+      },
+      "outputs": {
+        "rune_ward_t1": 1
+      }
+    },
+    {
+      "id": "forge_refine_uncommon_t3",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "forge",
+      "timeSec": 0,
+      "service": "refine",
+      "inputs": {
+        "mat_crystal_shard": 10,
+        "reagent_quenching_oil_t1": 2
+      },
+      "cost": {
+        "gold": 60000
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 7
+      }
+    },
+    {
+      "id": "forge_jade_core_shell_t1",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "forge",
+      "timeSec": 600,
+      "inputs": {
+        "mat_artifact_shard": 25,
+        "mat_rune_dust": 30,
+        "reagent_spirit_solvent_t1": 1
+      },
+      "cost": {
+        "gold": 150000,
+        "spiritStones": 15
+      },
+      "outputs": {
+        "item_jade_core_shell_t1": 1
+      },
+      "note": "Creates the account item that unlocks the Jade Core slot"
+    },
+    {
+      "id": "forge_rune_venom_t1",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "forge",
+      "timeSec": 300,
+      "inputs": {
+        "mat_rune_dust": 28,
+        "mat_venom_sac": 2
+      },
+      "cost": {
+        "gold": 250000
+      },
+      "outputs": {
+        "rune_venom_t1": 1
+      }
+    },
+    {
+      "id": "forge_rune_mist_t1",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "forge",
+      "timeSec": 300,
+      "inputs": {
+        "mat_rune_dust": 28,
+        "mat_mist_pearl": 2
+      },
+      "cost": {
+        "gold": 250000
+      },
+      "outputs": {
+        "rune_mist_t1": 1
+      }
+    },
+    {
+      "id": "forge_refine_rare_t4",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "forge",
+      "timeSec": 0,
+      "service": "refine",
+      "inputs": {
+        "mat_mist_pearl": 6,
+        "reagent_quenching_oil_t1": 3
+      },
+      "cost": {
+        "gold": 300000
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 9
+      }
+    },
+    {
+      "id": "forge_jade_core_upgrade_t2",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "forge",
+      "timeSec": 900,
+      "inputs": {
+        "mat_artifact_shard": 60,
+        "mat_rune_dust": 80,
+        "reagent_spirit_solvent_t1": 2
+      },
+      "cost": {
+        "gold": 600000,
+        "spiritStones": 60
+      },
+      "effect": {
+        "type": "upgradeJadeCore",
+        "toTier": 2
+      }
+    },
+    {
+      "id": "forge_rune_edge_t1",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "forge",
+      "timeSec": 360,
+      "inputs": {
+        "mat_rune_dust": 45,
+        "mat_blade_core": 2
+      },
+      "cost": {
+        "gold": 1500000
+      },
+      "outputs": {
+        "rune_edge_t1": 1
+      }
+    },
+    {
+      "id": "forge_rune_storm_t1",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "forge",
+      "timeSec": 360,
+      "inputs": {
+        "mat_rune_dust": 45,
+        "mat_thunder_sand": 2
+      },
+      "cost": {
+        "gold": 1500000
+      },
+      "outputs": {
+        "rune_storm_t1": 1
+      }
+    },
+    {
+      "id": "forge_refine_legendary_t5",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "forge",
+      "timeSec": 0,
+      "service": "refine",
+      "inputs": {
+        "mat_spirit_steel_ore": 10,
+        "reagent_quenching_oil_t2": 2
+      },
+      "cost": {
+        "gold": 1000000
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 10
+      }
+    },
+    {
+      "id": "forge_jade_core_upgrade_t3",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "forge",
+      "timeSec": 1200,
+      "inputs": {
+        "mat_artifact_shard": 140,
+        "mat_rune_dust": 160,
+        "reagent_spirit_solvent_t2": 2
+      },
+      "cost": {
+        "gold": 3000000,
+        "spiritStones": 200
+      },
+      "effect": {
+        "type": "upgradeJadeCore",
+        "toTier": 3
+      }
+    }
+  ]
+}

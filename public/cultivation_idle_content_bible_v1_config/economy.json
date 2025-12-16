@@ -1,0 +1,758 @@
+{
+  "version": "1.0",
+  "generatedOn": "2025-12-15",
+  "paths": [
+    "heaven",
+    "earth",
+    "martial"
+  ],
+  "majorRealms": [
+    {
+      "id": "qi_condensation",
+      "name": "Qi Condensation",
+      "index": 0
+    },
+    {
+      "id": "foundation_establishment",
+      "name": "Foundation Establishment",
+      "index": 1
+    },
+    {
+      "id": "core_formation",
+      "name": "Core Formation",
+      "index": 2
+    },
+    {
+      "id": "nascent_soul",
+      "name": "Nascent Soul",
+      "index": 3
+    },
+    {
+      "id": "soul_formation",
+      "name": "Soul Formation",
+      "index": 4
+    },
+    {
+      "id": "spirit_severing",
+      "name": "Spirit Severing",
+      "index": 5,
+      "stretch": true
+    }
+  ],
+  "manualSystem": {
+    "grades": {
+      "mortal": {
+        "rankCap": 5,
+        "traitCap": 1,
+        "runeSockets": 0
+      },
+      "earth": {
+        "rankCap": 7,
+        "traitCap": 2,
+        "runeSockets": 1
+      },
+      "heaven": {
+        "rankCap": 9,
+        "traitCap": 2,
+        "runeSockets": 1,
+        "mastery75PotencyBonus": 0.25
+      },
+      "mystic": {
+        "rankCap": 10,
+        "traitCap": 3,
+        "runeSockets": 2
+      }
+    },
+    "rarityFragmentValue": {
+      "common": 20,
+      "uncommon": 45,
+      "rare": 110,
+      "epic": 280,
+      "legendary": 700
+    },
+    "gradeFragmentMultiplier": {
+      "mortal": 1.0,
+      "earth": 1.2,
+      "heaven": 1.5,
+      "mystic": 2.0
+    },
+    "rarityTraitSlots": {
+      "common": 1,
+      "uncommon": 1,
+      "rare": 2,
+      "epic": 2,
+      "legendary": 3
+    },
+    "mastery": {
+      "maxLevel": 100,
+      "xpPerCast": {
+        "active": 1.0,
+        "passiveTick": 0.25
+      },
+      "effectMultiplierPerLevel": 0.003,
+      "milestones": [
+        {
+          "level": 25,
+          "effects": [
+            {
+              "type": "cooldownMultiplier",
+              "value": 0.95
+            }
+          ]
+        },
+        {
+          "level": 50,
+          "effects": [
+            {
+              "type": "resourceCostMultiplier",
+              "value": 0.9
+            }
+          ]
+        },
+        {
+          "level": 75,
+          "effects": [
+            {
+              "type": "unlockSecondary"
+            }
+          ]
+        },
+        {
+          "level": 100,
+          "effects": [
+            {
+              "type": "effectMultiplier",
+              "value": 1.1
+            },
+            {
+              "type": "cosmeticTitle",
+              "value": "Perfected"
+            }
+          ]
+        }
+      ]
+    },
+    "rank": {
+      "maxRank": 10,
+      "multiplierPerRank": 0.1,
+      "rankUpCosts": [
+        {
+          "toRank": 2,
+          "fragments": 20,
+          "runeDust": 2,
+          "soulInkTier": 0
+        },
+        {
+          "toRank": 3,
+          "fragments": 40,
+          "runeDust": 4,
+          "soulInkTier": 0
+        },
+        {
+          "toRank": 4,
+          "fragments": 80,
+          "runeDust": 8,
+          "soulInkTier": 0
+        },
+        {
+          "toRank": 5,
+          "fragments": 160,
+          "runeDust": 16,
+          "soulInkTier": 0
+        },
+        {
+          "toRank": 6,
+          "fragments": 240,
+          "runeDust": 24,
+          "soulInkTier": 1,
+          "requiresGradeAtLeast": "earth"
+        },
+        {
+          "toRank": 7,
+          "fragments": 360,
+          "runeDust": 36,
+          "soulInkTier": 1,
+          "requiresGradeAtLeast": "earth"
+        },
+        {
+          "toRank": 8,
+          "fragments": 520,
+          "runeDust": 52,
+          "soulInkTier": 1,
+          "requiresGradeAtLeast": "heaven"
+        },
+        {
+          "toRank": 9,
+          "fragments": 750,
+          "runeDust": 75,
+          "soulInkTier": 2,
+          "requiresGradeAtLeast": "heaven"
+        },
+        {
+          "toRank": 10,
+          "fragments": 1100,
+          "runeDust": 110,
+          "soulInkTier": 2,
+          "requiresGradeAtLeast": "mystic"
+        }
+      ]
+    },
+    "pavilions": {
+      "stockSlots": 10,
+      "slotTypes": {
+        "standard": {
+          "slots": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weights": {
+            "common": 70,
+            "uncommon": 30
+          }
+        },
+        "advanced": {
+          "slots": [
+            5,
+            6,
+            7
+          ],
+          "weights": {
+            "uncommon": 60,
+            "rare": 35,
+            "epic": 5
+          }
+        },
+        "rareSlot": {
+          "slots": [
+            8,
+            9
+          ],
+          "weights": {
+            "rare": 85,
+            "epic": 15
+          }
+        },
+        "featured": {
+          "slots": [
+            10
+          ],
+          "weights": {
+            "rare": 70,
+            "epic": 25,
+            "legendary": 5
+          }
+        }
+      },
+      "cityTierModifiers": {
+        "city_1": {
+          "legendaryWeightMultiplier": 0.0,
+          "featuredEpicCap": 20
+        },
+        "city_2": {
+          "legendaryWeightMultiplier": 0.2
+        },
+        "city_3": {
+          "legendaryWeightMultiplier": 0.4
+        },
+        "city_4": {
+          "legendaryWeightMultiplier": 0.8
+        },
+        "city_5": {
+          "legendaryWeightMultiplier": 1.4,
+          "ultimateManualFeaturedChance": 0.08
+        }
+      },
+      "refresh": {
+        "freeRefreshHours": 6,
+        "meritRefreshCostByCityIndex": [
+          2,
+          4,
+          6,
+          8,
+          10
+        ],
+        "goldRefreshCostByCityIndex": [
+          [
+            5000,
+            10000,
+            20000,
+            40000,
+            80000
+          ],
+          [
+            20000,
+            40000,
+            80000,
+            160000,
+            320000
+          ],
+          [
+            80000,
+            160000,
+            320000,
+            640000,
+            1280000
+          ],
+          [
+            300000,
+            600000,
+            1200000,
+            2400000,
+            4800000
+          ],
+          [
+            1000000,
+            2000000,
+            4000000,
+            8000000,
+            16000000
+          ]
+        ],
+        "pity": {
+          "featuredEpicPityToGuarantee": 10,
+          "featuredLegendaryPityToGuarantee": 30,
+          "rareSlotEpicPityWindow": 10,
+          "rareSlotEpicGuarantee": true
+        }
+      },
+      "manualPricesByCityIndex": [
+        {
+          "grade": "mortal",
+          "prices": {
+            "common": {
+              "gold": 250,
+              "spiritStones": 0
+            },
+            "uncommon": {
+              "gold": 800,
+              "spiritStones": 0
+            },
+            "rare": {
+              "gold": 2500,
+              "spiritStones": 1
+            },
+            "epic": {
+              "gold": 8000,
+              "spiritStones": 3
+            },
+            "legendary": {
+              "gold": 0,
+              "spiritStones": 0,
+              "notSold": true
+            }
+          }
+        },
+        {
+          "grade": "earth",
+          "prices": {
+            "common": {
+              "gold": 1200,
+              "spiritStones": 0
+            },
+            "uncommon": {
+              "gold": 3800,
+              "spiritStones": 1
+            },
+            "rare": {
+              "gold": 12000,
+              "spiritStones": 4
+            },
+            "epic": {
+              "gold": 40000,
+              "spiritStones": 12
+            },
+            "legendary": {
+              "gold": 120000,
+              "spiritStones": 30
+            }
+          }
+        },
+        {
+          "grade": "heaven",
+          "prices": {
+            "common": {
+              "gold": 6000,
+              "spiritStones": 2
+            },
+            "uncommon": {
+              "gold": 18000,
+              "spiritStones": 6
+            },
+            "rare": {
+              "gold": 60000,
+              "spiritStones": 18
+            },
+            "epic": {
+              "gold": 200000,
+              "spiritStones": 55
+            },
+            "legendary": {
+              "gold": 600000,
+              "spiritStones": 140
+            }
+          }
+        },
+        {
+          "grade": "mystic",
+          "prices": {
+            "common": {
+              "gold": 30000,
+              "spiritStones": 8
+            },
+            "uncommon": {
+              "gold": 90000,
+              "spiritStones": 22
+            },
+            "rare": {
+              "gold": 300000,
+              "spiritStones": 65
+            },
+            "epic": {
+              "gold": 1000000,
+              "spiritStones": 200
+            },
+            "legendary": {
+              "gold": 3000000,
+              "spiritStones": 520
+            }
+          }
+        },
+        {
+          "grade": "mystic",
+          "prices": {
+            "common": {
+              "gold": 30000,
+              "spiritStones": 8
+            },
+            "uncommon": {
+              "gold": 90000,
+              "spiritStones": 22
+            },
+            "rare": {
+              "gold": 300000,
+              "spiritStones": 65
+            },
+            "epic": {
+              "gold": 1000000,
+              "spiritStones": 200
+            },
+            "legendary": {
+              "gold": 3000000,
+              "spiritStones": 520
+            },
+            "ultimate": {
+              "rare": {
+                "gold": 400000,
+                "spiritStones": 90
+              },
+              "epic": {
+                "gold": 1400000,
+                "spiritStones": 260
+              },
+              "legendary": {
+                "gold": 4500000,
+                "spiritStones": 700
+              }
+            }
+          }
+        }
+      ]
+    },
+    "gateTrials": {
+      "failSafe": {
+        "failThresholdEligibleAttempts": 3,
+        "purchaseCostByCityIndex": [
+          {
+            "gold": 25000,
+            "merit": 10,
+            "spiritStones": 0
+          },
+          {
+            "gold": 120000,
+            "merit": 15,
+            "spiritStones": 5
+          },
+          {
+            "gold": 450000,
+            "merit": 20,
+            "spiritStones": 15
+          },
+          {
+            "gold": 1800000,
+            "merit": 25,
+            "spiritStones": 40
+          },
+          {
+            "gold": 6000000,
+            "merit": 35,
+            "spiritStones": 100
+          }
+        ]
+      }
+    },
+    "drops": {
+      "outskirts": {
+        "mobGoldByCityIndex": [
+          [
+            6,
+            12
+          ],
+          [
+            25,
+            45
+          ],
+          [
+            80,
+            140
+          ],
+          [
+            220,
+            380
+          ],
+          [
+            600,
+            900
+          ]
+        ],
+        "mobCommonMatChance": 0.8,
+        "mobDoubleMatChance": 0.15,
+        "mobRareMatChance": 0.05,
+        "mobManualScrapsChanceByCityIndex": [
+          0.03,
+          0.04,
+          0.05,
+          0.06,
+          0.07
+        ],
+        "mobManualScrapsRangeByCityIndex": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            8
+          ]
+        ],
+        "mobGearDropChanceByCityIndex": [
+          0.008,
+          0.012,
+          0.016,
+          0.02,
+          0.025
+        ],
+        "bossGoldByCityIndex": [
+          [
+            250,
+            400
+          ],
+          [
+            1200,
+            2000
+          ],
+          [
+            4000,
+            7000
+          ],
+          [
+            12000,
+            20000
+          ],
+          [
+            35000,
+            60000
+          ]
+        ],
+        "bossMatCountRangeByCityIndex": [
+          [
+            4,
+            7
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            8,
+            14
+          ],
+          [
+            10,
+            18
+          ],
+          [
+            12,
+            22
+          ]
+        ],
+        "bossRareMatChanceByCityIndex": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3
+        ],
+        "bossSpiritStoneChanceByCityIndex": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3
+        ],
+        "bossSpiritStoneRangeByCityIndex": [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            4,
+            7
+          ],
+          [
+            7,
+            12
+          ]
+        ],
+        "bossTechniqueFragmentsRangeByCityIndex": [
+          [
+            5,
+            12
+          ],
+          [
+            12,
+            25
+          ],
+          [
+            25,
+            45
+          ],
+          [
+            45,
+            75
+          ],
+          [
+            75,
+            120
+          ]
+        ],
+        "bossManualDropChanceByCityIndex": [
+          0.08,
+          0.1,
+          0.12,
+          0.14,
+          0.16
+        ],
+        "bossManualRarityWeights": {
+          "common": 70,
+          "uncommon": 25,
+          "rare": 4,
+          "epic": 1,
+          "legendary": 0
+        },
+        "bossManualLegendaryChanceOverrideByCityIndex": [
+          0.0,
+          0.0,
+          0.005,
+          0.01,
+          0.02
+        ],
+        "bossManualPity": {
+          "killsNoManualGuarantee": 20,
+          "killsNoRarePlusGuarantee": 80
+        }
+      },
+      "ruins": {
+        "finalChestTechniqueFragmentsRangeByCityIndex": [
+          [
+            20,
+            35
+          ],
+          [
+            35,
+            55
+          ],
+          [
+            55,
+            85
+          ],
+          [
+            85,
+            130
+          ],
+          [
+            130,
+            190
+          ]
+        ],
+        "finalChestRuneDustRangeByCityIndex": [
+          [
+            5,
+            10
+          ],
+          [
+            10,
+            20
+          ],
+          [
+            20,
+            35
+          ],
+          [
+            35,
+            60
+          ],
+          [
+            60,
+            90
+          ]
+        ],
+        "finalChestArtifactShardsRangeByCityIndex": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            0
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            10,
+            18
+          ]
+        ],
+        "manualDropChance": 0.02,
+        "manualPityRunGuarantee": 50
+      }
+    }
+  }
+}

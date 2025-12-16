@@ -1,0 +1,235 @@
+{
+  "version": "1.0",
+  "durations": [
+    {
+      "id": "short",
+      "minutes": 10,
+      "efficiencyMult": 1.0
+    },
+    {
+      "id": "medium",
+      "minutes": 30,
+      "efficiencyMult": 1.05
+    },
+    {
+      "id": "long",
+      "minutes": 120,
+      "efficiencyMult": 1.1
+    }
+  ],
+  "types": [
+    {
+      "id": "forage",
+      "name": "Forage",
+      "yieldsTag": "herbs"
+    },
+    {
+      "id": "mine",
+      "name": "Mine",
+      "yieldsTag": "ore"
+    },
+    {
+      "id": "scout",
+      "name": "Scout",
+      "yieldsTag": "fragments"
+    }
+  ],
+  "cityYields": [
+    {
+      "cityId": "city_pinewind_hamlet",
+      "forage": {
+        "mat_common_herb_bundle": [
+          3,
+          6
+        ],
+        "mat_spirit_leaf": [
+          1,
+          3
+        ],
+        "mat_spirit_dew": [
+          0,
+          1
+        ],
+        "rareChance": 0.1
+      },
+      "mine": {
+        "mat_low_grade_ore": [
+          3,
+          6
+        ],
+        "mat_rune_dust": [
+          1,
+          2
+        ],
+        "rareChance": 0.05
+      },
+      "scout": {
+        "mat_technique_fragment": [
+          10,
+          20
+        ],
+        "crate_manual_scraps": [
+          20,
+          35
+        ],
+        "rareChance": 0.05
+      }
+    },
+    {
+      "cityId": "city_stonecrag_town",
+      "forage": {
+        "mat_common_herb_bundle": [
+          4,
+          8
+        ],
+        "mat_earth_essence": [
+          0,
+          1
+        ],
+        "rareChance": 0.1
+      },
+      "mine": {
+        "mat_quarry_ore": [
+          4,
+          8
+        ],
+        "mat_iron_sand": [
+          2,
+          5
+        ],
+        "mat_earth_essence": [
+          0,
+          1
+        ],
+        "rareChance": 0.1
+      },
+      "scout": {
+        "mat_technique_fragment": [
+          15,
+          30
+        ],
+        "crate_manual_scraps": [
+          30,
+          50
+        ],
+        "rareChance": 0.06
+      }
+    },
+    {
+      "cityId": "city_spirit_cavern_city",
+      "forage": {
+        "mat_spirit_leaf": [
+          4,
+          8
+        ],
+        "mat_aura_residue": [
+          1,
+          3
+        ],
+        "rareChance": 0.1
+      },
+      "mine": {
+        "mat_crystal_shard": [
+          4,
+          8
+        ],
+        "mat_core_fragment": [
+          2,
+          4
+        ],
+        "rareChance": 0.1
+      },
+      "scout": {
+        "mat_technique_fragment": [
+          25,
+          45
+        ],
+        "crate_manual_scraps": [
+          45,
+          70
+        ],
+        "rareChance": 0.08
+      }
+    },
+    {
+      "cityId": "city_lotusford",
+      "forage": {
+        "mat_lotus_pollen": [
+          4,
+          9
+        ],
+        "mat_mist_pearl": [
+          2,
+          5
+        ],
+        "mat_seed_ancient": [
+          0,
+          1
+        ],
+        "rareChance": 0.1
+      },
+      "mine": {
+        "mat_venom_sac": [
+          3,
+          6
+        ],
+        "mat_rune_dust": [
+          6,
+          10
+        ],
+        "rareChance": 0.1
+      },
+      "scout": {
+        "mat_technique_fragment": [
+          40,
+          70
+        ],
+        "crate_manual_scraps": [
+          70,
+          100
+        ],
+        "rareChance": 0.1
+      }
+    },
+    {
+      "cityId": "city_ironpeak_bastion",
+      "forage": {
+        "mat_mist_pearl": [
+          2,
+          5
+        ],
+        "mat_soul_ember": [
+          2,
+          5
+        ],
+        "rareChance": 0.1
+      },
+      "mine": {
+        "mat_spirit_steel_ore": [
+          4,
+          9
+        ],
+        "mat_blade_core": [
+          1,
+          3
+        ],
+        "mat_thunder_sand": [
+          0,
+          1
+        ],
+        "rareChance": 0.12
+      },
+      "scout": {
+        "mat_technique_fragment": [
+          60,
+          95
+        ],
+        "crate_manual_scraps": [
+          90,
+          130
+        ],
+        "rareChance": 0.12
+      }
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "version": "1.0",
+  "rules": {
+    "activeSlots": 3,
+    "freeRefreshHours": 6,
+    "goldRefreshEscalation": true,
+    "meritRefreshEnabled": true
+  },
+  "templates": [
+    {
+      "id": "bounty_kill_mobs",
+      "name": "Cull the Outskirts",
+      "type": "outskirtsKills",
+      "params": {
+        "kills": [
+          150,
+          250,
+          400,
+          600,
+          900
+        ]
+      }
+    },
+    {
+      "id": "bounty_kill_boss",
+      "name": "Hunt the Outskirts Boss",
+      "type": "bossKills",
+      "params": {
+        "kills": [
+          3,
+          4,
+          5,
+          6,
+          8
+        ]
+      }
+    },
+    {
+      "id": "bounty_clear_ruins",
+      "name": "Scavenge the Ruins",
+      "type": "ruinClears",
+      "params": {
+        "clears": [
+          2,
+          3,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "id": "bounty_run_expeditions",
+      "name": "City Commission",
+      "type": "expeditions",
+      "params": {
+        "runs": [
+          2,
+          3,
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    {
+      "id": "bounty_craft_items",
+      "name": "Workshop Order",
+      "type": "craft",
+      "params": {
+        "craftCount": [
+          5,
+          8,
+          10,
+          12,
+          15
+        ]
+      }
+    },
+    {
+      "id": "bounty_gain_mastery",
+      "name": "Refine Your Arts",
+      "type": "masteryGain",
+      "params": {
+        "levels": [
+          8,
+          10,
+          12,
+          14,
+          16
+        ]
+      }
+    }
+  ],
+  "rewardsByCityIndex": {
+    "easy": {
+      "gold": [
+        150,
+        1200,
+        7000,
+        30000,
+        100000
+      ],
+      "merit": [
+        1,
+        1,
+        1,
+        2,
+        2
+      ],
+      "spiritStones": [
+        0,
+        0,
+        1,
+        4,
+        10
+      ]
+    },
+    "medium": {
+      "gold": [
+        700,
+        3500,
+        18000,
+        70000,
+        240000
+      ],
+      "merit": [
+        2,
+        2,
+        3,
+        4,
+        5
+      ],
+      "spiritStones": [
+        1,
+        2,
+        6,
+        18,
+        40
+      ]
+    },
+    "hard": {
+      "gold": [
+        1400,
+        10000,
+        40000,
+        150000,
+        520000
+      ],
+      "merit": [
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "spiritStones": [
+        2,
+        4,
+        10,
+        35,
+        90
+      ]
+    }
+  }
+}

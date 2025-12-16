@@ -1,0 +1,128 @@
+{
+  "version": "1.0",
+  "trials": [
+    {
+      "id": "trial_novices_clearing",
+      "cityId": "city_pinewind_hamlet",
+      "cityIndex": 0,
+      "name": "Novice's Clearing",
+      "bossId": "trialboss_forest_sentinel",
+      "gatesToMajorRealm": "foundation_establishment",
+      "gateItemId": "gate_foundation_pill",
+      "eligibilityRule": {
+        "type": "atFinalSubstageQiCap",
+        "fromMajorRealm": "qi_condensation"
+      },
+      "failSafePurchase": {
+        "enabled": true,
+        "afterEligibleFails": 3,
+        "costRef": "economy.manualSystem.gateTrials.failSafe.purchaseCostByCityIndex[0]"
+      },
+      "firstEligibleClearReward": {
+        "type": "chooseOne",
+        "options": [
+          "token_recipe_scroll_t1",
+          "token_blueprint_scroll_t1",
+          "token_pavilion_refresh_bundle_t1"
+        ]
+      }
+    },
+    {
+      "id": "trial_stone_core_sanctum",
+      "cityId": "city_stonecrag_town",
+      "cityIndex": 1,
+      "name": "Stone Core Sanctum",
+      "bossId": "trialboss_sanctum_juggernaut",
+      "gatesToMajorRealm": "core_formation",
+      "gateItemId": "gate_core_catalyst",
+      "eligibilityRule": {
+        "type": "atFinalSubstageQiCap",
+        "fromMajorRealm": "foundation_establishment"
+      },
+      "failSafePurchase": {
+        "enabled": true,
+        "afterEligibleFails": 3,
+        "costRef": "economy.manualSystem.gateTrials.failSafe.purchaseCostByCityIndex[1]"
+      },
+      "firstEligibleClearReward": {
+        "type": "chooseOne",
+        "options": [
+          "token_recipe_scroll_t2",
+          "token_blueprint_scroll_t2",
+          "token_pavilion_refresh_bundle_t2"
+        ]
+      }
+    },
+    {
+      "id": "trial_patriarchs_seal",
+      "cityId": "city_spirit_cavern_city",
+      "cityIndex": 2,
+      "name": "Patriarch's Seal",
+      "bossId": "trialboss_sealkeeper",
+      "gatesToMajorRealm": "nascent_soul",
+      "gateItemId": "gate_core_stabilizer",
+      "eligibilityRule": {
+        "type": "atFinalSubstageQiCap",
+        "fromMajorRealm": "core_formation"
+      },
+      "failSafePurchase": {
+        "enabled": true,
+        "afterEligibleFails": 3,
+        "costRef": "economy.manualSystem.gateTrials.failSafe.purchaseCostByCityIndex[2]"
+      },
+      "firstEligibleClearReward": {
+        "type": "chooseOne",
+        "options": [
+          "token_recipe_scroll_t3",
+          "token_blueprint_scroll_t3",
+          "token_pavilion_refresh_bundle_t3"
+        ]
+      }
+    },
+    {
+      "id": "trial_soul_lantern_vault",
+      "cityId": "city_lotusford",
+      "cityIndex": 3,
+      "name": "Soul Lantern Vault",
+      "bossId": "trialboss_lantern_warden",
+      "gatesToMajorRealm": "soul_formation",
+      "gateItemId": "gate_soul_condensate",
+      "eligibilityRule": {
+        "type": "atFinalSubstageQiCap",
+        "fromMajorRealm": "nascent_soul"
+      },
+      "failSafePurchase": {
+        "enabled": true,
+        "afterEligibleFails": 3,
+        "costRef": "economy.manualSystem.gateTrials.failSafe.purchaseCostByCityIndex[3]"
+      },
+      "firstEligibleClearReward": {
+        "type": "chooseOne",
+        "options": [
+          "token_recipe_scroll_t4",
+          "token_blueprint_scroll_t4",
+          "token_pavilion_refresh_bundle_t4"
+        ]
+      }
+    },
+    {
+      "id": "trial_severing_court",
+      "cityId": "city_ironpeak_bastion",
+      "cityIndex": 4,
+      "name": "Severing Court",
+      "bossId": "trialboss_severing_judge",
+      "gatesToMajorRealm": "spirit_severing",
+      "gateItemId": "gate_severing_seal",
+      "eligibilityRule": {
+        "type": "atFinalSubstageQiCap",
+        "fromMajorRealm": "soul_formation"
+      },
+      "failSafePurchase": {
+        "enabled": true,
+        "afterEligibleFails": 3,
+        "costRef": "economy.manualSystem.gateTrials.failSafe.purchaseCostByCityIndex[4]"
+      },
+      "stretch": true
+    }
+  ]
+}

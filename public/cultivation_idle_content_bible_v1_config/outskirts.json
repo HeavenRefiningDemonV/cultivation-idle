@@ -1,0 +1,216 @@
+{
+  "version": "1.0",
+  "outskirts": [
+    {
+      "id": "outskirts_training_forest",
+      "cityId": "city_pinewind_hamlet",
+      "cityIndex": 0,
+      "name": "Training Forest",
+      "killsToBoss": 20,
+      "bossId": "boss_novice_guardian",
+      "mobPool": [
+        {
+          "enemyId": "enemy_forest_rabbit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_forest_wolf",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_woodland_bandit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_spirit_sprout",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_moss_troll",
+          "weight": 20
+        }
+      ],
+      "matPools": {
+        "common": [
+          "mat_common_herb_bundle",
+          "mat_spirit_leaf",
+          "mat_beast_blood",
+          "mat_beast_bone",
+          "mat_low_grade_ore"
+        ],
+        "rare": [
+          "mat_spirit_dew"
+        ]
+      }
+    },
+    {
+      "id": "outskirts_rockfall_quarry",
+      "cityId": "city_stonecrag_town",
+      "cityIndex": 1,
+      "name": "Rockfall Quarry",
+      "killsToBoss": 24,
+      "bossId": "boss_quarry_overseer",
+      "mobPool": [
+        {
+          "enemyId": "enemy_stone_lizard",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_quarry_bandit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_earth_sprite",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_iron_boar",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_kiln_smoke_imp",
+          "weight": 20
+        }
+      ],
+      "matPools": {
+        "common": [
+          "mat_stone_chunk",
+          "mat_iron_sand",
+          "mat_quarry_ore",
+          "mat_beast_bone",
+          "mat_fire_ash"
+        ],
+        "rare": [
+          "mat_earth_essence"
+        ]
+      }
+    },
+    {
+      "id": "outskirts_spirit_cavern",
+      "cityId": "city_spirit_cavern_city",
+      "cityIndex": 2,
+      "name": "Spirit Cavern",
+      "killsToBoss": 26,
+      "bossId": "boss_cavern_patriarch",
+      "mobPool": [
+        {
+          "enemyId": "enemy_crystal_mite",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_cave_spirit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_shadow_slime",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_ancient_miner",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_aura_wisp",
+          "weight": 20
+        }
+      ],
+      "matPools": {
+        "common": [
+          "mat_core_fragment",
+          "mat_crystal_shard",
+          "mat_aura_residue",
+          "mat_spirit_stone_chunk",
+          "mat_rune_dust"
+        ],
+        "rare": [
+          "mat_artifact_shard"
+        ]
+      }
+    },
+    {
+      "id": "outskirts_mist_marsh",
+      "cityId": "city_lotusford",
+      "cityIndex": 3,
+      "name": "Mist Marsh",
+      "killsToBoss": 28,
+      "bossId": "boss_marsh_sovereign",
+      "mobPool": [
+        {
+          "enemyId": "enemy_venom_frog",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_lotus_spirit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_marsh_raider",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_mist_wraith",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_swamp_tortoise",
+          "weight": 20
+        }
+      ],
+      "matPools": {
+        "common": [
+          "mat_lotus_pollen",
+          "mat_mist_pearl",
+          "mat_venom_sac",
+          "mat_soul_ember",
+          "mat_rune_dust"
+        ],
+        "rare": [
+          "mat_seed_ancient"
+        ]
+      }
+    },
+    {
+      "id": "outskirts_razor_ridge",
+      "cityId": "city_ironpeak_bastion",
+      "cityIndex": 4,
+      "name": "Razor Ridge",
+      "killsToBoss": 30,
+      "bossId": "boss_ironpeak_warlord",
+      "mobPool": [
+        {
+          "enemyId": "enemy_iron_boar_elite",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_blade_monk",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_ridge_bandit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_metal_spirit",
+          "weight": 20
+        },
+        {
+          "enemyId": "enemy_furnace_wraith",
+          "weight": 20
+        }
+      ],
+      "matPools": {
+        "common": [
+          "mat_spirit_steel_ore",
+          "mat_blade_core",
+          "mat_furnace_cinder",
+          "mat_iron_sand",
+          "mat_rune_dust"
+        ],
+        "rare": [
+          "mat_thunder_sand",
+          "mat_artifact_shard"
+        ]
+      }
+    }
+  ]
+}
