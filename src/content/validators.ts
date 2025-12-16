@@ -1,7 +1,13 @@
 import type {
-  CitiesConfig,
+  AlchemyRecipesConfig,
+  ApothecaryShopsConfig,
+  BountiesConfig,
+  CitiesPayload,
   CityDef,
+  EconomyConfig,
   EnemiesConfig,
+  ExpeditionsConfig,
+  ForgeBlueprintsConfig,
   HeartLawsConfig,
   ItemsConfig,
   OutskirtsConfig,
@@ -10,13 +16,34 @@ import type {
   PrestigeStoreConfig,
   RunesConfig,
   RuinsConfig,
+  TalismanRecipesConfig,
   TechniqueDef,
   TechniquesConfig,
   TrialsConfig,
 } from './types';
 import type { LoadedContentRaw } from './loaders';
 
-export interface ValidatedContent extends LoadedContentRaw {}
+export interface ValidatedContent {
+  raw: LoadedContentRaw;
+  economy: EconomyConfig;
+  cities: CityDef[];
+  items: ItemsConfig['items'];
+  techniques: TechniquesConfig['techniques'];
+  pavilions: PavilionDef[];
+  outskirts: OutskirtsConfig['outskirts'];
+  enemies: EnemiesConfig['enemies'];
+  trials: TrialsConfig['trials'];
+  ruins: RuinsConfig['ruins'];
+  alchemy_recipes: AlchemyRecipesConfig['recipes'];
+  forge_blueprints: ForgeBlueprintsConfig['blueprints'];
+  runes: RunesConfig['runes'];
+  talisman_recipes: TalismanRecipesConfig['talismans'];
+  apothecary_shops: ApothecaryShopsConfig['shops'];
+  expeditions: ExpeditionsConfig;
+  bounties: BountiesConfig['templates'];
+  heart_laws: HeartLawsConfig['heartLaws'];
+  prestige_store: PrestigeStoreConfig['upgrades'];
+}
 
 export function assert(condition: any, message: string): asserts condition {
   if (!condition) {
@@ -65,12 +92,25 @@ export function assertUniqueIds(arr: { id: string }[], label: string) {
   }
 }
 
-function validateCities(config: CitiesConfig): CityDef[] {
-  assertObject(config, 'cities.json root');
-  assertHasKey(config, 'cities', 'cities.json');
-  assertArray((config as any).cities, 'cities.json.cities');
+export function extractCities(root: CitiesPayload): CityDef[] {
+  if (Array.isArray(root)) {
+    assertArrayItemsHaveId(root as any[], 'cities.json cities');
+    assertUniqueIds(root as any, 'cities.json cities');
+    return root as CityDef[];
+  }
 
-  const cities = (config as any).cities as CityDef[];
+  assert(isObject(root), 'cities.json must be an array of cities OR an object with { cities: [...] }');
+  assertHasKey(root, 'cities', 'cities.json');
+  const arr = (root as any).cities;
+  assertArray(arr, 'cities.json.cities');
+  assertArrayItemsHaveId(arr as any[], 'cities.json cities');
+  assertUniqueIds(arr as any, 'cities.json cities');
+
+  return arr as CityDef[];
+}
+
+function validateCities(config: CitiesPayload): CityDef[] {
+  const cities = extractCities(config);
   cities.forEach((city, idx) => {
     assertObject(city, `cities[${idx}]`);
     assert(typeof city.id === 'string', `cities[${idx}].id must be a string`);
@@ -86,8 +126,6 @@ function validateCities(config: CitiesConfig): CityDef[] {
       assertHasKey(city.refs, key, `cities[${idx}].refs`),
     );
   });
-
-  assertUniqueIds(cities, 'cities.json.cities');
   return cities;
 }
 
@@ -454,5 +492,25 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   Object.keys(prestigeMap);
   Object.keys(bountyTemplateMap);
 
-  return raw;
+  return {
+    raw,
+    economy: raw.economy,
+    cities,
+    items,
+    techniques,
+    pavilions,
+    outskirts,
+    enemies,
+    trials,
+    ruins,
+    alchemy_recipes: alchemyRecipes,
+    forge_blueprints: forgeBlueprints,
+    runes,
+    talisman_recipes: talismanRecipes,
+    apothecary_shops: apothecaryShops,
+    expeditions: raw.expeditions,
+    bounties: bountyTemplates,
+    heart_laws: heartLaws,
+    prestige_store: prestige,
+  };
 }

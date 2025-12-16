@@ -2,7 +2,7 @@ import type {
   AlchemyRecipesConfig,
   ApothecaryShopsConfig,
   BountiesConfig,
-  CitiesConfig,
+  CitiesPayload,
   EconomyConfig,
   EnemiesConfig,
   ExpeditionsConfig,
@@ -22,7 +22,7 @@ import { contentUrl } from './contentPaths';
 
 export interface LoadedContentRaw {
   economy: EconomyConfig;
-  cities: CitiesConfig;
+  cities: CitiesPayload;
   items: ItemsConfig;
   techniques: TechniquesConfig;
   pavilions: PavilionsConfig;

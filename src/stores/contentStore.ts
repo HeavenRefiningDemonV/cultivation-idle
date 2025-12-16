@@ -8,7 +8,7 @@ import type {
   RuinDef,
   TechniqueDef,
   TrialDef,
-  LoadedContentRaw,
+  ValidatedContent,
 } from '../content';
 import { loadAllContent, validateLoadedContent } from '../content';
 
@@ -30,7 +30,7 @@ interface ContentStoreState {
   isLoading: boolean;
   isLoaded: boolean;
   error: string | null;
-  raw: LoadedContentRaw | null;
+  raw: ValidatedContent | null;
   maps: ContentMaps;
   citiesSorted: CityDef[];
   techniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]>;
@@ -86,18 +86,17 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       try {
         const raw = await loadAllContent();
         const validated = validateLoadedContent(raw);
-
-        const cities = validated.cities.cities ?? [];
-        const items = validated.items.items ?? [];
-        const techniques = validated.techniques.techniques ?? [];
-        const pavilions = validated.pavilions.pavilions ?? [];
-        const outskirts = validated.outskirts.outskirts ?? [];
-        const enemies = validated.enemies.enemies ?? [];
-        const trials = validated.trials.trials ?? [];
-        const ruins = validated.ruins.ruins ?? [];
-        const runes = validated.runes.runes ?? [];
-        const heartLaws = validated.heart_laws.heartLaws ?? [];
-        const prestigeUpgrades = validated.prestige_store.upgrades ?? [];
+        const cities = validated.cities;
+        const items = validated.items;
+        const techniques = validated.techniques;
+        const pavilions = validated.pavilions;
+        const outskirts = validated.outskirts;
+        const enemies = validated.enemies;
+        const trials = validated.trials;
+        const ruins = validated.ruins;
+        const runes = validated.runes;
+        const heartLaws = validated.heart_laws;
+        const prestigeUpgrades = validated.prestige_store;
 
         const maps: ContentMaps = {
           citiesById: Object.fromEntries(cities.map((city) => [city.id, city])),

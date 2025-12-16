@@ -24,6 +24,8 @@ export interface CitiesConfig {
   cities: CityDef[];
 }
 
+export type CitiesPayload = CityDef[] | CitiesConfig;
+
 export interface ItemDef {
   id: string;
   name: string;
