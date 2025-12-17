@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { CombatState, CombatContext, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
-import type { OutskirtsDef } from '../content';
+import type { OutskirtsDef, OutskirtsDropsConfig } from '../content';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
@@ -75,6 +75,26 @@ function randomFromList<T>(list: T[]): T | null {
   return list[index] ?? null;
 }
 
+function valueByIndex<T>(
+  source: Record<number, T> | T[] | undefined,
+  index: number,
+  fallback: T,
+): T {
+  if (Array.isArray(source)) {
+    return source[index] ?? source[source.length - 1] ?? fallback;
+  }
+
+  if (source && typeof source === 'object') {
+    const byIndex = (source as Record<number, T>)[index];
+    if (byIndex !== undefined) return byIndex;
+
+    const values = Object.values(source as Record<number, T>);
+    if (values.length > 0) return values[values.length - 1] ?? fallback;
+  }
+
+  return fallback;
+}
+
 function pickFromWeightedPool(
   pool: { enemyId: string; weight: number }[],
   fallbackId?: string,
@@ -105,24 +125,32 @@ function collapseItems(items: RewardItemBundle[]): RewardItemBundle[] {
 
 function buildOutskirtsRewards(
   outskirtsDef: OutskirtsDef,
-  dropsConfig: any,
+  dropsConfig: OutskirtsDropsConfig | undefined,
   cityIndex: number,
   isBoss: boolean,
 ): RewardBundle {
-  const drops = dropsConfig?.outskirts ?? dropsConfig ?? {};
   const idx = Math.max(0, cityIndex ?? 0);
+  const drops = dropsConfig ?? {};
+
+  const mobGoldRange = valueByIndex<[number, number]>(drops.mobGoldByCityIndex, idx, [2, 6]);
+  const mobCommonChance = drops.mobCommonMatChance ?? 0.35;
+  const mobDoubleChance = drops.mobDoubleMatChance ?? 0.1;
+  const mobRareChance = drops.mobRareMatChance ?? 0.02;
+
+  const bossGoldRange = valueByIndex<[number, number]>(drops.bossGoldByCityIndex, idx, [20, 40]);
+  const bossMatCountRange = valueByIndex<[number, number]>(drops.bossMatCountRangeByCityIndex, idx, [2, 4]);
+  const bossRareChance = valueByIndex(drops.bossRareMatChanceByCityIndex, idx, 0.1);
+  const bossSpiritChance = valueByIndex(drops.bossSpiritStoneChanceByCityIndex, idx, 0);
+  const bossSpiritRange = valueByIndex<[number, number]>(drops.bossSpiritStoneRangeByCityIndex, idx, [0, 0]);
 
   const bundle: RewardBundle = { currencies: {} };
   const items: RewardItemBundle[] = [];
 
   if (isBoss) {
-    const goldRange = drops.bossGoldByCityIndex?.[idx] ?? drops.bossGoldByCityIndex?.slice(-1)?.[0];
-    const gold = randomIntInRange(goldRange, [0, 0]);
+    const gold = randomIntInRange(bossGoldRange, bossGoldRange);
     bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
 
-    const matCountRange = drops.bossMatCountRangeByCityIndex?.[idx] ??
-      drops.bossMatCountRangeByCityIndex?.slice(-1)?.[0];
-    const matCount = Math.max(0, randomIntInRange(matCountRange, [1, 1]));
+    const matCount = Math.max(0, randomIntInRange(bossMatCountRange, bossMatCountRange));
     const commonPool = outskirtsDef.matPools?.common ?? [];
     for (let i = 0; i < matCount; i += 1) {
       const mat = randomFromList(commonPool);
@@ -130,32 +158,28 @@ function buildOutskirtsRewards(
     }
 
     const rarePool = outskirtsDef.matPools?.rare ?? [];
-    const rareChance = drops.bossRareMatChanceByCityIndex?.[idx] ?? 0;
+    const rareChance = bossRareChance ?? 0;
     if (rarePool.length > 0 && Math.random() < rareChance) {
       const rareMat = randomFromList(rarePool);
       if (rareMat) items.push({ itemId: rareMat, qty: 1 });
     }
 
-    const spiritChance = drops.bossSpiritStoneChanceByCityIndex?.[idx] ?? 0;
-    if (Math.random() < spiritChance) {
-      const spiritRange = drops.bossSpiritStoneRangeByCityIndex?.[idx] ??
-        drops.bossSpiritStoneRangeByCityIndex?.slice(-1)?.[0];
-      const spiritQty = randomIntInRange(spiritRange, [0, 0]);
+    if (Math.random() < bossSpiritChance) {
+      const spiritQty = randomIntInRange(bossSpiritRange, bossSpiritRange);
       if (spiritQty > 0) {
         bundle.currencies = { ...bundle.currencies, spiritStones: spiritQty.toString() };
       }
     }
   } else {
-    const goldRange = drops.mobGoldByCityIndex?.[idx] ?? drops.mobGoldByCityIndex?.slice(-1)?.[0];
-    const gold = randomIntInRange(goldRange, [0, 0]);
+    const gold = randomIntInRange(mobGoldRange, mobGoldRange);
     bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
 
     const commonPool = outskirtsDef.matPools?.common ?? [];
     const rarePool = outskirtsDef.matPools?.rare ?? [];
 
-    const commonChance = drops.mobCommonMatChance ?? 0;
-    const doubleChance = drops.mobDoubleMatChance ?? 0;
-    const rareChance = drops.mobRareMatChance ?? 0;
+    const commonChance = mobCommonChance ?? 0;
+    const doubleChance = mobDoubleChance ?? 0;
+    const rareChance = mobRareChance ?? 0;
 
     if (commonPool.length > 0 && Math.random() < commonChance) {
       const mat = randomFromList(commonPool);
@@ -296,7 +320,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         ? contentStore.maps.citiesById[context.cityId]?.index ?? 0
         : 0);
 
-      const isBoss = Boolean(context?.isBoss ?? role === 'boss' || tags.includes('boss'));
+      const isBoss = context?.isBoss ?? (role === 'boss' || tags.includes('boss'));
 
       const enemyScaled = createEnemy(enemyTemplateId, {
         cityIndex,
@@ -510,7 +534,6 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const gameStore = useGameStore.getState();
       const playerStats = gameStore.stats;
       const enemy = state.currentEnemy;
-      const combatContext = state.combatContext;
 
       // Check if enemy dodges
       const dodgeRoll = Math.random() * 100;
@@ -704,8 +727,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
           useCityStore.getState().markOutskirtsBossDefeated(cityId);
         }
 
-        const dropsConfig = contentStore.raw?.economy?.drops ?? contentStore.raw?.economy;
-        const rewards = buildOutskirtsRewards(outskirtsDef, dropsConfig, cityIndex, isBossFight);
+        const economy = contentStore.raw?.economy;
+        const rewards = buildOutskirtsRewards(outskirtsDef, economy?.drops?.outskirts, cityIndex, isBossFight);
         grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
 
         setTimeout(() => {
@@ -853,6 +876,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (!state.currentEnemy) return;
 
       const enemy = state.currentEnemy;
+      const context = state.combatContext;
 
       // Add defeat message
       get().addLogEntry(
@@ -861,7 +885,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         '#ef4444'
       );
 
-      if (combatContext.type === 'outskirts') {
+      if (context?.type === 'outskirts') {
         useActivityStore.getState().stopActivity();
       }
 

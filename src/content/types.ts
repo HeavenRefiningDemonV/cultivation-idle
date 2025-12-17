@@ -1,12 +1,31 @@
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;
 
+export type OutskirtsDropsConfig = {
+  mobGoldByCityIndex?: Record<number, [number, number]>;
+  mobCommonMatChance?: number;
+  mobDoubleMatChance?: number;
+  mobRareMatChance?: number;
+
+  bossGoldByCityIndex?: Record<number, [number, number]>;
+  bossMatCountRangeByCityIndex?: Record<number, [number, number]>;
+  bossRareMatChanceByCityIndex?: Record<number, number>;
+
+  bossSpiritStoneChanceByCityIndex?: Record<number, number>;
+  bossSpiritStoneRangeByCityIndex?: Record<number, [number, number]>;
+};
+
 export interface EconomyConfig {
   version?: string;
   generatedOn?: string;
   paths: PathId[];
   majorRealms: { id: MajorRealmId; name: string; index: number; stretch?: boolean }[];
   manualSystem?: unknown;
+
+  drops?: {
+    outskirts?: OutskirtsDropsConfig;
+    // future modules: trials?: ..., ruins?: ...
+  };
 }
 
 export interface CityDef {
