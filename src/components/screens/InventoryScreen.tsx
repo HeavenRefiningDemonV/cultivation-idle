@@ -244,6 +244,8 @@ export function InventoryScreen() {
   const {
     items,
     gold,
+    spiritStones,
+    merit,
     maxSlots,
     equipWeapon,
     unequipWeapon,
@@ -313,6 +315,12 @@ export function InventoryScreen() {
       <div className={'inventoryScreenHeader'}>
         <div className={'inventoryScreenGoldRow'}>
           Gold: <span className={'inventoryScreenSlotName'}>{formatNumber(gold)}</span> 💰
+        </div>
+        <div className={'inventoryScreenGoldRow'}>
+          Spirit Stones: <span className={'inventoryScreenSlotName'}>{formatNumber(spiritStones)}</span> ✨
+        </div>
+        <div className={'inventoryScreenGoldRow'}>
+          Merit: <span className={'inventoryScreenSlotName'}>{formatNumber(merit)}</span> 🏅
         </div>
         <div className={'inventoryScreenSlotInfo'}>
           {items.length} / {maxSlots} slots used

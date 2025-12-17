@@ -1,39 +1,13 @@
-# Cultivation Idle
+Prompt 4 patch files
 
-Xianxia-themed incremental RPG built with React + TypeScript + Vite
+Apply by copying the contents of this archive over your project root (merge/replace matching paths).
 
-## Tech Stack
+Key additions:
+- Foreground ActivityStore (single active activity gate)
+- CombatStore: combatContext + startCombat/endCombat (template-driven)
+- Reward pipeline: grantRewards(bundle, reason) + RewardsLogStore
+- Inventory: added Spirit Stones + Merit currencies; hybrid item definitions (legacy itemsDatabase + content items.json)
+- Settings: "Rewards Debug" panel with "Test Grant Rewards" button
 
-- React 19.1+ with TypeScript 5.9+
-- Vite for build tooling
-- Zustand for state management (to be added)
-
-## Project Structure
-
-```
-src/
-  components/  - React components
-  stores/      - Zustand state management
-  systems/     - Game logic systems
-  utils/       - Helper functions
-  types/       - TypeScript type definitions
-  hooks/       - Custom React hooks
-  constants/   - Game constants
-
-public/
-  config/      - JSON game configuration
-  assets/      - Images and sounds
-```
-
-## Development
-
-```bash
-npm install
-npm run dev
-```
-
-## Build
-
-```bash
-npm run build
-```
+Build note:
+- If your build previously failed with missing Sass preprocessor, run `npm install` and ensure `sass` is installed (added to devDependencies).

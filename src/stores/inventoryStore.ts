@@ -10,13 +10,69 @@ import { D, add, subtract, greaterThanOrEqualTo } from '../utils/numbers';
  * This will be populated from a separate constants file or loaded from JSON
  */
 import { ITEMS_DATABASE } from '../constants/itemsDatabase';
+import type { ItemDef as ContentItemDef } from '../content';
+import { useContentStore } from './contentStore';
 
 /**
- * Get item definition by ID
+ * Get item definition by ID.
+ *
+ * Source of truth (in order):
+ * 1) Legacy in-code ITEMS_DATABASE (equipment, consumables, etc.)
+ * 2) Content-loaded items.json (materials, currencies, etc.) mapped into ItemDefinition
+ *
+ * This hybrid approach lets us progressively move systems over to content-driven items
+ * without breaking existing equipment/combat logic.
  */
-function getItemDefinition(itemId: string): ItemDefinition | null {
-  return ITEMS_DATABASE[itemId] || null;
+export function getItemDefinition(itemId: string): ItemDefinition | null {
+  const legacy = ITEMS_DATABASE[itemId];
+  if (legacy) return legacy;
+
+  const contentItem = useContentStore.getState().maps.itemsById[itemId] as ContentItemDef | undefined;
+  if (contentItem) {
+    // Cache the mapped definition so UI lookups don't allocate repeatedly.
+    if (!CONTENT_ITEM_DEFINITION_CACHE[itemId]) {
+      CONTENT_ITEM_DEFINITION_CACHE[itemId] = mapContentItemToDefinition(contentItem);
+    }
+    return CONTENT_ITEM_DEFINITION_CACHE[itemId];
+  }
+
+  return null;
 }
+
+const CONTENT_ITEM_DEFINITION_CACHE: Record<string, ItemDefinition> = {};
+
+function mapContentItemToDefinition(item: ContentItemDef): ItemDefinition {
+  const category = (item.category ?? '').toLowerCase();
+
+  // Best-effort mapping until content fully defines equipment schema.
+  let type: ItemDefinition['type'] = 'material';
+  if (category === 'consumable') type = 'consumable';
+  else if (category === 'weapon') type = 'weapon';
+  else if (category === 'accessory') type = 'accessory';
+  else if (category === 'treasure') type = 'treasure';
+  else if (category === 'currency') type = 'treasure';
+
+  const stackSizeRaw = typeof item.stackSize === 'number' ? item.stackSize : 1;
+
+  // Content uses 0 for "special" non-stack caps (e.g., currencies). We treat as very large.
+  const maxStack = stackSizeRaw === 0 ? 999_999 : Math.max(1, stackSizeRaw);
+  const stackable = maxStack > 1;
+
+  const sellValue = typeof item.sellValue === 'number' ? item.sellValue : 0;
+
+  return {
+    id: item.id,
+    name: item.name,
+    description: item.description ?? '',
+    type,
+    rarity: 'common',
+    level: 1,
+    value: sellValue.toString(),
+    stackable,
+    maxStack,
+  };
+}
+
 
 /**
  * Generate a unique ID for inventory items
@@ -30,6 +86,8 @@ const createInitialInventoryState = () => ({
   equippedWeaponId: null as string | null,
   equippedAccessoryId: null as string | null,
   gold: '0',
+  spiritStones: '0',
+  merit: '0',
   maxSlots: 20,
 });
 
@@ -386,6 +444,60 @@ export const useInventoryStore = create<InventoryState>()(
     },
 
     /**
+     * Add Spirit Stones (currency) to inventory
+     */
+    addSpiritStones: (amount: string) => {
+      set((state) => {
+        state.spiritStones = add(state.spiritStones, amount).toString();
+      });
+    },
+
+    /**
+     * Remove Spirit Stones (currency) from inventory
+     */
+    removeSpiritStones: (amount: string) => {
+      const state = get();
+
+      if (!greaterThanOrEqualTo(state.spiritStones, amount)) {
+        console.warn('Not enough spirit stones');
+        return false;
+      }
+
+      set((state) => {
+        state.spiritStones = subtract(state.spiritStones, amount).toString();
+      });
+
+      return true;
+    },
+
+    /**
+     * Add Merit (currency) to inventory
+     */
+    addMerit: (amount: string) => {
+      set((state) => {
+        state.merit = add(state.merit, amount).toString();
+      });
+    },
+
+    /**
+     * Remove Merit (currency) from inventory
+     */
+    removeMerit: (amount: string) => {
+      const state = get();
+
+      if (!greaterThanOrEqualTo(state.merit, amount)) {
+        console.warn('Not enough merit');
+        return false;
+      }
+
+      set((state) => {
+        state.merit = subtract(state.merit, amount).toString();
+      });
+
+      return true;
+    },
+
+    /**
      * Sell items for gold
      */
     sellItem: (itemId: string, quantity: number = 1) => {
@@ -517,10 +629,3 @@ export const useInventoryStore = create<InventoryState>()(
     },
   }))
 );
-
-/**
- * Get item definition from the database
- * Exported for use in other modules
- */
-export { getItemDefinition };
-

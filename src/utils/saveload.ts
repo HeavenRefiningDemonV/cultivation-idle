@@ -75,6 +75,8 @@ function gatherGameState(): SaveData {
       equippedWeapon: inventoryState.equippedWeaponId,
       equippedAccessory: inventoryState.equippedAccessoryId,
       gold: inventoryState.gold,
+      spiritStones: inventoryState.spiritStones,
+      merit: inventoryState.merit,
       maxSlots: inventoryState.maxSlots,
     },
 
@@ -167,6 +169,8 @@ function validateSaveData(data: unknown): data is SaveData {
 
     const is = record.inventoryState as Record<string, unknown>;
     if (!Array.isArray((is as { items?: unknown }).items) || typeof is.gold !== 'string') return false;
+    if ('spiritStones' in is && (is as { spiritStones?: unknown }).spiritStones !== undefined && typeof (is as { spiritStones?: unknown }).spiritStones !== 'string') return false;
+    if ('merit' in is && (is as { merit?: unknown }).merit !== undefined && typeof (is as { merit?: unknown }).merit !== 'string') return false;
     if (
       'equippedWeapon' in is &&
       (typeof (is as { equippedWeapon?: unknown }).equippedWeapon !== 'string' &&
@@ -375,6 +379,8 @@ function applySaveData(saveData: SaveData): void {
       state.equippedWeaponId = saveData.inventoryState.equippedWeapon ?? null;
       state.equippedAccessoryId = saveData.inventoryState.equippedAccessory ?? null;
       state.gold = saveData.inventoryState.gold;
+      state.spiritStones = typeof saveData.inventoryState.spiritStones === 'string' ? saveData.inventoryState.spiritStones : '0';
+      state.merit = typeof saveData.inventoryState.merit === 'string' ? saveData.inventoryState.merit : '0';
       state.maxSlots = saveData.inventoryState.maxSlots;
 
       const itemMap = new Map(state.items.map((item) => [item.id, item]));

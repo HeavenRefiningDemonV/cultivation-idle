@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { CombatState, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
+import type { CombatState, CombatContext, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
+import { useContentStore } from './contentStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
@@ -67,6 +68,7 @@ const createInitialCombatState = () => ({
   currentZone: null as string | null,
   currentDungeon: null as string | null,
   currentEnemy: null as EnemyDefinition | null,
+  combatContext: { type: null } as CombatContext,
   playerHP: '0',
   playerMaxHP: '0',
   enemyHP: '0',
@@ -111,6 +113,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.inCombat = true;
         state.currentZone = zone;
         state.currentEnemy = enemy;
+        state.combatContext = { type: null };
         state.enemyMechanics = (enemy as EnemyDefinition & { mechanics?: EnemyMechanic[] }).mechanics || [];
         state.activeAura = null;
 
@@ -140,6 +143,127 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
     },
 
+
+
+    /**
+     * Start combat from a content-driven enemy template.
+     *
+     * This is the foundation entrypoint for city modules (Outskirts / Trials / Ruins).
+     * Enemy stats are currently derived from player stats with simple multipliers and
+     * will be refined when module-specific scaling is implemented.
+     */
+    startCombat: (enemyTemplateId: string, context: CombatContext) => {
+      const playerStats = useGameStore.getState().stats;
+      const now = Date.now();
+
+      const template = useContentStore.getState().maps.enemiesById[enemyTemplateId];
+      const tags = Array.isArray(template?.tags) ? template!.tags : [];
+      const role = typeof template?.role === 'string' ? template!.role : 'mob';
+
+      const isBoss = role === 'boss' || tags.includes('boss');
+
+      // Baseline multipliers (tuned only to keep early fights reasonable).
+      let hpMult = 0.85;
+      let atkMult = 0.65;
+      let defMult = 0.55;
+
+      // Context nudges (placeholder until per-module tuning exists).
+      if (context?.type === 'trial') {
+        hpMult += 0.10;
+        atkMult += 0.05;
+        defMult += 0.05;
+      } else if (context?.type === 'ruins') {
+        hpMult += 0.20;
+        atkMult += 0.10;
+        defMult += 0.10;
+      }
+
+      if (isBoss) {
+        hpMult *= 2.50;
+        atkMult *= 1.15;
+        defMult *= 1.10;
+      }
+
+      const hpRaw = D(playerStats.maxHp).times(hpMult);
+      const atkRaw = D(playerStats.atk).times(atkMult);
+      const defRaw = D(playerStats.def).times(defMult);
+
+      const hp = (hpRaw.lessThan(1) ? D(1) : hpRaw).toDecimalPlaces(0).toString();
+      const atk = (atkRaw.lessThan(0) ? D(0) : atkRaw).toDecimalPlaces(0).toString();
+      const def = (defRaw.lessThan(0) ? D(0) : defRaw).toDecimalPlaces(0).toString();
+
+      const enemyName = template?.name ?? enemyTemplateId;
+
+      const enemy: EnemyDefinition & { mechanics?: EnemyMechanic[] } = {
+        id: enemyTemplateId,
+        name: enemyName,
+        level: 1,
+        zone: context?.type ? context.type : 'unknown',
+        hp,
+        atk,
+        def,
+        crit: isBoss ? 10 : 5,
+        critDmg: isBoss ? 170 : 150,
+        dodge: isBoss ? 6 : 4,
+        speed: 1.0,
+        goldReward: '0',
+        expReward: '0',
+        isBoss,
+        mechanics: Array.isArray(template?.mechanics) ? (template!.mechanics as unknown as EnemyMechanic[]) : [],
+      };
+
+      // Initialize boss mechanics if this is a boss
+      if (isBoss) {
+        bossMechanics = new BossMechanics();
+        console.log('[CombatStore] Boss mechanics initialized for', enemyName);
+      } else {
+        bossMechanics = null;
+      }
+
+      set((state) => {
+        state.inCombat = true;
+        state.currentZone = null;
+        state.currentDungeon = null;
+        state.currentEnemy = enemy;
+        state.combatContext = context ?? { type: null };
+        state.enemyMechanics = enemy.mechanics || [];
+        state.activeAura = null;
+
+        // Initialize HP
+        state.playerHP = playerStats.hp;
+        state.playerMaxHP = playerStats.maxHp;
+        state.enemyHP = enemy.hp;
+        state.enemyMaxHP = enemy.hp;
+
+        // Clear combat log
+        state.combatLog = [];
+
+        // Reset timing
+        state.lastAttackTime = now;
+        state.lastEnemyAttackTime = now;
+
+        // Boss tracking
+        state.isBoss = isBoss;
+        state.combatStartTime = now;
+      });
+
+      if (isBoss) {
+        get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemyName}!`, '#f59e0b');
+      } else {
+        get().addLogEntry('system', `Combat started with ${enemyName}!`, '#fbbf24');
+      }
+    },
+
+    /**
+     * End combat via a simple victory/defeat flag.
+     *
+     * This is a convenience wrapper for module callers.
+     */
+    endCombat: (victory: boolean) => {
+      if (!get().inCombat) return;
+      if (victory) get().defeatEnemy();
+      else get().playerDefeat();
+    },
     /**
      * Start dungeon combat with a boss
      */
@@ -182,6 +306,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.currentZone = null; // Not a zone fight
         state.currentDungeon = dungeonId;
         state.currentEnemy = enemy;
+        state.combatContext = { type: null };
         state.enemyMechanics = dungeonData.boss.mechanics || [];
         state.activeAura = null;
 
@@ -225,6 +350,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.currentZone = null;
         state.currentDungeon = null;
         state.currentEnemy = null;
+        state.combatContext = { type: null };
         state.playerHP = '0';
         state.playerMaxHP = '0';
         state.enemyHP = '0';

@@ -228,6 +228,8 @@ export interface SaveData {
     equippedWeapon: string | null;
     equippedAccessory: string | null;
     gold: string;
+    spiritStones?: string;
+    merit?: string;
     maxSlots: number;
   };
 
@@ -348,6 +350,20 @@ export interface CombatLogEntry {
 }
 
 /**
+ * Combat context
+ *
+ * This tags where the fight originated (city module), so reward formulas and
+ * progression hooks can be applied without hard-coding per-screen logic.
+ */
+export type CombatContextType = 'outskirts' | 'trial' | 'ruins' | null;
+
+export interface CombatContext {
+  type: CombatContextType;
+  cityId?: string;
+  sourceId?: string;
+}
+
+/**
  * Combat state
  */
 export interface CombatState {
@@ -356,6 +372,9 @@ export interface CombatState {
   currentZone: string | null;
   currentDungeon: string | null;
   currentEnemy: EnemyDefinition | null;
+
+  // Context
+  combatContext: CombatContext;
 
   // HP tracking
   playerHP: string;        // Current player HP (Decimal string)
@@ -385,6 +404,8 @@ export interface CombatState {
 
   // Actions
   enterCombat: (zone: string, enemy: EnemyDefinition) => void;
+  startCombat: (enemyTemplateId: string, context: CombatContext) => void;
+  endCombat: (victory: boolean) => void;
   exitCombat: () => void;
   playerAttack: () => void;
   enemyAttack: () => void;
@@ -487,6 +508,8 @@ export interface InventoryState {
 
   // Currency
   gold: string;            // Gold amount (Decimal string)
+  spiritStones: string;    // Spirit Stones amount (Decimal string)
+  merit: string;           // Merit amount (Decimal string)
 
   // Capacity
   maxSlots: number;
@@ -501,6 +524,10 @@ export interface InventoryState {
   useConsumable: (itemId: string) => boolean;
   addGold: (amount: string) => void;
   removeGold: (amount: string) => boolean;
+  addSpiritStones: (amount: string) => void;
+  removeSpiritStones: (amount: string) => boolean;
+  addMerit: (amount: string) => void;
+  removeMerit: (amount: string) => boolean;
   sellItem: (itemId: string, quantity?: number) => boolean;
   getEquipmentStats: () => EquipmentStats;
   getItemCount: (itemId: string) => number;

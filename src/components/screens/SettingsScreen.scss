@@ -259,3 +259,75 @@
   font-family: 'Courier New', monospace;
   color: #111827;
 }
+
+/* Rewards Debug */
+
+.settingsRewardsActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.settingsScreenDebugButton {
+  width: 100%;
+}
+
+.settingsScreenDebugButtonSecondary {
+  opacity: 0.9;
+}
+
+.settingsRewardsLog {
+  margin-top: 14px;
+}
+
+.settingsRewardsEmpty {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  color: #1f2937;
+}
+
+.settingsRewardsList {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.settingsRewardsEntry {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+
+.settingsRewardsEntryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.settingsRewardsEntryReason {
+  font-weight: 700;
+  color: #111827;
+  font-size: 13px;
+}
+
+.settingsRewardsEntryTime {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.settingsRewardsEntrySummary {
+  color: #1f2937;
+  font-size: 13px;
+  line-height: 1.4;
+}

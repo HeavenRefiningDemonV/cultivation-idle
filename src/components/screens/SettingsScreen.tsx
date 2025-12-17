@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { deleteSaveAndHardReset } from '../../utils/saveload';
 import { useContentStore } from '../../stores/contentStore';
 import { getContentBaseUrl } from '../../content';
+import { grantRewards } from '../../systems/rewards';
 import { useUIStore } from '../../stores/uiStore';
+import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import './SettingsScreen.scss';
 
 export function SettingsScreen() {
@@ -26,6 +28,9 @@ export function SettingsScreen() {
   const ruinsCount = useContentStore((state) => Object.keys(state.maps.ruinsById).length);
   const pavilionsCount = useContentStore((state) => Object.keys(state.maps.pavilionsById).length);
 
+  const rewardLogEntries = useRewardsLogStore((state) => state.entries);
+  const clearRewardLog = useRewardsLogStore((state) => state.clear);
+
   const toggleOfflineModal = () => setSettings({ showOfflineModal: !showOfflineModal });
   const toggleCombatLog = () => setSettings({ showCombatLog: !showCombatLog });
   const togglePrestigeConfirm = () =>
@@ -34,6 +39,27 @@ export function SettingsScreen() {
   const handleDeleteSave = () => {
     setShowDeleteModal(false);
     deleteSaveAndHardReset();
+  };
+
+  const handleTestGrantRewards = () => {
+    // Pull a random material from the content pack (falls back to legacy ids if content is empty).
+    const maps = useContentStore.getState().maps;
+    const materialIds = Object.values(maps.itemsById)
+      .filter((item) => item && item.category === 'material')
+      .map((item) => item.id);
+
+    const randomMaterialId =
+      materialIds.length > 0 ? materialIds[Math.floor(Math.random() * materialIds.length)] : 'spirit_stone';
+
+    const result = grantRewards(
+      {
+        currencies: { gold: '10' },
+        items: [{ itemId: randomMaterialId, qty: 1 }],
+      },
+      'Test Grant Rewards',
+    );
+
+    console.log('[Rewards] Test Grant Rewards result', result);
   };
 
   useEffect(() => {
@@ -88,6 +114,49 @@ export function SettingsScreen() {
                   <p className={'settingsScreenOptionDescription'}>Ask for confirmation before reincarnating.</p>
                 </div>
               </label>
+            </div>
+          </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <h2 className={'settingsScreenPanelTitle'}>Rewards Debug</h2>
+            <p className={'settingsScreenPanelSubtitle'}>Validate the central reward pipeline (currencies + items).</p>
+
+            <div className={'settingsRewardsActions'}>
+              <button
+                onClick={handleTestGrantRewards}
+                className={'button-standard settingsScreenDebugButton'}
+                disabled={!contentIsLoaded}
+              >
+                Test Grant Rewards (10 Gold + 1 Material)
+              </button>
+              <button
+                onClick={clearRewardLog}
+                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                disabled={rewardLogEntries.length === 0}
+              >
+                Clear Reward Log
+              </button>
+            </div>
+
+            <div className={'settingsRewardsLog'}>
+              <div className={'settingsDebugLabel'}>Recent Grants</div>
+              {rewardLogEntries.length === 0 ? (
+                <div className={'settingsRewardsEmpty'}>No reward grants yet.</div>
+              ) : (
+                <div className={'settingsRewardsList'}>
+                  {rewardLogEntries.slice(0, 6).map((entry) => (
+                    <div key={entry.id} className={'settingsRewardsEntry'}>
+                      <div className={'settingsRewardsEntryHeader'}>
+                        <span className={'settingsRewardsEntryReason'}>{entry.reason}</span>
+                        <span className={'settingsRewardsEntryTime'}>
+                          {new Date(entry.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className={'settingsRewardsEntrySummary'}>{entry.summary}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -195,6 +264,49 @@ export function SettingsScreen() {
                 })}
             </div>
           </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <h2 className={'settingsScreenPanelTitle'}>Rewards Debug</h2>
+            <p className={'settingsScreenPanelSubtitle'}>Validate the central reward pipeline (currencies + items).</p>
+
+            <div className={'settingsRewardsActions'}>
+              <button
+                onClick={handleTestGrantRewards}
+                className={'button-standard settingsScreenDebugButton'}
+                disabled={!contentIsLoaded}
+              >
+                Test Grant Rewards (10 Gold + 1 Material)
+              </button>
+              <button
+                onClick={clearRewardLog}
+                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                disabled={rewardLogEntries.length === 0}
+              >
+                Clear Reward Log
+              </button>
+            </div>
+
+            <div className={'settingsRewardsLog'}>
+              <div className={'settingsDebugLabel'}>Recent Grants</div>
+              {rewardLogEntries.length === 0 ? (
+                <div className={'settingsRewardsEmpty'}>No reward grants yet.</div>
+              ) : (
+                <div className={'settingsRewardsList'}>
+                  {rewardLogEntries.slice(0, 6).map((entry) => (
+                    <div key={entry.id} className={'settingsRewardsEntry'}>
+                      <div className={'settingsRewardsEntryHeader'}>
+                        <span className={'settingsRewardsEntryReason'}>{entry.reason}</span>
+                        <span className={'settingsRewardsEntryTime'}>
+                          {new Date(entry.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className={'settingsRewardsEntrySummary'}>{entry.summary}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -218,6 +330,49 @@ export function SettingsScreen() {
               >
                 Delete &amp; Restart
               </button>
+            </div>
+          </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <h2 className={'settingsScreenPanelTitle'}>Rewards Debug</h2>
+            <p className={'settingsScreenPanelSubtitle'}>Validate the central reward pipeline (currencies + items).</p>
+
+            <div className={'settingsRewardsActions'}>
+              <button
+                onClick={handleTestGrantRewards}
+                className={'button-standard settingsScreenDebugButton'}
+                disabled={!contentIsLoaded}
+              >
+                Test Grant Rewards (10 Gold + 1 Material)
+              </button>
+              <button
+                onClick={clearRewardLog}
+                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                disabled={rewardLogEntries.length === 0}
+              >
+                Clear Reward Log
+              </button>
+            </div>
+
+            <div className={'settingsRewardsLog'}>
+              <div className={'settingsDebugLabel'}>Recent Grants</div>
+              {rewardLogEntries.length === 0 ? (
+                <div className={'settingsRewardsEmpty'}>No reward grants yet.</div>
+              ) : (
+                <div className={'settingsRewardsList'}>
+                  {rewardLogEntries.slice(0, 6).map((entry) => (
+                    <div key={entry.id} className={'settingsRewardsEntry'}>
+                      <div className={'settingsRewardsEntryHeader'}>
+                        <span className={'settingsRewardsEntryReason'}>{entry.reason}</span>
+                        <span className={'settingsRewardsEntryTime'}>
+                          {new Date(entry.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className={'settingsRewardsEntrySummary'}>{entry.summary}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
