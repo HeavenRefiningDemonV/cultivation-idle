@@ -10,6 +10,7 @@ import { useContentStore } from './contentStore';
 import { useActivityStore } from './activityStore';
 import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
+import { useTrialStore } from './trialStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
@@ -316,11 +317,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const tags = Array.isArray(template?.tags) ? template!.tags : [];
       const role = typeof template?.role === 'string' ? template!.role : 'mob';
-      const cityIndex = context?.cityIndex ?? (context?.cityId
-        ? contentStore.maps.citiesById[context.cityId]?.index ?? 0
-        : 0);
+      const contextCityId = context && 'cityId' in context ? (context as any).cityId : undefined;
+      const contextCityIndex = context && 'cityIndex' in context ? (context as any).cityIndex : undefined;
+      const cityIndex = typeof contextCityIndex === 'number'
+        ? contextCityIndex
+        : contextCityId
+          ? contentStore.maps.citiesById[contextCityId]?.index ?? 0
+          : 0;
 
-      const isBoss = context?.isBoss ?? (role === 'boss' || tags.includes('boss'));
+      const isBoss =
+        (context && 'isBoss' in context ? (context as any).isBoss : undefined) ??
+        (role === 'boss' || tags.includes('boss'));
 
       const enemyScaled = createEnemy(enemyTemplateId, {
         cityIndex,
@@ -706,6 +713,26 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const gameStore = useGameStore.getState();
       const inventoryStore = useInventoryStore.getState();
 
+      if (combatContext.type === 'trial') {
+        const { cityId, trialId, gateItemId, eligible } = combatContext;
+
+        useActivityStore.getState().stopActivity();
+
+        if (eligible) {
+          useTrialStore.getState().markCleared(trialId);
+          useCityStore.getState().markGateTrialCleared(cityId);
+          grantRewards({ items: [{ itemId: gateItemId, qty: 1 }] }, 'Gate Trial clear');
+        } else {
+          grantRewards({ currencies: { gold: '500' } }, 'Gate Trial (not eligible)');
+        }
+
+        setTimeout(() => {
+          get().exitCombat();
+        }, 500);
+
+        return;
+      }
+
       if (combatContext.type === 'outskirts') {
         const { cityId, sourceId } = combatContext;
         const contentStore = useContentStore.getState();
@@ -887,6 +914,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (context?.type === 'outskirts') {
         useActivityStore.getState().stopActivity();
+      }
+
+      if (context?.type === 'trial') {
+        useActivityStore.getState().stopActivity();
+        if (context.eligible) {
+          useTrialStore.getState().recordFailure(context.trialId);
+        }
       }
 
       // Add respawn message (no death penalty in idle games usually)

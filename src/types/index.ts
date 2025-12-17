@@ -274,6 +274,19 @@ export interface SaveData {
     intentRegenRate: string;
     techniques: Record<string, Technique>;
   };
+
+  // Trial progression
+  trialState?: {
+    progressByTrialId: Record<
+      string,
+      {
+        attempts: number;
+        cleared: boolean;
+        lastAttemptAt: number | null;
+        lastClearAt: number | null;
+      }
+    >;
+  };
 }
 
 export interface PrestigeUpgradeEffect {
@@ -357,13 +370,27 @@ export interface CombatLogEntry {
  */
 export type CombatContextType = 'outskirts' | 'trial' | 'ruins' | null;
 
-export interface CombatContext {
-  type: CombatContextType;
-  cityId?: string;
-  sourceId?: string;
-  cityIndex?: number;
-  isBoss?: boolean;
-}
+export type CombatContext =
+  | { type: null }
+  | {
+      type: 'outskirts';
+      cityId?: string;
+      sourceId?: string;
+      cityIndex?: number;
+      isBoss?: boolean;
+    }
+  | {
+      type: 'trial';
+      cityId: string;
+      trialId: string;
+      gateItemId: string;
+      eligible: boolean;
+    }
+  | {
+      type: 'ruins';
+      cityId: string;
+      ruinsId: string;
+    };
 
 /**
  * Combat state

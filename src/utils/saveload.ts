@@ -9,6 +9,7 @@ import { useDungeonStore } from '../stores/dungeonStore';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
+import { useTrialStore } from '../stores/trialStore';
 
 /**
  * Save system constants
@@ -36,6 +37,7 @@ function gatherGameState(): SaveData {
   const techniqueState = useTechniqueStore.getState();
   const prestigeState = usePrestigeStore.getState();
   const cityState = useCityStore.getState();
+  const trialState = useTrialStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -103,6 +105,10 @@ function gatherGameState(): SaveData {
       maxIntent: techniqueState.maxIntent,
       intentRegenRate: techniqueState.intentRegenRate,
       techniques: techniqueState.techniques,
+    },
+
+    trialState: {
+      progressByTrialId: { ...trialState.progressByTrialId },
     },
   };
 
@@ -214,6 +220,26 @@ function validateSaveData(data: unknown): data is SaveData {
       const ts = record.techniqueState as Record<string, unknown>;
       if (typeof ts.currentIntent !== 'string' || typeof ts.maxIntent !== 'string') return false;
       if (typeof ts.intentRegenRate !== 'string' || typeof ts.techniques !== 'object') return false;
+    }
+
+    if ('trialState' in record && record.trialState) {
+      const ts = record.trialState as Record<string, unknown>;
+      if (typeof ts.progressByTrialId !== 'object' || ts.progressByTrialId === null) return false;
+
+      const progressById = ts.progressByTrialId as Record<string, unknown>;
+      for (const value of Object.values(progressById)) {
+        if (!value || typeof value !== 'object') return false;
+        const progress = value as Record<string, unknown>;
+
+        if (
+          typeof progress.attempts !== 'number' ||
+          typeof progress.cleared !== 'boolean' ||
+          ('lastAttemptAt' in progress && progress.lastAttemptAt !== null && typeof progress.lastAttemptAt !== 'number') ||
+          ('lastClearAt' in progress && progress.lastClearAt !== null && typeof progress.lastClearAt !== 'number')
+        ) {
+          return false;
+        }
+      }
     }
 
     return true;
@@ -421,6 +447,12 @@ function applySaveData(saveData: SaveData): void {
       });
     }
 
+    if (saveData.trialState?.progressByTrialId) {
+      useTrialStore.setState({
+        progressByTrialId: saveData.trialState.progressByTrialId,
+      });
+    }
+
     const selectedPath = saveData.gameState.selectedPath;
     if (selectedPath) {
       try {
@@ -538,6 +570,8 @@ export function deleteSave(): boolean {
 
     useCityStore.getState().hardResetCity();
 
+    useTrialStore.getState().hardResetTrials();
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -581,6 +615,12 @@ export function deleteSaveAndHardReset(): void {
     useCityStore.getState().hardResetCity();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset city state', error);
+  }
+
+  try {
+    useTrialStore.getState().hardResetTrials();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset trial state', error);
   }
 
   try {

@@ -6,6 +6,10 @@ import { useUIStore } from '../../stores/uiStore';
 import { useActivityStore } from '../../stores/activityStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useOutskirtsStore } from '../../stores/outskirtsStore';
+import { useTrialStore } from '../../stores/trialStore';
+import { useInventoryStore } from '../../stores/inventoryStore';
+import { grantRewards } from '../../systems/rewards';
+import { greaterThanOrEqualTo } from '../../utils/numbers';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -81,6 +85,10 @@ export function WorldScreen() {
   const citiesSorted = useContentStore((state) => state.citiesSorted);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
+  const trialsById = useContentStore((state) => state.maps.trialsById);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
+  const economy = useContentStore((state) => state.raw?.economy);
+  const gateTrialEconomy = (economy as any)?.manualSystem?.gateTrials;
 
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
@@ -95,11 +103,15 @@ export function WorldScreen() {
 
   const startCombat = useCombatStore((state) => state.startCombat);
   const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
+  const setAutoCombatAI = useCombatStore((state) => state.setAutoCombatAI);
   const exitCombat = useCombatStore((state) => state.exitCombat);
   const combatContext = useCombatStore((state) => state.combatContext);
 
   const shouldSpawnBoss = useOutskirtsStore((state) => state.shouldSpawnBoss);
   const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
+
+  const trialProgressById = useTrialStore((state) => state.progressByTrialId);
+  const getItemCount = useInventoryStore((state) => state.getItemCount);
 
   useEffect(() => {
     setHeaderTitles('World', 'Cities & activities');
@@ -147,6 +159,54 @@ export function WorldScreen() {
   const bossName = outskirtsDef ? enemiesById[outskirtsDef.bossId]?.name ?? outskirtsDef.bossId : null;
   const isBossReady = outskirtsDef ? shouldSpawnBoss(outskirtsDef.id, outskirtsDef) : false;
   const cityFlags = selectedCity ? cityFlagsById[selectedCity.id] : null;
+  const trialDef = moduleRefId ? trialsById[moduleRefId] : undefined;
+  const trialProgress = moduleRefId
+    ? trialProgressById[moduleRefId] ?? { attempts: 0, cleared: false, lastAttemptAt: null, lastClearAt: null }
+    : null;
+  const isTrialActive = activeActivity?.type === 'trial' && activeActivity.sourceId === moduleRefId;
+  const trialCityIndex = trialDef?.cityIndex ?? selectedCity?.index ?? 0;
+  const trialBossName = trialDef ? enemiesById[trialDef.bossId]?.name ?? trialDef.bossId : null;
+  const gateItemName = trialDef ? itemsById[trialDef.gateItemId]?.name ?? trialDef.gateItemId : null;
+  const gateItemOwned = trialDef ? getItemCount(trialDef.gateItemId) > 0 : false;
+  const trialFailSafeThreshold = useMemo(() => {
+    return (
+      trialDef?.failSafe?.thresholdAttempts ??
+      gateTrialEconomy?.failSafe?.failThresholdEligibleAttempts ??
+      3
+    );
+  }, [gateTrialEconomy, trialDef]);
+  const trialFailSafeCost = useMemo(() => {
+    const normalize = (value: unknown) => {
+      if (typeof value === 'number') return value.toString();
+      if (typeof value === 'string') return value;
+      return undefined;
+    };
+
+    const fallback = gateTrialEconomy?.failSafe?.purchaseCostByCityIndex?.[trialCityIndex];
+    const merged = trialDef?.failSafe?.cost ?? fallback;
+    if (!merged) return null;
+    const cost = {
+      gold: normalize((merged as any).gold),
+      spiritStones: normalize((merged as any).spiritStones),
+      merit: normalize((merged as any).merit),
+    };
+    if (!cost.gold && !cost.spiritStones && !cost.merit) return null;
+    return cost;
+  }, [gateTrialEconomy, trialCityIndex, trialDef?.failSafe?.cost]);
+  const isTrialEligible = Boolean(trialDef && !(trialProgress?.cleared || cityFlags?.gateTrialCleared));
+  const failSafeUnlocked = Boolean(
+    trialDef &&
+      isTrialEligible &&
+      !isTrialActive &&
+      !gateItemOwned &&
+      trialFailSafeCost &&
+      (trialProgress?.attempts ?? 0) >= trialFailSafeThreshold,
+  );
+  const trialEligibilityRule = trialDef?.eligibilityRule
+    ? typeof trialDef.eligibilityRule === 'string'
+      ? trialDef.eligibilityRule
+      : String(trialDef.eligibilityRule)
+    : 'No eligibility rule provided';
 
   const handleStartOutskirts = () => {
     if (!selectedCity || !outskirtsDef) return;
@@ -164,6 +224,59 @@ export function WorldScreen() {
       cityIndex: outskirtsDef.cityIndex,
       isBoss: isBossReady,
     });
+  };
+
+  const handleChallengeTrial = () => {
+    if (!selectedCity || !trialDef || !isTrialEligible) return;
+
+    if (combatContext.type) {
+      exitCombat();
+    }
+
+    stopActivity();
+    startActivity({ type: 'trial', cityId: selectedCity.id, sourceId: trialDef.id });
+    setAutoAttack(true);
+    setAutoCombatAI(true);
+
+    startCombat(trialDef.bossId, {
+      type: 'trial',
+      cityId: selectedCity.id,
+      trialId: trialDef.id,
+      gateItemId: trialDef.gateItemId,
+      eligible: isTrialEligible,
+    });
+  };
+
+  const handleStopTrial = () => {
+    stopActivity();
+    if (combatContext.type === 'trial') {
+      exitCombat();
+    }
+  };
+
+  const handleFailSafePurchase = () => {
+    if (!trialDef || !trialFailSafeCost || !isTrialEligible || isTrialActive) return;
+
+    const inventory = useInventoryStore.getState();
+    const goldCost = trialFailSafeCost.gold;
+    const spiritStoneCost = trialFailSafeCost.spiritStones;
+    const meritCost = trialFailSafeCost.merit;
+
+    const canAfford =
+      (!goldCost || greaterThanOrEqualTo(inventory.gold, goldCost)) &&
+      (!spiritStoneCost || greaterThanOrEqualTo(inventory.spiritStones, spiritStoneCost)) &&
+      (!meritCost || greaterThanOrEqualTo(inventory.merit, meritCost));
+
+    if (!canAfford) {
+      console.warn('[WorldScreen] Cannot afford fail-safe purchase');
+      return;
+    }
+
+    if (goldCost) inventory.removeGold(goldCost);
+    if (spiritStoneCost) inventory.removeSpiritStones(spiritStoneCost);
+    if (meritCost) inventory.removeMerit(meritCost);
+
+    grantRewards({ items: [{ itemId: trialDef.gateItemId, qty: 1 }] }, 'Gate Trial fail-safe purchase');
   };
 
   const handleStopOutskirts = () => {
@@ -340,6 +453,65 @@ export function WorldScreen() {
                         >
                           Stop
                         </button>
+                      </div>
+                    </div>
+                  ) : selectedModuleKey === 'gateTrial' && trialDef ? (
+                    <div className={'worldScreenPlaceholder'}>
+                      <div className={'worldScreenPlaceholderHeader'}>
+                        <div className={'worldScreenPlaceholderTitle'}>
+                          {trialDef.name ?? moduleMeta.label}
+                        </div>
+                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
+                      </div>
+                      <div className={'worldScreenPlaceholderBody'}>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Boss: {trialBossName ?? 'Unknown'}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Gate Item: {gateItemName ?? 'Unknown'} (Owned: {gateItemOwned ? 'Yes' : 'No'})
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Eligibility: {isTrialEligible ? 'Eligible' : 'Not eligible'}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Rule: {trialEligibilityRule}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Attempts: {trialProgress?.attempts ?? 0} / {trialFailSafeThreshold}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Activity: {isTrialActive ? 'Active' : 'Inactive'}
+                        </div>
+                      </div>
+                      <div className={'worldScreenPlaceholderActions'}>
+                        <button
+                          className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                          onClick={handleChallengeTrial}
+                          disabled={!isTrialEligible || !trialDef}
+                        >
+                          Challenge Trial
+                        </button>
+                        <button className={'worldScreenModuleButton'} onClick={handleStopTrial}>
+                          Stop
+                        </button>
+                        {failSafeUnlocked && trialFailSafeCost && (
+                          <button className={'worldScreenModuleButton'} onClick={handleFailSafePurchase}>
+                            Emergency Gate Item Purchase ({
+                              [
+                                trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
+                                trialFailSafeCost.spiritStones
+                                  ? `${trialFailSafeCost.spiritStones} Spirit Stones`
+                                  : null,
+                                trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
+                              ]
+                                .filter(Boolean)
+                                .join(' / ')
+                            })
+                          </button>
+                        )}
                       </div>
                     </div>
                   ) : (

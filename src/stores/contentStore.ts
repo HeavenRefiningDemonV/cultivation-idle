@@ -20,6 +20,7 @@ interface ContentMaps {
   outskirtsById: Record<string, OutskirtsDef>;
   enemiesById: Record<string, EnemyTemplate>;
   trialsById: Record<string, TrialDef>;
+  trialsByCityId: Record<string, TrialDef>;
   ruinsById: Record<string, RuinDef>;
   runesById: Record<string, { id: string; [k: string]: any }>;
   heartLawsById: Record<string, { id: string; [k: string]: any }>;
@@ -48,6 +49,7 @@ const emptyMaps: ContentMaps = {
   outskirtsById: {},
   enemiesById: {},
   trialsById: {},
+  trialsByCityId: {},
   ruinsById: {},
   runesById: {},
   heartLawsById: {},
@@ -106,6 +108,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
           outskirtsById: Object.fromEntries(outskirts.map((outskirt) => [outskirt.id, outskirt])),
           enemiesById: Object.fromEntries(enemies.map((enemy) => [enemy.id, enemy])),
           trialsById: Object.fromEntries(trials.map((trial) => [trial.id, trial])),
+          trialsByCityId: Object.fromEntries(trials.map((trial) => [trial.cityId, trial])),
           ruinsById: Object.fromEntries(ruins.map((ruin) => [ruin.id, ruin])),
           runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune as any])),
           heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law as any])),

@@ -124,17 +124,28 @@ export interface EnemiesConfig {
   enemies: EnemyTemplate[];
 }
 
+export interface TrialFailSafeCost {
+  gold?: string;
+  spiritStones?: string;
+  merit?: string;
+}
+
+export interface TrialFailSafe {
+  thresholdAttempts?: number;
+  cost?: TrialFailSafeCost;
+}
+
 export interface TrialDef {
   id: string;
   cityId: string;
-  cityIndex: number;
+  cityIndex?: number;
   name?: string;
   bossId: string;
-  gatesToMajorRealm: MajorRealmId;
   gateItemId: string;
-  eligibilityRule?: unknown;
-  failSafePurchase?: unknown;
+  eligibilityRule?: string | unknown;
+  failSafe?: TrialFailSafe;
   firstEligibleClearReward?: unknown;
+  gatesToMajorRealm?: MajorRealmId;
   stretch?: boolean;
 }
 

@@ -266,6 +266,48 @@ function validateTrials(config: TrialsConfig) {
     assert(typeof trial.cityId === 'string', `trials[${idx}].cityId must be a string`);
     assert(typeof trial.bossId === 'string', `trials[${idx}].bossId must be a string`);
     assert(typeof trial.gateItemId === 'string', `trials[${idx}].gateItemId must be a string`);
+
+    if (trial.cityIndex !== undefined) {
+      assert(typeof trial.cityIndex === 'number', `trials[${idx}].cityIndex must be a number if provided`);
+    }
+
+    if (trial.eligibilityRule && typeof trial.eligibilityRule !== 'string') {
+      try {
+        // Coerce to string for UI display only
+        (trial as any).eligibilityRule = JSON.stringify(trial.eligibilityRule);
+      } catch (error) {
+        console.warn('[ContentValidation] Unable to stringify eligibilityRule', error);
+      }
+    }
+
+    if (trial.failSafe) {
+      assertObject(trial.failSafe, `trials[${idx}].failSafe`);
+      if (trial.failSafe.cost) {
+        assertObject(trial.failSafe.cost, `trials[${idx}].failSafe.cost`);
+        for (const [k, v] of Object.entries(trial.failSafe.cost)) {
+          if (v == null) continue;
+          assert(typeof v === 'string' || typeof v === 'number', `trials[${idx}].failSafe.cost.${k} must be string or number`);
+          if (!isCurrencyKey(k)) {
+            console.warn(`[ContentValidation] trials[${idx}].failSafe.cost.${k} is not a recognized currency key`);
+          }
+          if (typeof v === 'number') {
+            (trial.failSafe.cost as any)[k] = v.toString();
+          }
+        }
+      }
+      if (trial.failSafe.thresholdAttempts !== undefined) {
+        assert(
+          typeof trial.failSafe.thresholdAttempts === 'number',
+          `trials[${idx}].failSafe.thresholdAttempts must be a number if provided`,
+        );
+      }
+    }
+
+    const normalizedThreshold = trial.failSafe?.thresholdAttempts ?? 3;
+    (trial as any).failSafe = {
+      thresholdAttempts: normalizedThreshold,
+      ...trial.failSafe,
+    };
   });
 
   assertUniqueIds(trials, 'trials.json.trials');
