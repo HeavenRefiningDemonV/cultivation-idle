@@ -92,6 +92,37 @@ export function assertUniqueIds(arr: { id: string }[], label: string) {
   }
 }
 
+const VALID_CURRENCY_KEYS = new Set([
+  'gold',
+  'spiritStones',
+  'merit',
+  // allow item-style currency ids too (future-proof)
+  'cur_gold',
+  'cur_spirit_stone',
+  'cur_merit',
+  'cur_ap',
+]);
+
+function isCurrencyKey(k: string): boolean {
+  return VALID_CURRENCY_KEYS.has(k);
+}
+
+function assertCostOrItemRefsExist(
+  refs: unknown,
+  label: string,
+  itemsById: Record<string, { id: string }>,
+) {
+  if (refs == null) return;
+  assertObject(refs, label);
+  for (const [k, v] of Object.entries(refs as Record<string, unknown>)) {
+    assert(typeof v === 'number' && Number.isFinite(v), `${label}.${k} must be a finite number`);
+
+    if (isCurrencyKey(k)) continue;
+
+    assert(!!itemsById[k], `${label} references missing item '${k}'`);
+  }
+}
+
 export function extractCities(root: CitiesPayload): CityDef[] {
   if (Array.isArray(root)) {
     assertArrayItemsHaveId(root as any[], 'cities.json cities');
@@ -391,6 +422,11 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     assert(shop.cityId in cityMap, `apothecary_shops.shops[${idx}] cityId does not exist`);
     shop.stock.forEach((stockItem, stockIdx) => {
       assert(stockItem.itemId in itemMap, `apothecary_shops.shops[${idx}].stock[${stockIdx}] missing item`);
+      assertCostOrItemRefsExist(
+        stockItem.buy,
+        `apothecary_shops.shops[${idx}].stock[${stockIdx}].buy`,
+        itemMap,
+      );
     });
   });
 
@@ -433,14 +469,22 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     assert(blueprint.unlocksAtCityId in cityMap, `forge_blueprints.blueprints[${idx}].unlocksAtCityId missing in cities`);
     validateRecipeItems(blueprint.inputs, itemMap, `forge_blueprints.blueprints[${idx}].inputs`);
     validateRecipeItems(blueprint.outputs, { ...itemMap, ...runeMap }, `forge_blueprints.blueprints[${idx}].outputs`);
-    validateRecipeItems(blueprint.cost, itemMap, `forge_blueprints.blueprints[${idx}].cost`);
+    assertCostOrItemRefsExist(
+      blueprint.cost,
+      `forge_blueprints.blueprints[${idx}].cost`,
+      itemMap,
+    );
   });
 
   talismanRecipes.forEach((talisman, idx) => {
     assert(talisman.unlocksAtCityId in cityMap, `talisman_recipes.talismans[${idx}].unlocksAtCityId missing in cities`);
     validateRecipeItems(talisman.inputs, itemMap, `talisman_recipes.talismans[${idx}].inputs`);
     validateRecipeItems(talisman.outputs, itemMap, `talisman_recipes.talismans[${idx}].outputs`);
-    validateRecipeItems(talisman.cost, itemMap, `talisman_recipes.talismans[${idx}].cost`);
+    assertCostOrItemRefsExist(
+      talisman.cost,
+      `talisman_recipes.talismans[${idx}].cost`,
+      itemMap,
+    );
   });
 
   bountyTemplates.forEach((template, idx) => {
