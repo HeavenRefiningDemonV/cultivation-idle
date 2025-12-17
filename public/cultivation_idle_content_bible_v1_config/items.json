@@ -586,6 +586,14 @@
       "category": "crate",
       "stackSize": 999,
       "sellValue": 0
+    },
+    {
+      "id": "item_jade_core_shell_t1",
+      "name": "Jade Core Shell T1",
+      "category": "token",
+      "stackSize": 1,
+      "sellValue": 0,
+      "description": "Creates the account item that unlocks the Jade Core slot"
     }
   ]
 }

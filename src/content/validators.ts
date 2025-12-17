@@ -45,6 +45,11 @@ export interface ValidatedContent {
   prestige_store: PrestigeStoreConfig['upgrades'];
 }
 
+type ErrorCollector = {
+  errors: string[];
+  addErr: (msg: string) => void;
+};
+
 export function assert(condition: any, message: string): asserts condition {
   if (!condition) {
     throw new Error(`[ContentValidation] ${message}`);
@@ -111,6 +116,7 @@ function assertCostOrItemRefsExist(
   refs: unknown,
   label: string,
   itemsById: Record<string, { id: string }>,
+  addErr: ErrorCollector['addErr'],
 ) {
   if (refs == null) return;
   assertObject(refs, label);
@@ -119,7 +125,9 @@ function assertCostOrItemRefsExist(
 
     if (isCurrencyKey(k)) continue;
 
-    assert(!!itemsById[k], `${label} references missing item '${k}'`);
+    if (!itemsById[k]) {
+      addErr(`${label} references missing item '${k}'`);
+    }
   }
 }
 
@@ -366,14 +374,24 @@ function buildIdMap<T extends { id: string }>(items: T[]): Record<string, T> {
   }, {});
 }
 
-function validateRecipeItems(record: Record<string, number> | undefined, items: Record<string, unknown>, label: string) {
+function validateRecipeItems(
+  record: Record<string, number> | undefined,
+  items: Record<string, unknown>,
+  label: string,
+  addErr: ErrorCollector['addErr'],
+) {
   if (!record) return;
   Object.keys(record).forEach((itemId) => {
-    assert(itemId in items, `${label} references missing item '${itemId}'`);
+    if (!(itemId in items)) {
+      addErr(`${label} references missing item '${itemId}'`);
+    }
   });
 }
 
 export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
+  const errors: string[] = [];
+  const addErr = (msg: string) => errors.push(`[ContentValidation] ${msg}`);
+
   // Basic shape validation
   const cities = validateCities(raw.cities);
   const techniques = validateTechniques(raw.techniques);
@@ -411,79 +429,125 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   // Cross references on cities
   cities.forEach((city) => {
     const { refs } = city;
-    assert(refs.outskirtsId in outskirtsMap, `City ${city.id} refs.outskirtsId missing in outskirts`);
-    assert(refs.gateTrialId in trialMap, `City ${city.id} refs.gateTrialId missing in trials`);
-    assert(refs.ruinId in ruinMap, `City ${city.id} refs.ruinId missing in ruins`);
-    assert(refs.pavilionId in pavilionMap, `City ${city.id} refs.pavilionId missing in pavilions`);
-    assert(refs.apothecaryId in apothecaryMap, `City ${city.id} refs.apothecaryId missing in apothecary shops`);
+    if (!(refs.outskirtsId in outskirtsMap)) {
+      addErr(`City ${city.id} refs.outskirtsId missing in outskirts`);
+    }
+    if (!(refs.gateTrialId in trialMap)) {
+      addErr(`City ${city.id} refs.gateTrialId missing in trials`);
+    }
+    if (!(refs.ruinId in ruinMap)) {
+      addErr(`City ${city.id} refs.ruinId missing in ruins`);
+    }
+    if (!(refs.pavilionId in pavilionMap)) {
+      addErr(`City ${city.id} refs.pavilionId missing in pavilions`);
+    }
+    if (!(refs.apothecaryId in apothecaryMap)) {
+      addErr(`City ${city.id} refs.apothecaryId missing in apothecary shops`);
+    }
   });
 
   apothecaryShops.forEach((shop, idx) => {
-    assert(shop.cityId in cityMap, `apothecary_shops.shops[${idx}] cityId does not exist`);
+    if (!(shop.cityId in cityMap)) {
+      addErr(`apothecary_shops.shops[${idx}] cityId does not exist`);
+    }
     shop.stock.forEach((stockItem, stockIdx) => {
-      assert(stockItem.itemId in itemMap, `apothecary_shops.shops[${idx}].stock[${stockIdx}] missing item`);
+      if (!(stockItem.itemId in itemMap)) {
+        addErr(`apothecary_shops.shops[${idx}].stock[${stockIdx}] missing item`);
+      }
       assertCostOrItemRefsExist(
         stockItem.buy,
         `apothecary_shops.shops[${idx}].stock[${stockIdx}].buy`,
         itemMap,
+        addErr,
       );
     });
   });
 
   pavilions.forEach((pavilion, idx) => {
-    assert(pavilion.cityId in cityMap, `pavilions[${idx}].cityId does not exist in cities`);
+    if (!(pavilion.cityId in cityMap)) {
+      addErr(`pavilions[${idx}].cityId does not exist in cities`);
+    }
     (['heaven', 'earth', 'martial'] as const).forEach((path) => {
       assertArray(pavilion.poolByPath[path], `pavilions[${idx}].poolByPath.${path}`);
       pavilion.poolByPath[path].forEach((techId, poolIdx) => {
-        assert(techId in techniqueMap, `pavilions[${idx}].poolByPath.${path}[${poolIdx}] missing technique`);
+        if (!(techId in techniqueMap)) {
+          addErr(`pavilions[${idx}].poolByPath.${path}[${poolIdx}] missing technique`);
+        }
       });
     });
   });
 
   outskirts.forEach((outskirt, idx) => {
-    assert(outskirt.cityId in cityMap, `outskirts[${idx}].cityId missing in cities`);
-    assert(outskirt.bossId in enemyMap, `outskirts[${idx}].bossId missing in enemies`);
+    if (!(outskirt.cityId in cityMap)) {
+      addErr(`outskirts[${idx}].cityId missing in cities`);
+    }
+    if (!(outskirt.bossId in enemyMap)) {
+      addErr(`outskirts[${idx}].bossId missing in enemies`);
+    }
     outskirt.mobPool.forEach((mob, mobIdx) => {
       assert(typeof mob.enemyId === 'string', `outskirts[${idx}].mobPool[${mobIdx}].enemyId must be string`);
-      assert(mob.enemyId in enemyMap, `outskirts[${idx}].mobPool[${mobIdx}].enemyId missing in enemies`);
+      if (!(mob.enemyId in enemyMap)) {
+        addErr(`outskirts[${idx}].mobPool[${mobIdx}].enemyId missing in enemies`);
+      }
     });
   });
 
   trials.forEach((trial, idx) => {
-    assert(trial.cityId in cityMap, `trials[${idx}].cityId missing in cities`);
-    assert(trial.bossId in enemyMap, `trials[${idx}].bossId missing in enemies`);
-    assert(trial.gateItemId in itemMap, `trials[${idx}].gateItemId missing in items`);
+    if (!(trial.cityId in cityMap)) {
+      addErr(`trials[${idx}].cityId missing in cities`);
+    }
+    if (!(trial.bossId in enemyMap)) {
+      addErr(`trials[${idx}].bossId missing in enemies`);
+    }
+    if (!(trial.gateItemId in itemMap)) {
+      addErr(`trials[${idx}].gateItemId missing in items`);
+    }
   });
 
   ruins.forEach((ruin, idx) => {
-    assert(ruin.cityId in cityMap, `ruins[${idx}].cityId missing in cities`);
+    if (!(ruin.cityId in cityMap)) {
+      addErr(`ruins[${idx}].cityId missing in cities`);
+    }
   });
 
   alchemyRecipes.forEach((recipe, idx) => {
-    assert(recipe.unlocksAtCityId in cityMap, `alchemy_recipes.recipes[${idx}].unlocksAtCityId missing in cities`);
-    validateRecipeItems(recipe.inputs, itemMap, `alchemy_recipes.recipes[${idx}].inputs`);
-    validateRecipeItems(recipe.outputs, itemMap, `alchemy_recipes.recipes[${idx}].outputs`);
+    if (!(recipe.unlocksAtCityId in cityMap)) {
+      addErr(`alchemy_recipes.recipes[${idx}].unlocksAtCityId missing in cities`);
+    }
+    validateRecipeItems(recipe.inputs, itemMap, `alchemy_recipes.recipes[${idx}].inputs`, addErr);
+    validateRecipeItems(recipe.outputs, itemMap, `alchemy_recipes.recipes[${idx}].outputs`, addErr);
   });
 
   forgeBlueprints.forEach((blueprint, idx) => {
-    assert(blueprint.unlocksAtCityId in cityMap, `forge_blueprints.blueprints[${idx}].unlocksAtCityId missing in cities`);
-    validateRecipeItems(blueprint.inputs, itemMap, `forge_blueprints.blueprints[${idx}].inputs`);
-    validateRecipeItems(blueprint.outputs, { ...itemMap, ...runeMap }, `forge_blueprints.blueprints[${idx}].outputs`);
+    if (!(blueprint.unlocksAtCityId in cityMap)) {
+      addErr(`forge_blueprints.blueprints[${idx}].unlocksAtCityId missing in cities`);
+    }
+    validateRecipeItems(blueprint.inputs, itemMap, `forge_blueprints.blueprints[${idx}].inputs`, addErr);
+    validateRecipeItems(
+      blueprint.outputs,
+      { ...itemMap, ...runeMap },
+      `forge_blueprints.blueprints[${idx}].outputs`,
+      addErr,
+    );
     assertCostOrItemRefsExist(
       blueprint.cost,
       `forge_blueprints.blueprints[${idx}].cost`,
       itemMap,
+      addErr,
     );
   });
 
   talismanRecipes.forEach((talisman, idx) => {
-    assert(talisman.unlocksAtCityId in cityMap, `talisman_recipes.talismans[${idx}].unlocksAtCityId missing in cities`);
-    validateRecipeItems(talisman.inputs, itemMap, `talisman_recipes.talismans[${idx}].inputs`);
-    validateRecipeItems(talisman.outputs, itemMap, `talisman_recipes.talismans[${idx}].outputs`);
+    if (!(talisman.unlocksAtCityId in cityMap)) {
+      addErr(`talisman_recipes.talismans[${idx}].unlocksAtCityId missing in cities`);
+    }
+    validateRecipeItems(talisman.inputs, itemMap, `talisman_recipes.talismans[${idx}].inputs`, addErr);
+    validateRecipeItems(talisman.outputs, itemMap, `talisman_recipes.talismans[${idx}].outputs`, addErr);
     assertCostOrItemRefsExist(
       talisman.cost,
       `talisman_recipes.talismans[${idx}].cost`,
       itemMap,
+      addErr,
     );
   });
 
@@ -517,7 +581,6 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     '[ContentValidation] Technique counts by path:',
     `Heaven=${techniquesByPath.heaven}, Earth=${techniquesByPath.earth}, Martial=${techniquesByPath.martial}`,
   );
-
   cities
     .filter((city) => city.index <= 4)
     .forEach((city) => {
@@ -535,6 +598,14 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   Object.keys(lawMap);
   Object.keys(prestigeMap);
   Object.keys(bountyTemplateMap);
+
+  if (errors.length > 0) {
+    const body = errors
+      .slice(0, 100)
+      .map((e) => `- ${e}`)
+      .join('\n');
+    throw new Error(`[ContentValidation] ${errors.length} issue(s) found:\n${body}`);
+  }
 
   return {
     raw,
