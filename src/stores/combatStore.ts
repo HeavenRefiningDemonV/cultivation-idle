@@ -1,14 +1,20 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { CombatState, CombatContext, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
+import type { OutskirtsDef } from '../content';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
 import { useDungeonStore } from './dungeonStore';
 import { useContentStore } from './contentStore';
+import { useActivityStore } from './activityStore';
+import { useOutskirtsStore } from './outskirtsStore';
+import { useCityStore } from './cityStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
+import { grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
+import { createEnemy } from '../systems/enemyFactory';
 
 interface DungeonBoss {
   id: string;
@@ -47,11 +53,132 @@ const DEFENSE_CONSTANT_K = 100;
 const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
 const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
 const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
+const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
 
 /**
  * Boss mechanics instance (single instance per combat)
  */
 let bossMechanics: BossMechanics | null = null;
+
+function randomIntInRange(range: [number, number] | undefined, fallback: [number, number] = [0, 0]): number {
+  const [minRaw, maxRaw] = Array.isArray(range) && range.length === 2 ? range : fallback;
+  const min = Number.isFinite(minRaw) ? Number(minRaw) : fallback[0];
+  const max = Number.isFinite(maxRaw) ? Number(maxRaw) : fallback[1];
+  const low = Math.min(min, max);
+  const high = Math.max(min, max);
+  return Math.floor(Math.random() * (high - low + 1)) + low;
+}
+
+function randomFromList<T>(list: T[]): T | null {
+  if (!Array.isArray(list) || list.length === 0) return null;
+  const index = Math.floor(Math.random() * list.length);
+  return list[index] ?? null;
+}
+
+function pickFromWeightedPool(
+  pool: { enemyId: string; weight: number }[],
+  fallbackId?: string,
+): string | null {
+  if (!Array.isArray(pool) || pool.length === 0) return fallbackId ?? null;
+  const totalWeight = pool.reduce((sum, entry) => sum + (entry.weight ?? 0), 0);
+  if (totalWeight <= 0) return fallbackId ?? pool[0]?.enemyId ?? null;
+
+  let roll = Math.random() * totalWeight;
+  for (const entry of pool) {
+    roll -= entry.weight ?? 0;
+    if (roll <= 0) return entry.enemyId;
+  }
+
+  return pool[pool.length - 1]?.enemyId ?? fallbackId ?? null;
+}
+
+function collapseItems(items: RewardItemBundle[]): RewardItemBundle[] {
+  const merged = new Map<string, number>();
+
+  items.forEach((item) => {
+    if (!item?.itemId || typeof item.qty !== 'number' || item.qty <= 0) return;
+    merged.set(item.itemId, (merged.get(item.itemId) ?? 0) + item.qty);
+  });
+
+  return Array.from(merged.entries()).map(([itemId, qty]) => ({ itemId, qty }));
+}
+
+function buildOutskirtsRewards(
+  outskirtsDef: OutskirtsDef,
+  dropsConfig: any,
+  cityIndex: number,
+  isBoss: boolean,
+): RewardBundle {
+  const drops = dropsConfig?.outskirts ?? dropsConfig ?? {};
+  const idx = Math.max(0, cityIndex ?? 0);
+
+  const bundle: RewardBundle = { currencies: {} };
+  const items: RewardItemBundle[] = [];
+
+  if (isBoss) {
+    const goldRange = drops.bossGoldByCityIndex?.[idx] ?? drops.bossGoldByCityIndex?.slice(-1)?.[0];
+    const gold = randomIntInRange(goldRange, [0, 0]);
+    bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
+
+    const matCountRange = drops.bossMatCountRangeByCityIndex?.[idx] ??
+      drops.bossMatCountRangeByCityIndex?.slice(-1)?.[0];
+    const matCount = Math.max(0, randomIntInRange(matCountRange, [1, 1]));
+    const commonPool = outskirtsDef.matPools?.common ?? [];
+    for (let i = 0; i < matCount; i += 1) {
+      const mat = randomFromList(commonPool);
+      if (mat) items.push({ itemId: mat, qty: 1 });
+    }
+
+    const rarePool = outskirtsDef.matPools?.rare ?? [];
+    const rareChance = drops.bossRareMatChanceByCityIndex?.[idx] ?? 0;
+    if (rarePool.length > 0 && Math.random() < rareChance) {
+      const rareMat = randomFromList(rarePool);
+      if (rareMat) items.push({ itemId: rareMat, qty: 1 });
+    }
+
+    const spiritChance = drops.bossSpiritStoneChanceByCityIndex?.[idx] ?? 0;
+    if (Math.random() < spiritChance) {
+      const spiritRange = drops.bossSpiritStoneRangeByCityIndex?.[idx] ??
+        drops.bossSpiritStoneRangeByCityIndex?.slice(-1)?.[0];
+      const spiritQty = randomIntInRange(spiritRange, [0, 0]);
+      if (spiritQty > 0) {
+        bundle.currencies = { ...bundle.currencies, spiritStones: spiritQty.toString() };
+      }
+    }
+  } else {
+    const goldRange = drops.mobGoldByCityIndex?.[idx] ?? drops.mobGoldByCityIndex?.slice(-1)?.[0];
+    const gold = randomIntInRange(goldRange, [0, 0]);
+    bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
+
+    const commonPool = outskirtsDef.matPools?.common ?? [];
+    const rarePool = outskirtsDef.matPools?.rare ?? [];
+
+    const commonChance = drops.mobCommonMatChance ?? 0;
+    const doubleChance = drops.mobDoubleMatChance ?? 0;
+    const rareChance = drops.mobRareMatChance ?? 0;
+
+    if (commonPool.length > 0 && Math.random() < commonChance) {
+      const mat = randomFromList(commonPool);
+      if (mat) items.push({ itemId: mat, qty: 1 });
+      if (Math.random() < doubleChance) {
+        const second = randomFromList(commonPool);
+        if (second) items.push({ itemId: second, qty: 1 });
+      }
+    }
+
+    if (rarePool.length > 0 && Math.random() < rareChance) {
+      const rareMat = randomFromList(rarePool);
+      if (rareMat) items.push({ itemId: rareMat, qty: 1 });
+    }
+  }
+
+  const collapsedItems = collapseItems(items);
+  if (collapsedItems.length > 0) {
+    bundle.items = collapsedItems;
+  }
+
+  return bundle;
+}
 
 /**
  * Extended Combat State with dungeon support
@@ -155,67 +282,56 @@ export const useCombatStore = create<ExtendedCombatState>()(
     startCombat: (enemyTemplateId: string, context: CombatContext) => {
       const playerStats = useGameStore.getState().stats;
       const now = Date.now();
+      const contentStore = useContentStore.getState();
 
-      const template = useContentStore.getState().maps.enemiesById[enemyTemplateId];
+      const template = contentStore.maps.enemiesById[enemyTemplateId];
+      if (!template) {
+        console.warn('[CombatStore] Unknown enemy template', enemyTemplateId);
+        return;
+      }
+
       const tags = Array.isArray(template?.tags) ? template!.tags : [];
       const role = typeof template?.role === 'string' ? template!.role : 'mob';
+      const cityIndex = context?.cityIndex ?? (context?.cityId
+        ? contentStore.maps.citiesById[context.cityId]?.index ?? 0
+        : 0);
 
-      const isBoss = role === 'boss' || tags.includes('boss');
+      const isBoss = Boolean(context?.isBoss ?? role === 'boss' || tags.includes('boss'));
 
-      // Baseline multipliers (tuned only to keep early fights reasonable).
-      let hpMult = 0.85;
-      let atkMult = 0.65;
-      let defMult = 0.55;
-
-      // Context nudges (placeholder until per-module tuning exists).
-      if (context?.type === 'trial') {
-        hpMult += 0.10;
-        atkMult += 0.05;
-        defMult += 0.05;
-      } else if (context?.type === 'ruins') {
-        hpMult += 0.20;
-        atkMult += 0.10;
-        defMult += 0.10;
-      }
-
-      if (isBoss) {
-        hpMult *= 2.50;
-        atkMult *= 1.15;
-        defMult *= 1.10;
-      }
-
-      const hpRaw = D(playerStats.maxHp).times(hpMult);
-      const atkRaw = D(playerStats.atk).times(atkMult);
-      const defRaw = D(playerStats.def).times(defMult);
-
-      const hp = (hpRaw.lessThan(1) ? D(1) : hpRaw).toDecimalPlaces(0).toString();
-      const atk = (atkRaw.lessThan(0) ? D(0) : atkRaw).toDecimalPlaces(0).toString();
-      const def = (defRaw.lessThan(0) ? D(0) : defRaw).toDecimalPlaces(0).toString();
-
-      const enemyName = template?.name ?? enemyTemplateId;
+      const enemyScaled = createEnemy(enemyTemplateId, {
+        cityIndex,
+        isBoss,
+        playerPowerSnapshot: {
+          atk: playerStats.atk,
+          def: playerStats.def,
+          maxHp: playerStats.maxHp,
+        },
+      });
 
       const enemy: EnemyDefinition & { mechanics?: EnemyMechanic[] } = {
-        id: enemyTemplateId,
-        name: enemyName,
-        level: 1,
+        id: enemyScaled.id,
+        name: enemyScaled.name,
+        level: enemyScaled.level,
         zone: context?.type ? context.type : 'unknown',
-        hp,
-        atk,
-        def,
-        crit: isBoss ? 10 : 5,
+        hp: enemyScaled.maxHp,
+        atk: enemyScaled.atk,
+        def: enemyScaled.def,
+        crit: enemyScaled.critChance ?? (isBoss ? 10 : 5),
         critDmg: isBoss ? 170 : 150,
-        dodge: isBoss ? 6 : 4,
-        speed: 1.0,
-        goldReward: '0',
-        expReward: '0',
-        isBoss,
-        mechanics: Array.isArray(template?.mechanics) ? (template!.mechanics as unknown as EnemyMechanic[]) : [],
+        dodge: enemyScaled.dodgeChance ?? (isBoss ? 6 : 4),
+        speed: enemyScaled.speed ?? 1.0,
+        goldReward: enemyScaled.goldDrop ?? '0',
+        expReward: enemyScaled.exp ?? '0',
+        isBoss: enemyScaled.isBoss,
+        mechanics: enemyScaled.mechanics ?? (Array.isArray(template?.mechanics)
+          ? (template!.mechanics as unknown as EnemyMechanic[])
+          : []),
       };
 
       // Initialize boss mechanics if this is a boss
-      if (isBoss) {
+      if (enemy.isBoss) {
         bossMechanics = new BossMechanics();
-        console.log('[CombatStore] Boss mechanics initialized for', enemyName);
+        console.log('[CombatStore] Boss mechanics initialized for', enemy.name);
       } else {
         bossMechanics = null;
       }
@@ -247,10 +363,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatStartTime = now;
       });
 
-      if (isBoss) {
-        get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemyName}!`, '#f59e0b');
+      if (enemy.isBoss) {
+        get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
       } else {
-        get().addLogEntry('system', `Combat started with ${enemyName}!`, '#fbbf24');
+        get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
     },
 
@@ -394,6 +510,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const gameStore = useGameStore.getState();
       const playerStats = gameStore.stats;
       const enemy = state.currentEnemy;
+      const combatContext = state.combatContext;
 
       // Check if enemy dodges
       const dodgeRoll = Math.random() * 100;
@@ -551,6 +668,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const currentDungeon = state.currentDungeon;
       const isBoss = state.isBoss;
       const combatTime = (Date.now() - state.combatStartTime) / 1000; // Time in seconds
+      const combatContext = state.combatContext;
+      const activityToken = useActivityStore.getState().active?.startedAt;
 
       // Add victory message
       if (currentDungeon) {
@@ -563,6 +682,68 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const gameStore = useGameStore.getState();
       const inventoryStore = useInventoryStore.getState();
+
+      if (combatContext.type === 'outskirts') {
+        const { cityId, sourceId } = combatContext;
+        const contentStore = useContentStore.getState();
+        const outskirtsDef = sourceId ? contentStore.maps.outskirtsById[sourceId] : undefined;
+
+        if (!outskirtsDef) {
+          console.warn('[CombatStore] Missing outskirts def for', sourceId);
+          setTimeout(() => get().exitCombat(), 500);
+          return;
+        }
+
+        const cityIndex = combatContext.cityIndex ?? outskirtsDef.cityIndex ?? (cityId
+          ? contentStore.maps.citiesById[cityId]?.index ?? 0
+          : 0);
+        const isBossFight = Boolean(combatContext.isBoss ?? isBoss);
+
+        useOutskirtsStore.getState().recordKill(outskirtsDef.id, isBossFight);
+        if (isBossFight && cityId) {
+          useCityStore.getState().markOutskirtsBossDefeated(cityId);
+        }
+
+        const dropsConfig = contentStore.raw?.economy?.drops ?? contentStore.raw?.economy;
+        const rewards = buildOutskirtsRewards(outskirtsDef, dropsConfig, cityIndex, isBossFight);
+        grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
+
+        setTimeout(() => {
+          get().exitCombat();
+
+          const activity = useActivityStore.getState().active;
+          if (
+            !activity ||
+            activity.type !== 'outskirts' ||
+            activity.cityId !== cityId ||
+            activity.sourceId !== sourceId ||
+            activity.startedAt !== activityToken
+          ) {
+            return;
+          }
+
+          const latestContent = useContentStore.getState();
+          const latestDef = sourceId ? latestContent.maps.outskirtsById[sourceId] : undefined;
+          if (!latestDef) return;
+
+          const nextIsBoss = useOutskirtsStore.getState().shouldSpawnBoss(latestDef.id, latestDef);
+          const nextEnemyId = nextIsBoss
+            ? latestDef.bossId
+            : pickFromWeightedPool(latestDef.mobPool, latestDef.mobPool?.[0]?.enemyId);
+
+          if (!nextEnemyId) return;
+
+          get().startCombat(nextEnemyId, {
+            type: 'outskirts',
+            cityId,
+            sourceId,
+            cityIndex: latestDef.cityIndex,
+            isBoss: nextIsBoss,
+          });
+        }, OUTSKIRTS_NEXT_FIGHT_DELAY_MS);
+
+        return;
+      }
 
       // Handle dungeon rewards
       if (currentDungeon) {
@@ -679,6 +860,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
         `You have been defeated by ${enemy.name}...`,
         '#ef4444'
       );
+
+      if (combatContext.type === 'outskirts') {
+        useActivityStore.getState().stopActivity();
+      }
 
       // Add respawn message (no death penalty in idle games usually)
       get().addLogEntry(

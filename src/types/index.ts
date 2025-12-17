@@ -361,6 +361,8 @@ export interface CombatContext {
   type: CombatContextType;
   cityId?: string;
   sourceId?: string;
+  cityIndex?: number;
+  isBoss?: boolean;
 }
 
 /**

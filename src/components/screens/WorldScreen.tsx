@@ -3,6 +3,9 @@ import type { CityDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useCityStore } from '../../stores/cityStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useActivityStore } from '../../stores/activityStore';
+import { useCombatStore } from '../../stores/combatStore';
+import { useOutskirtsStore } from '../../stores/outskirtsStore';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -47,6 +50,20 @@ function getModuleMeta(key: string) {
   return { label: toTitleCase(key), prompt: 'Coming soon' };
 }
 
+function pickEnemyFromPool(pool: { enemyId: string; weight: number }[]): string | null {
+  if (!Array.isArray(pool) || pool.length === 0) return null;
+  const totalWeight = pool.reduce((sum, entry) => sum + (entry.weight ?? 0), 0);
+  if (totalWeight <= 0) return pool[0]?.enemyId ?? null;
+
+  let roll = Math.random() * totalWeight;
+  for (const entry of pool) {
+    roll -= entry.weight ?? 0;
+    if (roll <= 0) return entry.enemyId;
+  }
+
+  return pool[pool.length - 1]?.enemyId ?? null;
+}
+
 function resolveModuleRef(city: CityDef | null, moduleKey: string | null) {
   if (!city || !moduleKey || !city.refs) return null;
   const explicitKey = MODULE_REF_KEYS[moduleKey];
@@ -62,12 +79,27 @@ export function WorldScreen() {
   const isLoading = useContentStore((state) => state.isLoading);
   const error = useContentStore((state) => state.error);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
+  const enemiesById = useContentStore((state) => state.maps.enemiesById);
+  const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
   const setSelectedModule = useCityStore((state) => state.setSelectedModule);
+  const cityFlagsById = useCityStore((state) => state.cityFlagsById);
+
+  const activeActivity = useActivityStore((state) => state.active);
+  const startActivity = useActivityStore((state) => state.startActivity);
+  const stopActivity = useActivityStore((state) => state.stopActivity);
+
+  const startCombat = useCombatStore((state) => state.startCombat);
+  const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
+  const exitCombat = useCombatStore((state) => state.exitCombat);
+  const combatContext = useCombatStore((state) => state.combatContext);
+
+  const shouldSpawnBoss = useOutskirtsStore((state) => state.shouldSpawnBoss);
+  const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
 
   useEffect(() => {
     setHeaderTitles('World', 'Cities & activities');
@@ -106,6 +138,40 @@ export function WorldScreen() {
 
   const moduleMeta = selectedModuleKey ? getModuleMeta(selectedModuleKey) : null;
   const moduleRefId = resolveModuleRef(selectedCity, selectedModuleKey);
+  const outskirtsDef = moduleRefId ? outskirtsById[moduleRefId] : undefined;
+  const outskirtsProgress = moduleRefId
+    ? progressByOutskirtsId[moduleRefId] ?? { killsSinceBoss: 0, totalKills: 0, bossDefeated: false }
+    : null;
+  const isOutskirtsActive =
+    activeActivity?.type === 'outskirts' && activeActivity.sourceId === moduleRefId;
+  const bossName = outskirtsDef ? enemiesById[outskirtsDef.bossId]?.name ?? outskirtsDef.bossId : null;
+  const isBossReady = outskirtsDef ? shouldSpawnBoss(outskirtsDef.id, outskirtsDef) : false;
+  const cityFlags = selectedCity ? cityFlagsById[selectedCity.id] : null;
+
+  const handleStartOutskirts = () => {
+    if (!selectedCity || !outskirtsDef) return;
+
+    const nextEnemyId = isBossReady ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
+    if (!nextEnemyId) return;
+
+    startActivity({ type: 'outskirts', cityId: selectedCity.id, sourceId: outskirtsDef.id });
+    setAutoAttack(true);
+
+    startCombat(nextEnemyId, {
+      type: 'outskirts',
+      cityId: selectedCity.id,
+      sourceId: outskirtsDef.id,
+      cityIndex: outskirtsDef.cityIndex,
+      isBoss: isBossReady,
+    });
+  };
+
+  const handleStopOutskirts = () => {
+    stopActivity();
+    if (combatContext.type === 'outskirts') {
+      exitCombat();
+    }
+  };
 
   if (isLoading) {
     return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
@@ -225,18 +291,71 @@ export function WorldScreen() {
                 </div>
 
                 {selectedModuleKey && moduleMeta && (
-                  <div className={'worldScreenPlaceholder'}>
-                    <div className={'worldScreenPlaceholderHeader'}>
-                      <div className={'worldScreenPlaceholderTitle'}>{moduleMeta.label}</div>
-                      <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
-                    </div>
-                    <div className={'worldScreenPlaceholderBody'}>
-                      <div className={'worldScreenPlaceholderLine'}>Coming in {moduleMeta.prompt}</div>
-                      <div className={'worldScreenPlaceholderLine'}>
-                        Reference ID: {moduleRefId ? moduleRefId : 'No ref id'}
+                  selectedModuleKey === 'outskirts' && outskirtsDef ? (
+                    <div className={'worldScreenPlaceholder'}>
+                      <div className={'worldScreenPlaceholderHeader'}>
+                        <div className={'worldScreenPlaceholderTitle'}>
+                          {outskirtsDef.name ?? moduleMeta.label}
+                        </div>
+                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
+                      </div>
+                      <div className={'worldScreenPlaceholderBody'}>
+                        <div
+                          className={'worldScreenPlaceholderLine'}
+                          data-testid="outskirts-progress"
+                        >
+                          Kills to Boss: {outskirtsProgress?.killsSinceBoss ?? 0} /{' '}
+                          {outskirtsDef.killsToBoss}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Boss: {bossName ?? 'Unknown'} • Defeated:{' '}
+                          {outskirtsProgress?.bossDefeated ? 'Yes' : 'No'}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Activity: {isOutskirtsActive ? 'Active' : 'Inactive'}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Loop: {isBossReady ? 'Boss encounter ready' : 'Farming mobs'}
+                        </div>
+                        {cityFlags && (
+                          <div className={'worldScreenPlaceholderLine'}>
+                            City Flag — Boss Cleared:{' '}
+                            {cityFlags.outskirtsBossDefeated ? 'Yes' : 'No'}
+                          </div>
+                        )}
+                      </div>
+                      <div className={'worldScreenPlaceholderActions'}>
+                        <button
+                          className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                          onClick={handleStartOutskirts}
+                          data-testid="outskirts-start"
+                          disabled={!outskirtsDef}
+                        >
+                          Start Outskirts
+                        </button>
+                        <button
+                          className={'worldScreenModuleButton'}
+                          onClick={handleStopOutskirts}
+                          data-testid="outskirts-stop"
+                        >
+                          Stop
+                        </button>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className={'worldScreenPlaceholder'}>
+                      <div className={'worldScreenPlaceholderHeader'}>
+                        <div className={'worldScreenPlaceholderTitle'}>{moduleMeta.label}</div>
+                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
+                      </div>
+                      <div className={'worldScreenPlaceholderBody'}>
+                        <div className={'worldScreenPlaceholderLine'}>Coming in {moduleMeta.prompt}</div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Reference ID: {moduleRefId ? moduleRefId : 'No ref id'}
+                        </div>
+                      </div>
+                    </div>
+                  )
                 )}
               </div>
             </div>
