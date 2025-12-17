@@ -20,7 +20,6 @@ export type GameTab =
   | 'cultivation'
   | 'status'
   | 'adventure'
-  | 'dungeon'
   | 'inventory'
   | 'techniques'
   | 'prestige'

@@ -46,15 +46,9 @@ export function Sidebar() {
         />
         <NavButton
           tab="adventure"
-          label="Adventure"
+          label="World / Cities"
           active={activeTab === 'adventure'}
           onClick={() => setActiveTab('adventure')}
-        />
-        <NavButton
-          tab="dungeon"
-          label="Dungeon"
-          active={activeTab === 'dungeon'}
-          onClick={() => setActiveTab('dungeon')}
         />
         <NavButton
           tab="inventory"

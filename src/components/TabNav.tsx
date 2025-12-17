@@ -16,7 +16,7 @@ interface TabDefinition {
  */
 const TABS: TabDefinition[] = [
   { id: 'cultivation', label: 'Cultivation' },
-  { id: 'adventure', label: 'Adventure' },
+  { id: 'adventure', label: 'World / Cities' },
   { id: 'inventory', label: 'Inventory' },
   { id: 'techniques', label: 'Techniques' },
   { id: 'prestige', label: 'Prestige' },

@@ -4,8 +4,7 @@ import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
-import { AdventureScreen } from './screens/AdventureScreen';
-import { DungeonScreen } from './screens/DungeonScreen';
+import { WorldScreen } from './screens/WorldScreen';
 import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
@@ -47,7 +46,7 @@ export function GameLayout() {
   const activeTab = useUIStore((state) => state.activeTab);
   const showOfflineProgressModal = useUIStore((state) => state.showOfflineProgressModal);
   const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
-  const isScrollable = activeTab === 'status' || activeTab === 'dungeon'  || activeTab === 'prestige';
+  const isScrollable = activeTab === 'status' || activeTab === 'prestige';
 
   // Render content based on active tab
   const renderContent = () => {
@@ -57,9 +56,7 @@ export function GameLayout() {
       case 'status':
         return <StatusScreen />;
       case 'adventure':
-        return <AdventureScreen />;
-      case 'dungeon':
-        return <DungeonScreen />;
+        return <WorldScreen />;
       case 'inventory':
         return <InventoryScreen />;
       case 'techniques':
