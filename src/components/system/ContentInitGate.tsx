@@ -1,12 +1,15 @@
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 import { useContentStore } from '../../stores/contentStore';
+import { useCityStore } from '../../stores/cityStore';
 
 export function ContentInitGate({ children }: PropsWithChildren) {
   const isLoading = useContentStore((state) => state.isLoading);
   const isLoaded = useContentStore((state) => state.isLoaded);
   const error = useContentStore((state) => state.error);
   const load = useContentStore((state) => state.load);
+  const citiesSorted = useContentStore((state) => state.citiesSorted);
+  const initializeFromContent = useCityStore((state) => state.initializeFromContent);
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -14,6 +17,11 @@ export function ContentInitGate({ children }: PropsWithChildren) {
     startedRef.current = true;
     load().catch(() => {});
   }, [load]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    initializeFromContent(citiesSorted);
+  }, [isLoaded, citiesSorted, initializeFromContent]);
 
   if (error) {
     return (

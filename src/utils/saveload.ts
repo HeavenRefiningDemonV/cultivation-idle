@@ -8,6 +8,7 @@ import { useZoneStore } from '../stores/zoneStore';
 import { useDungeonStore } from '../stores/dungeonStore';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useUIStore } from '../stores/uiStore';
+import { useCityStore } from '../stores/cityStore';
 
 /**
  * Save system constants
@@ -34,6 +35,7 @@ function gatherGameState(): SaveData {
   const zoneState = useZoneStore.getState();
   const techniqueState = useTechniqueStore.getState();
   const prestigeState = usePrestigeStore.getState();
+  const cityState = useCityStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -84,6 +86,14 @@ function gatherGameState(): SaveData {
     zoneState: {
       unlockedZones: zoneState.unlockedZones,
       zoneProgress: zoneState.zoneProgress,
+    },
+
+    cityState: {
+      currentCityId: cityState.currentCityId,
+      unlockedCityIds: [...cityState.unlockedCityIds],
+      selectedModuleByCity: { ...cityState.selectedModuleByCity },
+      cityFlagsById: { ...cityState.cityFlagsById },
+      initializedFromContent: cityState.initializedFromContent,
     },
 
     techniqueState: {
@@ -179,6 +189,21 @@ function validateSaveData(data: unknown): data is SaveData {
     if ('zoneState' in record && record.zoneState) {
       const zs = record.zoneState as Record<string, unknown>;
       if (!Array.isArray((zs as { unlockedZones?: unknown }).unlockedZones) || typeof zs.zoneProgress !== 'object') return false;
+    }
+
+    if ('cityState' in record && record.cityState) {
+      const cs = record.cityState as Record<string, unknown>;
+      const invalid =
+        (cs.currentCityId !== null && typeof cs.currentCityId !== 'string') ||
+        !Array.isArray((cs as { unlockedCityIds?: unknown }).unlockedCityIds) ||
+        typeof cs.selectedModuleByCity !== 'object' ||
+        cs.selectedModuleByCity === null ||
+        typeof cs.cityFlagsById !== 'object' ||
+        cs.cityFlagsById === null;
+
+      if (invalid) {
+        console.warn('[SaveLoad] cityState invalid in save, ignoring section');
+      }
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -505,6 +530,8 @@ export function deleteSave(): boolean {
       autoCombatAI: false,
     });
 
+    useCityStore.getState().hardResetCity();
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -542,6 +569,12 @@ export function deleteSaveAndHardReset(): void {
     useCombatStore.getState().hardResetCombat();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset combat', error);
+  }
+
+  try {
+    useCityStore.getState().hardResetCity();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset city state', error);
   }
 
   try {

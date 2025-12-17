@@ -249,6 +249,22 @@ export interface SaveData {
     }>;
   };
 
+  // City progression
+  cityState?: {
+    currentCityId: string | null;
+    unlockedCityIds: string[];
+    selectedModuleByCity: Record<string, string>;
+    cityFlagsById: Record<
+      string,
+      {
+        outskirtsBossDefeated: boolean;
+        gateTrialCleared: boolean;
+        ruinsCleared: boolean;
+      }
+    >;
+    initializedFromContent?: boolean;
+  };
+
   // Technique progression
   techniqueState: {
     currentIntent: string;

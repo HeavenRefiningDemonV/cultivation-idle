@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { CityDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
+import { useCityStore } from '../../stores/cityStore';
 import { useUIStore } from '../../stores/uiStore';
 import './WorldScreen.scss';
-
-const LOCALSTORAGE_SELECTED_CITY_KEY = 'ci_world_selected_city_id';
-const LOCALSTORAGE_SELECTED_MODULES_KEY = 'ci_world_selected_module_by_city';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
@@ -65,77 +63,20 @@ export function WorldScreen() {
   const error = useContentStore((state) => state.error);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
 
-  const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
-  const [selectedModuleByCity, setSelectedModuleByCity] = useState<Record<string, string>>({});
-  const restoredRef = useRef(false);
+  const currentCityId = useCityStore((state) => state.currentCityId);
+  const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
+  const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
+  const setCurrentCity = useCityStore((state) => state.setCurrentCity);
+  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
 
   useEffect(() => {
     setHeaderTitles('World', 'Cities & activities');
   }, [setHeaderTitles]);
 
-  const persistModuleMap = (map: Record<string, string>) => {
-    try {
-      localStorage.setItem(LOCALSTORAGE_SELECTED_MODULES_KEY, JSON.stringify(map));
-    } catch (err) {
-      console.warn('[WorldScreen] Failed to persist module map', err);
-    }
-  };
-
-  const persistCitySelection = (cityId: string | null) => {
-    try {
-      if (cityId) {
-        localStorage.setItem(LOCALSTORAGE_SELECTED_CITY_KEY, cityId);
-      } else {
-        localStorage.removeItem(LOCALSTORAGE_SELECTED_CITY_KEY);
-      }
-    } catch (err) {
-      console.warn('[WorldScreen] Failed to persist city selection', err);
-    }
-  };
-
-  useEffect(() => {
-    if (!isLoaded || citiesSorted.length === 0 || restoredRef.current) return;
-    restoredRef.current = true;
-
-    let storedCity: string | null = null;
-    let storedModuleMap: Record<string, string> = {};
-
-    try {
-      storedCity = localStorage.getItem(LOCALSTORAGE_SELECTED_CITY_KEY);
-      const mappingRaw = localStorage.getItem(LOCALSTORAGE_SELECTED_MODULES_KEY);
-      if (mappingRaw) {
-        const parsed = JSON.parse(mappingRaw);
-        if (parsed && typeof parsed === 'object') {
-          storedModuleMap = parsed as Record<string, string>;
-        }
-      }
-    } catch (err) {
-      console.warn('[WorldScreen] Failed to load persisted selection', err);
-    }
-
-    const validCityIds = new Set(citiesSorted.map((c) => c.id));
-    const initialCityId = storedCity && validCityIds.has(storedCity) ? storedCity : citiesSorted[0]?.id ?? null;
-
-    let nextModuleMap = storedModuleMap;
-    const initialCity = citiesSorted.find((c) => c.id === initialCityId) ?? null;
-    if (initialCity) {
-      const storedModule = storedModuleMap[initialCity.id];
-      const fallbackModule = initialCity.modules?.[0];
-      if ((!storedModule || !initialCity.modules.includes(storedModule)) && fallbackModule) {
-        nextModuleMap = { ...storedModuleMap, [initialCity.id]: fallbackModule };
-      }
-    }
-
-    setSelectedCityId(initialCityId);
-    setSelectedModuleByCity(nextModuleMap);
-    persistCitySelection(initialCityId);
-    persistModuleMap(nextModuleMap);
-  }, [isLoaded, citiesSorted]);
-
   const selectedCity = useMemo(() => {
-    if (!selectedCityId) return null;
-    return citiesSorted.find((city) => city.id === selectedCityId) ?? null;
-  }, [citiesSorted, selectedCityId]);
+    if (!currentCityId) return null;
+    return citiesSorted.find((city) => city.id === currentCityId) ?? null;
+  }, [citiesSorted, currentCityId]);
 
   const selectedModuleKey = useMemo(() => {
     if (!selectedCity) return null;
@@ -146,35 +87,21 @@ export function WorldScreen() {
 
   useEffect(() => {
     if (!selectedCity || !selectedModuleKey) return;
-    const current = selectedModuleByCity[selectedCity.id];
-    if (current === selectedModuleKey) return;
-    const nextMap = { ...selectedModuleByCity, [selectedCity.id]: selectedModuleKey };
-    setSelectedModuleByCity(nextMap);
-    persistModuleMap(nextMap);
-  }, [selectedCity, selectedModuleKey, selectedModuleByCity]);
+    const stored = selectedModuleByCity[selectedCity.id];
+    if (stored !== selectedModuleKey) {
+      setSelectedModule(selectedCity.id, selectedModuleKey);
+    }
+  }, [selectedCity, selectedModuleKey, selectedModuleByCity, setSelectedModule]);
 
   const handleSelectCity = (city: CityDef) => {
     if (!city) return;
-    setSelectedCityId(city.id);
-    persistCitySelection(city.id);
-
-    setSelectedModuleByCity((prev) => {
-      const existing = prev[city.id];
-      const validExisting = existing && city.modules.includes(existing) ? existing : null;
-      const nextModule = validExisting ?? city.modules[0] ?? null;
-      const nextMap = nextModule ? { ...prev, [city.id]: nextModule } : prev;
-      persistModuleMap(nextMap);
-      return nextMap;
-    });
+    if (!unlockedCityIds.includes(city.id)) return;
+    setCurrentCity(city.id);
   };
 
   const handleSelectModule = (moduleKey: string) => {
-    if (!selectedCity || !moduleKey) return;
-    setSelectedModuleByCity((prev) => {
-      const nextMap = { ...prev, [selectedCity.id]: moduleKey };
-      persistModuleMap(nextMap);
-      return nextMap;
-    });
+    if (!selectedCity) return;
+    setSelectedModule(selectedCity.id, moduleKey);
   };
 
   const moduleMeta = selectedModuleKey ? getModuleMeta(selectedModuleKey) : null;
@@ -207,12 +134,16 @@ export function WorldScreen() {
           </div>
           <div className={'worldScreenCityList'}>
             {citiesSorted.map((city) => {
-              const isActive = city.id === selectedCityId;
+              const isActive = city.id === currentCityId;
+              const isUnlocked = unlockedCityIds.includes(city.id);
               return (
                 <button
                   key={city.id}
-                  className={`worldScreenCityButton ${isActive ? 'worldScreenCityButton--active' : ''}`}
+                  className={`worldScreenCityButton ${isActive ? 'worldScreenCityButton--active' : ''} ${
+                    isUnlocked ? '' : 'worldScreenCityButton--locked'
+                  }`}
                   onClick={() => handleSelectCity(city)}
+                  disabled={!isUnlocked}
                 >
                   <div className={'worldScreenCityTitle'}>
                     <span className={'worldScreenCityName'}>{city.name}</span>
@@ -221,6 +152,7 @@ export function WorldScreen() {
                   <div className={'worldScreenCityMeta'}>
                     Unlocks at realm: {city.unlockMajorRealm}
                   </div>
+                  {!isUnlocked && <div className={'worldScreenCityLockedBadge'}>Locked</div>}
                   {city.themeTags && city.themeTags.length > 0 && (
                     <div className={'worldScreenCityTags'}>
                       {city.themeTags.map((tag) => (
