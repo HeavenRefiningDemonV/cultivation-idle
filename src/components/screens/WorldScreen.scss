@@ -199,6 +199,144 @@
   font-size: 13px;
 }
 
+
+
+.apothecaryPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.apothecaryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.apothecaryTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.apothecarySubtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.apothecaryStockList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.apothecaryStock {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.apothecaryStockMain {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.apothecaryItemName {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.apothecaryPrice,
+.apothecaryLimit,
+.apothecaryRemaining,
+.apothecaryQtyInfo,
+.apothecaryWallet {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.apothecaryActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.apothecaryQuantity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.apothecaryQuantity label {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.apothecaryQuantity input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8fafc;
+}
+
+.apothecaryQuickButtons {
+  display: flex;
+  gap: 6px;
+}
+
+.apothecaryQuickButtons button {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+}
+
+.apothecaryBuyButton {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #38bdf8;
+  color: #0b172a;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.apothecaryBuyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.apothecaryMessage {
+  padding: 8px;
+  color: #cbd5e1;
+}
+
+.apothecaryFeedback {
+  color: #22c55e;
+  font-size: 13px;
+}
+
+.apothecaryFeedback--error {
+  color: #fca5a5;
+}
+
+.apothecaryMessageRow {
+  min-height: 18px;
+}
+
 .worldScreenRefRow dd {
   margin: 0;
   font-size: 14px;

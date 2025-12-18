@@ -10,6 +10,7 @@ import { useTrialStore } from '../../stores/trialStore';
 import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { grantRewards } from '../../systems/rewards';
+import { ApothecaryPanel } from '../world/ApothecaryPanel';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -17,7 +18,7 @@ const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },
   gateTrial: { label: 'Gate Trial', prompt: 'Coming in Prompt 6' },
   ruins: { label: 'Ruins', prompt: 'Repeatable dungeon runs' },
-  apothecary: { label: 'Apothecary', prompt: 'Coming in Prompt 9' },
+  apothecary: { label: 'Apothecary', prompt: 'Purchase pills and tonics' },
   manualPavilion: { label: 'Manual Pavilion', prompt: 'Coming in Prompt 10' },
   alchemy: { label: 'Alchemy', prompt: 'Coming in Prompt 13' },
   forge: { label: 'Forge', prompt: 'Coming in Prompt 14' },
@@ -603,6 +604,8 @@ export function WorldScreen() {
                         </button>
                       </div>
                     </div>
+                  ) : selectedModuleKey === 'apothecary' ? (
+                    <ApothecaryPanel shopId={moduleRefId ?? null} />
                   ) : (
                     <div className={'worldScreenPlaceholder'}>
                       <div className={'worldScreenPlaceholderHeader'}>

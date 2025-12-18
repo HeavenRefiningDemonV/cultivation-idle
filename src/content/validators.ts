@@ -121,7 +121,10 @@ function assertCostOrItemRefsExist(
   if (refs == null) return;
   assertObject(refs, label);
   for (const [k, v] of Object.entries(refs as Record<string, unknown>)) {
-    assert(typeof v === 'number' && Number.isFinite(v), `${label}.${k} must be a finite number`);
+    const isNumberLike =
+      (typeof v === 'number' && Number.isFinite(v)) ||
+      (typeof v === 'string' && v.trim().length > 0 && !Number.isNaN(Number(v)));
+    assert(isNumberLike, `${label}.${k} must be a finite number or numeric string`);
 
     if (isCurrencyKey(k)) continue;
 
@@ -436,6 +439,43 @@ function validateApothecary(config: LoadedContentRaw['apothecary_shops']) {
   assertObject(config, 'apothecary_shops.json root');
   assertHasKey(config, 'shops', 'apothecary_shops.json');
   assertArray(config.shops, 'apothecary_shops.json.shops');
+  (config.shops as any[]).forEach((shop, idx) => {
+    assertObject(shop, `apothecary_shops.shops[${idx}]`);
+    assert(typeof shop.id === 'string', `apothecary_shops.shops[${idx}].id must be a string`);
+    assert(typeof shop.cityId === 'string', `apothecary_shops.shops[${idx}].cityId must be a string`);
+    assertArray(shop.stock, `apothecary_shops.shops[${idx}].stock`);
+
+    (shop.stock as any[]).forEach((stock, stockIdx) => {
+      assertObject(stock, `apothecary_shops.shops[${idx}].stock[${stockIdx}]`);
+      assert(
+        typeof stock.itemId === 'string',
+        `apothecary_shops.shops[${idx}].stock[${stockIdx}].itemId must be a string`,
+      );
+
+      if (stock.qty !== undefined) {
+        assert(
+          typeof stock.qty === 'number' && Number.isFinite(stock.qty),
+          `apothecary_shops.shops[${idx}].stock[${stockIdx}].qty must be a finite number`,
+        );
+      }
+
+      if (stock.dailyLimit !== undefined && stock.dailyLimit !== null) {
+        assert(
+          typeof stock.dailyLimit === 'number' && Number.isFinite(stock.dailyLimit),
+          `apothecary_shops.shops[${idx}].stock[${stockIdx}].dailyLimit must be a finite number or null`,
+        );
+      }
+
+      if (stock.buy) {
+        assertCostOrItemRefsExist(
+          stock.buy,
+          `apothecary_shops.shops[${idx}].stock[${stockIdx}].buy`,
+          {},
+          addErr,
+        );
+      }
+    });
+  });
   return config.shops;
 }
 
