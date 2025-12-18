@@ -11,7 +11,6 @@ import {
   setInventoryStoreGetter as setPrestigeInventoryStoreGetter,
   setGameStoreGetter,
 } from '../stores/prestigeStore';
-import { useTechniqueStore, setTechniqueStoreDependencies } from '../stores/techniqueStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
@@ -145,10 +144,6 @@ class GameLoop {
       // Update combat store (attacks, cooldowns)
       const combatState = useCombatStore.getState();
       combatState.tick(deltaTime);
-
-      // Update technique store (intent regen, auto-cast)
-      const techniqueState = useTechniqueStore.getState();
-      techniqueState.updateTechniques(deltaTime);
     } catch (error) {
       console.error('[GameLoop] Error in tick:', error);
     }
@@ -239,10 +234,6 @@ export function initializeGame(): boolean {
     setCombatStoreGetter(() => useCombatStore.getState());
     setGameInventoryStoreGetter(() => useInventoryStore.getState());
     setPrestigeInventoryStoreGetter(() => useInventoryStore.getState());
-    setTechniqueStoreDependencies(
-      () => useCombatStore.getState(),
-      () => useGameStore.getState()
-    );
     console.log('[GameLoop] Store dependencies wired');
 
     // Initialize prestige store upgrades
@@ -251,10 +242,6 @@ export function initializeGame(): boolean {
 
     // Align prestige run timer with current run state
     usePrestigeStore.setState({ runStartTime: useGameStore.getState().runStartTime });
-
-    // Initialize technique store
-    useTechniqueStore.getState().initializeTechniques();
-    console.log('[GameLoop] Technique store initialized');
 
     // Generate spirit root if none exists
     const prestigeStore = usePrestigeStore.getState();

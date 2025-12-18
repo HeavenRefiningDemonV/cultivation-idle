@@ -191,6 +191,20 @@ export interface GameState {
 /**
  * Save data structure
  */
+export type TechniqueSlotType = 'active' | 'passive' | 'ultimate';
+export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
+
+export interface SaveTechniqueLoadout {
+  id: string;
+  name: string;
+  aiProfile: AiProfile;
+  slots: {
+    active: string[];
+    passive: string[];
+    ultimate: string | null;
+  };
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -273,10 +287,8 @@ export interface SaveData {
 
   // Technique progression
   techniqueState: {
-    currentIntent: string;
-    maxIntent: string;
-    intentRegenRate: string;
-    techniques: Record<string, Technique>;
+    loadouts: SaveTechniqueLoadout[];
+    selectedLoadoutId: string;
   };
 
   techCollectionState?: {
