@@ -53,7 +53,7 @@ function describePool(entries: { technique?: TechniqueDef; techId: string }[]) {
 
 export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const pavilion = useContentStore((state) => (pavilionId ? state.maps.pavilionsById[pavilionId] : undefined));
-  const { lifePath } = useGameStore((state) => ({ lifePath: state.lifePath }));
+  const lifePath = useGameStore((state) => state.lifePath);
   const spendCurrencies = useInventoryStore((state) => state.spendCurrencies);
   const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
