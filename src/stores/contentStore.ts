@@ -42,6 +42,7 @@ interface ContentStoreState {
   getCity: (id: string) => CityDef;
   getItem: (id: string) => ItemDef;
   getTechnique: (id: string) => TechniqueDef;
+  getPavilion: (id: string) => PavilionDef | undefined;
   getApothecaryShop: (id: string) => ApothecaryShopDef | undefined;
 }
 
@@ -200,6 +201,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       throw new Error(`[ContentStore] Unknown technique id ${id}`);
     }
     return technique;
+  },
+
+  getPavilion: (id: string) => {
+    const { isLoaded, maps } = get();
+    if (!isLoaded) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return maps.pavilionsById[id];
   },
 
   getApothecaryShop: (id: string) => {

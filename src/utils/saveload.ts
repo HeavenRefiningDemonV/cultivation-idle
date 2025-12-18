@@ -12,6 +12,7 @@ import { useCityStore } from '../stores/cityStore';
 import { useTrialStore } from '../stores/trialStore';
 import { useRuinsStore } from '../stores/ruinsStore';
 import { useShopStore } from '../stores/shopStore';
+import { useTechCollectionStore } from '../stores/techCollectionStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -43,6 +44,7 @@ function gatherGameState(): SaveData {
   const trialState = useTrialStore.getState();
   const ruinsState = useRuinsStore.getState();
   const shopState = useShopStore.getState();
+  const techCollectionState = useTechCollectionStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -53,6 +55,7 @@ function gatherGameState(): SaveData {
       qi: gameState.qi,
       spiritRoot: prestigeState.spiritRoot,
       selectedPath: gameState.selectedPath,
+      lifePath: gameState.lifePath,
       focusMode: gameState.focusMode,
       pathPerks: gameState.pathPerks,
       totalAuras: gameState.totalAuras,
@@ -125,6 +128,11 @@ function gatherGameState(): SaveData {
         ]),
       ),
     },
+
+    techCollectionState: {
+      unlockedTechs: { ...techCollectionState.unlockedTechs },
+      fragments: { ...techCollectionState.fragments },
+    },
   };
 
   return saveData;
@@ -153,6 +161,14 @@ function validateSaveData(data: unknown): data is SaveData {
       ) {
         return false;
       }
+    }
+    if (
+      'lifePath' in gs &&
+      (gs as { lifePath?: unknown }).lifePath !== null &&
+      (gs as { lifePath?: unknown }).lifePath !== undefined &&
+      typeof (gs as { lifePath?: unknown }).lifePath !== 'string'
+    ) {
+      return false;
     }
     if ('lastTickTime' in gs && typeof gs.lastTickTime !== 'number') return false;
     if ('lastActiveTime' in gs && typeof gs.lastActiveTime !== 'number') return false;
@@ -442,6 +458,7 @@ function applySaveData(saveData: SaveData): void {
       realm: saveData.gameState.realm,
       qi: saveData.gameState.qi,
       selectedPath: saveData.gameState.selectedPath,
+      lifePath: saveData.gameState.lifePath ?? null,
       focusMode: saveData.gameState.focusMode,
       pathPerks: saveData.gameState.pathPerks || [],
       totalAuras: saveData.gameState.totalAuras,
@@ -552,6 +569,12 @@ function applySaveData(saveData: SaveData): void {
     if (shopState) {
       useShopStore.getState().hydrate(shopState);
     }
+
+    const collectionState = saveData.techCollectionState ?? {
+      unlockedTechs: {},
+      fragments: {},
+    };
+    useTechCollectionStore.getState().hydrate(collectionState);
 
     const selectedPath = saveData.gameState.selectedPath;
     if (selectedPath) {
@@ -670,6 +693,12 @@ export function deleteSave(): boolean {
 
     useShopStore.getState().hardResetShop();
 
+    try {
+      useTechCollectionStore.getState().hardReset();
+    } catch (error) {
+      console.warn('[deleteSave] Failed to reset technique collection', error);
+    }
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -749,6 +778,12 @@ export function deleteSaveAndHardReset(): void {
     useTechniqueStore.getState().hardResetTechniques();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset techniques', error);
+  }
+
+  try {
+    useTechCollectionStore.getState().hardReset();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset technique collection', error);
   }
 
   try {

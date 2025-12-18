@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { GameState, FocusMode, CultivationPath, ActiveBuff, BuffStat } from '../types';
+import type { GameState, FocusMode, CultivationPath, LifePath, ActiveBuff, BuffStat } from '../types';
 import {
   REALMS,
   PATH_MODIFIERS,
@@ -82,6 +82,7 @@ const createInitialGameState = () => ({
   absorptionShield: '0',
   absorptionExpiresAt: null as number | null,
   selectedPath: null as CultivationPath | null,
+  lifePath: null as LifePath | null,
   focusMode: 'balanced' as FocusMode,
   pathPerks: [] as string[],
   totalAuras: 0,
@@ -191,6 +192,22 @@ export const useGameStore = create<GameState>()(
       // Recalculate derived values
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+    },
+
+    setLifePath: (path: LifePath) => {
+      if (!get().canChangeLifePath()) {
+        console.warn('Life path already chosen for this run.');
+        return;
+      }
+
+      set((state) => {
+        state.lifePath = path;
+      });
+    },
+
+    canChangeLifePath: () => {
+      const state = get();
+      return state.lifePath === null;
     },
 
     /**

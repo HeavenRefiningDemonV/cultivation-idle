@@ -11,6 +11,8 @@ import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { grantRewards } from '../../systems/rewards';
 import { ApothecaryPanel } from './ApothecaryPanel';
+import { ManualPavilionPanel } from './ManualPavilionPanel';
+import { MeditationHallPanel } from './MeditationHallPanel';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -553,6 +555,10 @@ export function WorldScreen() {
                         )}
                       </div>
                     </div>
+                  ) : selectedModuleKey === 'meditationHall' ? (
+                    <MeditationHallPanel />
+                  ) : selectedModuleKey === 'manualPavilion' ? (
+                    <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
                   ) : selectedModuleKey === 'apothecary' ? (
                     <ApothecaryPanel shopId={moduleRefId ?? null} />
                   ) : selectedModuleKey === 'ruins' && ruinDef ? (

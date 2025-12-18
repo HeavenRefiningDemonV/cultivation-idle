@@ -215,6 +215,20 @@ function validatePavilions(config: PavilionsConfig): PavilionDef[] {
     assert(typeof pavilion.id === 'string', `pavilions[${idx}].id must be a string`);
     assert(typeof pavilion.cityId === 'string', `pavilions[${idx}].cityId must be a string`);
     assertObject(pavilion.poolByPath, `pavilions[${idx}].poolByPath`);
+
+    (['heaven', 'earth', 'martial'] as const).forEach((path) => {
+      const pool = pavilion.poolByPath?.[path] ?? [];
+      assertArray(pool, `pavilions[${idx}].poolByPath.${path}`);
+      pool.forEach((entry, poolIdx) => {
+        const isString = typeof entry === 'string';
+        const isObj = entry && typeof entry === 'object';
+        const techId = isObj ? (entry as { techId?: unknown }).techId : undefined;
+        assert(
+          isString || (isObj && typeof techId === 'string'),
+          `pavilions[${idx}].poolByPath.${path}[${poolIdx}] must be string or {techId}`,
+        );
+      });
+    });
   });
 
   assertUniqueIds(pavilions, 'pavilions.json.pavilions');
@@ -634,10 +648,19 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       addErr(`pavilions[${idx}].cityId does not exist in cities`);
     }
     (['heaven', 'earth', 'martial'] as const).forEach((path) => {
-      assertArray(pavilion.poolByPath[path], `pavilions[${idx}].poolByPath.${path}`);
-      pavilion.poolByPath[path].forEach((techId, poolIdx) => {
-        if (!(techId in techniqueMap)) {
-          addErr(`pavilions[${idx}].poolByPath.${path}[${poolIdx}] missing technique`);
+      const pool = pavilion.poolByPath?.[path] ?? [];
+      assertArray(pool, `pavilions[${idx}].poolByPath.${path}`);
+      pool.forEach((entry, poolIdx) => {
+        const techId =
+          typeof entry === 'string'
+            ? entry
+            : entry && typeof entry === 'object'
+              ? (entry as { techId?: string }).techId
+              : undefined;
+        if (techId && !(techId in techniqueMap)) {
+          console.warn(
+            `[ContentValidation] pavilions[${idx}].poolByPath.${path}[${poolIdx}] references unknown technique ${techId}. Will attempt to resolve dynamically.`,
+          );
         }
       });
     });

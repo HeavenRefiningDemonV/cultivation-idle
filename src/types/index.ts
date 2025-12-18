@@ -2,6 +2,7 @@
  * Cultivation path types
  */
 export type CultivationPath = 'heaven' | 'earth' | 'martial';
+export type LifePath = 'heaven' | 'earth' | 'martial';
 
 /**
  * Focus mode for cultivation
@@ -145,6 +146,7 @@ export interface GameState {
 
   // Cultivation choices
   selectedPath: CultivationPath | null;
+  lifePath: LifePath | null;
   focusMode: FocusMode;
   pathPerks: string[];                  // Selected path perk IDs
 
@@ -165,6 +167,8 @@ export interface GameState {
   tick: (deltaTime: number) => void;
   setFocusMode: (mode: FocusMode) => void;
   selectPath: (path: CultivationPath) => void;
+  setLifePath: (path: LifePath) => void;
+  canChangeLifePath: () => boolean;
   selectPerk: (perkId: string) => boolean;
   breakthrough: () => boolean;
   calculateQiPerSecond: () => void;
@@ -197,6 +201,7 @@ export interface SaveData {
     qi: string;
     spiritRoot?: SpiritRoot | null;
     selectedPath: CultivationPath | null;
+    lifePath?: LifePath | null;
     focusMode: FocusMode;
     pathPerks: string[];
     totalAuras: number;
@@ -272,6 +277,20 @@ export interface SaveData {
     maxIntent: string;
     intentRegenRate: string;
     techniques: Record<string, Technique>;
+  };
+
+  techCollectionState?: {
+    unlockedTechs: Record<
+      string,
+      {
+        unlocked: boolean;
+        masteryXp: number;
+        rank: number;
+        rarity?: string;
+        tier?: string;
+      }
+    >;
+    fragments: Record<string, number>;
   };
 
   // Trial progression

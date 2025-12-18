@@ -72,6 +72,8 @@ export interface TechniqueDef {
   resourceCost?: number;
   effect?: unknown;
   secondaryAtMastery75?: unknown;
+  rarity?: string;
+  tier?: string;
 }
 
 export interface TechniquesConfig {
@@ -80,13 +82,25 @@ export interface TechniquesConfig {
   techniques: TechniqueDef[];
 }
 
+export type PavilionPoolEntry =
+  | string
+  | {
+      techId: string;
+      weight?: number;
+      rarity?: string;
+      tier?: string;
+      fragmentValue?: number;
+    };
+
 export interface PavilionDef {
   id: string;
   cityId: string;
   cityIndex: number;
   gradeSold?: string;
   currency?: Record<string, boolean>;
-  poolByPath: Record<PathId, string[]>;
+  poolByPath: Record<PathId, PavilionPoolEntry[]>;
+  cost?: Partial<Record<'gold' | 'spiritStones' | 'merit', string | number>>;
+  duplicateFragmentValue?: number;
   featuredRules?: unknown;
 }
 
