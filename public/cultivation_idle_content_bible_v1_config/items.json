@@ -588,6 +588,15 @@
       "sellValue": 0
     },
     {
+      "id": "frag_manual_mortal",
+      "name": "Manual Fragment (Mortal)",
+      "category": "material",
+      "stackSize": 9999,
+      "sellValue": 0,
+      "description": "Tattered pages of a basic cultivation manual that can be pieced together.",
+      "tags": ["fragment", "manual", "mortal"]
+    },
+    {
       "id": "item_jade_core_shell_t1",
       "name": "Jade Core Shell T1",
       "category": "token",
