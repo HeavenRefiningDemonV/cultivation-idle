@@ -1,9 +1,11 @@
 import type {
   AlchemyRecipesConfig,
   ApothecaryShopsConfig,
+  ApothecaryShopDef,
   BountiesConfig,
   CitiesPayload,
   CityDef,
+  CurrencyKey,
   EconomyConfig,
   EnemiesConfig,
   ExpeditionsConfig,
@@ -38,7 +40,7 @@ export interface ValidatedContent {
   forge_blueprints: ForgeBlueprintsConfig['blueprints'];
   runes: RunesConfig['runes'];
   talisman_recipes: TalismanRecipesConfig['talismans'];
-  apothecary_shops: ApothecaryShopsConfig['shops'];
+  apothecary_shops: ApothecaryShopDef[];
   expeditions: ExpeditionsConfig;
   bounties: BountiesConfig['templates'];
   heart_laws: HeartLawsConfig['heartLaws'];
@@ -432,11 +434,91 @@ function validateTalismans(config: LoadedContentRaw['talisman_recipes']) {
   return config.talismans;
 }
 
-function validateApothecary(config: LoadedContentRaw['apothecary_shops']) {
+function normalizePrice(
+  buy: unknown,
+  label: string,
+  addErr: ErrorCollector['addErr'],
+): Partial<Record<CurrencyKey, string>> {
+  if (!isObject(buy)) return {};
+  const price: Partial<Record<CurrencyKey, string>> = {};
+  Object.entries(buy as Record<string, unknown>).forEach(([key, value]) => {
+    if (!isCurrencyKey(key)) {
+      addErr(`${label} contains unknown currency '${key}'`);
+      return;
+    }
+    if (typeof value !== 'number' && typeof value !== 'string') {
+      addErr(`${label}.${key} must be a number or string`);
+      return;
+    }
+    price[key as CurrencyKey] = value.toString();
+  });
+  return price;
+}
+
+function validateApothecary(
+  config: LoadedContentRaw['apothecary_shops'],
+  addErr: ErrorCollector['addErr'],
+): ApothecaryShopDef[] {
   assertObject(config, 'apothecary_shops.json root');
   assertHasKey(config, 'shops', 'apothecary_shops.json');
   assertArray(config.shops, 'apothecary_shops.json.shops');
-  return config.shops;
+
+  const normalized: ApothecaryShopDef[] = (config.shops as ApothecaryShopsConfig['shops']).map(
+    (shop, idx) => {
+      assertObject(shop, `apothecary_shops.shops[${idx}]`);
+      assert(typeof shop.id === 'string', `apothecary_shops.shops[${idx}].id must be a string`);
+      assert(typeof shop.cityId === 'string', `apothecary_shops.shops[${idx}].cityId must be a string`);
+      assertArray(shop.stock, `apothecary_shops.shops[${idx}].stock`);
+
+      const stock = shop.stock.map((entry, stockIdx) => {
+        assertObject(entry, `apothecary_shops.shops[${idx}].stock[${stockIdx}]`);
+        assert(
+          typeof entry.itemId === 'string',
+          `apothecary_shops.shops[${idx}].stock[${stockIdx}].itemId must be a string`,
+        );
+
+        const itemId = entry.itemId as string;
+        const stockId =
+          typeof entry.id === 'string' && entry.id.trim().length > 0
+            ? entry.id
+            : `${shop.id}:${itemId}`;
+
+        const dailyLimit =
+          entry.dailyLimit === null
+            ? null
+            : typeof entry.dailyLimit === 'number'
+              ? entry.dailyLimit
+              : undefined;
+
+        const qty = typeof entry.qty === 'number' && Number.isFinite(entry.qty) ? entry.qty : undefined;
+        const price = normalizePrice(
+          entry.buy,
+          `apothecary_shops.shops[${idx}].stock[${stockIdx}].buy`,
+          addErr,
+        );
+
+        return {
+          id: stockId,
+          itemId,
+          qty,
+          price,
+          dailyLimit,
+        };
+      });
+
+      assertUniqueIds(stock, `apothecary_shops.shops[${idx}].stock`);
+
+      return {
+        id: shop.id,
+        cityId: shop.cityId,
+        name: shop.name,
+        stock,
+      };
+    },
+  );
+
+  assertUniqueIds(normalized, 'apothecary_shops.shops');
+  return normalized;
 }
 
 function validateExpeditions(config: LoadedContentRaw['expeditions']) {
@@ -497,7 +579,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const alchemyRecipes = validateAlchemy(raw.alchemy_recipes);
   const forgeBlueprints = validateForge(raw.forge_blueprints);
   const talismanRecipes = validateTalismans(raw.talisman_recipes);
-  const apothecaryShops = validateApothecary(raw.apothecary_shops);
+  const apothecaryShops = validateApothecary(raw.apothecary_shops, addErr);
   validateExpeditions(raw.expeditions);
   const bountyTemplates = validateBounties(raw.bounties);
 
@@ -544,12 +626,6 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       if (!(stockItem.itemId in itemMap)) {
         addErr(`apothecary_shops.shops[${idx}].stock[${stockIdx}] missing item`);
       }
-      assertCostOrItemRefsExist(
-        stockItem.buy,
-        `apothecary_shops.shops[${idx}].stock[${stockIdx}].buy`,
-        itemMap,
-        addErr,
-      );
     });
   });
 

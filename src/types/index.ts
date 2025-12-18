@@ -301,6 +301,12 @@ export interface SaveData {
     >;
     autoRepeatDefault?: boolean;
   };
+
+  // Shop state
+  shopState?: {
+    dayKey: string;
+    purchasedToday: Record<string, Record<string, number>>;
+  };
 }
 
 export interface PrestigeUpgradeEffect {

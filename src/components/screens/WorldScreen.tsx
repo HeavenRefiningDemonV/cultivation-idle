@@ -10,6 +10,7 @@ import { useTrialStore } from '../../stores/trialStore';
 import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { grantRewards } from '../../systems/rewards';
+import { ApothecaryPanel } from './ApothecaryPanel';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -552,6 +553,8 @@ export function WorldScreen() {
                         )}
                       </div>
                     </div>
+                  ) : selectedModuleKey === 'apothecary' ? (
+                    <ApothecaryPanel shopId={moduleRefId ?? null} />
                   ) : selectedModuleKey === 'ruins' && ruinDef ? (
                     <div className={'worldScreenPlaceholder'}>
                       <div className={'worldScreenPlaceholderHeader'}>

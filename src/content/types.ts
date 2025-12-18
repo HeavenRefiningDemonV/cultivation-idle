@@ -189,6 +189,24 @@ export interface RuinsConfig {
   ruins: RuinDef[];
 }
 
+export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
+export type ApothecaryPrice = Partial<Record<CurrencyKey, string>>;
+
+export interface ApothecaryStock {
+  id: string;
+  itemId: string;
+  qty?: number;
+  price: ApothecaryPrice;
+  dailyLimit?: number | null;
+}
+
+export interface ApothecaryShopDef {
+  id: string;
+  cityId: string;
+  name?: string;
+  stock: ApothecaryStock[];
+}
+
 export interface AlchemyRecipesConfig {
   version?: string;
   recipes: Array<{
@@ -240,7 +258,14 @@ export interface ApothecaryShopsConfig {
   shops: Array<{
     id: string;
     cityId: string;
-    stock: Array<{ itemId: string; buy: Record<string, number>; dailyLimit: number | null }>;
+    name?: string;
+    stock: Array<{
+      id?: string;
+      itemId: string;
+      qty?: number;
+      buy?: Record<string, number | string>;
+      dailyLimit?: number | null;
+    }>;
   }>;
 }
 

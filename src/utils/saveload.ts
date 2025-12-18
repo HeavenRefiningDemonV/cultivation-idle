@@ -11,6 +11,8 @@ import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
 import { useTrialStore } from '../stores/trialStore';
 import { useRuinsStore } from '../stores/ruinsStore';
+import { useShopStore } from '../stores/shopStore';
+import { getDayKey } from './dayKey';
 
 /**
  * Save system constants
@@ -40,6 +42,7 @@ function gatherGameState(): SaveData {
   const cityState = useCityStore.getState();
   const trialState = useTrialStore.getState();
   const ruinsState = useRuinsStore.getState();
+  const shopState = useShopStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -111,6 +114,16 @@ function gatherGameState(): SaveData {
     ruinsState: {
       progressByRuinId: { ...ruinsState.progressByRuinId },
       autoRepeatDefault: ruinsState.autoRepeatDefault,
+    },
+
+    shopState: {
+      dayKey: shopState.dayKey,
+      purchasedToday: Object.fromEntries(
+        Object.entries(shopState.purchasedToday).map(([shopId, entries]) => [
+          shopId,
+          { ...entries },
+        ]),
+      ),
     },
   };
 
@@ -283,6 +296,12 @@ function validateSaveData(data: unknown): data is SaveData {
           }
         }
       }
+    }
+
+    if ('shopState' in record && record.shopState) {
+      const ss = record.shopState as Record<string, unknown>;
+      if (typeof ss.dayKey !== 'string') return false;
+      if (typeof ss.purchasedToday !== 'object' || ss.purchasedToday === null) return false;
     }
 
     return true;
@@ -528,6 +547,12 @@ function applySaveData(saveData: SaveData): void {
       });
     }
 
+    const shopState =
+      saveData.shopState ?? ({ dayKey: getDayKey(), purchasedToday: {} } as SaveData['shopState']);
+    if (shopState) {
+      useShopStore.getState().hydrate(shopState);
+    }
+
     const selectedPath = saveData.gameState.selectedPath;
     if (selectedPath) {
       try {
@@ -643,6 +668,8 @@ export function deleteSave(): boolean {
 
     useRuinsStore.getState().hardResetRuins();
 
+    useShopStore.getState().hardResetShop();
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -698,6 +725,12 @@ export function deleteSaveAndHardReset(): void {
     useRuinsStore.getState().hardResetRuins();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset ruins state', error);
+  }
+
+  try {
+    useShopStore.getState().hardResetShop();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset shop state', error);
   }
 
   try {

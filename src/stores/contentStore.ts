@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type {
+  ApothecaryShopDef,
   CityDef,
   EnemyTemplate,
   ItemDef,
@@ -25,6 +26,8 @@ interface ContentMaps {
   runesById: Record<string, { id: string; [k: string]: any }>;
   heartLawsById: Record<string, { id: string; [k: string]: any }>;
   prestigeUpgradesById: Record<string, { id: string; [k: string]: any }>;
+  apothecariesById: Record<string, ApothecaryShopDef>;
+  apothecariesByCityId: Record<string, ApothecaryShopDef>;
 }
 
 interface ContentStoreState {
@@ -39,6 +42,7 @@ interface ContentStoreState {
   getCity: (id: string) => CityDef;
   getItem: (id: string) => ItemDef;
   getTechnique: (id: string) => TechniqueDef;
+  getApothecaryShop: (id: string) => ApothecaryShopDef | undefined;
 }
 
 const emptyMaps: ContentMaps = {
@@ -54,6 +58,8 @@ const emptyMaps: ContentMaps = {
   runesById: {},
   heartLawsById: {},
   prestigeUpgradesById: {},
+  apothecariesById: {},
+  apothecariesByCityId: {},
 };
 
 const emptyTechniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]> = {
@@ -96,6 +102,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
         const enemies = validated.enemies;
         const trials = validated.trials;
         const ruins = validated.ruins;
+        const apothecaries = validated.apothecary_shops;
         const runes = validated.runes;
         const heartLaws = validated.heart_laws;
         const prestigeUpgrades = validated.prestige_store;
@@ -110,6 +117,8 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
           trialsById: Object.fromEntries(trials.map((trial) => [trial.id, trial])),
           trialsByCityId: Object.fromEntries(trials.map((trial) => [trial.cityId, trial])),
           ruinsById: Object.fromEntries(ruins.map((ruin) => [ruin.id, ruin])),
+          apothecariesById: Object.fromEntries(apothecaries.map((shop) => [shop.id, shop])),
+          apothecariesByCityId: Object.fromEntries(apothecaries.map((shop) => [shop.cityId, shop])),
           runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune as any])),
           heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law as any])),
           prestigeUpgradesById: Object.fromEntries(
@@ -192,9 +201,25 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     }
     return technique;
   },
+
+  getApothecaryShop: (id: string) => {
+    const { isLoaded, maps } = get();
+    if (!isLoaded) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return maps.apothecariesById[id];
+  },
 }));
 
 export function getItemDef(itemId: string): ItemDef | null {
   const maps = useContentStore.getState().maps;
   return maps?.itemsById?.[itemId] ?? null;
+}
+
+export function formatPrice(price: Partial<Record<'gold' | 'spiritStones' | 'merit', string>>): string {
+  const parts: string[] = [];
+  if (price.gold) parts.push(`${price.gold} Gold`);
+  if (price.spiritStones) parts.push(`${price.spiritStones} Spirit Stones`);
+  if (price.merit) parts.push(`${price.merit} Merit`);
+  return parts.join(' / ');
 }
