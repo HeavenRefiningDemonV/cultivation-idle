@@ -7,6 +7,7 @@ import { useActivityStore } from '../../stores/activityStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useOutskirtsStore } from '../../stores/outskirtsStore';
 import { useTrialStore } from '../../stores/trialStore';
+import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { grantRewards } from '../../systems/rewards';
 import { greaterThanOrEqualTo } from '../../utils/numbers';
@@ -16,7 +17,7 @@ const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
   outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },
   gateTrial: { label: 'Gate Trial', prompt: 'Coming in Prompt 6' },
-  ruins: { label: 'Ruins', prompt: 'Coming in Prompt 7' },
+  ruins: { label: 'Ruins', prompt: 'Repeatable dungeon runs' },
   apothecary: { label: 'Apothecary', prompt: 'Coming in Prompt 9' },
   manualPavilion: { label: 'Manual Pavilion', prompt: 'Coming in Prompt 10' },
   alchemy: { label: 'Alchemy', prompt: 'Coming in Prompt 13' },
@@ -86,6 +87,7 @@ export function WorldScreen() {
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const trialsById = useContentStore((state) => state.maps.trialsById);
+  const ruinsById = useContentStore((state) => state.maps.ruinsById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const economy = useContentStore((state) => state.raw?.economy);
   const gateTrialEconomy = (economy as any)?.manualSystem?.gateTrials;
@@ -111,6 +113,12 @@ export function WorldScreen() {
   const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
+  const ruinsProgressById = useRuinsStore((state) => state.progressByRuinId);
+  const activeRuinRun = useRuinsStore((state) => state.activeRun);
+  const startRuinRun = useRuinsStore((state) => state.startRun);
+  const stopRuinRun = useRuinsStore((state) => state.stopRun);
+  const setRuinsAutoRepeat = useRuinsStore((state) => state.setAutoRepeat);
+  const ruinsAutoRepeatDefault = useRuinsStore((state) => state.autoRepeatDefault);
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
   useEffect(() => {
@@ -208,6 +216,13 @@ export function WorldScreen() {
       : String(trialDef.eligibilityRule)
     : 'No eligibility rule provided';
 
+  const ruinDef = moduleRefId ? ruinsById[moduleRefId] : undefined;
+  const ruinProgress = moduleRefId
+    ? ruinsProgressById[moduleRefId] ?? { totalRuns: 0, totalRoomsCleared: 0, bossKills: 0 }
+    : null;
+  const isRuinsActive = activeActivity?.type === 'ruins' && activeActivity.sourceId === moduleRefId;
+  const activeRuin = activeRuinRun && activeRuinRun.ruinId === moduleRefId ? activeRuinRun : null;
+
   const handleStartOutskirts = () => {
     if (!selectedCity || !outskirtsDef) return;
 
@@ -284,6 +299,22 @@ export function WorldScreen() {
     if (combatContext.type === 'outskirts') {
       exitCombat();
     }
+  };
+
+  const handleStartRuins = () => {
+    if (!selectedCity || !ruinDef) return;
+    startRuinRun(ruinDef.id);
+  };
+
+  const handleStopRuins = () => {
+    stopRuinRun();
+    if (combatContext.type === 'ruins') {
+      exitCombat();
+    }
+  };
+
+  const handleToggleRuinsAutoRepeat = () => {
+    setRuinsAutoRepeat(!ruinsAutoRepeatDefault);
   };
 
   if (isLoading) {
@@ -512,6 +543,57 @@ export function WorldScreen() {
                             })
                           </button>
                         )}
+                      </div>
+                    </div>
+                  ) : selectedModuleKey === 'ruins' && ruinDef ? (
+                    <div className={'worldScreenPlaceholder'}>
+                      <div className={'worldScreenPlaceholderHeader'}>
+                        <div className={'worldScreenPlaceholderTitle'}>
+                          {ruinDef.name ?? moduleMeta.label}
+                        </div>
+                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
+                      </div>
+                      <div className={'worldScreenPlaceholderBody'}>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Rooms: {ruinDef.roomCount}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Activity: {isRuinsActive ? 'Active' : 'Inactive'}
+                          {activeRuin && (
+                            <span>
+                              {' '}
+                              (Room {activeRuin.roomIndex + 1}/{activeRuin.roomCount})
+                            </span>
+                          )}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Runs: {ruinProgress?.totalRuns ?? 0} • Boss kills: {ruinProgress?.bossKills ?? 0}
+                        </div>
+                        <div className={'worldScreenPlaceholderLine'}>
+                          Best time:{' '}
+                          {ruinProgress?.bestRunSeconds ? `${ruinProgress.bestRunSeconds.toFixed(1)}s` : 'N/A'}
+                        </div>
+                        {ruinProgress?.lastRun && (
+                          <div className={'worldScreenPlaceholderLine'}>
+                            Last run: {ruinProgress.lastRun.victory ? 'Victory' : 'Defeat'} in{' '}
+                            {ruinProgress.lastRun.seconds.toFixed(1)}s (rooms {ruinProgress.lastRun.roomsCleared})
+                          </div>
+                        )}
+                      </div>
+                      <div className={'worldScreenPlaceholderActions'}>
+                        <button
+                          className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                          onClick={handleStartRuins}
+                          disabled={!ruinDef}
+                        >
+                          Start Run
+                        </button>
+                        <button className={'worldScreenModuleButton'} onClick={handleStopRuins}>
+                          Stop
+                        </button>
+                        <button className={'worldScreenModuleButton'} onClick={handleToggleRuinsAutoRepeat}>
+                          Auto-repeat: {ruinsAutoRepeatDefault ? 'On' : 'Off'}
+                        </button>
                       </div>
                     </div>
                   ) : (

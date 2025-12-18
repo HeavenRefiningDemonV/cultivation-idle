@@ -12,6 +12,9 @@ interface CreateEnemyOptions {
   cityIndex: number;
   isBoss: boolean;
   playerPowerSnapshot: PlayerPowerSnapshot;
+  difficulty?: 'outskirts' | 'trial' | 'ruins' | 'generic';
+  roomIndex?: number;
+  roomCount?: number;
 }
 
 interface EnemyFactoryResult {
@@ -42,7 +45,7 @@ function clampToMinimum(value: string, min: number): string {
 }
 
 export function createEnemy(templateId: string, opts: CreateEnemyOptions): EnemyFactoryResult {
-  const { cityIndex, isBoss, playerPowerSnapshot } = opts;
+  const { cityIndex, isBoss, playerPowerSnapshot, difficulty = 'generic', roomIndex = 0, roomCount = 1 } = opts;
   const { maps } = useContentStore.getState();
   const template = maps.enemiesById[templateId];
 
@@ -51,13 +54,25 @@ export function createEnemy(templateId: string, opts: CreateEnemyOptions): Enemy
 
   const mobTTKSeconds = 8 + cityIndex * 2;
   const bossTTKSeconds = 22 + cityIndex * 4;
-  const targetTTK = isBoss ? bossTTKSeconds : mobTTKSeconds;
+  let targetTTK = isBoss ? bossTTKSeconds : mobTTKSeconds;
+
+  if (difficulty === 'ruins') {
+    const progress = roomCount > 1 ? Math.max(0, roomIndex) / Math.max(1, roomCount - 1) : 0;
+    const scaling = 1.15 + progress * 0.35;
+    targetTTK *= scaling;
+  }
 
   const enemyMaxHp = playerAtk.times(targetTTK);
 
   const mobEnemyTTKSeconds = 24 + cityIndex * 3;
   const bossEnemyTTKSeconds = 34 + cityIndex * 5;
-  const enemyTTK = isBoss ? bossEnemyTTKSeconds : mobEnemyTTKSeconds;
+  let enemyTTK = isBoss ? bossEnemyTTKSeconds : mobEnemyTTKSeconds;
+
+  if (difficulty === 'ruins') {
+    const progress = roomCount > 1 ? Math.max(0, roomIndex) / Math.max(1, roomCount - 1) : 0;
+    const scaling = 1.1 + progress * 0.25;
+    enemyTTK *= scaling;
+  }
 
   const attacksNeeded = enemyTTK / ENEMY_ATTACK_INTERVAL_SEC;
   const enemyAtk = attacksNeeded > 0 ? playerMaxHp.dividedBy(attacksNeeded) : D(1);

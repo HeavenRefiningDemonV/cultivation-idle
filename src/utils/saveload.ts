@@ -10,6 +10,7 @@ import { usePrestigeStore } from '../stores/prestigeStore';
 import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
 import { useTrialStore } from '../stores/trialStore';
+import { useRuinsStore } from '../stores/ruinsStore';
 
 /**
  * Save system constants
@@ -38,6 +39,7 @@ function gatherGameState(): SaveData {
   const prestigeState = usePrestigeStore.getState();
   const cityState = useCityStore.getState();
   const trialState = useTrialStore.getState();
+  const ruinsState = useRuinsStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -109,6 +111,11 @@ function gatherGameState(): SaveData {
 
     trialState: {
       progressByTrialId: { ...trialState.progressByTrialId },
+    },
+
+    ruinsState: {
+      progressByRuinId: { ...ruinsState.progressByRuinId },
+      autoRepeatDefault: ruinsState.autoRepeatDefault,
     },
   };
 
@@ -238,6 +245,48 @@ function validateSaveData(data: unknown): data is SaveData {
           ('lastClearAt' in progress && progress.lastClearAt !== null && typeof progress.lastClearAt !== 'number')
         ) {
           return false;
+        }
+      }
+    }
+
+    if ('ruinsState' in record && record.ruinsState) {
+      const rs = record.ruinsState as Record<string, unknown>;
+      if (typeof rs.progressByRuinId !== 'object' || rs.progressByRuinId === null) return false;
+      if (
+        'autoRepeatDefault' in rs &&
+        (rs as { autoRepeatDefault?: unknown }).autoRepeatDefault !== undefined &&
+        typeof (rs as { autoRepeatDefault?: unknown }).autoRepeatDefault !== 'boolean'
+      ) {
+        return false;
+      }
+
+      const progressById = rs.progressByRuinId as Record<string, unknown>;
+      for (const value of Object.values(progressById)) {
+        if (!value || typeof value !== 'object') return false;
+        const progress = value as Record<string, unknown>;
+        if (
+          typeof progress.totalRuns !== 'number' ||
+          typeof progress.totalRoomsCleared !== 'number' ||
+          typeof progress.bossKills !== 'number'
+        ) {
+          return false;
+        }
+
+        if ('bestRunSeconds' in progress && progress.bestRunSeconds !== undefined && typeof progress.bestRunSeconds !== 'number') {
+          return false;
+        }
+
+        if ('lastRun' in progress && progress.lastRun !== undefined) {
+          const lr = progress.lastRun as any;
+          if (
+            !lr ||
+            typeof lr.endedAt !== 'number' ||
+            typeof lr.victory !== 'boolean' ||
+            typeof lr.roomsCleared !== 'number' ||
+            typeof lr.seconds !== 'number'
+          ) {
+            return false;
+          }
         }
       }
     }
@@ -453,6 +502,14 @@ function applySaveData(saveData: SaveData): void {
       });
     }
 
+    if (saveData.ruinsState?.progressByRuinId) {
+      useRuinsStore.setState({
+        progressByRuinId: saveData.ruinsState.progressByRuinId,
+        autoRepeatDefault: saveData.ruinsState.autoRepeatDefault ?? true,
+        activeRun: null,
+      });
+    }
+
     const selectedPath = saveData.gameState.selectedPath;
     if (selectedPath) {
       try {
@@ -572,6 +629,8 @@ export function deleteSave(): boolean {
 
     useTrialStore.getState().hardResetTrials();
 
+    useRuinsStore.getState().hardResetRuins();
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -621,6 +680,12 @@ export function deleteSaveAndHardReset(): void {
     useTrialStore.getState().hardResetTrials();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset trial state', error);
+  }
+
+  try {
+    useRuinsStore.getState().hardResetRuins();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset ruins state', error);
   }
 
   try {

@@ -154,13 +154,34 @@ export interface TrialsConfig {
   trials: TrialDef[];
 }
 
+export type RuinDropPoolEntry = {
+  itemId: string;
+  weight: number;
+  qtyMin: number;
+  qtyMax: number;
+};
+
+export type RuinDropTable = {
+  goldMin?: number;
+  goldMax?: number;
+  rolls: number;
+  pool: RuinDropPoolEntry[];
+  guaranteed?: Array<{ itemId: string; qty: number }>;
+};
+
 export interface RuinDef {
   id: string;
   cityId: string;
-  cityIndex: number;
+  cityIndex?: number;
   name?: string;
   roomCount: number;
-  finalChestBonus?: unknown;
+  roomPools: {
+    mobs: string[];
+    miniBoss?: string[];
+    finalBoss?: string[];
+  };
+  dropsPerRoom: RuinDropTable;
+  finalChestDrops: RuinDropTable;
 }
 
 export interface RuinsConfig {

@@ -287,6 +287,21 @@ export interface SaveData {
       }
     >;
   };
+
+  // Ruins progression
+  ruinsState?: {
+    progressByRuinId: Record<
+      string,
+      {
+        totalRuns: number;
+        totalRoomsCleared: number;
+        bossKills: number;
+        bestRunSeconds?: number;
+        lastRun?: { endedAt: number; victory: boolean; roomsCleared: number; seconds: number };
+      }
+    >;
+    autoRepeatDefault?: boolean;
+  };
 }
 
 export interface PrestigeUpgradeEffect {
@@ -389,7 +404,13 @@ export type CombatContext =
   | {
       type: 'ruins';
       cityId: string;
-      ruinsId: string;
+      sourceId: string;
+      ruinsId?: string;
+      runId: string;
+      roomIndex: number;
+      roomCount: number;
+      isBoss?: boolean;
+      cityIndex?: number;
     };
 
 /**

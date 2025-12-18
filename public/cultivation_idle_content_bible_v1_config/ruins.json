@@ -3,54 +3,37 @@
   "ruins": [
     {
       "id": "ruin_hollow_log_den",
-      "cityId": "city_pinewind_hamlet",
-      "cityIndex": 0,
       "name": "Hollow Log Den",
+      "cityId": "city_pinewind_hamlet",
       "roomCount": 5,
-      "finalChestBonus": {
-        "extraCommonMatChance": 0.1
-      }
-    },
-    {
-      "id": "ruin_broken_kiln",
-      "cityId": "city_stonecrag_town",
-      "cityIndex": 1,
-      "name": "Broken Kiln",
-      "roomCount": 6,
-      "finalChestBonus": {
-        "extraRuneDustChance": 0.1
-      }
-    },
-    {
-      "id": "ruin_echo_crystal_tunnels",
-      "cityId": "city_spirit_cavern_city",
-      "cityIndex": 2,
-      "name": "Echo Crystal Tunnels",
-      "roomCount": 7,
-      "finalChestBonus": {
-        "extraTechniqueFragmentsChance": 0.1
-      }
-    },
-    {
-      "id": "ruin_sunken_pavilion",
-      "cityId": "city_lotusford",
-      "cityIndex": 3,
-      "name": "Sunken Pavilion",
-      "roomCount": 7,
-      "finalChestBonus": {
-        "extraSoulInkChance": 0.08,
-        "extraSeedChance": 0.06
-      }
-    },
-    {
-      "id": "ruin_old_furnace_complex",
-      "cityId": "city_ironpeak_bastion",
-      "cityIndex": 4,
-      "name": "Old Furnace Complex",
-      "roomCount": 8,
-      "finalChestBonus": {
-        "extraArtifactShardChance": 0.1,
-        "extraRuneDustChance": 0.1
+      "roomPools": {
+        "mobs": ["enemy_forest_rabbit", "enemy_forest_wolf", "enemy_woodland_bandit"],
+        "finalBoss": ["boss_novice_guardian"]
+      },
+      "dropsPerRoom": {
+        "goldMin": 20,
+        "goldMax": 35,
+        "rolls": 2,
+        "pool": [
+          { "itemId": "mat_spirit_leaf", "weight": 40, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_beast_bone", "weight": 25, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_beast_blood", "weight": 25, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_low_grade_ore", "weight": 10, "qtyMin": 1, "qtyMax": 1 }
+        ]
+      },
+      "finalChestDrops": {
+        "goldMin": 80,
+        "goldMax": 120,
+        "rolls": 4,
+        "pool": [
+          { "itemId": "mat_spirit_dew", "weight": 5, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_spirit_leaf", "weight": 35, "qtyMin": 2, "qtyMax": 4 },
+          { "itemId": "mat_beast_bone", "weight": 30, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_core_fragment", "weight": 30, "qtyMin": 1, "qtyMax": 1 }
+        ],
+        "guaranteed": [
+          { "itemId": "mat_core_fragment", "qty": 1 }
+        ]
       }
     }
   ]

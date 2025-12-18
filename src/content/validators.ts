@@ -320,10 +320,58 @@ function validateRuins(config: RuinsConfig) {
   assertArray((config as any).ruins, 'ruins.json.ruins');
   const ruins = (config as any).ruins as RuinsConfig['ruins'];
 
+  const scrubGateItems = (items: any[], label: string) => {
+    return items.filter((entry) => {
+      if (typeof entry?.itemId !== 'string') return false;
+      if (entry.itemId.startsWith('gate_')) {
+        console.warn(`[ContentValidation] ${label} removed gate item ${entry.itemId}`);
+        return false;
+      }
+      return true;
+    });
+  };
+
   ruins.forEach((ruin, idx) => {
     assertObject(ruin, `ruins[${idx}]`);
     assert(typeof ruin.id === 'string', `ruins[${idx}].id must be a string`);
     assert(typeof ruin.cityId === 'string', `ruins[${idx}].cityId must be a string`);
+    assert(typeof ruin.roomCount === 'number', `ruins[${idx}].roomCount must be a number`);
+
+    assertObject((ruin as any).roomPools, `ruins[${idx}].roomPools`);
+    assertArray((ruin as any).roomPools.mobs, `ruins[${idx}].roomPools.mobs`);
+    if ((ruin as any).roomPools.miniBoss) {
+      assertArray((ruin as any).roomPools.miniBoss, `ruins[${idx}].roomPools.miniBoss`);
+    }
+    if ((ruin as any).roomPools.finalBoss) {
+      assertArray((ruin as any).roomPools.finalBoss, `ruins[${idx}].roomPools.finalBoss`);
+    }
+
+    const validateDropTable = (table: any, label: string) => {
+      assertObject(table, label);
+      assert('rolls' in table && typeof table.rolls === 'number', `${label}.rolls must be a number`);
+      assertArray(table.pool, `${label}.pool`);
+      const poolList = Array.isArray(table.pool) ? table.pool : [];
+      table.pool = scrubGateItems(poolList, `${label}.pool`);
+      (table.pool as any[]).forEach((entry: any, poolIdx: number) => {
+        assert(typeof entry.itemId === 'string', `${label}.pool[${poolIdx}].itemId must be a string`);
+        assert(typeof entry.weight === 'number', `${label}.pool[${poolIdx}].weight must be a number`);
+        assert(typeof entry.qtyMin === 'number', `${label}.pool[${poolIdx}].qtyMin must be a number`);
+        assert(typeof entry.qtyMax === 'number', `${label}.pool[${poolIdx}].qtyMax must be a number`);
+      });
+
+      const guaranteedList = Array.isArray(table.guaranteed) ? table.guaranteed : [];
+      table.guaranteed = scrubGateItems(guaranteedList, `${label}.guaranteed`);
+      (table.guaranteed as any[]).forEach((entry: any, gIdx: number) => {
+        assert(typeof entry.itemId === 'string', `${label}.guaranteed[${gIdx}].itemId must be a string`);
+        assert(typeof entry.qty === 'number', `${label}.guaranteed[${gIdx}].qty must be a number`);
+      });
+    };
+
+    assertObject((ruin as any).dropsPerRoom, `ruins[${idx}].dropsPerRoom`);
+    validateDropTable((ruin as any).dropsPerRoom, `ruins[${idx}].dropsPerRoom`);
+
+    assertObject((ruin as any).finalChestDrops, `ruins[${idx}].finalChestDrops`);
+    validateDropTable((ruin as any).finalChestDrops, `ruins[${idx}].finalChestDrops`);
   });
 
   assertUniqueIds(ruins, 'ruins.json.ruins');
@@ -550,6 +598,39 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     if (!(ruin.cityId in cityMap)) {
       addErr(`ruins[${idx}].cityId missing in cities`);
     }
+
+    const pools = ruin.roomPools;
+    pools.mobs.forEach((mobId, mobIdx) => {
+      if (!(mobId in enemyMap)) {
+        addErr(`ruins[${idx}].roomPools.mobs[${mobIdx}] missing in enemies`);
+      }
+    });
+    (pools.miniBoss ?? []).forEach((mobId, mobIdx) => {
+      if (!(mobId in enemyMap)) {
+        addErr(`ruins[${idx}].roomPools.miniBoss[${mobIdx}] missing in enemies`);
+      }
+    });
+    (pools.finalBoss ?? []).forEach((mobId, mobIdx) => {
+      if (!(mobId in enemyMap)) {
+        addErr(`ruins[${idx}].roomPools.finalBoss[${mobIdx}] missing in enemies`);
+      }
+    });
+
+    const validateDropTableItems = (table: any, label: string) => {
+      table.pool.forEach((entry: any, poolIdx: number) => {
+        if (!(entry.itemId in itemMap)) {
+          addErr(`${label}.pool[${poolIdx}] missing item in items`);
+        }
+      });
+      (table.guaranteed ?? []).forEach((entry: any, gIdx: number) => {
+        if (!(entry.itemId in itemMap)) {
+          addErr(`${label}.guaranteed[${gIdx}] missing item in items`);
+        }
+      });
+    };
+
+    validateDropTableItems(ruin.dropsPerRoom as any, `ruins[${idx}].dropsPerRoom`);
+    validateDropTableItems(ruin.finalChestDrops as any, `ruins[${idx}].finalChestDrops`);
   });
 
   alchemyRecipes.forEach((recipe, idx) => {

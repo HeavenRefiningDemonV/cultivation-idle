@@ -11,6 +11,7 @@ import { useActivityStore } from './activityStore';
 import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
+import { useRuinsStore } from './ruinsStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
@@ -329,6 +330,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
         (context && 'isBoss' in context ? (context as any).isBoss : undefined) ??
         (role === 'boss' || tags.includes('boss'));
 
+      const roomIndex = context?.type === 'ruins' ? context.roomIndex ?? 0 : 0;
+      const roomCount = context?.type === 'ruins' ? context.roomCount ?? 1 : 1;
+      const difficulty: 'outskirts' | 'trial' | 'ruins' | 'generic' =
+        context?.type === 'ruins' ? 'ruins' : context?.type === 'trial' ? 'trial' : 'outskirts';
+
       const enemyScaled = createEnemy(enemyTemplateId, {
         cityIndex,
         isBoss,
@@ -337,6 +343,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
           def: playerStats.def,
           maxHp: playerStats.maxHp,
         },
+        difficulty,
+        roomIndex,
+        roomCount,
       });
 
       const enemy: EnemyDefinition & { mechanics?: EnemyMechanic[] } = {
@@ -733,6 +742,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
         return;
       }
 
+      if (combatContext.type === 'ruins') {
+        const { runId, sourceId, cityId, roomIndex } = combatContext;
+        const ruinId = sourceId ?? (combatContext as any).ruinsId;
+        if (runId && ruinId && cityId) {
+          useRuinsStore.getState().handleRoomVictory({ runId, ruinId, cityId, roomIndex });
+        } else {
+          console.warn('[CombatStore] Missing ruins context data', combatContext);
+          useActivityStore.getState().stopActivity();
+          useCombatStore.getState().exitCombat();
+        }
+        return;
+      }
+
       if (combatContext.type === 'outskirts') {
         const { cityId, sourceId } = combatContext;
         const contentStore = useContentStore.getState();
@@ -920,6 +942,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
         useActivityStore.getState().stopActivity();
         if (context.eligible) {
           useTrialStore.getState().recordFailure(context.trialId);
+        }
+      }
+
+      if (context?.type === 'ruins') {
+        useActivityStore.getState().stopActivity();
+        const ruinId = context.sourceId ?? (context as any).ruinsId;
+        if (ruinId) {
+          useRuinsStore.getState().handleRunDefeat({
+            runId: context.runId,
+            ruinId,
+            cityId: context.cityId,
+            roomIndex: context.roomIndex,
+          });
         }
       }
 
