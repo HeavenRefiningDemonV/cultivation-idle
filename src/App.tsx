@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { GameLayout } from './components/GameLayout';
 import { ContentInitGate } from './components/system/ContentInitGate';
 import { initializeGame } from './systems/gameLoop';
+import { useShopStore } from './stores/shopStore';
 import './App.scss';
 
 /**
@@ -30,6 +31,21 @@ function App() {
       setInitError(`Game initialization error: ${error}`);
     }
   }, []); // Run once on mount
+
+  useEffect(() => {
+    const store = useShopStore.getState();
+    store.ensureDayKeyCurrent();
+
+    const intervalId = window.setInterval(() => {
+      try {
+        useShopStore.getState().ensureDayKeyCurrent();
+      } catch (error) {
+        console.warn('[App] Failed to refresh shop day key', error);
+      }
+    }, 60_000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   // Show error screen if initialization failed
   if (initError) {

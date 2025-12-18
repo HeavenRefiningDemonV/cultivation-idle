@@ -11,6 +11,8 @@ import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
 import { useTrialStore } from '../stores/trialStore';
 import { useRuinsStore } from '../stores/ruinsStore';
+import { useShopStore } from '../stores/shopStore';
+import { getDayKey } from './dayKey';
 
 /**
  * Save system constants
@@ -40,6 +42,7 @@ function gatherGameState(): SaveData {
   const cityState = useCityStore.getState();
   const trialState = useTrialStore.getState();
   const ruinsState = useRuinsStore.getState();
+  const shopState = useShopStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -111,6 +114,16 @@ function gatherGameState(): SaveData {
     ruinsState: {
       progressByRuinId: { ...ruinsState.progressByRuinId },
       autoRepeatDefault: ruinsState.autoRepeatDefault,
+    },
+
+    shopsState: {
+      dayKey: shopState.dayKey,
+      purchasedToday: Object.fromEntries(
+        Object.entries(shopState.purchasedToday).map(([shopId, entries]) => [
+          shopId,
+          { ...entries },
+        ]),
+      ),
     },
   };
 
@@ -281,6 +294,21 @@ function validateSaveData(data: unknown): data is SaveData {
           ) {
             return false;
           }
+        }
+      }
+    }
+
+    if ('shopsState' in record && record.shopsState) {
+      const ss = record.shopsState as Record<string, unknown>;
+      if (typeof ss.dayKey !== 'string') return false;
+      if (typeof ss.purchasedToday !== 'object' || ss.purchasedToday === null) return false;
+
+      const purchasedByShop = ss.purchasedToday as Record<string, unknown>;
+      for (const value of Object.values(purchasedByShop)) {
+        if (!value || typeof value !== 'object') return false;
+        const entries = value as Record<string, unknown>;
+        for (const count of Object.values(entries)) {
+          if (typeof count !== 'number') return false;
         }
       }
     }
@@ -528,6 +556,9 @@ function applySaveData(saveData: SaveData): void {
       });
     }
 
+    const shopsPayload = saveData.shopsState ?? { dayKey: getDayKey(), purchasedToday: {} };
+    useShopStore.getState().hydrate(shopsPayload);
+
     const selectedPath = saveData.gameState.selectedPath;
     if (selectedPath) {
       try {
@@ -643,6 +674,8 @@ export function deleteSave(): boolean {
 
     useRuinsStore.getState().hardResetRuins();
 
+    useShopStore.getState().hardReset();
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -698,6 +731,12 @@ export function deleteSaveAndHardReset(): void {
     useRuinsStore.getState().hardResetRuins();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset ruins state', error);
+  }
+
+  try {
+    useShopStore.getState().hardReset();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset shop state', error);
   }
 
   try {

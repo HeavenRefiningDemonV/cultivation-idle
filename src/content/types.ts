@@ -235,13 +235,43 @@ export interface TalismanRecipesConfig {
   }>;
 }
 
+export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
+
+export type ApothecaryPrice = Partial<Record<CurrencyKey, string>>;
+
+export interface ApothecaryStockConfig {
+  id?: string;
+  itemId: string;
+  qty?: number;
+  buy?: Record<string, number | string>;
+  dailyLimit?: number | null;
+}
+
+export interface ApothecaryShopConfig {
+  id: string;
+  cityId: string;
+  name?: string;
+  stock: ApothecaryStockConfig[];
+}
+
+export interface ApothecaryStock {
+  id: string;
+  itemId: string;
+  qty?: number;
+  price: ApothecaryPrice;
+  dailyLimit?: number | null;
+}
+
+export interface ApothecaryShopDef {
+  id: string;
+  cityId: string;
+  name?: string;
+  stock: ApothecaryStock[];
+}
+
 export interface ApothecaryShopsConfig {
   version?: string;
-  shops: Array<{
-    id: string;
-    cityId: string;
-    stock: Array<{ itemId: string; buy: Record<string, number>; dailyLimit: number | null }>;
-  }>;
+  shops: ApothecaryShopConfig[];
 }
 
 export interface ExpeditionsConfig {
