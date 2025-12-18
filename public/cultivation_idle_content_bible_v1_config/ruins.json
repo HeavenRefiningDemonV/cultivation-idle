@@ -35,6 +35,178 @@
           { "itemId": "mat_core_fragment", "qty": 1 }
         ]
       }
+    },
+    {
+      "id": "ruin_broken_kiln",
+      "name": "Broken Kiln",
+      "cityId": "city_stonecrag_town",
+      "roomCount": 5,
+      "roomPools": {
+        "mobs": [
+          "enemy_stone_lizard",
+          "enemy_quarry_bandit",
+          "enemy_earth_sprite",
+          "enemy_iron_boar",
+          "enemy_kiln_smoke_imp"
+        ],
+        "finalBoss": ["boss_quarry_overseer"]
+      },
+      "dropsPerRoom": {
+        "goldMin": 35,
+        "goldMax": 55,
+        "rolls": 2,
+        "pool": [
+          { "itemId": "mat_stone_chunk", "weight": 35, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_iron_sand", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_quarry_ore", "weight": 20, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_fire_ash", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_beast_bone", "weight": 10, "qtyMin": 1, "qtyMax": 1 }
+        ]
+      },
+      "finalChestDrops": {
+        "goldMin": 120,
+        "goldMax": 180,
+        "rolls": 4,
+        "pool": [
+          { "itemId": "mat_earth_essence", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_quarry_ore", "weight": 30, "qtyMin": 2, "qtyMax": 3 },
+          { "itemId": "mat_stone_chunk", "weight": 30, "qtyMin": 2, "qtyMax": 4 },
+          { "itemId": "mat_iron_sand", "weight": 20, "qtyMin": 1, "qtyMax": 3 },
+          { "itemId": "frag_manual_mortal", "weight": 10, "qtyMin": 1, "qtyMax": 1 }
+        ],
+        "guaranteed": [
+          { "itemId": "frag_manual_mortal", "qty": 1 }
+        ]
+      }
+    },
+    {
+      "id": "ruin_echo_crystal_tunnels",
+      "name": "Echo Crystal Tunnels",
+      "cityId": "city_spirit_cavern_city",
+      "roomCount": 6,
+      "roomPools": {
+        "mobs": [
+          "enemy_crystal_mite",
+          "enemy_cave_spirit",
+          "enemy_shadow_slime",
+          "enemy_ancient_miner",
+          "enemy_aura_wisp"
+        ],
+        "finalBoss": ["boss_cavern_patriarch"]
+      },
+      "dropsPerRoom": {
+        "goldMin": 45,
+        "goldMax": 70,
+        "rolls": 2,
+        "pool": [
+          { "itemId": "mat_core_fragment", "weight": 30, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_crystal_shard", "weight": 30, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_aura_residue", "weight": 20, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_spirit_stone_chunk", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_rune_dust", "weight": 10, "qtyMin": 1, "qtyMax": 2 }
+        ]
+      },
+      "finalChestDrops": {
+        "goldMin": 150,
+        "goldMax": 220,
+        "rolls": 4,
+        "pool": [
+          { "itemId": "mat_artifact_shard", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_crystal_shard", "weight": 25, "qtyMin": 2, "qtyMax": 4 },
+          { "itemId": "mat_core_fragment", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_aura_residue", "weight": 20, "qtyMin": 2, "qtyMax": 3 },
+          { "itemId": "frag_manual_mortal", "weight": 20, "qtyMin": 1, "qtyMax": 1 }
+        ],
+        "guaranteed": [
+          { "itemId": "mat_core_fragment", "qty": 1 }
+        ]
+      }
+    },
+    {
+      "id": "ruin_sunken_pavilion",
+      "name": "Sunken Pavilion",
+      "cityId": "city_lotusford",
+      "roomCount": 6,
+      "roomPools": {
+        "mobs": [
+          "enemy_venom_frog",
+          "enemy_lotus_spirit",
+          "enemy_marsh_raider",
+          "enemy_mist_wraith",
+          "enemy_swamp_tortoise"
+        ],
+        "finalBoss": ["boss_marsh_sovereign"]
+      },
+      "dropsPerRoom": {
+        "goldMin": 55,
+        "goldMax": 85,
+        "rolls": 2,
+        "pool": [
+          { "itemId": "mat_lotus_pollen", "weight": 30, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_mist_pearl", "weight": 25, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_venom_sac", "weight": 20, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_soul_ember", "weight": 15, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_rune_dust", "weight": 10, "qtyMin": 1, "qtyMax": 2 }
+        ]
+      },
+      "finalChestDrops": {
+        "goldMin": 180,
+        "goldMax": 260,
+        "rolls": 4,
+        "pool": [
+          { "itemId": "mat_seed_ancient", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_lotus_pollen", "weight": 25, "qtyMin": 2, "qtyMax": 4 },
+          { "itemId": "mat_mist_pearl", "weight": 20, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_soul_ember", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "frag_manual_mortal", "weight": 20, "qtyMin": 1, "qtyMax": 1 }
+        ],
+        "guaranteed": [
+          { "itemId": "frag_manual_mortal", "qty": 1 }
+        ]
+      }
+    },
+    {
+      "id": "ruin_old_furnace_complex",
+      "name": "Old Furnace Complex",
+      "cityId": "city_ironpeak_bastion",
+      "roomCount": 7,
+      "roomPools": {
+        "mobs": [
+          "enemy_iron_boar_elite",
+          "enemy_blade_monk",
+          "enemy_ridge_bandit",
+          "enemy_metal_spirit",
+          "enemy_furnace_wraith"
+        ],
+        "finalBoss": ["boss_ironpeak_warlord"]
+      },
+      "dropsPerRoom": {
+        "goldMin": 65,
+        "goldMax": 95,
+        "rolls": 2,
+        "pool": [
+          { "itemId": "mat_spirit_steel_ore", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_blade_core", "weight": 20, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_furnace_cinder", "weight": 20, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_iron_sand", "weight": 15, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_rune_dust", "weight": 20, "qtyMin": 1, "qtyMax": 2 }
+        ]
+      },
+      "finalChestDrops": {
+        "goldMin": 220,
+        "goldMax": 300,
+        "rolls": 4,
+        "pool": [
+          { "itemId": "mat_thunder_sand", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_spirit_steel_ore", "weight": 25, "qtyMin": 2, "qtyMax": 4 },
+          { "itemId": "mat_blade_core", "weight": 20, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_furnace_cinder", "weight": 25, "qtyMin": 1, "qtyMax": 3 },
+          { "itemId": "mat_artifact_shard", "weight": 20, "qtyMin": 1, "qtyMax": 1 }
+        ],
+        "guaranteed": [
+          { "itemId": "mat_artifact_shard", "qty": 1 }
+        ]
+      }
     }
   ]
 }
