@@ -88,8 +88,6 @@ export function StatusScreen() {
   // Inventory Store
   const gold = useInventoryStore((state) => state.gold);
   const items = useInventoryStore((state) => state.items);
-  const equippedWeapon = useInventoryStore((state) => state.getEquippedWeaponDefinition());
-  const equippedAccessory = useInventoryStore((state) => state.getEquippedAccessoryDefinition());
 
   // Combat Store (for statistics)
   const combatLog = useCombatStore((state) => state.combatLog);
@@ -163,63 +161,8 @@ export function StatusScreen() {
             {/* Resources */}
             <StatCard title="Resources">
               <StatRow label="Gold" value={formatNumber(gold)} tone="gold" />
-              <StatRow label="Inventory Items" value={items.length} tone="muted" />
+              <StatRow label="Inventory Items" value={Object.keys(items).length} tone="muted" />
             </StatCard>
-
-            {/* Equipment Section */}
-            <div className={'statusScreenEquipmentSection'}>
-              <SectionHeader icon="⚔️" title="Equipment" />
-
-              {/* Weapon */}
-              <div className={'statusScreenEquipmentBlock'}>
-                <div className={'statusScreenEquipmentLabel'}>Weapon</div>
-                {equippedWeapon ? (
-                  <div className={'statusScreenEquipmentCard'}>
-                    <div className={'statusScreenEquipmentNamePurple'}>{equippedWeapon.name}</div>
-                    <div className={'statusScreenEquipmentMeta'}>
-                      {equippedWeapon.rarity.charAt(0).toUpperCase() + equippedWeapon.rarity.slice(1)} Weapon
-                    </div>
-                    {equippedWeapon.stats && (
-                      <div className={'statusScreenEquipmentStats'}>
-                        {equippedWeapon.stats.atk && (
-                          <div>ATK: +{formatNumber(equippedWeapon.stats.atk)}</div>
-                        )}
-                        {equippedWeapon.stats.crit && (
-                          <div>Crit Rate: +{formatPercentFromValue(equippedWeapon.stats.crit, 0)}</div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className={'statusScreenEquipmentEmpty'}>No weapon equipped</div>
-                )}
-              </div>
-
-              {/* Accessory */}
-              <div>
-                <div className={'statusScreenEquipmentLabel'}>Accessory</div>
-                {equippedAccessory ? (
-                  <div className={`${'statusScreenEquipmentCard'} ${'statusScreenEquipmentCardAccessory'}`}>
-                    <div className={'statusScreenEquipmentNameCyan'}>{equippedAccessory.name}</div>
-                    <div className={'statusScreenEquipmentMeta'}>
-                      {equippedAccessory.rarity.charAt(0).toUpperCase() + equippedAccessory.rarity.slice(1)} Accessory
-                    </div>
-                    {equippedAccessory.stats && (
-                      <div className={'statusScreenEquipmentStats'}>
-                        {equippedAccessory.stats.hp && (
-                          <div>HP: +{formatNumber(equippedAccessory.stats.hp)}</div>
-                        )}
-                        {equippedAccessory.stats.def && (
-                          <div>DEF: +{formatNumber(equippedAccessory.stats.def)}</div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className={'statusScreenEquipmentEmpty'}>No accessory equipped</div>
-                )}
-              </div>
-            </div>
 
             {/* Additional Info */}
             <div className={'statusScreenMiscPanel'}>

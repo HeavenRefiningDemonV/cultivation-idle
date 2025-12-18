@@ -224,13 +224,12 @@ export interface SaveData {
 
   // Inventory state
   inventoryState: {
-    items: InventoryItem[];
-    equippedWeapon: string | null;
-    equippedAccessory: string | null;
-    gold: string;
-    spiritStones?: string;
-    merit?: string;
-    maxSlots: number;
+    currencies: {
+      gold: string;
+      spiritStones: string;
+      merit: string;
+    };
+    items: Record<string, number>;
   };
 
   // Combat settings (not combat state, just settings)
@@ -522,70 +521,34 @@ export interface ItemDefinition {
   maxStack: number;
 }
 
-/**
- * Inventory item instance
- */
-export interface InventoryItem {
-  id: string;              // Unique instance ID
-  itemId: string;          // Reference to ItemDefinition
-  quantity: number;
-  equipped?: boolean;      // Marked when item is currently equipped
-}
-
-/**
- * Equipment bonus stats
- */
-export interface EquipmentStats {
-  hp: string;
-  atk: string;
-  def: string;
-  crit: number;
-  critDmg: number;
-  dodge: number;
-  qiGain: number;
-}
+export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
 
 /**
  * Inventory state
  */
 export interface InventoryState {
-  // Items
-  items: InventoryItem[];
+  currencies: Record<CurrencyKey, string>;
+  items: Record<string, number>;
+  gold: string;
+  spiritStones: string;
+  merit: string;
 
-  // Equipment
-  equippedWeaponId: string | null;
-  equippedAccessoryId: string | null;
+  addCurrency: (key: CurrencyKey, amount: string) => void;
+  spendCurrency: (key: CurrencyKey, amount: string) => boolean;
+  canAffordCurrency: (costs: Partial<Record<CurrencyKey, string>>) => boolean;
+  spendCurrencies: (costs: Partial<Record<CurrencyKey, string>>) => boolean;
 
-  // Currency
-  gold: string;            // Gold amount (Decimal string)
-  spiritStones: string;    // Spirit Stones amount (Decimal string)
-  merit: string;           // Merit amount (Decimal string)
-
-  // Capacity
-  maxSlots: number;
-
-  // Actions
   addItem: (itemId: string, quantity: number) => boolean;
   removeItem: (itemId: string, quantity: number) => boolean;
-  equipWeapon: (inventoryItemId: string) => boolean;
-  unequipWeapon: () => boolean;
-  equipAccessory: (inventoryItemId: string) => boolean;
-  unequipAccessory: () => boolean;
-  useConsumable: (itemId: string) => boolean;
+  getQty: (itemId: string) => number;
+
   addGold: (amount: string) => void;
-  removeGold: (amount: string) => boolean;
   addSpiritStones: (amount: string) => void;
-  removeSpiritStones: (amount: string) => boolean;
   addMerit: (amount: string) => void;
-  removeMerit: (amount: string) => boolean;
-  sellItem: (itemId: string, quantity?: number) => boolean;
-  getEquipmentStats: () => EquipmentStats;
   getItemCount: (itemId: string) => number;
-  hasItem: (itemId: string, quantity?: number) => boolean;
+
   resetInventory: () => void;
   hardResetInventory: () => void;
-  getEquippedWeaponDefinition: () => ItemDefinition | null;
-  getEquippedAccessoryDefinition: () => ItemDefinition | null;
 }
 
 /**

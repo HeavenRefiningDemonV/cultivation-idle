@@ -193,3 +193,8 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     return technique;
   },
 }));
+
+export function getItemDef(itemId: string): ItemDef | null {
+  const maps = useContentStore.getState().maps;
+  return maps?.itemsById?.[itemId] ?? null;
+}

@@ -1,5 +1,6 @@
-import { useInventoryStore, getItemDefinition } from '../stores/inventoryStore';
+import { useInventoryStore } from '../stores/inventoryStore';
 import { useRewardsLogStore } from '../stores/rewardsLogStore';
+import { getItemDef } from '../stores/contentStore';
 
 export type RewardCurrencyBundle = {
   gold?: string;
@@ -39,7 +40,7 @@ function normalizeCurrency(amount: string | undefined): string {
 }
 
 function nameForItem(itemId: string): string {
-  const def = getItemDefinition(itemId);
+  const def = getItemDef(itemId);
   return def?.name ?? itemId;
 }
 
@@ -89,20 +90,19 @@ export function grantRewards(bundle: RewardBundle, reason: string): GrantRewards
 
   const gold = normalizeCurrency(currencies.gold);
   if (gold !== '0') {
-    inventory.addGold(gold);
+    inventory.addCurrency('gold', gold);
     appliedCurrencies.gold = gold;
   }
 
   const spiritStones = normalizeCurrency(currencies.spiritStones);
   if (spiritStones !== '0') {
-    // Safe even if UI doesn't show it yet.
-    inventory.addSpiritStones(spiritStones);
+    inventory.addCurrency('spiritStones', spiritStones);
     appliedCurrencies.spiritStones = spiritStones;
   }
 
   const merit = normalizeCurrency(currencies.merit);
   if (merit !== '0') {
-    inventory.addMerit(merit);
+    inventory.addCurrency('merit', merit);
     appliedCurrencies.merit = merit;
   }
 

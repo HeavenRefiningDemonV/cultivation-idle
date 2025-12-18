@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
-import { D } from '../utils/numbers';
 import { saveGame } from '../utils/saveload';
 
 /**
@@ -441,14 +440,16 @@ export const usePrestigeStore = create<PrestigeState>()(
       const cost = state.getSpiritRootRerollCost();
       const inventoryStore = _getInventoryStore();
 
+      const costStr = cost.toString();
+
       // Check if player has enough gold
-      if (D(inventoryStore.gold).lt(cost)) {
+      if (!inventoryStore.canAffordCurrency({ gold: costStr })) {
         console.log(`[SpiritRoot] Not enough gold to reroll (need ${cost})`);
         return false;
       }
 
       // Deduct gold
-      if (!inventoryStore.removeGold(cost.toString())) {
+      if (!inventoryStore.spendCurrency('gold', costStr)) {
         return false;
       }
 

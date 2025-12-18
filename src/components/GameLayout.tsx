@@ -5,7 +5,7 @@ import { Sidebar } from './Sidebar';
 import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
 import { WorldScreen } from './screens/WorldScreen';
-import { InventoryScreen } from './screens/InventoryScreen';
+import InventoryScreen from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 import { SettingsScreen } from './screens/SettingsScreen';

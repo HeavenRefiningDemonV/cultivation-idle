@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useCallback } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
+import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
@@ -8,6 +8,7 @@ import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { GATE_ITEMS } from '../../systems/loot';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
+import { getItemDef } from '../../stores/contentStore';
 import cultivatorImage from "../../assets/onscreen/cbg_full.png";
 import dantianImage from "../../assets/onscreen/qisign.png";
 import longBar from "../../assets/menus/bar_long.png";
@@ -59,7 +60,7 @@ export function CultivateScreen() {
 
   const breakthrough = useGameStore((state) => state.breakthrough);
   const setFocusMode = useGameStore((state) => state.setFocusMode);
-  const inventoryItems = useInventoryStore((state) => state.items);
+  const getItemCount = useInventoryStore((state) => state.getItemCount);
   const {
     showPathSelectionModal,
     showPerkSelectionModal,
@@ -88,16 +89,13 @@ export function CultivateScreen() {
 
   const requiredGateItemDefinition = useMemo(() => {
     if (!requiredGateItem) return null;
-    return getItemDefinition(requiredGateItem) || null;
+    return getItemDef(requiredGateItem) || null;
   }, [requiredGateItem]);
 
   const gateItemCount = useMemo(() => {
     if (!requiredGateItem) return 0;
-    const matchingItem = inventoryItems.find(
-      (item) => item.itemId === requiredGateItem
-    );
-    return matchingItem?.quantity ?? 0;
-  }, [inventoryItems, requiredGateItem]);
+    return getItemCount(requiredGateItem);
+  }, [getItemCount, requiredGateItem]);
 
   const hasRequiredToken = useMemo(() => {
     if (!requiredGateItem) return true;

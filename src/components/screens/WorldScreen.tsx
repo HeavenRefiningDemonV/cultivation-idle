@@ -10,7 +10,6 @@ import { useTrialStore } from '../../stores/trialStore';
 import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { grantRewards } from '../../systems/rewards';
-import { greaterThanOrEqualTo } from '../../utils/numbers';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -277,19 +276,27 @@ export function WorldScreen() {
     const spiritStoneCost = trialFailSafeCost.spiritStones;
     const meritCost = trialFailSafeCost.merit;
 
-    const canAfford =
-      (!goldCost || greaterThanOrEqualTo(inventory.gold, goldCost)) &&
-      (!spiritStoneCost || greaterThanOrEqualTo(inventory.spiritStones, spiritStoneCost)) &&
-      (!meritCost || greaterThanOrEqualTo(inventory.merit, meritCost));
+    const canAfford = inventory.canAffordCurrency({
+      gold: goldCost,
+      spiritStones: spiritStoneCost,
+      merit: meritCost,
+    });
 
     if (!canAfford) {
       console.warn('[WorldScreen] Cannot afford fail-safe purchase');
       return;
     }
 
-    if (goldCost) inventory.removeGold(goldCost);
-    if (spiritStoneCost) inventory.removeSpiritStones(spiritStoneCost);
-    if (meritCost) inventory.removeMerit(meritCost);
+    const spent = inventory.spendCurrencies({
+      gold: goldCost,
+      spiritStones: spiritStoneCost,
+      merit: meritCost,
+    });
+
+    if (!spent) {
+      console.warn('[WorldScreen] Failed to deduct currencies for fail-safe purchase');
+      return;
+    }
 
     grantRewards({ items: [{ itemId: trialDef.gateItemId, qty: 1 }] }, 'Gate Trial fail-safe purchase');
   };

@@ -1,343 +1,85 @@
-.inventoryScreenRoot {
-  max-width: 1100px;
-  margin: 0 auto;
+.inventory-screen {
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.inventoryScreenHeader {
-  text-align: center;
-}
-
-.inventoryScreenTitle {
-  margin: 0 0 8px 0;
-  font-family: 'Julee', cursive;
-  font-size: 36px;
-  font-weight: 700;
-  color: #fbbf24;
-}
-
-.inventoryScreenGoldRow {
-  color: rgba(251, 191, 36, 0.9);
-  font-size: 18px;
-}
-
-.inventoryScreenSlotInfo {
-  margin-top: 4px;
-  color: #000000;
-  font-size: 14px;
-}
-
-.inventoryScreenEquipmentPanel {
-  background: transparent;
-  border-radius: 14px;
-  padding: 24px;
-}
-
-.inventoryScreenSectionTitle {
-  margin: 0 0 12px 0;
-  font-family: 'Julee', cursive;
-  font-size: 24px;
-  font-weight: 700;
-  color: #fbbf24;
-}
-
-.inventoryScreenEquipmentGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
 }
 
-.inventoryScreenSlotCard {
-  background: rgba(30, 41, 59, 0.55);
-  border: 2px solid rgba(251, 191, 36, 0.25);
-  border-radius: 14px;
-  padding: 16px;
+.inventory-currencies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
 }
 
-.inventoryScreenSlotTitle {
-  margin: 0 0 12px 0;
-  font-family: 'Julee', cursive;
-  font-size: 18px;
-  font-weight: 700;
-  color: #fbbf24;
-  text-transform: capitalize;
-}
-
-.inventoryScreenSlotContent {
+.inventory-currency-row {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #111318;
+  border: 1px solid #1f2430;
+  border-radius: 8px;
+}
+
+.inventory-currency-label {
+  font-weight: 600;
+}
+
+.inventory-currency-value {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.inventory-items {
+  background: #0d0f14;
+  border: 1px solid #1f2430;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.inventory-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 12px;
 }
 
-.inventoryScreenSlotName {
-  font-weight: 700;
-}
-
-.inventoryScreenSlotDescription {
-  margin: 0;
-  color: #000000;
-  font-size: 14px;
-}
-
-.inventoryScreenStatBlock {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.35);
-  border-radius: 10px;
-  padding: 8px;
-  font-size: 12px;
-  display: grid;
-  gap: 4px;
-}
-
-.inventoryScreenStatLine {
-  color: #4ade80;
-}
-
-.inventoryScreenSlotEmpty {
-  text-align: center;
-  padding: 32px 0;
-  color: #000000;
-}
-
-.inventoryScreenSlotEmptyIcon {
-  font-size: 2.5rem;
-  color: #475569;
-  margin-bottom: 8px;
-}
-
-.inventoryScreenActionButton {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  color: #fff;
-  background: #dc2626;
-  cursor: pointer;
-  transition: filter 0.15s ease, transform 0.15s ease;
-}
-
-.inventoryScreenActionButton:hover {
-  filter: brightness(1.05);
-}
-
-.inventoryScreenTabs {
-  display: flex;
-  gap: 8px;
-  border-bottom: 2px solid rgba(251, 191, 36, 0.3);
-}
-
-.inventoryScreenTabButton {
-  padding: 8px 12px;
-  font-family: 'Julee', cursive;
-  font-weight: 700;
-  text-transform: capitalize;
-  color: #000000;
-  background: transparent;
-  border: none;
-  border-bottom: 4px solid transparent;
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.inventoryScreenTabButton:hover {
-  color: #000000;
-}
-
-.inventoryScreenTabButtonActive {
-  color: #fbbf24;
-  border-color: #fbbf24;
-}
-
-.inventoryScreenInventorySection {
-  min-height: 400px;
-}
-
-.inventoryScreenEmptyState {
+.inventory-item-card {
+  border: 1px solid #242a37;
+  border-radius: 8px;
+  padding: 10px;
+  background: #141922;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 32px 0;
-  color: #000000;
+  gap: 6px;
 }
 
-.inventoryScreenEmptyIcon {
-  font-size: 3rem;
-  color: #475569;
-}
-
-.inventoryScreenEmptyTitle {
-  margin: 0;
-  color: #000000;
-  font-size: 20px;
-}
-
-.inventoryScreenCardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.inventoryScreenItemCard {
-  border: 2px solid #374151;
-  border-radius: 14px;
-  padding: 16px;
-  background: rgba(248, 250, 252, 0.9);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.inventoryScreenItemCard:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-}
-
-.inventoryScreenItemHeader {
+.inventory-item-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
+  align-items: center;
 }
 
-.inventoryScreenItemTitle {
-  margin: 0;
-  font-family: 'Julee', cursive;
-  font-size: 18px;
+.inventory-item-name {
   font-weight: 700;
 }
 
-.inventoryScreenItemMeta {
-  margin-top: 4px;
-  color: #475569;
-  font-size: 12px;
-  text-transform: capitalize;
+.inventory-item-qty {
+  font-family: 'JetBrains Mono', monospace;
 }
 
-.inventoryScreenQuantityBadge {
-  background: #334155;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.inventoryScreenItemDescription {
-  margin: 0 0 12px 0;
-  color: #475569;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.inventoryScreenEquipmentStats {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 12px;
-  display: grid;
-  gap: 4px;
-  color: #166534;
-  font-size: 12px;
-}
-
-.inventoryScreenConsumableStats {
-  background: rgba(59, 130, 246, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 12px;
-  color: #1d4ed8;
-  font-size: 12px;
-}
-
-.inventoryScreenItemActions {
+.inventory-item-meta {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #c5d0e6;
 }
 
-.inventoryScreenItemButton {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  color: #fff;
-  cursor: pointer;
-  transition: filter 0.15s ease, transform 0.15s ease;
-  font-size: 14px;
+.inventory-item-id {
+  font-size: 11px;
+  color: #7d8696;
+  word-break: break-all;
 }
 
-.inventoryScreenItemButton:hover {
-  filter: brightness(1.05);
-}
-
-.inventoryScreenButtonEquip {
-  background: #2563eb;
-}
-
-.inventoryScreenButtonUse {
-  background: #16a34a;
-}
-
-.inventoryScreenButtonSell {
-  background: #ca8a04;
-}
-
-.inventoryScreenRarityCommon {
-  border-color: #9ca3af;
-  background: #f8fafc;
-}
-
-.inventoryScreenRarityUncommon {
-  border-color: #22c55e;
-  background: #f0fdf4;
-}
-
-.inventoryScreenRarityRare {
-  border-color: #3b82f6;
-  background: #eff6ff;
-}
-
-.inventoryScreenRarityEpic {
-  border-color: #a855f7;
-  background: #f5f3ff;
-}
-
-.inventoryScreenRarityLegendary {
-  border-color: #ea580c;
-  background: #fff7ed;
-}
-
-.inventoryScreenRarityMythic {
-  border-color: #ef4444;
-  background: #fef2f2;
-}
-
-.inventoryScreenTextCommon {
-  color: #334155;
-}
-
-.inventoryScreenTextUncommon {
-  color: #166534;
-}
-
-.inventoryScreenTextRare {
-  color: #1d4ed8;
-}
-
-.inventoryScreenTextEpic {
-  color: #7e22ce;
-}
-
-.inventoryScreenTextLegendary {
-  color: #9a3412;
-}
-
-.inventoryScreenTextMythic {
-  color: #b91c1c;
+.inventory-empty {
+  padding: 8px;
+  color: #b8c1d8;
 }

@@ -75,13 +75,8 @@ function gatherGameState(): SaveData {
     },
 
     inventoryState: {
-      items: inventoryState.items,
-      equippedWeapon: inventoryState.equippedWeaponId,
-      equippedAccessory: inventoryState.equippedAccessoryId,
-      gold: inventoryState.gold,
-      spiritStones: inventoryState.spiritStones,
-      merit: inventoryState.merit,
-      maxSlots: inventoryState.maxSlots,
+      currencies: { ...inventoryState.currencies },
+      items: { ...inventoryState.items },
     },
 
     combatSettings: {
@@ -181,23 +176,22 @@ function validateSaveData(data: unknown): data is SaveData {
     }
 
     const is = record.inventoryState as Record<string, unknown>;
-    if (!Array.isArray((is as { items?: unknown }).items) || typeof is.gold !== 'string') return false;
-    if ('spiritStones' in is && (is as { spiritStones?: unknown }).spiritStones !== undefined && typeof (is as { spiritStones?: unknown }).spiritStones !== 'string') return false;
-    if ('merit' in is && (is as { merit?: unknown }).merit !== undefined && typeof (is as { merit?: unknown }).merit !== 'string') return false;
-    if (
-      'equippedWeapon' in is &&
-      (typeof (is as { equippedWeapon?: unknown }).equippedWeapon !== 'string' &&
-        (is as { equippedWeapon?: unknown }).equippedWeapon !== null)
-    ) {
-      return false;
-    }
-    if (
-      'equippedAccessory' in is &&
-      (typeof (is as { equippedAccessory?: unknown }).equippedAccessory !== 'string' &&
-        (is as { equippedAccessory?: unknown }).equippedAccessory !== null)
-    ) {
-      return false;
-    }
+    const itemsValue = (is as { items?: unknown }).items;
+    const itemsValid =
+      (typeof itemsValue === 'object' && itemsValue !== null) || Array.isArray(itemsValue);
+    if (!itemsValid) return false;
+
+    const currenciesValue = (is as { currencies?: unknown }).currencies as
+      | { gold?: unknown; spiritStones?: unknown; merit?: unknown }
+      | undefined;
+    const currenciesValid =
+      currenciesValue === undefined ||
+      (typeof currenciesValue === 'object' &&
+        currenciesValue !== null &&
+        typeof currenciesValue.gold === 'string' &&
+        typeof currenciesValue.spiritStones === 'string' &&
+        typeof currenciesValue.merit === 'string');
+    if (!currenciesValid) return false;
 
     const cs = record.combatSettings as Record<string, unknown>;
     if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
@@ -445,32 +439,56 @@ function applySaveData(saveData: SaveData): void {
       runStartTime: saveData.gameState.runStartTime || prestigeStore.runStartTime,
     });
 
-    // Apply to inventory store and re-bind equipped items
+    // Apply to inventory store
     useInventoryStore.setState((state) => {
-      state.items = (saveData.inventoryState.items || []).map((item) => ({
-        ...item,
-        equipped: false,
-      }));
-      state.equippedWeaponId = saveData.inventoryState.equippedWeapon ?? null;
-      state.equippedAccessoryId = saveData.inventoryState.equippedAccessory ?? null;
-      state.gold = saveData.inventoryState.gold;
-      state.spiritStones = typeof saveData.inventoryState.spiritStones === 'string' ? saveData.inventoryState.spiritStones : '0';
-      state.merit = typeof saveData.inventoryState.merit === 'string' ? saveData.inventoryState.merit : '0';
-      state.maxSlots = saveData.inventoryState.maxSlots;
+      const savedItems = saveData.inventoryState.items as unknown;
+      const nextItems: Record<string, number> = {};
 
-      const itemMap = new Map(state.items.map((item) => [item.id, item]));
-
-      if (state.equippedWeaponId && itemMap.has(state.equippedWeaponId)) {
-        itemMap.get(state.equippedWeaponId)!.equipped = true;
-      } else {
-        state.equippedWeaponId = null;
+      if (Array.isArray(savedItems)) {
+        for (const entry of savedItems as Array<{ itemId?: string; quantity?: number }>) {
+          if (!entry || typeof entry.itemId !== 'string') continue;
+          const qty = Math.floor(entry.quantity ?? 0);
+          if (Number.isNaN(qty) || qty <= 0) continue;
+          nextItems[entry.itemId] = (nextItems[entry.itemId] || 0) + qty;
+        }
+      } else if (savedItems && typeof savedItems === 'object') {
+        Object.entries(savedItems as Record<string, unknown>).forEach(([itemId, qty]) => {
+          if (typeof itemId !== 'string') return;
+          const amount = Math.floor(typeof qty === 'number' ? qty : 0);
+          if (Number.isNaN(amount) || amount <= 0) return;
+          nextItems[itemId] = amount;
+        });
       }
 
-      if (state.equippedAccessoryId && itemMap.has(state.equippedAccessoryId)) {
-        itemMap.get(state.equippedAccessoryId)!.equipped = true;
-      } else {
-        state.equippedAccessoryId = null;
-      }
+      const savedCurrencies = (saveData.inventoryState as { currencies?: Record<string, unknown> }).currencies;
+      const gold =
+        typeof savedCurrencies?.gold === 'string'
+          ? savedCurrencies.gold
+          : typeof (saveData.inventoryState as { gold?: unknown }).gold === 'string'
+            ? (saveData.inventoryState as { gold?: string }).gold!
+            : '0';
+      const spiritStones =
+        typeof savedCurrencies?.spiritStones === 'string'
+          ? savedCurrencies.spiritStones
+          : typeof (saveData.inventoryState as { spiritStones?: unknown }).spiritStones === 'string'
+            ? (saveData.inventoryState as { spiritStones?: string }).spiritStones!
+            : '0';
+      const merit =
+        typeof savedCurrencies?.merit === 'string'
+          ? savedCurrencies.merit
+          : typeof (saveData.inventoryState as { merit?: unknown }).merit === 'string'
+            ? (saveData.inventoryState as { merit?: string }).merit!
+            : '0';
+
+      state.currencies = {
+        gold,
+        spiritStones,
+        merit,
+      };
+      state.items = nextItems;
+      state.gold = gold;
+      state.spiritStones = spiritStones;
+      state.merit = merit;
     });
 
     // Apply combat settings
@@ -612,13 +630,7 @@ export function deleteSave(): boolean {
     const gameStore = useGameStore.getState();
     gameStore.resetRun();
 
-    useInventoryStore.setState({
-      items: [],
-      equippedWeaponId: null,
-      equippedAccessoryId: null,
-      gold: '0',
-      maxSlots: 20,
-    });
+    useInventoryStore.getState().hardResetInventory();
 
     useCombatStore.setState({
       autoAttack: false,

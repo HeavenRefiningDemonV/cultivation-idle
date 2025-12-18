@@ -1,14 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type {
-  GameState,
-  FocusMode,
-  CultivationPath,
-  EquipmentStats,
-  ActiveBuff,
-  BuffStat,
-} from '../types';
+import type { GameState, FocusMode, CultivationPath, ActiveBuff, BuffStat } from '../types';
 import {
   REALMS,
   PATH_MODIFIERS,
@@ -32,8 +25,7 @@ import { useTechniqueStore } from './techniqueStore';
 import { useUIStore } from './uiStore';
 
 interface InventoryStoreDeps {
-  getEquipmentStats: () => EquipmentStats;
-  hasItem: (itemId: string, quantity?: number) => boolean;
+  getItemCount: (itemId: string) => number;
   removeItem: (itemId: string, quantity: number) => boolean;
   resetInventory: () => void;
 }
@@ -347,7 +339,7 @@ export const useGameStore = create<GameState>()(
           }
         }
 
-        if (!inventoryStore || !inventoryStore.hasItem(gateItemId)) {
+        if (!inventoryStore || inventoryStore.getItemCount(gateItemId) <= 0) {
           console.warn(`[GameStore] Missing required breakthrough item: ${gateItemId}`);
           return false;
         }
@@ -504,20 +496,6 @@ export const useGameStore = create<GameState>()(
         }
       }
 
-      // Apply equipment Qi gain bonus
-      if (_getInventoryStore) {
-        try {
-          const inventoryStore = _getInventoryStore();
-          const equipmentStats = inventoryStore.getEquipmentStats();
-          if (equipmentStats.qiGain > 0) {
-            const equipmentMultiplier = D(1).plus(D(equipmentStats.qiGain).dividedBy(100));
-            qiPerSec = multiply(qiPerSec, equipmentMultiplier);
-          }
-        } catch {
-          // Equipment stats not available
-        }
-      }
-
       // Apply path perk bonuses
       for (const perkId of state.pathPerks) {
         const perk = getPerkById(perkId);
@@ -650,25 +628,6 @@ export const useGameStore = create<GameState>()(
           }
         } catch {
           // Prestige store not available
-        }
-      }
-
-      // Apply equipment bonuses
-      if (_getInventoryStore) {
-        try {
-          const inventoryStore = _getInventoryStore();
-          const equipmentStats = inventoryStore.getEquipmentStats();
-
-          hp = add(hp, equipmentStats.hp);
-          atk = add(atk, equipmentStats.atk);
-          def = add(def, equipmentStats.def);
-          crit += equipmentStats.crit;
-          critDmg += equipmentStats.critDmg;
-          dodge += equipmentStats.dodge;
-
-          // Qi gain bonus is applied in calculateQiPerSecond
-        } catch {
-          // Equipment stats not available, skip
         }
       }
 
