@@ -86,6 +86,7 @@ interface TechCollectionState {
 }
 
 const XP_SCALE = 3;
+export const MASTERY_XP_SCALE = XP_SCALE;
 
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: TechRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
@@ -276,7 +277,7 @@ function getRuneSlotsForGrade(grade: ManualGrade) {
   return runeSlotsByGrade[grade] ?? 0;
 }
 
-function normalizeOwnedState(
+export function normalizeTechEntry(
   techId: string,
   incoming?: Partial<TechniqueOwnedState> | null,
 ): TechniqueOwnedState {
@@ -320,7 +321,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const existing = get().unlockedTechs[techId];
       if (existing) return existing;
 
-      const normalized = normalizeOwnedState(techId);
+      const normalized = normalizeTechEntry(techId);
       set((state) => {
         state.unlockedTechs[techId] = normalized;
       });
@@ -332,7 +333,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       set((state) => {
         const existing = state.unlockedTechs[techId];
         if (existing?.unlocked) return;
-        const normalized = normalizeOwnedState(techId, {
+        const normalized = normalizeTechEntry(techId, {
           ...existing,
           ...meta,
           unlocked: true,
@@ -369,7 +370,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
     setManualGrade: (techId, grade) => {
       set((state) => {
-        const entry = state.unlockedTechs[techId] ?? normalizeOwnedState(techId);
+        const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
         if (!isHigherGrade(entry.manualGrade, grade)) {
           state.unlockedTechs[techId] = entry;
           return;
@@ -383,7 +384,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
     setRarityIfHigher: (techId, rarity) => {
       set((state) => {
-        const entry = state.unlockedTechs[techId] ?? normalizeOwnedState(techId);
+        const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
         if (!isHigherRarity(entry.rarity, rarity)) {
           state.unlockedTechs[techId] = entry;
           return;
@@ -777,7 +778,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const incoming = data.unlockedTechs ?? {};
 
         Object.entries(incoming).forEach(([techId, entry]) => {
-          unlockedTechs[techId] = normalizeOwnedState(techId, entry);
+          unlockedTechs[techId] = normalizeTechEntry(techId, entry);
         });
 
         state.unlockedTechs = unlockedTechs;
