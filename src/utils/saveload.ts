@@ -130,6 +130,7 @@ function gatherGameState(): SaveData {
     techCollectionState: {
       unlockedTechs: { ...techCollectionState.unlockedTechs },
       fragments: { ...techCollectionState.fragments },
+      rngSeed: techCollectionState.rngSeed,
     },
   };
 
@@ -582,6 +583,7 @@ function applySaveData(saveData: SaveData): void {
     const collectionState = saveData.techCollectionState ?? {
       unlockedTechs: {},
       fragments: {},
+      rngSeed: undefined,
     };
     useTechCollectionStore.getState().hydrate(collectionState);
 

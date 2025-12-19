@@ -307,6 +307,7 @@ export interface SaveData {
       }
     >;
     fragments: Record<string, number>;
+    rngSeed?: number;
   };
 
   // Trial progression

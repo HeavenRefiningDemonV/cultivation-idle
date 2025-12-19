@@ -1,4 +1,4 @@
-import { useMemo, type ChangeEvent } from 'react';
+import { useEffect, useMemo, type ChangeEvent } from 'react';
 import type { TechniqueDef } from '../content';
 import { useCombatStore } from '../stores/combatStore';
 import { useContentStore } from '../stores/contentStore';
@@ -49,6 +49,10 @@ export function TechniquesPanel() {
   const { loadouts, selectedLoadoutId, setSelectedLoadout, setAiProfile, equipTechnique } =
     useTechniqueStore();
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
+  const ensureTraits = useTechCollectionStore((state) => state.ensureTraits);
+  const rerollTraits = useTechCollectionStore((state) => state.rerollTraits);
+  const getEffectiveTraitSlots = useTechCollectionStore((state) => state.getEffectiveTraitSlots);
+  const getTraitDisplay = useTechCollectionStore((state) => state.getTraitDisplay);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const fragments = useTechCollectionStore((state) => state.fragments);
@@ -104,6 +108,12 @@ export function TechniquesPanel() {
   const recentTechniqueLog = useMemo(() => {
     return [...techniqueLog].slice(-10).reverse();
   }, [techniqueLog]);
+
+  useEffect(() => {
+    Object.keys(unlockedTechs).forEach((techId) => {
+      ensureTraits(techId);
+    });
+  }, [ensureTraits, unlockedTechs]);
 
   return (
     <div className={'worldScreenPlaceholder'}>
@@ -267,6 +277,12 @@ export function TechniquesPanel() {
               const fragmentCount = fragments[entry.id] ?? 0;
               const runeDustCount = items['mat_rune_dust'] ?? 0;
               const soulInkCount = cost ? (items[cost.soulInkItemId] ?? 0) : 0;
+              const traitSlots = getEffectiveTraitSlots(entry.id);
+              const traits = getTraitDisplay(entry.id);
+              const rerollInkId = 'reagent_soul_ink_t0';
+              const rerollInkName = itemsById[rerollInkId]?.name ?? 'Soul Ink';
+              const rerollInkQty = items[rerollInkId] ?? 0;
+              const canReroll = traitSlots > 0 && rerollInkQty >= 1;
               const canUpgrade =
                 cost &&
                 entry.rank < rankCap &&
@@ -294,6 +310,23 @@ export function TechniquesPanel() {
                   <div>
                     Rank: {getRankLabel(entry.rank)} / {getRankLabel(rankCap)}
                   </div>
+                  <div>
+                    Traits ({traits.length}/{traitSlots})
+                  </div>
+                  {traits.length === 0 && <div>No traits yet.</div>}
+                  {traits.map((trait) => (
+                    <div key={trait}>{trait}</div>
+                  ))}
+                  <button
+                    className={'worldScreenModuleButton'}
+                    onClick={() => rerollTraits(entry.id)}
+                    disabled={!canReroll}
+                  >
+                    Reroll Traits (cost: 1 {rerollInkName})
+                  </button>
+                  {!canReroll && traitSlots > 0 && (
+                    <div className={'worldScreenInlineError'}>Not enough soul ink.</div>
+                  )}
                   <div>
                     Cost:{' '}
                     {cost

@@ -419,6 +419,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         const rank = techCollection.unlockedTechs[techId]?.rank ?? 1;
         const rankMult = rankMultiplier(rank);
+        const scaling = getTechniqueScaling(techId);
         const effects = applyRankMultiplier(
           normalizeTechniqueEffects(techDef),
           rankMult,
@@ -433,7 +434,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
               id: buffId,
               stat: effect.stat,
               mode: effect.mode,
-              value: effect.value * rankMult,
+              value: effect.value * rankMult * scaling.traitMods.buffMult,
               endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
             });
           });
@@ -548,6 +549,24 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (scored[0]?.score > 0) return scored[0].techId;
 
       return scored[0]?.techId ?? null;
+    };
+
+    const getTechniqueScaling = (techId: string) => {
+      const techCollection = useTechCollectionStore.getState();
+      const isBoss = get().isBoss || get().combatContext.type === 'trial';
+      const traitMods = techCollection.getTraitModifiers(techId, isBoss);
+      const masteryCdr = techCollection.getMasteryCooldownReductionPct(techId);
+      const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
+
+      const cooldownReductionPct = Math.min(0.3, traitMods.cooldownReductionPct + masteryCdr);
+      const costReductionPct = Math.min(0.4, traitMods.costReductionPct + masteryCostReduction);
+
+      return {
+        traitMods,
+        cooldownReductionPct,
+        costReductionPct,
+        isBoss,
+      };
     };
 
     return {
@@ -1562,15 +1581,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
       const resourceCost = techDef.resourceCost ?? 0;
+      const { costReductionPct } = getTechniqueScaling(techId);
+      const effectiveCost = resourceCost * (1 - costReductionPct);
 
       if (resourceModel === 'qiPct') {
-        const costPct = resourceCost > 1 ? resourceCost / 100 : resourceCost;
+        const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
         const cost = state.combatResources.maxQi * costPct;
         return state.combatResources.qi >= cost;
       }
 
       if (resourceModel === 'intent') {
-        return state.combatResources.intent >= resourceCost;
+        return state.combatResources.intent >= effectiveCost;
       }
 
       return true;
@@ -1594,24 +1615,27 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
       const rankMult = rankMultiplier(rank);
+      const scaling = getTechniqueScaling(techId);
       const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef), rankMult);
       addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
 
       set((state) => {
         const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
         const resourceCost = techDef.resourceCost ?? 0;
+        const effectiveCost = resourceCost * (1 - scaling.costReductionPct);
 
         if (resourceModel === 'qiPct') {
-          const costPct = resourceCost > 1 ? resourceCost / 100 : resourceCost;
+          const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
           const cost = state.combatResources.maxQi * costPct;
           state.combatResources.qi = Math.max(0, state.combatResources.qi - cost);
         } else if (resourceModel === 'intent') {
-          state.combatResources.intent = Math.max(0, state.combatResources.intent - resourceCost);
+          state.combatResources.intent = Math.max(0, state.combatResources.intent - effectiveCost);
         }
 
         const baseCdSec = techDef.cooldownSec ?? 0;
         if (baseCdSec > 0) {
-          state.techniqueCooldowns[techId] = now + baseCdSec * 1000;
+          const cdSec = Math.max(0, baseCdSec * (1 - scaling.cooldownReductionPct));
+          state.techniqueCooldowns[techId] = now + cdSec * 1000;
         }
 
         state.lastTechniqueCastAt = now;
@@ -1636,7 +1660,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       effects.forEach((effect) => {
         switch (effect.type) {
           case 'damage': {
-            const damage = D(effectiveStats.atk).times(effect.mult);
+            const damage = D(effectiveStats.atk).times(effect.mult * scaling.traitMods.damageMult);
             set((state) => {
               const newHP = subtract(state.enemyHP, damage.toString());
               const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
@@ -1645,7 +1669,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'heal': {
-            const healAmount = maxHp.times(effect.mult);
+            const healAmount = maxHp.times(effect.mult * scaling.traitMods.healMult);
             set((state) => {
               const newHP = D(state.playerHP).plus(healAmount);
               const cappedHP = newHP.greaterThan(maxHp) ? maxHp : newHP;
@@ -1654,7 +1678,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'shield': {
-            const shieldAmount = maxHp.times(effect.mult).toNumber();
+            const shieldAmount = maxHp.times(effect.mult * scaling.traitMods.shieldMult).toNumber();
             const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
             const expiresAt = now + durationSec * 1000;
             set((state) => {
@@ -1678,7 +1702,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
                 id: buffId,
                 stat: effect.stat,
                 mode: effect.mode,
-                value: effect.value,
+                value: effect.value * scaling.traitMods.buffMult,
                 endsAt: now + durationSec * 1000,
               });
             });

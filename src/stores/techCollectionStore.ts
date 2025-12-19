@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
+import { randFloat } from '../utils/rng';
 
 export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
 export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
@@ -27,6 +28,7 @@ export interface TechniqueOwnedState {
 interface TechCollectionState {
   unlockedTechs: Record<string, TechniqueOwnedState>;
   fragments: Record<string, number>;
+  rngSeed: number;
   hasTech: (techId: string) => boolean;
   ensureTechState: (techId: string) => TechniqueOwnedState;
   unlockTech: (techId: string, meta?: Partial<TechniqueOwnedState>) => void;
@@ -38,6 +40,21 @@ interface TechCollectionState {
   getMasteryLevel: (techId: string) => number;
   getEffectiveRuneSlots: (techId: string) => number;
   getEffectiveTraitSlots: (techId: string) => number;
+  ensureTraits: (techId: string) => void;
+  rerollTraits: (techId: string) => { ok: boolean; reason?: string };
+  getTraitModifiers: (techId: string, isBoss: boolean) => {
+    damageMult: number;
+    healMult: number;
+    shieldMult: number;
+    buffMult: number;
+    cooldownReductionPct: number;
+    costReductionPct: number;
+    masteryGainPct: number;
+  };
+  getTraitDisplay: (techId: string) => string[];
+  nextRand: () => number;
+  getMasteryCooldownReductionPct: (techId: string) => number;
+  getMasteryCostReductionPct: (techId: string) => number;
   getRankCap: (techId: string) => number;
   getRankUpgradeCost: (nextRank: number) => {
     fragmentsRequired: number;
@@ -46,7 +63,11 @@ interface TechCollectionState {
     soulInkItemId: string;
   } | null;
   upgradeRank: (techId: string) => { ok: boolean; reason?: string };
-  hydrate: (data: { unlockedTechs?: Record<string, Partial<TechniqueOwnedState>>; fragments?: Record<string, number> }) => void;
+  hydrate: (data: {
+    unlockedTechs?: Record<string, Partial<TechniqueOwnedState>>;
+    fragments?: Record<string, number>;
+    rngSeed?: number;
+  }) => void;
   hardReset: () => void;
 }
 
@@ -118,9 +139,10 @@ const createDefaultOwnedState = (): TechniqueOwnedState => ({
   runes: [],
 });
 
-const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'fragments'> => ({
+const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'fragments' | 'rngSeed'> => ({
   unlockedTechs: {},
   fragments: {},
+  rngSeed: 123456789,
 });
 
 const rankCapsByGrade: Record<ManualGrade, number> = {
@@ -151,6 +173,73 @@ const rankCostTable: Record<
 };
 
 const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
+const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
+
+type TraitDefinition = {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+};
+
+const TRAIT_LIBRARY: TraitDefinition[] = [
+  { id: 'dmgPct', label: 'Damage', min: 0.03, max: 0.12 },
+  { id: 'healPct', label: 'Heal', min: 0.03, max: 0.12 },
+  { id: 'shieldPct', label: 'Shield', min: 0.03, max: 0.12 },
+  { id: 'cooldownReductionPct', label: 'Cooldown', min: 0.02, max: 0.08 },
+  { id: 'costReductionPct', label: 'Cost', min: 0.02, max: 0.1 },
+  { id: 'masteryGainPct', label: 'Mastery Gain', min: 0.05, max: 0.2 },
+  { id: 'vsBossDamagePct', label: 'Boss Damage', min: 0.04, max: 0.15 },
+];
+
+const MAX_TRAIT_CDR = 0.15;
+const MAX_TRAIT_COST_REDUCTION = 0.25;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function formatPercent(value: number) {
+  return `${Math.round(value * 100)}%`;
+}
+
+function getTraitDefinition(id: string): TraitDefinition | undefined {
+  return TRAIT_LIBRARY.find((trait) => trait.id === id);
+}
+
+function rollTraitValue(def: TraitDefinition, seed: number) {
+  const { value, seed: next } = randFloat(seed);
+  const rolled = def.min + (def.max - def.min) * value;
+  return { value: Number(rolled.toFixed(4)), seed: next };
+}
+
+function rollTraits(
+  count: number,
+  seed: number,
+  existingIds: string[] = [],
+): { traits: TechniqueTrait[]; seed: number } {
+  const traits: TechniqueTrait[] = [];
+  const available = TRAIT_LIBRARY.map((trait) => trait.id);
+  let nextSeed = seed;
+  const used = new Set(existingIds);
+
+  for (let i = 0; i < count; i += 1) {
+    const pool = available.filter((id) => !used.has(id));
+    const choices = pool.length > 0 ? pool : available;
+    const { value, seed: seeded } = randFloat(nextSeed);
+    nextSeed = seeded;
+    const index = Math.floor(value * choices.length);
+    const traitId = choices[Math.min(index, choices.length - 1)];
+    used.add(traitId);
+    const def = getTraitDefinition(traitId);
+    if (!def) continue;
+    const rolled = rollTraitValue(def, nextSeed);
+    nextSeed = rolled.seed;
+    traits.push({ id: traitId, value: rolled.value });
+  }
+
+  return { traits, seed: nextSeed };
+}
 
 function normalizeOwnedState(
   techId: string,
@@ -179,6 +268,14 @@ export const useTechCollectionStore = create<TechCollectionState>()(
   immer((set, get) => ({
     ...createInitialState(),
 
+    nextRand: () => {
+      const { value, seed } = randFloat(get().rngSeed);
+      set((state) => {
+        state.rngSeed = seed;
+      });
+      return value;
+    },
+
     hasTech: (techId) => {
       return Boolean(get().unlockedTechs[techId]?.unlocked);
     },
@@ -205,6 +302,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         });
         state.unlockedTechs[techId] = normalized;
       });
+      get().ensureTraits(techId);
     },
 
     addFragments: (techId, qty) => {
@@ -225,7 +323,9 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       set((state) => {
         const entry = state.unlockedTechs[techId];
         if (!entry?.unlocked) return;
-        entry.masteryXp += amount;
+        const masteryGainPct = get().getTraitModifiers(techId, false).masteryGainPct;
+        const total = amount * (1 + masteryGainPct);
+        entry.masteryXp += total;
         entry.lastCastAt = now;
       });
     },
@@ -259,6 +359,26 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       return masteryLevelFromXp(entry?.masteryXp ?? 0);
     },
 
+    getMasteryCooldownReductionPct: (techId) => {
+      const level = get().getMasteryLevel(techId);
+      const milestones = masteryMilestones(level);
+      let reduction = 0;
+      if (milestones.at50) reduction += 0.05;
+      if (milestones.at75) reduction += 0.05;
+      if (milestones.at100) reduction += 0.05;
+      return clamp(reduction, 0, 0.15);
+    },
+
+    getMasteryCostReductionPct: (techId) => {
+      const level = get().getMasteryLevel(techId);
+      const milestones = masteryMilestones(level);
+      let reduction = 0;
+      if (milestones.at50) reduction += 0.05;
+      if (milestones.at75) reduction += 0.05;
+      if (milestones.at100) reduction += 0.05;
+      return clamp(reduction, 0, 0.15);
+    },
+
     getEffectiveRuneSlots: (techId) => {
       const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
       if (grade === 'earth') return 1;
@@ -287,6 +407,131 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       };
 
       return Math.min(raritySlots[rarity], gradeCap[grade]);
+    },
+
+    ensureTraits: (techId) => {
+      set((state) => {
+        const entry = state.unlockedTechs[techId];
+        if (!entry) return;
+        const slots = get().getEffectiveTraitSlots(techId);
+        if (slots <= 0) {
+          entry.traits = [];
+          return;
+        }
+
+        if (entry.traits.length === slots) return;
+
+        if (entry.traits.length > slots) {
+          entry.traits = entry.traits.slice(0, slots);
+          return;
+        }
+
+        const missing = slots - entry.traits.length;
+        const existingIds = entry.traits.map((trait) => trait.id);
+        const rolled = rollTraits(missing, state.rngSeed, existingIds);
+        state.rngSeed = rolled.seed;
+        entry.traits = [...entry.traits, ...rolled.traits];
+      });
+    },
+
+    rerollTraits: (techId) => {
+      const entry = get().unlockedTechs[techId];
+      if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
+
+      const slots = get().getEffectiveTraitSlots(techId);
+      if (slots <= 0) return { ok: false, reason: 'No trait slots available.' };
+
+      const content = useContentStore.getState();
+      if (!content.maps.itemsById[SOUL_INK_REROLL_ITEM_ID]) {
+        return { ok: false, reason: 'Soul ink item missing.' };
+      }
+
+      const inventory = useInventoryStore.getState();
+      if (inventory.getQty(SOUL_INK_REROLL_ITEM_ID) < 1) {
+        return { ok: false, reason: 'Not enough soul ink.' };
+      }
+
+      const removed = inventory.removeItem(SOUL_INK_REROLL_ITEM_ID, 1);
+      if (!removed) return { ok: false, reason: 'Unable to consume soul ink.' };
+
+      set((state) => {
+        const next = rollTraits(slots, state.rngSeed);
+        state.rngSeed = next.seed;
+        const target = state.unlockedTechs[techId];
+        if (target) {
+          target.traits = next.traits;
+        }
+      });
+
+      return { ok: true };
+    },
+
+    getTraitModifiers: (techId, isBoss) => {
+      const entry = get().unlockedTechs[techId];
+      const traits = entry?.traits ?? [];
+      let damagePct = 0;
+      let healPct = 0;
+      let shieldPct = 0;
+      let cooldownReductionPct = 0;
+      let costReductionPct = 0;
+      let masteryGainPct = 0;
+      let vsBossDamagePct = 0;
+
+      traits.forEach((trait) => {
+        switch (trait.id) {
+          case 'dmgPct':
+            damagePct += trait.value;
+            break;
+          case 'healPct':
+            healPct += trait.value;
+            break;
+          case 'shieldPct':
+            shieldPct += trait.value;
+            break;
+          case 'cooldownReductionPct':
+            cooldownReductionPct += trait.value;
+            break;
+          case 'costReductionPct':
+            costReductionPct += trait.value;
+            break;
+          case 'masteryGainPct':
+            masteryGainPct += trait.value;
+            break;
+          case 'vsBossDamagePct':
+            vsBossDamagePct += trait.value;
+            break;
+          default:
+            break;
+        }
+      });
+
+      if (isBoss) {
+        damagePct += vsBossDamagePct;
+      }
+
+      const buffPct = Math.max(damagePct, healPct, shieldPct);
+
+      return {
+        damageMult: 1 + damagePct,
+        healMult: 1 + healPct,
+        shieldMult: 1 + shieldPct,
+        buffMult: 1 + buffPct,
+        cooldownReductionPct: clamp(cooldownReductionPct, 0, MAX_TRAIT_CDR),
+        costReductionPct: clamp(costReductionPct, 0, MAX_TRAIT_COST_REDUCTION),
+        masteryGainPct,
+      };
+    },
+
+    getTraitDisplay: (techId) => {
+      const entry = get().unlockedTechs[techId];
+      if (!entry) return [];
+      return entry.traits.map((trait) => {
+        const def = getTraitDefinition(trait.id);
+        const label = def?.label ?? trait.id;
+        const value = formatPercent(trait.value);
+        const sign = trait.id.includes('Reduction') ? '-' : '+';
+        return `${label} ${sign}${value}`;
+      });
     },
 
     getRankCap: (techId) => {
@@ -363,6 +608,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
         state.unlockedTechs = unlockedTechs;
         state.fragments = { ...(data.fragments ?? {}) };
+        state.rngSeed = typeof data.rngSeed === 'number' ? data.rngSeed : state.rngSeed;
       });
     },
 
@@ -371,6 +617,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         const base = createInitialState();
         state.unlockedTechs = base.unlockedTechs;
         state.fragments = base.fragments;
+        state.rngSeed = base.rngSeed;
       });
     },
   })),
