@@ -43,21 +43,12 @@ export function TechniquesPanel() {
     useTechniqueStore();
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
-  const {
-    inCombat,
-    techniqueCooldowns,
-    combatResources,
-    combatShield,
-    combatBuffs,
-    techniqueLog,
-  } = useCombatStore((state) => ({
-    inCombat: state.inCombat,
-    techniqueCooldowns: state.techniqueCooldowns,
-    combatResources: state.combatResources,
-    combatShield: state.combatShield,
-    combatBuffs: state.combatBuffs,
-    techniqueLog: state.techniqueLog,
-  }));
+  const inCombat = useCombatStore((state) => state.inCombat);
+  const techniqueCooldowns = useCombatStore((state) => state.techniqueCooldowns);
+  const combatResources = useCombatStore((state) => state.combatResources);
+  const combatShield = useCombatStore((state) => state.combatShield);
+  const combatBuffs = useCombatStore((state) => state.combatBuffs);
+  const techniqueLog = useCombatStore((state) => state.techniqueLog);
 
   const selectedLoadout = useMemo(() => {
     return loadouts.find((loadout) => loadout.id === selectedLoadoutId);
