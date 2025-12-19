@@ -419,7 +419,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         const rank = techCollection.unlockedTechs[techId]?.rank ?? 1;
         const rankMult = rankMultiplier(rank);
-        const scaling = getTechniqueScaling(techId);
+        const scaling = getTechniqueScaling(techId, techDef);
         const effects = applyRankMultiplier(
           normalizeTechniqueEffects(techDef),
           rankMult,
@@ -434,7 +434,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
               id: buffId,
               stat: effect.stat,
               mode: effect.mode,
-              value: effect.value * rankMult * scaling.traitMods.buffMult,
+              value: effect.value * rankMult * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
               endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
             });
           });
@@ -551,18 +551,26 @@ export const useCombatStore = create<ExtendedCombatState>()(
       return scored[0]?.techId ?? null;
     };
 
-    const getTechniqueScaling = (techId: string) => {
+    const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
       const techCollection = useTechCollectionStore.getState();
       const isBoss = get().isBoss || get().combatContext.type === 'trial';
       const traitMods = techCollection.getTraitModifiers(techId, isBoss);
+      const runeMods = techCollection.getRuneModifiers(techId, technique);
       const masteryCdr = techCollection.getMasteryCooldownReductionPct(techId);
       const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
 
-      const cooldownReductionPct = Math.min(0.3, traitMods.cooldownReductionPct + masteryCdr);
-      const costReductionPct = Math.min(0.4, traitMods.costReductionPct + masteryCostReduction);
+      const cooldownReductionPct = Math.min(
+        0.3,
+        traitMods.cooldownReductionPct + runeMods.cooldownReductionPct + masteryCdr,
+      );
+      const costReductionPct = Math.min(
+        0.4,
+        traitMods.costReductionPct + runeMods.costReductionPct + masteryCostReduction,
+      );
 
       return {
         traitMods,
+        runeMods,
         cooldownReductionPct,
         costReductionPct,
         isBoss,
@@ -1581,7 +1589,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
       const resourceCost = techDef.resourceCost ?? 0;
-      const { costReductionPct } = getTechniqueScaling(techId);
+      const { costReductionPct } = getTechniqueScaling(techId, techDef);
       const effectiveCost = resourceCost * (1 - costReductionPct);
 
       if (resourceModel === 'qiPct') {
@@ -1615,7 +1623,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
       const rankMult = rankMultiplier(rank);
-      const scaling = getTechniqueScaling(techId);
+      const scaling = getTechniqueScaling(techId, techDef);
       const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef), rankMult);
       addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
 
@@ -1660,7 +1668,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       effects.forEach((effect) => {
         switch (effect.type) {
           case 'damage': {
-            const damage = D(effectiveStats.atk).times(effect.mult * scaling.traitMods.damageMult);
+            const damage = D(effectiveStats.atk).times(
+              effect.mult * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
+            );
             set((state) => {
               const newHP = subtract(state.enemyHP, damage.toString());
               const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
@@ -1669,7 +1679,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'heal': {
-            const healAmount = maxHp.times(effect.mult * scaling.traitMods.healMult);
+            const healAmount = maxHp.times(
+              effect.mult * scaling.traitMods.healMult * scaling.runeMods.healMult,
+            );
             set((state) => {
               const newHP = D(state.playerHP).plus(healAmount);
               const cappedHP = newHP.greaterThan(maxHp) ? maxHp : newHP;
@@ -1678,7 +1690,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'shield': {
-            const shieldAmount = maxHp.times(effect.mult * scaling.traitMods.shieldMult).toNumber();
+            const shieldAmount = maxHp
+              .times(effect.mult * scaling.traitMods.shieldMult * scaling.runeMods.shieldMult)
+              .toNumber();
             const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
             const expiresAt = now + durationSec * 1000;
             set((state) => {
@@ -1702,7 +1716,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
                 id: buffId,
                 stat: effect.stat,
                 mode: effect.mode,
-                value: effect.value * scaling.traitMods.buffMult,
+                value: effect.value * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
                 endsAt: now + durationSec * 1000,
               });
             });

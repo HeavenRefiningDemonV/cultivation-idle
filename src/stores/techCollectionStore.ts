@@ -42,6 +42,20 @@ interface TechCollectionState {
   getEffectiveTraitSlots: (techId: string) => number;
   ensureTraits: (techId: string) => void;
   rerollTraits: (techId: string) => { ok: boolean; reason?: string };
+  ensureRunes: (techId: string) => void;
+  socketRune: (techId: string, slotIndex: number, runeItemId: string) => { ok: boolean; reason?: string };
+  unsocketRune: (techId: string, slotIndex: number) => { ok: boolean; reason?: string };
+  getRuneModifiers: (
+    techId: string,
+    technique?: TechniqueDef,
+  ) => {
+    damageMult: number;
+    healMult: number;
+    shieldMult: number;
+    buffMult: number;
+    cooldownReductionPct: number;
+    costReductionPct: number;
+  };
   getTraitModifiers: (techId: string, isBoss: boolean) => {
     damageMult: number;
     healMult: number;
@@ -152,6 +166,13 @@ const rankCapsByGrade: Record<ManualGrade, number> = {
   mystic: 10,
 };
 
+const runeSlotsByGrade: Record<ManualGrade, number> = {
+  mortal: 0,
+  earth: 1,
+  heaven: 1,
+  mystic: 2,
+};
+
 const rankCostTable: Record<
   number,
   {
@@ -241,6 +262,20 @@ function rollTraits(
   return { traits, seed: nextSeed };
 }
 
+function normalizeRunes(runes: Array<string | null> | undefined, slots: number) {
+  const base = Array.isArray(runes) ? [...runes] : [];
+  if (slots <= 0) return [];
+  if (base.length > slots) return base.slice(0, slots);
+  if (base.length < slots) {
+    return [...base, ...Array.from({ length: slots - base.length }, () => null)];
+  }
+  return base;
+}
+
+function getRuneSlotsForGrade(grade: ManualGrade) {
+  return runeSlotsByGrade[grade] ?? 0;
+}
+
 function normalizeOwnedState(
   techId: string,
   incoming?: Partial<TechniqueOwnedState> | null,
@@ -257,7 +292,8 @@ function normalizeOwnedState(
   merged.manualGrade = normalizeGrade(incoming?.manualGrade);
   merged.rarity = normalizeRarity(incoming?.rarity);
   merged.traits = Array.isArray(incoming?.traits) ? incoming!.traits!.filter(Boolean) : base.traits;
-  merged.runes = Array.isArray(incoming?.runes) ? incoming!.runes!.map((rune) => rune ?? null) : base.runes;
+  const normalizedRunes = Array.isArray(incoming?.runes) ? incoming!.runes!.map((rune) => rune ?? null) : base.runes;
+  merged.runes = normalizeRunes(normalizedRunes, getRuneSlotsForGrade(merged.manualGrade));
   merged.tier = incoming?.tier ?? merged.tier;
   merged.lastCastAt = incoming?.lastCastAt;
 
@@ -288,6 +324,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       set((state) => {
         state.unlockedTechs[techId] = normalized;
       });
+      get().ensureRunes(techId);
       return normalized;
     },
 
@@ -338,8 +375,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           return;
         }
         entry.manualGrade = grade;
+        entry.runes = normalizeRunes(entry.runes, getRuneSlotsForGrade(entry.manualGrade));
         state.unlockedTechs[techId] = entry;
       });
+      get().ensureRunes(techId);
     },
 
     setRarityIfHigher: (techId, rarity) => {
@@ -381,10 +420,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
     getEffectiveRuneSlots: (techId) => {
       const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
-      if (grade === 'earth') return 1;
-      if (grade === 'heaven') return 1;
-      if (grade === 'mystic') return 2;
-      return 0;
+      return getRuneSlotsForGrade(grade);
     },
 
     getEffectiveTraitSlots: (techId) => {
@@ -407,6 +443,144 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       };
 
       return Math.min(raritySlots[rarity], gradeCap[grade]);
+    },
+
+    ensureRunes: (techId) => {
+      set((state) => {
+        const entry = state.unlockedTechs[techId];
+        if (!entry) return;
+        const slots = getRuneSlotsForGrade(entry.manualGrade);
+        entry.runes = normalizeRunes(entry.runes, slots);
+      });
+    },
+
+    socketRune: (techId, slotIndex, runeItemId) => {
+      const entry = get().unlockedTechs[techId];
+      if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
+
+      const slots = getRuneSlotsForGrade(entry.manualGrade);
+      if (slotIndex < 0 || slotIndex >= slots) return { ok: false, reason: 'Invalid slot.' };
+
+      const currentRunes = normalizeRunes(entry.runes, slots);
+      if (currentRunes[slotIndex]) return { ok: false, reason: 'Slot already filled.' };
+
+      const content = useContentStore.getState();
+      if (!content.maps.runesById[runeItemId]) {
+        return { ok: false, reason: 'Unknown rune.' };
+      }
+
+      const inventory = useInventoryStore.getState();
+      if (inventory.getQty(runeItemId) < 1) {
+        return { ok: false, reason: 'Not enough runes.' };
+      }
+
+      const removed = inventory.removeItem(runeItemId, 1);
+      if (!removed) return { ok: false, reason: 'Unable to consume rune.' };
+
+      set((state) => {
+        const target = state.unlockedTechs[techId];
+        if (!target) return;
+        target.runes = normalizeRunes(target.runes, slots);
+        target.runes[slotIndex] = runeItemId;
+      });
+
+      return { ok: true };
+    },
+
+    unsocketRune: (techId, slotIndex) => {
+      const entry = get().unlockedTechs[techId];
+      if (!entry) return { ok: false, reason: 'Technique not unlocked.' };
+
+      const slots = getRuneSlotsForGrade(entry.manualGrade);
+      if (slotIndex < 0 || slotIndex >= slots) return { ok: false, reason: 'Invalid slot.' };
+      const currentRunes = normalizeRunes(entry.runes, slots);
+      const runeId = currentRunes[slotIndex];
+      if (!runeId) return { ok: false, reason: 'Slot is empty.' };
+
+      const inventory = useInventoryStore.getState();
+      inventory.addItem(runeId, 1);
+
+      set((state) => {
+        const target = state.unlockedTechs[techId];
+        if (!target) return;
+        target.runes = normalizeRunes(target.runes, slots);
+        target.runes[slotIndex] = null;
+      });
+
+      return { ok: true };
+    },
+
+    getRuneModifiers: (techId, technique) => {
+      const entry = get().unlockedTechs[techId];
+      const runes = entry?.runes ?? [];
+      const content = useContentStore.getState();
+      const tags = technique?.tags?.map((tag) => tag.toLowerCase()) ?? [];
+      const isHeaven = technique?.path === 'heaven';
+
+      let damagePct = 0;
+      let healPct = 0;
+      let shieldPct = 0;
+      let buffPct = 0;
+      let cooldownReductionPct = 0;
+      let costReductionPct = 0;
+
+      runes.forEach((runeId) => {
+        if (!runeId) return;
+        const runeDef = content.maps.runesById[runeId];
+        if (!runeDef) return;
+        const effects = (runeDef as { effects?: Array<{ stat?: string; pct?: number }> }).effects ?? [];
+        effects.forEach((effect) => {
+          const stat = effect.stat ?? '';
+          const pct = typeof effect.pct === 'number' ? effect.pct : 0;
+          if (!stat || !pct) return;
+
+          switch (stat) {
+            case 'shieldStrength':
+            case 'wardShieldStrength':
+              shieldPct += pct;
+              break;
+            case 'lightningDamage': {
+              const hasLightning = tags.includes('lightning') || tags.includes('storm') || tags.includes('thunder');
+              damagePct += hasLightning ? pct : Math.min(0.04, pct * 0.33);
+              break;
+            }
+            case 'burnDamage':
+            case 'poisonDamage': {
+              const matchesTag = tags.some((tag) => tag.includes('burn') || tag.includes('poison') || tag.includes('fire'));
+              if (matchesTag) {
+                damagePct += pct;
+              }
+              break;
+            }
+            case 'critDmg':
+              damagePct += Math.min(0.08, Math.abs(pct) * 0.5);
+              break;
+            case 'heavenCost':
+              if (isHeaven) costReductionPct += Math.abs(pct);
+              break;
+            case 'heavenCooldown':
+              if (isHeaven) cooldownReductionPct += Math.abs(pct);
+              break;
+            case 'haste':
+              cooldownReductionPct += Math.abs(pct);
+              break;
+            case 'defBuffEffectiveness':
+              buffPct += Math.abs(pct);
+              break;
+            default:
+              break;
+          }
+        });
+      });
+
+      return {
+        damageMult: 1 + damagePct,
+        healMult: 1 + healPct,
+        shieldMult: 1 + shieldPct,
+        buffMult: 1 + buffPct,
+        cooldownReductionPct: clamp(cooldownReductionPct, 0, 0.2),
+        costReductionPct: clamp(costReductionPct, 0, 0.25),
+      };
     },
 
     ensureTraits: (techId) => {
@@ -609,6 +783,9 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         state.unlockedTechs = unlockedTechs;
         state.fragments = { ...(data.fragments ?? {}) };
         state.rngSeed = typeof data.rngSeed === 'number' ? data.rngSeed : state.rngSeed;
+      });
+      Object.keys(get().unlockedTechs).forEach((techId) => {
+        get().ensureRunes(techId);
       });
     },
 

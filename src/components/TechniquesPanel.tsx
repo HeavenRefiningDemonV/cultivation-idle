@@ -52,9 +52,14 @@ export function TechniquesPanel() {
   const ensureTraits = useTechCollectionStore((state) => state.ensureTraits);
   const rerollTraits = useTechCollectionStore((state) => state.rerollTraits);
   const getEffectiveTraitSlots = useTechCollectionStore((state) => state.getEffectiveTraitSlots);
+  const getEffectiveRuneSlots = useTechCollectionStore((state) => state.getEffectiveRuneSlots);
   const getTraitDisplay = useTechCollectionStore((state) => state.getTraitDisplay);
+  const ensureRunes = useTechCollectionStore((state) => state.ensureRunes);
+  const socketRune = useTechCollectionStore((state) => state.socketRune);
+  const unsocketRune = useTechCollectionStore((state) => state.unsocketRune);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
+  const runesById = useContentStore((state) => state.maps.runesById);
   const fragments = useTechCollectionStore((state) => state.fragments);
   const upgradeRank = useTechCollectionStore((state) => state.upgradeRank);
   const getRankCap = useTechCollectionStore((state) => state.getRankCap);
@@ -79,6 +84,7 @@ export function TechniquesPanel() {
         def: techniquesById[techId],
         masteryXp: meta?.masteryXp ?? 0,
         rank: meta?.rank ?? 1,
+        runes: meta?.runes ?? [],
       }))
       .sort((a, b) => getDisplayName(a.def, a.id).localeCompare(getDisplayName(b.def, b.id)));
   }, [techniquesById, unlockedTechs]);
@@ -109,11 +115,24 @@ export function TechniquesPanel() {
     return [...techniqueLog].slice(-10).reverse();
   }, [techniqueLog]);
 
+  const availableRuneItems = useMemo(() => {
+    const runeIds = Object.keys(runesById);
+    if (runeIds.length === 0) return [];
+    return runeIds
+      .map((runeId) => ({
+        id: runeId,
+        name: runesById[runeId]?.id ?? runeId,
+        qty: items[runeId] ?? 0,
+      }))
+      .filter((entry) => entry.qty > 0);
+  }, [items, runesById]);
+
   useEffect(() => {
     Object.keys(unlockedTechs).forEach((techId) => {
       ensureTraits(techId);
+      ensureRunes(techId);
     });
-  }, [ensureTraits, unlockedTechs]);
+  }, [ensureRunes, ensureTraits, unlockedTechs]);
 
   return (
     <div className={'worldScreenPlaceholder'}>
@@ -283,6 +302,8 @@ export function TechniquesPanel() {
               const rerollInkName = itemsById[rerollInkId]?.name ?? 'Soul Ink';
               const rerollInkQty = items[rerollInkId] ?? 0;
               const canReroll = traitSlots > 0 && rerollInkQty >= 1;
+              const runeSlots = getEffectiveRuneSlots(entry.id);
+              const runeSlotsArray = Array.from({ length: runeSlots }, (_, idx) => entry.runes?.[idx] ?? null);
               const canUpgrade =
                 cost &&
                 entry.rank < rankCap &&
@@ -326,6 +347,57 @@ export function TechniquesPanel() {
                   </button>
                   {!canReroll && traitSlots > 0 && (
                     <div className={'worldScreenInlineError'}>Not enough soul ink.</div>
+                  )}
+                  <div>
+                    Runes ({entry.runes?.filter(Boolean).length ?? 0}/{runeSlots})
+                  </div>
+                  {Object.keys(runesById).length === 0 && (
+                    <div>Runes not available (missing runes config).</div>
+                  )}
+                  {Object.keys(runesById).length > 0 && runeSlots === 0 && (
+                    <div>No rune sockets unlocked.</div>
+                  )}
+                  {Object.keys(runesById).length > 0 && (
+                    <div>
+                      {runeSlotsArray.map((runeId, slotIndex) => (
+                        <div key={`${entry.id}-rune-${slotIndex}`}>
+                          Slot {slotIndex + 1}:{' '}
+                          {runeId ? (
+                            <>
+                              {itemsById[runeId]?.name ?? runeId}{' '}
+                              <button
+                                className={'worldScreenModuleButton'}
+                                onClick={() => unsocketRune(entry.id, slotIndex)}
+                              >
+                                Unsocket
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              Empty{' '}
+                              {availableRuneItems.length > 0 ? (
+                                <select
+                                  onChange={(event) => {
+                                    const value = event.target.value;
+                                    if (value) socketRune(entry.id, slotIndex, value);
+                                    event.currentTarget.value = '';
+                                  }}
+                                >
+                                  <option value="">Socket rune...</option>
+                                  {availableRuneItems.map((rune) => (
+                                    <option key={rune.id} value={rune.id}>
+                                      {itemsById[rune.id]?.name ?? rune.id} ({rune.qty})
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <span>No runes in inventory.</span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   )}
                   <div>
                     Cost:{' '}
