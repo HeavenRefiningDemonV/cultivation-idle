@@ -1610,6 +1610,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastTechniqueCastAt = now;
       });
 
+      const xpGain = techDef.type === 'passive' ? 0 : 1;
+      if (xpGain > 0) {
+        useTechCollectionStore.getState().addMasteryXp(techId, xpGain, now);
+      }
+
       if (effects.length === 0) {
         addTechniqueLogEntry('warn', `${techDef.name} has no effects to apply.`, techId, now);
         return true;

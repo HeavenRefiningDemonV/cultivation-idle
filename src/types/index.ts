@@ -298,8 +298,12 @@ export interface SaveData {
         unlocked: boolean;
         masteryXp: number;
         rank: number;
-        rarity?: string;
+        manualGrade?: 'mortal' | 'earth' | 'heaven' | 'mystic';
+        rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+        traits?: Array<{ id: string; value: number }>;
+        runes?: Array<string | null>;
         tier?: string;
+        lastCastAt?: number;
       }
     >;
     fragments: Record<string, number>;

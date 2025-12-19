@@ -2,7 +2,7 @@ import { useMemo, type ChangeEvent } from 'react';
 import type { TechniqueDef } from '../content';
 import { useCombatStore } from '../stores/combatStore';
 import { useContentStore } from '../stores/contentStore';
-import { useTechCollectionStore } from '../stores/techCollectionStore';
+import { masteryLevelFromXp, masteryMilestones, useTechCollectionStore } from '../stores/techCollectionStore';
 import { useTechniqueStore, type AiProfile } from '../stores/techniqueStore';
 
 const aiProfiles: AiProfile[] = ['balanced', 'survivor', 'burst', 'farmer'];
@@ -57,7 +57,11 @@ export function TechniquesPanel() {
   const unlockedList = useMemo(() => {
     return Object.entries(unlockedTechs)
       .filter(([, meta]) => meta?.unlocked)
-      .map(([techId]) => ({ id: techId, def: techniquesById[techId] }))
+      .map(([techId, meta]) => ({
+        id: techId,
+        def: techniquesById[techId],
+        masteryXp: meta?.masteryXp ?? 0,
+      }))
       .sort((a, b) => getDisplayName(a.def, a.id).localeCompare(getDisplayName(b.def, b.id)));
   }, [techniquesById, unlockedTechs]);
 
@@ -234,12 +238,30 @@ export function TechniquesPanel() {
         )}
         {unlockedList.map((entry) => (
           <div key={entry.id} className={'worldScreenPlaceholderLine'}>
+            {(() => {
+              const level = masteryLevelFromXp(entry.masteryXp);
+              const milestones = masteryMilestones(level);
+              const flags = [
+                milestones.at25 ? '25' : null,
+                milestones.at50 ? '50' : null,
+                milestones.at75 ? '75' : null,
+                milestones.at100 ? '100' : null,
+              ].filter(Boolean);
+              return (
+                <>
             <div>{getDisplayName(entry.def, entry.id)}</div>
             <div>
               Tags: {describeTags(entry.def)}
               {entry.def?.cooldownSec ? ` • Cooldown: ${entry.def.cooldownSec}s` : ''}
               {describeResourceCost(entry.def) ? ` • ${describeResourceCost(entry.def)}` : ''}
             </div>
+            <div>
+              Mastery: L{level} (XP {Math.floor(entry.masteryXp)})
+              {flags.length > 0 ? ` • Milestones: ${flags.join('/')}` : ''}
+            </div>
+                </>
+              );
+            })()}
           </div>
         ))}
       </div>
