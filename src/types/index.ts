@@ -413,6 +413,33 @@ export interface CombatLogEntry {
   color: string;
 }
 
+export interface CombatTechniqueLogEntry {
+  at: number;
+  kind: 'cast' | 'effect' | 'warn';
+  message: string;
+  techId?: string;
+}
+
+export interface CombatShield {
+  amount: number;
+  expiresAt: number | null;
+}
+
+export interface CombatBuff {
+  id: string;
+  stat: string;
+  mode: 'pct' | 'flat';
+  value: number;
+  endsAt: number;
+}
+
+export interface CombatResources {
+  qi: number;
+  maxQi: number;
+  intent: number;
+  maxIntent: number;
+}
+
 /**
  * Combat context
  *
@@ -478,7 +505,14 @@ export interface CombatState {
   // Timing
   lastAttackTime: number;
   lastEnemyAttackTime: number;
-  techniquesCooldowns: Record<string, number>;
+  techniqueCooldowns: Record<string, number>;
+  lastTechniqueCastAt: number;
+
+  // Technique runtime state
+  combatShield: CombatShield | null;
+  combatBuffs: CombatBuff[];
+  combatResources: CombatResources;
+  techniqueLog: CombatTechniqueLogEntry[];
 
   // Boss mechanics
   isBoss: boolean;
@@ -498,6 +532,8 @@ export interface CombatState {
   defeatEnemy: () => void;
   playerDefeat: () => void;
   tick: (deltaTime: number) => void;
+  canCastTechnique: (techId: string, now?: number) => boolean;
+  castTechnique: (techId: string, now?: number, source?: 'ai' | 'manual') => boolean;
   addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
   setAutoAttack: (enabled: boolean) => void;
   setAutoCombatAI: (enabled: boolean) => void;
