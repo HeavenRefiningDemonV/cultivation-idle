@@ -24,14 +24,14 @@ import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
 import { useTechniqueStore } from './techniqueStore';
-import { useTechCollectionStore } from './techCollectionStore';
+import { rankMultiplier, useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
 import { grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
 import { createEnemy } from '../systems/enemyFactory';
 import type { NormalizedEffect } from '../systems/techniques/effects';
-import { classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
+import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
 
 interface DungeonBoss {
   id: string;
@@ -417,7 +417,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const techDef = contentStore.maps.techniquesById[techId];
         if (!techDef) return;
 
-        const effects = normalizeTechniqueEffects(techDef).filter((effect) => effect.type === 'buff');
+        const rank = techCollection.unlockedTechs[techId]?.rank ?? 1;
+        const rankMult = rankMultiplier(rank);
+        const effects = applyRankMultiplier(
+          normalizeTechniqueEffects(techDef),
+          rankMult,
+        ).filter((effect) => effect.type === 'buff');
         if (effects.length === 0) return;
 
         set((state) => {
@@ -428,7 +433,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
               id: buffId,
               stat: effect.stat,
               mode: effect.mode,
-              value: effect.value,
+              value: effect.value * rankMult,
               endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
             });
           });
@@ -1587,7 +1592,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         return false;
       }
 
-      const effects = normalizeTechniqueEffects(techDef);
+      const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
+      const rankMult = rankMultiplier(rank);
+      const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef), rankMult);
       addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
 
       set((state) => {

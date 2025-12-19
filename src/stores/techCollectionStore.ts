@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content';
+import { useContentStore } from './contentStore';
+import { useInventoryStore } from './inventoryStore';
 
 export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
 export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
@@ -36,6 +38,14 @@ interface TechCollectionState {
   getMasteryLevel: (techId: string) => number;
   getEffectiveRuneSlots: (techId: string) => number;
   getEffectiveTraitSlots: (techId: string) => number;
+  getRankCap: (techId: string) => number;
+  getRankUpgradeCost: (nextRank: number) => {
+    fragmentsRequired: number;
+    runeDustRequired: number;
+    soulInkRequired: number;
+    soulInkItemId: string;
+  } | null;
+  upgradeRank: (techId: string) => { ok: boolean; reason?: string };
   hydrate: (data: { unlockedTechs?: Record<string, Partial<TechniqueOwnedState>>; fragments?: Record<string, number> }) => void;
   hardReset: () => void;
 }
@@ -54,6 +64,11 @@ export function masteryLevelFromXp(xp: number): number {
 export function masteryMultiplier(level: number): number {
   const clamped = Math.min(100, Math.max(1, level));
   return 1 + 0.003 * clamped;
+}
+
+export function rankMultiplier(rank: number): number {
+  const clamped = Math.min(10, Math.max(1, rank));
+  return 1 + 0.1 * (clamped - 1);
 }
 
 export function masteryMilestones(level: number) {
@@ -107,6 +122,35 @@ const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'frag
   unlockedTechs: {},
   fragments: {},
 });
+
+const rankCapsByGrade: Record<ManualGrade, number> = {
+  mortal: 5,
+  earth: 7,
+  heaven: 9,
+  mystic: 10,
+};
+
+const rankCostTable: Record<
+  number,
+  {
+    fragmentsRequired: number;
+    runeDustRequired: number;
+    soulInkRequired: number;
+    soulInkItemId: string;
+  }
+> = {
+  2: { fragmentsRequired: 20, runeDustRequired: 2, soulInkRequired: 1, soulInkItemId: 'reagent_soul_ink_t0' },
+  3: { fragmentsRequired: 40, runeDustRequired: 4, soulInkRequired: 2, soulInkItemId: 'reagent_soul_ink_t0' },
+  4: { fragmentsRequired: 80, runeDustRequired: 8, soulInkRequired: 4, soulInkItemId: 'reagent_soul_ink_t0' },
+  5: { fragmentsRequired: 160, runeDustRequired: 16, soulInkRequired: 8, soulInkItemId: 'reagent_soul_ink_t0' },
+  6: { fragmentsRequired: 240, runeDustRequired: 24, soulInkRequired: 12, soulInkItemId: 'reagent_soul_ink_t1' },
+  7: { fragmentsRequired: 360, runeDustRequired: 36, soulInkRequired: 18, soulInkItemId: 'reagent_soul_ink_t1' },
+  8: { fragmentsRequired: 520, runeDustRequired: 52, soulInkRequired: 26, soulInkItemId: 'reagent_soul_ink_t2' },
+  9: { fragmentsRequired: 750, runeDustRequired: 75, soulInkRequired: 38, soulInkItemId: 'reagent_soul_ink_t2' },
+  10: { fragmentsRequired: 1100, runeDustRequired: 110, soulInkRequired: 55, soulInkItemId: 'reagent_soul_ink_t2' },
+};
+
+const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
 
 function normalizeOwnedState(
   techId: string,
@@ -243,6 +287,69 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       };
 
       return Math.min(raritySlots[rarity], gradeCap[grade]);
+    },
+
+    getRankCap: (techId) => {
+      const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
+      return rankCapsByGrade[grade] ?? 5;
+    },
+
+    getRankUpgradeCost: (nextRank) => {
+      return rankCostTable[nextRank] ?? null;
+    },
+
+    upgradeRank: (techId) => {
+      const entry = get().unlockedTechs[techId];
+      if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
+
+      const rankCap = get().getRankCap(techId);
+      if (entry.rank >= rankCap) return { ok: false, reason: 'Rank cap reached.' };
+
+      const nextRank = entry.rank + 1;
+      const cost = get().getRankUpgradeCost(nextRank);
+      if (!cost) return { ok: false, reason: 'Invalid rank cost.' };
+
+      const fragments = get().fragments[techId] ?? 0;
+      if (fragments < cost.fragmentsRequired) return { ok: false, reason: 'Not enough fragments.' };
+
+      const content = useContentStore.getState();
+      if (!content.maps.itemsById[RUNE_DUST_ITEM_ID]) {
+        return { ok: false, reason: 'Rune dust item missing.' };
+      }
+      if (!content.maps.itemsById[cost.soulInkItemId]) {
+        return { ok: false, reason: 'Soul ink item missing.' };
+      }
+
+      const inventory = useInventoryStore.getState();
+      const runeDustQty = inventory.getQty(RUNE_DUST_ITEM_ID);
+      if (runeDustQty < cost.runeDustRequired) return { ok: false, reason: 'Not enough rune dust.' };
+
+      const soulInkQty = inventory.getQty(cost.soulInkItemId);
+      if (soulInkQty < cost.soulInkRequired) return { ok: false, reason: 'Not enough soul ink.' };
+
+      const removedRuneDust = inventory.removeItem(RUNE_DUST_ITEM_ID, cost.runeDustRequired);
+      const removedSoulInk = inventory.removeItem(cost.soulInkItemId, cost.soulInkRequired);
+
+      if (!removedRuneDust || !removedSoulInk) {
+        if (removedRuneDust) {
+          inventory.addItem(RUNE_DUST_ITEM_ID, cost.runeDustRequired);
+        }
+        if (removedSoulInk) {
+          inventory.addItem(cost.soulInkItemId, cost.soulInkRequired);
+        }
+        return { ok: false, reason: 'Unable to consume materials.' };
+      }
+
+      set((state) => {
+        const current = state.fragments[techId] ?? 0;
+        state.fragments[techId] = Math.max(0, current - cost.fragmentsRequired);
+        const target = state.unlockedTechs[techId];
+        if (target) {
+          target.rank = nextRank;
+        }
+      });
+
+      return { ok: true };
     },
 
     hydrate: (data) => {

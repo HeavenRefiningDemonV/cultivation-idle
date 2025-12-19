@@ -174,6 +174,25 @@ export function normalizeTechniqueEffects(techDef: TechniqueDef | undefined): No
   return normalizeObjectEffect(rawEffect);
 }
 
+export function applyRankMultiplier(effects: NormalizedEffect[], rankMult: number): NormalizedEffect[] {
+  if (!Number.isFinite(rankMult) || rankMult === 1) {
+    return effects;
+  }
+
+  return effects.map((effect) => {
+    switch (effect.type) {
+      case 'damage':
+      case 'heal':
+      case 'shield':
+        return { ...effect, mult: effect.mult * rankMult };
+      case 'buff':
+        return { ...effect, value: effect.value * rankMult };
+      default:
+        return effect;
+    }
+  });
+}
+
 export function summarizeEffects(effects: NormalizedEffect[]): string[] {
   return effects.map((effect) => {
     switch (effect.type) {

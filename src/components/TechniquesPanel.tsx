@@ -2,6 +2,7 @@ import { useMemo, type ChangeEvent } from 'react';
 import type { TechniqueDef } from '../content';
 import { useCombatStore } from '../stores/combatStore';
 import { useContentStore } from '../stores/contentStore';
+import { useInventoryStore } from '../stores/inventoryStore';
 import { masteryLevelFromXp, masteryMilestones, useTechCollectionStore } from '../stores/techCollectionStore';
 import { useTechniqueStore, type AiProfile } from '../stores/techniqueStore';
 
@@ -38,11 +39,23 @@ function describeResourceCost(def: TechniqueDef | undefined) {
   return null;
 }
 
+function getRankLabel(rank: number) {
+  const labels = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+  if (rank <= 0) return 'I';
+  return labels[Math.min(rank, 10) - 1] ?? 'X';
+}
+
 export function TechniquesPanel() {
   const { loadouts, selectedLoadoutId, setSelectedLoadout, setAiProfile, equipTechnique } =
     useTechniqueStore();
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
+  const fragments = useTechCollectionStore((state) => state.fragments);
+  const upgradeRank = useTechCollectionStore((state) => state.upgradeRank);
+  const getRankCap = useTechCollectionStore((state) => state.getRankCap);
+  const getRankUpgradeCost = useTechCollectionStore((state) => state.getRankUpgradeCost);
+  const items = useInventoryStore((state) => state.items);
   const inCombat = useCombatStore((state) => state.inCombat);
   const techniqueCooldowns = useCombatStore((state) => state.techniqueCooldowns);
   const combatResources = useCombatStore((state) => state.combatResources);
@@ -61,6 +74,7 @@ export function TechniquesPanel() {
         id: techId,
         def: techniquesById[techId],
         masteryXp: meta?.masteryXp ?? 0,
+        rank: meta?.rank ?? 1,
       }))
       .sort((a, b) => getDisplayName(a.def, a.id).localeCompare(getDisplayName(b.def, b.id)));
   }, [techniquesById, unlockedTechs]);
@@ -247,18 +261,55 @@ export function TechniquesPanel() {
                 milestones.at75 ? '75' : null,
                 milestones.at100 ? '100' : null,
               ].filter(Boolean);
+              const rankCap = getRankCap(entry.id);
+              const nextRank = entry.rank + 1;
+              const cost = getRankUpgradeCost(nextRank);
+              const fragmentCount = fragments[entry.id] ?? 0;
+              const runeDustCount = items['mat_rune_dust'] ?? 0;
+              const soulInkCount = cost ? (items[cost.soulInkItemId] ?? 0) : 0;
+              const canUpgrade =
+                cost &&
+                entry.rank < rankCap &&
+                fragmentCount >= cost.fragmentsRequired &&
+                runeDustCount >= cost.runeDustRequired &&
+                soulInkCount >= cost.soulInkRequired;
+              let disabledReason = '';
+              if (entry.rank >= rankCap) disabledReason = 'Rank cap reached.';
+              else if (!cost) disabledReason = 'Upgrade unavailable.';
+              else if (fragmentCount < cost.fragmentsRequired) disabledReason = 'Not enough fragments.';
+              else if (runeDustCount < cost.runeDustRequired) disabledReason = 'Not enough rune dust.';
+              else if (soulInkCount < cost.soulInkRequired) disabledReason = 'Not enough soul ink.';
               return (
                 <>
-            <div>{getDisplayName(entry.def, entry.id)}</div>
-            <div>
-              Tags: {describeTags(entry.def)}
-              {entry.def?.cooldownSec ? ` • Cooldown: ${entry.def.cooldownSec}s` : ''}
-              {describeResourceCost(entry.def) ? ` • ${describeResourceCost(entry.def)}` : ''}
-            </div>
-            <div>
-              Mastery: L{level} (XP {Math.floor(entry.masteryXp)})
-              {flags.length > 0 ? ` • Milestones: ${flags.join('/')}` : ''}
-            </div>
+                  <div>{getDisplayName(entry.def, entry.id)}</div>
+                  <div>
+                    Tags: {describeTags(entry.def)}
+                    {entry.def?.cooldownSec ? ` • Cooldown: ${entry.def.cooldownSec}s` : ''}
+                    {describeResourceCost(entry.def) ? ` • ${describeResourceCost(entry.def)}` : ''}
+                  </div>
+                  <div>
+                    Mastery: L{level} (XP {Math.floor(entry.masteryXp)})
+                    {flags.length > 0 ? ` • Milestones: ${flags.join('/')}` : ''}
+                  </div>
+                  <div>
+                    Rank: {getRankLabel(entry.rank)} / {getRankLabel(rankCap)}
+                  </div>
+                  <div>
+                    Cost:{' '}
+                    {cost
+                      ? `${cost.fragmentsRequired} fragments • ${cost.runeDustRequired} Rune Dust • ${cost.soulInkRequired} ${itemsById[cost.soulInkItemId]?.name ?? cost.soulInkItemId}`
+                      : '—'}
+                  </div>
+                  <button
+                    className={'worldScreenModuleButton'}
+                    onClick={() => upgradeRank(entry.id)}
+                    disabled={!canUpgrade}
+                  >
+                    Upgrade Rank
+                  </button>
+                  {!canUpgrade && disabledReason && (
+                    <div className={'worldScreenInlineError'}>{disabledReason}</div>
+                  )}
                 </>
               );
             })()}
