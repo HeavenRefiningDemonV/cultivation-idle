@@ -507,6 +507,7 @@ export interface CombatState {
   lastEnemyAttackTime: number;
   techniqueCooldowns: Record<string, number>;
   lastTechniqueCastAt: number;
+  nextAiDecisionAt: number;
 
   // Technique runtime state
   combatShield: CombatShield | null;

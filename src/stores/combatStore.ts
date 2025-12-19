@@ -11,6 +11,7 @@ import type {
   CombatShield,
   CombatTechniqueLogEntry,
 } from '../types';
+import type { TechniqueDef } from '../content';
 import type { OutskirtsDef, OutskirtsDropsConfig } from '../content';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
@@ -22,12 +23,15 @@ import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
+import { useTechniqueStore } from './techniqueStore';
+import { useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
 import { grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
 import { createEnemy } from '../systems/enemyFactory';
-import { normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
+import type { NormalizedEffect } from '../systems/techniques/effects';
+import { classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
 
 interface DungeonBoss {
   id: string;
@@ -72,6 +76,9 @@ const DEFAULT_SHIELD_DURATION_SEC = 12;
 const DEFAULT_BUFF_DURATION_SEC = 10;
 const QI_REGEN_PER_SEC_PCT = 0.02;
 const INTENT_REGEN_PER_SEC = 10;
+const AI_DECISION_INTERVAL_MS = 250;
+const MIN_TECHNIQUE_CAST_INTERVAL_MS = 300;
+const PASSIVE_BUFF_DURATION_SEC = 999999;
 
 /**
  * Boss mechanics instance (single instance per combat)
@@ -333,6 +340,7 @@ const createInitialCombatState = () => ({
   lastEnemyAttackTime: 0,
   techniqueCooldowns: {} as Record<string, number>,
   lastTechniqueCastAt: 0,
+  nextAiDecisionAt: 0,
   combatShield: null as CombatShield | null,
   combatBuffs: [] as CombatBuff[],
   combatResources: buildCombatResources(),
@@ -394,6 +402,149 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
     };
 
+    const applyPassiveTechniques = (now: number) => {
+      const loadout = useTechniqueStore.getState().getSelectedLoadout();
+      if (!loadout) return;
+
+      const contentStore = useContentStore.getState();
+      const techCollection = useTechCollectionStore.getState();
+      const passiveIds = loadout.slots.passive.filter((id) => id);
+
+      if (passiveIds.length === 0) return;
+
+      passiveIds.forEach((techId) => {
+        if (!techCollection.hasTech(techId)) return;
+        const techDef = contentStore.maps.techniquesById[techId];
+        if (!techDef) return;
+
+        const effects = normalizeTechniqueEffects(techDef).filter((effect) => effect.type === 'buff');
+        if (effects.length === 0) return;
+
+        set((state) => {
+          effects.forEach((effect) => {
+            const buffId = `${techId}:${effect.stat}`;
+            state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+            state.combatBuffs.push({
+              id: buffId,
+              stat: effect.stat,
+              mode: effect.mode,
+              value: effect.value,
+              endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
+            });
+          });
+        });
+      });
+    };
+
+    const selectTechniqueToCast = (now: number) => {
+      const state = get();
+      if (!state.inCombat || !state.currentEnemy) return null;
+      if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
+
+      const loadout = useTechniqueStore.getState().getSelectedLoadout();
+      if (!loadout) return null;
+
+      const techCollection = useTechCollectionStore.getState();
+      const contentStore = useContentStore.getState();
+      const aiProfile = loadout.aiProfile ?? 'balanced';
+      const activeIds = loadout.slots.active.filter((id) => id);
+      const candidateIds = [...activeIds];
+
+      if (loadout.slots.ultimate) {
+        candidateIds.push(loadout.slots.ultimate);
+      }
+
+      const uniqueCandidates = Array.from(new Set(candidateIds));
+
+      type Candidate = {
+        techId: string;
+        def: TechniqueDef;
+        classification: ReturnType<typeof classifyTechnique>;
+        effects: NormalizedEffect[];
+      };
+
+      const candidates = uniqueCandidates.reduce<Candidate[]>((acc, techId) => {
+        if (!techCollection.hasTech(techId)) return acc;
+        const def = contentStore.maps.techniquesById[techId];
+        if (!def) return acc;
+        if (!get().canCastTechnique(techId, now)) return acc;
+        acc.push({
+          techId,
+          def,
+          classification: classifyTechnique(def),
+          effects: normalizeTechniqueEffects(def),
+        });
+        return acc;
+      }, []);
+
+      if (candidates.length === 0) return null;
+
+      const hp = D(state.playerHP);
+      const maxHp = D(state.playerMaxHP);
+      const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
+      const isBossFight = state.isBoss || state.combatContext.type === 'trial';
+
+      const scored = candidates.map((candidate) => {
+        const { def, effects, classification } = candidate;
+        const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
+        const damageMults = effects
+          .filter((effect) => effect.type === 'damage')
+          .map((effect) => effect.mult);
+        const damageMult = damageMults.length ? Math.max(...damageMults) : 0;
+        const damageScore = damageMult > 0 ? damageMult / cooldownSec : 0;
+
+        const hasHeal = effects.some((effect) => effect.type === 'heal');
+        const hasShield = effects.some((effect) => effect.type === 'shield');
+        const hasDefBuff = effects.some(
+          (effect) => effect.type === 'buff' && /def|hp|resist/i.test(effect.stat)
+        );
+
+        let defensiveScore = 0;
+        if (hasHeal) defensiveScore += 5;
+        if (hasShield) defensiveScore += 4;
+        if (hasDefBuff) defensiveScore += 3;
+
+        let score = damageScore;
+
+        if (aiProfile === 'survivor') {
+          if (hpPct < 0.4 && defensiveScore > 0) {
+            score = defensiveScore * 10 + damageScore;
+          }
+        } else if (aiProfile === 'burst') {
+          if (isBossFight) {
+            if (classification.isBurst || (def.cooldownSec ?? 0) >= 20) {
+              score += 2;
+            }
+            if (classification.isUltimate) {
+              score += 2;
+            }
+          }
+        } else if (aiProfile === 'farmer') {
+          if ((def.cooldownSec ?? 0) <= 10) {
+            score += 1.5;
+          }
+          if (classification.isAoE) {
+            score += 1.5;
+          }
+        }
+
+        return { ...candidate, score, damageScore, defensiveScore };
+      });
+
+      if (aiProfile === 'survivor' && hpPct < 0.4) {
+        const defensiveCandidates = scored.filter((entry) => entry.defensiveScore > 0);
+        if (defensiveCandidates.length > 0) {
+          defensiveCandidates.sort((a, b) => b.score - a.score);
+          return defensiveCandidates[0]?.techId ?? null;
+        }
+      }
+
+      scored.sort((a, b) => b.score - a.score);
+      if (scored[0]?.score > 0) return scored[0].techId;
+
+      return scored[0]?.techId ?? null;
+    };
+
     return {
       // Initial state
       ...createInitialCombatState(),
@@ -436,6 +587,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastEnemyAttackTime = now;
         state.techniqueCooldowns = {};
         state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
@@ -452,6 +604,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
+
+      applyPassiveTechniques(now);
     },
 
 
@@ -557,6 +711,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastEnemyAttackTime = now;
         state.techniqueCooldowns = {};
         state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
@@ -572,6 +727,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
+
+      applyPassiveTechniques(now);
     },
 
     /**
@@ -644,6 +801,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastEnemyAttackTime = now;
         state.techniqueCooldowns = {};
         state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
@@ -657,6 +815,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Add entry to log
       get().addLogEntry('system', `⚠️ DUNGEON TRIAL: ${dungeonData.name}!`, '#f59e0b');
       get().addLogEntry('system', `⚔️ BOSS: ${enemy.name}!`, '#ef4444');
+
+      applyPassiveTechniques(now);
     },
 
     /**
@@ -685,6 +845,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastEnemyAttackTime = 0;
         state.techniqueCooldowns = {};
         state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = 0;
         state.combatShield = null;
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
@@ -1187,6 +1348,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
           state.combatResources.intent + intentRegen,
         );
       });
+
+      if (now >= state.nextAiDecisionAt) {
+        set((state) => {
+          state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+        });
+
+        const selectedTechId = selectTechniqueToCast(now);
+        if (selectedTechId) {
+          get().castTechnique(selectedTechId, now, 'ai');
+        }
+      }
 
       // Process boss mechanics
       if (state.isBoss && bossMechanics) {
