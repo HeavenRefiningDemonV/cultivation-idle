@@ -1,5 +1,6 @@
 import { useMemo, type ChangeEvent } from 'react';
 import type { TechniqueDef } from '../content';
+import { useCombatStore } from '../stores/combatStore';
 import { useContentStore } from '../stores/contentStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
 import { useTechniqueStore, type AiProfile } from '../stores/techniqueStore';
@@ -25,11 +26,38 @@ function describeTags(def: TechniqueDef | undefined) {
   return def?.tags?.join(', ') ?? '—';
 }
 
+function describeResourceCost(def: TechniqueDef | undefined) {
+  if (!def || def.resourceCost === undefined) return null;
+  const model = def.resourceModel?.toLowerCase() ?? 'none';
+  if (model.includes('heaven') || model.includes('qi')) {
+    return `Cost: ${def.resourceCost}% MaxQi`;
+  }
+  if (model.includes('martial') || model.includes('intent')) {
+    return `Cost: ${def.resourceCost} Intent`;
+  }
+  return null;
+}
+
 export function TechniquesPanel() {
   const { loadouts, selectedLoadoutId, setSelectedLoadout, setAiProfile, equipTechnique } =
     useTechniqueStore();
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const {
+    inCombat,
+    techniqueCooldowns,
+    combatResources,
+    combatShield,
+    combatBuffs,
+    techniqueLog,
+  } = useCombatStore((state) => ({
+    inCombat: state.inCombat,
+    techniqueCooldowns: state.techniqueCooldowns,
+    combatResources: state.combatResources,
+    combatShield: state.combatShield,
+    combatBuffs: state.combatBuffs,
+    techniqueLog: state.techniqueLog,
+  }));
 
   const selectedLoadout = useMemo(() => {
     return loadouts.find((loadout) => loadout.id === selectedLoadoutId);
@@ -63,6 +91,10 @@ export function TechniquesPanel() {
   const activeSlots = selectedLoadout?.slots.active ?? ['', ''];
   const passiveSlots = selectedLoadout?.slots.passive ?? [''];
   const ultimateSlot = selectedLoadout?.slots.ultimate ?? null;
+  const now = Date.now();
+  const recentTechniqueLog = useMemo(() => {
+    return [...techniqueLog].slice(-10).reverse();
+  }, [techniqueLog]);
 
   return (
     <div className={'worldScreenPlaceholder'}>
@@ -96,23 +128,45 @@ export function TechniquesPanel() {
             </select>
           </label>
         </div>
+        <div className={'worldScreenPlaceholderLine'}>
+          AI: {(selectedLoadout?.aiProfile ?? 'balanced').toUpperCase()}
+        </div>
       </div>
 
       <div className={'worldScreenPlaceholderBody'}>
         <div className={'worldScreenPlaceholderLine worldScreenHighlight'}>Active Slots</div>
-        {activeSlots.map((techId, index) => (
-          <div key={`active-${index}`} className={'worldScreenPlaceholderLine'}>
-            Slot {index + 1}:{' '}
-            <select value={techId} onChange={handleEquip('active', index)}>
-              <option value="">(Empty)</option>
-              {activeCandidates.map((entry) => (
-                <option key={entry.id} value={entry.id}>
-                  {getDisplayName(entry.def, entry.id)}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
+        {activeSlots.map((techId, index) => {
+          const def = techId ? techniquesById[techId] : undefined;
+          const cooldownReadyAt = techId ? techniqueCooldowns[techId] : undefined;
+          const remainingSec =
+            inCombat && cooldownReadyAt ? Math.max(0, (cooldownReadyAt - now) / 1000) : 0;
+          const cooldownText = !techId
+            ? ''
+            : !inCombat || remainingSec <= 0
+              ? 'Ready'
+              : `CD: ${remainingSec.toFixed(1)}s`;
+          const costText = describeResourceCost(def);
+
+          return (
+            <div key={`active-${index}`} className={'worldScreenPlaceholderLine'}>
+              Slot {index + 1}:{' '}
+              <select value={techId} onChange={handleEquip('active', index)}>
+                <option value="">(Empty)</option>
+                {activeCandidates.map((entry) => (
+                  <option key={entry.id} value={entry.id}>
+                    {getDisplayName(entry.def, entry.id)}
+                  </option>
+                ))}
+              </select>
+              {techId && (
+                <div>
+                  {getDisplayName(def, techId)} • {cooldownText}
+                  {costText ? ` • ${costText}` : ''}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         <div className={'worldScreenPlaceholderLine worldScreenHighlight'}>Passive Slot</div>
         <div className={'worldScreenPlaceholderLine'}>
@@ -124,6 +178,9 @@ export function TechniquesPanel() {
               </option>
             ))}
           </select>
+          {passiveSlots[0] && (
+            <div>{getDisplayName(techniquesById[passiveSlots[0]], passiveSlots[0])}</div>
+          )}
         </div>
 
         <div className={'worldScreenPlaceholderLine worldScreenHighlight'}>Ultimate</div>
@@ -136,7 +193,47 @@ export function TechniquesPanel() {
               </option>
             ))}
           </select>
+          {ultimateSlot && (
+            <div>{getDisplayName(techniquesById[ultimateSlot], ultimateSlot)}</div>
+          )}
         </div>
+      </div>
+
+      <div className={'worldScreenPlaceholderBody'}>
+        <div className={'worldScreenPlaceholderLine worldScreenHighlight'}>Combat runtime</div>
+        {!inCombat && <div className={'worldScreenPlaceholderLine'}>Not in combat.</div>}
+        {inCombat && (
+          <>
+            <div className={'worldScreenPlaceholderLine'}>
+              Resources: Qi {combatResources.qi.toFixed(1)} / {combatResources.maxQi.toFixed(0)} •
+              Intent {combatResources.intent.toFixed(1)} / {combatResources.maxIntent.toFixed(0)}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Shield:{' '}
+              {combatShield && combatShield.amount > 0
+                ? `${combatShield.amount.toFixed(0)}${combatShield.expiresAt ? ` (${Math.max(0, (combatShield.expiresAt - now) / 1000).toFixed(0)}s)` : ''}`
+                : 'None'}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Buffs: {combatBuffs.length === 0 ? 'None' : ''}
+            </div>
+            {combatBuffs.map((buff) => (
+              <div key={buff.id} className={'worldScreenPlaceholderLine'}>
+                {buff.stat} {buff.mode === 'pct' ? `${Math.round(buff.value * 100)}%` : buff.value} •{' '}
+                {Math.max(0, (buff.endsAt - now) / 1000).toFixed(0)}s
+              </div>
+            ))}
+            <div className={'worldScreenPlaceholderLine'}>Recent casts</div>
+            {recentTechniqueLog.length === 0 && (
+              <div className={'worldScreenPlaceholderLine'}>No casts yet.</div>
+            )}
+            {recentTechniqueLog.map((entry, index) => (
+              <div key={`${entry.at}-${index}`} className={'worldScreenPlaceholderLine'}>
+                {new Date(entry.at).toLocaleTimeString()} • {entry.kind.toUpperCase()} • {entry.message}
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       <div className={'worldScreenPlaceholderBody'}>
@@ -150,7 +247,7 @@ export function TechniquesPanel() {
             <div>
               Tags: {describeTags(entry.def)}
               {entry.def?.cooldownSec ? ` • Cooldown: ${entry.def.cooldownSec}s` : ''}
-              {entry.def?.resourceCost ? ` • Cost: ${entry.def.resourceCost}` : ''}
+              {describeResourceCost(entry.def) ? ` • ${describeResourceCost(entry.def)}` : ''}
             </div>
           </div>
         ))}
