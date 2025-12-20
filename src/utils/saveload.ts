@@ -104,10 +104,8 @@ function gatherGameState(): SaveData {
     },
 
     techniqueState: {
-      currentIntent: techniqueState.currentIntent,
-      maxIntent: techniqueState.maxIntent,
-      intentRegenRate: techniqueState.intentRegenRate,
-      techniques: techniqueState.techniques,
+      loadouts: techniqueState.loadouts,
+      selectedLoadoutId: techniqueState.selectedLoadoutId,
     },
 
     trialState: {
@@ -132,6 +130,7 @@ function gatherGameState(): SaveData {
     techCollectionState: {
       unlockedTechs: { ...techCollectionState.unlockedTechs },
       fragments: { ...techCollectionState.fragments },
+      rngSeed: techCollectionState.rngSeed,
     },
   };
 
@@ -248,8 +247,21 @@ function validateSaveData(data: unknown): data is SaveData {
 
     if ('techniqueState' in record && record.techniqueState) {
       const ts = record.techniqueState as Record<string, unknown>;
-      if (typeof ts.currentIntent !== 'string' || typeof ts.maxIntent !== 'string') return false;
-      if (typeof ts.intentRegenRate !== 'string' || typeof ts.techniques !== 'object') return false;
+      if (typeof ts.selectedLoadoutId !== 'string') return false;
+      if (!Array.isArray((ts as { loadouts?: unknown }).loadouts)) return false;
+
+      const loadouts = (ts as { loadouts: any[] }).loadouts;
+      for (const loadout of loadouts) {
+        if (!loadout || typeof loadout !== 'object') return false;
+        const typed = loadout as Record<string, unknown>;
+        if (typeof typed.id !== 'string' || typeof typed.name !== 'string') return false;
+        if (typeof typed.aiProfile !== 'string') return false;
+        const slots = typed.slots as Record<string, unknown>;
+        if (!slots || typeof slots !== 'object') return false;
+        if (!Array.isArray(slots.active) || !Array.isArray(slots.passive)) return false;
+        if ('ultimate' in slots && slots.ultimate !== null && typeof slots.ultimate !== 'string')
+          return false;
+      }
     }
 
     if ('trialState' in record && record.trialState) {
@@ -542,12 +554,10 @@ function applySaveData(saveData: SaveData): void {
     }
 
     if (saveData.techniqueState) {
-      useTechniqueStore.setState({
-        currentIntent: saveData.techniqueState.currentIntent,
-        maxIntent: saveData.techniqueState.maxIntent,
-        intentRegenRate: saveData.techniqueState.intentRegenRate,
-        techniques: saveData.techniqueState.techniques,
-      });
+      useTechniqueStore.setState((state) => ({
+        loadouts: saveData.techniqueState.loadouts ?? state.loadouts,
+        selectedLoadoutId: saveData.techniqueState.selectedLoadoutId || state.selectedLoadoutId,
+      }));
     }
 
     if (saveData.trialState?.progressByTrialId) {
@@ -573,26 +583,9 @@ function applySaveData(saveData: SaveData): void {
     const collectionState = saveData.techCollectionState ?? {
       unlockedTechs: {},
       fragments: {},
+      rngSeed: undefined,
     };
     useTechCollectionStore.getState().hydrate(collectionState);
-
-    const selectedPath = saveData.gameState.selectedPath;
-    if (selectedPath) {
-      try {
-        const techniqueStore = useTechniqueStore.getState();
-        techniqueStore.unlockTechniqueByPathAndTier(selectedPath, 1);
-
-        if (saveData.gameState.realm.index >= 1) {
-          techniqueStore.unlockTechniqueByPathAndTier(selectedPath, 2);
-        }
-
-        if (saveData.gameState.realm.index >= 2) {
-          techniqueStore.unlockTechniqueByPathAndTier(selectedPath, 3);
-        }
-      } catch {
-        // Technique store unavailable during load
-      }
-    }
 
     // Recalculate derived values after hydration
     gameStore.calculateQiPerSecond();
@@ -775,9 +768,9 @@ export function deleteSaveAndHardReset(): void {
   }
 
   try {
-    useTechniqueStore.getState().hardResetTechniques();
+    useTechniqueStore.getState().resetLoadouts();
   } catch (error) {
-    console.warn('[deleteSaveAndHardReset] Failed to reset techniques', error);
+    console.warn('[deleteSaveAndHardReset] Failed to reset technique loadouts', error);
   }
 
   try {

@@ -1,6 +1,5 @@
 import { useState, type CSSProperties } from 'react';
 import { useGameStore } from '../../stores/gameStore';
-import { useTechniqueStore } from '../../stores/techniqueStore';
 import { useUIStore } from '../../stores/uiStore';
 import { getAvailablePerks } from '../../data/pathPerks';
 import type { CultivationPath } from '../../types';
@@ -80,19 +79,11 @@ const paths: Array<{
 
 export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
   const { selectPath, realm, pathPerks } = useGameStore();
-  const { unlockTechnique, techniques } = useTechniqueStore();
   const { showPerkSelection, hidePathSelection } = useUIStore();
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   const handleSelectPath = (pathId: CultivationPath) => {
     selectPath(pathId);
-
-    const tier1Technique = Object.values(techniques).find((tech) => tech.path === pathId && tech.tier === 1);
-
-    if (tier1Technique) {
-      unlockTechnique(tier1Technique.id);
-      console.log(`[PathSelection] Auto-unlocked tier 1 technique: ${tier1Technique.name}`);
-    }
 
     const availablePerks = getAvailablePerks(pathId, realm.index);
     const hasRealmPerk = availablePerks.some((perk) => pathPerks.includes(perk.id));

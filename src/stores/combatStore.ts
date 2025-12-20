@@ -1,6 +1,17 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { CombatState, CombatContext, EnemyDefinition, CombatLogEntry, EnemyMechanic } from '../types';
+import type {
+  CombatState,
+  CombatContext,
+  EnemyDefinition,
+  CombatLogEntry,
+  EnemyMechanic,
+  CombatBuff,
+  CombatResources,
+  CombatShield,
+  CombatTechniqueLogEntry,
+} from '../types';
+import type { TechniqueDef } from '../content';
 import type { OutskirtsDef, OutskirtsDropsConfig } from '../content';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
@@ -12,11 +23,15 @@ import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
+import { useTechniqueStore } from './techniqueStore';
+import { rankMultiplier, useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
 import { grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
 import { createEnemy } from '../systems/enemyFactory';
+import type { NormalizedEffect } from '../systems/techniques/effects';
+import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
 
 interface DungeonBoss {
   id: string;
@@ -56,6 +71,14 @@ const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
 const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
 const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
 const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
+const MAX_TECHNIQUE_LOG_ENTRIES = 50;
+const DEFAULT_SHIELD_DURATION_SEC = 12;
+const DEFAULT_BUFF_DURATION_SEC = 10;
+const QI_REGEN_PER_SEC_PCT = 0.02;
+const INTENT_REGEN_PER_SEC = 10;
+const AI_DECISION_INTERVAL_MS = 250;
+const MIN_TECHNIQUE_CAST_INTERVAL_MS = 300;
+const PASSIVE_BUFF_DURATION_SEC = 999999;
 
 /**
  * Boss mechanics instance (single instance per combat)
@@ -123,6 +146,90 @@ function collapseItems(items: RewardItemBundle[]): RewardItemBundle[] {
   });
 
   return Array.from(merged.entries()).map(([itemId, qty]) => ({ itemId, qty }));
+}
+
+function resolveCombatResourceModel(resourceModel?: string): 'qiPct' | 'intent' | 'none' {
+  const normalized = (resourceModel ?? '').toLowerCase();
+  if (normalized.includes('heaven') || normalized.includes('qi')) {
+    return 'qiPct';
+  }
+  if (normalized.includes('martial') || normalized.includes('intent')) {
+    return 'intent';
+  }
+  return 'none';
+}
+
+function buildCombatResources(): CombatResources {
+  const gameState = useGameStore.getState();
+  const qiValue = Number.isFinite(D(gameState.qi).toNumber()) ? D(gameState.qi).toNumber() : 0;
+  const maxQi = Math.max(100, qiValue);
+  const maxIntent = 100;
+
+  return {
+    qi: Math.min(qiValue, maxQi),
+    maxQi,
+    intent: maxIntent,
+    maxIntent,
+  };
+}
+
+function getBasePlayerCombatStats() {
+  const stats = useGameStore.getState().stats;
+  return {
+    atk: D(stats.atk).toNumber(),
+    def: D(stats.def).toNumber(),
+    maxHp: D(stats.maxHp).toNumber(),
+    crit: stats.crit,
+    critDmg: stats.critDmg,
+    dodge: stats.dodge,
+    speed: stats.speed,
+  };
+}
+
+function resolveStatKey(stat: string): keyof ReturnType<typeof getBasePlayerCombatStats> | null {
+  const normalized = stat.trim().toLowerCase();
+  if (['atk', 'attack'].includes(normalized)) return 'atk';
+  if (['def', 'defense'].includes(normalized)) return 'def';
+  if (['hp', 'maxhp', 'max_hp', 'max hp'].includes(normalized)) return 'maxHp';
+  if (['crit', 'critical'].includes(normalized)) return 'crit';
+  if (['critdmg', 'crit_dmg', 'crit dmg'].includes(normalized)) return 'critDmg';
+  if (['dodge', 'evasion'].includes(normalized)) return 'dodge';
+  if (['speed', 'haste'].includes(normalized)) return 'speed';
+  return null;
+}
+
+function getEffectivePlayerCombatStats(combatBuffs: CombatBuff[], now: number) {
+  const base = getBasePlayerCombatStats();
+  const updated = { ...base };
+
+  combatBuffs
+    .filter((buff) => buff.endsAt > now)
+    .forEach((buff) => {
+      const key = resolveStatKey(buff.stat);
+      if (!key) return;
+      const current = updated[key];
+      const nextValue = buff.mode === 'pct' ? current * (1 + buff.value) : current + buff.value;
+      updated[key] = nextValue;
+    });
+
+  updated.atk = Math.max(0, updated.atk);
+  updated.def = Math.max(0, updated.def);
+  updated.maxHp = Math.max(1, updated.maxHp);
+  updated.crit = Math.max(0, updated.crit);
+  updated.critDmg = Math.max(0, updated.critDmg);
+  updated.dodge = Math.max(0, updated.dodge);
+  updated.speed = Math.max(0, updated.speed);
+
+  return updated;
+}
+
+function resolveShieldDurationSec(effect: unknown): number | null {
+  if (!effect || typeof effect !== 'object') return null;
+  if (Array.isArray(effect)) return null;
+  const type = (effect as any).type;
+  if (type !== 'shield') return null;
+  const duration = (effect as any).durationSec;
+  return typeof duration === 'number' && Number.isFinite(duration) ? duration : null;
 }
 
 function buildOutskirtsRewards(
@@ -231,7 +338,13 @@ const createInitialCombatState = () => ({
   autoCombatAI: false,
   lastAttackTime: 0,
   lastEnemyAttackTime: 0,
-  techniquesCooldowns: {} as Record<string, number>,
+  techniqueCooldowns: {} as Record<string, number>,
+  lastTechniqueCastAt: 0,
+  nextAiDecisionAt: 0,
+  combatShield: null as CombatShield | null,
+  combatBuffs: [] as CombatBuff[],
+  combatResources: buildCombatResources(),
+  techniqueLog: [] as CombatTechniqueLogEntry[],
   isBoss: false,
   combatStartTime: 0,
   enemyMechanics: [] as EnemyMechanic[],
@@ -242,9 +355,231 @@ const createInitialCombatState = () => ({
  * Combat store managing all combat state and actions
  */
 export const useCombatStore = create<ExtendedCombatState>()(
-  immer((set, get) => ({
-    // Initial state
-    ...createInitialCombatState(),
+  immer((set, get) => {
+    const applyCombatShield = (damage: ReturnType<typeof D>, now: number) => {
+      let remainingDamage = damage;
+      let absorbed = D(0);
+
+      set((state) => {
+        const shield = state.combatShield;
+        if (!shield) return;
+        if (shield.expiresAt !== null && shield.expiresAt <= now) {
+          state.combatShield = null;
+          return;
+        }
+        const shieldAmount = D(shield.amount);
+        if (shieldAmount.lessThanOrEqualTo(0)) {
+          state.combatShield = null;
+          return;
+        }
+
+        const absorbAmount = remainingDamage.lessThan(shieldAmount) ? remainingDamage : shieldAmount;
+        absorbed = absorbAmount;
+        remainingDamage = remainingDamage.minus(absorbAmount);
+
+        const nextAmount = shieldAmount.minus(absorbAmount).toNumber();
+        if (nextAmount <= 0) {
+          state.combatShield = null;
+        } else {
+          state.combatShield.amount = nextAmount;
+        }
+      });
+
+      return { remainingDamage, absorbed };
+    };
+
+    const addTechniqueLogEntry = (
+      kind: CombatTechniqueLogEntry['kind'],
+      message: string,
+      techId?: string,
+      at: number = Date.now(),
+    ) => {
+      set((state) => {
+        state.techniqueLog.push({ at, kind, message, techId });
+        if (state.techniqueLog.length > MAX_TECHNIQUE_LOG_ENTRIES) {
+          state.techniqueLog.shift();
+        }
+      });
+    };
+
+    const applyPassiveTechniques = (now: number) => {
+      const loadout = useTechniqueStore.getState().getSelectedLoadout();
+      if (!loadout) return;
+
+      const contentStore = useContentStore.getState();
+      const techCollection = useTechCollectionStore.getState();
+      const passiveIds = loadout.slots.passive.filter((id) => id);
+
+      if (passiveIds.length === 0) return;
+
+      passiveIds.forEach((techId) => {
+        if (!techCollection.hasTech(techId)) return;
+        const techDef = contentStore.maps.techniquesById[techId];
+        if (!techDef) return;
+
+        const rank = techCollection.unlockedTechs[techId]?.rank ?? 1;
+        const rankMult = rankMultiplier(rank);
+        const scaling = getTechniqueScaling(techId, techDef);
+        const effects = applyRankMultiplier(
+          normalizeTechniqueEffects(techDef),
+          rankMult,
+        ).filter((effect) => effect.type === 'buff');
+        if (effects.length === 0) return;
+
+        set((state) => {
+          effects.forEach((effect) => {
+            const buffId = `${techId}:${effect.stat}`;
+            state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+            state.combatBuffs.push({
+              id: buffId,
+              stat: effect.stat,
+              mode: effect.mode,
+              value: effect.value * rankMult * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
+              endsAt: now + PASSIVE_BUFF_DURATION_SEC * 1000,
+            });
+          });
+        });
+      });
+    };
+
+    const selectTechniqueToCast = (now: number) => {
+      const state = get();
+      if (!state.inCombat || !state.currentEnemy) return null;
+      if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
+
+      const loadout = useTechniqueStore.getState().getSelectedLoadout();
+      if (!loadout) return null;
+
+      const techCollection = useTechCollectionStore.getState();
+      const contentStore = useContentStore.getState();
+      const aiProfile = loadout.aiProfile ?? 'balanced';
+      const activeIds = loadout.slots.active.filter((id) => id);
+      const candidateIds = [...activeIds];
+
+      if (loadout.slots.ultimate) {
+        candidateIds.push(loadout.slots.ultimate);
+      }
+
+      const uniqueCandidates = Array.from(new Set(candidateIds));
+
+      type Candidate = {
+        techId: string;
+        def: TechniqueDef;
+        classification: ReturnType<typeof classifyTechnique>;
+        effects: NormalizedEffect[];
+      };
+
+      const candidates = uniqueCandidates.reduce<Candidate[]>((acc, techId) => {
+        if (!techCollection.hasTech(techId)) return acc;
+        const def = contentStore.maps.techniquesById[techId];
+        if (!def) return acc;
+        if (!get().canCastTechnique(techId, now)) return acc;
+        acc.push({
+          techId,
+          def,
+          classification: classifyTechnique(def),
+          effects: normalizeTechniqueEffects(def),
+        });
+        return acc;
+      }, []);
+
+      if (candidates.length === 0) return null;
+
+      const hp = D(state.playerHP);
+      const maxHp = D(state.playerMaxHP);
+      const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
+      const isBossFight = state.isBoss || state.combatContext.type === 'trial';
+
+      const scored = candidates.map((candidate) => {
+        const { def, effects, classification } = candidate;
+        const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
+        const damageMults = effects
+          .filter((effect) => effect.type === 'damage')
+          .map((effect) => effect.mult);
+        const damageMult = damageMults.length ? Math.max(...damageMults) : 0;
+        const damageScore = damageMult > 0 ? damageMult / cooldownSec : 0;
+
+        const hasHeal = effects.some((effect) => effect.type === 'heal');
+        const hasShield = effects.some((effect) => effect.type === 'shield');
+        const hasDefBuff = effects.some(
+          (effect) => effect.type === 'buff' && /def|hp|resist/i.test(effect.stat)
+        );
+
+        let defensiveScore = 0;
+        if (hasHeal) defensiveScore += 5;
+        if (hasShield) defensiveScore += 4;
+        if (hasDefBuff) defensiveScore += 3;
+
+        let score = damageScore;
+
+        if (aiProfile === 'survivor') {
+          if (hpPct < 0.4 && defensiveScore > 0) {
+            score = defensiveScore * 10 + damageScore;
+          }
+        } else if (aiProfile === 'burst') {
+          if (isBossFight) {
+            if (classification.isBurst || (def.cooldownSec ?? 0) >= 20) {
+              score += 2;
+            }
+            if (classification.isUltimate) {
+              score += 2;
+            }
+          }
+        } else if (aiProfile === 'farmer') {
+          if ((def.cooldownSec ?? 0) <= 10) {
+            score += 1.5;
+          }
+          if (classification.isAoE) {
+            score += 1.5;
+          }
+        }
+
+        return { ...candidate, score, damageScore, defensiveScore };
+      });
+
+      if (aiProfile === 'survivor' && hpPct < 0.4) {
+        const defensiveCandidates = scored.filter((entry) => entry.defensiveScore > 0);
+        if (defensiveCandidates.length > 0) {
+          defensiveCandidates.sort((a, b) => b.score - a.score);
+          return defensiveCandidates[0]?.techId ?? null;
+        }
+      }
+
+      scored.sort((a, b) => b.score - a.score);
+      if (scored[0]?.score > 0) return scored[0].techId;
+
+      return scored[0]?.techId ?? null;
+    };
+
+    const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
+      const techCollection = useTechCollectionStore.getState();
+      const isBoss = get().isBoss || get().combatContext.type === 'trial';
+      const traitMods = techCollection.getTraitModifiers(techId, isBoss);
+      const runeMods = techCollection.getRuneModifiers(techId, technique);
+      const masteryCdr = techCollection.getMasteryCooldownReductionPct(techId);
+      const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
+
+      const cooldownReductionPct = Math.min(
+        0.3,
+        traitMods.cooldownReductionPct + runeMods.cooldownReductionPct + masteryCdr,
+      );
+      const costReductionPct = Math.min(
+        0.4,
+        traitMods.costReductionPct + runeMods.costReductionPct + masteryCostReduction,
+      );
+
+      return {
+        traitMods,
+        runeMods,
+        cooldownReductionPct,
+        costReductionPct,
+        isBoss,
+      };
+    };
+
+    return {
+      // Initial state
+      ...createInitialCombatState(),
 
     /**
      * Enter combat with an enemy
@@ -282,6 +617,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Reset timing
         state.lastAttackTime = now;
         state.lastEnemyAttackTime = now;
+        state.techniqueCooldowns = {};
+        state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+        state.combatShield = null;
+        state.combatBuffs = [];
+        state.combatResources = buildCombatResources();
+        state.techniqueLog = [];
 
         // Boss tracking
         state.isBoss = isBoss;
@@ -294,6 +636,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
+
+      applyPassiveTechniques(now);
     },
 
 
@@ -397,6 +741,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Reset timing
         state.lastAttackTime = now;
         state.lastEnemyAttackTime = now;
+        state.techniqueCooldowns = {};
+        state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+        state.combatShield = null;
+        state.combatBuffs = [];
+        state.combatResources = buildCombatResources();
+        state.techniqueLog = [];
 
         // Boss tracking
         state.isBoss = isBoss;
@@ -408,6 +759,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
+
+      applyPassiveTechniques(now);
     },
 
     /**
@@ -478,6 +831,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Reset timing
         state.lastAttackTime = now;
         state.lastEnemyAttackTime = now;
+        state.techniqueCooldowns = {};
+        state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+        state.combatShield = null;
+        state.combatBuffs = [];
+        state.combatResources = buildCombatResources();
+        state.techniqueLog = [];
 
         // Boss tracking
         state.isBoss = true;
@@ -487,6 +847,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Add entry to log
       get().addLogEntry('system', `⚠️ DUNGEON TRIAL: ${dungeonData.name}!`, '#f59e0b');
       get().addLogEntry('system', `⚔️ BOSS: ${enemy.name}!`, '#ef4444');
+
+      applyPassiveTechniques(now);
     },
 
     /**
@@ -513,6 +875,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.enemyMaxHP = '0';
         state.lastAttackTime = 0;
         state.lastEnemyAttackTime = 0;
+        state.techniqueCooldowns = {};
+        state.lastTechniqueCastAt = 0;
+        state.nextAiDecisionAt = 0;
+        state.combatShield = null;
+        state.combatBuffs = [];
+        state.combatResources = buildCombatResources();
+        state.techniqueLog = [];
         state.isBoss = false;
         state.combatStartTime = 0;
         state.enemyMechanics = [];
@@ -547,8 +916,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (lessThanOrEqualTo(state.enemyHP, 0) || lessThanOrEqualTo(state.playerHP, 0)) return;
 
-      const gameStore = useGameStore.getState();
-      const playerStats = gameStore.stats;
+      const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
       const enemy = state.currentEnemy;
 
       // Check if enemy dodges
@@ -562,18 +930,18 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
-      const atk = D(playerStats.atk);
+      const atk = D(effectiveStats.atk);
       const def = D(enemy.def);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
       const baseDamage = atk.times(D(1).minus(defReduction));
 
       // Check for critical hit
       const critRoll = Math.random() * 100;
-      const isCrit = critRoll < playerStats.crit;
+      const isCrit = critRoll < effectiveStats.crit;
       let finalDamage = baseDamage;
 
       if (isCrit) {
-        const critMultiplier = D(playerStats.critDmg).dividedBy(100);
+        const critMultiplier = D(effectiveStats.critDmg).dividedBy(100);
         finalDamage = baseDamage.times(critMultiplier);
         get().addLogEntry(
           'damage',
@@ -617,12 +985,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0)) return;
 
       const gameStore = useGameStore.getState();
-      const playerStats = gameStore.stats;
+      const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
       const enemy = state.currentEnemy;
 
       // Check if player dodges
       const dodgeRoll = Math.random() * 100;
-      if (dodgeRoll < playerStats.dodge) {
+      if (dodgeRoll < effectiveStats.dodge) {
         get().addLogEntry('enemy', `You dodged ${enemy.name}'s attack!`, '#94a3b8');
         set((state) => {
           state.lastEnemyAttackTime = now;
@@ -641,7 +1009,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
       }
 
-      const def = D(playerStats.def);
+      const def = D(effectiveStats.def);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
       const baseDamage = atk.times(D(1).minus(defReduction));
 
@@ -655,9 +1023,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
         finalDamage = baseDamage.times(critMultiplier);
       }
 
-      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(finalDamage.toString());
+      const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(finalDamage, now);
+      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(postCombatShield.toString());
       const damageAfterShield = D(remainingDamage);
-      const absorbedAmount = D(absorbed);
+      const absorbedAmount = D(absorbed).plus(combatAbsorbed);
 
       if (damageAfterShield.lessThanOrEqualTo(0)) {
         get().addLogEntry(
@@ -993,6 +1362,36 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const currentEnemyHP = D(state.enemyHP);
       const currentEnemyMaxHP = D(state.enemyMaxHP);
 
+      set((state) => {
+        state.combatBuffs = state.combatBuffs.filter((buff) => buff.endsAt > now);
+
+        if (state.combatShield) {
+          const expired = state.combatShield.expiresAt !== null && state.combatShield.expiresAt <= now;
+          if (expired || state.combatShield.amount <= 0) {
+            state.combatShield = null;
+          }
+        }
+
+        const qiRegen = state.combatResources.maxQi * QI_REGEN_PER_SEC_PCT * (deltaTime / 1000);
+        const intentRegen = INTENT_REGEN_PER_SEC * (deltaTime / 1000);
+        state.combatResources.qi = Math.min(state.combatResources.maxQi, state.combatResources.qi + qiRegen);
+        state.combatResources.intent = Math.min(
+          state.combatResources.maxIntent,
+          state.combatResources.intent + intentRegen,
+        );
+      });
+
+      if (now >= state.nextAiDecisionAt) {
+        set((state) => {
+          state.nextAiDecisionAt = now + AI_DECISION_INTERVAL_MS;
+        });
+
+        const selectedTechId = selectTechniqueToCast(now);
+        if (selectedTechId) {
+          get().castTechnique(selectedTechId, now, 'ai');
+        }
+      }
+
       // Process boss mechanics
       if (state.isBoss && bossMechanics) {
         const combatTime = (now - state.combatStartTime) / 1000; // Convert to seconds
@@ -1026,7 +1425,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         // Handle ultimate trigger
         if (mechanics.ultimateTriggered && mechanics.ultimateDamageMultiplier) {
           // Apply massive damage to player
-          const playerStats = useGameStore.getState().stats;
+          const effectiveStats = getEffectivePlayerCombatStats(state.combatBuffs, now);
           const enemy = state.currentEnemy;
 
           // Calculate base damage with ultimate multiplier
@@ -1038,15 +1437,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
             atk = atk.times(enrageMultiplier);
           }
 
-          const def = D(playerStats.def);
+          const def = D(effectiveStats.def);
           const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
           const ultimateDamage = atk.times(D(1).minus(defReduction));
 
+          const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(
+            ultimateDamage,
+            now
+          );
           const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(
-            ultimateDamage.toString()
+            postCombatShield.toString()
           );
           const damageAfterShield = D(remainingDamage);
-          const absorbedAmount = D(absorbed);
+          const absorbedAmount = D(absorbed).plus(combatAbsorbed);
 
           const absorptionNote = absorbedAmount.greaterThan(0)
             ? ` (${absorbedAmount.toFixed(0)} absorbed)`
@@ -1117,9 +1520,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (state.activeAura && state.activeAura.damagePerSec > 0) {
         const auraDamage = D(state.activeAura.damagePerSec).times(deltaTime / 1000);
-        const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(auraDamage.toString());
+        const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(auraDamage, now);
+        const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(postCombatShield.toString());
         const damageAfterShield = D(remainingDamage);
-        const absorbedAmount = D(absorbed);
+        const absorbedAmount = D(absorbed).plus(combatAbsorbed);
 
         if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
           set((state) => {
@@ -1163,14 +1567,176 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Update technique cooldowns
       set((state) => {
         const updatedCooldowns: Record<string, number> = {};
-        Object.keys(state.techniquesCooldowns).forEach((techniqueId) => {
-          const remaining = state.techniquesCooldowns[techniqueId] - deltaTime;
-          if (remaining > 0) {
-            updatedCooldowns[techniqueId] = remaining;
+        Object.entries(state.techniqueCooldowns).forEach(([techniqueId, readyAt]) => {
+          if (readyAt > now) {
+            updatedCooldowns[techniqueId] = readyAt;
           }
         });
-        state.techniquesCooldowns = updatedCooldowns;
+        state.techniqueCooldowns = updatedCooldowns;
       });
+    },
+
+    canCastTechnique: (techId: string, now: number = Date.now()) => {
+      const state = get();
+      if (!state.inCombat || !state.currentEnemy) return false;
+
+      const contentStore = useContentStore.getState();
+      const techDef = contentStore.maps.techniquesById[techId];
+      if (!techDef) return false;
+
+      const readyAt = state.techniqueCooldowns[techId] ?? 0;
+      if (now < readyAt) return false;
+
+      const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
+      const resourceCost = techDef.resourceCost ?? 0;
+      const { costReductionPct } = getTechniqueScaling(techId, techDef);
+      const effectiveCost = resourceCost * (1 - costReductionPct);
+
+      if (resourceModel === 'qiPct') {
+        const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
+        const cost = state.combatResources.maxQi * costPct;
+        return state.combatResources.qi >= cost;
+      }
+
+      if (resourceModel === 'intent') {
+        return state.combatResources.intent >= effectiveCost;
+      }
+
+      return true;
+    },
+
+    castTechnique: (techId: string, now: number = Date.now(), source: 'ai' | 'manual' = 'ai') => {
+      const state = get();
+      if (!state.inCombat || !state.currentEnemy) return false;
+
+      const contentStore = useContentStore.getState();
+      const techDef = contentStore.maps.techniquesById[techId];
+      if (!techDef) {
+        addTechniqueLogEntry('warn', `Unknown technique ${techId}.`, techId, now);
+        return false;
+      }
+
+      if (!get().canCastTechnique(techId, now)) {
+        addTechniqueLogEntry('warn', `${techDef.name} is not ready or lacks resources.`, techId, now);
+        return false;
+      }
+
+      const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
+      const rankMult = rankMultiplier(rank);
+      const scaling = getTechniqueScaling(techId, techDef);
+      const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef), rankMult);
+      addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
+
+      set((state) => {
+        const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
+        const resourceCost = techDef.resourceCost ?? 0;
+        const effectiveCost = resourceCost * (1 - scaling.costReductionPct);
+
+        if (resourceModel === 'qiPct') {
+          const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
+          const cost = state.combatResources.maxQi * costPct;
+          state.combatResources.qi = Math.max(0, state.combatResources.qi - cost);
+        } else if (resourceModel === 'intent') {
+          state.combatResources.intent = Math.max(0, state.combatResources.intent - effectiveCost);
+        }
+
+        const baseCdSec = techDef.cooldownSec ?? 0;
+        if (baseCdSec > 0) {
+          const cdSec = Math.max(0, baseCdSec * (1 - scaling.cooldownReductionPct));
+          state.techniqueCooldowns[techId] = now + cdSec * 1000;
+        }
+
+        state.lastTechniqueCastAt = now;
+      });
+
+      const xpGain = techDef.type === 'passive' ? 0 : 1;
+      if (xpGain > 0) {
+        useTechCollectionStore.getState().addMasteryXp(techId, xpGain, now);
+      }
+
+      if (effects.length === 0) {
+        addTechniqueLogEntry('warn', `${techDef.name} has no effects to apply.`, techId, now);
+        return true;
+      }
+
+      const effectSummaries = summarizeEffects(effects);
+      effectSummaries.forEach((summary) => addTechniqueLogEntry('effect', summary, techId, now));
+
+      const effectiveStats = getEffectivePlayerCombatStats(get().combatBuffs, now);
+      const maxHp = D(effectiveStats.maxHp);
+
+      effects.forEach((effect) => {
+        switch (effect.type) {
+          case 'damage': {
+            const damage = D(effectiveStats.atk).times(
+              effect.mult * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
+            );
+            set((state) => {
+              const newHP = subtract(state.enemyHP, damage.toString());
+              const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
+              state.enemyHP = clampedHP.toString();
+            });
+            break;
+          }
+          case 'heal': {
+            const healAmount = maxHp.times(
+              effect.mult * scaling.traitMods.healMult * scaling.runeMods.healMult,
+            );
+            set((state) => {
+              const newHP = D(state.playerHP).plus(healAmount);
+              const cappedHP = newHP.greaterThan(maxHp) ? maxHp : newHP;
+              state.playerHP = cappedHP.toString();
+            });
+            break;
+          }
+          case 'shield': {
+            const shieldAmount = maxHp
+              .times(effect.mult * scaling.traitMods.shieldMult * scaling.runeMods.shieldMult)
+              .toNumber();
+            const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
+            const expiresAt = now + durationSec * 1000;
+            set((state) => {
+              if (!state.combatShield) {
+                state.combatShield = { amount: shieldAmount, expiresAt };
+                return;
+              }
+              state.combatShield.amount += shieldAmount;
+              if (state.combatShield.expiresAt === null || state.combatShield.expiresAt < expiresAt) {
+                state.combatShield.expiresAt = expiresAt;
+              }
+            });
+            break;
+          }
+          case 'buff': {
+            const durationSec = effect.durationSec ?? DEFAULT_BUFF_DURATION_SEC;
+            const buffId = `${techId}:${effect.stat}`;
+            set((state) => {
+              state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+              state.combatBuffs.push({
+                id: buffId,
+                stat: effect.stat,
+                mode: effect.mode,
+                value: effect.value * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
+                endsAt: now + durationSec * 1000,
+              });
+            });
+            break;
+          }
+          case 'addStatus':
+            addTechniqueLogEntry('effect', `${techDef.name} applied a status (stub).`, techId, now);
+            break;
+          default:
+            break;
+        }
+      });
+
+      if (lessThanOrEqualTo(get().enemyHP, 0)) {
+        setTimeout(() => {
+          get().defeatEnemy();
+        }, 500);
+      }
+
+      return true;
     },
 
     /**
@@ -1223,6 +1789,6 @@ export const useCombatStore = create<ExtendedCombatState>()(
         get().addLogEntry('system', 'Combat AI disabled.', '#94a3b8');
       }
     },
-  }))
+  };
+  })
 );
-

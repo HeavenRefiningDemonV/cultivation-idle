@@ -3,10 +3,11 @@ import type { PavilionDef, PavilionPoolEntry, TechniqueDef } from '../../content
 import { useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useGameStore } from '../../stores/gameStore';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
+import { isHigherGrade, normalizeGrade, normalizeRarity, useTechCollectionStore } from '../../stores/techCollectionStore';
 import type { LifePath } from '../../types';
 import { weightedPick } from '../../utils/weightedPick';
 import { resolvePavilionPool } from '../../utils/techResolver';
+import { TechniquesPanel } from '../TechniquesPanel';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -14,7 +15,7 @@ interface ManualPavilionPanelProps {
 
 interface LastResultState {
   techId: string;
-  status: 'new' | 'duplicate';
+  status: 'new' | 'duplicate' | 'upgrade';
   fragmentsGained: number;
 }
 
@@ -61,6 +62,9 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const hasTech = useTechCollectionStore((state) => state.hasTech);
   const unlockTech = useTechCollectionStore((state) => state.unlockTech);
   const addFragments = useTechCollectionStore((state) => state.addFragments);
+  const setManualGrade = useTechCollectionStore((state) => state.setManualGrade);
+  const setRarityIfHigher = useTechCollectionStore((state) => state.setRarityIfHigher);
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const [lastResult, setLastResult] = useState<LastResultState | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,9 +122,25 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
     const resolvedTech = picked.techId;
     const meta = typeof picked.entry === 'string' ? undefined : picked.entry;
+    const gradeSold = normalizeGrade(pavilion.gradeSold);
+    const techniqueDef = picked.technique ?? techniquesById[resolvedTech];
+    const resolvedRarity = normalizeRarity(techniqueDef?.rarity ?? meta?.rarity);
+
     if (!hasTech(resolvedTech)) {
-      unlockTech(resolvedTech, { rarity: meta?.rarity, tier: meta?.tier });
+      unlockTech(resolvedTech, {
+        manualGrade: gradeSold,
+        rarity: resolvedRarity,
+        tier: meta?.tier,
+      });
       setLastResult({ techId: resolvedTech, status: 'new', fragmentsGained: 0 });
+      return;
+    }
+
+    const currentGrade = unlockedTechs[resolvedTech]?.manualGrade ?? 'mortal';
+    if (isHigherGrade(currentGrade, gradeSold)) {
+      setManualGrade(resolvedTech, gradeSold);
+      setRarityIfHigher(resolvedTech, resolvedRarity);
+      setLastResult({ techId: resolvedTech, status: 'upgrade', fragmentsGained: 0 });
       return;
     }
 
@@ -130,77 +150,92 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     setLastResult({ techId: resolvedTech, status: 'duplicate', fragmentsGained: fragmentValue });
   };
 
-  const content = useContentStore.getState();
-  const getTechniqueName = (techId: string) => content.maps.techniquesById[techId]?.name ?? techId;
+  const getTechniqueName = (techId: string) => techniquesById[techId]?.name ?? techId;
 
   if (!pavilionId) {
-    return <div className={'worldScreenPlaceholder'}>No pavilion in this city.</div>;
+    return (
+      <>
+        <div className={'worldScreenPlaceholder'}>No pavilion in this city.</div>
+        <TechniquesPanel />
+      </>
+    );
   }
 
   if (!pavilion) {
     return (
-      <div className={'worldScreenPlaceholder'}>
-        Pavilion data missing (pavilionId={pavilionId}).
-      </div>
+      <>
+        <div className={'worldScreenPlaceholder'}>
+          Pavilion data missing (pavilionId={pavilionId}).
+        </div>
+        <TechniquesPanel />
+      </>
     );
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{pavilion.id.replace(/_/g, ' ') || 'Manual Pavilion'}</div>
-        <div className={'worldScreenPlaceholderKey'}>manualPavilion</div>
-      </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>
-          Path: {lifePath ? lifePath.toUpperCase() : 'Choose a Path in Meditation Hall'}
+    <>
+      <div className={'worldScreenPlaceholder'}>
+        <div className={'worldScreenPlaceholderHeader'}>
+          <div className={'worldScreenPlaceholderTitle'}>{pavilion.id.replace(/_/g, ' ') || 'Manual Pavilion'}</div>
+          <div className={'worldScreenPlaceholderKey'}>manualPavilion</div>
         </div>
-        {PATHS.map((path) => (
-          <div
-            key={path}
-            className={`worldScreenPlaceholderLine ${lifePath === path ? 'worldScreenHighlight' : ''}`}
-          >
-            {path.toUpperCase()}: {describePool(poolsByPath[path])}
-          </div>
-        ))}
-        <div className={'worldScreenPlaceholderLine'}>
-          Cost: {[cost.gold ? `${cost.gold} Gold` : null, cost.spiritStones ? `${cost.spiritStones} Spirit Stones` : null]
-            .filter(Boolean)
-            .join(' / ') || 'Free'}
-        </div>
-      </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleBuy}
-          disabled={!lifePath || !canAffordCurrency(cost)}
-        >
-          Buy Manual
-        </button>
-        {!lifePath && <div className={'worldScreenInlineError'}>Choose a path to buy manuals.</div>}
-        {error && <div className={'worldScreenInlineError'}>{error}</div>}
-      </div>
-      {lastResult && (
         <div className={'worldScreenPlaceholderBody'}>
           <div className={'worldScreenPlaceholderLine'}>
-            Last Result: {getTechniqueName(lastResult.techId)} ({lastResult.status === 'new' ? 'New' : 'Duplicate'})
+            Path: {lifePath ? lifePath.toUpperCase() : 'Choose a Path in Meditation Hall'}
           </div>
-          {lastResult.status === 'duplicate' && (
-            <div className={'worldScreenPlaceholderLine'}>
-              Fragments gained: {lastResult.fragmentsGained} • Total fragments: {fragments[lastResult.techId] ?? 0}
+          {PATHS.map((path) => (
+            <div
+              key={path}
+              className={`worldScreenPlaceholderLine ${lifePath === path ? 'worldScreenHighlight' : ''}`}
+            >
+              {path.toUpperCase()}: {describePool(poolsByPath[path])}
             </div>
-          )}
-        </div>
-      )}
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>Unlocked techniques:</div>
-        {Object.keys(unlockedTechs).length === 0 && <div className={'worldScreenPlaceholderLine'}>None yet.</div>}
-        {Object.entries(unlockedTechs).map(([techId]) => (
-          <div key={techId} className={'worldScreenPlaceholderLine'}>
-            {getTechniqueName(techId)} ({techId}) • Fragments: {fragments[techId] ?? 0}
+          ))}
+          <div className={'worldScreenPlaceholderLine'}>
+            Cost: {[cost.gold ? `${cost.gold} Gold` : null, cost.spiritStones ? `${cost.spiritStones} Spirit Stones` : null]
+              .filter(Boolean)
+              .join(' / ') || 'Free'}
           </div>
-        ))}
+        </div>
+        <div className={'worldScreenPlaceholderActions'}>
+          <button
+            className={'worldScreenModuleButton worldScreenModuleButton--active'}
+            onClick={handleBuy}
+            disabled={!lifePath || !canAffordCurrency(cost)}
+          >
+            Buy Manual
+          </button>
+          {!lifePath && <div className={'worldScreenInlineError'}>Choose a path to buy manuals.</div>}
+          {error && <div className={'worldScreenInlineError'}>{error}</div>}
+        </div>
+        {lastResult && (
+          <div className={'worldScreenPlaceholderBody'}>
+            <div className={'worldScreenPlaceholderLine'}>
+              Last Result: {getTechniqueName(lastResult.techId)} ({lastResult.status === 'new' ? 'New' : lastResult.status === 'upgrade' ? 'Upgraded' : 'Duplicate'})
+            </div>
+            {lastResult.status === 'duplicate' && (
+              <div className={'worldScreenPlaceholderLine'}>
+                Fragments gained: {lastResult.fragmentsGained} • Total fragments: {fragments[lastResult.techId] ?? 0}
+              </div>
+            )}
+            {lastResult.status === 'upgrade' && (
+              <div className={'worldScreenPlaceholderLine'}>
+                Manual grade upgraded to {unlockedTechs[lastResult.techId]?.manualGrade ?? 'mortal'}.
+              </div>
+            )}
+          </div>
+        )}
+        <div className={'worldScreenPlaceholderBody'}>
+          <div className={'worldScreenPlaceholderLine'}>Unlocked techniques:</div>
+          {Object.keys(unlockedTechs).length === 0 && <div className={'worldScreenPlaceholderLine'}>None yet.</div>}
+          {Object.entries(unlockedTechs).map(([techId]) => (
+            <div key={techId} className={'worldScreenPlaceholderLine'}>
+              {getTechniqueName(techId)} ({techId}) • Fragments: {fragments[techId] ?? 0}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+      <TechniquesPanel />
+    </>
   );
 }

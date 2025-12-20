@@ -191,6 +191,20 @@ export interface GameState {
 /**
  * Save data structure
  */
+export type TechniqueSlotType = 'active' | 'passive' | 'ultimate';
+export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
+
+export interface SaveTechniqueLoadout {
+  id: string;
+  name: string;
+  aiProfile: AiProfile;
+  slots: {
+    active: string[];
+    passive: string[];
+    ultimate: string | null;
+  };
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -273,10 +287,8 @@ export interface SaveData {
 
   // Technique progression
   techniqueState: {
-    currentIntent: string;
-    maxIntent: string;
-    intentRegenRate: string;
-    techniques: Record<string, Technique>;
+    loadouts: SaveTechniqueLoadout[];
+    selectedLoadoutId: string;
   };
 
   techCollectionState?: {
@@ -286,11 +298,16 @@ export interface SaveData {
         unlocked: boolean;
         masteryXp: number;
         rank: number;
-        rarity?: string;
+        manualGrade?: 'mortal' | 'earth' | 'heaven' | 'mystic';
+        rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+        traits?: Array<{ id: string; value: number }>;
+        runes?: Array<string | null>;
         tier?: string;
+        lastCastAt?: number;
       }
     >;
     fragments: Record<string, number>;
+    rngSeed?: number;
   };
 
   // Trial progression
@@ -401,6 +418,33 @@ export interface CombatLogEntry {
   color: string;
 }
 
+export interface CombatTechniqueLogEntry {
+  at: number;
+  kind: 'cast' | 'effect' | 'warn';
+  message: string;
+  techId?: string;
+}
+
+export interface CombatShield {
+  amount: number;
+  expiresAt: number | null;
+}
+
+export interface CombatBuff {
+  id: string;
+  stat: string;
+  mode: 'pct' | 'flat';
+  value: number;
+  endsAt: number;
+}
+
+export interface CombatResources {
+  qi: number;
+  maxQi: number;
+  intent: number;
+  maxIntent: number;
+}
+
 /**
  * Combat context
  *
@@ -466,7 +510,15 @@ export interface CombatState {
   // Timing
   lastAttackTime: number;
   lastEnemyAttackTime: number;
-  techniquesCooldowns: Record<string, number>;
+  techniqueCooldowns: Record<string, number>;
+  lastTechniqueCastAt: number;
+  nextAiDecisionAt: number;
+
+  // Technique runtime state
+  combatShield: CombatShield | null;
+  combatBuffs: CombatBuff[];
+  combatResources: CombatResources;
+  techniqueLog: CombatTechniqueLogEntry[];
 
   // Boss mechanics
   isBoss: boolean;
@@ -486,6 +538,8 @@ export interface CombatState {
   defeatEnemy: () => void;
   playerDefeat: () => void;
   tick: (deltaTime: number) => void;
+  canCastTechnique: (techId: string, now?: number) => boolean;
+  castTechnique: (techId: string, now?: number, source?: 'ai' | 'manual') => boolean;
   addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
   setAutoAttack: (enabled: boolean) => void;
   setAutoCombatAI: (enabled: boolean) => void;

@@ -21,7 +21,6 @@ import {
   ZONE_UNLOCK_REQUIREMENTS,
 } from './zoneStore';
 import { useDungeonStore } from './dungeonStore';
-import { useTechniqueStore } from './techniqueStore';
 import { useUIStore } from './uiStore';
 
 interface InventoryStoreDeps {
@@ -182,12 +181,6 @@ export const useGameStore = create<GameState>()(
       set((state) => {
         state.selectedPath = path;
       });
-
-      try {
-        useTechniqueStore.getState().unlockTechniqueByPathAndTier(path, 1);
-      } catch {
-        // Technique store may not be initialized yet
-      }
 
       // Recalculate derived values
       get().calculateQiPerSecond();
@@ -404,21 +397,6 @@ export const useGameStore = create<GameState>()(
       const newRealmIndex = get().realm.index;
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
-      }
-
-      const path = get().selectedPath;
-      if (path) {
-        try {
-          const techniqueStore = useTechniqueStore.getState();
-          if (newRealmIndex >= 1) {
-            techniqueStore.unlockTechniqueByPathAndTier(path, 2);
-          }
-          if (newRealmIndex >= 2) {
-            techniqueStore.unlockTechniqueByPathAndTier(path, 3);
-          }
-        } catch {
-          // Technique store unavailable
-        }
       }
 
       // Recalculate stats and Qi generation
@@ -855,13 +833,6 @@ export const useGameStore = create<GameState>()(
         useDungeonStore.getState().resetDungeons();
       } catch {
         // Dungeon store not available
-      }
-
-      // Reset techniques and intent
-      try {
-        useTechniqueStore.getState().resetTechniques();
-      } catch {
-        // Technique store not available
       }
 
       // Prestige-specific logic handled in prestige store
