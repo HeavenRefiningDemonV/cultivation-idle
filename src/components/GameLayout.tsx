@@ -72,7 +72,7 @@ export function GameLayout() {
   };
 
   return (
-    <div className='gameLayoutRoot'>
+    <div className={`gameLayoutRoot ${activeTab === 'adventure' ? 'gameLayoutRoot--world' : ''}`}>
       <Header />
       <div className="nonheader">
         <Sidebar />

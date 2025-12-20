@@ -1,12 +1,17 @@
 .gameLayoutRoot {
   min-width: 100vh;
   min-height: 100vh;
-  background: url('../assets/background/cbg_bg.png') no-repeat;
+  background-image: url('../assets/background/cbg_bg.png');
+  background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
 
+}
+
+.gameLayoutRoot--world {
+  background-image: url('../assets/background/city.png');
 }
 
 .nonheader {
