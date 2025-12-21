@@ -3,6 +3,7 @@ import { useRewardsLogStore } from '../stores/rewardsLogStore';
 import { getItemDef } from '../stores/contentStore';
 import { D } from '../utils/numbers';
 import { getTalismanBonusesNow } from '../stores/buffStore';
+import { normalizeItemList } from '../utils/itemList';
 
 export type RewardCurrencyBundle = {
   gold?: string;
@@ -111,7 +112,7 @@ export function grantRewards(bundle: RewardBundle, reason: string): GrantRewards
   }
 
   // Items
-  const items = Array.isArray(bundle.items) ? bundle.items : [];
+  const items = normalizeItemList(bundle.items);
   for (const item of items) {
     if (!item || !item.itemId || typeof item.qty !== 'number' || item.qty <= 0) continue;
 
@@ -178,9 +179,10 @@ export function applyLootBonuses(bundle: RewardBundle, context: LootContext): Re
     return bundle;
   }
 
+  const normalizedItems = normalizeItemList(bundle.items);
   const next: RewardBundle = {
     currencies: bundle.currencies ? { ...bundle.currencies } : undefined,
-    items: bundle.items ? bundle.items.map((item) => ({ ...item })) : undefined,
+    items: normalizedItems.length > 0 ? normalizedItems.map((item) => ({ ...item })) : undefined,
     techniqueFragments: bundle.techniqueFragments
       ? bundle.techniqueFragments.map((fragment) => ({ ...fragment }))
       : undefined,

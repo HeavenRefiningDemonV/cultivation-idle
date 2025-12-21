@@ -771,6 +771,23 @@ function validateExpeditions(config: LoadedContentRaw['expeditions']): Expeditio
       }
       if (!entry.yieldsByTag || typeof entry.yieldsByTag !== 'object') {
         errors.push(`cityYields[${idx}].yieldsByTag must be an object`);
+      } else {
+        Object.entries(entry.yieldsByTag).forEach(([tag, bundle]) => {
+          if (!bundle || typeof bundle !== 'object') {
+            errors.push(`cityYields[${idx}].yieldsByTag.${tag} must be an object`);
+            return;
+          }
+          const items = (bundle as { items?: unknown }).items;
+          if (items !== undefined && !Array.isArray(items)) {
+            if (items && typeof items === 'object') {
+              errors.push(
+                `cityYields[${idx}].yieldsByTag.${tag}.items expected array but got map. Use Object.entries conversion.`,
+              );
+            } else {
+              errors.push(`cityYields[${idx}].yieldsByTag.${tag}.items must be an array`);
+            }
+          }
+        });
       }
     });
   }
@@ -852,7 +869,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const techniqueMap = buildIdMap(techniques);
   const apothecaryMap = buildIdMap(apothecaryShops);
   const lawMap = buildIdMap(heartLaws);
-  const prestigeMap = buildIdMap(prestige);
+  const prestigeMap = buildIdMap(prestige.upgrades);
   const bountyTemplateMap = buildIdMap(bountyConfig.templates);
 
   // Cross references on cities

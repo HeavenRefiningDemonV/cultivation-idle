@@ -4,6 +4,7 @@ import type { RewardBundle } from '../systems/rewards';
 import { grantRewards } from '../systems/rewards';
 import { useContentStore } from './contentStore';
 import { multiply } from '../utils/numbers';
+import { normalizeItemList } from '../utils/itemList';
 
 export type ExpeditionRunStatus = 'running' | 'complete';
 
@@ -49,9 +50,10 @@ function mergeRewardBundles(bundles: RewardBundle[]): RewardBundle {
       mergeCurrency(merged.currencies, bundle.currencies);
     }
 
-    if (bundle.items && bundle.items.length > 0) {
+    const items = normalizeItemList(bundle.items);
+    if (items.length > 0) {
       merged.items = merged.items ?? [];
-      merged.items.push(...bundle.items.map((item) => ({ ...item })));
+      merged.items.push(...items.map((item) => ({ ...item })));
     }
 
     if (bundle.techniqueFragments && bundle.techniqueFragments.length > 0) {
@@ -69,9 +71,10 @@ function mergeRewardBundles(bundles: RewardBundle[]): RewardBundle {
 
 function applyEfficiency(bundle: RewardBundle, efficiencyMult?: number): RewardBundle {
   if (!efficiencyMult || efficiencyMult === 1) return bundle;
+  const normalizedItems = normalizeItemList(bundle.items);
   const next: RewardBundle = {
     currencies: bundle.currencies ? { ...bundle.currencies } : undefined,
-    items: bundle.items ? bundle.items.map((item) => ({ ...item })) : undefined,
+    items: normalizedItems.length > 0 ? normalizedItems.map((item) => ({ ...item })) : undefined,
     techniqueFragments: bundle.techniqueFragments
       ? bundle.techniqueFragments.map((fragment) => ({ ...fragment }))
       : undefined,
