@@ -11,7 +11,14 @@ import type {
   TrialDef,
   ValidatedContent,
 } from '../content';
-import { loadAllContent, validateLoadedContent } from '../content';
+import {
+  loadAllContent,
+  normalizeForgeBlueprint,
+  validateLoadedContent,
+  type NormalizedForgeBlueprint,
+  isRefineBlueprint,
+  isRuneBlueprint,
+} from '../content';
 
 interface ContentMaps {
   citiesById: Record<string, CityDef>;
@@ -232,3 +239,36 @@ export function formatPrice(price: Partial<Record<'gold' | 'spiritStones' | 'mer
   if (price.merit) parts.push(`${price.merit} Merit`);
   return parts.join(' / ');
 }
+
+export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
+  const blueprints = useContentStore.getState().raw?.forge_blueprints ?? [];
+  return blueprints.map((blueprint) => normalizeForgeBlueprint(blueprint));
+}
+
+export function getForgeBlueprint(id: string): NormalizedForgeBlueprint | undefined {
+  return listForgeBlueprints().find((blueprint) => blueprint.id === id);
+}
+
+export function listForgeBlueprintsForCity(options: {
+  cityId?: string | null;
+  cityIndex?: number | null;
+  tier?: number | null;
+} = {}): NormalizedForgeBlueprint[] {
+  const { cityId, cityIndex, tier } = options;
+  const list = listForgeBlueprints();
+
+  if (cityId) {
+    const filtered = list.filter((blueprint) => blueprint.cityId === cityId);
+    return filtered.length > 0 ? filtered : list;
+  }
+
+  const gatingIndex = cityIndex ?? tier;
+  if (typeof gatingIndex === 'number') {
+    const filtered = list.filter((blueprint) => blueprint.cityIndex === gatingIndex);
+    return filtered.length > 0 ? filtered : list;
+  }
+
+  return list;
+}
+
+export { isRuneBlueprint, isRefineBlueprint };
