@@ -12,6 +12,7 @@ import {
   setGameStoreGetter,
 } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
+import { useProfessionStore } from '../stores/professionStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 import { useUIStore } from '../stores/uiStore';
@@ -295,6 +296,8 @@ export function initializeGame(): boolean {
         } else {
           console.log('[GameLoop] No offline progress to apply');
         }
+
+        useProfessionStore.getState().tick(Date.now());
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');
       }

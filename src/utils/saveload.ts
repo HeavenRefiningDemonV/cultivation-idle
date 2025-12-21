@@ -13,6 +13,7 @@ import { useTrialStore } from '../stores/trialStore';
 import { useRuinsStore } from '../stores/ruinsStore';
 import { useShopStore } from '../stores/shopStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
+import { useProfessionStore } from '../stores/professionStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -45,6 +46,7 @@ function gatherGameState(): SaveData {
   const ruinsState = useRuinsStore.getState();
   const shopState = useShopStore.getState();
   const techCollectionState = useTechCollectionStore.getState();
+  const professionState = useProfessionStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -131,6 +133,11 @@ function gatherGameState(): SaveData {
       unlockedTechs: { ...techCollectionState.unlockedTechs },
       fragments: { ...techCollectionState.fragments },
       rngSeed: techCollectionState.rngSeed,
+    },
+
+    professionState: {
+      alchemyQueue: professionState.alchemyQueue.map((job) => ({ ...job })),
+      lastTickAt: professionState.lastTickAt,
     },
   };
 
@@ -330,6 +337,22 @@ function validateSaveData(data: unknown): data is SaveData {
       const ss = record.shopState as Record<string, unknown>;
       if (typeof ss.dayKey !== 'string') return false;
       if (typeof ss.purchasedToday !== 'object' || ss.purchasedToday === null) return false;
+    }
+
+    if ('professionState' in record && record.professionState) {
+      const ps = record.professionState as Record<string, unknown>;
+      if (!Array.isArray((ps as { alchemyQueue?: unknown }).alchemyQueue)) return false;
+      if (typeof ps.lastTickAt !== 'number') return false;
+
+      const queue = (ps as { alchemyQueue: Array<Record<string, unknown>> }).alchemyQueue;
+      for (const job of queue) {
+        if (!job || typeof job !== 'object') return false;
+        if (typeof job.id !== 'string') return false;
+        if (typeof job.recipeId !== 'string') return false;
+        if (typeof job.qty !== 'number') return false;
+        if (typeof job.startedAt !== 'number') return false;
+        if (typeof job.endsAt !== 'number') return false;
+      }
     }
 
     return true;
@@ -580,6 +603,14 @@ function applySaveData(saveData: SaveData): void {
       useShopStore.getState().hydrate(shopState);
     }
 
+    const professionState = saveData.professionState ?? { alchemyQueue: [], lastTickAt: 0 };
+    useProfessionStore.setState({
+      alchemyQueue: Array.isArray(professionState.alchemyQueue)
+        ? professionState.alchemyQueue.map((job) => ({ ...job }))
+        : [],
+      lastTickAt: typeof professionState.lastTickAt === 'number' ? professionState.lastTickAt : 0,
+    });
+
     const collectionState = saveData.techCollectionState ?? {
       unlockedTechs: {},
       fragments: {},
@@ -686,6 +717,8 @@ export function deleteSave(): boolean {
 
     useShopStore.getState().hardResetShop();
 
+    useProfessionStore.setState({ alchemyQueue: [], lastTickAt: 0 });
+
     try {
       useTechCollectionStore.getState().hardReset();
     } catch (error) {
@@ -753,6 +786,12 @@ export function deleteSaveAndHardReset(): void {
     useShopStore.getState().hardResetShop();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset shop state', error);
+  }
+
+  try {
+    useProfessionStore.setState({ alchemyQueue: [], lastTickAt: 0 });
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset profession state', error);
   }
 
   try {

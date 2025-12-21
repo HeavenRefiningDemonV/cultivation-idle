@@ -343,6 +343,18 @@ export interface SaveData {
     dayKey: string;
     purchasedToday: Record<string, Record<string, number>>;
   };
+
+  // Profession state
+  professionState?: {
+    alchemyQueue: Array<{
+      id: string;
+      recipeId: string;
+      qty: number;
+      startedAt: number;
+      endsAt: number;
+    }>;
+    lastTickAt: number;
+  };
 }
 
 export interface PrestigeUpgradeEffect {
