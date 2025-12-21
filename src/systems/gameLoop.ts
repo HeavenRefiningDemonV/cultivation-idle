@@ -13,6 +13,7 @@ import {
 } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useProfessionStore } from '../stores/professionStore';
+import { useExpeditionStore } from '../stores/expeditionStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 import { useUIStore } from '../stores/uiStore';
@@ -171,6 +172,7 @@ class GameLoop {
 
       // We could add additional cultivation logic here in the future
       // For now, the gameStore.tick() handles Qi generation
+      useExpeditionStore.getState().tick(Date.now());
     } catch (error) {
       console.error('[GameLoop] Error in cultivation tick:', error);
     }
@@ -298,6 +300,7 @@ export function initializeGame(): boolean {
         }
 
         useProfessionStore.getState().tick(Date.now());
+        useExpeditionStore.getState().tick(Date.now());
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');
       }

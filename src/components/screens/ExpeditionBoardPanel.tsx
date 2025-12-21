@@ -25,7 +25,6 @@ export function ExpeditionBoardPanel() {
   const activeRuns = useExpeditionStore((state) => state.active);
   const start = useExpeditionStore((state) => state.start);
   const claim = useExpeditionStore((state) => state.claim);
-  const tick = useExpeditionStore((state) => state.tick);
 
   const [now, setNow] = useState(() => Date.now());
   const [selectedTypeBySlot, setSelectedTypeBySlot] = useState<Record<number, string>>({});
@@ -43,12 +42,6 @@ export function ExpeditionBoardPanel() {
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    tick(Date.now());
-    const interval = window.setInterval(() => tick(Date.now()), 3000);
-    return () => window.clearInterval(interval);
-  }, [tick]);
 
   useEffect(() => {
     if (types.length === 0) return;

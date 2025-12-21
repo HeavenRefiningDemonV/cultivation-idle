@@ -17,6 +17,7 @@ import { useProfessionStore } from '../stores/professionStore';
 import { useEquipmentStore } from '../stores/equipmentStore';
 import { useBuffStore } from '../stores/buffStore';
 import { useBountyStore } from '../stores/bountyStore';
+import { useExpeditionStore } from '../stores/expeditionStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -53,6 +54,7 @@ function gatherGameState(): SaveData {
   const equipmentState = useEquipmentStore.getState();
   const buffState = useBuffStore.getState();
   const bountyState = useBountyStore.getState();
+  const expeditionState = useExpeditionStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -114,6 +116,11 @@ function gatherGameState(): SaveData {
     bountyState: {
       activeByCityId: { ...bountyState.activeByCityId },
       lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
+    },
+
+    expeditionState: {
+      slots: expeditionState.slots,
+      active: expeditionState.active.map((run) => ({ ...run })),
     },
 
     techniqueState: {
@@ -279,6 +286,12 @@ function validateSaveData(data: unknown): data is SaveData {
       const bs = record.bountyState as Record<string, unknown>;
       if (typeof bs.activeByCityId !== 'object' || bs.activeByCityId === null) return false;
       if (typeof bs.lastRefreshAtByCityId !== 'object' || bs.lastRefreshAtByCityId === null) return false;
+    }
+
+    if ('expeditionState' in record && record.expeditionState) {
+      const es = record.expeditionState as Record<string, unknown>;
+      if (typeof es.slots !== 'number') return false;
+      if (!Array.isArray((es as { active?: unknown }).active)) return false;
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -678,6 +691,15 @@ function applySaveData(saveData: SaveData): void {
       lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
     });
 
+    const expeditionState = saveData.expeditionState ?? { slots: 1, active: [] };
+    useExpeditionStore.setState({
+      slots: typeof expeditionState.slots === 'number' ? expeditionState.slots : 1,
+      active: Array.isArray(expeditionState.active)
+        ? expeditionState.active.map((run) => ({ ...run }))
+        : [],
+    });
+    useExpeditionStore.getState().tick(Date.now());
+
     if (saveData.ruinsState?.progressByRuinId) {
       useRuinsStore.setState({
         progressByRuinId: saveData.ruinsState.progressByRuinId,
@@ -843,6 +865,7 @@ export function deleteSave(): boolean {
     useEquipmentStore.getState().hardResetEquipment();
     useBuffStore.getState().hardResetBuffs();
     useBountyStore.getState().hardResetBounties();
+    useExpeditionStore.setState({ slots: 1, active: [] });
 
     try {
       useTechCollectionStore.getState().hardReset();

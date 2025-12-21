@@ -232,6 +232,17 @@ export interface SaveBountyInstance {
   createdAt: number;
 }
 
+export interface SaveExpeditionRun {
+  slotIndex: number;
+  expeditionTypeId: string;
+  durationId: string;
+  cityId: string;
+  cityIndex: number;
+  startedAt: number;
+  endsAt: number;
+  status: 'running' | 'complete';
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -315,6 +326,11 @@ export interface SaveData {
   bountyState?: {
     activeByCityId: Record<string, SaveBountyInstance[]>;
     lastRefreshAtByCityId: Record<string, number>;
+  };
+
+  expeditionState?: {
+    slots: number;
+    active: SaveExpeditionRun[];
   };
 
   // Technique progression
