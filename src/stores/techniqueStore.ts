@@ -21,7 +21,10 @@ export interface TechniqueLoadout {
 interface TechniqueStoreState {
   loadouts: TechniqueLoadout[];
   selectedLoadoutId: string;
+  activeSlots: number;
+  passiveSlots: number;
   setSelectedLoadout: (id: string) => void;
+  setSlotCounts: (slots: { active?: number; passive?: number }) => void;
   setAiProfile: (loadoutId: string, profile: AiProfile) => void;
   equipTechnique: (slotType: SlotType, slotIndex: number, techId: string) => void;
   resetLoadouts: () => void;
@@ -32,19 +35,36 @@ interface TechniqueStoreState {
   ) => { active: string[]; passive: string[]; ultimate: string | null };
 }
 
-const ACTIVE_SLOTS = 2;
-const PASSIVE_SLOTS = 1;
+export const BASE_ACTIVE_SLOTS = 2;
+export const BASE_PASSIVE_SLOTS = 1;
 
-const createEmptyLoadout = (id: string, name: string, aiProfile: AiProfile): TechniqueLoadout => ({
+const createEmptyLoadout = (
+  id: string,
+  name: string,
+  aiProfile: AiProfile,
+  activeSlots: number,
+  passiveSlots: number,
+): TechniqueLoadout => ({
   id,
   name,
   aiProfile,
   slots: {
-    active: Array.from({ length: ACTIVE_SLOTS }, () => ''),
-    passive: Array.from({ length: PASSIVE_SLOTS }, () => ''),
+    active: Array.from({ length: activeSlots }, () => ''),
+    passive: Array.from({ length: passiveSlots }, () => ''),
     ultimate: null,
   },
 });
+
+const clampSlotCount = (value: number, minimum: number) => {
+  if (!Number.isFinite(value)) return minimum;
+  return Math.max(minimum, Math.floor(value));
+};
+
+const normalizeSlots = (slots: string[], nextCount: number) => {
+  if (slots.length === nextCount) return slots;
+  if (slots.length > nextCount) return slots.slice(0, nextCount);
+  return [...slots, ...Array.from({ length: nextCount - slots.length }, () => '')];
+};
 
 const isSlotCompatible = (tech: TechniqueDef | undefined, slotType: SlotType) => {
   if (!tech || !tech.type) return true;
@@ -55,10 +75,12 @@ const isSlotCompatible = (tech: TechniqueDef | undefined, slotType: SlotType) =>
 
 export const useTechniqueStore = create<TechniqueStoreState>()(
   immer((set, get) => ({
+    activeSlots: BASE_ACTIVE_SLOTS,
+    passiveSlots: BASE_PASSIVE_SLOTS,
     loadouts: [
-      createEmptyLoadout('loadout_1', 'Loadout 1', 'balanced'),
-      createEmptyLoadout('loadout_2', 'Loadout 2', 'survivor'),
-      createEmptyLoadout('loadout_3', 'Loadout 3', 'burst'),
+      createEmptyLoadout('loadout_1', 'Loadout 1', 'balanced', BASE_ACTIVE_SLOTS, BASE_PASSIVE_SLOTS),
+      createEmptyLoadout('loadout_2', 'Loadout 2', 'survivor', BASE_ACTIVE_SLOTS, BASE_PASSIVE_SLOTS),
+      createEmptyLoadout('loadout_3', 'Loadout 3', 'burst', BASE_ACTIVE_SLOTS, BASE_PASSIVE_SLOTS),
     ],
     selectedLoadoutId: 'loadout_1',
 
@@ -67,6 +89,22 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       if (!exists) return;
       set((state) => {
         state.selectedLoadoutId = id;
+      });
+    },
+
+    setSlotCounts: ({ active, passive }) => {
+      const current = get();
+      const nextActive = clampSlotCount(active ?? current.activeSlots, BASE_ACTIVE_SLOTS);
+      const nextPassive = clampSlotCount(passive ?? current.passiveSlots, BASE_PASSIVE_SLOTS);
+      if (nextActive === current.activeSlots && nextPassive === current.passiveSlots) return;
+
+      set((state) => {
+        state.activeSlots = nextActive;
+        state.passiveSlots = nextPassive;
+        state.loadouts.forEach((loadout) => {
+          loadout.slots.active = normalizeSlots(loadout.slots.active, nextActive);
+          loadout.slots.passive = normalizeSlots(loadout.slots.passive, nextPassive);
+        });
       });
     },
 
@@ -83,8 +121,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       const loadout = state.loadouts.find((l) => l.id === state.selectedLoadoutId);
       if (!loadout) return;
 
-      if (slotType === 'active' && (slotIndex < 0 || slotIndex >= ACTIVE_SLOTS)) return;
-      if (slotType === 'passive' && (slotIndex < 0 || slotIndex >= PASSIVE_SLOTS)) return;
+      if (slotType === 'active' && (slotIndex < 0 || slotIndex >= state.activeSlots)) return;
+      if (slotType === 'passive' && (slotIndex < 0 || slotIndex >= state.passiveSlots)) return;
       if (slotType === 'ultimate' && slotIndex !== 0) return;
 
       if (techId !== '') {
@@ -133,11 +171,12 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
     },
 
     resetLoadouts: () => {
+      const { activeSlots, passiveSlots } = get();
       set(() => ({
         loadouts: [
-          createEmptyLoadout('loadout_1', 'Loadout 1', 'balanced'),
-          createEmptyLoadout('loadout_2', 'Loadout 2', 'survivor'),
-          createEmptyLoadout('loadout_3', 'Loadout 3', 'burst'),
+          createEmptyLoadout('loadout_1', 'Loadout 1', 'balanced', activeSlots, passiveSlots),
+          createEmptyLoadout('loadout_2', 'Loadout 2', 'survivor', activeSlots, passiveSlots),
+          createEmptyLoadout('loadout_3', 'Loadout 3', 'burst', activeSlots, passiveSlots),
         ],
         selectedLoadoutId: 'loadout_1',
       }));
@@ -157,8 +196,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       const loadout = state.loadouts.find((l) => l.id === (loadoutId ?? state.selectedLoadoutId));
       if (!loadout) {
         return {
-          active: Array.from({ length: ACTIVE_SLOTS }, () => ''),
-          passive: Array.from({ length: PASSIVE_SLOTS }, () => ''),
+          active: Array.from({ length: state.activeSlots }, () => ''),
+          passive: Array.from({ length: state.passiveSlots }, () => ''),
           ultimate: null,
         };
       }

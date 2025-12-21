@@ -21,6 +21,7 @@ export interface ExpeditionRun {
 interface ExpeditionState {
   slots: number;
   active: ExpeditionRun[];
+  setSlots: (slots: number) => void;
   start: (slotIndex: number, typeId: string, durationId: string, cityId: string, cityIndex: number) => boolean;
   claim: (slotIndex: number) => boolean;
   tick: (now: number) => void;
@@ -133,6 +134,15 @@ export const useExpeditionStore = create<ExpeditionState>()(
   immer((set, get) => ({
     slots: 1,
     active: [],
+
+    setSlots: (slots) => {
+      const nextSlots = Number.isFinite(slots) ? Math.max(1, Math.floor(slots)) : 1;
+      if (nextSlots === get().slots) return;
+      set((state) => {
+        state.slots = nextSlots;
+        state.active = state.active.filter((run) => run.slotIndex < nextSlots);
+      });
+    },
 
     start: (slotIndex, typeId, durationId, cityId, cityIndex) => {
       const { slots, active } = get();

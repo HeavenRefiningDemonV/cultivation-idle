@@ -19,6 +19,8 @@ import { useBuffStore } from '../stores/buffStore';
 import { useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heartLawStore';
+import { useContentStore } from '../stores/contentStore';
+import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { getDayKey } from './dayKey';
 
 /**
@@ -811,6 +813,17 @@ function applySaveData(saveData: SaveData): void {
       rngSeed: undefined,
     };
     useTechCollectionStore.getState().hydrate(collectionState);
+
+    const contentState = useContentStore.getState();
+    if (contentState.isLoaded) {
+      recomputeAndApplyPrestigeUnlocks(usePrestigeStore.getState().purchasesById);
+    } else {
+      const unsubscribe = useContentStore.subscribe((state) => {
+        if (!state.isLoaded) return;
+        recomputeAndApplyPrestigeUnlocks(usePrestigeStore.getState().purchasesById);
+        unsubscribe();
+      });
+    }
 
     // Recalculate derived values after hydration
     gameStore.calculateQiPerSecond();

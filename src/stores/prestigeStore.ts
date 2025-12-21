@@ -5,6 +5,7 @@ import { REALMS } from '../constants';
 import { saveGame } from '../utils/saveload';
 import { useContentStore } from './contentStore';
 import type { PrestigeUpgradeDef } from '../content';
+import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -265,6 +266,7 @@ export const usePrestigeStore = create<PrestigeState>()(
         state.purchasesById[upgradeId] = current + 1;
       });
 
+      recomputeAndApplyPrestigeUnlocks(get().purchasesById);
       return { ok: true };
     },
 
