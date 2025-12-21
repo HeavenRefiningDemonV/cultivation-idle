@@ -250,6 +250,26 @@ export interface SaveHeartLawState {
   unlockedHeartLawIds: string[];
 }
 
+export interface SaveActivityState {
+  active: {
+    type: string;
+    cityId?: string;
+    sourceId?: string;
+    startedAt: number;
+  } | null;
+}
+
+export interface SaveOutskirtsState {
+  progressByOutskirtsId: Record<
+    string,
+    {
+      killsSinceBoss: number;
+      totalKills: number;
+      bossDefeated: boolean;
+    }
+  >;
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -329,6 +349,10 @@ export interface SaveData {
     >;
     initializedFromContent?: boolean;
   };
+
+  activityState?: SaveActivityState;
+
+  outskirtsState?: SaveOutskirtsState;
 
   bountyState?: {
     activeByCityId: Record<string, SaveBountyInstance[]>;

@@ -9,6 +9,8 @@ import { useDungeonStore } from '../stores/dungeonStore';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
+import { useActivityStore } from '../stores/activityStore';
+import { useOutskirtsStore } from '../stores/outskirtsStore';
 import { useTrialStore } from '../stores/trialStore';
 import { useRuinsStore } from '../stores/ruinsStore';
 import { useShopStore } from '../stores/shopStore';
@@ -22,11 +24,11 @@ import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heart
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { getDayKey } from './dayKey';
+import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
 
 /**
  * Save system constants
  */
-const SAVE_VERSION = '1.0.0';
 const SAVE_KEY = 'cultivation-idle-save-v3';
 const BACKUP_A_KEY = 'cultivation-idle-save-v3-backup-A';
 const BACKUP_B_KEY = 'cultivation-idle-save-v3-backup-B';
@@ -59,6 +61,8 @@ function gatherGameState(): SaveData {
   const bountyState = useBountyStore.getState();
   const expeditionState = useExpeditionStore.getState();
   const heartLawState = useHeartLawStore.getState();
+  const activityState = useActivityStore.getState();
+  const outskirtsState = useOutskirtsStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -115,6 +119,14 @@ function gatherGameState(): SaveData {
       selectedModuleByCity: { ...cityState.selectedModuleByCity },
       cityFlagsById: { ...cityState.cityFlagsById },
       initializedFromContent: cityState.initializedFromContent,
+    },
+
+    activityState: {
+      active: activityState.active ? { ...activityState.active } : null,
+    },
+
+    outskirtsState: {
+      progressByOutskirtsId: { ...outskirtsState.progressByOutskirtsId },
     },
 
     bountyState: {
@@ -512,13 +524,12 @@ function decryptSaveData(encrypted: string): SaveData | null {
     }
 
     const data = JSON.parse(jsonString);
-
-    if (!validateSaveData(data)) {
-      console.error('Decrypted data failed validation');
-      return null;
+    const migrated = migrateSave(data);
+    if (!validateSaveData(migrated)) {
+      console.warn('[SaveLoad] Migrated save data failed validation, using defaults');
+      return buildDefaultSaveState();
     }
-
-    return data as SaveData;
+    return migrated;
   } catch (error) {
     console.error('Decryption error:', error);
     return null;
@@ -584,6 +595,7 @@ export function saveGame(): boolean {
  */
 function applySaveData(saveData: SaveData): void {
   try {
+    const defaults = buildDefaultSaveState();
     const prestigeStore = usePrestigeStore.getState();
     const gameStore = useGameStore.getState();
 
@@ -702,47 +714,43 @@ function applySaveData(saveData: SaveData): void {
     });
 
     // Apply zone state (if exists)
-    if (saveData.zoneState) {
-      useZoneStore.setState({
-        unlockedZones: saveData.zoneState.unlockedZones,
-        zoneProgress: saveData.zoneState.zoneProgress,
-      });
-    }
-
-    if (saveData.techniqueState) {
-      useTechniqueStore.setState((state) => ({
-        loadouts: saveData.techniqueState.loadouts ?? state.loadouts,
-        selectedLoadoutId: saveData.techniqueState.selectedLoadoutId || state.selectedLoadoutId,
-      }));
-    }
-
-    if (saveData.trialState?.progressByTrialId) {
-      useTrialStore.setState({
-        progressByTrialId: saveData.trialState.progressByTrialId,
-      });
-    }
-
-    const bountyState = saveData.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
-    useBountyStore.setState({
-      activeByCityId: { ...bountyState.activeByCityId },
-      lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
+    useZoneStore.setState({
+      unlockedZones: saveData.zoneState.unlockedZones,
+      zoneProgress: saveData.zoneState.zoneProgress,
     });
 
-    const expeditionState = saveData.expeditionState ?? { slots: 1, active: [] };
+    const cityState = saveData.cityState ?? defaults.cityState;
+    useCityStore.setState({
+      currentCityId: cityState.currentCityId ?? null,
+      unlockedCityIds: Array.isArray(cityState.unlockedCityIds) ? [...cityState.unlockedCityIds] : [],
+      selectedModuleByCity: { ...(cityState.selectedModuleByCity ?? {}) },
+      cityFlagsById: { ...(cityState.cityFlagsById ?? {}) },
+      initializedFromContent: cityState.initializedFromContent ?? false,
+    });
+
+    useTechniqueStore.setState((state) => ({
+      loadouts: saveData.techniqueState?.loadouts ?? state.loadouts,
+      selectedLoadoutId: saveData.techniqueState?.selectedLoadoutId || state.selectedLoadoutId,
+    }));
+
+    useTrialStore.setState({
+      progressByTrialId: saveData.trialState?.progressByTrialId ?? defaults.trialState.progressByTrialId,
+    });
+
+    useBountyStore.setState({
+      activeByCityId: { ...(saveData.bountyState?.activeByCityId ?? defaults.bountyState.activeByCityId) },
+      lastRefreshAtByCityId: {
+        ...(saveData.bountyState?.lastRefreshAtByCityId ?? defaults.bountyState.lastRefreshAtByCityId),
+      },
+    });
+
     useExpeditionStore.setState({
-      slots: typeof expeditionState.slots === 'number' ? expeditionState.slots : 1,
-      active: Array.isArray(expeditionState.active)
-        ? expeditionState.active.map((run) => ({ ...run }))
-        : [],
+      slots: saveData.expeditionState?.slots ?? defaults.expeditionState.slots,
+      active: saveData.expeditionState?.active.map((run) => ({ ...run })) ?? [],
     });
     useExpeditionStore.getState().tick(Date.now());
 
-    const heartLawState = saveData.heartLawState ?? {
-      selectedHeartLawId: null,
-      chapter: 1,
-      comprehension: 0,
-      unlockedHeartLawIds: getDefaultUnlockedHeartLawIds(),
-    };
+    const heartLawState = saveData.heartLawState ?? defaults.heartLawState;
     useHeartLawStore.setState({
       selectedHeartLawId: heartLawState.selectedHeartLawId ?? null,
       chapter: typeof heartLawState.chapter === 'number' ? heartLawState.chapter : 1,
@@ -752,25 +760,16 @@ function applySaveData(saveData: SaveData): void {
         : getDefaultUnlockedHeartLawIds(),
     });
 
-    if (saveData.ruinsState?.progressByRuinId) {
-      useRuinsStore.setState({
-        progressByRuinId: saveData.ruinsState.progressByRuinId,
-        autoRepeatDefault: saveData.ruinsState.autoRepeatDefault ?? true,
-        activeRun: null,
-      });
-    }
+    useRuinsStore.setState({
+      progressByRuinId: saveData.ruinsState?.progressByRuinId ?? defaults.ruinsState.progressByRuinId,
+      autoRepeatDefault: saveData.ruinsState?.autoRepeatDefault ?? defaults.ruinsState.autoRepeatDefault,
+      activeRun: null,
+    });
 
-    const shopState =
-      saveData.shopState ?? ({ dayKey: getDayKey(), purchasedToday: {} } as SaveData['shopState']);
-    if (shopState) {
-      useShopStore.getState().hydrate(shopState);
-    }
+    const shopState = saveData.shopState ?? defaults.shopState;
+    useShopStore.getState().hydrate(shopState);
 
-    const equipmentState = saveData.equipmentState ?? {
-      equippedWeaponId: null,
-      equippedAccessoryId: null,
-      refineLevelBySlot: { weapon: 0, accessory: 0 },
-    };
+    const equipmentState = saveData.equipmentState ?? defaults.equipmentState;
     useEquipmentStore.setState({
       equippedWeaponId: equipmentState.equippedWeaponId ?? null,
       equippedAccessoryId: equipmentState.equippedAccessoryId ?? null,
@@ -780,7 +779,7 @@ function applySaveData(saveData: SaveData): void {
       },
     });
 
-    const buffState = saveData.buffState ?? { activeTalismans: [] };
+    const buffState = saveData.buffState ?? defaults.buffState;
     useBuffStore.setState({
       activeTalismans: Array.isArray(buffState.activeTalismans)
         ? buffState.activeTalismans.map((entry) => ({ ...entry }))
@@ -788,12 +787,7 @@ function applySaveData(saveData: SaveData): void {
     });
     useBuffStore.getState().purgeExpired(Date.now());
 
-    const professionState = saveData.professionState ?? {
-      alchemyQueue: [],
-      talismanQueue: [],
-      forgeQueue: [],
-      lastTickAt: 0,
-    };
+    const professionState = saveData.professionState ?? defaults.professionState;
     useProfessionStore.setState({
       alchemyQueue: Array.isArray(professionState.alchemyQueue)
         ? professionState.alchemyQueue.map((job) => ({ ...job }))
@@ -807,12 +801,18 @@ function applySaveData(saveData: SaveData): void {
       lastTickAt: typeof professionState.lastTickAt === 'number' ? professionState.lastTickAt : 0,
     });
 
-    const collectionState = saveData.techCollectionState ?? {
-      unlockedTechs: {},
-      fragments: {},
-      rngSeed: undefined,
-    };
+    const collectionState = saveData.techCollectionState ?? defaults.techCollectionState;
     useTechCollectionStore.getState().hydrate(collectionState);
+
+    useActivityStore.setState({
+      active: saveData.activityState?.active ?? null,
+    });
+
+    useOutskirtsStore.setState({
+      progressByOutskirtsId: {
+        ...(saveData.outskirtsState?.progressByOutskirtsId ?? defaults.outskirtsState.progressByOutskirtsId),
+      },
+    });
 
     const contentState = useContentStore.getState();
     if (contentState.isLoaded) {
@@ -829,6 +829,7 @@ function applySaveData(saveData: SaveData): void {
     gameStore.calculateQiPerSecond();
     gameStore.calculatePlayerStats();
 
+    assertRequiredSaveKeys(gatherGameState());
     console.log('[SaveLoad] Save data applied successfully');
   } catch (error) {
     console.error('[SaveLoad] Error applying save data:', error);
@@ -1111,15 +1112,11 @@ export function importSave(base64String: string): boolean {
     }
 
     const jsonString = atob(base64Json);
-    const saveData = JSON.parse(jsonString);
-
-    if (!validateSaveData(saveData)) {
-      console.error('[SaveLoad] Imported data failed validation');
-      return false;
-    }
+    const rawSave = JSON.parse(jsonString);
+    const saveData = migrateSave(rawSave);
 
     // Apply the imported data
-    applySaveData(saveData as SaveData);
+    applySaveData(saveData);
 
     // Save to localStorage
     saveGame();
