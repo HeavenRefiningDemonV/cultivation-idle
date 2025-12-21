@@ -468,3 +468,190 @@
   border: 1px solid rgba(248, 113, 113, 0.3);
   color: #fecdd3;
 }
+
+.alchemyPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alchemyPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.alchemyTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.alchemySubtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.alchemySections {
+  display: grid;
+  gap: 12px;
+}
+
+.alchemySection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.alchemySectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.alchemySectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.alchemySectionSub {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.alchemyRecipeList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alchemyRecipeCard,
+.alchemyQueueCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+
+.alchemyRecipeHeader,
+.alchemyQueueHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.alchemyRecipeName,
+.alchemyQueueName {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.alchemyRecipeId,
+.alchemyQueueMeta {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.alchemyRecipeMeta,
+.alchemyQueueTiming {
+  text-align: right;
+  font-size: 12px;
+  color: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alchemyRecipeBody {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alchemyRecipeDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  font-size: 13px;
+}
+
+.alchemyRecipeDetails ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: #e2e8f0;
+}
+
+.alchemyRecipeLabel {
+  font-size: 12px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.alchemyRecipeControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.alchemyRecipeControls input {
+  width: 80px;
+  margin-left: 8px;
+}
+
+.alchemyRecipeActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alchemyRecipeHint {
+  font-size: 12px;
+  color: #fca5a5;
+}
+
+.alchemyQueueList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.alchemyQueueActions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.alchemyQueueEmpty {
+  color: #cbd5e1;
+  font-size: 13px;
+  padding: 6px 0;
+}
+
+.alchemyStatus {
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.alchemyStatus--success {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: #bbf7d0;
+}
+
+.alchemyStatus--error {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #fecdd3;
+}
