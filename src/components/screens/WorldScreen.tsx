@@ -12,6 +12,7 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { grantRewards } from '../../systems/rewards';
 import { ApothecaryPanel } from './ApothecaryPanel';
 import { AlchemyPanel } from './AlchemyPanel';
+import { ForgePanel } from './ForgePanel';
 import { ManualPavilionPanel } from './ManualPavilionPanel';
 import { MeditationHallPanel } from './MeditationHallPanel';
 import './WorldScreen.scss';
@@ -564,6 +565,8 @@ export function WorldScreen() {
                     <ApothecaryPanel shopId={moduleRefId ?? null} />
                   ) : selectedModuleKey === 'alchemy' ? (
                     <AlchemyPanel cityId={selectedCity.id} />
+                  ) : selectedModuleKey === 'forge' ? (
+                    <ForgePanel cityId={selectedCity.id} />
                   ) : selectedModuleKey === 'ruins' && ruinDef ? (
                     <div className={'worldScreenPlaceholder'}>
                       <div className={'worldScreenPlaceholderHeader'}>
