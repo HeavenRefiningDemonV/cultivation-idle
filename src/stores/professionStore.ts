@@ -44,6 +44,7 @@ interface ProfessionState {
   startTalisman: (recipeId: string, qty: number) => ActionResult;
   startForge: (blueprintId: string, qty: number, options?: { targetSlot?: ForgeJob['targetSlot'] }) => ActionResult;
   tick: (now: number) => void;
+  applyOffline: (now: number) => void;
   claimAlchemy: (jobId: string) => ActionResult;
   claimTalisman: (jobId: string) => ActionResult;
   claimForge: (jobId: string) => ActionResult;
@@ -424,6 +425,10 @@ export const useProfessionStore = create<ProfessionState>()(
         return;
       }
       set({ lastTickAt: now });
+    },
+
+    applyOffline: (now) => {
+      get().tick(now);
     },
 
     claimAlchemy: (jobId) => {

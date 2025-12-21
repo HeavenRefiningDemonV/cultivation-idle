@@ -304,10 +304,9 @@ export function initializeGame(): boolean {
           console.log('[GameLoop] No offline progress to apply');
         }
 
-        useProfessionStore.getState().tick(Date.now());
-        useExpeditionStore.getState().tick(Date.now());
-
         const now = Date.now();
+        useProfessionStore.getState().applyOffline(now);
+        useExpeditionStore.getState().tick(now);
         useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
         saveGame();
       } else {
