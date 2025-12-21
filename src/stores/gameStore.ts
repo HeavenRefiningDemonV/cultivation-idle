@@ -23,6 +23,8 @@ import {
 import { useDungeonStore } from './dungeonStore';
 import { useUIStore } from './uiStore';
 import { useEquipmentStore } from './equipmentStore';
+import { useHeartLawStore } from './heartLawStore';
+import { useActivityStore } from './activityStore';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -137,6 +139,15 @@ export const useGameStore = create<GameState>()(
      */
     tick: (deltaTime: number) => {
       get().removeExpiredBuffs();
+
+      const heartLawState = useHeartLawStore.getState();
+      const activeActivity = useActivityStore.getState().active;
+      if (heartLawState.selectedHeartLawId && (!activeActivity || activeActivity.type === 'meditate')) {
+        const comprehensionGain = (deltaTime / 1000) * (1 / 60);
+        if (comprehensionGain > 0) {
+          heartLawState.addComprehension(comprehensionGain, 'meditation');
+        }
+      }
 
       set((state) => {
         // Calculate Qi gained this tick

@@ -6,6 +6,7 @@ import { useActivityStore } from './activityStore';
 import { useCombatStore } from './combatStore';
 import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
+import { useHeartLawStore } from './heartLawStore';
 import { applyLootBonuses, grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
 
 export type RuinProgress = {
@@ -262,6 +263,9 @@ export const useRuinsStore = create<RuinsState>()(
           );
           grantRewards(chestRewards, `Ruins — ${ruinDef.name ?? ruinDef.id} (Final Chest)`);
           useBountyStore.getState().recordEvent({ type: 'RUINS_RUN_CLEAR', cityId, amount: 1 });
+          if (useHeartLawStore.getState().selectedHeartLawId) {
+            useHeartLawStore.getState().addComprehension(15, 'ruinsClear');
+          }
 
           const now = Date.now();
           const seconds = Math.max(0, (now - active.startedAt) / 1000);

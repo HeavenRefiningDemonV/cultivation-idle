@@ -64,14 +64,19 @@ export const useHeartLawStore = create<HeartLawState>()(
       const { selectedHeartLawId } = get();
       if (!selectedHeartLawId) return;
 
+      let advancedTo: number | null = null;
       set((state) => {
         while (state.chapter < 5) {
           const requirement = getChapterRequirement(state.chapter);
           if (requirement <= 0 || state.comprehension < requirement) break;
           state.comprehension -= requirement;
           state.chapter += 1;
+          advancedTo = state.chapter;
         }
       });
+      if (advancedTo) {
+        console.log(`[HeartLaw] advanced to chapter ${advancedTo}`);
+      }
     },
 
     isUnlocked: (id) => {
