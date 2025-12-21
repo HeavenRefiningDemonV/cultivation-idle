@@ -5,6 +5,7 @@ import { getContentBaseUrl } from '../../content';
 import { grantRewards } from '../../systems/rewards';
 import { useUIStore } from '../../stores/uiStore';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore';
+import { SystemStatusPanel } from '../SystemStatusPanel';
 import './SettingsScreen.scss';
 
 export function SettingsScreen() {
@@ -115,6 +116,10 @@ export function SettingsScreen() {
                 </div>
               </label>
             </div>
+          </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <SystemStatusPanel />
           </div>
 
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
