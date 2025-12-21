@@ -344,6 +344,15 @@ export interface SaveData {
     purchasedToday: Record<string, Record<string, number>>;
   };
 
+  equipmentState?: {
+    equippedWeaponId: string | null;
+    equippedAccessoryId: string | null;
+    refineLevelBySlot: {
+      weapon: number;
+      accessory: number;
+    };
+  };
+
   // Profession state
   professionState?: {
     alchemyQueue: Array<{

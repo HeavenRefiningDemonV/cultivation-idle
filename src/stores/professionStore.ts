@@ -6,6 +6,7 @@ import { getForgeBlueprint } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
 import { useContentStore } from './contentStore';
 import { useEquipmentStore } from './equipmentStore';
+import { useGameStore } from './gameStore';
 
 export type AlchemyJob = {
   id: string;
@@ -365,7 +366,11 @@ export const useProfessionStore = create<ProfessionState>()(
       }
 
       if (blueprint.type === 'service' && blueprint.service === 'refine' && job.targetSlot) {
-        useEquipmentStore.getState().applyRefineFromForge(job.targetSlot, job.qty);
+        const result = useEquipmentStore.getState().applyRefineFromForge(job.targetSlot, job.qty);
+        if (!result.ok) {
+          return { ok: false, error: result.error };
+        }
+        useGameStore.getState().calculatePlayerStats();
       }
 
       set((state) => {

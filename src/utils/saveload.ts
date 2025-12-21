@@ -14,6 +14,7 @@ import { useRuinsStore } from '../stores/ruinsStore';
 import { useShopStore } from '../stores/shopStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
 import { useProfessionStore } from '../stores/professionStore';
+import { useEquipmentStore } from '../stores/equipmentStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -47,6 +48,7 @@ function gatherGameState(): SaveData {
   const shopState = useShopStore.getState();
   const techCollectionState = useTechCollectionStore.getState();
   const professionState = useProfessionStore.getState();
+  const equipmentState = useEquipmentStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -127,6 +129,12 @@ function gatherGameState(): SaveData {
           { ...entries },
         ]),
       ),
+    },
+
+    equipmentState: {
+      equippedWeaponId: equipmentState.equippedWeaponId,
+      equippedAccessoryId: equipmentState.equippedAccessoryId,
+      refineLevelBySlot: { ...equipmentState.refineLevelBySlot },
     },
 
     techCollectionState: {
@@ -338,6 +346,21 @@ function validateSaveData(data: unknown): data is SaveData {
       const ss = record.shopState as Record<string, unknown>;
       if (typeof ss.dayKey !== 'string') return false;
       if (typeof ss.purchasedToday !== 'object' || ss.purchasedToday === null) return false;
+    }
+
+    if ('equipmentState' in record && record.equipmentState) {
+      const es = record.equipmentState as Record<string, unknown>;
+      const weaponId = (es as { equippedWeaponId?: unknown }).equippedWeaponId;
+      const accessoryId = (es as { equippedAccessoryId?: unknown }).equippedAccessoryId;
+      if (weaponId !== null && weaponId !== undefined && typeof weaponId !== 'string') return false;
+      if (accessoryId !== null && accessoryId !== undefined && typeof accessoryId !== 'string') return false;
+
+      const refine = (es as { refineLevelBySlot?: unknown }).refineLevelBySlot as
+        | { weapon?: unknown; accessory?: unknown }
+        | undefined;
+      if (refine) {
+        if (typeof refine.weapon !== 'number' || typeof refine.accessory !== 'number') return false;
+      }
     }
 
     if ('professionState' in record && record.professionState) {
@@ -618,6 +641,20 @@ function applySaveData(saveData: SaveData): void {
       useShopStore.getState().hydrate(shopState);
     }
 
+    const equipmentState = saveData.equipmentState ?? {
+      equippedWeaponId: null,
+      equippedAccessoryId: null,
+      refineLevelBySlot: { weapon: 0, accessory: 0 },
+    };
+    useEquipmentStore.setState({
+      equippedWeaponId: equipmentState.equippedWeaponId ?? null,
+      equippedAccessoryId: equipmentState.equippedAccessoryId ?? null,
+      refineLevelBySlot: {
+        weapon: equipmentState.refineLevelBySlot?.weapon ?? 0,
+        accessory: equipmentState.refineLevelBySlot?.accessory ?? 0,
+      },
+    });
+
     const professionState = saveData.professionState ?? {
       alchemyQueue: [],
       forgeQueue: [],
@@ -740,6 +777,7 @@ export function deleteSave(): boolean {
     useShopStore.getState().hardResetShop();
 
     useProfessionStore.setState({ alchemyQueue: [], forgeQueue: [], lastTickAt: 0 });
+    useEquipmentStore.getState().hardResetEquipment();
 
     try {
       useTechCollectionStore.getState().hardReset();
@@ -814,6 +852,12 @@ export function deleteSaveAndHardReset(): void {
     useProfessionStore.setState({ alchemyQueue: [], forgeQueue: [], lastTickAt: 0 });
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset profession state', error);
+  }
+
+  try {
+    useEquipmentStore.getState().hardResetEquipment();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset equipment state', error);
   }
 
   try {

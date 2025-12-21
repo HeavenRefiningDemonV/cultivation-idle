@@ -22,6 +22,7 @@ import {
 } from './zoneStore';
 import { useDungeonStore } from './dungeonStore';
 import { useUIStore } from './uiStore';
+import { useEquipmentStore } from './equipmentStore';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -656,6 +657,21 @@ export const useGameStore = create<GameState>()(
           // qiMultiplier is handled in calculateQiPerSecond
         }
       }
+
+      const equipmentState = useEquipmentStore.getState();
+      const weaponLevel = equipmentState.refineLevelBySlot.weapon;
+      const accessoryLevel = equipmentState.refineLevelBySlot.accessory;
+      const weaponMultiplier = equipmentState.equippedWeaponId
+        ? Decimal.min(D(1.25), D(1).plus(D(0.02).times(weaponLevel)))
+        : D(1);
+      const accessoryMultiplier = equipmentState.equippedAccessoryId
+        ? Decimal.min(D(1.25), D(1).plus(D(0.02).times(accessoryLevel)))
+        : D(1);
+
+      atk = multiply(atk, weaponMultiplier);
+      hp = multiply(hp, accessoryMultiplier);
+      def = multiply(def, accessoryMultiplier);
+      regen = multiply(regen, accessoryMultiplier);
 
       // Apply active buffs
       for (const buff of activeBuffs) {
