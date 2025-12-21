@@ -18,7 +18,6 @@ export function BountyBoardPanel() {
   const cityMap = useContentStore((state) => state.maps.citiesById);
   const generateForCity = useBountyStore((state) => state.generateForCity);
   const refresh = useBountyStore((state) => state.refresh);
-  const recordEvent = useBountyStore((state) => state.recordEvent);
   const claim = useBountyStore((state) => state.claim);
   const bounties = useBountyStore((state) =>
     currentCityId ? state.activeByCityId[currentCityId] ?? [] : [],
@@ -105,41 +104,7 @@ export function BountyBoardPanel() {
         )}
       </div>
 
-      <div className={'bountyBoardDevTools'}>
-        <div className={'bountyBoardDevTitle'}>Simulate progress</div>
-        <div className={'bountyBoardDevButtons'}>
-          <button
-            className={'worldScreenModuleButton'}
-            onClick={() => recordEvent({ type: 'OUTSKIRTS_KILL', cityId: currentCityId })}
-          >
-            Sim Outskirts Kill
-          </button>
-          <button
-            className={'worldScreenModuleButton'}
-            onClick={() => recordEvent({ type: 'OUTSKIRTS_BOSS_KILL', cityId: currentCityId })}
-          >
-            Sim Outskirts Boss
-          </button>
-          <button
-            className={'worldScreenModuleButton'}
-            onClick={() => recordEvent({ type: 'RUINS_ROOM_CLEAR', cityId: currentCityId })}
-          >
-            Sim Ruins Room
-          </button>
-          <button
-            className={'worldScreenModuleButton'}
-            onClick={() => recordEvent({ type: 'RUINS_RUN_CLEAR', cityId: currentCityId })}
-          >
-            Sim Ruins Run
-          </button>
-          <button
-            className={'worldScreenModuleButton'}
-            onClick={() => recordEvent({ type: 'TRIAL_CLEAR', cityId: currentCityId })}
-          >
-            Sim Trial Clear
-          </button>
-        </div>
-      </div>
+      {/* Dev buttons removed once real hooks are wired. */}
     </div>
   );
 }

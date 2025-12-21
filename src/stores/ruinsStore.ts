@@ -5,6 +5,7 @@ import { useContentStore } from './contentStore';
 import { useActivityStore } from './activityStore';
 import { useCombatStore } from './combatStore';
 import { useCityStore } from './cityStore';
+import { useBountyStore } from './bountyStore';
 import { applyLootBonuses, grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
 
 export type RuinProgress = {
@@ -252,6 +253,7 @@ export const useRuinsStore = create<RuinsState>()(
 
         const perRoomRewards = rollDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`);
         grantRewards(perRoomRewards, `Ruins — ${ruinDef.name ?? ruinDef.id} (Room ${roomIndex + 1}/${active.roomCount})`);
+        useBountyStore.getState().recordEvent({ type: 'RUINS_ROOM_CLEAR', cityId, amount: 1 });
 
         if (isFinalRoom) {
           const chestRewards = rollDropTable(
@@ -259,6 +261,7 @@ export const useRuinsStore = create<RuinsState>()(
             `Ruins ${ruinDef.id} final chest room ${roomIndex + 1}`,
           );
           grantRewards(chestRewards, `Ruins — ${ruinDef.name ?? ruinDef.id} (Final Chest)`);
+          useBountyStore.getState().recordEvent({ type: 'RUINS_RUN_CLEAR', cityId, amount: 1 });
 
           const now = Date.now();
           const seconds = Math.max(0, (now - active.startedAt) / 1000);

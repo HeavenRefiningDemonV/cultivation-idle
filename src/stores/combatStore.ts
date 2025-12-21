@@ -24,6 +24,7 @@ import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
 import { useTechniqueStore } from './techniqueStore';
+import { useBountyStore } from './bountyStore';
 import { rankMultiplier, useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
@@ -1103,6 +1104,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const { cityId, trialId, gateItemId, eligible } = combatContext;
 
         useActivityStore.getState().stopActivity();
+        useBountyStore.getState().recordEvent({ type: 'TRIAL_CLEAR', cityId, amount: 1 });
 
         if (eligible) {
           useTrialStore.getState().markCleared(trialId);
@@ -1149,6 +1151,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const isBossFight = Boolean(combatContext.isBoss ?? isBoss);
 
         useOutskirtsStore.getState().recordKill(outskirtsDef.id, isBossFight);
+        if (cityId) {
+          useBountyStore
+            .getState()
+            .recordEvent({ type: isBossFight ? 'OUTSKIRTS_BOSS_KILL' : 'OUTSKIRTS_KILL', cityId, amount: 1 });
+        }
         if (isBossFight && cityId) {
           useCityStore.getState().markOutskirtsBossDefeated(cityId);
         }
