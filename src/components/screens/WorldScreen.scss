@@ -859,3 +859,185 @@
   border: 1px solid rgba(248, 113, 113, 0.3);
   color: #fecdd3;
 }
+
+.talismanPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.talismanPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.talismanTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.talismanSubtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.talismanSections {
+  display: grid;
+  gap: 12px;
+}
+
+.talismanSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.talismanSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.talismanSectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.talismanSectionSub {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.talismanRecipeList,
+.talismanQueueList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.talismanRecipeCard,
+.talismanQueueCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+}
+
+.talismanRecipeHeader,
+.talismanQueueHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.talismanRecipeName,
+.talismanQueueName {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.talismanRecipeId,
+.talismanQueueMeta {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.talismanRecipeMeta,
+.talismanQueueTiming {
+  text-align: right;
+  font-size: 12px;
+  color: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.talismanRecipeBody {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.talismanRecipeDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  font-size: 13px;
+}
+
+.talismanRecipeDetails ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: #e2e8f0;
+}
+
+.talismanRecipeLabel {
+  font-size: 12px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.talismanRecipeControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.talismanRecipeControls input {
+  width: 80px;
+  margin-left: 8px;
+}
+
+.talismanRecipeActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.talismanRecipeHint {
+  font-size: 12px;
+  color: #fca5a5;
+}
+
+.talismanQueueActions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.talismanQueueEmpty {
+  color: #cbd5e1;
+  font-size: 13px;
+  padding: 6px 0;
+}
+
+.talismanStatus {
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.talismanStatus--success {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: #bbf7d0;
+}
+
+.talismanStatus--error {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #fecdd3;
+}

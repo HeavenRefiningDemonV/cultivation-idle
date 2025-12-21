@@ -240,6 +240,10 @@ export function formatPrice(price: Partial<Record<'gold' | 'spiritStones' | 'mer
   return parts.join(' / ');
 }
 
+export function listTalismanRecipes() {
+  return useContentStore.getState().raw?.talisman_recipes ?? [];
+}
+
 export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
   const blueprints = useContentStore.getState().raw?.forge_blueprints ?? [];
   return blueprints.map((blueprint) => normalizeForgeBlueprint(blueprint));
