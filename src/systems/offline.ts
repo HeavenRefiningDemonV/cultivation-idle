@@ -40,6 +40,7 @@ export interface OfflineContext {
   dtMs: number;
   rawMs: number;
   wasCapped: boolean;
+  wasMeditating: boolean;
 }
 
 /**
@@ -78,14 +79,12 @@ export function calculateOfflineProgress(
     offlineSeconds = MAX_OFFLINE_SECONDS;
   }
 
-  // Get player's current Qi/s from game store
-  const gameState = useGameStore.getState();
-  const qiPerSecond = D(gameState.qiPerSecond);
+  const { qiGained: baseQiGained } = computeCultivationOfflineGain(offlineSeconds);
 
   // Calculate offline Qi gain with efficiency multiplier
   // Formula: Qi/s * offline seconds * efficiency
   const offlineEfficiency = getOfflineEfficiency();
-  const qiGained = multiply(multiply(qiPerSecond, offlineSeconds), offlineEfficiency);
+  const qiGained = multiply(baseQiGained, offlineEfficiency);
 
   return {
     offlineSeconds,
@@ -96,7 +95,11 @@ export function calculateOfflineProgress(
   };
 }
 
-export function buildOfflineContext(lastActiveAtMs: number, now = Date.now()): OfflineContext {
+export function buildOfflineContext(
+  lastActiveAtMs: number,
+  options?: { now?: number; wasMeditating?: boolean },
+): OfflineContext {
+  const now = options?.now ?? Date.now();
   const rawMs = Math.max(0, now - lastActiveAtMs);
   const dtMs = Math.max(0, Math.min(rawMs, MAX_OFFLINE_MS));
   const wasCapped = rawMs > dtMs;
@@ -111,7 +114,16 @@ export function buildOfflineContext(lastActiveAtMs: number, now = Date.now()): O
     dtMs,
     rawMs,
     wasCapped,
+    wasMeditating: options?.wasMeditating ?? false,
   };
+}
+
+export function computeCultivationOfflineGain(dtSeconds: number) {
+  const clampedSeconds = Math.max(0, dtSeconds);
+  const gameState = useGameStore.getState();
+  const qiPerSecond = D(gameState.qiPerSecond);
+  const qiGained = multiply(qiPerSecond, clampedSeconds);
+  return { qiGained, qiPerSecond };
 }
 
 /**
@@ -123,6 +135,11 @@ export function buildOfflineContext(lastActiveAtMs: number, now = Date.now()): O
 export function applyOfflineProgressFromContext(context: OfflineContext): OfflineProgressSummary | null {
   try {
     console.log('[Offline] Calculating offline progress...');
+
+    if (!context.wasMeditating) {
+      console.log('[Offline] Skipping cultivation offline gains (not meditating)');
+      return null;
+    }
 
     // Get current time
     const currentUtc = context.now;
@@ -175,7 +192,7 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
   const gameState = useGameStore.getState();
   const currentUtc = Date.now();
   const lastOnlineUtc = gameState.lastActiveTime || gameState.lastTickTime || currentUtc;
-  const context = buildOfflineContext(lastOnlineUtc, currentUtc);
+  const context = buildOfflineContext(lastOnlineUtc, { now: currentUtc, wasMeditating: false });
   return applyOfflineProgressFromContext(context);
 }
 

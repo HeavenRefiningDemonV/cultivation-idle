@@ -291,6 +291,8 @@ export function initializeGame(): boolean {
             console.log('  - Offline time was capped at 12 hours');
           }
 
+          useUIStore.getState().addNotification('info', `Offline: +${offlineProgress.qiGained} Qi`, 5000);
+
           if (offlineProgress.offlineSeconds >= OFFLINE_MODAL_THRESHOLD) {
             try {
               useUIStore.getState().showOfflineProgress(offlineProgress);

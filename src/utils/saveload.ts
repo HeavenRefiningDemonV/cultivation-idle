@@ -543,6 +543,9 @@ function decryptSaveData(encrypted: string): SaveData | null {
         migrated.gameState.lastActiveTime ??
         migrated.gameState.lastTickTime ??
         Date.now(),
+      {
+        wasMeditating: migrated.activityState?.active?.type === 'meditate',
+      },
     );
     return migrated;
   } catch (error) {
@@ -898,7 +901,13 @@ export function loadGame(): boolean {
     }
 
     pendingOfflineContext = buildOfflineContext(
-      saveData.meta?.lastActiveAtMs ?? saveData.gameState.lastActiveTime ?? saveData.gameState.lastTickTime ?? Date.now(),
+      saveData.meta?.lastActiveAtMs ??
+        saveData.gameState.lastActiveTime ??
+        saveData.gameState.lastTickTime ??
+        Date.now(),
+      {
+        wasMeditating: saveData.activityState?.active?.type === 'meditate',
+      },
     );
 
     // Apply save data to stores
