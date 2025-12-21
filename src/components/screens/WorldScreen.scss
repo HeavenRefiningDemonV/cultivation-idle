@@ -511,6 +511,92 @@
   justify-content: flex-end;
 }
 
+.heartLawCurrent {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heartLawCurrentHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.heartLawCurrentName {
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.heartLawInfo {
+  font-size: 13px;
+  cursor: help;
+}
+
+.heartLawCurrentMeta {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.heartLawProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heartLawProgressText {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+.heartLawList {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.heartLawCard {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.4);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.heartLawCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.heartLawCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.heartLawCardTier {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+.heartLawCardMeta {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
 
 .apothecaryPanelHeader {
   display: flex;
