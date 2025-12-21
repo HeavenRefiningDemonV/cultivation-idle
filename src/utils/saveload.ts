@@ -137,6 +137,7 @@ function gatherGameState(): SaveData {
 
     professionState: {
       alchemyQueue: professionState.alchemyQueue.map((job) => ({ ...job })),
+      forgeQueue: professionState.forgeQueue.map((job) => ({ ...job })),
       lastTickAt: professionState.lastTickAt,
     },
   };
@@ -341,10 +342,11 @@ function validateSaveData(data: unknown): data is SaveData {
 
     if ('professionState' in record && record.professionState) {
       const ps = record.professionState as Record<string, unknown>;
-      if (!Array.isArray((ps as { alchemyQueue?: unknown }).alchemyQueue)) return false;
-      if (typeof ps.lastTickAt !== 'number') return false;
+      if ('alchemyQueue' in ps && !Array.isArray((ps as { alchemyQueue?: unknown }).alchemyQueue)) return false;
+      if ('forgeQueue' in ps && !Array.isArray((ps as { forgeQueue?: unknown }).forgeQueue)) return false;
+      if ('lastTickAt' in ps && typeof ps.lastTickAt !== 'number') return false;
 
-      const queue = (ps as { alchemyQueue: Array<Record<string, unknown>> }).alchemyQueue;
+      const queue = (ps as { alchemyQueue?: Array<Record<string, unknown>> }).alchemyQueue ?? [];
       for (const job of queue) {
         if (!job || typeof job !== 'object') return false;
         if (typeof job.id !== 'string') return false;
@@ -352,6 +354,19 @@ function validateSaveData(data: unknown): data is SaveData {
         if (typeof job.qty !== 'number') return false;
         if (typeof job.startedAt !== 'number') return false;
         if (typeof job.endsAt !== 'number') return false;
+      }
+
+      const forgeQueue = (ps as { forgeQueue?: Array<Record<string, unknown>> }).forgeQueue ?? [];
+      for (const job of forgeQueue) {
+        if (!job || typeof job !== 'object') return false;
+        if (typeof job.id !== 'string') return false;
+        if (typeof job.blueprintId !== 'string') return false;
+        if (typeof job.qty !== 'number') return false;
+        if (typeof job.startedAt !== 'number') return false;
+        if (typeof job.endsAt !== 'number') return false;
+        if ('targetSlot' in job && job.targetSlot !== undefined) {
+          if (job.targetSlot !== 'weapon' && job.targetSlot !== 'accessory') return false;
+        }
       }
     }
 
@@ -603,10 +618,17 @@ function applySaveData(saveData: SaveData): void {
       useShopStore.getState().hydrate(shopState);
     }
 
-    const professionState = saveData.professionState ?? { alchemyQueue: [], lastTickAt: 0 };
+    const professionState = saveData.professionState ?? {
+      alchemyQueue: [],
+      forgeQueue: [],
+      lastTickAt: 0,
+    };
     useProfessionStore.setState({
       alchemyQueue: Array.isArray(professionState.alchemyQueue)
         ? professionState.alchemyQueue.map((job) => ({ ...job }))
+        : [],
+      forgeQueue: Array.isArray(professionState.forgeQueue)
+        ? professionState.forgeQueue.map((job) => ({ ...job }))
         : [],
       lastTickAt: typeof professionState.lastTickAt === 'number' ? professionState.lastTickAt : 0,
     });
@@ -717,7 +739,7 @@ export function deleteSave(): boolean {
 
     useShopStore.getState().hardResetShop();
 
-    useProfessionStore.setState({ alchemyQueue: [], lastTickAt: 0 });
+    useProfessionStore.setState({ alchemyQueue: [], forgeQueue: [], lastTickAt: 0 });
 
     try {
       useTechCollectionStore.getState().hardReset();
@@ -789,7 +811,7 @@ export function deleteSaveAndHardReset(): void {
   }
 
   try {
-    useProfessionStore.setState({ alchemyQueue: [], lastTickAt: 0 });
+    useProfessionStore.setState({ alchemyQueue: [], forgeQueue: [], lastTickAt: 0 });
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset profession state', error);
   }

@@ -353,6 +353,14 @@ export interface SaveData {
       startedAt: number;
       endsAt: number;
     }>;
+    forgeQueue: Array<{
+      id: string;
+      blueprintId: string;
+      qty: number;
+      startedAt: number;
+      endsAt: number;
+      targetSlot?: 'weapon' | 'accessory';
+    }>;
     lastTickAt: number;
   };
 }
