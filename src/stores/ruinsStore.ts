@@ -5,7 +5,7 @@ import { useContentStore } from './contentStore';
 import { useActivityStore } from './activityStore';
 import { useCombatStore } from './combatStore';
 import { useCityStore } from './cityStore';
-import { grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
+import { applyLootBonuses, grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
 
 export type RuinProgress = {
   totalRuns: number;
@@ -107,7 +107,7 @@ function rollDropTable(table: RuinDropTable, label: string): RewardBundle {
   });
 
   bundle.items = collapseItems(filtered);
-  return bundle;
+  return applyLootBonuses(bundle, 'ruins');
 }
 
 export const useRuinsStore = create<RuinsState>()(

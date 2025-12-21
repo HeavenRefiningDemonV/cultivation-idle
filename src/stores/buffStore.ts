@@ -141,3 +141,15 @@ export const useBuffStore = create<BuffState>()(
     },
   })),
 );
+
+export function getTalismanBonusesNow(now: number = Date.now()): Required<TalismanBonuses> {
+  const store = useBuffStore.getState();
+  store.purgeExpired(now);
+  const bonuses = store.getBonusesSnapshot(now);
+  return {
+    goldDropBonusPct: bonuses.goldDropBonusPct ?? 0,
+    matDropBonusPct: bonuses.matDropBonusPct ?? 0,
+    fragmentDropBonusPct: bonuses.fragmentDropBonusPct ?? 0,
+    damageBonusPct: bonuses.damageBonusPct ?? 0,
+  };
+}

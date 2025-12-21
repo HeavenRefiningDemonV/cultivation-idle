@@ -28,7 +28,8 @@ import { rankMultiplier, useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
-import { grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
+import { applyLootBonuses, grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
+import { getTalismanBonusesNow } from './buffStore';
 import { createEnemy } from '../systems/enemyFactory';
 import type { NormalizedEffect } from '../systems/techniques/effects';
 import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
@@ -310,7 +311,7 @@ function buildOutskirtsRewards(
     bundle.items = collapsedItems;
   }
 
-  return bundle;
+  return applyLootBonuses(bundle, 'outskirts');
 }
 
 /**
@@ -935,6 +936,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
       const baseDamage = atk.times(D(1).minus(defReduction));
 
+      const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
+      const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
+
       // Check for critical hit
       const critRoll = Math.random() * 100;
       const isCrit = critRoll < effectiveStats.crit;
@@ -954,6 +958,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
           `You deal ${finalDamage.toFixed(0)} damage.`,
           '#60a5fa'
         );
+      }
+
+      if (bonusPct > 0) {
+        finalDamage = finalDamage.times(damageMultiplier);
       }
 
       // Apply damage to enemy
@@ -1668,9 +1676,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
       effects.forEach((effect) => {
         switch (effect.type) {
           case 'damage': {
-            const damage = D(effectiveStats.atk).times(
+            const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
+            const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
+            const damage = D(effectiveStats.atk)
+              .times(
               effect.mult * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
-            );
+            )
+              .times(damageMultiplier);
             set((state) => {
               const newHP = subtract(state.enemyHP, damage.toString());
               const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
