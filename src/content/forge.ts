@@ -37,7 +37,7 @@ function normalizeItemEntries(value: unknown): Array<{ itemId: string; qty: numb
         if (!entry || typeof entry !== 'object') return null;
         const record = entry as Record<string, unknown>;
         const itemId = typeof record.itemId === 'string' ? record.itemId : typeof record.id === 'string' ? record.id : '';
-        const qty = toNumber(record.qty ?? record.amount ?? record.count);
+        const qty = Math.max(0, toNumber(record.qty ?? record.amount ?? record.count));
         if (!itemId || qty <= 0) return null;
         return { itemId, qty };
       })
@@ -47,7 +47,7 @@ function normalizeItemEntries(value: unknown): Array<{ itemId: string; qty: numb
   if (typeof value === 'object') {
     return Object.entries(value as Record<string, unknown>)
       .map(([itemId, qty]) => {
-        const amount = toNumber(qty);
+        const amount = Math.max(0, toNumber(qty));
         if (!itemId || amount <= 0) return null;
         return { itemId, qty: amount };
       })
@@ -106,13 +106,17 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
   const costItems = normalizeItemEntries(
     raw.inputs ?? raw.in ?? raw.ingredients ?? raw.costItems ?? (raw.cost as Record<string, unknown> | undefined)?.items,
   );
-  const gold =
+  const gold = Math.max(
+    0,
     readCostField(raw, 'gold') ||
-    readCostField(raw, 'gp') ||
-    readCostField(raw, 'goldCost') ||
-    readCostField(raw, 'costGold');
-  const spiritStones =
-    readCostField(raw, 'spiritStones') || readCostField(raw, 'ss') || readCostField(raw, 'ssCost');
+      readCostField(raw, 'gp') ||
+      readCostField(raw, 'goldCost') ||
+      readCostField(raw, 'costGold'),
+  );
+  const spiritStones = Math.max(
+    0,
+    readCostField(raw, 'spiritStones') || readCostField(raw, 'ss') || readCostField(raw, 'ssCost'),
+  );
 
   const output = normalizeOutput(raw.outputs ?? raw.out ?? raw.output ?? raw.produces ?? raw.result);
 
@@ -126,7 +130,7 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
     cityIndex: Number.isFinite(cityIndex) ? cityIndex : undefined,
     type,
     service,
-    timeSec: Number.isFinite(timeSec) ? timeSec : 0,
+    timeSec: Number.isFinite(timeSec) ? Math.max(0, timeSec) : 0,
     costs: {
       gold: Number.isFinite(gold) ? gold : 0,
       spiritStones: Number.isFinite(spiritStones) ? spiritStones : 0,

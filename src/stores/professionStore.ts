@@ -177,25 +177,29 @@ export const useProfessionStore = create<ProfessionState>()(
         if (!targetSlot || (targetSlot !== 'weapon' && targetSlot !== 'accessory')) {
           return { ok: false, reason: 'Select a target slot' };
         }
+      } else if (blueprint.type === 'service') {
+        return { ok: false, reason: 'Unsupported service' };
       }
 
       const inventory = useInventoryStore.getState();
+      const contentStore = useContentStore.getState();
       for (const entry of blueprint.costs.items) {
         if (!entry || !entry.itemId) continue;
-        const required = Math.floor(entry.qty) * amount;
+        const required = Math.max(0, Math.floor(entry.qty)) * amount;
         if (required <= 0) continue;
         if (inventory.getQty(entry.itemId) < required) {
-          return { ok: false, reason: `Not enough ${entry.itemId}` };
+          const itemName = contentStore.maps.itemsById[entry.itemId]?.name ?? entry.itemId;
+          return { ok: false, reason: `Need ${required} ${itemName}` };
         }
       }
 
-      const goldCost = blueprint.costs.gold * amount;
-      const spiritStoneCost = blueprint.costs.spiritStones * amount;
+      const goldCost = Math.max(0, blueprint.costs.gold) * amount;
+      const spiritStoneCost = Math.max(0, blueprint.costs.spiritStones) * amount;
       if (goldCost > 0 && !greaterThanOrEqualTo(inventory.currencies.gold ?? '0', goldCost)) {
-        return { ok: false, reason: 'Not enough Gold' };
+        return { ok: false, reason: `Need ${goldCost} Gold` };
       }
       if (spiritStoneCost > 0 && !greaterThanOrEqualTo(inventory.currencies.spiritStones ?? '0', spiritStoneCost)) {
-        return { ok: false, reason: 'Not enough Spirit Stones' };
+        return { ok: false, reason: `Need ${spiritStoneCost} Spirit Stones` };
       }
 
       return { ok: true };
@@ -222,20 +226,24 @@ export const useProfessionStore = create<ProfessionState>()(
         if (!targetSlot || (targetSlot !== 'weapon' && targetSlot !== 'accessory')) {
           return { ok: false, error: 'Select a target slot' };
         }
+      } else if (blueprint.type === 'service') {
+        return { ok: false, error: 'Unsupported service' };
       }
 
       const inventory = useInventoryStore.getState();
+      const contentStore = useContentStore.getState();
       for (const entry of blueprint.costs.items) {
         if (!entry || !entry.itemId) continue;
-        const required = Math.floor(entry.qty) * amount;
+        const required = Math.max(0, Math.floor(entry.qty)) * amount;
         if (required <= 0) continue;
         if (inventory.getQty(entry.itemId) < required) {
-          return { ok: false, error: `Not enough ${entry.itemId}` };
+          const itemName = contentStore.maps.itemsById[entry.itemId]?.name ?? entry.itemId;
+          return { ok: false, error: `Need ${required} ${itemName}` };
         }
       }
 
-      const goldCost = blueprint.costs.gold * amount;
-      const spiritStoneCost = blueprint.costs.spiritStones * amount;
+      const goldCost = Math.max(0, blueprint.costs.gold) * amount;
+      const spiritStoneCost = Math.max(0, blueprint.costs.spiritStones) * amount;
       const costs: Partial<Record<CurrencyKey, string>> = {};
       if (goldCost > 0) costs.gold = goldCost.toString();
       if (spiritStoneCost > 0) costs.spiritStones = spiritStoneCost.toString();
@@ -249,7 +257,7 @@ export const useProfessionStore = create<ProfessionState>()(
 
       const removedItems: Array<{ itemId: string; qty: number }> = [];
       for (const entry of blueprint.costs.items) {
-        const perJob = Math.floor(entry.qty);
+        const perJob = Math.max(0, Math.floor(entry.qty));
         if (!entry.itemId || perJob <= 0) continue;
         const requiredQty = perJob * amount;
         const removed = inventory.removeItem(entry.itemId, requiredQty);
@@ -272,7 +280,7 @@ export const useProfessionStore = create<ProfessionState>()(
         }
       }
 
-      const durationMs = blueprint.timeSec * amount * 1000;
+      const durationMs = Math.max(0, blueprint.timeSec) * amount * 1000;
       const now = Date.now();
       const lastJob = get().forgeQueue.at(-1);
       const startedAt = lastJob ? Math.max(now, lastJob.endsAt) : now;
