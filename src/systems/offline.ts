@@ -203,7 +203,7 @@ export function formatOfflineDuration(seconds: number): string {
 export function getOfflineEfficiency(): number {
   try {
     const prestigeStore = usePrestigeStore.getState();
-    const bonus = prestigeStore.getUpgradeEffect('offline_mult') || 0;
+    const bonus = prestigeStore.getUpgradeEffectByStat('offlineEfficiencyAdd') || 0;
     const efficiency = DEFAULT_OFFLINE_EFFICIENCY * (1 + bonus);
     return Math.min(efficiency, 1);
   } catch {

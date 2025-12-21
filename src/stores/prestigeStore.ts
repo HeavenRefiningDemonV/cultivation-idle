@@ -3,6 +3,8 @@ import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
 import { saveGame } from '../utils/saveload';
+import { useContentStore } from './contentStore';
+import type { PrestigeUpgradeDef } from '../content';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -20,21 +22,6 @@ export function setInventoryStoreGetter(getter: () => InventoryState) {
   _getInventoryStore = getter;
 }
 
-export interface PrestigeUpgrade {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  maxLevel: number;
-  currentLevel: number;
-  effect: {
-    type: 'multiplier' | 'unlock' | 'flat_bonus';
-    stat?: string;
-    value?: number;
-    valuePerLevel?: number;
-  };
-}
-
 export interface PrestigeRun {
   runNumber: number;
   realmReached: number;
@@ -49,7 +36,7 @@ interface PrestigeState {
   currentRunAP: number;
   prestigeCount: number;
   prestigeRuns: PrestigeRun[];
-  upgrades: Record<string, PrestigeUpgrade>;
+  purchasesById: Record<string, number>;
   highestRealmReached: number;
   runStartTime: number;
 
@@ -63,13 +50,19 @@ interface PrestigeState {
   calculateAPGain: () => number;
   canPrestige: () => boolean;
   performPrestige: () => void;
-  purchaseUpgrade: (upgradeId: string) => boolean;
+  purchaseUpgrade: (upgradeId: string) => { ok: boolean; reason?: string };
   getUpgradeEffect: (upgradeId: string) => number;
+  getUpgradeDef: (upgradeId: string) => PrestigeUpgradeDef | undefined;
+  getCurrentLevel: (upgradeId: string) => number;
+  getMaxLevel: (upgradeId: string) => number;
+  getNextLevelCost: (upgradeId: string) => number | null;
+  checkPrereqs: (upgradeId: string) => { ok: boolean; reason?: string };
   updateHighestRealm: (realmIndex: number) => void;
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
   getCultivationMultiplier: () => number;
   initializeUpgrades: () => void;
+  getUpgradeEffectByStat: (stat: string) => number;
 
   // Spirit root methods
   generateSpiritRoot: (resetRerollCount?: boolean) => void;
@@ -97,12 +90,37 @@ const createInitialPrestigeState = () => ({
   currentRunAP: 0,
   prestigeCount: 0,
   prestigeRuns: [] as PrestigeRun[],
-  upgrades: {} as Record<string, PrestigeUpgrade>,
+  purchasesById: {} as Record<string, number>,
   highestRealmReached: 0,
   runStartTime: Date.now(),
   rerollCount: 0,
   spiritRoot: null as SpiritRoot | null,
 });
+
+function getUpgradesFromContent(): PrestigeUpgradeDef[] {
+  const content = useContentStore.getState();
+  if (!content.isLoaded || !content.raw?.prestige_store) return [];
+  return content.raw.prestige_store.upgrades ?? [];
+}
+
+function getUpgradeById(id: string): PrestigeUpgradeDef | undefined {
+  return getUpgradesFromContent().find((upgrade) => upgrade.id === id);
+}
+
+function getUpgradeCostFromDef(def: PrestigeUpgradeDef, nextLevel: number): number | null {
+  if (nextLevel < 1 || nextLevel > def.maxLevel) return null;
+  const index = nextLevel - 1;
+  if (def.costs && def.costs[index] !== undefined) return def.costs[index];
+  if (def.tiers && def.tiers[index]) return def.tiers[index].cost;
+  if (def.costCurve) {
+    const cost = def.costCurve.base * Math.pow(def.costCurve.mult, index);
+    if (def.costCurve.round && def.costCurve.round > 0) {
+      return Math.round(cost / def.costCurve.round) * def.costCurve.round;
+    }
+    return Math.round(cost);
+  }
+  return null;
+}
 
 export const usePrestigeStore = create<PrestigeState>()(
   immer((set, get) => ({
@@ -193,184 +211,113 @@ export const usePrestigeStore = create<PrestigeState>()(
       }
     },
 
-    purchaseUpgrade: (upgradeId: string) => {
-      const state = get();
-      const upgrade = state.upgrades[upgradeId];
+    getUpgradeDef: (upgradeId) => getUpgradeById(upgradeId),
 
-      if (!upgrade) return false;
-      if (upgrade.currentLevel >= upgrade.maxLevel) return false;
-      if (state.totalAP < upgrade.cost) return false;
+    getCurrentLevel: (upgradeId) => {
+      return get().purchasesById[upgradeId] ?? 0;
+    },
+
+    getMaxLevel: (upgradeId) => {
+      const def = getUpgradeById(upgradeId);
+      return def?.maxLevel ?? 0;
+    },
+
+    getNextLevelCost: (upgradeId) => {
+      const def = getUpgradeById(upgradeId);
+      if (!def) return null;
+      const current = get().purchasesById[upgradeId] ?? 0;
+      if (current >= def.maxLevel) return null;
+      return getUpgradeCostFromDef(def, current + 1);
+    },
+
+    checkPrereqs: (upgradeId) => {
+      const def = getUpgradeById(upgradeId);
+      if (!def) return { ok: false, reason: 'Upgrade not found' };
+      const prereqs = def.prereq ?? [];
+      for (const prereq of prereqs) {
+        const current = get().purchasesById[prereq.upgradeId] ?? 0;
+        if (current < prereq.minLevel) {
+          const prereqDef = getUpgradeById(prereq.upgradeId);
+          const name = prereqDef?.name ?? prereq.upgradeId;
+          return { ok: false, reason: `Requires ${name} Lv ${prereq.minLevel}` };
+        }
+      }
+      return { ok: true };
+    },
+
+    purchaseUpgrade: (upgradeId) => {
+      const def = getUpgradeById(upgradeId);
+      if (!def) return { ok: false, reason: 'Upgrade not found' };
+
+      const current = get().purchasesById[upgradeId] ?? 0;
+      if (current >= def.maxLevel) return { ok: false, reason: 'Already maxed' };
+
+      const prereqCheck = get().checkPrereqs(upgradeId);
+      if (!prereqCheck.ok) return prereqCheck;
+
+      const cost = getUpgradeCostFromDef(def, current + 1);
+      if (cost === null) return { ok: false, reason: 'Cost unavailable' };
+
+      if (get().totalAP < cost) return { ok: false, reason: 'Not enough AP' };
 
       set((state) => {
-        state.totalAP -= upgrade.cost;
-        const upg = state.upgrades[upgradeId];
-        upg.currentLevel += 1;
-        upg.cost = Math.floor(upg.cost * 1.5); // Exponential cost scaling
+        state.totalAP -= cost;
+        state.purchasesById[upgradeId] = current + 1;
       });
 
-      return true;
+      return { ok: true };
     },
 
     getUpgradeEffect: (upgradeId: string) => {
-      const upgrade = get().upgrades[upgradeId];
-      if (!upgrade || upgrade.currentLevel === 0) return 0;
+      const def = getUpgradeById(upgradeId);
+      if (!def) return 0;
+      const current = get().purchasesById[upgradeId] ?? 0;
+      if (current <= 0) return 0;
 
-      if (upgrade.effect.type === 'multiplier' && upgrade.effect.valuePerLevel) {
-        return upgrade.effect.valuePerLevel * upgrade.currentLevel;
+      if (def.type === 'multiplier' && typeof def.effectPerLevel === 'number') {
+        return def.effectPerLevel * current;
       }
 
-      if (upgrade.effect.type === 'flat_bonus' && upgrade.effect.value) {
-        return upgrade.effect.value * upgrade.currentLevel;
+      if (def.type === 'multilevel' && typeof def.effectPerLevel === 'number') {
+        return def.effectPerLevel * current;
       }
 
       return 0;
     },
 
+    getUpgradeEffectByStat: (stat: string) => {
+      let total = 0;
+      getUpgradesFromContent().forEach((def) => {
+        if (def.stat !== stat) return;
+        const current = get().purchasesById[def.id] ?? 0;
+        if (current <= 0) return;
+        if (typeof def.effectPerLevel === 'number') {
+          total += def.effectPerLevel * current;
+        }
+      });
+      return total;
+    },
+
     getQiMultiplier: () => {
-      const idleBonus = get().getUpgradeEffect('idle_mult');
+      const idleBonus = get().getUpgradeEffectByStat('idleQiMult');
       return 1 + idleBonus;
     },
 
     getCombatMultiplier: () => {
-      const damageBonus = get().getUpgradeEffect('damage_mult');
-      const hpBonus = get().getUpgradeEffect('hp_mult');
-      return 1 + damageBonus + hpBonus;
+      const damageBonus = get().getUpgradeEffectByStat('combatMult');
+      return 1 + damageBonus;
     },
 
     getCultivationMultiplier: () => {
-      const cultivationBonus = get().getUpgradeEffect('offline_mult');
+      const cultivationBonus = get().getUpgradeEffectByStat('offlineEfficiencyAdd');
       return 1 + cultivationBonus;
     },
 
     initializeUpgrades: () => {
       set((state) => {
-        state.upgrades = {
-          root_floor: {
-            id: 'root_floor',
-            name: 'Spirit Root Foundation',
-            description: 'Start each run with a better spirit root quality',
-            cost: 50,
-            maxLevel: 5,
-            currentLevel: 0,
-            effect: {
-              type: 'flat_bonus',
-              stat: 'spirit_root_floor',
-              value: 1,
-            },
-          },
-          idle_mult: {
-            id: 'idle_mult',
-            name: 'Cultivation Enhancement',
-            description: 'Increase idle Qi generation',
-            cost: 30,
-            maxLevel: 10,
-            currentLevel: 0,
-            effect: {
-              type: 'multiplier',
-              stat: 'idle_rate',
-              valuePerLevel: 0.1,
-            },
-          },
-          damage_mult: {
-            id: 'damage_mult',
-            name: 'Martial Prowess',
-            description: 'Increase damage dealt in combat',
-            cost: 40,
-            maxLevel: 10,
-            currentLevel: 0,
-            effect: {
-              type: 'multiplier',
-              stat: 'damage_percent',
-              valuePerLevel: 0.05,
-            },
-          },
-          hp_mult: {
-            id: 'hp_mult',
-            name: 'Body Tempering',
-            description: 'Increase maximum HP',
-            cost: 40,
-            maxLevel: 10,
-            currentLevel: 0,
-            effect: {
-              type: 'multiplier',
-              stat: 'max_hp',
-              valuePerLevel: 0.08,
-            },
-          },
-          offline_mult: {
-            id: 'offline_mult',
-            name: 'Timeless Meditation',
-            description: 'Increase offline progress efficiency',
-            cost: 60,
-            maxLevel: 5,
-            currentLevel: 0,
-            effect: {
-              type: 'multiplier',
-              stat: 'offline_rate',
-              valuePerLevel: 0.1,
-            },
-          },
-          starter_tech: {
-            id: 'starter_tech',
-            name: 'Inherited Technique',
-            description: 'Start with a basic combat technique',
-            cost: 100,
-            maxLevel: 1,
-            currentLevel: 0,
-            effect: {
-              type: 'unlock',
-              stat: 'starter_technique',
-            },
-          },
-          early_gear: {
-            id: 'early_gear',
-            name: 'Ancestral Equipment',
-            description: 'Start with a basic weapon and accessory',
-            cost: 80,
-            maxLevel: 1,
-            currentLevel: 0,
-            effect: {
-              type: 'unlock',
-              stat: 'starter_gear',
-            },
-          },
-          auto_retry: {
-            id: 'auto_retry',
-            name: 'Persistent Will',
-            description: 'Automatically retry dungeons on defeat',
-            cost: 120,
-            maxLevel: 1,
-            currentLevel: 0,
-            effect: {
-              type: 'unlock',
-              stat: 'auto_retry_dungeons',
-            },
-          },
-          dungeon_scout: {
-            id: 'dungeon_scout',
-            name: 'Dungeon Insight',
-            description: 'Preview dungeon bosses and mechanics before entering',
-            cost: 90,
-            maxLevel: 1,
-            currentLevel: 0,
-            effect: {
-              type: 'unlock',
-              stat: 'dungeon_preview',
-            },
-          },
-          dual_path: {
-            id: 'dual_path',
-            name: 'Dual Cultivation',
-            description: 'Unlock the ability to cultivate two paths simultaneously (LOCKED)',
-            cost: 500,
-            maxLevel: 1,
-            currentLevel: 0,
-            effect: {
-              type: 'unlock',
-              stat: 'dual_path',
-            },
-          },
-        };
+        if (!state.purchasesById) {
+          state.purchasesById = {};
+        }
       });
     },
 
@@ -379,7 +326,7 @@ export const usePrestigeStore = create<PrestigeState>()(
      */
     generateSpiritRoot: (resetRerollCount = true) => {
       const state = get();
-      const floor = state.getUpgradeEffect('root_floor');
+      const floor = state.getUpgradeEffectByStat('spiritRootFloor');
 
       // Quality roll (1-5: Mortal, Common, Uncommon, Rare, Legendary)
       // Base: 60% Mortal, 25% Common, 10% Uncommon, 4% Rare, 1% Legendary
@@ -499,3 +446,14 @@ export const usePrestigeStore = create<PrestigeState>()(
     },
   }))
 );
+
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  (window as any).devPrestigeBuyFirst = () => {
+    const upgrades = getUpgradesFromContent();
+    const first = upgrades[0];
+    if (!first) {
+      return { ok: false, reason: 'No upgrades available' };
+    }
+    return usePrestigeStore.getState().purchaseUpgrade(first.id);
+  };
+}

@@ -1,24 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useContentStore } from '../../stores/contentStore';
 import './PrestigeScreen.scss';
 
 export function PrestigeScreen() {
-  const {
-    totalAP,
-    lifetimeAP,
-    prestigeCount,
-    prestigeRuns,
-    upgrades,
-    calculateAPGain,
-    canPrestige,
-    performPrestige,
-    purchaseUpgrade,
-  } = usePrestigeStore();
+  const totalAP = usePrestigeStore((state) => state.totalAP);
+  const lifetimeAP = usePrestigeStore((state) => state.lifetimeAP);
+  const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
+  const prestigeRuns = usePrestigeStore((state) => state.prestigeRuns);
+  const calculateAPGain = usePrestigeStore((state) => state.calculateAPGain);
+  const canPrestige = usePrestigeStore((state) => state.canPrestige);
+  const performPrestige = usePrestigeStore((state) => state.performPrestige);
+  const purchaseUpgrade = usePrestigeStore((state) => state.purchaseUpgrade);
+  const getCurrentLevel = usePrestigeStore((state) => state.getCurrentLevel);
+  const getMaxLevel = usePrestigeStore((state) => state.getMaxLevel);
+  const getNextLevelCost = usePrestigeStore((state) => state.getNextLevelCost);
+  const checkPrereqs = usePrestigeStore((state) => state.checkPrereqs);
+  const isContentLoaded = useContentStore((state) => state.isLoaded);
+  const getPrestigeUpgrades = useContentStore((state) => state.getPrestigeUpgrades);
 
   const realm = useGameStore((state) => state.realm);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
   const apGain = calculateAPGain();
@@ -44,6 +49,20 @@ export function PrestigeScreen() {
   useEffect(() => {
     setHeaderTitles('Reincarnation', 'Restart your cultivation journey with powerful blessings');
   }, [setHeaderTitles]);
+
+  const upgradeList = useMemo(() => {
+    if (!isContentLoaded) return [];
+    return getPrestigeUpgrades();
+  }, [getPrestigeUpgrades, isContentLoaded]);
+
+  const handlePurchase = (upgradeId: string) => {
+    const result = purchaseUpgrade(upgradeId);
+    if (!result.ok) {
+      setPurchaseMessage(result.reason ?? 'Purchase failed');
+    } else {
+      setPurchaseMessage(null);
+    }
+  };
 
   const realmNames = [
     'Qi Refining',
@@ -125,10 +144,14 @@ export function PrestigeScreen() {
           <h2 className={'prestigeScreenShopTitle'}>Ascension Shop</h2>
 
           <div className={'prestigeScreenShopGrid'}>
-            {Object.values(upgrades).map((upgrade) => {
-              const isMaxed = upgrade.currentLevel >= upgrade.maxLevel;
-              const canAfford = totalAP >= upgrade.cost;
-              const isLocked = upgrade.id === 'dual_path';
+            {upgradeList.map((upgrade) => {
+              const currentLevel = getCurrentLevel(upgrade.id);
+              const maxLevel = getMaxLevel(upgrade.id);
+              const isMaxed = currentLevel >= maxLevel;
+              const nextCost = getNextLevelCost(upgrade.id);
+              const prereqCheck = checkPrereqs(upgrade.id);
+              const canAfford = nextCost !== null && totalAP >= nextCost;
+              const isLocked = !prereqCheck.ok;
               const cardClasses = ['prestigeScreenShopCard'];
 
               if (isMaxed) cardClasses.push('prestigeScreenShopMaxed');
@@ -148,25 +171,23 @@ export function PrestigeScreen() {
                     <div className={'prestigeScreenShopLevelRow'}>
                       <span className={'prestigeScreenInfoLabel'}>Level</span>
                       <span className={'prestigeScreenInfoValue'}>
-                        {upgrade.currentLevel} / {upgrade.maxLevel}
+                        {currentLevel} / {maxLevel}
                       </span>
                     </div>
                     <div className={'prestigeScreenShopProgress'}>
                       <div
                         className={'prestigeScreenShopProgressFill'}
-                        style={{ width: `${(upgrade.currentLevel / upgrade.maxLevel) * 100}%` }}
+                        style={{ width: `${maxLevel ? (currentLevel / maxLevel) * 100 : 0}%` }}
                       />
                     </div>
                   </div>
 
-                  {upgrade.currentLevel > 0 && (
+                  {currentLevel > 0 && (
                     <div className={'prestigeScreenShopEffect'}>
                       <div className={'prestigeScreenShopEffectLabel'}>Current Effect:</div>
                       <div className={'prestigeScreenShopEffectValue'}>
-                        {upgrade.effect.type === 'multiplier' && upgrade.effect.valuePerLevel
-                          ? `+${(upgrade.effect.valuePerLevel * upgrade.currentLevel * 100).toFixed(0)}% ${upgrade.effect.stat}`
-                          : upgrade.effect.type === 'flat_bonus' && upgrade.effect.value
-                          ? `+${upgrade.effect.value * upgrade.currentLevel} ${upgrade.effect.stat}`
+                        {upgrade.type === 'multiplier' && typeof upgrade.effectPerLevel === 'number'
+                          ? `+${(upgrade.effectPerLevel * currentLevel * 100).toFixed(0)}% ${upgrade.stat ?? ''}`
                           : 'Unlocked'}
                       </div>
                     </div>
@@ -177,11 +198,11 @@ export function PrestigeScreen() {
                       <div className={'prestigeScreenShopCost'}>
                         <span className={'prestigeScreenInfoLabel'}>Cost: </span>
                         <span className={`${'prestigeScreenShopCostValue'} ${canAfford ? 'prestigeScreenShopCostReady' : 'prestigeScreenShopCostMissing'}`}>
-                          {upgrade.cost} AP
+                          {nextCost ?? 'N/A'} AP
                         </span>
                       </div>
                       <button
-                        onClick={() => purchaseUpgrade(upgrade.id)}
+                        onClick={() => handlePurchase(upgrade.id)}
                         disabled={!canAfford}
                         className={`${'button-standard'} ${'prestigeScreenShopButton'} ${
                           canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'
@@ -192,11 +213,16 @@ export function PrestigeScreen() {
                     </div>
                   )}
 
-                  {isLocked && <div className={'prestigeScreenLockedNote'}>Unlock condition not met</div>}
+                  {isLocked && (
+                    <div className={'prestigeScreenLockedNote'}>
+                      {prereqCheck.reason ?? 'Unlock condition not met'}
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
+          {purchaseMessage && <div className={'prestigeScreenLockedNote'}>{purchaseMessage}</div>}
         </div>
 
         {/* Prestige History */}

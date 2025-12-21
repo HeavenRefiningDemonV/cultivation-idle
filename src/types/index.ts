@@ -279,7 +279,7 @@ export interface SaveData {
     currentRunAP: number;
     prestigeCount: number;
     prestigeRuns: PrestigeRun[];
-    upgrades: Record<string, PrestigeUpgrade>;
+    purchasesById: Record<string, number>;
     highestRealmReached: number;
     runStartTime: number;
     rerollCount: number;

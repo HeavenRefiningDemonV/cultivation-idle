@@ -85,7 +85,7 @@ function gatherGameState(): SaveData {
       currentRunAP: prestigeState.currentRunAP,
       prestigeCount: prestigeState.prestigeCount,
       prestigeRuns: prestigeState.prestigeRuns,
-      upgrades: prestigeState.upgrades,
+      purchasesById: { ...prestigeState.purchasesById },
       highestRealmReached: prestigeState.highestRealmReached,
       runStartTime: prestigeState.runStartTime,
       rerollCount: prestigeState.rerollCount,
@@ -234,7 +234,12 @@ function validateSaveData(data: unknown): data is SaveData {
       if (!numbersValid) return false;
 
       if (!Array.isArray((ps as { prestigeRuns?: unknown }).prestigeRuns)) return false;
-      if (typeof ps.upgrades !== 'object' || ps.upgrades === null) return false;
+      if ('purchasesById' in ps && ps.purchasesById !== undefined && typeof ps.purchasesById !== 'object') {
+        return false;
+      }
+      if ('upgrades' in ps && ps.upgrades !== undefined && typeof ps.upgrades !== 'object') {
+        return false;
+      }
 
       if ('spiritRoot' in ps && ps.spiritRoot !== undefined) {
         const sr = (ps as { spiritRoot?: unknown }).spiritRoot as
@@ -596,7 +601,18 @@ function applySaveData(saveData: SaveData): void {
         state.currentRunAP = prestigeState.currentRunAP;
         state.prestigeCount = prestigeState.prestigeCount;
         state.prestigeRuns = prestigeState.prestigeRuns || [];
-        state.upgrades = { ...state.upgrades, ...(prestigeState.upgrades || {}) };
+        const legacyUpgrades = (prestigeState as { upgrades?: Record<string, { currentLevel?: number }> }).upgrades;
+        const legacyPurchases: Record<string, number> = {};
+        if (legacyUpgrades) {
+          Object.entries(legacyUpgrades).forEach(([id, upgrade]) => {
+            const level = typeof upgrade?.currentLevel === 'number' ? upgrade.currentLevel : 0;
+            if (level > 0) legacyPurchases[id] = level;
+          });
+        }
+        state.purchasesById = {
+          ...legacyPurchases,
+          ...(prestigeState.purchasesById || {}),
+        };
         state.highestRealmReached = prestigeState.highestRealmReached;
         state.runStartTime = prestigeState.runStartTime;
         state.rerollCount = prestigeState.rerollCount;
