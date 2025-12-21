@@ -24,7 +24,7 @@ const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
   outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },
   gateTrial: { label: 'Gate Trial', prompt: 'Coming in Prompt 6' },
-  ruins: { label: 'Ruins', prompt: 'Repeatable dungeon runs' },
+  ruins: { label: 'Ruins', prompt: 'Repeatable ruins runs' },
   apothecary: { label: 'Apothecary', prompt: 'Coming in Prompt 9' },
   manualPavilion: { label: 'Manual Pavilion', prompt: 'Coming in Prompt 10' },
   alchemy: { label: 'Alchemy', prompt: 'Coming in Prompt 13' },

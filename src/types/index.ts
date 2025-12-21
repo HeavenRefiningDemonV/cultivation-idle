@@ -623,7 +623,6 @@ export interface CombatState {
   // Combat status
   inCombat: boolean;
   currentZone: string | null;
-  currentDungeon: string | null;
   currentEnemy: EnemyDefinition | null;
 
   // Context

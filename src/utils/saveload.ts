@@ -5,7 +5,6 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
 import { useTechniqueStore } from '../stores/techniqueStore';
 import { useZoneStore } from '../stores/zoneStore';
-import { useDungeonStore } from '../stores/dungeonStore';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
@@ -1064,12 +1063,6 @@ export function deleteSaveAndHardReset(): void {
     useZoneStore.getState().hardResetZones();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset zones', error);
-  }
-
-  try {
-    useDungeonStore.getState().hardResetDungeons();
-  } catch (error) {
-    console.warn('[deleteSaveAndHardReset] Failed to reset dungeons', error);
   }
 
   try {

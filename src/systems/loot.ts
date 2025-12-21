@@ -53,7 +53,7 @@ const PITY_DROP_POOLS: Record<string, { itemId: string; rarity: ItemRarity }[]> 
  * Gate items required for realm breakthroughs
  * Key corresponds to the realm index the player is LEAVING
  *
- * Early breakthroughs are intentionally tied to dungeon rewards to force
+ * Early breakthroughs are intentionally tied to ruins rewards to force
  * players to complete the associated challenge before advancing.
  */
 export const GATE_ITEMS: Record<number, string> = {

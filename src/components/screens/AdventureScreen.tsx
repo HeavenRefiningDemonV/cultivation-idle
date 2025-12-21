@@ -149,7 +149,7 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
 }
 
 /**
- * Combat View Component (exported for reuse in dungeons)
+ * Combat View Component
  */
 export function CombatView() {
   const {

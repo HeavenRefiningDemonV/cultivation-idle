@@ -20,7 +20,6 @@ import {
   ZONE_REALM_REQUIREMENTS,
   ZONE_UNLOCK_REQUIREMENTS,
 } from './zoneStore';
-import { useDungeonStore } from './dungeonStore';
 import { useUIStore } from './uiStore';
 import { useEquipmentStore } from './equipmentStore';
 import { useHeartLawStore } from './heartLawStore';
@@ -871,13 +870,6 @@ export const useGameStore = create<GameState>()(
         useZoneStore.getState().resetAllZones();
       } catch {
         // Zone store not available
-      }
-
-      // Reset dungeon progression
-      try {
-        useDungeonStore.getState().resetDungeons();
-      } catch {
-        // Dungeon store not available
       }
 
       // Prestige-specific logic handled in prestige store

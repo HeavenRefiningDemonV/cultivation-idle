@@ -55,7 +55,7 @@ const paths: Array<{
       'Highest Survivability',
       '-10% Attack Power',
     ],
-    playstyle: 'Ideal for survival-focused play. Best for difficult dungeons and bosses. Slow but steady.',
+    playstyle: 'Ideal for survival-focused play. Best for difficult ruins and bosses. Slow but steady.',
   },
   {
     id: 'martial',
