@@ -534,7 +534,8 @@ function validatePrestige(config: PrestigeStoreConfig) {
       throw new Error(`[ContentValidation] ${label}.type must be a string`);
     }
 
-    const maxLevel = resolveMaxLevel(upgrade, label);
+    const labelWithId = `${label} (id=${id})`;
+    const maxLevel = resolveMaxLevel(upgrade, labelWithId);
 
     const costs = Array.isArray(upgrade.costs) ? (upgrade.costs as number[]) : undefined;
     if (costs && costs.length < maxLevel) {
