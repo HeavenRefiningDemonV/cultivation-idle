@@ -18,7 +18,11 @@ import type {
   OutskirtsConfig,
   PavilionDef,
   PavilionsConfig,
+  PrestigeCostCurve,
+  PrestigePrereq,
   PrestigeStoreConfig,
+  PrestigeUpgradeDef,
+  PrestigeUpgradeTier,
   RunesConfig,
   RuinsConfig,
   TalismanRecipesConfig,
@@ -47,7 +51,7 @@ export interface ValidatedContent {
   expeditions: ExpeditionsContent;
   bounties: BountiesConfig;
   heart_laws: HeartLawsConfig['heartLaws'];
-  prestige_store: PrestigeStoreConfig['upgrades'];
+  prestige_store: PrestigeStoreConfig;
 }
 
 type ErrorCollector = {
@@ -421,13 +425,165 @@ function validateHeartLaws(config: HeartLawsConfig) {
   return laws;
 }
 
+function normalizePrereqs(raw: unknown, validIds: Set<string>, label: string): PrestigePrereq[] {
+  if (!raw) return [];
+  const entries = Array.isArray(raw) ? raw : [];
+  const prereqs: PrestigePrereq[] = [];
+
+  entries.forEach((entry, idx) => {
+    if (typeof entry === 'string') {
+      if (!validIds.has(entry)) {
+        throw new Error(`[ContentValidation] ${label}.prereq[${idx}] references unknown upgrade '${entry}'`);
+      }
+      prereqs.push({ upgradeId: entry, minLevel: 1 });
+      return;
+    }
+
+    if (!entry || typeof entry !== 'object') {
+      throw new Error(`[ContentValidation] ${label}.prereq[${idx}] must be a string or object`);
+    }
+
+    const record = entry as Record<string, unknown>;
+    const upgradeId = record.upgradeId;
+    const minLevel = record.minLevel;
+    if (typeof upgradeId !== 'string' || !upgradeId) {
+      throw new Error(`[ContentValidation] ${label}.prereq[${idx}].upgradeId must be a string`);
+    }
+    if (!validIds.has(upgradeId)) {
+      throw new Error(`[ContentValidation] ${label}.prereq[${idx}] references unknown upgrade '${upgradeId}'`);
+    }
+    if (typeof minLevel !== 'number' || minLevel < 1) {
+      throw new Error(`[ContentValidation] ${label}.prereq[${idx}].minLevel must be >= 1`);
+    }
+    prereqs.push({ upgradeId, minLevel });
+  });
+
+  return prereqs;
+}
+
+function normalizeCostCurve(raw: unknown, label: string): PrestigeCostCurve | undefined {
+  if (!raw) return undefined;
+  if (!isObject(raw)) {
+    throw new Error(`[ContentValidation] ${label}.costCurve must be an object`);
+  }
+  const base = (raw as Record<string, unknown>).base;
+  const mult = (raw as Record<string, unknown>).mult;
+  const round = (raw as Record<string, unknown>).round;
+  if (typeof base !== 'number' || base <= 0) {
+    throw new Error(`[ContentValidation] ${label}.costCurve.base must be > 0`);
+  }
+  if (typeof mult !== 'number' || mult < 1) {
+    throw new Error(`[ContentValidation] ${label}.costCurve.mult must be >= 1`);
+  }
+  if (round !== undefined && typeof round !== 'number') {
+    throw new Error(`[ContentValidation] ${label}.costCurve.round must be a number`);
+  }
+  return { base, mult, round };
+}
+
+function normalizeTiers(raw: unknown, label: string): PrestigeUpgradeTier[] | undefined {
+  if (!raw) return undefined;
+  assertArray(raw, `${label}.tiers`);
+  return (raw as PrestigeUpgradeTier[]).map((tier, idx) => {
+    if (!tier || typeof tier !== 'object') {
+      throw new Error(`[ContentValidation] ${label}.tiers[${idx}] must be an object`);
+    }
+    if (typeof tier.cost !== 'number') {
+      throw new Error(`[ContentValidation] ${label}.tiers[${idx}].cost must be a number`);
+    }
+    return { cost: tier.cost, effects: tier.effects };
+  });
+}
+
+function resolveMaxLevel(raw: Record<string, unknown>, label: string): number {
+  const maxLevel =
+    typeof raw.maxLevel === 'number'
+      ? raw.maxLevel
+      : typeof raw.levels === 'number'
+        ? raw.levels
+        : undefined;
+  if (maxLevel === undefined) {
+    throw new Error(`[ContentValidation] ${label} missing maxLevel/levels`);
+  }
+  if (maxLevel < 1) {
+    throw new Error(`[ContentValidation] ${label}.maxLevel must be >= 1`);
+  }
+  return maxLevel;
+}
+
 function validatePrestige(config: PrestigeStoreConfig) {
   assertObject(config, 'prestige_store.json root');
   assertHasKey(config, 'upgrades', 'prestige_store.json');
   assertArray((config as any).upgrades, 'prestige_store.json.upgrades');
-  const upgrades = (config as any).upgrades as PrestigeStoreConfig['upgrades'];
-  assertUniqueIds(upgrades, 'prestige_store.json.upgrades');
-  return upgrades;
+  const upgrades = (config as any).upgrades as Array<Record<string, unknown>>;
+  assertUniqueIds(upgrades as Array<{ id: string }>, 'prestige_store.json.upgrades');
+
+  const idSet = new Set<string>(upgrades.map((upgrade) => String(upgrade.id)));
+
+  const normalized: PrestigeUpgradeDef[] = upgrades.map((upgrade, idx) => {
+    assertObject(upgrade, `prestige_store.upgrades[${idx}]`);
+    const label = `prestige_store.upgrades[${idx}]`;
+    const id = upgrade.id;
+    if (typeof id !== 'string' || !id) {
+      throw new Error(`[ContentValidation] ${label}.id must be a string`);
+    }
+    if (typeof upgrade.name !== 'string') {
+      throw new Error(`[ContentValidation] ${label}.name must be a string`);
+    }
+    if (typeof upgrade.type !== 'string') {
+      throw new Error(`[ContentValidation] ${label}.type must be a string`);
+    }
+
+    const maxLevel = resolveMaxLevel(upgrade, label);
+
+    const costs = Array.isArray(upgrade.costs) ? (upgrade.costs as number[]) : undefined;
+    if (costs && costs.length < maxLevel) {
+      throw new Error(`[ContentValidation] ${label}.costs must have >= maxLevel entries`);
+    }
+
+    const tiers = normalizeTiers(upgrade.tiers, label);
+    if (tiers && tiers.length < maxLevel) {
+      throw new Error(`[ContentValidation] ${label}.tiers must have >= maxLevel entries`);
+    }
+
+    const costCurve = normalizeCostCurve(upgrade.costCurve, label);
+    if (!costs && !tiers && !costCurve) {
+      throw new Error(`[ContentValidation] ${label} must define costs, tiers, or costCurve`);
+    }
+
+    const prereq = normalizePrereqs(upgrade.prereq, idSet, label);
+
+    const effect = upgrade.effect;
+    if (effect !== undefined && !isObject(effect)) {
+      throw new Error(`[ContentValidation] ${label}.effect must be an object if present`);
+    }
+
+    return {
+      id,
+      name: upgrade.name as string,
+      description: upgrade.description as string | undefined,
+      category: upgrade.category as string | undefined,
+      type: upgrade.type as string,
+      maxLevel,
+      costs,
+      tiers,
+      costCurve,
+      prereq,
+      stat: upgrade.stat as string | undefined,
+      effectPerLevel: upgrade.effectPerLevel,
+      effect: effect as PrestigeUpgradeDef['effect'],
+      unlocks: Array.isArray(upgrade.unlocks) ? (upgrade.unlocks as string[]) : undefined,
+      capAt: typeof upgrade.capAt === 'number' ? upgrade.capAt : undefined,
+      minMult: typeof upgrade.minMult === 'number' ? upgrade.minMult : undefined,
+      order: typeof upgrade.order === 'number' ? upgrade.order : undefined,
+    };
+  });
+
+  return {
+    version: config.version,
+    currency: config.currency,
+    upgrades: normalized,
+  };
 }
 
 function validateAlchemy(config: LoadedContentRaw['alchemy_recipes']) {

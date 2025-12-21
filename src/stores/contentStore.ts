@@ -7,6 +7,7 @@ import type {
   ItemDef,
   OutskirtsDef,
   PavilionDef,
+  PrestigeUpgradeDef,
   RuinDef,
   TechniqueDef,
   TrialDef,
@@ -33,7 +34,7 @@ interface ContentMaps {
   ruinsById: Record<string, RuinDef>;
   runesById: Record<string, { id: string; [k: string]: any }>;
   heartLawsById: Record<string, HeartLawDef>;
-  prestigeUpgradesById: Record<string, { id: string; [k: string]: any }>;
+  prestigeUpgradesById: Record<string, PrestigeUpgradeDef>;
   apothecariesById: Record<string, ApothecaryShopDef>;
   apothecariesByCityId: Record<string, ApothecaryShopDef>;
 }
@@ -59,6 +60,8 @@ interface ContentStoreState {
   getExpeditionCityYields: (cityIndex: number) => ValidatedContent['expeditions']['cityYields'][number] | null;
   getHeartLaw: (id: string) => HeartLawDef;
   listHeartLaws: () => HeartLawDef[];
+  getPrestigeStoreConfig: () => ValidatedContent['prestige_store'];
+  getPrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
 }
 
 const emptyMaps: ContentMaps = {
@@ -121,7 +124,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
         const apothecaries = validated.apothecary_shops;
         const runes = validated.runes;
         const heartLaws = validated.heart_laws;
-        const prestigeUpgrades = validated.prestige_store;
+        const prestigeUpgrades = validated.prestige_store.upgrades;
 
         const maps: ContentMaps = {
           citiesById: Object.fromEntries(cities.map((city) => [city.id, city])),
@@ -158,6 +161,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
         console.info(
           `[Content] Loaded ${cities.length} cities, ${techniques.length} techniques (H/E/M: ${techniquesByPath.heaven.length}/${techniquesByPath.earth.length}/${techniquesByPath.martial.length})`,
         );
+        console.info(`[Content] Prestige upgrades: ${prestigeUpgrades.length}`);
 
         set({
           raw: validated,
@@ -286,6 +290,18 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       if (tierA !== tierB) return tierA.localeCompare(tierB);
       return a.name.localeCompare(b.name);
     });
+  },
+
+  getPrestigeStoreConfig: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw?.prestige_store) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return raw.prestige_store;
+  },
+
+  getPrestigeUpgrades: () => {
+    return get().getPrestigeStoreConfig().upgrades ?? [];
   },
 }));
 

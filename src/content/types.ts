@@ -375,18 +375,46 @@ export interface HeartLawsConfig {
 export interface PrestigeStoreConfig {
   version?: string;
   currency?: string;
-  upgrades: Array<{
-    id: string;
-    name: string;
-    type: string;
-    costs: number[];
-    prereq?: string[];
-    levels?: number;
-    stat?: string;
-    effectPerLevel?: unknown;
-    effect?: unknown;
-    unlocks?: string[];
-    capAt?: number;
-    minMult?: number;
-  }>;
+  upgrades: PrestigeUpgradeDef[];
+}
+
+export interface PrestigePrereq {
+  upgradeId: string;
+  minLevel: number;
+}
+
+export type PrestigeEffect =
+  | { type: 'multiplier'; stat: string; value?: number; valuePerLevel?: number }
+  | { type: 'unlock'; stat?: string; [k: string]: any }
+  | { type: string; [k: string]: any };
+
+export interface PrestigeUpgradeTier {
+  cost: number;
+  effects?: unknown;
+}
+
+export interface PrestigeCostCurve {
+  base: number;
+  mult: number;
+  round?: number;
+}
+
+export interface PrestigeUpgradeDef {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  type: string;
+  maxLevel: number;
+  costs?: number[];
+  tiers?: PrestigeUpgradeTier[];
+  costCurve?: PrestigeCostCurve;
+  prereq?: PrestigePrereq[];
+  stat?: string;
+  effectPerLevel?: unknown;
+  effect?: PrestigeEffect;
+  unlocks?: string[];
+  capAt?: number;
+  minMult?: number;
+  order?: number;
 }
