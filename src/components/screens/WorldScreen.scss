@@ -423,6 +423,94 @@
   color: #4ade80;
 }
 
+.expeditionBoardPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expeditionBoardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.expeditionBoardTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.expeditionBoardSubtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.expeditionBoardSlots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.expeditionBoardCard {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.4);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expeditionBoardCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expeditionBoardCardTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.expeditionBoardCardStatus {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+.expeditionBoardCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.expeditionBoardField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.expeditionBoardField select {
+  background: rgba(15, 23, 42, 0.8);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.expeditionBoardCardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 
 .apothecaryPanelHeader {
   display: flex;
