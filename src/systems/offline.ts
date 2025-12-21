@@ -9,6 +9,7 @@ import { D, multiply, formatNumber } from '../utils/numbers';
 const MAX_OFFLINE_HOURS = 12;                    // Maximum offline time to calculate (12 hours)
 const DEFAULT_OFFLINE_EFFICIENCY = 0.5;          // Offline Qi gain is 50% of normal rate
 const MAX_OFFLINE_SECONDS = MAX_OFFLINE_HOURS * 60 * 60;  // 43200 seconds
+export const MAX_OFFLINE_MS = MAX_OFFLINE_SECONDS * 1000;
 const ONE_WEEK_SECONDS = 7 * 24 * 60 * 60;       // 604800 seconds
 
 /**
@@ -31,6 +32,14 @@ export interface OfflineProgressSummary {
   efficiency: number;
   wasCapped: boolean;
   offlineSeconds: number;
+}
+
+export interface OfflineContext {
+  lastActiveAtMs: number;
+  now: number;
+  dtMs: number;
+  rawMs: number;
+  wasCapped: boolean;
 }
 
 /**
@@ -87,22 +96,37 @@ export function calculateOfflineProgress(
   };
 }
 
+export function buildOfflineContext(lastActiveAtMs: number, now = Date.now()): OfflineContext {
+  const rawMs = Math.max(0, now - lastActiveAtMs);
+  const dtMs = Math.max(0, Math.min(rawMs, MAX_OFFLINE_MS));
+  const wasCapped = rawMs > dtMs;
+  if (import.meta.env?.DEV) {
+    const rawSeconds = Math.floor(rawMs / 1000);
+    const dtSeconds = Math.floor(dtMs / 1000);
+    console.log(`[Offline] dt=${dtSeconds}s (capped from raw ${rawSeconds}s)`);
+  }
+  return {
+    lastActiveAtMs,
+    now,
+    dtMs,
+    rawMs,
+    wasCapped,
+  };
+}
+
 /**
  * Apply offline progress to the game
  * Retrieves last online time, calculates progress, and updates game state
  *
  * @returns Summary of offline progress for display
  */
-export function applyOfflineProgress(): OfflineProgressSummary | null {
+export function applyOfflineProgressFromContext(context: OfflineContext): OfflineProgressSummary | null {
   try {
     console.log('[Offline] Calculating offline progress...');
 
     // Get current time
-    const currentUtc = Date.now();
-
-    // Get last online time from game store
-    const gameState = useGameStore.getState();
-    const lastOnlineUtc = gameState.lastActiveTime || gameState.lastTickTime || currentUtc;
+    const currentUtc = context.now;
+    const lastOnlineUtc = currentUtc - context.dtMs;
 
     // If last online time is in the future or same as current, no offline progress
     if (lastOnlineUtc >= currentUtc) {
@@ -120,6 +144,7 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
     }
 
     // Add Qi to player
+    const gameState = useGameStore.getState();
     const currentQi = D(gameState.qi);
     const newQi = currentQi.plus(progress.qiGained);
 
@@ -144,6 +169,14 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
     console.error('[Offline] Error applying offline progress:', error);
     return null;
   }
+}
+
+export function applyOfflineProgress(): OfflineProgressSummary | null {
+  const gameState = useGameStore.getState();
+  const currentUtc = Date.now();
+  const lastOnlineUtc = gameState.lastActiveTime || gameState.lastTickTime || currentUtc;
+  const context = buildOfflineContext(lastOnlineUtc, currentUtc);
+  return applyOfflineProgressFromContext(context);
 }
 
 /**

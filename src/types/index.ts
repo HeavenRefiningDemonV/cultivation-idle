@@ -273,6 +273,9 @@ export interface SaveOutskirtsState {
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
+  meta?: {
+    lastActiveAtMs: number;
+  };
 
   // Game state
   gameState: {

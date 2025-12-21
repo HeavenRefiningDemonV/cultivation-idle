@@ -14,8 +14,8 @@ import {
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useProfessionStore } from '../stores/professionStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
-import { saveGame, loadGame, hasSave } from '../utils/saveload';
-import { applyOfflineProgress } from './offline';
+import { saveGame, loadGame, hasSave, consumeOfflineContext } from '../utils/saveload';
+import { applyOfflineProgressFromContext } from './offline';
 import { useUIStore } from '../stores/uiStore';
 
 /**
@@ -277,7 +277,10 @@ export function initializeGame(): boolean {
         console.log('[GameLoop] Save loaded successfully');
 
         // Apply offline progress
-        const offlineProgress = applyOfflineProgress();
+        const offlineContext = consumeOfflineContext();
+        const offlineProgress = offlineContext
+          ? applyOfflineProgressFromContext(offlineContext)
+          : null;
 
         if (offlineProgress) {
           console.log('[GameLoop] Offline progress applied:');
@@ -301,6 +304,10 @@ export function initializeGame(): boolean {
 
         useProfessionStore.getState().tick(Date.now());
         useExpeditionStore.getState().tick(Date.now());
+
+        const now = Date.now();
+        useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
+        saveGame();
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');
       }

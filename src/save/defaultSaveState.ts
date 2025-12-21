@@ -48,6 +48,7 @@ const warnInvalidSlice = (slice: string) => {
 };
 
 export function buildDefaultSaveState(): SaveData {
+  const now = Date.now();
   const gameState = useGameStore.getState();
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();
@@ -70,7 +71,10 @@ export function buildDefaultSaveState(): SaveData {
 
   return {
     version: SAVE_VERSION,
-    timestamp: Date.now(),
+    timestamp: now,
+    meta: {
+      lastActiveAtMs: now,
+    },
     gameState: {
       realm: gameState.realm,
       qi: gameState.qi,
@@ -372,6 +376,16 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
     ...record,
+    meta: isRecord(record.meta)
+      ? {
+          ...defaults.meta,
+          ...record.meta,
+          lastActiveAtMs:
+            typeof record.meta.lastActiveAtMs === 'number'
+              ? record.meta.lastActiveAtMs
+              : defaults.meta.lastActiveAtMs,
+        }
+      : defaults.meta,
     gameState: isRecord(record.gameState) ? { ...defaults.gameState, ...record.gameState } : defaults.gameState,
     prestigeState: mergeSlice(record.prestigeState, defaults.prestigeState, isValidPrestigeState, 'prestigeState'),
     inventoryState: isRecord(record.inventoryState)

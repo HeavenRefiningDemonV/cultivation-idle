@@ -25,6 +25,7 @@ import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { getDayKey } from './dayKey';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
+import { buildOfflineContext, type OfflineContext } from '../systems/offline';
 
 /**
  * Save system constants
@@ -44,6 +45,7 @@ const ENCRYPTION_KEY = 'cultivation-idle-secret-2025';
  * Gather current game state from all stores
  */
 function gatherGameState(): SaveData {
+  const now = Date.now();
   const gameState = useGameStore.getState();
   const inventoryState = useInventoryStore.getState();
   const combatState = useCombatStore.getState();
@@ -66,7 +68,10 @@ function gatherGameState(): SaveData {
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
-    timestamp: Date.now(),
+    timestamp: now,
+    meta: {
+      lastActiveAtMs: now,
+    },
 
     gameState: {
       realm: gameState.realm,
@@ -206,6 +211,10 @@ function validateSaveData(data: unknown): data is SaveData {
     const record = data as Record<string, unknown>;
     if (!('version' in record) || !('timestamp' in record)) return false;
     if (!('gameState' in record) || !('inventoryState' in record) || !('combatSettings' in record)) return false;
+    if ('meta' in record && record.meta !== undefined) {
+      const meta = record.meta as Record<string, unknown>;
+      if (typeof meta.lastActiveAtMs !== 'number') return false;
+    }
 
     // Basic structure validation
     const gs = record.gameState as Record<string, unknown>;
@@ -529,11 +538,25 @@ function decryptSaveData(encrypted: string): SaveData | null {
       console.warn('[SaveLoad] Migrated save data failed validation, using defaults');
       return buildDefaultSaveState();
     }
+    pendingOfflineContext = buildOfflineContext(
+      migrated.meta?.lastActiveAtMs ??
+        migrated.gameState.lastActiveTime ??
+        migrated.gameState.lastTickTime ??
+        Date.now(),
+    );
     return migrated;
   } catch (error) {
     console.error('Decryption error:', error);
     return null;
   }
+}
+
+let pendingOfflineContext: OfflineContext | null = null;
+
+export function consumeOfflineContext(): OfflineContext | null {
+  const context = pendingOfflineContext;
+  pendingOfflineContext = null;
+  return context;
 }
 
 /**
@@ -874,6 +897,10 @@ export function loadGame(): boolean {
       return false;
     }
 
+    pendingOfflineContext = buildOfflineContext(
+      saveData.meta?.lastActiveAtMs ?? saveData.gameState.lastActiveTime ?? saveData.gameState.lastTickTime ?? Date.now(),
+    );
+
     // Apply save data to stores
     applySaveData(saveData);
 
@@ -1114,6 +1141,7 @@ export function importSave(base64String: string): boolean {
     const jsonString = atob(base64Json);
     const rawSave = JSON.parse(jsonString);
     const saveData = migrateSave(rawSave);
+    pendingOfflineContext = null;
 
     // Apply the imported data
     applySaveData(saveData);
