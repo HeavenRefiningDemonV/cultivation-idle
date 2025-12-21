@@ -349,19 +349,27 @@ export interface BountiesConfig {
   templates: BountyTemplate[];
 }
 
+export interface HeartLawChapter {
+  chapter: number;
+  effects: unknown;
+}
+
+export interface HeartLawDef {
+  id: string;
+  name: string;
+  tier?: string;
+  archetype?: string;
+  daoTags?: string[];
+  spiritRootAffinities?: string[];
+  signature?: unknown;
+  chapters?: HeartLawChapter[];
+  isStarter?: boolean;
+}
+
 export interface HeartLawsConfig {
   version?: string;
   affinityRules?: unknown;
-  heartLaws: Array<{
-    id: string;
-    name: string;
-    tier?: string;
-    archetype?: string;
-    daoTags?: string[];
-    spiritRootAffinities?: string[];
-    signature?: unknown;
-    chapters?: Array<{ chapter: number; effects: unknown }>;
-  }>;
+  heartLaws: HeartLawDef[];
 }
 
 export interface PrestigeStoreConfig {

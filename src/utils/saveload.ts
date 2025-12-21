@@ -18,6 +18,7 @@ import { useEquipmentStore } from '../stores/equipmentStore';
 import { useBuffStore } from '../stores/buffStore';
 import { useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
+import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heartLawStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -55,6 +56,7 @@ function gatherGameState(): SaveData {
   const buffState = useBuffStore.getState();
   const bountyState = useBountyStore.getState();
   const expeditionState = useExpeditionStore.getState();
+  const heartLawState = useHeartLawStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -121,6 +123,13 @@ function gatherGameState(): SaveData {
     expeditionState: {
       slots: expeditionState.slots,
       active: expeditionState.active.map((run) => ({ ...run })),
+    },
+
+    heartLawState: {
+      selectedHeartLawId: heartLawState.selectedHeartLawId,
+      chapter: heartLawState.chapter,
+      comprehension: heartLawState.comprehension,
+      unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
     },
 
     techniqueState: {
@@ -292,6 +301,16 @@ function validateSaveData(data: unknown): data is SaveData {
       const es = record.expeditionState as Record<string, unknown>;
       if (typeof es.slots !== 'number') return false;
       if (!Array.isArray((es as { active?: unknown }).active)) return false;
+    }
+
+    if ('heartLawState' in record && record.heartLawState) {
+      const hs = record.heartLawState as Record<string, unknown>;
+      if (hs.selectedHeartLawId !== null && hs.selectedHeartLawId !== undefined && typeof hs.selectedHeartLawId !== 'string') {
+        return false;
+      }
+      if (typeof hs.chapter !== 'number') return false;
+      if (typeof hs.comprehension !== 'number') return false;
+      if (!Array.isArray((hs as { unlockedHeartLawIds?: unknown }).unlockedHeartLawIds)) return false;
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -700,6 +719,21 @@ function applySaveData(saveData: SaveData): void {
     });
     useExpeditionStore.getState().tick(Date.now());
 
+    const heartLawState = saveData.heartLawState ?? {
+      selectedHeartLawId: null,
+      chapter: 1,
+      comprehension: 0,
+      unlockedHeartLawIds: getDefaultUnlockedHeartLawIds(),
+    };
+    useHeartLawStore.setState({
+      selectedHeartLawId: heartLawState.selectedHeartLawId ?? null,
+      chapter: typeof heartLawState.chapter === 'number' ? heartLawState.chapter : 1,
+      comprehension: typeof heartLawState.comprehension === 'number' ? heartLawState.comprehension : 0,
+      unlockedHeartLawIds: Array.isArray(heartLawState.unlockedHeartLawIds)
+        ? Array.from(new Set(heartLawState.unlockedHeartLawIds))
+        : getDefaultUnlockedHeartLawIds(),
+    });
+
     if (saveData.ruinsState?.progressByRuinId) {
       useRuinsStore.setState({
         progressByRuinId: saveData.ruinsState.progressByRuinId,
@@ -866,6 +900,12 @@ export function deleteSave(): boolean {
     useBuffStore.getState().hardResetBuffs();
     useBountyStore.getState().hardResetBounties();
     useExpeditionStore.setState({ slots: 1, active: [] });
+    useHeartLawStore.setState({
+      selectedHeartLawId: null,
+      chapter: 1,
+      comprehension: 0,
+      unlockedHeartLawIds: getDefaultUnlockedHeartLawIds(),
+    });
 
     try {
       useTechCollectionStore.getState().hardReset();

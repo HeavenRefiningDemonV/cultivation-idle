@@ -243,6 +243,13 @@ export interface SaveExpeditionRun {
   status: 'running' | 'complete';
 }
 
+export interface SaveHeartLawState {
+  selectedHeartLawId: string | null;
+  chapter: number;
+  comprehension: number;
+  unlockedHeartLawIds: string[];
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -332,6 +339,8 @@ export interface SaveData {
     slots: number;
     active: SaveExpeditionRun[];
   };
+
+  heartLawState?: SaveHeartLawState;
 
   // Technique progression
   techniqueState: {

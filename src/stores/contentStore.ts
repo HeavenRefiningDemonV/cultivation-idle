@@ -3,6 +3,7 @@ import type {
   ApothecaryShopDef,
   CityDef,
   EnemyTemplate,
+  HeartLawDef,
   ItemDef,
   OutskirtsDef,
   PavilionDef,
@@ -31,7 +32,7 @@ interface ContentMaps {
   trialsByCityId: Record<string, TrialDef>;
   ruinsById: Record<string, RuinDef>;
   runesById: Record<string, { id: string; [k: string]: any }>;
-  heartLawsById: Record<string, { id: string; [k: string]: any }>;
+  heartLawsById: Record<string, HeartLawDef>;
   prestigeUpgradesById: Record<string, { id: string; [k: string]: any }>;
   apothecariesById: Record<string, ApothecaryShopDef>;
   apothecariesByCityId: Record<string, ApothecaryShopDef>;
@@ -56,6 +57,8 @@ interface ContentStoreState {
   getExpeditionDurations: () => ValidatedContent['expeditions']['durations'];
   getExpeditionTypes: () => ValidatedContent['expeditions']['types'];
   getExpeditionCityYields: (cityIndex: number) => ValidatedContent['expeditions']['cityYields'][number] | null;
+  getHeartLaw: (id: string) => HeartLawDef;
+  listHeartLaws: () => HeartLawDef[];
 }
 
 const emptyMaps: ContentMaps = {
@@ -133,7 +136,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
           apothecariesById: Object.fromEntries(apothecaries.map((shop) => [shop.id, shop])),
           apothecariesByCityId: Object.fromEntries(apothecaries.map((shop) => [shop.cityId, shop])),
           runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune as any])),
-          heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law as any])),
+          heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law])),
           prestigeUpgradesById: Object.fromEntries(
             prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade as any]),
           ),
@@ -258,6 +261,31 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
   getExpeditionCityYields: (cityIndex: number) => {
     const content = get().getExpeditionsContent();
     return content.cityYields.find((entry) => entry.cityIndex === cityIndex) ?? null;
+  },
+
+  getHeartLaw: (id: string) => {
+    const { isLoaded, maps } = get();
+    if (!isLoaded) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    const law = maps.heartLawsById[id];
+    if (!law) {
+      throw new Error(`[ContentStore] Unknown heart law id ${id}`);
+    }
+    return law;
+  },
+
+  listHeartLaws: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw?.heart_laws) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return [...raw.heart_laws].sort((a, b) => {
+      const tierA = a.tier ?? '';
+      const tierB = b.tier ?? '';
+      if (tierA !== tierB) return tierA.localeCompare(tierB);
+      return a.name.localeCompare(b.name);
+    });
   },
 }));
 
