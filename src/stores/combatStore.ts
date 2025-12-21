@@ -35,6 +35,8 @@ import { getTalismanBonusesNow } from './buffStore';
 import { createEnemy } from '../systems/enemyFactory';
 import type { NormalizedEffect } from '../systems/techniques/effects';
 import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
+import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
+import { getSpiritRootSnapshot } from './gameStore';
 
 interface DungeonBoss {
   id: string;
@@ -59,6 +61,19 @@ interface DungeonData {
     guaranteedDrop?: { itemId: string; name: string };
   };
   boss: DungeonBoss;
+}
+
+function getHeartLawCombatMultiplier(): number {
+  const selectedId = useHeartLawStore.getState().selectedHeartLawId;
+  if (!selectedId) return 1;
+  const heartLawDef = useContentStore.getState().maps.heartLawsById[selectedId] ?? null;
+  if (!heartLawDef) return 1;
+  const bonuses = getHeartLawBonuses({
+    heartLawDef,
+    chapter: useHeartLawStore.getState().chapter,
+    spiritRoot: getSpiritRootSnapshot(),
+  });
+  return bonuses.combatDamageMult ?? 1;
 }
 
 /**
@@ -940,6 +955,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
       const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
+      const heartLawMultiplier = D(getHeartLawCombatMultiplier());
 
       // Check for critical hit
       const critRoll = Math.random() * 100;
@@ -964,6 +980,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (bonusPct > 0) {
         finalDamage = finalDamage.times(damageMultiplier);
+      }
+
+      if (!heartLawMultiplier.equals(1)) {
+        finalDamage = finalDamage.times(heartLawMultiplier);
       }
 
       // Apply damage to enemy
@@ -1694,11 +1714,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
           case 'damage': {
             const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
             const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
+            const heartLawMultiplier = D(getHeartLawCombatMultiplier());
             const damage = D(effectiveStats.atk)
               .times(
               effect.mult * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
             )
-              .times(damageMultiplier);
+              .times(damageMultiplier)
+              .times(heartLawMultiplier);
             set((state) => {
               const newHP = subtract(state.enemyHP, damage.toString());
               const clampedHP = clamp(newHP, 0, state.enemyMaxHP);

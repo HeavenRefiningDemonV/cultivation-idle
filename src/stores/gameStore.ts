@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { GameState, FocusMode, CultivationPath, LifePath, ActiveBuff, BuffStat } from '../types';
+import type { GameState, FocusMode, CultivationPath, LifePath, ActiveBuff, BuffStat, SpiritRoot } from '../types';
 import {
   REALMS,
   PATH_MODIFIERS,
@@ -25,6 +25,8 @@ import { useUIStore } from './uiStore';
 import { useEquipmentStore } from './equipmentStore';
 import { useHeartLawStore } from './heartLawStore';
 import { useActivityStore } from './activityStore';
+import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
+import { useContentStore } from './contentStore';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -60,6 +62,11 @@ export function setInventoryStoreGetter(getter: () => InventoryStoreDeps) {
 let _getPrestigeStore: (() => PrestigeStoreDeps) | null = null;
 export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
   _getPrestigeStore = getter;
+}
+
+export function getSpiritRootSnapshot(): SpiritRoot | null {
+  const prestigeStore = _getPrestigeStore ? _getPrestigeStore() : null;
+  return prestigeStore?.spiritRoot ?? null;
 }
 
 let _getCombatStore: (() => CombatStoreDeps) | null = null;
@@ -510,6 +517,17 @@ export const useGameStore = create<GameState>()(
           const perkMultiplier = D(1).plus(perk.effect.value);
           qiPerSec = multiply(qiPerSec, perkMultiplier);
         }
+      }
+
+      const heartLawId = useHeartLawStore.getState().selectedHeartLawId;
+      if (heartLawId) {
+        const heartLawDef = useContentStore.getState().maps.heartLawsById[heartLawId] ?? null;
+        const bonuses = getHeartLawBonuses({
+          heartLawDef,
+          chapter: useHeartLawStore.getState().chapter,
+          spiritRoot: getSpiritRootSnapshot(),
+        });
+        qiPerSec = multiply(qiPerSec, D(bonuses.cultivateRateMult));
       }
 
       set((state) => {

@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useHeartLawStore } from '../../stores/heartLawStore';
+import { usePrestigeStore } from '../../stores/prestigeStore';
 import type { LifePath } from '../../types';
+import { getAffinityStatus, getHeartLawBonuses } from '../../systems/heartLaw/heartLawLogic';
 
 const PATHS: { id: LifePath; label: string; desc: string }[] = [
   { id: 'heaven', label: 'Heaven', desc: 'Focus on techniques of the heavens and spiritual insight.' },
@@ -57,6 +59,7 @@ export function MeditationHallPanel() {
   const comprehension = useHeartLawStore((state) => state.comprehension);
   const selectHeartLaw = useHeartLawStore((state) => state.selectHeartLaw);
   const isUnlocked = useHeartLawStore((state) => state.isUnlocked);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
 
   const title = useMemo(() => {
     if (lifePath) return `Chosen Path: ${lifePath.toUpperCase()}`;
@@ -73,8 +76,23 @@ export function MeditationHallPanel() {
     return heartLaws.find((law) => law.id === selectedHeartLawId) ?? null;
   }, [heartLaws, selectedHeartLawId]);
 
+  const heartLawBonuses = useMemo(() => {
+    if (!selectedHeartLaw) return null;
+    return getHeartLawBonuses({
+      heartLawDef: selectedHeartLaw,
+      chapter,
+      spiritRoot,
+    });
+  }, [chapter, selectedHeartLaw, spiritRoot]);
+
+  const affinityStatus = useMemo(() => {
+    if (!selectedHeartLaw) return { status: 'none' as const, percent: 0 };
+    return getAffinityStatus(selectedHeartLaw, spiritRoot);
+  }, [selectedHeartLaw, spiritRoot]);
+
   const nextRequirement = chapter < 5 ? DEFAULT_CHAPTER_REQUIREMENTS[chapter] ?? 0 : 0;
   const progressValue = Math.min(comprehension, nextRequirement || comprehension);
+  const progressDisplay = comprehension % 1 === 0 ? comprehension.toFixed(0) : comprehension.toFixed(1);
 
   const handleSelectHeartLaw = (id: string) => {
     if (!isUnlocked(id)) return;
@@ -144,6 +162,18 @@ export function MeditationHallPanel() {
               <div className={'heartLawCurrentMeta'}>
                 Dao Tags: {(selectedHeartLaw.daoTags ?? []).join(', ') || 'None'}
               </div>
+              {heartLawBonuses && (
+                <div className={'heartLawCurrentMeta'}>
+                  Cultivation Rate: {((heartLawBonuses.cultivateRateMult - 1) * 100).toFixed(1)}% • Combat
+                  Damage: {((heartLawBonuses.combatDamageMult - 1) * 100).toFixed(1)}%
+                </div>
+              )}
+              <div className={'heartLawCurrentMeta'}>
+                Affinity:{' '}
+                {affinityStatus.status === 'match' && `Match (+${affinityStatus.percent}%)`}
+                {affinityStatus.status === 'mismatch' && `Mismatch (-${affinityStatus.percent}%)`}
+                {affinityStatus.status === 'none' && 'None'}
+              </div>
               <div className={'heartLawCurrentMeta'}>
                 Chapter: {CHAPTER_LABELS[Math.max(0, chapter - 1)] ?? 'I'}
               </div>
@@ -151,7 +181,7 @@ export function MeditationHallPanel() {
                 <div className={'heartLawProgress'}>
                   <progress value={progressValue} max={nextRequirement} />
                   <div className={'heartLawProgressText'}>
-                    {comprehension} / {nextRequirement} to Chapter {CHAPTER_LABELS[chapter] ?? 'V'}
+                    {progressDisplay} / {nextRequirement} to Chapter {CHAPTER_LABELS[chapter] ?? 'V'}
                   </div>
                 </div>
               ) : (
