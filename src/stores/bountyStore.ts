@@ -41,6 +41,8 @@ interface BountyStoreState {
   lastRefreshAtByCityId: Record<string, number>;
   generateForCity: (cityId: string, cityIndex: number) => void;
   refresh: (cityId: string, cityIndex: number) => void;
+  canRefresh: (cityId: string, now?: number) => boolean;
+  nextRefreshAt: (cityId: string) => number | null;
   recordEvent: (event: BountyEvent) => void;
   claim: (cityId: string, instanceId: string) => boolean;
   hardResetBounties: () => void;
@@ -74,6 +76,25 @@ function buildRewardBundle(range: { gold: [number, number]; merit: [number, numb
   return { currencies };
 }
 
+function findRewardTierForCity(
+  cityIndex: number,
+  rewardTiers: Record<string, { [k in BountyDifficulty]: { gold: [number, number]; merit: [number, number]; spiritStones: [number, number] } }>,
+) {
+  const entries = Object.entries(rewardTiers)
+    .map(([key, value]) => ({ index: Number(key), value }))
+    .filter((entry) => Number.isFinite(entry.index))
+    .sort((a, b) => a.index - b.index);
+
+  if (entries.length === 0) return null;
+  const exact = entries.find((entry) => entry.index === cityIndex);
+  if (exact) return exact.value;
+
+  const lower = entries.filter((entry) => entry.index <= cityIndex);
+  if (lower.length > 0) return lower[lower.length - 1].value;
+
+  return entries[0].value;
+}
+
 function selectTemplate(
   templates: BountyTemplate[],
   difficulty: BountyDifficulty,
@@ -98,13 +119,14 @@ function selectTemplate(
 }
 
 function buildBounties(cityId: string, cityIndex: number): BountyInstance[] {
-  const bountyConfig = useContentStore.getState().getBountyConfig();
+  const bountyConfig = useContentStore.getState().raw?.bounties;
+  if (!bountyConfig) return [];
   const templates = bountyConfig.templates ?? [];
   if (!Array.isArray(templates) || templates.length === 0) return [];
 
-  const rewardByCity =
-    bountyConfig.rewardTiersByCityIndex?.[String(cityIndex)] ??
-    bountyConfig.rewardTiersByCityIndex?.['0'];
+  const rewardByCity = bountyConfig.rewardTiersByCityIndex
+    ? findRewardTierForCity(cityIndex, bountyConfig.rewardTiersByCityIndex)
+    : null;
   if (!rewardByCity) return [];
 
   const used = new Set<string>();
@@ -141,9 +163,16 @@ export const useBountyStore = create<BountyStoreState>()(
 
     generateForCity: (cityId, cityIndex) => {
       const existing = get().activeByCityId[cityId];
-      if (existing && existing.length >= 3) return;
+      if (existing && existing.length === 3) return;
       const next = buildBounties(cityId, cityIndex);
-      if (next.length === 0) return;
+      if (next.length !== 3) {
+        if (existing && existing.length > 3) {
+          set((state) => {
+            state.activeByCityId[cityId] = existing.slice(0, 3);
+          });
+        }
+        return;
+      }
       set((state) => {
         state.activeByCityId[cityId] = next;
         state.lastRefreshAtByCityId[cityId] = Date.now();
@@ -151,12 +180,31 @@ export const useBountyStore = create<BountyStoreState>()(
     },
 
     refresh: (cityId, cityIndex) => {
+      if (!get().canRefresh(cityId)) return;
       const next = buildBounties(cityId, cityIndex);
-      if (next.length === 0) return;
+      if (next.length !== 3) return;
       set((state) => {
         state.activeByCityId[cityId] = next;
         state.lastRefreshAtByCityId[cityId] = Date.now();
       });
+    },
+
+    canRefresh: (cityId, now = Date.now()) => {
+      const bountyConfig = useContentStore.getState().raw?.bounties;
+      const cooldownSeconds = bountyConfig?.refreshCooldownSeconds ?? 0;
+      if (cooldownSeconds <= 0) return true;
+      const last = get().lastRefreshAtByCityId[cityId];
+      if (!last) return true;
+      return now >= last + cooldownSeconds * 1000;
+    },
+
+    nextRefreshAt: (cityId) => {
+      const bountyConfig = useContentStore.getState().raw?.bounties;
+      const cooldownSeconds = bountyConfig?.refreshCooldownSeconds ?? 0;
+      if (cooldownSeconds <= 0) return null;
+      const last = get().lastRefreshAtByCityId[cityId];
+      if (!last) return null;
+      return last + cooldownSeconds * 1000;
     },
 
     recordEvent: (event) => {

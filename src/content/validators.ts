@@ -779,6 +779,17 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     assert(typeof template.id === 'string', `bounties.templates[${idx}].id must be a string`);
   });
 
+  const rewardTierKeys = Object.keys(bountyConfig.rewardTiersByCityIndex ?? {});
+  const rewardTierIndices = rewardTierKeys
+    .map((key) => Number(key))
+    .filter((idx) => Number.isFinite(idx));
+  const maxCityIndex = Math.max(0, ...cities.map((city) => city.index));
+  for (let idx = 0; idx <= maxCityIndex; idx += 1) {
+    if (!rewardTierIndices.includes(idx)) {
+      console.warn(`[ContentValidation] bounties.rewardTiersByCityIndex missing city index ${idx}`);
+    }
+  }
+
   // City pavilion sanity for first 5 cities
   cities
     .filter((city) => city.index <= 4)

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useBountyStore } from '../../stores/bountyStore';
@@ -13,11 +13,29 @@ function formatRewards(bundle: RewardBundle): string {
   return parts.length > 0 ? parts.join(' / ') : 'None';
 }
 
+function formatDuration(ms: number): string {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (value: number) => value.toString().padStart(2, '0');
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+function formatDifficultyLabel(difficulty: string): string {
+  if (difficulty === 'easy') return 'Easy';
+  if (difficulty === 'medium') return 'Medium';
+  if (difficulty === 'hard') return 'Hard';
+  return difficulty;
+}
+
 export function BountyBoardPanel() {
   const currentCityId = useCityStore((state) => state.currentCityId);
   const cityMap = useContentStore((state) => state.maps.citiesById);
   const generateForCity = useBountyStore((state) => state.generateForCity);
   const refresh = useBountyStore((state) => state.refresh);
+  const canRefresh = useBountyStore((state) => state.canRefresh);
+  const nextRefreshAt = useBountyStore((state) => state.nextRefreshAt);
   const claim = useBountyStore((state) => state.claim);
   const bounties = useBountyStore((state) =>
     currentCityId ? state.activeByCityId[currentCityId] ?? [] : [],
@@ -25,6 +43,12 @@ export function BountyBoardPanel() {
   const lastRefreshAt = useBountyStore((state) =>
     currentCityId ? state.lastRefreshAtByCityId[currentCityId] : undefined,
   );
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    const handle = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(handle);
+  }, []);
 
   const cityIndex = useMemo(() => {
     if (!currentCityId) return null;
@@ -56,10 +80,17 @@ export function BountyBoardPanel() {
             City index: {cityIndex} • Last refresh:{' '}
             {lastRefreshAt ? new Date(lastRefreshAt).toLocaleTimeString() : 'Never'}
           </div>
+          <div className={'bountyBoardSubtitle'}>
+            Next refresh:{' '}
+            {canRefresh(currentCityId, now)
+              ? 'Ready'
+              : formatDuration(Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now))}
+          </div>
         </div>
         <button
           className={'worldScreenModuleButton'}
           onClick={() => refresh(currentCityId, cityIndex)}
+          disabled={!canRefresh(currentCityId, now)}
         >
           Refresh Bounties
         </button>
@@ -68,12 +99,17 @@ export function BountyBoardPanel() {
       <div className={'bountyBoardList'}>
         {bounties.map((bounty) => {
           const isComplete = bounty.progress >= bounty.target;
+          const isReadyToClaim = isComplete && !bounty.claimed;
+          const difficultyLabel = formatDifficultyLabel(bounty.difficulty);
           return (
-            <div key={bounty.instanceId} className={'bountyBoardCard'}>
+            <div
+              key={bounty.instanceId}
+              className={`bountyBoardCard ${isReadyToClaim ? 'bountyBoardCard--ready' : ''}`}
+            >
               <div className={'bountyBoardCardHeader'}>
                 <div>
                   <div className={'bountyBoardCardTitle'}>{bounty.title}</div>
-                  <div className={'bountyBoardCardSubtitle'}>{bounty.difficulty.toUpperCase()}</div>
+                  <div className={'bountyBoardCardSubtitle'}>{difficultyLabel}</div>
                 </div>
                 <div className={'bountyBoardCardMeta'}>
                   <div>Target: {bounty.target}</div>
@@ -86,6 +122,7 @@ export function BountyBoardPanel() {
                   Progress: {bounty.progress} / {bounty.target}
                 </div>
                 <div className={'bountyBoardCardLine'}>Rewards: {formatRewards(bounty.rewards)}</div>
+                {isReadyToClaim && <div className={'bountyBoardCardReady'}>Ready to claim!</div>}
               </div>
               <div className={'bountyBoardCardActions'}>
                 <button
@@ -93,7 +130,7 @@ export function BountyBoardPanel() {
                   onClick={() => claim(currentCityId, bounty.instanceId)}
                   disabled={!isComplete || bounty.claimed}
                 >
-                  Claim
+                  {bounty.claimed ? 'Claimed' : 'Claim'}
                 </button>
               </div>
             </div>
