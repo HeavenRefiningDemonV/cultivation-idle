@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { usePrestigeStore } from '../../stores/prestigeStore';
+import { useInventoryStore } from '../../stores/inventoryStore';
+import { getItemDef, useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
+import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useUIStore } from '../../stores/uiStore';
-import { useContentStore } from '../../stores/contentStore';
+import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
 export function PrestigeScreen() {
@@ -23,6 +25,7 @@ export function PrestigeScreen() {
 
   const realm = useGameStore((state) => state.realm);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [sellBeforePrestige, setSellBeforePrestige] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
@@ -30,20 +33,47 @@ export function PrestigeScreen() {
   const canPrestigeNow = canPrestige();
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
 
-  const handlePrestige = () => {
+  const sellAllItems = () => {
+    const inventory = useInventoryStore.getState();
+    const items = inventory.items;
+    let totalGold = D(0);
+
+    Object.entries(items).forEach(([itemId, qty]) => {
+      const def = getItemDef(itemId);
+      const sellValue = def?.sellValue ?? 0;
+      if (sellValue > 0 && qty > 0) {
+        totalGold = totalGold.plus(D(sellValue).times(qty));
+      }
+      inventory.removeItem(itemId, qty);
+    });
+
+    if (totalGold.greaterThan(0)) {
+      inventory.addCurrency('gold', totalGold.toString());
+    }
+  };
+
+  const handlePrestige = (shouldSellAll = false) => {
     if (!canPrestigeNow) return;
+    setSellBeforePrestige(shouldSellAll);
 
     if (requirePrestigeConfirm) {
       setShowConfirmation(true);
       return;
     }
 
+    if (shouldSellAll) {
+      sellAllItems();
+    }
     performPrestige();
   };
 
   const confirmPrestige = () => {
+    if (sellBeforePrestige) {
+      sellAllItems();
+    }
     performPrestige();
     setShowConfirmation(false);
+    setSellBeforePrestige(false);
   };
 
   useEffect(() => {
@@ -125,15 +155,26 @@ export function PrestigeScreen() {
             Each reincarnation grants Ascension Points to unlock permanent upgrades. You'll return to the mortal realm but
             with newfound power and potential.
           </p>
-          <button
-            onClick={handlePrestige}
-            disabled={!canPrestigeNow}
-            className={`${'button-standard'} ${'prestigeScreenPrestigeButton'} ${
-              canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'
-            }`}
-          >
-            {canPrestigeNow ? 'Reincarnate Now' : 'Not Ready Yet'}
-          </button>
+          <div className={'prestigeScreenPrestigeActions'}>
+            <button
+              onClick={() => handlePrestige(false)}
+              disabled={!canPrestigeNow}
+              className={`${'button-standard'} ${'prestigeScreenPrestigeButton'} ${
+                canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'
+              }`}
+            >
+              {canPrestigeNow ? 'Reincarnate Now' : 'Not Ready Yet'}
+            </button>
+            <button
+              onClick={() => handlePrestige(true)}
+              disabled={!canPrestigeNow}
+              className={`${'button-standard'} ${'prestigeScreenPrestigeButton'} ${
+                canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'
+              }`}
+            >
+              {canPrestigeNow ? 'Sell All & Reincarnate' : 'Not Ready Yet'}
+            </button>
+          </div>
           {!canPrestigeNow && (
             <p className={'prestigeScreenPrestigeHint'}>Reach Foundation Establishment to unlock Reincarnation.</p>
           )}
@@ -260,9 +301,17 @@ export function PrestigeScreen() {
                 Are you sure you want to reincarnate? This will reset your cultivation progress, but you'll gain{' '}
                 <strong className={'prestigeScreenModalHighlight'}>{apGain} AP</strong> to purchase permanent upgrades.
               </p>
+              {sellBeforePrestige && (
+                <p className={'prestigeScreenModalText'}>
+                  All inventory items will be sold for gold before the reset.
+                </p>
+              )}
               <div className={'prestigeScreenModalActions'}>
                 <button
-                  onClick={() => setShowConfirmation(false)}
+                  onClick={() => {
+                    setShowConfirmation(false);
+                    setSellBeforePrestige(false);
+                  }}
                   className={`${'button-standard'} ${'prestigeScreenModalButton'} ${'prestigeScreenModalCancel'}`}
                 >
                   Cancel

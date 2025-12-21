@@ -147,7 +147,14 @@
   margin: 0 auto;
 }
 
+.prestigeScreenPrestigeActions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
 .prestigeScreenPrestigeButton {
+  width: 100%;
   padding: 16px 32px;
   border-radius: 14px;
   border: none;
