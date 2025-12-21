@@ -13,22 +13,16 @@ function formatCountdown(ms: number): string {
 
 export function SystemStatusPanel() {
   const activity = useActivityStore((state) => state.active);
-  const professionState = useProfessionStore((state) => ({
-    alchemyQueue: state.alchemyQueue,
-    talismanQueue: state.talismanQueue,
-    forgeQueue: state.forgeQueue,
-  }));
-  const expeditionState = useExpeditionStore((state) => ({
-    slots: state.slots,
-    active: state.active,
-  }));
-  const contentState = useContentStore((state) => ({
-    isLoaded: state.isLoaded,
-    isLoading: state.isLoading,
-    error: state.error,
-    maps: state.maps,
-    raw: state.raw,
-  }));
+  const alchemyQueue = useProfessionStore((state) => state.alchemyQueue);
+  const talismanQueue = useProfessionStore((state) => state.talismanQueue);
+  const forgeQueue = useProfessionStore((state) => state.forgeQueue);
+  const expeditionSlots = useExpeditionStore((state) => state.slots);
+  const expeditionActive = useExpeditionStore((state) => state.active);
+  const contentIsLoaded = useContentStore((state) => state.isLoaded);
+  const contentIsLoading = useContentStore((state) => state.isLoading);
+  const contentError = useContentStore((state) => state.error);
+  const contentMaps = useContentStore((state) => state.maps);
+  const contentRaw = useContentStore((state) => state.raw);
 
   const [now, setNow] = useState(() => Date.now());
 
@@ -48,19 +42,19 @@ export function SystemStatusPanel() {
 
   const professionJobs = useMemo(() => {
     const jobs = [
-      ...professionState.alchemyQueue.map((job) => ({
+      ...alchemyQueue.map((job) => ({
         type: 'Alchemy',
         id: job.id,
         label: job.recipeId,
         endsAt: job.endsAt,
       })),
-      ...professionState.talismanQueue.map((job) => ({
+      ...talismanQueue.map((job) => ({
         type: 'Talisman',
         id: job.id,
         label: job.recipeId,
         endsAt: job.endsAt,
       })),
-      ...professionState.forgeQueue.map((job) => ({
+      ...forgeQueue.map((job) => ({
         type: 'Forge',
         id: job.id,
         label: job.blueprintId,
@@ -68,18 +62,18 @@ export function SystemStatusPanel() {
       })),
     ];
     return jobs.sort((a, b) => a.endsAt - b.endsAt);
-  }, [professionState.alchemyQueue, professionState.forgeQueue, professionState.talismanQueue]);
+  }, [alchemyQueue, forgeQueue, talismanQueue]);
 
   const expeditionJobs = useMemo(() => {
-    return expeditionState.active.map((run) => ({
+    return expeditionActive.map((run) => ({
       id: `${run.cityId}:${run.expeditionTypeId}`,
       label: `${run.expeditionTypeId} (city=${run.cityId})`,
       endsAt: run.endsAt,
     }));
-  }, [expeditionState.active]);
+  }, [expeditionActive]);
 
   const contentCounts = useMemo(() => {
-    const maps = contentState.maps;
+    const maps = contentMaps;
     return {
       cities: Object.keys(maps.citiesById ?? {}).length,
       items: Object.keys(maps.itemsById ?? {}).length,
@@ -89,10 +83,10 @@ export function SystemStatusPanel() {
       enemies: Object.keys(maps.enemiesById ?? {}).length,
       trials: Object.keys(maps.trialsById ?? {}).length,
       ruins: Object.keys(maps.ruinsById ?? {}).length,
-      heartLaws: contentState.raw?.heart_laws?.length ?? 0,
-      prestigeUpgrades: contentState.raw?.prestige_store?.upgrades?.length ?? 0,
+      heartLaws: contentRaw?.heart_laws?.length ?? 0,
+      prestigeUpgrades: contentRaw?.prestige_store?.upgrades?.length ?? 0,
     };
-  }, [contentState.maps, contentState.raw]);
+  }, [contentMaps, contentRaw]);
 
   return (
     <>
@@ -105,8 +99,7 @@ export function SystemStatusPanel() {
       <div className={'settingsDebugRow'}>
         <div className={'settingsDebugLabel'}>Craft Queues</div>
         <div className={'settingsDebugValue'}>
-          Alchemy: {professionState.alchemyQueue.length} • Talisman: {professionState.talismanQueue.length} • Forge:{' '}
-          {professionState.forgeQueue.length}
+          Alchemy: {alchemyQueue.length} • Talisman: {talismanQueue.length} • Forge: {forgeQueue.length}
         </div>
       </div>
 
@@ -131,7 +124,7 @@ export function SystemStatusPanel() {
       <div className={'settingsDebugRow'}>
         <div className={'settingsDebugLabel'}>Expeditions</div>
         <div className={'settingsDebugValue'}>
-          Slots: {expeditionState.slots} • Active: {expeditionState.active.length}
+          Slots: {expeditionSlots} • Active: {expeditionActive.length}
         </div>
       </div>
 
@@ -156,10 +149,10 @@ export function SystemStatusPanel() {
       <div className={'settingsDebugRow'}>
         <div className={'settingsDebugLabel'}>Content</div>
         <div className={'settingsDebugValue'}>
-          Loaded: {contentState.isLoaded ? 'Yes' : 'No'} • Loading: {contentState.isLoading ? 'Yes' : 'No'}
+          Loaded: {contentIsLoaded ? 'Yes' : 'No'} • Loading: {contentIsLoading ? 'Yes' : 'No'}
         </div>
       </div>
-      {contentState.error && <div className={'settingsDebugError'}>Error: {contentState.error}</div>}
+      {contentError && <div className={'settingsDebugError'}>Error: {contentError}</div>}
       <div className={'settingsDebugGrid'}>
         <div className={'settingsDebugItem'}>
           <div className={'settingsDebugLabel'}>Cities</div>
