@@ -1,166 +1,79 @@
 {
-  "version": "1.0",
-  "rules": {
-    "activeSlots": 3,
-    "freeRefreshHours": 6,
-    "goldRefreshEscalation": true,
-    "meritRefreshEnabled": true
+  "version": 1,
+  "refreshCooldownSeconds": 21600,
+  "difficulties": ["easy", "medium", "hard"],
+  "rewardTiersByCityIndex": {
+    "0": {
+      "easy": { "gold": [150, 250], "merit": [1, 1], "spiritStones": [0, 0] },
+      "medium": { "gold": [400, 700], "merit": [2, 2], "spiritStones": [1, 1] },
+      "hard": { "gold": [900, 1400], "merit": [3, 3], "spiritStones": [1, 2] }
+    },
+    "1": {
+      "easy": { "gold": [700, 1200], "merit": [1, 1], "spiritStones": [0, 0] },
+      "medium": { "gold": [2000, 3500], "merit": [2, 2], "spiritStones": [1, 2] },
+      "hard": { "gold": [6000, 10000], "merit": [4, 4], "spiritStones": [2, 4] }
+    },
+    "2": {
+      "easy": { "gold": [4000, 7000], "merit": [1, 1], "spiritStones": [1, 2] },
+      "medium": { "gold": [10000, 18000], "merit": [3, 3], "spiritStones": [3, 6] },
+      "hard": { "gold": [25000, 40000], "merit": [5, 5], "spiritStones": [6, 10] }
+    },
+    "3": {
+      "easy": { "gold": [18000, 30000], "merit": [2, 2], "spiritStones": [4, 7] },
+      "medium": { "gold": [40000, 70000], "merit": [4, 4], "spiritStones": [10, 18] },
+      "hard": { "gold": [90000, 150000], "merit": [6, 6], "spiritStones": [20, 35] }
+    },
+    "4": {
+      "easy": { "gold": [90000, 140000], "merit": [2, 2], "spiritStones": [8, 14] },
+      "medium": { "gold": [200000, 320000], "merit": [4, 4], "spiritStones": [18, 32] },
+      "hard": { "gold": [450000, 700000], "merit": [7, 7], "spiritStones": [40, 70] }
+    }
   },
   "templates": [
     {
-      "id": "bounty_kill_mobs",
+      "id": "tmpl_outskirts_kills",
       "name": "Cull the Outskirts",
-      "type": "outskirtsKills",
-      "params": {
-        "kills": [
-          150,
-          250,
-          400,
-          600,
-          900
-        ]
-      }
+      "desc": "Defeat {target} enemies in the Outskirts.",
+      "kind": "OUTSKIRTS_KILL",
+      "targets": { "easy": 25, "medium": 60, "hard": 140 },
+      "difficulties": ["easy", "medium", "hard"],
+      "minCityIndex": 0
     },
     {
-      "id": "bounty_kill_boss",
+      "id": "tmpl_outskirts_boss",
       "name": "Hunt the Outskirts Boss",
-      "type": "bossKills",
-      "params": {
-        "kills": [
-          3,
-          4,
-          5,
-          6,
-          8
-        ]
-      }
+      "desc": "Defeat the Outskirts boss {target} times.",
+      "kind": "OUTSKIRTS_BOSS_KILL",
+      "targets": { "easy": 1, "medium": 2, "hard": 4 },
+      "difficulties": ["easy", "medium", "hard"],
+      "minCityIndex": 0
     },
     {
-      "id": "bounty_clear_ruins",
-      "name": "Scavenge the Ruins",
-      "type": "ruinClears",
-      "params": {
-        "clears": [
-          2,
-          3,
-          3,
-          4,
-          5
-        ]
-      }
+      "id": "tmpl_ruins_rooms",
+      "name": "Purge the Ruins",
+      "desc": "Clear {target} Ruins rooms.",
+      "kind": "RUINS_ROOM_CLEAR",
+      "targets": { "easy": 5, "medium": 12, "hard": 25 },
+      "difficulties": ["easy", "medium", "hard"],
+      "minCityIndex": 0
     },
     {
-      "id": "bounty_run_expeditions",
-      "name": "City Commission",
-      "type": "expeditions",
-      "params": {
-        "runs": [
-          2,
-          3,
-          3,
-          4,
-          5
-        ]
-      }
+      "id": "tmpl_ruins_runs",
+      "name": "Conquer the Ruins",
+      "desc": "Complete {target} Ruins runs.",
+      "kind": "RUINS_RUN_CLEAR",
+      "targets": { "easy": 1, "medium": 2, "hard": 4 },
+      "difficulties": ["easy", "medium", "hard"],
+      "minCityIndex": 0
     },
     {
-      "id": "bounty_craft_items",
-      "name": "Workshop Order",
-      "type": "craft",
-      "params": {
-        "craftCount": [
-          5,
-          8,
-          10,
-          12,
-          15
-        ]
-      }
-    },
-    {
-      "id": "bounty_gain_mastery",
-      "name": "Refine Your Arts",
-      "type": "masteryGain",
-      "params": {
-        "levels": [
-          8,
-          10,
-          12,
-          14,
-          16
-        ]
-      }
+      "id": "tmpl_trial_clear",
+      "name": "Prove Your Worth",
+      "desc": "Clear the Gate Trial {target} times.",
+      "kind": "TRIAL_CLEAR",
+      "targets": { "easy": 1, "medium": 1, "hard": 2 },
+      "difficulties": ["easy", "medium", "hard"],
+      "minCityIndex": 0
     }
-  ],
-  "rewardsByCityIndex": {
-    "easy": {
-      "gold": [
-        150,
-        1200,
-        7000,
-        30000,
-        100000
-      ],
-      "merit": [
-        1,
-        1,
-        1,
-        2,
-        2
-      ],
-      "spiritStones": [
-        0,
-        0,
-        1,
-        4,
-        10
-      ]
-    },
-    "medium": {
-      "gold": [
-        700,
-        3500,
-        18000,
-        70000,
-        240000
-      ],
-      "merit": [
-        2,
-        2,
-        3,
-        4,
-        5
-      ],
-      "spiritStones": [
-        1,
-        2,
-        6,
-        18,
-        40
-      ]
-    },
-    "hard": {
-      "gold": [
-        1400,
-        10000,
-        40000,
-        150000,
-        520000
-      ],
-      "merit": [
-        3,
-        4,
-        5,
-        6,
-        8
-      ],
-      "spiritStones": [
-        2,
-        4,
-        10,
-        35,
-        90
-      ]
-    }
-  }
+  ]
 }

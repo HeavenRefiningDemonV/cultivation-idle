@@ -328,6 +328,107 @@
   gap: 12px;
 }
 
+.bountyBoardPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bountyBoardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  gap: 12px;
+}
+
+.bountyBoardTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bountyBoardSubtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.bountyBoardList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.bountyBoardCard {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.4);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bountyBoardCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bountyBoardCardTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.bountyBoardCardSubtitle {
+  font-size: 12px;
+  color: #a5b4fc;
+  margin-top: 2px;
+}
+
+.bountyBoardCardMeta {
+  font-size: 12px;
+  color: #cbd5e1;
+  text-align: right;
+}
+
+.bountyBoardCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.bountyBoardCardLine {
+  margin-top: 2px;
+}
+
+.bountyBoardCardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bountyBoardDevTools {
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  padding: 12px;
+}
+
+.bountyBoardDevTitle {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.bountyBoardDevButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .apothecaryPanelHeader {
   display: flex;
   justify-content: space-between;

@@ -42,7 +42,7 @@ export interface ValidatedContent {
   talisman_recipes: TalismanRecipesConfig['talismans'];
   apothecary_shops: ApothecaryShopDef[];
   expeditions: ExpeditionsConfig;
-  bounties: BountiesConfig['templates'];
+  bounties: BountiesConfig;
   heart_laws: HeartLawsConfig['heartLaws'];
   prestige_store: PrestigeStoreConfig['upgrades'];
 }
@@ -548,9 +548,11 @@ function validateExpeditions(config: LoadedContentRaw['expeditions']) {
 
 function validateBounties(config: LoadedContentRaw['bounties']) {
   assertObject(config, 'bounties.json root');
+  assertHasKey(config, 'version', 'bounties.json');
   assertHasKey(config, 'templates', 'bounties.json');
   assertArray(config.templates, 'bounties.json.templates');
-  return config.templates;
+  assertHasKey(config, 'rewardTiersByCityIndex', 'bounties.json');
+  return config as BountiesConfig;
 }
 
 function buildIdMap<T extends { id: string }>(items: T[]): Record<string, T> {
@@ -595,7 +597,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const talismanRecipes = validateTalismans(raw.talisman_recipes);
   const apothecaryShops = validateApothecary(raw.apothecary_shops, addErr);
   validateExpeditions(raw.expeditions);
-  const bountyTemplates = validateBounties(raw.bounties);
+  const bountyConfig = validateBounties(raw.bounties);
 
   // Build maps for cross references
   const cityMap = buildIdMap(cities);
@@ -610,7 +612,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const apothecaryMap = buildIdMap(apothecaryShops);
   const lawMap = buildIdMap(heartLaws);
   const prestigeMap = buildIdMap(prestige);
-  const bountyTemplateMap = buildIdMap(bountyTemplates);
+  const bountyTemplateMap = buildIdMap(bountyConfig.templates);
 
   // Cross references on cities
   cities.forEach((city) => {
@@ -773,7 +775,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     );
   });
 
-  bountyTemplates.forEach((template, idx) => {
+  bountyConfig.templates.forEach((template, idx) => {
     assert(typeof template.id === 'string', `bounties.templates[${idx}].id must be a string`);
   });
 
@@ -846,7 +848,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     talisman_recipes: talismanRecipes,
     apothecary_shops: apothecaryShops,
     expeditions: raw.expeditions,
-    bounties: bountyTemplates,
+    bounties: bountyConfig,
     heart_laws: heartLaws,
     prestige_store: prestige,
   };

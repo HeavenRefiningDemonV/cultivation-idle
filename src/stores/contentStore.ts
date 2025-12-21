@@ -51,6 +51,7 @@ interface ContentStoreState {
   getTechnique: (id: string) => TechniqueDef;
   getPavilion: (id: string) => PavilionDef | undefined;
   getApothecaryShop: (id: string) => ApothecaryShopDef | undefined;
+  getBountyConfig: () => ValidatedContent['bounties'];
 }
 
 const emptyMaps: ContentMaps = {
@@ -224,6 +225,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       throw new Error('[ContentStore] Content not loaded');
     }
     return maps.apothecariesById[id];
+  },
+
+  getBountyConfig: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw?.bounties) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return raw.bounties;
   },
 }));
 

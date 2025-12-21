@@ -205,6 +205,33 @@ export interface SaveTechniqueLoadout {
   };
 }
 
+export interface SaveRewardBundle {
+  currencies?: {
+    gold?: string;
+    spiritStones?: string;
+    merit?: string;
+  };
+  items?: Array<{ itemId: string; qty: number }>;
+  techniqueFragments?: Array<{ techId: string; qty: number }>;
+  comprehension?: number;
+}
+
+export interface SaveBountyInstance {
+  instanceId: string;
+  cityId: string;
+  cityIndex: number;
+  templateId: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  kind: 'OUTSKIRTS_KILL' | 'OUTSKIRTS_BOSS_KILL' | 'RUINS_ROOM_CLEAR' | 'RUINS_RUN_CLEAR' | 'TRIAL_CLEAR';
+  title: string;
+  description: string;
+  progress: number;
+  target: number;
+  claimed: boolean;
+  rewards: SaveRewardBundle;
+  createdAt: number;
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -283,6 +310,11 @@ export interface SaveData {
       }
     >;
     initializedFromContent?: boolean;
+  };
+
+  bountyState?: {
+    activeByCityId: Record<string, SaveBountyInstance[]>;
+    lastRefreshAtByCityId: Record<string, number>;
   };
 
   // Technique progression

@@ -16,6 +16,7 @@ import { ForgePanel } from './ForgePanel';
 import { TalismanPanel } from './TalismanPanel';
 import { ManualPavilionPanel } from './ManualPavilionPanel';
 import { MeditationHallPanel } from './MeditationHallPanel';
+import { BountyBoardPanel } from './BountyBoardPanel';
 import './WorldScreen.scss';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
@@ -570,6 +571,8 @@ export function WorldScreen() {
                     <ForgePanel cityId={selectedCity.id} />
                   ) : selectedModuleKey === 'talismanStudio' ? (
                     <TalismanPanel cityId={selectedCity.id} />
+                  ) : selectedModuleKey === 'bounties' ? (
+                    <BountyBoardPanel />
                   ) : selectedModuleKey === 'ruins' && ruinDef ? (
                     <div className={'worldScreenPlaceholder'}>
                       <div className={'worldScreenPlaceholderHeader'}>

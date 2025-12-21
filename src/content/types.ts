@@ -290,11 +290,36 @@ export interface ExpeditionsConfig {
   cityYields: Array<Record<string, unknown>>;
 }
 
+export type BountyDifficulty = 'easy' | 'medium' | 'hard';
+
+export type BountyRewardRange = [number, number];
+
+export interface BountyRewardTier {
+  gold: BountyRewardRange;
+  merit: BountyRewardRange;
+  spiritStones: BountyRewardRange;
+}
+
+export type BountyRewardTiersByDifficulty = Record<BountyDifficulty, BountyRewardTier>;
+
+export type BountyRewardTiersByCityIndex = Record<string, BountyRewardTiersByDifficulty>;
+
+export interface BountyTemplate {
+  id: string;
+  name: string;
+  desc: string;
+  kind: string;
+  targets: Record<BountyDifficulty, number>;
+  difficulties: BountyDifficulty[];
+  minCityIndex: number;
+}
+
 export interface BountiesConfig {
-  version?: string;
-  rules?: unknown;
-  templates: Array<{ id: string; name: string; type: string; params?: unknown }>;
-  rewardsByCityIndex?: unknown;
+  version?: number;
+  refreshCooldownSeconds: number;
+  difficulties: BountyDifficulty[];
+  rewardTiersByCityIndex: BountyRewardTiersByCityIndex;
+  templates: BountyTemplate[];
 }
 
 export interface HeartLawsConfig {

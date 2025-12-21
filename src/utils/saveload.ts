@@ -16,6 +16,7 @@ import { useTechCollectionStore } from '../stores/techCollectionStore';
 import { useProfessionStore } from '../stores/professionStore';
 import { useEquipmentStore } from '../stores/equipmentStore';
 import { useBuffStore } from '../stores/buffStore';
+import { useBountyStore } from '../stores/bountyStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -51,6 +52,7 @@ function gatherGameState(): SaveData {
   const professionState = useProfessionStore.getState();
   const equipmentState = useEquipmentStore.getState();
   const buffState = useBuffStore.getState();
+  const bountyState = useBountyStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -107,6 +109,11 @@ function gatherGameState(): SaveData {
       selectedModuleByCity: { ...cityState.selectedModuleByCity },
       cityFlagsById: { ...cityState.cityFlagsById },
       initializedFromContent: cityState.initializedFromContent,
+    },
+
+    bountyState: {
+      activeByCityId: { ...bountyState.activeByCityId },
+      lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
     },
 
     techniqueState: {
@@ -266,6 +273,12 @@ function validateSaveData(data: unknown): data is SaveData {
       if (invalid) {
         console.warn('[SaveLoad] cityState invalid in save, ignoring section');
       }
+    }
+
+    if ('bountyState' in record && record.bountyState) {
+      const bs = record.bountyState as Record<string, unknown>;
+      if (typeof bs.activeByCityId !== 'object' || bs.activeByCityId === null) return false;
+      if (typeof bs.lastRefreshAtByCityId !== 'object' || bs.lastRefreshAtByCityId === null) return false;
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -659,6 +672,12 @@ function applySaveData(saveData: SaveData): void {
       });
     }
 
+    const bountyState = saveData.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
+    useBountyStore.setState({
+      activeByCityId: { ...bountyState.activeByCityId },
+      lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
+    });
+
     if (saveData.ruinsState?.progressByRuinId) {
       useRuinsStore.setState({
         progressByRuinId: saveData.ruinsState.progressByRuinId,
@@ -823,6 +842,7 @@ export function deleteSave(): boolean {
     useProfessionStore.setState({ alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
     useEquipmentStore.getState().hardResetEquipment();
     useBuffStore.getState().hardResetBuffs();
+    useBountyStore.getState().hardResetBounties();
 
     try {
       useTechCollectionStore.getState().hardReset();
