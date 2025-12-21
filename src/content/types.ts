@@ -1,3 +1,5 @@
+import type { RewardBundle } from '../systems/rewards';
+
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;
 
@@ -284,10 +286,35 @@ export interface ApothecaryShopsConfig {
 }
 
 export interface ExpeditionsConfig {
-  version?: string;
-  durations: Array<{ id: string; minutes: number; efficiencyMult?: number }>;
-  types: Array<{ id: string; name: string; yieldsTag: string }>;
-  cityYields: Array<Record<string, unknown>>;
+  version?: string | number;
+  durations: ExpeditionDurationDef[];
+  types: ExpeditionTypeDef[];
+  cityYields: ExpeditionCityYieldDef[];
+}
+
+export interface ExpeditionDurationDef {
+  id: string;
+  label: string;
+  seconds: number;
+  efficiencyMult?: number;
+}
+
+export interface ExpeditionTypeDef {
+  id: string;
+  name: string;
+  yieldTags: string[];
+  description?: string;
+}
+
+export interface ExpeditionCityYieldDef {
+  cityIndex: number;
+  yieldsByTag: Record<string, RewardBundle>;
+}
+
+export interface ExpeditionsContent {
+  durations: ExpeditionDurationDef[];
+  types: ExpeditionTypeDef[];
+  cityYields: ExpeditionCityYieldDef[];
 }
 
 export type BountyDifficulty = 'easy' | 'medium' | 'hard';

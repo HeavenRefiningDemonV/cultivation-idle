@@ -8,7 +8,10 @@ import type {
   CurrencyKey,
   EconomyConfig,
   EnemiesConfig,
-  ExpeditionsConfig,
+  ExpeditionsContent,
+  ExpeditionCityYieldDef,
+  ExpeditionDurationDef,
+  ExpeditionTypeDef,
   ForgeBlueprintsConfig,
   HeartLawsConfig,
   ItemsConfig,
@@ -41,7 +44,7 @@ export interface ValidatedContent {
   runes: RunesConfig['runes'];
   talisman_recipes: TalismanRecipesConfig['talismans'];
   apothecary_shops: ApothecaryShopDef[];
-  expeditions: ExpeditionsConfig;
+  expeditions: ExpeditionsContent;
   bounties: BountiesConfig;
   heart_laws: HeartLawsConfig['heartLaws'];
   prestige_store: PrestigeStoreConfig['upgrades'];
@@ -535,15 +538,96 @@ function validateApothecary(
   return normalized;
 }
 
-function validateExpeditions(config: LoadedContentRaw['expeditions']) {
-  assertObject(config, 'expeditions.json root');
-  assertHasKey(config, 'durations', 'expeditions.json');
-  assertHasKey(config, 'types', 'expeditions.json');
-  assertHasKey(config, 'cityYields', 'expeditions.json');
-  assertArray(config.durations, 'expeditions.json.durations');
-  assertArray(config.types, 'expeditions.json.types');
-  assertArray(config.cityYields, 'expeditions.json.cityYields');
-  return config;
+const EMPTY_EXPEDITIONS: ExpeditionsContent = {
+  durations: [],
+  types: [],
+  cityYields: [],
+};
+
+function validateExpeditions(config: LoadedContentRaw['expeditions']): ExpeditionsContent {
+  const errors: string[] = [];
+
+  if (!config || typeof config !== 'object') {
+    console.warn('[ContentValidation] expeditions.json missing or invalid root.');
+    return EMPTY_EXPEDITIONS;
+  }
+
+  const durations = Array.isArray(config.durations) ? (config.durations as ExpeditionDurationDef[]) : null;
+  const types = Array.isArray(config.types) ? (config.types as ExpeditionTypeDef[]) : null;
+  const cityYields = Array.isArray(config.cityYields) ? (config.cityYields as ExpeditionCityYieldDef[]) : null;
+
+  if (!durations) errors.push('expeditions.json.durations must be an array');
+  if (!types) errors.push('expeditions.json.types must be an array');
+  if (!cityYields) errors.push('expeditions.json.cityYields must be an array');
+
+  if (durations) {
+    const ids = new Set<string>();
+    durations.forEach((duration, idx) => {
+      if (!duration || typeof duration !== 'object') {
+        errors.push(`durations[${idx}] must be an object`);
+        return;
+      }
+      if (typeof duration.id !== 'string' || !duration.id.trim()) {
+        errors.push(`durations[${idx}].id must be a string`);
+      } else if (ids.has(duration.id)) {
+        errors.push(`durations contains duplicate id ${duration.id}`);
+      } else {
+        ids.add(duration.id);
+      }
+      if (typeof duration.seconds !== 'number' || duration.seconds <= 0) {
+        errors.push(`durations[${idx}].seconds must be > 0`);
+      }
+      if (!duration.label || typeof duration.label !== 'string') {
+        duration.label = duration.id ?? `Duration ${idx + 1}`;
+      }
+    });
+  }
+
+  if (types) {
+    const ids = new Set<string>();
+    types.forEach((entry, idx) => {
+      if (!entry || typeof entry !== 'object') {
+        errors.push(`types[${idx}] must be an object`);
+        return;
+      }
+      if (typeof entry.id !== 'string' || !entry.id.trim()) {
+        errors.push(`types[${idx}].id must be a string`);
+      } else if (ids.has(entry.id)) {
+        errors.push(`types contains duplicate id ${entry.id}`);
+      } else {
+        ids.add(entry.id);
+      }
+      if (!Array.isArray(entry.yieldTags) || entry.yieldTags.length === 0) {
+        errors.push(`types[${idx}].yieldTags must be a non-empty array`);
+      }
+    });
+  }
+
+  if (cityYields) {
+    cityYields.forEach((entry, idx) => {
+      if (!entry || typeof entry !== 'object') {
+        errors.push(`cityYields[${idx}] must be an object`);
+        return;
+      }
+      if (typeof entry.cityIndex !== 'number' || entry.cityIndex < 0) {
+        errors.push(`cityYields[${idx}].cityIndex must be a non-negative number`);
+      }
+      if (!entry.yieldsByTag || typeof entry.yieldsByTag !== 'object') {
+        errors.push(`cityYields[${idx}].yieldsByTag must be an object`);
+      }
+    });
+  }
+
+  if (errors.length > 0) {
+    console.warn('[ContentValidation] Expeditions content invalid:', errors.join('; '));
+    return EMPTY_EXPEDITIONS;
+  }
+
+  return {
+    durations: durations ?? [],
+    types: types ?? [],
+    cityYields: cityYields ?? [],
+  };
 }
 
 function validateBounties(config: LoadedContentRaw['bounties']) {
@@ -596,7 +680,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const forgeBlueprints = validateForge(raw.forge_blueprints);
   const talismanRecipes = validateTalismans(raw.talisman_recipes);
   const apothecaryShops = validateApothecary(raw.apothecary_shops, addErr);
-  validateExpeditions(raw.expeditions);
+  const expeditions = validateExpeditions(raw.expeditions);
   const bountyConfig = validateBounties(raw.bounties);
 
   // Build maps for cross references
@@ -858,7 +942,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     runes,
     talisman_recipes: talismanRecipes,
     apothecary_shops: apothecaryShops,
-    expeditions: raw.expeditions,
+    expeditions,
     bounties: bountyConfig,
     heart_laws: heartLaws,
     prestige_store: prestige,

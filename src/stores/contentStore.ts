@@ -52,6 +52,10 @@ interface ContentStoreState {
   getPavilion: (id: string) => PavilionDef | undefined;
   getApothecaryShop: (id: string) => ApothecaryShopDef | undefined;
   getBountyConfig: () => ValidatedContent['bounties'];
+  getExpeditionsContent: () => ValidatedContent['expeditions'];
+  getExpeditionDurations: () => ValidatedContent['expeditions']['durations'];
+  getExpeditionTypes: () => ValidatedContent['expeditions']['types'];
+  getExpeditionCityYields: (cityIndex: number) => ValidatedContent['expeditions']['cityYields'][number] | null;
 }
 
 const emptyMaps: ContentMaps = {
@@ -233,6 +237,27 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       throw new Error('[ContentStore] Content not loaded');
     }
     return raw.bounties;
+  },
+
+  getExpeditionsContent: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw?.expeditions) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return raw.expeditions;
+  },
+
+  getExpeditionDurations: () => {
+    return get().getExpeditionsContent().durations ?? [];
+  },
+
+  getExpeditionTypes: () => {
+    return get().getExpeditionsContent().types ?? [];
+  },
+
+  getExpeditionCityYields: (cityIndex: number) => {
+    const content = get().getExpeditionsContent();
+    return content.cityYields.find((entry) => entry.cityIndex === cityIndex) ?? null;
   },
 }));
 

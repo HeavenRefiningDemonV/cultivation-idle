@@ -68,7 +68,22 @@ async function loadFile<T>(fileName: string): Promise<T> {
   }
 }
 
+async function loadOptionalFile<T>(fileName: string, fallback: T): Promise<T> {
+  try {
+    return await loadFile(fileName);
+  } catch (error) {
+    console.warn(`[Content] Optional content missing or invalid: ${fileName}`, error);
+    return fallback;
+  }
+}
+
 export async function loadAllContent(): Promise<LoadedContentRaw> {
+  const emptyExpeditions: ExpeditionsConfig = {
+    durations: [],
+    types: [],
+    cityYields: [],
+  };
+
   const files = {
     economy: 'economy.json',
     cities: 'cities.json',
@@ -92,7 +107,10 @@ export async function loadAllContent(): Promise<LoadedContentRaw> {
 
   const entries = await Promise.all(
     Object.entries(files).map(async ([key, fileName]) => {
-      const data = await loadFile(fileName as string);
+      const data =
+        key === 'expeditions'
+          ? await loadOptionalFile(fileName as string, emptyExpeditions)
+          : await loadFile(fileName as string);
       return [key, data] as const;
     }),
   );
