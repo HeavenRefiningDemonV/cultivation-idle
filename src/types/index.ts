@@ -353,6 +353,21 @@ export interface SaveData {
     };
   };
 
+  buffState?: {
+    activeTalismans: Array<{
+      id: string;
+      itemId: string;
+      startedAt: number;
+      endsAt: number;
+      bonuses: {
+        goldDropBonusPct?: number;
+        matDropBonusPct?: number;
+        fragmentDropBonusPct?: number;
+        damageBonusPct?: number;
+      };
+    }>;
+  };
+
   // Profession state
   professionState?: {
     alchemyQueue: Array<{

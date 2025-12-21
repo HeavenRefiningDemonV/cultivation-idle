@@ -3,6 +3,7 @@ import { formatPrice, getItemDef, useContentStore } from '../../stores/contentSt
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useProfessionStore } from '../../stores/professionStore';
 import { greaterThanOrEqualTo, multiply } from '../../utils/numbers';
+import { useBuffStore } from '../../stores/buffStore';
 
 interface TalismanPanelProps {
   cityId: string | null;
@@ -54,6 +55,8 @@ export function TalismanPanel({ cityId }: TalismanPanelProps) {
   const startTalisman = useProfessionStore((state) => state.startTalisman);
   const claimTalisman = useProfessionStore((state) => state.claimTalisman);
   const queue = useProfessionStore((state) => state.talismanQueue);
+  const activeTalismans = useBuffStore((state) => state.activeTalismans);
+  const purgeExpired = useBuffStore((state) => state.purgeExpired);
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
@@ -64,6 +67,11 @@ export function TalismanPanel({ cityId }: TalismanPanelProps) {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
     return () => window.clearInterval(handle);
   }, []);
+
+  useEffect(() => {
+    const handle = window.setInterval(() => purgeExpired(Date.now()), 1000);
+    return () => window.clearInterval(handle);
+  }, [purgeExpired]);
 
   const visibleRecipes = useMemo(() => {
     if (!cityId) return recipes;
@@ -136,6 +144,48 @@ export function TalismanPanel({ cityId }: TalismanPanelProps) {
       </div>
 
       <div className={'talismanSections'}>
+        <div className={'talismanSection'}>
+          <div className={'talismanSectionHeader'}>
+            <div className={'talismanSectionTitle'}>Active Talismans</div>
+            <div className={'talismanSectionSub'}>Active bonuses (max per bonus type).</div>
+          </div>
+          {activeTalismans.length === 0 ? (
+            <div className={'talismanQueueEmpty'}>No active talismans.</div>
+          ) : (
+            <div className={'talismanQueueList'}>
+              {activeTalismans.map((entry) => {
+                const itemName = getItemDef(entry.itemId)?.name ?? entry.itemId;
+                const remainingMs = Math.max(0, entry.endsAt - now);
+                const bonuses = entry.bonuses;
+                const bonusParts = [
+                  bonuses.goldDropBonusPct ? `Gold +${Math.round(bonuses.goldDropBonusPct * 100)}%` : null,
+                  bonuses.matDropBonusPct ? `Mats +${Math.round(bonuses.matDropBonusPct * 100)}%` : null,
+                  bonuses.fragmentDropBonusPct
+                    ? `Fragments +${Math.round(bonuses.fragmentDropBonusPct * 100)}%`
+                    : null,
+                  bonuses.damageBonusPct ? `Damage +${Math.round(bonuses.damageBonusPct * 100)}%` : null,
+                ].filter(Boolean);
+
+                return (
+                  <div key={entry.id} className={'talismanQueueCard'}>
+                    <div className={'talismanQueueHeader'}>
+                      <div>
+                        <div className={'talismanQueueName'}>{itemName}</div>
+                        <div className={'talismanQueueMeta'}>
+                          {bonusParts.length > 0 ? bonusParts.join(' • ') : 'No bonuses'}
+                        </div>
+                      </div>
+                      <div className={'talismanQueueTiming'}>
+                        <div>Active</div>
+                        <div>{formatDuration(remainingMs)}</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
         <div className={'talismanSection'}>
           <div className={'talismanSectionHeader'}>
             <div className={'talismanSectionTitle'}>Recipes</div>

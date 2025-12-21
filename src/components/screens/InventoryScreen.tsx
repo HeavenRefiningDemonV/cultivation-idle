@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef } from '../../stores/contentStore';
+import { useBuffStore } from '../../stores/buffStore';
 import './InventoryScreen.scss';
 
 type DisplayItem = {
@@ -23,6 +24,10 @@ function CurrencyRow({ label, value }: { label: string; value: string }) {
 export default function InventoryScreen() {
   const currencies = useInventoryStore((state) => state.currencies);
   const items = useInventoryStore((state) => state.items);
+  const activateTalisman = useBuffStore((state) => state.activateTalisman);
+  const [statusByItem, setStatusByItem] = useState<Record<string, { type: 'success' | 'error'; message: string }>>(
+    {},
+  );
 
   const displayItems = useMemo<DisplayItem[]>(() => {
     return Object.entries(items)
@@ -72,6 +77,34 @@ export default function InventoryScreen() {
                   ) : null}
                 </div>
                 <div className="inventory-item-id">{item.itemId}</div>
+                {item.category === 'talisman' && item.qty > 0 && (
+                  <div className="inventory-item-actions">
+                    <button
+                      className="inventory-item-use"
+                      onClick={() => {
+                        const result = activateTalisman(item.itemId);
+                        if (!result.ok) {
+                          setStatusByItem((prev) => ({
+                            ...prev,
+                            [item.itemId]: { type: 'error', message: result.error },
+                          }));
+                          return;
+                        }
+                        setStatusByItem((prev) => ({
+                          ...prev,
+                          [item.itemId]: { type: 'success', message: 'Activated talisman' },
+                        }));
+                      }}
+                    >
+                      Use
+                    </button>
+                  </div>
+                )}
+                {statusByItem[item.itemId] && (
+                  <div className={`inventory-item-status inventory-item-status--${statusByItem[item.itemId].type}`}>
+                    {statusByItem[item.itemId].message}
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -15,6 +15,7 @@ import { useShopStore } from '../stores/shopStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
 import { useProfessionStore } from '../stores/professionStore';
 import { useEquipmentStore } from '../stores/equipmentStore';
+import { useBuffStore } from '../stores/buffStore';
 import { getDayKey } from './dayKey';
 
 /**
@@ -49,6 +50,7 @@ function gatherGameState(): SaveData {
   const techCollectionState = useTechCollectionStore.getState();
   const professionState = useProfessionStore.getState();
   const equipmentState = useEquipmentStore.getState();
+  const buffState = useBuffStore.getState();
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -135,6 +137,10 @@ function gatherGameState(): SaveData {
       equippedWeaponId: equipmentState.equippedWeaponId,
       equippedAccessoryId: equipmentState.equippedAccessoryId,
       refineLevelBySlot: { ...equipmentState.refineLevelBySlot },
+    },
+
+    buffState: {
+      activeTalismans: buffState.activeTalismans.map((entry) => ({ ...entry })),
     },
 
     techCollectionState: {
@@ -361,6 +367,20 @@ function validateSaveData(data: unknown): data is SaveData {
         | undefined;
       if (refine) {
         if (typeof refine.weapon !== 'number' || typeof refine.accessory !== 'number') return false;
+      }
+    }
+
+    if ('buffState' in record && record.buffState) {
+      const bs = record.buffState as Record<string, unknown>;
+      if (!Array.isArray((bs as { activeTalismans?: unknown }).activeTalismans)) return false;
+      const active = (bs as { activeTalismans: Array<Record<string, unknown>> }).activeTalismans;
+      for (const entry of active) {
+        if (!entry || typeof entry !== 'object') return false;
+        if (typeof entry.id !== 'string') return false;
+        if (typeof entry.itemId !== 'string') return false;
+        if (typeof entry.startedAt !== 'number') return false;
+        if (typeof entry.endsAt !== 'number') return false;
+        if ('bonuses' in entry && entry.bonuses !== undefined && typeof entry.bonuses !== 'object') return false;
       }
     }
 
@@ -667,6 +687,14 @@ function applySaveData(saveData: SaveData): void {
       },
     });
 
+    const buffState = saveData.buffState ?? { activeTalismans: [] };
+    useBuffStore.setState({
+      activeTalismans: Array.isArray(buffState.activeTalismans)
+        ? buffState.activeTalismans.map((entry) => ({ ...entry }))
+        : [],
+    });
+    useBuffStore.getState().purgeExpired(Date.now());
+
     const professionState = saveData.professionState ?? {
       alchemyQueue: [],
       talismanQueue: [],
@@ -794,6 +822,7 @@ export function deleteSave(): boolean {
 
     useProfessionStore.setState({ alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
     useEquipmentStore.getState().hardResetEquipment();
+    useBuffStore.getState().hardResetBuffs();
 
     try {
       useTechCollectionStore.getState().hardReset();
@@ -874,6 +903,12 @@ export function deleteSaveAndHardReset(): void {
     useEquipmentStore.getState().hardResetEquipment();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset equipment state', error);
+  }
+
+  try {
+    useBuffStore.getState().hardResetBuffs();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset buff state', error);
   }
 
   try {
