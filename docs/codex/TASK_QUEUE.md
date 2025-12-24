@@ -1,0 +1,231 @@
+# Codex Task Queue (Parts A–I)
+
+Use these checklists to drive scoped implementation prompts for the overhaul spec in `docs/Part A — Manual Pavilion and Combat Techniques Overhaul.txt`. Each sub-task is sized for ~1 hour of focused work.
+
+## Part A — Manual Pavilion and Combat Techniques Overhaul
+- [ ] Pavilion stock & shelves UI refresh
+  - Target: `src/features/manuals/`, `src/content/manuals/`, `src/ui/shop/`
+  - Acceptance criteria:
+    - Visible shelf/grid presentation with filters and detail panel per spec (common/advanced/rare/featured).
+    - Stock shows timer + pity counters and explains blind bundle as optional.
+    - Wishlist/pin indicator appears on matching manuals.
+    - Locked (sealed) manuals visibly tied to realm gating.
+    - Purchases flow through pavilion store/service without bypassing reward pipeline.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Technique lifecycle clarity (buy → study → equip)
+  - Target: `src/features/techniques/`, `src/stores/techniquesStore.ts`, `src/ui/loadouts/`
+  - Acceptance criteria:
+    - Manual consumption teaches techniques and surfaces the 3-step promise in UI copy/tooltips.
+    - Equip/loadout screen shows slots by type (active/passive/ultimate) with grade/rarity visuals.
+    - Mastery/rank/trait preview appears on technique detail; duplicates convert to fragments correctly.
+    - Combat preview uses CombatStore state only (no duplicate combat logic).
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Pavilion refresh, pity, and inquiry mechanics
+  - Target: `src/services/pavilionService.ts`, `src/stores/pavilionStore.ts`, `src/ui/pavilion/`
+  - Acceptance criteria:
+    - Free/paid refresh timers persist across sessions and show history of last refreshes.
+    - Pity counters for featured shelf track rolls and display thresholds (epic/legendary).
+    - Inquiry/wishlist focus effects influence next refresh according to content settings.
+    - All rewards/grants use `RewardService.grantRewards` and respect ActivityStore gating.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Content validation for manuals and techniques
+  - Target: `src/content/validation/`, `src/content/manuals/`, `src/scripts/`
+  - Acceptance criteria:
+    - Validator checks manual pools, rarity weights, realm locks, and technique references against content packs.
+    - Reports missing icons/IDs and invalid trait/rune references.
+    - Validations run in CI/local script with clear output and non-zero exit on failure.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part B — Cultivation Core Overhaul
+- [ ] Start-of-life path & heart law selection flow
+  - Target: `src/features/new-life/`, `src/ui/modals/`, `src/stores/profileStore.ts`
+  - Acceptance criteria:
+    - Reincarnate flow forces Path and Heart Law selection before gameplay resumes.
+    - Cards explain identity/playstyle; disabled options show prerequisites.
+    - Selected Heart Law initializes cultivation state and ActivityStore switches to cultivate.
+    - Flow persists selections in save data and provides tutorial tooltips.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Cultivation tab rework with active heart law panel
+  - Target: `src/features/cultivation/`, `src/ui/cultivation/`, `src/stores/cultivationStore.ts`
+  - Acceptance criteria:
+    - Cultivation tab hosts heart law progression, current activity status, and breathing/insight feedback.
+    - Chapter/verse progression shows milestones, timers, and expected gains.
+    - Switching heart laws handles confirmation, costs, and state resets per spec.
+    - ActivityStore enforces single foreground activity and surfaces progress bars.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Heart law mastery, breakthroughs, and rewards
+  - Target: `src/services/cultivationService.ts`, `src/content/heartLaws/`, `src/ui/cultivation/milestones`
+  - Acceptance criteria:
+    - Mastery gain ties to cultivation time and triggers chapter breakthroughs with UI celebration.
+    - Realm gating integrates with sealed manuals/techniques and unlocks new chapters.
+    - Rewards, buffs, and currencies from breakthroughs routed through `RewardService.grantRewards`.
+    - Offline progress applies to cultivation timers but not combat.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part C — Combat Experience Overhaul (Outskirts + Trials + Ruins)
+- [ ] Activity gating and queue handling for combat locales
+  - Target: `src/stores/activityStore.ts`, `src/features/outskirts/`, `src/features/trials/`, `src/features/ruins/`
+  - Acceptance criteria:
+    - Outskirts, Trials, and Ruins launch via ActivityStore with one foreground slot.
+    - Queues and timers persist offline (except combat simulation itself).
+    - Entry costs and realm locks enforced via content data.
+    - Completion emits combat resolution events consumed by other systems (loot, quests, mastery).
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Combat viewer and feedback upgrades
+  - Target: `src/ui/combat/`, `src/features/combat/`, `src/stores/combatStore.ts`
+  - Acceptance criteria:
+    - Auto-combat viewer shows HP, timers, TTK estimates, loot ticker, and ability cues.
+    - Loadouts from Techniques store reflected in simulation without duplicated logic.
+    - Fail/success states surface recommended next actions (manuals, heart law, upgrades).
+    - Motion/animations use Framer Motion only where clarity improves.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Reward piping and pity/guarantee hooks for combat drops
+  - Target: `src/services/rewardService.ts`, `src/content/combat/`, `src/ui/loot/`
+  - Acceptance criteria:
+    - Combat resolution grants loot via `grantRewards(bundle, reason)` with reasons for analytics.
+    - Pity/guarantee counters for Trials/Ruins tracked and displayed.
+    - Drop tables reference content IDs validated against content packs.
+    - Offline progress never simulates combat but does process queued completions.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part D — Apothecary Overhaul
+- [ ] Apothecary UI and recipe discovery
+  - Target: `src/features/apothecary/`, `src/content/recipes/`, `src/ui/apothecary/`
+  - Acceptance criteria:
+    - Town apothecary presents clear tiers (basic/advanced/rare) with locked/visible recipes.
+    - Recipe cards show inputs, outputs, crit chances, and required reputation/realm.
+    - Discovery hints and flavor text align with cultivation theming.
+    - Purchases/crafting costs validate against inventory via reward service pipeline.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Brewing/crafting loop and idle progression
+  - Target: `src/stores/apothecaryStore.ts`, `src/services/craftingService.ts`, `src/ui/timers/`
+  - Acceptance criteria:
+    - Brewing runs as background queue respecting ActivityStore rules; timers persist offline.
+    - Outputs/items granted through `RewardService.grantRewards` with reasons.
+    - Failure/success/crit outcomes surfaced in UI log with tooltips.
+    - Queue management supports reordering/cancel with refunds per spec.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Ingredient sourcing and economy hooks
+  - Target: `src/content/resources/`, `src/features/gathering/`, `src/services/meritService.ts`
+  - Acceptance criteria:
+    - Ingredient drop tables connect to expeditions/bounties with clear sourcing labels.
+    - Merit/reputation gates enforced for special recipes.
+    - Content validation flags missing resource IDs or circular refs.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part E — Crafting Overhaul: Alchemy Hall + Artifact Forge
+- [ ] Alchemy Hall minigame/light-interaction flow
+  - Target: `src/features/alchemyHall/`, `src/ui/alchemy/`, `src/stores/alchemyStore.ts`
+  - Acceptance criteria:
+    - Players can perform light interaction (channeling/breath pacing) that influences outcome without breaking idle play.
+    - UI shows progress, risks, and rewards with clear feedback beats.
+    - Activity respects single foreground rule and pauses correctly.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Artifact Forge item crafting and rerolls
+  - Target: `src/features/artifactForge/`, `src/content/artifacts/`, `src/services/artifactService.ts`
+  - Acceptance criteria:
+    - Forge supports deterministic base crafting plus reroll/affix mechanics tied to rarity.
+    - UI shows sockets/trait slots scaling by grade; sealed slots display requirements.
+    - All material consumption and outputs use reward service pipeline.
+    - Validation catches invalid affix IDs and missing art references.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Shared crafting UX patterns
+  - Target: `src/ui/components/`, `src/ui/steps/`, `src/styles/`
+  - Acceptance criteria:
+    - Common panels for timers, progress, and confirmations reused by Apothecary/Alchemy/Forge.
+    - Accessibility primitives from Headless UI applied consistently.
+    - Animation/feedback patterns documented for reuse.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part F — Bounties, Expeditions, and Global UI/UX
+- [ ] Bounty board clarity and pacing
+  - Target: `src/features/bounties/`, `src/content/bounties/`, `src/ui/bounties/`
+  - Acceptance criteria:
+    - Board lists tiers, timers, and rewards with recommended power and realm locks.
+    - Turn-in flow emphasizes reward reasons and uses `grantRewards`.
+    - Reputation/merit tie-ins surfaced; pity/guarantees for rare bounties displayed.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Expedition planning and offline progress
+  - Target: `src/features/expeditions/`, `src/stores/expeditionStore.ts`, `src/ui/expeditions/`
+  - Acceptance criteria:
+    - Expedition planner shows slots, travel time, risk/reward, and element/path preferences.
+    - Offline progress resolves timers and grants rewards on return; combat is not simulated offline.
+    - Failure states and injury/debt hooks represented per spec.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Global navigation and status surfaces
+  - Target: `src/app/`, `src/ui/layout/`, `src/ui/status/`
+  - Acceptance criteria:
+    - City-hub unified navigation with clear “current activity” indicator.
+    - Always-visible progress indicators (timers, queues, loot ticker) without modal hunting.
+    - Notifications/toasts highlight recent rewards and suggested next actions.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part G — Reward Cadence & Economy Tuning
+- [ ] Reward pipeline consistency and audit
+  - Target: `src/services/rewardService.ts`, `src/content/rewards/`, `src/utils/rewardTypes.ts`
+  - Acceptance criteria:
+    - Single `grantRewards(bundle, reason)` path handles combat, profession, cultivation, and pavilion rewards.
+    - Reasons enumerated for analytics; duplicate math removed from features.
+    - Reward bundles validate currency/item IDs and pity counters.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Economy pacing & sinks implementation
+  - Target: `src/content/economy/`, `src/services/economyService.ts`, `src/ui/economy/`
+  - Acceptance criteria:
+    - Costs for manuals, crafting, refreshes, and bounties align to spec tables.
+    - Gold/spirit stone/merit sinks surfaced with ETA-to-goal calculators.
+    - UI communicates pity, focus, and conversion options that mitigate RNG pain.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Progression rewards & celebration beats
+  - Target: `src/ui/toasts/`, `src/ui/celebrations/`, `src/services/progressionService.ts`
+  - Acceptance criteria:
+    - Breakthroughs, chapter unlocks, and rare drops trigger celebratory UI without blocking idle loops.
+    - Reward recap panels show source + reason for each grant.
+    - Works across manual pavilion, cultivation, combat, and crafting contexts.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part H — Frontend Architecture Overhaul and Execution Plan
+- [ ] App shell, layout, and routing cleanup
+  - Target: `src/app/`, `src/ui/layout/`, `src/ui/navigation/`
+  - Acceptance criteria:
+    - Single city-hub layout with persistent nav, status rail, and activity header.
+    - Routes/pages align to features (pavilion, cultivation, combat, professions) with consistent scaffolding.
+    - Loading/error boundaries standardized.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] State architecture and store boundaries
+  - Target: `src/stores/`, `src/services/`, `src/utils/storeHelpers.ts`
+  - Acceptance criteria:
+    - Combat logic confined to CombatStore; other stores react via events.
+    - ActivityStore mediates all foreground tasks; offline progress processed centrally.
+    - Selector-based subscriptions documented and applied to avoid rerenders.
+    - Save/load pipeline clearly owns persistence and versioning.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Content-driven UI and validation hooks
+  - Target: `src/content/`, `src/services/contentService.ts`, `src/ui/content/`
+  - Acceptance criteria:
+    - Content packs drive shelves, heart laws, recipes, bounties, and expedition options with schema validation.
+    - Missing/invalid IDs logged and surfaced in dev builds.
+    - Developer documentation notes how to extend content safely.
+  - Verification commands: `npm run typecheck`, `npm run build`
+
+## Part I — Validation, Telemetry, and Proof the Game Is No Longer Confusing
+- [ ] Validation suite and CI hooks
+  - Target: `src/scripts/validation/`, `src/content/`, `.github/workflows/`
+  - Acceptance criteria:
+    - Scripts check content cross-references, pity counters, and reward bundles.
+    - CI workflow runs validation + typecheck + build; fails on invalid content.
+    - Dev command documented in README/AGENTS for local runs.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] Telemetry events and funnels
+  - Target: `src/services/telemetryService.ts`, `src/utils/events.ts`, `src/features/*`
+  - Acceptance criteria:
+    - Events capture selection completion (path/heart law/manual equip), combat outcomes, and reward grants with reasons.
+    - Funnels for confusion metrics (manual understanding, heart law comprehension) aligned to spec KPIs.
+    - Telemetry hooks are passive (no UI blocking) and feature-flagged for local/dev.
+  - Verification commands: `npm run typecheck`, `npm run build`
+- [ ] UX proof and tutorialization
+  - Target: `src/ui/tutorials/`, `src/ui/tooltips/`, `src/services/onboardingService.ts`
+  - Acceptance criteria:
+    - Guided prompts/tooltips answer the core mental model questions within 60 seconds for new players.
+    - Tutorials emphasize one-foreground-activity rule and reward sources.
+    - Success criteria recorded (completion rates, dismissals) via telemetry.
+  - Verification commands: `npm run typecheck`, `npm run build`
