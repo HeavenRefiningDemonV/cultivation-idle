@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { GameEvents } from '../services/events/GameEvents';
 import { buildInitialStock, refreshStock as generateRefresh } from '../features/manuals/pavilionStockGenerator';
 import type { ManualPavilionSaveState, PavilionStockState } from '../features/manuals/pavilionStockTypes';
+import { useContentStore } from './contentStore';
 
 interface ManualPavilionStoreState extends ManualPavilionSaveState {
   ensureStock: (pavilionId: string, now?: number) => void;
@@ -32,6 +33,8 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
     stockByPavilionId: {},
 
     ensureStock: (pavilionId: string, now = Date.now()) => {
+      const content = useContentStore.getState();
+      if (!content.isLoaded || !content.maps.pavilionsById[pavilionId]) return;
       if (get().stockByPavilionId[pavilionId]) return;
       const stock = buildInitialStock(pavilionId, now);
       set((state) => {
@@ -40,6 +43,10 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
     },
 
     refreshStock: (pavilionId: string, now = Date.now()) => {
+      const content = useContentStore.getState();
+      if (!content.isLoaded || !content.maps.pavilionsById[pavilionId]) {
+        return { ok: false, reason: 'content_loading' };
+      }
       const existing = get().stockByPavilionId[pavilionId];
       if (!existing) {
         get().ensureStock(pavilionId, now);

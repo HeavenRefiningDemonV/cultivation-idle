@@ -3,6 +3,7 @@ import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useBountyStore } from '../../stores/bountyStore';
 import type { RewardBundle } from '../../services/rewards';
+import { formatDurationHMS } from '../../utils/timeFormat';
 
 function formatRewards(bundle: RewardBundle): string {
   const parts: string[] = [];
@@ -11,15 +12,6 @@ function formatRewards(bundle: RewardBundle): string {
   if (currencies.merit) parts.push(`${currencies.merit} Merit`);
   if (currencies.spiritStones) parts.push(`${currencies.spiritStones} Spirit Stones`);
   return parts.length > 0 ? parts.join(' / ') : 'None';
-}
-
-function formatDuration(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  const pad = (value: number) => value.toString().padStart(2, '0');
-  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
 function formatDifficultyLabel(difficulty: string): string {
@@ -84,7 +76,7 @@ export function BountyBoardPanel() {
             Next refresh:{' '}
             {canRefresh(currentCityId, now)
               ? 'Ready'
-              : formatDuration(Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now))}
+              : formatDurationHMS(Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now))}
           </div>
         </div>
         <button

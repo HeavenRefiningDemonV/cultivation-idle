@@ -59,6 +59,26 @@ function applyCityModifiers(weights: RarityWeights, cityId: string): RarityWeigh
   return updated;
 }
 
+function applyFeaturedPityUpdate(
+  rarity: ManualRarity,
+  pity: { featuredEpic: number; featuredLegendary: number },
+): { featuredEpic: number; featuredLegendary: number } {
+  const nextPity = { ...pity };
+  if (rarity === 'legendary') {
+    nextPity.featuredEpic = 0;
+    nextPity.featuredLegendary = 0;
+    return nextPity;
+  }
+  if (rarity === 'epic') {
+    nextPity.featuredEpic = 0;
+    nextPity.featuredLegendary += 1;
+    return nextPity;
+  }
+  nextPity.featuredEpic += 1;
+  nextPity.featuredLegendary += 1;
+  return nextPity;
+}
+
 function rollRarity(
   seed: number,
   weights: RarityWeights,
@@ -67,16 +87,14 @@ function rollRarity(
   isFeatured: boolean,
 ): { rarity: ManualRarity; pity: { featuredEpic: number; featuredLegendary: number }; seed: number } {
   let nextSeedValue = seed;
-  const nextPity = { ...pity };
+  let nextPity = { ...pity };
   if (isFeatured) {
     if (nextPity.featuredLegendary >= pityRules.featuredLegendaryPityToGuarantee - 1) {
-      nextPity.featuredEpic = 0;
-      nextPity.featuredLegendary = 0;
+      nextPity = applyFeaturedPityUpdate('legendary', nextPity);
       return { rarity: 'legendary', pity: nextPity, seed: nextSeedValue };
     }
     if (nextPity.featuredEpic >= pityRules.featuredEpicPityToGuarantee - 1) {
-      nextPity.featuredEpic = 0;
-      nextPity.featuredLegendary += 1;
+      nextPity = applyFeaturedPityUpdate('epic', nextPity);
       return { rarity: 'epic', pity: nextPity, seed: nextSeedValue };
     }
   }
@@ -90,19 +108,23 @@ function rollRarity(
   const rarity = result.pick;
 
   if (isFeatured) {
-    if (rarity === 'legendary') {
-      nextPity.featuredEpic = 0;
-      nextPity.featuredLegendary = 0;
-    } else if (rarity === 'epic') {
-      nextPity.featuredEpic = 0;
-      nextPity.featuredLegendary += 1;
-    } else {
-      nextPity.featuredEpic += 1;
-      nextPity.featuredLegendary += 1;
-    }
+    nextPity = applyFeaturedPityUpdate(rarity, nextPity);
   }
 
   return { rarity, pity: nextPity, seed: nextSeedValue };
+}
+
+function simulateFeaturedPity(
+  starting: { featuredEpic: number; featuredLegendary: number },
+  rarities: ManualRarity[],
+  pityRules: { featuredEpicPityToGuarantee: number; featuredLegendaryPityToGuarantee: number },
+): { featuredEpic: number; featuredLegendary: number } {
+  void pityRules; // included for parity with roll logic and future expansion
+  let state = { ...starting };
+  rarities.forEach((rarity) => {
+    state = applyFeaturedPityUpdate(rarity, state);
+  });
+  return state;
 }
 
 interface TechniqueCandidate {
@@ -167,13 +189,19 @@ function getVisibleSlotCount(cityIndex: number): number {
   return 24;
 }
 
+function clampCityIndex(prices?: Array<unknown>, cityIndex?: number): number {
+  if (!Array.isArray(prices) || prices.length === 0) return 0;
+  const idx = typeof cityIndex === 'number' && Number.isFinite(cityIndex) ? cityIndex : 0;
+  return Math.min(Math.max(idx, 0), prices.length - 1);
+}
+
 function determineGrade(pavilionId: string, cityIndex: number): ManualGrade {
   const pavilion = useContentStore.getState().maps.pavilionsById[pavilionId];
   const economy = useContentStore.getState().raw?.economy?.manualSystem;
   const gradeFromPavilion = (pavilion?.gradeSold as ManualGrade | undefined) ?? null;
   if (gradeFromPavilion) return gradeFromPavilion;
   const prices = (economy as any)?.pavilions?.manualPricesByCityIndex as Array<{ grade?: ManualGrade }> | undefined;
-  const entry = prices?.[cityIndex] ?? prices?.[prices.length - 1];
+  const entry = prices?.[clampCityIndex(prices, cityIndex)];
   return (entry?.grade as ManualGrade) ?? 'mortal';
 }
 
@@ -188,7 +216,7 @@ function getPriceForRarity(
         prices?: Record<ManualRarity | 'ultimate', { gold?: number; spiritStones?: number; merit?: number; notSold?: boolean }>;
       }>
     | undefined;
-  const entry = prices?.[cityIndex] ?? prices?.[prices.length - 1];
+  const entry = prices?.[clampCityIndex(prices, cityIndex)];
   const rarityPrices = entry?.prices?.[rarity] ?? null;
   if (!rarityPrices || rarityPrices.notSold) {
     return { price: {}, notSold: !!rarityPrices?.notSold };
@@ -244,8 +272,9 @@ function summarizeHistory(slots: PavilionStockSlot[], generatedAt: number): Pavi
 }
 
 function generateStock(pavilionId: string, now: number, previous?: PavilionStockState): PavilionStockState {
-  const pavilion = useContentStore.getState().maps.pavilionsById[pavilionId];
-  const economy = useContentStore.getState().raw?.economy?.manualSystem;
+  const content = useContentStore.getState();
+  const pavilion = content.maps.pavilionsById[pavilionId];
+  const economy = content.raw?.economy?.manualSystem;
   const freeRefreshHours = Number((economy as any)?.pavilions?.refresh?.freeRefreshHours ?? 6);
   const pityRules = {
     featuredEpicPityToGuarantee: Number((economy as any)?.pavilions?.refresh?.pity?.featuredEpicPityToGuarantee ?? 10),
@@ -254,8 +283,26 @@ function generateStock(pavilionId: string, now: number, previous?: PavilionStock
     ),
   };
 
-  const cityId = pavilion?.cityId ?? 'unknown_city';
-  const cityIndex = pavilion?.cityIndex ?? 0;
+  if (!content.isLoaded || !pavilion) {
+    const cityId = pavilion?.cityId ?? 'unknown_city';
+    const cityIndex = pavilion?.cityIndex ?? 0;
+    return (
+      previous ?? {
+        pavilionId,
+        cityId,
+        cityIndex,
+        generatedAt: now,
+        nextRefreshAt: now + freeRefreshHours * 60 * 60 * 1000,
+        rngSeed: stringToSeed(`${pavilionId}:${now}`),
+        slots: [],
+        pity: { featuredEpic: 0, featuredLegendary: 0 },
+        history: [],
+      }
+    );
+  }
+
+  const cityId = pavilion.cityId ?? 'unknown_city';
+  const cityIndex = pavilion.cityIndex ?? 0;
   const coreSlots = Number((economy as any)?.pavilions?.stockSlots ?? 10);
   const visibleSlots = Math.max(coreSlots, getVisibleSlotCount(cityIndex));
   const plan = buildSlotPlan(visibleSlots);
@@ -323,4 +370,54 @@ export function buildInitialStock(pavilionId: string, now: number): PavilionStoc
 
 export function refreshStock(prev: PavilionStockState, now: number): PavilionStockState {
   return generateStock(prev.pavilionId, now, prev);
+}
+
+function runPitySanityChecks() {
+  const rules = { featuredEpicPityToGuarantee: 10, featuredLegendaryPityToGuarantee: 30 };
+  const base = { featuredEpic: 0, featuredLegendary: 0 };
+  const afterThreeCommons = simulateFeaturedPity(base, ['common', 'common', 'common'], rules);
+  const afterEpic = simulateFeaturedPity(base, ['epic'], rules);
+  const afterLegendary = simulateFeaturedPity({ featuredEpic: 5, featuredLegendary: 5 }, ['legendary'], rules);
+  const epicGuarantee = rollRarity(
+    0,
+    { common: 1 },
+    { featuredEpic: rules.featuredEpicPityToGuarantee - 1, featuredLegendary: 0 },
+    rules,
+    true,
+  );
+  const legendaryGuarantee = rollRarity(
+    0,
+    { common: 1 },
+    {
+      featuredEpic: rules.featuredEpicPityToGuarantee,
+      featuredLegendary: rules.featuredLegendaryPityToGuarantee - 1,
+    },
+    rules,
+    true,
+  );
+
+  const issues: string[] = [];
+  if (afterThreeCommons.featuredEpic !== 3 || afterThreeCommons.featuredLegendary !== 3) {
+    issues.push('Featured pity should increment on non-epic/legendary rolls.');
+  }
+  if (afterEpic.featuredEpic !== 0 || afterEpic.featuredLegendary !== 1) {
+    issues.push('Epic pity should reset epic counter and increment legendary.');
+  }
+  if (afterLegendary.featuredEpic !== 0 || afterLegendary.featuredLegendary !== 0) {
+    issues.push('Legendary pity should reset both counters.');
+  }
+  if (epicGuarantee.rarity !== 'epic') {
+    issues.push('Epic pity guarantee did not trigger.');
+  }
+  if (legendaryGuarantee.rarity !== 'legendary') {
+    issues.push('Legendary pity guarantee did not trigger.');
+  }
+
+  if (issues.length && typeof console !== 'undefined') {
+    console.warn('[Pavilion Pity Sanity]', issues.join(' '));
+  }
+}
+
+if (import.meta.env?.DEV) {
+  runPitySanityChecks();
 }

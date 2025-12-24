@@ -6,6 +6,7 @@ import { useManualPavilionStore } from '../../stores/manualPavilionStore';
 import { useGameStore } from '../../stores/gameStore';
 import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
 import { formatPrice } from '../../stores/contentStore';
+import { formatDurationHMS } from '../../utils/timeFormat';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -29,18 +30,6 @@ function normalizeGradeValue(value?: string | null): ManualGrade {
     return value as ManualGrade;
   }
   return 'mortal';
-}
-
-function formatDuration(ms: number) {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600)
-    .toString()
-    .padStart(2, '0');
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-    .toString()
-    .padStart(2, '0');
-  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-  return `${hours}:${minutes}:${seconds}`;
 }
 
 function getTechniqueMeta(techniqueId: string, techniquesById: Record<string, TechniqueDef | undefined>) {
@@ -99,6 +88,8 @@ function isSlotMatchingFilters(
 }
 
 export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
+  const isContentLoaded = useContentStore((state) => state.isLoaded);
+  const isContentLoading = useContentStore((state) => state.isLoading);
   const pavilion = useContentStore((state) => (pavilionId ? state.maps.pavilionsById[pavilionId] : undefined));
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const manualSystem = useContentStore((state) => state.raw?.economy?.manualSystem as any);
@@ -123,10 +114,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   }, []);
 
   useEffect(() => {
-    if (pavilionId) {
+    if (pavilionId && isContentLoaded && pavilion) {
       ensureStock(pavilionId);
     }
-  }, [ensureStock, pavilionId]);
+  }, [ensureStock, isContentLoaded, pavilion, pavilionId]);
 
   useEffect(() => {
     if (!stock || stock.slots.length === 0) return;
@@ -141,7 +132,9 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   }, [selectedSlotId, stock]);
 
   const gradeCap = deriveGradeCap(realmIndex);
-  const gradeSold = normalizeGradeValue(pavilion?.gradeSold);
+  const gradeSold = normalizeGradeValue(
+    pavilion?.gradeSold ?? manualSystem?.pavilions?.manualPricesByCityIndex?.[pavilion?.cityIndex ?? 0]?.grade,
+  );
   const pityEpicMax = manualSystem?.pavilions?.pity?.featuredEpicPityToGuarantee ?? 10;
   const pityLegendaryMax = manualSystem?.pavilions?.pity?.featuredLegendaryPityToGuarantee ?? 30;
 
@@ -183,7 +176,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   const handleRefresh = () => {
     if (!pavilionId) return;
-    refreshStock(pavilionId);
+    refreshStock(pavilionId, Date.now());
   };
 
   const renderFilters = () => {
@@ -309,6 +302,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       return <div className={'pavilionDetailEmpty'}>Select a manual to see details.</div>;
     }
     const technique = getTechniqueMeta(selectedSlot.techniqueId, techniquesById);
+    const purchaseDisabledReason = selectedSlot.notSold
+      ? 'Not sold here'
+      : 'Purchasing is implemented in P2';
+    const studyDisabledReason = selectedSlot.notSold ? 'Not sold here' : 'Study flow is implemented in P3';
     return (
       <div className={'pavilionDetail'}>
         <div className={'pavilionDetailHeader'}>
@@ -333,12 +330,15 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           )}
           <div className={'pavilionDetailLine'}>Tags: {technique?.tags?.join(', ') || 'None'}</div>
           <div className={'pavilionDetailLine pavilionDetailPlaceholder'}>Traits appear after studying.</div>
+          {selectedSlot.notSold && (
+            <div className={'pavilionDetailLine pavilionCardNotSold'}>Not sold here in this city tier.</div>
+          )}
         </div>
         <div className={'pavilionDetailActions'}>
-          <button className={'worldScreenModuleButton'} disabled title="Purchasing is implemented in P2">
+          <button className={'worldScreenModuleButton'} disabled title={purchaseDisabledReason}>
             Buy Manual
           </button>
-          <button className={'worldScreenModuleButton'} disabled title="Study flow is implemented in P3">
+          <button className={'worldScreenModuleButton'} disabled title={studyDisabledReason}>
             Buy &amp; Study Now
           </button>
         </div>
@@ -385,11 +385,11 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const renderRefreshBar = () => {
     if (!stock) return null;
     const remaining = Math.max(0, stock.nextRefreshAt - now);
-    const ready = remaining === 0;
+    const ready = now >= stock.nextRefreshAt;
     return (
       <div className={'pavilionRefreshBar'}>
         <div>
-          <div className={'pavilionRefreshLine'}>Next refresh in: {formatDuration(remaining)}</div>
+          <div className={'pavilionRefreshLine'}>Next refresh in: {formatDurationHMS(remaining)}</div>
           <div className={'pavilionPityLine'}>
             <span title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter.">
               Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed
@@ -414,6 +414,20 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           <div className={'worldScreenPlaceholderKey'}>manualPavilion</div>
         </div>
         <div className={'worldScreenPlaceholderBody'}>Visit another city to access a manual pavilion.</div>
+      </div>
+    );
+  }
+
+  if (!isContentLoaded) {
+    return (
+      <div className={'worldScreenPlaceholder'}>
+        <div className={'worldScreenPlaceholderHeader'}>
+          <div className={'worldScreenPlaceholderTitle'}>Loading content…</div>
+          <div className={'worldScreenPlaceholderKey'}>{pavilionId}</div>
+        </div>
+        <div className={'worldScreenPlaceholderBody'}>
+          {isContentLoading ? 'Loading manuals and pavilion data.' : 'Content not ready yet.'}
+        </div>
       </div>
     );
   }
