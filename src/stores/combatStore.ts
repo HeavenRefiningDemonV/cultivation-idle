@@ -29,7 +29,7 @@ import { rankMultiplier, useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
-import { applyLootBonuses, grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
+import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards';
 import { getTalismanBonusesNow } from './buffStore';
 import { createEnemy } from '../systems/enemyFactory';
 import type { NormalizedEffect } from '../systems/techniques/effects';
@@ -1016,9 +1016,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (eligible) {
           useTrialStore.getState().markCleared(trialId);
           useCityStore.getState().markGateTrialCleared(cityId);
-          grantRewards({ items: [{ itemId: gateItemId, qty: 1 }] }, 'Gate Trial clear');
+          RewardService.grantRewards({ items: [{ itemId: gateItemId, qty: 1 }] }, 'Gate Trial clear');
         } else {
-          grantRewards({ currencies: { gold: '500' } }, 'Gate Trial (not eligible)');
+          RewardService.grantRewards({ currencies: { gold: '500' } }, 'Gate Trial (not eligible)');
         }
 
         setTimeout(() => {
@@ -1074,7 +1074,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         const economy = contentStore.raw?.economy;
         const rewards = buildOutskirtsRewards(outskirtsDef, economy?.drops?.outskirts, cityIndex, isBossFight);
-        grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
+        RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
 
         setTimeout(() => {
           get().exitCombat();

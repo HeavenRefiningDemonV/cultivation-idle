@@ -17,6 +17,7 @@ import { useExpeditionStore } from '../stores/expeditionStore';
 import { saveGame, loadGame, hasSave, consumeOfflineContext } from '../utils/saveload';
 import { applyOfflineProgressFromContext } from './offline';
 import { useUIStore } from '../stores/uiStore';
+import { RewardService } from '../services/rewards';
 
 /**
  * Game loop constants
@@ -255,12 +256,19 @@ export function initializeGame(): boolean {
 
     // Add starter items for testing (only if inventory is empty)
     const inventoryStore = useInventoryStore.getState();
-    if (inventoryStore.items.length === 0) {
-      inventoryStore.addItem('rusty_sword', 1);
-      inventoryStore.addItem('worn_talisman', 1);
-      inventoryStore.addItem('health_pill', 5);
-      inventoryStore.addItem('spirit_stone', 10);
-      inventoryStore.addGold('1000');
+    if (Object.keys(inventoryStore.items).length === 0) {
+      RewardService.grantRewards(
+        {
+          currencies: { gold: '1000' },
+          items: [
+            { itemId: 'rusty_sword', qty: 1 },
+            { itemId: 'worn_talisman', qty: 1 },
+            { itemId: 'health_pill', qty: 5 },
+            { itemId: 'spirit_stone', qty: 10 },
+          ],
+        },
+        'Game start: starter pack',
+      );
       console.log('[GameLoop] Added starter items to inventory');
     }
 

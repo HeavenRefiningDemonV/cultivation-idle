@@ -1,4 +1,4 @@
-import type { RewardBundle } from '../systems/rewards';
+import type { RewardBundle } from '../services/rewards';
 
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;

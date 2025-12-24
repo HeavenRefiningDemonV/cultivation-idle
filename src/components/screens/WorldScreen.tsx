@@ -9,7 +9,7 @@ import { useOutskirtsStore } from '../../stores/outskirtsStore';
 import { useTrialStore } from '../../stores/trialStore';
 import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
-import { grantRewards } from '../../systems/rewards';
+import { RewardService } from '../../services/rewards';
 import { ApothecaryPanel } from './ApothecaryPanel';
 import { AlchemyPanel } from './AlchemyPanel';
 import { ForgePanel } from './ForgePanel';
@@ -306,7 +306,10 @@ export function WorldScreen() {
       return;
     }
 
-    grantRewards({ items: [{ itemId: trialDef.gateItemId, qty: 1 }] }, 'Gate Trial fail-safe purchase');
+    RewardService.grantRewards(
+      { items: [{ itemId: trialDef.gateItemId, qty: 1 }] },
+      'Gate Trial fail-safe purchase',
+    );
   };
 
   const handleStopOutskirts = () => {

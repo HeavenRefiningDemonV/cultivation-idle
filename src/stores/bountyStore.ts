@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { BountyTemplate } from '../content';
 import { useContentStore } from './contentStore';
-import { grantRewards, type RewardBundle } from '../systems/rewards';
+import { RewardService, type RewardBundle } from '../services/rewards';
 
 export type BountyKind =
   | 'OUTSKIRTS_KILL'
@@ -222,7 +222,7 @@ export const useBountyStore = create<BountyStoreState>()(
     claim: (cityId, instanceId) => {
       const bounty = get().activeByCityId[cityId]?.find((entry) => entry.instanceId === instanceId);
       if (!bounty || bounty.claimed || bounty.progress < bounty.target) return false;
-      grantRewards(bounty.rewards, `bounty:${bounty.templateId}`);
+      RewardService.grantRewards(bounty.rewards, `bounty:${bounty.templateId}`);
       set((state) => {
         const list = state.activeByCityId[cityId];
         if (!list) return;

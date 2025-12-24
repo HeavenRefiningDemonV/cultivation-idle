@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useBountyStore } from '../../stores/bountyStore';
-import type { RewardBundle } from '../../systems/rewards';
+import type { RewardBundle } from '../../services/rewards';
 
 function formatRewards(bundle: RewardBundle): string {
   const parts: string[] = [];

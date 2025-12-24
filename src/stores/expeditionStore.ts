@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { RewardBundle } from '../systems/rewards';
-import { grantRewards } from '../systems/rewards';
+import { RewardService, type RewardBundle } from '../services/rewards';
 import { useContentStore } from './contentStore';
 import { multiply } from '../utils/numbers';
 import { normalizeItemList } from '../utils/itemList';
@@ -202,7 +201,10 @@ export const useExpeditionStore = create<ExpeditionState>()(
       const efficiencyMult = findDurationSeconds(run.durationId)?.efficiencyMult;
       const finalBundle = applyEfficiency(baseBundle, efficiencyMult);
 
-      grantRewards(finalBundle, `expedition_claim:${run.expeditionTypeId}:${run.durationId}:city=${run.cityId}`);
+      RewardService.grantRewards(
+        finalBundle,
+        `expedition_claim:${run.expeditionTypeId}:${run.durationId}:city=${run.cityId}`,
+      );
 
       set((state) => {
         state.active = state.active.filter((entry) => entry.slotIndex !== slotIndex);

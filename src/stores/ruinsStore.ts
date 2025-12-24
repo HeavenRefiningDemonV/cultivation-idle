@@ -7,7 +7,7 @@ import { useCombatStore } from './combatStore';
 import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
-import { applyLootBonuses, grantRewards, type RewardBundle, type RewardItemBundle } from '../systems/rewards';
+import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards';
 
 export type RuinProgress = {
   totalRuns: number;
@@ -253,7 +253,10 @@ export const useRuinsStore = create<RuinsState>()(
         const isFinalRoom = roomIndex >= active.roomCount - 1;
 
         const perRoomRewards = rollDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`);
-        grantRewards(perRoomRewards, `Ruins — ${ruinDef.name ?? ruinDef.id} (Room ${roomIndex + 1}/${active.roomCount})`);
+        RewardService.grantRewards(
+          perRoomRewards,
+          `Ruins — ${ruinDef.name ?? ruinDef.id} (Room ${roomIndex + 1}/${active.roomCount})`,
+        );
         useBountyStore.getState().recordEvent({ type: 'RUINS_ROOM_CLEAR', cityId, amount: 1 });
 
         if (isFinalRoom) {
@@ -261,7 +264,10 @@ export const useRuinsStore = create<RuinsState>()(
             ruinDef.finalChestDrops,
             `Ruins ${ruinDef.id} final chest room ${roomIndex + 1}`,
           );
-          grantRewards(chestRewards, `Ruins — ${ruinDef.name ?? ruinDef.id} (Final Chest)`);
+          RewardService.grantRewards(
+            chestRewards,
+            `Ruins — ${ruinDef.name ?? ruinDef.id} (Final Chest)`,
+          );
           useBountyStore.getState().recordEvent({ type: 'RUINS_RUN_CLEAR', cityId, amount: 1 });
           if (useHeartLawStore.getState().selectedHeartLawId) {
             useHeartLawStore.getState().addComprehension(15, 'ruinsClear');

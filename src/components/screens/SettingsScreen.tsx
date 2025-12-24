@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { deleteSaveAndHardReset } from '../../utils/saveload';
 import { useContentStore } from '../../stores/contentStore';
 import { getContentBaseUrl } from '../../content';
-import { grantRewards } from '../../systems/rewards';
+import { RewardService } from '../../services/rewards';
 import { useUIStore } from '../../stores/uiStore';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
@@ -52,7 +52,7 @@ export function SettingsScreen() {
     const randomMaterialId =
       materialIds.length > 0 ? materialIds[Math.floor(Math.random() * materialIds.length)] : 'spirit_stone';
 
-    const result = grantRewards(
+    const result = RewardService.grantRewards(
       {
         currencies: { gold: '10' },
         items: [{ itemId: randomMaterialId, qty: 1 }],

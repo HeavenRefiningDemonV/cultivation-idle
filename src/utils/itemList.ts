@@ -1,4 +1,4 @@
-import type { RewardItemBundle } from '../systems/rewards';
+import type { RewardItemBundle } from '../services/rewards';
 
 export function normalizeItemList(
   input: RewardItemBundle[] | Record<string, number> | null | undefined,

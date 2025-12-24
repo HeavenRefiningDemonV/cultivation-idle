@@ -4,6 +4,7 @@ import { getItemDef, useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useUIStore } from '../../stores/uiStore';
+import { RewardService } from '../../services/rewards';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -48,7 +49,10 @@ export function PrestigeScreen() {
     });
 
     if (totalGold.greaterThan(0)) {
-      inventory.addCurrency('gold', totalGold.toString());
+      RewardService.grantRewards(
+        { currencies: { gold: totalGold.toString() } },
+        'Prestige: Sell all items',
+      );
     }
   };
 

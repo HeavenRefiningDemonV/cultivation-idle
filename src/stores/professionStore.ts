@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { grantRewards } from '../systems/rewards';
+import { RewardService } from '../services/rewards';
 import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
 import { getForgeBlueprint } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
@@ -457,7 +457,7 @@ export const useProfessionStore = create<ProfessionState>()(
         .filter((entry): entry is { itemId: string; qty: number } => Boolean(entry));
 
       if (items.length > 0) {
-        grantRewards({ items }, `Alchemy: ${job.recipeId}`);
+        RewardService.grantRewards({ items }, `Alchemy: ${job.recipeId}`);
       }
 
       set((state) => {
@@ -493,7 +493,7 @@ export const useProfessionStore = create<ProfessionState>()(
         .filter((entry): entry is { itemId: string; qty: number } => Boolean(entry));
 
       if (items.length > 0) {
-        grantRewards({ items }, `Talisman: ${job.recipeId}`);
+        RewardService.grantRewards({ items }, `Talisman: ${job.recipeId}`);
       }
 
       set((state) => {
@@ -523,7 +523,7 @@ export const useProfessionStore = create<ProfessionState>()(
         const outputItem = blueprint.output?.itemId;
         const outputQty = blueprint.output?.qty ?? 1;
         if (outputItem) {
-          grantRewards(
+          RewardService.grantRewards(
             { items: [{ itemId: outputItem, qty: Math.max(1, Math.floor(outputQty)) * job.qty }] },
             `Forge: ${job.blueprintId}`,
           );

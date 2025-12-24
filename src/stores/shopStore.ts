@@ -4,6 +4,7 @@ import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
 import { getDayKey } from '../utils/dayKey';
 import { useContentStore } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
+import { RewardService } from '../services/rewards';
 
 export type PurchasedToday = Record<string, Record<string, number>>;
 
@@ -169,14 +170,19 @@ export const useShopStore = create<ShopState>()(
         }
       }
 
-      const spent = inventory.spendCurrencies(costs);
+      const spent = RewardService.spendCurrency(costs, `shop:${shopId}:${stockId}`);
       if (!spent) {
         return fail('Failed to spend currencies');
       }
 
       const grantQty = normalizeQty(stock.qty) * quantity;
-      const granted = inventory.addItem(stock.itemId, grantQty);
-      if (!granted) {
+      const grantResult = RewardService.grantRewards(
+        { items: [{ itemId: stock.itemId, qty: grantQty }] },
+        `shop:${shopId}:${stockId}`,
+      );
+
+      const appliedQty = grantResult.appliedItems.find((entry) => entry.itemId === stock.itemId)?.qty ?? 0;
+      if (appliedQty <= 0) {
         return fail('Failed to grant item');
       }
 
@@ -188,7 +194,7 @@ export const useShopStore = create<ShopState>()(
         state.lastError = null;
       });
 
-      return { ok: true, grantedQty: grantQty };
+      return { ok: true, grantedQty: appliedQty };
     },
 
     hydrate: (state) => {
