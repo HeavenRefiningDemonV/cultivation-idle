@@ -278,7 +278,7 @@ function getRuneSlotsForGrade(grade: ManualGrade) {
 }
 
 export function normalizeTechEntry(
-  techId: string,
+  _techId: string,
   incoming?: Partial<TechniqueOwnedState> | null,
 ): TechniqueOwnedState {
   const base = createDefaultOwnedState();

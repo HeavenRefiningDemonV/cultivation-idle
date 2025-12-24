@@ -63,6 +63,11 @@ export type HeartLawSelectedEvent = {
   };
 };
 
+export type PavilionStockRefreshedEvent = {
+  type: 'pavilion/stock_refreshed';
+  payload: { pavilionId: string; cityId: string; cityIndex: number; at: number };
+};
+
 export type GameEvent =
   | RewardsGrantedEvent
   | CombatResolvedEvent
@@ -70,7 +75,8 @@ export type GameEvent =
   | ManualPurchasedEvent
   | ManualStudiedEvent
   | TechniqueEquippedEvent
-  | HeartLawSelectedEvent;
+  | HeartLawSelectedEvent
+  | PavilionStockRefreshedEvent;
 
 export type GameEventType = GameEvent['type'];
 export type GameEventForType<TType extends GameEventType> = Extract<GameEvent, { type: TType }>;

@@ -371,7 +371,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const nextAmount = shieldAmount.minus(absorbAmount).toNumber();
         if (nextAmount <= 0) {
           state.combatShield = null;
-        } else {
+        } else if (state.combatShield) {
           state.combatShield.amount = nextAmount;
         }
       });

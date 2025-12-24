@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { PavilionDef, PavilionPoolEntry, TechniqueDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useGameStore } from '../../stores/gameStore';
 import { isHigherGrade, normalizeGrade, normalizeRarity, useTechCollectionStore } from '../../stores/techCollectionStore';
+import { useManualPavilionStore } from '../../stores/manualPavilionStore';
 import type { LifePath } from '../../types';
 import { weightedPick } from '../../utils/weightedPick';
 import { resolvePavilionPool } from '../../utils/techResolver';
@@ -57,6 +58,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const lifePath = useGameStore((state) => state.lifePath);
   const spendCurrencies = useInventoryStore((state) => state.spendCurrencies);
   const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
+  const ensureStock = useManualPavilionStore((state) => state.ensureStock);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const fragments = useTechCollectionStore((state) => state.fragments);
   const hasTech = useTechCollectionStore((state) => state.hasTech);
@@ -85,6 +87,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   const selectedPool = lifePath ? poolsByPath[lifePath] ?? [] : [];
   const cost = normalizeCost(pavilion?.cost);
+
+  useEffect(() => {
+    if (pavilionId) {
+      ensureStock(pavilionId);
+    }
+  }, [ensureStock, pavilionId]);
 
   const handleBuy = () => {
     setError(null);

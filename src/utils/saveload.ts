@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js';
 import type { SaveData } from '../types';
+import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
@@ -20,9 +21,9 @@ import { useBuffStore } from '../stores/buffStore';
 import { useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heartLawStore';
+import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
-import { getDayKey } from './dayKey';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
 import { buildOfflineContext, type OfflineContext } from '../systems/offline';
 
@@ -41,6 +42,22 @@ let lastLoadedSaveData: SaveData | null = null;
  * For an idle game, basic obfuscation is usually sufficient
  */
 const ENCRYPTION_KEY = 'cultivation-idle-secret-2025';
+
+function cloneManualPavilionState(
+  source: ManualPavilionSaveState['stockByPavilionId'],
+): ManualPavilionSaveState['stockByPavilionId'] {
+  const copy: ManualPavilionSaveState['stockByPavilionId'] = {};
+  Object.entries(source ?? {}).forEach(([pavilionId, stock]) => {
+    if (!stock || typeof stock !== 'object') return;
+    copy[pavilionId] = {
+      ...stock,
+      slots: Array.isArray(stock.slots) ? stock.slots.map((slot) => ({ ...slot })) : [],
+      pity: { ...(stock.pity ?? { featuredEpic: 0, featuredLegendary: 0 }) },
+      history: Array.isArray(stock.history) ? stock.history.map((entry) => ({ ...entry })) : [],
+    };
+  });
+  return copy;
+}
 
 /**
  * Gather current game state from all stores
@@ -64,6 +81,7 @@ function gatherGameState(): SaveData {
   const bountyState = useBountyStore.getState();
   const expeditionState = useExpeditionStore.getState();
   const heartLawState = useHeartLawStore.getState();
+  const manualPavilionState = useManualPavilionStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
 
@@ -152,6 +170,10 @@ function gatherGameState(): SaveData {
       chapter: heartLawState.chapter,
       comprehension: heartLawState.comprehension,
       unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
+    },
+
+    manualPavilionState: {
+      stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
     },
 
     techniqueState: {
@@ -342,6 +364,11 @@ function validateSaveData(data: unknown): data is SaveData {
       if (typeof hs.chapter !== 'number') return false;
       if (typeof hs.comprehension !== 'number') return false;
       if (!Array.isArray((hs as { unlockedHeartLawIds?: unknown }).unlockedHeartLawIds)) return false;
+    }
+
+    if ('manualPavilionState' in record && record.manualPavilionState) {
+      const mps = record.manualPavilionState as Record<string, unknown>;
+      if (!mps.stockByPavilionId || typeof mps.stockByPavilionId !== 'object') return false;
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -631,6 +658,34 @@ function applySaveData(saveData: SaveData): void {
     const defaults = buildDefaultSaveState();
     const prestigeStore = usePrestigeStore.getState();
     const gameStore = useGameStore.getState();
+    const cityState =
+      saveData.cityState ??
+      defaults.cityState ?? {
+        currentCityId: null,
+        unlockedCityIds: [],
+        selectedModuleByCity: {},
+        cityFlagsById: {},
+        initializedFromContent: false,
+      };
+    const shopState = saveData.shopState ?? defaults.shopState ?? { dayKey: '', purchasedToday: {} };
+    const equipmentState =
+      saveData.equipmentState ??
+      defaults.equipmentState ?? { equippedWeaponId: null, equippedAccessoryId: null, refineLevelBySlot: { weapon: 0, accessory: 0 } };
+    const buffState = saveData.buffState ?? defaults.buffState ?? { activeTalismans: [] };
+    const professionState =
+      saveData.professionState ??
+      defaults.professionState ?? { alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 };
+    const collectionState =
+      saveData.techCollectionState ?? defaults.techCollectionState ?? { unlockedTechs: {}, fragments: {}, rngSeed: undefined };
+    const activityState = saveData.activityState ?? defaults.activityState ?? { active: null, lastChangedAt: null, history: [] };
+    const outskirtsState = saveData.outskirtsState ?? defaults.outskirtsState ?? { progressByOutskirtsId: {} };
+    const heartLawState =
+      saveData.heartLawState ??
+      defaults.heartLawState ?? { selectedHeartLawId: null, chapter: 1, comprehension: 0, unlockedHeartLawIds: [] };
+    const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {} };
+    const bountyState = saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
+    const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
+    const ruinsState = saveData.ruinsState ?? defaults.ruinsState ?? { progressByRuinId: {} };
 
     // Restore spirit root (fallback to reroll for old saves)
     const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
@@ -752,7 +807,6 @@ function applySaveData(saveData: SaveData): void {
       zoneProgress: saveData.zoneState.zoneProgress,
     });
 
-    const cityState = saveData.cityState ?? defaults.cityState;
     useCityStore.setState({
       currentCityId: cityState.currentCityId ?? null,
       unlockedCityIds: Array.isArray(cityState.unlockedCityIds) ? [...cityState.unlockedCityIds] : [],
@@ -767,23 +821,22 @@ function applySaveData(saveData: SaveData): void {
     }));
 
     useTrialStore.setState({
-      progressByTrialId: saveData.trialState?.progressByTrialId ?? defaults.trialState.progressByTrialId,
+      progressByTrialId: trialState.progressByTrialId ?? {},
     });
 
     useBountyStore.setState({
-      activeByCityId: { ...(saveData.bountyState?.activeByCityId ?? defaults.bountyState.activeByCityId) },
+      activeByCityId: { ...(bountyState.activeByCityId ?? {}) },
       lastRefreshAtByCityId: {
-        ...(saveData.bountyState?.lastRefreshAtByCityId ?? defaults.bountyState.lastRefreshAtByCityId),
+        ...(bountyState.lastRefreshAtByCityId ?? {}),
       },
     });
 
     useExpeditionStore.setState({
-      slots: saveData.expeditionState?.slots ?? defaults.expeditionState.slots,
-      active: saveData.expeditionState?.active.map((run) => ({ ...run })) ?? [],
+      slots: expeditionState.slots,
+      active: Array.isArray(expeditionState.active) ? expeditionState.active.map((run) => ({ ...run })) : [],
     });
     useExpeditionStore.getState().tick(Date.now());
 
-    const heartLawState = saveData.heartLawState ?? defaults.heartLawState;
     useHeartLawStore.setState({
       selectedHeartLawId: heartLawState.selectedHeartLawId ?? null,
       chapter: typeof heartLawState.chapter === 'number' ? heartLawState.chapter : 1,
@@ -793,16 +846,17 @@ function applySaveData(saveData: SaveData): void {
         : getDefaultUnlockedHeartLawIds(),
     });
 
+    const manualPavilionState = saveData.manualPavilionState ?? defaults.manualPavilionState;
+    useManualPavilionStore.getState().hydrate(manualPavilionState);
+
     useRuinsStore.setState({
-      progressByRuinId: saveData.ruinsState?.progressByRuinId ?? defaults.ruinsState.progressByRuinId,
-      autoRepeatDefault: saveData.ruinsState?.autoRepeatDefault ?? defaults.ruinsState.autoRepeatDefault,
+      progressByRuinId: ruinsState.progressByRuinId ?? {},
+      autoRepeatDefault: ruinsState.autoRepeatDefault,
       activeRun: null,
     });
 
-    const shopState = saveData.shopState ?? defaults.shopState;
     useShopStore.getState().hydrate(shopState);
 
-    const equipmentState = saveData.equipmentState ?? defaults.equipmentState;
     useEquipmentStore.setState({
       equippedWeaponId: equipmentState.equippedWeaponId ?? null,
       equippedAccessoryId: equipmentState.equippedAccessoryId ?? null,
@@ -812,7 +866,6 @@ function applySaveData(saveData: SaveData): void {
       },
     });
 
-    const buffState = saveData.buffState ?? defaults.buffState;
     useBuffStore.setState({
       activeTalismans: Array.isArray(buffState.activeTalismans)
         ? buffState.activeTalismans.map((entry) => ({ ...entry }))
@@ -820,7 +873,6 @@ function applySaveData(saveData: SaveData): void {
     });
     useBuffStore.getState().purgeExpired(Date.now());
 
-    const professionState = saveData.professionState ?? defaults.professionState;
     useProfessionStore.setState({
       alchemyQueue: Array.isArray(professionState.alchemyQueue)
         ? professionState.alchemyQueue.map((job) => ({ ...job }))
@@ -834,19 +886,17 @@ function applySaveData(saveData: SaveData): void {
       lastTickAt: typeof professionState.lastTickAt === 'number' ? professionState.lastTickAt : 0,
     });
 
-    const collectionState = saveData.techCollectionState ?? defaults.techCollectionState;
     useTechCollectionStore.getState().hydrate(collectionState);
 
-    const activityState = saveData.activityState ?? defaults.activityState;
     useActivityStore.setState({
-      active: activityState?.active ?? null,
-      lastChangedAt: activityState?.lastChangedAt ?? null,
-      history: Array.isArray(activityState?.history) ? [...activityState.history] : [],
+      active: (activityState.active as any) ?? null,
+      lastChangedAt: activityState.lastChangedAt ?? null,
+      history: Array.isArray(activityState.history) ? ([...activityState.history] as any) : [],
     });
 
     useOutskirtsStore.setState({
       progressByOutskirtsId: {
-        ...(saveData.outskirtsState?.progressByOutskirtsId ?? defaults.outskirtsState.progressByOutskirtsId),
+        ...(outskirtsState.progressByOutskirtsId ?? {}),
       },
     });
 

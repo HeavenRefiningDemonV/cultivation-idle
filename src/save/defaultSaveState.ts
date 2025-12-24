@@ -18,8 +18,9 @@ import { useBuffStore } from '../stores/buffStore';
 import { useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { useHeartLawStore } from '../stores/heartLawStore';
+import { useManualPavilionStore } from '../stores/manualPavilionStore';
 
-export const SAVE_VERSION = '1.0.1';
+export const SAVE_VERSION = '1.0.2';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -35,6 +36,7 @@ const REQUIRED_SAVE_KEYS = [
   'expeditionState',
   'heartLawState',
   'prestigeState',
+  'manualPavilionState',
 ];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -45,6 +47,22 @@ const isStringArray = (value: unknown): value is string[] =>
 
 const warnInvalidSlice = (slice: string) => {
   console.warn(`[SaveLoad] ${slice} invalid in save, using defaults`);
+};
+
+const cloneManualPavilionState = (
+  source: ReturnType<typeof useManualPavilionStore.getState>['stockByPavilionId'],
+): ReturnType<typeof useManualPavilionStore.getState>['stockByPavilionId'] => {
+  const copy: ReturnType<typeof useManualPavilionStore.getState>['stockByPavilionId'] = {};
+  Object.entries(source ?? {}).forEach(([pavilionId, stock]) => {
+    if (!stock || typeof stock !== 'object') return;
+    copy[pavilionId] = {
+      ...stock,
+      slots: Array.isArray(stock.slots) ? stock.slots.map((slot) => ({ ...slot })) : [],
+      pity: { ...(stock.pity ?? { featuredEpic: 0, featuredLegendary: 0 }) },
+      history: Array.isArray(stock.history) ? stock.history.map((entry) => ({ ...entry })) : [],
+    };
+  });
+  return copy;
 };
 
 export function buildDefaultSaveState(): SaveData {
@@ -68,6 +86,7 @@ export function buildDefaultSaveState(): SaveData {
   const bountyState = useBountyStore.getState();
   const expeditionState = useExpeditionStore.getState();
   const heartLawState = useHeartLawStore.getState();
+  const manualPavilionState = useManualPavilionStore.getState();
 
   return {
     version: SAVE_VERSION,
@@ -185,6 +204,9 @@ export function buildDefaultSaveState(): SaveData {
       comprehension: heartLawState.comprehension,
       unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
     },
+    manualPavilionState: {
+      stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
+    },
   };
 }
 
@@ -282,28 +304,6 @@ function isValidTechCollectionState(value: unknown): value is SaveData['techColl
   return true;
 }
 
-function isValidTechniqueState(value: unknown): value is SaveData['techniqueState'] {
-  if (!isRecord(value)) return false;
-  if (!Array.isArray(value.loadouts)) return false;
-  for (const loadout of value.loadouts) {
-    if (!isRecord(loadout)) return false;
-    if (typeof loadout.id !== 'string' || typeof loadout.name !== 'string') return false;
-    if (typeof loadout.aiProfile !== 'string') return false;
-    if (!isRecord(loadout.slots)) return false;
-    if (!Array.isArray(loadout.slots.active)) return false;
-    if (!Array.isArray(loadout.slots.passive)) return false;
-    if (
-      loadout.slots.ultimate !== null &&
-      loadout.slots.ultimate !== undefined &&
-      typeof loadout.slots.ultimate !== 'string'
-    ) {
-      return false;
-    }
-  }
-  if (typeof value.selectedLoadoutId !== 'string') return false;
-  return true;
-}
-
 function isValidProfessionState(value: unknown): value is SaveData['professionState'] {
   if (!isRecord(value)) return false;
   if (!Array.isArray(value.alchemyQueue)) return false;
@@ -346,6 +346,35 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   if (typeof value.chapter !== 'number') return false;
   if (typeof value.comprehension !== 'number') return false;
   if (!isStringArray(value.unlockedHeartLawIds)) return false;
+  return true;
+}
+
+function isValidManualPavilionState(value: unknown): value is SaveData['manualPavilionState'] {
+  if (!isRecord(value)) return false;
+  if (!isRecord(value.stockByPavilionId)) return false;
+  for (const stock of Object.values(value.stockByPavilionId)) {
+    if (!isRecord(stock)) return false;
+    if (typeof stock.pavilionId !== 'string') return false;
+    if (typeof stock.cityId !== 'string') return false;
+    if (typeof stock.cityIndex !== 'number') return false;
+    if (typeof stock.generatedAt !== 'number') return false;
+    if (typeof stock.nextRefreshAt !== 'number') return false;
+    if (typeof stock.rngSeed !== 'number') return false;
+    if (!Array.isArray(stock.slots)) return false;
+    if (!isRecord(stock.pity)) return false;
+    if (typeof (stock.pity as any).featuredEpic !== 'number') return false;
+    if (typeof (stock.pity as any).featuredLegendary !== 'number') return false;
+    for (const slot of stock.slots) {
+      if (!isRecord(slot)) return false;
+      if (typeof slot.slotIndex !== 'number') return false;
+      if (typeof slot.shelf !== 'string') return false;
+      if (typeof slot.techniqueId !== 'string') return false;
+      if (typeof slot.grade !== 'string') return false;
+      if (typeof slot.rarity !== 'string') return false;
+      if (slot.price !== undefined && slot.price !== null && typeof slot.price !== 'object') return false;
+    }
+    if (stock.history !== undefined && stock.history !== null && !Array.isArray(stock.history)) return false;
+  }
   return true;
 }
 
@@ -399,20 +428,24 @@ function mergeTechniqueState(
 export function mergeWithDefaults(partialSave: unknown): SaveData {
   const defaults = buildDefaultSaveState();
   const record = isRecord(partialSave) ? partialSave : {};
+  const defaultsMeta = defaults.meta ?? { lastActiveAtMs: Date.now() };
+  const baseEquipment =
+    defaults.equipmentState ?? ({ equippedWeaponId: null, equippedAccessoryId: null, refineLevelBySlot: { weapon: 0, accessory: 0 } } as SaveData['equipmentState']);
+  const baseBuffState = defaults.buffState ?? ({ activeTalismans: [] } as SaveData['buffState']);
 
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
     ...record,
     meta: isRecord(record.meta)
       ? {
-          ...defaults.meta,
+          ...defaultsMeta,
           ...record.meta,
           lastActiveAtMs:
             typeof record.meta.lastActiveAtMs === 'number'
               ? record.meta.lastActiveAtMs
-              : defaults.meta.lastActiveAtMs,
+              : defaultsMeta.lastActiveAtMs,
         }
-      : defaults.meta,
+      : defaultsMeta,
     gameState: isRecord(record.gameState) ? { ...defaults.gameState, ...record.gameState } : defaults.gameState,
     prestigeState: mergeSlice(record.prestigeState, defaults.prestigeState, isValidPrestigeState, 'prestigeState'),
     inventoryState: isRecord(record.inventoryState)
@@ -442,9 +475,11 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       'professionState',
     ),
     equipmentState: isRecord(record.equipmentState)
-      ? { ...defaults.equipmentState, ...record.equipmentState }
-      : defaults.equipmentState,
-    buffState: isRecord(record.buffState) ? { ...defaults.buffState, ...record.buffState } : defaults.buffState,
+      ? ({ ...baseEquipment, ...record.equipmentState } as SaveData['equipmentState'])
+      : baseEquipment,
+    buffState: isRecord(record.buffState)
+      ? ({ ...baseBuffState, ...record.buffState } as SaveData['buffState'])
+      : baseBuffState,
     bountyState: mergeSlice(record.bountyState, defaults.bountyState, isValidBountyState, 'bountyState'),
     expeditionState: mergeSlice(
       record.expeditionState,
@@ -457,6 +492,12 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       defaults.heartLawState,
       isValidHeartLawState,
       'heartLawState',
+    ),
+    manualPavilionState: mergeSlice(
+      record.manualPavilionState,
+      defaults.manualPavilionState,
+      isValidManualPavilionState,
+      'manualPavilionState',
     ),
   };
 
@@ -507,7 +548,7 @@ export function migrateSave(raw: unknown): SaveData {
 
 export function assertRequiredSaveKeys(saveData: SaveData): void {
   if (typeof import.meta === 'undefined' || !import.meta.env?.DEV) return;
-  const record = saveData as Record<string, unknown>;
+  const record = saveData as unknown as Record<string, unknown>;
   const missing = REQUIRED_SAVE_KEYS.filter((key) => !(key in record));
   if (missing.length > 0) {
     console.warn('[SaveLoad] Missing required save keys after hydration:', missing.join(', '));

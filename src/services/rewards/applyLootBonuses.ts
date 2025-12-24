@@ -4,7 +4,7 @@ import { normalizeItemList } from '../../utils/itemList';
 import { D } from '../../utils/numbers';
 import type { RewardBundle, LootContext } from './types';
 
-export function applyLootBonuses(bundle: RewardBundle, context: LootContext): RewardBundle {
+export function applyLootBonuses(bundle: RewardBundle, _context: LootContext): RewardBundle {
   if (!bundle || (!bundle.currencies && !bundle.items && !bundle.techniqueFragments)) {
     return bundle;
   }

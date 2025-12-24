@@ -65,7 +65,9 @@ export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
 
 export function getSpiritRootSnapshot(): SpiritRoot | null {
   const prestigeStore = _getPrestigeStore ? _getPrestigeStore() : null;
-  return prestigeStore?.spiritRoot ?? null;
+  const root = prestigeStore?.spiritRoot as any;
+  if (!root || typeof root.grade !== 'number') return null;
+  return root as SpiritRoot;
 }
 
 let _getCombatStore: (() => CombatStoreDeps) | null = null;

@@ -361,6 +361,8 @@ export interface SaveData {
     initializedFromContent?: boolean;
   };
 
+  manualPavilionState: ManualPavilionSaveState;
+
   activityState?: SaveActivityState;
 
   outskirtsState?: SaveOutskirtsState;
@@ -833,3 +835,4 @@ export interface PrestigeState {
   updateHighestRealm: (realmIndex: number) => void;
   incrementBossesDefeated: () => void;
 }
+import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes';
