@@ -127,6 +127,8 @@ function gatherGameState(): SaveData {
 
     activityState: {
       active: activityState.active ? { ...activityState.active } : null,
+      lastChangedAt: activityState.lastChangedAt ?? null,
+      history: Array.isArray(activityState.history) ? [...activityState.history] : [],
     },
 
     outskirtsState: {
@@ -829,8 +831,11 @@ function applySaveData(saveData: SaveData): void {
     const collectionState = saveData.techCollectionState ?? defaults.techCollectionState;
     useTechCollectionStore.getState().hydrate(collectionState);
 
+    const activityState = saveData.activityState ?? defaults.activityState;
     useActivityStore.setState({
-      active: saveData.activityState?.active ?? null,
+      active: activityState?.active ?? null,
+      lastChangedAt: activityState?.lastChangedAt ?? null,
+      history: Array.isArray(activityState?.history) ? [...activityState.history] : [],
     });
 
     useOutskirtsStore.setState({

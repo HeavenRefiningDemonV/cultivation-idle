@@ -33,7 +33,7 @@ export function SystemStatusPanel() {
 
   const activityLabel = useMemo(() => {
     if (!activity) return 'None';
-    const parts = [activity.type];
+    const parts: string[] = [activity.type];
     if (activity.cityId) parts.push(`city=${activity.cityId}`);
     if (activity.sourceId) parts.push(`source=${activity.sourceId}`);
     parts.push(`started=${new Date(activity.startedAt).toLocaleTimeString()}`);

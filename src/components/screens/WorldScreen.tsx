@@ -236,7 +236,7 @@ export function WorldScreen() {
     const nextEnemyId = isBossReady ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
     if (!nextEnemyId) return;
 
-    startActivity({ type: 'outskirts', cityId: selectedCity.id, sourceId: outskirtsDef.id });
+    startActivity('outskirts', { cityId: selectedCity.id, sourceId: outskirtsDef.id });
     setAutoAttack(true);
 
     startCombat(nextEnemyId, {
@@ -256,7 +256,7 @@ export function WorldScreen() {
     }
 
     stopActivity();
-    startActivity({ type: 'trial', cityId: selectedCity.id, sourceId: trialDef.id });
+    startActivity('trial', { cityId: selectedCity.id, sourceId: trialDef.id });
     setAutoAttack(true);
     setAutoCombatAI(true);
 

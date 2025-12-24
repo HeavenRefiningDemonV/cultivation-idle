@@ -191,7 +191,7 @@ export const useRuinsStore = create<RuinsState>()(
           combatStore.exitCombat();
         }
 
-        activityStore.startActivity({ type: 'ruins', cityId: ruinDef.cityId, sourceId: ruinDef.id });
+        activityStore.startActivity('ruins', { cityId: ruinDef.cityId, sourceId: ruinDef.id });
         useCombatStore.getState().setAutoAttack(true);
         useCombatStore.getState().setAutoCombatAI(true);
 

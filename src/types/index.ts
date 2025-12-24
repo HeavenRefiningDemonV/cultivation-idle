@@ -256,7 +256,15 @@ export interface SaveActivityState {
     cityId?: string;
     sourceId?: string;
     startedAt: number;
+    payload?: Record<string, unknown>;
   } | null;
+  lastChangedAt?: number | null;
+  history?: {
+    previous: SaveActivityState['active'];
+    next: SaveActivityState['active'];
+    changedAt: number;
+    reason?: string;
+  }[];
 }
 
 export interface SaveOutskirtsState {

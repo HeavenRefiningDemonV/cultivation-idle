@@ -36,6 +36,7 @@ import type { NormalizedEffect } from '../systems/techniques/effects';
 import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { getSpiritRootSnapshot } from './gameStore';
+import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -1237,6 +1238,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
      */
     tick: (deltaTime: number) => {
       const state = get();
+      const activeActivity = useActivityStore.getState().active;
+      const isForegroundCombat = activeActivity
+        ? COMBAT_ACTIVITY_TYPES.includes(activeActivity.type)
+        : false;
+      const contextType = state.combatContext?.type ?? null;
+
+      if (!isForegroundCombat || (contextType && activeActivity?.type && contextType !== activeActivity.type)) {
+        return;
+      }
+
       if (!state.inCombat || !state.currentEnemy) return;
 
       if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0)) return;

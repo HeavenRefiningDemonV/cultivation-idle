@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { GameEvents } from '../services/events/GameEvents';
+import type {
+  ActiveActivity,
+  ActivityHistoryEntry,
+  ForegroundActivityPayload,
+  ForegroundActivityType,
+} from '../types/activity';
 
-export type ActivityType = 'meditate' | 'outskirts' | 'trial' | 'ruins';
-
-export type ActiveActivity = {
-  type: ActivityType;
-  cityId?: string;
-  sourceId?: string;
-  startedAt: number;
-};
+export type { ActiveActivity, ForegroundActivityPayload, ForegroundActivityType } from '../types/activity';
 
 interface ActivityState {
   /**
@@ -19,21 +19,36 @@ interface ActivityState {
   active: ActiveActivity | null;
 
   /**
+   * Timestamp of the most recent activity transition.
+   */
+  lastChangedAt: number | null;
+
+  /**
+   * Ring buffer of recent transitions for debugging/analytics.
+   */
+  history: ActivityHistoryEntry[];
+
+  /**
    * Start an activity. Always stops any previous activity first.
    */
-  startActivity: (activity: Omit<ActiveActivity, 'startedAt'>) => void;
+  startActivity: (type: ForegroundActivityType, payload?: ForegroundActivityPayload, reason?: string) => void;
 
   /**
    * Stop any active activity.
    */
-  stopActivity: () => void;
+  stopActivity: (reason?: string) => void;
+
+  /**
+   * Convenience setter to directly set the active activity.
+   */
+  setActivity: (type: ForegroundActivityType | null, payload?: ForegroundActivityPayload, reason?: string) => void;
 
   /**
    * Convenience check.
    * - If no type passed: returns true if any activity is active.
    * - If type passed: returns true only if that type is active.
    */
-  isActive: (type?: ActivityType) => boolean;
+  isActive: (type?: ForegroundActivityType) => boolean;
 
   /**
    * Reset to a clean state (used by hard resets / deletes).
@@ -41,33 +56,85 @@ interface ActivityState {
   hardResetActivity: () => void;
 }
 
-const createInitialActivityState = (): Pick<ActivityState, 'active'> => ({
+const HISTORY_LIMIT = 25;
+
+const createInitialActivityState = (): Pick<ActivityState, 'active' | 'lastChangedAt' | 'history'> => ({
   active: null,
+  lastChangedAt: null,
+  history: [],
 });
+
+function toActiveActivity(
+  type: ForegroundActivityType,
+  payload?: ForegroundActivityPayload,
+  startedAt: number = Date.now(),
+): ActiveActivity {
+  const payloadData = payload && Object.keys(payload).length > 0 ? payload : undefined;
+  return {
+    ...payload,
+    type,
+    startedAt,
+    payload: payloadData,
+  };
+}
+
+function pushHistory(state: ActivityState, entry: ActivityHistoryEntry) {
+  state.history.unshift(entry);
+  if (state.history.length > HISTORY_LIMIT) {
+    state.history.pop();
+  }
+}
 
 export const useActivityStore = create<ActivityState>()(
   immer((set, get) => ({
     ...createInitialActivityState(),
 
-    startActivity: (activity) => {
-      set((state) => {
-        // Single foreground rule: always stop any previous activity first.
-        state.active = null;
+    startActivity: (type, payload, reason = 'start') => {
+      const previous = get().active;
+      const now = Date.now();
+      const next = toActiveActivity(type, payload, now);
 
-        state.active = {
-          ...activity,
-          startedAt: Date.now(),
-        };
+      set((state) => {
+        state.active = next;
+        state.lastChangedAt = now;
+        pushHistory(state, { previous, next, changedAt: now, reason });
+      });
+
+      GameEvents.emit({
+        type: 'activity/changed',
+        payload: { previous, next, reason, changedAt: now },
       });
     },
 
-    stopActivity: () => {
+    stopActivity: (reason = 'stop') => {
+      const previous = get().active;
+      if (!previous) {
+        return;
+      }
+
+      const now = Date.now();
+
       set((state) => {
         state.active = null;
+        state.lastChangedAt = now;
+        pushHistory(state, { previous, next: null, changedAt: now, reason });
+      });
+
+      GameEvents.emit({
+        type: 'activity/changed',
+        payload: { previous, next: null, reason, changedAt: now },
       });
     },
 
-    isActive: (type?: ActivityType) => {
+    setActivity: (type, payload, reason) => {
+      if (!type) {
+        get().stopActivity(reason ?? 'clear');
+        return;
+      }
+      get().startActivity(type, payload, reason);
+    },
+
+    isActive: (type?: ForegroundActivityType) => {
       const active = get().active;
       if (!active) return false;
       if (!type) return true;

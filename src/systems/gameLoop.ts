@@ -17,7 +17,9 @@ import { useExpeditionStore } from '../stores/expeditionStore';
 import { saveGame, loadGame, hasSave, consumeOfflineContext } from '../utils/saveload';
 import { applyOfflineProgressFromContext } from './offline';
 import { useUIStore } from '../stores/uiStore';
+import { useActivityStore } from '../stores/activityStore';
 import { RewardService } from '../services/rewards';
+import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 
 /**
  * Game loop constants
@@ -146,7 +148,14 @@ class GameLoop {
 
       // Update combat store (attacks, cooldowns)
       const combatState = useCombatStore.getState();
-      combatState.tick(deltaTime);
+      const activeActivity = useActivityStore.getState().active;
+      const isCombatActivityActive = activeActivity
+        ? COMBAT_ACTIVITY_TYPES.includes(activeActivity.type)
+        : false;
+
+      if (isCombatActivityActive) {
+        combatState.tick(deltaTime);
+      }
     } catch (error) {
       console.error('[GameLoop] Error in tick:', error);
     }

@@ -124,6 +124,8 @@ export function buildDefaultSaveState(): SaveData {
     },
     activityState: {
       active: activityState.active ? { ...activityState.active } : null,
+      lastChangedAt: activityState.lastChangedAt ?? null,
+      history: Array.isArray(activityState.history) ? [...activityState.history] : [],
     },
     outskirtsState: {
       progressByOutskirtsId: { ...outskirtsState.progressByOutskirtsId },
@@ -204,10 +206,35 @@ function isValidCityState(value: unknown): value is SaveData['cityState'] {
 function isValidActivityState(value: unknown): value is SaveData['activityState'] {
   if (!isRecord(value)) return false;
   const active = value.active;
-  if (active === null) return true;
-  if (!isRecord(active)) return false;
-  if (typeof active.type !== 'string') return false;
-  if (typeof active.startedAt !== 'number') return false;
+  const validateActive = (entry: unknown) => {
+    if (entry === null || entry === undefined) return true;
+    if (!isRecord(entry)) return false;
+    if (typeof entry.type !== 'string') return false;
+    if (typeof entry.startedAt !== 'number') return false;
+    if (entry.payload !== undefined && !isRecord(entry.payload)) return false;
+    return true;
+  };
+
+  if (active !== null && active !== undefined && !validateActive(active)) return false;
+
+  if (
+    value.lastChangedAt !== undefined &&
+    value.lastChangedAt !== null &&
+    typeof value.lastChangedAt !== 'number'
+  ) {
+    return false;
+  }
+
+  if (value.history !== undefined && value.history !== null) {
+    if (!Array.isArray(value.history)) return false;
+    for (const entry of value.history) {
+      if (!isRecord(entry)) return false;
+      if (!validateActive(entry.previous)) return false;
+      if (!validateActive(entry.next)) return false;
+      if (typeof entry.changedAt !== 'number') return false;
+      if (entry.reason !== undefined && entry.reason !== null && typeof entry.reason !== 'string') return false;
+    }
+  }
   return true;
 }
 

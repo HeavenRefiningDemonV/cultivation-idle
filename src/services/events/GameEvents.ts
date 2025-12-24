@@ -1,4 +1,5 @@
 import type { RewardBundle, GrantRewardsResult } from '../rewards/types';
+import type { ActiveActivity } from '../../types/activity';
 
 export type RewardsGrantedEvent = {
   type: 'rewards/granted';
@@ -23,8 +24,10 @@ export type CombatResolvedEvent = {
 export type ActivityChangedEvent = {
   type: 'activity/changed';
   payload: {
-    activityType: string | null;
-    activityId?: string | null;
+    previous: ActiveActivity | null;
+    next: ActiveActivity | null;
+    reason?: string;
+    changedAt: number;
   };
 };
 
