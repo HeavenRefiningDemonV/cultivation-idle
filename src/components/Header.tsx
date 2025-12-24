@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { useUIStore } from '../stores/uiStore';
 import { formatNumber } from '../utils/numbers';
-import { getSaveInfo } from '../utils/saveload';
+import { SaveService } from '../services/save/SaveService';
 import './Header.scss';
 
 /**
@@ -22,7 +22,7 @@ export function Header() {
   // Update "Last saved" indicator every second
   useEffect(() => {
     const updateLastSaved = () => {
-      const saveInfo = getSaveInfo();
+  const saveInfo = SaveService.getSaveInfo();
 
       if (!saveInfo) {
         setLastSavedText('Never');

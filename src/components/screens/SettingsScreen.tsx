@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { deleteSaveAndHardReset } from '../../utils/saveload';
+import { SaveService } from '../../services/save/SaveService';
 import { useContentStore } from '../../stores/contentStore';
 import { getContentBaseUrl } from '../../content';
 import { RewardService } from '../../services/rewards';
@@ -12,6 +12,7 @@ export function SettingsScreen() {
   const showOfflineModal = useUIStore((state) => state.settings.showOfflineModal);
   const showCombatLog = useUIStore((state) => state.settings.showCombatLog);
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
+  const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
   const setSettings = useUIStore((state) => state.setSettings);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -36,10 +37,11 @@ export function SettingsScreen() {
   const toggleCombatLog = () => setSettings({ showCombatLog: !showCombatLog });
   const togglePrestigeConfirm = () =>
     setSettings({ requirePrestigeConfirm: !requirePrestigeConfirm });
+  const toggleSystemStatus = () => setSettings({ showSystemStatusPanel: !showSystemStatusPanel });
 
   const handleDeleteSave = () => {
     setShowDeleteModal(false);
-    deleteSaveAndHardReset();
+    SaveService.deleteSaveAndHardReset();
   };
 
   const handleTestGrantRewards = () => {
@@ -113,6 +115,21 @@ export function SettingsScreen() {
                 <div>
                   <div className={'settingsScreenOptionLabel'}>Require prestige confirmation</div>
                   <p className={'settingsScreenOptionDescription'}>Ask for confirmation before reincarnating.</p>
+                </div>
+              </label>
+
+              <label className={'settingsScreenOptionRow'}>
+                <input
+                  type="checkbox"
+                  checked={showSystemStatusPanel}
+                  onChange={toggleSystemStatus}
+                  className={'settingsScreenCheckbox'}
+                />
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Show system status overlay (dev)</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Display runtime state for debugging: activity, combat gating, saves, and queues.
+                  </p>
                 </div>
               </label>
             </div>

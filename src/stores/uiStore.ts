@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { OfflineProgressSummary } from '../systems/offline';
+import type { OfflineCatchupResult } from '../services/time/OfflineCatchup';
 
 /**
  * UI notification types
@@ -29,6 +30,7 @@ export interface UISettingsState {
   showOfflineModal: boolean;
   showCombatLog: boolean;
   requirePrestigeConfirm: boolean;
+  showSystemStatusPanel: boolean;
 }
 
 interface UIStateBase {
@@ -58,6 +60,10 @@ interface UIStateBase {
   // UI Settings
   settings: UISettingsState;
 
+  // Save + offline transparency
+  lastSaveAt: number | null;
+  lastOfflineSummary: OfflineCatchupResult['summary'];
+
   // Tooltips
   tooltipVisible: boolean;
   tooltipContent: string;
@@ -86,6 +92,8 @@ export interface UIState extends UIStateBase {
   hideOfflineProgress: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
+  setLastSaveAt: (timestamp: number | null) => void;
+  setLastOfflineSummary: (summary: OfflineCatchupResult['summary']) => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
   hardResetUI: () => void;
 }
@@ -108,7 +116,10 @@ const INITIAL_UI_STATE: UIStateBase = {
     showOfflineModal: true,
     showCombatLog: true,
     requirePrestigeConfirm: true,
+    showSystemStatusPanel: false,
   },
+  lastSaveAt: null,
+  lastOfflineSummary: null,
   tooltipVisible: false,
   tooltipContent: '',
   tooltipPosition: { x: 0, y: 0 },
@@ -329,6 +340,18 @@ export const useUIStore = create<UIState>()(
     hideTooltip: () => {
       set((state) => {
         state.tooltipVisible = false;
+      });
+    },
+
+    setLastSaveAt: (timestamp) => {
+      set((state) => {
+        state.lastSaveAt = timestamp;
+      });
+    },
+
+    setLastOfflineSummary: (summary) => {
+      set((state) => {
+        state.lastOfflineSummary = summary;
       });
     },
 

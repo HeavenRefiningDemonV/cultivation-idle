@@ -1,0 +1,14 @@
+.systemStatusOverlay {
+  position: fixed;
+  inset: 1rem;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  z-index: 50;
+}
+
+.systemStatusOverlay > * {
+  pointer-events: auto;
+  max-width: 420px;
+}

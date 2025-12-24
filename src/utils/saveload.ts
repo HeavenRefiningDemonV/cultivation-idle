@@ -34,6 +34,8 @@ const BACKUP_A_KEY = 'cultivation-idle-save-v3-backup-A';
 const BACKUP_B_KEY = 'cultivation-idle-save-v3-backup-B';
 const BACKUP_C_KEY = 'cultivation-idle-save-v3-backup-C';
 
+let lastLoadedSaveData: SaveData | null = null;
+
 /**
  * Encryption key - in production, this could be more sophisticated
  * For an idle game, basic obfuscation is usually sufficient
@@ -563,6 +565,10 @@ export function consumeOfflineContext(): OfflineContext | null {
   return context;
 }
 
+export function getLastLoadedSaveSnapshot(): SaveData | null {
+  return lastLoadedSaveData;
+}
+
 /**
  * Rotate backup saves (C → B → A → main)
  */
@@ -903,6 +909,8 @@ export function loadGame(): boolean {
       console.log('[SaveLoad] No valid save found');
       return false;
     }
+
+    lastLoadedSaveData = saveData;
 
     pendingOfflineContext = buildOfflineContext(
       saveData.meta?.lastActiveAtMs ??

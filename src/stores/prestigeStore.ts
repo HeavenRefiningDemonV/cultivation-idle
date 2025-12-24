@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
-import { saveGame } from '../utils/saveload';
+import { SaveService } from '../services/save/SaveService';
 import { useContentStore } from './contentStore';
 import type { PrestigeUpgradeDef } from '../content';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
@@ -206,7 +206,7 @@ export const usePrestigeStore = create<PrestigeState>()(
 
       // Persist progress immediately so prestige isn't lost on refresh
       try {
-        saveGame();
+      SaveService.save();
       } catch (error) {
         console.warn('[Prestige] Failed to save after prestige', error);
       }

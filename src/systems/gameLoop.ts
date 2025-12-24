@@ -12,10 +12,8 @@ import {
   setGameStoreGetter,
 } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
-import { useProfessionStore } from '../stores/professionStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
-import { saveGame, loadGame, hasSave, consumeOfflineContext } from '../utils/saveload';
-import { applyOfflineProgressFromContext } from './offline';
+import { SaveService } from '../services/save/SaveService';
 import { useUIStore } from '../stores/uiStore';
 import { useActivityStore } from '../stores/activityStore';
 import { RewardService } from '../services/rewards';
@@ -27,8 +25,6 @@ import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 const CULTIVATION_TICK_INTERVAL = 1000;  // 1 second in milliseconds
 const AUTOSAVE_INTERVAL = 60000;         // 60 seconds in milliseconds
 const MAX_DELTA_TIME = 1000;             // Max 1 second delta to prevent time exploits
-const OFFLINE_MODAL_THRESHOLD = 60 * 5;  // Minimum seconds offline before showing modal
-
 /**
  * Main game loop managing all game ticking and updates
  */
@@ -204,7 +200,7 @@ class GameLoop {
    */
   private autosaveTick(): void {
     try {
-      const success = saveGame();
+      const success = SaveService.save();
       if (success) {
         console.log('[GameLoop] Game autosaved');
       } else {
@@ -247,6 +243,7 @@ export function initializeGame(): boolean {
     setCombatStoreGetter(() => useCombatStore.getState());
     setGameInventoryStoreGetter(() => useInventoryStore.getState());
     setPrestigeInventoryStoreGetter(() => useInventoryStore.getState());
+    SaveService.initializeSubscriptions();
     console.log('[GameLoop] Store dependencies wired');
 
     // Initialize prestige store upgrades
@@ -282,50 +279,28 @@ export function initializeGame(): boolean {
     }
 
     // Check if save exists
-    const saveExists = hasSave();
+    const saveExists = SaveService.hasSave();
 
     if (saveExists) {
       console.log('[GameLoop] Save found, loading...');
 
       // Load save data
-      const loadSuccess = loadGame();
+      const loadSuccess = SaveService.load();
 
       if (loadSuccess) {
         console.log('[GameLoop] Save loaded successfully');
 
-        // Apply offline progress
-        const offlineContext = consumeOfflineContext();
-        const offlineProgress = offlineContext
-          ? applyOfflineProgressFromContext(offlineContext)
-          : null;
-
-        if (offlineProgress) {
-          console.log('[GameLoop] Offline progress applied:');
-          console.log(`  - Duration: ${offlineProgress.offlineDuration}`);
-          console.log(`  - Qi gained: ${offlineProgress.qiGained}`);
-          console.log(`  - Efficiency: ${offlineProgress.efficiency * 100}%`);
-          if (offlineProgress.wasCapped) {
-            console.log('  - Offline time was capped at 12 hours');
+        const offlineSummary = useUIStore.getState().lastOfflineSummary;
+        if (offlineSummary) {
+          const qiPart = offlineSummary.parts.find((part) => part.label.toLowerCase().includes('qi'));
+          if (qiPart) {
+            useUIStore.getState().addNotification('info', `Offline: ${qiPart.value}`, 5000);
           }
-
-          useUIStore.getState().addNotification('info', `Offline: +${offlineProgress.qiGained} Qi`, 5000);
-
-          if (offlineProgress.offlineSeconds >= OFFLINE_MODAL_THRESHOLD) {
-            try {
-              useUIStore.getState().showOfflineProgress(offlineProgress);
-            } catch {
-              console.warn('[GameLoop] Unable to show offline progress modal');
-            }
-          }
-        } else {
-          console.log('[GameLoop] No offline progress to apply');
         }
 
         const now = Date.now();
-        useProfessionStore.getState().applyOffline(now);
-        useExpeditionStore.getState().tick(now);
         useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
-        saveGame();
+        SaveService.save();
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');
       }
@@ -362,7 +337,7 @@ function setupBeforeUnload(): void {
       });
 
       // Save the game
-      const success = saveGame();
+    const success = SaveService.save();
 
       if (success) {
         console.log('[GameLoop] Game saved on exit');
@@ -409,7 +384,7 @@ export function shutdownGame(): void {
 
   try {
     // Save the game
-    saveGame();
+    SaveService.save();
 
     // Stop the game loop
     gameLoop.stop();

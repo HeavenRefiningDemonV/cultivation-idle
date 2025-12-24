@@ -3,6 +3,8 @@ import { useActivityStore } from '../stores/activityStore';
 import { useProfessionStore } from '../stores/professionStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { useContentStore } from '../stores/contentStore';
+import { useCombatStore } from '../stores/combatStore';
+import { useUIStore } from '../stores/uiStore';
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -18,6 +20,9 @@ export function SystemStatusPanel() {
   const forgeQueue = useProfessionStore((state) => state.forgeQueue);
   const expeditionSlots = useExpeditionStore((state) => state.slots);
   const expeditionActive = useExpeditionStore((state) => state.active);
+  const combatContext = useCombatStore((state) => state.combatContext);
+  const lastSaveAt = useUIStore((state) => state.lastSaveAt);
+  const lastOfflineSummary = useUIStore((state) => state.lastOfflineSummary);
   const contentIsLoaded = useContentStore((state) => state.isLoaded);
   const contentIsLoading = useContentStore((state) => state.isLoading);
   const contentError = useContentStore((state) => state.error);
@@ -88,6 +93,9 @@ export function SystemStatusPanel() {
     };
   }, [contentMaps, contentRaw]);
 
+  const combatStatus = combatContext?.type ? `Active (${combatContext.type})` : 'Idle';
+  const lastSaveLabel = lastSaveAt ? new Date(lastSaveAt).toLocaleTimeString() : 'No save yet';
+
   return (
     <>
       <h2 className={'settingsScreenPanelTitle'}>System Status</h2>
@@ -95,6 +103,32 @@ export function SystemStatusPanel() {
         <div className={'settingsDebugLabel'}>Activity</div>
         <div className={'settingsDebugValue'}>{activityLabel}</div>
       </div>
+
+      <div className={'settingsDebugRow'}>
+        <div className={'settingsDebugLabel'}>Combat</div>
+        <div className={'settingsDebugValue'}>{combatStatus}</div>
+      </div>
+
+      <div className={'settingsDebugRow'}>
+        <div className={'settingsDebugLabel'}>Saves</div>
+        <div className={'settingsDebugValue'}>{lastSaveLabel}</div>
+      </div>
+
+      {lastOfflineSummary ? (
+        <div className={'settingsDebugRow'}>
+          <div className={'settingsDebugLabel'}>Offline catch-up</div>
+          <div className={'settingsDebugValue'}>
+            {Math.floor(lastOfflineSummary.offlineSeconds)}s
+            {lastOfflineSummary.parts.length > 0 && (
+              <ul>
+                {lastOfflineSummary.parts.map((part) => (
+                  <li key={part.label}>{part.label}: {part.value}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ) : null}
 
       <div className={'settingsDebugRow'}>
         <div className={'settingsDebugLabel'}>Craft Queues</div>
