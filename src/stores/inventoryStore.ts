@@ -22,6 +22,10 @@ export type InventoryState = {
   removeItem: (itemId: string, qty: number) => boolean;
   getQty: (itemId: string) => number;
 
+  // item affordability helpers
+  canAffordItem: (itemId: string, qty: number) => boolean;
+  spendItem: (itemId: string, qty: number) => boolean;
+
   // compatibility helpers
   addGold: (amount: string) => void;
   addSpiritStones: (amount: string) => void;
@@ -167,6 +171,22 @@ export const useInventoryStore = create<InventoryState>()(
 
     getQty: (itemId) => {
       return get().items[itemId] || 0;
+    },
+
+    canAffordItem: (itemId, qty) => {
+      if (!itemId) return false;
+      const amount = Math.floor(qty);
+      if (Number.isNaN(amount) || amount <= 0) return false;
+      return get().getQty(itemId) >= amount;
+    },
+
+    spendItem: (itemId, qty) => {
+      if (!itemId) return false;
+      const amount = Math.floor(qty);
+      if (Number.isNaN(amount) || amount <= 0) return false;
+      const current = get().getQty(itemId);
+      if (current < amount) return false;
+      return get().removeItem(itemId, amount);
     },
 
     // compatibility wrappers

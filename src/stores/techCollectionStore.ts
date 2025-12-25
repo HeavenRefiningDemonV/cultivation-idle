@@ -44,7 +44,10 @@ interface TechCollectionState {
   getEffectiveRuneSlots: (techId: string) => number;
   getEffectiveTraitSlots: (techId: string) => number;
   ensureTraits: (techId: string) => void;
-  rerollTraits: (techId: string) => { ok: boolean; reason?: string };
+  rerollTraits: (
+    techId: string,
+    options?: { lockIndex?: number; lockEnabled?: boolean },
+  ) => { ok: boolean; reason?: string; cost?: { soulInkItemId: string; qty: number }; lockedIndex?: number };
   applyTraitQualityBoost: (techId: string, chance?: number) => void;
   ensureRunes: (techId: string) => void;
   socketRune: (techId: string, slotIndex: number, runeItemId: string) => { ok: boolean; reason?: string };
@@ -73,16 +76,40 @@ interface TechCollectionState {
   nextRand: () => number;
   getMasteryCooldownReductionPct: (techId: string) => number;
   getMasteryCostReductionPct: (techId: string) => number;
+  getMasteryEffectMultiplier: (techId: string) => number;
   getRankCap: (techId: string) => number;
   getRankUpgradeCost: (nextRank: number) => {
     fragmentsRequired: number;
     runeDustRequired: number;
     soulInkRequired: number;
     soulInkItemId: string;
+    requiredGrade?: ManualGrade;
+  } | null;
+  getNextRankCost: (techId: string) => {
+    nextRank: number;
+    cost: {
+      fragmentsRequired: number;
+      runeDustRequired: number;
+      soulInkRequired: number;
+      soulInkItemId: string;
+      requiredGrade?: ManualGrade;
+    };
+    rankCap: number;
   } | null;
   upgradeRank: (techId: string) => { ok: boolean; reason?: string };
   toggleFavorite: (techId: string) => void;
   isFavorite?: (techId: string) => boolean;
+  getTraitDefinition: (traitId: string) => TraitDefinition | null;
+  getTraitRollRangeLabel: (traitId: string) => string;
+  getTraitQualityPct: (trait: { id: string; value?: number; valuePct?: number }) => number;
+  getMasteryMilestoneEffects: (level: number) => {
+    cooldownMult: number;
+    costMult: number;
+    effectMult: number;
+    secondaryUnlocked: boolean;
+    cosmeticTitle?: string;
+  };
+  getNextMasteryMilestone: (level: number) => { level: number; effectsSummary: string[] } | null;
   hydrate: (data: {
     unlockedTechs?: Record<string, Partial<TechniqueOwnedState>>;
     fragments?: Record<string, number>;
@@ -102,20 +129,88 @@ export function xpNeededForLevel(level: number): number {
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: TechRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 
+const DEFAULT_GRADE_RULES: Record<ManualGrade, { rankCap: number; traitCap: number; runeSockets: number }> = {
+  mortal: { rankCap: 5, traitCap: 1, runeSockets: 0 },
+  earth: { rankCap: 7, traitCap: 2, runeSockets: 1 },
+  heaven: { rankCap: 9, traitCap: 2, runeSockets: 1 },
+  mystic: { rankCap: 10, traitCap: 3, runeSockets: 2 },
+};
+
+const DEFAULT_RARITY_TRAIT_SLOTS: Record<TechRarity, number> = {
+  common: 1,
+  uncommon: 1,
+  rare: 2,
+  epic: 2,
+  legendary: 3,
+};
+
+const DEFAULT_RANK_COSTS: Array<{
+  toRank: number;
+  fragments: number;
+  runeDust: number;
+  soulInkTier: number;
+  requiresGradeAtLeast?: ManualGrade;
+}> = [
+  { toRank: 2, fragments: 20, runeDust: 2, soulInkTier: 0 },
+  { toRank: 3, fragments: 40, runeDust: 4, soulInkTier: 0 },
+  { toRank: 4, fragments: 80, runeDust: 8, soulInkTier: 0 },
+  { toRank: 5, fragments: 160, runeDust: 16, soulInkTier: 0 },
+  { toRank: 6, fragments: 240, runeDust: 24, soulInkTier: 1, requiresGradeAtLeast: 'earth' },
+  { toRank: 7, fragments: 360, runeDust: 36, soulInkTier: 1, requiresGradeAtLeast: 'earth' },
+  { toRank: 8, fragments: 520, runeDust: 52, soulInkTier: 2, requiresGradeAtLeast: 'heaven' },
+  { toRank: 9, fragments: 750, runeDust: 75, soulInkTier: 2, requiresGradeAtLeast: 'heaven' },
+  { toRank: 10, fragments: 1100, runeDust: 110, soulInkTier: 2, requiresGradeAtLeast: 'mystic' },
+];
+
+const DEFAULT_RANK_MULTIPLIER_PER_RANK = 0.1;
+const DEFAULT_EFFECT_MULTIPLIER_PER_LEVEL = 0.003;
+const DEFAULT_MASTERY_MILESTONES = [
+  { level: 25, effects: [{ type: 'cooldownMultiplier', value: 0.95 }] },
+  { level: 50, effects: [{ type: 'resourceCostMultiplier', value: 0.9 }] },
+  { level: 75, effects: [{ type: 'unlockSecondary' }] },
+  { level: 100, effects: [{ type: 'effectMultiplier', value: 1.1 }, { type: 'cosmeticTitle', value: 'Perfected' }] },
+];
+
+type MasteryEffect =
+  | { type: 'cooldownMultiplier'; value: number }
+  | { type: 'resourceCostMultiplier'; value: number }
+  | { type: 'effectMultiplier'; value: number }
+  | { type: 'unlockSecondary' }
+  | { type: 'cosmeticTitle'; value: string };
+
+function getManualSystemEconomy(): any | null {
+  return useContentStore.getState().raw?.economy?.manualSystem ?? null;
+}
+
 export function masteryLevelFromXp(xp: number): number {
   const normalized = Math.max(0, xp);
   const level = 1 + Math.floor(Math.sqrt(normalized / XP_SCALE));
   return Math.min(100, Math.max(1, level));
 }
 
+function getEffectMultiplierPerLevel(): number {
+  const economy = getManualSystemEconomy();
+  const value = economy?.mastery?.effectMultiplierPerLevel;
+  return typeof value === 'number' ? value : DEFAULT_EFFECT_MULTIPLIER_PER_LEVEL;
+}
+
+function getRankMultiplierPerRank(): number {
+  const economy = getManualSystemEconomy();
+  const value = economy?.rank?.multiplierPerRank;
+  return typeof value === 'number' ? value : DEFAULT_RANK_MULTIPLIER_PER_RANK;
+}
+
 export function masteryMultiplier(level: number): number {
   const clamped = Math.min(100, Math.max(1, level));
-  return 1 + 0.003 * clamped;
+  const base = 1 + getEffectMultiplierPerLevel() * clamped;
+  const milestoneMult = getMasteryMilestoneEffects(clamped).effectMult;
+  return base * milestoneMult;
 }
 
 export function rankMultiplier(rank: number): number {
   const clamped = Math.min(10, Math.max(1, rank));
-  return 1 + 0.1 * (clamped - 1);
+  const step = getRankMultiplierPerRank();
+  return 1 + step * (clamped - 1);
 }
 
 export function masteryMilestones(level: number) {
@@ -155,6 +250,119 @@ export function getManualGradeFromTechnique(technique?: TechniqueDef): ManualGra
   return normalizeGrade(technique?.tier);
 }
 
+function getGradeRule(grade: ManualGrade) {
+  const economy = getManualSystemEconomy();
+  const rawGrade = economy?.grades?.[grade];
+  const fallback = DEFAULT_GRADE_RULES[grade];
+  return {
+    rankCap: rawGrade?.rankCap ?? fallback.rankCap,
+    traitCap: rawGrade?.traitCap ?? fallback.traitCap,
+    runeSockets: rawGrade?.runeSockets ?? fallback.runeSockets,
+  };
+}
+
+function getRarityTraitSlotCount(rarity: TechRarity): number {
+  const economy = getManualSystemEconomy();
+  const slots = economy?.rarityTraitSlots?.[rarity];
+  if (typeof slots === 'number') return slots;
+  return DEFAULT_RARITY_TRAIT_SLOTS[rarity];
+}
+
+function getRankCostTable(): Record<
+  number,
+  {
+    fragmentsRequired: number;
+    runeDustRequired: number;
+    soulInkRequired: number;
+    soulInkItemId: string;
+    requiredGrade?: ManualGrade;
+  }
+> {
+  const economy = getManualSystemEconomy();
+  const entries = economy?.rank?.rankUpCosts ?? DEFAULT_RANK_COSTS;
+  return entries.reduce((acc, entry) => {
+    const soulInkTier = typeof entry.soulInkTier === 'number' ? entry.soulInkTier : 0;
+    const soulInkItemId = `reagent_soul_ink_t${soulInkTier}`;
+    const cost = {
+      fragmentsRequired: entry.fragments ?? 0,
+      runeDustRequired: entry.runeDust ?? 0,
+      soulInkRequired: typeof entry.soulInk === 'number' ? entry.soulInk : 1,
+      soulInkItemId,
+      requiredGrade: entry.requiresGradeAtLeast,
+    };
+    acc[entry.toRank] = cost;
+    return acc;
+  }, {} as Record<number, { fragmentsRequired: number; runeDustRequired: number; soulInkRequired: number; soulInkItemId: string; requiredGrade?: ManualGrade }>);
+}
+
+function getMasteryMilestonesConfig(): Array<{ level: number; effects: MasteryEffect[] }> {
+  const economy = getManualSystemEconomy();
+  return economy?.mastery?.milestones ?? DEFAULT_MASTERY_MILESTONES;
+}
+
+export function getMasteryMilestoneEffects(level: number) {
+  const clamped = Math.max(0, Math.min(100, Math.floor(level)));
+  const milestones = getMasteryMilestonesConfig();
+  let cooldownMult = 1;
+  let costMult = 1;
+  let effectMult = 1;
+  let secondaryUnlocked = false;
+  let cosmeticTitle: string | undefined;
+
+  milestones
+    .filter((milestone) => milestone.level <= clamped)
+    .forEach((milestone) => {
+      milestone.effects?.forEach((effect) => {
+        switch (effect.type) {
+          case 'cooldownMultiplier':
+            cooldownMult *= typeof effect.value === 'number' ? effect.value : 1;
+            break;
+          case 'resourceCostMultiplier':
+            costMult *= typeof effect.value === 'number' ? effect.value : 1;
+            break;
+          case 'effectMultiplier':
+            effectMult *= typeof effect.value === 'number' ? effect.value : 1;
+            break;
+          case 'unlockSecondary':
+            secondaryUnlocked = true;
+            break;
+          case 'cosmeticTitle':
+            cosmeticTitle = effect.value;
+            break;
+          default:
+            break;
+        }
+      });
+    });
+
+  return { cooldownMult, costMult, effectMult, secondaryUnlocked, cosmeticTitle };
+}
+
+export function getNextMasteryMilestone(level: number): { level: number; effectsSummary: string[] } | null {
+  const clamped = Math.max(0, Math.min(100, Math.floor(level)));
+  const milestones = getMasteryMilestonesConfig().filter((milestone) => milestone.level > clamped);
+  if (!milestones.length) return null;
+  const next = milestones.reduce((lowest, current) => (current.level < lowest.level ? current : lowest));
+  const effectsSummary = next.effects?.map((effect) => {
+    switch (effect.type) {
+      case 'cooldownMultiplier':
+        return `Cooldown ${formatPercent(1 - (effect.value ?? 1))}`;
+      case 'resourceCostMultiplier':
+        return `Cost ${formatPercent(1 - (effect.value ?? 1))}`;
+      case 'effectMultiplier':
+        return `Effect ${formatPercent((effect.value ?? 1) - 1)}`;
+      case 'unlockSecondary':
+        return 'Secondary effect unlock';
+      case 'cosmeticTitle':
+        return `Title: ${effect.value}`;
+      default:
+        return 'Milestone bonus';
+    }
+  });
+
+  return { level: next.level, effectsSummary: effectsSummary ?? [] };
+}
+
 const createDefaultOwnedState = (): TechniqueOwnedState => ({
   unlocked: false,
   masteryXp: 0,
@@ -172,40 +380,6 @@ const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'frag
   fragments: {},
   rngSeed: 123456789,
 });
-
-const rankCapsByGrade: Record<ManualGrade, number> = {
-  mortal: 5,
-  earth: 7,
-  heaven: 9,
-  mystic: 10,
-};
-
-const runeSlotsByGrade: Record<ManualGrade, number> = {
-  mortal: 0,
-  earth: 1,
-  heaven: 1,
-  mystic: 2,
-};
-
-const rankCostTable: Record<
-  number,
-  {
-    fragmentsRequired: number;
-    runeDustRequired: number;
-    soulInkRequired: number;
-    soulInkItemId: string;
-  }
-> = {
-  2: { fragmentsRequired: 20, runeDustRequired: 2, soulInkRequired: 1, soulInkItemId: 'reagent_soul_ink_t0' },
-  3: { fragmentsRequired: 40, runeDustRequired: 4, soulInkRequired: 2, soulInkItemId: 'reagent_soul_ink_t0' },
-  4: { fragmentsRequired: 80, runeDustRequired: 8, soulInkRequired: 4, soulInkItemId: 'reagent_soul_ink_t0' },
-  5: { fragmentsRequired: 160, runeDustRequired: 16, soulInkRequired: 8, soulInkItemId: 'reagent_soul_ink_t0' },
-  6: { fragmentsRequired: 240, runeDustRequired: 24, soulInkRequired: 12, soulInkItemId: 'reagent_soul_ink_t1' },
-  7: { fragmentsRequired: 360, runeDustRequired: 36, soulInkRequired: 18, soulInkItemId: 'reagent_soul_ink_t1' },
-  8: { fragmentsRequired: 520, runeDustRequired: 52, soulInkRequired: 26, soulInkItemId: 'reagent_soul_ink_t2' },
-  9: { fragmentsRequired: 750, runeDustRequired: 75, soulInkRequired: 38, soulInkItemId: 'reagent_soul_ink_t2' },
-  10: { fragmentsRequired: 1100, runeDustRequired: 110, soulInkRequired: 55, soulInkItemId: 'reagent_soul_ink_t2' },
-};
 
 const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
 const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
@@ -238,8 +412,28 @@ function formatPercent(value: number) {
   return `${Math.round(value * 100)}%`;
 }
 
-function getTraitDefinition(id: string): TraitDefinition | undefined {
+export function getTraitDefinition(id: string): TraitDefinition | undefined {
   return TRAIT_LIBRARY.find((trait) => trait.id === id);
+}
+
+function getTraitValue(trait: { value?: number; valuePct?: number }) {
+  if (typeof trait.valuePct === 'number') return trait.valuePct;
+  return trait.value ?? 0;
+}
+
+export function getTraitQualityPct(trait: { id: string; value?: number; valuePct?: number }): number {
+  const def = getTraitDefinition(trait.id);
+  if (!def) return 0;
+  const span = def.max - def.min;
+  if (span <= 0) return 1;
+  const value = getTraitValue(trait);
+  return clamp((value - def.min) / span, 0, 1);
+}
+
+export function getTraitRollRangeLabel(traitId: string): string {
+  const def = getTraitDefinition(traitId);
+  if (!def) return '';
+  return `${formatPercent(def.min)} to ${formatPercent(def.max)}`;
 }
 
 function rollTraitValue(def: TraitDefinition, seed: number) {
@@ -287,7 +481,7 @@ function normalizeRunes(runes: Array<string | null> | undefined, slots: number) 
 }
 
 function getRuneSlotsForGrade(grade: ManualGrade) {
-  return runeSlotsByGrade[grade] ?? 0;
+  return getGradeRule(grade).runeSockets;
 }
 
 export function normalizeTechEntry(
@@ -429,23 +623,25 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
     getMasteryCooldownReductionPct: (techId) => {
       const level = get().getMasteryLevel(techId);
-      const milestones = masteryMilestones(level);
-      let reduction = 0;
-      if (milestones.at50) reduction += 0.05;
-      if (milestones.at75) reduction += 0.05;
-      if (milestones.at100) reduction += 0.05;
-      return clamp(reduction, 0, 0.15);
+      const effects = getMasteryMilestoneEffects(level);
+      return clamp(1 - effects.cooldownMult, 0, 1);
     },
 
     getMasteryCostReductionPct: (techId) => {
       const level = get().getMasteryLevel(techId);
-      const milestones = masteryMilestones(level);
-      let reduction = 0;
-      if (milestones.at50) reduction += 0.05;
-      if (milestones.at75) reduction += 0.05;
-      if (milestones.at100) reduction += 0.05;
-      return clamp(reduction, 0, 0.15);
+      const effects = getMasteryMilestoneEffects(level);
+      return clamp(1 - effects.costMult, 0, 1);
     },
+
+    getMasteryEffectMultiplier: (techId) => {
+      const level = get().getMasteryLevel(techId);
+      const effects = getMasteryMilestoneEffects(level);
+      const base = 1 + getEffectMultiplierPerLevel() * level;
+      return base * effects.effectMult;
+    },
+
+    getMasteryMilestoneEffects: (level) => getMasteryMilestoneEffects(level),
+    getNextMasteryMilestone: (level) => getNextMasteryMilestone(level),
 
     getEffectiveRuneSlots: (techId) => {
       const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
@@ -457,21 +653,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const rarity = entry?.rarity ?? 'common';
       const grade = entry?.manualGrade ?? 'mortal';
 
-      const raritySlots: Record<TechRarity, number> = {
-        common: 0,
-        uncommon: 1,
-        rare: 1,
-        epic: 2,
-        legendary: 3,
-      };
-      const gradeCap: Record<ManualGrade, number> = {
-        mortal: 0,
-        earth: 1,
-        heaven: 2,
-        mystic: 3,
-      };
+      const raritySlots = getRarityTraitSlotCount(rarity);
+      const gradeCap = getGradeRule(grade).traitCap;
 
-      return Math.min(raritySlots[rarity], gradeCap[grade]);
+      return Math.min(raritySlots, gradeCap);
     },
 
     ensureRunes: (techId) => {
@@ -647,7 +832,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       });
     },
 
-    rerollTraits: (techId) => {
+    rerollTraits: (techId, options) => {
       const entry = get().unlockedTechs[techId];
       if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
 
@@ -659,24 +844,41 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         return { ok: false, reason: 'Soul ink item missing.' };
       }
 
-      const inventory = useInventoryStore.getState();
-      if (inventory.getQty(SOUL_INK_REROLL_ITEM_ID) < 1) {
-        return { ok: false, reason: 'Not enough soul ink.' };
+      const lockEnabled = Boolean(options?.lockEnabled);
+      const requestedLockIndex = typeof options?.lockIndex === 'number' ? options.lockIndex : null;
+      const lockIndex = lockEnabled && requestedLockIndex !== null ? requestedLockIndex : -1;
+      const hasValidLock = lockEnabled && lockIndex >= 0 && lockIndex < slots && Boolean(entry.traits[lockIndex]);
+      if (lockEnabled && !hasValidLock) {
+        return { ok: false, reason: 'invalid_lock', cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: 2 } };
       }
 
-      const removed = inventory.removeItem(SOUL_INK_REROLL_ITEM_ID, 1);
-      if (!removed) return { ok: false, reason: 'Unable to consume soul ink.' };
+      const costQty = hasValidLock ? 2 : 1;
+      const inventory = useInventoryStore.getState();
+      if (!inventory.canAffordItem(SOUL_INK_REROLL_ITEM_ID, costQty)) {
+        return { ok: false, reason: 'insufficient_items', cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
+      }
+
+      const removed = inventory.spendItem(SOUL_INK_REROLL_ITEM_ID, costQty);
+      if (!removed) {
+        return { ok: false, reason: 'Unable to consume soul ink.', cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
+      }
 
       set((state) => {
-        const next = rollTraits(slots, state.rngSeed);
-        state.rngSeed = next.seed;
         const target = state.unlockedTechs[techId];
-        if (target) {
-          target.traits = next.traits;
-        }
+        if (!target) return;
+
+        const lockedTrait = hasValidLock ? target.traits[lockIndex] : null;
+        const availableSlots = hasValidLock ? slots - 1 : slots;
+        const existingIds = lockedTrait ? [lockedTrait.id] : [];
+        const next = rollTraits(availableSlots, state.rngSeed, existingIds);
+        state.rngSeed = next.seed;
+        const traits = hasValidLock
+          ? [...next.traits.slice(0, lockIndex), lockedTrait!, ...next.traits.slice(lockIndex)]
+          : next.traits;
+        target.traits = traits.slice(0, slots);
       });
 
-      return { ok: true };
+      return { ok: true, lockedIndex: hasValidLock ? lockIndex : undefined, cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
     },
 
     applyTraitQualityBoost: (techId, chance = 0.05) => {
@@ -766,13 +968,29 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       });
     },
 
+    getTraitDefinition: (traitId) => getTraitDefinition(traitId) ?? null,
+    getTraitRollRangeLabel: (traitId) => getTraitRollRangeLabel(traitId),
+    getTraitQualityPct: (trait) => getTraitQualityPct(trait),
+
     getRankCap: (techId) => {
       const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
-      return rankCapsByGrade[grade] ?? 5;
+      return getGradeRule(grade).rankCap;
     },
 
     getRankUpgradeCost: (nextRank) => {
-      return rankCostTable[nextRank] ?? null;
+      const table = getRankCostTable();
+      return table[nextRank] ?? null;
+    },
+
+    getNextRankCost: (techId) => {
+      const entry = get().unlockedTechs[techId];
+      if (!entry?.unlocked) return null;
+      const rankCap = get().getRankCap(techId);
+      const nextRank = entry.rank + 1;
+      if (nextRank > rankCap) return null;
+      const cost = get().getRankUpgradeCost(nextRank);
+      if (!cost) return null;
+      return { nextRank, cost, rankCap };
     },
 
     upgradeRank: (techId) => {
@@ -786,6 +1004,13 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const cost = get().getRankUpgradeCost(nextRank);
       if (!cost) return { ok: false, reason: 'Invalid rank cost.' };
 
+      if (
+        cost.requiredGrade &&
+        gradeOrder.indexOf(entry.manualGrade) < gradeOrder.indexOf(cost.requiredGrade)
+      ) {
+        return { ok: false, reason: `Requires ${cost.requiredGrade} grade.` };
+      }
+
       const fragments = get().fragments[techId] ?? 0;
       if (fragments < cost.fragmentsRequired) return { ok: false, reason: 'Not enough fragments.' };
 
@@ -798,14 +1023,16 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       }
 
       const inventory = useInventoryStore.getState();
-      const runeDustQty = inventory.getQty(RUNE_DUST_ITEM_ID);
-      if (runeDustQty < cost.runeDustRequired) return { ok: false, reason: 'Not enough rune dust.' };
+      if (!inventory.canAffordItem(RUNE_DUST_ITEM_ID, cost.runeDustRequired)) {
+        return { ok: false, reason: 'Not enough rune dust.' };
+      }
 
-      const soulInkQty = inventory.getQty(cost.soulInkItemId);
-      if (soulInkQty < cost.soulInkRequired) return { ok: false, reason: 'Not enough soul ink.' };
+      if (!inventory.canAffordItem(cost.soulInkItemId, cost.soulInkRequired)) {
+        return { ok: false, reason: 'Not enough soul ink.' };
+      }
 
-      const removedRuneDust = inventory.removeItem(RUNE_DUST_ITEM_ID, cost.runeDustRequired);
-      const removedSoulInk = inventory.removeItem(cost.soulInkItemId, cost.soulInkRequired);
+      const removedRuneDust = inventory.spendItem(RUNE_DUST_ITEM_ID, cost.runeDustRequired);
+      const removedSoulInk = inventory.spendItem(cost.soulInkItemId, cost.soulInkRequired);
 
       if (!removedRuneDust || !removedSoulInk) {
         if (removedRuneDust) {
