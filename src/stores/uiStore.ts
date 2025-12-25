@@ -56,6 +56,15 @@ interface UIStateBase {
   showBreakthroughAnimation: boolean;
   showOfflineProgressModal: boolean;
   offlineProgressSummary: OfflineProgressSummary | null;
+  showManualSatchelModal: boolean;
+  showTechniqueLearnedModal: boolean;
+  techniqueLearnedPayload: {
+    techId: string;
+    grade: string;
+    rarity: string;
+    focusReward?: string;
+    learnedAt: number;
+  } | null;
 
   // UI Settings
   settings: UISettingsState;
@@ -95,6 +104,10 @@ export interface UIState extends UIStateBase {
   setLastSaveAt: (timestamp: number | null) => void;
   setLastOfflineSummary: (summary: OfflineCatchupResult['summary']) => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
+  openManualSatchel: () => void;
+  closeManualSatchel: () => void;
+  openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
+  closeTechniqueLearned: () => void;
   hardResetUI: () => void;
 }
 
@@ -112,6 +125,9 @@ const INITIAL_UI_STATE: UIStateBase = {
   showBreakthroughAnimation: false,
   showOfflineProgressModal: false,
   offlineProgressSummary: null,
+  showManualSatchelModal: false,
+  showTechniqueLearnedModal: false,
+  techniqueLearnedPayload: null,
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -361,6 +377,32 @@ export const useUIStore = create<UIState>()(
     setSettings: (partial: Partial<UISettingsState>) => {
       set((state) => {
         state.settings = { ...state.settings, ...partial };
+      });
+    },
+
+    openManualSatchel: () => {
+      set((state) => {
+        state.showManualSatchelModal = true;
+      });
+    },
+
+    closeManualSatchel: () => {
+      set((state) => {
+        state.showManualSatchelModal = false;
+      });
+    },
+
+    openTechniqueLearned: (payload) => {
+      set((state) => {
+        state.showTechniqueLearnedModal = true;
+        state.techniqueLearnedPayload = payload;
+      });
+    },
+
+    closeTechniqueLearned: () => {
+      set((state) => {
+        state.showTechniqueLearnedModal = false;
+        state.techniqueLearnedPayload = null;
       });
     },
 

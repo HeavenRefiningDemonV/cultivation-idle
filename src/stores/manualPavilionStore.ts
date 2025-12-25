@@ -14,7 +14,7 @@ import type { RewardCurrencyBundle } from '../services/rewards/types';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { useTechCollectionStore, isHigherGrade, isHigherRarity } from './techCollectionStore';
-import { useManualSatchelStore, buildManualSatchelKey } from './manualSatchelStore';
+import { useManualSatchelStore } from './manualSatchelStore';
 
 export type ManualPurchaseResult =
   | { ok: false; reason: string }
@@ -22,13 +22,13 @@ export type ManualPurchaseResult =
       ok: true;
       outcome: 'manualGranted';
       manualId: string;
+      manualInstanceId?: string;
       techId: string;
       manualName: string;
       grade: ManualGrade;
       rarity: ManualRarity;
       cost: RewardCurrencyBundle;
-      satchelKey: string;
-      qty: number;
+      satchelCount: number;
       mode: 'buy' | 'buyAndStudy';
     }
   | {
@@ -193,6 +193,12 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
       const manualId = manualIdForSlot(slot);
       const manualName = content.maps.techniquesById[slot.techniqueId]?.name ?? slot.techniqueId;
       const purchaseMode: 'buy' | 'buyAndStudy' = mode === 'buyAndStudy' ? 'buyAndStudy' : 'buy';
+      const satchelState = useManualSatchelStore.getState();
+      const existingManualIds = new Set(
+        satchelState.manuals
+          .filter((manual) => manual.techId === slot.techniqueId && manual.grade === slot.grade && manual.rarity === slot.rarity)
+          .map((manual) => manual.id),
+      );
 
       set((state) => {
         state.isPurchasing = true;
@@ -242,19 +248,22 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
           { manuals: [{ manualId, techId: slot.techniqueId, grade: slot.grade, rarity: slot.rarity, qty: 1 }] },
           'Buy Manual',
         );
-        const satchelKey = buildManualSatchelKey(slot.techniqueId, slot.grade, slot.rarity);
-        const qty = useManualSatchelStore.getState().getQty(satchelKey);
+        const updatedSatchel = useManualSatchelStore.getState();
+        const newManual = updatedSatchel.manuals
+          .filter((manual) => manual.techId === slot.techniqueId && manual.grade === slot.grade && manual.rarity === slot.rarity)
+          .find((manual) => !existingManualIds.has(manual.id));
+        const count = updatedSatchel.getManualCount(slot.techniqueId, slot.grade, slot.rarity);
         result = {
           ok: true,
           outcome: 'manualGranted',
           manualId,
+          manualInstanceId: newManual?.id,
           techId: slot.techniqueId,
           manualName,
           grade: slot.grade,
           rarity: slot.rarity,
           cost,
-          satchelKey,
-          qty,
+          satchelCount: count,
           mode: purchaseMode,
         };
       }

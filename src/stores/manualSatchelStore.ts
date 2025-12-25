@@ -1,131 +1,309 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { ManualGrade, TechRarity } from './techCollectionStore';
-import type { SaveManualSatchelEntry, SaveManualSatchelState } from '../types';
+import { GameEvents } from '../services/events/GameEvents';
+import { useContentStore } from './contentStore';
+import {
+  type ManualGrade,
+  type TechRarity,
+  normalizeGrade,
+  normalizeRarity,
+  useTechCollectionStore,
+} from './techCollectionStore';
+import { useUIStore } from './uiStore';
 
-export type ManualSatchelEntry = SaveManualSatchelEntry;
+export type FocusRewardType = 'time' | 'mastery' | 'traitQuality';
 
-interface ManualSatchelStoreState extends SaveManualSatchelState {
-  addManual: (args: {
-    manualId: string;
-    techId: string;
-    grade: ManualGrade;
-    rarity: TechRarity;
-    qty?: number;
-    acquiredAtMs?: number;
-  }) => { key: string; qty: number };
-  removeManual: (key: string, qty?: number) => { ok: boolean; qty: number };
-  getQty: (key: string) => number;
-  listEntries: () => ManualSatchelEntry[];
-  hydrate: (slice?: Partial<SaveManualSatchelState>) => void;
-  clear: () => void;
+export interface ManualInstance {
+  id: string;
+  pavilionId?: string | null;
+  cityId?: string | null;
+  techId: string;
+  grade: ManualGrade;
+  rarity: TechRarity;
+  acquiredAt: number;
 }
 
-const allowedGrades: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
-const allowedRarities: TechRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-
-function normalizeGrade(input: string): ManualGrade {
-  if (allowedGrades.includes(input as ManualGrade)) {
-    return input as ManualGrade;
-  }
-  return 'mortal';
+export interface ActiveStudy {
+  studyId: string;
+  manual: ManualInstance;
+  startedAt: number;
+  endsAt: number;
+  focusUsed: boolean;
+  focusReward?: FocusRewardType;
+  focusAppliedAt?: number;
+  completionHandled?: boolean;
 }
 
-function normalizeRarity(input: string): TechRarity {
-  if (allowedRarities.includes(input as TechRarity)) {
-    return input as TechRarity;
-  }
-  return 'common';
+export interface ManualSatchelState {
+  manuals: ManualInstance[];
+  activeStudy: ActiveStudy | null;
+  lastLearned?: { techId: string; grade: ManualGrade; rarity: TechRarity; focusReward?: FocusRewardType; learnedAt: number } | null;
 }
 
-export function buildManualSatchelKey(techId: string, grade: ManualGrade, rarity: TechRarity): string {
-  return `${techId}:${grade}:${rarity}`;
+interface ManualSatchelStoreState extends ManualSatchelState {
+  addManual: (
+    manual: Omit<ManualInstance, 'id' | 'acquiredAt'> & Partial<Pick<ManualInstance, 'id' | 'acquiredAt'>>,
+  ) => ManualInstance;
+  dismantleManual: (instanceId: string) => { ok: boolean; fragmentsGained?: number; techId?: string; reason?: string };
+  startStudy: (instanceId: string, now?: number) => { ok: boolean; reason?: string };
+  applyFocusReward: (now?: number) => { ok: boolean; reward?: FocusRewardType; reason?: string };
+  tick: (now?: number) => void;
+  hydrate: (slice?: Partial<ManualSatchelState>) => void;
+  toSaveState: () => ManualSatchelState;
+  hardReset: () => void;
+  getManualCount: (techId: string, grade: ManualGrade, rarity: TechRarity) => number;
 }
 
-function sanitizeEntry(entry: Partial<SaveManualSatchelEntry>): SaveManualSatchelEntry | null {
-  if (!entry || typeof entry.manualId !== 'string' || typeof entry.techId !== 'string') return null;
-  const grade = normalizeGrade(String(entry.grade ?? ''));
-  const rarity = normalizeRarity(String(entry.rarity ?? ''));
-  const qty = Math.max(0, Math.floor(entry.qty ?? 0));
-  if (qty <= 0) return null;
-  const key = buildManualSatchelKey(entry.techId, grade, rarity);
-  const first = typeof entry.acquiredAtFirstMs === 'number' ? entry.acquiredAtFirstMs : Date.now();
-  const last = typeof entry.acquiredAtLastMs === 'number' ? entry.acquiredAtLastMs : first;
+const STUDY_DURATION_MS: Record<ManualGrade, number> = {
+  mortal: 30_000,
+  earth: 60_000,
+  heaven: 120_000,
+  mystic: 300_000,
+};
+
+const DEFAULT_RARITY_FRAGMENT_VALUES: Record<TechRarity, number> = {
+  common: 1,
+  uncommon: 2,
+  rare: 4,
+  epic: 8,
+  legendary: 16,
+};
+
+const DEFAULT_GRADE_FRAGMENT_MULTIPLIER: Record<ManualGrade, number> = {
+  mortal: 1,
+  earth: 2,
+  heaven: 4,
+  mystic: 8,
+};
+
+function generateManualId(): string {
+  return `man_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
+function sanitizeManual(manual: Partial<ManualInstance>): ManualInstance | null {
+  if (!manual || typeof manual.techId !== 'string') return null;
+  const id = typeof manual.id === 'string' ? manual.id : generateManualId();
+  const grade = normalizeGrade(manual.grade);
+  const rarity = normalizeRarity(manual.rarity);
+  const acquiredAt = typeof manual.acquiredAt === 'number' ? manual.acquiredAt : Date.now();
   return {
-    key,
-    manualId: entry.manualId,
-    techId: entry.techId,
+    id,
+    pavilionId: manual.pavilionId ?? null,
+    cityId: manual.cityId ?? null,
+    techId: manual.techId,
     grade,
     rarity,
-    qty,
-    acquiredAtFirstMs: first,
-    acquiredAtLastMs: last,
+    acquiredAt,
   };
+}
+
+function sanitizeActiveStudy(study: Partial<ActiveStudy> | null | undefined): ActiveStudy | null {
+  if (!study || !study.manual) return null;
+  const manual = sanitizeManual(study.manual);
+  if (!manual) return null;
+  const startedAt = typeof study.startedAt === 'number' ? study.startedAt : Date.now();
+  const endsAt = typeof study.endsAt === 'number' ? study.endsAt : startedAt;
+  return {
+    studyId: typeof study.studyId === 'string' ? study.studyId : `study_${manual.id}`,
+    manual,
+    startedAt,
+    endsAt,
+    focusUsed: Boolean(study.focusUsed),
+    focusReward: study.focusReward,
+    focusAppliedAt: typeof study.focusAppliedAt === 'number' ? study.focusAppliedAt : undefined,
+    completionHandled: Boolean(study.completionHandled),
+  };
+}
+
+function getFragmentConfig() {
+  const economy = useContentStore.getState().raw as any;
+  const manualSystem = economy?.economy?.manualSystem;
+  const rarityFragmentValue: Partial<Record<TechRarity, number>> = manualSystem?.rarityFragmentValue ?? {};
+  const gradeFragmentMultiplier: Partial<Record<ManualGrade, number>> = manualSystem?.gradeFragmentMultiplier ?? {};
+  return { rarityFragmentValue, gradeFragmentMultiplier };
+}
+
+function computeFragments(grade: ManualGrade, rarity: TechRarity): number {
+  const config = getFragmentConfig();
+  const rarityValue = Number(config.rarityFragmentValue[rarity] ?? DEFAULT_RARITY_FRAGMENT_VALUES[rarity] ?? 0);
+  const gradeMultiplier = Number(
+    config.gradeFragmentMultiplier[grade] ?? DEFAULT_GRADE_FRAGMENT_MULTIPLIER[grade] ?? 1,
+  );
+  return Math.max(0, Math.floor(rarityValue * gradeMultiplier));
+}
+
+function ensureMasteryAtLeast(techId: string, level: number) {
+  const collection = useTechCollectionStore.getState();
+  collection.ensureMasteryLevelAtLeast(techId, level);
 }
 
 export const useManualSatchelStore = create<ManualSatchelStoreState>()(
   immer((set, get) => ({
-    entries: {},
+    manuals: [],
+    activeStudy: null,
+    lastLearned: null,
 
-    addManual: ({ manualId, techId, grade, rarity, qty = 1, acquiredAtMs = Date.now() }) => {
-      if (!manualId || !techId) return { key: '', qty: 0 };
-      const normalizedGrade = normalizeGrade(grade);
-      const normalizedRarity = normalizeRarity(rarity);
-      const sanitizedQty = Math.max(1, Math.floor(qty));
-      const key = buildManualSatchelKey(techId, normalizedGrade, normalizedRarity);
+    addManual: (manual) => {
+      const sanitized = sanitizeManual(manual);
+      if (!sanitized) return manual as ManualInstance;
       set((state) => {
-        const existing = state.entries[key];
-        if (existing) {
-          existing.qty += sanitizedQty;
-          existing.acquiredAtLastMs = acquiredAtMs;
-        } else {
-          state.entries[key] = {
-            key,
-            manualId,
-            techId,
-            grade: normalizedGrade,
-            rarity: normalizedRarity,
-            qty: sanitizedQty,
-            acquiredAtFirstMs: acquiredAtMs,
-            acquiredAtLastMs: acquiredAtMs,
-          };
-        }
+        state.manuals.push(sanitized);
       });
-      return { key, qty: get().entries[key]?.qty ?? sanitizedQty };
+      GameEvents.emit({
+        type: 'manuals/purchased',
+        payload: { manualId: sanitized.techId, techniqueId: sanitized.techId, quantity: 1 },
+      });
+      return sanitized;
     },
 
-    removeManual: (key: string, qty = 1) => {
-      const sanitizedQty = Math.max(1, Math.floor(qty));
-      let remaining = 0;
+    dismantleManual: (instanceId) => {
+      const currentState = get();
+      if (currentState.activeStudy?.manual.id === instanceId) {
+        return { ok: false, reason: 'manual_in_use' };
+      }
+      let removed: ManualInstance | null = null;
       set((state) => {
-        const existing = state.entries[key];
-        if (!existing) return;
-        existing.qty = Math.max(0, existing.qty - sanitizedQty);
-        if (existing.qty <= 0) {
-          delete state.entries[key];
-          remaining = 0;
-        } else {
-          remaining = existing.qty;
-        }
+        const index = state.manuals.findIndex((manual) => manual.id === instanceId);
+        if (index === -1) return;
+        removed = state.manuals.splice(index, 1)[0];
       });
-      return { ok: sanitizedQty > 0, qty: remaining };
+      if (!removed) return { ok: false, reason: 'manual_not_found' };
+      const manual = removed as ManualInstance;
+      const fragmentsGained = computeFragments(manual.grade, manual.rarity);
+      if (fragmentsGained > 0) {
+        useTechCollectionStore.getState().addFragments(manual.techId, fragmentsGained);
+      }
+      GameEvents.emit({ type: 'rewards/granted', payload: { type: 'techniqueFragments', techId: manual.techId } as any });
+      return { ok: true, fragmentsGained, techId: manual.techId };
     },
 
-    getQty: (key: string) => get().entries[key]?.qty ?? 0,
+    startStudy: (instanceId, now = Date.now()) => {
+      const currentState = get();
+      if (currentState.activeStudy) return { ok: false, reason: 'Already studying a manual.' };
+      let manual: ManualInstance | null = null;
+      set((draft) => {
+        const index = draft.manuals.findIndex((entry) => entry.id === instanceId);
+        if (index === -1) return;
+        manual = draft.manuals.splice(index, 1)[0];
+        const durationMs = manual ? STUDY_DURATION_MS[manual.grade] ?? STUDY_DURATION_MS.mortal : 0;
+        draft.activeStudy = manual
+          ? {
+              studyId: `study_${manual.id}`,
+              manual,
+              startedAt: now,
+              endsAt: now + durationMs,
+              focusUsed: false,
+            }
+          : draft.activeStudy;
+      });
+      if (!manual) return { ok: false, reason: 'Manual not found.' };
+      const manualInstance = manual as ManualInstance;
+      GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manualInstance.techId, progress: 0 } });
+      return { ok: true };
+    },
 
-    listEntries: () => Object.values(get().entries).sort((a, b) => b.acquiredAtLastMs - a.acquiredAtLastMs),
+    applyFocusReward: (now = Date.now()) => {
+      const active = get().activeStudy;
+      if (!active) return { ok: false, reason: 'No active study.' };
+      if (active.focusUsed) return { ok: false, reason: 'Focus already applied.' };
+      const rewards: FocusRewardType[] = ['time', 'mastery', 'traitQuality'];
+      const roll = rewards[Math.floor(Math.random() * rewards.length)];
+      set((state) => {
+        const study = state.activeStudy;
+        if (!study) return;
+        study.focusUsed = true;
+        study.focusReward = roll;
+        study.focusAppliedAt = now;
+        if (roll === 'time') {
+          const remaining = Math.max(0, study.endsAt - now);
+          study.endsAt = now + remaining * 0.9;
+        }
+      });
+      GameEvents.emit({ type: 'manuals/studied', payload: { manualId: active.manual.techId, progress: 0.5 } });
+      return { ok: true, reward: roll };
+    },
+
+    tick: (now = Date.now()) => {
+      const active = get().activeStudy;
+      if (!active || active.completionHandled) return;
+      if (now < active.endsAt) return;
+      set((state) => {
+        if (!state.activeStudy) return;
+        state.activeStudy.completionHandled = true;
+      });
+      const collection = useTechCollectionStore.getState();
+      const ui = useUIStore.getState();
+      const { manual, focusReward } = active;
+      const hasTech = collection.hasTech(manual.techId);
+
+      if (hasTech) {
+        const fragmentsGained = computeFragments(manual.grade, manual.rarity);
+        if (fragmentsGained > 0) {
+          collection.addFragments(manual.techId, fragmentsGained);
+        }
+        set((state) => {
+          state.activeStudy = null;
+          state.lastLearned = null;
+        });
+        ui.addNotification('info', `Manual converted to fragments for ${manual.techId}`);
+        GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manual.techId, progress: 1 } });
+        return;
+      }
+
+      collection.unlockTech(manual.techId, { unlocked: true, manualGrade: manual.grade, rarity: manual.rarity });
+      collection.setManualGrade(manual.techId, manual.grade);
+      collection.setRarityIfHigher(manual.techId, manual.rarity);
+
+      if (focusReward === 'mastery') {
+        ensureMasteryAtLeast(manual.techId, 10);
+      }
+      if (focusReward === 'traitQuality') {
+        collection.applyTraitQualityBoost(manual.techId, 0.05);
+      }
+
+      const learnedPayload = {
+        techId: manual.techId,
+        grade: manual.grade,
+        rarity: manual.rarity,
+        focusReward,
+        learnedAt: now,
+      } as const;
+
+      set((state) => {
+        state.activeStudy = null;
+        state.lastLearned = learnedPayload;
+      });
+      ui.openTechniqueLearned(learnedPayload);
+      GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manual.techId, progress: 1 } });
+    },
 
     hydrate: (slice) => {
-      if (!slice || typeof slice !== 'object' || !slice.entries || typeof slice.entries !== 'object') return;
-      const next: Record<string, ManualSatchelEntry> = {};
-      Object.entries(slice.entries).forEach(([key, entry]) => {
-        const sanitized = sanitizeEntry(entry as Partial<SaveManualSatchelEntry>);
-        if (!sanitized) return;
-        next[key] = sanitized;
-      });
-      set({ entries: next });
+      if (!slice || typeof slice !== 'object') return;
+      const manuals: ManualInstance[] = Array.isArray(slice.manuals)
+        ? slice.manuals
+            .map((entry) => sanitizeManual(entry))
+            .filter(Boolean)
+            .map((entry) => entry!)
+        : [];
+      const activeStudy = sanitizeActiveStudy(slice.activeStudy);
+      const lastLearned = slice.lastLearned ?? null;
+      set({ manuals, activeStudy, lastLearned });
     },
 
-    clear: () => set({ entries: {} }),
+    toSaveState: () => {
+      const state = get();
+      return {
+        manuals: state.manuals.map((manual) => ({ ...manual })),
+        activeStudy: state.activeStudy ? { ...state.activeStudy, manual: { ...state.activeStudy.manual } } : null,
+        lastLearned: state.lastLearned ? { ...state.lastLearned } : null,
+      };
+    },
+
+    hardReset: () => set({ manuals: [], activeStudy: null, lastLearned: null }),
+
+    getManualCount: (techId, grade, rarity) => {
+      return get().manuals.filter((manual) => manual.techId === techId && manual.grade === grade && manual.rarity === rarity)
+        .length;
+    },
   })),
 );

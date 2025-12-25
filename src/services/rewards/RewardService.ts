@@ -69,16 +69,16 @@ function applyManuals(manuals: RewardBundle['manuals'] | undefined) {
   if (!manuals || manuals.length === 0) return;
   const satchel = useManualSatchelStore.getState();
   manuals.forEach((manual) => {
-    if (!manual || !manual.manualId || !manual.techId) return;
+    if (!manual || !manual.techId) return;
     const qty = Math.max(1, Math.floor(manual.qty ?? 0));
-    satchel.addManual({
-      manualId: manual.manualId,
-      techId: manual.techId,
-      grade: manual.grade,
-      rarity: manual.rarity,
-      qty,
-      acquiredAtMs: Date.now(),
-    });
+    for (let i = 0; i < qty; i += 1) {
+      satchel.addManual({
+        techId: manual.techId,
+        grade: manual.grade,
+        rarity: manual.rarity,
+        acquiredAt: Date.now(),
+      });
+    }
   });
 }
 

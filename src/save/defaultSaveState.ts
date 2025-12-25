@@ -21,7 +21,7 @@ import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 
-export const SAVE_VERSION = '1.0.3';
+export const SAVE_VERSION = '1.0.4';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -63,17 +63,6 @@ const cloneManualPavilionState = (
       pity: { ...(stock.pity ?? { featuredEpic: 0, featuredLegendary: 0 }) },
       history: Array.isArray(stock.history) ? stock.history.map((entry) => ({ ...entry })) : [],
     };
-  });
-  return copy;
-};
-
-const cloneManualSatchelState = (
-  source: ReturnType<typeof useManualSatchelStore.getState>['entries'],
-): ReturnType<typeof useManualSatchelStore.getState>['entries'] => {
-  const copy: ReturnType<typeof useManualSatchelStore.getState>['entries'] = {};
-  Object.entries(source ?? {}).forEach(([key, entry]) => {
-    if (!entry || typeof entry !== 'object') return;
-    copy[key] = { ...entry };
   });
   return copy;
 };
@@ -221,9 +210,7 @@ export function buildDefaultSaveState(): SaveData {
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
     },
-    manualSatchelState: {
-      entries: cloneManualSatchelState(manualSatchelState.entries),
-    },
+    manualSatchelState: manualSatchelState.toSaveState(),
   };
 }
 
@@ -397,16 +384,24 @@ function isValidManualPavilionState(value: unknown): value is SaveData['manualPa
 
 function isValidManualSatchelState(value: unknown): value is SaveData['manualSatchelState'] {
   if (!isRecord(value)) return false;
-  if (!isRecord(value.entries)) return false;
-  for (const entry of Object.values(value.entries)) {
-    if (!isRecord(entry)) continue;
-    if (typeof entry.manualId !== 'string') return false;
+  if (!Array.isArray(value.manuals)) return false;
+  for (const entry of value.manuals) {
+    if (!isRecord(entry)) return false;
+    if (typeof entry.id !== 'string') return false;
     if (typeof entry.techId !== 'string') return false;
     if (typeof entry.grade !== 'string') return false;
     if (typeof entry.rarity !== 'string') return false;
-    if (typeof entry.qty !== 'number') return false;
-    if (typeof entry.acquiredAtFirstMs !== 'number') return false;
-    if (typeof entry.acquiredAtLastMs !== 'number') return false;
+    if (typeof entry.acquiredAt !== 'number') return false;
+  }
+  if (value.activeStudy !== null && value.activeStudy !== undefined) {
+    const study = value.activeStudy as any;
+    if (!isRecord(study)) return false;
+    if (typeof study.studyId !== 'string') return false;
+    if (!isRecord(study.manual)) return false;
+    if (typeof (study.manual as any).techId !== 'string') return false;
+    if (typeof (study.manual as any).grade !== 'string') return false;
+    if (typeof (study.manual as any).rarity !== 'string') return false;
+    if (typeof (study.manual as any).acquiredAt !== 'number') return false;
   }
   return true;
 }

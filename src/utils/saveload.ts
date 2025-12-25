@@ -60,13 +60,17 @@ function cloneManualPavilionState(
   return copy;
 }
 
-function cloneManualSatchelState(source: SaveManualSatchelState['entries']): SaveManualSatchelState['entries'] {
-  const copy: SaveManualSatchelState['entries'] = {};
-  Object.entries(source ?? {}).forEach(([key, entry]) => {
-    if (!entry || typeof entry !== 'object') return;
-    copy[key] = { ...entry };
-  });
-  return copy;
+function cloneManualSatchelState(source: SaveManualSatchelState): SaveManualSatchelState {
+  return {
+    manuals: Array.isArray(source?.manuals) ? source.manuals.map((manual) => ({ ...manual })) : [],
+    activeStudy: source?.activeStudy
+      ? {
+          ...source.activeStudy,
+          manual: { ...source.activeStudy.manual },
+        }
+      : null,
+    lastLearned: source?.lastLearned ? { ...source.lastLearned } : null,
+  };
 }
 
 /**
@@ -187,9 +191,7 @@ function gatherGameState(): SaveData {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
     },
 
-    manualSatchelState: {
-      entries: cloneManualSatchelState(manualSatchelState.entries),
-    },
+    manualSatchelState: cloneManualSatchelState(manualSatchelState.toSaveState()),
 
     techniqueState: {
       loadouts: techniqueState.loadouts,
@@ -388,7 +390,7 @@ function validateSaveData(data: unknown): data is SaveData {
 
     if ('manualSatchelState' in record && record.manualSatchelState) {
       const mss = record.manualSatchelState as Record<string, unknown>;
-      if (!mss.entries || typeof mss.entries !== 'object') return false;
+      if (!Array.isArray(mss.manuals)) return false;
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -866,7 +868,11 @@ function applySaveData(saveData: SaveData): void {
         : getDefaultUnlockedHeartLawIds(),
     });
 
-    const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? { entries: {} };
+    const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? {
+      manuals: [],
+      activeStudy: null,
+      lastLearned: null,
+    };
     const manualPavilionState = saveData.manualPavilionState ?? defaults.manualPavilionState;
     useManualPavilionStore.getState().hydrate(manualPavilionState);
     useManualSatchelStore.getState().hydrate(manualSatchelState);
@@ -1063,6 +1069,12 @@ export function deleteSave(): boolean {
       console.warn('[deleteSave] Failed to reset technique collection', error);
     }
 
+    try {
+      useManualSatchelStore.getState().hardReset();
+    } catch (error) {
+      console.warn('[deleteSave] Failed to reset manual satchel', error);
+    }
+
     console.log('[SaveLoad] All saves deleted and game reset');
     return true;
   } catch (error) {
@@ -1160,6 +1172,12 @@ export function deleteSaveAndHardReset(): void {
     useTechCollectionStore.getState().hardReset();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset technique collection', error);
+  }
+
+  try {
+    useManualSatchelStore.getState().hardReset();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset manual satchel', error);
   }
 
   try {

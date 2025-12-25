@@ -279,18 +279,30 @@ export interface SaveOutskirtsState {
 }
 
 export interface SaveManualSatchelEntry {
-  key: string;
-  manualId: string;
+  id: string;
+  pavilionId?: string | null;
+  cityId?: string | null;
   techId: string;
   grade: 'mortal' | 'earth' | 'heaven' | 'mystic';
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  qty: number;
-  acquiredAtFirstMs: number;
-  acquiredAtLastMs: number;
+  acquiredAt: number;
+}
+
+export interface SaveActiveManualStudy {
+  studyId: string;
+  manual: SaveManualSatchelEntry;
+  startedAt: number;
+  endsAt: number;
+  focusUsed: boolean;
+  focusReward?: 'time' | 'mastery' | 'traitQuality';
+  focusAppliedAt?: number;
+  completionHandled?: boolean;
 }
 
 export interface SaveManualSatchelState {
-  entries: Record<string, SaveManualSatchelEntry>;
+  manuals: SaveManualSatchelEntry[];
+  activeStudy: SaveActiveManualStudy | null;
+  lastLearned?: { techId: string; grade: SaveManualSatchelEntry['grade']; rarity: SaveManualSatchelEntry['rarity']; focusReward?: 'time' | 'mastery' | 'traitQuality'; learnedAt: number } | null;
 }
 
 export interface SaveData {

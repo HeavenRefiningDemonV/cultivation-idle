@@ -13,6 +13,7 @@ import {
 } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
+import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { SaveService } from '../services/save/SaveService';
 import { useUIStore } from '../stores/uiStore';
 import { useActivityStore } from '../stores/activityStore';
@@ -179,6 +180,7 @@ class GameLoop {
       // We could add additional cultivation logic here in the future
       // For now, the gameStore.tick() handles Qi generation
       useExpeditionStore.getState().tick(Date.now());
+      useManualSatchelStore.getState().tick(Date.now());
     } catch (error) {
       console.error('[GameLoop] Error in cultivation tick:', error);
     }
@@ -300,6 +302,7 @@ export function initializeGame(): boolean {
 
         const now = Date.now();
         useGameStore.setState({ lastActiveTime: now, lastTickTime: now });
+        useManualSatchelStore.getState().tick(now);
         SaveService.save();
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');

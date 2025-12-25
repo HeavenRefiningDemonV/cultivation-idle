@@ -38,10 +38,12 @@ interface TechCollectionState {
   setManualGrade: (techId: string, grade: ManualGrade) => void;
   setRarityIfHigher: (techId: string, rarity: TechRarity) => void;
   getMasteryLevel: (techId: string) => number;
+  ensureMasteryLevelAtLeast: (techId: string, level: number) => void;
   getEffectiveRuneSlots: (techId: string) => number;
   getEffectiveTraitSlots: (techId: string) => number;
   ensureTraits: (techId: string) => void;
   rerollTraits: (techId: string) => { ok: boolean; reason?: string };
+  applyTraitQualityBoost: (techId: string, chance?: number) => void;
   ensureRunes: (techId: string) => void;
   socketRune: (techId: string, slotIndex: number, runeItemId: string) => { ok: boolean; reason?: string };
   unsocketRune: (techId: string, slotIndex: number) => { ok: boolean; reason?: string };
@@ -87,6 +89,11 @@ interface TechCollectionState {
 
 const XP_SCALE = 3;
 export const MASTERY_XP_SCALE = XP_SCALE;
+
+export function xpNeededForLevel(level: number): number {
+  if (level <= 1) return 0;
+  return Math.max(0, (level - 1) ** 2 * XP_SCALE);
+}
 
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: TechRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
@@ -399,6 +406,17 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       return masteryLevelFromXp(entry?.masteryXp ?? 0);
     },
 
+    ensureMasteryLevelAtLeast: (techId, level) => {
+      if (level <= 1) return;
+      set((state) => {
+        const entry = state.unlockedTechs[techId];
+        if (!entry?.unlocked) return;
+        const targetXp = xpNeededForLevel(level);
+        if (entry.masteryXp >= targetXp) return;
+        entry.masteryXp = targetXp;
+      });
+    },
+
     getMasteryCooldownReductionPct: (techId) => {
       const level = get().getMasteryLevel(techId);
       const milestones = masteryMilestones(level);
@@ -639,6 +657,25 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       });
 
       return { ok: true };
+    },
+
+    applyTraitQualityBoost: (techId, chance = 0.05) => {
+      if (chance <= 0) return;
+      set((state) => {
+        const entry = state.unlockedTechs[techId];
+        if (!entry?.unlocked || !entry.traits?.length) return;
+        let seed = state.rngSeed;
+        entry.traits = entry.traits.map((trait) => {
+          const def = getTraitDefinition(trait.id);
+          if (!def) return trait;
+          const roll = randFloat(seed);
+          seed = roll.seed;
+          if (roll.value >= chance) return trait;
+          const boosted = Math.min(def.max, trait.value + (def.max - trait.value) * 0.5);
+          return { ...trait, value: Number(boosted.toFixed(4)) };
+        });
+        state.rngSeed = seed;
+      });
     },
 
     getTraitModifiers: (techId, isBoss) => {

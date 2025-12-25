@@ -9,7 +9,7 @@ import { formatPrice } from '../../stores/contentStore';
 import { formatDurationHMS } from '../../utils/timeFormat';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
-import { studyManualFromSatchel } from '../../services/manuals/manualStudy';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -221,15 +221,18 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
     let finalResult: ManualPurchaseResult & { studied?: boolean } = result;
     if (mode === 'buyAndStudy' && result.outcome === 'manualGranted') {
-      const studyResult = studyManualFromSatchel({
-        satchelKey: result.satchelKey,
-        manualId: result.manualId,
-        techId: result.techId,
-        grade: result.grade,
-        rarity: result.rarity,
-      });
-      if (studyResult.ok) {
-        finalResult = { ...result, studied: true };
+      const satchel = useManualSatchelStore.getState();
+      const manualId =
+        result.manualInstanceId ||
+        satchel.manuals.find(
+          (manual) =>
+            manual.techId === result.techId && manual.grade === result.grade && manual.rarity === result.rarity,
+        )?.id;
+      if (manualId) {
+        const studyResult = satchel.startStudy(manualId);
+        if (studyResult.ok) {
+          finalResult = { ...result, studied: true };
+        }
       }
     }
 
@@ -459,7 +462,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       return (
         <div className={'pavilionPurchaseResult'}>
           <div className={'pavilionResultTitle'}>Manual Purchased</div>
-          <div>Added to Manual Satchel ({purchaseResult.qty} owned in stack).</div>
+          <div>
+            Added to Manual Satchel
+            {typeof purchaseResult.satchelCount === 'number'
+              ? ` (${purchaseResult.satchelCount} owned in this grade/rarity).`
+              : '.'}
+          </div>
           {purchaseResult.studied && <div>Technique Learned (studied instantly).</div>}
           <div>
             {purchaseResult.manualName} • {gradeLabel(purchaseResult.grade)} • {rarityLabel(purchaseResult.rarity)}
