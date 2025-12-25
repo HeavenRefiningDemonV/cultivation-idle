@@ -63,6 +63,13 @@
   align-items: center;
 }
 
+.pavilionHeaderActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
 .pavilionTitle {
   font-size: 18px;
   font-weight: 600;

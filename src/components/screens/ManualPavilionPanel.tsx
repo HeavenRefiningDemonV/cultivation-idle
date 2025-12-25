@@ -10,6 +10,7 @@ import { formatDurationHMS } from '../../utils/timeFormat';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
+import { useUIStore } from '../../stores/uiStore';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -121,6 +122,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const lastPurchaseError = useManualPavilionStore((state) => state.lastError);
   const realmIndex = useGameStore((state) => state.realm.index);
   const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
+  const openManualSatchel = useUIStore((state) => state.openManualSatchel);
+  const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
 
   const [filters, setFilters] = useState<FiltersState>({
     type: 'all',
@@ -616,7 +619,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
               Grade sold: {gradeLabel(gradeSold as ManualGrade)} • Grade cap: {gradeLabel(gradeCap)}
             </div>
           </div>
-          {renderRefreshBar()}
+          <div className={'pavilionHeaderActions'}>
+            <button className={'worldScreenModuleButton'} onClick={openManualSatchel}>
+              Manual Satchel ({satchelCount})
+            </button>
+            {renderRefreshBar()}
+          </div>
         </div>
         <div className={'pavilionShelves'}>
           {renderShelf('Common Shelf', shelves.common)}

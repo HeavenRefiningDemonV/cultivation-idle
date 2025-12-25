@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef } from '../../stores/contentStore';
 import { useBuffStore } from '../../stores/buffStore';
+import { useUIStore } from '../../stores/uiStore';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import './InventoryScreen.scss';
 
 type DisplayItem = {
@@ -25,6 +27,8 @@ export default function InventoryScreen() {
   const currencies = useInventoryStore((state) => state.currencies);
   const items = useInventoryStore((state) => state.items);
   const activateTalisman = useBuffStore((state) => state.activateTalisman);
+  const openManualSatchel = useUIStore((state) => state.openManualSatchel);
+  const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
   const [statusByItem, setStatusByItem] = useState<Record<string, { type: 'success' | 'error'; message: string }>>(
     {},
   );
@@ -51,6 +55,13 @@ export default function InventoryScreen() {
   return (
     <div className="inventory-screen">
       <h2>Inventory</h2>
+
+      <div className="inventory-satchel-entry">
+        <button className="inventory-satchel-button" onClick={openManualSatchel}>
+          Manual Satchel ({satchelCount})
+        </button>
+        <div className="inventory-satchel-copy">Buy Manual → Study Manual → Technique Learned → Equip Technique → Auto-Used in Combat</div>
+      </div>
 
       <div className="inventory-currencies">
         <CurrencyRow label="Gold" value={currencies.gold} />
