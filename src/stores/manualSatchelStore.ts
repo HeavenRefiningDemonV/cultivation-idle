@@ -38,7 +38,7 @@ function normalizeRarity(input: string): TechRarity {
   return 'common';
 }
 
-function buildKey(techId: string, grade: ManualGrade, rarity: TechRarity): string {
+export function buildManualSatchelKey(techId: string, grade: ManualGrade, rarity: TechRarity): string {
   return `${techId}:${grade}:${rarity}`;
 }
 
@@ -48,7 +48,7 @@ function sanitizeEntry(entry: Partial<SaveManualSatchelEntry>): SaveManualSatche
   const rarity = normalizeRarity(String(entry.rarity ?? ''));
   const qty = Math.max(0, Math.floor(entry.qty ?? 0));
   if (qty <= 0) return null;
-  const key = buildKey(entry.techId, grade, rarity);
+  const key = buildManualSatchelKey(entry.techId, grade, rarity);
   const first = typeof entry.acquiredAtFirstMs === 'number' ? entry.acquiredAtFirstMs : Date.now();
   const last = typeof entry.acquiredAtLastMs === 'number' ? entry.acquiredAtLastMs : first;
   return {
@@ -72,7 +72,7 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       const normalizedGrade = normalizeGrade(grade);
       const normalizedRarity = normalizeRarity(rarity);
       const sanitizedQty = Math.max(1, Math.floor(qty));
-      const key = buildKey(techId, normalizedGrade, normalizedRarity);
+      const key = buildManualSatchelKey(techId, normalizedGrade, normalizedRarity);
       set((state) => {
         const existing = state.entries[key];
         if (existing) {

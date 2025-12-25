@@ -35,6 +35,7 @@ export type ManualPurchasedEvent = {
   type: 'manuals/purchased';
   payload: {
     manualId: string;
+    techniqueId?: string;
     cost?: Record<string, string>;
     quantity?: number;
   };

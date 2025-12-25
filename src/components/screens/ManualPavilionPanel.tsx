@@ -7,6 +7,9 @@ import { useGameStore } from '../../stores/gameStore';
 import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
 import { formatPrice } from '../../stores/contentStore';
 import { formatDurationHMS } from '../../utils/timeFormat';
+import { useInventoryStore } from '../../stores/inventoryStore';
+import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
+import { studyManualFromSatchel } from '../../services/manuals/manualStudy';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -24,6 +27,18 @@ interface FiltersState {
 
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: ManualRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+const purchaseErrorCopy: Record<string, string> = {
+  insufficient_funds: 'Not enough currency for this purchase.',
+  already_sold: 'This manual has already been purchased.',
+  not_sold_here: 'This manual is not sold in this pavilion.',
+  sealed: 'This manual is sealed behind a higher grade.',
+  invalid_cost: 'Invalid price for this manual.',
+  stock_missing: 'Pavilion stock missing. Try refreshing.',
+  slot_missing: 'Manual slot missing. Try refreshing.',
+  purchase_in_progress: 'Another purchase is already in progress.',
+  spend_failed: 'Unable to spend currency for this purchase.',
+  content_loading: 'Content is still loading.',
+};
 
 function normalizeGradeValue(value?: string | null): ManualGrade {
   if (value && (gradeOrder as string[]).includes(value)) {
@@ -87,6 +102,11 @@ function isSlotMatchingFilters(
   return true;
 }
 
+function formatPurchaseError(reason?: string | null) {
+  if (!reason) return null;
+  return purchaseErrorCopy[reason] ?? reason;
+}
+
 export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const isContentLoaded = useContentStore((state) => state.isLoaded);
   const isContentLoading = useContentStore((state) => state.isLoading);
@@ -96,7 +116,11 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const ensureStock = useManualPavilionStore((state) => state.ensureStock);
   const refreshStock = useManualPavilionStore((state) => state.refreshStock);
   const stock = useManualPavilionStore((state) => (pavilionId ? state.stockByPavilionId[pavilionId] : null));
+  const buyManual = useManualPavilionStore((state) => state.buyManual);
+  const isPurchasing = useManualPavilionStore((state) => state.isPurchasing);
+  const lastPurchaseError = useManualPavilionStore((state) => state.lastError);
   const realmIndex = useGameStore((state) => state.realm.index);
+  const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
 
   const [filters, setFilters] = useState<FiltersState>({
     type: 'all',
@@ -107,11 +131,18 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   });
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(handle);
   }, []);
+
+  useEffect(() => {
+    setPurchaseResult(null);
+    setPurchaseError(null);
+  }, [selectedSlotId, stock?.generatedAt]);
 
   useEffect(() => {
     if (pavilionId && isContentLoaded && pavilion) {
@@ -177,6 +208,42 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const handleRefresh = () => {
     if (!pavilionId) return;
     refreshStock(pavilionId, Date.now());
+  };
+
+  const handlePurchase = (mode: 'buy' | 'buyAndStudy') => {
+    if (!pavilionId || !selectedSlot) return;
+    const result = buyManual({ pavilionId, stockId: selectedSlot.slotIndex, mode });
+    if (!result.ok) {
+      setPurchaseError(result.reason || 'purchase_failed');
+      setPurchaseResult(null);
+      return;
+    }
+
+    let finalResult: ManualPurchaseResult & { studied?: boolean } = result;
+    if (mode === 'buyAndStudy' && result.outcome === 'manualGranted') {
+      const studyResult = studyManualFromSatchel({
+        satchelKey: result.satchelKey,
+        manualId: result.manualId,
+        techId: result.techId,
+        grade: result.grade,
+        rarity: result.rarity,
+      });
+      if (studyResult.ok) {
+        finalResult = { ...result, studied: true };
+      }
+    }
+
+    setPurchaseError(null);
+    setPurchaseResult(finalResult);
+  };
+
+  const scrollToTechnique = (techId: string) => {
+    const el = document.getElementById(`tech-card-${techId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('techniqueCardHighlight');
+      window.setTimeout(() => el.classList.remove('techniqueCardHighlight'), 2000);
+    }
   };
 
   const renderFilters = () => {
@@ -259,10 +326,13 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const renderCard = (slot: PavilionStockSlot) => {
     const technique = getTechniqueMeta(slot.techniqueId, techniquesById);
     const isSelected = selectedSlot?.slotIndex === slot.slotIndex;
+    const sold = Boolean(slot.sold);
     return (
       <div
         key={slot.slotIndex}
-        className={`pavilionCard ${isSelected ? 'pavilionCard--selected' : ''} ${slot.sealed ? 'pavilionCard--sealed' : ''}`}
+        className={`pavilionCard ${isSelected ? 'pavilionCard--selected' : ''} ${slot.sealed ? 'pavilionCard--sealed' : ''} ${
+          sold ? 'pavilionCard--sold' : ''
+        }`}
         onClick={() => handleSelect(slot)}
       >
         <div className={'pavilionCardHeader'}>
@@ -281,6 +351,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           ) : (
             <div className={'pavilionCardLine'}>Price: {formatPrice(slot.price) || 'Free'}</div>
           )}
+          {sold && <div className={'pavilionCardLine pavilionCardSold'}>Sold out</div>}
           {slot.sealed && <div className={'pavilionCardLine pavilionCardNotSold'}>Sealed (grade locked)</div>}
         </div>
       </div>
@@ -302,10 +373,22 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       return <div className={'pavilionDetailEmpty'}>Select a manual to see details.</div>;
     }
     const technique = getTechniqueMeta(selectedSlot.techniqueId, techniquesById);
-    const purchaseDisabledReason = selectedSlot.notSold
-      ? 'Not sold here'
-      : 'Purchasing is implemented in P2';
-    const studyDisabledReason = selectedSlot.notSold ? 'Not sold here' : 'Study flow is implemented in P3';
+    const costLabel = formatPrice(selectedSlot.price) || 'Free';
+    const canAfford = selectedSlot.price ? canAffordCurrency(selectedSlot.price) : true;
+    const purchaseDisabledReason = selectedSlot.sold
+      ? 'Already purchased'
+      : selectedSlot.notSold
+        ? 'Not sold here'
+        : selectedSlot.sealed
+          ? 'Sealed (grade locked)'
+          : !canAfford
+            ? 'Not enough currency'
+            : isPurchasing
+              ? 'Purchase in progress'
+              : undefined;
+    const studyDisabledReason =
+      purchaseDisabledReason ?? 'Buy & Study Now performs an instant study in this milestone.';
+    const errorMessage = formatPurchaseError(purchaseError || lastPurchaseError);
     return (
       <div className={'pavilionDetail'}>
         <div className={'pavilionDetailHeader'}>
@@ -333,15 +416,73 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           {selectedSlot.notSold && (
             <div className={'pavilionDetailLine pavilionCardNotSold'}>Not sold here in this city tier.</div>
           )}
+          {selectedSlot.sold && <div className={'pavilionDetailLine pavilionCardSold'}>Sold out.</div>}
+          <div className={'pavilionDetailLine'}>Price: {costLabel}</div>
         </div>
         <div className={'pavilionDetailActions'}>
-          <button className={'worldScreenModuleButton'} disabled title={purchaseDisabledReason}>
+          <button
+            className={'worldScreenModuleButton'}
+            disabled={Boolean(purchaseDisabledReason)}
+            title={purchaseDisabledReason}
+            onClick={() => handlePurchase('buy')}
+          >
             Buy Manual
           </button>
-          <button className={'worldScreenModuleButton'} disabled title={studyDisabledReason}>
+          <button
+            className={'worldScreenModuleButton'}
+            disabled={Boolean(studyDisabledReason)}
+            title={studyDisabledReason}
+            onClick={() => handlePurchase('buyAndStudy')}
+          >
             Buy &amp; Study Now
           </button>
         </div>
+        {errorMessage && <div className={'pavilionPurchaseError'}>Purchase failed: {errorMessage}</div>}
+        {renderPurchaseResult()}
+      </div>
+    );
+  };
+
+  const renderPurchaseResult = () => {
+    if (!purchaseResult) return null;
+    if (!purchaseResult.ok) {
+      return (
+        <div className={'pavilionPurchaseResult pavilionPurchaseResult--error'}>
+          Purchase failed: {purchaseResult.reason}
+        </div>
+      );
+    }
+
+    const costText = formatPrice(purchaseResult.cost) || 'Free';
+
+    if (purchaseResult.outcome === 'manualGranted') {
+      return (
+        <div className={'pavilionPurchaseResult'}>
+          <div className={'pavilionResultTitle'}>Manual Purchased</div>
+          <div>Added to Manual Satchel ({purchaseResult.qty} owned in stack).</div>
+          {purchaseResult.studied && <div>Technique Learned (studied instantly).</div>}
+          <div>
+            {purchaseResult.manualName} • {gradeLabel(purchaseResult.grade)} • {rarityLabel(purchaseResult.rarity)}
+          </div>
+          <div>Cost: {costText}</div>
+        </div>
+      );
+    }
+
+    const progressLine = purchaseResult.nextRankCostFragments
+      ? `Progress: ${purchaseResult.fragmentsAfter}/${purchaseResult.nextRankCostFragments} toward Rank ${purchaseResult.nextRank}`
+      : 'Rank cap reached for current grade.';
+
+    return (
+      <div className={'pavilionPurchaseResult pavilionPurchaseResult--duplicate'}>
+        <div className={'pavilionResultTitle'}>Duplicate Manual → Converted</div>
+        <div>
+          +{purchaseResult.fragmentsGained} Technique Fragments ({rarityLabel(purchaseResult.rarity)})
+        </div>
+        <div>{progressLine}</div>
+        <button className={'worldScreenModuleButton'} onClick={() => scrollToTechnique(purchaseResult.techId)}>
+          Upgrade now
+        </button>
       </div>
     );
   };

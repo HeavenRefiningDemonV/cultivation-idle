@@ -343,6 +343,7 @@ function generateStock(pavilionId: string, now: number, previous?: PavilionStock
       rarity: rarityResult.rarity,
       price,
       notSold,
+      sold: false,
     });
   });
 

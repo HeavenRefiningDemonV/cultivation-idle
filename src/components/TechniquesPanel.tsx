@@ -390,7 +390,7 @@ export function TechniquesPanel() {
           <div className={'worldScreenPlaceholderLine'}>Buy manuals to unlock techniques.</div>
         )}
         {techniqueCards.map((entry) => (
-          <div key={entry.id} className={'worldScreenPlaceholderLine'}>
+          <div key={entry.id} id={`tech-card-${entry.id}`} className={'worldScreenPlaceholderLine'}>
             <div>{getDisplayName(entry.def, entry.id)}</div>
             <div>
               Type: {entry.def?.type ?? '—'} • Tags: {describeTags(entry.def)}

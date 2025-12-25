@@ -197,6 +197,15 @@
   font-weight: 600;
 }
 
+.pavilionCardSold {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.pavilionCard--sold {
+  opacity: 0.6;
+}
+
 .pavilionDetail {
   display: flex;
   flex-direction: column;
@@ -285,4 +294,42 @@
 
 .pavilionPityLine span {
   display: block;
+}
+
+.pavilionPurchaseResult {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #e2e8f0;
+  gap: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pavilionPurchaseResult--duplicate {
+  border-color: #7c3aed;
+}
+
+.pavilionPurchaseResult--error {
+  border-color: #ef4444;
+  color: #fecdd3;
+}
+
+.pavilionPurchaseError {
+  margin-top: 8px;
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.pavilionResultTitle {
+  font-weight: 700;
+  color: #c084fc;
+}
+
+.techniqueCardHighlight {
+  outline: 2px solid #fbbf24;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
+  transition: outline 0.3s ease;
 }

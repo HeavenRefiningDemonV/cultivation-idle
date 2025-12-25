@@ -22,6 +22,8 @@ export interface PavilionStockSlot {
   price: Partial<Record<'gold' | 'spiritStones' | 'merit', string>>;
   notSold?: boolean;
   sealed?: boolean;
+  sold?: boolean;
+  soldAt?: number;
 }
 
 export interface PavilionStockState {
