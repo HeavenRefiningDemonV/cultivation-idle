@@ -394,12 +394,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
     };
 
     const applyPassiveTechniques = (now: number) => {
-      const loadout = useTechniqueStore.getState().getSelectedLoadout();
-      if (!loadout) return;
-
       const contentStore = useContentStore.getState();
       const techCollection = useTechCollectionStore.getState();
-      const passiveIds = loadout.slots.passive.filter((id) => id);
+      const passiveIds = useTechniqueStore.getState().getCombatEquippedTechIds().passive;
 
       if (passiveIds.length === 0) return;
 
@@ -439,16 +436,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
 
       const loadout = useTechniqueStore.getState().getSelectedLoadout();
-      if (!loadout) return null;
-
       const techCollection = useTechCollectionStore.getState();
       const contentStore = useContentStore.getState();
-      const aiProfile = loadout.aiProfile ?? 'balanced';
-      const activeIds = loadout.slots.active.filter((id) => id);
-      const candidateIds = [...activeIds];
+      const aiProfile = loadout?.aiProfile ?? 'balanced';
+      const equipped = useTechniqueStore.getState().getCombatEquippedTechIds();
+      const candidateIds = [...equipped.active];
 
-      if (loadout.slots.ultimate) {
-        candidateIds.push(loadout.slots.ultimate);
+      if (equipped.ultimate) {
+        candidateIds.push(equipped.ultimate);
       }
 
       const uniqueCandidates = Array.from(new Set(candidateIds));

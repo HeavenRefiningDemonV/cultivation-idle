@@ -65,6 +65,9 @@ interface UIStateBase {
     focusReward?: string;
     learnedAt: number;
   } | null;
+  techniqueLibraryIntent:
+    | null
+    | { type: 'equip'; techniqueId: string; preferredSlotType?: 'active' | 'passive' | 'ultimate' };
 
   // UI Settings
   settings: UISettingsState;
@@ -108,6 +111,8 @@ export interface UIState extends UIStateBase {
   closeManualSatchel: () => void;
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
   closeTechniqueLearned: () => void;
+  setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
+  clearTechniqueLibraryIntent: () => void;
   hardResetUI: () => void;
 }
 
@@ -128,6 +133,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   showManualSatchelModal: false,
   showTechniqueLearnedModal: false,
   techniqueLearnedPayload: null,
+  techniqueLibraryIntent: null,
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -403,6 +409,19 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.showTechniqueLearnedModal = false;
         state.techniqueLearnedPayload = null;
+      });
+    },
+
+    setTechniqueLibraryIntent: (intent) => {
+      set((state) => {
+        state.techniqueLibraryIntent = intent;
+        state.activeTab = 'techniques';
+      });
+    },
+
+    clearTechniqueLibraryIntent: () => {
+      set((state) => {
+        state.techniqueLibraryIntent = null;
       });
     },
 

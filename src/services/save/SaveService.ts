@@ -43,6 +43,7 @@ export const SaveService = {
     GameEvents.on('activity/changed', () => this.save());
     GameEvents.on('manuals/purchased', () => this.save());
     GameEvents.on('manuals/studied', () => this.save());
+    GameEvents.on('techniques/equipped', () => this.save());
   },
   save(): boolean {
     const ok = legacySaveGame();

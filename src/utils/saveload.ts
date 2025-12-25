@@ -837,10 +837,7 @@ function applySaveData(saveData: SaveData): void {
       initializedFromContent: cityState.initializedFromContent ?? false,
     });
 
-    useTechniqueStore.setState((state) => ({
-      loadouts: saveData.techniqueState?.loadouts ?? state.loadouts,
-      selectedLoadoutId: saveData.techniqueState?.selectedLoadoutId || state.selectedLoadoutId,
-    }));
+    useTechniqueStore.getState().hydrateFromSave(saveData.techniqueState);
 
     useTrialStore.setState({
       progressByTrialId: trialState.progressByTrialId ?? {},

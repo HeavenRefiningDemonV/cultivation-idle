@@ -54,6 +54,7 @@ export type TechniqueEquippedEvent = {
   payload: {
     techniqueId: string;
     slot?: number;
+    slotType?: 'active' | 'passive' | 'ultimate';
   };
 };
 
