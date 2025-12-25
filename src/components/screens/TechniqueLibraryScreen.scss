@@ -564,3 +564,248 @@
   background: rgba(108, 199, 255, 0.16);
   border: 1px solid rgba(108, 199, 255, 0.35);
 }
+
+.techniqueLibraryOwnedCard {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(20, 24, 35, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: rgba(108, 199, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  &.is-selected {
+    border-color: rgba(164, 255, 190, 0.6);
+    box-shadow: 0 0 0 1px rgba(164, 255, 190, 0.4);
+  }
+
+  & + & {
+    margin-top: 10px;
+  }
+}
+
+.techniqueLibraryOwnedHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.techniqueLibraryOwnedTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.techniqueLibraryOwnedBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.techniqueLibraryTrack {
+  margin-top: 10px;
+}
+
+.techniqueLibraryTrackHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #cde7ff;
+}
+
+.techniqueLibraryTrackHint {
+  color: #a0b7d8;
+  font-size: 12px;
+}
+
+.techniqueLibraryRankRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.techniqueLibraryRankPips {
+  display: flex;
+  gap: 4px;
+}
+
+.techniqueLibraryRankPip {
+  width: 12px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+
+  &.is-filled {
+    background: linear-gradient(90deg, #7ddfc3, #5ab0ff);
+  }
+}
+
+.techniqueLibraryUpgradeHint {
+  color: #a4ffbe;
+  font-size: 12px;
+}
+
+.techniqueLibraryTraitPips {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.techniqueLibraryTraitPip {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+
+  &.is-filled {
+    background: linear-gradient(90deg, #92e9ff, #8df5d3);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &.is-locked {
+    background: rgba(255, 255, 255, 0.04);
+    border-style: dashed;
+    opacity: 0.6;
+  }
+}
+
+.techniqueLibraryProgressGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.techniqueLibraryProgressCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(16, 22, 32, 0.85);
+}
+
+.techniqueLibraryEffectList {
+  padding-left: 18px;
+  color: #dfe8ff;
+  line-height: 1.4;
+}
+
+.techniqueLibraryTraitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(18, 23, 33, 0.8);
+  margin-top: 8px;
+}
+
+.techniqueLibraryTraitMain {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 10px;
+  align-items: center;
+}
+
+.techniqueLibraryTraitName {
+  font-weight: 700;
+}
+
+.techniqueLibraryTraitValue {
+  color: #a4ffbe;
+}
+
+.techniqueLibraryTraitRange {
+  color: #a0b7d8;
+  font-size: 12px;
+}
+
+.techniqueLibraryTraitQuality {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.techniqueLibraryTraitQualityBar {
+  width: 140px;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.techniqueLibraryTraitQualityFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffc38d, #ffd166);
+}
+
+.techniqueLibraryTraitLock {
+  font-size: 12px;
+  color: #cde7ff;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.techniqueLibraryTraitActions {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.techniqueLibraryToggle {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.techniqueLibraryRuneSockets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.techniqueLibraryRuneRow {
+  display: grid;
+  grid-template-columns: 90px 1fr 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.techniqueLibraryRunePill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  text-align: center;
+  font-size: 13px;
+  color: #cde7ff;
+
+  &.is-filled {
+    border-style: solid;
+    background: rgba(148, 207, 255, 0.15);
+  }
+}
+
+.techniqueLibraryRuneSlotLabel {
+  color: #a0b7d8;
+}
+
+.techniqueLibraryEffectList em {
+  color: #a0b7d8;
+}

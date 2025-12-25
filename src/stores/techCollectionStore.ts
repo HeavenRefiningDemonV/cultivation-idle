@@ -103,6 +103,9 @@ interface TechCollectionState {
   getTraitDefinition: (traitId: string) => TraitDefinition | null;
   getTraitRollRangeLabel: (traitId: string) => string;
   getTraitQualityPct: (trait: { id: string; value?: number; valuePct?: number }) => number;
+  getTraitSlotBreakdown: (
+    techId: string,
+  ) => { raritySlots: number; gradeCap: number; effectiveSlots: number; rarity: string; grade: ManualGrade };
   getMasteryMilestoneEffects: (level: number) => {
     cooldownMult: number;
     costMult: number;
@@ -1011,6 +1014,17 @@ export const useTechCollectionStore = create<TechCollectionState>()(
     getTraitDefinition: (traitId) => getTraitDefinition(traitId) ?? null,
     getTraitRollRangeLabel: (traitId) => getTraitRollRangeLabel(traitId),
     getTraitQualityPct: (trait) => getTraitQualityPct(trait),
+    getTraitSlotBreakdown: (techId) => {
+      const entry = get().unlockedTechs[techId];
+      const rarity = entry?.rarity ?? 'common';
+      const grade = entry?.manualGrade ?? 'mortal';
+
+      const raritySlots = getRarityTraitSlotCount(rarity);
+      const gradeCap = getGradeRule(grade).traitCap;
+      const effectiveSlots = Math.min(raritySlots, gradeCap);
+
+      return { raritySlots, gradeCap, effectiveSlots, rarity, grade };
+    },
 
     getRankCap: (techId) => {
       const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
