@@ -1,0 +1,338 @@
+.techniqueLibraryRoot {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  color: #f5f5f5;
+}
+
+.techniqueLibraryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.techniqueLibraryColumn--left {
+  width: 28%;
+}
+
+.techniqueLibraryColumn--center {
+  width: 32%;
+}
+
+.techniqueLibraryColumn--right {
+  flex: 1;
+}
+
+.techniqueLibraryPanel {
+  background: rgba(21, 26, 36, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+.techniqueLibraryPanelHeader {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.techniqueLibraryLoadouts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.techniqueLibraryLoadout {
+  width: 100%;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  color: inherit;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.techniqueLibraryLoadout:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.techniqueLibraryLoadout.is-active {
+  border-color: #6cc7ff;
+  background: rgba(108, 199, 255, 0.08);
+}
+
+.techniqueLibraryLoadoutName {
+  font-weight: 700;
+}
+
+.techniqueLibraryLoadoutMeta {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.techniqueLibrarySlots {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.techniqueLibrarySlotGroupLabel {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #a2c4ff;
+}
+
+.techniqueLibrarySlotRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.techniqueLibrarySlotRow:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.techniqueLibrarySlotRow.is-selected {
+  border-color: #8be28b;
+  background: rgba(139, 226, 139, 0.08);
+}
+
+.techniqueLibrarySlotRow.is-locked {
+  cursor: not-allowed;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.techniqueLibrarySlotLabel {
+  font-weight: 600;
+}
+
+.techniqueLibrarySlotContent {
+  font-size: 13px;
+  text-align: right;
+}
+
+.techniqueLibrarySlotEmpty {
+  opacity: 0.7;
+}
+
+.techniqueLibrarySlotLocked {
+  text-align: right;
+  font-size: 12px;
+  color: #d299ff;
+}
+
+.techniqueLibrarySlotSubtext {
+  opacity: 0.85;
+}
+
+.techniqueLibrarySlotTechName {
+  color: #fefefe;
+  font-weight: 600;
+}
+
+.techniqueLibraryOwnedList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.techniqueLibraryOwnedRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  color: inherit;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.techniqueLibraryOwnedRow:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.techniqueLibraryOwnedRow.is-selected {
+  border-color: #6cc7ff;
+  background: rgba(108, 199, 255, 0.08);
+}
+
+.techniqueLibraryOwnedName {
+  font-weight: 600;
+  text-align: left;
+}
+
+.techniqueLibraryOwnedBadges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.techniqueLibraryTypeBadge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.type-active {
+  background: rgba(108, 199, 255, 0.18);
+  color: #bde5ff;
+}
+
+.type-passive {
+  background: rgba(217, 153, 255, 0.18);
+  color: #f0d1ff;
+}
+
+.type-ultimate {
+  background: rgba(255, 182, 64, 0.18);
+  color: #ffddab;
+}
+
+.techniqueLibraryEquippedBadge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: rgba(139, 226, 139, 0.2);
+  color: #d6ffd6;
+}
+
+.techniqueLibraryEmptyState {
+  padding: 12px;
+  text-align: center;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.techniqueLibraryDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.techniqueLibraryDetailTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.techniqueLibraryDetailSection {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 10px;
+  line-height: 1.4;
+}
+
+.techniqueLibraryDetailLine {
+  margin-bottom: 6px;
+}
+
+.techniqueLibraryDetailStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.techniqueLibraryStatLabel {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.techniqueLibraryStatValue {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.techniqueLibraryTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.techniqueLibraryTag {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.techniqueLibraryButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.techniqueLibraryPrimaryButton {
+  background: linear-gradient(135deg, #6cc7ff, #7be39d);
+  color: #0b1724;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.techniqueLibraryPrimaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.techniqueLibraryDisabledButton {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: not-allowed;
+}
+
+.techniqueLibraryEmptyDetail {
+  padding: 12px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.techniqueLibraryInlineMessage {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.inline-success {
+  background: rgba(139, 226, 139, 0.2);
+  border: 1px solid rgba(139, 226, 139, 0.4);
+}
+
+.inline-error {
+  background: rgba(255, 107, 107, 0.16);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+}
+
+.inline-info {
+  background: rgba(108, 199, 255, 0.16);
+  border: 1px solid rgba(108, 199, 255, 0.35);
+}

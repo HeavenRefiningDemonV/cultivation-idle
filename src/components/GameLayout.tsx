@@ -12,6 +12,7 @@ import { ManualSatchelModal } from './modals/ManualSatchelModal';
 import { TechniqueLearnedModal } from './modals/TechniqueLearnedModal';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SystemStatusPanelOverlay } from '../app/overlays/SystemStatusPanel';
+import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import './GameLayout.scss';
 
 /**
@@ -30,16 +31,16 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
 }
 
 /**
- * Techniques tab content (placeholder for now)
+ * Techniques tab content
  */
 function TechniquesTab() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
   useEffect(() => {
-    setHeaderTitles('Techniques', 'Coming soon!');
+    setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
   }, [setHeaderTitles]);
 
-  return <PlaceholderContent tabName="Techniques" />;
+  return <TechniqueLibraryScreen />;
 }
 
 /**
