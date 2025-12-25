@@ -38,6 +38,46 @@
   letter-spacing: 0.3px;
 }
 
+.techniqueLibraryFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.techniqueLibraryFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.techniqueLibraryFilter select,
+.techniqueLibraryFilter input[type='checkbox'] {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #f5f5f5;
+  padding: 6px;
+}
+
+.techniqueLibraryFilter--checkbox {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.techniqueLibraryReset {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #f5f5f5;
+  cursor: pointer;
+}
+
 .techniqueLibraryLoadouts {
   display: flex;
   flex-direction: column;
@@ -153,7 +193,7 @@
 .techniqueLibraryOwnedRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid transparent;
@@ -173,6 +213,20 @@
   background: rgba(108, 199, 255, 0.08);
 }
 
+.techniqueLibraryOwnedRowLeft {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.techniqueLibraryOwnedRowRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 160px;
+}
+
 .techniqueLibraryOwnedName {
   font-weight: 600;
   text-align: left;
@@ -182,6 +236,7 @@
   display: flex;
   gap: 6px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .techniqueLibraryTypeBadge {
@@ -191,6 +246,93 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
+}
+
+.techniqueLibraryBadge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.techniqueLibraryIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 16px;
+}
+
+.rarity-common {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f5f5;
+}
+
+.rarity-uncommon {
+  background: rgba(108, 199, 255, 0.15);
+  color: #cdeeff;
+}
+
+.rarity-rare {
+  background: rgba(114, 137, 218, 0.2);
+  color: #dbe1ff;
+}
+
+.rarity-epic {
+  background: rgba(217, 153, 255, 0.2);
+  color: #f0d1ff;
+}
+
+.rarity-legendary {
+  background: rgba(255, 182, 64, 0.25);
+  color: #ffe3b0;
+}
+
+.grade-mortal {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.grade-earth {
+  border: 1px solid #6cc7ff;
+}
+
+.grade-heaven {
+  border: 1px solid #d799ff;
+}
+
+.grade-mystic {
+  border: 1px solid #ffb640;
+}
+
+.techniqueLibraryFavorite {
+  color: #ffd166;
+  font-size: 14px;
+}
+
+.techniqueLibraryMasteryBar {
+  position: relative;
+  width: 160px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.techniqueLibraryMasteryFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #6cc7ff, #7be39d);
+}
+
+.techniqueLibraryMasteryLabel {
+  font-size: 12px;
+  opacity: 0.85;
 }
 
 .type-active {
@@ -235,6 +377,19 @@
   margin: 0;
   font-size: 20px;
   font-weight: 800;
+}
+
+.techniqueLibraryDetailTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.techniqueLibraryDetailBadges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .techniqueLibraryDetailSection {
@@ -300,6 +455,15 @@
   cursor: not-allowed;
 }
 
+.techniqueLibrarySecondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 .techniqueLibraryDisabledButton {
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.7);
@@ -307,6 +471,49 @@
   padding: 10px 12px;
   border-radius: 8px;
   cursor: not-allowed;
+}
+
+.techniqueLibraryProgressSection {
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.techniqueLibraryProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.techniqueLibraryProgressBar {
+  position: relative;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  margin: 8px 0 6px;
+  overflow: hidden;
+}
+
+.techniqueLibraryProgressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #6cc7ff, #7be39d);
+}
+
+.techniqueLibraryProgressTick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.techniqueLibraryProgressLabel {
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .techniqueLibraryEmptyDetail {

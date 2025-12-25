@@ -23,6 +23,8 @@ export interface TechniqueOwnedState {
   runes: Array<string | null>;
   tier?: string;
   lastCastAt?: number;
+  unlockedAt?: number;
+  favorite?: boolean;
 }
 
 interface TechCollectionState {
@@ -79,6 +81,8 @@ interface TechCollectionState {
     soulInkItemId: string;
   } | null;
   upgradeRank: (techId: string) => { ok: boolean; reason?: string };
+  toggleFavorite: (techId: string) => void;
+  isFavorite?: (techId: string) => boolean;
   hydrate: (data: {
     unlockedTechs?: Record<string, Partial<TechniqueOwnedState>>;
     fragments?: Record<string, number>;
@@ -159,6 +163,8 @@ const createDefaultOwnedState = (): TechniqueOwnedState => ({
   rarity: 'common',
   traits: [],
   runes: [],
+  unlockedAt: undefined,
+  favorite: false,
 });
 
 const createInitialState = (): Pick<TechCollectionState, 'unlockedTechs' | 'fragments' | 'rngSeed'> => ({
@@ -304,6 +310,8 @@ export function normalizeTechEntry(
   merged.runes = normalizeRunes(normalizedRunes, getRuneSlotsForGrade(merged.manualGrade));
   merged.tier = incoming?.tier ?? merged.tier;
   merged.lastCastAt = incoming?.lastCastAt;
+  merged.unlockedAt = typeof incoming?.unlockedAt === 'number' ? incoming.unlockedAt : merged.unlockedAt;
+  merged.favorite = incoming?.favorite ?? merged.favorite;
 
   return merged;
 }
@@ -344,6 +352,8 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           ...existing,
           ...meta,
           unlocked: true,
+          unlockedAt: existing?.unlockedAt ?? Date.now(),
+          favorite: existing?.favorite,
         });
         state.unlockedTechs[techId] = normalized;
       });
@@ -505,6 +515,16 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
       return { ok: true };
     },
+
+    toggleFavorite: (techId) => {
+      set((state) => {
+        const entry = state.unlockedTechs[techId] ?? normalizeTechEntry(techId);
+        entry.favorite = !entry.favorite;
+        state.unlockedTechs[techId] = entry;
+      });
+    },
+
+    isFavorite: (techId) => Boolean(get().unlockedTechs[techId]?.favorite),
 
     unsocketRune: (techId, slotIndex) => {
       const entry = get().unlockedTechs[techId];

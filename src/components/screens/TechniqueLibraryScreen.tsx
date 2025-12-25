@@ -2,7 +2,14 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { REALMS } from '../../constants';
 import { useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
+import {
+  masteryLevelFromXp,
+  masteryMultiplier,
+  normalizeGrade,
+  normalizeRarity,
+  rankMultiplier,
+  useTechCollectionStore,
+} from '../../stores/techCollectionStore';
 import type { SlotType } from '../../stores/techniqueStore';
 import { useTechniqueStore } from '../../stores/techniqueStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -11,6 +18,44 @@ import './TechniqueLibraryScreen.scss';
 type InlineMessage = { type: 'error' | 'info' | 'success'; text: string } | null;
 
 type SlotSelection = { type: SlotType; index: number };
+
+type SortKey = 'power' | 'recent' | 'used' | 'rarity';
+type TypeFilter = 'all' | 'active' | 'passive' | 'ultimate';
+type GradeFilter = 'all' | 'mortal' | 'earth' | 'heaven' | 'mystic';
+
+type OwnedTechniqueView = {
+  id: string;
+  name: string;
+  def?: ReturnType<typeof useContentStore.getState>['maps']['techniquesById'][string];
+  typeLabel: 'Active' | 'Passive' | 'Ultimate';
+  path?: string;
+  role?: string;
+  rarity: string;
+  grade: string;
+  rank: number;
+  masteryXp: number;
+  masteryLevel: number;
+  masteryPct: number;
+  unlockedAt: number;
+  lastCastAt: number;
+  favorite: boolean;
+  powerScore: number;
+};
+
+const rarityWeight: Record<string, number> = {
+  common: 1,
+  uncommon: 1.05,
+  rare: 1.1,
+  epic: 1.2,
+  legendary: 1.35,
+};
+
+const gradeWeight: Record<string, number> = {
+  mortal: 1,
+  earth: 1.05,
+  heaven: 1.1,
+  mystic: 1.2,
+};
 
 const techniqueType = (technique: { type?: string; tags?: string[] } | undefined): SlotType => {
   if (!technique) return 'active';
@@ -24,6 +69,26 @@ const slotLabel = (slot: SlotSelection) => {
   return `${slot.type === 'active' ? 'Active' : 'Passive'} ${slot.index + 1}`;
 };
 
+const typeIcon = (type: SlotType) => {
+  if (type === 'ultimate') return '☄';
+  if (type === 'passive') return '⛩';
+  return '⚔';
+};
+
+const rarityLabel = (value?: string) => {
+  const safe = value ?? 'common';
+  return safe.charAt(0).toUpperCase() + safe.slice(1);
+};
+const gradeLabel = (value?: string) => {
+  const safe = value ?? 'mortal';
+  return safe.charAt(0).toUpperCase() + safe.slice(1);
+};
+
+const gradeOrder: string[] = ['mortal', 'earth', 'heaven', 'mystic'];
+const rarityOrder: string[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+
+const formatRankLabel = (rank: number) => `Rank ${rank}`;
+
 const formatResourceCost = (resourceModel?: string, resourceCost?: number | string) => {
   if (!resourceModel) return 'N/A';
   if (resourceCost === undefined || resourceCost === null || resourceCost === '') return resourceModel;
@@ -34,6 +99,12 @@ export function TechniqueLibraryScreen() {
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<SlotSelection>({ type: 'active', index: 0 });
   const [inlineMessage, setInlineMessage] = useState<InlineMessage>(null);
+  const [sortKey, setSortKey] = useState<SortKey>('power');
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [pathFilter, setPathFilter] = useState<string>('all');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all');
+  const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
 
   const {
     loadouts,
@@ -49,6 +120,7 @@ export function TechniqueLibraryScreen() {
     getSlotProgressionSnapshot: state.getSlotProgressionSnapshot,
   }));
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
+  const toggleFavorite = useTechCollectionStore((state) => state.toggleFavorite);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const realmIndex = useGameStore((state) => state.realm.index);
   const { techniqueLibraryIntent, clearTechniqueLibraryIntent, setHeaderTitles } = useUIStore((state) => ({
@@ -67,26 +139,133 @@ export function TechniqueLibraryScreen() {
     [loadouts, selectedLoadoutId],
   );
 
-  const equippedSet = useMemo(() => {
+  const loadoutLabels = useMemo(
+    () => loadouts.map((loadout, idx) => ({ id: loadout.id, label: String.fromCharCode(65 + idx), name: loadout.name })),
+    [loadouts],
+  );
+
+  const equippedInfo = useMemo(() => {
     const ids = new Set<string>();
-    loadouts.forEach((loadout) => {
-      loadout.slots.active.forEach((id) => id && ids.add(id));
-      loadout.slots.passive.forEach((id) => id && ids.add(id));
-      if (loadout.slots.ultimate) ids.add(loadout.slots.ultimate);
+    const map: Record<string, string[]> = {};
+
+    loadouts.forEach((loadout, idx) => {
+      const label = String.fromCharCode(65 + idx);
+      const add = (id?: string | null) => {
+        if (!id) return;
+        ids.add(id);
+        map[id] = map[id] ? [...new Set([...map[id], label])] : [label];
+      };
+
+      loadout.slots.active.forEach(add);
+      loadout.slots.passive.forEach(add);
+      add(loadout.slots.ultimate);
     });
-    return ids;
+
+    return { ids, map };
   }, [loadouts]);
 
-  const ownedTechniques = useMemo(() => {
+  const ownedTechniques = useMemo<OwnedTechniqueView[]>(() => {
     return Object.entries(unlockedTechs)
       .filter(([, meta]) => meta?.unlocked)
-      .map(([id]) => ({ id, def: techniquesById[id] }))
-      .sort((a, b) => {
-        const nameA = (a.def?.name || a.id).toLowerCase();
-        const nameB = (b.def?.name || b.id).toLowerCase();
-        return nameA.localeCompare(nameB);
+      .map(([id, meta]) => {
+        const def = techniquesById[id];
+        const name = def?.name || id;
+        const type = techniqueType(def);
+        const typeLabel: OwnedTechniqueView['typeLabel'] =
+          type === 'ultimate' ? 'Ultimate' : type === 'passive' ? 'Passive' : 'Active';
+        const rarity = normalizeRarity(meta?.rarity ?? def?.rarity);
+        const grade = normalizeGrade(meta?.manualGrade ?? def?.tier);
+        const rank = meta?.rank ?? 1;
+        const masteryXp = meta?.masteryXp ?? 0;
+        const masteryLevel = masteryLevelFromXp(masteryXp);
+        const masteryPct = masteryLevel / 100;
+        const rarityBias = rarityWeight[rarity] ?? 1;
+        const gradeBias = gradeWeight[grade] ?? 1;
+        const powerScore = rankMultiplier(rank) * masteryMultiplier(masteryLevel) * rarityBias * gradeBias;
+
+        return {
+          id,
+          name,
+          def,
+          typeLabel,
+          path: def?.path,
+          role: def?.role,
+          rarity,
+          grade,
+          rank,
+          masteryXp,
+          masteryLevel,
+          masteryPct,
+          unlockedAt: meta?.unlockedAt ?? 0,
+          lastCastAt: meta?.lastCastAt ?? 0,
+          favorite: Boolean(meta?.favorite),
+          powerScore,
+        } satisfies OwnedTechniqueView;
       });
   }, [techniquesById, unlockedTechs]);
+
+  const uniquePaths = useMemo(() => {
+    const paths = new Set<string>();
+    ownedTechniques.forEach((tech) => {
+      if (tech.path) paths.add(tech.path);
+    });
+    return Array.from(paths).sort();
+  }, [ownedTechniques]);
+
+  const uniqueRoles = useMemo(() => {
+    const roles = new Set<string>();
+    ownedTechniques.forEach((tech) => {
+      if (tech.role) roles.add(tech.role);
+    });
+    return Array.from(roles).sort();
+  }, [ownedTechniques]);
+
+  const filteredTechniques = useMemo(() => {
+    let list = [...ownedTechniques];
+
+    list = list.filter((tech) => {
+      const matchesType = typeFilter === 'all' || tech.typeLabel.toLowerCase() === typeFilter;
+      const matchesPath = pathFilter === 'all' || tech.path === pathFilter;
+      const matchesRole = roleFilter === 'all' || tech.role === roleFilter;
+      const matchesGrade = gradeFilter === 'all' || tech.grade === gradeFilter;
+      const matchesFavorite = !favoritesOnly || tech.favorite;
+      return matchesType && matchesPath && matchesRole && matchesGrade && matchesFavorite;
+    });
+
+    list.sort((a, b) => {
+      if (sortKey === 'power') {
+        if (b.powerScore !== a.powerScore) return b.powerScore - a.powerScore;
+      } else if (sortKey === 'recent') {
+        if (b.unlockedAt !== a.unlockedAt) return (b.unlockedAt || 0) - (a.unlockedAt || 0);
+      } else if (sortKey === 'used') {
+        if (b.masteryXp !== a.masteryXp) return b.masteryXp - a.masteryXp;
+        if (b.lastCastAt !== a.lastCastAt) return (b.lastCastAt || 0) - (a.lastCastAt || 0);
+      } else if (sortKey === 'rarity') {
+        const rarityCompare = rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
+        if (rarityCompare !== 0) return rarityCompare;
+        const gradeCompare = gradeOrder.indexOf(b.grade) - gradeOrder.indexOf(a.grade);
+        if (gradeCompare !== 0) return gradeCompare;
+      }
+
+      return a.name.localeCompare(b.name);
+    });
+
+    return list;
+  }, [favoritesOnly, gradeFilter, ownedTechniques, pathFilter, roleFilter, sortKey, typeFilter]);
+
+  const selectedOwned = useMemo(
+    () => ownedTechniques.find((tech) => tech.id === selectedTechniqueId),
+    [ownedTechniques, selectedTechniqueId],
+  );
+
+  const resetFilters = useCallback(() => {
+    setSortKey('power');
+    setTypeFilter('all');
+    setPathFilter('all');
+    setRoleFilter('all');
+    setGradeFilter('all');
+    setFavoritesOnly(false);
+  }, []);
 
   useEffect(() => {
     setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
@@ -178,6 +357,16 @@ export function TechniqueLibraryScreen() {
     }
   }, [equipTechnique, selectedLoadout, selectedSlot, selectedTechniqueId]);
 
+  const handleFavoriteToggle = useCallback(() => {
+    if (!selectedTechniqueId) return;
+    const willFavorite = !(selectedOwned?.favorite ?? false);
+    toggleFavorite(selectedTechniqueId);
+    setInlineMessage({
+      type: 'info',
+      text: willFavorite ? 'Added to favorites.' : 'Removed from favorites.',
+    });
+  }, [selectedOwned?.favorite, selectedTechniqueId, toggleFavorite]);
+
   const renderSlotRow = (slot: SlotSelection, techId: string | null | undefined) => {
     const isSelected = selectedSlot.type === slot.type && selectedSlot.index === slot.index;
     const isUnlocked =
@@ -219,6 +408,7 @@ export function TechniqueLibraryScreen() {
   };
 
   const selectedTechDef = selectedTechniqueId ? techniquesById[selectedTechniqueId] : undefined;
+  const selectedType = techniqueType(selectedTechDef);
   const effectText = selectedTechDef
     ? String(selectedTechDef.effect ?? 'No effect description available.')
     : 'No effect description available.';
@@ -275,27 +465,143 @@ export function TechniqueLibraryScreen() {
       <div className="techniqueLibraryColumn techniqueLibraryColumn--center">
         <div className="techniqueLibraryPanel">
           <div className="techniqueLibraryPanelHeader">Owned Techniques</div>
+          <div className="techniqueLibraryFilters">
+            <div className="techniqueLibraryFilter">
+              <label htmlFor="techSort">Sort</label>
+              <select
+                id="techSort"
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+              >
+                <option value="power">Power</option>
+                <option value="recent">Recently Learned</option>
+                <option value="used">Most Used</option>
+                <option value="rarity">Rarity</option>
+              </select>
+            </div>
+            <div className="techniqueLibraryFilter">
+              <label htmlFor="techType">Type</label>
+              <select
+                id="techType"
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
+              >
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="passive">Passive</option>
+                <option value="ultimate">Ultimate</option>
+              </select>
+            </div>
+            <div className="techniqueLibraryFilter">
+              <label htmlFor="techPath">Path</label>
+              <select
+                id="techPath"
+                value={pathFilter}
+                onChange={(e) => setPathFilter(e.target.value)}
+              >
+                <option value="all">All</option>
+                {uniquePaths.map((path) => (
+                  <option key={path} value={path}>
+                    {path}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="techniqueLibraryFilter">
+              <label htmlFor="techRole">Role</label>
+              <select
+                id="techRole"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+              >
+                <option value="all">All</option>
+                {uniqueRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="techniqueLibraryFilter">
+              <label htmlFor="techGrade">Grade</label>
+              <select
+                id="techGrade"
+                value={gradeFilter}
+                onChange={(e) => setGradeFilter(e.target.value as GradeFilter)}
+              >
+                <option value="all">All</option>
+                <option value="mortal">Mortal</option>
+                <option value="earth">Earth</option>
+                <option value="heaven">Heaven</option>
+                <option value="mystic">Mystic</option>
+              </select>
+            </div>
+            <div className="techniqueLibraryFilter techniqueLibraryFilter--checkbox">
+              <label htmlFor="techFavorites">Favorites only</label>
+              <input
+                id="techFavorites"
+                type="checkbox"
+                checked={favoritesOnly}
+                onChange={(e) => setFavoritesOnly(e.target.checked)}
+              />
+            </div>
+            <button className="techniqueLibraryReset" onClick={resetFilters} type="button">
+              Reset filters
+            </button>
+          </div>
           <div className="techniqueLibraryOwnedList">
             {ownedTechniques.length === 0 ? (
               <div className="techniqueLibraryEmptyState">
                 No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the Technique.
               </div>
+            ) : filteredTechniques.length === 0 ? (
+              <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>
             ) : (
-              ownedTechniques.map(({ id, def }) => {
-                const type = techniqueType(def);
+              filteredTechniques.map((tech) => {
+                const type = techniqueType(tech.def);
+                const equippedLabels = equippedInfo.map[tech.id];
                 return (
                   <button
-                    key={id}
-                    className={`techniqueLibraryOwnedRow ${selectedTechniqueId === id ? 'is-selected' : ''}`}
+                    key={tech.id}
+                    className={`techniqueLibraryOwnedRow ${selectedTechniqueId === tech.id ? 'is-selected' : ''}`}
                     onClick={() => {
-                      setSelectedTechniqueId(id);
+                      setSelectedTechniqueId(tech.id);
                       setInlineMessage(null);
                     }}
                   >
-                    <div className="techniqueLibraryOwnedName">{def?.name || id}</div>
-                    <div className="techniqueLibraryOwnedBadges">
-                      <span className={`techniqueLibraryTypeBadge type-${type}`}>{type === 'ultimate' ? 'Ultimate' : type === 'passive' ? 'Passive' : 'Active'}</span>
-                      {equippedSet.has(id) && <span className="techniqueLibraryEquippedBadge">Equipped</span>}
+                    <div className="techniqueLibraryOwnedRowLeft">
+                      <div className={`techniqueLibraryIcon type-${type}`}>{typeIcon(type)}</div>
+                      <div>
+                        <div className="techniqueLibraryOwnedName">{tech.name}</div>
+                        <div className="techniqueLibraryOwnedBadges">
+                          <span className={`techniqueLibraryTypeBadge type-${type}`}>
+                            {tech.typeLabel}
+                          </span>
+                          <span className={`techniqueLibraryBadge rarity-${tech.rarity}`}>{rarityLabel(tech.rarity)}</span>
+                          <span className={`techniqueLibraryBadge grade-${tech.grade}`}>{gradeLabel(tech.grade)}</span>
+                          {tech.favorite && <span className="techniqueLibraryFavorite">★</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="techniqueLibraryOwnedRowRight">
+                      <div className="techniqueLibraryRank">{formatRankLabel(tech.rank)}</div>
+                      <div className="techniqueLibraryMasteryBar">
+                        <div
+                          className="techniqueLibraryMasteryFill"
+                          style={{ width: `${Math.min(100, Math.max(0, tech.masteryPct * 100))}%` }}
+                        />
+                      </div>
+                      <div className="techniqueLibraryMasteryLabel">Mastery {tech.masteryLevel}/100</div>
+                      {equippedLabels && (
+                        <div className="techniqueLibraryEquippedBadge" title={
+                          loadoutLabels
+                            .filter((label) => equippedLabels.includes(label.label))
+                            .map((label) => `${label.label}: ${label.name}`)
+                            .join(', ')
+                        }>
+                          Equipped: {equippedLabels.join(', ')}
+                        </div>
+                      )}
                     </div>
                   </button>
                 );
@@ -311,7 +617,26 @@ export function TechniqueLibraryScreen() {
           <div className="techniqueLibraryDetail">
             {selectedTechniqueId ? (
               <>
-                <h3 className="techniqueLibraryDetailTitle">{selectedTechDef?.name || selectedTechniqueId}</h3>
+                <div className="techniqueLibraryDetailTitleRow">
+                  <h3 className="techniqueLibraryDetailTitle">{selectedTechDef?.name || selectedTechniqueId}</h3>
+                  {selectedOwned?.favorite && <span className="techniqueLibraryFavorite">★</span>}
+                </div>
+                <div className="techniqueLibraryDetailBadges">
+                  <span className={`techniqueLibraryTypeBadge type-${selectedType}`}>
+                    {selectedType === 'ultimate'
+                      ? 'Ultimate'
+                      : selectedType === 'passive'
+                        ? 'Passive'
+                        : 'Active'}
+                  </span>
+                  <span className={`techniqueLibraryBadge rarity-${selectedOwned?.rarity ?? 'common'}`}>
+                    {rarityLabel(selectedOwned?.rarity)}
+                  </span>
+                  <span className={`techniqueLibraryBadge grade-${selectedOwned?.grade ?? 'mortal'}`}>
+                    {gradeLabel(selectedOwned?.grade)}
+                  </span>
+                  <span className="techniqueLibraryRank">{formatRankLabel(selectedOwned?.rank ?? 1)}</span>
+                </div>
                 <div className="techniqueLibraryDetailSection">
                   <div className="techniqueLibraryDetailLine">
                     <strong>In combat:</strong> {effectText}
@@ -359,6 +684,25 @@ export function TechniqueLibraryScreen() {
                   ) : null}
                 </div>
 
+                <div className="techniqueLibraryProgressSection">
+                  <div className="techniqueLibraryProgressHeader">
+                    <span>Progress</span>
+                    <span>{formatRankLabel(selectedOwned?.rank ?? 1)}</span>
+                  </div>
+                  <div className="techniqueLibraryProgressBar">
+                    <div
+                      className="techniqueLibraryProgressFill"
+                      style={{ width: `${Math.min(100, Math.max(0, (selectedOwned?.masteryPct ?? 0) * 100))}%` }}
+                    />
+                    {[25, 50, 75, 100].map((mark) => (
+                      <div key={mark} className="techniqueLibraryProgressTick" style={{ left: `${mark}%` }} />
+                    ))}
+                  </div>
+                  <div className="techniqueLibraryProgressLabel">
+                    Mastery {selectedOwned?.masteryLevel ?? 1}/100
+                  </div>
+                </div>
+
                 <div className="techniqueLibraryButtons">
                   <button
                     className="techniqueLibraryPrimaryButton"
@@ -366,6 +710,9 @@ export function TechniqueLibraryScreen() {
                     onClick={handleEquip}
                   >
                     {equipButtonLabel}
+                  </button>
+                  <button className="techniqueLibrarySecondaryButton" onClick={handleFavoriteToggle}>
+                    {selectedOwned?.favorite ? 'Unfavorite' : 'Favorite'}
                   </button>
                   <button className="techniqueLibraryDisabledButton" title="Implemented in P5" disabled>
                     Upgrade Rank
@@ -375,9 +722,6 @@ export function TechniqueLibraryScreen() {
                   </button>
                   <button className="techniqueLibraryDisabledButton" title="Implemented in P5" disabled>
                     Socket Rune
-                  </button>
-                  <button className="techniqueLibraryDisabledButton" title="Implemented in P5" disabled>
-                    Favorite
                   </button>
                 </div>
               </>

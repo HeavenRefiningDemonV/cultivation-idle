@@ -426,6 +426,8 @@ export interface SaveData {
         runes?: Array<string | null>;
         tier?: string;
         lastCastAt?: number;
+        unlockedAt?: number;
+        favorite?: boolean;
       }
     >;
     fragments: Record<string, number>;
