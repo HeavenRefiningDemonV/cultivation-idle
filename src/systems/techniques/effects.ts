@@ -1,16 +1,19 @@
 import type { TechniqueDef } from '../../content';
 
-type NormalizedDamage = { type: 'damage'; mult: number };
-type NormalizedHeal = { type: 'heal'; mult: number };
-type NormalizedShield = { type: 'shield'; mult: number };
+type EffectSource = 'primary' | 'secondary';
+
+type NormalizedDamage = { type: 'damage'; mult: number; source?: EffectSource };
+type NormalizedHeal = { type: 'heal'; mult: number; source?: EffectSource };
+type NormalizedShield = { type: 'shield'; mult: number; source?: EffectSource };
 type NormalizedBuff = {
   type: 'buff';
   stat: string;
   value: number;
   mode: 'pct' | 'flat';
   durationSec?: number;
+  source?: EffectSource;
 };
-type NormalizedAddStatus = { type: 'addStatus'; status?: unknown };
+type NormalizedAddStatus = { type: 'addStatus'; status?: unknown; source?: EffectSource };
 
 export type NormalizedEffect =
   | NormalizedDamage
@@ -86,25 +89,25 @@ function normalizeBuffLike(raw: any): NormalizedBuff | undefined {
   return undefined;
 }
 
-function normalizeObjectEffect(raw: any): NormalizedEffect[] {
+function normalizeObjectEffect(raw: any, source: EffectSource = 'primary'): NormalizedEffect[] {
   if (!raw || typeof raw !== 'object') return [];
 
   if (Array.isArray(raw)) {
-    return raw.flatMap((entry) => normalizeObjectEffect(entry));
+    return raw.flatMap((entry) => normalizeObjectEffect(entry, source));
   }
 
   const type = (raw as any).type as string | undefined;
   switch (type) {
     case 'composite':
       if (Array.isArray((raw as any).effects)) {
-        return (raw as any).effects.flatMap((entry: unknown) => normalizeObjectEffect(entry));
+        return (raw as any).effects.flatMap((entry: unknown) => normalizeObjectEffect(entry, source));
       }
       warn('composite effect missing effects array', raw);
       return [];
     case 'damage': {
       const mult = (raw as any).mult ?? (raw as any).value;
       if (typeof mult === 'number' && Number.isFinite(mult)) {
-        return [{ type: 'damage', mult }];
+        return [{ type: 'damage', mult, source }];
       }
       warn('invalid damage effect', raw);
       return [];
@@ -112,7 +115,7 @@ function normalizeObjectEffect(raw: any): NormalizedEffect[] {
     case 'heal': {
       const mult = (raw as any).mult ?? (raw as any).maxHpPct;
       if (typeof mult === 'number' && Number.isFinite(mult)) {
-        return [{ type: 'heal', mult }];
+        return [{ type: 'heal', mult, source }];
       }
       warn('invalid heal effect', raw);
       return [];
@@ -120,14 +123,14 @@ function normalizeObjectEffect(raw: any): NormalizedEffect[] {
     case 'shield': {
       const mult = (raw as any).mult ?? (raw as any).maxHpPct;
       if (typeof mult === 'number' && Number.isFinite(mult)) {
-        return [{ type: 'shield', mult }];
+        return [{ type: 'shield', mult, source }];
       }
       warn('invalid shield effect', raw);
       return [];
     }
     case 'buff': {
       const buff = normalizeBuffLike(raw);
-      if (buff) return [buff];
+      if (buff) return [{ ...buff, source }];
       warn('invalid buff effect', raw);
       return [];
     }
@@ -142,15 +145,13 @@ function normalizeObjectEffect(raw: any): NormalizedEffect[] {
     }
     case 'addStatus':
     case 'addStatusOnHit':
-      return [{ type: 'addStatus', status: (raw as any).status ?? raw }];
+      return [{ type: 'addStatus', status: (raw as any).status ?? raw, source }];
     default:
       return [];
   }
 }
 
-export function normalizeTechniqueEffects(techDef: TechniqueDef | undefined): NormalizedEffect[] {
-  if (!techDef) return [];
-  const rawEffect = (techDef as any).effect;
+function normalizeRawEffect(rawEffect: any, source: EffectSource = 'primary'): NormalizedEffect[] {
   if (!rawEffect) return [];
 
   if (typeof rawEffect === 'string') {
@@ -165,13 +166,31 @@ export function normalizeTechniqueEffects(techDef: TechniqueDef | undefined): No
           value: parsed.value,
           mode,
           durationSec: parsed.duration,
+          source,
         },
       ];
     }
-    return [{ type: parsed.kind, mult: parsed.mult } as NormalizedEffect];
+    return [{ type: parsed.kind, mult: parsed.mult, source } as NormalizedEffect];
   }
 
-  return normalizeObjectEffect(rawEffect);
+  return normalizeObjectEffect(rawEffect, source);
+}
+
+export function normalizeTechniqueEffects(
+  techDef: TechniqueDef | undefined,
+  options?: { includeSecondary?: boolean },
+): NormalizedEffect[] {
+  if (!techDef) return [];
+  const effects: NormalizedEffect[] = [];
+  const includeSecondary = Boolean(options?.includeSecondary);
+
+  effects.push(...normalizeRawEffect((techDef as any).effect, 'primary'));
+
+  if (includeSecondary && (techDef as any).secondaryAtMastery75) {
+    effects.push(...normalizeRawEffect((techDef as any).secondaryAtMastery75, 'secondary'));
+  }
+
+  return effects;
 }
 
 export function applyRankMultiplier(effects: NormalizedEffect[], rankMult: number): NormalizedEffect[] {

@@ -25,7 +25,7 @@ import { useRuinsStore } from './ruinsStore';
 import { useTechniqueStore } from './techniqueStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
-import { rankMultiplier, useTechCollectionStore } from './techCollectionStore';
+import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
@@ -539,11 +539,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
     const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
       const techCollection = useTechCollectionStore.getState();
+      const entry = techCollection.unlockedTechs[techId];
+      const masteryLevel = masteryLevelFromXp(entry?.masteryXp ?? 0);
+      const milestoneEffects = techCollection.getMasteryMilestoneEffects(masteryLevel);
       const isBoss = get().isBoss || get().combatContext.type === 'trial';
       const traitMods = techCollection.getTraitModifiers(techId, isBoss);
       const runeMods = techCollection.getRuneModifiers(techId, technique);
       const masteryCdr = techCollection.getMasteryCooldownReductionPct(techId);
       const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
+      const masteryEffectMult = techCollection.getMasteryEffectMultiplier(techId);
+
+      const economy = useContentStore.getState().raw?.economy?.manualSystem;
+      const heavenBonus = economy?.grades?.heaven?.mastery75PotencyBonus;
+      const secondaryUnlocked = milestoneEffects.secondaryUnlocked;
+      const secondaryPotencyMult =
+        entry?.manualGrade === 'heaven' && masteryLevel >= 75 && secondaryUnlocked
+          ? 1 + (typeof heavenBonus === 'number' ? heavenBonus : 0.25)
+          : 1;
 
       const cooldownReductionPct = Math.min(
         0.3,
@@ -559,6 +571,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         runeMods,
         cooldownReductionPct,
         costReductionPct,
+        masteryEffectMult,
+        secondaryUnlocked,
+        secondaryPotencyMult,
         isBoss,
       };
     };
@@ -1516,7 +1531,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
       const rankMult = rankMultiplier(rank);
       const scaling = getTechniqueScaling(techId, techDef);
-      const effects = applyRankMultiplier(normalizeTechniqueEffects(techDef), rankMult);
+      const effects = applyRankMultiplier(
+        normalizeTechniqueEffects(techDef, { includeSecondary: scaling.secondaryUnlocked }),
+        rankMult,
+      );
       addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
 
       set((state) => {
@@ -1563,9 +1581,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const bonusPct = Math.max(0, getTalismanBonusesNow().damageBonusPct);
             const damageMultiplier = D(1).plus(D(bonusPct).dividedBy(100));
             const heartLawMultiplier = D(getHeartLawCombatMultiplier());
+            const masteryMult = scaling.masteryEffectMult ?? 1;
+            const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
             const damage = D(effectiveStats.atk)
               .times(
-              effect.mult * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
+              effect.mult * masteryMult * secondaryPotency * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
             )
               .times(damageMultiplier)
               .times(heartLawMultiplier);
@@ -1577,8 +1597,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'heal': {
+            const masteryMult = scaling.masteryEffectMult ?? 1;
+            const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
             const healAmount = maxHp.times(
-              effect.mult * scaling.traitMods.healMult * scaling.runeMods.healMult,
+              effect.mult * masteryMult * secondaryPotency * scaling.traitMods.healMult * scaling.runeMods.healMult,
             );
             set((state) => {
               const newHP = D(state.playerHP).plus(healAmount);
@@ -1588,8 +1610,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
           case 'shield': {
+            const masteryMult = scaling.masteryEffectMult ?? 1;
+            const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
             const shieldAmount = maxHp
-              .times(effect.mult * scaling.traitMods.shieldMult * scaling.runeMods.shieldMult)
+              .times(
+                effect.mult * masteryMult * secondaryPotency * scaling.traitMods.shieldMult * scaling.runeMods.shieldMult,
+              )
               .toNumber();
             const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
             const expiresAt = now + durationSec * 1000;
@@ -1608,13 +1634,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
           case 'buff': {
             const durationSec = effect.durationSec ?? DEFAULT_BUFF_DURATION_SEC;
             const buffId = `${techId}:${effect.stat}`;
+            const masteryMult = scaling.masteryEffectMult ?? 1;
+            const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
             set((state) => {
               state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
               state.combatBuffs.push({
                 id: buffId,
                 stat: effect.stat,
                 mode: effect.mode,
-                value: effect.value * scaling.traitMods.buffMult * scaling.runeMods.buffMult,
+                value:
+                  effect.value *
+                  masteryMult *
+                  secondaryPotency *
+                  scaling.traitMods.buffMult *
+                  scaling.runeMods.buffMult,
                 endsAt: now + durationSec * 1000,
               });
             });

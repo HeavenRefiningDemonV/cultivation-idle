@@ -4,6 +4,7 @@ import type { TechniqueDef } from '../content';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { randFloat } from '../utils/rng';
+import { useUIStore } from './uiStore';
 
 export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
 export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
@@ -300,6 +301,27 @@ function getMasteryMilestonesConfig(): Array<{ level: number; effects: MasteryEf
   return economy?.mastery?.milestones ?? DEFAULT_MASTERY_MILESTONES;
 }
 
+function formatMilestoneEffectsSummary(effects: MasteryEffect[] | undefined): string[] {
+  if (!effects?.length) return [];
+
+  return effects.map((effect) => {
+    switch (effect.type) {
+      case 'cooldownMultiplier':
+        return `Cooldown ${formatPercent(1 - (effect.value ?? 1))}`;
+      case 'resourceCostMultiplier':
+        return `Cost ${formatPercent(1 - (effect.value ?? 1))}`;
+      case 'effectMultiplier':
+        return `Effect ${formatPercent((effect.value ?? 1) - 1)}`;
+      case 'unlockSecondary':
+        return 'Secondary effect unlock';
+      case 'cosmeticTitle':
+        return `Title: ${effect.value}`;
+      default:
+        return 'Milestone bonus';
+    }
+  });
+}
+
 export function getMasteryMilestoneEffects(level: number) {
   const clamped = Math.max(0, Math.min(100, Math.floor(level)));
   const milestones = getMasteryMilestonesConfig();
@@ -569,6 +591,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
     addMasteryXp: (techId, amount, now = Date.now()) => {
       if (!Number.isFinite(amount) || amount <= 0) return;
+      const prevLevel = get().getMasteryLevel(techId);
       set((state) => {
         const entry = state.unlockedTechs[techId];
         if (!entry?.unlocked) return;
@@ -577,6 +600,23 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         entry.masteryXp += total;
         entry.lastCastAt = now;
       });
+
+      const nextLevel = get().getMasteryLevel(techId);
+      if (nextLevel > prevLevel) {
+        const milestonesCrossed = getMasteryMilestonesConfig().filter(
+          (milestone) => milestone.level > prevLevel && milestone.level <= nextLevel,
+        );
+        if (milestonesCrossed.length) {
+          const ui = useUIStore.getState();
+          milestonesCrossed.forEach((milestone) => {
+            const summaryParts = formatMilestoneEffectsSummary(milestone.effects);
+            const message = summaryParts.length
+              ? `Mastery ${milestone.level} reached: ${summaryParts.join(', ')}`
+              : `Mastery ${milestone.level} reached.`;
+            ui.addNotification('success', message, 2500);
+          });
+        }
+      }
     },
 
     setManualGrade: (techId, grade) => {
