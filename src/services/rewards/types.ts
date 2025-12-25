@@ -12,10 +12,19 @@ export type RewardTechniqueFragmentBundle = {
   qty: number;
 };
 
+export type RewardManualBundle = {
+  manualId: string;
+  techId: string;
+  grade: 'mortal' | 'earth' | 'heaven' | 'mystic';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  qty: number;
+};
+
 export type RewardBundle = {
   currencies?: RewardCurrencyBundle;
   items?: RewardItemBundle[];
   techniqueFragments?: RewardTechniqueFragmentBundle[];
+  manuals?: RewardManualBundle[];
   comprehension?: number;
 };
 

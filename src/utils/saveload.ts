@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js';
-import type { SaveData } from '../types';
+import type { SaveData, SaveManualSatchelState } from '../types';
 import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
@@ -22,6 +22,7 @@ import { useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
+import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
@@ -59,6 +60,15 @@ function cloneManualPavilionState(
   return copy;
 }
 
+function cloneManualSatchelState(source: SaveManualSatchelState['entries']): SaveManualSatchelState['entries'] {
+  const copy: SaveManualSatchelState['entries'] = {};
+  Object.entries(source ?? {}).forEach(([key, entry]) => {
+    if (!entry || typeof entry !== 'object') return;
+    copy[key] = { ...entry };
+  });
+  return copy;
+}
+
 /**
  * Gather current game state from all stores
  */
@@ -82,6 +92,7 @@ function gatherGameState(): SaveData {
   const expeditionState = useExpeditionStore.getState();
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
+  const manualSatchelState = useManualSatchelStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
 
@@ -174,6 +185,10 @@ function gatherGameState(): SaveData {
 
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
+    },
+
+    manualSatchelState: {
+      entries: cloneManualSatchelState(manualSatchelState.entries),
     },
 
     techniqueState: {
@@ -369,6 +384,11 @@ function validateSaveData(data: unknown): data is SaveData {
     if ('manualPavilionState' in record && record.manualPavilionState) {
       const mps = record.manualPavilionState as Record<string, unknown>;
       if (!mps.stockByPavilionId || typeof mps.stockByPavilionId !== 'object') return false;
+    }
+
+    if ('manualSatchelState' in record && record.manualSatchelState) {
+      const mss = record.manualSatchelState as Record<string, unknown>;
+      if (!mss.entries || typeof mss.entries !== 'object') return false;
     }
 
     if ('techniqueState' in record && record.techniqueState) {
@@ -846,8 +866,10 @@ function applySaveData(saveData: SaveData): void {
         : getDefaultUnlockedHeartLawIds(),
     });
 
+    const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? { entries: {} };
     const manualPavilionState = saveData.manualPavilionState ?? defaults.manualPavilionState;
     useManualPavilionStore.getState().hydrate(manualPavilionState);
+    useManualSatchelStore.getState().hydrate(manualSatchelState);
 
     useRuinsStore.setState({
       progressByRuinId: ruinsState.progressByRuinId ?? {},

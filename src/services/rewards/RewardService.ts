@@ -3,6 +3,8 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { normalizeItemList } from '../../utils/itemList';
 import { buildRewardSummary, normalizeRewardBundle } from './rewardSummary';
 import type { RewardBundle, GrantRewardsResult, RewardCurrencyBundle } from './types';
+import { useTechCollectionStore } from '../../stores/techCollectionStore';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 
 function sanitizeAmount(amount: string | undefined): string | null {
   if (!amount) return null;
@@ -52,6 +54,34 @@ function applyItems(items: RewardBundle['items'] | undefined, result: GrantRewar
   }
 }
 
+function applyTechniqueFragments(fragments: RewardBundle['techniqueFragments'] | undefined) {
+  if (!fragments || fragments.length === 0) return;
+  const techCollection = useTechCollectionStore.getState();
+  fragments.forEach((fragment) => {
+    if (!fragment || !fragment.techId) return;
+    const qty = Math.max(0, Math.floor(fragment.qty ?? 0));
+    if (qty <= 0) return;
+    techCollection.addFragments(fragment.techId, qty);
+  });
+}
+
+function applyManuals(manuals: RewardBundle['manuals'] | undefined) {
+  if (!manuals || manuals.length === 0) return;
+  const satchel = useManualSatchelStore.getState();
+  manuals.forEach((manual) => {
+    if (!manual || !manual.manualId || !manual.techId) return;
+    const qty = Math.max(1, Math.floor(manual.qty ?? 0));
+    satchel.addManual({
+      manualId: manual.manualId,
+      techId: manual.techId,
+      grade: manual.grade,
+      rarity: manual.rarity,
+      qty,
+      acquiredAtMs: Date.now(),
+    });
+  });
+}
+
 function emitRewardGranted(bundle: RewardBundle, result: GrantRewardsResult, reason: string, timestamp: number) {
   const summary = buildRewardSummary(result);
   GameEvents.emit({
@@ -82,9 +112,8 @@ export const RewardService = {
 
     applyItems(normalized.items, result);
 
-    if (Array.isArray(normalized.techniqueFragments) && normalized.techniqueFragments.length > 0) {
-      console.log('[RewardService] techniqueFragments not wired yet:', normalized.techniqueFragments);
-    }
+    applyTechniqueFragments(normalized.techniqueFragments);
+    applyManuals(normalized.manuals);
 
     if (typeof normalized.comprehension === 'number') {
       console.log('[RewardService] comprehension not wired yet:', normalized.comprehension);

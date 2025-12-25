@@ -19,8 +19,9 @@ import { useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
+import { useManualSatchelStore } from '../stores/manualSatchelStore';
 
-export const SAVE_VERSION = '1.0.2';
+export const SAVE_VERSION = '1.0.3';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -37,6 +38,7 @@ const REQUIRED_SAVE_KEYS = [
   'heartLawState',
   'prestigeState',
   'manualPavilionState',
+  'manualSatchelState',
 ];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -65,6 +67,17 @@ const cloneManualPavilionState = (
   return copy;
 };
 
+const cloneManualSatchelState = (
+  source: ReturnType<typeof useManualSatchelStore.getState>['entries'],
+): ReturnType<typeof useManualSatchelStore.getState>['entries'] => {
+  const copy: ReturnType<typeof useManualSatchelStore.getState>['entries'] = {};
+  Object.entries(source ?? {}).forEach(([key, entry]) => {
+    if (!entry || typeof entry !== 'object') return;
+    copy[key] = { ...entry };
+  });
+  return copy;
+};
+
 export function buildDefaultSaveState(): SaveData {
   const now = Date.now();
   const gameState = useGameStore.getState();
@@ -87,6 +100,7 @@ export function buildDefaultSaveState(): SaveData {
   const expeditionState = useExpeditionStore.getState();
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
+  const manualSatchelState = useManualSatchelStore.getState();
 
   return {
     version: SAVE_VERSION,
@@ -206,6 +220,9 @@ export function buildDefaultSaveState(): SaveData {
     },
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
+    },
+    manualSatchelState: {
+      entries: cloneManualSatchelState(manualSatchelState.entries),
     },
   };
 }
@@ -378,6 +395,22 @@ function isValidManualPavilionState(value: unknown): value is SaveData['manualPa
   return true;
 }
 
+function isValidManualSatchelState(value: unknown): value is SaveData['manualSatchelState'] {
+  if (!isRecord(value)) return false;
+  if (!isRecord(value.entries)) return false;
+  for (const entry of Object.values(value.entries)) {
+    if (!isRecord(entry)) continue;
+    if (typeof entry.manualId !== 'string') return false;
+    if (typeof entry.techId !== 'string') return false;
+    if (typeof entry.grade !== 'string') return false;
+    if (typeof entry.rarity !== 'string') return false;
+    if (typeof entry.qty !== 'number') return false;
+    if (typeof entry.acquiredAtFirstMs !== 'number') return false;
+    if (typeof entry.acquiredAtLastMs !== 'number') return false;
+  }
+  return true;
+}
+
 function isValidPrestigeState(value: unknown): value is SaveData['prestigeState'] {
   if (!isRecord(value)) return false;
   if (typeof value.totalAP !== 'number') return false;
@@ -498,6 +531,12 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       defaults.manualPavilionState,
       isValidManualPavilionState,
       'manualPavilionState',
+    ),
+    manualSatchelState: mergeSlice(
+      record.manualSatchelState,
+      defaults.manualSatchelState,
+      isValidManualSatchelState,
+      'manualSatchelState',
     ),
   };
 

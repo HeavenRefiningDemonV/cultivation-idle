@@ -278,6 +278,21 @@ export interface SaveOutskirtsState {
   >;
 }
 
+export interface SaveManualSatchelEntry {
+  key: string;
+  manualId: string;
+  techId: string;
+  grade: 'mortal' | 'earth' | 'heaven' | 'mystic';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  qty: number;
+  acquiredAtFirstMs: number;
+  acquiredAtLastMs: number;
+}
+
+export interface SaveManualSatchelState {
+  entries: Record<string, SaveManualSatchelEntry>;
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -362,6 +377,7 @@ export interface SaveData {
   };
 
   manualPavilionState: ManualPavilionSaveState;
+  manualSatchelState: SaveManualSatchelState;
 
   activityState?: SaveActivityState;
 

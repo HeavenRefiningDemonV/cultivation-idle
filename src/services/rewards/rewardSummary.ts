@@ -3,6 +3,9 @@ import { normalizeItemList } from '../../utils/itemList';
 import { D } from '../../utils/numbers';
 import type { GrantRewardsResult, RewardBundle, RewardCurrencyBundle } from './types';
 
+const allowedGrades = ['mortal', 'earth', 'heaven', 'mystic'] as const;
+const allowedRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;
+
 function normalizeCurrency(amount: string | undefined): string {
   if (!amount) return '0';
   const trimmed = amount.trim();
@@ -33,6 +36,20 @@ function normalizeCurrencies(bundle?: RewardCurrencyBundle): RewardCurrencyBundl
   });
 
   return normalized;
+}
+
+function normalizeGrade(input?: string): (typeof allowedGrades)[number] {
+  const value = (input ?? '').toLowerCase();
+  return allowedGrades.includes(value as (typeof allowedGrades)[number])
+    ? (value as (typeof allowedGrades)[number])
+    : 'mortal';
+}
+
+function normalizeRarity(input?: string): (typeof allowedRarities)[number] {
+  const value = (input ?? '').toLowerCase();
+  return allowedRarities.includes(value as (typeof allowedRarities)[number])
+    ? (value as (typeof allowedRarities)[number])
+    : 'common';
 }
 
 export function buildRewardSummary(result: GrantRewardsResult): string {
@@ -76,6 +93,23 @@ export function normalizeRewardBundle(bundle: RewardBundle): RewardBundle {
     normalized.techniqueFragments = bundle.techniqueFragments
       .filter((fragment) => fragment && fragment.techId && fragment.qty > 0)
       .map((fragment) => ({ ...fragment, qty: Math.floor(fragment.qty) }));
+  }
+
+  if (Array.isArray(bundle.manuals) && bundle.manuals.length > 0) {
+    const manuals = bundle.manuals
+      .filter((manual) => manual && manual.manualId && manual.techId)
+      .map((manual) => ({
+        manualId: manual.manualId,
+        techId: manual.techId,
+        grade: normalizeGrade(manual.grade),
+        rarity: normalizeRarity(manual.rarity),
+        qty: Math.max(1, Math.floor(manual.qty ?? 0)),
+      }))
+      .filter((manual) => manual.qty > 0);
+
+    if (manuals.length > 0) {
+      normalized.manuals = manuals;
+    }
   }
 
   if (typeof bundle.comprehension === 'number' && Number.isFinite(bundle.comprehension)) {
