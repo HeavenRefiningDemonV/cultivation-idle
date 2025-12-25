@@ -365,6 +365,27 @@
   font-size: 14px;
 }
 
+.techniqueLibraryEmptyState p {
+  margin: 0 0 8px;
+}
+
+.techniqueLibraryLinkButton {
+  background: linear-gradient(90deg, #38bdf8, #60a5fa);
+  color: #0b111d;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.techniqueLibraryLinkButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
 .techniqueLibraryDetail {
   display: flex;
   flex-direction: column;

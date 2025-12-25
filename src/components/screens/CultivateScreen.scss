@@ -76,6 +76,53 @@
   gap: 16px;
 }
 
+.cultivateScreenLibraryCta {
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(251, 191, 36, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.cultivateScreenLibraryText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cultivateScreenLibraryTitle {
+  font-family: 'Julee', cursive;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.cultivateScreenLibrarySubtext {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.cultivateScreenLibraryButton {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  color: #0b111d;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  min-width: 180px;
+}
+
+.cultivateScreenLibraryButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
 .cultivateScreenPanel {
   border-radius: 14px;
   padding: 24px;

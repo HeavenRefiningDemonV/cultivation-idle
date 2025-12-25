@@ -119,6 +119,7 @@ export function TechniqueLibraryScreen() {
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const progression = useMemo(
     () => getSlotProgressionSnapshot(realmIndex),
@@ -358,6 +359,10 @@ export function TechniqueLibraryScreen() {
     });
   }, [selectedOwned?.favorite, selectedTechniqueId, toggleFavorite]);
 
+  const handleManualPavilionNavigation = useCallback(() => {
+    setActiveTab('adventure');
+  }, [setActiveTab]);
+
   const renderSlotRow = (slot: SlotSelection, techId: string | null | undefined) => {
     const isSelected = selectedSlot.type === slot.type && selectedSlot.index === slot.index;
     const isUnlocked =
@@ -543,7 +548,13 @@ export function TechniqueLibraryScreen() {
           <div className="techniqueLibraryOwnedList">
             {ownedTechniques.length === 0 ? (
               <div className="techniqueLibraryEmptyState">
-                No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the Technique.
+                <p>
+                  No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the
+                  Technique.
+                </p>
+                <button className="techniqueLibraryLinkButton" onClick={handleManualPavilionNavigation}>
+                  Go to Manual Pavilion
+                </button>
               </div>
             ) : filteredTechniques.length === 0 ? (
               <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>

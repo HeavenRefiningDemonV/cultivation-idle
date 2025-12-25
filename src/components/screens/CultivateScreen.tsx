@@ -71,6 +71,8 @@ export function CultivateScreen() {
     hidePerkSelection,
     setHeaderTitles,
   } = useUIStore();
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
 
   const currentRealm = REALMS[realm.index];
   const nextSubstage = realm.substage + 1;
@@ -149,10 +151,27 @@ export function CultivateScreen() {
     breakthrough();
   };
 
+  const handleOpenTechniqueLibrary = useCallback(() => {
+    clearTechniqueLibraryIntent();
+    setActiveTab('techniques');
+  }, [clearTechniqueLibraryIntent, setActiveTab]);
+
   return (
     <div className={'cultivateScreenRoot'}>
       <div className={'cultivateScreenGrid'}>
         <div className={'cultivateScreenLeftColumn'}>
+
+          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenLibraryCta'}`}>
+            <div className={'cultivateScreenLibraryText'}>
+              <div className={'cultivateScreenLibraryTitle'}>Technique Library</div>
+              <div className={'cultivateScreenLibrarySubtext'}>
+                Equip techniques for combat. Buy Manuals in towns, then Study them to learn.
+              </div>
+            </div>
+            <button className={'cultivateScreenLibraryButton'} onClick={handleOpenTechniqueLibrary}>
+              Open Technique Library
+            </button>
+          </div>
 
           <div className="cultivator-container">
             <img className='cultivator' src={cultivatorImage} />

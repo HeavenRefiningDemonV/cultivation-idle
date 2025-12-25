@@ -112,6 +112,10 @@ export interface UIState extends UIStateBase {
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
   closeTechniqueLearned: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
+  openTechniqueLibraryForEquip: (
+    techniqueId: string,
+    preferredSlotType?: 'active' | 'passive' | 'ultimate',
+  ) => void;
   clearTechniqueLibraryIntent: () => void;
   hardResetUI: () => void;
 }
@@ -423,6 +427,10 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.techniqueLibraryIntent = null;
       });
+    },
+
+    openTechniqueLibraryForEquip: (techniqueId, preferredSlotType) => {
+      get().setTechniqueLibraryIntent({ type: 'equip', techniqueId, preferredSlotType });
     },
 
     /**

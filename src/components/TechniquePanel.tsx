@@ -1,11 +1,16 @@
 import { useTechniqueStore } from '../stores/techniqueStore';
 import { useContentStore } from '../stores/contentStore';
+import { useUIStore } from '../stores/uiStore';
 import './TechniquePanel.scss';
 
 export function TechniquePanel() {
-  const { loadouts, selectedLoadoutId, setSelectedLoadout, getEquippedTechIds, getSelectedAiProfile } =
-    useTechniqueStore();
+  const loadouts = useTechniqueStore((state) => state.loadouts);
+  const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
+  const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
+  const getEquippedTechIds = useTechniqueStore((state) => state.getEquippedTechIds);
+  const getSelectedAiProfile = useTechniqueStore((state) => state.getSelectedAiProfile);
   const { maps } = useContentStore();
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const selectedProfile = getSelectedAiProfile();
 
@@ -16,7 +21,12 @@ export function TechniquePanel() {
 
   return (
     <div className={'techniquePanelRoot'}>
-      <h3 className={'techniquePanelTitle'}>Technique Loadouts</h3>
+      <div className={'techniquePanelHeaderRow'}>
+        <h3 className={'techniquePanelTitle'}>Technique Loadouts</h3>
+        <button className={'techniquePanelOpenLibrary'} onClick={() => setActiveTab('techniques')}>
+          Open Technique Library
+        </button>
+      </div>
       <p className={'techniquePanelFooterNote'}>
         Loadouts are used by your AI during combat. Switching loadouts adjusts priorities but techniques still
         auto-cast.
