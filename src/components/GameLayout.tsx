@@ -9,6 +9,7 @@ import InventoryScreen from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
 import { ManualSatchelModal } from './modals/ManualSatchelModal';
+import { TechniqueLearnedModal } from './modals/TechniqueLearnedModal';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SystemStatusPanelOverlay } from '../app/overlays/SystemStatusPanel';
 import './GameLayout.scss';
@@ -50,6 +51,7 @@ export function GameLayout() {
   const showOfflineModalSetting = useUIStore((state) => state.settings.showOfflineModal);
   const showSystemStatusOverlay = useUIStore((state) => state.settings.showSystemStatusPanel);
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
+  const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
 
   // Render content based on active tab
@@ -87,6 +89,7 @@ export function GameLayout() {
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
       {showManualSatchelModal && <ManualSatchelModal />}
+      {showTechniqueLearnedModal && <TechniqueLearnedModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
     </div>
   );

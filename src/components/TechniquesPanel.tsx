@@ -387,7 +387,9 @@ export function TechniquesPanel() {
       <div className={'worldScreenPlaceholderBody'}>
         <div className={'worldScreenPlaceholderLine worldScreenHighlight'}>Unlocked techniques</div>
         {techniqueCards.length === 0 && (
-          <div className={'worldScreenPlaceholderLine'}>Buy manuals to unlock techniques.</div>
+          <div className={'worldScreenPlaceholderLine'}>
+            Buy manuals to study techniques and equip them for combat.
+          </div>
         )}
         {techniqueCards.map((entry) => (
           <div key={entry.id} id={`tech-card-${entry.id}`} className={'worldScreenPlaceholderLine'}>
