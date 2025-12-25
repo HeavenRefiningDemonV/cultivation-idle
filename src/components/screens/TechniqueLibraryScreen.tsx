@@ -15,6 +15,8 @@ import { useTechniqueStore } from '../../stores/techniqueStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
+import { RankUpgradeRitualModal } from '../modals/RankUpgradeRitualModal';
+import { TraitRerollModal } from '../modals/TraitRerollModal';
 import './TechniqueLibraryScreen.scss';
 
 type InlineMessage = { type: 'error' | 'info' | 'success'; text: string } | null;
@@ -89,6 +91,7 @@ const gradeLabel = (value?: string) => {
 const gradeOrder: string[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: string[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
+const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
 
 const formatRankLabel = (rank: number) => `Rank ${rank}`;
 
@@ -102,9 +105,9 @@ export function TechniqueLibraryScreen() {
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all');
   const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
-  const [lockEnabled, setLockEnabled] = useState(false);
-  const [lockTraitIndex, setLockTraitIndex] = useState<number | null>(null);
   const [runeSelections, setRuneSelections] = useState<Record<number, string>>({});
+  const [showRankModal, setShowRankModal] = useState(false);
+  const [showTraitModal, setShowTraitModal] = useState(false);
 
   // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
   const loadouts = useTechniqueStore((state) => state.loadouts);
@@ -117,7 +120,6 @@ export function TechniqueLibraryScreen() {
   const getTraitSlotBreakdown = useTechCollectionStore((state) => state.getTraitSlotBreakdown);
   const getEffectiveTraitSlots = useTechCollectionStore((state) => state.getEffectiveTraitSlots);
   const ensureTraits = useTechCollectionStore((state) => state.ensureTraits);
-  const rerollTraits = useTechCollectionStore((state) => state.rerollTraits);
   const getTraitDefinition = useTechCollectionStore((state) => state.getTraitDefinition);
   const getTraitRollRangeLabel = useTechCollectionStore((state) => state.getTraitRollRangeLabel);
   const getTraitQualityPct = useTechCollectionStore((state) => state.getTraitQualityPct);
@@ -140,7 +142,9 @@ export function TechniqueLibraryScreen() {
   );
   const realmIndex = useGameStore((state) => state.realm.index);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
+  const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
+  const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const inventoryItems = useInventoryStore((state) => state.items);
@@ -299,8 +303,6 @@ export function TechniqueLibraryScreen() {
     if (!selectedTechniqueId) return;
     ensureTraits(selectedTechniqueId);
     ensureRunes(selectedTechniqueId);
-    setLockTraitIndex(null);
-    setLockEnabled(false);
     setRuneSelections({});
   }, [ensureRunes, ensureTraits, selectedTechniqueId]);
 
@@ -337,6 +339,29 @@ export function TechniqueLibraryScreen() {
     techniqueLibraryIntent,
     techniquesById,
   ]);
+
+  useEffect(() => {
+    if (!techniqueFocusRequest) return;
+    const { techId, action } = techniqueFocusRequest;
+    setSelectedTechniqueId(techId);
+
+    window.requestAnimationFrame(() => {
+      const el = document.getElementById(`tech-card-${techId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('techniqueCardHighlight');
+        window.setTimeout(() => el.classList.remove('techniqueCardHighlight'), 2000);
+      }
+
+      if (action === 'upgradeRank') {
+        setShowRankModal(true);
+      } else if (action === 'rerollTraits') {
+        setShowTraitModal(true);
+      }
+    });
+
+    clearTechniqueFocusRequest();
+  }, [clearTechniqueFocusRequest, techniqueFocusRequest]);
 
   useEffect(() => {
     const { type, index } = selectedSlot;
@@ -399,26 +424,6 @@ export function TechniqueLibraryScreen() {
       text: willFavorite ? 'Added to favorites.' : 'Removed from favorites.',
     });
   }, [selectedOwned?.favorite, selectedTechniqueId, toggleFavorite]);
-
-  const handleRerollTraits = useCallback(() => {
-    if (!selectedTechniqueId) return;
-    const result = rerollTraits(selectedTechniqueId, {
-      lockEnabled,
-      lockIndex: lockTraitIndex ?? undefined,
-    });
-
-    if (result.ok) {
-      const lockedText = result.lockedIndex !== undefined ? ` (kept trait ${result.lockedIndex + 1})` : '';
-      setInlineMessage({ type: 'success', text: `Traits rerolled${lockedText}.` });
-    } else {
-      const baseMessage = result.reason === 'invalid_lock'
-        ? 'Select a valid trait to lock before rerolling.'
-        : result.reason === 'insufficient_items'
-          ? 'Not enough Soul Ink to reroll traits.'
-          : result.reason ?? 'Unable to reroll traits.';
-      setInlineMessage({ type: 'error', text: baseMessage });
-    }
-  }, [lockEnabled, lockTraitIndex, rerollTraits, selectedTechniqueId]);
 
   const handleSocketRune = useCallback(
     (slotIndex: number) => {
@@ -514,7 +519,6 @@ export function TechniqueLibraryScreen() {
     ? getTraitSlotBreakdown(selectedTechniqueId)
     : { raritySlots: 0, gradeCap: 0, effectiveSlots: 0, rarity: 'common', grade: 'mortal' as const };
   const selectedTraits = selectedEntry?.traits ?? [];
-  const rerollCostQty = lockEnabled && lockTraitIndex !== null ? 2 : 1;
   const rerollItemName = itemsById[SOUL_INK_REROLL_ITEM_ID]?.name ?? 'Soul Ink';
   const runeSlots = selectedTechniqueId ? getEffectiveRuneSlots(selectedTechniqueId) : 0;
   const runeDisplay = useMemo(
@@ -540,6 +544,25 @@ export function TechniqueLibraryScreen() {
 
   const equipButtonLabel = selectedSlotTechId && selectedSlotTechId !== selectedTechniqueId ? 'Swap' : 'Equip';
   const equipDisabled = !selectedTechniqueId || !selectedLoadout;
+  const nextRankCost = nextRankInfo?.cost;
+  const rankUpgradeDisabledReason = !nextRankInfo
+    ? 'Rank cap reached for current grade.'
+    : fragmentsOwnedSelected < (nextRankCost?.fragmentsRequired ?? 0)
+      ? 'Not enough fragments.'
+      : (inventoryItems[RUNE_DUST_ITEM_ID] ?? 0) < (nextRankCost?.runeDustRequired ?? 0)
+        ? 'Not enough rune dust.'
+        : (inventoryItems[nextRankCost?.soulInkItemId ?? ''] ?? 0) < (nextRankCost?.soulInkRequired ?? 0)
+          ? 'Not enough soul ink.'
+          : null;
+  const rerollDisabledReason =
+    traitInfoSelected.effectiveSlots <= 0
+      ? 'No trait slots available.'
+      : (inventoryItems[SOUL_INK_REROLL_ITEM_ID] ?? 0) <= 0
+        ? 'Need Soul Ink to reroll traits.'
+        : null;
+  const rankPowerDeltaPct = selectedOwned && nextRankInfo
+    ? (rankMultiplier(nextRankInfo.nextRank) / rankMultiplier(selectedOwned.rank) - 1) * 100
+    : 10;
 
   return (
     <div className="techniqueLibraryRoot">
@@ -903,6 +926,21 @@ export function TechniqueLibraryScreen() {
                     <div className="techniqueLibraryTrackHint">
                       Fragments owned: {fragmentsOwnedSelected}/{nextRankInfo?.cost.fragmentsRequired ?? '—'}
                     </div>
+                    <div className="techniqueLibraryRankActions">
+                      <div className="techniqueLibraryTrackHint">
+                        {nextRankInfo
+                          ? `Power increase on upgrade: +${rankPowerDeltaPct.toFixed(0)}%`
+                          : 'Rank cap reached: no further power at this grade.'}
+                      </div>
+                      <button
+                        className="techniqueLibrarySecondaryButton"
+                        onClick={() => setShowRankModal(true)}
+                        disabled={Boolean(rankUpgradeDisabledReason)}
+                        title={rankUpgradeDisabledReason ?? undefined}
+                      >
+                        Upgrade Rank
+                      </button>
+                    </div>
                   </div>
 
                   <div className="techniqueLibraryProgressCard">
@@ -973,7 +1011,14 @@ export function TechniqueLibraryScreen() {
 
                 <div className="techniqueLibraryDetailSection">
                   <h4>Sub-Insights (Traits)</h4>
-                  {selectedTraits.length === 0 ? <p>No traits yet.</p> : null}
+                  <div className="techniqueLibraryTrackHint">
+                    Trait slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap}) →
+                    {traitInfoSelected.effectiveSlots}
+                  </div>
+                  {traitInfoSelected.effectiveSlots === 0 && <p>No Sub-Insight slots available for this technique.</p>}
+                  {selectedTraits.length === 0 && traitInfoSelected.effectiveSlots > 0 && (
+                    <p>No traits yet. Re-scribe to discover fresh insights.</p>
+                  )}
                   {selectedTraits.map((trait, idx) => {
                     const def = getTraitDefinition(trait.id);
                     const range = getTraitRollRangeLabel(trait.id);
@@ -985,40 +1030,27 @@ export function TechniqueLibraryScreen() {
                         <div className="techniqueLibraryTraitMain">
                           <div className="techniqueLibraryTraitName">{label}</div>
                           <div className="techniqueLibraryTraitValue">{(valuePct * 100).toFixed(1)}%</div>
-                          <div className="techniqueLibraryTraitRange">{range}</div>
                         </div>
                         <div className="techniqueLibraryTraitQuality">
+                          <div className="techniqueLibraryTraitRange">{range}</div>
                           <div className="techniqueLibraryTraitQualityBar">
                             <div className="techniqueLibraryTraitQualityFill" style={{ width: `${quality * 100}%` }} />
                           </div>
-                          <label className="techniqueLibraryTraitLock">
-                            <input
-                              type="radio"
-                              name="traitLock"
-                              checked={lockTraitIndex === idx}
-                              onChange={() => {
-                                setLockTraitIndex(idx);
-                                setLockEnabled(true);
-                              }}
-                            />
-                            Lock this trait
-                          </label>
                         </div>
                       </div>
                     );
                   })}
                   <div className="techniqueLibraryTraitActions">
-                    <label className="techniqueLibraryToggle">
-                      <input
-                        type="checkbox"
-                        checked={lockEnabled}
-                        onChange={(e) => setLockEnabled(e.target.checked)}
-                        disabled={selectedTraits.length === 0}
-                      />
-                      Lock 1 trait (+1 {rerollItemName})
-                    </label>
-                    <button className="techniqueLibraryPrimaryButton" onClick={handleRerollTraits} disabled={!selectedTraits.length}>
-                      Reroll Sub-Insights (Cost: {rerollCostQty}× {rerollItemName})
+                    <div className="techniqueLibraryTrackHint">
+                      Reroll: 1× {rerollItemName}. Lock 1 trait: +1× {rerollItemName} (choose in modal).
+                    </div>
+                    <button
+                      className="techniqueLibraryPrimaryButton"
+                      onClick={() => setShowTraitModal(true)}
+                      disabled={Boolean(rerollDisabledReason)}
+                      title={rerollDisabledReason ?? undefined}
+                    >
+                      Reroll Sub-Insights
                     </button>
                   </div>
                 </div>
@@ -1075,6 +1107,13 @@ export function TechniqueLibraryScreen() {
             )}
           </div>
         </div>
+
+        {showRankModal && selectedTechniqueId && (
+          <RankUpgradeRitualModal techId={selectedTechniqueId} onClose={() => setShowRankModal(false)} />
+        )}
+        {showTraitModal && selectedTechniqueId && (
+          <TraitRerollModal techId={selectedTechniqueId} onClose={() => setShowTraitModal(false)} />
+        )}
 
         {inlineMessage && (
           <div className={`techniqueLibraryInlineMessage inline-${inlineMessage.type}`}>

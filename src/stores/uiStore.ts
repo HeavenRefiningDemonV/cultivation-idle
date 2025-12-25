@@ -68,6 +68,7 @@ interface UIStateBase {
   techniqueLibraryIntent:
     | null
     | { type: 'equip'; techniqueId: string; preferredSlotType?: 'active' | 'passive' | 'ultimate' };
+  techniqueFocusRequest: { techId: string; action?: 'open' | 'upgradeRank' | 'rerollTraits' } | null;
 
   // UI Settings
   settings: UISettingsState;
@@ -116,6 +117,11 @@ export interface UIState extends UIStateBase {
     techniqueId: string,
     preferredSlotType?: 'active' | 'passive' | 'ultimate',
   ) => void;
+  requestTechniqueFocus: (
+    techId: string,
+    action?: 'open' | 'upgradeRank' | 'rerollTraits',
+  ) => void;
+  clearTechniqueFocusRequest: () => void;
   clearTechniqueLibraryIntent: () => void;
   hardResetUI: () => void;
 }
@@ -138,6 +144,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   showTechniqueLearnedModal: false,
   techniqueLearnedPayload: null,
   techniqueLibraryIntent: null,
+  techniqueFocusRequest: null,
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -420,6 +427,19 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.techniqueLibraryIntent = intent;
         state.activeTab = 'techniques';
+      });
+    },
+
+    requestTechniqueFocus: (techId, action = 'open') => {
+      set((state) => {
+        state.techniqueFocusRequest = { techId, action };
+        state.activeTab = 'techniques';
+      });
+    },
+
+    clearTechniqueFocusRequest: () => {
+      set((state) => {
+        state.techniqueFocusRequest = null;
       });
     },
 

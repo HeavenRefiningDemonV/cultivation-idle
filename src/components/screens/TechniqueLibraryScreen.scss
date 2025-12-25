@@ -650,6 +650,18 @@
   }
 }
 
+.techniqueLibraryRankActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.techniqueLibraryRankActions .techniqueLibrarySecondaryButton {
+  min-width: 160px;
+}
+
 .techniqueLibraryUpgradeHint {
   color: #a4ffbe;
   font-size: 12px;

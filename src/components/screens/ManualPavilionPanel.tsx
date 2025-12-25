@@ -123,6 +123,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const realmIndex = useGameStore((state) => state.realm.index);
   const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const requestTechniqueFocus = useUIStore((state) => state.requestTechniqueFocus);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
 
   const [filters, setFilters] = useState<FiltersState>({
@@ -243,13 +245,9 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     setPurchaseResult(finalResult);
   };
 
-  const scrollToTechnique = (techId: string) => {
-    const el = document.getElementById(`tech-card-${techId}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.classList.add('techniqueCardHighlight');
-      window.setTimeout(() => el.classList.remove('techniqueCardHighlight'), 2000);
-    }
+  const handleUpgradeNow = (techId: string) => {
+    setActiveTab('techniques');
+    requestTechniqueFocus(techId, 'upgradeRank');
   };
 
   const renderFilters = () => {
@@ -491,7 +489,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           +{purchaseResult.fragmentsGained} Technique Fragments ({rarityLabel(purchaseResult.rarity)})
         </div>
         <div>{progressLine}</div>
-        <button className={'worldScreenModuleButton'} onClick={() => scrollToTechnique(purchaseResult.techId)}>
+        <button className={'worldScreenModuleButton'} onClick={() => handleUpgradeNow(purchaseResult.techId)}>
           Upgrade now
         </button>
       </div>
