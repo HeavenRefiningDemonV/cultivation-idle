@@ -193,11 +193,13 @@ export interface GameState {
  */
 export type TechniqueSlotType = 'active' | 'passive' | 'ultimate';
 export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
+export type CastingPolicy = 'aggressive' | 'balanced' | 'defensive';
 
 export interface SaveTechniqueLoadout {
   id: string;
   name: string;
   aiProfile: AiProfile;
+  castingPolicy?: CastingPolicy;
   slots: {
     active: string[];
     passive: string[];

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content';
+import type { SaveTechniqueLoadout } from '../types';
 import { REALMS } from '../constants';
 import { useContentStore } from './contentStore';
 import { useGameStore } from './gameStore';
@@ -8,6 +9,7 @@ import { GameEvents } from '../services/events/GameEvents';
 import { useTechCollectionStore } from './techCollectionStore';
 
 export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
+export type CastingPolicy = 'aggressive' | 'balanced' | 'defensive';
 export type SlotType = 'active' | 'passive' | 'ultimate';
 
 export type EquipResult =
@@ -28,6 +30,7 @@ export interface TechniqueLoadout {
     ultimate: string | null;
   };
   aiProfile: AiProfile;
+  castingPolicy: CastingPolicy;
 }
 
 interface TechniqueStoreState {
@@ -52,6 +55,7 @@ interface TechniqueStoreState {
   setSelectedLoadout: (id: string) => void;
   setSlotCounts: (slots: { active?: number; passive?: number }) => void;
   setAiProfile: (loadoutId: string, profile: AiProfile) => void;
+  setCastingPolicy: (loadoutId: string, policy: CastingPolicy) => void;
   equipTechnique: (
     slotType: SlotType,
     slotIndex: number,
@@ -59,11 +63,12 @@ interface TechniqueStoreState {
     loadoutId?: string,
   ) => EquipResult;
   hydrateFromSave: (
-    data: { loadouts: TechniqueLoadout[]; selectedLoadoutId: string } | null | undefined,
+    data: { loadouts: SaveTechniqueLoadout[]; selectedLoadoutId: string } | null | undefined,
   ) => void;
   resetLoadouts: () => void;
   getSelectedLoadout: () => TechniqueLoadout | undefined;
   getSelectedAiProfile: () => AiProfile;
+  getSelectedCastingPolicy: () => CastingPolicy;
   getEquippedTechIds: (
     loadoutId?: string
   ) => { active: string[]; passive: string[]; ultimate: string | null };
@@ -84,16 +89,31 @@ type SlotUnlockRequirement = {
   reasonText: string;
 };
 
+const mapAiProfileToCastingPolicy = (profile: AiProfile | undefined): CastingPolicy => {
+  switch (profile) {
+    case 'burst':
+      return 'aggressive';
+    case 'survivor':
+      return 'defensive';
+    case 'farmer':
+      return 'balanced';
+    default:
+      return 'balanced';
+  }
+};
+
 const createEmptyLoadout = (
   id: string,
   name: string,
   aiProfile: AiProfile,
   activeSlots: number,
   passiveSlots: number,
+  castingPolicy?: CastingPolicy,
 ): TechniqueLoadout => ({
   id,
   name,
   aiProfile,
+  castingPolicy: castingPolicy ?? mapAiProfileToCastingPolicy(aiProfile),
   slots: {
     active: Array.from({ length: activeSlots }, () => ''),
     passive: Array.from({ length: passiveSlots }, () => ''),
@@ -276,6 +296,14 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       });
     },
 
+    setCastingPolicy: (loadoutId, policy) => {
+      set((state) => {
+        const loadout = state.loadouts.find((l) => l.id === loadoutId);
+        if (!loadout) return;
+        loadout.castingPolicy = policy;
+      });
+    },
+
     equipTechnique: (slotType, slotIndex, techId, loadoutId) => {
       const state = get();
       const loadout = state.loadouts.find((l) => l.id === (loadoutId ?? state.selectedLoadoutId));
@@ -390,6 +418,7 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       const progression = get().getSlotProgressionSnapshot();
       const normalizedLoadouts = data.loadouts.map((loadout) => ({
         ...loadout,
+        castingPolicy: loadout.castingPolicy ?? mapAiProfileToCastingPolicy(loadout.aiProfile),
         slots: {
           active: normalizeSlots(loadout.slots?.active ?? [], progression.displayed.active),
           passive: normalizeSlots(loadout.slots?.passive ?? [], progression.displayed.passive),
@@ -423,6 +452,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
 
     getSelectedAiProfile: () => {
       return get().getSelectedLoadout()?.aiProfile ?? 'balanced';
+    },
+
+    getSelectedCastingPolicy: () => {
+      return get().getSelectedLoadout()?.castingPolicy ?? 'balanced';
     },
 
     getEquippedTechIds: (loadoutId) => {

@@ -22,7 +22,7 @@ import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
-import { useTechniqueStore } from './techniqueStore';
+import { useTechniqueStore, type CastingPolicy } from './techniqueStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
 import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore';
@@ -165,6 +165,110 @@ function buildCombatResources(): CombatResources {
     intent: maxIntent,
     maxIntent,
   };
+}
+
+const DEBUFF_TAGS = ['burn', 'poison', 'bleed', 'dot', 'debuff', 'curse', 'slow'];
+
+function hasDebuffSignal(def: TechniqueDef | undefined, effects: NormalizedEffect[]): boolean {
+  if (!def) return false;
+  const tags = (def.tags ?? []).map((tag) => tag.toLowerCase());
+  if (tags.some((tag) => DEBUFF_TAGS.includes(tag))) return true;
+  return effects.some((effect) => effect.type === 'addStatus');
+}
+
+type ResourceAfterCastInfo = {
+  resourceAfterPct: number;
+  resourceModel: 'qiPct' | 'intent' | 'none';
+};
+
+function computeResourceAfterCastPct(
+  def: TechniqueDef,
+  costReductionPct: number,
+  resources: CombatResources,
+): ResourceAfterCastInfo {
+  const resourceModel = resolveCombatResourceModel(def.resourceModel);
+  const resourceCost = def.resourceCost ?? 0;
+  const effectiveCost = resourceCost * (1 - costReductionPct);
+
+  if (resourceModel === 'qiPct') {
+    const costPct = effectiveCost > 1 ? effectiveCost / 100 : effectiveCost;
+    const cost = resources.maxQi * costPct;
+    const remaining = Math.max(0, resources.qi - cost);
+    const pct = resources.maxQi > 0 ? remaining / resources.maxQi : 0;
+    return { resourceAfterPct: pct, resourceModel };
+  }
+
+  if (resourceModel === 'intent') {
+    const remaining = Math.max(0, resources.intent - effectiveCost);
+    const pct = resources.maxIntent > 0 ? remaining / resources.maxIntent : 0;
+    return { resourceAfterPct: pct, resourceModel };
+  }
+
+  return { resourceAfterPct: 1, resourceModel: 'none' };
+}
+
+type CandidateScoreInput = {
+  policy: CastingPolicy;
+  hpPct: number;
+  isBossFight: boolean;
+  shieldMissingOrExpiring: boolean;
+  reservePct: number;
+  resourceAfterPct: number;
+  damageScore: number;
+  defensiveScore: number;
+  debuffScore: number;
+  classification: ReturnType<typeof classifyTechnique>;
+  hasShield: boolean;
+};
+
+function computeCandidateScore(input: CandidateScoreInput): number {
+  const {
+    policy,
+    hpPct,
+    isBossFight,
+    shieldMissingOrExpiring,
+    reservePct,
+    resourceAfterPct,
+    damageScore,
+    defensiveScore,
+    debuffScore,
+    classification,
+    hasShield,
+  } = input;
+
+  if (policy === 'aggressive') {
+    let score = damageScore;
+    if (classification.isBurst) score += 2;
+    if (classification.isUltimate) score += isBossFight ? 2 : 1;
+    if (defensiveScore > 0) {
+      score += hpPct < 0.25 ? defensiveScore * 2 : -2;
+    }
+    return score;
+  }
+
+  if (policy === 'balanced') {
+    let score = damageScore;
+    score += debuffScore * 1.5;
+    if (classification.isAoE) score += 0.5;
+    if (defensiveScore > 0 && hpPct < 0.6) score += 1;
+    if (reservePct > 0 && resourceAfterPct < reservePct) score -= 10;
+    return score;
+  }
+
+  // defensive
+  let score = damageScore * 0.6 + defensiveScore;
+  if (shieldMissingOrExpiring && hasShield) {
+    score += 2;
+  }
+  if (hpPct < 0.7 && defensiveScore > 0) {
+    score += 2;
+  }
+  if (classification.isBurst || classification.isUltimate) {
+    if (hpPct < 0.75) score -= 6;
+    if (hpPct < 0.6) score -= 6;
+  }
+  if (reservePct > 0 && resourceAfterPct < reservePct) score -= 10;
+  return score;
 }
 
 function getBasePlayerCombatStats() {
@@ -436,9 +540,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
 
       const loadout = useTechniqueStore.getState().getSelectedLoadout();
+      const castingPolicy = (loadout?.castingPolicy as CastingPolicy | undefined) ?? 'balanced';
       const techCollection = useTechCollectionStore.getState();
       const contentStore = useContentStore.getState();
-      const aiProfile = loadout?.aiProfile ?? 'balanced';
       const equipped = useTechniqueStore.getState().getCombatEquippedTechIds();
       const candidateIds = [...equipped.active];
 
@@ -453,31 +557,30 @@ export const useCombatStore = create<ExtendedCombatState>()(
         def: TechniqueDef;
         classification: ReturnType<typeof classifyTechnique>;
         effects: NormalizedEffect[];
+        damageScore: number;
+        defensiveScore: number;
+        debuffScore: number;
+        hasShield: boolean;
+        resourceAfterPct: number;
       };
+
+      const hp = D(state.playerHP);
+      const maxHp = D(state.playerMaxHP);
+      const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
+      const isBossFight = state.isBoss || state.combatContext.type === 'trial';
+      const shieldMissingOrExpiring =
+        !state.combatShield ||
+        (state.combatShield.expiresAt !== null && state.combatShield.expiresAt <= now + 3000);
 
       const candidates = uniqueCandidates.reduce<Candidate[]>((acc, techId) => {
         if (!techCollection.hasTech(techId)) return acc;
         const def = contentStore.maps.techniquesById[techId];
         if (!def) return acc;
         if (!get().canCastTechnique(techId, now)) return acc;
-        acc.push({
-          techId,
-          def,
-          classification: classifyTechnique(def),
-          effects: normalizeTechniqueEffects(def),
-        });
-        return acc;
-      }, []);
 
-      if (candidates.length === 0) return null;
-
-      const hp = D(state.playerHP);
-      const maxHp = D(state.playerMaxHP);
-      const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
-      const isBossFight = state.isBoss || state.combatContext.type === 'trial';
-
-      const scored = candidates.map((candidate) => {
-        const { def, effects, classification } = candidate;
+        const scaling = getTechniqueScaling(techId, def);
+        const effects = normalizeTechniqueEffects(def, { includeSecondary: scaling.secondaryUnlocked });
+        const classification = classifyTechnique(def);
         const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
         const damageMults = effects
           .filter((effect) => effect.type === 'damage')
@@ -496,45 +599,60 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (hasShield) defensiveScore += 4;
         if (hasDefBuff) defensiveScore += 3;
 
-        let score = damageScore;
+        const debuffScore = hasDebuffSignal(def, effects) ? 2 : 0;
+        const { resourceAfterPct } = computeResourceAfterCastPct(def, scaling.costReductionPct, state.combatResources);
 
-        if (aiProfile === 'survivor') {
-          if (hpPct < 0.4 && defensiveScore > 0) {
-            score = defensiveScore * 10 + damageScore;
-          }
-        } else if (aiProfile === 'burst') {
-          if (isBossFight) {
-            if (classification.isBurst || (def.cooldownSec ?? 0) >= 20) {
-              score += 2;
-            }
-            if (classification.isUltimate) {
-              score += 2;
-            }
-          }
-        } else if (aiProfile === 'farmer') {
-          if ((def.cooldownSec ?? 0) <= 10) {
-            score += 1.5;
-          }
-          if (classification.isAoE) {
-            score += 1.5;
-          }
-        }
+        acc.push({
+          techId,
+          def,
+          classification,
+          effects,
+          damageScore,
+          defensiveScore,
+          debuffScore,
+          hasShield,
+          resourceAfterPct,
+        });
+        return acc;
+      }, []);
 
-        return { ...candidate, score, damageScore, defensiveScore };
+      if (candidates.length === 0) return null;
+
+      const reservePct = castingPolicy === 'defensive' ? 0.2 : castingPolicy === 'balanced' ? 0.12 : 0;
+
+      const scored = candidates.map((candidate) => {
+        const score = computeCandidateScore({
+          policy: castingPolicy,
+          hpPct,
+          isBossFight,
+          shieldMissingOrExpiring,
+          reservePct,
+          resourceAfterPct: candidate.resourceAfterPct,
+          damageScore: candidate.damageScore,
+          defensiveScore: candidate.defensiveScore,
+          debuffScore: candidate.debuffScore,
+          classification: candidate.classification,
+          hasShield: candidate.hasShield,
+        });
+
+        return { ...candidate, score };
       });
 
-      if (aiProfile === 'survivor' && hpPct < 0.4) {
-        const defensiveCandidates = scored.filter((entry) => entry.defensiveScore > 0);
+      if (castingPolicy === 'defensive' && hpPct < 0.55) {
+        const defensiveCandidates = scored
+          .filter((entry) => entry.defensiveScore > 0)
+          .sort((a, b) => b.defensiveScore - a.defensiveScore || b.score - a.score);
         if (defensiveCandidates.length > 0) {
-          defensiveCandidates.sort((a, b) => b.score - a.score);
           return defensiveCandidates[0]?.techId ?? null;
         }
       }
 
       scored.sort((a, b) => b.score - a.score);
-      if (scored[0]?.score > 0) return scored[0].techId;
+      const best = scored[0];
+      if (!best) return null;
+      if (best.score > 0) return best.techId;
 
-      return scored[0]?.techId ?? null;
+      return castingPolicy === 'aggressive' ? best.techId : null;
     };
 
     const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {

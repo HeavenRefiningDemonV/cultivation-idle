@@ -10,7 +10,7 @@ import {
   rankMultiplier,
   useTechCollectionStore,
 } from '../../stores/techCollectionStore';
-import type { SlotType } from '../../stores/techniqueStore';
+import type { CastingPolicy, SlotType } from '../../stores/techniqueStore';
 import { useTechniqueStore } from '../../stores/techniqueStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -61,6 +61,18 @@ const gradeWeight: Record<string, number> = {
   mystic: 1.2,
 };
 
+const castingPolicyLabels: Record<CastingPolicy, string> = {
+  aggressive: 'Aggressive',
+  balanced: 'Balanced',
+  defensive: 'Defensive',
+};
+
+const castingPolicyHelp: Record<CastingPolicy, string> = {
+  aggressive: 'Prioritize damage; cast on cooldown.',
+  balanced: 'Conserve resources; prefer debuffs.',
+  defensive: 'Prioritize shields/heals; burst only when safe.',
+};
+
 const techniqueType = (technique: { type?: string; tags?: string[] } | undefined): SlotType => {
   if (!technique) return 'active';
   if (technique.type === 'ultimate') return 'ultimate';
@@ -92,6 +104,7 @@ const gradeOrder: string[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: string[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
 const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
+const castingPolicies: CastingPolicy[] = ['aggressive', 'balanced', 'defensive'];
 
 const formatRankLabel = (rank: number) => `Rank ${rank}`;
 
@@ -113,6 +126,7 @@ export function TechniqueLibraryScreen() {
   const loadouts = useTechniqueStore((state) => state.loadouts);
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
   const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
+  const setCastingPolicy = useTechniqueStore((state) => state.setCastingPolicy);
   const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
@@ -158,6 +172,8 @@ export function TechniqueLibraryScreen() {
     () => loadouts.find((l) => l.id === selectedLoadoutId) ?? loadouts[0],
     [loadouts, selectedLoadoutId],
   );
+
+  const selectedCastingPolicy: CastingPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
 
   const loadoutLabels = useMemo(
     () => loadouts.map((loadout, idx) => ({ id: loadout.id, label: String.fromCharCode(65 + idx), name: loadout.name })),
@@ -577,9 +593,35 @@ export function TechniqueLibraryScreen() {
                 onClick={() => setSelectedLoadout(loadout.id)}
               >
                 <div className="techniqueLibraryLoadoutName">{loadout.name}</div>
-                <div className="techniqueLibraryLoadoutMeta">AI: {loadout.aiProfile}</div>
+                <div className="techniqueLibraryLoadoutMeta">
+                  Casting: {castingPolicyLabels[loadout.castingPolicy]}
+                </div>
               </button>
             ))}
+          </div>
+
+          <div className="techniqueLibraryCastingPolicy">
+            <div className="techniqueLibraryCastingPolicyLabel">Casting Policy</div>
+            <div className="techniqueLibraryCastingPolicyButtons">
+              {castingPolicies.map((policy) => {
+                const active = selectedCastingPolicy === policy;
+                return (
+                  <button
+                    key={policy}
+                    type="button"
+                    className={`techniqueLibraryCastingPolicyButton ${active ? 'is-active' : ''}`}
+                    onClick={() => selectedLoadout && setCastingPolicy(selectedLoadout.id, policy)}
+                    title={castingPolicyHelp[policy]}
+                    disabled={!selectedLoadout}
+                  >
+                    {castingPolicyLabels[policy]}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="techniqueLibraryCastingPolicyHelp">
+              {castingPolicyHelp[selectedCastingPolicy]}
+            </div>
           </div>
         </div>
 
