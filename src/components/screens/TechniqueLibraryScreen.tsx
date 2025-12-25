@@ -106,28 +106,19 @@ export function TechniqueLibraryScreen() {
   const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all');
   const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
 
-  const {
-    loadouts,
-    selectedLoadoutId,
-    setSelectedLoadout,
-    equipTechnique,
-    getSlotProgressionSnapshot,
-  } = useTechniqueStore((state) => ({
-    loadouts: state.loadouts,
-    selectedLoadoutId: state.selectedLoadoutId,
-    setSelectedLoadout: state.setSelectedLoadout,
-    equipTechnique: state.equipTechnique,
-    getSlotProgressionSnapshot: state.getSlotProgressionSnapshot,
-  }));
+  // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
+  const loadouts = useTechniqueStore((state) => state.loadouts);
+  const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
+  const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
+  const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
+  const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const toggleFavorite = useTechCollectionStore((state) => state.toggleFavorite);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const realmIndex = useGameStore((state) => state.realm.index);
-  const { techniqueLibraryIntent, clearTechniqueLibraryIntent, setHeaderTitles } = useUIStore((state) => ({
-    techniqueLibraryIntent: state.techniqueLibraryIntent,
-    clearTechniqueLibraryIntent: state.clearTechniqueLibraryIntent,
-    setHeaderTitles: state.setHeaderTitles,
-  }));
+  const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
+  const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
 
   const progression = useMemo(
     () => getSlotProgressionSnapshot(realmIndex),
