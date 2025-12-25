@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { formatDistanceToNowStrict } from 'date-fns';
 import { REALMS } from '../../constants';
 import { useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -13,6 +14,7 @@ import {
 import type { CastingPolicy, SlotType } from '../../stores/techniqueStore';
 import { useTechniqueStore } from '../../stores/techniqueStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
+import { useCombatStore } from '../../stores/combatStore';
 import { useUIStore } from '../../stores/uiStore';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
 import { RankUpgradeRitualModal } from '../modals/RankUpgradeRitualModal';
@@ -44,6 +46,20 @@ type OwnedTechniqueView = {
   lastCastAt: number;
   favorite: boolean;
   powerScore: number;
+};
+
+type EquipmentProofRow = {
+  slotType: SlotType;
+  slotIndex: number;
+  slotLabel: string;
+  techId: string;
+  name: string;
+  def?: ReturnType<typeof useContentStore.getState>['maps']['techniquesById'][string];
+  lastCastAt: number | null;
+  effectiveCooldownSec: number | null;
+  castsPerHour: number | null;
+  masteryPerHour: number | null;
+  icon?: string | null;
 };
 
 const rarityWeight: Record<string, number> = {
@@ -121,6 +137,7 @@ export function TechniqueLibraryScreen() {
   const [runeSelections, setRuneSelections] = useState<Record<number, string>>({});
   const [showRankModal, setShowRankModal] = useState(false);
   const [showTraitModal, setShowTraitModal] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
   // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
   const loadouts = useTechniqueStore((state) => state.loadouts);
@@ -129,6 +146,7 @@ export function TechniqueLibraryScreen() {
   const setCastingPolicy = useTechniqueStore((state) => state.setCastingPolicy);
   const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
+  const getCombatEquippedTechIds = useTechniqueStore((state) => state.getCombatEquippedTechIds);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const toggleFavorite = useTechCollectionStore((state) => state.toggleFavorite);
   const getTraitSlotBreakdown = useTechCollectionStore((state) => state.getTraitSlotBreakdown);
@@ -146,6 +164,8 @@ export function TechniqueLibraryScreen() {
   const fragments = useTechCollectionStore((state) => state.fragments);
   const getMasteryCooldownReductionPct = useTechCollectionStore((state) => state.getMasteryCooldownReductionPct);
   const getMasteryCostReductionPct = useTechCollectionStore((state) => state.getMasteryCostReductionPct);
+  const getTraitModifiers = useTechCollectionStore((state) => state.getTraitModifiers);
+  const getRuneModifiers = useTechCollectionStore((state) => state.getRuneModifiers);
   const getNextMasteryMilestoneHelper = useTechCollectionStore((state) => state.getNextMasteryMilestone);
   const getMasteryMilestoneEffectsHelper = useTechCollectionStore((state) => state.getMasteryMilestoneEffects);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
@@ -162,6 +182,8 @@ export function TechniqueLibraryScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const inventoryItems = useInventoryStore((state) => state.items);
+  const isBossFlag = useCombatStore((state) => state.isBoss);
+  const combatContextType = useCombatStore((state) => state.combatContext?.type);
 
   const progression = useMemo(
     () => getSlotProgressionSnapshot(realmIndex),
@@ -174,6 +196,8 @@ export function TechniqueLibraryScreen() {
   );
 
   const selectedCastingPolicy: CastingPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
+
+  const isBossFight = isBossFlag || combatContextType === 'trial';
 
   const loadoutLabels = useMemo(
     () => loadouts.map((loadout, idx) => ({ id: loadout.id, label: String.fromCharCode(65 + idx), name: loadout.name })),
@@ -199,6 +223,70 @@ export function TechniqueLibraryScreen() {
 
     return { ids, map };
   }, [loadouts]);
+
+  const equipmentProofRows = useMemo<EquipmentProofRow[]>(() => {
+    if (!selectedLoadout) return [];
+
+    const rows: EquipmentProofRow[] = [];
+    const combatEquipped = getCombatEquippedTechIds(selectedLoadout.id);
+
+    const addRow = (slotType: SlotType, slotIndex: number, techId: string | null | undefined) => {
+      if (!techId) return;
+      if (
+        (slotType === 'active' && !combatEquipped.active.includes(techId)) ||
+        (slotType === 'passive' && !combatEquipped.passive.includes(techId)) ||
+        (slotType === 'ultimate' && combatEquipped.ultimate !== techId)
+      ) {
+        return;
+      }
+      const def = techniquesById[techId];
+      const meta = unlockedTechs[techId];
+      const traitMods = getTraitModifiers(techId, isBossFight);
+      const runeMods = getRuneModifiers(techId, def);
+      const masteryCdrPct = getMasteryCooldownReductionPct(techId);
+      const totalCooldownReductionPct = Math.min(
+        0.3,
+        (traitMods?.cooldownReductionPct ?? 0) + (runeMods?.cooldownReductionPct ?? 0) + (masteryCdrPct ?? 0),
+      );
+      const baseCooldown = def?.cooldownSec ?? 0;
+      const effectiveCooldownSec = baseCooldown > 0 ? Math.max(0.5, baseCooldown * (1 - totalCooldownReductionPct)) : null;
+      const castsPerHour = effectiveCooldownSec ? 3600 / effectiveCooldownSec : null;
+      const masteryGainPct = traitMods?.masteryGainPct ?? 0;
+      const masteryPerHour = slotType === 'passive' ? null : castsPerHour ? castsPerHour * (1 + masteryGainPct) : null;
+
+      rows.push({
+        slotType,
+        slotIndex,
+        slotLabel: slotLabel({ type: slotType, index: slotIndex }),
+        techId,
+        name: def?.name ?? techId,
+        def,
+        lastCastAt: meta?.lastCastAt ?? null,
+        effectiveCooldownSec,
+        castsPerHour,
+        masteryPerHour,
+        icon: (def as any)?.icon ?? null,
+      });
+    };
+
+    selectedLoadout.slots.active.forEach((id, idx) => addRow('active', idx, id));
+    selectedLoadout.slots.passive.forEach((id, idx) => addRow('passive', idx, id));
+
+    if (selectedLoadout.slots.ultimate) {
+      addRow('ultimate', 0, selectedLoadout.slots.ultimate);
+    }
+
+    return rows;
+  }, [
+    getMasteryCooldownReductionPct,
+    getRuneModifiers,
+    getTraitModifiers,
+    getCombatEquippedTechIds,
+    isBossFight,
+    selectedLoadout,
+    techniquesById,
+    unlockedTechs,
+  ]);
 
   const ownedTechniques = useMemo<OwnedTechniqueView[]>(() => {
     return Object.entries(unlockedTechs)
@@ -314,6 +402,11 @@ export function TechniqueLibraryScreen() {
   useEffect(() => {
     setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
   }, [setHeaderTitles]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (!selectedTechniqueId) return;
@@ -580,6 +673,28 @@ export function TechniqueLibraryScreen() {
     ? (rankMultiplier(nextRankInfo.nextRank) / rankMultiplier(selectedOwned.rank) - 1) * 100
     : 10;
 
+  const formatCastRate = (row: EquipmentProofRow) => {
+    if (row.slotType === 'passive') return 'Cast rate: Passive (always on)';
+    if (row.effectiveCooldownSec) {
+      const perHour = row.castsPerHour != null ? row.castsPerHour.toFixed(0) : '—';
+      return `Cast rate (est.): ≈ 1 / ${row.effectiveCooldownSec.toFixed(1)}s (≈ ${perHour}/hr)`;
+    }
+    return 'Cast rate (est.): —';
+  };
+
+  const formatMasteryRate = (row: EquipmentProofRow) => {
+    if (row.slotType === 'passive') return 'Mastery: Passive (no xp)';
+    if (row.masteryPerHour != null) return `Mastery (est.): ≈ ${row.masteryPerHour.toFixed(0)} xp/hr`;
+    return 'Mastery (est.): —';
+  };
+
+  const formatLastCast = (lastCastAt: number | null) => {
+    if (!lastCastAt) return 'Last cast: Never';
+    // `now` exists purely to refresh the relative time every second.
+    void now;
+    return `Last cast: ${formatDistanceToNowStrict(lastCastAt, { addSuffix: true })}`;
+  };
+
   return (
     <div className="techniqueLibraryRoot">
       <div className="techniqueLibraryColumn techniqueLibraryColumn--left">
@@ -640,6 +755,34 @@ export function TechniqueLibraryScreen() {
 
             <div className="techniqueLibrarySlotGroupLabel">Ultimate</div>
             {renderSlotRow({ type: 'ultimate', index: 0 }, selectedLoadout?.slots.ultimate)}
+          </div>
+        </div>
+
+        <div className="techniqueLibraryPanel">
+          <div className="techniqueLibraryPanelHeader">Equipment Proof (This Loadout)</div>
+          <div className="techniqueLibraryProofList">
+            {equipmentProofRows.length === 0 && (
+              <div className="techniqueLibraryEmpty">No techniques equipped in this loadout.</div>
+            )}
+            {equipmentProofRows.map((row) => (
+              <div
+                key={`${row.slotType}-${row.slotIndex}-${row.techId}`}
+                className="techniqueLibraryProofRow"
+              >
+                <div className="techniqueLibraryProofIcon">{row.icon || typeIcon(row.slotType)}</div>
+                <div className="techniqueLibraryProofBody">
+                  <div className="techniqueLibraryProofHeader">
+                    <div className="techniqueLibraryProofName">{row.name}</div>
+                    <div className="techniqueLibraryProofSlot">{row.slotLabel}</div>
+                  </div>
+                  <div className="techniqueLibraryProofStats">
+                    <div>{formatCastRate(row)}</div>
+                    <div>{formatLastCast(row.lastCastAt)}</div>
+                    <div>{formatMasteryRate(row)}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
