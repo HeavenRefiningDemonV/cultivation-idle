@@ -82,6 +82,8 @@ const PASSIVE_BUFF_DURATION_SEC = 999999;
  */
 let bossMechanics: BossMechanics | null = null;
 
+let combatLoopErrorLogged = false;
+
 function randomIntInRange(range: [number, number] | undefined, fallback: [number, number] = [0, 0]): number {
   const [minRaw, maxRaw] = Array.isArray(range) && range.length === 2 ? range : fallback;
   const min = Number.isFinite(minRaw) ? Number(minRaw) : fallback[0];
@@ -727,6 +729,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         bossMechanics = null;
       }
 
+      combatLoopErrorLogged = false;
+
       set((state) => {
         state.inCombat = true;
         state.currentZone = zone;
@@ -1058,46 +1062,47 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
-      let atk = D(enemy.atk);
+      let enemyAttackPower = D(enemy.atk);
 
       // Apply boss enrage multiplier
       if (state.isBoss && bossMechanics) {
         const enrageMultiplier = bossMechanics.getEnrageMultiplier();
         if (enrageMultiplier > 1) {
-          atk = atk.times(enrageMultiplier);
+          enemyAttackPower = enemyAttackPower.times(enrageMultiplier);
         }
       }
 
       const def = D(effectiveStats.def);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
-      const baseDamage = atk.times(D(1).minus(defReduction));
+      const baseDamage = enemyAttackPower.times(D(1).minus(defReduction));
 
       // Check for critical hit
       const critRoll = Math.random() * 100;
       const isCrit = critRoll < enemy.crit;
-      let finalDamage = baseDamage;
+      const critMultiplier = isCrit ? D(enemy.critDmg).dividedBy(100) : D(1);
+      const damageAfterCrit = baseDamage.times(critMultiplier);
 
-      if (isCrit) {
-        const critMultiplier = D(enemy.critDmg).dividedBy(100);
-        finalDamage = baseDamage.times(critMultiplier);
-      }
-
-      const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(finalDamage, now);
-      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(postCombatShield.toString());
-      const damageAfterShield = D(remainingDamage);
+      const { remainingDamage: damageAfterCombatShield, absorbed: combatAbsorbed } = applyCombatShield(
+        damageAfterCrit,
+        now
+      );
+      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(damageAfterCombatShield.toString());
+      const damageAfterAbsorption = D(remainingDamage);
       const absorbedAmount = D(absorbed).plus(combatAbsorbed);
 
-      if (damageAfterShield.lessThanOrEqualTo(0)) {
+      const startingHp = D(state.playerHP);
+      const newHP = subtract(state.playerHP, damageAfterAbsorption.toString());
+      const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+      const appliedDamage = startingHp.minus(D(clampedHP));
+      const absorptionNote = absorbedAmount.greaterThan(0) ? ` (${absorbedAmount.toFixed(0)} absorbed)` : '';
+
+      if (damageAfterAbsorption.lessThanOrEqualTo(0)) {
         get().addLogEntry(
           'system',
           `${enemy.name}'s attack was absorbed by your shield!`,
           '#22c55e'
         );
       } else {
-        const absorptionNote = absorbedAmount.greaterThan(0)
-          ? ` (${absorbedAmount.toFixed(0)} absorbed)`
-          : '';
-
         get().addLogEntry(
           isCrit ? 'damage' : 'enemy',
           isCrit
@@ -1107,18 +1112,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
         );
       }
 
-      // Apply damage to player
-      let appliedDamage = damageAfterShield;
       set((state) => {
-        const startingHp = D(state.playerHP);
-        const newHP = subtract(state.playerHP, damageAfterShield.toString());
-        const clampedHP = clamp(newHP, 0, state.playerMaxHP);
-        appliedDamage = startingHp.minus(D(clampedHP));
         state.playerHP = clampedHP.toString();
         state.lastEnemyAttackTime = now;
       });
 
-      if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+      if (damageAfterAbsorption.greaterThan(0) || absorbedAmount.greaterThan(0)) {
         emitEvent({
           type: 'HIT',
           source: 'enemy',
@@ -1662,14 +1661,42 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       // Auto-attack if enabled
       if (state.autoAttack && now - state.lastAttackTime >= PLAYER_ATTACK_COOLDOWN) {
-        get().playerAttack();
+        try {
+          get().playerAttack();
+        } catch (error) {
+          if (!combatLoopErrorLogged) {
+            combatLoopErrorLogged = true;
+            console.error('[CombatStore] Error during playerAttack:', error);
+            try {
+              get().addLogEntry('system', 'Combat halted due to an error. Please report.', '#f87171');
+            } catch (logError) {
+              console.error('[CombatStore] Failed to log combat error', logError);
+            }
+          }
+          get().exitCombat();
+          return;
+        }
       }
 
       // Enemy auto-attacks (skip if ultimate just triggered)
       if (now - state.lastEnemyAttackTime >= ENEMY_ATTACK_COOLDOWN) {
         // Check if enemy is still alive before attacking
         if (greaterThan(state.enemyHP, 0)) {
-          get().enemyAttack();
+          try {
+            get().enemyAttack();
+          } catch (error) {
+            if (!combatLoopErrorLogged) {
+              combatLoopErrorLogged = true;
+              console.error('[CombatStore] Error during enemyAttack:', error);
+              try {
+                get().addLogEntry('system', 'Combat halted due to an error. Please report.', '#f87171');
+              } catch (logError) {
+                console.error('[CombatStore] Failed to log combat error', logError);
+              }
+            }
+            get().exitCombat();
+            return;
+          }
         }
       }
 
