@@ -3,23 +3,11 @@ import { useGameStore } from '../../stores/gameStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useHeartLawStore } from '../../stores/heartLawStore';
 import { usePrestigeStore } from '../../stores/prestigeStore';
-import type { LifePath } from '../../types';
+import { useUIStore } from '../../stores/uiStore';
 import { getAffinityStatus, getHeartLawBonuses } from '../../systems/heartLaw/heartLawLogic';
-
-const PATHS: { id: LifePath; label: string; desc: string }[] = [
-  { id: 'heaven', label: 'Heaven', desc: 'Focus on techniques of the heavens and spiritual insight.' },
-  { id: 'earth', label: 'Earth', desc: 'Steady and defensive methods rooted in the earth.' },
-  { id: 'martial', label: 'Martial', desc: 'Physical mastery and weapon-oriented techniques.' },
-];
+import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo';
 
 const CHAPTER_LABELS = ['I', 'II', 'III', 'IV', 'V'];
-
-const DEFAULT_CHAPTER_REQUIREMENTS: Record<number, number> = {
-  1: 100,
-  2: 250,
-  3: 500,
-  4: 1000,
-};
 
 function formatSignature(signature: unknown): string {
   if (!signature) return 'No signature details.';
@@ -50,21 +38,15 @@ function formatTierLabel(tier?: string): string {
 
 export function MeditationHallPanel() {
   const lifePath = useGameStore((state) => state.lifePath);
-  const setLifePath = useGameStore((state) => state.setLifePath);
-  const canChangeLifePath = useGameStore((state) => state.canChangeLifePath);
   const isLoaded = useContentStore((state) => state.isLoaded);
   const listHeartLaws = useContentStore((state) => state.listHeartLaws);
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
   const chapter = useHeartLawStore((state) => state.chapter);
   const comprehension = useHeartLawStore((state) => state.comprehension);
-  const selectHeartLaw = useHeartLawStore((state) => state.selectHeartLaw);
+  const getNextRequirement = useHeartLawStore((state) => state.getComprehensionRequirementForNextChapter);
   const isUnlocked = useHeartLawStore((state) => state.isUnlocked);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
-
-  const title = useMemo(() => {
-    if (lifePath) return `Chosen Path: ${lifePath.toUpperCase()}`;
-    return 'Choose your Path';
-  }, [lifePath]);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const heartLaws = useMemo(() => {
     if (!isLoaded) return [];
@@ -90,63 +72,36 @@ export function MeditationHallPanel() {
     return getAffinityStatus(selectedHeartLaw, spiritRoot);
   }, [selectedHeartLaw, spiritRoot]);
 
-  const nextRequirement = chapter < 5 ? DEFAULT_CHAPTER_REQUIREMENTS[chapter] ?? 0 : 0;
+  const nextRequirement = getNextRequirement();
   const progressValue = Math.min(comprehension, nextRequirement || comprehension);
   const progressDisplay = comprehension % 1 === 0 ? comprehension.toFixed(0) : comprehension.toFixed(1);
-
-  const handleSelectHeartLaw = (id: string) => {
-    if (!isUnlocked(id)) return;
-    if (!selectedHeartLawId) {
-      selectHeartLaw(id);
-      return;
-    }
-    if (selectedHeartLawId === id) return;
-    const confirmed = window.confirm(
-      'Changing Heart Law resets chapter + comprehension for this life. Continue?',
-    );
-    if (confirmed) {
-      selectHeartLaw(id);
-    }
-  };
 
   return (
     <div className={'worldScreenPlaceholder'}>
       <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{title}</div>
+        <div className={'worldScreenPlaceholderTitle'}>Meditation Hall (Shortcut)</div>
         <div className={'worldScreenPlaceholderKey'}>meditationHall</div>
       </div>
       <div className={'worldScreenPlaceholderBody'}>
         <div className={'worldScreenPlaceholderLine'}>
-          Choose one path for this life. This determines which manuals you can buy and which techniques you can equip later.
+          Heart Laws are chosen at the start of each life. Use this shortcut to review your scripture and jump to the Cultivation tab.
         </div>
-        {PATHS.map((path) => (
-          <div key={path.id} className={'worldScreenPlaceholderLine'}>
-            <div className={'worldScreenPlaceholderTitle'}>{path.label}</div>
-            <div className={'worldScreenPlaceholderLine'}>{path.desc}</div>
-            <button
-              className={`worldScreenModuleButton ${lifePath === path.id ? 'worldScreenModuleButton--active' : ''}`}
-              disabled={!canChangeLifePath() && lifePath !== path.id}
-              onClick={() => setLifePath(path.id)}
-            >
-              {lifePath === path.id ? 'Selected' : 'Choose'}
-            </button>
-          </div>
-        ))}
-        {!canChangeLifePath() && lifePath && (
-          <div className={'worldScreenInlineError'}>Path can only be changed at the start of a life.</div>
-        )}
+        <button className={'worldScreenModuleButton'} onClick={() => setActiveTab('cultivation')}>
+          Open Cultivation
+        </button>
+
         <div className={'worldScreenPlaceholderLine'}>
-          <div className={'worldScreenPlaceholderTitle'}>Heart Laws</div>
-          {!selectedHeartLaw && (
-            <div className={'worldScreenPlaceholderLine'}>
-              No Heart Law selected (choose one for this life).
-            </div>
-          )}
-          {selectedHeartLaw && (
-            <div className={'heartLawCurrent'}>
-              <div className={'heartLawCurrentHeader'}>
-                <div className={'heartLawCurrentName'}>
-                  {selectedHeartLaw.name}
+          {lifePath
+            ? `Chosen Path: ${lifePath.charAt(0).toUpperCase() + lifePath.slice(1)}`
+            : 'Path not chosen yet — select in the Life Start Wizard.'}
+        </div>
+
+        <div className={'worldScreenPlaceholderLine'}>
+          <div className={'heartLawCurrent'}>
+            <div className={'heartLawCurrentHeader'}>
+              <div className={'heartLawCurrentName'}>
+                {selectedHeartLaw?.name ?? 'No Heart Law selected'}
+                {selectedHeartLaw && (
                   <span
                     className={'heartLawInfo'}
                     title={formatSignature(selectedHeartLaw.signature)}
@@ -154,66 +109,67 @@ export function MeditationHallPanel() {
                   >
                     ℹ️
                   </span>
-                </div>
-                <div className={'heartLawCurrentMeta'}>
-                  Pattern: {selectedHeartLaw.archetype ?? 'Unknown'}
-                </div>
+                )}
               </div>
-              <div className={'heartLawCurrentMeta'}>
-                Dao Tags: {(selectedHeartLaw.daoTags ?? []).join(', ') || 'None'}
-              </div>
-              {heartLawBonuses && (
-                <div className={'heartLawCurrentMeta'}>
-                  Cultivation Rate: {((heartLawBonuses.cultivateRateMult - 1) * 100).toFixed(1)}% • Combat
-                  Damage: {((heartLawBonuses.combatDamageMult - 1) * 100).toFixed(1)}%
-                </div>
-              )}
-              <div className={'heartLawCurrentMeta'}>
-                Affinity:{' '}
-                {affinityStatus.status === 'match' && `Match (+${affinityStatus.percent}%)`}
-                {affinityStatus.status === 'mismatch' && `Mismatch (-${affinityStatus.percent}%)`}
-                {affinityStatus.status === 'none' && 'None'}
-              </div>
-              <div className={'heartLawCurrentMeta'}>
-                Chapter: {CHAPTER_LABELS[Math.max(0, chapter - 1)] ?? 'I'}
-              </div>
-              {chapter < 5 ? (
-                <div className={'heartLawProgress'}>
-                  <progress value={progressValue} max={nextRequirement} />
-                  <div className={'heartLawProgressText'}>
-                    {progressDisplay} / {nextRequirement} to Chapter {CHAPTER_LABELS[chapter] ?? 'V'}
-                  </div>
-                </div>
-              ) : (
-                <div className={'heartLawProgressText'}>Max chapter reached.</div>
-              )}
+              {selectedHeartLaw && <div className={'heartLawCurrentMeta'}>Pattern: {selectedHeartLaw.archetype ?? 'Unknown'}</div>}
             </div>
-          )}
+            {selectedHeartLaw && (
+              <>
+                <div className={'heartLawCurrentMeta'}>Dao Tags: {(selectedHeartLaw.daoTags ?? []).join(', ') || 'None'}</div>
+                {heartLawBonuses && (
+                  <div className={'heartLawCurrentMeta'}>
+                    Cultivation Rate: {((heartLawBonuses.cultivateRateMult - 1) * 100).toFixed(1)}% • Combat Damage:{' '}
+                    {((heartLawBonuses.combatDamageMult - 1) * 100).toFixed(1)}%
+                  </div>
+                )}
+                <div className={'heartLawCurrentMeta'}>
+                  Affinity:{' '}
+                  {affinityStatus.status === 'match' && `Match (+${affinityStatus.percent}%)`}
+                  {affinityStatus.status === 'mismatch' && `Mismatch (-${affinityStatus.percent}%)`}
+                  {affinityStatus.status === 'none' && 'None'}
+                </div>
+                <div className={'heartLawCurrentMeta'}>Chapter: {CHAPTER_LABELS[Math.max(0, chapter - 1)] ?? 'I'}</div>
+                {chapter < 5 ? (
+                  <div className={'heartLawProgress'}>
+                    <progress value={progressValue} max={nextRequirement} />
+                    <div className={'heartLawProgressText'}>
+                      {progressDisplay} / {nextRequirement} to Chapter {CHAPTER_LABELS[chapter] ?? 'V'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className={'heartLawProgressText'}>Max chapter reached.</div>
+                )}
+              </>
+            )}
+            {!selectedHeartLaw && <div className={'heartLawProgressText'}>Choose a Heart Law in the Life Start Wizard.</div>}
+          </div>
         </div>
+
         {heartLaws.length > 0 && (
           <div className={'heartLawList'}>
             {heartLaws.map((law) => {
               const unlocked = isUnlocked(law.id);
               const isSelected = selectedHeartLawId === law.id;
+              const unlockInfo = getHeartLawUnlockInfo(law.tier);
+              const lockLine =
+                unlockInfo.kind === 'prestige'
+                  ? `Unlock: ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP)`
+                  : unlockInfo.kind === 'starter'
+                    ? 'Starter choice'
+                    : 'Locked — Unlock via Prestige';
               return (
                 <div key={law.id} className={'heartLawCard'}>
                   <div className={'heartLawCardHeader'}>
                     <div className={'heartLawCardTitle'}>{law.name}</div>
                     <div className={'heartLawCardTier'}>{formatTierLabel(law.tier)}</div>
                   </div>
+                  <div className={'heartLawCardMeta'}>Dao Tags: {(law.daoTags ?? []).slice(0, 3).join(', ') || 'None'}</div>
                   <div className={'heartLawCardMeta'}>
-                    Dao Tags: {(law.daoTags ?? []).slice(0, 3).join(', ') || 'None'}
+                    {unlocked ? (isSelected ? 'Selected this life' : 'Unlocked this life') : lockLine}
                   </div>
-                  {!unlocked && (
-                    <div className={'heartLawCardMeta'}>Locked (unlock via Prestige)</div>
-                  )}
-                  <button
-                    className={`worldScreenModuleButton ${isSelected ? 'worldScreenModuleButton--active' : ''}`}
-                    disabled={!unlocked}
-                    onClick={() => handleSelectHeartLaw(law.id)}
-                  >
-                    {isSelected ? 'Selected' : unlocked ? 'Select' : 'Locked'}
-                  </button>
+                  <div className={'heartLawCardMeta'}>
+                    Adjust Heart Laws in the Life Start Wizard (Prestige) or Cultivation tab shortcut.
+                  </div>
                 </div>
               );
             })}

@@ -7,6 +7,7 @@ import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useUIStore } from '../../stores/uiStore';
 import { SaveService } from '../../services/save/SaveService';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic';
+import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo';
 import type { HeartLawDef, LifePath } from '../../types';
 
 const LIFE_PATHS: { id: LifePath; name: string; desc: string }[] = [
@@ -203,7 +204,14 @@ export function LifeStartWizardModal() {
               {heartLaws.map((law) => {
                 const unlocked = isHeartLawUnlocked(law.id);
                 const selected = selectedHeartLawId === law.id;
+                const unlockInfo = getHeartLawUnlockInfo(law.tier);
                 const tierLabel = law.tier === 'starter' ? 'Starter' : law.tier ? law.tier.replace('tier', 'Tier ') : 'Tier ?';
+                const lockedText =
+                  unlockInfo.kind === 'prestige'
+                    ? `Unlock: ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP)`
+                    : unlockInfo.kind === 'starter'
+                      ? 'Starter'
+                      : 'Locked — Unlock via Prestige';
                 return (
                   <button
                     key={law.id}
@@ -215,7 +223,7 @@ export function LifeStartWizardModal() {
                     <div className="wizardCardTitle">{law.name}</div>
                     <div className="wizardCardTags">{(law.daoTags ?? []).slice(0, 3).join(' • ') || 'No tags'}</div>
                     <div className="wizardCardDesc">{tierLabel === 'starter' ? 'Starter' : tierLabel}</div>
-                    <div className="wizardCardMeta">{unlocked ? 'Select' : 'Locked — Unlock via Prestige (AP)'}</div>
+                    <div className="wizardCardMeta">{unlocked ? 'Select' : lockedText}</div>
                   </button>
                 );
               })}

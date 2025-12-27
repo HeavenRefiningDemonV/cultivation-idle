@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef, useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
+import { useHeartLawStore } from '../../stores/heartLawStore';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
@@ -29,6 +30,7 @@ export function PrestigeScreen() {
   const [sellBeforePrestige, setSellBeforePrestige] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
 
   const apGain = calculateAPGain();
   const canPrestigeNow = canPrestige();
@@ -68,6 +70,8 @@ export function PrestigeScreen() {
     if (shouldSellAll) {
       sellAllItems();
     }
+    const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
+    setLifeStartWizardContext(lastHeartLawId ?? null);
     performPrestige();
   };
 
@@ -75,6 +79,8 @@ export function PrestigeScreen() {
     if (sellBeforePrestige) {
       sellAllItems();
     }
+    const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
+    setLifeStartWizardContext(lastHeartLawId ?? null);
     performPrestige();
     setShowConfirmation(false);
     setSellBeforePrestige(false);

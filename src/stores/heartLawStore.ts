@@ -25,6 +25,7 @@ interface HeartLawState {
   setBreathMode: (mode: BreathMode) => void;
   setStudyTechniqueId: (techniqueId: string | null) => void;
   markInsight: (timestampMs?: number) => void;
+  getComprehensionRequirementForNextChapter: () => number;
   resetForNewLife: () => void;
 }
 
@@ -136,6 +137,12 @@ export const useHeartLawStore = create<HeartLawState>()(
       set((state) => {
         state.lastInsightAt = at;
       });
+    },
+
+    getComprehensionRequirementForNextChapter: () => {
+      const chapter = get().chapter;
+      if (chapter >= 5) return 0;
+      return getChapterRequirement(chapter);
     },
 
     resetForNewLife: () => {

@@ -843,6 +843,13 @@ export const useGameStore = create<GameState>()(
       // Reset game progression
       get().resetRun();
 
+      // Reset heart law state for the new life but preserve unlocks
+      try {
+        useHeartLawStore.getState().resetForNewLife();
+      } catch {
+        // Heart law store not available
+      }
+
       // Clear inventory and equipment
       if (_getInventoryStore) {
         try {
