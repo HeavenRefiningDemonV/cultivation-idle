@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { REALMS } from '../../constants';
-import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
+import { getBreathModeMultipliers, INSIGHT_BURSTS } from '../../content/tuning/cultivationTuning';
 import { MAX_OFFLINE_MS } from '../../systems/offline';
 import { GATE_ITEMS } from '../../systems/loot';
 import { useActivityStore } from '../../stores/activityStore';
@@ -9,12 +9,14 @@ import { useCultivationStore } from '../../stores/cultivationStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
-import type { BreathMode, InsightMomentState } from '../../types';
+import type { BreathMode, InsightChoiceId, InsightMomentState } from '../../types';
 import { formatNumber, D } from '../../utils/numbers';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel';
+import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget';
+import { InsightMomentToast } from '../../ui/cultivation/InsightMomentToast';
 import './CultivateScreen.scss';
 
 const BREATH_COPY: Record<BreathMode, string> = {
@@ -103,40 +105,16 @@ function CultivationTabHeaderBar({
   );
 }
 
-function QiProgressBar({ current, required }: { current: string; required: string }) {
+function QiProgressBar({ current, required, pulse }: { current: string; required: string; pulse?: boolean }) {
   const currentVal = D(current);
   const requiredVal = D(required);
   const pct = requiredVal.greaterThan(0)
     ? Math.min(100, currentVal.div(requiredVal).times(100).toNumber())
     : 0;
   return (
-    <div className="qiProgressBar">
+    <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
       <div className="qiProgressFill" style={{ width: `${pct}%` }} />
       <div className="qiProgressText">{pct.toFixed(1)}%</div>
-    </div>
-  );
-}
-
-function InsightMomentPanel({ insight, now }: { insight: InsightMomentState; now: number }) {
-  const remainingMs = Math.max(0, insight.expiresAt - now);
-  const remainingSeconds = Math.ceil(remainingMs / 1000);
-  return (
-    <div className="cultivationPanel">
-      <div className="panelHeader">
-        <div>
-          <div className="panelTitle">Insight Moment</div>
-          <div className="panelSub">Auto-resolves in {remainingSeconds}s</div>
-        </div>
-      </div>
-      <div className="insightChoices">
-        {insight.choices.map((choice) => (
-          <div key={choice.id} className="insightChoice">
-            <div className="insightChoiceTitle">{choice.title}</div>
-            <div className="insightChoiceDesc">{choice.description}</div>
-          </div>
-        ))}
-        <div className="insightDefault">Default on timeout: {insight.defaultChoiceId}</div>
-      </div>
     </div>
   );
 }
@@ -167,6 +145,7 @@ export function CultivateScreen() {
   const hidePathSelection = useUIStore((state) => state.hidePathSelection);
   const showPerkSelection = useUIStore((state) => state.showPerkSelection);
   const hidePerkSelection = useUIStore((state) => state.hidePerkSelection);
+  const addNotification = useUIStore((state) => state.addNotification);
 
   const realm = useGameStore((state) => state.realm);
   const qi = useGameStore((state) => state.qi);
@@ -188,15 +167,16 @@ export function CultivateScreen() {
   const stability = useCultivationStore((state) => state.stability);
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
-  const studyEnabled = useCultivationStore((state) => state.studyEnabled);
-  const studyTechniqueId = useCultivationStore((state) => state.studyTechniqueId);
   const nextRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter());
+  const resolveInsight = useCultivationStore((state) => state.resolveInsight);
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
   const [now, setNow] = useState(Date.now());
+  const lastInsightRef = useRef<InsightMomentState | null>(null);
+  const manualInsightHandled = useRef(false);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -206,6 +186,20 @@ export function CultivateScreen() {
   useEffect(() => {
     setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
   }, [setHeaderTitles]);
+
+  useEffect(() => {
+    const previous = lastInsightRef.current;
+    if (insight && (!previous || previous.startedAt !== insight.startedAt)) {
+      manualInsightHandled.current = false;
+    }
+    if (previous && !insight) {
+      if (!manualInsightHandled.current) {
+        addNotification('info', 'Insight Moment passed. (Auto)', 2500);
+      }
+      manualInsightHandled.current = false;
+    }
+    lastInsightRef.current = insight;
+  }, [insight, addNotification]);
 
   const currentRealm = REALMS[realm.index] ?? REALMS[0];
   const realmLabel = currentRealm?.name ?? 'Realm';
@@ -265,6 +259,23 @@ export function CultivateScreen() {
     }
   }, [blockingActivity, isCultivating, startActivity, stopActivity]);
 
+  const handleInsightChoice = useCallback(
+    (choiceId: InsightChoiceId) => {
+      manualInsightHandled.current = true;
+      resolveInsight(choiceId);
+      let message = 'Insight resolved.';
+      if (choiceId === 'contemplate') {
+        message = `Insight gained: +${INSIGHT_BURSTS.comprehension} Comprehension`;
+      } else if (choiceId === 'drawQi') {
+        message = `Qi surged (+${INSIGHT_BURSTS.qiSecondsWorth}s worth of Qi income)`;
+      } else {
+        message = 'Foundation stabilized.';
+      }
+      addNotification('success', message, 3500);
+    },
+    [resolveInsight, addNotification],
+  );
+
   const headerRate = effectiveRate.toString();
   const offlineHoursCap = Math.round(MAX_OFFLINE_MS / (1000 * 60 * 60));
 
@@ -276,7 +287,10 @@ export function CultivateScreen() {
 
   const realmStageLabel = isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`;
 
-  const insightCard = insight && insight.pending ? <InsightMomentPanel insight={insight} now={now} /> : null;
+  const insightCard =
+    insight && insight.pending ? (
+      <InsightMomentToast insight={insight} now={now} onChoose={handleInsightChoice} />
+    ) : null;
 
   const hasPerkForRealm = useCallback(
     (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
@@ -379,7 +393,7 @@ export function CultivateScreen() {
                   {canBreakthrough ? 'Ready' : 'Not ready'}
                 </div>
               </div>
-              <QiProgressBar current={qi} required={breakthroughCost} />
+              <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
               {requiredGateItem ? (
                 <div className="inlineMessage inlineMessage--muted">
                   {hasRequiredToken ? (
@@ -422,7 +436,11 @@ export function CultivateScreen() {
             <SectionShell title="Insight" subtitle="Respond before it fades">
               {insightCard}
             </SectionShell>
-          ) : null}
+          ) : (
+            <SectionShell title="Insight" subtitle="Moments surface while cultivating">
+              <div className="inlineMessage inlineMessage--muted">Your mind is steady. Keep cultivating for insight.</div>
+            </SectionShell>
+          )}
         </div>
 
         <div className="cultivationColumn cultivationColumn--right">
@@ -431,19 +449,7 @@ export function CultivateScreen() {
           </SectionShell>
 
           <SectionShell title="Study" subtitle="Optional trickle while cultivating">
-            <div className="cultivationPanel">
-              <div className="panelHeader">
-                <div>
-                  <div className="panelTitle">Study Mode</div>
-                  <div className="panelSub">Enabled during cultivation</div>
-                </div>
-              </div>
-              <div className="inlineMessage inlineMessage--muted">
-                {studyEnabled && studyTechniqueId
-                  ? `Studying ${studyTechniqueId}`
-                  : 'Study mode is currently disabled.'}
-              </div>
-            </div>
+            <StudyModeWidget />
           </SectionShell>
         </div>
       </div>

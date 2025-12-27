@@ -250,12 +250,28 @@
   overflow: hidden;
 }
 
+.qiProgressBar--pulse .qiProgressFill {
+  animation: qiPulse 1.8s ease-in-out infinite;
+}
+
 .qiProgressFill {
   position: absolute;
   inset: 0;
   width: 0;
   background: linear-gradient(90deg, #22d3ee, #8b5cf6);
   transition: width 0.25s ease-out;
+}
+
+@keyframes qiPulse {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
+  }
+  100% {
+    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+  }
 }
 
 .qiProgressText {
