@@ -33,6 +33,7 @@ export interface UISettingsState {
   showSystemStatusPanel: boolean;
    showCombatMinibar: boolean;
    combatMinibarExpanded: boolean;
+  showCombatFloatingNumbers: boolean;
 }
 
 interface UIStateBase {
@@ -165,6 +166,7 @@ const INITIAL_UI_STATE: UIStateBase = {
     showSystemStatusPanel: false,
     showCombatMinibar: true,
     combatMinibarExpanded: true,
+    showCombatFloatingNumbers: true,
   },
   lastSaveAt: null,
   lastOfflineSummary: null,
