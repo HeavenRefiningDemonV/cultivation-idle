@@ -502,6 +502,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
     };
 
+    const emitEvent = (event: Omit<CombatEvent, 'id' | 'at'> & Partial<Pick<CombatEvent, 'id' | 'at'>>) => {
+      const at = event.at ?? Date.now();
+      get().pushEvent({ ...event, at } as CombatEvent);
+    };
+
     const applyPassiveTechniques = (now: number) => {
       const contentStore = useContentStore.getState();
       const techCollection = useTechCollectionStore.getState();
@@ -758,6 +763,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Add entry to log
       if (isBoss) {
         get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+        emitEvent({ type: 'BOSS_SPAWN', enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
@@ -881,6 +887,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (enemy.isBoss) {
         get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+        emitEvent({ type: 'BOSS_SPAWN', enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
@@ -984,31 +991,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Check for critical hit
       const critRoll = Math.random() * 100;
       const isCrit = critRoll < effectiveStats.crit;
-      let finalDamage = baseDamage;
+      const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
 
-      if (isCrit) {
-        const critMultiplier = D(effectiveStats.critDmg).dividedBy(100);
-        finalDamage = baseDamage.times(critMultiplier);
-        get().addLogEntry(
-          'damage',
-          `Critical hit! You deal ${finalDamage.toFixed(0)} damage!`,
-          '#f59e0b'
-        );
-      } else {
-        get().addLogEntry(
-          'player',
-          `You deal ${finalDamage.toFixed(0)} damage.`,
-          '#60a5fa'
-        );
-      }
+      const finalDamage = baseDamage.times(damageMultiplier).times(heartLawMultiplier).times(critMultiplier);
+      const currentEnemyHp = D(state.enemyHP);
+      const appliedDamage = currentEnemyHp.lessThan(finalDamage) ? currentEnemyHp : finalDamage;
 
-      if (bonusPct > 0) {
-        finalDamage = finalDamage.times(damageMultiplier);
-      }
-
-      if (!heartLawMultiplier.equals(1)) {
-        finalDamage = finalDamage.times(heartLawMultiplier);
-      }
+      get().addLogEntry(
+        isCrit ? 'damage' : 'player',
+        isCrit
+          ? `Critical hit! You deal ${appliedDamage.toFixed(0)} damage!`
+          : `You deal ${appliedDamage.toFixed(0)} damage.`,
+        isCrit ? '#f59e0b' : '#60a5fa'
+      );
 
       // Apply damage to enemy
       set((state) => {
@@ -1016,6 +1011,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
         state.enemyHP = clampedHP.toString();
         state.lastAttackTime = now;
+      });
+
+      emitEvent({
+        type: 'HIT',
+        source: 'player',
+        target: 'enemy',
+        amount: appliedDamage.toFixed(0),
+        isCrit,
+        kind: 'basic',
       });
 
       // Check if enemy is defeated
@@ -1096,19 +1100,34 @@ export const useCombatStore = create<ExtendedCombatState>()(
         get().addLogEntry(
           isCrit ? 'damage' : 'enemy',
           isCrit
-            ? `${enemy.name} lands a critical hit! Takes ${damageAfterShield.toFixed(0)} damage!${absorptionNote}`
-            : `${enemy.name} deals ${damageAfterShield.toFixed(0)} damage.${absorptionNote}`,
+            ? `${enemy.name} lands a critical hit! Takes ${appliedDamage.toFixed(0)} damage!${absorptionNote}`
+            : `${enemy.name} deals ${appliedDamage.toFixed(0)} damage.${absorptionNote}`,
           isCrit ? '#ef4444' : '#f87171'
         );
       }
 
       // Apply damage to player
+      let appliedDamage = damageAfterShield;
       set((state) => {
+        const startingHp = D(state.playerHP);
         const newHP = subtract(state.playerHP, damageAfterShield.toString());
         const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+        appliedDamage = startingHp.minus(D(clampedHP));
         state.playerHP = clampedHP.toString();
         state.lastEnemyAttackTime = now;
       });
+
+      if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+        emitEvent({
+          type: 'HIT',
+          source: 'enemy',
+          target: 'player',
+          amount: appliedDamage.toFixed(0),
+          isCrit,
+          absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
+          kind: 'basic',
+        });
+      }
 
       // Check if player is defeated
       if (lessThanOrEqualTo(get().playerHP, 0)) {
@@ -1130,10 +1149,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const isBoss = state.isBoss;
       const combatContext = state.combatContext;
       const activityToken = useActivityStore.getState().active?.startedAt;
+      const emitLootDrops = (items: RewardItemBundle[] | undefined, reason?: string) => {
+        if (!items) return;
+        const maps = useContentStore.getState().maps;
+        items.forEach((item) => {
+          if (!item?.itemId || !item.qty) return;
+          const rarity = maps.itemsById[item.itemId]?.rarity ?? 'common';
+          emitEvent({ type: 'LOOT_DROP', itemId: item.itemId, qty: item.qty, rarity, reason });
+        });
+      };
 
       // Add victory message
       if (isBoss) {
         get().addLogEntry('victory', `🏆 BOSS DEFEATED! ${enemy.name} has fallen!`, '#fbbf24');
+        emitEvent({ type: 'BOSS_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
       }
@@ -1153,7 +1182,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (eligible) {
           useTrialStore.getState().markCleared(trialId);
           useCityStore.getState().markGateTrialCleared(cityId);
-          RewardService.grantRewards({ items: [{ itemId: gateItemId, qty: 1 }] }, 'Gate Trial clear');
+          const rewards = { items: [{ itemId: gateItemId, qty: 1 }] };
+          emitLootDrops(rewards.items, 'Gate Trial clear');
+          RewardService.grantRewards(rewards, 'Gate Trial clear');
         } else {
           RewardService.grantRewards({ currencies: { gold: '500' } }, 'Gate Trial (not eligible)');
         }
@@ -1212,6 +1243,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const economy = contentStore.raw?.economy;
         const rewards = buildOutskirtsRewards(outskirtsDef, economy?.drops?.outskirts, cityIndex, isBossFight);
         RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
+        emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');
 
         setTimeout(() => {
           get().exitCombat();
@@ -1277,6 +1309,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
       }
 
+      emitLootDrops(
+        lootResult.items?.map((item) => ({ itemId: item.itemId, qty: item.quantity })),
+        isBoss ? 'Boss loot' : 'Victory loot',
+      );
+
       // Format and display loot messages
       const lootMessages = formatLootMessage(lootResult);
       for (const message of lootMessages) {
@@ -1325,6 +1362,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         `You have been defeated by ${enemy.name}...`,
         '#ef4444'
       );
+
+      emitEvent({ type: 'PLAYER_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
 
       if (context?.type === 'outskirts') {
         useActivityStore.getState().stopActivity();
@@ -1488,17 +1527,31 @@ export const useCombatStore = create<ExtendedCombatState>()(
             ? ` (${absorbedAmount.toFixed(0)} absorbed)`
             : '';
 
-          get().addLogEntry(
-            'damage',
-            `⚡ ${enemy.name} unleashes ULTIMATE ATTACK! Takes ${damageAfterShield.toFixed(0)} damage!${absorptionNote}`,
-            '#a855f7'
-          );
+          let appliedDamage = damageAfterShield;
 
           // Apply damage to player
           set((state) => {
+            const startingHp = D(state.playerHP);
             const newHP = subtract(state.playerHP, damageAfterShield.toString());
             const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+            appliedDamage = startingHp.minus(D(clampedHP));
             state.playerHP = clampedHP.toString();
+          });
+
+          get().addLogEntry(
+            'damage',
+            `⚡ ${enemy.name} unleashes ULTIMATE ATTACK! Takes ${appliedDamage.toFixed(0)} damage!${absorptionNote}`,
+            '#a855f7'
+          );
+
+          emitEvent({
+            type: 'HIT',
+            source: 'enemy',
+            target: 'player',
+            amount: appliedDamage.toFixed(0),
+            isCrit: false,
+            absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
+            kind: 'boss_ultimate',
           });
 
           // Check if player is defeated
@@ -1526,6 +1579,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
               `⚠️ ${state.currentEnemy.name} is charging a powerful attack! (3s)`,
               '#f59e0b'
             );
+            emitEvent({
+              type: 'ENEMY_SPECIAL_TELEGRAPH',
+              specialId: 'boss_ultimate',
+              resolvesInMs: 3000,
+            });
           }
         }
       }
@@ -1559,9 +1617,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const absorbedAmount = D(absorbed).plus(combatAbsorbed);
 
         if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+          let appliedDamage = damageAfterShield;
           set((state) => {
+            const startingHp = D(state.playerHP);
             const newHP = subtract(state.playerHP, damageAfterShield.toString());
             const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+            appliedDamage = startingHp.minus(D(clampedHP));
             state.playerHP = clampedHP.toString();
           });
 
@@ -1571,9 +1632,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
           get().addLogEntry(
             'damage',
-            `${state.currentEnemy.name}'s aura deals ${damageAfterShield.toFixed(0)} damage${absorptionNote}.`,
+            `${state.currentEnemy.name}'s aura deals ${appliedDamage.toFixed(0)} damage${absorptionNote}.`,
             '#ef4444'
           );
+
+          emitEvent({
+            type: 'HIT',
+            source: 'enemy',
+            target: 'player',
+            amount: appliedDamage.toFixed(0),
+            isCrit: false,
+            absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
+            kind: 'aura',
+          });
 
           if (lessThanOrEqualTo(get().playerHP, 0)) {
             setTimeout(() => {
@@ -1663,6 +1734,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       );
       addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
 
+      emitEvent({ type: 'SKILL_CAST', techniqueId: techId, source, at: now });
+
       set((state) => {
         const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
         const resourceCost = techDef.resourceCost ?? 0;
@@ -1709,16 +1782,32 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const heartLawMultiplier = D(getHeartLawCombatMultiplier());
             const masteryMult = scaling.masteryEffectMult ?? 1;
             const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
+            const critRoll = Math.random() * 100;
+            const isCrit = critRoll < effectiveStats.crit;
+            const critMultiplier = isCrit ? D(effectiveStats.critDmg).dividedBy(100) : D(1);
             const damage = D(effectiveStats.atk)
               .times(
-              effect.mult * masteryMult * secondaryPotency * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
-            )
+                effect.mult * masteryMult * secondaryPotency * scaling.traitMods.damageMult * scaling.runeMods.damageMult,
+              )
               .times(damageMultiplier)
-              .times(heartLawMultiplier);
+              .times(heartLawMultiplier)
+              .times(critMultiplier);
+            let appliedDamage = damage;
             set((state) => {
+              const startingHp = D(state.enemyHP);
               const newHP = subtract(state.enemyHP, damage.toString());
               const clampedHP = clamp(newHP, 0, state.enemyMaxHP);
+              appliedDamage = startingHp.minus(D(clampedHP));
               state.enemyHP = clampedHP.toString();
+            });
+            emitEvent({
+              type: 'HIT',
+              source: 'player',
+              target: 'enemy',
+              amount: appliedDamage.toFixed(0),
+              isCrit,
+              techniqueId: techId,
+              kind: 'technique',
             });
             break;
           }
@@ -1728,11 +1817,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const healAmount = maxHp.times(
               effect.mult * masteryMult * secondaryPotency * scaling.traitMods.healMult * scaling.runeMods.healMult,
             );
+            let actualHeal = healAmount;
             set((state) => {
-              const newHP = D(state.playerHP).plus(healAmount);
+              const startingHp = D(state.playerHP);
+              const newHP = startingHp.plus(healAmount);
               const cappedHP = newHP.greaterThan(maxHp) ? maxHp : newHP;
+              actualHeal = cappedHP.minus(startingHp);
               state.playerHP = cappedHP.toString();
             });
+            emitEvent({ type: 'HEAL', amount: actualHeal.toFixed(0), techniqueId: techId });
             break;
           }
           case 'shield': {
@@ -1745,15 +1838,24 @@ export const useCombatStore = create<ExtendedCombatState>()(
               .toNumber();
             const durationSec = resolveShieldDurationSec(techDef.effect) ?? DEFAULT_SHIELD_DURATION_SEC;
             const expiresAt = now + durationSec * 1000;
+            let totalShield = shieldAmount;
             set((state) => {
               if (!state.combatShield) {
                 state.combatShield = { amount: shieldAmount, expiresAt };
                 return;
               }
               state.combatShield.amount += shieldAmount;
+              totalShield = state.combatShield.amount;
               if (state.combatShield.expiresAt === null || state.combatShield.expiresAt < expiresAt) {
                 state.combatShield.expiresAt = expiresAt;
               }
+            });
+            emitEvent({
+              type: 'SHIELD_GAINED',
+              amount: shieldAmount.toFixed(0),
+              total: totalShield.toFixed(0),
+              durationSec: durationSec,
+              techniqueId: techId,
             });
             break;
           }
@@ -1762,6 +1864,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const buffId = `${techId}:${effect.stat}`;
             const masteryMult = scaling.masteryEffectMult ?? 1;
             const secondaryPotency = effect.source === 'secondary' ? scaling.secondaryPotencyMult : 1;
+            const hadExisting = get().combatBuffs.some((buff) => buff.id === buffId);
             set((state) => {
               state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
               state.combatBuffs.push({
@@ -1776,6 +1879,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
                   scaling.runeMods.buffMult,
                 endsAt: now + durationSec * 1000,
               });
+            });
+            emitEvent({
+              type: 'STATUS_APPLIED',
+              statusId: `buff:${effect.stat}`,
+              stacks: 1,
+              durationSec,
+              refreshed: hadExisting,
+              techniqueId: techId,
+              target: 'player',
             });
             break;
           }
