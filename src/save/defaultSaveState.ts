@@ -21,7 +21,7 @@ import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 
-export const SAVE_VERSION = '1.0.4';
+export const SAVE_VERSION = '1.0.5';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -206,6 +206,9 @@ export function buildDefaultSaveState(): SaveData {
       chapter: heartLawState.chapter,
       comprehension: heartLawState.comprehension,
       unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
+      breathMode: heartLawState.breathMode,
+      studyTechniqueId: heartLawState.studyTechniqueId,
+      lastInsightAt: heartLawState.lastInsightAt,
     },
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
@@ -350,6 +353,29 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   if (typeof value.chapter !== 'number') return false;
   if (typeof value.comprehension !== 'number') return false;
   if (!isStringArray(value.unlockedHeartLawIds)) return false;
+  if (
+    'breathMode' in value &&
+    value.breathMode !== undefined &&
+    !['balanced', 'safe', 'fast'].includes(value.breathMode as string)
+  ) {
+    return false;
+  }
+  if (
+    'studyTechniqueId' in value &&
+    value.studyTechniqueId !== null &&
+    value.studyTechniqueId !== undefined &&
+    typeof value.studyTechniqueId !== 'string'
+  ) {
+    return false;
+  }
+  if (
+    'lastInsightAt' in value &&
+    value.lastInsightAt !== null &&
+    value.lastInsightAt !== undefined &&
+    typeof value.lastInsightAt !== 'number'
+  ) {
+    return false;
+  }
   return true;
 }
 

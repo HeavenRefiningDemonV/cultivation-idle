@@ -44,6 +44,7 @@ export const SaveService = {
     GameEvents.on('manuals/purchased', () => this.save());
     GameEvents.on('manuals/studied', () => this.save());
     GameEvents.on('techniques/equipped', () => this.save());
+    GameEvents.on('heartlaw/selected', () => this.save());
   },
   save(): boolean {
     const ok = legacySaveGame();

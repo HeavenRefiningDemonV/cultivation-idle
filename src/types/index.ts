@@ -8,6 +8,7 @@ export type LifePath = 'heaven' | 'earth' | 'martial';
  * Focus mode for cultivation
  */
 export type FocusMode = 'balanced' | 'body' | 'spirit';
+export type BreathMode = 'balanced' | 'safe' | 'fast';
 
 /**
  * Realm information
@@ -250,6 +251,9 @@ export interface SaveHeartLawState {
   chapter: number;
   comprehension: number;
   unlockedHeartLawIds: string[];
+  breathMode: BreathMode;
+  studyTechniqueId: string | null;
+  lastInsightAt: number | null;
 }
 
 export interface SaveActivityState {

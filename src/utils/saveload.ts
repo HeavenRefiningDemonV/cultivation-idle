@@ -185,6 +185,9 @@ function gatherGameState(): SaveData {
       chapter: heartLawState.chapter,
       comprehension: heartLawState.comprehension,
       unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
+      breathMode: heartLawState.breathMode,
+      studyTechniqueId: heartLawState.studyTechniqueId,
+      lastInsightAt: heartLawState.lastInsightAt,
     },
 
     manualPavilionState: {
@@ -381,6 +384,29 @@ function validateSaveData(data: unknown): data is SaveData {
       if (typeof hs.chapter !== 'number') return false;
       if (typeof hs.comprehension !== 'number') return false;
       if (!Array.isArray((hs as { unlockedHeartLawIds?: unknown }).unlockedHeartLawIds)) return false;
+      if (
+        'breathMode' in hs &&
+        hs.breathMode !== undefined &&
+        !['balanced', 'safe', 'fast'].includes(hs.breathMode as string)
+      ) {
+        return false;
+      }
+      if (
+        'studyTechniqueId' in hs &&
+        hs.studyTechniqueId !== null &&
+        hs.studyTechniqueId !== undefined &&
+        typeof hs.studyTechniqueId !== 'string'
+      ) {
+        return false;
+      }
+      if (
+        'lastInsightAt' in hs &&
+        hs.lastInsightAt !== null &&
+        hs.lastInsightAt !== undefined &&
+        typeof hs.lastInsightAt !== 'number'
+      ) {
+        return false;
+      }
     }
 
     if ('manualPavilionState' in record && record.manualPavilionState) {
@@ -703,7 +729,15 @@ function applySaveData(saveData: SaveData): void {
     const outskirtsState = saveData.outskirtsState ?? defaults.outskirtsState ?? { progressByOutskirtsId: {} };
     const heartLawState =
       saveData.heartLawState ??
-      defaults.heartLawState ?? { selectedHeartLawId: null, chapter: 1, comprehension: 0, unlockedHeartLawIds: [] };
+      defaults.heartLawState ?? {
+        selectedHeartLawId: null,
+        chapter: 1,
+        comprehension: 0,
+        unlockedHeartLawIds: [],
+        breathMode: 'balanced',
+        studyTechniqueId: null,
+        lastInsightAt: null,
+      };
     const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {} };
     const bountyState = saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
     const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
@@ -863,6 +897,18 @@ function applySaveData(saveData: SaveData): void {
       unlockedHeartLawIds: Array.isArray(heartLawState.unlockedHeartLawIds)
         ? Array.from(new Set(heartLawState.unlockedHeartLawIds))
         : getDefaultUnlockedHeartLawIds(),
+      breathMode:
+        heartLawState.breathMode === 'safe' || heartLawState.breathMode === 'fast'
+          ? heartLawState.breathMode
+          : 'balanced',
+      studyTechniqueId:
+        typeof heartLawState.studyTechniqueId === 'string' || heartLawState.studyTechniqueId === null
+          ? heartLawState.studyTechniqueId
+          : null,
+      lastInsightAt:
+        typeof heartLawState.lastInsightAt === 'number' && Number.isFinite(heartLawState.lastInsightAt)
+          ? heartLawState.lastInsightAt
+          : null,
     });
 
     const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? {

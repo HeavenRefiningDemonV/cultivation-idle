@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { HeartLawDef } from '../content';
+import { GameEvents } from '../services/events/GameEvents';
+import type { BreathMode } from '../types';
 import { useContentStore } from './contentStore';
 
 export type ComprehensionSource = 'meditation' | 'outskirtsBoss' | 'trialClear' | 'ruinsClear';
@@ -10,12 +12,19 @@ interface HeartLawState {
   chapter: number;
   comprehension: number;
   unlockedHeartLawIds: string[];
+  breathMode: BreathMode;
+  studyTechniqueId: string | null;
+  lastInsightAt: number | null;
   selectHeartLaw: (id: string) => void;
   addComprehension: (amount: number, source: ComprehensionSource) => void;
   tryAdvanceChapter: () => void;
   isUnlocked: (id: string) => boolean;
   setUnlocked: (ids: string[]) => void;
   unlock: (id: string) => void;
+  setBreathMode: (mode: BreathMode) => void;
+  setStudyTechniqueId: (techniqueId: string | null) => void;
+  markInsight: (timestampMs?: number) => void;
+  resetForNewLife: () => void;
 }
 
 const DEFAULT_REQUIREMENTS: Record<number, number> = {
@@ -41,6 +50,9 @@ export const useHeartLawStore = create<HeartLawState>()(
     chapter: 1,
     comprehension: 0,
     unlockedHeartLawIds: [],
+    breathMode: 'balanced',
+    studyTechniqueId: null,
+    lastInsightAt: null,
 
     selectHeartLaw: (id) => {
       if (!get().isUnlocked(id)) return;
@@ -49,7 +61,10 @@ export const useHeartLawStore = create<HeartLawState>()(
         state.selectedHeartLawId = id;
         state.chapter = 1;
         state.comprehension = 0;
+        state.studyTechniqueId = null;
+        state.lastInsightAt = null;
       });
+      GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: id } });
     },
 
     addComprehension: (amount) => {
@@ -100,6 +115,37 @@ export const useHeartLawStore = create<HeartLawState>()(
           state.unlockedHeartLawIds.push(id);
         }
       });
+    },
+
+    setBreathMode: (mode) => {
+      set((state) => {
+        state.breathMode = mode;
+      });
+    },
+
+    setStudyTechniqueId: (techniqueId) => {
+      set((state) => {
+        state.studyTechniqueId = techniqueId;
+      });
+    },
+
+    markInsight: (timestampMs) => {
+      const at = typeof timestampMs === 'number' ? timestampMs : Date.now();
+      set((state) => {
+        state.lastInsightAt = at;
+      });
+    },
+
+    resetForNewLife: () => {
+      set((state) => {
+        state.selectedHeartLawId = null;
+        state.chapter = 1;
+        state.comprehension = 0;
+        state.breathMode = 'balanced';
+        state.studyTechniqueId = null;
+        state.lastInsightAt = null;
+      });
+      GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: null } });
     },
   })),
 );
