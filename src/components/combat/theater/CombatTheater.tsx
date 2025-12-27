@@ -7,6 +7,7 @@ import { useUIStore } from '../../../stores/uiStore';
 import { computeCombatSafety, hpPercent } from '../../../systems/combat/minibarModel';
 import { formatNumber, D } from '../../../utils/numbers';
 import { CombatCanvas } from '../CombatCanvas';
+import { TechniqueStrip } from './TechniqueStrip';
 import './CombatTheater.scss';
 
 function formatActivityLabel(type: string | null | undefined): string {
@@ -155,6 +156,18 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="combat-theater__subheader">{activityLabel}</div>
+      </div>
+
+      <div className="combat-theater__layout">
+        <div className="combat-theater__column">
+          <TechniqueStrip />
+        </div>
+        <div className="combat-theater__column combat-theater__column--secondary">
+          <div className="combat-theater__placeholder">
+            <div className="combat-theater__placeholder-title">Fight intel</div>
+            <div className="combat-theater__placeholder-text">More detailed battle insights coming soon.</div>
+          </div>
+        </div>
       </div>
 
       <div className="combat-theater__snapshot">
