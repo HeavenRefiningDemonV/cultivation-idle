@@ -199,6 +199,47 @@
   font-size: 13px;
 }
 
+.recentTechniqueActivations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recentTechniqueActivationsHeader {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.recentTechniqueActivationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.recentTechniqueActivationsItem {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.recentTechniqueActivationsText {
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.recentTechniqueActivationsText--crit {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.recentTechniqueActivationsEmpty {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
 .worldScreenRefRow dd {
   margin: 0;
   font-size: 14px;

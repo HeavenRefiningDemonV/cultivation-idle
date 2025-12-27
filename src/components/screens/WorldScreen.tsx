@@ -19,6 +19,7 @@ import { MeditationHallPanel } from './MeditationHallPanel';
 import { BountyBoardPanel } from './BountyBoardPanel';
 import { ExpeditionBoardPanel } from './ExpeditionBoardPanel';
 import './WorldScreen.scss';
+import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
@@ -115,6 +116,7 @@ export function WorldScreen() {
   const setAutoCombatAI = useCombatStore((state) => state.setAutoCombatAI);
   const exitCombat = useCombatStore((state) => state.exitCombat);
   const combatContext = useCombatStore((state) => state.combatContext);
+  const inCombat = useCombatStore((state) => state.inCombat);
 
   const shouldSpawnBoss = useOutskirtsStore((state) => state.shouldSpawnBoss);
   const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
@@ -426,6 +428,12 @@ export function WorldScreen() {
                   )}
                 </div>
               </div>
+
+              {inCombat && (
+                <div className={'worldScreenPanel'}>
+                  <RecentTechniqueActivations />
+                </div>
+              )}
 
               <div className={'worldScreenPanel'}>
                 <div className={'worldScreenPanelHeader'}>
