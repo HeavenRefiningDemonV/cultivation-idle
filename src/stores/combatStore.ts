@@ -38,6 +38,7 @@ import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summ
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { getSpiritRootSnapshot } from './gameStore';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
+import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -1176,7 +1177,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
         useActivityStore.getState().stopActivity();
         useBountyStore.getState().recordEvent({ type: 'TRIAL_CLEAR', cityId, amount: 1 });
         if (useHeartLawStore.getState().selectedHeartLawId) {
-          useHeartLawStore.getState().addComprehension(40, 'trialClear');
+          useHeartLawStore
+            .getState()
+            .addComprehension(COMPREHENSION_EVENT_BONUSES.trialClear, 'trialClear');
         }
 
         if (eligible) {
@@ -1232,7 +1235,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
             .recordEvent({ type: isBossFight ? 'OUTSKIRTS_BOSS_KILL' : 'OUTSKIRTS_KILL', cityId, amount: 1 });
           if (isBossFight) {
             if (useHeartLawStore.getState().selectedHeartLawId) {
-              useHeartLawStore.getState().addComprehension(25, 'outskirtsBoss');
+              useHeartLawStore
+                .getState()
+                .addComprehension(COMPREHENSION_EVENT_BONUSES.outskirtsBoss, 'outskirtsBoss');
             }
           }
         }

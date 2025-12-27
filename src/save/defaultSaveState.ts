@@ -21,7 +21,7 @@ import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 
-export const SAVE_VERSION = '1.0.5';
+export const SAVE_VERSION = '1.0.6';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -207,8 +207,13 @@ export function buildDefaultSaveState(): SaveData {
       comprehension: heartLawState.comprehension,
       unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
       breathMode: heartLawState.breathMode,
+      studyEnabled: heartLawState.studyEnabled,
       studyTechniqueId: heartLawState.studyTechniqueId,
       lastInsightAt: heartLawState.lastInsightAt,
+      nextInsightAt: heartLawState.nextInsightAt ?? null,
+      insight: heartLawState.insight ?? null,
+      stability: heartLawState.stability,
+      stabilityCap: heartLawState.stabilityCap,
     },
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
@@ -360,6 +365,9 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   ) {
     return false;
   }
+  if ('studyEnabled' in value && value.studyEnabled !== undefined && typeof value.studyEnabled !== 'boolean') {
+    return false;
+  }
   if (
     'studyTechniqueId' in value &&
     value.studyTechniqueId !== null &&
@@ -374,6 +382,28 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
     value.lastInsightAt !== undefined &&
     typeof value.lastInsightAt !== 'number'
   ) {
+    return false;
+  }
+  if (
+    'nextInsightAt' in value &&
+    value.nextInsightAt !== null &&
+    value.nextInsightAt !== undefined &&
+    typeof value.nextInsightAt !== 'number'
+  ) {
+    return false;
+  }
+  if (
+    'insight' in value &&
+    value.insight !== null &&
+    value.insight !== undefined &&
+    typeof value.insight !== 'object'
+  ) {
+    return false;
+  }
+  if ('stability' in value && value.stability !== undefined && typeof value.stability !== 'number') {
+    return false;
+  }
+  if ('stabilityCap' in value && value.stabilityCap !== undefined && typeof value.stabilityCap !== 'number') {
     return false;
   }
   return true;

@@ -5,6 +5,7 @@ import { useExpeditionStore } from '../../stores/expeditionStore';
 import { buildDefaultSaveState } from '../../save/defaultSaveState';
 import { formatNumber, D } from '../../utils/numbers';
 import { MAX_OFFLINE_MS } from '../../systems/offline';
+import { cultivationService } from '../cultivationService';
 
 export interface OfflineCatchupSummaryPart {
   label: string;
@@ -48,6 +49,8 @@ export function apply(stateSnapshot: SaveData, nowWall: number): OfflineCatchupR
     });
     summaryParts.push({ label: 'Qi gained', value: formatNumber(qiGain) });
   }
+
+  cultivationService.applyOfflineProgress(seconds * 1000, nowWall - seconds * 1000, nowWall);
 
   // Profession queues (tick timers only)
   const professionStore = useProfessionStore.getState();

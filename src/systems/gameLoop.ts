@@ -15,6 +15,7 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { SaveService } from '../services/save/SaveService';
+import { cultivationService } from '../services/cultivationService';
 import { useUIStore } from '../stores/uiStore';
 import { useActivityStore } from '../stores/activityStore';
 import { RewardService } from '../services/rewards';
@@ -142,6 +143,8 @@ class GameLoop {
       // Update game store (HP regen, etc.)
       const gameState = useGameStore.getState();
       gameState.tick(deltaTime);
+
+      cultivationService.tick(deltaTime);
 
       // Update combat store (attacks, cooldowns)
       const combatState = useCombatStore.getState();

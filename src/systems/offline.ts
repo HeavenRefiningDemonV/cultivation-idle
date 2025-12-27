@@ -1,5 +1,6 @@
 import Decimal from 'decimal.js';
 import { useGameStore } from '../stores/gameStore';
+import { cultivationService } from '../services/cultivationService';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { D, multiply, formatNumber } from '../utils/numbers';
 
@@ -170,6 +171,8 @@ export function applyOfflineProgressFromContext(context: OfflineContext): Offlin
       lastTickTime: currentUtc,
       lastActiveTime: currentUtc,
     });
+
+    cultivationService.applyOfflineProgress(progress.offlineSeconds * 1000, lastOnlineUtc, currentUtc);
 
     // Create summary
     const summary: OfflineProgressSummary = {

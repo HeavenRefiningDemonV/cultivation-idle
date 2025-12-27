@@ -22,8 +22,8 @@ import {
 } from './zoneStore';
 import { useUIStore } from './uiStore';
 import { useEquipmentStore } from './equipmentStore';
+import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
 import { useHeartLawStore } from './heartLawStore';
-import { useActivityStore } from './activityStore';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { useContentStore } from './contentStore';
 
@@ -148,18 +148,10 @@ export const useGameStore = create<GameState>()(
     tick: (deltaTime: number) => {
       get().removeExpiredBuffs();
 
-      const heartLawState = useHeartLawStore.getState();
-      const activeActivity = useActivityStore.getState().active;
-      if (heartLawState.selectedHeartLawId && (!activeActivity || activeActivity.type === 'meditate')) {
-        const comprehensionGain = (deltaTime / 1000) * (1 / 60);
-        if (comprehensionGain > 0) {
-          heartLawState.addComprehension(comprehensionGain, 'meditation');
-        }
-      }
-
       set((state) => {
         // Calculate Qi gained this tick
-        const qiGain = multiply(state.qiPerSecond, deltaTime / 1000);
+        const breath = getBreathModeMultipliers(useHeartLawStore.getState().breathMode);
+        const qiGain = multiply(state.qiPerSecond, (deltaTime / 1000) * breath.qiRateMult);
         state.qi = add(state.qi, qiGain).toString();
 
         // Regenerate HP (if needed for combat)

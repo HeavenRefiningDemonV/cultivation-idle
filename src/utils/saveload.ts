@@ -186,8 +186,13 @@ function gatherGameState(): SaveData {
       comprehension: heartLawState.comprehension,
       unlockedHeartLawIds: [...heartLawState.unlockedHeartLawIds],
       breathMode: heartLawState.breathMode,
+      studyEnabled: heartLawState.studyEnabled,
       studyTechniqueId: heartLawState.studyTechniqueId,
       lastInsightAt: heartLawState.lastInsightAt,
+      nextInsightAt: heartLawState.nextInsightAt ?? null,
+      insight: heartLawState.insight ?? null,
+      stability: heartLawState.stability,
+      stabilityCap: heartLawState.stabilityCap,
     },
 
     manualPavilionState: {
@@ -391,6 +396,9 @@ function validateSaveData(data: unknown): data is SaveData {
       ) {
         return false;
       }
+      if ('studyEnabled' in hs && hs.studyEnabled !== undefined && typeof hs.studyEnabled !== 'boolean') {
+        return false;
+      }
       if (
         'studyTechniqueId' in hs &&
         hs.studyTechniqueId !== null &&
@@ -405,6 +413,20 @@ function validateSaveData(data: unknown): data is SaveData {
         hs.lastInsightAt !== undefined &&
         typeof hs.lastInsightAt !== 'number'
       ) {
+        return false;
+      }
+      if (
+        'nextInsightAt' in hs &&
+        hs.nextInsightAt !== null &&
+        hs.nextInsightAt !== undefined &&
+        typeof hs.nextInsightAt !== 'number'
+      ) {
+        return false;
+      }
+      if ('stability' in hs && hs.stability !== undefined && typeof hs.stability !== 'number') {
+        return false;
+      }
+      if ('stabilityCap' in hs && hs.stabilityCap !== undefined && typeof hs.stabilityCap !== 'number') {
         return false;
       }
     }
@@ -901,6 +923,7 @@ function applySaveData(saveData: SaveData): void {
         heartLawState.breathMode === 'safe' || heartLawState.breathMode === 'fast'
           ? heartLawState.breathMode
           : 'balanced',
+      studyEnabled: typeof heartLawState.studyEnabled === 'boolean' ? heartLawState.studyEnabled : false,
       studyTechniqueId:
         typeof heartLawState.studyTechniqueId === 'string' || heartLawState.studyTechniqueId === null
           ? heartLawState.studyTechniqueId
@@ -909,6 +932,19 @@ function applySaveData(saveData: SaveData): void {
         typeof heartLawState.lastInsightAt === 'number' && Number.isFinite(heartLawState.lastInsightAt)
           ? heartLawState.lastInsightAt
           : null,
+      nextInsightAt:
+        typeof heartLawState.nextInsightAt === 'number' && Number.isFinite(heartLawState.nextInsightAt)
+          ? heartLawState.nextInsightAt
+          : null,
+      insight: (heartLawState as any).insight ?? null,
+      stability:
+        typeof heartLawState.stability === 'number' && Number.isFinite(heartLawState.stability)
+          ? heartLawState.stability
+          : 0,
+      stabilityCap:
+        typeof heartLawState.stabilityCap === 'number' && Number.isFinite(heartLawState.stabilityCap)
+          ? heartLawState.stabilityCap
+          : 100,
     });
 
     const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? {

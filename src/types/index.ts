@@ -9,6 +9,22 @@ export type LifePath = 'heaven' | 'earth' | 'martial';
  */
 export type FocusMode = 'balanced' | 'body' | 'spirit';
 export type BreathMode = 'balanced' | 'safe' | 'fast';
+export type ComprehensionSource = 'meditation' | 'outskirtsBoss' | 'trialClear' | 'ruinsClear';
+export type InsightChoiceId = 'contemplate' | 'stabilize' | 'drawQi';
+
+export interface InsightChoice {
+  id: InsightChoiceId;
+  title: string;
+  description: string;
+}
+
+export interface InsightMomentState {
+  pending: boolean;
+  startedAt: number;
+  expiresAt: number;
+  choices: InsightChoice[];
+  defaultChoiceId: InsightChoiceId;
+}
 
 /**
  * Realm information
@@ -252,8 +268,13 @@ export interface SaveHeartLawState {
   comprehension: number;
   unlockedHeartLawIds: string[];
   breathMode: BreathMode;
+  studyEnabled?: boolean;
   studyTechniqueId: string | null;
   lastInsightAt: number | null;
+  nextInsightAt?: number | null;
+  insight?: InsightMomentState | null;
+  stability?: number;
+  stabilityCap?: number;
 }
 
 export interface SaveActivityState {
