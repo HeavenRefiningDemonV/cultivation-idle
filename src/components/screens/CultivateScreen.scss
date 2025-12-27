@@ -1,472 +1,313 @@
-@keyframes spinCentered {
-  from {
-    /* Keep it centered, start rotation at 0 */
-    transform: rotate(0deg);
-  }
-
-  to {
-    /* Keep it centered, end rotation at 360 */
-    transform: rotate(360deg);
-  }
-}
-
-.cultivateScreenRoot {
-  overflow: hidden;
-  z-index: 1;
+.cultivationTab {
   display: flex;
-  height: 100%;
-  width: 100%;
   flex-direction: column;
-  gap: 24px;
-}
-
-.cultivateScreenHeader {
-  text-align: center;
-}
-
-.cultivator-container {
-  position: absolute;
-  width: calc(100% - 14rem);
-  margin-right: 14rem;
-  z-index: -2;
-  bottom: -25%;
-}
-
-.cultivator {
-  width: 100%;
-  transform: translateX(-14.5%);
-}
-
-.dantian {
-  position: absolute;
-  height: 6rem;
-  width: 6rem;
-  left: calc(38%);
-  top: 43%;
-  opacity: 80%;
-  animation: spinCentered 5s linear infinite;
-}
-
-.cultivateScreenTitle {
-  margin: 0;
-  font-family: 'Julee', cursive;
-  font-size: 30px;
-  font-weight: 700;
-}
-
-.cultivateScreenSubtitle {
-  margin: 4px 0 0;
-  color: #000000;
-  font-size: 14px;
-}
-
-.cultivateScreenGrid {
-  display: flex;
-  justify-content: flex-end;
-  height: 100%;
-  width: 100%;
-  z-index: 9;
-}
-
-.cultivateScreenLeftColumn {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: space-between;
   gap: 16px;
+  height: 100%;
+  padding: 8px;
 }
 
-.cultivateScreenLibraryCta {
-  background: rgba(15, 23, 42, 0.6);
-  border: 2px solid rgba(251, 191, 36, 0.45);
+.cultivationHeader {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  background: rgba(15, 18, 28, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+.cultivationHeaderItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cultivationHeaderLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
+}
+
+.cultivationHeaderValue {
+  font-weight: 700;
+  font-size: 18px;
+  color: #e5e7eb;
+}
+
+.cultivationHeaderSub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.cultivationGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.cultivationColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cultivationSection {
+  background: rgba(18, 23, 36, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.cultivationSection summary {
+  list-style: none;
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cultivationSection summary::-webkit-details-marker {
+  display: none;
+}
+
+.sectionToggleHint {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cultivationPanel {
+  background: rgba(10, 13, 22, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panelHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  color: #e2e8f0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  gap: 10px;
 }
 
-.cultivateScreenLibraryText {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cultivateScreenLibraryTitle {
-  font-family: 'Julee', cursive;
-  font-size: 18px;
+.panelTitle {
   font-weight: 700;
-  color: #fbbf24;
+  font-size: 16px;
+  color: #f3f4f6;
 }
 
-.cultivateScreenLibrarySubtext {
-  font-size: 12px;
+.panelSub {
+  font-size: 13px;
+  color: #a5b4fc;
+}
+
+.primaryButton {
+  background: linear-gradient(90deg, #8b5cf6, #22d3ee);
+  color: #0b1020;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.35);
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.primaryButton--secondary {
+  background: linear-gradient(90deg, #334155, #0ea5e9);
+  color: #e2e8f0;
+}
+
+.inlineMessage {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.inlineMessage--warning {
+  background: rgba(248, 180, 0, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fcd34d;
+}
+
+.inlineMessage--muted {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   color: #cbd5e1;
 }
 
-.cultivateScreenLibraryButton {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
-  color: #0b111d;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-  min-width: 180px;
-}
-
-.cultivateScreenLibraryButton:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
-}
-
-.cultivateScreenPanel {
-  border-radius: 14px;
-  padding: 24px;
-}
-
-/*
-.cultivateScreenAuraLayer {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cultivateScreenAuraRingLarge {
-  position: absolute;
-  width: 12rem;
-  height: 12rem;
-  border-radius: 9999px;
-  border: 2px solid rgba(147, 197, 253, 0.3);
-  animation: auraPing 2.5s ease-out infinite;
-}
-
-.cultivateScreenAuraRingMedium {
-  position: absolute;
-  width: 10rem;
-  height: 10rem;
-  border-radius: 9999px;
-  border: 2px solid rgba(147, 197, 253, 0.4);
-  animation: auraPulse 2.4s ease-in-out infinite;
-}
-
-.cultivateScreenAuraRingSmall {
-  position: absolute;
-  width: 8rem;
-  height: 8rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(191, 219, 254, 0.5);
-}
-*/
-
-.cultivateScreenStatsGrid {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-/*.cultivateScreenStatCard {
-
-}*/
-
-.cultivateScreenStatLabel {
-  color: #000000;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.cultivateScreenStatValue {
-  font-weight: 700;
-  font-size: 24px;
-}
-
-/*skdjsıohdjshdsd*/
-
-.progress-bar {
-  position: relative;
-  width: 100%;
-  transform: translateY(10px) scale(0.8);
-  margin-bottom: 3rem;
-}
-
-.bar-container {
-  position: absolute;
-  width: 100%;
-
-  object-fit: contain;
-  z-index: 10;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-.cultivateScreenProgressContainer {
-  position: absolute;
-
-  height: 1rem;
-  align-self: center;
-  width: 100%;
-  overflow: hidden;
-  box-shadow: 0 0 10px 10px #ddd;
-}
-
-.cultivateScreenProgressHeader {
-  margin-bottom: 12px;
-  text-shadow: 0 0 10px white, 0 0 15px white, 0 0 30px white;
-  padding: 0 5rem;
-}
-
-.cultivateScreenProgressTitle {
-  margin-bottom: 4px;
-  font-family: 'Julee', cursive;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.cultivateScreenProgressSubtitle {
-  margin: 0;
-  color: #000000;
-  font-size: 14px;
-}
-
-.cultivateScreenProgressBlock {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  margin-bottom: 1rem;
-  text-shadow: 0 0 10px white, 0 0 15px white, 0 0 30px white;
-  padding: 0 5rem;
-}
-
-.cultivateScreenProgressLabel {
-  font-family: 'Julee', cursive;
-  font-weight: 600;
-}
-
-.cultivateScreenProgressValue {
-  color: #000000;
-}
-
-.cultivateScreenProgressPattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.12;
-  background-image: repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(255, 255, 255, 0.12) 10px, rgba(255, 255, 255, 0.12) 20px);
-}
-
-.cultivateScreenProgressFill {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.82) 0%, rgba(147, 197, 253, 0.9) 50%, rgba(59, 130, 246, 0.82) 100%);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-  transition: width 0.5s ease-out;
-}
-
-.cultivateScreenProgressShimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
-  opacity: 0.6;
-  animation: shimmer 2s infinite;
-}
-
-.cultivateScreenProgressText {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
-}
-
-.cultivateScreenGateRequirement {
-  width: 50%;
-  justify-self: center;
-  background-color: #ddd6;
-  margin-top: 12px;
-  border: 1px solid #374151;
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: #000000;
-  font-size: 14px;
-  backdrop-filter: blur(2px);
-}
-
-.cultivateScreenGateReady {
-  color: #4ade80;
-  font-weight: 700;
-}
-
-.cultivateScreenGateMissing {
-  font-weight: 700;
-}
-
-.cultivateScreenGateNote {
-  margin: 4px 0 0;
-  color: #000000;
-  font-size: 12px;
-}
-
-.bbdiv {
-  margin-top: 16px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-
-  .bback {
-    position: absolute;
-    height: 100%;
-    left: 50%;
-    transform: translateX(-50%) scale(1.5) scaleX(2);
-    z-index: -1;
-  }
-
-  .cultivateScreenBreakthroughButton {
-    background: transparent;
-    width: 20%;
-    padding: 16px;
-    border: none;
-    border-radius: 14px;
-    font-family: 'Julee', cursive;
-    font-weight: 700;
-    font-size: 18px;
-    color: black;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-    /*background-image: url("../../assets/menus/block_fancy.png");*/
-    background-size: cover;
-    z-index: 9;
-  }
-
-  .cultivateScreenBreakthroughButton:hover {
-    transform: translateY(-2px) scale(1.01);
-    filter: brightness(1.05);
-    background: transparent;
-    border: none;
-  }
-
-  .cultivateScreenBreakthroughButton:disabled {
-    color: #94a3b8;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-  }
-}
-
-.cultivateScreenRightColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 14rem;
-  justify-self: center;
-}
-
-.right-column {
-  backdrop-filter: blur(8px);
-  border-image: url("../../assets/menus/buttoncorners.png") 60 / 0 0 0 10px / 5px;
-  background-color: #ddd6;
-}
-
-.cultivateScreenPanelHeader {
-  margin: 0 0 12px 0;
-  font-family: 'Julee', cursive;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.cultivateScreenFocusList {
+.breathSection {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.cultivateScreenFocusButton {
-  width: 100%;
-  border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px;
-  color: #000000;
+.breathSectionLabel {
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.breathDial {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.breathDialOption {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 10px;
   text-align: left;
-  padding: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  color: #e5e7eb;
 }
 
-.cultivateScreenFocusButtonActive {
-  background: rgba(125, 211, 252, 0.18);
-  box-shadow: 0 0 20px rgba(82, 200, 255, 0.7);
+.breathDialOption:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.cultivateScreenFocusTitle {
-  margin: 0;
+.breathDialOption--active {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.breathDialLabel {
   font-weight: 700;
-  text-transform: capitalize;
-}
-
-.cultivateScreenFocusDescription {
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: #000000;
-}
-
-.cultivateScreenInfoList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  color: #000000;
-  font-size: 14px;
-}
-
-.cultivateScreenInfoLabel {
-  color: #000000;
   margin-bottom: 4px;
 }
 
-.cultivateScreenInfoValue {
-  color: #000000;
+.breathDialHint {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+.offlineHint {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progressLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
+}
+
+.progressValue {
   font-weight: 700;
-  text-transform: capitalize;
+  font-size: 15px;
+  color: #e5e7eb;
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
+.progressStatus {
+  font-weight: 700;
+  color: #f97316;
 }
 
-@keyframes auraPing {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.6;
-  }
-
-  100% {
-    transform: scale(1.2);
-    opacity: 0;
-  }
+.progressStatus--ready {
+  color: #4ade80;
 }
 
-@keyframes auraPulse {
+.qiProgressBar {
+  position: relative;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
 
-  0%,
-  100% {
-    transform: scale(0.96);
-    opacity: 0.6;
+.qiProgressFill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg, #22d3ee, #8b5cf6);
+  transition: width 0.25s ease-out;
+}
+
+.qiProgressText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #0b1020;
+  font-weight: 700;
+  mix-blend-mode: screen;
+}
+
+.insightChoices {
+  display: grid;
+  gap: 8px;
+}
+
+.insightChoice {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.insightChoiceTitle {
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+.insightChoiceDesc {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.insightDefault {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+@media (max-width: 900px) {
+  .cultivationGrid {
+    grid-template-columns: 1fr;
   }
 
-  50% {
-    transform: scale(1.05);
-    opacity: 0.9;
+  .cultivationSection summary {
+    display: flex;
+    padding: 4px 0;
+  }
+
+  .sectionBody {
+    margin-top: 6px;
   }
 }

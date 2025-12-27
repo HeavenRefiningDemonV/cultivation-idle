@@ -1,134 +1,298 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { REALMS } from '../../constants';
+import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
+import { MAX_OFFLINE_MS } from '../../systems/offline';
+import { GATE_ITEMS } from '../../systems/loot';
+import { useActivityStore } from '../../stores/activityStore';
+import { useContentStore, getItemDef } from '../../stores/contentStore';
+import { useCultivationStore } from '../../stores/cultivationStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
-import { formatNumber } from '../../utils/numbers';
-import { REALMS } from '../../constants';
+import type { BreathMode, InsightMomentState } from '../../types';
+import { formatNumber, D } from '../../utils/numbers';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
-import { GATE_ITEMS } from '../../systems/loot';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
-import { getItemDef } from '../../stores/contentStore';
-import cultivatorImage from "../../assets/onscreen/cbg_full.png";
-import dantianImage from "../../assets/onscreen/qisign.png";
-import longBar from "../../assets/menus/bar_long.png";
-import fancyBlock from "../../assets/menus/block_fancy.png"
 import './CultivateScreen.scss';
 
-/**
- * Ornate Progress Bar with gradient fill
- */
-function OrnateProgressBar({
-  current,
-  max,
-}: {
-  current: string;
-  max: string;
-  label: string;
-}) {
-  const percent = Math.min(100, parseFloat((Number(current) / Number(max) * 100).toFixed(2)));
+const BREATH_COPY: Record<BreathMode, string> = {
+  balanced: 'Even flow. Standard Qi and Insight.',
+  safe: 'Slower Qi. More stable. Slightly more Insight.',
+  fast: 'Faster Qi. Less stable. Slightly less Insight.',
+};
+
+const ACTIVITY_LABELS: Record<string, string> = {
+  meditate: 'Cultivating',
+  outskirts: 'Adventuring',
+  trial: 'Trial',
+  ruins: 'Ruins',
+};
+
+function BreathCycleDial({ value, onChange }: { value: BreathMode; onChange: (mode: BreathMode) => void }) {
+  const options: { label: string; mode: BreathMode; description: string }[] = [
+    { label: 'Safe', mode: 'safe', description: BREATH_COPY.safe },
+    { label: 'Balanced', mode: 'balanced', description: BREATH_COPY.balanced },
+    { label: 'Fast', mode: 'fast', description: BREATH_COPY.fast },
+  ];
 
   return (
-    <>
-      <div className={'cultivateScreenProgressContainer'}>
-        {/* Background pattern */}
-        <div className={'cultivateScreenProgressPattern'} />
-
-        {/* Gradient fill */}
-        <div className={'cultivateScreenProgressFill'} style={{ width: `${percent}%` }}>
-          <div className={'cultivateScreenProgressShimmer'} />
-        </div>
-
-        {/* Percentage text */}
-      </div>
-      <div className={'cultivateScreenProgressText'}>{percent.toFixed(1)}%</div>
-    </>
+    <div className="breathDial" role="group" aria-label="Breath Cycle">
+      {options.map((opt) => (
+        <button
+          key={opt.mode}
+          type="button"
+          className={`breathDialOption ${value === opt.mode ? 'breathDialOption--active' : ''}`}
+          onClick={() => onChange(opt.mode)}
+        >
+          <div className="breathDialLabel">{opt.label}</div>
+          <div className="breathDialHint">{opt.description}</div>
+        </button>
+      ))}
+    </div>
   );
 }
 
-/**
- * Main Cultivate Screen Component
- */
+function CultivationTabHeaderBar({
+  realmLabel,
+  substage,
+  qi,
+  qiPerSecond,
+  rateTooltip,
+  activityLabel,
+  stability,
+  stabilityCap,
+}: {
+  realmLabel: string;
+  substage: number;
+  qi: string;
+  qiPerSecond: string;
+  rateTooltip: string;
+  activityLabel: string;
+  stability: number;
+  stabilityCap: number;
+}) {
+  const stabilityPct = stabilityCap > 0 ? Math.min(100, (stability / stabilityCap) * 100) : 0;
+  return (
+    <div className="cultivationHeader">
+      <div className="cultivationHeaderItem">
+        <div className="cultivationHeaderLabel">Realm</div>
+        <div className="cultivationHeaderValue">{realmLabel}</div>
+        <div className="cultivationHeaderSub">Stage {substage}</div>
+      </div>
+      <div className="cultivationHeaderItem">
+        <div className="cultivationHeaderLabel">Qi</div>
+        <div className="cultivationHeaderValue">{formatNumber(qi)}</div>
+      </div>
+      <div className="cultivationHeaderItem" title={rateTooltip}>
+        <div className="cultivationHeaderLabel">Cultivation Rate</div>
+        <div className="cultivationHeaderValue">{formatNumber(qiPerSecond)} /s</div>
+        <div className="cultivationHeaderSub">Hover for breakdown</div>
+      </div>
+      <div className="cultivationHeaderItem">
+        <div className="cultivationHeaderLabel">Stability</div>
+        <div className="cultivationHeaderValue">{Math.round(stabilityPct)}%</div>
+        <div className="cultivationHeaderSub">{stability}/{stabilityCap}</div>
+      </div>
+      <div className="cultivationHeaderItem">
+        <div className="cultivationHeaderLabel">Foreground Activity</div>
+        <div className="cultivationHeaderValue">{activityLabel}</div>
+      </div>
+    </div>
+  );
+}
+
+function QiProgressBar({ current, required }: { current: string; required: string }) {
+  const currentVal = D(current);
+  const requiredVal = D(required);
+  const pct = requiredVal.greaterThan(0)
+    ? Math.min(100, currentVal.div(requiredVal).times(100).toNumber())
+    : 0;
+  return (
+    <div className="qiProgressBar">
+      <div className="qiProgressFill" style={{ width: `${pct}%` }} />
+      <div className="qiProgressText">{pct.toFixed(1)}%</div>
+    </div>
+  );
+}
+
+function InsightMomentPanel({ insight, now }: { insight: InsightMomentState; now: number }) {
+  const remainingMs = Math.max(0, insight.expiresAt - now);
+  const remainingSeconds = Math.ceil(remainingMs / 1000);
+  return (
+    <div className="cultivationPanel">
+      <div className="panelHeader">
+        <div>
+          <div className="panelTitle">Insight Moment</div>
+          <div className="panelSub">Auto-resolves in {remainingSeconds}s</div>
+        </div>
+      </div>
+      <div className="insightChoices">
+        {insight.choices.map((choice) => (
+          <div key={choice.id} className="insightChoice">
+            <div className="insightChoiceTitle">{choice.title}</div>
+            <div className="insightChoiceDesc">{choice.description}</div>
+          </div>
+        ))}
+        <div className="insightDefault">Default on timeout: {insight.defaultChoiceId}</div>
+      </div>
+    </div>
+  );
+}
+
+function SectionShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+  return (
+    <details className="cultivationSection" open>
+      <summary>
+        <div>
+          <div className="panelTitle">{title}</div>
+          {subtitle ? <div className="panelSub">{subtitle}</div> : null}
+        </div>
+        <span className="sectionToggleHint">Tap to collapse</span>
+      </summary>
+      <div className="sectionBody">{children}</div>
+    </details>
+  );
+}
+
+const roman = ['I', 'II', 'III', 'IV', 'V'];
+
 export function CultivateScreen() {
+  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const showPathSelectionModal = useUIStore((state) => state.showPathSelectionModal);
+  const showPerkSelectionModal = useUIStore((state) => state.showPerkSelectionModal);
+  const perkSelectionRealm = useUIStore((state) => state.perkSelectionRealm);
+  const showPathSelection = useUIStore((state) => state.showPathSelection);
+  const hidePathSelection = useUIStore((state) => state.hidePathSelection);
+  const showPerkSelection = useUIStore((state) => state.showPerkSelection);
+  const hidePerkSelection = useUIStore((state) => state.hidePerkSelection);
+
   const realm = useGameStore((state) => state.realm);
   const qi = useGameStore((state) => state.qi);
   const qiPerSecond = useGameStore((state) => state.qiPerSecond);
-  const focusMode = useGameStore((state) => state.focusMode);
+  const breakthroughCost = useGameStore((state) => state.getBreakthroughRequirement());
+  const breakthrough = useGameStore((state) => state.breakthrough);
   const selectedPath = useGameStore((state) => state.selectedPath);
   const pathPerks = useGameStore((state) => state.pathPerks);
-  const breakthroughCost = useGameStore((state) => state.getBreakthroughRequirement());
 
-  const breakthrough = useGameStore((state) => state.breakthrough);
-  const setFocusMode = useGameStore((state) => state.setFocusMode);
+  const activeActivity = useActivityStore((state) => state.active);
+  const startActivity = useActivityStore((state) => state.startActivity);
+  const stopActivity = useActivityStore((state) => state.stopActivity);
+
+  const breathMode = useCultivationStore((state) => state.breathMode);
+  const setBreathMode = useCultivationStore((state) => state.setBreathMode);
+  const insight = useCultivationStore((state) => state.insight);
+  const chapter = useCultivationStore((state) => state.chapter);
+  const comprehension = useCultivationStore((state) => state.comprehension);
+  const stability = useCultivationStore((state) => state.stability);
+  const stabilityCap = useCultivationStore((state) => state.stabilityCap);
+  const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
+  const studyEnabled = useCultivationStore((state) => state.studyEnabled);
+  const studyTechniqueId = useCultivationStore((state) => state.studyTechniqueId);
+  const nextRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter());
+
+  const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
+
   const getItemCount = useInventoryStore((state) => state.getItemCount);
-  const {
-    showPathSelectionModal,
-    showPerkSelectionModal,
-    perkSelectionRealm,
-    showPathSelection,
-    hidePathSelection,
-    showPerkSelection,
-    hidePerkSelection,
-    setHeaderTitles,
-  } = useUIStore();
-  const setActiveTab = useUIStore((state) => state.setActiveTab);
-  const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
 
-  const currentRealm = REALMS[realm.index];
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
+  }, [setHeaderTitles]);
+
+  const currentRealm = REALMS[realm.index] ?? REALMS[0];
+  const realmLabel = currentRealm?.name ?? 'Realm';
   const nextSubstage = realm.substage + 1;
   const isLastSubstage = nextSubstage > currentRealm.substages;
 
   const requiredGateItem = useMemo(() => {
-    const willAdvanceRealm =
-      realm.substage >= currentRealm.substages && realm.index < REALMS.length - 1;
-
+    const willAdvanceRealm = realm.substage >= currentRealm.substages && realm.index < REALMS.length - 1;
     if (willAdvanceRealm) {
       return GATE_ITEMS[realm.index] || null;
     }
-
     return null;
   }, [currentRealm.substages, realm.index, realm.substage]);
-
-  const requiredGateItemDefinition = useMemo(() => {
-    if (!requiredGateItem) return null;
-    return getItemDef(requiredGateItem) || null;
-  }, [requiredGateItem]);
 
   const gateItemCount = useMemo(() => {
     if (!requiredGateItem) return 0;
     return getItemCount(requiredGateItem);
   }, [getItemCount, requiredGateItem]);
 
+  const requiredGateItemDefinition = useMemo(() => {
+    if (!requiredGateItem) return null;
+    return getItemDef(requiredGateItem) || null;
+  }, [requiredGateItem]);
+
   const hasRequiredToken = useMemo(() => {
     if (!requiredGateItem) return true;
     return gateItemCount > 0;
   }, [gateItemCount, requiredGateItem]);
 
-  const hasEnoughQi = Number(qi) >= Number(breakthroughCost);
+  const hasEnoughQi = useMemo(() => {
+    const current = D(qi);
+    const needed = D(breakthroughCost || '0');
+    return current.greaterThanOrEqualTo(needed);
+  }, [breakthroughCost, qi]);
+
   const canBreakthrough = hasEnoughQi && hasRequiredToken;
 
+  const breathMultipliers = getBreathModeMultipliers(breathMode);
+  const baseRate = D(qiPerSecond || '0');
+  const effectiveRate = baseRate.times(breathMultipliers.qiRateMult);
+  const rateTooltip = [
+    `Base: ${formatNumber(baseRate.toNumber())} Qi/s`,
+    `Breath cycle: x${breathMultipliers.qiRateMult} (${breathMode})`,
+    'Heart Law bonus: x1 (future tuning)',
+  ].join('\n');
+
+  const activityLabel = activeActivity ? ACTIVITY_LABELS[activeActivity.type] ?? 'Busy' : 'Idle';
+  const isCultivating = activeActivity?.type === 'meditate';
+  const blockingActivity = activeActivity && activeActivity.type !== 'meditate';
+
+  const toggleCultivation = useCallback(() => {
+    if (blockingActivity) return;
+    if (isCultivating) {
+      stopActivity('cultivation_stop');
+    } else {
+      startActivity('meditate', undefined, 'cultivation_start');
+    }
+  }, [blockingActivity, isCultivating, startActivity, stopActivity]);
+
+  const headerRate = effectiveRate.toString();
+  const offlineHoursCap = Math.round(MAX_OFFLINE_MS / (1000 * 60 * 60));
+
+  const heartLawName = selectedHeartLawId
+    ? heartLawsById[selectedHeartLawId]?.name ?? selectedHeartLawId
+    : 'No Heart Law selected';
+
+  const comprehensionPct = nextRequirement > 0 ? Math.min(100, (comprehension / nextRequirement) * 100) : 100;
+
+  const realmStageLabel = isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`;
+
+  const insightCard = insight && insight.pending ? <InsightMomentPanel insight={insight} now={now} /> : null;
+
   const hasPerkForRealm = useCallback(
-    (realmIndex: number) =>
-      pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
-    [pathPerks]
+    (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
+    [pathPerks],
   );
 
-  // Show path selection when player reaches Foundation (realm 1) and hasn't chosen
   useEffect(() => {
     if (realm.index >= 1 && !selectedPath) {
       showPathSelection();
     }
   }, [realm.index, selectedPath, showPathSelection]);
 
-  // Show perk selection when entering a new major realm without a perk for it
   useEffect(() => {
     if (!selectedPath || realm.index < 1) return;
-
     const hasRealmPerk = hasPerkForRealm(realm.index);
     const availablePerks = getAvailablePerks(selectedPath, realm.index);
-    const perkModalAlreadyOpen =
-      showPerkSelectionModal && perkSelectionRealm === realm.index;
-
+    const perkModalAlreadyOpen = showPerkSelectionModal && perkSelectionRealm === realm.index;
     if (availablePerks.length > 0 && !hasRealmPerk && !perkModalAlreadyOpen) {
       showPerkSelection(realm.index);
     }
@@ -141,169 +305,159 @@ export function CultivateScreen() {
     perkSelectionRealm,
   ]);
 
-  useEffect(() => {
-    setHeaderTitles('Cultivation Chamber', 'Meditate and gather Qi to advance your cultivation');
-  }, [setHeaderTitles]);
-
-  // Handle breakthrough button click
-  const handleBreakthrough = () => {
-    if (!canBreakthrough) return;
-    breakthrough();
-  };
-
-  const handleOpenTechniqueLibrary = useCallback(() => {
-    clearTechniqueLibraryIntent();
-    setActiveTab('techniques');
-  }, [clearTechniqueLibraryIntent, setActiveTab]);
-
   return (
-    <div className={'cultivateScreenRoot'}>
-      <div className={'cultivateScreenGrid'}>
-        <div className={'cultivateScreenLeftColumn'}>
+    <div className="cultivationTab">
+      <CultivationTabHeaderBar
+        realmLabel={realmLabel}
+        substage={realm.substage}
+        qi={qi}
+        qiPerSecond={headerRate}
+        rateTooltip={rateTooltip}
+        activityLabel={activityLabel}
+        stability={stability}
+        stabilityCap={stabilityCap}
+      />
 
-          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenLibraryCta'}`}>
-            <div className={'cultivateScreenLibraryText'}>
-              <div className={'cultivateScreenLibraryTitle'}>Technique Library</div>
-              <div className={'cultivateScreenLibrarySubtext'}>
-                Equip techniques for combat. Buy Manuals in towns, then Study them to learn.
+      <div className="cultivationGrid">
+        <div className="cultivationColumn cultivationColumn--left">
+          <SectionShell title="Cultivate" subtitle="Control your breath and focus">
+            <div className="cultivationPanel">
+              <div className="panelHeader">
+                <div>
+                  <div className="panelTitle">Cultivate</div>
+                  <div className="panelSub">Foreground activity required to gain Insight and Study</div>
+                </div>
+                <button
+                  type="button"
+                  className={`primaryButton ${isCultivating ? 'primaryButton--secondary' : ''}`}
+                  onClick={toggleCultivation}
+                  disabled={Boolean(blockingActivity)}
+                  title={blockingActivity ? 'Stop your current activity to cultivate' : undefined}
+                >
+                  {isCultivating ? 'Stop Cultivating' : 'Start Cultivating'}
+                </button>
               </div>
-            </div>
-            <button className={'cultivateScreenLibraryButton'} onClick={handleOpenTechniqueLibrary}>
-              Open Technique Library
-            </button>
-          </div>
-
-          <div className="cultivator-container">
-            <img className='cultivator' src={cultivatorImage} />
-            <img className='dantian' src={dantianImage} />
-          </div>
-
-          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-
-            {/* Qi Stats */}
-            <div className={'cultivateScreenStatsGrid'}>
-
-            </div>
-          </div>
-
-          {/* Breakthrough Progress */}
-          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-            <div className={'cultivateScreenProgressHeader'}>
-              <div className={'cultivateScreenProgressTitle'}>{currentRealm.name}</div>
-              <div className={'cultivateScreenProgressSubtitle'}>
-                {isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`}
+              {blockingActivity ? (
+                <div className="inlineMessage inlineMessage--warning">
+                  Currently {activityLabel.toLowerCase()}. Stop that activity to resume cultivation.
+                </div>
+              ) : null}
+              <div className="breathSection">
+                <div className="breathSectionLabel">Breath Cycle</div>
+                <BreathCycleDial value={breathMode} onChange={setBreathMode} />
               </div>
+              <div className="offlineHint">Offline progress capped at ~{offlineHoursCap}h.</div>
             </div>
+          </SectionShell>
 
-
-            <div className={'cultivateScreenProgressBlock'}>
-              <span className={'cultivateScreenProgressLabel'}>Breakthrough Progress</span>
-              <span className={'cultivateScreenProgressValue'}>
-                {formatNumber(qi)} / {formatNumber(breakthroughCost)}
-              </span>
-            </div>
-
-            <div className="progress-bar">
-              <OrnateProgressBar current={qi} max={breakthroughCost} label="Breakthrough Progress" />
-              <img className='bar-container' src={longBar} />
-            </div>
-
-            {requiredGateItem && (
-              <div className={'cultivateScreenGateRequirement'}>
-                {hasRequiredToken ? (
-                  <span className={'cultivateScreenGateReady'}>
-                    {requiredGateItemDefinition?.name || 'Required Item'} ready ({gateItemCount}/1)
-                  </span>
-                ) : (
-                  <span className={'cultivateScreenGateMissing'}>
-                    Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
-                  </span>
-                )}
-                <p className={'cultivateScreenGateNote'}>
-                  Obtained from key bosses and trials. One will be consumed when breaking through to the
-                  next realm.
-                </p>
+          <SectionShell title="Progress" subtitle="Qi, breakthroughs, and verses">
+            <div className="cultivationPanel">
+              <div className="panelHeader">
+                <div>
+                  <div className="panelTitle">Breakthrough Progress</div>
+                  <div className="panelSub">{realmStageLabel}</div>
+                </div>
+                <button
+                  type="button"
+                  className="primaryButton"
+                  onClick={() => canBreakthrough && breakthrough()}
+                  disabled={!canBreakthrough}
+                  title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+                >
+                  Attempt Breakthrough
+                </button>
               </div>
-            )}
-
-            {/* Breakthrough Button */}
-            <div className="bbdiv">
-              <img className='bback' src={fancyBlock} />
-              <button
-              onClick={handleBreakthrough}
-              disabled={!canBreakthrough}
-              className={'button-standard cultivateScreenBreakthroughButton'}
-            >
-              {canBreakthrough
-                ? 'Break Through!'
-                : !hasRequiredToken && requiredGateItem
-                  ? `Requires ${requiredGateItemDefinition?.name || 'Gate Item'}`
-                  : 'Insufficient Qi'}
-            </button>
-            </div>
-            
-          </div>
-        </div>
-
-        {/* RIGHT: Focus & Upgrades */}
-        <div className={'cultivateScreenRightColumn right-column'}>
-          {/* Focus Mode Selector */}
-          <div className={`cultivateScreenPanel csp-right`}>
-            <h3 className={'cultivateScreenPanelHeader'}>Cultivation Focus</h3>
-
-            <div className={'cultivateScreenFocusList'}>
-              {(['balanced', 'body', 'spirit'] as const).map((mode) => {
-                const isActive = focusMode === mode;
-                return (
-                  <button
-                    key={mode}
-                    onClick={() => setFocusMode(mode)}
-                    className={` cultivateScreenFocusButton ${isActive ? 'cultivateScreenFocusButtonActive' : ''}`}
-                  >
-                    <div className={'cultivateScreenFocusTitle'}>{mode}</div>
-                    <div className={'cultivateScreenFocusDescription'}>
-                      {mode === 'balanced' && 'Equal focus on all aspects'}
-                      {mode === 'body' && 'Enhance physical cultivation'}
-                      {mode === 'spirit' && 'Focus on spiritual energy'}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Cultivation Info */}
-          <div className={`${'cultivateScreenPanel'} ${'cultivateScreenPanelDark'}`}>
-            <h3 className={'cultivateScreenPanelHeader'}>Cultivation Info</h3>
-
-            <div className={'cultivateScreenInfoList'}>
-              <div>
-                <div className={'cultivateScreenInfoLabel'}>Current Path</div>
-                <div className={'cultivateScreenInfoValue'}>{useGameStore.getState().selectedPath || 'None'}</div>
-              </div>
-              <div>
-                <div className={'cultivateScreenInfoLabel'}>Total Auras</div>
-                <div className={`${'cultivateScreenInfoValue'} ${'cultivateScreenInfoHighlight'}`}>
-                  {formatNumber(useGameStore.getState().totalAuras)}
+              <div className="progressRow">
+                <div>
+                  <div className="progressLabel">Qi</div>
+                  <div className="progressValue">
+                    {formatNumber(qi)} / {formatNumber(breakthroughCost)}
+                  </div>
+                </div>
+                <div className={`progressStatus ${canBreakthrough ? 'progressStatus--ready' : ''}`}>
+                  {canBreakthrough ? 'Ready' : 'Not ready'}
                 </div>
               </div>
-              <div className={'cultivateScreenStatCard'}>
-                <div className={'cultivateScreenStatLabel'}>Current Qi</div>
-                <div className={'cultivateScreenStatValue'}>{formatNumber(qi)}</div>
+              <QiProgressBar current={qi} required={breakthroughCost} />
+              {requiredGateItem ? (
+                <div className="inlineMessage inlineMessage--muted">
+                  {hasRequiredToken ? (
+                    <span>
+                      {requiredGateItemDefinition?.name || 'Gate Item'} ready ({gateItemCount}/1)
+                    </span>
+                  ) : (
+                    <span>
+                      Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
+                    </span>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="cultivationPanel">
+              <div className="panelHeader">
+                <div>
+                  <div className="panelTitle">Verse Progress</div>
+                  <div className="panelSub">
+                    Verse {roman[chapter - 1] ?? chapter} — {heartLawName}
+                  </div>
+                </div>
               </div>
-              <div className={'cultivateScreenStatCard'}>
-                <div className={'cultivateScreenStatLabel'}>Qi per Second</div>
-                <div className={'cultivateScreenStatValue'}>{formatNumber(qiPerSecond)}</div>
+              <div className="progressRow">
+                <div>
+                  <div className="progressLabel">Comprehension</div>
+                  <div className="progressValue">{comprehension.toFixed(1)} / {nextRequirement}</div>
+                </div>
+                <div className="progressStatus">{comprehensionPct.toFixed(1)}%</div>
+              </div>
+              <div className="qiProgressBar">
+                <div className="qiProgressFill" style={{ width: `${Math.min(100, comprehensionPct)}%` }} />
+                <div className="qiProgressText">Verse {roman[chapter - 1] ?? chapter}</div>
               </div>
             </div>
-          </div>
+          </SectionShell>
+
+          {insightCard ? (
+            <SectionShell title="Insight" subtitle="Respond before it fades">
+              {insightCard}
+            </SectionShell>
+          ) : null}
+        </div>
+
+        <div className="cultivationColumn cultivationColumn--right">
+          <SectionShell title="Heart Law" subtitle="Meditation Hall">
+            <div className="cultivationPanel">
+              <div className="panelHeader">
+                <div>
+                  <div className="panelTitle">{heartLawName}</div>
+                  <div className="panelSub">Verse {roman[chapter - 1] ?? chapter}</div>
+                </div>
+              </div>
+              <div className="inlineMessage inlineMessage--muted">
+                Detailed Heart Law management lives in the Cultivation tab. Meditation Hall acts as a shortcut.
+              </div>
+            </div>
+          </SectionShell>
+
+          <SectionShell title="Study" subtitle="Optional trickle while cultivating">
+            <div className="cultivationPanel">
+              <div className="panelHeader">
+                <div>
+                  <div className="panelTitle">Study Mode</div>
+                  <div className="panelSub">Enabled during cultivation</div>
+                </div>
+              </div>
+              <div className="inlineMessage inlineMessage--muted">
+                {studyEnabled && studyTechniqueId
+                  ? `Studying ${studyTechniqueId}`
+                  : 'Study mode is currently disabled.'}
+              </div>
+            </div>
+          </SectionShell>
         </div>
       </div>
 
-      {/* Path Selection Modal */}
       {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
-
-      {/* Perk Selection Modal */}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
       )}
