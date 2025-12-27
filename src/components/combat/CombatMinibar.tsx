@@ -100,6 +100,7 @@ export function CombatMinibar() {
     settings: state.settings,
     combatTheaterOpen: state.combatTheaterOpen,
     toggleCombatTheater: state.toggleCombatTheater,
+    closeCombatTheater: state.closeCombatTheater,
     toggleCombatMinibarExpanded: state.toggleCombatMinibarExpanded,
   }));
 
@@ -194,6 +195,8 @@ export function CombatMinibar() {
       useActivityStore.getState().stopActivity('combat-minibar-stop');
       useCombatStore.getState().exitCombat();
     }
+
+    ui.closeCombatTheater();
   };
 
   const expandedContent = (
