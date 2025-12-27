@@ -31,6 +31,8 @@ export interface UISettingsState {
   showCombatLog: boolean;
   requirePrestigeConfirm: boolean;
   showSystemStatusPanel: boolean;
+   showCombatMinibar: boolean;
+   combatMinibarExpanded: boolean;
 }
 
 interface UIStateBase {
@@ -82,6 +84,9 @@ interface UIStateBase {
   tooltipVisible: boolean;
   tooltipContent: string;
   tooltipPosition: { x: number; y: number };
+
+  // Combat overlays
+  combatTheaterOpen: boolean;
 }
 
 /**
@@ -109,6 +114,10 @@ export interface UIState extends UIStateBase {
   setLastSaveAt: (timestamp: number | null) => void;
   setLastOfflineSummary: (summary: OfflineCatchupResult['summary']) => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
+  toggleCombatMinibarExpanded: () => void;
+  openCombatTheater: () => void;
+  closeCombatTheater: () => void;
+  toggleCombatTheater: () => void;
   openManualSatchel: () => void;
   closeManualSatchel: () => void;
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
@@ -154,12 +163,15 @@ const INITIAL_UI_STATE: UIStateBase = {
     showCombatLog: true,
     requirePrestigeConfirm: true,
     showSystemStatusPanel: false,
+    showCombatMinibar: true,
+    combatMinibarExpanded: true,
   },
   lastSaveAt: null,
   lastOfflineSummary: null,
   tooltipVisible: false,
   tooltipContent: '',
   tooltipPosition: { x: 0, y: 0 },
+  combatTheaterOpen: false,
 };
 
 /**
@@ -398,6 +410,30 @@ export const useUIStore = create<UIState>()(
     setSettings: (partial: Partial<UISettingsState>) => {
       set((state) => {
         state.settings = { ...state.settings, ...partial };
+      });
+    },
+
+    toggleCombatMinibarExpanded: () => {
+      set((state) => {
+        state.settings.combatMinibarExpanded = !state.settings.combatMinibarExpanded;
+      });
+    },
+
+    openCombatTheater: () => {
+      set((state) => {
+        state.combatTheaterOpen = true;
+      });
+    },
+
+    closeCombatTheater: () => {
+      set((state) => {
+        state.combatTheaterOpen = false;
+      });
+    },
+
+    toggleCombatTheater: () => {
+      set((state) => {
+        state.combatTheaterOpen = !state.combatTheaterOpen;
       });
     },
 

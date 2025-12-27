@@ -58,13 +58,13 @@ function getHeartLawCombatMultiplier(): number {
  * Defense constant for damage calculation
  * Damage = ATK * (1 - DEF/(DEF + K))
  */
-const DEFENSE_CONSTANT_K = 100;
+export const DEFENSE_CONSTANT_K = 100;
 
 /**
  * Combat timing constants (in milliseconds)
  */
-const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
-const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
+export const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
+export const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
 const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
 const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
 const MAX_TECHNIQUE_LOG_ENTRIES = 50;
