@@ -585,6 +585,115 @@ export interface LootDrop {
   maxAmount: number;
 }
 
+export type CombatEventType =
+  | 'HIT'
+  | 'SKILL_CAST'
+  | 'STATUS_APPLIED'
+  | 'STATUS_TICK'
+  | 'SHIELD_GAINED'
+  | 'HEAL'
+  | 'ENEMY_SPECIAL_TELEGRAPH'
+  | 'LOOT_DROP'
+  | 'BOSS_SPAWN'
+  | 'BOSS_DEFEATED'
+  | 'PLAYER_DEFEATED';
+
+export type CombatEventSource = 'player' | 'enemy' | 'system';
+export type CombatEventTarget = 'player' | 'enemy';
+
+export type CombatEvent =
+  | {
+      id: string;
+      at: number;
+      type: 'HIT';
+      source: CombatEventSource;
+      target: CombatEventTarget;
+      amount: string;
+      isCrit: boolean;
+      techniqueId?: string;
+      absorbed?: string;
+      kind?: 'basic' | 'technique' | 'aura' | 'boss_ultimate';
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'SKILL_CAST';
+      techniqueId: string;
+      source: 'ai' | 'manual' | 'system';
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'STATUS_APPLIED';
+      statusId: string;
+      stacks: number;
+      durationSec?: number;
+      refreshed?: boolean;
+      techniqueId?: string;
+      target?: CombatEventTarget;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'STATUS_TICK';
+      statusId: string;
+      amount: string;
+      target?: CombatEventTarget;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'SHIELD_GAINED';
+      amount: string;
+      total?: string;
+      durationSec?: number;
+      techniqueId?: string;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'HEAL';
+      amount: string;
+      techniqueId?: string;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'ENEMY_SPECIAL_TELEGRAPH';
+      specialId: string;
+      resolvesInMs: number;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'LOOT_DROP';
+      itemId: string;
+      qty: number;
+      rarity: string;
+      reason?: string;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'BOSS_SPAWN';
+      enemyId: string;
+      enemyName?: string;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'BOSS_DEFEATED';
+      enemyId: string;
+      enemyName?: string;
+    }
+  | {
+      id: string;
+      at: number;
+      type: 'PLAYER_DEFEATED';
+      enemyId?: string;
+      enemyName?: string;
+    };
+
 /**
  * Combat log entry
  */
@@ -695,6 +804,7 @@ export interface CombatState {
   combatBuffs: CombatBuff[];
   combatResources: CombatResources;
   techniqueLog: CombatTechniqueLogEntry[];
+  events: CombatEvent[];
 
   // Boss mechanics
   isBoss: boolean;
@@ -717,6 +827,8 @@ export interface CombatState {
   canCastTechnique: (techId: string, now?: number) => boolean;
   castTechnique: (techId: string, now?: number, source?: 'ai' | 'manual') => boolean;
   addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
+  pushEvent: (event: CombatEvent) => void;
+  clearEvents: () => void;
   setAutoAttack: (enabled: boolean) => void;
   setAutoCombatAI: (enabled: boolean) => void;
   resetCombat: () => void;

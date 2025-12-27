@@ -10,6 +10,7 @@ import type {
   CombatResources,
   CombatShield,
   CombatTechniqueLogEntry,
+  CombatEvent,
 } from '../types';
 import type { TechniqueDef } from '../content';
 import type { OutskirtsDef, OutskirtsDropsConfig } from '../content';
@@ -66,6 +67,7 @@ const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
 const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
 const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
 const MAX_TECHNIQUE_LOG_ENTRIES = 50;
+const MAX_COMBAT_EVENT_ENTRIES = 200;
 const DEFAULT_SHIELD_DURATION_SEC = 12;
 const DEFAULT_BUFF_DURATION_SEC = 10;
 const QI_REGEN_PER_SEC_PCT = 0.02;
@@ -93,6 +95,8 @@ function randomFromList<T>(list: T[]): T | null {
   const index = Math.floor(Math.random() * list.length);
   return list[index] ?? null;
 }
+
+const makeCombatEventId = (at: number) => `${at}-${Math.random().toString(16).slice(2, 10)}`;
 
 function valueByIndex<T>(
   source: Record<number, T> | T[] | undefined,
@@ -440,6 +444,7 @@ const createInitialCombatState = () => ({
   combatBuffs: [] as CombatBuff[],
   combatResources: buildCombatResources(),
   techniqueLog: [] as CombatTechniqueLogEntry[],
+  events: [] as CombatEvent[],
   isBoss: false,
   combatStartTime: 0,
   enemyMechanics: [] as EnemyMechanic[],
@@ -732,6 +737,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         // Clear combat log
         state.combatLog = [];
+        state.events = [];
 
         // Reset timing
         state.lastAttackTime = now;
@@ -855,6 +861,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         // Clear combat log
         state.combatLog = [];
+        state.events = [];
 
         // Reset timing
         state.lastAttackTime = now;
@@ -916,6 +923,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatBuffs = [];
         state.combatResources = buildCombatResources();
         state.techniqueLog = [];
+        state.events = [];
         state.isBoss = false;
         state.combatStartTime = 0;
         state.enemyMechanics = [];
@@ -1806,6 +1814,25 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (state.combatLog.length > MAX_COMBAT_LOG_ENTRIES) {
           state.combatLog.shift();
         }
+      });
+    },
+
+    pushEvent: (event: CombatEvent) => {
+      const at = event.at ?? Date.now();
+      const entry: CombatEvent = { ...event, at, id: event.id ?? makeCombatEventId(at) };
+
+      set((state) => {
+        state.events.push(entry);
+        const overflow = state.events.length - MAX_COMBAT_EVENT_ENTRIES;
+        if (overflow > 0) {
+          state.events.splice(0, overflow);
+        }
+      });
+    },
+
+    clearEvents: () => {
+      set((state) => {
+        state.events = [];
       });
     },
 
