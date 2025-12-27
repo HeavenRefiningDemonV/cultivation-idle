@@ -1,4 +1,4 @@
-import { CombatEvent } from '../../types';
+import type { CombatEvent } from '../../types';
 import { D } from '../../utils/numbers';
 
 export interface RollingDpsMetrics {
