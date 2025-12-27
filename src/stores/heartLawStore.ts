@@ -4,6 +4,7 @@ import type { HeartLawDef } from '../content';
 import { GameEvents } from '../services/events/GameEvents';
 import type { BreathMode } from '../types';
 import { useContentStore } from './contentStore';
+import { useUIStore } from './uiStore';
 
 export type ComprehensionSource = 'meditation' | 'outskirtsBoss' | 'trialClear' | 'ruinsClear';
 
@@ -57,6 +58,7 @@ export const useHeartLawStore = create<HeartLawState>()(
     selectHeartLaw: (id) => {
       if (!get().isUnlocked(id)) return;
       if (get().selectedHeartLawId === id) return;
+      useUIStore.getState().setLifeStartWizardContext(id);
       set((state) => {
         state.selectedHeartLawId = id;
         state.chapter = 1;
@@ -137,6 +139,7 @@ export const useHeartLawStore = create<HeartLawState>()(
     },
 
     resetForNewLife: () => {
+      const lastSelected = get().selectedHeartLawId;
       set((state) => {
         state.selectedHeartLawId = null;
         state.chapter = 1;
@@ -145,6 +148,9 @@ export const useHeartLawStore = create<HeartLawState>()(
         state.studyTechniqueId = null;
         state.lastInsightAt = null;
       });
+      if (lastSelected) {
+        useUIStore.getState().setLifeStartWizardContext(lastSelected);
+      }
       GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: null } });
     },
   })),

@@ -69,6 +69,7 @@ interface UIStateBase {
     | null
     | { type: 'equip'; techniqueId: string; preferredSlotType?: 'active' | 'passive' | 'ultimate' };
   techniqueFocusRequest: { techId: string; action?: 'open' | 'upgradeRank' | 'rerollTraits' } | null;
+  lifeStartWizardContext: { lastHeartLawId: string | null };
 
   // UI Settings
   settings: UISettingsState;
@@ -123,6 +124,8 @@ export interface UIState extends UIStateBase {
   ) => void;
   clearTechniqueFocusRequest: () => void;
   clearTechniqueLibraryIntent: () => void;
+  setLifeStartWizardContext: (lastHeartLawId: string | null) => void;
+  clearLifeStartWizardContext: () => void;
   hardResetUI: () => void;
 }
 
@@ -145,6 +148,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   techniqueLearnedPayload: null,
   techniqueLibraryIntent: null,
   techniqueFocusRequest: null,
+  lifeStartWizardContext: { lastHeartLawId: null },
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -446,6 +450,18 @@ export const useUIStore = create<UIState>()(
     clearTechniqueLibraryIntent: () => {
       set((state) => {
         state.techniqueLibraryIntent = null;
+      });
+    },
+
+    setLifeStartWizardContext: (lastHeartLawId) => {
+      set((state) => {
+        state.lifeStartWizardContext = { lastHeartLawId };
+      });
+    },
+
+    clearLifeStartWizardContext: () => {
+      set((state) => {
+        state.lifeStartWizardContext = { lastHeartLawId: null };
       });
     },
 
