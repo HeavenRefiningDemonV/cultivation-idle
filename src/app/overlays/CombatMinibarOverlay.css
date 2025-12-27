@@ -1,0 +1,14 @@
+.combatMinibarOverlay {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1100;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.combatMinibarOverlay > * {
+  pointer-events: auto;
+}
