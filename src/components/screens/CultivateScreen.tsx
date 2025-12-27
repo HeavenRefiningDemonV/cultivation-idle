@@ -14,6 +14,7 @@ import { formatNumber, D } from '../../utils/numbers';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
+import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel';
 import './CultivateScreen.scss';
 
 const BREATH_COPY: Record<BreathMode, string> = {
@@ -426,17 +427,7 @@ export function CultivateScreen() {
 
         <div className="cultivationColumn cultivationColumn--right">
           <SectionShell title="Heart Law" subtitle="Meditation Hall">
-            <div className="cultivationPanel">
-              <div className="panelHeader">
-                <div>
-                  <div className="panelTitle">{heartLawName}</div>
-                  <div className="panelSub">Verse {roman[chapter - 1] ?? chapter}</div>
-                </div>
-              </div>
-              <div className="inlineMessage inlineMessage--muted">
-                Detailed Heart Law management lives in the Cultivation tab. Meditation Hall acts as a shortcut.
-              </div>
-            </div>
+            <HeartLawPanel />
           </SectionShell>
 
           <SectionShell title="Study" subtitle="Optional trickle while cultivating">
