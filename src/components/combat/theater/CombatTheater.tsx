@@ -8,6 +8,9 @@ import { computeCombatSafety, hpPercent } from '../../../systems/combat/minibarM
 import { formatNumber, D } from '../../../utils/numbers';
 import { CombatCanvas } from '../CombatCanvas';
 import { TechniqueStrip } from './TechniqueStrip';
+import { FightIntelPanel } from './FightIntelPanel';
+import { LootTicker } from './LootTicker';
+import { StatusEffectRow } from './StatusEffectRow';
 import './CombatTheater.scss';
 
 function formatActivityLabel(type: string | null | undefined): string {
@@ -158,17 +161,18 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
         <div className="combat-theater__subheader">{activityLabel}</div>
       </div>
 
+      <StatusEffectRow />
+
       <div className="combat-theater__layout">
         <div className="combat-theater__column">
           <TechniqueStrip />
         </div>
         <div className="combat-theater__column combat-theater__column--secondary">
-          <div className="combat-theater__placeholder">
-            <div className="combat-theater__placeholder-title">Fight intel</div>
-            <div className="combat-theater__placeholder-text">More detailed battle insights coming soon.</div>
-          </div>
+          <FightIntelPanel />
         </div>
       </div>
+
+      <LootTicker />
 
       <div className="combat-theater__snapshot">
         <div className="combat-theater__bar">

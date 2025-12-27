@@ -120,6 +120,33 @@
   color: #f5f5f7;
 }
 
+.combat-theater__status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.combat-theater__status-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 6px 10px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #e7ebf3;
+}
+
+.combat-theater__status-chip-label {
+  font-weight: 700;
+}
+
+.combat-theater__status-chip-detail {
+  color: #c7ccd8;
+}
+
 .combat-theater__snapshot {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -252,4 +279,130 @@
 .combat-theater__events-empty {
   color: #c7ccd8;
   font-size: 0.95rem;
+}
+
+.combat-theater__loot-ticker {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.combat-theater__section-title {
+  font-weight: 700;
+}
+
+.combat-theater__loot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.combat-theater__loot-entry {
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.combat-theater__loot-entry--rare {
+  border-color: rgba(86, 154, 255, 0.5);
+  color: #c5dbff;
+}
+
+.combat-theater__loot-entry--epic {
+  border-color: rgba(175, 106, 255, 0.5);
+  color: #e3c8ff;
+}
+
+.combat-theater__loot-entry--legendary {
+  border-color: rgba(255, 197, 86, 0.5);
+  color: #ffe6b3;
+}
+
+.combat-theater__loot-empty {
+  color: #c7ccd8;
+}
+
+.combat-theater__intel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #e7ebf3;
+}
+
+.combat-theater__intel summary {
+  cursor: pointer;
+  font-weight: 700;
+  outline: none;
+  list-style: none;
+}
+
+.combat-theater__intel summary::-webkit-details-marker {
+  display: none;
+}
+
+.combat-theater__intel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.combat-theater__intel-block {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.combat-theater__intel-title {
+  font-weight: 700;
+}
+
+.combat-theater__intel-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.combat-theater__safety-pill {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: fit-content;
+}
+
+.combat-theater__safety-pill--safe {
+  background: rgba(63, 191, 127, 0.12);
+  border-color: rgba(63, 191, 127, 0.35);
+}
+
+.combat-theater__safety-pill--risky {
+  background: rgba(255, 175, 64, 0.12);
+  border-color: rgba(255, 175, 64, 0.4);
+}
+
+.combat-theater__safety-pill--deadly {
+  background: rgba(255, 87, 87, 0.15);
+  border-color: rgba(255, 87, 87, 0.45);
+}
+
+.combat-theater__intel-reasons {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  color: #e7ebf3;
 }
