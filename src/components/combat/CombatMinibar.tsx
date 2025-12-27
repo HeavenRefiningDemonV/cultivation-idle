@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/shallow';
 import { COMBAT_ACTIVITY_TYPES } from '../../types/activity';
 import { useActivityStore } from '../../stores/activityStore';
 import { DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN, PLAYER_ATTACK_COOLDOWN, useCombatStore } from '../../stores/combatStore';
@@ -76,38 +77,37 @@ function LastEventChip({ text }: { text: string }) {
 
 export function CombatMinibar() {
   const activity = useActivityStore((state) => state.active);
-  const combat = useCombatStore((state) => ({
-    inCombat: state.inCombat,
-    currentEnemy: state.currentEnemy,
-    playerHP: state.playerHP,
-    playerMaxHP: state.playerMaxHP,
-    enemyHP: state.enemyHP,
-    enemyMaxHP: state.enemyMaxHP,
-    lastAttackTime: state.lastAttackTime,
-    lastEnemyAttackTime: state.lastEnemyAttackTime,
-    isBoss: state.isBoss,
-    combatLog: state.combatLog,
-    techniqueLog: state.techniqueLog,
-    combatShield: state.combatShield,
-    enemyMechanics: state.enemyMechanics,
-    activeAura: state.activeAura,
-  }));
-  const { absorptionShield, playerDef } = useGameStore((state) => ({
-    absorptionShield: state.absorptionShield,
-    playerDef: state.stats.def,
-  }));
-  const ui = useUIStore((state) => ({
-    settings: state.settings,
-    combatTheaterOpen: state.combatTheaterOpen,
-    toggleCombatTheater: state.toggleCombatTheater,
-    closeCombatTheater: state.closeCombatTheater,
-    toggleCombatMinibarExpanded: state.toggleCombatMinibarExpanded,
-  }));
+  const combat = useCombatStore(
+    useShallow((state) => ({
+      inCombat: state.inCombat,
+      currentEnemy: state.currentEnemy,
+      playerHP: state.playerHP,
+      playerMaxHP: state.playerMaxHP,
+      enemyHP: state.enemyHP,
+      enemyMaxHP: state.enemyMaxHP,
+      lastAttackTime: state.lastAttackTime,
+      lastEnemyAttackTime: state.lastEnemyAttackTime,
+      isBoss: state.isBoss,
+      combatLog: state.combatLog,
+      techniqueLog: state.techniqueLog,
+      combatShield: state.combatShield,
+      enemyMechanics: state.enemyMechanics,
+      activeAura: state.activeAura,
+    }))
+  );
+  const absorptionShield = useGameStore((state) => state.absorptionShield);
+  const playerDef = useGameStore((state) => state.stats.def);
+  const showCombatMinibar = useUIStore((state) => state.settings.showCombatMinibar);
+  const combatMinibarExpanded = useUIStore((state) => state.settings.combatMinibarExpanded);
+  const combatTheaterOpen = useUIStore((state) => state.combatTheaterOpen);
+  const toggleCombatTheater = useUIStore((state) => state.toggleCombatTheater);
+  const closeCombatTheater = useUIStore((state) => state.closeCombatTheater);
+  const toggleCombatMinibarExpanded = useUIStore((state) => state.toggleCombatMinibarExpanded);
 
   const [now, setNow] = useState(() => Date.now());
 
   const combatActivityActive = activity ? COMBAT_ACTIVITY_TYPES.includes(activity.type) : false;
-  const shouldShow = ui.settings.showCombatMinibar && (combatActivityActive || combat.inCombat);
+  const shouldShow = showCombatMinibar && (combatActivityActive || combat.inCombat);
 
   useEffect(() => {
     if (!shouldShow) return undefined;
@@ -196,7 +196,7 @@ export function CombatMinibar() {
       useCombatStore.getState().exitCombat();
     }
 
-    ui.closeCombatTheater();
+    closeCombatTheater();
   };
 
   const expandedContent = (
@@ -205,8 +205,8 @@ export function CombatMinibar() {
         <div className="combat-minibar__activity">{activityLabel}</div>
         <div className="combat-minibar__header-actions">
           <SafetyBadge tier={safety.tier} reasons={safety.reasons} />
-          <button className="button-standard" onClick={ui.toggleCombatTheater}>
-            {ui.combatTheaterOpen ? 'Close Theater' : 'Open Theater'}
+          <button className="button-standard" onClick={toggleCombatTheater}>
+            {combatTheaterOpen ? 'Close Theater' : 'Open Theater'}
           </button>
           <button className="button-standard button-standard--danger" onClick={stopActivity}>
             Stop
@@ -276,9 +276,9 @@ export function CombatMinibar() {
     </div>
   );
 
-  if (!ui.settings.combatMinibarExpanded) {
+  if (!combatMinibarExpanded) {
     return (
-      <div className="combat-minibar combat-minibar--collapsed" onClick={ui.toggleCombatMinibarExpanded}>
+      <div className="combat-minibar combat-minibar--collapsed" onClick={toggleCombatMinibarExpanded}>
         <div className="combat-minibar__collapsed-label">{activityLabel}</div>
         <div className="combat-minibar__collapsed-hp">HP {playerHpPct.toFixed(0)}%</div>
         <SafetyBadge tier={safety.tier} reasons={safety.reasons} />

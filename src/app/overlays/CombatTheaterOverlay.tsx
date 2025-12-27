@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../stores/activityStore';
 import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -22,34 +23,32 @@ function formatActivityLabel(type: string | null | undefined): string {
 
 export function CombatTheaterOverlay() {
   const activity = useActivityStore((state) => state.active);
-  const { settings, combatTheaterOpen, closeCombatTheater } = useUIStore((state) => ({
-    settings: state.settings,
-    combatTheaterOpen: state.combatTheaterOpen,
-    closeCombatTheater: state.closeCombatTheater,
-  }));
-  const combat = useCombatStore((state) => ({
-    currentEnemy: state.currentEnemy,
-    playerHP: state.playerHP,
-    playerMaxHP: state.playerMaxHP,
-    enemyHP: state.enemyHP,
-    enemyMaxHP: state.enemyMaxHP,
-    isBoss: state.isBoss,
-    enemyMechanics: state.enemyMechanics,
-    activeAura: state.activeAura,
-    combatShield: state.combatShield,
-    techniqueLog: state.techniqueLog,
-    inCombat: state.inCombat,
-  }));
-  const { absorptionShield, playerDef } = useGameStore((state) => ({
-    absorptionShield: state.absorptionShield,
-    playerDef: state.stats.def,
-  }));
+  const showCombatMinibar = useUIStore((state) => state.settings.showCombatMinibar);
+  const combatTheaterOpen = useUIStore((state) => state.combatTheaterOpen);
+  const closeCombatTheater = useUIStore((state) => state.closeCombatTheater);
+  const combat = useCombatStore(
+    useShallow((state) => ({
+      currentEnemy: state.currentEnemy,
+      playerHP: state.playerHP,
+      playerMaxHP: state.playerMaxHP,
+      enemyHP: state.enemyHP,
+      enemyMaxHP: state.enemyMaxHP,
+      isBoss: state.isBoss,
+      enemyMechanics: state.enemyMechanics,
+      activeAura: state.activeAura,
+      combatShield: state.combatShield,
+      techniqueLog: state.techniqueLog,
+      inCombat: state.inCombat,
+    }))
+  );
+  const absorptionShield = useGameStore((state) => state.absorptionShield);
+  const playerDef = useGameStore((state) => state.stats.def);
 
   useEffect(() => {
-    if (!settings.showCombatMinibar && combatTheaterOpen) {
+    if (!showCombatMinibar && combatTheaterOpen) {
       closeCombatTheater();
     }
-  }, [settings.showCombatMinibar, combatTheaterOpen, closeCombatTheater]);
+  }, [showCombatMinibar, combatTheaterOpen, closeCombatTheater]);
 
   const playerHpPct = hpPercent(combat.playerHP, combat.playerMaxHP);
   const enemyHpPct = hpPercent(combat.enemyHP, combat.enemyMaxHP);
@@ -104,7 +103,7 @@ export function CombatTheaterOverlay() {
       ));
   }, [combat.techniqueLog]);
 
-  if (!settings.showCombatMinibar || !combatTheaterOpen) {
+  if (!showCombatMinibar || !combatTheaterOpen) {
     return null;
   }
 
