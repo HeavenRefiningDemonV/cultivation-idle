@@ -846,7 +846,47 @@ function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): Craf
   }
   const cursor =
     isRecord(session.cursor) && typeof (session.cursor as any).stepIndex === 'number'
-      ? { stepIndex: (session.cursor as any).stepIndex as number }
+      ? {
+          stepIndex: (session.cursor as any).stepIndex as number,
+          stepStartedAt:
+            (session.cursor as any).stepStartedAt === undefined || typeof (session.cursor as any).stepStartedAt === 'number'
+              ? ((session.cursor as any).stepStartedAt as number | undefined)
+              : undefined,
+          stepEndsAt:
+            (session.cursor as any).stepEndsAt === undefined || typeof (session.cursor as any).stepEndsAt === 'number'
+              ? ((session.cursor as any).stepEndsAt as number | undefined)
+              : undefined,
+          heatSetting:
+            (session.cursor as any).heatSetting === undefined || typeof (session.cursor as any).heatSetting === 'number'
+              ? ((session.cursor as any).heatSetting as number | undefined)
+              : undefined,
+          impurities:
+            (session.cursor as any).impurities === undefined || typeof (session.cursor as any).impurities === 'number'
+              ? ((session.cursor as any).impurities as number | undefined)
+              : undefined,
+          scoreParts:
+            (session.cursor as any).scoreParts && typeof (session.cursor as any).scoreParts === 'object'
+              ? { ...(session.cursor as any).scoreParts }
+              : undefined,
+          orderMistakes:
+            (session.cursor as any).orderMistakes === undefined || typeof (session.cursor as any).orderMistakes === 'number'
+              ? ((session.cursor as any).orderMistakes as number | undefined)
+              : undefined,
+          backgroundResolveAt:
+            (session.cursor as any).backgroundResolveAt === undefined || (session.cursor as any).backgroundResolveAt === null
+              ? ((session.cursor as any).backgroundResolveAt as number | null | undefined)
+              : typeof (session.cursor as any).backgroundResolveAt === 'number'
+                ? ((session.cursor as any).backgroundResolveAt as number)
+                : null,
+          backgroundReason:
+            (session.cursor as any).backgroundReason === undefined || (session.cursor as any).backgroundReason === null
+              ? ((session.cursor as any).backgroundReason as CraftSession['cursor']['backgroundReason'])
+              : (session.cursor as any).backgroundReason === 'closed' ||
+                  (session.cursor as any).backgroundReason === 'navigated' ||
+                  (session.cursor as any).backgroundReason === 'crashed'
+                ? ((session.cursor as any).backgroundReason as CraftSession['cursor']['backgroundReason'])
+                : null,
+        }
       : { stepIndex: 0 };
   const payment = sanitizeCraftPayment(session.payment);
   const prompts = Array.isArray((session as any).prompts)

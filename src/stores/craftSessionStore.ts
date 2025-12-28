@@ -8,6 +8,7 @@ import type {
   CraftPromptStatus,
   CraftScript,
   CraftSession,
+  CraftStep,
   CraftSessionPayment,
   CraftSessionSaveState,
   CraftStation,
@@ -23,6 +24,7 @@ import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftS
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
+import { useUIStore } from './uiStore';
 import { multiply } from '../utils/numbers';
 
 interface StartSessionArgs {
@@ -39,6 +41,10 @@ interface CraftSessionStoreState extends CraftSessionSaveState {
   abortSession: (now?: number) => { ok: boolean; reason?: string };
   updateActiveSessionPrompts: (now?: number) => CraftPromptState[];
   completePrompt: (promptId: string, now?: number) => { ok: boolean; reason?: string };
+  setStepStartedNow: (now?: number) => void;
+  advanceStep: (now?: number) => void;
+  markBackgroundResolving: (reason: 'closed' | 'navigated' | 'crashed') => void;
+  tick: (now?: number) => void;
   claimActiveSession: (
     now?: number,
   ) =>
@@ -76,6 +82,24 @@ const calculateAlchemyDurationMs = (timeSec: number | undefined, qty: number): n
 const calculateForgeDurationMs = (timeSec: number | undefined, qty: number): number => {
   const duration = typeof timeSec === 'number' && Number.isFinite(timeSec) ? timeSec : 0;
   return Math.max(0, Math.floor(duration * qty * 1000));
+};
+
+const getStepDurationMs = (step: CraftStep): number | undefined => {
+  switch (step.type) {
+    case 'HOLD_HEAT':
+      return step.durationMs;
+    case 'TEMPER':
+      return step.durationMs;
+    case 'SEAL_LID':
+      return step.windowMs;
+    case 'HEAT_TO':
+    case 'ADD_INGREDIENT':
+    case 'HAMMER':
+    case 'QUENCH':
+    case 'FINISH':
+    default:
+      return undefined;
+  }
 };
 
 const sanitizePromptState = (raw: unknown): CraftPromptState | null => {
@@ -119,6 +143,14 @@ const cloneScript = (script: CraftScript): CraftScript => ({
   ...script,
   steps: script.steps.map((step) => ({ ...step })),
 });
+
+const computeBaselineResolveAt = (session: CraftSession): number => {
+  const baselineDurationMs = Math.max(
+    0,
+    Math.floor(((session.script.baselineTimeSec ?? (session.endsAt - session.startedAt) / 1000) as number) * 1000),
+  );
+  return session.createdAt + baselineDurationMs;
+};
 
 const buildCurrencyCosts = (
   rawCosts: Partial<Record<'gold' | 'spiritStones' | 'merit', number | string>> | undefined,
@@ -183,7 +215,47 @@ const sanitizeActiveSession = (raw: unknown): CraftSession | null => {
     typeof record.cursor === 'object' &&
     record.cursor !== null &&
     typeof (record.cursor as any).stepIndex === 'number'
-      ? { stepIndex: (record.cursor as any).stepIndex as number }
+      ? {
+          stepIndex: (record.cursor as any).stepIndex as number,
+          stepStartedAt:
+            (record.cursor as any).stepStartedAt === undefined || typeof (record.cursor as any).stepStartedAt === 'number'
+              ? ((record.cursor as any).stepStartedAt as number | undefined)
+              : undefined,
+          stepEndsAt:
+            (record.cursor as any).stepEndsAt === undefined || typeof (record.cursor as any).stepEndsAt === 'number'
+              ? ((record.cursor as any).stepEndsAt as number | undefined)
+              : undefined,
+          heatSetting:
+            (record.cursor as any).heatSetting === undefined || typeof (record.cursor as any).heatSetting === 'number'
+              ? ((record.cursor as any).heatSetting as number | undefined)
+              : undefined,
+          impurities:
+            (record.cursor as any).impurities === undefined || typeof (record.cursor as any).impurities === 'number'
+              ? ((record.cursor as any).impurities as number | undefined)
+              : undefined,
+          scoreParts:
+            (record.cursor as any).scoreParts && typeof (record.cursor as any).scoreParts === 'object'
+              ? { ...(record.cursor as any).scoreParts }
+              : undefined,
+          orderMistakes:
+            (record.cursor as any).orderMistakes === undefined || typeof (record.cursor as any).orderMistakes === 'number'
+              ? ((record.cursor as any).orderMistakes as number | undefined)
+              : undefined,
+          backgroundResolveAt:
+            (record.cursor as any).backgroundResolveAt === undefined || (record.cursor as any).backgroundResolveAt === null
+              ? ((record.cursor as any).backgroundResolveAt as number | null | undefined)
+              : typeof (record.cursor as any).backgroundResolveAt === 'number'
+                ? ((record.cursor as any).backgroundResolveAt as number)
+                : null,
+          backgroundReason:
+            (record.cursor as any).backgroundReason === undefined || (record.cursor as any).backgroundReason === null
+              ? ((record.cursor as any).backgroundReason as CraftSession['cursor']['backgroundReason'])
+              : (record.cursor as any).backgroundReason === 'closed' ||
+                  (record.cursor as any).backgroundReason === 'navigated' ||
+                  (record.cursor as any).backgroundReason === 'crashed'
+                ? ((record.cursor as any).backgroundReason as CraftSession['cursor']['backgroundReason'])
+                : null,
+        }
       : { stepIndex: 0 };
 
   const prompts = Array.isArray((record as any).prompts)
@@ -215,8 +287,46 @@ export const createDefaultCraftSessionState = (): CraftSessionSaveState => ({
 });
 
 export const useCraftSessionStore = create<CraftSessionStoreState>()(
-  immer((set, get) => ({
-    ...createDefaultCraftSessionState(),
+  immer((set, get) => {
+    const resolveSessionToBaseline = (active: CraftSession, now: number) => {
+      const settledPrompts = advancePromptStates(active.prompts ?? [], now);
+      if (active.station === 'alchemy') {
+        const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === active.sourceId);
+        if (!recipe) return;
+        const outputs = recipe.outputs ?? {};
+        const baseItems = Object.entries(outputs)
+          .map(([itemId, baseQty]) => {
+            const perJob = Math.floor(Number(baseQty));
+            if (!Number.isFinite(perJob) || perJob <= 0) return null;
+            return { itemId, qty: perJob * active.qty };
+          })
+          .filter((entry): entry is { itemId: string; qty: number } => Boolean(entry));
+
+        if (baseItems.length > 0) {
+          RewardService.grantRewards({ items: baseItems }, `Alchemy Session (baseline): ${active.sourceId}`);
+        }
+
+        useRecipeMasteryStore.getState().gainAlchemyMastery(active.sourceId, 1 * active.qty, 'idle');
+        useUIStore.getState().addNotification('success', 'Alchemy session completed (baseline)', 4000);
+      } else if (active.station === 'forge') {
+        const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === active.sourceId);
+        const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
+        if (!blueprint || blueprint.type !== 'craft' || !blueprint.output) return;
+        const baseItems = [{ itemId: blueprint.output.itemId, qty: blueprint.output.qty * active.qty }];
+        RewardService.grantRewards({ items: baseItems }, `Forge Session (baseline): ${active.sourceId}`);
+        useUIStore.getState().addNotification('success', 'Forge session completed (baseline)', 4000);
+      }
+
+      set((state) => {
+        if (state.activeSession) {
+          state.activeSession.prompts = settledPrompts;
+        }
+        state.activeSession = null;
+      });
+    };
+
+    return {
+      ...createDefaultCraftSessionState(),
 
     setMode: (station, mode) => {
       if (!isCraftMode(mode) || !isValidCraftStation(station)) return;
@@ -337,7 +447,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         startedAt,
         endsAt,
         script,
-        cursor: { stepIndex: 0 },
+        cursor: { stepIndex: 0, backgroundResolveAt: null, backgroundReason: null },
         payment: {
           currencies: payment.currencies,
           items: itemCosts,
@@ -409,6 +519,63 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         return { ok: false, reason: result.reason };
       }
       return { ok: true };
+    },
+
+    setStepStartedNow: (now = Date.now()) => {
+      const active = get().activeSession;
+      if (!active) return;
+      const step = active.script.steps[active.cursor.stepIndex];
+      if (!step) return;
+      const duration = getStepDurationMs(step);
+      set((state) => {
+        if (state.activeSession) {
+          state.activeSession.cursor.stepStartedAt = now;
+          state.activeSession.cursor.stepEndsAt = duration ? now + duration : undefined;
+        }
+      });
+    },
+
+    advanceStep: (now = Date.now()) => {
+      const active = get().activeSession;
+      if (!active) return;
+      const nextIndex = Math.min(active.cursor.stepIndex + 1, Math.max(0, active.script.steps.length - 1));
+      const nextStep = active.script.steps[nextIndex];
+      const duration = nextStep ? getStepDurationMs(nextStep) : undefined;
+      set((state) => {
+        if (state.activeSession) {
+          state.activeSession.cursor.stepIndex = nextIndex;
+          state.activeSession.cursor.stepStartedAt = now;
+          state.activeSession.cursor.stepEndsAt = duration ? now + duration : undefined;
+          state.activeSession.cursor.scoreParts = undefined;
+          state.activeSession.cursor.orderMistakes = state.activeSession.cursor.orderMistakes ?? 0;
+        }
+      });
+    },
+
+    markBackgroundResolving: (reason) => {
+      const active = get().activeSession;
+      if (!active) return;
+      const target = computeBaselineResolveAt(active);
+      const now = Date.now();
+      set((state) => {
+        if (state.activeSession) {
+          const cursor = state.activeSession.cursor;
+          if (cursor.backgroundResolveAt == null) {
+            cursor.backgroundResolveAt = Math.max(target, now);
+            cursor.backgroundReason = reason;
+          }
+        }
+      });
+    },
+
+    tick: (now = Date.now()) => {
+      const active = get().activeSession;
+      if (!active) return;
+      const backgroundResolveAt = active.cursor.backgroundResolveAt;
+      if (backgroundResolveAt == null) return;
+      if (now >= backgroundResolveAt) {
+        resolveSessionToBaseline(active, now);
+      }
     },
 
     claimActiveSession: (now = Date.now()) => {

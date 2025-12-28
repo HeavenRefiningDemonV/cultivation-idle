@@ -63,6 +63,9 @@ export function buildAlchemyScript(recipeId: string, seed: number): CraftScript 
     steps.push(buildHoldStep('stabilize', 'Stabilize mixture', 2000 + roll() * 2000));
   }
 
+  const sealWindow = clampNumber(2000 + roll() * 2000, 750, 6000);
+  steps.push({ id: 'seal_lid', type: 'SEAL_LID', uiLabel: 'Seal the lid', windowMs: sealWindow });
+
   const finalHold = clampNumber(holdBase * 0.2 + roll() * 1200, 750, 6000);
   steps.push(buildHoldStep('finish_hold', 'Finish simmer', finalHold));
   steps.push({ id: 'finish', type: 'FINISH', uiLabel: 'Bottle the batch' });

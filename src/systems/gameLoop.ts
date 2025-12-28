@@ -14,6 +14,7 @@ import {
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
+import { useCraftSessionStore } from '../stores/craftSessionStore';
 import { SaveService } from '../services/save/SaveService';
 import { cultivationService } from '../services/cultivationService';
 import { useUIStore } from '../stores/uiStore';
@@ -184,6 +185,7 @@ class GameLoop {
       // For now, the gameStore.tick() handles Qi generation
       useExpeditionStore.getState().tick(Date.now());
       useManualSatchelStore.getState().tick(Date.now());
+      useCraftSessionStore.getState().tick(Date.now());
     } catch (error) {
       console.error('[GameLoop] Error in cultivation tick:', error);
     }

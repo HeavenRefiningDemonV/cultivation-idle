@@ -9,6 +9,7 @@ export type CraftStepType =
   | 'HAMMER'
   | 'QUENCH'
   | 'TEMPER'
+  | 'SEAL_LID'
   | 'FINISH';
 
 export type CraftPromptType = 'STABILIZE_FLAME' | 'ADD_CATALYST';
@@ -88,6 +89,12 @@ export type CraftStep =
     }
   | {
       id: string;
+      type: 'SEAL_LID';
+      uiLabel?: string;
+      windowMs: number;
+    }
+  | {
+      id: string;
       type: 'FINISH';
       uiLabel?: string;
     };
@@ -116,7 +123,17 @@ export interface CraftSession {
   startedAt: number;
   endsAt: number;
   script: CraftScript;
-  cursor: { stepIndex: number };
+  cursor: {
+    stepIndex: number;
+    stepStartedAt?: number;
+    stepEndsAt?: number;
+    heatSetting?: number;
+    impurities?: number;
+    scoreParts?: { heat?: number; stability?: number; order?: number; qte?: number };
+    orderMistakes?: number;
+    backgroundResolveAt?: number | null;
+    backgroundReason?: 'closed' | 'navigated' | 'crashed' | null;
+  };
   payment: CraftSessionPayment;
   prompts?: CraftPromptState[];
 }
