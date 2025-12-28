@@ -11,10 +11,6 @@ function toValue(value) {
   return '';
 }
 
-export default function classNames(...args) {
-  return args
-    .map(toValue)
-    .filter(Boolean)
-    .join(' ')
-    .trim();
+export default function classNames(...classes) {
+  return classes.map(toValue).filter(Boolean).join(' ');
 }

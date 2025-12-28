@@ -1,15 +1,2 @@
-export type ClassValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | ClassDictionary
-  | ClassArray;
-
-type ClassDictionary = { [id: string]: any };
-type ClassArray = ClassValue[];
-
-declare function classNames(...classes: ClassValue[]): string;
-
+declare function classNames(...classes: Array<string | number | null | undefined | false | Record<string, boolean>>): string;
 export default classNames;
