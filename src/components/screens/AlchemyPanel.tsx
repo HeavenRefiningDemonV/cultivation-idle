@@ -1,8 +1,11 @@
+import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
+import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useProfessionStore } from '../../stores/professionStore';
-import { greaterThanOrEqualTo, multiply } from '../../utils/numbers';
+import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
+import { UsedForLinks } from '../crafting/UsedForLinks';
 
 interface AlchemyPanelProps {
   cityId: string | null;
@@ -15,6 +18,7 @@ type CurrencyCosts = Partial<Record<'gold' | 'spiritStones' | 'merit', string>>;
 type RecipeCostMap = Partial<Record<'gold' | 'spiritStones' | 'merit', number>>;
 
 const MAX_QTY = 999;
+const SESSION_QTY = 1;
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -47,19 +51,40 @@ function computeCosts(costs: RecipeCostMap | undefined, qty: number): CurrencyCo
   return totals;
 }
 
+function formatUsageLabel(usage?: string): string | undefined {
+  switch (usage) {
+    case 'combat_only':
+      return 'Combat techniques and battles';
+    case 'combat_or_world':
+      return 'Techniques and combat while exploring';
+    case 'cultivate_only':
+      return 'Cultivation and Qi training';
+    default:
+      return undefined;
+  }
+}
+
 export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const recipes = useContentStore((state) => state.raw?.alchemy_recipes ?? []);
-  const itemMap = useContentStore((state) => state.maps.itemsById);
+  const cities = useContentStore((state) => state.raw?.cities ?? []);
   const startAlchemy = useProfessionStore((state) => state.startAlchemy);
   const claimAlchemy = useProfessionStore((state) => state.claimAlchemy);
   const queue = useProfessionStore((state) => state.alchemyQueue);
   const getQty = useInventoryStore((state) => state.getQty);
   const currencies = useInventoryStore((state) => state.currencies);
 
+  const modeByStation = useCraftSessionStore((state) => state.modeByStation);
+  const setCraftMode = useCraftSessionStore((state) => state.setMode);
+  const startSession = useCraftSessionStore((state) => state.startSession);
+  const abortSession = useCraftSessionStore((state) => state.abortSession);
+  const activeSession = useCraftSessionStore((state) => state.activeSession);
+
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
   const [queueStatus, setQueueStatus] = useState<Record<string, StatusMessage>>({});
+  const [sessionStatus, setSessionStatus] = useState<StatusMessage | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
@@ -68,8 +93,30 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
   const visibleRecipes = useMemo(() => {
     if (!cityId) return recipes;
-    return recipes.filter((recipe) => !recipe.unlocksAtCityId || recipe.unlocksAtCityId === cityId);
-  }, [cityId, recipes]);
+    const targetIndex = cities.findIndex((city) => city.id === cityId);
+    if (targetIndex < 0) return recipes;
+
+    return recipes.filter((recipe) => {
+      const unlockId = (recipe as Record<string, unknown>).unlocksAtCityId as string | undefined;
+      if (!unlockId) return true;
+      const unlockIndex = cities.findIndex((city) => city.id === unlockId);
+      if (unlockIndex === -1) return true;
+      return unlockIndex <= targetIndex;
+    });
+  }, [cities, cityId, recipes]);
+
+  useEffect(() => {
+    if (visibleRecipes.length === 0) return;
+    const firstId = visibleRecipes[0]?.id;
+    if (!selectedRecipeId || !visibleRecipes.find((recipe) => recipe.id === selectedRecipeId)) {
+      setSelectedRecipeId(firstId);
+    }
+  }, [selectedRecipeId, visibleRecipes]);
+
+  const selectedRecipe = useMemo(
+    () => visibleRecipes.find((recipe) => recipe.id === selectedRecipeId) ?? visibleRecipes[0] ?? null,
+    [selectedRecipeId, visibleRecipes],
+  );
 
   const handleSetQty = (recipeId: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [recipeId]: clampQty(value) }));
@@ -82,7 +129,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
       if (!Number.isFinite(perJob) || perJob <= 0) continue;
       const required = perJob * qty;
       if (getQty(itemId) < required) {
-        const itemName = itemMap[itemId]?.name ?? itemId;
+        const itemName = getItemDef(itemId)?.name ?? itemId;
         return { ok: false, reason: `Need ${itemName}` };
       }
     }
@@ -123,200 +170,315 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     );
   }
 
+  const selectedInputs = selectedRecipe?.inputs ?? {};
+  const selectedOutputs = selectedRecipe?.outputs ?? {};
+  const qty = selectedRecipe ? quantities[selectedRecipe.id] ?? 1 : 1;
+  const timePer = selectedRecipe?.timeSec ?? 0;
+  const totalTime = timePer * qty * 1000;
+  const costs = computeCosts((selectedRecipe as { costs?: RecipeCostMap })?.costs, qty);
+  const affordability = selectedRecipe ? canCraftRecipe(selectedRecipe, qty) : { ok: false };
+  const primaryOutputId = Object.keys(selectedOutputs)[0];
+  const primaryUsage = formatUsageLabel(getItemDef(primaryOutputId)?.usage);
+
+  const currentMode = modeByStation.alchemy;
+  const activeOtherStation = activeSession && activeSession.station !== 'alchemy';
+  const activeAlchemySession = activeSession && activeSession.station === 'alchemy';
+
   return (
     <div className={'alchemyPanel'}>
-      <div className={'alchemyPanelHeader'}>
+      <div className={'stationBanner'}>
         <div>
-          <div className={'alchemyTitle'}>Alchemy</div>
-          <div className={'alchemySubtitle'}>Queue size: {queue.length}</div>
+          <div className={'stationBannerTitle'}>Alchemy</div>
+          <div className={'stationBannerSubtitle'}>
+            Brew pills, elixirs, and reagents for combat and cultivation.
+          </div>
         </div>
+        <div className={'stationBannerMeta'}>Queue size: {queue.length}</div>
       </div>
 
-      <div className={'alchemySections'}>
-        <div className={'alchemySection'}>
-          <div className={'alchemySectionHeader'}>
-            <div className={'alchemySectionTitle'}>Recipes</div>
-            <div className={'alchemySectionSub'}>Select a recipe and craft a batch.</div>
-          </div>
-
-          <div className={'alchemyRecipeList'}>
+      <div className={'craftingLayout'}>
+        <div className={'craftingSidebar'}>
+          <div className={'craftingSidebarHeader'}>Recipes</div>
+          <div className={'craftingList'}>
             {visibleRecipes.map((recipe) => {
-              const qty = quantities[recipe.id] ?? 1;
-              const inputs = recipe.inputs ?? {};
-              const outputs = recipe.outputs ?? {};
-              const costs = computeCosts((recipe as { costs?: RecipeCostMap }).costs, qty);
-              const timePer = recipe.timeSec ?? 0;
-              const totalTime = timePer * qty * 1000;
-              const affordability = canCraftRecipe(recipe, qty);
-              const status = recipeStatus[recipe.id];
-
+              const outputEntries = Object.entries(recipe.outputs ?? {});
+              const firstOutput = outputEntries[0];
+              const outputName = firstOutput ? getItemDef(firstOutput[0])?.name ?? firstOutput[0] : recipe.id;
+              const isSelected = recipe.id === selectedRecipe?.id;
               return (
-                <div key={recipe.id} className={'alchemyRecipeCard'}>
-                  <div className={'alchemyRecipeHeader'}>
-                    <div>
-                      <div className={'alchemyRecipeName'}>{recipe.id}</div>
-                      <div className={'alchemyRecipeId'}>{recipe.station ?? 'alchemy'} recipe</div>
-                    </div>
-                    <div className={'alchemyRecipeMeta'}>
-                      <div>Time per: {formatDuration(timePer * 1000)}</div>
-                      <div>Total: {formatDuration(totalTime)}</div>
-                    </div>
-                  </div>
-
-                  <div className={'alchemyRecipeBody'}>
-                    <div className={'alchemyRecipeDetails'}>
-                      <div>
-                        <div className={'alchemyRecipeLabel'}>Ingredients</div>
-                        <ul>
-                          {Object.entries(inputs).map(([itemId, baseQty]) => {
-                            const perJob = Math.floor(baseQty);
-                            if (!Number.isFinite(perJob) || perJob <= 0) return null;
-                            const itemName = getItemDef(itemId)?.name ?? itemId;
-                            return (
-                              <li key={itemId}>
-                                {itemName} x{perJob * qty}
-                              </li>
-                            );
-                          })}
-                          {Object.keys(inputs).length === 0 && <li>None</li>}
-                        </ul>
-                      </div>
-                      <div>
-                        <div className={'alchemyRecipeLabel'}>Outputs</div>
-                        <ul>
-                          {Object.entries(outputs).map(([itemId, baseQty]) => {
-                            const perJob = Math.floor(baseQty);
-                            if (!Number.isFinite(perJob) || perJob <= 0) return null;
-                            const itemName = getItemDef(itemId)?.name ?? itemId;
-                            return (
-                              <li key={itemId}>
-                                {itemName} x{perJob * qty}
-                              </li>
-                            );
-                          })}
-                          {Object.keys(outputs).length === 0 && <li>None</li>}
-                        </ul>
-                      </div>
-                      <div>
-                        <div className={'alchemyRecipeLabel'}>Costs</div>
-                        <div>{formatPrice(costs) || 'Free'}</div>
-                      </div>
-                    </div>
-
-                    <div className={'alchemyRecipeControls'}>
-                      <label className={'alchemyRecipeLabel'}>
-                        Qty
-                        <input
-                          type="number"
-                          min={1}
-                          max={MAX_QTY}
-                          value={qty}
-                          onChange={(e) => handleSetQty(recipe.id, Number(e.target.value))}
-                        />
-                      </label>
-                      <div className={'alchemyRecipeActions'}>
-                        <button
-                          className={`worldScreenModuleButton ${affordability.ok ? 'worldScreenModuleButton--active' : ''}`}
-                          disabled={!affordability.ok}
-                          onClick={() => {
-                            const result = startAlchemy(recipe.id, qty);
-                            if (!result.ok) {
-                              setRecipeStatus((prev) => ({
-                                ...prev,
-                                [recipe.id]: { type: 'error', message: result.error },
-                              }));
-                              return;
-                            }
-                            setRecipeStatus((prev) => ({
-                              ...prev,
-                              [recipe.id]: { type: 'success', message: `Queued x${qty}` },
-                            }));
-                          }}
-                        >
-                          Craft
-                        </button>
-                        {!affordability.ok && affordability.reason && (
-                          <div className={'alchemyRecipeHint'}>{affordability.reason}</div>
-                        )}
-                      </div>
-                    </div>
-                    {status && (
-                      <div
-                        className={`alchemyStatus alchemyStatus--${status.type}`}
-                        role={status.type === 'error' ? 'alert' : 'status'}
-                      >
-                        {status.message}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <button
+                  key={recipe.id}
+                  className={classNames('craftingListItem', { 'craftingListItem--active': isSelected })}
+                  onClick={() => setSelectedRecipeId(recipe.id)}
+                >
+                  <div className={'craftingListName'}>{outputName}</div>
+                  <div className={'craftingListSub'}>{recipe.id}</div>
+                </button>
               );
             })}
           </div>
         </div>
 
-        <div className={'alchemySection'}>
-          <div className={'alchemySectionHeader'}>
-            <div className={'alchemySectionTitle'}>Queue</div>
-            <div className={'alchemySectionSub'}>Jobs process one at a time.</div>
-          </div>
-
-          {queue.length === 0 ? (
-            <div className={'alchemyQueueEmpty'}>No alchemy jobs queued.</div>
+        <div className={'craftingMain'}>
+          {!selectedRecipe ? (
+            <div className={'alchemyQueueEmpty'}>Select a recipe to view details.</div>
           ) : (
-            <div className={'alchemyQueueList'}>
-              {queue.map((job) => {
-                const recipe = recipes.find((entry) => entry.id === job.recipeId);
-                const remainingMs = Math.max(0, job.endsAt - now);
-                const ready = now >= job.endsAt;
-                const status = queueStatus[job.id];
-
-                return (
-                  <div key={job.id} className={'alchemyQueueCard'}>
-                    <div className={'alchemyQueueHeader'}>
-                      <div>
-                        <div className={'alchemyQueueName'}>{recipe?.id ?? job.recipeId}</div>
-                        <div className={'alchemyQueueMeta'}>Qty: {job.qty}</div>
-                      </div>
-                      <div className={'alchemyQueueTiming'}>
-                        <div>{ready ? 'Ready to claim' : 'In progress'}</div>
-                        <div>{ready ? '00:00' : formatDuration(remainingMs)}</div>
-                      </div>
+            <>
+              <div className={'craftingDetailCard'}>
+                <div className={'craftingDetailHeader'}>
+                  <div>
+                    <div className={'craftingDetailTitle'}>
+                      {getItemDef(primaryOutputId)?.name ?? selectedRecipe.id}
                     </div>
-                    <div className={'alchemyQueueActions'}>
+                    <div className={'craftingDetailSub'}>{selectedRecipe.id}</div>
+                  </div>
+                  <div className={'craftingDetailMeta'}>
+                    <div>Time per: {formatDuration(timePer * 1000)}</div>
+                    <div>Total: {formatDuration(totalTime)}</div>
+                  </div>
+                </div>
+
+                <UsedForLinks usageText={primaryUsage} className={'craftingUsedFor'} />
+
+                <div className={'alchemyRecipeDetails'}>
+                  <div>
+                    <div className={'alchemyRecipeLabel'}>Ingredients</div>
+                    <ul>
+                      {Object.entries(selectedInputs).map(([itemId, baseQty]) => {
+                        const perJob = Math.floor(baseQty);
+                        if (!Number.isFinite(perJob) || perJob <= 0) return null;
+                        const itemName = getItemDef(itemId)?.name ?? itemId;
+                        return (
+                          <li key={itemId}>
+                            {itemName} x{perJob * qty}
+                          </li>
+                        );
+                      })}
+                      {Object.keys(selectedInputs).length === 0 && <li>None</li>}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className={'alchemyRecipeLabel'}>Outputs</div>
+                    <ul>
+                      {Object.entries(selectedOutputs).map(([itemId, baseQty]) => {
+                        const perJob = Math.floor(baseQty);
+                        if (!Number.isFinite(perJob) || perJob <= 0) return null;
+                        const itemName = getItemDef(itemId)?.name ?? itemId;
+                        return (
+                          <li key={itemId}>
+                            {itemName} x{perJob * qty}
+                          </li>
+                        );
+                      })}
+                      {Object.keys(selectedOutputs).length === 0 && <li>None</li>}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className={'alchemyRecipeLabel'}>Costs</div>
+                    <div>{formatPrice(costs) || 'Free'}</div>
+                  </div>
+                </div>
+
+                <div className={'craftingModeSelector'}>
+                  <div className={'craftingModeLabel'}>Mode</div>
+                  <div className={'craftingModeButtons'}>
+                    {(['idle', 'assisted', 'handsOn'] as const).map((mode) => (
                       <button
-                        className={`worldScreenModuleButton ${ready ? 'worldScreenModuleButton--active' : ''}`}
-                        disabled={!ready}
+                        key={mode}
+                        type="button"
+                        className={classNames('craftingModeButton', {
+                          'craftingModeButton--active': currentMode === mode,
+                        })}
+                        onClick={() => setCraftMode('alchemy', mode)}
+                      >
+                        {mode === 'idle' ? 'Idle' : mode === 'assisted' ? 'Assisted' : 'Hands-on'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {currentMode === 'idle' && (
+                  <div className={'alchemyRecipeControls'}>
+                    <label className={'alchemyRecipeLabel'}>
+                      Qty
+                      <input
+                        type="number"
+                        min={1}
+                        max={MAX_QTY}
+                        value={qty}
+                        onChange={(e) => handleSetQty(selectedRecipe.id, Number(e.target.value))}
+                      />
+                    </label>
+                    <div className={'alchemyRecipeActions'}>
+                      <button
+                        className={`worldScreenModuleButton ${affordability.ok ? 'worldScreenModuleButton--active' : ''}`}
+                        disabled={!affordability.ok}
                         onClick={() => {
-                          const result = claimAlchemy(job.id);
+                          const result = startAlchemy(selectedRecipe.id, qty);
                           if (!result.ok) {
-                            setQueueStatus((prev) => ({
+                            setRecipeStatus((prev) => ({
                               ...prev,
-                              [job.id]: { type: 'error', message: result.error },
+                              [selectedRecipe.id]: { type: 'error', message: result.error },
                             }));
                             return;
                           }
-                          setQueueStatus((prev) => ({
+                          setRecipeStatus((prev) => ({
                             ...prev,
-                            [job.id]: { type: 'success', message: 'Claimed' },
+                            [selectedRecipe.id]: { type: 'success', message: `Queued x${qty}` },
                           }));
                         }}
                       >
-                        Claim
+                        Craft
                       </button>
+                      {!affordability.ok && affordability.reason && (
+                        <div className={'alchemyRecipeHint'}>{affordability.reason}</div>
+                      )}
                     </div>
-                    {status && (
-                      <div
-                        className={`alchemyStatus alchemyStatus--${status.type}`}
-                        role={status.type === 'error' ? 'alert' : 'status'}
+                  </div>
+                )}
+
+                {currentMode !== 'idle' && (
+                  <div className={'craftingSessionBlock'}>
+                    <div className={'craftingSessionNote'}>Sessions craft 1 batch for now.</div>
+                    {activeOtherStation && (
+                      <div className={'alchemyRecipeHint'}>
+                        Another crafting session is active. Finish or abort it first.
+                      </div>
+                    )}
+                    {!activeAlchemySession && !activeOtherStation && (
+                      <button
+                        className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                        onClick={() => {
+                          const result = startSession({
+                            station: 'alchemy',
+                            mode: currentMode as 'assisted' | 'handsOn',
+                            sourceId: selectedRecipe.id,
+                            qty: SESSION_QTY,
+                            now: Date.now(),
+                          });
+                          if (!result.ok) {
+                            setSessionStatus({ type: 'error', message: `Cannot start: ${result.reason}` });
+                            return;
+                          }
+                          setSessionStatus({ type: 'success', message: 'Session started' });
+                        }}
                       >
-                        {status.message}
+                        Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
+                      </button>
+                    )}
+
+                    {activeAlchemySession && (
+                      <div className={'craftingSessionDetails'}>
+                        <div className={'craftingSessionRow'}>
+                          <div>Session active</div>
+                          <div className={'craftingSessionMeta'}>
+                            {activeAlchemySession.mode} · {activeAlchemySession.sourceId}
+                          </div>
+                        </div>
+                        <div className={'craftingStepList'}>
+                          {activeAlchemySession.script.steps.map((step) => (
+                            <div key={step.id} className={'craftingStepItem'}>
+                              <div className={'craftingStepType'}>{step.uiLabel ?? step.type}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className={'craftingSessionActions'}>
+                          <button
+                            className={'worldScreenModuleButton'}
+                            onClick={() => {
+                              abortSession();
+                              setSessionStatus({ type: 'success', message: 'Session aborted and refunded' });
+                            }}
+                          >
+                            Abort session
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {sessionStatus && (
+                      <div className={`alchemyStatus alchemyStatus--${sessionStatus.type}`}>
+                        {sessionStatus.message}
                       </div>
                     )}
                   </div>
-                );
-              })}
-            </div>
+                )}
+
+                {recipeStatus[selectedRecipe.id] && (
+                  <div
+                    className={`alchemyStatus alchemyStatus--${recipeStatus[selectedRecipe.id].type}`}
+                    role={recipeStatus[selectedRecipe.id].type === 'error' ? 'alert' : 'status'}
+                  >
+                    {recipeStatus[selectedRecipe.id].message}
+                  </div>
+                )}
+              </div>
+
+              <div className={'alchemySection'}>
+                <div className={'alchemySectionHeader'}>
+                  <div className={'alchemySectionTitle'}>Queue</div>
+                  <div className={'alchemySectionSub'}>Jobs process one at a time.</div>
+                </div>
+
+                {queue.length === 0 ? (
+                  <div className={'alchemyQueueEmpty'}>No alchemy jobs queued.</div>
+                ) : (
+                  <div className={'alchemyQueueList'}>
+                    {queue.map((job) => {
+                      const recipe = recipes.find((entry) => entry.id === job.recipeId);
+                      const remainingMs = Math.max(0, job.endsAt - now);
+                      const ready = now >= job.endsAt;
+                      const status = queueStatus[job.id];
+
+                      return (
+                        <div key={job.id} className={'alchemyQueueCard'}>
+                          <div className={'alchemyQueueHeader'}>
+                            <div>
+                              <div className={'alchemyQueueName'}>{recipe?.id ?? job.recipeId}</div>
+                              <div className={'alchemyQueueMeta'}>Qty: {job.qty}</div>
+                            </div>
+                            <div className={'alchemyQueueTiming'}>
+                              <div>{ready ? 'Ready to claim' : 'In progress'}</div>
+                              <div>{ready ? '00:00' : formatDuration(remainingMs)}</div>
+                            </div>
+                          </div>
+                          <div className={'alchemyQueueActions'}>
+                            <button
+                              className={`worldScreenModuleButton ${ready ? 'worldScreenModuleButton--active' : ''}`}
+                              disabled={!ready}
+                              onClick={() => {
+                                const result = claimAlchemy(job.id);
+                                if (!result.ok) {
+                                  setQueueStatus((prev) => ({
+                                    ...prev,
+                                    [job.id]: { type: 'error', message: result.error },
+                                  }));
+                                  return;
+                                }
+                                setQueueStatus((prev) => ({
+                                  ...prev,
+                                  [job.id]: { type: 'success', message: 'Claimed' },
+                                }));
+                              }}
+                            >
+                              Claim
+                            </button>
+                          </div>
+                          {status && (
+                            <div
+                              className={`alchemyStatus alchemyStatus--${status.type}`}
+                              role={status.type === 'error' ? 'alert' : 'status'}
+                            >
+                              {status.message}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
