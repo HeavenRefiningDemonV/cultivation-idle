@@ -12,6 +12,7 @@ import type {
   CraftSessionPayment,
   CraftSessionSaveState,
   CraftStation,
+  AlchemyHandsOnResult,
   PromptDef,
 } from '../systems/crafting/craftingTypes';
 import {
@@ -21,6 +22,7 @@ import {
   instantiatePrompts,
 } from '../systems/crafting/assistedPrompts';
 import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts';
+import { buildAlchemyOutputs, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
@@ -49,7 +51,7 @@ interface CraftSessionStoreState extends CraftSessionSaveState {
   advanceStep: (now?: number) => void;
   markBackgroundResolving: (reason: 'closed' | 'navigated' | 'crashed') => void;
   tick: (now?: number) => void;
-  completeHandsOnSession: (now?: number) => { ok: boolean; reason?: string };
+  completeHandsOnSession: (now?: number) => { ok: boolean; reason?: string; result?: AlchemyHandsOnResult };
   claimActiveSession: (
     now?: number,
   ) =>
@@ -148,6 +150,96 @@ const cloneScript = (script: CraftScript): CraftScript => ({
   ...script,
   steps: script.steps.map((step) => ({ ...step })),
 });
+
+const HANDS_ON_WEIGHTS = {
+  heat: 0.35,
+  stability: 0.25,
+  order: 0.3,
+  qte: 0.1,
+};
+
+const YIELD_BY_GRADE: Record<AlchemyHandsOnResult['grade'], number> = {
+  crude: 0.9,
+  low: 1,
+  mid: 1.08,
+  high: 1.18,
+  perfect: 1.3,
+};
+
+const clampScore = (value: number | undefined, fallback: number): number => {
+  const next = Math.floor(value ?? fallback);
+  if (!Number.isFinite(next)) return fallback;
+  return Math.max(0, Math.min(100, next));
+};
+
+const computeHandsOnResult = (
+  active: CraftSession,
+  recipe: { outputs?: Record<string, number>; timeSec?: number },
+  masteryBefore: number,
+  now: number,
+): { result: AlchemyHandsOnResult; rewardItems: Array<{ itemId: string; qty: number }> } => {
+  const impurities = Math.max(0, active.cursor.impurities ?? 0);
+  const orderMistakes = Math.max(0, active.cursor.orderMistakes ?? 0);
+  const scoreParts = active.cursor.scoreParts ?? {};
+  const heatScore = clampScore(scoreParts.heat, 60);
+  const stabilityScore = clampScore(scoreParts.stability, Math.max(20, 100 - impurities * 6 - orderMistakes * 4));
+  const orderScore = clampScore(scoreParts.order, Math.max(20, 100 - orderMistakes * 12));
+  const qteScore = clampScore(scoreParts.qte, 50);
+
+  const totalWeighted =
+    (heatScore / 100) * HANDS_ON_WEIGHTS.heat +
+    (stabilityScore / 100) * HANDS_ON_WEIGHTS.stability +
+    (orderScore / 100) * HANDS_ON_WEIGHTS.order +
+    (qteScore / 100) * HANDS_ON_WEIGHTS.qte;
+
+  let grade: AlchemyHandsOnResult['grade'] = 'crude';
+  if (totalWeighted >= 0.9 && impurities === 0) grade = 'perfect';
+  else if (totalWeighted >= 0.75) grade = 'high';
+  else if (totalWeighted >= 0.55) grade = 'mid';
+  else if (totalWeighted >= 0.35) grade = 'low';
+
+  const yieldMultiplier = YIELD_BY_GRADE[grade];
+  const outputsGranted = buildAlchemyOutputs(recipe.outputs, active.qty, yieldMultiplier);
+  const byproductBase = impurities >= 2 ? 2 : impurities === 1 ? 1 : 0;
+  const byproductsGranted =
+    byproductBase > 0 ? [{ itemId: 'mat_aura_residue', qty: byproductBase * active.qty }] : [];
+
+  const baselineTimeSec =
+    typeof active.script.baselineTimeSec === 'number'
+      ? active.script.baselineTimeSec
+      : typeof recipe.timeSec === 'number'
+        ? recipe.timeSec
+        : Math.max(0, (active.endsAt - active.startedAt) / 1000);
+  const elapsedSec = Math.max(0, (now - active.startedAt) / 1000);
+  const timeSavedSec = Math.max(0, baselineTimeSec - elapsedSec);
+
+  const masteryGain = Math.max(0, Math.floor(5 * active.qty));
+  const masteryAfter = Math.min(100, masteryBefore + masteryGain);
+
+  return {
+    result: {
+      grade,
+      yieldMultiplier,
+      outputsGranted,
+      byproductsGranted,
+      impurities,
+      scoreBreakdown: {
+        heat: heatScore,
+        stability: stabilityScore,
+        order: orderScore,
+        qte: qteScore,
+        total: Math.round(totalWeighted * 100),
+      },
+      baselineTimeSec,
+      elapsedSec,
+      timeSavedSec,
+      masteryBefore,
+      masteryAfter,
+      masteryGain,
+    },
+    rewardItems: [...outputsGranted, ...byproductsGranted],
+  };
+};
 
 const computeBaselineResolveAt = (session: CraftSession): number => {
   const baselineDurationMs = Math.max(
@@ -298,14 +390,12 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       if (active.station === 'alchemy') {
         const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === active.sourceId);
         if (!recipe) return;
-        const outputs = recipe.outputs ?? {};
-        const baseItems = Object.entries(outputs)
-          .map(([itemId, baseQty]) => {
-            const perJob = Math.floor(Number(baseQty));
-            if (!Number.isFinite(perJob) || perJob <= 0) return null;
-            return { itemId, qty: perJob * active.qty };
-          })
-          .filter((entry): entry is { itemId: string; qty: number } => Boolean(entry));
+        const mastery = useRecipeMasteryStore.getState().getAlchemyMastery(active.sourceId);
+        const baseItems = buildAlchemyOutputs(
+          recipe.outputs,
+          active.qty,
+          getIdleYieldMultiplierForMastery(mastery),
+        );
 
         if (baseItems.length > 0) {
           RewardService.grantRewards({ items: baseItems }, `Alchemy Session (baseline): ${active.sourceId}`);
@@ -638,20 +728,52 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       const active = get().activeSession;
       if (!active) return { ok: false, reason: 'no_session' };
       if (active.mode !== 'handsOn') return { ok: false, reason: 'wrong_mode' };
+      if (active.station !== 'alchemy') return { ok: false, reason: 'unsupported_station' };
+
+      const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === active.sourceId);
+      if (!recipe) return { ok: false, reason: 'missing_recipe' };
+      const masteryBefore = useRecipeMasteryStore.getState().getAlchemyMastery(active.sourceId);
+      const settledPrompts = advancePromptStates(active.prompts ?? [], now);
+      const { result, rewardItems } = computeHandsOnResult(active, recipe, masteryBefore, now);
+
       set((state) => {
         if (state.activeSession) {
           state.activeSession.endsAt = now;
           state.activeSession.cursor.backgroundResolveAt = null;
           state.activeSession.cursor.backgroundReason = null;
+          state.activeSession.prompts = settledPrompts;
         }
       });
-      return { ok: true };
+
+      if (rewardItems.length > 0) {
+        RewardService.grantRewards({ items: rewardItems }, `Alchemy Hands-on: ${active.sourceId}`);
+      }
+
+      if (result.masteryGain > 0) {
+        useRecipeMasteryStore
+          .getState()
+          .gainAlchemyMastery(active.sourceId, result.masteryGain, 'handsOn');
+      }
+
+      set((state) => {
+        state.activeSession = null;
+      });
+
+      useUIStore
+        .getState()
+        .addNotification('success', `Hands-on alchemy complete (${result.grade})`, 3500);
+
+      return { ok: true, result };
     },
 
     claimActiveSession: (now = Date.now()) => {
       const active = get().activeSession;
       if (!active) return { ok: false, reason: 'no_session' };
       if (now < active.endsAt) return { ok: false, reason: 'not_ready' };
+
+      if (active.mode === 'handsOn' && active.station === 'alchemy') {
+        return { ok: false, reason: 'hands_on_complete_first' };
+      }
 
       const settledPrompts = advancePromptStates(active.prompts ?? [], now);
 

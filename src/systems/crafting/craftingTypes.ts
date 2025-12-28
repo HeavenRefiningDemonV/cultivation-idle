@@ -142,3 +142,18 @@ export interface CraftSessionSaveState {
   modeByStation: Partial<Record<CraftStation, CraftMode>>;
   activeSession: CraftSession | null;
 }
+
+export interface AlchemyHandsOnResult {
+  grade: 'crude' | 'low' | 'mid' | 'high' | 'perfect';
+  yieldMultiplier: number;
+  outputsGranted: Array<{ itemId: string; qty: number }>;
+  byproductsGranted: Array<{ itemId: string; qty: number }>;
+  impurities: number;
+  scoreBreakdown: { heat: number; stability: number; order: number; qte: number; total: number };
+  baselineTimeSec: number;
+  elapsedSec: number;
+  timeSavedSec: number;
+  masteryBefore: number;
+  masteryAfter: number;
+  masteryGain: number;
+}

@@ -8,6 +8,7 @@ import { useContentStore } from './contentStore';
 import { useEquipmentStore } from './equipmentStore';
 import { useGameStore } from './gameStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
+import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 
 export type AlchemyJob = {
   id: string;
@@ -94,6 +95,9 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Invalid recipe time' };
       }
 
+      const mastery = useRecipeMasteryStore.getState().getAlchemyMastery(recipeId);
+      const timeMultiplier = getAlchemyTimeMultiplier(mastery);
+
       const inventory = useInventoryStore.getState();
       const inputs = recipe.inputs ?? {};
       for (const [itemId, baseQty] of Object.entries(inputs)) {
@@ -153,7 +157,7 @@ export const useProfessionStore = create<ProfessionState>()(
         }
       }
 
-      const durationMs = durationSec * amount * 1000;
+      const durationMs = durationSec * amount * timeMultiplier * 1000;
       const now = Date.now();
       const lastJob = get().alchemyQueue.at(-1);
       const startedAt = lastJob ? Math.max(now, lastJob.endsAt) : now;
@@ -448,14 +452,8 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Recipe not found' };
       }
 
-      const outputs = recipe.outputs ?? {};
-      const items = Object.entries(outputs)
-        .map(([itemId, baseQty]) => {
-          const perJob = Math.floor(baseQty);
-          if (!Number.isFinite(perJob) || perJob <= 0) return null;
-          return { itemId, qty: perJob * job.qty };
-        })
-        .filter((entry): entry is { itemId: string; qty: number } => Boolean(entry));
+      const mastery = useRecipeMasteryStore.getState().getAlchemyMastery(job.recipeId);
+      const items = buildAlchemyOutputs(recipe.outputs, job.qty, getIdleYieldMultiplierForMastery(mastery));
 
       if (items.length > 0) {
         RewardService.grantRewards({ items }, `Alchemy: ${job.recipeId}`);

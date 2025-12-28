@@ -7,10 +7,13 @@ import { useProfessionStore } from '../../stores/professionStore';
 import { useRecipeMasteryStore } from '../../stores/recipeMasteryStore';
 import { useUIStore } from '../../stores/uiStore';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
+import { getAlchemyTimeMultiplier } from '../../systems/crafting/alchemyBonuses';
 import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
 import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
 import { HandsOnAlchemySession } from '../crafting/HandsOnAlchemySession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
+import { AlchemyResultModal } from '../modals/AlchemyResultModal';
+import type { AlchemyHandsOnResult } from '../../systems/crafting/craftingTypes';
 
 interface AlchemyPanelProps {
   cityId: string | null;
@@ -23,7 +26,6 @@ type CurrencyCosts = Partial<Record<'gold' | 'spiritStones' | 'merit', string>>;
 type RecipeCostMap = Partial<Record<'gold' | 'spiritStones' | 'merit', number>>;
 
 const MAX_QTY = 999;
-const SESSION_QTY = 1;
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -110,6 +112,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const [sessionStatus, setSessionStatus] = useState<StatusMessage | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
+  const [lastResult, setLastResult] = useState<{ result: AlchemyHandsOnResult; recipeId: string } | null>(null);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
@@ -153,6 +156,12 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
   const handleSetQty = (recipeId: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [recipeId]: clampQty(value) }));
+  };
+
+  const computeSessionQty = (recipeId: string | null) => {
+    if (!recipeId) return 1;
+    const masteryValue = getAlchemyMastery(recipeId);
+    return masteryValue >= 50 ? 5 : 1;
   };
 
   const canCraftRecipe = (recipe: (typeof recipes)[number], qty: number): { ok: boolean; reason?: string } => {
@@ -206,12 +215,30 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const selectedInputs = selectedRecipe?.inputs ?? {};
   const selectedOutputs = selectedRecipe?.outputs ?? {};
   const qty = selectedRecipe ? quantities[selectedRecipe.id] ?? 1 : 1;
+  const masteryInfo = selectedRecipe
+    ? getAlchemyThresholdInfo(selectedRecipe.id)
+    : { mastery: 0, nextThreshold: null, unlocked: [] as number[] };
   const timePer = selectedRecipe?.timeSec ?? 0;
-  const totalTime = timePer * qty * 1000;
+  const timeMultiplier = getAlchemyTimeMultiplier(masteryInfo.mastery ?? 0);
+  const totalTime = timePer * timeMultiplier * qty * 1000;
   const costs = computeCosts((selectedRecipe as { costs?: RecipeCostMap })?.costs, qty);
   const affordability = selectedRecipe ? canCraftRecipe(selectedRecipe, qty) : { ok: false };
   const primaryOutputId = Object.keys(selectedOutputs)[0];
   const primaryUsage = formatUsageLabel(getItemDef(primaryOutputId)?.usage);
+  const maxCraftable = useMemo(() => {
+    if (!selectedRecipe) return MAX_QTY;
+    const inputs = Object.entries(selectedInputs);
+    if (inputs.length === 0) return MAX_QTY;
+    const ratios = inputs
+      .map(([itemId, baseQty]) => {
+        const perJob = Math.max(1, Math.floor(baseQty));
+        const current = getQty(itemId);
+        return Math.floor(current / perJob);
+      })
+      .filter((value) => Number.isFinite(value));
+    if (ratios.length === 0) return MAX_QTY;
+    return clampQty(Math.max(1, Math.min(...ratios)));
+  }, [getQty, selectedInputs, selectedRecipe]);
 
   const currentMode = modeByStation.alchemy;
   const activeOtherStation = activeSession && activeSession.station !== 'alchemy';
@@ -222,13 +249,55 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
   const sessionRemainingMs = activeAlchemySession ? Math.max(0, activeAlchemySession.endsAt - now) : 0;
   const sessionReady = activeAlchemySession ? now >= activeAlchemySession.endsAt : false;
-  const masteryInfo = selectedRecipe
-    ? getAlchemyThresholdInfo(selectedRecipe.id)
-    : { mastery: 0, nextThreshold: null, unlocked: [] as number[] };
   const masteryPercent = Math.min(100, Math.max(0, masteryInfo.mastery));
   const nextUnlockText = masteryInfo.nextThreshold
     ? `${masteryInfo.nextThreshold}: ${getThresholdLabel(masteryInfo.nextThreshold)}`
     : 'All unlocks reached';
+  const sessionQty = computeSessionQty(selectedRecipe?.id ?? null);
+  const resultRecipe = lastResult ? recipes.find((entry) => entry.id === lastResult.recipeId) : null;
+  const resultOutputId = resultRecipe ? Object.keys(resultRecipe.outputs ?? {})[0] : undefined;
+  const resultRecipeName =
+    (resultOutputId ? getItemDef(resultOutputId)?.name : undefined) ??
+    resultRecipe?.id ??
+    lastResult?.recipeId ??
+    'Alchemy result';
+
+  const handleResultClose = () => setLastResult(null);
+  const handleResultCraftAgain = () => {
+    if (!lastResult) return;
+    const qtyForSession = computeSessionQty(lastResult.recipeId);
+    const outcome = startSession({
+      station: 'alchemy',
+      mode: 'handsOn',
+      sourceId: lastResult.recipeId,
+      qty: qtyForSession,
+      now: Date.now(),
+    });
+    if (!outcome.ok) {
+      setSessionStatus({ type: 'error', message: `Cannot start: ${outcome.reason}` });
+      return;
+    }
+    setSessionStatus({ type: 'success', message: 'Hands-on session started' });
+    setLastResult(null);
+  };
+
+  const handleResultQueueIdle = () => {
+    if (!lastResult) return;
+    const qtyForQueue = computeSessionQty(lastResult.recipeId);
+    const outcome = startAlchemy(lastResult.recipeId, qtyForQueue);
+    if (!outcome.ok) {
+      setRecipeStatus((prev) => ({
+        ...prev,
+        [lastResult.recipeId]: { type: 'error', message: outcome.error },
+      }));
+      return;
+    }
+    setRecipeStatus((prev) => ({
+      ...prev,
+      [lastResult.recipeId]: { type: 'success', message: `Queued x${qtyForQueue}` },
+    }));
+    setLastResult(null);
+  };
 
   useEffect(() => {
     return () => {
@@ -380,6 +449,32 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                         onChange={(e) => handleSetQty(selectedRecipe.id, Number(e.target.value))}
                       />
                     </label>
+                    <div className={'alchemyQtyButtons'}>
+                      <button
+                        type="button"
+                        className={'worldScreenModuleButton'}
+                        onClick={() => handleSetQty(selectedRecipe.id, 1)}
+                      >
+                        x1
+                      </button>
+                      <button
+                        type="button"
+                        className={classNames('worldScreenModuleButton', {
+                          'worldScreenModuleButton--active': masteryInfo.mastery >= 50,
+                        })}
+                        disabled={masteryInfo.mastery < 50}
+                        onClick={() => handleSetQty(selectedRecipe.id, Math.min(5, maxCraftable))}
+                      >
+                        x5
+                      </button>
+                      <button
+                        type="button"
+                        className={'worldScreenModuleButton'}
+                        onClick={() => handleSetQty(selectedRecipe.id, maxCraftable)}
+                      >
+                        Max
+                      </button>
+                    </div>
                     <div className={'alchemyRecipeActions'}>
                       <button
                         className={`worldScreenModuleButton ${affordability.ok ? 'worldScreenModuleButton--active' : ''}`}
@@ -410,7 +505,9 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
                 {currentMode !== 'idle' && (
                   <div className={'craftingSessionBlock craftSessionCard'}>
-                    <div className={'craftingSessionNote'}>Sessions craft 1 batch for now.</div>
+                    <div className={'craftingSessionNote'}>
+                      Sessions craft {sessionQty} batch{sessionQty > 1 ? 'es' : ''} at a time.
+                    </div>
                     {activeOtherStation && (
                       <div className={'alchemyRecipeHint'}>
                         Another crafting session is active. Finish or abort it first.
@@ -424,7 +521,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                             station: 'alchemy',
                             mode: currentMode as 'assisted' | 'handsOn',
                             sourceId: selectedRecipe.id,
-                            qty: SESSION_QTY,
+                            qty: sessionQty,
                             now: Date.now(),
                           });
                           if (!result.ok) {
@@ -450,26 +547,17 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                           <div className={'craftingSessionMeta'}>
                             <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
                           </div>
-                          <HandsOnAlchemySession session={activeAlchemySession} now={now} />
+                          <HandsOnAlchemySession
+                            session={activeAlchemySession}
+                            now={now}
+                            onResult={(result) =>
+                              setLastResult({ result, recipeId: activeAlchemySession.sourceId })
+                            }
+                          />
                           <div className={'craftingSessionActions'}>
-                            <button
-                              className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
-                              disabled={!sessionReady}
-                              onClick={() => {
-                                const result = claimSession(Date.now());
-                                if (!result.ok) {
-                                  const message =
-                                    result.reason === 'not_ready'
-                                      ? 'Session not finished yet'
-                                      : 'Unable to claim session';
-                                  setSessionStatus({ type: 'error', message });
-                                  return;
-                                }
-                                setSessionStatus({ type: 'success', message: 'Session claimed.' });
-                              }}
-                            >
-                              Claim batch
-                            </button>
+                            <div className={'craftingSessionNote'}>
+                              Complete within the hands-on UI to grant rewards immediately.
+                            </div>
                             <button
                               className={'worldScreenModuleButton'}
                               onClick={() => {
@@ -652,6 +740,16 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
           )}
         </div>
       </div>
+
+      {lastResult && (
+        <AlchemyResultModal
+          result={lastResult.result}
+          recipeName={resultRecipeName}
+          onClose={handleResultClose}
+          onCraftAgain={handleResultCraftAgain}
+          onQueueIdle={handleResultQueueIdle}
+        />
+      )}
     </div>
   );
 }

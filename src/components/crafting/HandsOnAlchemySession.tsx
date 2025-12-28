@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CraftSession, CraftStep } from '../../systems/crafting/craftingTypes';
+import type { AlchemyHandsOnResult, CraftSession, CraftStep } from '../../systems/crafting/craftingTypes';
 import { getItemDef } from '../../stores/contentStore';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -8,6 +8,7 @@ import { useUIStore } from '../../stores/uiStore';
 interface HandsOnAlchemySessionProps {
   session: CraftSession;
   now: number;
+  onResult?: (result: AlchemyHandsOnResult) => void;
 }
 
 interface HeatZoneInfo {
@@ -62,7 +63,7 @@ function computeStability(impurities: number, mistakes: number) {
   return Math.max(0, Math.min(100, 100 - impurities * 6 - mistakes * 4));
 }
 
-export function HandsOnAlchemySession({ session, now }: HandsOnAlchemySessionProps) {
+export function HandsOnAlchemySession({ session, now, onResult }: HandsOnAlchemySessionProps) {
   const setHeatSetting = useCraftSessionStore((state) => state.setHeatSetting);
   const addImpurities = useCraftSessionStore((state) => state.addImpurities);
   const recordScoreParts = useCraftSessionStore((state) => state.recordScoreParts);
@@ -72,7 +73,6 @@ export function HandsOnAlchemySession({ session, now }: HandsOnAlchemySessionPro
   const markBackgroundResolving = useCraftSessionStore((state) => state.markBackgroundResolving);
   const completeHandsOnSession = useCraftSessionStore((state) => state.completeHandsOnSession);
   const abortSession = useCraftSessionStore((state) => state.abortSession);
-  const claimSession = useCraftSessionStore((state) => state.claimActiveSession);
   const addNotification = useUIStore((state) => state.addNotification);
 
   const heatSetting = session.cursor.heatSetting ?? 300;
@@ -207,8 +207,11 @@ export function HandsOnAlchemySession({ session, now }: HandsOnAlchemySessionPro
 
   const handleComplete = () => {
     const result = completeHandsOnSession(Date.now());
-    if (result.ok) {
-      setLocalStatus('Batch finished. Claim when ready.');
+    if (result.ok && result.result) {
+      setLocalStatus('Batch finished.');
+      onResult?.(result.result);
+    } else {
+      setLocalStatus('Unable to complete right now.');
     }
   };
 
@@ -218,15 +221,6 @@ export function HandsOnAlchemySession({ session, now }: HandsOnAlchemySessionPro
   const backgroundMessage = backgroundEta
     ? `Session will finish at baseline in ${formatTimeMs(Math.max(0, backgroundEta - now))}.`
     : null;
-
-  const handleClaim = () => {
-    const result = claimSession(Date.now());
-    if (result.ok) {
-      setLocalStatus('Batch claimed.');
-    } else {
-      setLocalStatus(result.reason === 'not_ready' ? 'Batch not ready yet.' : 'Unable to claim session.');
-    }
-  };
 
   return (
     <div className="handsOnSessionCard">
@@ -360,9 +354,6 @@ export function HandsOnAlchemySession({ session, now }: HandsOnAlchemySessionPro
                   onClick={handleComplete}
                 >
                   Complete batch
-                </button>
-                <button type="button" className="worldScreenModuleButton" onClick={handleClaim}>
-                  Claim now
                 </button>
               </div>
             )}
