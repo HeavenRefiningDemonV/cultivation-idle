@@ -54,7 +54,7 @@ export interface ItemDef {
   stackSize?: number;
   sellValue?: number;
   description?: string;
-  usage?: string;
+  usage?: 'combat_only' | 'combat_or_world' | 'cultivate_only';
   note?: string;
 }
 

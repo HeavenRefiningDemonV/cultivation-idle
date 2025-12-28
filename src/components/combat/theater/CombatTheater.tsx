@@ -15,6 +15,7 @@ import { StatusEffectRow } from './StatusEffectRow';
 import { ProgressPanel } from './ProgressPanel';
 import { AI_PROFILE_OPTIONS, buildAiReason, getTechniqueAiTags } from '../../../systems/combat/aiProfiles';
 import { normalizeTechniqueEffects } from '../../../systems/techniques/effects';
+import { MedicinePouchStrip } from '../MedicinePouchStrip';
 import './CombatTheater.scss';
 
 function formatActivityLabel(type: string | null | undefined): string {
@@ -295,6 +296,8 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
       {aiHint && <div className="combat-theater__ai-hint">{aiHint.text}</div>}
 
       <ProgressPanel />
+
+      <MedicinePouchStrip />
 
       <StatusEffectRow />
 

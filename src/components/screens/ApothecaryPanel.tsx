@@ -6,6 +6,7 @@ import { randFloat } from '../../utils/rng';
 import { RewardService } from '../../services/rewards';
 import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
+import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
@@ -387,6 +388,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
   return (
     <div className={'apothecaryPanel'}>
+      <MedicinePouchPanel />
       <div className={'apothecaryHeaderCard'}>
         <div>
           <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>

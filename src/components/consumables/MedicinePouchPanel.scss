@@ -1,0 +1,137 @@
+.medicinePouchPanel {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.medicinePouchPanelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.medicinePouchTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.medicinePouchSubtitle {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.medicinePouchFootnote {
+  font-size: 12px;
+  color: #94a3b8;
+  text-align: right;
+}
+
+.medicinePouchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.medicinePouchCard {
+  border: 1px solid #1e293b;
+  background: #111827;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medicinePouchCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.medicinePouchCardTitle {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.medicinePouchCardSubtitle {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.medicinePouchTag {
+  padding: 4px 8px;
+  background: #0ea5e9;
+  color: #0b1220;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.medicinePouchMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.medicinePouchField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.medicinePouchField--inline {
+  justify-content: space-between;
+}
+
+.medicinePouchLabel {
+  min-width: 90px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.medicinePouchSelect,
+.medicinePouchInput {
+  flex: 1;
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  color: #e2e8f0;
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.medicinePouchButton {
+  background: #0ea5e9;
+  border: none;
+  color: #0b1220;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.medicinePouchButton--ghost {
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #1f2937;
+}
+
+.medicinePouchCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.medicinePouchHint {
+  font-size: 12px;
+  color: #94a3b8;
+}

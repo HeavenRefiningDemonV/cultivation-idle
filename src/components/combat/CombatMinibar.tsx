@@ -9,6 +9,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel';
 import { formatNumber } from '../../utils/numbers';
 import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles';
+import { MedicinePouchStrip } from './MedicinePouchStrip';
 import './CombatMinibar.scss';
 
 type LogEntry =
@@ -275,6 +276,8 @@ function CombatMinibarContent({
           </div>
         </div>
       </div>
+
+      <MedicinePouchStrip />
 
       <div className="combat-minibar__footer">
         <div className="combat-minibar__last-event">
