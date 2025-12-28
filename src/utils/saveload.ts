@@ -24,6 +24,7 @@ import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heart
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { useMedicinePouchStore } from '../stores/medicinePouchStore';
+import { useCraftSessionStore } from '../stores/craftSessionStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
@@ -122,6 +123,7 @@ function gatherGameState(): SaveData {
   const manualPavilionState = useManualPavilionStore.getState();
   const manualSatchelState = useManualSatchelStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
+  const craftSessionState = useCraftSessionStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
 
@@ -167,6 +169,7 @@ function gatherGameState(): SaveData {
       items: { ...inventoryState.items },
     },
 
+    craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
 
     combatSettings: {
@@ -840,6 +843,8 @@ function applySaveData(saveData: SaveData): void {
     const ruinsState =
       saveData.ruinsState ??
       defaults.ruinsState ?? { progressByRuinId: {}, autoRepeatDefault: false, autoRestart: false, runHistory: [], lastRunSummary: null };
+    const craftSessionState =
+      saveData.craftSessionState ?? defaults.craftSessionState ?? { modeByStation: {}, activeSession: null };
 
     // Restore spirit root (fallback to reroll for old saves)
     const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
@@ -949,6 +954,7 @@ function applySaveData(saveData: SaveData): void {
       state.merit = merit;
     });
 
+    useCraftSessionStore.getState().hydrate(craftSessionState);
     useMedicinePouchStore.getState().hydrate(saveData.medicinePouchState ?? defaults.medicinePouchState);
 
     // Apply combat settings
@@ -1217,6 +1223,7 @@ export function deleteSave(): boolean {
 
     useInventoryStore.getState().hardResetInventory();
 
+    useCraftSessionStore.getState().hardReset();
     useMedicinePouchStore.getState().hardReset();
 
     useCombatStore.setState({
@@ -1287,6 +1294,12 @@ export function deleteSaveAndHardReset(): void {
     useInventoryStore.getState().hardResetInventory();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset inventory', error);
+  }
+
+  try {
+    useCraftSessionStore.getState().hardReset();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset craft session state', error);
   }
 
   try {

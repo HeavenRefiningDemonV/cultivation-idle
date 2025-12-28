@@ -1,3 +1,5 @@
+import type { CraftSessionSaveState } from '../systems/crafting/craftingTypes';
+
 /**
  * Cultivation path types
  */
@@ -407,6 +409,7 @@ export interface SaveData {
     items: Record<string, number>;
   };
 
+  craftSessionState?: CraftSessionSaveState;
   medicinePouchState: MedicinePouchState;
 
   // Combat settings (not combat state, just settings)

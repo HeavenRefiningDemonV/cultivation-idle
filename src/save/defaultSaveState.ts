@@ -1,4 +1,12 @@
 import type { SaveData } from '../types';
+import type {
+  CraftMode,
+  CraftSession,
+  CraftSessionPayment,
+  CraftSessionSaveState,
+  CraftStation,
+  CraftScript,
+} from '../systems/crafting/craftingTypes';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
@@ -21,8 +29,9 @@ import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore';
+import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
 
-export const SAVE_VERSION = '1.0.9';
+export const SAVE_VERSION = '1.0.10';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -40,6 +49,7 @@ const REQUIRED_SAVE_KEYS = [
   'prestigeState',
   'manualPavilionState',
   'manualSatchelState',
+  'craftSessionState',
   'medicinePouchState',
 ];
 
@@ -113,6 +123,7 @@ export function buildDefaultSaveState(): SaveData {
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
   const manualSatchelState = useManualSatchelStore.getState();
+  const craftSessionState = useCraftSessionStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
 
   return {
@@ -153,6 +164,7 @@ export function buildDefaultSaveState(): SaveData {
       currencies: { ...inventoryState.currencies },
       items: { ...inventoryState.items },
     },
+    craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
     combatSettings: {
       autoAttack: combatState.autoAttack,
@@ -425,6 +437,58 @@ function isValidExpeditionState(value: unknown): value is SaveData['expeditionSt
   return true;
 }
 
+const validCraftStations: CraftStation[] = ['alchemy', 'forge', 'talisman'];
+const validCraftModes: CraftMode[] = ['idle', 'assisted', 'handsOn'];
+const isCraftStationValue = (value: unknown): value is CraftStation =>
+  typeof value === 'string' && validCraftStations.includes(value as CraftStation);
+const isCraftModeValue = (value: unknown): value is CraftMode =>
+  typeof value === 'string' && validCraftModes.includes(value as CraftMode);
+const isCraftSessionMode = (value: unknown): value is CraftSession['mode'] => value === 'assisted' || value === 'handsOn';
+
+function isValidCraftSessionState(value: unknown): value is SaveData['craftSessionState'] {
+  if (!isRecord(value)) return false;
+  if ('modeByStation' in value && value.modeByStation !== undefined && value.modeByStation !== null) {
+    if (!isRecord(value.modeByStation)) return false;
+    for (const mode of Object.values(value.modeByStation)) {
+      if (mode !== undefined && !isCraftModeValue(mode)) return false;
+    }
+  }
+
+  if (value.activeSession !== undefined && value.activeSession !== null) {
+    if (!isRecord(value.activeSession)) return false;
+    const session = value.activeSession as Record<string, unknown>;
+    if (typeof session.sessionId !== 'string') return false;
+    if (!isCraftStationValue(session.station)) return false;
+    if (!isCraftSessionMode(session.mode)) return false;
+    if (typeof session.sourceId !== 'string') return false;
+    if (typeof session.qty !== 'number' || typeof session.createdAt !== 'number' || typeof session.seed !== 'number') return false;
+    if (!isRecord(session.cursor) || typeof (session.cursor as any).stepIndex !== 'number') return false;
+    if (!isRecord(session.script)) return false;
+    const script = session.script as CraftScript;
+    if (!Array.isArray(script.steps)) return false;
+    if (!script.steps.every((step) => isRecord(step) && typeof step.id === 'string' && typeof (step as any).type === 'string'))
+      return false;
+
+    if ('payment' in session && session.payment !== undefined && session.payment !== null) {
+      const payment = session.payment as Record<string, unknown>;
+      if ('currencies' in payment && payment.currencies !== undefined && payment.currencies !== null && !isRecord(payment.currencies))
+        return false;
+      if ('items' in payment && payment.items !== undefined && payment.items !== null) {
+        if (!Array.isArray(payment.items)) return false;
+        if (
+          !payment.items.every(
+            (entry) => isRecord(entry) && typeof entry.itemId === 'string' && typeof (entry as any).qty === 'number',
+          )
+        ) {
+          return false;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
 function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'] {
   if (!isRecord(value)) return false;
   if (
@@ -677,6 +741,91 @@ function mergeMedicinePouchState(
   return { slots: nextSlots };
 }
 
+const cloneCraftScript = (script: CraftScript): CraftScript => ({
+  ...script,
+  steps: Array.isArray(script.steps) ? script.steps.map((step) => ({ ...step })) : [],
+});
+
+function sanitizeCraftPayment(raw: unknown): CraftSessionPayment {
+  const payment: CraftSessionPayment = {};
+  if (!isRecord(raw)) return payment;
+  if (isRecord((raw as any).currencies)) {
+    payment.currencies = {};
+    (Object.keys((raw as any).currencies) as Array<keyof CraftSessionPayment['currencies']>).forEach((key) => {
+      const value = (raw as any).currencies?.[key];
+      if (typeof value === 'string') {
+        payment.currencies![key] = value;
+      }
+    });
+  }
+  if (Array.isArray((raw as any).items)) {
+    payment.items = (raw as any).items
+      .filter((entry) => isRecord(entry) && typeof (entry as any).itemId === 'string' && typeof (entry as any).qty === 'number')
+      .map((entry) => ({ itemId: (entry as any).itemId as string, qty: Math.max(0, Math.floor((entry as any).qty as number)) }))
+      .filter((entry) => entry.qty > 0);
+  }
+  return payment;
+}
+
+function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): CraftSession | null {
+  if (!isRecord(raw)) return fallback;
+  const session = raw as Record<string, unknown>;
+  if (typeof session.sessionId !== 'string') return fallback;
+  if (!isCraftStationValue(session.station)) return fallback;
+  if (!isCraftSessionMode(session.mode)) return fallback;
+  if (typeof session.sourceId !== 'string') return fallback;
+  const qty =
+    typeof session.qty === 'number' && Number.isFinite(session.qty) ? Math.min(Math.max(1, Math.floor(session.qty)), 999) : null;
+  if (qty === null) return fallback;
+  if (typeof session.createdAt !== 'number' || typeof session.seed !== 'number') return fallback;
+  if (!isRecord(session.script)) return fallback;
+  const script = session.script as CraftScript;
+  if (!Array.isArray(script.steps)) return fallback;
+  if (!script.steps.every((step) => isRecord(step) && typeof step.id === 'string' && typeof (step as any).type === 'string')) {
+    return fallback;
+  }
+  const cursor =
+    isRecord(session.cursor) && typeof (session.cursor as any).stepIndex === 'number'
+      ? { stepIndex: (session.cursor as any).stepIndex as number }
+      : { stepIndex: 0 };
+  const payment = sanitizeCraftPayment(session.payment);
+
+  return {
+    sessionId: session.sessionId,
+    station: session.station as CraftStation,
+    mode: session.mode as CraftSession['mode'],
+    sourceId: session.sourceId,
+    qty,
+    createdAt: session.createdAt as number,
+    seed: session.seed as number,
+    script: cloneCraftScript(script),
+    cursor,
+    payment,
+  };
+}
+
+function mergeCraftSessionState(raw: unknown, defaults: CraftSessionSaveState): CraftSessionSaveState {
+  if (!isValidCraftSessionState(raw)) {
+    if (raw !== undefined) {
+      warnInvalidSlice('craftSessionState');
+    }
+    return defaults;
+  }
+
+  const record = raw as CraftSessionSaveState;
+  const nextModes: CraftSessionSaveState['modeByStation'] = { ...defaults.modeByStation };
+  if (record.modeByStation && isRecord(record.modeByStation)) {
+    Object.entries(record.modeByStation).forEach(([station, mode]) => {
+      if (isCraftStationValue(station) && isCraftModeValue(mode)) {
+        nextModes[station] = mode;
+      }
+    });
+  }
+
+  const activeSession = sanitizeCraftSession(record.activeSession, defaults.activeSession ?? null);
+  return { modeByStation: nextModes, activeSession };
+}
+
 export function mergeWithDefaults(partialSave: unknown): SaveData {
   const defaults = buildDefaultSaveState();
   const record = isRecord(partialSave) ? partialSave : {};
@@ -685,6 +834,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
     defaults.equipmentState ?? ({ equippedWeaponId: null, equippedAccessoryId: null, refineLevelBySlot: { weapon: 0, accessory: 0 } } as SaveData['equipmentState']);
   const baseBuffState = defaults.buffState ?? ({ activeTalismans: [] } as SaveData['buffState']);
   const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
+  const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
 
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
@@ -704,6 +854,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
     inventoryState: isRecord(record.inventoryState)
       ? { ...defaults.inventoryState, ...record.inventoryState }
       : defaults.inventoryState,
+    craftSessionState: mergeCraftSessionState(record.craftSessionState, baseCraftSessionState),
     medicinePouchState: mergeMedicinePouchState(record.medicinePouchState, baseMedicinePouchState),
     combatSettings: isRecord(record.combatSettings)
       ? { ...defaults.combatSettings, ...record.combatSettings }
