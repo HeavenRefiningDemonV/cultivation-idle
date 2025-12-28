@@ -360,6 +360,10 @@ export interface SaveManualSatchelState {
   lastLearned?: { techId: string; grade: SaveManualSatchelEntry['grade']; rarity: SaveManualSatchelEntry['rarity']; focusReward?: 'time' | 'mastery' | 'traitQuality'; learnedAt: number } | null;
 }
 
+export interface SaveRecipeMasteryState {
+  alchemy: Record<string, number>;
+}
+
 export interface SaveData {
   version: string;              // Save format version
   timestamp: number;            // When save was created
@@ -411,6 +415,7 @@ export interface SaveData {
 
   craftSessionState?: CraftSessionSaveState;
   medicinePouchState: MedicinePouchState;
+  recipeMasteryState?: SaveRecipeMasteryState;
 
   // Combat settings (not combat state, just settings)
   combatSettings: {

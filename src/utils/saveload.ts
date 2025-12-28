@@ -25,6 +25,7 @@ import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { useMedicinePouchStore } from '../stores/medicinePouchStore';
 import { useCraftSessionStore } from '../stores/craftSessionStore';
+import { useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
@@ -124,6 +125,7 @@ function gatherGameState(): SaveData {
   const manualSatchelState = useManualSatchelStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
   const craftSessionState = useCraftSessionStore.getState();
+  const recipeMasteryState = useRecipeMasteryStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
 
@@ -171,6 +173,7 @@ function gatherGameState(): SaveData {
 
     craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
+    recipeMasteryState: recipeMasteryState.toSaveState(),
 
     combatSettings: {
       autoAttack: combatState.autoAttack,
@@ -840,11 +843,12 @@ function applySaveData(saveData: SaveData): void {
     const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {}, activeTrialSessionId: null };
     const bountyState = saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
     const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
-    const ruinsState =
-      saveData.ruinsState ??
-      defaults.ruinsState ?? { progressByRuinId: {}, autoRepeatDefault: false, autoRestart: false, runHistory: [], lastRunSummary: null };
-    const craftSessionState =
-      saveData.craftSessionState ?? defaults.craftSessionState ?? { modeByStation: {}, activeSession: null };
+  const ruinsState =
+    saveData.ruinsState ??
+    defaults.ruinsState ?? { progressByRuinId: {}, autoRepeatDefault: false, autoRestart: false, runHistory: [], lastRunSummary: null };
+  const craftSessionState =
+    saveData.craftSessionState ?? defaults.craftSessionState ?? { modeByStation: {}, activeSession: null };
+  const recipeMasteryState = saveData.recipeMasteryState ?? defaults.recipeMasteryState ?? { alchemy: {} };
 
     // Restore spirit root (fallback to reroll for old saves)
     const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
@@ -956,6 +960,7 @@ function applySaveData(saveData: SaveData): void {
 
     useCraftSessionStore.getState().hydrate(craftSessionState);
     useMedicinePouchStore.getState().hydrate(saveData.medicinePouchState ?? defaults.medicinePouchState);
+    useRecipeMasteryStore.getState().hydrate(recipeMasteryState);
 
     // Apply combat settings
     useCombatStore.setState({
@@ -1225,6 +1230,7 @@ export function deleteSave(): boolean {
 
     useCraftSessionStore.getState().hardReset();
     useMedicinePouchStore.getState().hardReset();
+    useRecipeMasteryStore.getState().hardReset();
 
     useCombatStore.setState({
       autoAttack: false,
@@ -1306,6 +1312,12 @@ export function deleteSaveAndHardReset(): void {
     useMedicinePouchStore.getState().hardReset();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset medicine pouch', error);
+  }
+
+  try {
+    useRecipeMasteryStore.getState().hardReset();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset recipe mastery', error);
   }
 
   try {

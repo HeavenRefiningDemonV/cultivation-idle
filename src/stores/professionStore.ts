@@ -7,6 +7,7 @@ import { useInventoryStore, type CurrencyKey } from './inventoryStore';
 import { useContentStore } from './contentStore';
 import { useEquipmentStore } from './equipmentStore';
 import { useGameStore } from './gameStore';
+import { useRecipeMasteryStore } from './recipeMasteryStore';
 
 export type AlchemyJob = {
   id: string;
@@ -459,6 +460,8 @@ export const useProfessionStore = create<ProfessionState>()(
       if (items.length > 0) {
         RewardService.grantRewards({ items }, `Alchemy: ${job.recipeId}`);
       }
+
+      useRecipeMasteryStore.getState().gainAlchemyMastery(job.recipeId, job.qty, 'idle');
 
       set((state) => {
         state.alchemyQueue = state.alchemyQueue.filter((entry) => entry.id !== jobId);

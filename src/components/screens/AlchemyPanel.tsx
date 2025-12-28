@@ -4,6 +4,7 @@ import { formatPrice, getItemDef, useContentStore } from '../../stores/contentSt
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useProfessionStore } from '../../stores/professionStore';
+import { useRecipeMasteryStore } from '../../stores/recipeMasteryStore';
 import { useUIStore } from '../../stores/uiStore';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
@@ -67,6 +68,18 @@ function formatUsageLabel(usage?: string): string | undefined {
   }
 }
 
+const masteryThresholds: Array<{ value: 25 | 50 | 75 | 100; label: string }> = [
+  { value: 25, label: 'Assisted prompts improve yield more.' },
+  { value: 50, label: 'Batch crafting unlocked (x5 options).' },
+  { value: 75, label: 'Alchemy time reduced slightly.' },
+  { value: 100, label: 'Idle: higher baseline quality.' },
+];
+
+function getThresholdLabel(value: number): string {
+  const match = masteryThresholds.find((entry) => entry.value === value);
+  return match?.label ?? '';
+}
+
 export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const recipes = useContentStore((state) => state.raw?.alchemy_recipes ?? []);
   const cities = useContentStore((state) => state.raw?.cities ?? []);
@@ -75,6 +88,8 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const queue = useProfessionStore((state) => state.alchemyQueue);
   const getQty = useInventoryStore((state) => state.getQty);
   const currencies = useInventoryStore((state) => state.currencies);
+  const getAlchemyMastery = useRecipeMasteryStore((state) => state.getAlchemyMastery);
+  const getAlchemyThresholdInfo = useRecipeMasteryStore((state) => state.getAlchemyThresholdInfo);
 
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
   const setCraftMode = useCraftSessionStore((state) => state.setMode);
@@ -204,6 +219,13 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
   const sessionRemainingMs = activeAlchemySession ? Math.max(0, activeAlchemySession.endsAt - now) : 0;
   const sessionReady = activeAlchemySession ? now >= activeAlchemySession.endsAt : false;
+  const masteryInfo = selectedRecipe
+    ? getAlchemyThresholdInfo(selectedRecipe.id)
+    : { mastery: 0, nextThreshold: null, unlocked: [] as number[] };
+  const masteryPercent = Math.min(100, Math.max(0, masteryInfo.mastery));
+  const nextUnlockText = masteryInfo.nextThreshold
+    ? `${masteryInfo.nextThreshold}: ${getThresholdLabel(masteryInfo.nextThreshold)}`
+    : 'All unlocks reached';
 
   return (
     <div className={'alchemyPanel'}>
@@ -263,6 +285,16 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                 </div>
 
                 <UsedForLinks usageText={primaryUsage} className={'craftingUsedFor craftUsedFor'} />
+
+                <div className={'alchemyMastery'}>
+                  <div className={'alchemyMasteryHeader'}>
+                    <span>Mastery: {masteryInfo.mastery}/100</span>
+                    <span className={'alchemyMasteryNext'}>Next unlock: {nextUnlockText}</span>
+                  </div>
+                  <div className={'alchemyMasteryBar'}>
+                    <div className={'alchemyMasteryBarFill'} style={{ width: `${masteryPercent}%` }} />
+                  </div>
+                </div>
 
                 <div className={'alchemyRecipeDetails'}>
                   <div>

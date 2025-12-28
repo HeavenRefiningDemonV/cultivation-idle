@@ -31,8 +31,9 @@ import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore';
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
+import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 
-export const SAVE_VERSION = '1.0.11';
+export const SAVE_VERSION = '1.0.12';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -52,6 +53,7 @@ const REQUIRED_SAVE_KEYS = [
   'manualSatchelState',
   'craftSessionState',
   'medicinePouchState',
+  'recipeMasteryState',
 ];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -126,6 +128,7 @@ export function buildDefaultSaveState(): SaveData {
   const manualSatchelState = useManualSatchelStore.getState();
   const craftSessionState = useCraftSessionStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
+  const recipeMasteryState = useRecipeMasteryStore.getState();
 
   return {
     version: SAVE_VERSION,
@@ -167,6 +170,7 @@ export function buildDefaultSaveState(): SaveData {
     },
     craftSessionState: craftSessionState.toSaveState(),
     medicinePouchState: medicinePouchState.toSaveState(),
+    recipeMasteryState: recipeMasteryState.toSaveState(),
     combatSettings: {
       autoAttack: combatState.autoAttack,
       autoCombatAI: combatState.autoCombatAI,
@@ -537,6 +541,12 @@ function isValidCraftSessionState(value: unknown): value is SaveData['craftSessi
   return true;
 }
 
+function isValidRecipeMasteryState(value: unknown): value is SaveData['recipeMasteryState'] {
+  if (!isRecord(value)) return false;
+  if ('alchemy' in value && value.alchemy !== undefined && value.alchemy !== null && !isRecord(value.alchemy)) return false;
+  return true;
+}
+
 function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'] {
   if (!isRecord(value)) return false;
   if (
@@ -884,6 +894,30 @@ function mergeCraftSessionState(raw: unknown, defaults: CraftSessionSaveState): 
   return { modeByStation: nextModes, activeSession };
 }
 
+function mergeRecipeMasteryState(
+  raw: unknown,
+  defaults: NonNullable<SaveData['recipeMasteryState']>,
+): SaveData['recipeMasteryState'] {
+  if (!isValidRecipeMasteryState(raw)) {
+    if (raw !== undefined) {
+      warnInvalidSlice('recipeMasteryState');
+    }
+    return defaults;
+  }
+
+  const record = raw as SaveData['recipeMasteryState'];
+  const nextAlchemy: Record<string, number> = { ...defaults.alchemy };
+  if (record.alchemy && isRecord(record.alchemy)) {
+    Object.entries(record.alchemy).forEach(([recipeId, value]) => {
+      if (typeof value !== 'number') return;
+      const clamped = Math.min(100, Math.max(0, Math.floor(value)));
+      nextAlchemy[recipeId] = clamped;
+    });
+  }
+
+  return { alchemy: nextAlchemy };
+}
+
 export function mergeWithDefaults(partialSave: unknown): SaveData {
   const defaults = buildDefaultSaveState();
   const record = isRecord(partialSave) ? partialSave : {};
@@ -893,6 +927,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const baseBuffState = defaults.buffState ?? ({ activeTalismans: [] } as SaveData['buffState']);
   const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
   const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
+  const baseRecipeMasteryState = defaults.recipeMasteryState ?? createDefaultRecipeMasteryState();
 
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
@@ -914,6 +949,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       : defaults.inventoryState,
     craftSessionState: mergeCraftSessionState(record.craftSessionState, baseCraftSessionState),
     medicinePouchState: mergeMedicinePouchState(record.medicinePouchState, baseMedicinePouchState),
+    recipeMasteryState: mergeRecipeMasteryState(record.recipeMasteryState, baseRecipeMasteryState),
     combatSettings: isRecord(record.combatSettings)
       ? { ...defaults.combatSettings, ...record.combatSettings }
       : defaults.combatSettings,

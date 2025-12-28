@@ -22,6 +22,7 @@ import {
 import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
+import { useRecipeMasteryStore } from './recipeMasteryStore';
 import { multiply } from '../utils/numbers';
 
 interface StartSessionArgs {
@@ -433,6 +434,13 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
 
         if (bonusResult.items.length > 0) {
           RewardService.grantRewards({ items: bonusResult.items }, `Alchemy Session: ${active.sourceId}`);
+        }
+
+        const masteryGainPerBatch = active.mode === 'handsOn' ? 5 : 2;
+        if (masteryGainPerBatch > 0) {
+          useRecipeMasteryStore
+            .getState()
+            .gainAlchemyMastery(active.sourceId, masteryGainPerBatch * active.qty, active.mode);
         }
 
         set((state) => {
