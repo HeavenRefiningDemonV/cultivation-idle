@@ -695,6 +695,31 @@ export const useGameStore = create<GameState>()(
       def = multiply(def, accessoryMultiplier);
       regen = multiply(regen, accessoryMultiplier);
 
+      const temperAffixes = [
+        ...(equipmentState.temperBonusesBySlot.weapon ?? []),
+        ...(equipmentState.temperBonusesBySlot.accessory ?? []),
+      ];
+      temperAffixes.forEach((affix) => {
+        switch (affix.stat) {
+          case 'atkPct':
+            atk = multiply(atk, D(1).plus(affix.valuePct));
+            break;
+          case 'defPct':
+            def = multiply(def, D(1).plus(affix.valuePct));
+            break;
+          case 'hpPct':
+            hp = multiply(hp, D(1).plus(affix.valuePct));
+            regen = multiply(regen, D(1).plus(affix.valuePct * 0.5));
+            break;
+          case 'critPct':
+            crit += affix.valuePct * 100;
+            break;
+          case 'dodgePct':
+            dodge += affix.valuePct * 100;
+            break;
+        }
+      });
+
       // Apply active buffs
       for (const buff of activeBuffs) {
         switch (buff.stat) {

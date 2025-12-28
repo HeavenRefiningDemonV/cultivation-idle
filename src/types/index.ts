@@ -545,6 +545,8 @@ export interface SaveData {
       weapon: number;
       accessory: number;
     };
+    temperBonusesBySlot?: Record<import('../stores/equipmentStore').EquipmentSlot, import('../stores/equipmentStore').TemperAffix[]>;
+    forgeToolTiers?: import('../stores/equipmentStore').ForgeToolTiers;
   };
 
   buffState?: {

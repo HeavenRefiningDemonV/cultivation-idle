@@ -33,7 +33,7 @@ import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../store
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 
-export const SAVE_VERSION = '1.0.12';
+export const SAVE_VERSION = '1.0.13';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -254,6 +254,8 @@ export function buildDefaultSaveState(): SaveData {
       equippedWeaponId: equipmentState.equippedWeaponId ?? null,
       equippedAccessoryId: equipmentState.equippedAccessoryId ?? null,
       refineLevelBySlot: { ...equipmentState.refineLevelBySlot },
+      temperBonusesBySlot: { ...equipmentState.temperBonusesBySlot },
+      forgeToolTiers: { ...equipmentState.forgeToolTiers },
     },
     buffState: {
       activeTalismans: buffState.activeTalismans.map((entry) => ({ ...entry })),
@@ -963,7 +965,14 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const record = isRecord(partialSave) ? partialSave : {};
   const defaultsMeta = defaults.meta ?? { lastActiveAtMs: Date.now() };
   const baseEquipment =
-    defaults.equipmentState ?? ({ equippedWeaponId: null, equippedAccessoryId: null, refineLevelBySlot: { weapon: 0, accessory: 0 } } as SaveData['equipmentState']);
+    defaults.equipmentState ??
+    ({
+      equippedWeaponId: null,
+      equippedAccessoryId: null,
+      refineLevelBySlot: { weapon: 0, accessory: 0 },
+      temperBonusesBySlot: { weapon: [], accessory: [] },
+      forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
+    } as SaveData['equipmentState']);
   const baseBuffState = defaults.buffState ?? ({ activeTalismans: [] } as SaveData['buffState']);
   const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
   const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
@@ -1013,9 +1022,39 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       isValidProfessionState,
       'professionState',
     ),
-    equipmentState: isRecord(record.equipmentState)
-      ? ({ ...baseEquipment, ...record.equipmentState } as SaveData['equipmentState'])
-      : baseEquipment,
+    equipmentState: (() => {
+      if (!isRecord(record.equipmentState)) return baseEquipment;
+      const incoming = record.equipmentState as SaveData['equipmentState'];
+      const temperBonuses = isRecord(incoming.temperBonusesBySlot)
+        ? {
+            weapon: Array.isArray((incoming.temperBonusesBySlot as any).weapon)
+              ? ((incoming.temperBonusesBySlot as any).weapon as any[])
+              : [],
+            accessory: Array.isArray((incoming.temperBonusesBySlot as any).accessory)
+              ? ((incoming.temperBonusesBySlot as any).accessory as any[])
+              : [],
+          }
+        : baseEquipment.temperBonusesBySlot ?? { weapon: [], accessory: [] };
+      const toolTiers = isRecord(incoming.forgeToolTiers)
+        ? {
+            anvil: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).anvil) || 1)),
+            hammer: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).hammer) || 1)),
+            bellows: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).bellows) || 1)),
+            quenchTub: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).quenchTub) || 1)),
+          }
+        : baseEquipment.forgeToolTiers ?? { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 };
+
+      return {
+        ...baseEquipment,
+        ...incoming,
+        refineLevelBySlot: {
+          weapon: Math.max(0, Math.floor(incoming.refineLevelBySlot?.weapon ?? baseEquipment.refineLevelBySlot.weapon)),
+          accessory: Math.max(0, Math.floor(incoming.refineLevelBySlot?.accessory ?? baseEquipment.refineLevelBySlot.accessory)),
+        },
+        temperBonusesBySlot: temperBonuses,
+        forgeToolTiers: toolTiers,
+      } as SaveData['equipmentState'];
+    })(),
     buffState: isRecord(record.buffState)
       ? ({ ...baseBuffState, ...record.buffState } as SaveData['buffState'])
       : baseBuffState,

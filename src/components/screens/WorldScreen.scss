@@ -2058,6 +2058,85 @@
   padding: 6px 0;
 }
 
+.forgeToolStrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.forgeTool {
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+
+.forgeToolLabel {
+  font-weight: 600;
+}
+
+.forgeToolTier {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.25rem;
+}
+
+.forgeToolButton {
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.forgeAffixList {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.forgeResultCard {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.forgeResultHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.forgeResultTitle {
+  font-weight: 700;
+}
+
+.forgeResultSub {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.forgeResultGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.35rem 0.75rem;
+}
+
+.forgeResultRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.forgeResultLabel {
+  font-weight: 600;
+}
+
+.forgeResultValue {
+  font-family: 'Inter', sans-serif;
+}
+
 .forgeStatus {
   padding: 6px 8px;
   border-radius: 8px;

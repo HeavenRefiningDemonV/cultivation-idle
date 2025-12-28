@@ -20,6 +20,43 @@
       }
     },
     {
+      "id": "forge_temper_weapon_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 90,
+      "service": "temper",
+      "inputs": {
+        "mat_low_grade_ore": 6
+      },
+      "cost": {
+        "gold": 800
+      },
+      "effect": {
+        "type": "temperGear",
+        "baseProcChancePct": 25,
+        "affixPool": ["boss_damage_pct", "crit_chance_pct"],
+        "targetSlot": "weapon"
+      },
+      "stepScript": [
+        { "id": "heat_bar", "type": "HEAT_MATERIAL", "targetMin": 520, "targetMax": 760, "holdMs": 3200 },
+        { "id": "hammer_true", "type": "HAMMER_PATTERN", "hits": 6, "shrinkMs": 780, "tolerance": 0.2 },
+        {
+          "id": "quench_sheen",
+          "type": "QUENCH",
+          "mediumOptions": ["oil", "water"],
+          "medium": "oil",
+          "timingWindow": { "goodMin": 1600, "goodMax": 3000, "perfectMin": 2100, "perfectMax": 2500 }
+        },
+        { "id": "temper_edge", "type": "TEMPER", "targetMin": 430, "targetMax": 560, "holdMs": 3000 },
+        { "id": "finish_temper", "type": "FINISH", "uiLabel": "Seal edge" }
+      ],
+      "handsOnBonus": {
+        "temperProcChancePct": 10,
+        "masteryMult": 1.05,
+        "timeReductionPct": 0.1
+      }
+    },
+    {
       "id": "forge_rune_ember_t1",
       "unlocksAtCityId": "city_pinewind_hamlet",
       "station": "forge",

@@ -285,6 +285,8 @@ function gatherGameState(): SaveData {
       equippedWeaponId: equipmentState.equippedWeaponId,
       equippedAccessoryId: equipmentState.equippedAccessoryId,
       refineLevelBySlot: { ...equipmentState.refineLevelBySlot },
+      temperBonusesBySlot: { ...equipmentState.temperBonusesBySlot },
+      forgeToolTiers: { ...equipmentState.forgeToolTiers },
     },
 
     buffState: {
@@ -819,7 +821,13 @@ function applySaveData(saveData: SaveData): void {
     const shopState = saveData.shopState ?? defaults.shopState ?? { dayKey: '', purchasedToday: {} };
     const equipmentState =
       saveData.equipmentState ??
-      defaults.equipmentState ?? { equippedWeaponId: null, equippedAccessoryId: null, refineLevelBySlot: { weapon: 0, accessory: 0 } };
+      defaults.equipmentState ?? {
+        equippedWeaponId: null,
+        equippedAccessoryId: null,
+        refineLevelBySlot: { weapon: 0, accessory: 0 },
+        temperBonusesBySlot: { weapon: [], accessory: [] },
+        forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
+      };
     const buffState = saveData.buffState ?? defaults.buffState ?? { activeTalismans: [] };
     const professionState =
       saveData.professionState ??
@@ -1079,6 +1087,20 @@ function applySaveData(saveData: SaveData): void {
       refineLevelBySlot: {
         weapon: equipmentState.refineLevelBySlot?.weapon ?? 0,
         accessory: equipmentState.refineLevelBySlot?.accessory ?? 0,
+      },
+      temperBonusesBySlot: {
+        weapon: Array.isArray((equipmentState as any).temperBonusesBySlot?.weapon)
+          ? (((equipmentState as any).temperBonusesBySlot?.weapon as any[]) ?? [])
+          : [],
+        accessory: Array.isArray((equipmentState as any).temperBonusesBySlot?.accessory)
+          ? (((equipmentState as any).temperBonusesBySlot?.accessory as any[]) ?? [])
+          : [],
+      },
+      forgeToolTiers: {
+        anvil: Math.max(1, Math.min(10, Number((equipmentState as any).forgeToolTiers?.anvil) || 1)),
+        hammer: Math.max(1, Math.min(10, Number((equipmentState as any).forgeToolTiers?.hammer) || 1)),
+        bellows: Math.max(1, Math.min(10, Number((equipmentState as any).forgeToolTiers?.bellows) || 1)),
+        quenchTub: Math.max(1, Math.min(10, Number((equipmentState as any).forgeToolTiers?.quenchTub) || 1)),
       },
     });
 

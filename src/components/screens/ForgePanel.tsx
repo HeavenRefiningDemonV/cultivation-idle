@@ -5,12 +5,15 @@ import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useEquipmentStore } from '../../stores/equipmentStore';
 import { useProfessionStore } from '../../stores/professionStore';
 import { useUIStore } from '../../stores/uiStore';
-import { isRefineBlueprint, isRuneBlueprint } from '../../content';
+import { isRefineBlueprint, isRuneBlueprint, isTemperBlueprint } from '../../content';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
 import { ForgeHandsOnSession } from '../crafting/ForgeHandsOnSession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
 import type { CraftStep, ForgeSessionOutcome, ForgeStepResult } from '../../systems/crafting/craftingTypes';
+import type { ForgeServiceResult } from '../../services/forgeService';
+import { RewardService } from '../../services/rewards';
+import { listTemperAffixes } from '../../content/temperAffixes';
 
 interface ForgePanelProps {
   cityId: string | null;
@@ -117,6 +120,9 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const equippedAccessoryId = useEquipmentStore((state) => state.equippedAccessoryId);
   const refineLevelBySlot = useEquipmentStore((state) => state.refineLevelBySlot);
   const getRefineCapForCurrentProgress = useEquipmentStore((state) => state.getRefineCapForCurrentProgress);
+  const temperBonusesBySlot = useEquipmentStore((state) => state.temperBonusesBySlot);
+  const forgeToolTiers = useEquipmentStore((state) => state.forgeToolTiers);
+  const upgradeForgeTool = useEquipmentStore((state) => state.upgradeForgeTool);
 
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
   const setCraftMode = useCraftSessionStore((state) => state.setMode);
@@ -137,6 +143,15 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const [now, setNow] = useState(() => Date.now());
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
   const [lastForgeOutcome, setLastForgeOutcome] = useState<ForgeSessionOutcome | null>(null);
+  const [lastServiceResult, setLastServiceResult] = useState<ForgeServiceResult | null>(null);
+  const [selectedServiceSlot, setSelectedServiceSlot] = useState<'weapon' | 'accessory'>('weapon');
+  const affixLabels = useMemo(() => {
+    const map: Record<string, string> = {};
+    listTemperAffixes().forEach((affix) => {
+      map[affix.id] = affix.label;
+    });
+    return map;
+  }, []);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
@@ -177,17 +192,22 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     [blueprints],
   );
 
+  const serviceBlueprints = useMemo(() => blueprints.filter((bp) => bp.type === 'service'), [blueprints]);
   const refineBlueprint = useMemo(
-    () => blueprints.find((blueprint) => isRefineBlueprint(blueprint)) ?? null,
-    [blueprints],
+    () => serviceBlueprints.find((blueprint) => isRefineBlueprint(blueprint)) ?? null,
+    [serviceBlueprints],
+  );
+  const temperBlueprint = useMemo(
+    () => serviceBlueprints.find((blueprint) => isTemperBlueprint(blueprint)) ?? null,
+    [serviceBlueprints],
   );
 
   useEffect(() => {
-    const first = runeBlueprints[0]?.id ?? refineBlueprint?.id ?? null;
+    const first = runeBlueprints[0]?.id ?? refineBlueprint?.id ?? temperBlueprint?.id ?? null;
     if (!selectedBlueprintId || !blueprints.find((bp) => bp.id === selectedBlueprintId)) {
       setSelectedBlueprintId(first);
     }
-  }, [blueprints, refineBlueprint?.id, runeBlueprints, selectedBlueprintId]);
+  }, [blueprints, refineBlueprint?.id, temperBlueprint?.id, runeBlueprints, selectedBlueprintId]);
 
   useEffect(() => {
     return () => {
@@ -385,6 +405,43 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
       {servicesIdleOnly && <div className={'forgeHint'}>Services are idle-only.</div>}
     </div>
   );
+
+  const renderToolStrip = () => {
+    const toolEntries: Array<{ key: keyof typeof forgeToolTiers; label: string; hint: string }> = [
+      { key: 'anvil', label: 'Anvil', hint: 'Stability' },
+      { key: 'hammer', label: 'Hammer', hint: 'Timing leniency' },
+      { key: 'bellows', label: 'Bellows', hint: 'Heat window' },
+      { key: 'quenchTub', label: 'Quench Tub', hint: 'Quench consistency' },
+    ];
+
+    const handleUpgrade = (key: keyof typeof forgeToolTiers) => {
+      const nextTier = (forgeToolTiers[key] ?? 1) + 1;
+      const cost = Math.max(200, nextTier * 500);
+      const spent = RewardService.spendCurrency({ gold: cost.toString() }, `forge_tool:${key}:${nextTier}`);
+      if (spent) {
+        upgradeForgeTool(key, 1);
+      }
+    };
+
+    return (
+      <div className="forgeToolStrip">
+        {toolEntries.map((entry) => (
+          <div key={entry.key} className="forgeTool">
+            <div className="forgeToolLabel">{entry.label}</div>
+            <div className="forgeToolTier">Tier {forgeToolTiers[entry.key]}</div>
+            <div className="forgeHint">{entry.hint}</div>
+            <button
+              type="button"
+              className="worldScreenModuleButton forgeToolButton"
+              onClick={() => handleUpgrade(entry.key)}
+            >
+              Upgrade
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const renderCraftContent = () => {
     if (!selectedBlueprint) return null;
@@ -649,21 +706,106 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     );
   };
 
+  const renderTemperContent = () => {
+    if (!selectedBlueprint) return null;
+    const effect = (selectedBlueprint as any).effect ?? {};
+    const baseChance = typeof effect.baseProcChancePct === 'number' ? effect.baseProcChancePct : 25;
+    const toolBonus = Math.max(0, (forgeToolTiers.hammer - 1) * 0.5 + (forgeToolTiers.bellows - 1) * 0.25);
+    const displayedChance = Math.min(100, baseChance + toolBonus);
+    const activeAffixes = temperBonusesBySlot[selectedServiceSlot] ?? [];
+    const allowedAffixes: string[] | undefined = Array.isArray(effect.affixPool)
+      ? (effect.affixPool as string[])
+      : undefined;
+
+    return (
+      <div className={'forgeRefinePanel'}>
+        <div className={'forgeRefineRow'}>
+          <div>
+            <div className={'forgeBlueprintLabel'}>Target Slot</div>
+            <div className={'forgeRefineName'}>
+              <label>
+                <input
+                  type="radio"
+                  name="temperSlot"
+                  checked={selectedServiceSlot === 'weapon'}
+                  onChange={() => setSelectedServiceSlot('weapon')}
+                />
+                Weapon
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="temperSlot"
+                  checked={selectedServiceSlot === 'accessory'}
+                  onChange={() => setSelectedServiceSlot('accessory')}
+                />
+                Accessory
+              </label>
+            </div>
+          </div>
+          <div className={'forgeRefineMeta'}>Base chance: {displayedChance.toFixed(1)}%</div>
+          <div className={'forgeRefineMeta'}>Tool bonus included</div>
+          <button
+            className={'worldScreenModuleButton worldScreenModuleButton--active'}
+            onClick={() => {
+              const result = startForge(selectedBlueprint.id, 1, { targetSlot: selectedServiceSlot });
+              if (!result.ok) {
+                setRecipeStatus((prev) => ({ ...prev, [selectedBlueprint.id]: { type: 'error', message: result.error } }));
+                return;
+              }
+              setRecipeStatus((prev) => ({
+                ...prev,
+                [selectedBlueprint.id]: { type: 'success', message: 'Tempering started (idle)' },
+              }));
+            }}
+          >
+            Temper (Idle)
+          </button>
+        </div>
+
+        <div className={'forgeBlueprintLabel'}>Current affixes</div>
+        {activeAffixes.length === 0 ? (
+          <div className={'forgeHint'}>No temper bonuses on this slot yet.</div>
+        ) : (
+          <ul className={'forgeAffixList'}>
+            {activeAffixes.map((affix) => (
+              <li key={affix.id}>
+                {affix.label} ({affix.stat}) +{Math.round(affix.valuePct * 100)}%
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {allowedAffixes && (
+          <div className={'forgeHint'}>
+            Possible lines: {allowedAffixes.map((id) => affixLabels[id] ?? id).join(', ')}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderServiceContent = () => {
     const usageText = formatUsageLabel(undefined);
+    const service = (selectedBlueprint as any)?.service ?? 'service';
+    const serviceTitle = service === 'temper' ? 'Tempering' : 'Refine Equipment';
     return (
       <div className={'craftingDetailCard'}>
         <div className={'craftingDetailHeader'}>
           <div>
-            <div className={'craftingDetailTitle'}>Refine Equipment</div>
-            <div className={'craftingDetailSub'}>{selectedBlueprint?.id ?? 'refine_service'}</div>
+            <div className={'craftingDetailTitle'}>{serviceTitle}</div>
+            <div className={'craftingDetailSub'}>{selectedBlueprint?.id ?? 'service'} </div>
           </div>
-          <div className={'craftingDetailMeta'}>Upgrades equipped weapon and accessory.</div>
+          <div className={'craftingDetailMeta'}>
+            {service === 'temper'
+              ? 'Add a safe bonus line to gear. Failures do nothing.'
+              : 'Upgrades equipped weapon and accessory.'}
+          </div>
         </div>
 
         <UsedForLinks usageText={usageText} className={'craftingUsedFor craftUsedFor'} />
         {renderModeSelector(true)}
-        {renderRefineContent()}
+        {service === 'temper' ? renderTemperContent() : renderRefineContent()}
       </div>
     );
   };
@@ -674,6 +816,56 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     const output = blueprint.output;
     const outputItem = output?.itemId ? getItemDef(output.itemId) : null;
     return outputItem?.name ?? blueprint.name ?? blueprint.id;
+  };
+
+  const renderServiceResultCard = () => {
+    if (!lastServiceResult) return null;
+    const statsToShow: Array<{ key: keyof ForgeServiceResult['beforeStats']; label: string }> = [
+      { key: 'hp', label: 'HP' },
+      { key: 'atk', label: 'ATK' },
+      { key: 'def', label: 'DEF' },
+      { key: 'crit', label: 'Crit %' },
+      { key: 'dodge', label: 'Dodge %' },
+    ];
+
+    const formatDelta = (key: keyof ForgeServiceResult['beforeStats']) => {
+      const before = Number(lastServiceResult.beforeStats[key] ?? 0);
+      const after = Number(lastServiceResult.afterStats[key] ?? 0);
+      const diff = after - before;
+      const sign = diff >= 0 ? '+' : '';
+      return `${after.toFixed(0)} (${sign}${diff.toFixed(0)})`;
+    };
+
+    return (
+      <div className={'forgeResultCard'}>
+        <div className={'forgeResultHeader'}>
+          <div className={'forgeResultTitle'}>
+            {lastServiceResult.type === 'temper' ? 'Tempering result' : 'Refinement result'} ({
+              lastServiceResult.slot
+            })
+          </div>
+          {lastServiceResult.type === 'temper' && (
+            <div className={'forgeResultSub'}>
+              {lastServiceResult.success
+                ? lastServiceResult.affix
+                  ? `New affix: ${lastServiceResult.affix.label}`
+                  : 'Temper proc succeeded.'
+                : 'No temper proc this attempt.'}
+              {lastServiceResult.procChancePct !== undefined &&
+                ` Chance: ${lastServiceResult.procChancePct.toFixed(1)}%.`}
+            </div>
+          )}
+        </div>
+        <div className={'forgeResultGrid'}>
+          {statsToShow.map((stat) => (
+            <div key={stat.key} className={'forgeResultRow'}>
+              <div className={'forgeResultLabel'}>{stat.label}</div>
+              <div className={'forgeResultValue'}>{formatDelta(stat.key)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -687,6 +879,8 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
         </div>
         <div className={'stationBannerMeta'}>Queue size: {forgeQueue.length}</div>
       </div>
+
+      {renderToolStrip()}
 
       <div className={'craftingLayout craftWorkspace'}>
         <div className={'craftingSidebar craftSidebar'}>
@@ -712,17 +906,23 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           </div>
           <div className={'craftingSidebarGroupLabel'}>Services</div>
           <div className={'craftingList craftSidebarList'}>
-            {refineBlueprint ? (
-              <button
-                className={classNames('craftingListItem craftSidebarItem', {
-                  'craftingListItem--active': refineBlueprint.id === selectedBlueprint?.id,
-                  'craftSidebarItem--active': refineBlueprint.id === selectedBlueprint?.id,
-                })}
-                onClick={() => setSelectedBlueprintId(refineBlueprint.id)}
-              >
-                <div className={'craftingListName'}>{sidebarLabel(refineBlueprint.id)}</div>
-                <div className={'craftingListSub'}>{refineBlueprint.id}</div>
-              </button>
+            {serviceBlueprints.length > 0 ? (
+              serviceBlueprints.map((bp) => {
+                const isSelected = bp.id === selectedBlueprint?.id;
+                return (
+                  <button
+                    key={bp.id}
+                    className={classNames('craftingListItem craftSidebarItem', {
+                      'craftingListItem--active': isSelected,
+                      'craftSidebarItem--active': isSelected,
+                    })}
+                    onClick={() => setSelectedBlueprintId(bp.id)}
+                  >
+                    <div className={'craftingListName'}>{sidebarLabel(bp.id)}</div>
+                    <div className={'craftingListSub'}>{bp.id}</div>
+                  </button>
+                );
+              })
             ) : (
               <div className={'forgeHint'}>No services unlocked.</div>
             )}
@@ -737,6 +937,8 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           ) : (
             renderCraftContent()
           )}
+
+          {renderServiceResultCard()}
 
           <div className={'forgeSection'}>
             <div className={'forgeSectionHeader'}>
@@ -782,13 +984,16 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                           className={`worldScreenModuleButton ${done ? 'worldScreenModuleButton--active' : ''}`}
                           disabled={!done}
                           onClick={() => {
-                            const result = claimForge(job.id);
+                            const result = claimForge(job.id) as { ok: boolean; error?: string; result?: ForgeServiceResult };
                             if (!result.ok) {
                               setQueueStatus((prev) => ({
                                 ...prev,
                                 [job.id]: { type: 'error', message: result.error },
                               }));
                               return;
+                            }
+                            if (result.result) {
+                              setLastServiceResult(result.result);
                             }
                             setQueueStatus((prev) => ({
                               ...prev,

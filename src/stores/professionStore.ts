@@ -9,6 +9,7 @@ import { useEquipmentStore } from './equipmentStore';
 import { useGameStore } from './gameStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
 import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
+import { applyRefineService, applyTemperService } from '../services/forgeService';
 
 export type AlchemyJob = {
   id: string;
@@ -26,7 +27,7 @@ export type TalismanJob = {
   endsAt: number;
 };
 
-export type ActionResult = { ok: true } | { ok: false; error: string };
+export type ActionResult = { ok: true; result?: unknown } | { ok: false; error: string };
 
 export type ForgeJob = {
   id: string;
@@ -60,6 +61,15 @@ interface ProfessionState {
 }
 
 const makeJobId = () => `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+const hashSeed = (value: string): number => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
 const MAX_ALCHEMY_QTY = 999;
 const MAX_TALISMAN_QTY = 999;
 const MAX_FORGE_QTY = 999;
@@ -295,7 +305,7 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, reason: 'Missing output' };
       }
 
-      if (blueprint.type === 'service' && blueprint.service === 'refine') {
+      if (blueprint.type === 'service' && (blueprint.service === 'refine' || blueprint.service === 'temper')) {
         if (!targetSlot || (targetSlot !== 'weapon' && targetSlot !== 'accessory')) {
           return { ok: false, reason: 'Select a target slot' };
         }
@@ -344,7 +354,7 @@ export const useProfessionStore = create<ProfessionState>()(
       }
 
       const targetSlot = options?.targetSlot;
-      if (blueprint.type === 'service' && blueprint.service === 'refine') {
+      if (blueprint.type === 'service' && (blueprint.service === 'refine' || blueprint.service === 'temper')) {
         if (!targetSlot || (targetSlot !== 'weapon' && targetSlot !== 'accessory')) {
           return { ok: false, error: 'Select a target slot' };
         }
@@ -520,6 +530,8 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Blueprint not found' };
       }
 
+      let serviceResult: ReturnType<typeof applyRefineService> | ReturnType<typeof applyTemperService> | null = null;
+
       if (blueprint.type === 'craft') {
         const outputItem = blueprint.output?.itemId;
         const outputQty = blueprint.output?.qty ?? 1;
@@ -531,19 +543,23 @@ export const useProfessionStore = create<ProfessionState>()(
         }
       }
 
-      if (blueprint.type === 'service' && blueprint.service === 'refine' && job.targetSlot) {
-        const result = useEquipmentStore.getState().applyRefineFromForge(job.targetSlot, job.qty);
-        if (!result.ok) {
-          return { ok: false, error: result.error };
+      if (blueprint.type === 'service' && job.targetSlot) {
+        if (blueprint.service === 'refine') {
+          serviceResult = applyRefineService({ blueprint, slot: job.targetSlot, qty: job.qty });
+          if (!serviceResult.success) {
+            return { ok: false, error: 'Refine failed' };
+          }
+        } else if (blueprint.service === 'temper') {
+          const seed = Math.abs(hashSeed(job.id));
+          serviceResult = applyTemperService({ blueprint, slot: job.targetSlot, qty: job.qty, seed });
         }
-        useGameStore.getState().calculatePlayerStats();
       }
 
       set((state) => {
         state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
       });
 
-      return { ok: true };
+      return { ok: true, result: serviceResult ?? undefined };
     },
 
     getForgeJobs: () => get().forgeQueue,

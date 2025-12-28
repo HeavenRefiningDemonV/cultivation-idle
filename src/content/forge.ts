@@ -21,6 +21,7 @@ export type NormalizedForgeBlueprint = {
   assistedPrompts?: PromptDef[];
   stepScript?: ForgeStepDef[];
   handsOnBonus?: ForgeHandsOnBonus;
+  effect?: Record<string, unknown>;
 };
 
 function toNumber(value: unknown): number {
@@ -152,6 +153,7 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
     : undefined;
   const stepScript = sanitizeStepScript((raw as any).stepScript);
   const handsOnBonus = sanitizeHandsOnBonus((raw as any).handsOnBonus);
+  const effect = typeof raw.effect === 'object' && raw.effect ? (raw.effect as Record<string, unknown>) : undefined;
 
   const tags = Array.isArray(raw.tags) ? raw.tags.filter((tag) => typeof tag === 'string') : undefined;
   const type: 'craft' | 'service' = service || raw.effect ? 'service' : 'craft';
@@ -174,6 +176,7 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
     assistedPrompts,
     stepScript,
     handsOnBonus,
+    effect,
   };
 }
 
@@ -183,4 +186,8 @@ export function isRuneBlueprint(blueprint: NormalizedForgeBlueprint): boolean {
 
 export function isRefineBlueprint(blueprint: NormalizedForgeBlueprint): boolean {
   return blueprint.type === 'service' && blueprint.service === 'refine';
+}
+
+export function isTemperBlueprint(blueprint: NormalizedForgeBlueprint): boolean {
+  return blueprint.type === 'service' && blueprint.service === 'temper';
 }
