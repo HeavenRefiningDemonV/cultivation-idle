@@ -909,6 +909,36 @@
   font-size: 13px;
 }
 
+.craftingPromptCard {
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.08);
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.craftingPromptTitle {
+  font-weight: 600;
+}
+
+.craftingPromptBody {
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.craftingPromptCountdown {
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.craftingPromptActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .craftingStepList {
   display: flex;
   flex-direction: column;

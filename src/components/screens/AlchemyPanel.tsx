@@ -4,6 +4,8 @@ import { formatPrice, getItemDef, useContentStore } from '../../stores/contentSt
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useProfessionStore } from '../../stores/professionStore';
+import { useUIStore } from '../../stores/uiStore';
+import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
 import { UsedForLinks } from '../crafting/UsedForLinks';
 
@@ -78,6 +80,11 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const startSession = useCraftSessionStore((state) => state.startSession);
   const abortSession = useCraftSessionStore((state) => state.abortSession);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
+  const updateSessionPrompts = useCraftSessionStore((state) => state.updateActiveSessionPrompts);
+  const completePromptAction = useCraftSessionStore((state) => state.completePrompt);
+  const claimSession = useCraftSessionStore((state) => state.claimActiveSession);
+
+  const addNotification = useUIStore((state) => state.addNotification);
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
@@ -90,6 +97,14 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
     return () => window.clearInterval(handle);
   }, []);
+
+  useEffect(() => {
+    updateSessionPrompts(now);
+  }, [now, updateSessionPrompts]);
+
+  useEffect(() => {
+    setSessionStatus(null);
+  }, [activeSession?.sessionId]);
 
   const visibleRecipes = useMemo(() => {
     if (!cityId) return recipes;
@@ -182,7 +197,13 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
   const currentMode = modeByStation.alchemy;
   const activeOtherStation = activeSession && activeSession.station !== 'alchemy';
-  const activeAlchemySession = activeSession && activeSession.station === 'alchemy';
+  const activeAlchemySession = activeSession?.station === 'alchemy' ? activeSession : null;
+  const activePrompts = activeAlchemySession?.prompts ?? [];
+  const promptSummary = summarizePrompts(activePrompts);
+  const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
+  const promptCountdownSec = availablePrompt ? Math.max(0, Math.ceil((availablePrompt.expiresAtMs - now) / 1000)) : 0;
+  const sessionRemainingMs = activeAlchemySession ? Math.max(0, activeAlchemySession.endsAt - now) : 0;
+  const sessionReady = activeAlchemySession ? now >= activeAlchemySession.endsAt : false;
 
   return (
     <div className={'alchemyPanel'}>
@@ -367,18 +388,56 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                           setSessionStatus({ type: 'success', message: 'Session started' });
                         }}
                       >
-                        Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
+                      Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
                       </button>
                     )}
 
                     {activeAlchemySession && (
-                      <div className={'craftingSessionDetails'}>
+                      <div className={'craftingSessionDetails craftSessionCard'}>
                         <div className={'craftingSessionRow'}>
                           <div>Session active</div>
                           <div className={'craftingSessionMeta'}>
                             {activeAlchemySession.mode} · {activeAlchemySession.sourceId}
                           </div>
                         </div>
+                        <div className={'craftingSessionMeta'}>
+                          <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
+                          <div>
+                            Assisted: {promptSummary.completed}/{promptSummary.total} prompts completed
+                          </div>
+                        </div>
+
+                        {activeAlchemySession.mode === 'assisted' && availablePrompt && (
+                          <div className={'craftingPromptCard'}>
+                            <div className={'craftingPromptTitle'}>{availablePrompt.ui?.title ?? 'Stabilize the flame'}</div>
+                            <div className={'craftingPromptBody'}>
+                              {availablePrompt.ui?.body ??
+                                'Click to stabilize within the window for a small bonus. Ignoring has no penalty.'}
+                            </div>
+                            <div className={'craftingPromptCountdown'}>{promptCountdownSec}s remaining</div>
+                            <div className={'craftingPromptActions'}>
+                              <button
+                                className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                                onClick={() => {
+                                  const result = completePromptAction(availablePrompt.id, Date.now());
+                                  if (!result.ok) {
+                                    setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
+                                    return;
+                                  }
+                                  const bonusLabel =
+                                    availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
+                                      ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
+                                      : '';
+                                  addNotification('success', `Flame stabilized${bonusLabel}`, 2500);
+                                  setSessionStatus({ type: 'success', message: `Flame stabilized${bonusLabel}` });
+                                }}
+                              >
+                                Stabilize
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
                         <div className={'craftingStepList'}>
                           {activeAlchemySession.script.steps.map((step) => (
                             <div key={step.id} className={'craftingStepItem'}>
@@ -387,6 +446,32 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                           ))}
                         </div>
                         <div className={'craftingSessionActions'}>
+                          <button
+                            className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
+                            disabled={!sessionReady}
+                            onClick={() => {
+                              const result = claimSession(Date.now());
+                              if (!result.ok) {
+                                const message =
+                                  result.reason === 'not_ready'
+                                    ? 'Session not finished yet'
+                                    : 'Unable to claim session';
+                                setSessionStatus({ type: 'error', message });
+                                return;
+                              }
+                              const bonusTotal = (result.bonus?.bonusItems ?? []).reduce(
+                                (sum, entry) => sum + entry.qty,
+                                0,
+                              );
+                              const summaryText =
+                                result.bonus && result.bonus.total > 0
+                                  ? `Assisted bonus: +${bonusTotal} (${result.bonus.completed}/${result.bonus.total} prompts).`
+                                  : 'Session claimed at baseline.';
+                              setSessionStatus({ type: 'success', message: summaryText });
+                            }}
+                          >
+                            Claim batch
+                          </button>
                           <button
                             className={'worldScreenModuleButton'}
                             onClick={() => {

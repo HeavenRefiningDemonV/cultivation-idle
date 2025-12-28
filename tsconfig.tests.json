@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "rootDir": ".",
+    "outDir": "./tmp-tests",
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "strict": true,
+    "types": ["node"],
+    "esModuleInterop": true
+  },
+  "include": [
+    "tests/**/*.ts",
+    "src/systems/crafting/assistedPrompts.ts",
+    "src/systems/crafting/craftingTypes.ts"
+  ]
+}

@@ -11,6 +11,40 @@ export type CraftStepType =
   | 'TEMPER'
   | 'FINISH';
 
+export type CraftPromptType = 'STABILIZE_FLAME';
+
+export type CraftPromptStatus = 'PENDING' | 'AVAILABLE' | 'COMPLETED' | 'MISSED';
+
+export interface CraftPromptBonus {
+  yieldPct?: number;
+  qualityScore?: number;
+}
+
+export interface CraftPromptUiCopy {
+  title?: string;
+  body?: string;
+}
+
+export interface PromptDef {
+  id: string;
+  type: CraftPromptType;
+  atPct: number;
+  windowSec: number;
+  bonus?: CraftPromptBonus;
+  ui?: CraftPromptUiCopy;
+}
+
+export interface CraftPromptState {
+  id: string;
+  type: CraftPromptType;
+  dueAtMs: number;
+  expiresAtMs: number;
+  status: CraftPromptStatus;
+  completedAtMs?: number | null;
+  bonus?: CraftPromptBonus;
+  ui?: CraftPromptUiCopy;
+}
+
 export type CraftStep =
   | {
       id: string;
@@ -79,9 +113,12 @@ export interface CraftSession {
   qty: number;
   createdAt: number;
   seed: number;
+  startedAt: number;
+  endsAt: number;
   script: CraftScript;
   cursor: { stepIndex: number };
   payment: CraftSessionPayment;
+  prompts?: CraftPromptState[];
 }
 
 export interface CraftSessionSaveState {

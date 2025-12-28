@@ -1,6 +1,7 @@
 import type { SaveData } from '../types';
 import type {
   CraftMode,
+  CraftPromptState,
   CraftSession,
   CraftSessionPayment,
   CraftSessionSaveState,
@@ -31,7 +32,7 @@ import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore';
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
 
-export const SAVE_VERSION = '1.0.10';
+export const SAVE_VERSION = '1.0.11';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -445,6 +446,35 @@ const isCraftModeValue = (value: unknown): value is CraftMode =>
   typeof value === 'string' && validCraftModes.includes(value as CraftMode);
 const isCraftSessionMode = (value: unknown): value is CraftSession['mode'] => value === 'assisted' || value === 'handsOn';
 
+const sanitizePromptStatus = (value: unknown): CraftPromptState['status'] | null => {
+  if (value === 'PENDING' || value === 'AVAILABLE' || value === 'COMPLETED' || value === 'MISSED') return value;
+  return null;
+};
+
+const sanitizePromptState = (raw: unknown): CraftPromptState | null => {
+  if (!isRecord(raw)) return null;
+  if (typeof raw.id !== 'string' || typeof (raw as any).type !== 'string') return null;
+  if (typeof (raw as any).dueAtMs !== 'number' || typeof (raw as any).expiresAtMs !== 'number') return null;
+  const status = sanitizePromptStatus((raw as any).status);
+  if (!status) return null;
+  const completedAtMs =
+    (raw as any).completedAtMs === null || typeof (raw as any).completedAtMs === 'number'
+      ? ((raw as any).completedAtMs as number | null)
+      : null;
+  const bonus = isRecord((raw as any).bonus) ? ((raw as any).bonus as CraftPromptState['bonus']) : undefined;
+  const ui = isRecord((raw as any).ui) ? ((raw as any).ui as CraftPromptState['ui']) : undefined;
+  return {
+    id: raw.id,
+    type: (raw as any).type as CraftPromptState['type'],
+    dueAtMs: (raw as any).dueAtMs as number,
+    expiresAtMs: (raw as any).expiresAtMs as number,
+    status,
+    completedAtMs,
+    bonus,
+    ui,
+  };
+};
+
 function isValidCraftSessionState(value: unknown): value is SaveData['craftSessionState'] {
   if (!isRecord(value)) return false;
   if ('modeByStation' in value && value.modeByStation !== undefined && value.modeByStation !== null) {
@@ -462,12 +492,30 @@ function isValidCraftSessionState(value: unknown): value is SaveData['craftSessi
     if (!isCraftSessionMode(session.mode)) return false;
     if (typeof session.sourceId !== 'string') return false;
     if (typeof session.qty !== 'number' || typeof session.createdAt !== 'number' || typeof session.seed !== 'number') return false;
+    if (typeof session.startedAt !== 'number' || typeof session.endsAt !== 'number') return false;
     if (!isRecord(session.cursor) || typeof (session.cursor as any).stepIndex !== 'number') return false;
     if (!isRecord(session.script)) return false;
     const script = session.script as CraftScript;
     if (!Array.isArray(script.steps)) return false;
     if (!script.steps.every((step) => isRecord(step) && typeof step.id === 'string' && typeof (step as any).type === 'string'))
       return false;
+
+    if ('prompts' in session && session.prompts !== undefined && session.prompts !== null) {
+      if (!Array.isArray(session.prompts)) return false;
+      if (
+        !session.prompts.every(
+          (prompt) =>
+            isRecord(prompt) &&
+            typeof prompt.id === 'string' &&
+            typeof (prompt as any).type === 'string' &&
+            typeof (prompt as any).dueAtMs === 'number' &&
+            typeof (prompt as any).expiresAtMs === 'number' &&
+            typeof (prompt as any).status === 'string',
+        )
+      ) {
+        return false;
+      }
+    }
 
     if ('payment' in session && session.payment !== undefined && session.payment !== null) {
       const payment = session.payment as Record<string, unknown>;
@@ -778,6 +826,8 @@ function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): Craf
     typeof session.qty === 'number' && Number.isFinite(session.qty) ? Math.min(Math.max(1, Math.floor(session.qty)), 999) : null;
   if (qty === null) return fallback;
   if (typeof session.createdAt !== 'number' || typeof session.seed !== 'number') return fallback;
+  const startedAt = typeof session.startedAt === 'number' ? session.startedAt : session.createdAt;
+  const endsAt = typeof session.endsAt === 'number' ? session.endsAt : startedAt;
   if (!isRecord(session.script)) return fallback;
   const script = session.script as CraftScript;
   if (!Array.isArray(script.steps)) return fallback;
@@ -789,6 +839,11 @@ function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): Craf
       ? { stepIndex: (session.cursor as any).stepIndex as number }
       : { stepIndex: 0 };
   const payment = sanitizeCraftPayment(session.payment);
+  const prompts = Array.isArray((session as any).prompts)
+    ? ((session as any).prompts as unknown[])
+        .map((prompt) => sanitizePromptState(prompt))
+        .filter((prompt): prompt is CraftPromptState => Boolean(prompt))
+    : [];
 
   return {
     sessionId: session.sessionId,
@@ -798,9 +853,12 @@ function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): Craf
     qty,
     createdAt: session.createdAt as number,
     seed: session.seed as number,
+    startedAt,
+    endsAt,
     script: cloneCraftScript(script),
     cursor,
     payment,
+    prompts,
   };
 }
 

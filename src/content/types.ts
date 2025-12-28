@@ -1,4 +1,5 @@
 import type { RewardBundle } from '../services/rewards';
+import type { PromptDef } from '../systems/crafting/craftingTypes';
 
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;
@@ -241,6 +242,7 @@ export interface AlchemyRecipesConfig {
     timeSec: number;
     inputs: Record<string, number>;
     outputs: Record<string, number>;
+    assistedPrompts?: PromptDef[];
   }>;
 }
 

@@ -12,7 +12,20 @@
       },
       "outputs": {
         "cons_healing_pellet_t1": 3
-      }
+      },
+      "assistedPrompts": [
+        {
+          "id": "stab_flame_mid",
+          "type": "STABILIZE_FLAME",
+          "atPct": 0.5,
+          "windowSec": 8,
+          "bonus": { "yieldPct": 2 },
+          "ui": {
+            "title": "Stabilize the flame",
+            "body": "Hold the flame steady during the simmer to earn a small yield bonus."
+          }
+        }
+      ]
     },
     {
       "id": "alc_qi_elixir_t1",
