@@ -256,16 +256,18 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const renderModeSelector = (servicesIdleOnly: boolean) => (
     <div className={'craftingModeSelector'}>
       <div className={'craftingModeLabel'}>Mode</div>
-      <div className={'craftingModeButtons'}>
+      <div className={'craftingModeButtons craftModeTabs'}>
         {(['idle', 'assisted', 'handsOn'] as const).map((mode) => {
           const disabled = servicesIdleOnly && mode !== 'idle';
           return (
             <button
               key={mode}
               type="button"
-              className={classNames('craftingModeButton', {
+              className={classNames('craftingModeButton craftModeTab', {
                 'craftingModeButton--active': currentMode === mode,
+                'craftModeTab--active': currentMode === mode,
                 'craftingModeButton--disabled': disabled,
+                'craftModeTab--disabled': disabled,
               })}
               disabled={disabled}
               onClick={() => setCraftMode('forge', mode)}
@@ -305,7 +307,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           </div>
         </div>
 
-        <UsedForLinks usageText={usageText} className={'craftingUsedFor'} />
+        <UsedForLinks usageText={usageText} className={'craftingUsedFor craftUsedFor'} />
 
         <div className={'forgeBlueprintDetails'}>
           <div>
@@ -383,7 +385,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
         )}
 
         {currentMode !== 'idle' && (
-          <div className={'craftingSessionBlock'}>
+          <div className={'craftingSessionBlock craftSessionCard'}>
             <div className={'craftingSessionNote'}>Sessions craft 1 batch for now.</div>
             {activeOtherStation && (
               <div className={'forgeHint'}>Another crafting session is active. Finish or abort it first.</div>
@@ -470,7 +472,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           <div className={'craftingDetailMeta'}>Upgrades equipped weapon and accessory.</div>
         </div>
 
-        <UsedForLinks usageText={usageText} className={'craftingUsedFor'} />
+        <UsedForLinks usageText={usageText} className={'craftingUsedFor craftUsedFor'} />
         {renderModeSelector(true)}
         {renderRefineContent()}
       </div>
@@ -487,7 +489,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
 
   return (
     <div className={'forgePanel'}>
-      <div className={'stationBanner'}>
+      <div className={'stationBanner craftPurposeBanner'}>
         <div>
           <div className={'stationBannerTitle'}>Forge</div>
           <div className={'stationBannerSubtitle'}>
@@ -497,17 +499,20 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
         <div className={'stationBannerMeta'}>Queue size: {forgeQueue.length}</div>
       </div>
 
-      <div className={'craftingLayout'}>
-        <div className={'craftingSidebar'}>
-          <div className={'craftingSidebarHeader'}>Blueprints</div>
+      <div className={'craftingLayout craftWorkspace'}>
+        <div className={'craftingSidebar craftSidebar'}>
+          <div className={'craftingSidebarHeader craftSidebarHeader'}>Blueprints</div>
           <div className={'craftingSidebarGroupLabel'}>Runes</div>
-          <div className={'craftingList'}>
+          <div className={'craftingList craftSidebarList'}>
             {runeBlueprints.map((blueprint) => {
               const isSelected = blueprint.id === selectedBlueprint?.id;
               return (
                 <button
                   key={blueprint.id}
-                  className={classNames('craftingListItem', { 'craftingListItem--active': isSelected })}
+                  className={classNames('craftingListItem craftSidebarItem', {
+                    'craftingListItem--active': isSelected,
+                    'craftSidebarItem--active': isSelected,
+                  })}
                   onClick={() => setSelectedBlueprintId(blueprint.id)}
                 >
                   <div className={'craftingListName'}>{sidebarLabel(blueprint.id)}</div>
@@ -517,11 +522,12 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
             })}
           </div>
           <div className={'craftingSidebarGroupLabel'}>Services</div>
-          <div className={'craftingList'}>
+          <div className={'craftingList craftSidebarList'}>
             {refineBlueprint ? (
               <button
-                className={classNames('craftingListItem', {
+                className={classNames('craftingListItem craftSidebarItem', {
                   'craftingListItem--active': refineBlueprint.id === selectedBlueprint?.id,
+                  'craftSidebarItem--active': refineBlueprint.id === selectedBlueprint?.id,
                 })}
                 onClick={() => setSelectedBlueprintId(refineBlueprint.id)}
               >
@@ -534,7 +540,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           </div>
         </div>
 
-        <div className={'craftingMain'}>
+        <div className={'craftingMain craftMain'}>
           {!selectedBlueprint ? (
             <div className={'forgeEmpty'}>Select a blueprint to view details.</div>
           ) : isServiceBlueprint ? (

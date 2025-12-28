@@ -186,7 +186,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
   return (
     <div className={'alchemyPanel'}>
-      <div className={'stationBanner'}>
+      <div className={'stationBanner craftPurposeBanner'}>
         <div>
           <div className={'stationBannerTitle'}>Alchemy</div>
           <div className={'stationBannerSubtitle'}>
@@ -196,10 +196,10 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
         <div className={'stationBannerMeta'}>Queue size: {queue.length}</div>
       </div>
 
-      <div className={'craftingLayout'}>
-        <div className={'craftingSidebar'}>
-          <div className={'craftingSidebarHeader'}>Recipes</div>
-          <div className={'craftingList'}>
+      <div className={'craftingLayout craftWorkspace'}>
+        <div className={'craftingSidebar craftSidebar'}>
+          <div className={'craftingSidebarHeader craftSidebarHeader'}>Recipes</div>
+          <div className={'craftingList craftSidebarList'}>
             {visibleRecipes.map((recipe) => {
               const outputEntries = Object.entries(recipe.outputs ?? {});
               const firstOutput = outputEntries[0];
@@ -208,7 +208,10 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
               return (
                 <button
                   key={recipe.id}
-                  className={classNames('craftingListItem', { 'craftingListItem--active': isSelected })}
+                  className={classNames('craftingListItem craftSidebarItem', {
+                    'craftingListItem--active': isSelected,
+                    'craftSidebarItem--active': isSelected,
+                  })}
                   onClick={() => setSelectedRecipeId(recipe.id)}
                 >
                   <div className={'craftingListName'}>{outputName}</div>
@@ -219,7 +222,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
           </div>
         </div>
 
-        <div className={'craftingMain'}>
+        <div className={'craftingMain craftMain'}>
           {!selectedRecipe ? (
             <div className={'alchemyQueueEmpty'}>Select a recipe to view details.</div>
           ) : (
@@ -238,7 +241,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                   </div>
                 </div>
 
-                <UsedForLinks usageText={primaryUsage} className={'craftingUsedFor'} />
+                <UsedForLinks usageText={primaryUsage} className={'craftingUsedFor craftUsedFor'} />
 
                 <div className={'alchemyRecipeDetails'}>
                   <div>
@@ -281,13 +284,14 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
                 <div className={'craftingModeSelector'}>
                   <div className={'craftingModeLabel'}>Mode</div>
-                  <div className={'craftingModeButtons'}>
+                  <div className={'craftingModeButtons craftModeTabs'}>
                     {(['idle', 'assisted', 'handsOn'] as const).map((mode) => (
                       <button
                         key={mode}
                         type="button"
-                        className={classNames('craftingModeButton', {
+                        className={classNames('craftingModeButton craftModeTab', {
                           'craftingModeButton--active': currentMode === mode,
+                          'craftModeTab--active': currentMode === mode,
                         })}
                         onClick={() => setCraftMode('alchemy', mode)}
                       >
@@ -338,7 +342,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                 )}
 
                 {currentMode !== 'idle' && (
-                  <div className={'craftingSessionBlock'}>
+                  <div className={'craftingSessionBlock craftSessionCard'}>
                     <div className={'craftingSessionNote'}>Sessions craft 1 batch for now.</div>
                     {activeOtherStation && (
                       <div className={'alchemyRecipeHint'}>
