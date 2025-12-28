@@ -20,8 +20,9 @@ import { useExpeditionStore } from '../stores/expeditionStore';
 import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
+import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore';
 
-export const SAVE_VERSION = '1.0.8';
+export const SAVE_VERSION = '1.0.9';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -39,6 +40,7 @@ const REQUIRED_SAVE_KEYS = [
   'prestigeState',
   'manualPavilionState',
   'manualSatchelState',
+  'medicinePouchState',
 ];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -111,6 +113,7 @@ export function buildDefaultSaveState(): SaveData {
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
   const manualSatchelState = useManualSatchelStore.getState();
+  const medicinePouchState = useMedicinePouchStore.getState();
 
   return {
     version: SAVE_VERSION,
@@ -150,6 +153,7 @@ export function buildDefaultSaveState(): SaveData {
       currencies: { ...inventoryState.currencies },
       items: { ...inventoryState.items },
     },
+    medicinePouchState: medicinePouchState.toSaveState(),
     combatSettings: {
       autoAttack: combatState.autoAttack,
       autoCombatAI: combatState.autoCombatAI,
@@ -484,6 +488,35 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   return true;
 }
 
+function isValidMedicinePouchSlot(value: unknown): value is import('../types').MedicinePouchSlotState {
+  if (!isRecord(value)) return false;
+  if (typeof value.slotKey !== 'string') return false;
+  if ('equippedItemId' in value && value.equippedItemId !== null && typeof value.equippedItemId !== 'string') return false;
+  if ('enabled' in value && value.enabled !== undefined && typeof value.enabled !== 'boolean') return false;
+  if (
+    'trigger' in value &&
+    value.trigger !== undefined &&
+    !['manual', 'hpBelowPct', 'qiBelowPct', 'intentBelowPct', 'fightStart', 'bossStart'].includes(
+      value.trigger as string,
+    )
+  ) {
+    return false;
+  }
+  if ('thresholdPct' in value && value.thresholdPct !== undefined && typeof value.thresholdPct !== 'number') return false;
+  if ('cooldownSec' in value && value.cooldownSec !== undefined && typeof value.cooldownSec !== 'number') return false;
+  if ('bossOnly' in value && value.bossOnly !== undefined && typeof value.bossOnly !== 'boolean') return false;
+  if ('lastUsedAt' in value && value.lastUsedAt !== undefined && value.lastUsedAt !== null && typeof value.lastUsedAt !== 'number') {
+    return false;
+  }
+  return true;
+}
+
+function isValidMedicinePouchState(value: unknown): value is SaveData['medicinePouchState'] {
+  if (!isRecord(value)) return false;
+  if (!isRecord(value.slots)) return false;
+  return (['healing', 'utility', 'specialty'] as const).every((slotKey) => isValidMedicinePouchSlot(value.slots[slotKey]));
+}
+
 function isValidManualPavilionState(value: unknown): value is SaveData['manualPavilionState'] {
   if (!isRecord(value)) return false;
   if (!isRecord(value.stockByPavilionId)) return false;
@@ -584,6 +617,66 @@ function mergeTechniqueState(
   return { ...defaults, ...raw, loadouts, selectedLoadoutId };
 }
 
+const validMedicineTriggers = ['manual', 'hpBelowPct', 'qiBelowPct', 'intentBelowPct', 'fightStart', 'bossStart'] as const;
+
+const clampNumber = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+
+function sanitizeMedicinePouchSlot(
+  slotKey: import('../types').MedicinePouchSlotKey,
+  raw: unknown,
+  fallback: import('../types').MedicinePouchSlotState,
+): import('../types').MedicinePouchSlotState {
+  if (!isRecord(raw)) return fallback;
+  const equippedItemId = typeof raw.equippedItemId === 'string' ? raw.equippedItemId : null;
+  const enabled = raw.enabled !== undefined ? Boolean(raw.enabled) : fallback.enabled;
+  const trigger =
+    typeof raw.trigger === 'string' && (validMedicineTriggers as readonly string[]).includes(raw.trigger)
+      ? (raw.trigger as (typeof validMedicineTriggers)[number])
+      : fallback.trigger;
+  const thresholdPct = clampNumber(
+    typeof raw.thresholdPct === 'number' && Number.isFinite(raw.thresholdPct) ? raw.thresholdPct : fallback.thresholdPct,
+    0,
+    100,
+  );
+  const cooldownSec = clampNumber(
+    typeof raw.cooldownSec === 'number' && Number.isFinite(raw.cooldownSec) ? raw.cooldownSec : fallback.cooldownSec,
+    0,
+    3600,
+  );
+  const bossOnly = raw.bossOnly !== undefined ? Boolean(raw.bossOnly) : fallback.bossOnly;
+  const lastUsedAt = typeof raw.lastUsedAt === 'number' && Number.isFinite(raw.lastUsedAt) ? raw.lastUsedAt : null;
+
+  return {
+    slotKey,
+    equippedItemId,
+    enabled,
+    trigger,
+    thresholdPct,
+    cooldownSec,
+    bossOnly,
+    lastUsedAt,
+  };
+}
+
+function mergeMedicinePouchState(
+  raw: unknown,
+  defaults: SaveData['medicinePouchState'],
+): SaveData['medicinePouchState'] {
+  if (!isValidMedicinePouchState(raw)) {
+    if (raw !== undefined) {
+      warnInvalidSlice('medicinePouchState');
+    }
+    return defaults;
+  }
+
+  const nextSlots: SaveData['medicinePouchState']['slots'] = { ...defaults.slots } as any;
+  (['healing', 'utility', 'specialty'] as const).forEach((slotKey) => {
+    nextSlots[slotKey] = sanitizeMedicinePouchSlot(slotKey, raw.slots?.[slotKey], defaults.slots[slotKey]);
+  });
+
+  return { slots: nextSlots };
+}
+
 export function mergeWithDefaults(partialSave: unknown): SaveData {
   const defaults = buildDefaultSaveState();
   const record = isRecord(partialSave) ? partialSave : {};
@@ -591,6 +684,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const baseEquipment =
     defaults.equipmentState ?? ({ equippedWeaponId: null, equippedAccessoryId: null, refineLevelBySlot: { weapon: 0, accessory: 0 } } as SaveData['equipmentState']);
   const baseBuffState = defaults.buffState ?? ({ activeTalismans: [] } as SaveData['buffState']);
+  const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
 
   const merged: SaveData & Record<string, unknown> = {
     ...defaults,
@@ -610,6 +704,7 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
     inventoryState: isRecord(record.inventoryState)
       ? { ...defaults.inventoryState, ...record.inventoryState }
       : defaults.inventoryState,
+    medicinePouchState: mergeMedicinePouchState(record.medicinePouchState, baseMedicinePouchState),
     combatSettings: isRecord(record.combatSettings)
       ? { ...defaults.combatSettings, ...record.combatSettings }
       : defaults.combatSettings,

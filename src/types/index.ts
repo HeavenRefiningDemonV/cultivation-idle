@@ -12,6 +12,30 @@ export type BreathMode = 'balanced' | 'safe' | 'fast';
 export type ComprehensionSource = 'meditation' | 'outskirtsBoss' | 'trialClear' | 'ruinsClear';
 export type InsightChoiceId = 'contemplate' | 'stabilize' | 'drawQi';
 
+export type MedicinePouchSlotKey = 'healing' | 'utility' | 'specialty';
+export type MedicinePouchTrigger =
+  | 'manual'
+  | 'hpBelowPct'
+  | 'qiBelowPct'
+  | 'intentBelowPct'
+  | 'fightStart'
+  | 'bossStart';
+
+export interface MedicinePouchSlotState {
+  slotKey: MedicinePouchSlotKey;
+  equippedItemId: string | null;
+  enabled: boolean;
+  trigger: MedicinePouchTrigger;
+  thresholdPct: number;
+  cooldownSec: number;
+  bossOnly: boolean;
+  lastUsedAt: number | null;
+}
+
+export interface MedicinePouchState {
+  slots: Record<MedicinePouchSlotKey, MedicinePouchSlotState>;
+}
+
 export interface InsightChoice {
   id: InsightChoiceId;
   title: string;
@@ -382,6 +406,8 @@ export interface SaveData {
     };
     items: Record<string, number>;
   };
+
+  medicinePouchState: MedicinePouchState;
 
   // Combat settings (not combat state, just settings)
   combatSettings: {

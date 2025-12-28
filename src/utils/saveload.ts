@@ -23,6 +23,7 @@ import { useExpeditionStore } from '../stores/expeditionStore';
 import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
+import { useMedicinePouchStore } from '../stores/medicinePouchStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
@@ -120,6 +121,7 @@ function gatherGameState(): SaveData {
   const heartLawState = useHeartLawStore.getState();
   const manualPavilionState = useManualPavilionStore.getState();
   const manualSatchelState = useManualSatchelStore.getState();
+  const medicinePouchState = useMedicinePouchStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
 
@@ -164,6 +166,8 @@ function gatherGameState(): SaveData {
       currencies: { ...inventoryState.currencies },
       items: { ...inventoryState.items },
     },
+
+    medicinePouchState: medicinePouchState.toSaveState(),
 
     combatSettings: {
       autoAttack: combatState.autoAttack,
@@ -390,6 +394,13 @@ function validateSaveData(data: unknown): data is SaveData {
         typeof currenciesValue.spiritStones === 'string' &&
         typeof currenciesValue.merit === 'string');
     if (!currenciesValid) return false;
+
+    if ('medicinePouchState' in record && record.medicinePouchState !== undefined) {
+      const pouch = record.medicinePouchState as Record<string, unknown>;
+      const slots = (pouch as { slots?: unknown }).slots;
+      const hasSlots = slots && typeof slots === 'object';
+      if (!hasSlots) return false;
+    }
 
     const cs = record.combatSettings as Record<string, unknown>;
     if (typeof cs.autoAttack !== 'boolean' || typeof cs.autoCombatAI !== 'boolean') return false;
@@ -938,6 +949,8 @@ function applySaveData(saveData: SaveData): void {
       state.merit = merit;
     });
 
+    useMedicinePouchStore.getState().hydrate(saveData.medicinePouchState ?? defaults.medicinePouchState);
+
     // Apply combat settings
     useCombatStore.setState({
       autoAttack: saveData.combatSettings.autoAttack,
@@ -1204,6 +1217,8 @@ export function deleteSave(): boolean {
 
     useInventoryStore.getState().hardResetInventory();
 
+    useMedicinePouchStore.getState().hardReset();
+
     useCombatStore.setState({
       autoAttack: false,
       autoCombatAI: false,
@@ -1272,6 +1287,12 @@ export function deleteSaveAndHardReset(): void {
     useInventoryStore.getState().hardResetInventory();
   } catch (error) {
     console.warn('[deleteSaveAndHardReset] Failed to reset inventory', error);
+  }
+
+  try {
+    useMedicinePouchStore.getState().hardReset();
+  } catch (error) {
+    console.warn('[deleteSaveAndHardReset] Failed to reset medicine pouch', error);
   }
 
   try {
