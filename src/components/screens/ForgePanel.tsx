@@ -8,7 +8,9 @@ import { useUIStore } from '../../stores/uiStore';
 import { isRefineBlueprint, isRuneBlueprint } from '../../content';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
+import { ForgeHandsOnSession } from '../crafting/ForgeHandsOnSession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
+import type { CraftStep, ForgeSessionOutcome, ForgeStepResult } from '../../systems/crafting/craftingTypes';
 
 interface ForgePanelProps {
   cityId: string | null;
@@ -52,6 +54,58 @@ function formatUsageLabel(usage?: string): string | undefined {
   }
 }
 
+function buildAssistedPerformance(step: CraftStep): ForgeStepResult | null {
+  switch (step.type) {
+    case 'HEAT_MATERIAL':
+      return {
+        stepId: step.id,
+        type: 'HEAT_MATERIAL',
+        achievedMin: step.targetMin,
+        achievedMax: step.targetMax,
+        holdMs: step.holdMs,
+      };
+    case 'HAMMER_PATTERN':
+      return {
+        stepId: step.id,
+        type: 'HAMMER_PATTERN',
+        hitsLanded: step.hits,
+        hitsRequired: step.hits,
+        timingScore: 0.75,
+      };
+    case 'QUENCH':
+      return {
+        stepId: step.id,
+        type: 'QUENCH',
+        medium: step.mediumOptions[0] ?? 'water',
+        timingMs: step.timingWindow ? (step.timingWindow.goodMin + step.timingWindow.goodMax) / 2 : undefined,
+      };
+    case 'TEMPER':
+      return {
+        stepId: step.id,
+        type: 'TEMPER',
+        achievedMin: step.targetMin ?? step.targetHeat - 15,
+        achievedMax: step.targetMax ?? step.targetHeat + 15,
+        holdMs: step.holdMs ?? step.durationMs,
+      };
+    case 'ALLOY_MIX': {
+      const choice = step.options[0];
+      return {
+        stepId: step.id,
+        type: 'ALLOY_MIX',
+        choiceId: choice?.id,
+        qualityDelta: choice?.qualityDelta,
+      };
+    }
+    case 'CAST_OR_SHAPE':
+      return { stepId: step.id, type: 'CAST_OR_SHAPE', variant: step.variant, precision: 0.7, success: true };
+    case 'ENGRAVE_RUNE':
+      return { stepId: step.id, type: 'ENGRAVE_RUNE', success: true, precision: 0.65, optional: step.optional };
+    case 'FINISH':
+    default:
+      return null;
+  }
+}
+
 export function ForgePanel({ cityId }: ForgePanelProps) {
   const startForge = useProfessionStore((state) => state.startForge);
   const claimForge = useProfessionStore((state) => state.claimForge);
@@ -69,9 +123,11 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const startSession = useCraftSessionStore((state) => state.startSession);
   const abortSession = useCraftSessionStore((state) => state.abortSession);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
+  const recordForgeStepResult = useCraftSessionStore((state) => state.recordForgeStepResult);
   const updateSessionPrompts = useCraftSessionStore((state) => state.updateActiveSessionPrompts);
   const completePromptAction = useCraftSessionStore((state) => state.completePrompt);
   const claimSession = useCraftSessionStore((state) => state.claimActiveSession);
+  const markBackgroundResolving = useCraftSessionStore((state) => state.markBackgroundResolving);
   const addNotification = useUIStore((state) => state.addNotification);
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
@@ -80,6 +136,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const [sessionStatus, setSessionStatus] = useState<StatusMessage | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
+  const [lastForgeOutcome, setLastForgeOutcome] = useState<ForgeSessionOutcome | null>(null);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
@@ -91,7 +148,23 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   }, [now, updateSessionPrompts]);
 
   useEffect(() => {
+    if (!activeForgeSession || activeForgeSession.mode !== 'assisted') return;
+    const existingIds = new Set((activeForgeSession.cursor.forgeStepResults ?? []).map((entry) => entry.stepId));
+    activeForgeSession.script.steps.forEach((step) => {
+      if (existingIds.has(step.id)) return;
+      const perf = buildAssistedPerformance(step);
+      if (perf) {
+        recordForgeStepResult(perf);
+      }
+    });
+  }, [activeForgeSession, recordForgeStepResult]);
+
+  useEffect(() => {
     setSessionStatus(null);
+  }, [activeSession?.sessionId]);
+
+  useEffect(() => {
+    setLastForgeOutcome(null);
   }, [activeSession?.sessionId]);
 
   const blueprints = useMemo(() => {
@@ -115,6 +188,14 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
       setSelectedBlueprintId(first);
     }
   }, [blueprints, refineBlueprint?.id, runeBlueprints, selectedBlueprintId]);
+
+  useEffect(() => {
+    return () => {
+      if (activeForgeSession?.mode === 'handsOn' && activeForgeSession.cursor.backgroundResolveAt == null) {
+        markBackgroundResolving('navigated');
+      }
+    };
+  }, [activeForgeSession, markBackgroundResolving]);
 
   const selectedBlueprint = useMemo(
     () => blueprints.find((bp) => bp.id === selectedBlueprintId) ?? blueprints[0] ?? null,
@@ -317,6 +398,13 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     const status = recipeStatus[selectedBlueprint.id];
     const affordability = canStartForge(selectedBlueprint.id, qty);
     const usageText = formatUsageLabel(outputItem?.usage);
+    const blueprintForSession = activeForgeSession
+      ? blueprints.find((bp) => bp.id === activeForgeSession.sourceId) ?? selectedBlueprint
+      : selectedBlueprint;
+    const handsOnBonus = blueprintForSession?.handsOnBonus ?? activeForgeSession?.script.handsOnBonus;
+    const activeOutputName = blueprintForSession?.output?.itemId
+      ? getItemDef(blueprintForSession.output.itemId)?.name ?? blueprintForSession.output.itemId
+      : blueprintForSession?.name ?? outputName;
 
     return (
       <div className={'craftingDetailCard'}>
@@ -410,7 +498,9 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
 
         {currentMode !== 'idle' && (
           <div className={'craftingSessionBlock craftSessionCard'}>
-            <div className={'craftingSessionNote'}>Sessions craft 1 batch for now.</div>
+            <div className={'craftingSessionNote'}>
+              Sessions craft 1 batch for now. Assisted auto-resolves at a good grade; hands-on is interactive.
+            </div>
             {activeOtherStation && (
               <div className={'forgeHint'}>Another crafting session is active. Finish or abort it first.</div>
             )}
@@ -432,10 +522,40 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                   setSessionStatus({ type: 'success', message: 'Session started' });
                 }}
               >
-              Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
+                Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
               </button>
             )}
-            {activeForgeSession && (
+            {activeForgeSession && activeForgeSession.mode === 'handsOn' && (
+              <div className={'craftingSessionDetails craftSessionCard'}>
+                <ForgeHandsOnSession
+                  session={activeForgeSession}
+                  now={now}
+                  blueprintName={activeOutputName}
+                  bonus={handsOnBonus}
+                  onOutcome={(outcome) => {
+                    setLastForgeOutcome(outcome);
+                    setSessionStatus({ type: 'success', message: 'Hands-on forge complete' });
+                  }}
+                />
+                {lastForgeOutcome && (
+                  <div className={'forgeOutcomeCard'}>
+                    <div className={'forgeOutcomeTitle'}>Outcome summary</div>
+                    <div className={'forgeOutcomeGrid'}>
+                      <div>Overall: {Math.round(lastForgeOutcome.scoreOverall * 100)}%</div>
+                      <div>Heat: {Math.round(lastForgeOutcome.heatScore * 100)}%</div>
+                      <div>Hammer: {Math.round(lastForgeOutcome.hammerScore * 100)}%</div>
+                      <div>Quench: {Math.round(lastForgeOutcome.quenchScore * 100)}%</div>
+                      <div>Temper: {Math.round(lastForgeOutcome.temperScore * 100)}%</div>
+                      <div>Time bonus: +{Math.round(lastForgeOutcome.timeReductionPctApplied)}%</div>
+                      <div>Quality proc: +{Math.round(lastForgeOutcome.qualityProcChanceBonusPct)}%</div>
+                      <div>Mastery mult: x{lastForgeOutcome.masteryMultApplied.toFixed(2)}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeForgeSession && activeForgeSession.mode === 'assisted' && (
               <div className={'craftingSessionDetails craftSessionCard'}>
                 <div className={'craftingSessionRow'}>
                   <div>Session active</div>
@@ -448,7 +568,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                   <div>Assisted: {promptSummary.completed}/{promptSummary.total} prompts completed</div>
                 </div>
 
-                {activeForgeSession.mode === 'assisted' && availablePrompt && (
+                {availablePrompt && (
                   <AssistedPromptCard
                     prompt={availablePrompt}
                     now={now}

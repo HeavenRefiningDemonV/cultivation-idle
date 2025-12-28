@@ -979,6 +979,298 @@
   padding: 6px 8px;
 }
 
+.forgeHandsOnLayout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.forgeHandsOnMain,
+.forgeHandsOnSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forgeSessionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.forgeSessionTitle {
+  font-weight: 700;
+}
+
+.forgeSessionSub {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeSessionMeta {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.forgeDial {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(226, 232, 240, 0.03));
+}
+
+.forgeDialHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.forgeDialTitle {
+  font-weight: 700;
+}
+
+.forgeDialZone {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.forgeDialMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-top: 6px;
+}
+
+.forgeTargetBar {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.forgeTargetFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(34, 197, 94, 0.35);
+  border-radius: 8px;
+}
+
+.forgeTargetPointer {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  background: #fbbf24;
+}
+
+.forgeStepCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.forgeStepTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.forgeStepBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeStepMeta {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeHammerMeter {
+  height: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.forgeHammerProgress {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(59, 130, 246, 0.7));
+}
+
+.forgeHammerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeMediumRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.forgeMediumChip {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.forgeMediumChip--active {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.forgeQuenchBar {
+  position: relative;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.forgeQuenchFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(59, 130, 246, 0.4);
+}
+
+.forgeQuenchGood {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.forgeQuenchPerfect {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(168, 85, 247, 0.3);
+}
+
+.forgeQualityMeter {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.forgeQualityTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.forgeQualityRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeQualityRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 60px;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgeQualityBar {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.forgeQualityFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.7), rgba(59, 130, 246, 0.7));
+  border-radius: 8px;
+}
+
+.forgeQualityValue {
+  text-align: right;
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.forgeHandsOnActions {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeTimeline {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.forgeTimelineTitle {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.forgeTimelineList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeTimelineItem {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.forgeTimelineItem--active {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.forgeTimelineItem--done {
+  opacity: 0.7;
+}
+
+.forgeOutcomePreview,
+.forgeOutcomeCard {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.forgeOutcomeTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.forgeOutcomeRow {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.forgeOutcomeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 6px;
+  font-size: 13px;
+}
+
 .alchemyIngredientRow--done {
   opacity: 0.6;
 }
@@ -1052,6 +1344,10 @@
 @media (max-width: 900px) {
   .craftWorkspace,
   .craftingLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .forgeHandsOnLayout {
     grid-template-columns: 1fr;
   }
 
