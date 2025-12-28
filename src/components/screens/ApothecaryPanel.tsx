@@ -1,33 +1,67 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
+import { useInventoryStore } from '../../stores/inventoryStore';
 import { useShopStore } from '../../stores/shopStore';
-import { multiply } from '../../utils/numbers';
+import { randFloat } from '../../utils/rng';
+import './ApothecaryPanel.scss';
+
+type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
 
 interface ApothecaryPanelProps {
   shopId: string | null;
 }
 
-const currencyKeys = ['gold', 'spiritStones', 'merit'] as const;
+function stringToSeed(input: string) {
+  let seed = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    seed = (seed * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return seed;
+}
 
-function computeTotalPrice(price: Partial<Record<string, string>>, qty: number) {
-  const totals: Partial<Record<string, string>> = {};
-  currencyKeys.forEach((key) => {
-    const unit = price[key];
-    if (unit !== undefined) {
-      totals[key] = multiply(unit, qty).toString();
-    }
-  });
-  return totals;
+function pickDeterministic<T>(pool: T[], count: number, seed: number) {
+  const available = [...pool];
+  const picks: T[] = [];
+  let currentSeed = seed;
+
+  while (picks.length < count && available.length > 0) {
+    const { value, seed: nextSeed } = randFloat(currentSeed || 1);
+    currentSeed = nextSeed;
+    const idx = Math.floor(value * available.length);
+    picks.push(available.splice(idx, 1)[0]);
+  }
+
+  return { picks, seed: currentSeed };
+}
+
+function usageLabel(usage?: string) {
+  switch (usage) {
+    case 'combat_only':
+      return 'Combat Only';
+    case 'cultivate_only':
+      return 'Cultivation Only';
+    case 'combat_or_world':
+      return 'Combat / World';
+    default:
+      return 'General';
+  }
 }
 
 export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
-  const shop = useContentStore((state) => (shopId ? state.maps.apothecariesById[shopId] : undefined));
-  const purchasedToday = useShopStore((state) => state.purchasedToday);
+  const apothecary = useContentStore((state) =>
+    shopId ? state.maps.apothecariesById[shopId] : undefined,
+  );
+  const currencies = useInventoryStore((state) => state.currencies);
+  const getQty = useInventoryStore((state) => state.getQty);
+
   const dayKey = useShopStore((state) => state.dayKey);
   const ensureDayKeyCurrent = useShopStore((state) => state.ensureDayKeyCurrent);
+  const getPurchased = useShopStore((state) => state.getPurchased);
+  const getRemainingToday = useShopStore((state) => state.getRemainingToday);
+  const canBuy = useShopStore((state) => state.canBuy);
   const buy = useShopStore((state) => state.buy);
 
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [activeShelf, setActiveShelf] = useState<ShelfKey>('combat');
   const [statusByStock, setStatusByStock] = useState<
     Record<string, { type: 'success' | 'error'; message: string }>
   >({});
@@ -36,165 +70,227 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     ensureDayKeyCurrent();
   }, [ensureDayKeyCurrent]);
 
-  const handleSetQty = (stockId: string, qty: number) => {
-    const next = Math.max(1, Math.floor(qty));
-    setQuantities((prev) => ({ ...prev, [stockId]: next }));
+  const stock = apothecary?.stock ?? [];
+
+  const combatStock = useMemo(
+    () =>
+      stock.filter((entry) => {
+        const usage = getItemDef(entry.itemId)?.usage;
+        // Default unknown usage to combat to keep items visible until tagged.
+        return usage === 'combat_only' || usage === 'combat_or_world' || usage === undefined;
+      }),
+    [stock],
+  );
+
+  const cultivationStock = useMemo(
+    () => stock.filter((entry) => getItemDef(entry.itemId)?.usage === 'cultivate_only'),
+    [stock],
+  );
+
+  const rotatingStock = useMemo(() => {
+    if (!apothecary) return [] as typeof stock;
+    let seed = stringToSeed(`${apothecary.id}${dayKey}rotating`);
+    const combatPick = pickDeterministic(combatStock, 2, seed);
+    seed = combatPick.seed;
+    const cultivationPick = pickDeterministic(cultivationStock, 2, seed);
+    return [...combatPick.picks, ...cultivationPick.picks];
+  }, [apothecary, dayKey, combatStock, cultivationStock]);
+
+  const renderPlaceholder = (title: string, body: string) => (
+    <div className={'worldScreenPlaceholder'}>
+      <div className={'worldScreenPlaceholderHeader'}>
+        <div className={'worldScreenPlaceholderTitle'}>{title}</div>
+      </div>
+      <div className={'worldScreenPlaceholderBody'}>{body}</div>
+    </div>
+  );
+
+  if (!shopId) {
+    return renderPlaceholder('No Apothecary here', 'This city does not host an apothecary.');
+  }
+
+  if (!apothecary) {
+    return renderPlaceholder('Apothecary data missing', `Shop definition not found (id: ${shopId}).`);
+  }
+
+  if (!apothecary.stock || apothecary.stock.length === 0) {
+    return renderPlaceholder(apothecary.name ?? 'Apothecary', 'No stock available.');
+  }
+
+  const shelfOptions: { key: ShelfKey; label: string }[] = [
+    { key: 'combat', label: `Combat (${combatStock.length})` },
+    { key: 'cultivation', label: `Cultivation (${cultivationStock.length})` },
+    { key: 'rotating', label: `Rotating (${rotatingStock.length})` },
+    { key: 'services', label: 'Services' },
+    { key: 'bundles', label: 'Bundles' },
+  ];
+
+  const renderStockCard = (entryId: string) => {
+    const stockEntry = stock.find((s) => s.id === entryId);
+    if (!stockEntry) return null;
+
+    const itemDef = getItemDef(stockEntry.itemId);
+    const itemName = itemDef?.name ?? stockEntry.itemId;
+    const description = itemDef?.description || itemDef?.id || 'No description yet.';
+    const perPurchaseQty = stockEntry.qty ?? 1;
+    const purchased = getPurchased(apothecary.id, stockEntry.id);
+    const remaining = getRemainingToday(apothecary.id, stockEntry.id, stockEntry.dailyLimit);
+    const limit = stockEntry.dailyLimit;
+    const owned = getQty(stockEntry.itemId);
+
+    const maxUnlimitedQty = Math.min(99, itemDef?.stackSize ?? 99);
+    const maxBuyQty = limit == null ? maxUnlimitedQty : remaining ?? 0;
+
+    const canBuyOne = remaining !== 0 && canBuy(apothecary.id, stockEntry.id, 1).ok;
+    const canBuyMax = maxBuyQty > 0 && canBuy(apothecary.id, stockEntry.id, maxBuyQty).ok;
+
+    const status = statusByStock[stockEntry.id];
+    const tag = usageLabel(itemDef?.usage);
+
+    const handlePurchase = (qty: number) => {
+      if (qty <= 0) return;
+      const result = buy(apothecary.id, stockEntry.id, qty);
+      if (!result.ok) {
+        setStatusByStock((prev) => ({
+          ...prev,
+          [stockEntry.id]: { type: 'error', message: result.error || 'Purchase failed.' },
+        }));
+        return;
+      }
+
+      const grantedQty = result.grantedQty ?? perPurchaseQty * qty;
+      setStatusByStock((prev) => ({
+        ...prev,
+        [stockEntry.id]: {
+          type: 'success',
+          message: `Purchased ${grantedQty} × ${itemName}.`,
+        },
+      }));
+    };
+
+    return (
+      <div key={stockEntry.id} className={'apothecaryCard'}>
+        <div className={'apothecaryCardHeader'}>
+          <div>
+            <div className={'apothecaryCardTitle'}>{itemName}</div>
+            <div className={'apothecaryCardSubtitle'}>{description}</div>
+          </div>
+          <div className={'apothecaryTag'}>{tag}</div>
+        </div>
+
+        <div className={'apothecaryCardMeta'}>
+          <span className={'apothecaryMetaLine'}>Owned: {owned}</span>
+          <span className={'apothecaryMetaLine'}>Price: {formatPrice(stockEntry.price) || 'Free'}</span>
+        </div>
+
+        <div className={'apothecaryLimitBlock'}>
+          {limit != null ? (
+            <>
+              <progress value={purchased} max={limit} className={'apothecaryProgress'} />
+              <div className={'apothecaryLimitText'}>
+                Remaining today: {Math.max(remaining ?? 0, 0)} / {limit}
+              </div>
+            </>
+          ) : (
+            <div className={'apothecaryLimitText'}>No daily limit</div>
+          )}
+        </div>
+
+        <div className={'apothecaryActions'}>
+          <button
+            className={`worldScreenModuleButton apothecaryActionButton${canBuyOne ? ' worldScreenModuleButton--active' : ''}`}
+            onClick={() => handlePurchase(1)}
+            disabled={!canBuyOne}
+          >
+            Buy 1
+          </button>
+          <button
+            className={`worldScreenModuleButton apothecaryActionButton${canBuyMax ? ' worldScreenModuleButton--active' : ''}`}
+            onClick={() => handlePurchase(maxBuyQty)}
+            disabled={!canBuyMax}
+          >
+            Buy Max
+          </button>
+        </div>
+
+        {status && (
+          <div
+            className={`apothecaryStatus apothecaryStatus--${status.type}`}
+            role={status.type === 'error' ? 'alert' : 'status'}
+          >
+            {status.message}
+          </div>
+        )}
+      </div>
+    );
   };
 
-  const renderContent = () => {
-    if (!shopId) {
+  const renderShelf = (key: ShelfKey) => {
+    if (key === 'services' || key === 'bundles') {
       return (
-        <div className={'worldScreenPlaceholder'}>
-          <div className={'worldScreenPlaceholderHeader'}>
-            <div className={'worldScreenPlaceholderTitle'}>No Apothecary here</div>
-          </div>
-          <div className={'worldScreenPlaceholderBody'}>This city does not host an apothecary.</div>
+        <div className={'apothecaryEmpty'}>
+          <div className={'apothecaryEmptyTitle'}>No offers here yet.</div>
+          <div className={'apothecaryEmptyBody'}>Check back later for special services and bundles.</div>
         </div>
       );
     }
 
-    if (!shop) {
-      return (
-        <div className={'worldScreenPlaceholder'}>
-          <div className={'worldScreenPlaceholderHeader'}>
-            <div className={'worldScreenPlaceholderTitle'}>Apothecary data missing</div>
-          </div>
-          <div className={'worldScreenPlaceholderBody'}>Shop definition not found (id: {shopId}).</div>
-        </div>
-      );
-    }
+    const shelfStock = key === 'combat' ? combatStock : key === 'cultivation' ? cultivationStock : rotatingStock;
 
-    if (!shop.stock || shop.stock.length === 0) {
+    if (!shelfStock.length) {
       return (
-        <div className={'worldScreenPlaceholder'}>
-          <div className={'worldScreenPlaceholderHeader'}>
-            <div className={'worldScreenPlaceholderTitle'}>{shop.name ?? 'Apothecary'}</div>
-          </div>
-          <div className={'worldScreenPlaceholderBody'}>No stock available.</div>
+        <div className={'apothecaryEmpty'}>
+          <div className={'apothecaryEmptyTitle'}>Nothing available.</div>
+          <div className={'apothecaryEmptyBody'}>No items match this shelf right now.</div>
         </div>
       );
     }
 
     return (
-      <div className={'apothecaryPanel'}>
-        <div className={'apothecaryPanelHeader'}>
-          <div>
-            <div className={'apothecaryTitle'}>{shop.name ?? 'Apothecary'}</div>
-            <div className={'apothecarySubtitle'}>Daily reset key: {dayKey}</div>
-          </div>
-          <div className={'apothecaryMeta'}>
-            <div>ID: {shop.id}</div>
-            <div>City: {shop.cityId}</div>
-          </div>
-        </div>
-
-        <div className={'apothecaryStockList'}>
-          {shop.stock.map((stock) => {
-            const item = getItemDef(stock.itemId);
-            const itemName = item?.name ?? stock.itemId;
-            const perPurchaseQty = stock.qty ?? 1;
-            const purchased = purchasedToday[shop.id]?.[stock.id] ?? 0;
-            const limit = stock.dailyLimit;
-            const remaining = limit == null ? null : Math.max(limit - purchased, 0);
-            const qty = quantities[stock.id] ?? 1;
-            const cappedQty = remaining == null ? qty : Math.min(qty, Math.max(remaining, 1));
-            const totalPrice = computeTotalPrice(stock.price ?? {}, cappedQty);
-
-            const canBuy = cappedQty >= 1 && (remaining == null || cappedQty <= remaining);
-            const status = statusByStock[stock.id];
-            const maxButtonQty = remaining == null ? 99 : Math.max(remaining, 0);
-
-            return (
-              <div key={stock.id} className={'apothecaryStockCard'}>
-                <div className={'apothecaryStockHeader'}>
-                  <div>
-                    <div className={'apothecaryStockName'}>{itemName}</div>
-                    <div className={'apothecaryStockId'}>{stock.itemId}</div>
-                  </div>
-                  <div className={'apothecaryPriceBlock'}>
-                    <div>Price: {formatPrice(stock.price) || 'Free'}</div>
-                    <div className={'apothecaryPerQty'}>Grants {perPurchaseQty}x per purchase</div>
-                  </div>
-                </div>
-                <div className={'apothecaryStockBody'}>
-                  <div className={'apothecaryLimit'}>
-                    Daily limit:{' '}
-                    {limit == null ? 'Unlimited' : `${purchased} / ${limit}`}
-                    {remaining != null && ` (Remaining: ${remaining})`}
-                  </div>
-                  <div className={'apothecaryControls'}>
-                    <div className={'apothecaryQtyControls'}>
-                      <label className={'apothecaryLabel'}>
-                        Qty
-                        <input
-                          type="number"
-                          min={1}
-                          value={cappedQty}
-                          onChange={(e) => handleSetQty(stock.id, Number(e.target.value))}
-                          disabled={remaining === 0}
-                        />
-                      </label>
-                      <div className={'apothecaryQuickButtons'}>
-                        <button onClick={() => handleSetQty(stock.id, 1)} disabled={remaining === 0}>
-                          x1
-                        </button>
-                        <button onClick={() => handleSetQty(stock.id, 5)} disabled={remaining === 0}>
-                          x5
-                        </button>
-                        <button
-                          onClick={() => handleSetQty(stock.id, maxButtonQty || 1)}
-                          disabled={remaining === 0}
-                        >
-                          Max
-                        </button>
-                      </div>
-                    </div>
-                    <div className={'apothecaryTotals'}>
-                      <div>Total price: {formatPrice(totalPrice) || 'Free'}</div>
-                      <div>Will receive: {perPurchaseQty * cappedQty}x</div>
-                    </div>
-                    <div className={'apothecaryActions'}>
-                      <button
-                        className={`worldScreenModuleButton ${canBuy ? 'worldScreenModuleButton--active' : ''}`}
-                        onClick={() => {
-                          const result = buy(shop.id, stock.id, cappedQty);
-                          if (!result.ok) {
-                            setStatusByStock((prev) => ({
-                              ...prev,
-                              [stock.id]: { type: 'error', message: result.error || 'Purchase failed' },
-                            }));
-                            return;
-                          }
-                          setStatusByStock((prev) => ({
-                            ...prev,
-                            [stock.id]: {
-                              type: 'success',
-                              message: `Purchased +${(result.grantedQty ?? perPurchaseQty * cappedQty)} ${itemName}`,
-                            },
-                          }));
-                        }}
-                        disabled={!canBuy || remaining === 0}
-                      >
-                        {remaining === 0 ? 'Sold Out Today' : 'Buy'}
-                      </button>
-                    </div>
-                  </div>
-                  {status && (
-                    <div
-                      className={`apothecaryStatus apothecaryStatus--${status.type}`}
-                      role={status.type === 'error' ? 'alert' : 'status'}
-                    >
-                      {status.message}
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+      <div className={'apothecaryGrid'}>
+        {shelfStock.map((entry) => renderStockCard(entry.id))}
       </div>
     );
   };
 
-  return renderContent();
+  return (
+    <div className={'apothecaryPanel'}>
+      <div className={'apothecaryHeaderCard'}>
+        <div>
+          <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>
+          <div className={'apothecarySubheading'}>
+            Buy remedies for combat and cultivation. Daily limits reset at local midnight.
+          </div>
+          <div className={'apothecaryDayKey'}>Day: {dayKey}</div>
+        </div>
+        <div className={'apothecaryWallet'}>
+          <div className={'apothecaryWalletLabel'}>Wallet</div>
+          <div className={'apothecaryWalletGrid'}>
+            <span>Gold</span>
+            <strong>{currencies.gold ?? '0'}</strong>
+            <span>Spirit Stones</span>
+            <strong>{currencies.spiritStones ?? '0'}</strong>
+            <span>Merit</span>
+            <strong>{currencies.merit ?? '0'}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className={'apothecaryShelfTabs'}>
+        {shelfOptions.map((option) => (
+          <button
+            key={option.key}
+            className={`worldScreenModuleButton apothecaryShelfTab${
+              activeShelf === option.key ? ' apothecaryShelfTab--active worldScreenModuleButton--active' : ''
+            }`}
+            onClick={() => setActiveShelf(option.key)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      {renderShelf(activeShelf)}
+    </div>
+  );
 }
