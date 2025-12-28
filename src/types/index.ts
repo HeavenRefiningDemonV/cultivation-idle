@@ -911,6 +911,11 @@ export interface CombatState {
   startCombat: (enemyTemplateId: string, context: CombatContext) => void;
   endCombat: (victory: boolean) => void;
   exitCombat: () => void;
+  consumeCombatConsumable: (
+    itemId: string,
+    source: 'auto' | 'manual',
+    now?: number,
+  ) => { ok: boolean; reason?: string };
   playerAttack: () => void;
   enemyAttack: () => void;
   defeatEnemy: () => void;

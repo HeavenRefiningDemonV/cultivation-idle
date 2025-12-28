@@ -11,6 +11,7 @@ import type {
   CombatShield,
   CombatTechniqueLogEntry,
   CombatEvent,
+  MedicinePouchSlotKey,
 } from '../types';
 import type { TechniqueDef } from '../content';
 import type { OutskirtsDef, OutskirtsDropsConfig } from '../content';
@@ -42,6 +43,11 @@ import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
 import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles';
 import { useUIStore } from './uiStore';
+import {
+  getConsumableSpec,
+  isCombatUsableConsumable,
+} from '../systems/consumables/consumableCatalog';
+import { useMedicinePouchStore } from './medicinePouchStore';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -709,6 +715,89 @@ export const useCombatStore = create<ExtendedCombatState>()(
       return castingPolicy === 'aggressive' ? best.techId : null;
     };
 
+    const tryAutoUseMedicinePouch = (
+      now: number,
+      _reason: 'tick' | 'postEnemyDamage' | 'postAuraDamage' | 'fightStart',
+    ) => {
+      const uiSettings = useUIStore.getState().settings;
+      if (!uiSettings.useConsumablesInCombat) return;
+
+      const state = get();
+      if (!state.inCombat || !state.currentEnemy) return;
+
+      const pouch = useMedicinePouchStore.getState();
+      const slots = pouch.slots;
+      const orderedSlots: MedicinePouchSlotKey[] = ['healing', 'utility', 'specialty'];
+
+      for (const slotKey of orderedSlots) {
+        const slot = slots[slotKey];
+        if (!slot || !slot.enabled) continue;
+        const itemId = slot.equippedItemId;
+        if (!itemId) continue;
+
+        const spec = getConsumableSpec(itemId);
+        if (!spec || !isCombatUsableConsumable(itemId)) continue;
+
+        if (slot.bossOnly && !(state.isBoss || state.combatContext.type === 'trial')) {
+          continue;
+        }
+
+        const requiredCooldownSec = Math.max(slot.cooldownSec, spec.cooldownSec);
+        const lastUsed = slot.lastUsedAt;
+        const cooldownReady =
+          lastUsed === null || now - lastUsed >= requiredCooldownSec * 1000;
+        if (!cooldownReady) continue;
+
+        let shouldUse = false;
+        switch (slot.trigger) {
+          case 'manual':
+            shouldUse = false;
+            break;
+          case 'hpBelowPct': {
+            const maxHp = D(state.playerMaxHP);
+            const currentHp = D(state.playerHP);
+            const hpPct = maxHp.greaterThan(0)
+              ? currentHp.dividedBy(maxHp).times(100).toNumber()
+              : 0;
+            shouldUse = hpPct <= slot.thresholdPct;
+            break;
+          }
+          case 'qiBelowPct': {
+            const qiPct = state.combatResources.maxQi > 0
+              ? (state.combatResources.qi / state.combatResources.maxQi) * 100
+              : 0;
+            shouldUse = qiPct <= slot.thresholdPct;
+            break;
+          }
+          case 'intentBelowPct': {
+            const intentPct = state.combatResources.maxIntent > 0
+              ? (state.combatResources.intent / state.combatResources.maxIntent) * 100
+              : 0;
+            shouldUse = intentPct <= slot.thresholdPct;
+            break;
+          }
+          case 'fightStart':
+            shouldUse = lastUsed === null || lastUsed < state.combatStartTime;
+            break;
+          case 'bossStart':
+            shouldUse =
+              (state.isBoss || state.combatContext.type === 'trial') &&
+              (lastUsed === null || lastUsed < state.combatStartTime);
+            break;
+          default:
+            break;
+        }
+
+        if (!shouldUse) continue;
+
+        const result = get().consumeCombatConsumable(itemId, 'auto', now);
+        if (result.ok) {
+          pouch.markUsed(slotKey, now);
+          break;
+        }
+      }
+    };
+
     const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
       const techCollection = useTechCollectionStore.getState();
       const entry = techCollection.unlockedTechs[techId];
@@ -998,6 +1087,147 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
     },
 
+    consumeCombatConsumable: (itemId: string, _source: 'auto' | 'manual', now = Date.now()) => {
+      const state = get();
+      if (!state.inCombat || !state.currentEnemy) return { ok: false, reason: 'not_in_combat' };
+
+      if (!isCombatUsableConsumable(itemId)) {
+        return { ok: false, reason: 'not_combat_consumable' };
+      }
+
+      const spec = getConsumableSpec(itemId);
+      if (!spec) return { ok: false, reason: 'unknown_spec' };
+
+      const inventory = useInventoryStore.getState();
+      if (!inventory.spendItem(itemId, 1)) {
+        return { ok: false, reason: 'no_charges' };
+      }
+
+      const effect = spec.effect;
+      const maxHp = D(state.playerMaxHP);
+
+      switch (effect.kind) {
+        case 'healPct': {
+          const healAmount = maxHp.times(effect.pct);
+          let appliedHeal = D(0);
+          set((state) => {
+            const current = D(state.playerHP);
+            const healed = current.plus(healAmount);
+            const capped = healed.greaterThan(maxHp) ? maxHp : healed;
+            appliedHeal = capped.minus(current);
+            state.playerHP = capped.toString();
+          });
+
+          if (appliedHeal.greaterThan(0)) {
+            emitEvent({ type: 'HEAL', amount: appliedHeal.toFixed(0) });
+            get().addLogEntry(
+              'heal',
+              `🧪 Used ${spec.shortLabel}: +${appliedHeal.toFixed(0)} HP`,
+              '#34d399',
+            );
+          }
+          break;
+        }
+        case 'shieldPct': {
+          const shieldGain = maxHp.times(effect.pct).toNumber();
+          const expiresAt = now + effect.durationSec * 1000;
+          let totalShield = shieldGain;
+
+          set((state) => {
+            if (!state.combatShield) {
+              state.combatShield = { amount: shieldGain, expiresAt };
+            } else {
+              state.combatShield.amount += shieldGain;
+              if (state.combatShield.expiresAt === null || state.combatShield.expiresAt < expiresAt) {
+                state.combatShield.expiresAt = expiresAt;
+              }
+            }
+            totalShield = state.combatShield?.amount ?? shieldGain;
+          });
+
+          emitEvent({
+            type: 'SHIELD_GAINED',
+            amount: shieldGain.toFixed(0),
+            total: totalShield.toFixed(0),
+            durationSec: effect.durationSec,
+          });
+          get().addLogEntry(
+            'system',
+            `🧪 Used ${spec.shortLabel}: Shield ${Math.round(shieldGain)} for ${effect.durationSec}s`,
+            '#38bdf8',
+          );
+          break;
+        }
+        case 'combatBuff': {
+          const buffId = `consumable:${itemId}:${effect.stat}`;
+          const endsAt = now + effect.durationSec * 1000;
+          let refreshed = false;
+
+          set((state) => {
+            refreshed = state.combatBuffs.some((buff) => buff.id === buffId);
+            state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
+            state.combatBuffs.push({
+              id: buffId,
+              stat: effect.stat,
+              mode: effect.mode,
+              value: effect.value,
+              endsAt,
+            });
+          });
+
+          const valueLabel = `${(effect.value * 100).toFixed(0)}${effect.mode === 'pct' ? '%' : ''}`;
+          emitEvent({
+            type: 'STATUS_APPLIED',
+            statusId: buffId,
+            stacks: 1,
+            durationSec: effect.durationSec,
+            refreshed,
+            target: 'player',
+          });
+          get().addLogEntry(
+            'system',
+            `🧪 Used ${spec.shortLabel}: ${effect.stat} +${valueLabel} for ${effect.durationSec}s`,
+            '#38bdf8',
+          );
+          break;
+        }
+        case 'restoreQiPct': {
+          const gain = state.combatResources.maxQi * effect.pct;
+          let applied = 0;
+          set((state) => {
+            const before = state.combatResources.qi;
+            const next = Math.min(state.combatResources.maxQi, before + gain);
+            applied = next - before;
+            state.combatResources.qi = next;
+          });
+
+          if (applied > 0) {
+            get().addLogEntry('system', `🧪 Used ${spec.shortLabel}: +${applied.toFixed(0)} Qi`, '#22d3ee');
+          }
+          break;
+        }
+        case 'restoreIntentPct': {
+          const gain = state.combatResources.maxIntent * effect.pct;
+          let applied = 0;
+          set((state) => {
+            const before = state.combatResources.intent;
+            const next = Math.min(state.combatResources.maxIntent, before + gain);
+            applied = next - before;
+            state.combatResources.intent = next;
+          });
+
+          if (applied > 0) {
+            get().addLogEntry('system', `🧪 Used ${spec.shortLabel}: +${applied.toFixed(0)} intent`, '#22d3ee');
+          }
+          break;
+        }
+        default:
+          return { ok: false, reason: 'unsupported_effect' };
+      }
+
+      return { ok: true };
+    },
+
     resetCombat: () => {
       bossMechanics = null;
 
@@ -1183,6 +1413,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
           kind: 'basic',
         });
       }
+
+      tryAutoUseMedicinePouch(now, 'postEnemyDamage');
 
       // Check if player is defeated
       if (lessThanOrEqualTo(get().playerHP, 0)) {
@@ -1544,12 +1776,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (!state.inCombat || !state.currentEnemy) return;
 
+      const now = Date.now();
+
+      tryAutoUseMedicinePouch(now, 'fightStart');
+
       if (lessThanOrEqualTo(state.playerHP, 0) || lessThanOrEqualTo(state.enemyHP, 0)) return;
 
       const gameStore = useGameStore.getState();
       gameStore.removeExpiredBuffs();
-
-      const now = Date.now();
       const currentEnemyHP = D(state.enemyHP);
       const currentEnemyMaxHP = D(state.enemyMaxHP);
 
@@ -1764,6 +1998,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
             absorbed: absorbedAmount.greaterThan(0) ? absorbedAmount.toFixed(0) : undefined,
             kind: 'aura',
           });
+
+          tryAutoUseMedicinePouch(now, 'postAuraDamage');
 
           if (lessThanOrEqualTo(get().playerHP, 0)) {
             setTimeout(() => {
