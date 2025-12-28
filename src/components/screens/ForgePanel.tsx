@@ -4,7 +4,10 @@ import { formatPrice, getForgeBlueprint, getItemDef, listForgeBlueprintsForCity 
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useEquipmentStore } from '../../stores/equipmentStore';
 import { useProfessionStore } from '../../stores/professionStore';
+import { useUIStore } from '../../stores/uiStore';
 import { isRefineBlueprint, isRuneBlueprint } from '../../content';
+import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
+import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
 import { UsedForLinks } from '../crafting/UsedForLinks';
 
 interface ForgePanelProps {
@@ -66,6 +69,10 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const startSession = useCraftSessionStore((state) => state.startSession);
   const abortSession = useCraftSessionStore((state) => state.abortSession);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
+  const updateSessionPrompts = useCraftSessionStore((state) => state.updateActiveSessionPrompts);
+  const completePromptAction = useCraftSessionStore((state) => state.completePrompt);
+  const claimSession = useCraftSessionStore((state) => state.claimActiveSession);
+  const addNotification = useUIStore((state) => state.addNotification);
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
@@ -78,6 +85,14 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
     return () => window.clearInterval(handle);
   }, []);
+
+  useEffect(() => {
+    updateSessionPrompts(now);
+  }, [now, updateSessionPrompts]);
+
+  useEffect(() => {
+    setSessionStatus(null);
+  }, [activeSession?.sessionId]);
 
   const blueprints = useMemo(() => {
     if (!cityId) return [];
@@ -105,6 +120,14 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     () => blueprints.find((bp) => bp.id === selectedBlueprintId) ?? blueprints[0] ?? null,
     [blueprints, selectedBlueprintId],
   );
+
+  const activeOtherStation = activeSession && activeSession.station !== 'forge';
+  const activeForgeSession = activeSession?.station === 'forge' ? activeSession : null;
+  const activePrompts = activeForgeSession?.prompts ?? [];
+  const promptSummary = summarizePrompts(activePrompts);
+  const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
+  const sessionRemainingMs = activeForgeSession ? Math.max(0, activeForgeSession.endsAt - now) : 0;
+  const sessionReady = activeForgeSession ? now >= activeForgeSession.endsAt : false;
 
   const handleSetQty = (blueprintId: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [blueprintId]: clampQty(value) }));
@@ -160,8 +183,6 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
 
   const isServiceBlueprint = selectedBlueprint ? selectedBlueprint.type === 'service' : false;
   const currentMode = modeByStation.forge;
-  const activeOtherStation = activeSession && activeSession.station !== 'forge';
-  const activeForgeSession = activeSession && activeSession.station === 'forge';
 
   useEffect(() => {
     if (isServiceBlueprint && currentMode !== 'idle') {
@@ -276,6 +297,9 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
             </button>
           );
         })}
+      </div>
+      <div className={'craftModeNote'}>
+        Assisted: optional prompts improve this batch. Ignoring prompts has no penalty.
       </div>
       {servicesIdleOnly && <div className={'forgeHint'}>Services are idle-only.</div>}
     </div>
@@ -408,17 +432,43 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                   setSessionStatus({ type: 'success', message: 'Session started' });
                 }}
               >
-                Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
+              Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
               </button>
             )}
             {activeForgeSession && (
-              <div className={'craftingSessionDetails'}>
+              <div className={'craftingSessionDetails craftSessionCard'}>
                 <div className={'craftingSessionRow'}>
                   <div>Session active</div>
                   <div className={'craftingSessionMeta'}>
                     {activeForgeSession.mode} · {activeForgeSession.sourceId}
                   </div>
                 </div>
+                <div className={'craftingSessionMeta'}>
+                  <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
+                  <div>Assisted: {promptSummary.completed}/{promptSummary.total} prompts completed</div>
+                </div>
+
+                {activeForgeSession.mode === 'assisted' && availablePrompt && (
+                  <AssistedPromptCard
+                    prompt={availablePrompt}
+                    now={now}
+                    onComplete={() => {
+                      const result = completePromptAction(availablePrompt.id, Date.now());
+                      if (!result.ok) {
+                        setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
+                        return;
+                      }
+                      const bonusLabel =
+                        availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
+                          ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
+                          : '';
+                      const toastLabel = availablePrompt.type === 'ADD_CATALYST' ? 'Catalyst added' : 'Heat stabilized';
+                      addNotification('success', `${toastLabel}${bonusLabel}`, 2500);
+                      setSessionStatus({ type: 'success', message: `${toastLabel}${bonusLabel}` });
+                    }}
+                  />
+                )}
+
                 <div className={'craftingStepList'}>
                   {activeForgeSession.script.steps.map((step) => (
                     <div key={step.id} className={'craftingStepItem'}>
@@ -427,6 +477,25 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                   ))}
                 </div>
                 <div className={'craftingSessionActions'}>
+                  <button
+                    className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
+                    disabled={!sessionReady}
+                    onClick={() => {
+                      const result = claimSession(Date.now());
+                      if (!result.ok) {
+                        const message = result.reason === 'not_ready' ? 'Session not finished yet' : 'Unable to claim session';
+                        setSessionStatus({ type: 'error', message });
+                        return;
+                      }
+                      const bonusTotal = result.bonus?.bonusItems?.reduce((acc, item) => acc + item.qty, 0) ?? 0;
+                      const summary = result.bonus
+                        ? `Assisted bonus: +${bonusTotal} (${result.bonus.completed}/${result.bonus.total} prompts).`
+                        : 'Session claimed.';
+                      setSessionStatus({ type: 'success', message: summary });
+                    }}
+                  >
+                    Claim session
+                  </button>
                   <button
                     className={'worldScreenModuleButton'}
                     onClick={() => {

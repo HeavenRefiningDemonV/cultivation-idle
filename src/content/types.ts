@@ -258,6 +258,7 @@ export interface ForgeBlueprintsConfig {
     cost?: Record<string, number>;
     service?: string;
     effect?: unknown;
+    assistedPrompts?: PromptDef[];
   }>;
 }
 

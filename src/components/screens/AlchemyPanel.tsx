@@ -7,6 +7,7 @@ import { useProfessionStore } from '../../stores/professionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
+import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
 import { UsedForLinks } from '../crafting/UsedForLinks';
 
 interface AlchemyPanelProps {
@@ -201,7 +202,6 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const activePrompts = activeAlchemySession?.prompts ?? [];
   const promptSummary = summarizePrompts(activePrompts);
   const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
-  const promptCountdownSec = availablePrompt ? Math.max(0, Math.ceil((availablePrompt.expiresAtMs - now) / 1000)) : 0;
   const sessionRemainingMs = activeAlchemySession ? Math.max(0, activeAlchemySession.endsAt - now) : 0;
   const sessionReady = activeAlchemySession ? now >= activeAlchemySession.endsAt : false;
 
@@ -320,6 +320,9 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                       </button>
                     ))}
                   </div>
+                  <div className={'craftModeNote'}>
+                    Assisted: optional prompts improve this batch. Ignoring prompts has no penalty.
+                  </div>
                 </div>
 
                 {currentMode === 'idle' && (
@@ -408,34 +411,25 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                         </div>
 
                         {activeAlchemySession.mode === 'assisted' && availablePrompt && (
-                          <div className={'craftingPromptCard'}>
-                            <div className={'craftingPromptTitle'}>{availablePrompt.ui?.title ?? 'Stabilize the flame'}</div>
-                            <div className={'craftingPromptBody'}>
-                              {availablePrompt.ui?.body ??
-                                'Click to stabilize within the window for a small bonus. Ignoring has no penalty.'}
-                            </div>
-                            <div className={'craftingPromptCountdown'}>{promptCountdownSec}s remaining</div>
-                            <div className={'craftingPromptActions'}>
-                              <button
-                                className={'worldScreenModuleButton worldScreenModuleButton--active'}
-                                onClick={() => {
-                                  const result = completePromptAction(availablePrompt.id, Date.now());
-                                  if (!result.ok) {
-                                    setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
-                                    return;
-                                  }
-                                  const bonusLabel =
-                                    availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
-                                      ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
-                                      : '';
-                                  addNotification('success', `Flame stabilized${bonusLabel}`, 2500);
-                                  setSessionStatus({ type: 'success', message: `Flame stabilized${bonusLabel}` });
-                                }}
-                              >
-                                Stabilize
-                              </button>
-                            </div>
-                          </div>
+                          <AssistedPromptCard
+                            prompt={availablePrompt}
+                            now={now}
+                            onComplete={() => {
+                              const result = completePromptAction(availablePrompt.id, Date.now());
+                              if (!result.ok) {
+                                setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
+                                return;
+                              }
+                              const bonusLabel =
+                                availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
+                                  ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
+                                  : '';
+                              const toastLabel =
+                                availablePrompt.type === 'ADD_CATALYST' ? 'Catalyst added' : 'Flame stabilized';
+                              addNotification('success', `${toastLabel}${bonusLabel}`, 2500);
+                              setSessionStatus({ type: 'success', message: `${toastLabel}${bonusLabel}` });
+                            }}
+                          />
                         )}
 
                         <div className={'craftingStepList'}>

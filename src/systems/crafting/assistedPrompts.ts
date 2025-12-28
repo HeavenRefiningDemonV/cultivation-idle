@@ -4,12 +4,14 @@ const clamp = (value: number, min: number, max: number): number => Math.min(max,
 
 const sortByDueTime = (a: CraftPromptState, b: CraftPromptState) => a.dueAtMs - b.dueAtMs;
 
-export function scheduleAssistedPrompts(
+export function instantiatePrompts(
   defs: PromptDef[] | undefined,
   startedAtMs: number,
   endsAtMs: number,
+  _seed?: number,
 ): CraftPromptState[] {
   if (!defs || defs.length === 0) return [];
+  void _seed;
   const duration = Math.max(0, endsAtMs - startedAtMs);
   return defs
     .map((def, index) => {
@@ -31,7 +33,16 @@ export function scheduleAssistedPrompts(
     .sort(sortByDueTime);
 }
 
-export function updatePromptStatuses(prompts: CraftPromptState[], now: number): CraftPromptState[] {
+export function scheduleAssistedPrompts(
+  defs: PromptDef[] | undefined,
+  startedAtMs: number,
+  endsAtMs: number,
+  seed?: number,
+): CraftPromptState[] {
+  return instantiatePrompts(defs, startedAtMs, endsAtMs, seed);
+}
+
+export function advancePromptStates(prompts: CraftPromptState[], now: number): CraftPromptState[] {
   return prompts.map((prompt) => {
     if (prompt.status === 'COMPLETED') return prompt;
     if (now >= prompt.expiresAtMs) {
@@ -44,12 +55,16 @@ export function updatePromptStatuses(prompts: CraftPromptState[], now: number): 
   });
 }
 
+export function updatePromptStatuses(prompts: CraftPromptState[], now: number): CraftPromptState[] {
+  return advancePromptStates(prompts, now);
+}
+
 export function completePrompt(
   prompts: CraftPromptState[],
   promptId: string,
   now: number,
 ): { prompts: CraftPromptState[]; ok: boolean; reason?: string } {
-  const updated = updatePromptStatuses(prompts, now);
+  const updated = advancePromptStates(prompts, now);
   const target = updated.find((prompt) => prompt.id === promptId);
   if (!target) {
     return { prompts: updated, ok: false, reason: 'missing_prompt' };
@@ -82,6 +97,23 @@ export function summarizePrompts(prompts: CraftPromptState[]): {
   return { total, completed, available };
 }
 
+export function computeAssistedBonus(prompts: CraftPromptState[]): {
+  totalYieldPct: number;
+  totalQualityScore: number;
+  completedCount: number;
+  totalCount: number;
+} {
+  const completed = prompts.filter((prompt) => prompt.status === 'COMPLETED');
+  const totalYieldPct = completed.reduce((acc, prompt) => acc + (prompt.bonus?.yieldPct ?? 0), 0);
+  const totalQualityScore = completed.reduce((acc, prompt) => acc + (prompt.bonus?.qualityScore ?? 0), 0);
+  return {
+    totalYieldPct,
+    totalQualityScore,
+    completedCount: completed.length,
+    totalCount: prompts.length,
+  };
+}
+
 export function applyYieldBonuses(
   baseItems: Array<{ itemId: string; qty: number }>,
   prompts: CraftPromptState[],
@@ -91,20 +123,24 @@ export function applyYieldBonuses(
   completed: number;
   total: number;
 } {
-  const completedPrompts = prompts.filter((prompt) => prompt.status === 'COMPLETED');
-  const totalYieldPct = completedPrompts.reduce((acc, prompt) => acc + (prompt.bonus?.yieldPct ?? 0), 0);
-  if (totalYieldPct <= 0) {
-    return { items: baseItems.map((entry) => ({ ...entry })), bonusItems: [], completed: completedPrompts.length, total: prompts.length };
+  const bonusSummary = computeAssistedBonus(prompts);
+  if (bonusSummary.totalYieldPct <= 0) {
+    return {
+      items: baseItems.map((entry) => ({ ...entry })),
+      bonusItems: [],
+      completed: bonusSummary.completedCount,
+      total: bonusSummary.totalCount,
+    };
   }
 
   const bonusItems: Array<{ itemId: string; qty: number }> = [];
   const items = baseItems.map((entry) => {
-    const bonusQty = Math.floor(entry.qty * (totalYieldPct / 100));
+    const bonusQty = Math.floor(entry.qty * (bonusSummary.totalYieldPct / 100));
     if (bonusQty > 0) {
       bonusItems.push({ itemId: entry.itemId, qty: bonusQty });
     }
     return { itemId: entry.itemId, qty: entry.qty + Math.max(0, bonusQty) };
   });
 
-  return { items, bonusItems, completed: completedPrompts.length, total: prompts.length };
+  return { items, bonusItems, completed: bonusSummary.completedCount, total: bonusSummary.totalCount };
 }

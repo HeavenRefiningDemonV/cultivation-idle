@@ -11,7 +11,7 @@ export type CraftStepType =
   | 'TEMPER'
   | 'FINISH';
 
-export type CraftPromptType = 'STABILIZE_FLAME';
+export type CraftPromptType = 'STABILIZE_FLAME' | 'ADD_CATALYST';
 
 export type CraftPromptStatus = 'PENDING' | 'AVAILABLE' | 'COMPLETED' | 'MISSED';
 

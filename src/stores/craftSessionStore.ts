@@ -13,7 +13,12 @@ import type {
   CraftStation,
   PromptDef,
 } from '../systems/crafting/craftingTypes';
-import { applyYieldBonuses, completePrompt as completeAssistedPrompt, scheduleAssistedPrompts, updatePromptStatuses } from '../systems/crafting/assistedPrompts';
+import {
+  advancePromptStates,
+  applyYieldBonuses,
+  completePrompt as completeAssistedPrompt,
+  instantiatePrompts,
+} from '../systems/crafting/assistedPrompts';
 import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
@@ -257,7 +262,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           ? ((recipe as any).assistedPrompts as PromptDef[])
           : [];
         if (args.mode === 'assisted') {
-          prompts = scheduleAssistedPrompts(promptDefs, startedAt, endsAt);
+          prompts = instantiatePrompts(promptDefs, startedAt, endsAt, seed);
         }
       } else if (args.station === 'forge') {
         const rawBlueprint = content.raw?.forge_blueprints?.find((entry) => entry.id === args.sourceId);
@@ -276,6 +281,12 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         const durationMs = calculateForgeDurationMs(blueprint.timeSec, qty);
         startedAt = createdAt;
         endsAt = startedAt + durationMs;
+        const promptDefs = Array.isArray((rawBlueprint as any)?.assistedPrompts)
+          ? ((rawBlueprint as any).assistedPrompts as PromptDef[])
+          : [];
+        if (args.mode === 'assisted') {
+          prompts = instantiatePrompts(promptDefs, startedAt, endsAt, seed);
+        }
       } else {
         return { ok: false, reason: 'unsupported_station' };
       }
@@ -372,7 +383,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       if (!active || !active.prompts || active.prompts.length === 0) {
         return active?.prompts ?? [];
       }
-      const nextPrompts = updatePromptStatuses(active.prompts, now);
+      const nextPrompts = advancePromptStates(active.prompts, now);
       set((state) => {
         if (state.activeSession) {
           state.activeSession.prompts = nextPrompts;
@@ -404,10 +415,11 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       if (!active) return { ok: false, reason: 'no_session' };
       if (now < active.endsAt) return { ok: false, reason: 'not_ready' };
 
+      const settledPrompts = advancePromptStates(active.prompts ?? [], now);
+
       if (active.station === 'alchemy') {
         const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === active.sourceId);
         if (!recipe) return { ok: false, reason: 'missing_recipe' };
-        const settledPrompts = updatePromptStatuses(active.prompts ?? [], now);
         const outputs = recipe.outputs ?? {};
         const baseItems = Object.entries(outputs)
           .map(([itemId, baseQty]) => {
@@ -430,7 +442,37 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           state.activeSession = null;
         });
 
-        return { ok: true, bonus: { completed: bonusResult.completed, total: bonusResult.total, bonusItems: bonusResult.bonusItems } };
+        return {
+          ok: true,
+          bonus: { completed: bonusResult.completed, total: bonusResult.total, bonusItems: bonusResult.bonusItems },
+        };
+      }
+
+      if (active.station === 'forge') {
+        const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === active.sourceId);
+        const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
+        if (!blueprint || blueprint.type !== 'craft' || !blueprint.output) {
+          return { ok: false, reason: 'missing_blueprint' };
+        }
+
+        const baseItems = [{ itemId: blueprint.output.itemId, qty: blueprint.output.qty * active.qty }];
+        const bonusResult = applyYieldBonuses(baseItems, settledPrompts);
+
+        if (bonusResult.items.length > 0) {
+          RewardService.grantRewards({ items: bonusResult.items }, `Forge Session: ${active.sourceId}`);
+        }
+
+        set((state) => {
+          if (state.activeSession) {
+            state.activeSession.prompts = settledPrompts;
+          }
+          state.activeSession = null;
+        });
+
+        return {
+          ok: true,
+          bonus: { completed: bonusResult.completed, total: bonusResult.total, bonusItems: bonusResult.bonusItems },
+        };
       }
 
       return { ok: false, reason: 'unsupported_station' };
@@ -448,21 +490,36 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         });
       }
       let activeSession = sanitizeActiveSession(slice?.activeSession);
-      if (activeSession && activeSession.station === 'alchemy' && activeSession.mode === 'assisted') {
-        const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === activeSession?.sourceId);
-        const promptDefs = Array.isArray((recipe as any)?.assistedPrompts)
-          ? ((recipe as any).assistedPrompts as PromptDef[])
-          : [];
-        const durationMs = calculateAlchemyDurationMs(
-          recipe?.timeSec ?? (recipe as { craftTimeSec?: number })?.craftTimeSec,
-          activeSession.qty,
-        );
-        const endsAt = activeSession.endsAt || activeSession.startedAt + durationMs;
-        const prompts =
-          activeSession.prompts && activeSession.prompts.length > 0
-            ? activeSession.prompts
-            : scheduleAssistedPrompts(promptDefs, activeSession.startedAt, endsAt);
-        activeSession = { ...activeSession, endsAt, prompts };
+      if (activeSession && activeSession.mode === 'assisted') {
+        if (activeSession.station === 'alchemy') {
+          const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === activeSession?.sourceId);
+          const promptDefs = Array.isArray((recipe as any)?.assistedPrompts)
+            ? ((recipe as any).assistedPrompts as PromptDef[])
+            : [];
+          const durationMs = calculateAlchemyDurationMs(
+            recipe?.timeSec ?? (recipe as { craftTimeSec?: number })?.craftTimeSec,
+            activeSession.qty,
+          );
+          const endsAt = activeSession.endsAt || activeSession.startedAt + durationMs;
+          const prompts =
+            activeSession.prompts && activeSession.prompts.length > 0
+              ? activeSession.prompts
+              : instantiatePrompts(promptDefs, activeSession.startedAt, endsAt, activeSession.seed);
+          activeSession = { ...activeSession, endsAt, prompts };
+        } else if (activeSession.station === 'forge') {
+          const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === activeSession.sourceId);
+          const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : null;
+          const promptDefs = Array.isArray((rawBlueprint as any)?.assistedPrompts)
+            ? ((rawBlueprint as any).assistedPrompts as PromptDef[])
+            : [];
+          const durationMs = calculateForgeDurationMs(blueprint?.timeSec, activeSession.qty);
+          const endsAt = activeSession.endsAt || activeSession.startedAt + durationMs;
+          const prompts =
+            activeSession.prompts && activeSession.prompts.length > 0
+              ? activeSession.prompts
+              : instantiatePrompts(promptDefs, activeSession.startedAt, endsAt, activeSession.seed);
+          activeSession = { ...activeSession, endsAt, prompts };
+        }
       }
       set(() => ({ modeByStation: nextModes, activeSession }));
     },

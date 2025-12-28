@@ -1,3 +1,4 @@
+import type { PromptDef } from '../systems/crafting/craftingTypes';
 import type { ForgeBlueprintsConfig } from './types';
 
 export type ForgeBlueprintRaw = ForgeBlueprintsConfig['blueprints'][number];
@@ -17,6 +18,7 @@ export type NormalizedForgeBlueprint = {
   };
   output?: { itemId: string; qty: number };
   tags?: string[];
+  assistedPrompts?: PromptDef[];
 };
 
 function toNumber(value: unknown): number {
@@ -120,6 +122,10 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
 
   const output = normalizeOutput(raw.outputs ?? raw.out ?? raw.output ?? raw.produces ?? raw.result);
 
+  const assistedPrompts = Array.isArray((raw as any).assistedPrompts)
+    ? ((raw as any).assistedPrompts as PromptDef[])
+    : undefined;
+
   const tags = Array.isArray(raw.tags) ? raw.tags.filter((tag) => typeof tag === 'string') : undefined;
   const type: 'craft' | 'service' = service || raw.effect ? 'service' : 'craft';
 
@@ -138,6 +144,7 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
     },
     output,
     tags,
+    assistedPrompts,
   };
 }
 

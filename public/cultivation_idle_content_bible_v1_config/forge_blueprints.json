@@ -33,7 +33,31 @@
       },
       "outputs": {
         "rune_ember_t1": 1
-      }
+      },
+      "assistedPrompts": [
+        {
+          "id": "stabilize_heat_ember",
+          "type": "STABILIZE_FLAME",
+          "atPct": 0.4,
+          "windowSec": 8,
+          "bonus": { "yieldPct": 2 },
+          "ui": {
+            "title": "Hold the forge heat",
+            "body": "Keep the embers steady to slightly improve the rune quality."
+          }
+        },
+        {
+          "id": "add_catalyst_ember",
+          "type": "ADD_CATALYST",
+          "atPct": 0.75,
+          "windowSec": 10,
+          "bonus": { "yieldPct": 2 },
+          "ui": {
+            "title": "Add catalyst to the mold",
+            "body": "Drag the catalyst into the mold opening before the heat fades."
+          }
+        }
+      ]
     },
     {
       "id": "forge_rune_stone_t1",
