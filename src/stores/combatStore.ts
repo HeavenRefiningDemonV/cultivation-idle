@@ -23,7 +23,7 @@ import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
-import { useTechniqueStore, type CastingPolicy } from './techniqueStore';
+import { useTechniqueStore, type AiProfile, type CastingPolicy } from './techniqueStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
 import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore';
@@ -39,6 +39,8 @@ import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { getSpiritRootSnapshot } from './gameStore';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
+import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
+import { getTechniqueAiTags, mapAiProfileToCastingPolicy } from '../systems/combat/aiProfiles';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -58,13 +60,13 @@ function getHeartLawCombatMultiplier(): number {
  * Defense constant for damage calculation
  * Damage = ATK * (1 - DEF/(DEF + K))
  */
-const DEFENSE_CONSTANT_K = 100;
+export const DEFENSE_CONSTANT_K = 100;
 
 /**
  * Combat timing constants (in milliseconds)
  */
-const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
-const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
+export const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
+export const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
 const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
 const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
 const MAX_TECHNIQUE_LOG_ENTRIES = 50;
@@ -81,6 +83,8 @@ const PASSIVE_BUFF_DURATION_SEC = 999999;
  * Boss mechanics instance (single instance per combat)
  */
 let bossMechanics: BossMechanics | null = null;
+
+let combatLoopErrorLogged = false;
 
 function randomIntInRange(range: [number, number] | undefined, fallback: [number, number] = [0, 0]): number {
   const [minRaw, maxRaw] = Array.isArray(range) && range.length === 2 ? range : fallback;
@@ -226,6 +230,16 @@ type CandidateScoreInput = {
   hasShield: boolean;
 };
 
+type ProfileScoreContext = {
+  profile: AiProfile;
+  baseScore: number;
+  hpPct: number;
+  enemyHpPct: number;
+  isBossFight: boolean;
+  aiTags: ReturnType<typeof getTechniqueAiTags>;
+  classification: ReturnType<typeof classifyTechnique>;
+};
+
 function computeCandidateScore(input: CandidateScoreInput): number {
   const {
     policy,
@@ -273,6 +287,38 @@ function computeCandidateScore(input: CandidateScoreInput): number {
     if (hpPct < 0.6) score -= 6;
   }
   if (reservePct > 0 && resourceAfterPct < reservePct) score -= 10;
+  return score;
+}
+
+function applyAiProfileAdjustments(context: ProfileScoreContext): number {
+  const { profile, baseScore, hpPct, enemyHpPct, isBossFight, aiTags, classification } = context;
+  let score = baseScore;
+
+  if (profile === 'survivor') {
+    if (hpPct < 0.5 && (aiTags.isHeal || aiTags.isShield)) {
+      score += 6;
+    }
+    if (hpPct < 0.35 && aiTags.isHeal) {
+      score += 3;
+    }
+    if (hpPct < 0.5 && !aiTags.isHeal && !aiTags.isShield) {
+      score -= 1;
+    }
+  } else if (profile === 'burst') {
+    if (isBossFight || enemyHpPct > 0.4) {
+      if (aiTags.isBurstDamage || classification.isBurst || classification.isUltimate) {
+        score += 4;
+      }
+    }
+  } else if (profile === 'farmer') {
+    if (!isBossFight) {
+      if (aiTags.isAoe) score += 3;
+      if (aiTags.isHeal || aiTags.isShield) score -= 2;
+    } else if (classification.isUltimate || aiTags.isBurstDamage) {
+      score += 1;
+    }
+  }
+
   return score;
 }
 
@@ -551,7 +597,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
 
       const loadout = useTechniqueStore.getState().getSelectedLoadout();
-      const castingPolicy = (loadout?.castingPolicy as CastingPolicy | undefined) ?? 'balanced';
+      const aiProfile: AiProfile =
+        useUIStore.getState().settings.combatAIProfile ?? loadout?.aiProfile ?? 'balanced';
+      const castingPolicy: CastingPolicy =
+        (loadout?.castingPolicy as CastingPolicy | undefined) ?? mapAiProfileToCastingPolicy(aiProfile);
       const techCollection = useTechCollectionStore.getState();
       const contentStore = useContentStore.getState();
       const equipped = useTechniqueStore.getState().getCombatEquippedTechIds();
@@ -573,11 +622,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
         debuffScore: number;
         hasShield: boolean;
         resourceAfterPct: number;
+        aiTags: ReturnType<typeof getTechniqueAiTags>;
       };
 
       const hp = D(state.playerHP);
       const maxHp = D(state.playerMaxHP);
       const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
+      const enemyMaxHp = D(state.enemyMaxHP);
+      const enemyHpPct = enemyMaxHp.greaterThan(0)
+        ? D(state.enemyHP).dividedBy(enemyMaxHp).toNumber()
+        : 0;
       const isBossFight = state.isBoss || state.combatContext.type === 'trial';
       const shieldMissingOrExpiring =
         !state.combatShield ||
@@ -598,6 +652,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
           .map((effect) => effect.mult);
         const damageMult = damageMults.length ? Math.max(...damageMults) : 0;
         const damageScore = damageMult > 0 ? damageMult / cooldownSec : 0;
+
+        const aiTags = getTechniqueAiTags(def, effects);
 
         const hasHeal = effects.some((effect) => effect.type === 'heal');
         const hasShield = effects.some((effect) => effect.type === 'shield');
@@ -623,6 +679,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           debuffScore,
           hasShield,
           resourceAfterPct,
+          aiTags,
         });
         return acc;
       }, []);
@@ -632,7 +689,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const reservePct = castingPolicy === 'defensive' ? 0.2 : castingPolicy === 'balanced' ? 0.12 : 0;
 
       const scored = candidates.map((candidate) => {
-        const score = computeCandidateScore({
+        const baseScore = computeCandidateScore({
           policy: castingPolicy,
           hpPct,
           isBossFight,
@@ -644,6 +701,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
           debuffScore: candidate.debuffScore,
           classification: candidate.classification,
           hasShield: candidate.hasShield,
+        });
+        const score = applyAiProfileAdjustments({
+          profile: aiProfile,
+          baseScore,
+          hpPct,
+          enemyHpPct,
+          isBossFight,
+          aiTags: candidate.aiTags,
+          classification: candidate.classification,
         });
 
         return { ...candidate, score };
@@ -726,6 +792,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       } else {
         bossMechanics = null;
       }
+
+      combatLoopErrorLogged = false;
 
       set((state) => {
         state.inCombat = true;
@@ -810,6 +878,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const roomCount = context?.type === 'ruins' ? context.roomCount ?? 1 : 1;
       const difficulty: 'outskirts' | 'trial' | 'ruins' | 'generic' =
         context?.type === 'ruins' ? 'ruins' : context?.type === 'trial' ? 'trial' : 'outskirts';
+
+      if (context?.type === 'trial' && context.trialId) {
+        const trialStore = useTrialStore.getState();
+        if (trialStore.activeTrialSessionId !== context.trialId) {
+          trialStore.beginTrialSession(context.trialId, now);
+        } else {
+          trialStore.setAttemptStart(context.trialId, now);
+        }
+      }
 
       const enemyScaled = createEnemy(enemyTemplateId, {
         cityIndex,
@@ -912,6 +989,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
     exitCombat: () => {
       // Clean up boss mechanics
       bossMechanics = null;
+
+      const contextSnapshot = get().combatContext;
+      if (contextSnapshot?.type === 'trial') {
+        useTrialStore.getState().resetSession(contextSnapshot.trialId);
+      }
 
       set((state) => {
         state.inCombat = false;
@@ -1058,46 +1140,47 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       // Calculate base damage: ATK * (1 - DEF/(DEF + K))
-      let atk = D(enemy.atk);
+      let enemyAttackPower = D(enemy.atk);
 
       // Apply boss enrage multiplier
       if (state.isBoss && bossMechanics) {
         const enrageMultiplier = bossMechanics.getEnrageMultiplier();
         if (enrageMultiplier > 1) {
-          atk = atk.times(enrageMultiplier);
+          enemyAttackPower = enemyAttackPower.times(enrageMultiplier);
         }
       }
 
       const def = D(effectiveStats.def);
       const defReduction = def.dividedBy(def.plus(DEFENSE_CONSTANT_K));
-      const baseDamage = atk.times(D(1).minus(defReduction));
+      const baseDamage = enemyAttackPower.times(D(1).minus(defReduction));
 
       // Check for critical hit
       const critRoll = Math.random() * 100;
       const isCrit = critRoll < enemy.crit;
-      let finalDamage = baseDamage;
+      const critMultiplier = isCrit ? D(enemy.critDmg).dividedBy(100) : D(1);
+      const damageAfterCrit = baseDamage.times(critMultiplier);
 
-      if (isCrit) {
-        const critMultiplier = D(enemy.critDmg).dividedBy(100);
-        finalDamage = baseDamage.times(critMultiplier);
-      }
-
-      const { remainingDamage: postCombatShield, absorbed: combatAbsorbed } = applyCombatShield(finalDamage, now);
-      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(postCombatShield.toString());
-      const damageAfterShield = D(remainingDamage);
+      const { remainingDamage: damageAfterCombatShield, absorbed: combatAbsorbed } = applyCombatShield(
+        damageAfterCrit,
+        now
+      );
+      const { remainingDamage, absorbed } = gameStore.applyAbsorptionShield(damageAfterCombatShield.toString());
+      const damageAfterAbsorption = D(remainingDamage);
       const absorbedAmount = D(absorbed).plus(combatAbsorbed);
 
-      if (damageAfterShield.lessThanOrEqualTo(0)) {
+      const startingHp = D(state.playerHP);
+      const newHP = subtract(state.playerHP, damageAfterAbsorption.toString());
+      const clampedHP = clamp(newHP, 0, state.playerMaxHP);
+      const appliedDamage = startingHp.minus(D(clampedHP));
+      const absorptionNote = absorbedAmount.greaterThan(0) ? ` (${absorbedAmount.toFixed(0)} absorbed)` : '';
+
+      if (damageAfterAbsorption.lessThanOrEqualTo(0)) {
         get().addLogEntry(
           'system',
           `${enemy.name}'s attack was absorbed by your shield!`,
           '#22c55e'
         );
       } else {
-        const absorptionNote = absorbedAmount.greaterThan(0)
-          ? ` (${absorbedAmount.toFixed(0)} absorbed)`
-          : '';
-
         get().addLogEntry(
           isCrit ? 'damage' : 'enemy',
           isCrit
@@ -1107,18 +1190,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
         );
       }
 
-      // Apply damage to player
-      let appliedDamage = damageAfterShield;
       set((state) => {
-        const startingHp = D(state.playerHP);
-        const newHP = subtract(state.playerHP, damageAfterShield.toString());
-        const clampedHP = clamp(newHP, 0, state.playerMaxHP);
-        appliedDamage = startingHp.minus(D(clampedHP));
         state.playerHP = clampedHP.toString();
         state.lastEnemyAttackTime = now;
       });
 
-      if (damageAfterShield.greaterThan(0) || absorbedAmount.greaterThan(0)) {
+      if (damageAfterAbsorption.greaterThan(0) || absorbedAmount.greaterThan(0)) {
         emitEvent({
           type: 'HIT',
           source: 'enemy',
@@ -1250,6 +1327,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
         emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');
 
+        const { autoContinue, stopAtBoss } = useOutskirtsStore.getState();
+
         setTimeout(() => {
           get().exitCombat();
 
@@ -1261,6 +1340,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
             activity.sourceId !== sourceId ||
             activity.startedAt !== activityToken
           ) {
+            return;
+          }
+
+          if (stopAtBoss && isBossFight) {
+            useActivityStore.getState().stopActivity('outskirts-stop-at-boss');
+            return;
+          }
+
+          if (!autoContinue) {
+            useActivityStore.getState().stopActivity('outskirts-auto-continue-disabled');
             return;
           }
 
@@ -1358,6 +1447,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const state = get();
       if (!state.currentEnemy) return;
 
+      const now = Date.now();
       const enemy = state.currentEnemy;
       const context = state.combatContext;
 
@@ -1376,9 +1466,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (context?.type === 'trial') {
         useActivityStore.getState().stopActivity();
-        if (context.eligible) {
-          useTrialStore.getState().recordFailure(context.trialId);
-        }
+
+        const summary = buildTrialDefeatSummary({
+          trialId: context.trialId,
+          events: state.events,
+          startedAt: state.combatStartTime,
+          endedAt: now,
+          enemyHp: state.enemyHP,
+          enemyMaxHp: state.enemyMaxHP,
+          playerMaxHp: state.playerMaxHP,
+          absorptionShield: useGameStore.getState().absorptionShield,
+          combatShieldAmount: state.combatShield?.amount ?? 0,
+          enemyMechanics: state.enemyMechanics,
+        });
+
+        const trialStore = useTrialStore.getState();
+        trialStore.recordAttemptSummary(context.trialId, summary);
+        trialStore.recordFailure(context.trialId);
       }
 
       if (context?.type === 'ruins') {
@@ -1391,6 +1495,46 @@ export const useCombatStore = create<ExtendedCombatState>()(
             cityId: context.cityId,
             roomIndex: context.roomIndex,
           });
+        }
+      }
+
+      const uiSettings = useUIStore.getState().settings;
+      if (uiSettings.autoRetryOnDeath) {
+        if (context?.type === 'outskirts' && context.sourceId) {
+          setTimeout(() => {
+            if (useActivityStore.getState().active) return;
+            const content = useContentStore.getState();
+            const outskirtsDef = content.maps.outskirtsById[context.sourceId!];
+            if (!outskirtsDef) return;
+
+            const progressSnapshot = useOutskirtsStore.getState().getProgress(outskirtsDef.id);
+            const nextIsBoss = progressSnapshot.killsSinceBoss >= outskirtsDef.killsToBoss;
+            const nextEnemyId = nextIsBoss
+              ? outskirtsDef.bossId
+              : pickFromWeightedPool(outskirtsDef.mobPool, outskirtsDef.mobPool?.[0]?.enemyId);
+
+            if (!nextEnemyId) return;
+
+            useActivityStore
+              .getState()
+              .startActivity('outskirts', { cityId: outskirtsDef.cityId, sourceId: outskirtsDef.id });
+
+            get().startCombat(nextEnemyId, {
+              type: 'outskirts',
+              cityId: outskirtsDef.cityId,
+              sourceId: outskirtsDef.id,
+              cityIndex: outskirtsDef.cityIndex,
+              isBoss: nextIsBoss,
+            });
+          }, 2000);
+        } else if (context?.type === 'ruins') {
+          const ruinId = context.ruinsId ?? context.sourceId;
+          if (ruinId) {
+            setTimeout(() => {
+              if (useActivityStore.getState().active) return;
+              useRuinsStore.getState().startRun(ruinId);
+            }, 2000);
+          }
         }
       }
 
@@ -1662,14 +1806,42 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       // Auto-attack if enabled
       if (state.autoAttack && now - state.lastAttackTime >= PLAYER_ATTACK_COOLDOWN) {
-        get().playerAttack();
+        try {
+          get().playerAttack();
+        } catch (error) {
+          if (!combatLoopErrorLogged) {
+            combatLoopErrorLogged = true;
+            console.error('[CombatStore] Error during playerAttack:', error);
+            try {
+              get().addLogEntry('system', 'Combat halted due to an error. Please report.', '#f87171');
+            } catch (logError) {
+              console.error('[CombatStore] Failed to log combat error', logError);
+            }
+          }
+          get().exitCombat();
+          return;
+        }
       }
 
       // Enemy auto-attacks (skip if ultimate just triggered)
       if (now - state.lastEnemyAttackTime >= ENEMY_ATTACK_COOLDOWN) {
         // Check if enemy is still alive before attacking
         if (greaterThan(state.enemyHP, 0)) {
-          get().enemyAttack();
+          try {
+            get().enemyAttack();
+          } catch (error) {
+            if (!combatLoopErrorLogged) {
+              combatLoopErrorLogged = true;
+              console.error('[CombatStore] Error during enemyAttack:', error);
+              try {
+                get().addLogEntry('system', 'Combat halted due to an error. Please report.', '#f87171');
+              } catch (logError) {
+                console.error('[CombatStore] Failed to log combat error', logError);
+              }
+            }
+            get().exitCombat();
+            return;
+          }
         }
       }
 

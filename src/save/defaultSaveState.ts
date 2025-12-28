@@ -21,7 +21,7 @@ import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 
-export const SAVE_VERSION = '1.0.6';
+export const SAVE_VERSION = '1.0.8';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -46,6 +46,27 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((entry) => typeof entry === 'string');
+
+const isValidRuinsRunSummary = (value: unknown): value is import('../types').RuinsRunSummary => {
+  if (!isRecord(value)) return false;
+  if (typeof value.runId !== 'string') return false;
+  if (typeof value.ruinId !== 'string') return false;
+  if (typeof value.startedAt !== 'number' || typeof value.endedAt !== 'number') return false;
+  if (typeof value.durationSec !== 'number') return false;
+  if (typeof value.roomsCleared !== 'number' || typeof value.roomCount !== 'number') return false;
+  if (typeof value.victory !== 'boolean') return false;
+  if (typeof value.goldGained !== 'number') return false;
+  if (typeof value.rareDropCount !== 'number') return false;
+  if (!Array.isArray(value.drops)) return false;
+  return value.drops.every((drop) => {
+    if (!isRecord(drop)) return false;
+    if (typeof drop.itemId !== 'string') return false;
+    if (typeof drop.qty !== 'number') return false;
+    if ('rarity' in drop && drop.rarity != null && typeof drop.rarity !== 'string') return false;
+    if ('reason' in drop && drop.reason != null && typeof drop.reason !== 'string') return false;
+    return true;
+  });
+};
 
 const warnInvalidSlice = (slice: string) => {
   console.warn(`[SaveLoad] ${slice} invalid in save, using defaults`);
@@ -151,13 +172,36 @@ export function buildDefaultSaveState(): SaveData {
     },
     outskirtsState: {
       progressByOutskirtsId: { ...outskirtsState.progressByOutskirtsId },
+      autoContinue: outskirtsState.autoContinue,
+      stopAtBoss: outskirtsState.stopAtBoss,
     },
     trialState: {
-      progressByTrialId: { ...trialState.progressByTrialId },
+      activeTrialSessionId: trialState.activeTrialSessionId ?? null,
+      progressByTrialId: Object.fromEntries(
+        Object.entries(trialState.progressByTrialId ?? {}).map(([trialId, progress]) => [
+          trialId,
+          {
+            ...progress,
+            sessionAttempts: progress.sessionAttempts ?? 0,
+            attemptStartAt: progress.attemptStartAt ?? null,
+            lastAttemptSummary: progress.lastAttemptSummary
+              ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
+              : null,
+          },
+        ]),
+      ),
     },
     ruinsState: {
       progressByRuinId: { ...ruinsState.progressByRuinId },
       autoRepeatDefault: ruinsState.autoRepeatDefault,
+      autoRestart: ruinsState.autoRestart,
+      runHistory: ruinsState.runHistory.map((run) => ({
+        ...run,
+        drops: run.drops.map((drop) => ({ ...drop })),
+      })),
+      lastRunSummary: ruinsState.lastRunSummary
+        ? { ...ruinsState.lastRunSummary, drops: ruinsState.lastRunSummary.drops.map((drop) => ({ ...drop })) }
+        : null,
     },
     shopState: {
       dayKey: shopState.dayKey,
@@ -281,16 +325,40 @@ function isValidOutskirtsState(value: unknown): value is SaveData['outskirtsStat
     if (typeof progress.totalKills !== 'number') return false;
     if (typeof progress.bossDefeated !== 'boolean') return false;
   }
+  if (value.autoContinue !== undefined && typeof value.autoContinue !== 'boolean') return false;
+  if (value.stopAtBoss !== undefined && typeof value.stopAtBoss !== 'boolean') return false;
   return true;
 }
 
 function isValidTrialState(value: unknown): value is SaveData['trialState'] {
   if (!isRecord(value)) return false;
   if (!isRecord(value.progressByTrialId)) return false;
+  if (
+    'activeTrialSessionId' in value &&
+    value.activeTrialSessionId !== null &&
+    value.activeTrialSessionId !== undefined &&
+    typeof value.activeTrialSessionId !== 'string'
+  ) {
+    return false;
+  }
   for (const progress of Object.values(value.progressByTrialId)) {
     if (!isRecord(progress)) return false;
     if (typeof progress.attempts !== 'number') return false;
     if (typeof progress.cleared !== 'boolean') return false;
+    if ('sessionAttempts' in progress && typeof progress.sessionAttempts !== 'number') return false;
+    if ('attemptStartAt' in progress && progress.attemptStartAt !== null && typeof progress.attemptStartAt !== 'number')
+      return false;
+    if ('lastAttemptSummary' in progress && progress.lastAttemptSummary != null) {
+      const summary = progress.lastAttemptSummary;
+      if (!isRecord(summary)) return false;
+      if (typeof summary.trialId !== 'string') return false;
+      if (typeof summary.startedAt !== 'number' || typeof summary.endedAt !== 'number') return false;
+      if (typeof summary.durationSec !== 'number') return false;
+      if (typeof summary.bossHpPct !== 'number') return false;
+      if (typeof summary.maxHit !== 'number') return false;
+      if (typeof summary.maxHitLabel !== 'string') return false;
+      if (!Array.isArray(summary.suggestions)) return false;
+    }
   }
   return true;
 }
@@ -305,6 +373,13 @@ function isValidRuinsState(value: unknown): value is SaveData['ruinsState'] {
     if (typeof progress.bossKills !== 'number') return false;
   }
   if ('autoRepeatDefault' in value && typeof value.autoRepeatDefault !== 'boolean') return false;
+  if ('autoRestart' in value && value.autoRestart !== undefined && typeof value.autoRestart !== 'boolean') return false;
+  if (value.runHistory !== undefined) {
+    if (!Array.isArray(value.runHistory)) return false;
+    if (!value.runHistory.every((entry) => isValidRuinsRunSummary(entry))) return false;
+  }
+  if ('lastRunSummary' in value && value.lastRunSummary != null && !isValidRuinsRunSummary(value.lastRunSummary))
+    return false;
   return true;
 }
 

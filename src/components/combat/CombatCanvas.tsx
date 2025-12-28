@@ -12,6 +12,7 @@ interface CombatCanvasProps {
   inCombat: boolean;
   playerHP: number;
   enemyHP: number;
+  showFloatingNumbers?: boolean;
 }
 
 /**
@@ -33,6 +34,7 @@ export function CombatCanvas({
   inCombat,
   playerHP,
   enemyHP,
+  showFloatingNumbers = true,
 }: CombatCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
@@ -65,30 +67,33 @@ export function CombatCanvas({
   /**
    * Get background colors for current zone
    */
-    const getBackground = useCallback(() => {
-      const zoneKey = currentZone || 'default';
-      return ZONE_BACKGROUNDS[zoneKey] || ZONE_BACKGROUNDS.default;
-    }, [currentZone]);
+  const getBackground = useCallback(() => {
+    const zoneKey = currentZone || 'default';
+    return ZONE_BACKGROUNDS[zoneKey] || ZONE_BACKGROUNDS.default;
+  }, [currentZone]);
 
   /**
    * Draw background
    */
-    const drawBackground = useCallback((ctx: CanvasRenderingContext2D) => {
+  const drawBackground = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
       const bg = getBackground();
       const gradient = ctx.createLinearGradient(0, 0, 0, height);
       gradient.addColorStop(0, bg.top);
-    gradient.addColorStop(1, bg.bottom);
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+      gradient.addColorStop(1, bg.bottom);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
 
-    // Ground line
+      // Ground line
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, height - 50);
       ctx.lineTo(width, height - 50);
       ctx.stroke();
-    }, [getBackground, height, width]);
+    },
+    [getBackground, height, width]
+  );
 
   /**
    * Draw entity (player or enemy)
@@ -209,13 +214,12 @@ export function CombatCanvas({
   /**
    * Handle combat log updates and trigger animations
    */
-    useEffect(() => {
-      if (!inCombat || combatLog.length === 0) {
-        lastLogLengthRef.current = 0;
+  useEffect(() => {
+    if (!inCombat || combatLog.length === 0) {
+      lastLogLengthRef.current = 0;
       return;
     }
 
-    // Check for new log entries
     if (combatLog.length > lastLogLengthRef.current) {
       const newEntries = combatLog.slice(lastLogLengthRef.current);
       lastLogLengthRef.current = combatLog.length;
@@ -248,7 +252,9 @@ export function CombatCanvas({
 
           // Damage number at enemy position
           setTimeout(() => {
-            damageNumbers.spawn(baseEnemyX, entityY - 50, damage, isCrit);
+            if (showFloatingNumbers) {
+              damageNumbers.spawn(baseEnemyX, entityY - 50, damage, isCrit);
+            }
 
             // Particles on hit
             particlePool.emit(baseEnemyX, entityY, 15, {
@@ -289,7 +295,9 @@ export function CombatCanvas({
 
           // Damage number at player position
           setTimeout(() => {
-            damageNumbers.spawn(basePlayerX, entityY - 50, damage, isCrit);
+            if (showFloatingNumbers) {
+              damageNumbers.spawn(basePlayerX, entityY - 50, damage, isCrit);
+            }
 
             // Particles on hit
             particlePool.emit(basePlayerX, entityY, 15, {
@@ -317,14 +325,23 @@ export function CombatCanvas({
         }
       }
     }
-    }, [combatLog, damageNumbers, entityY, flashEffect, inCombat, particlePool, screenShake]);
+  }, [
+    combatLog,
+    damageNumbers,
+    entityY,
+    flashEffect,
+    inCombat,
+    particlePool,
+    screenShake,
+    showFloatingNumbers,
+  ]);
 
   /**
    * Main render loop
    */
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -352,7 +369,9 @@ export function CombatCanvas({
       }
 
       particlePool.update(cappedDelta);
-      damageNumbers.update(cappedDelta);
+      if (showFloatingNumbers) {
+        damageNumbers.update(cappedDelta);
+      }
       screenShake.update(cappedDelta);
       flashEffect.update(cappedDelta);
 
@@ -380,7 +399,9 @@ export function CombatCanvas({
         particlePool.render(ctx);
 
         // Draw damage numbers
-        damageNumbers.render(ctx);
+        if (showFloatingNumbers) {
+          damageNumbers.render(ctx);
+        }
       } else {
         // Not in combat - show idle message
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -408,44 +429,45 @@ export function CombatCanvas({
         cancelAnimationFrame(rafRef.current);
       }
     };
-    }, [
-      width,
-      height,
-      inCombat,
-      currentEnemy,
-      currentZone,
-      playerHP,
-      enemyHP,
-      playerMaxHP,
-      enemyMaxHP,
-      playerX,
-      enemyX,
-      damageNumbers,
-      drawBackground,
-      entityY,
-      flashEffect,
-      particlePool,
-      screenShake,
-    ]);
+  }, [
+    width,
+    height,
+    inCombat,
+    currentEnemy,
+    currentZone,
+    playerHP,
+    enemyHP,
+    playerMaxHP,
+    enemyMaxHP,
+    playerX,
+    enemyX,
+    damageNumbers,
+    drawBackground,
+    entityY,
+    flashEffect,
+    particlePool,
+    screenShake,
+    showFloatingNumbers,
+  ]);
 
   // Reset when combat ends
-    useEffect(() => {
-      if (!inCombat) {
-        particlePool.clear();
-        damageNumbers.clear();
-        setPlayerX(basePlayerX);
-        setEnemyX(baseEnemyX);
-        playerAnimRef.current = null;
-        enemyAnimRef.current = null;
-        lastLogLengthRef.current = 0;
-      }
-    }, [
-      baseEnemyX,
-      basePlayerX,
-      damageNumbers,
-      inCombat,
-      particlePool,
-    ]);
+  useEffect(() => {
+    if (!inCombat) {
+      particlePool.clear();
+      damageNumbers.clear();
+      setPlayerX(basePlayerX);
+      setEnemyX(baseEnemyX);
+      playerAnimRef.current = null;
+      enemyAnimRef.current = null;
+      lastLogLengthRef.current = 0;
+    }
+  }, [baseEnemyX, basePlayerX, damageNumbers, inCombat, particlePool]);
+
+  useEffect(() => {
+    if (!showFloatingNumbers) {
+      damageNumbers.clear();
+    }
+  }, [damageNumbers, showFloatingNumbers]);
 
   return (
     <canvas
