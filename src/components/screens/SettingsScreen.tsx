@@ -11,6 +11,8 @@ import './SettingsScreen.scss';
 export function SettingsScreen() {
   const showOfflineModal = useUIStore((state) => state.settings.showOfflineModal);
   const showCombatLog = useUIStore((state) => state.settings.showCombatLog);
+  const showCombatMinibar = useUIStore((state) => state.settings.showCombatMinibar);
+  const combatMinibarExpanded = useUIStore((state) => state.settings.combatMinibarExpanded);
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
   const setSettings = useUIStore((state) => state.setSettings);
@@ -35,6 +37,9 @@ export function SettingsScreen() {
 
   const toggleOfflineModal = () => setSettings({ showOfflineModal: !showOfflineModal });
   const toggleCombatLog = () => setSettings({ showCombatLog: !showCombatLog });
+  const toggleCombatMinibar = () => setSettings({ showCombatMinibar: !showCombatMinibar });
+  const toggleCombatMinibarExpanded = () =>
+    setSettings({ combatMinibarExpanded: !combatMinibarExpanded });
   const togglePrestigeConfirm = () =>
     setSettings({ requirePrestigeConfirm: !requirePrestigeConfirm });
   const toggleSystemStatus = () => setSettings({ showSystemStatusPanel: !showSystemStatusPanel });
@@ -102,6 +107,36 @@ export function SettingsScreen() {
                 <div>
                   <div className={'settingsScreenOptionLabel'}>Show combat log</div>
                   <p className={'settingsScreenOptionDescription'}>Hide or reveal the detailed combat event log.</p>
+                </div>
+              </label>
+
+              <label className={'settingsScreenOptionRow'}>
+                <input
+                  type="checkbox"
+                  checked={showCombatMinibar}
+                  onChange={toggleCombatMinibar}
+                  className={'settingsScreenCheckbox'}
+                />
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Show combat minibar</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Always display the compact combat overlay during fights and combat activities.
+                  </p>
+                </div>
+              </label>
+
+              <label className={'settingsScreenOptionRow'}>
+                <input
+                  type="checkbox"
+                  checked={combatMinibarExpanded}
+                  onChange={toggleCombatMinibarExpanded}
+                  className={'settingsScreenCheckbox'}
+                />
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Combat minibar expanded by default</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Keep the minibar unfolded when it appears; collapse later if screen space is tight.
+                  </p>
                 </div>
               </label>
 

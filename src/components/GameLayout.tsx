@@ -12,6 +12,8 @@ import { ManualSatchelModal } from './modals/ManualSatchelModal';
 import { TechniqueLearnedModal } from './modals/TechniqueLearnedModal';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SystemStatusPanelOverlay } from '../app/overlays/SystemStatusPanel';
+import { CombatMinibarOverlay } from '../app/overlays/CombatMinibarOverlay';
+import { CombatTheaterOverlay } from '../app/overlays/CombatTheaterOverlay';
 import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
 import './GameLayout.scss';
@@ -93,6 +95,8 @@ export function GameLayout() {
       {showManualSatchelModal && <ManualSatchelModal />}
       {showTechniqueLearnedModal && <TechniqueLearnedModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
+      <CombatMinibarOverlay />
+      <CombatTheaterOverlay />
       <LifeStartWizardModal />
     </div>
   );

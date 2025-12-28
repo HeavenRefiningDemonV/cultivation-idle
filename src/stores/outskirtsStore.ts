@@ -10,9 +10,13 @@ export type OutskirtsProgress = {
 
 interface OutskirtsState {
   progressByOutskirtsId: Record<string, OutskirtsProgress>;
+  autoContinue: boolean;
+  stopAtBoss: boolean;
   getProgress: (outskirtsId: string) => OutskirtsProgress;
   recordKill: (outskirtsId: string, isBoss: boolean) => void;
   shouldSpawnBoss: (outskirtsId: string, outskirtsDef: OutskirtsDef) => boolean;
+  setAutoContinue: (enabled: boolean) => void;
+  setStopAtBoss: (enabled: boolean) => void;
   hardResetOutskirts: () => void;
 }
 
@@ -25,6 +29,8 @@ const createDefaultProgress = (): OutskirtsProgress => ({
 export const useOutskirtsStore = create<OutskirtsState>()(
   immer((set, get) => ({
     progressByOutskirtsId: {},
+    autoContinue: true,
+    stopAtBoss: false,
 
     getProgress: (outskirtsId) => {
       const existing = get().progressByOutskirtsId[outskirtsId];
@@ -59,9 +65,23 @@ export const useOutskirtsStore = create<OutskirtsState>()(
       return progress.killsSinceBoss >= outskirtsDef.killsToBoss;
     },
 
+    setAutoContinue: (enabled) => {
+      set((state) => {
+        state.autoContinue = enabled;
+      });
+    },
+
+    setStopAtBoss: (enabled) => {
+      set((state) => {
+        state.stopAtBoss = enabled;
+      });
+    },
+
     hardResetOutskirts: () => {
       set(() => ({
         progressByOutskirtsId: {},
+        autoContinue: true,
+        stopAtBoss: false,
       }));
     },
   })),

@@ -303,6 +303,8 @@ export interface SaveOutskirtsState {
       bossDefeated: boolean;
     }
   >;
+  autoContinue?: boolean;
+  stopAtBoss?: boolean;
 }
 
 export interface SaveManualSatchelEntry {
@@ -463,13 +465,17 @@ export interface SaveData {
 
   // Trial progression
   trialState?: {
+    activeTrialSessionId?: string | null;
     progressByTrialId: Record<
       string,
       {
         attempts: number;
+        sessionAttempts?: number;
         cleared: boolean;
         lastAttemptAt: number | null;
         lastClearAt: number | null;
+        attemptStartAt?: number | null;
+        lastAttemptSummary?: TrialAttemptSummary | null;
       }
     >;
   };
@@ -487,6 +493,9 @@ export interface SaveData {
       }
     >;
     autoRepeatDefault?: boolean;
+    autoRestart?: boolean;
+    runHistory?: RuinsRunSummary[];
+    lastRunSummary?: RuinsRunSummary | null;
   };
 
   // Shop state
@@ -741,6 +750,27 @@ export interface CombatShield {
   expiresAt: number | null;
 }
 
+export interface RuinsRunDropSummary {
+  itemId: string;
+  qty: number;
+  rarity?: string;
+  reason?: string;
+}
+
+export interface RuinsRunSummary {
+  runId: string;
+  ruinId: string;
+  startedAt: number;
+  endedAt: number;
+  durationSec: number;
+  roomsCleared: number;
+  roomCount: number;
+  victory: boolean;
+  goldGained: number;
+  drops: RuinsRunDropSummary[];
+  rareDropCount: number;
+}
+
 export interface CombatBuff {
   id: string;
   stat: string;
@@ -754,6 +784,17 @@ export interface CombatResources {
   maxQi: number;
   intent: number;
   maxIntent: number;
+}
+
+export interface TrialAttemptSummary {
+  trialId: string;
+  startedAt: number;
+  endedAt: number;
+  durationSec: number;
+  bossHpPct: number;
+  maxHit: number;
+  maxHitLabel: string;
+  suggestions: string[];
 }
 
 /**
