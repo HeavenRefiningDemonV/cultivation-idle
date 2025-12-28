@@ -423,12 +423,12 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
     return {
       ...createDefaultCraftSessionState(),
 
-    setMode: (station, mode) => {
-      if (!isCraftMode(mode) || !isValidCraftStation(station)) return;
-      set((state) => {
-        state.modeByStation[station] = mode;
-      });
-    },
+      setMode: (station, mode) => {
+        if (!isCraftMode(mode) || !isValidCraftStation(station)) return;
+        set((state) => {
+          state.modeByStation[station] = mode;
+        });
+      },
 
     startSession: (args) => {
       if (get().activeSession) return { ok: false, reason: 'active_session' };
@@ -910,5 +910,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
     hardReset: () => {
       set(() => ({ ...createDefaultCraftSessionState() }));
     },
-  })),
+  };
+  })
 );
