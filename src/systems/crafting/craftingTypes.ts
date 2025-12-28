@@ -10,7 +10,12 @@ export type CraftStepType =
   | 'QUENCH'
   | 'TEMPER'
   | 'SEAL_LID'
-  | 'FINISH';
+  | 'FINISH'
+  | 'HEAT_MATERIAL'
+  | 'ALLOY_MIX'
+  | 'CAST_OR_SHAPE'
+  | 'HAMMER_PATTERN'
+  | 'ENGRAVE_RUNE';
 
 export type CraftPromptType = 'STABILIZE_FLAME' | 'ADD_CATALYST';
 
@@ -78,7 +83,9 @@ export type CraftStep =
       id: string;
       type: 'QUENCH';
       uiLabel?: string;
-      medium: 'water' | 'oil';
+      medium: 'water' | 'oil' | 'brine';
+      mediumOptions?: Array<'water' | 'oil' | 'brine'>;
+      timingWindow?: { goodMin: number; goodMax: number; perfectMin: number; perfectMax: number };
     }
   | {
       id: string;
@@ -86,12 +93,52 @@ export type CraftStep =
       uiLabel?: string;
       targetHeat: number;
       durationMs: number;
+      targetMin?: number;
+      targetMax?: number;
+      holdMs?: number;
     }
   | {
       id: string;
       type: 'SEAL_LID';
       uiLabel?: string;
       windowMs: number;
+    }
+  | {
+      id: string;
+      type: 'HEAT_MATERIAL';
+      uiLabel?: string;
+      targetMin: number;
+      targetMax: number;
+      holdMs: number;
+      jitter?: number;
+    }
+  | {
+      id: string;
+      type: 'ALLOY_MIX';
+      uiLabel?: string;
+      options: Array<{ id: string; label: string; qualityDelta?: number }>;
+    }
+  | {
+      id: string;
+      type: 'CAST_OR_SHAPE';
+      uiLabel?: string;
+      variant: 'cast' | 'shape';
+      difficulty?: number;
+    }
+  | {
+      id: string;
+      type: 'HAMMER_PATTERN';
+      uiLabel?: string;
+      hits: number;
+      shrinkMs: number;
+      tolerance: number;
+    }
+  | {
+      id: string;
+      type: 'ENGRAVE_RUNE';
+      uiLabel?: string;
+      optional?: boolean;
+      runeFamily?: string;
     }
   | {
       id: string;
@@ -105,7 +152,75 @@ export interface CraftScript {
   sourceId: string;
   steps: CraftStep[];
   baselineTimeSec?: number;
+  handsOnBonus?: ForgeHandsOnBonus;
 }
+
+export type ForgeStepDef = Extract<
+  CraftStep,
+  | { type: 'HEAT_MATERIAL' }
+  | { type: 'ALLOY_MIX' }
+  | { type: 'CAST_OR_SHAPE' }
+  | { type: 'HAMMER_PATTERN' }
+  | { type: 'QUENCH' }
+  | { type: 'TEMPER' }
+  | { type: 'ENGRAVE_RUNE' }
+>;
+
+export type ForgeStepResult =
+  | {
+      stepId: string;
+      type: 'HEAT_MATERIAL';
+      achievedMin?: number;
+      achievedMax?: number;
+      holdMs?: number;
+    }
+  | {
+      stepId: string;
+      type: 'ALLOY_MIX';
+      choiceId?: string;
+      qualityDelta?: number;
+    }
+  | {
+      stepId: string;
+      type: 'CAST_OR_SHAPE';
+      variant: 'cast' | 'shape';
+      precision?: number;
+      success?: boolean;
+    }
+  | {
+      stepId: string;
+      type: 'HAMMER_PATTERN';
+      hitsLanded: number;
+      hitsRequired: number;
+      timingScore?: number;
+    }
+  | {
+      stepId: string;
+      type: 'QUENCH';
+      medium: 'water' | 'oil' | 'brine';
+      timingMs?: number;
+    }
+  | {
+      stepId: string;
+      type: 'TEMPER';
+      achievedMin?: number;
+      achievedMax?: number;
+      holdMs?: number;
+    }
+  | {
+      stepId: string;
+      type: 'ENGRAVE_RUNE';
+      success?: boolean;
+      precision?: number;
+      optional?: boolean;
+    };
+
+export type ForgeHandsOnBonus = {
+  qualityProcChancePct?: number;
+  masteryMult?: number;
+  timeReductionPct?: number;
+  temperProcChancePct?: number;
+};
 
 export interface CraftSessionPayment {
   currencies?: Partial<Record<'gold' | 'spiritStones' | 'merit', string>>;
@@ -133,6 +248,7 @@ export interface CraftSession {
     orderMistakes?: number;
     backgroundResolveAt?: number | null;
     backgroundReason?: 'closed' | 'navigated' | 'crashed' | null;
+    forgeStepResults?: ForgeStepResult[];
   };
   payment: CraftSessionPayment;
   prompts?: CraftPromptState[];
@@ -156,4 +272,16 @@ export interface AlchemyHandsOnResult {
   masteryBefore: number;
   masteryAfter: number;
   masteryGain: number;
+}
+
+export interface ForgeSessionOutcome {
+  scoreOverall: number;
+  heatScore: number;
+  hammerScore: number;
+  quenchScore: number;
+  temperScore: number;
+  timeReductionPctApplied: number;
+  qualityProcChanceBonusPct: number;
+  masteryMultApplied: number;
+  temperProcChanceBonusPctApplied: number;
 }

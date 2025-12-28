@@ -1,4 +1,4 @@
-import type { PromptDef } from '../systems/crafting/craftingTypes';
+import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/crafting/craftingTypes';
 import type { ForgeBlueprintsConfig } from './types';
 
 export type ForgeBlueprintRaw = ForgeBlueprintsConfig['blueprints'][number];
@@ -19,6 +19,8 @@ export type NormalizedForgeBlueprint = {
   output?: { itemId: string; qty: number };
   tags?: string[];
   assistedPrompts?: PromptDef[];
+  stepScript?: ForgeStepDef[];
+  handsOnBonus?: ForgeHandsOnBonus;
 };
 
 function toNumber(value: unknown): number {
@@ -75,6 +77,29 @@ function normalizeOutput(value: unknown): { itemId: string; qty: number } | unde
   return undefined;
 }
 
+function sanitizeStepScript(raw: unknown): ForgeStepDef[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  return raw
+    .map((entry) => {
+      if (!entry || typeof entry !== 'object') return null;
+      const record = entry as Record<string, unknown>;
+      if (typeof record.id !== 'string' || typeof record.type !== 'string') return null;
+      return record as ForgeStepDef;
+    })
+    .filter((entry): entry is ForgeStepDef => Boolean(entry));
+}
+
+function sanitizeHandsOnBonus(raw: unknown): ForgeHandsOnBonus | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const record = raw as Record<string, unknown>;
+  const bonus: ForgeHandsOnBonus = {};
+  if (typeof record.qualityProcChancePct === 'number') bonus.qualityProcChancePct = record.qualityProcChancePct;
+  if (typeof record.masteryMult === 'number') bonus.masteryMult = record.masteryMult;
+  if (typeof record.timeReductionPct === 'number') bonus.timeReductionPct = record.timeReductionPct;
+  if (typeof record.temperProcChancePct === 'number') bonus.temperProcChancePct = record.temperProcChancePct;
+  return Object.keys(bonus).length > 0 ? bonus : undefined;
+}
+
 function readCostField(raw: Record<string, unknown>, key: string): number {
   if (key in raw) return toNumber(raw[key]);
   const cost = raw.cost as Record<string, unknown> | undefined;
@@ -125,6 +150,8 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
   const assistedPrompts = Array.isArray((raw as any).assistedPrompts)
     ? ((raw as any).assistedPrompts as PromptDef[])
     : undefined;
+  const stepScript = sanitizeStepScript((raw as any).stepScript);
+  const handsOnBonus = sanitizeHandsOnBonus((raw as any).handsOnBonus);
 
   const tags = Array.isArray(raw.tags) ? raw.tags.filter((tag) => typeof tag === 'string') : undefined;
   const type: 'craft' | 'service' = service || raw.effect ? 'service' : 'craft';
@@ -145,6 +172,8 @@ export function normalizeForgeBlueprint(rawBlueprint: ForgeBlueprintRaw | Record
     output,
     tags,
     assistedPrompts,
+    stepScript,
+    handsOnBonus,
   };
 }
 

@@ -1,5 +1,5 @@
 import type { RewardBundle } from '../services/rewards';
-import type { PromptDef } from '../systems/crafting/craftingTypes';
+import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/crafting/craftingTypes';
 
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;
@@ -259,6 +259,8 @@ export interface ForgeBlueprintsConfig {
     service?: string;
     effect?: unknown;
     assistedPrompts?: PromptDef[];
+    stepScript?: ForgeStepDef[];
+    handsOnBonus?: ForgeHandsOnBonus;
   }>;
 }
 

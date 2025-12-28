@@ -34,6 +34,34 @@
       "outputs": {
         "rune_ember_t1": 1
       },
+      "stepScript": [
+        { "id": "heat_ingot", "type": "HEAT_MATERIAL", "targetMin": 540, "targetMax": 760, "holdMs": 4200, "jitter": 30 },
+        {
+          "id": "alloy_mix",
+          "type": "ALLOY_MIX",
+          "options": [
+            { "id": "steady", "label": "Steady fold", "qualityDelta": 0.05 },
+            { "id": "quick", "label": "Quick stir", "qualityDelta": 0.02 }
+          ]
+        },
+        { "id": "shape_core", "type": "CAST_OR_SHAPE", "variant": "shape", "difficulty": 0.5 },
+        { "id": "hammer_runes", "type": "HAMMER_PATTERN", "hits": 7, "shrinkMs": 820, "tolerance": 0.18 },
+        {
+          "id": "quench_set",
+          "type": "QUENCH",
+          "mediumOptions": ["water", "oil"],
+          "medium": "water",
+          "timingWindow": { "goodMin": 1800, "goodMax": 3200, "perfectMin": 2300, "perfectMax": 2700 }
+        },
+        { "id": "temper_core", "type": "TEMPER", "targetMin": 430, "targetMax": 560, "holdMs": 3600 },
+        { "id": "engrave_ember", "type": "ENGRAVE_RUNE", "optional": false, "runeFamily": "ember" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 12,
+        "masteryMult": 1.1,
+        "timeReductionPct": 0.12,
+        "temperProcChancePct": 6
+      },
       "assistedPrompts": [
         {
           "id": "stabilize_heat_ember",
@@ -73,6 +101,34 @@
       },
       "outputs": {
         "rune_stone_t1": 1
+      },
+      "stepScript": [
+        { "id": "heat_stone", "type": "HEAT_MATERIAL", "targetMin": 500, "targetMax": 720, "holdMs": 3900, "jitter": 25 },
+        {
+          "id": "mix_quartz",
+          "type": "ALLOY_MIX",
+          "options": [
+            { "id": "slow_fold", "label": "Slow fold", "qualityDelta": 0.06 },
+            { "id": "quick_bind", "label": "Quick bind", "qualityDelta": 0.03 }
+          ]
+        },
+        { "id": "cast_plate", "type": "CAST_OR_SHAPE", "variant": "cast", "difficulty": 0.45 },
+        { "id": "hammer_faces", "type": "HAMMER_PATTERN", "hits": 6, "shrinkMs": 760, "tolerance": 0.2 },
+        {
+          "id": "quench_lock",
+          "type": "QUENCH",
+          "mediumOptions": ["water", "oil"],
+          "medium": "oil",
+          "timingWindow": { "goodMin": 1900, "goodMax": 3100, "perfectMin": 2400, "perfectMax": 2800 }
+        },
+        { "id": "temper_edge", "type": "TEMPER", "targetMin": 420, "targetMax": 540, "holdMs": 3400 },
+        { "id": "engrave_stone", "type": "ENGRAVE_RUNE", "optional": false, "runeFamily": "stone" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 10,
+        "masteryMult": 1.05,
+        "timeReductionPct": 0.1,
+        "temperProcChancePct": 5
       }
     },
     {

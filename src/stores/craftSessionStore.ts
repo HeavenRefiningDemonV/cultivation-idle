@@ -13,6 +13,8 @@ import type {
   CraftSessionSaveState,
   CraftStation,
   AlchemyHandsOnResult,
+  ForgeSessionOutcome,
+  ForgeStepResult,
   PromptDef,
 } from '../systems/crafting/craftingTypes';
 import {
@@ -23,6 +25,7 @@ import {
 } from '../systems/crafting/assistedPrompts';
 import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts';
 import { buildAlchemyOutputs, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
+import { computeForgeOutcome } from '../systems/crafting/forgeOutcome';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
@@ -47,11 +50,14 @@ interface CraftSessionStoreState extends CraftSessionSaveState {
   addImpurities: (delta: number) => void;
   recordScoreParts: (parts: CraftSession['cursor']['scoreParts']) => void;
   incrementOrderMistake: () => void;
+  recordForgeStepResult: (result: ForgeStepResult) => void;
   setStepStartedNow: (now?: number) => void;
   advanceStep: (now?: number) => void;
   markBackgroundResolving: (reason: 'closed' | 'navigated' | 'crashed') => void;
   tick: (now?: number) => void;
-  completeHandsOnSession: (now?: number) => { ok: boolean; reason?: string; result?: AlchemyHandsOnResult };
+  completeHandsOnSession: (
+    now?: number,
+  ) => { ok: boolean; reason?: string; result?: AlchemyHandsOnResult | ForgeSessionOutcome };
   claimActiveSession: (
     now?: number,
   ) =>
@@ -96,13 +102,22 @@ const getStepDurationMs = (step: CraftStep): number | undefined => {
     case 'HOLD_HEAT':
       return step.durationMs;
     case 'TEMPER':
-      return step.durationMs;
+      return step.durationMs ?? step.holdMs;
     case 'SEAL_LID':
       return step.windowMs;
+    case 'HEAT_MATERIAL':
+      return step.holdMs;
+    case 'HAMMER_PATTERN':
+      return Math.max(step.shrinkMs * Math.max(1, step.hits), step.shrinkMs);
+    case 'CAST_OR_SHAPE':
+      return undefined;
+    case 'ENGRAVE_RUNE':
+      return undefined;
+    case 'QUENCH':
+      return step.timingWindow ? Math.max(step.timingWindow.goodMax, step.timingWindow.perfectMax) : undefined;
     case 'HEAT_TO':
     case 'ADD_INGREDIENT':
     case 'HAMMER':
-    case 'QUENCH':
     case 'FINISH':
     default:
       return undefined;
@@ -130,6 +145,81 @@ const sanitizePromptState = (raw: unknown): CraftPromptState | null => {
     bonus,
     ui,
   };
+};
+
+const sanitizeForgeStepResult = (raw: unknown): ForgeStepResult | null => {
+  if (!raw || typeof raw !== 'object') return null;
+  const record = raw as Record<string, unknown>;
+  if (typeof record.stepId !== 'string' || typeof record.type !== 'string') return null;
+  const num = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : undefined);
+  switch (record.type) {
+    case 'HEAT_MATERIAL':
+      return {
+        stepId: record.stepId,
+        type: 'HEAT_MATERIAL',
+        achievedMin: num(record.achievedMin),
+        achievedMax: num(record.achievedMax),
+        holdMs: num(record.holdMs),
+      };
+    case 'ALLOY_MIX':
+      return {
+        stepId: record.stepId,
+        type: 'ALLOY_MIX',
+        choiceId: typeof record.choiceId === 'string' ? record.choiceId : undefined,
+        qualityDelta: num(record.qualityDelta),
+      };
+    case 'CAST_OR_SHAPE':
+      return {
+        stepId: record.stepId,
+        type: 'CAST_OR_SHAPE',
+        variant: record.variant === 'cast' || record.variant === 'shape' ? record.variant : 'cast',
+        precision: num(record.precision),
+        success: typeof record.success === 'boolean' ? record.success : undefined,
+      };
+    case 'HAMMER_PATTERN':
+      return {
+        stepId: record.stepId,
+        type: 'HAMMER_PATTERN',
+        hitsLanded: num(record.hitsLanded) ?? 0,
+        hitsRequired: num(record.hitsRequired) ?? 0,
+        timingScore: num(record.timingScore),
+      };
+    case 'QUENCH':
+      return {
+        stepId: record.stepId,
+        type: 'QUENCH',
+        medium:
+          record.medium === 'water' || record.medium === 'oil' || record.medium === 'brine'
+            ? record.medium
+            : 'water',
+        timingMs: num(record.timingMs),
+      };
+    case 'TEMPER':
+      return {
+        stepId: record.stepId,
+        type: 'TEMPER',
+        achievedMin: num(record.achievedMin),
+        achievedMax: num(record.achievedMax),
+        holdMs: num(record.holdMs),
+      };
+    case 'ENGRAVE_RUNE':
+      return {
+        stepId: record.stepId,
+        type: 'ENGRAVE_RUNE',
+        success: typeof record.success === 'boolean' ? record.success : undefined,
+        precision: num(record.precision),
+        optional: typeof record.optional === 'boolean' ? record.optional : undefined,
+      };
+    default:
+      return null;
+  }
+};
+
+const sanitizeForgeStepResults = (raw: unknown): ForgeStepResult[] | undefined => {
+  if (!Array.isArray(raw)) return undefined;
+  return raw
+    .map((entry) => sanitizeForgeStepResult(entry))
+    .filter((entry): entry is ForgeStepResult => Boolean(entry));
 };
 
 const isCraftMode = (value: unknown): value is CraftMode =>
@@ -352,6 +442,7 @@ const sanitizeActiveSession = (raw: unknown): CraftSession | null => {
                   (record.cursor as any).backgroundReason === 'crashed'
                 ? ((record.cursor as any).backgroundReason as CraftSession['cursor']['backgroundReason'])
                 : null,
+          forgeStepResults: sanitizeForgeStepResults((record.cursor as any).forgeStepResults),
         }
       : { stepIndex: 0 };
 
@@ -531,6 +622,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         spentItems.push(cost);
       }
 
+      const initialDuration = script.steps[0] ? getStepDurationMs(script.steps[0]) : undefined;
       const session: CraftSession = {
         sessionId: `craft:${args.station}:${args.sourceId}:${createdAt}`,
         station: args.station,
@@ -543,20 +635,28 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         endsAt,
         script,
         cursor: {
-        stepIndex: 0,
-        backgroundResolveAt: null,
-        backgroundReason: null,
-        heatSetting: 300,
-        impurities: 0,
-        scoreParts: {},
-        orderMistakes: 0,
-      },
+          stepIndex: 0,
+          stepStartedAt: startedAt,
+          stepEndsAt: initialDuration ? startedAt + initialDuration : undefined,
+          backgroundResolveAt: null,
+          backgroundReason: null,
+          heatSetting: 300,
+          impurities: 0,
+          scoreParts: {},
+          orderMistakes: 0,
+          forgeStepResults: [],
+        },
         payment: {
           currencies: payment.currencies,
           items: itemCosts,
         },
         prompts,
       };
+
+      if (session.mode === 'handsOn' && session.station === 'forge') {
+        session.cursor.backgroundResolveAt = computeBaselineResolveAt(session);
+        session.cursor.backgroundReason = 'navigated';
+      }
 
       set((state) => {
         state.modeByStation[args.station] = args.mode;
@@ -662,6 +762,20 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       });
     },
 
+    recordForgeStepResult: (result) => {
+      const sanitized = sanitizeForgeStepResult(result);
+      if (!sanitized) return;
+      set((state) => {
+        if (!state.activeSession) return;
+        const existing = state.activeSession.cursor.forgeStepResults ?? [];
+        const filtered = existing.filter(
+          (entry) => !(entry.stepId === sanitized.stepId && entry.type === sanitized.type),
+        );
+        filtered.push(sanitized);
+        state.activeSession.cursor.forgeStepResults = filtered;
+      });
+    },
+
     setStepStartedNow: (now = Date.now()) => {
       const active = get().activeSession;
       if (!active) return;
@@ -728,42 +842,82 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       const active = get().activeSession;
       if (!active) return { ok: false, reason: 'no_session' };
       if (active.mode !== 'handsOn') return { ok: false, reason: 'wrong_mode' };
-      if (active.station !== 'alchemy') return { ok: false, reason: 'unsupported_station' };
 
-      const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === active.sourceId);
-      if (!recipe) return { ok: false, reason: 'missing_recipe' };
-      const masteryBefore = useRecipeMasteryStore.getState().getAlchemyMastery(active.sourceId);
-      const settledPrompts = advancePromptStates(active.prompts ?? [], now);
-      const { result, rewardItems } = computeHandsOnResult(active, recipe, masteryBefore, now);
+      if (active.station === 'alchemy') {
+        const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === active.sourceId);
+        if (!recipe) return { ok: false, reason: 'missing_recipe' };
+        const masteryBefore = useRecipeMasteryStore.getState().getAlchemyMastery(active.sourceId);
+        const settledPrompts = advancePromptStates(active.prompts ?? [], now);
+        const { result, rewardItems } = computeHandsOnResult(active, recipe, masteryBefore, now);
 
-      set((state) => {
-        if (state.activeSession) {
-          state.activeSession.endsAt = now;
-          state.activeSession.cursor.backgroundResolveAt = null;
-          state.activeSession.cursor.backgroundReason = null;
-          state.activeSession.prompts = settledPrompts;
+        set((state) => {
+          if (state.activeSession) {
+            state.activeSession.endsAt = now;
+            state.activeSession.cursor.backgroundResolveAt = null;
+            state.activeSession.cursor.backgroundReason = null;
+            state.activeSession.prompts = settledPrompts;
+          }
+        });
+
+        if (rewardItems.length > 0) {
+          RewardService.grantRewards({ items: rewardItems }, `Alchemy Hands-on: ${active.sourceId}`);
         }
-      });
 
-      if (rewardItems.length > 0) {
-        RewardService.grantRewards({ items: rewardItems }, `Alchemy Hands-on: ${active.sourceId}`);
-      }
+        if (result.masteryGain > 0) {
+          useRecipeMasteryStore
+            .getState()
+            .gainAlchemyMastery(active.sourceId, result.masteryGain, 'handsOn');
+        }
 
-      if (result.masteryGain > 0) {
-        useRecipeMasteryStore
+        set((state) => {
+          state.activeSession = null;
+        });
+
+        useUIStore
           .getState()
-          .gainAlchemyMastery(active.sourceId, result.masteryGain, 'handsOn');
+          .addNotification('success', `Hands-on alchemy complete (${result.grade})`, 3500);
+
+        return { ok: true, result };
       }
 
-      set((state) => {
-        state.activeSession = null;
-      });
+      if (active.station === 'forge') {
+        const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === active.sourceId);
+        const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
+        if (!blueprint || blueprint.type !== 'craft' || !blueprint.output) {
+          return { ok: false, reason: 'missing_blueprint' };
+        }
+        const settledPrompts = advancePromptStates(active.prompts ?? [], now);
+        const outcome = computeForgeOutcome({
+          script: active.script,
+          performances: active.cursor.forgeStepResults ?? [],
+          handsOnBonus: active.script.handsOnBonus ?? blueprint.handsOnBonus,
+          seed: active.seed,
+        });
+        const rewardItems = [{ itemId: blueprint.output.itemId, qty: blueprint.output.qty * active.qty }];
 
-      useUIStore
-        .getState()
-        .addNotification('success', `Hands-on alchemy complete (${result.grade})`, 3500);
+        set((state) => {
+          if (state.activeSession) {
+            state.activeSession.endsAt = now;
+            state.activeSession.cursor.backgroundResolveAt = null;
+            state.activeSession.cursor.backgroundReason = null;
+            state.activeSession.prompts = settledPrompts;
+          }
+        });
 
-      return { ok: true, result };
+        if (rewardItems.length > 0) {
+          RewardService.grantRewards({ items: rewardItems }, `Forge Hands-on: ${active.sourceId}`);
+        }
+
+        set((state) => {
+          state.activeSession = null;
+        });
+
+        useUIStore.getState().addNotification('success', 'Hands-on forge complete', 3500);
+
+        return { ok: true, result: outcome };
+      }
+
+      return { ok: false, reason: 'unsupported_station' };
     },
 
     claimActiveSession: (now = Date.now()) => {
@@ -771,7 +925,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       if (!active) return { ok: false, reason: 'no_session' };
       if (now < active.endsAt) return { ok: false, reason: 'not_ready' };
 
-      if (active.mode === 'handsOn' && active.station === 'alchemy') {
+      if (active.mode === 'handsOn') {
         return { ok: false, reason: 'hands_on_complete_first' };
       }
 
@@ -888,6 +1042,19 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           activeSession = { ...activeSession, endsAt, prompts };
         }
       }
+      if (activeSession && activeSession.mode === 'handsOn' && activeSession.station === 'forge') {
+        const currentResolve = activeSession.cursor.backgroundResolveAt;
+        if (currentResolve == null) {
+          activeSession = {
+            ...activeSession,
+            cursor: {
+              ...activeSession.cursor,
+              backgroundResolveAt: computeBaselineResolveAt(activeSession),
+              backgroundReason: activeSession.cursor.backgroundReason ?? 'navigated',
+            },
+          };
+        }
+      }
       set(() => ({ modeByStation: nextModes, activeSession }));
     },
 
@@ -898,7 +1065,10 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         activeSession: activeSession
           ? {
               ...activeSession,
-              cursor: { ...activeSession.cursor },
+              cursor: {
+                ...activeSession.cursor,
+                forgeStepResults: activeSession.cursor.forgeStepResults?.map((entry) => ({ ...entry })),
+              },
               payment: sanitizePayment(activeSession.payment),
               script: cloneScript(activeSession.script),
               prompts: activeSession.prompts?.map((prompt) => ({ ...prompt })),
