@@ -3,9 +3,14 @@ import { formatPrice, getItemDef, useContentStore } from '../../stores/contentSt
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useShopStore } from '../../stores/shopStore';
 import { randFloat } from '../../utils/rng';
+import { RewardService } from '../../services/rewards';
+import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
+import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
+
+type StatusMessage = { type: 'success' | 'error'; message: string };
 
 interface ApothecaryPanelProps {
   shopId: string | null;
@@ -62,9 +67,9 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const buy = useShopStore((state) => state.buy);
 
   const [activeShelf, setActiveShelf] = useState<ShelfKey>('combat');
-  const [statusByStock, setStatusByStock] = useState<
-    Record<string, { type: 'success' | 'error'; message: string }>
-  >({});
+  const [statusByStock, setStatusByStock] = useState<Record<string, StatusMessage>>({});
+  const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
+  const [statusByService, setStatusByService] = useState<Record<string, StatusMessage>>({});
 
   useEffect(() => {
     ensureDayKeyCurrent();
@@ -124,6 +129,16 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     { key: 'services', label: 'Services' },
     { key: 'bundles', label: 'Bundles' },
   ];
+
+  const renderStatus = (status?: StatusMessage) =>
+    status ? (
+      <div
+        className={`apothecaryStatus apothecaryStatus--${status.type}`}
+        role={status.type === 'error' ? 'alert' : 'status'}
+      >
+        {status.message}
+      </div>
+    ) : null;
 
   const renderStockCard = (entryId: string) => {
     const stockEntry = stock.find((s) => s.id === entryId);
@@ -213,24 +228,141 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           </button>
         </div>
 
-        {status && (
-          <div
-            className={`apothecaryStatus apothecaryStatus--${status.type}`}
-            role={status.type === 'error' ? 'alert' : 'status'}
-          >
-            {status.message}
+        {renderStatus(status)}
+      </div>
+    );
+  };
+
+  const renderBundleCard = (bundle: (typeof apothecaryBundles)[number]) => {
+    const status = statusByBundle[bundle.id];
+
+    const handlePurchase = () => {
+      const reason = `apothecary_bundle:${bundle.id}`;
+      const spent = RewardService.spendCurrency(bundle.cost, reason);
+      if (!spent) {
+        setStatusByBundle((prev) => ({
+          ...prev,
+          [bundle.id]: { type: 'error', message: 'Not enough currency for this bundle.' },
+        }));
+        return;
+      }
+
+      RewardService.grantRewards({ items: bundle.items }, reason);
+      setStatusByBundle((prev) => ({
+        ...prev,
+        [bundle.id]: { type: 'success', message: 'Bundle purchased. Items delivered to inventory.' },
+      }));
+    };
+
+    return (
+      <div key={bundle.id} className={'apothecaryCard apothecaryCard--bundle'}>
+        <div className={'apothecaryCardHeader'}>
+          <div>
+            <div className={'apothecaryCardTitle'}>{bundle.name}</div>
+            <div className={'apothecaryCardSubtitle'}>{bundle.description}</div>
           </div>
-        )}
+          <div className={'apothecaryTag'}>Bundle</div>
+        </div>
+
+        <div className={'apothecaryCardBody'}>
+          <div className={'apothecaryBundlePrice'}>Total: {formatPrice(bundle.cost) || 'Free'}</div>
+          <div className={'apothecaryBundleIncludesLabel'}>Includes</div>
+          <ul className={'apothecaryBundleList'}>
+            {bundle.items.map((item) => {
+              const itemDef = getItemDef(item.itemId);
+              const name = itemDef?.name ?? item.itemId;
+              return (
+                <li key={item.itemId} className={'apothecaryBundleListItem'}>
+                  <span className={'apothecaryBundleItemName'}>{name}</span>
+                  <span className={'apothecaryBundleItemQty'}>× {item.qty}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <div className={'apothecaryActions'}>
+          <button
+            className={'worldScreenModuleButton apothecaryActionButton worldScreenModuleButton--active'}
+            onClick={handlePurchase}
+          >
+            Buy Bundle
+          </button>
+        </div>
+
+        {renderStatus(status)}
+      </div>
+    );
+  };
+
+  const renderServiceCard = (service: (typeof apothecaryServices)[number]) => {
+    const status = statusByService[service.id];
+
+    const handleClick = () => {
+      setStatusByService((prev) => ({
+        ...prev,
+        [service.id]: {
+          type: 'error',
+          message: 'Service not implemented yet.',
+        },
+      }));
+    };
+
+    return (
+      <div key={service.id} className={'apothecaryCard apothecaryCard--service'}>
+        <div className={'apothecaryCardHeader'}>
+          <div>
+            <div className={'apothecaryCardTitle'}>{service.name}</div>
+            <div className={'apothecaryCardSubtitle'}>{service.description}</div>
+          </div>
+          <div className={'apothecaryTag'}>Service</div>
+        </div>
+
+        <div className={'apothecaryActions'}>
+          <button
+            className={'worldScreenModuleButton apothecaryActionButton worldScreenModuleButton--active'}
+            onClick={handleClick}
+          >
+            {service.actionLabel}
+          </button>
+        </div>
+
+        {renderStatus(status)}
       </div>
     );
   };
 
   const renderShelf = (key: ShelfKey) => {
-    if (key === 'services' || key === 'bundles') {
+    if (key === 'bundles') {
+      if (!apothecaryBundles.length) {
+        return (
+          <div className={'apothecaryEmpty'}>
+            <div className={'apothecaryEmptyTitle'}>No bundles available.</div>
+            <div className={'apothecaryEmptyBody'}>Special bundles will appear here when stocked.</div>
+          </div>
+        );
+      }
+
       return (
-        <div className={'apothecaryEmpty'}>
-          <div className={'apothecaryEmptyTitle'}>No offers here yet.</div>
-          <div className={'apothecaryEmptyBody'}>Check back later for special services and bundles.</div>
+        <div className={'apothecaryGrid apothecaryGrid--bundles'}>
+          {apothecaryBundles.map((bundle) => renderBundleCard(bundle))}
+        </div>
+      );
+    }
+
+    if (key === 'services') {
+      if (!apothecaryServices.length) {
+        return (
+          <div className={'apothecaryEmpty'}>
+            <div className={'apothecaryEmptyTitle'}>No services active.</div>
+            <div className={'apothecaryEmptyBody'}>Service counters will open here soon.</div>
+          </div>
+        );
+      }
+
+      return (
+        <div className={'apothecaryGrid apothecaryGrid--services'}>
+          {apothecaryServices.map((service) => renderServiceCard(service))}
         </div>
       );
     }

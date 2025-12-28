@@ -75,6 +75,11 @@
   gap: 12px;
 }
 
+.apothecaryGrid--bundles,
+.apothecaryGrid--services {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
 .apothecaryCard {
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -83,6 +88,12 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.apothecaryCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .apothecaryCardHeader {
@@ -101,6 +112,11 @@
   font-size: 13px;
   color: #cbd5e1;
   margin-top: 4px;
+}
+
+.apothecaryCard--bundle .apothecaryCardSubtitle,
+.apothecaryCard--service .apothecaryCardSubtitle {
+  color: #e2e8f0;
 }
 
 .apothecaryTag {
@@ -146,6 +162,51 @@
 .apothecaryActions {
   display: flex;
   gap: 8px;
+}
+
+.apothecaryCard--bundle .apothecaryActions,
+.apothecaryCard--service .apothecaryActions {
+  margin-top: auto;
+}
+
+.apothecaryBundlePrice {
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.apothecaryBundleIncludesLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.apothecaryBundleList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.apothecaryBundleListItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.apothecaryBundleItemName {
+  font-weight: 600;
+}
+
+.apothecaryBundleItemQty {
+  color: #cbd5e1;
 }
 
 .apothecaryActionButton {
