@@ -7,6 +7,9 @@
     "module": "ESNext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "paths": {
+      "classnames": ["./vendor/classnames/index.js"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
