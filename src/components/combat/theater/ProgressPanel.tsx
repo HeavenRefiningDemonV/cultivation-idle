@@ -3,10 +3,7 @@ import { useActivityStore } from '../../../stores/activityStore';
 import { useCombatStore } from '../../../stores/combatStore';
 import { OutskirtsProgress } from './panels/OutskirtsProgress';
 import { TrialProgress } from '../../../features/trials/ui/TrialProgress';
-
-function RuinsProgressStub() {
-  return <div className="combat-theater__progress-placeholder">Ruins progress coming in P12-3.</div>;
-}
+import { RuinsProgress } from '../../../features/ruins/ui/RuinsProgress';
 
 export function ProgressPanel() {
   const activity = useActivityStore((state) => state.active);
@@ -39,7 +36,7 @@ export function ProgressPanel() {
   if (target === 'ruins') {
     return (
       <div className="combat-theater__panel">
-        <RuinsProgressStub />
+        <RuinsProgress />
       </div>
     );
   }

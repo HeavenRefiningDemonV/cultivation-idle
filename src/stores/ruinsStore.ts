@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { RuinDef, RuinDropTable } from '../content';
+import type { CombatEvent, RuinsRunSummary } from '../types';
 import { useContentStore } from './contentStore';
 import { useActivityStore } from './activityStore';
 import { useCombatStore } from './combatStore';
@@ -8,6 +9,7 @@ import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
 import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards';
+import { D } from '../utils/numbers';
 
 export type RuinProgress = {
   totalRuns: number;
@@ -26,6 +28,7 @@ export type ActiveRuinRun = {
   startedAt: number;
   lastTransitionAt: number;
   autoRepeat: boolean;
+  goldEarned: number;
   stopping: boolean;
 };
 
@@ -33,6 +36,9 @@ interface RuinsState {
   progressByRuinId: Record<string, RuinProgress>;
   activeRun: ActiveRuinRun | null;
   autoRepeatDefault: boolean;
+  autoRestart: boolean;
+  runHistory: RuinsRunSummary[];
+  lastRunSummary: RuinsRunSummary | null;
 
   initializeFromContent: (ruins: RuinDef[]) => void;
   startRun: (ruinId: string) => void;
@@ -112,6 +118,68 @@ function rollDropTable(table: RuinDropTable, label: string): RewardBundle {
   return applyLootBonuses(bundle, 'ruins');
 }
 
+function goldFromBundle(bundle: RewardBundle | undefined): number {
+  if (!bundle?.currencies?.gold) return 0;
+  const value = D(bundle.currencies.gold ?? 0).toNumber();
+  return Number.isFinite(value) ? value : 0;
+}
+
+function summarizeLootDrops(events: CombatEvent[], startedAt: number, endedAt: number): {
+  drops: RuinsRunSummary['drops'];
+  rareDropCount: number;
+} {
+  const aggregated = new Map<string, { qty: number; rarity?: string; reason?: string }>();
+  let rareDropCount = 0;
+
+  events.forEach((event) => {
+    if (event.type !== 'LOOT_DROP') return;
+    if (event.at < startedAt || event.at > endedAt) return;
+    const key = event.itemId;
+    const existing = aggregated.get(key);
+    aggregated.set(key, {
+      qty: (existing?.qty ?? 0) + event.qty,
+      rarity: event.rarity ?? existing?.rarity,
+      reason: event.reason ?? existing?.reason,
+    });
+    if (event.rarity && event.rarity !== 'common' && event.rarity !== 'uncommon') {
+      rareDropCount += 1;
+    }
+  });
+
+  const drops: RuinsRunSummary['drops'] = Array.from(aggregated.entries()).map(([itemId, data]) => ({
+    itemId,
+    qty: data.qty,
+    rarity: data.rarity,
+    reason: data.reason,
+  }));
+
+  return { drops, rareDropCount };
+}
+
+function buildRunSummary(
+  run: ActiveRuinRun,
+  params: { ruinId: string; victory: boolean; roomIndex: number; events: CombatEvent[] },
+): RuinsRunSummary {
+  const endedAt = Date.now();
+  const durationSec = Math.max(0, (endedAt - run.startedAt) / 1000);
+  const roomsCleared = params.victory ? run.roomCount : Math.max(0, Math.min(params.roomIndex, run.roomCount));
+  const { drops, rareDropCount } = summarizeLootDrops(params.events, run.startedAt, endedAt);
+
+  return {
+    runId: run.runId,
+    ruinId: params.ruinId,
+    startedAt: run.startedAt,
+    endedAt,
+    durationSec,
+    roomsCleared,
+    roomCount: run.roomCount,
+    victory: params.victory,
+    goldGained: run.goldEarned,
+    drops,
+    rareDropCount,
+  };
+}
+
 export const useRuinsStore = create<RuinsState>()(
   immer((set, get) => {
     const startNextRoom = (run: ActiveRuinRun, ruinDef: RuinDef) => {
@@ -165,7 +233,10 @@ export const useRuinsStore = create<RuinsState>()(
     return {
       progressByRuinId: {},
       activeRun: null,
-      autoRepeatDefault: true,
+      autoRepeatDefault: false,
+      autoRestart: false,
+      runHistory: [],
+      lastRunSummary: null,
 
       initializeFromContent: (ruins) => {
         set((draft) => {
@@ -199,6 +270,8 @@ export const useRuinsStore = create<RuinsState>()(
         const startedAt = Date.now();
         const roomCount = Math.max(ruinDef.roomCount ?? 1, 1);
 
+        const autoRepeat = get().autoRestart ?? get().autoRepeatDefault;
+
         const run: ActiveRuinRun = {
           runId,
           ruinId: ruinDef.id,
@@ -207,7 +280,8 @@ export const useRuinsStore = create<RuinsState>()(
           roomCount,
           startedAt,
           lastTransitionAt: startedAt,
-          autoRepeat: get().autoRepeatDefault,
+          autoRepeat,
+          goldEarned: 0,
           stopping: false,
         };
 
@@ -251,13 +325,23 @@ export const useRuinsStore = create<RuinsState>()(
         }
 
         const isFinalRoom = roomIndex >= active.roomCount - 1;
+        const isStopping = active.stopping;
 
         const perRoomRewards = rollDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`);
         RewardService.grantRewards(
           perRoomRewards,
           `Ruins — ${ruinDef.name ?? ruinDef.id} (Room ${roomIndex + 1}/${active.roomCount})`,
         );
+        const perRoomGold = goldFromBundle(perRoomRewards);
         useBountyStore.getState().recordEvent({ type: 'RUINS_ROOM_CLEAR', cityId, amount: 1 });
+
+        if (perRoomGold > 0) {
+          set((draft) => {
+            if (draft.activeRun && draft.activeRun.runId === runId) {
+              draft.activeRun.goldEarned += perRoomGold;
+            }
+          });
+        }
 
         if (isFinalRoom) {
           const chestRewards = rollDropTable(
@@ -268,6 +352,14 @@ export const useRuinsStore = create<RuinsState>()(
             chestRewards,
             `Ruins — ${ruinDef.name ?? ruinDef.id} (Final Chest)`,
           );
+          const chestGold = goldFromBundle(chestRewards);
+          if (chestGold > 0) {
+            set((draft) => {
+              if (draft.activeRun && draft.activeRun.runId === runId) {
+                draft.activeRun.goldEarned += chestGold;
+              }
+            });
+          }
           useBountyStore.getState().recordEvent({ type: 'RUINS_RUN_CLEAR', cityId, amount: 1 });
           if (useHeartLawStore.getState().selectedHeartLawId) {
             useHeartLawStore.getState().addComprehension(15, 'ruinsClear');
@@ -275,6 +367,13 @@ export const useRuinsStore = create<RuinsState>()(
 
           const now = Date.now();
           const seconds = Math.max(0, (now - active.startedAt) / 1000);
+          const events = useCombatStore.getState().events;
+          const summary = buildRunSummary(active, {
+            ruinId,
+            victory: true,
+            roomIndex: roomIndex + 1,
+            events,
+          });
 
           set((draft) => {
             const progress = draft.progressByRuinId[ruinId] ?? {
@@ -290,12 +389,24 @@ export const useRuinsStore = create<RuinsState>()(
               progress.bestRunSeconds = seconds;
             }
             draft.progressByRuinId[ruinId] = progress;
+            draft.lastRunSummary = summary;
+            draft.runHistory = [summary, ...draft.runHistory].slice(0, 5);
             draft.activeRun = null;
           });
 
           useCityStore.getState().markRuinsCleared(cityId);
           useActivityStore.getState().stopActivity();
           useCombatStore.getState().exitCombat();
+          setTimeout(() => {
+            if (isStopping) return;
+            const state = get();
+            const shouldRestart = state.autoRestart ?? state.autoRepeatDefault;
+            if (!shouldRestart) return;
+            if (state.activeRun) return;
+            const activityState = useActivityStore.getState().active;
+            if (activityState && activityState.type !== 'ruins') return;
+            get().startRun(ruinId);
+          }, 1000);
           return;
         }
 
@@ -327,6 +438,9 @@ export const useRuinsStore = create<RuinsState>()(
         const roomsCleared = Math.max(0, Math.min(roomIndex, active.roomCount));
         const now = Date.now();
         const seconds = Math.max(0, (now - active.startedAt) / 1000);
+        const isStopping = active.stopping;
+        const events = useCombatStore.getState().events;
+        const summary = buildRunSummary(active, { ruinId, victory: false, roomIndex, events });
 
         set((draft) => {
           const progress = draft.progressByRuinId[ruinId] ?? {
@@ -338,17 +452,30 @@ export const useRuinsStore = create<RuinsState>()(
           progress.totalRoomsCleared += roomsCleared;
           progress.lastRun = { endedAt: now, victory: false, roomsCleared, seconds };
           draft.progressByRuinId[ruinId] = progress;
+          draft.lastRunSummary = summary;
+          draft.runHistory = [summary, ...draft.runHistory].slice(0, 5);
           draft.activeRun = null;
         });
 
         useActivityStore.getState().stopActivity();
         useCombatStore.getState().exitCombat();
         useCityStore.getState();
+        setTimeout(() => {
+          if (isStopping) return;
+          const state = get();
+          const shouldRestart = state.autoRestart ?? state.autoRepeatDefault;
+          if (!shouldRestart) return;
+          if (state.activeRun) return;
+          const activityState = useActivityStore.getState().active;
+          if (activityState && activityState.type !== 'ruins') return;
+          get().startRun(ruinId);
+        }, 1000);
       },
 
       setAutoRepeat: (enabled) => {
         set((draft) => {
           draft.autoRepeatDefault = enabled;
+          draft.autoRestart = enabled;
           if (draft.activeRun) {
             draft.activeRun.autoRepeat = enabled;
           }
@@ -359,7 +486,10 @@ export const useRuinsStore = create<RuinsState>()(
         set(() => ({
           progressByRuinId: {},
           activeRun: null,
-          autoRepeatDefault: true,
+          autoRepeatDefault: false,
+          autoRestart: false,
+          runHistory: [],
+          lastRunSummary: null,
         }));
       },
     };

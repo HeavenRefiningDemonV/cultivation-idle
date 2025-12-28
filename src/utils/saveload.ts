@@ -60,6 +60,29 @@ function cloneManualPavilionState(
   return copy;
 }
 
+const isValidRuinsRunSummary = (value: unknown): value is SaveData['ruinsState']['runHistory'][number] => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  if (typeof record.runId !== 'string') return false;
+  if (typeof record.ruinId !== 'string') return false;
+  if (typeof record.startedAt !== 'number' || typeof record.endedAt !== 'number') return false;
+  if (typeof record.durationSec !== 'number') return false;
+  if (typeof record.roomsCleared !== 'number' || typeof record.roomCount !== 'number') return false;
+  if (typeof record.victory !== 'boolean') return false;
+  if (typeof record.goldGained !== 'number') return false;
+  if (typeof record.rareDropCount !== 'number') return false;
+  if (!Array.isArray(record.drops)) return false;
+  return record.drops.every((drop) => {
+    if (!drop || typeof drop !== 'object' || Array.isArray(drop)) return false;
+    const d = drop as Record<string, unknown>;
+    if (typeof d.itemId !== 'string') return false;
+    if (typeof d.qty !== 'number') return false;
+    if ('rarity' in d && d.rarity != null && typeof d.rarity !== 'string') return false;
+    if ('reason' in d && d.reason != null && typeof d.reason !== 'string') return false;
+    return true;
+  });
+};
+
 function cloneManualSatchelState(source: SaveManualSatchelState): SaveManualSatchelState {
   return {
     manuals: Array.isArray(source?.manuals) ? source.manuals.map((manual) => ({ ...manual })) : [],
@@ -228,6 +251,14 @@ function gatherGameState(): SaveData {
     ruinsState: {
       progressByRuinId: { ...ruinsState.progressByRuinId },
       autoRepeatDefault: ruinsState.autoRepeatDefault,
+      autoRestart: ruinsState.autoRestart,
+      runHistory: ruinsState.runHistory.map((run) => ({
+        ...run,
+        drops: run.drops.map((drop) => ({ ...drop })),
+      })),
+      lastRunSummary: ruinsState.lastRunSummary
+        ? { ...ruinsState.lastRunSummary, drops: ruinsState.lastRunSummary.drops.map((drop) => ({ ...drop })) }
+        : null,
     },
 
     shopState: {
@@ -505,6 +536,22 @@ function validateSaveData(data: unknown): data is SaveData {
       ) {
         return false;
       }
+      if (
+        'autoRestart' in rs &&
+        (rs as { autoRestart?: unknown }).autoRestart !== undefined &&
+        typeof (rs as { autoRestart?: unknown }).autoRestart !== 'boolean'
+      ) {
+        return false;
+      }
+
+      if ('runHistory' in rs && rs.runHistory !== undefined) {
+        if (!Array.isArray(rs.runHistory)) return false;
+        if (!rs.runHistory.every((entry: unknown) => isValidRuinsRunSummary(entry))) return false;
+      }
+
+      if ('lastRunSummary' in rs && rs.lastRunSummary != null && !isValidRuinsRunSummary(rs.lastRunSummary)) {
+        return false;
+      }
 
       const progressById = rs.progressByRuinId as Record<string, unknown>;
       for (const value of Object.values(progressById)) {
@@ -779,7 +826,9 @@ function applySaveData(saveData: SaveData): void {
     const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {}, activeTrialSessionId: null };
     const bountyState = saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
     const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
-    const ruinsState = saveData.ruinsState ?? defaults.ruinsState ?? { progressByRuinId: {} };
+    const ruinsState =
+      saveData.ruinsState ??
+      defaults.ruinsState ?? { progressByRuinId: {}, autoRepeatDefault: false, autoRestart: false, runHistory: [], lastRunSummary: null };
 
     // Restore spirit root (fallback to reroll for old saves)
     const spiritRoot = saveData.prestigeState?.spiritRoot ?? saveData.gameState.spiritRoot;
@@ -990,6 +1039,11 @@ function applySaveData(saveData: SaveData): void {
     useRuinsStore.setState({
       progressByRuinId: ruinsState.progressByRuinId ?? {},
       autoRepeatDefault: ruinsState.autoRepeatDefault,
+      autoRestart: ruinsState.autoRestart ?? ruinsState.autoRepeatDefault ?? false,
+      runHistory: Array.isArray(ruinsState.runHistory)
+        ? (ruinsState.runHistory as SaveData['ruinsState']['runHistory']).slice(0, 5)
+        : [],
+      lastRunSummary: ruinsState.lastRunSummary ?? null,
       activeRun: null,
     });
 

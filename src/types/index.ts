@@ -493,6 +493,9 @@ export interface SaveData {
       }
     >;
     autoRepeatDefault?: boolean;
+    autoRestart?: boolean;
+    runHistory?: RuinsRunSummary[];
+    lastRunSummary?: RuinsRunSummary | null;
   };
 
   // Shop state
@@ -745,6 +748,27 @@ export interface CombatTechniqueLogEntry {
 export interface CombatShield {
   amount: number;
   expiresAt: number | null;
+}
+
+export interface RuinsRunDropSummary {
+  itemId: string;
+  qty: number;
+  rarity?: string;
+  reason?: string;
+}
+
+export interface RuinsRunSummary {
+  runId: string;
+  ruinId: string;
+  startedAt: number;
+  endedAt: number;
+  durationSec: number;
+  roomsCleared: number;
+  roomCount: number;
+  victory: boolean;
+  goldGained: number;
+  drops: RuinsRunDropSummary[];
+  rareDropCount: number;
 }
 
 export interface CombatBuff {
