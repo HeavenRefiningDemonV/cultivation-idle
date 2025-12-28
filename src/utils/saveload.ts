@@ -209,7 +209,20 @@ function gatherGameState(): SaveData {
     },
 
     trialState: {
-      progressByTrialId: { ...trialState.progressByTrialId },
+      activeTrialSessionId: trialState.activeTrialSessionId ?? null,
+      progressByTrialId: Object.fromEntries(
+        Object.entries(trialState.progressByTrialId ?? {}).map(([trialId, progress]) => [
+          trialId,
+          {
+            ...progress,
+            sessionAttempts: progress.sessionAttempts ?? 0,
+            attemptStartAt: progress.attemptStartAt ?? null,
+            lastAttemptSummary: progress.lastAttemptSummary
+              ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
+              : null,
+          },
+        ]),
+      ),
     },
 
     ruinsState: {
@@ -763,7 +776,7 @@ function applySaveData(saveData: SaveData): void {
         studyTechniqueId: null,
         lastInsightAt: null,
       };
-    const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {} };
+    const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {}, activeTrialSessionId: null };
     const bountyState = saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
     const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
     const ruinsState = saveData.ruinsState ?? defaults.ruinsState ?? { progressByRuinId: {} };
@@ -898,8 +911,23 @@ function applySaveData(saveData: SaveData): void {
 
     useTechniqueStore.getState().hydrateFromSave(saveData.techniqueState);
 
+    const restoredTrials = Object.fromEntries(
+      Object.entries(trialState.progressByTrialId ?? {}).map(([trialId, progress]) => [
+        trialId,
+        {
+          ...progress,
+          sessionAttempts: progress.sessionAttempts ?? 0,
+          attemptStartAt: progress.attemptStartAt ?? null,
+          lastAttemptSummary: progress.lastAttemptSummary
+            ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
+            : null,
+        },
+      ]),
+    );
+
     useTrialStore.setState({
-      progressByTrialId: trialState.progressByTrialId ?? {},
+      activeTrialSessionId: trialState.activeTrialSessionId ?? null,
+      progressByTrialId: restoredTrials,
     });
 
     useBountyStore.setState({

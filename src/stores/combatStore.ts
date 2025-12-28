@@ -39,6 +39,7 @@ import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { getSpiritRootSnapshot } from './gameStore';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
+import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -815,6 +816,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const difficulty: 'outskirts' | 'trial' | 'ruins' | 'generic' =
         context?.type === 'ruins' ? 'ruins' : context?.type === 'trial' ? 'trial' : 'outskirts';
 
+      if (context?.type === 'trial' && context.trialId) {
+        const trialStore = useTrialStore.getState();
+        if (trialStore.activeTrialSessionId !== context.trialId) {
+          trialStore.beginTrialSession(context.trialId, now);
+        } else {
+          trialStore.setAttemptStart(context.trialId, now);
+        }
+      }
+
       const enemyScaled = createEnemy(enemyTemplateId, {
         cityIndex,
         isBoss,
@@ -916,6 +926,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
     exitCombat: () => {
       // Clean up boss mechanics
       bossMechanics = null;
+
+      const contextSnapshot = get().combatContext;
+      if (contextSnapshot?.type === 'trial') {
+        useTrialStore.getState().resetSession(contextSnapshot.trialId);
+      }
 
       set((state) => {
         state.inCombat = false;
@@ -1369,6 +1384,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const state = get();
       if (!state.currentEnemy) return;
 
+      const now = Date.now();
       const enemy = state.currentEnemy;
       const context = state.combatContext;
 
@@ -1387,9 +1403,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (context?.type === 'trial') {
         useActivityStore.getState().stopActivity();
-        if (context.eligible) {
-          useTrialStore.getState().recordFailure(context.trialId);
-        }
+
+        const summary = buildTrialDefeatSummary({
+          trialId: context.trialId,
+          events: state.events,
+          startedAt: state.combatStartTime,
+          endedAt: now,
+          enemyHp: state.enemyHP,
+          enemyMaxHp: state.enemyMaxHP,
+          playerMaxHp: state.playerMaxHP,
+          absorptionShield: useGameStore.getState().absorptionShield,
+          combatShieldAmount: state.combatShield?.amount ?? 0,
+          enemyMechanics: state.enemyMechanics,
+        });
+
+        const trialStore = useTrialStore.getState();
+        trialStore.recordAttemptSummary(context.trialId, summary);
+        trialStore.recordFailure(context.trialId);
       }
 
       if (context?.type === 'ruins') {

@@ -465,13 +465,17 @@ export interface SaveData {
 
   // Trial progression
   trialState?: {
+    activeTrialSessionId?: string | null;
     progressByTrialId: Record<
       string,
       {
         attempts: number;
+        sessionAttempts?: number;
         cleared: boolean;
         lastAttemptAt: number | null;
         lastClearAt: number | null;
+        attemptStartAt?: number | null;
+        lastAttemptSummary?: TrialAttemptSummary | null;
       }
     >;
   };
@@ -756,6 +760,17 @@ export interface CombatResources {
   maxQi: number;
   intent: number;
   maxIntent: number;
+}
+
+export interface TrialAttemptSummary {
+  trialId: string;
+  startedAt: number;
+  endedAt: number;
+  durationSec: number;
+  bossHpPct: number;
+  maxHit: number;
+  maxHitLabel: string;
+  suggestions: string[];
 }
 
 /**

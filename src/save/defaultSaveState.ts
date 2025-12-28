@@ -21,7 +21,7 @@ import { useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../stores/manualSatchelStore';
 
-export const SAVE_VERSION = '1.0.6';
+export const SAVE_VERSION = '1.0.7';
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -155,7 +155,20 @@ export function buildDefaultSaveState(): SaveData {
       stopAtBoss: outskirtsState.stopAtBoss,
     },
     trialState: {
-      progressByTrialId: { ...trialState.progressByTrialId },
+      activeTrialSessionId: trialState.activeTrialSessionId ?? null,
+      progressByTrialId: Object.fromEntries(
+        Object.entries(trialState.progressByTrialId ?? {}).map(([trialId, progress]) => [
+          trialId,
+          {
+            ...progress,
+            sessionAttempts: progress.sessionAttempts ?? 0,
+            attemptStartAt: progress.attemptStartAt ?? null,
+            lastAttemptSummary: progress.lastAttemptSummary
+              ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
+              : null,
+          },
+        ]),
+      ),
     },
     ruinsState: {
       progressByRuinId: { ...ruinsState.progressByRuinId },
@@ -291,10 +304,32 @@ function isValidOutskirtsState(value: unknown): value is SaveData['outskirtsStat
 function isValidTrialState(value: unknown): value is SaveData['trialState'] {
   if (!isRecord(value)) return false;
   if (!isRecord(value.progressByTrialId)) return false;
+  if (
+    'activeTrialSessionId' in value &&
+    value.activeTrialSessionId !== null &&
+    value.activeTrialSessionId !== undefined &&
+    typeof value.activeTrialSessionId !== 'string'
+  ) {
+    return false;
+  }
   for (const progress of Object.values(value.progressByTrialId)) {
     if (!isRecord(progress)) return false;
     if (typeof progress.attempts !== 'number') return false;
     if (typeof progress.cleared !== 'boolean') return false;
+    if ('sessionAttempts' in progress && typeof progress.sessionAttempts !== 'number') return false;
+    if ('attemptStartAt' in progress && progress.attemptStartAt !== null && typeof progress.attemptStartAt !== 'number')
+      return false;
+    if ('lastAttemptSummary' in progress && progress.lastAttemptSummary != null) {
+      const summary = progress.lastAttemptSummary;
+      if (!isRecord(summary)) return false;
+      if (typeof summary.trialId !== 'string') return false;
+      if (typeof summary.startedAt !== 'number' || typeof summary.endedAt !== 'number') return false;
+      if (typeof summary.durationSec !== 'number') return false;
+      if (typeof summary.bossHpPct !== 'number') return false;
+      if (typeof summary.maxHit !== 'number') return false;
+      if (typeof summary.maxHitLabel !== 'string') return false;
+      if (!Array.isArray(summary.suggestions)) return false;
+    }
   }
   return true;
 }

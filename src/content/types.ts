@@ -158,6 +158,13 @@ export interface TrialDef {
   name?: string;
   bossId: string;
   gateItemId: string;
+  requiredItemId?: string;
+  minRealm?: number;
+  realmRequirement?: number;
+  suggestedDPS?: number;
+  suggestedHP?: number;
+  suggestedDps?: number;
+  suggestedHp?: number;
   eligibilityRule?: string | unknown;
   failSafe?: TrialFailSafe;
   firstEligibleClearReward?: unknown;

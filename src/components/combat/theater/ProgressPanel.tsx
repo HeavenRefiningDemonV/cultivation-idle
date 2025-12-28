@@ -2,10 +2,7 @@ import { useMemo } from 'react';
 import { useActivityStore } from '../../../stores/activityStore';
 import { useCombatStore } from '../../../stores/combatStore';
 import { OutskirtsProgress } from './panels/OutskirtsProgress';
-
-function TrialProgressStub() {
-  return <div className="combat-theater__progress-placeholder">Trial progress coming in P12-2.</div>;
-}
+import { TrialProgress } from '../../../features/trials/ui/TrialProgress';
 
 function RuinsProgressStub() {
   return <div className="combat-theater__progress-placeholder">Ruins progress coming in P12-3.</div>;
@@ -34,7 +31,7 @@ export function ProgressPanel() {
   if (target === 'trial') {
     return (
       <div className="combat-theater__panel">
-        <TrialProgressStub />
+        <TrialProgress />
       </div>
     );
   }
