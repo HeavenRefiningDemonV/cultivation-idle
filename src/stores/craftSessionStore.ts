@@ -41,10 +41,15 @@ interface CraftSessionStoreState extends CraftSessionSaveState {
   abortSession: (now?: number) => { ok: boolean; reason?: string };
   updateActiveSessionPrompts: (now?: number) => CraftPromptState[];
   completePrompt: (promptId: string, now?: number) => { ok: boolean; reason?: string };
+  setHeatSetting: (value: number) => void;
+  addImpurities: (delta: number) => void;
+  recordScoreParts: (parts: CraftSession['cursor']['scoreParts']) => void;
+  incrementOrderMistake: () => void;
   setStepStartedNow: (now?: number) => void;
   advanceStep: (now?: number) => void;
   markBackgroundResolving: (reason: 'closed' | 'navigated' | 'crashed') => void;
   tick: (now?: number) => void;
+  completeHandsOnSession: (now?: number) => { ok: boolean; reason?: string };
   claimActiveSession: (
     now?: number,
   ) =>
@@ -447,7 +452,15 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         startedAt,
         endsAt,
         script,
-        cursor: { stepIndex: 0, backgroundResolveAt: null, backgroundReason: null },
+        cursor: {
+        stepIndex: 0,
+        backgroundResolveAt: null,
+        backgroundReason: null,
+        heatSetting: 300,
+        impurities: 0,
+        scoreParts: {},
+        orderMistakes: 0,
+      },
         payment: {
           currencies: payment.currencies,
           items: itemCosts,
@@ -521,6 +534,44 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       return { ok: true };
     },
 
+    setHeatSetting: (value) => {
+      const next = Math.max(0, Math.min(1200, Math.floor(value)));
+      set((state) => {
+        if (state.activeSession) {
+          state.activeSession.cursor.heatSetting = next;
+        }
+      });
+    },
+
+    addImpurities: (delta) => {
+      set((state) => {
+        if (state.activeSession) {
+          const current = state.activeSession.cursor.impurities ?? 0;
+          state.activeSession.cursor.impurities = Math.max(0, Math.min(999, current + delta));
+        }
+      });
+    },
+
+    recordScoreParts: (parts) => {
+      set((state) => {
+        if (state.activeSession) {
+          state.activeSession.cursor.scoreParts = {
+            ...(state.activeSession.cursor.scoreParts ?? {}),
+            ...(parts ?? {}),
+          };
+        }
+      });
+    },
+
+    incrementOrderMistake: () => {
+      set((state) => {
+        if (state.activeSession) {
+          const current = state.activeSession.cursor.orderMistakes ?? 0;
+          state.activeSession.cursor.orderMistakes = current + 1;
+        }
+      });
+    },
+
     setStepStartedNow: (now = Date.now()) => {
       const active = get().activeSession;
       if (!active) return;
@@ -531,6 +582,11 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         if (state.activeSession) {
           state.activeSession.cursor.stepStartedAt = now;
           state.activeSession.cursor.stepEndsAt = duration ? now + duration : undefined;
+          if (state.activeSession.cursor.heatSetting === undefined) {
+            state.activeSession.cursor.heatSetting = 300;
+          }
+          state.activeSession.cursor.scoreParts = state.activeSession.cursor.scoreParts ?? {};
+          state.activeSession.cursor.orderMistakes = state.activeSession.cursor.orderMistakes ?? 0;
         }
       });
     },
@@ -576,6 +632,20 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       if (now >= backgroundResolveAt) {
         resolveSessionToBaseline(active, now);
       }
+    },
+
+    completeHandsOnSession: (now = Date.now()) => {
+      const active = get().activeSession;
+      if (!active) return { ok: false, reason: 'no_session' };
+      if (active.mode !== 'handsOn') return { ok: false, reason: 'wrong_mode' };
+      set((state) => {
+        if (state.activeSession) {
+          state.activeSession.endsAt = now;
+          state.activeSession.cursor.backgroundResolveAt = null;
+          state.activeSession.cursor.backgroundReason = null;
+        }
+      });
+      return { ok: true };
     },
 
     claimActiveSession: (now = Date.now()) => {

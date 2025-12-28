@@ -9,6 +9,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
 import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
+import { HandsOnAlchemySession } from '../crafting/HandsOnAlchemySession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
 
 interface AlchemyPanelProps {
@@ -99,6 +100,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const updateSessionPrompts = useCraftSessionStore((state) => state.updateActiveSessionPrompts);
   const completePromptAction = useCraftSessionStore((state) => state.completePrompt);
   const claimSession = useCraftSessionStore((state) => state.claimActiveSession);
+  const markBackgroundResolving = useCraftSessionStore((state) => state.markBackgroundResolving);
 
   const addNotification = useUIStore((state) => state.addNotification);
 
@@ -214,6 +216,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const currentMode = modeByStation.alchemy;
   const activeOtherStation = activeSession && activeSession.station !== 'alchemy';
   const activeAlchemySession = activeSession?.station === 'alchemy' ? activeSession : null;
+  const isHandsOnActive = activeAlchemySession?.mode === 'handsOn';
   const activePrompts = activeAlchemySession?.prompts ?? [];
   const promptSummary = summarizePrompts(activePrompts);
   const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
@@ -226,6 +229,14 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const nextUnlockText = masteryInfo.nextThreshold
     ? `${masteryInfo.nextThreshold}: ${getThresholdLabel(masteryInfo.nextThreshold)}`
     : 'All unlocks reached';
+
+  useEffect(() => {
+    return () => {
+      if (activeAlchemySession?.mode === 'handsOn' && activeAlchemySession.cursor.backgroundResolveAt == null) {
+        markBackgroundResolving('navigated');
+      }
+    };
+  }, [activeAlchemySession, markBackgroundResolving]);
 
   return (
     <div className={'alchemyPanel'}>
@@ -428,87 +439,131 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                     )}
 
                     {activeAlchemySession && (
-                      <div className={'craftingSessionDetails craftSessionCard'}>
-                        <div className={'craftingSessionRow'}>
-                          <div>Session active</div>
-                          <div className={'craftingSessionMeta'}>
-                            {activeAlchemySession.mode} · {activeAlchemySession.sourceId}
-                          </div>
-                        </div>
-                        <div className={'craftingSessionMeta'}>
-                          <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
-                          <div>
-                            Assisted: {promptSummary.completed}/{promptSummary.total} prompts completed
-                          </div>
-                        </div>
-
-                        {activeAlchemySession.mode === 'assisted' && availablePrompt && (
-                          <AssistedPromptCard
-                            prompt={availablePrompt}
-                            now={now}
-                            onComplete={() => {
-                              const result = completePromptAction(availablePrompt.id, Date.now());
-                              if (!result.ok) {
-                                setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
-                                return;
-                              }
-                              const bonusLabel =
-                                availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
-                                  ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
-                                  : '';
-                              const toastLabel =
-                                availablePrompt.type === 'ADD_CATALYST' ? 'Catalyst added' : 'Flame stabilized';
-                              addNotification('success', `${toastLabel}${bonusLabel}`, 2500);
-                              setSessionStatus({ type: 'success', message: `${toastLabel}${bonusLabel}` });
-                            }}
-                          />
-                        )}
-
-                        <div className={'craftingStepList'}>
-                          {activeAlchemySession.script.steps.map((step) => (
-                            <div key={step.id} className={'craftingStepItem'}>
-                              <div className={'craftingStepType'}>{step.uiLabel ?? step.type}</div>
+                      isHandsOnActive ? (
+                        <div className={'craftingSessionDetails craftSessionCard'}>
+                          <div className={'craftingSessionRow'}>
+                            <div>Hands-on session</div>
+                            <div className={'craftingSessionMeta'}>
+                              {activeAlchemySession.sourceId}
                             </div>
-                          ))}
+                          </div>
+                          <div className={'craftingSessionMeta'}>
+                            <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
+                          </div>
+                          <HandsOnAlchemySession session={activeAlchemySession} now={now} />
+                          <div className={'craftingSessionActions'}>
+                            <button
+                              className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
+                              disabled={!sessionReady}
+                              onClick={() => {
+                                const result = claimSession(Date.now());
+                                if (!result.ok) {
+                                  const message =
+                                    result.reason === 'not_ready'
+                                      ? 'Session not finished yet'
+                                      : 'Unable to claim session';
+                                  setSessionStatus({ type: 'error', message });
+                                  return;
+                                }
+                                setSessionStatus({ type: 'success', message: 'Session claimed.' });
+                              }}
+                            >
+                              Claim batch
+                            </button>
+                            <button
+                              className={'worldScreenModuleButton'}
+                              onClick={() => {
+                                abortSession();
+                                setSessionStatus({ type: 'success', message: 'Session aborted and refunded' });
+                              }}
+                            >
+                              Abort session
+                            </button>
+                          </div>
                         </div>
-                        <div className={'craftingSessionActions'}>
-                          <button
-                            className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
-                            disabled={!sessionReady}
-                            onClick={() => {
-                              const result = claimSession(Date.now());
-                              if (!result.ok) {
-                                const message =
-                                  result.reason === 'not_ready'
-                                    ? 'Session not finished yet'
-                                    : 'Unable to claim session';
-                                setSessionStatus({ type: 'error', message });
-                                return;
-                              }
-                              const bonusTotal = (result.bonus?.bonusItems ?? []).reduce(
-                                (sum, entry) => sum + entry.qty,
-                                0,
-                              );
-                              const summaryText =
-                                result.bonus && result.bonus.total > 0
-                                  ? `Assisted bonus: +${bonusTotal} (${result.bonus.completed}/${result.bonus.total} prompts).`
-                                  : 'Session claimed at baseline.';
-                              setSessionStatus({ type: 'success', message: summaryText });
-                            }}
-                          >
-                            Claim batch
-                          </button>
-                          <button
-                            className={'worldScreenModuleButton'}
-                            onClick={() => {
-                              abortSession();
-                              setSessionStatus({ type: 'success', message: 'Session aborted and refunded' });
-                            }}
-                          >
-                            Abort session
-                          </button>
+                      ) : (
+                        <div className={'craftingSessionDetails craftSessionCard'}>
+                          <div className={'craftingSessionRow'}>
+                            <div>Session active</div>
+                            <div className={'craftingSessionMeta'}>
+                              {activeAlchemySession.mode} · {activeAlchemySession.sourceId}
+                            </div>
+                          </div>
+                          <div className={'craftingSessionMeta'}>
+                            <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
+                            <div>
+                              Assisted: {promptSummary.completed}/{promptSummary.total} prompts completed
+                            </div>
+                          </div>
+
+                          {activeAlchemySession.mode === 'assisted' && availablePrompt && (
+                            <AssistedPromptCard
+                              prompt={availablePrompt}
+                              now={now}
+                              onComplete={() => {
+                                const result = completePromptAction(availablePrompt.id, Date.now());
+                                if (!result.ok) {
+                                  setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
+                                  return;
+                                }
+                                const bonusLabel =
+                                  availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
+                                    ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
+                                    : '';
+                                const toastLabel =
+                                  availablePrompt.type === 'ADD_CATALYST' ? 'Catalyst added' : 'Flame stabilized';
+                                addNotification('success', `${toastLabel}${bonusLabel}`, 2500);
+                                setSessionStatus({ type: 'success', message: `${toastLabel}${bonusLabel}` });
+                              }}
+                            />
+                          )}
+
+                          <div className={'craftingStepList'}>
+                            {activeAlchemySession.script.steps.map((step) => (
+                              <div key={step.id} className={'craftingStepItem'}>
+                                <div className={'craftingStepType'}>{step.uiLabel ?? step.type}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className={'craftingSessionActions'}>
+                            <button
+                              className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
+                              disabled={!sessionReady}
+                              onClick={() => {
+                                const result = claimSession(Date.now());
+                                if (!result.ok) {
+                                  const message =
+                                    result.reason === 'not_ready'
+                                      ? 'Session not finished yet'
+                                      : 'Unable to claim session';
+                                  setSessionStatus({ type: 'error', message });
+                                  return;
+                                }
+                                const bonusTotal = (result.bonus?.bonusItems ?? []).reduce(
+                                  (sum, entry) => sum + entry.qty,
+                                  0,
+                                );
+                                const summaryText =
+                                  result.bonus && result.bonus.total > 0
+                                    ? `Assisted bonus: +${bonusTotal} (${result.bonus.completed}/${result.bonus.total} prompts).`
+                                    : 'Session claimed at baseline.';
+                                setSessionStatus({ type: 'success', message: summaryText });
+                              }}
+                            >
+                              Claim batch
+                            </button>
+                            <button
+                              className={'worldScreenModuleButton'}
+                              onClick={() => {
+                                abortSession();
+                                setSessionStatus({ type: 'success', message: 'Session aborted and refunded' });
+                              }}
+                            >
+                              Abort session
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      )
                     )}
 
                     {sessionStatus && (
