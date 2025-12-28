@@ -324,6 +324,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 15,
+      "description": "A quick remedy for restoring vitality during dangerous moments.",
       "usage": "combat_or_world"
     },
     {
@@ -332,6 +333,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 60,
+      "description": "A fortifying pellet that helps you withstand heavy blows.",
       "usage": "combat_only"
     },
     {
@@ -348,6 +350,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 70,
+      "description": "A burst of swiftness that helps you reposition and evade danger.",
       "usage": "combat_only"
     },
     {
@@ -364,6 +367,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 80,
+      "description": "A defensive ward that steadies the body against incoming harm.",
       "usage": "combat_only"
     },
     {
@@ -380,6 +384,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 150,
+      "description": "A cleansing pellet used to counter toxins and lingering venom.",
       "usage": "combat_only"
     },
     {
@@ -388,6 +393,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 150,
+      "description": "A tonic that sharpens concentration for decisive strikes.",
       "usage": "combat_only"
     },
     {
@@ -396,6 +402,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 450,
+      "description": "A tonic meant to accelerate learning through repeated practice.",
       "usage": "combat_only"
     },
     {
@@ -404,6 +411,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 70,
+      "description": "A simple elixir that supports steady Qi circulation while cultivating.",
       "usage": "cultivate_only"
     },
     {
@@ -412,6 +420,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 220,
+      "description": "A stronger elixir for deeper Qi circulation during cultivation.",
       "usage": "cultivate_only"
     },
     {
@@ -420,6 +429,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 160,
+      "description": "A warming draft that eases meridians and improves flow.",
       "usage": "cultivate_only"
     },
     {
@@ -428,6 +438,7 @@
       "category": "consumable",
       "stackSize": 999,
       "sellValue": 260,
+      "description": "A calming tea that settles breath and reduces inner turbulence.",
       "usage": "cultivate_only"
     },
     {
@@ -436,6 +447,7 @@
       "category": "consumable",
       "stackSize": 99,
       "sellValue": 350,
+      "description": "An elixir used to refine impurities and stabilize your foundation.",
       "usage": "cultivate_only"
     },
     {
@@ -444,6 +456,7 @@
       "category": "consumable",
       "stackSize": 99,
       "sellValue": 650,
+      "description": "A rare preparation intended for future tribulation resilience.",
       "usage": "cultivate_only",
       "note": "Future-proof"
     },

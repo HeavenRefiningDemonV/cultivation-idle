@@ -54,6 +54,8 @@ export interface ItemDef {
   stackSize?: number;
   sellValue?: number;
   description?: string;
+  usage?: string;
+  note?: string;
 }
 
 export interface ItemsConfig {
