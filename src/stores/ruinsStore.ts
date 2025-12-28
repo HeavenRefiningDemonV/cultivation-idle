@@ -10,6 +10,7 @@ import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
 import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards';
 import { D } from '../utils/numbers';
+import { useUIStore } from './uiStore';
 
 export type RuinProgress = {
   totalRuns: number;
@@ -463,7 +464,8 @@ export const useRuinsStore = create<RuinsState>()(
         setTimeout(() => {
           if (isStopping) return;
           const state = get();
-          const shouldRestart = state.autoRestart ?? state.autoRepeatDefault;
+          const uiSettings = useUIStore.getState().settings;
+          const shouldRestart = (state.autoRestart ?? state.autoRepeatDefault) || uiSettings.autoRetryOnDeath;
           if (!shouldRestart) return;
           if (state.activeRun) return;
           const activityState = useActivityStore.getState().active;

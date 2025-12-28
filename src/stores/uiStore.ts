@@ -31,9 +31,15 @@ export interface UISettingsState {
   showCombatLog: boolean;
   requirePrestigeConfirm: boolean;
   showSystemStatusPanel: boolean;
-   showCombatMinibar: boolean;
-   combatMinibarExpanded: boolean;
+  showCombatMinibar: boolean;
+  combatMinibarExpanded: boolean;
   showCombatFloatingNumbers: boolean;
+  combatAIProfile: 'balanced' | 'survivor' | 'burst' | 'farmer';
+  explainAIEnabled: boolean;
+  explainAIHintsRemaining: number;
+  autoRetryOnDeath: boolean;
+  useConsumablesInCombat: boolean;
+  preferredTarget: 'trash' | 'elite' | 'boss';
 }
 
 interface UIStateBase {
@@ -167,6 +173,12 @@ const INITIAL_UI_STATE: UIStateBase = {
     showCombatMinibar: true,
     combatMinibarExpanded: true,
     showCombatFloatingNumbers: true,
+    combatAIProfile: 'balanced',
+    explainAIEnabled: false,
+    explainAIHintsRemaining: 3,
+    autoRetryOnDeath: false,
+    useConsumablesInCombat: false,
+    preferredTarget: 'boss',
   },
   lastSaveAt: null,
   lastOfflineSummary: null,

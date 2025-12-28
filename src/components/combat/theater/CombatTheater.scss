@@ -90,6 +90,56 @@
   color: #c7ccd8;
 }
 
+.combat-theater__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.combat-theater__control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #e7ebf3;
+  font-size: 0.95rem;
+}
+
+.combat-theater__control select {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #f5f5f7;
+  padding: 6px 8px;
+}
+
+.combat-theater__control--checkbox {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.combat-theater__control-label {
+  font-weight: 700;
+}
+
+.combat-theater__control-note {
+  color: #c7ccd8;
+  font-size: 0.85rem;
+}
+
+.combat-theater__ai-hint {
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  color: #c3f9ff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
 .combat-theater__layout {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;

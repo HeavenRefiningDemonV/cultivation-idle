@@ -23,7 +23,7 @@ import { useOutskirtsStore } from './outskirtsStore';
 import { useCityStore } from './cityStore';
 import { useTrialStore } from './trialStore';
 import { useRuinsStore } from './ruinsStore';
-import { useTechniqueStore, type CastingPolicy } from './techniqueStore';
+import { useTechniqueStore, type AiProfile, type CastingPolicy } from './techniqueStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
 import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore';
@@ -40,6 +40,8 @@ import { getSpiritRootSnapshot } from './gameStore';
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
+import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles';
+import { useUIStore } from './uiStore';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -214,6 +216,23 @@ function computeResourceAfterCastPct(
 
   return { resourceAfterPct: 1, resourceModel: 'none' };
 }
+
+const mapAiProfileToCastingPolicy = (
+  profile: AiProfile,
+  fallback?: CastingPolicy,
+): CastingPolicy => {
+  if (fallback) return fallback;
+  switch (profile) {
+    case 'burst':
+      return 'aggressive';
+    case 'survivor':
+      return 'defensive';
+    case 'farmer':
+      return 'balanced';
+    default:
+      return 'balanced';
+  }
+};
 
 type CandidateScoreInput = {
   policy: CastingPolicy;
@@ -554,7 +573,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (now - state.lastTechniqueCastAt < MIN_TECHNIQUE_CAST_INTERVAL_MS) return null;
 
       const loadout = useTechniqueStore.getState().getSelectedLoadout();
-      const castingPolicy = (loadout?.castingPolicy as CastingPolicy | undefined) ?? 'balanced';
+      const uiSettings = useUIStore.getState().settings;
+      const aiProfile: AiProfile =
+        uiSettings?.combatAIProfile ?? (loadout?.aiProfile as AiProfile | undefined) ?? 'balanced';
+      const castingPolicy = mapAiProfileToCastingPolicy(
+        aiProfile,
+        loadout?.castingPolicy as CastingPolicy | undefined,
+      );
       const techCollection = useTechCollectionStore.getState();
       const contentStore = useContentStore.getState();
       const equipped = useTechniqueStore.getState().getCombatEquippedTechIds();
@@ -571,6 +596,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         def: TechniqueDef;
         classification: ReturnType<typeof classifyTechnique>;
         effects: NormalizedEffect[];
+        aiTags: ReturnType<typeof getTechniqueAiTags>;
         damageScore: number;
         defensiveScore: number;
         debuffScore: number;
@@ -582,6 +608,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const maxHp = D(state.playerMaxHP);
       const hpPct = maxHp.greaterThan(0) ? hp.dividedBy(maxHp).toNumber() : 0;
       const isBossFight = state.isBoss || state.combatContext.type === 'trial';
+      const enemyHp = D(state.enemyHP);
+      const enemyMaxHp = D(state.enemyMaxHP);
+      const enemyHpPct = enemyMaxHp.greaterThan(0) ? enemyHp.dividedBy(enemyMaxHp).toNumber() : 0;
       const shieldMissingOrExpiring =
         !state.combatShield ||
         (state.combatShield.expiresAt !== null && state.combatShield.expiresAt <= now + 3000);
@@ -595,6 +624,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const scaling = getTechniqueScaling(techId, def);
         const effects = normalizeTechniqueEffects(def, { includeSecondary: scaling.secondaryUnlocked });
         const classification = classifyTechnique(def);
+        const aiTags = getTechniqueAiTags(def, effects);
         const cooldownSec = Math.max(1, def.cooldownSec ?? 0);
         const damageMults = effects
           .filter((effect) => effect.type === 'damage')
@@ -621,6 +651,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           def,
           classification,
           effects,
+          aiTags,
           damageScore,
           defensiveScore,
           debuffScore,
@@ -633,9 +664,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
       if (candidates.length === 0) return null;
 
       const reservePct = castingPolicy === 'defensive' ? 0.2 : castingPolicy === 'balanced' ? 0.12 : 0;
+      const isPlayerDebuffed = false;
 
       const scored = candidates.map((candidate) => {
-        const score = computeCandidateScore({
+        const baseScore = computeCandidateScore({
           policy: castingPolicy,
           hpPct,
           isBossFight,
@@ -647,6 +679,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
           debuffScore: candidate.debuffScore,
           classification: candidate.classification,
           hasShield: candidate.hasShield,
+        });
+
+        const score = applyAiProfileBias(baseScore, candidate.aiTags, candidate.classification, {
+          profile: aiProfile,
+          hpPct,
+          enemyHpPct,
+          enemyIsBoss: isBossFight,
+          isPlayerDebuffed,
         });
 
         return { ...candidate, score };
@@ -1387,6 +1427,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const now = Date.now();
       const enemy = state.currentEnemy;
       const context = state.combatContext;
+      const uiSettings = useUIStore.getState().settings;
+      const autoRetryOnDeath = uiSettings.autoRetryOnDeath;
 
       // Add defeat message
       get().addLogEntry(
@@ -1398,7 +1440,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       emitEvent({ type: 'PLAYER_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
 
       if (context?.type === 'outskirts') {
-        useActivityStore.getState().stopActivity();
+        if (!autoRetryOnDeath) {
+          useActivityStore.getState().stopActivity();
+        }
       }
 
       if (context?.type === 'trial') {
@@ -1435,6 +1479,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
       }
 
+      const shouldRetryOutskirts = autoRetryOnDeath && context?.type === 'outskirts';
+
       // Add respawn message (no death penalty in idle games usually)
       get().addLogEntry(
         'system',
@@ -1451,6 +1497,33 @@ export const useCombatStore = create<ExtendedCombatState>()(
         });
 
         get().exitCombat();
+
+        if (shouldRetryOutskirts) {
+          const activity = useActivityStore.getState().active;
+          if (activity && activity.type === 'outskirts' && context && context.type === 'outskirts') {
+            const content = useContentStore.getState();
+            const outskirtsDef = context.sourceId
+              ? content.maps.outskirtsById[context.sourceId]
+              : undefined;
+            if (outskirtsDef) {
+              const nextIsBoss = Boolean(context.isBoss ?? state.isBoss ?? state.currentEnemy?.isBoss);
+              const nextEnemyId = nextIsBoss
+                ? outskirtsDef.bossId
+                : pickFromWeightedPool(outskirtsDef.mobPool, outskirtsDef.mobPool?.[0]?.enemyId);
+              if (nextEnemyId) {
+                setTimeout(() => {
+                  get().startCombat(nextEnemyId, {
+                    type: 'outskirts',
+                    cityId: context.cityId,
+                    sourceId: outskirtsDef.id,
+                    cityIndex: outskirtsDef.cityIndex,
+                    isBoss: nextIsBoss,
+                  });
+                }, OUTSKIRTS_NEXT_FIGHT_DELAY_MS);
+              }
+            }
+          }
+        }
       }, 2000);
     },
 

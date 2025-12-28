@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../stores/activityStore';
 import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../../stores/combatStore';
 import { useGameStore } from '../../../stores/gameStore';
 import { useUIStore } from '../../../stores/uiStore';
+import { useContentStore } from '../../../stores/contentStore';
 import { computeCombatSafety, hpPercent } from '../../../systems/combat/minibarModel';
 import { formatNumber, D } from '../../../utils/numbers';
 import { CombatCanvas } from '../CombatCanvas';
@@ -12,6 +13,8 @@ import { FightIntelPanel } from './FightIntelPanel';
 import { LootTicker } from './LootTicker';
 import { StatusEffectRow } from './StatusEffectRow';
 import { ProgressPanel } from './ProgressPanel';
+import { AI_PROFILE_OPTIONS, buildAiReason, getTechniqueAiTags } from '../../../systems/combat/aiProfiles';
+import { normalizeTechniqueEffects } from '../../../systems/techniques/effects';
 import './CombatTheater.scss';
 
 function formatActivityLabel(type: string | null | undefined): string {
@@ -31,6 +34,18 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
   const activity = useActivityStore((state) => state.active);
   const showFloatingNumbers = useUIStore((state) => state.settings.showCombatFloatingNumbers);
   const setSettings = useUIStore((state) => state.setSettings);
+  const uiSettings = useUIStore(
+    useShallow((state) => ({
+      profile: state.settings.combatAIProfile,
+      explainAIEnabled: state.settings.explainAIEnabled,
+      explainAIHintsRemaining: state.settings.explainAIHintsRemaining,
+      autoRetryOnDeath: state.settings.autoRetryOnDeath,
+      useConsumablesInCombat: state.settings.useConsumablesInCombat,
+      preferredTarget: state.settings.preferredTarget,
+    })),
+  );
+
+  const [aiHint, setAiHint] = useState<{ text: string; at: number } | null>(null);
 
   const {
     currentEnemy,
@@ -119,6 +134,52 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
     setSettings({ showCombatFloatingNumbers: checked });
   };
 
+  useEffect(() => {
+    const unsubscribe = useCombatStore.subscribe(
+      (state) => state.events[state.events.length - 1],
+      (event) => {
+        if (!event || event.type !== 'SKILL_CAST' || event.source !== 'ai') return;
+        const uiState = useUIStore.getState();
+        const settings = uiState.settings;
+        const shouldExplain = settings.explainAIEnabled || settings.explainAIHintsRemaining > 0;
+        if (!shouldExplain) return;
+
+        const content = useContentStore.getState();
+        const combat = useCombatStore.getState();
+        const def = content.maps.techniquesById[event.techniqueId];
+        if (!def) return;
+
+        const effects = normalizeTechniqueEffects(def, { includeSecondary: true });
+        const tags = getTechniqueAiTags(def, effects);
+        const playerHp = D(combat.playerHP);
+        const playerMaxHp = D(combat.playerMaxHP);
+        const enemyHp = D(combat.enemyHP);
+        const enemyMaxHp = D(combat.enemyMaxHP);
+        const hpPct = playerMaxHp.greaterThan(0) ? playerHp.dividedBy(playerMaxHp).toNumber() : 0;
+        const enemyHpPct = enemyMaxHp.greaterThan(0) ? enemyHp.dividedBy(enemyMaxHp).toNumber() : 0;
+        const reason = buildAiReason(def.name ?? 'Technique', tags, {
+          profile: settings.combatAIProfile,
+          hpPct,
+          enemyHpPct,
+          enemyIsBoss: combat.isBoss || combat.currentEnemy?.isBoss || combat.combatContext.type === 'trial',
+        });
+        setAiHint({ text: reason, at: Date.now() });
+
+        if (!settings.explainAIEnabled && settings.explainAIHintsRemaining > 0) {
+          uiState.setSettings({ explainAIHintsRemaining: Math.max(0, settings.explainAIHintsRemaining - 1) });
+        }
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!aiHint) return;
+    const timer = window.setTimeout(() => setAiHint(null), 4500);
+    return () => window.clearTimeout(timer);
+  }, [aiHint]);
+
   return (
     <div className="combat-theater">
       <div className="combat-theater__header">
@@ -161,6 +222,77 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
         </div>
         <div className="combat-theater__subheader">{activityLabel}</div>
       </div>
+
+      <div className="combat-theater__controls">
+        <label className="combat-theater__control">
+          <span className="combat-theater__control-label">AI Profile</span>
+          <select
+            value={uiSettings.profile}
+            onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
+          >
+            {AI_PROFILE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value} title={option.description}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="combat-theater__control combat-theater__control--checkbox">
+          <input
+            type="checkbox"
+            checked={uiSettings.explainAIEnabled}
+            onChange={(e) => setSettings({ explainAIEnabled: e.target.checked })}
+          />
+          <div>
+            <div className="combat-theater__control-label">Explain AI</div>
+            <div className="combat-theater__control-note">
+              {uiSettings.explainAIEnabled
+                ? 'Always show reasoning.'
+                : `Hints remaining: ${uiSettings.explainAIHintsRemaining}`}
+            </div>
+          </div>
+        </label>
+
+        <label className="combat-theater__control combat-theater__control--checkbox">
+          <input
+            type="checkbox"
+            checked={uiSettings.autoRetryOnDeath}
+            onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
+          />
+          <div>
+            <div className="combat-theater__control-label">Auto-retry on defeat</div>
+            <div className="combat-theater__control-note">Restarts Outskirts/Ruins when possible.</div>
+          </div>
+        </label>
+
+        <label className="combat-theater__control combat-theater__control--checkbox">
+          <input
+            type="checkbox"
+            checked={uiSettings.useConsumablesInCombat}
+            onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
+          />
+          <div>
+            <div className="combat-theater__control-label">Use consumables in combat</div>
+            <div className="combat-theater__control-note">Reserved for Medicine Pouch support.</div>
+          </div>
+        </label>
+
+        <label className="combat-theater__control">
+          <span className="combat-theater__control-label">Preferred target</span>
+          <select
+            value={uiSettings.preferredTarget}
+            onChange={(e) => setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })}
+          >
+            <option value="trash">Trash</option>
+            <option value="elite">Elite</option>
+            <option value="boss">Boss</option>
+          </select>
+          <div className="combat-theater__control-note">Used when multiple targets exist.</div>
+        </label>
+      </div>
+
+      {aiHint && <div className="combat-theater__ai-hint">{aiHint.text}</div>}
 
       <ProgressPanel />
 

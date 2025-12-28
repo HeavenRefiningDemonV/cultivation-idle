@@ -8,6 +8,7 @@ import { useRuinsStore } from '../../stores/ruinsStore';
 import { useUIStore } from '../../stores/uiStore';
 import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel';
 import { formatNumber } from '../../utils/numbers';
+import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles';
 import './CombatMinibar.scss';
 
 type LogEntry =
@@ -103,6 +104,8 @@ function CombatMinibarContent({
   const toggleCombatTheater = useUIStore((state) => state.toggleCombatTheater);
   const closeCombatTheater = useUIStore((state) => state.closeCombatTheater);
   const toggleCombatMinibarExpanded = useUIStore((state) => state.toggleCombatMinibarExpanded);
+  const combatAIProfile = useUIStore((state) => state.settings.combatAIProfile);
+  const setSettings = useUIStore((state) => state.setSettings);
 
   const [now, setNow] = useState(() => Date.now());
 
@@ -196,6 +199,20 @@ function CombatMinibarContent({
       <div className="combat-minibar__header">
         <div className="combat-minibar__activity">{activityLabel}</div>
         <div className="combat-minibar__header-actions">
+          <label className="combat-minibar__ai-label" title={AI_PROFILE_OPTIONS.find((opt) => opt.value === combatAIProfile)?.description}>
+            AI:
+            <select
+              className="combat-minibar__ai-select"
+              value={combatAIProfile}
+              onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof combatAIProfile })}
+            >
+              {AI_PROFILE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <SafetyBadge tier={safety.tier} reasons={safety.reasons} />
           <button className="button-standard" onClick={toggleCombatTheater}>
             {combatTheaterOpen ? 'Close Theater' : 'Open Theater'}
