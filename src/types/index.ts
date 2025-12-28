@@ -303,6 +303,8 @@ export interface SaveOutskirtsState {
       bossDefeated: boolean;
     }
   >;
+  autoContinue?: boolean;
+  stopAtBoss?: boolean;
 }
 
 export interface SaveManualSatchelEntry {

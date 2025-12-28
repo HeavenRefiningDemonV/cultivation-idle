@@ -11,6 +11,7 @@ import { TechniqueStrip } from './TechniqueStrip';
 import { FightIntelPanel } from './FightIntelPanel';
 import { LootTicker } from './LootTicker';
 import { StatusEffectRow } from './StatusEffectRow';
+import { ProgressPanel } from './ProgressPanel';
 import './CombatTheater.scss';
 
 function formatActivityLabel(type: string | null | undefined): string {
@@ -160,6 +161,8 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
         </div>
         <div className="combat-theater__subheader">{activityLabel}</div>
       </div>
+
+      <ProgressPanel />
 
       <StatusEffectRow />
 

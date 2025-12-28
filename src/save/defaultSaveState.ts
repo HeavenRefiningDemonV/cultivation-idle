@@ -151,6 +151,8 @@ export function buildDefaultSaveState(): SaveData {
     },
     outskirtsState: {
       progressByOutskirtsId: { ...outskirtsState.progressByOutskirtsId },
+      autoContinue: outskirtsState.autoContinue,
+      stopAtBoss: outskirtsState.stopAtBoss,
     },
     trialState: {
       progressByTrialId: { ...trialState.progressByTrialId },
@@ -281,6 +283,8 @@ function isValidOutskirtsState(value: unknown): value is SaveData['outskirtsStat
     if (typeof progress.totalKills !== 'number') return false;
     if (typeof progress.bossDefeated !== 'boolean') return false;
   }
+  if (value.autoContinue !== undefined && typeof value.autoContinue !== 'boolean') return false;
+  if (value.stopAtBoss !== undefined && typeof value.stopAtBoss !== 'boolean') return false;
   return true;
 }
 

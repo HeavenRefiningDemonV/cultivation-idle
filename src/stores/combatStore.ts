@@ -1249,6 +1249,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
         emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');
 
+        const { autoContinue, stopAtBoss } = useOutskirtsStore.getState();
+
         setTimeout(() => {
           get().exitCombat();
 
@@ -1260,6 +1262,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
             activity.sourceId !== sourceId ||
             activity.startedAt !== activityToken
           ) {
+            return;
+          }
+
+          if (stopAtBoss && isBossFight) {
+            useActivityStore.getState().stopActivity('outskirts-stop-at-boss');
+            return;
+          }
+
+          if (!autoContinue) {
+            useActivityStore.getState().stopActivity('outskirts-auto-continue-disabled');
             return;
           }
 

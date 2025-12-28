@@ -168,6 +168,8 @@ function gatherGameState(): SaveData {
 
     outskirtsState: {
       progressByOutskirtsId: { ...outskirtsState.progressByOutskirtsId },
+      autoContinue: outskirtsState.autoContinue,
+      stopAtBoss: outskirtsState.stopAtBoss,
     },
 
     bountyState: {
@@ -748,7 +750,8 @@ function applySaveData(saveData: SaveData): void {
     const collectionState =
       saveData.techCollectionState ?? defaults.techCollectionState ?? { unlockedTechs: {}, fragments: {}, rngSeed: undefined };
     const activityState = saveData.activityState ?? defaults.activityState ?? { active: null, lastChangedAt: null, history: [] };
-    const outskirtsState = saveData.outskirtsState ?? defaults.outskirtsState ?? { progressByOutskirtsId: {} };
+    const outskirtsState =
+      saveData.outskirtsState ?? defaults.outskirtsState ?? { progressByOutskirtsId: {}, autoContinue: true, stopAtBoss: false };
     const heartLawState =
       saveData.heartLawState ??
       defaults.heartLawState ?? {
@@ -1005,6 +1008,8 @@ function applySaveData(saveData: SaveData): void {
       progressByOutskirtsId: {
         ...(outskirtsState.progressByOutskirtsId ?? {}),
       },
+      autoContinue: outskirtsState.autoContinue ?? true,
+      stopAtBoss: outskirtsState.stopAtBoss ?? false,
     });
 
     const contentState = useContentStore.getState();

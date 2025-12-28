@@ -96,6 +96,18 @@
   gap: 10px;
 }
 
+.combat-theater__panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.combat-theater__progress-placeholder {
+  color: #c7ccd8;
+  font-size: 0.95rem;
+}
+
 .combat-theater__column {
   display: flex;
   flex-direction: column;
