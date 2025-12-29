@@ -737,6 +737,26 @@ function validateExpeditions(config: LoadedContentRaw['expeditions']): Expeditio
       if (!duration.label || typeof duration.label !== 'string') {
         duration.label = duration.id ?? `Duration ${idx + 1}`;
       }
+      if (duration.variancePct !== undefined) {
+        if (
+          typeof duration.variancePct !== 'number' ||
+          !Number.isFinite(duration.variancePct) ||
+          duration.variancePct < 0 ||
+          duration.variancePct > 0.5
+        ) {
+          errors.push(`durations[${idx}].variancePct must be between 0 and 0.5`);
+        }
+      }
+      if (duration.rareChance !== undefined) {
+        if (
+          typeof duration.rareChance !== 'number' ||
+          !Number.isFinite(duration.rareChance) ||
+          duration.rareChance < 0 ||
+          duration.rareChance > 1
+        ) {
+          errors.push(`durations[${idx}].rareChance must be between 0 and 1`);
+        }
+      }
     });
   }
 
@@ -756,6 +776,35 @@ function validateExpeditions(config: LoadedContentRaw['expeditions']): Expeditio
       }
       if (!Array.isArray(entry.yieldTags) || entry.yieldTags.length === 0) {
         errors.push(`types[${idx}].yieldTags must be a non-empty array`);
+      }
+      if (entry.recommendedModuleKey !== undefined) {
+        const allowed = ['alchemy', 'forge', 'manualPavilion'];
+        if (!allowed.includes(entry.recommendedModuleKey)) {
+          errors.push(`types[${idx}].recommendedModuleKey must be one of ${allowed.join(', ')}`);
+        }
+      }
+      if (entry.rareDrops !== undefined) {
+        if (!Array.isArray(entry.rareDrops)) {
+          errors.push(`types[${idx}].rareDrops must be an array if provided`);
+        } else {
+          entry.rareDrops.forEach((drop, dropIdx) => {
+            if (!drop || typeof drop !== 'object') {
+              errors.push(`types[${idx}].rareDrops[${dropIdx}] must be an object`);
+              return;
+            }
+            if (typeof drop.itemId !== 'string' || !drop.itemId.trim()) {
+              errors.push(`types[${idx}].rareDrops[${dropIdx}].itemId must be a string`);
+            }
+            if (typeof drop.qty !== 'number' || !Number.isFinite(drop.qty) || drop.qty <= 0) {
+              errors.push(`types[${idx}].rareDrops[${dropIdx}].qty must be a positive number`);
+            }
+            if (drop.weight !== undefined) {
+              if (typeof drop.weight !== 'number' || !Number.isFinite(drop.weight) || drop.weight < 0) {
+                errors.push(`types[${idx}].rareDrops[${dropIdx}].weight must be a non-negative number`);
+              }
+            }
+          });
+        }
       }
     });
   }

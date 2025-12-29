@@ -311,6 +311,8 @@ export interface ExpeditionDurationDef {
   label: string;
   seconds: number;
   efficiencyMult?: number;
+  variancePct?: number;
+  rareChance?: number;
 }
 
 export interface ExpeditionTypeDef {
@@ -318,6 +320,8 @@ export interface ExpeditionTypeDef {
   name: string;
   yieldTags: string[];
   description?: string;
+  recommendedModuleKey?: 'alchemy' | 'forge' | 'manualPavilion';
+  rareDrops?: Array<{ itemId: string; qty: number; weight?: number }>;
 }
 
 export interface ExpeditionCityYieldDef {

@@ -5,19 +5,25 @@
       "id": "short",
       "label": "Short",
       "seconds": 600,
-      "efficiencyMult": 1.0
+      "efficiencyMult": 1.0,
+      "variancePct": 0.15,
+      "rareChance": 0.05
     },
     {
       "id": "medium",
       "label": "Medium",
       "seconds": 1800,
-      "efficiencyMult": 1.05
+      "efficiencyMult": 1.05,
+      "variancePct": 0.18,
+      "rareChance": 0.08
     },
     {
       "id": "long",
       "label": "Long",
       "seconds": 7200,
-      "efficiencyMult": 1.1
+      "efficiencyMult": 1.1,
+      "variancePct": 0.22,
+      "rareChance": 0.12
     }
   ],
   "types": [
@@ -25,19 +31,39 @@
       "id": "forage",
       "name": "Forage",
       "yieldTags": ["herbs"],
-      "description": "Gather herbs and natural reagents."
+      "description": "Gather herbs and natural reagents.",
+      "recommendedModuleKey": "alchemy",
+      "rareDrops": [
+        { "itemId": "mat_spirit_dew", "qty": 1, "weight": 3 },
+        { "itemId": "mat_earth_essence", "qty": 1, "weight": 2 },
+        { "itemId": "mat_mist_pearl", "qty": 1, "weight": 1 },
+        { "itemId": "mat_seed_ancient", "qty": 1, "weight": 1 }
+      ]
     },
     {
       "id": "mine",
       "name": "Mine",
       "yieldTags": ["ore"],
-      "description": "Harvest ores and minerals."
+      "description": "Harvest ores and minerals.",
+      "recommendedModuleKey": "forge",
+      "rareDrops": [
+        { "itemId": "mat_spirit_steel_ore", "qty": 1, "weight": 3 },
+        { "itemId": "mat_thunder_sand", "qty": 1, "weight": 2 },
+        { "itemId": "mat_blade_core", "qty": 1, "weight": 1 },
+        { "itemId": "mat_crystal_shard", "qty": 1, "weight": 1 }
+      ]
     },
     {
       "id": "scout",
       "name": "Scout",
       "yieldTags": ["fragments"],
-      "description": "Recover manuals and fragments."
+      "description": "Recover manuals and fragments.",
+      "recommendedModuleKey": "manualPavilion",
+      "rareDrops": [
+        { "itemId": "crate_technique_fragment_pack_small", "qty": 1, "weight": 3 },
+        { "itemId": "mat_mist_pearl", "qty": 1, "weight": 1 },
+        { "itemId": "mat_earth_essence", "qty": 1, "weight": 1 }
+      ]
     }
   ],
   "cityYields": [
