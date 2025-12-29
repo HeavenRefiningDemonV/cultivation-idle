@@ -1031,7 +1031,15 @@ function applySaveData(saveData: SaveData): void {
 
     useExpeditionStore.setState({
       slots: expeditionState.slots,
-      active: Array.isArray(expeditionState.active) ? expeditionState.active.map((run) => ({ ...run })) : [],
+      active: Array.isArray(expeditionState.active)
+        ? expeditionState.active.map((run) => ({
+            ...run,
+            seed:
+              typeof run.seed === 'number' && Number.isFinite(run.seed)
+                ? run.seed >>> 0
+                : ((run as { startedAt?: number }).startedAt ?? Date.now()) >>> 0,
+          }))
+        : [],
     });
     useExpeditionStore.getState().tick(Date.now());
 

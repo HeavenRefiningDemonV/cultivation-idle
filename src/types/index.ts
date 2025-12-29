@@ -285,6 +285,7 @@ export interface SaveExpeditionRun {
   cityIndex: number;
   startedAt: number;
   endsAt: number;
+  seed?: number;
   status: 'running' | 'complete';
 }
 
