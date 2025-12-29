@@ -263,6 +263,7 @@ export function buildDefaultSaveState(): SaveData {
     bountyState: {
       activeByCityId: { ...bountyState.activeByCityId },
       lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
+      trackedByCityId: { ...(bountyState.trackedByCityId ?? {}) },
     },
     expeditionState: {
       slots: expeditionState.slots,
@@ -434,6 +435,11 @@ function isValidBountyState(value: unknown): value is SaveData['bountyState'] {
   if (!isRecord(value)) return false;
   if (!isRecord(value.activeByCityId)) return false;
   if (!isRecord(value.lastRefreshAtByCityId)) return false;
+  if ('trackedByCityId' in value && value.trackedByCityId !== undefined) {
+    if (!isRecord(value.trackedByCityId)) return false;
+    const values = Object.values(value.trackedByCityId as Record<string, unknown>);
+    if (!values.every((entry) => entry === null || typeof entry === 'string')) return false;
+  }
   return true;
 }
 

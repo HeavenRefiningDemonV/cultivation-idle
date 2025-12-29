@@ -208,6 +208,7 @@ function gatherGameState(): SaveData {
     bountyState: {
       activeByCityId: { ...bountyState.activeByCityId },
       lastRefreshAtByCityId: { ...bountyState.lastRefreshAtByCityId },
+      trackedByCityId: { ...(bountyState.trackedByCityId ?? {}) },
     },
 
     expeditionState: {
@@ -438,6 +439,11 @@ function validateSaveData(data: unknown): data is SaveData {
       const bs = record.bountyState as Record<string, unknown>;
       if (typeof bs.activeByCityId !== 'object' || bs.activeByCityId === null) return false;
       if (typeof bs.lastRefreshAtByCityId !== 'object' || bs.lastRefreshAtByCityId === null) return false;
+      if ('trackedByCityId' in bs && bs.trackedByCityId !== undefined) {
+        if (typeof bs.trackedByCityId !== 'object' || bs.trackedByCityId === null) return false;
+        const values = Object.values(bs.trackedByCityId as Record<string, unknown>);
+        if (!values.every((value) => value === null || typeof value === 'string')) return false;
+      }
     }
 
     if ('expeditionState' in record && record.expeditionState) {
@@ -849,7 +855,8 @@ function applySaveData(saveData: SaveData): void {
         lastInsightAt: null,
       };
     const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {}, activeTrialSessionId: null };
-    const bountyState = saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {} };
+    const bountyState =
+      saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {}, trackedByCityId: {} };
     const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
   const ruinsState =
     saveData.ruinsState ??
@@ -1016,6 +1023,7 @@ function applySaveData(saveData: SaveData): void {
       lastRefreshAtByCityId: {
         ...(bountyState.lastRefreshAtByCityId ?? {}),
       },
+      trackedByCityId: { ...(bountyState.trackedByCityId ?? {}) },
     });
 
     useExpeditionStore.setState({

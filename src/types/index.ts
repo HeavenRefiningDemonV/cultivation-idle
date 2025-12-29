@@ -461,6 +461,7 @@ export interface SaveData {
   bountyState?: {
     activeByCityId: Record<string, SaveBountyInstance[]>;
     lastRefreshAtByCityId: Record<string, number>;
+    trackedByCityId?: Record<string, string | null>;
   };
 
   expeditionState?: {

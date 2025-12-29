@@ -104,7 +104,11 @@ export interface UIState extends UIStateBase {
   setHeaderTitles: (title: string, subtitle?: string) => void;
   setHeaderTone: (tone: UIStateBase['headerTone']) => void;
   toggleSidePanel: () => void;
-  addNotification: (type: UINotification['type'], message: string, duration?: number) => void;
+  addNotification: (
+    type: UINotification['type'],
+    message: string,
+    duration?: number | { durationMs?: number },
+  ) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
   showPrestige: () => void;
@@ -247,13 +251,14 @@ export const useUIStore = create<UIState>()(
     /**
      * Add a notification
      */
-    addNotification: (type: UINotification['type'], message: string, duration?: number) => {
+    addNotification: (type: UINotification['type'], message: string, duration?: number | { durationMs?: number }) => {
+      const durationMs = typeof duration === 'number' ? duration : duration?.durationMs;
       const notification: UINotification = {
         id: generateNotificationId(),
         type,
         message,
         timestamp: Date.now(),
-        duration,
+        duration: durationMs,
       };
 
       set((state) => {
@@ -261,10 +266,10 @@ export const useUIStore = create<UIState>()(
       });
 
       // Auto-dismiss if duration is set
-      if (duration) {
+      if (durationMs) {
         setTimeout(() => {
           get().removeNotification(notification.id);
-        }, duration);
+        }, durationMs);
       }
 
       console.log(`[UI] Notification added: ${type} - ${message}`);
