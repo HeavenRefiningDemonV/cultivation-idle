@@ -4,6 +4,7 @@ import { RewardService, type RewardBundle } from '../services/rewards';
 import { useContentStore } from './contentStore';
 import { multiply } from '../utils/numbers';
 import { normalizeItemList } from '../utils/itemList';
+import { useBountyStore } from './bountyStore';
 
 export type ExpeditionRunStatus = 'running' | 'complete';
 
@@ -205,6 +206,8 @@ export const useExpeditionStore = create<ExpeditionState>()(
         finalBundle,
         `expedition_claim:${run.expeditionTypeId}:${run.durationId}:city=${run.cityId}`,
       );
+
+      useBountyStore.getState().recordEvent({ type: 'EXPEDITION_COMPLETE', cityId: run.cityId, amount: 1 });
 
       set((state) => {
         state.active = state.active.filter((entry) => entry.slotIndex !== slotIndex);

@@ -573,6 +573,7 @@ export interface SaveData {
       qty: number;
       startedAt: number;
       endsAt: number;
+      cityId?: string;
     }>;
     talismanQueue: Array<{
       id: string;
@@ -580,6 +581,7 @@ export interface SaveData {
       qty: number;
       startedAt: number;
       endsAt: number;
+      cityId?: string;
     }>;
     forgeQueue: Array<{
       id: string;
@@ -588,6 +590,7 @@ export interface SaveData {
       startedAt: number;
       endsAt: number;
       targetSlot?: 'weapon' | 'accessory';
+      cityId?: string;
     }>;
     lastTickAt: number;
   };

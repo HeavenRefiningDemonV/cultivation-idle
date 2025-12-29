@@ -105,9 +105,9 @@ export function bountyKindToProgressRule(kind: string): string {
     case 'TRIAL_CLEAR':
       return 'Clear gate trials.';
     case 'CRAFT_COMPLETE':
-      return 'Complete crafting sessions.';
+      return 'Claim completed crafting jobs (1 per job).';
     case 'EXPEDITION_COMPLETE':
-      return 'Finish expeditions.';
+      return 'Claim completed expeditions (1 per run).';
     default:
       return 'Progress the associated activity.';
   }

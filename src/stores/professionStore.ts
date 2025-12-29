@@ -10,6 +10,8 @@ import { useGameStore } from './gameStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
 import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 import { applyRefineService, applyTemperService } from '../services/forgeService';
+import { useCityStore } from './cityStore';
+import { useBountyStore } from './bountyStore';
 
 export type AlchemyJob = {
   id: string;
@@ -17,6 +19,7 @@ export type AlchemyJob = {
   qty: number;
   startedAt: number;
   endsAt: number;
+  cityId: string;
 };
 
 export type TalismanJob = {
@@ -25,6 +28,7 @@ export type TalismanJob = {
   qty: number;
   startedAt: number;
   endsAt: number;
+  cityId: string;
 };
 
 export type ActionResult = { ok: true; result?: unknown } | { ok: false; error: string };
@@ -36,6 +40,7 @@ export type ForgeJob = {
   startedAt: number;
   endsAt: number;
   targetSlot?: 'weapon' | 'accessory';
+  cityId: string;
 };
 
 interface ProfessionState {
@@ -80,6 +85,11 @@ const currencyLabels: Record<CurrencyKey, string> = {
   merit: 'Merit',
 };
 
+const resolveActiveCityId = (): string | null => {
+  const cityState = useCityStore.getState();
+  return cityState.currentCityId ?? cityState.unlockedCityIds[0] ?? null;
+};
+
 export const useProfessionStore = create<ProfessionState>()(
   immer((set, get) => ({
     alchemyQueue: [],
@@ -103,6 +113,11 @@ export const useProfessionStore = create<ProfessionState>()(
       const durationSec = recipe.timeSec ?? (recipe as { craftTimeSec?: number }).craftTimeSec;
       if (!Number.isFinite(durationSec) || durationSec <= 0) {
         return { ok: false, error: 'Invalid recipe time' };
+      }
+
+      const cityId = resolveActiveCityId();
+      if (!cityId) {
+        return { ok: false, error: 'Select a city first' };
       }
 
       const mastery = useRecipeMasteryStore.getState().getAlchemyMastery(recipeId);
@@ -180,6 +195,7 @@ export const useProfessionStore = create<ProfessionState>()(
           qty: amount,
           startedAt,
           endsAt,
+          cityId,
         });
       });
 
@@ -206,6 +222,11 @@ export const useProfessionStore = create<ProfessionState>()(
       const durationSec = recipe.timeSec ?? (recipe as { timeSeconds?: number }).timeSeconds;
       if (!Number.isFinite(durationSec) || durationSec < 0) {
         return { ok: false, error: 'Invalid recipe time' };
+      }
+
+      const cityId = resolveActiveCityId();
+      if (!cityId) {
+        return { ok: false, error: 'Select a city first' };
       }
 
       const inventory = useInventoryStore.getState();
@@ -283,6 +304,7 @@ export const useProfessionStore = create<ProfessionState>()(
           qty: amount,
           startedAt,
           endsAt,
+          cityId,
         });
       });
 
@@ -362,6 +384,11 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Unsupported service' };
       }
 
+      const cityId = resolveActiveCityId();
+      if (!cityId) {
+        return { ok: false, error: 'Select a city first' };
+      }
+
       const inventory = useInventoryStore.getState();
       const contentStore = useContentStore.getState();
       for (const entry of blueprint.costs.items) {
@@ -426,6 +453,7 @@ export const useProfessionStore = create<ProfessionState>()(
           startedAt,
           endsAt,
           targetSlot,
+          cityId,
         });
       });
 
@@ -475,6 +503,18 @@ export const useProfessionStore = create<ProfessionState>()(
         state.alchemyQueue = state.alchemyQueue.filter((entry) => entry.id !== jobId);
       });
 
+      const cityId =
+        job.cityId ??
+        useCityStore.getState().currentCityId ??
+        useCityStore.getState().unlockedCityIds[0] ??
+        'city_pinewind_hamlet';
+      useBountyStore.getState().recordEvent({ type: 'CRAFT_COMPLETE', cityId, amount: 1 });
+
+      // Manual test checklist:
+      // - Queue an Alchemy job in City A, switch cities, and claim to ensure progress counts for City A.
+      // - Start an expedition in City A, complete and claim to increment City A's bounty progress.
+      // - Reload to confirm tracked bounty and job cityId persist.
+
       return { ok: true };
     },
 
@@ -510,6 +550,13 @@ export const useProfessionStore = create<ProfessionState>()(
       set((state) => {
         state.talismanQueue = state.talismanQueue.filter((entry) => entry.id !== jobId);
       });
+
+      const cityId =
+        job.cityId ??
+        useCityStore.getState().currentCityId ??
+        useCityStore.getState().unlockedCityIds[0] ??
+        'city_pinewind_hamlet';
+      useBountyStore.getState().recordEvent({ type: 'CRAFT_COMPLETE', cityId, amount: 1 });
 
       return { ok: true };
     },
@@ -558,6 +605,13 @@ export const useProfessionStore = create<ProfessionState>()(
       set((state) => {
         state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
       });
+
+      const cityId =
+        job.cityId ??
+        useCityStore.getState().currentCityId ??
+        useCityStore.getState().unlockedCityIds[0] ??
+        'city_pinewind_hamlet';
+      useBountyStore.getState().recordEvent({ type: 'CRAFT_COMPLETE', cityId, amount: 1 });
 
       return { ok: true, result: serviceResult ?? undefined };
     },

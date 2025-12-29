@@ -659,6 +659,7 @@ function validateSaveData(data: unknown): data is SaveData {
         if (typeof job.qty !== 'number') return false;
         if (typeof job.startedAt !== 'number') return false;
         if (typeof job.endsAt !== 'number') return false;
+        if ('cityId' in job && job.cityId !== undefined && typeof job.cityId !== 'string') return false;
       }
 
       const talismanQueue = (ps as { talismanQueue?: Array<Record<string, unknown>> }).talismanQueue ?? [];
@@ -669,6 +670,7 @@ function validateSaveData(data: unknown): data is SaveData {
         if (typeof job.qty !== 'number') return false;
         if (typeof job.startedAt !== 'number') return false;
         if (typeof job.endsAt !== 'number') return false;
+        if ('cityId' in job && job.cityId !== undefined && typeof job.cityId !== 'string') return false;
       }
 
       const forgeQueue = (ps as { forgeQueue?: Array<Record<string, unknown>> }).forgeQueue ?? [];
@@ -682,6 +684,7 @@ function validateSaveData(data: unknown): data is SaveData {
         if ('targetSlot' in job && job.targetSlot !== undefined) {
           if (job.targetSlot !== 'weapon' && job.targetSlot !== 'accessory') return false;
         }
+        if ('cityId' in job && job.cityId !== undefined && typeof job.cityId !== 'string') return false;
       }
     }
 
@@ -1119,15 +1122,20 @@ function applySaveData(saveData: SaveData): void {
     });
     useBuffStore.getState().purgeExpired(Date.now());
 
+    const fallbackCityId =
+      useCityStore.getState().currentCityId ??
+      useCityStore.getState().unlockedCityIds[0] ??
+      'city_pinewind_hamlet';
+
     useProfessionStore.setState({
       alchemyQueue: Array.isArray(professionState.alchemyQueue)
-        ? professionState.alchemyQueue.map((job) => ({ ...job }))
+        ? professionState.alchemyQueue.map((job) => ({ ...job, cityId: job.cityId ?? fallbackCityId }))
         : [],
       talismanQueue: Array.isArray(professionState.talismanQueue)
-        ? professionState.talismanQueue.map((job) => ({ ...job }))
+        ? professionState.talismanQueue.map((job) => ({ ...job, cityId: job.cityId ?? fallbackCityId }))
         : [],
       forgeQueue: Array.isArray(professionState.forgeQueue)
-        ? professionState.forgeQueue.map((job) => ({ ...job }))
+        ? professionState.forgeQueue.map((job) => ({ ...job, cityId: job.cityId ?? fallbackCityId }))
         : [],
       lastTickAt: typeof professionState.lastTickAt === 'number' ? professionState.lastTickAt : 0,
     });
