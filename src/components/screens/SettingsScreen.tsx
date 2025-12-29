@@ -6,6 +6,8 @@ import { RewardService } from '../../services/rewards';
 import { useUIStore } from '../../stores/uiStore';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
+import { useTelemetryStore } from '../../stores/telemetryStore';
+import { useErrorLogStore } from '../../stores/errorLogStore';
 import './SettingsScreen.scss';
 
 export function SettingsScreen() {
@@ -31,6 +33,10 @@ export function SettingsScreen() {
   const trialsCount = useContentStore((state) => Object.keys(state.maps.trialsById).length);
   const ruinsCount = useContentStore((state) => Object.keys(state.maps.ruinsById).length);
   const pavilionsCount = useContentStore((state) => Object.keys(state.maps.pavilionsById).length);
+  const telemetryEvents = useTelemetryStore((state) => state.events);
+  const clearTelemetry = useTelemetryStore((state) => state.clear);
+  const errorEntries = useErrorLogStore((state) => state.errors);
+  const clearErrors = useErrorLogStore((state) => state.clear);
 
   const rewardLogEntries = useRewardsLogStore((state) => state.entries);
   const clearRewardLog = useRewardsLogStore((state) => state.clear);
@@ -68,6 +74,33 @@ export function SettingsScreen() {
     );
 
     console.log('[Rewards] Test Grant Rewards result', result);
+  };
+
+  const handleCopyTelemetry = () => {
+    const slice = telemetryEvents.slice(0, 30);
+    const text = JSON.stringify(slice, null, 2);
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+    } else {
+      console.log(text);
+    }
+  };
+
+  const handleCopyErrors = () => {
+    const slice = errorEntries.slice(0, 30);
+    const text = JSON.stringify(slice, null, 2);
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+    } else {
+      console.log(text);
+    }
+  };
+
+  const handleGenerateTestError = () => {
+    if (!window.confirm('Generate a test error to validate diagnostics?')) return;
+    setTimeout(() => {
+      throw new Error('Diagnostics test error');
+    }, 0);
   };
 
   useEffect(() => {
@@ -214,6 +247,119 @@ export function SettingsScreen() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <h2 className={'settingsScreenPanelTitle'}>Diagnostics (Dev)</h2>
+            <p className={'settingsScreenPanelSubtitle'}>Telemetry + error capture + debug tools.</p>
+
+            <div className={'settingsDiagnosticsList'}>
+              <div className={'settingsDiagnosticsRow'}>
+                <div>
+                  <div className={'settingsDebugLabel'}>Telemetry</div>
+                  <div className={'settingsDiagnosticsMeta'}>
+                    Showing {Math.min(15, telemetryEvents.length)} of {telemetryEvents.length} events
+                  </div>
+                </div>
+                <div className={'settingsDiagnosticsActions'}>
+                  <button
+                    className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                    onClick={clearTelemetry}
+                    disabled={telemetryEvents.length === 0}
+                  >
+                    Clear Events
+                  </button>
+                  <button
+                    className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                    onClick={handleCopyTelemetry}
+                    disabled={telemetryEvents.length === 0}
+                  >
+                    Copy Events (JSON)
+                  </button>
+                </div>
+              </div>
+
+              {telemetryEvents.length === 0 ? (
+                <div className={'settingsDiagnosticsEmpty'}>No telemetry events captured yet.</div>
+              ) : (
+                <div className={'settingsDiagnosticsEntries'}>
+                  {telemetryEvents.slice(0, 15).map((entry) => (
+                    <div key={entry.id} className={'settingsDiagnosticsEntry'}>
+                      <div className={'settingsDiagnosticsRow'}>
+                        <div>
+                          <div className={'settingsDebugLabel'}>{entry.type}</div>
+                          <div className={'settingsDiagnosticsMeta'}>
+                            {new Date(entry.ts).toLocaleTimeString()}
+                          </div>
+                        </div>
+                        <div className={'settingsDiagnosticsSummary'}>{entry.summary}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className={'settingsDiagnosticsList'}>
+              <div className={'settingsDiagnosticsRow'}>
+                <div>
+                  <div className={'settingsDebugLabel'}>Errors</div>
+                  <div className={'settingsDiagnosticsMeta'}>
+                    Showing {Math.min(10, errorEntries.length)} of {errorEntries.length} errors
+                  </div>
+                </div>
+                <div className={'settingsDiagnosticsActions'}>
+                  <button
+                    className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                    onClick={clearErrors}
+                    disabled={errorEntries.length === 0}
+                  >
+                    Clear Errors
+                  </button>
+                  <button
+                    className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                    onClick={handleCopyErrors}
+                    disabled={errorEntries.length === 0}
+                  >
+                    Copy Errors (JSON)
+                  </button>
+                </div>
+              </div>
+
+              {errorEntries.length === 0 ? (
+                <div className={'settingsDiagnosticsEmpty'}>No captured errors.</div>
+              ) : (
+                <div className={'settingsDiagnosticsEntries'}>
+                  {errorEntries.slice(0, 10).map((entry) => (
+                    <div key={entry.id} className={'settingsDiagnosticsEntry'}>
+                      <div className={'settingsDiagnosticsRow'}>
+                        <div>
+                          <div className={'settingsDebugLabel'}>{entry.kind}</div>
+                          <div className={'settingsDiagnosticsMeta'}>
+                            {new Date(entry.ts).toLocaleTimeString()}
+                          </div>
+                        </div>
+                        <div className={'settingsDiagnosticsSummary'}>{entry.message}</div>
+                      </div>
+                      {entry.stack ? (
+                        <div className={'settingsDiagnosticsCode'}>
+                          {entry.stack.split('\n').slice(0, 2).join('\n')}
+                        </div>
+                      ) : null}
+                      {entry.source ? (
+                        <div className={'settingsDiagnosticsMeta'}>Source: {entry.source}</div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className={'settingsDiagnosticsActions'}>
+              <button className={'button-standard settingsScreenDebugButton'} onClick={handleGenerateTestError}>
+                Generate Test Error
+              </button>
             </div>
           </div>
 

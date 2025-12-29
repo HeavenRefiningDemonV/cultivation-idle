@@ -5,6 +5,8 @@ import { useExpeditionStore } from '../stores/expeditionStore';
 import { useContentStore } from '../stores/contentStore';
 import { useCombatStore } from '../stores/combatStore';
 import { useUIStore } from '../stores/uiStore';
+import { useTelemetryStore } from '../stores/telemetryStore';
+import { useErrorLogStore } from '../stores/errorLogStore';
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -29,6 +31,9 @@ export function SystemStatusPanel() {
   const contentMaps = useContentStore((state) => state.maps);
   const contentRaw = useContentStore((state) => state.raw);
   const economyConfig = useContentStore((state) => state.raw?.economy);
+  const telemetryCount = useTelemetryStore((state) => state.events.length);
+  const errorCount = useErrorLogStore((state) => state.errors.length);
+  const lastTelemetryEvent = useTelemetryStore((state) => state.events[0]);
 
   const [now, setNow] = useState(() => Date.now());
 
@@ -125,6 +130,22 @@ export function SystemStatusPanel() {
         <div className={'settingsDebugLabel'}>Saves</div>
         <div className={'settingsDebugValue'}>{lastSaveLabel}</div>
       </div>
+
+      <div className={'settingsDebugRow'}>
+        <div className={'settingsDebugLabel'}>Telemetry</div>
+        <div className={'settingsDebugValue'}>
+          Events: {telemetryCount} • Errors: {errorCount}
+        </div>
+      </div>
+
+      {lastTelemetryEvent ? (
+        <div className={'settingsDebugRow'}>
+          <div className={'settingsDebugLabel'}>Last Event</div>
+          <div className={'settingsDebugValue'}>
+            {lastTelemetryEvent.type} • {lastTelemetryEvent.summary}
+          </div>
+        </div>
+      ) : null}
 
       {lastOfflineSummary ? (
         <div className={'settingsDebugRow'}>
