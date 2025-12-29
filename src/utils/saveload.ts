@@ -1090,8 +1090,15 @@ function applySaveData(saveData: SaveData): void {
     useManualPavilionStore.getState().hydrate(manualPavilionState);
     useManualSatchelStore.getState().hydrate(manualSatchelState);
 
+    const hydratedRuinProgress = Object.fromEntries(
+      Object.entries(ruinsState.progressByRuinId ?? {}).map(([ruinId, progress]) => [
+        ruinId,
+        { ...progress, bossChestRareFailures: progress.bossChestRareFailures ?? 0 },
+      ]),
+    );
+
     useRuinsStore.setState({
-      progressByRuinId: ruinsState.progressByRuinId ?? {},
+      progressByRuinId: hydratedRuinProgress,
       autoRepeatDefault: ruinsState.autoRepeatDefault,
       autoRestart: ruinsState.autoRestart ?? ruinsState.autoRepeatDefault ?? false,
       runHistory: Array.isArray(ruinsState.runHistory)

@@ -5,6 +5,7 @@ import { useCombatStore } from '../../../stores/combatStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useRuinsStore } from '../../../stores/ruinsStore';
 import type { RuinsRunSummary } from '../../../types';
+import { pityProgressPercent } from '../../../services/economy/pity';
 import { formatNumber } from '../../../utils/numbers';
 import './RuinsProgress.scss';
 
@@ -58,11 +59,12 @@ export function RuinsProgress() {
   const activity = useActivityStore((state) => state.active);
   const combatContext = useCombatStore((state) => state.combatContext);
 
-  const { ruinsById, enemiesById, itemsById } = useContentStore(
+  const { ruinsById, enemiesById, itemsById, economy } = useContentStore(
     useShallow((state) => ({
       ruinsById: state.maps.ruinsById,
       enemiesById: state.maps.enemiesById,
       itemsById: state.maps.itemsById,
+      economy: state.economy,
     })),
   );
 
@@ -112,6 +114,15 @@ export function RuinsProgress() {
     [runHistory, ruinId],
   );
   const progress = ruinId ? progressByRuinId[ruinId] : undefined;
+  const rareSummary = runSummary?.bossChestRare;
+
+  const pityRule = economy?.tuning?.pityDefaults?.ruinsBossChestRare;
+  const pityCap = pityRule?.pityCap ?? 0;
+  const baseChance = pityRule?.baseChance ?? 0;
+  const bossChestFailures = progress?.bossChestRareFailures ?? 0;
+  const showRareProgress = baseChance > 0 && pityCap > 1;
+  const pityPercent = showRareProgress ? pityProgressPercent(bossChestFailures, pityCap) * 100 : 0;
+  const pityTarget = Math.max(pityCap - 1, 0);
 
   const handleStart = () => {
     if (ruinId) {
@@ -150,6 +161,27 @@ export function RuinsProgress() {
         </div>
       </div>
 
+      {showRareProgress ? (
+        <div className="ruins-progress__pity">
+          <div className="ruins-progress__pity-row">
+            <div className="ruins-progress__pity-title">Boss Chest Rare Progress</div>
+            <div className="ruins-progress__pity-subtitle">
+              Base chance {Math.round((baseChance ?? 0) * 100)}% • Pity cap {pityCap}
+            </div>
+          </div>
+          <div className="ruins-progress__pity-bar">
+            <div
+              className="ruins-progress__pity-bar-fill"
+              style={{ width: `${Math.min(100, Math.max(0, pityPercent))}%` }}
+            />
+          </div>
+          <div className="ruins-progress__pity-meta">
+            Core shards: {bossChestFailures} / {pityTarget || '—'}
+            {pityTarget > 0 && bossChestFailures >= pityTarget ? ' — Guaranteed on next boss chest' : ''}
+          </div>
+        </div>
+      ) : null}
+
       <div className="ruins-progress__track">
         {roomTrack.map((room) => {
           const status = activeRun
@@ -172,23 +204,31 @@ export function RuinsProgress() {
       {runSummary ? (
         <div className="ruins-progress__summary">
           <div className="ruins-progress__summary-title">Run recap</div>
-          <div className="ruins-progress__summary-grid">
-            <div>
-              <div className="ruins-progress__metric">Outcome: {runSummary.victory ? 'Victory' : 'Defeat'}</div>
-              <div className="ruins-progress__metric">Duration: {formatDuration(runSummary.durationSec)}</div>
-              <div className="ruins-progress__metric">
-                Rooms cleared: {runSummary.roomsCleared} / {runSummary.roomCount}
+            <div className="ruins-progress__summary-grid">
+              <div>
+                <div className="ruins-progress__metric">Outcome: {runSummary.victory ? 'Victory' : 'Defeat'}</div>
+                <div className="ruins-progress__metric">Duration: {formatDuration(runSummary.durationSec)}</div>
+                <div className="ruins-progress__metric">
+                  Rooms cleared: {runSummary.roomsCleared} / {runSummary.roomCount}
+                </div>
+              </div>
+              <div>
+                <div className="ruins-progress__metric">Gold gained: +{formatNumber(runSummary.goldGained)}</div>
+                <div className="ruins-progress__metric">Rare drops: {runSummary.rareDropCount}</div>
+                <div className="ruins-progress__metric">Drops: {runSummary.drops.length}</div>
               </div>
             </div>
-            <div>
-              <div className="ruins-progress__metric">Gold gained: +{formatNumber(runSummary.goldGained)}</div>
-              <div className="ruins-progress__metric">Rare drops: {runSummary.rareDropCount}</div>
-              <div className="ruins-progress__metric">Drops: {runSummary.drops.length}</div>
-            </div>
-          </div>
-          {runSummary.drops.length > 0 ? (
-            <ul className="ruins-progress__drops">{summarizeMaterials(runSummary.drops, itemsById)}</ul>
-          ) : (
+            {rareSummary ? (
+              <div className="ruins-progress__pity-summary">
+                Rare bonus:{' '}
+                {rareSummary.hit
+                  ? `${itemsById['mat_artifact_shard_bundle']?.name ?? 'Artifact Shard Bundle'}${rareSummary.guaranteed ? ' (Guaranteed)' : ''}`
+                  : `Missed (${rareSummary.failuresBefore}/${Math.max(rareSummary.pityCap - 1, 0)})`}
+              </div>
+            ) : null}
+            {runSummary.drops.length > 0 ? (
+              <ul className="ruins-progress__drops">{summarizeMaterials(runSummary.drops, itemsById)}</ul>
+            ) : (
             <div className="ruins-progress__empty">No notable materials this run.</div>
           )}
         </div>

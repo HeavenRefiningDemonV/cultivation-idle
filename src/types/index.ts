@@ -525,6 +525,7 @@ export interface SaveData {
         totalRuns: number;
         totalRoomsCleared: number;
         bossKills: number;
+        bossChestRareFailures?: number;
         bestRunSeconds?: number;
         lastRun?: { endedAt: number; victory: boolean; roomsCleared: number; seconds: number };
       }
@@ -811,6 +812,7 @@ export interface RuinsRunSummary {
   goldGained: number;
   drops: RuinsRunDropSummary[];
   rareDropCount: number;
+  bossChestRare?: { hit: boolean; guaranteed: boolean; failuresBefore: number; pityCap: number };
 }
 
 export interface CombatBuff {

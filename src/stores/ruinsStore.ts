@@ -16,6 +16,7 @@ export type RuinProgress = {
   totalRuns: number;
   totalRoomsCleared: number;
   bossKills: number;
+  bossChestRareFailures: number;
   bestRunSeconds?: number;
   lastRun?: { endedAt: number; victory: boolean; roomsCleared: number; seconds: number };
 };
@@ -243,7 +244,14 @@ export const useRuinsStore = create<RuinsState>()(
         set((draft) => {
           ruins.forEach((ruin) => {
             if (!draft.progressByRuinId[ruin.id]) {
-              draft.progressByRuinId[ruin.id] = { totalRuns: 0, totalRoomsCleared: 0, bossKills: 0 };
+              draft.progressByRuinId[ruin.id] = {
+                totalRuns: 0,
+                totalRoomsCleared: 0,
+                bossKills: 0,
+                bossChestRareFailures: 0,
+              };
+            } else if (draft.progressByRuinId[ruin.id].bossChestRareFailures === undefined) {
+              draft.progressByRuinId[ruin.id].bossChestRareFailures = 0;
             }
           });
         });
@@ -361,6 +369,38 @@ export const useRuinsStore = create<RuinsState>()(
               }
             });
           }
+          const pityRule = useContentStore.getState().economy?.tuning?.pityDefaults?.ruinsBossChestRare;
+          const baseChance = pityRule?.baseChance ?? 0;
+          const pityIncrement = pityRule?.pityIncrement ?? 0;
+          const pityCap = pityRule?.pityCap ?? 0;
+          const keyProgress = get().progressByRuinId[ruinId]?.bossChestRareFailures ?? 0;
+          let rareHit = false;
+          let rareGuaranteed = false;
+          let nextRareFailures = keyProgress;
+
+          if (baseChance > 0 && pityCap > 1) {
+            if (keyProgress >= pityCap - 1) {
+              rareHit = true;
+              rareGuaranteed = true;
+              nextRareFailures = 0;
+            } else {
+              const chance = Math.min(1, Math.max(0, baseChance + keyProgress * pityIncrement));
+              rareHit = Math.random() < chance;
+              nextRareFailures = rareHit ? 0 : Math.min(keyProgress + 1, pityCap - 1);
+            }
+
+            if (rareHit) {
+              const rareBundle: RewardBundle = {
+                items: [{ itemId: 'mat_artifact_shard_bundle', qty: 1 }],
+              };
+              RewardService.grantRewards(rareBundle, 'ruins_boss_chest_rare');
+              const rareItemName = useContentStore.getState().maps.itemsById['mat_artifact_shard_bundle']?.name;
+              const message = rareGuaranteed
+                ? `Boss chest rare reward (guaranteed)${rareItemName ? `: ${rareItemName}` : ''}`
+                : `Boss chest rare reward${rareItemName ? `: ${rareItemName}` : ''}`;
+              useUIStore.getState().addNotification('success', message, 2500);
+            }
+          }
           useBountyStore.getState().recordEvent({ type: 'RUINS_RUN_CLEAR', cityId, amount: 1 });
           if (useHeartLawStore.getState().selectedHeartLawId) {
             useHeartLawStore.getState().addComprehension(15, 'ruinsClear');
@@ -375,16 +415,22 @@ export const useRuinsStore = create<RuinsState>()(
             roomIndex: roomIndex + 1,
             events,
           });
+          summary.bossChestRare =
+            baseChance > 0 && pityCap > 1
+              ? { hit: rareHit, guaranteed: rareGuaranteed, failuresBefore: keyProgress, pityCap }
+              : undefined;
 
           set((draft) => {
             const progress = draft.progressByRuinId[ruinId] ?? {
               totalRuns: 0,
               totalRoomsCleared: 0,
               bossKills: 0,
+              bossChestRareFailures: 0,
             };
             progress.totalRuns += 1;
             progress.totalRoomsCleared += active.roomCount;
             progress.bossKills += 1;
+            progress.bossChestRareFailures = baseChance > 0 && pityCap > 1 ? nextRareFailures : progress.bossChestRareFailures ?? 0;
             progress.lastRun = { endedAt: now, victory: true, roomsCleared: active.roomCount, seconds };
             if (!progress.bestRunSeconds || seconds < progress.bestRunSeconds) {
               progress.bestRunSeconds = seconds;
@@ -448,9 +494,11 @@ export const useRuinsStore = create<RuinsState>()(
             totalRuns: 0,
             totalRoomsCleared: 0,
             bossKills: 0,
+            bossChestRareFailures: 0,
           };
           progress.totalRuns += 1;
           progress.totalRoomsCleared += roomsCleared;
+          progress.bossChestRareFailures = progress.bossChestRareFailures ?? 0;
           progress.lastRun = { endedAt: now, victory: false, roomsCleared, seconds };
           draft.progressByRuinId[ruinId] = progress;
           draft.lastRunSummary = summary;

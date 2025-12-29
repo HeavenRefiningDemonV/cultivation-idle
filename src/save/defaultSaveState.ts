@@ -73,6 +73,14 @@ const isValidRuinsRunSummary = (value: unknown): value is import('../types').Rui
   if (typeof value.goldGained !== 'number') return false;
   if (typeof value.rareDropCount !== 'number') return false;
   if (!Array.isArray(value.drops)) return false;
+  if ('bossChestRare' in value && value.bossChestRare != null) {
+    const pity = (value as any).bossChestRare;
+    if (!isRecord(pity)) return false;
+    if (typeof pity.hit !== 'boolean') return false;
+    if (typeof pity.guaranteed !== 'boolean') return false;
+    if (typeof pity.failuresBefore !== 'number') return false;
+    if (typeof pity.pityCap !== 'number') return false;
+  }
   return value.drops.every((drop) => {
     if (!isRecord(drop)) return false;
     if (typeof drop.itemId !== 'string') return false;
@@ -213,7 +221,12 @@ export function buildDefaultSaveState(): SaveData {
       ),
     },
     ruinsState: {
-      progressByRuinId: { ...ruinsState.progressByRuinId },
+      progressByRuinId: Object.fromEntries(
+        Object.entries(ruinsState.progressByRuinId ?? {}).map(([ruinId, progress]) => [
+          ruinId,
+          { ...progress, bossChestRareFailures: progress.bossChestRareFailures ?? 0 },
+        ]),
+      ),
       autoRepeatDefault: ruinsState.autoRepeatDefault,
       autoRestart: ruinsState.autoRestart,
       runHistory: ruinsState.runHistory.map((run) => ({
@@ -396,6 +409,9 @@ function isValidRuinsState(value: unknown): value is SaveData['ruinsState'] {
     if (typeof progress.totalRuns !== 'number') return false;
     if (typeof progress.totalRoomsCleared !== 'number') return false;
     if (typeof progress.bossKills !== 'number') return false;
+    if ('bossChestRareFailures' in progress && progress.bossChestRareFailures !== undefined) {
+      if (typeof progress.bossChestRareFailures !== 'number') return false;
+    }
   }
   if ('autoRepeatDefault' in value && typeof value.autoRepeatDefault !== 'boolean') return false;
   if ('autoRestart' in value && value.autoRestart !== undefined && typeof value.autoRestart !== 'boolean') return false;
