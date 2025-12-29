@@ -136,6 +136,12 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const markBackgroundResolving = useCraftSessionStore((state) => state.markBackgroundResolving);
   const addNotification = useUIStore((state) => state.addNotification);
 
+  const activeOtherStation = activeSession && activeSession.station !== 'forge';
+  const activeForgeSession = activeSession?.station === 'forge' ? activeSession : null;
+  const activePrompts = activeForgeSession?.prompts ?? [];
+  const promptSummary = summarizePrompts(activePrompts);
+  const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
+
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
   const [queueStatus, setQueueStatus] = useState<Record<string, StatusMessage>>({});
@@ -222,11 +228,6 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     [blueprints, selectedBlueprintId],
   );
 
-  const activeOtherStation = activeSession && activeSession.station !== 'forge';
-  const activeForgeSession = activeSession?.station === 'forge' ? activeSession : null;
-  const activePrompts = activeForgeSession?.prompts ?? [];
-  const promptSummary = summarizePrompts(activePrompts);
-  const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
   const sessionRemainingMs = activeForgeSession ? Math.max(0, activeForgeSession.endsAt - now) : 0;
   const sessionReady = activeForgeSession ? now >= activeForgeSession.endsAt : false;
 
@@ -259,28 +260,6 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
       : refineAccessoryAffordability.ok
         ? null
         : refineAccessoryAffordability.reason ?? 'Cannot refine';
-
-  if (!cityId) {
-    return (
-      <div className={'worldScreenPlaceholder'}>
-        <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>No Forge in this city</div>
-        </div>
-        <div className={'worldScreenPlaceholderBody'}>This city does not host a forge station.</div>
-      </div>
-    );
-  }
-
-  if (!blueprints.length) {
-    return (
-      <div className={'worldScreenPlaceholder'}>
-        <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>No forge blueprints</div>
-        </div>
-        <div className={'worldScreenPlaceholderBody'}>Forge blueprints were not found in content.</div>
-      </div>
-    );
-  }
 
   const isServiceBlueprint = selectedBlueprint ? selectedBlueprint.type === 'service' : false;
   const currentMode = modeByStation.forge;
@@ -868,7 +847,9 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     );
   };
 
-  return (
+  let content: JSX.Element;
+
+  content = (
     <div className={'forgePanel'}>
       <div className={'stationBanner craftPurposeBanner'}>
         <div>
@@ -1022,4 +1003,26 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
       </div>
     </div>
   );
+
+  if (!cityId) {
+    content = (
+      <div className={'worldScreenPlaceholder'}>
+        <div className={'worldScreenPlaceholderHeader'}>
+          <div className={'worldScreenPlaceholderTitle'}>No Forge in this city</div>
+        </div>
+        <div className={'worldScreenPlaceholderBody'}>This city does not host a forge station.</div>
+      </div>
+    );
+  } else if (!blueprints.length) {
+    content = (
+      <div className={'worldScreenPlaceholder'}>
+        <div className={'worldScreenPlaceholderHeader'}>
+          <div className={'worldScreenPlaceholderTitle'}>No forge blueprints</div>
+        </div>
+        <div className={'worldScreenPlaceholderBody'}>Forge blueprints were not found in content.</div>
+      </div>
+    );
+  }
+
+  return content;
 }
