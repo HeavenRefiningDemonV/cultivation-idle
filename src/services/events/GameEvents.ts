@@ -87,6 +87,7 @@ export type GameEventHandler<TType extends GameEventType> = (event: GameEventFor
 type Listener = (event: GameEvent) => void;
 
 const listeners: Partial<Record<GameEventType, Set<Listener>>> = {};
+const anyListeners: Set<Listener> = new Set();
 
 function on<TType extends GameEventType>(type: TType, handler: GameEventHandler<TType>): void {
   if (!listeners[type]) {
@@ -99,15 +100,29 @@ function off<TType extends GameEventType>(type: TType, handler: GameEventHandler
   listeners[type]?.delete(handler as Listener);
 }
 
+function onAny(handler: Listener): void {
+  anyListeners.add(handler);
+}
+
+function offAny(handler: Listener): void {
+  anyListeners.delete(handler);
+}
+
 function emit(event: GameEvent): void {
   const handlers = listeners[event.type];
-  if (!handlers || handlers.size === 0) return;
-
-  handlers.forEach((handler) => {
+  handlers?.forEach((handler) => {
     try {
       (handler as GameEventHandler<typeof event.type>)(event as never);
     } catch (error) {
       console.warn('[GameEvents] Handler error for', event.type, error);
+    }
+  });
+
+  anyListeners.forEach((handler) => {
+    try {
+      handler(event);
+    } catch (error) {
+      console.warn('[GameEvents] Any-handler error for', event.type, error);
     }
   });
 }
@@ -116,4 +131,6 @@ export const GameEvents = {
   emit,
   on,
   off,
+  onAny,
+  offAny,
 };
