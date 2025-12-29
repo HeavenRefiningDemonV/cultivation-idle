@@ -8,7 +8,61 @@ import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
 import { useTelemetryStore } from '../../stores/telemetryStore';
 import { useErrorLogStore } from '../../stores/errorLogStore';
+import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle';
+import {
+  applySafeRepairs,
+  runRuntimeValidation,
+  type ValidationIssue,
+} from '../../services/diagnostics/runValidation';
 import './SettingsScreen.scss';
+
+function downloadJson(filename: string, data: unknown) {
+  try {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.warn('[Diagnostics] Failed to download JSON', error);
+  }
+}
+
+async function copyToClipboard(text: string) {
+  if (navigator?.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+}
+
+function formatDiagnosticsSummary(bundle: DiagnosticsBundleV1): string {
+  const parts: string[] = [];
+  parts.push(`Timestamp: ${new Date(bundle.createdAt).toISOString()}`);
+  parts.push(`App: ${bundle.app.name} v${bundle.app.version} (${bundle.app.mode})`);
+  parts.push(`Last save: ${bundle.save.lastSaveAt ? new Date(bundle.save.lastSaveAt).toISOString() : 'unknown'}`);
+  const activity = bundle.status.activity as { type?: string } | null;
+  parts.push(`Activity: ${activity?.type ?? 'none'}`);
+  const combatLabel = bundle.status.combat?.inCombat
+    ? `active (${bundle.status.combat.type ?? 'unknown'})`
+    : 'idle';
+  parts.push(`Combat: ${combatLabel}`);
+  parts.push(`Telemetry: events=${bundle.telemetry.recentEvents.length} errors=${bundle.telemetry.recentErrors.length}`);
+  parts.push(`Validation: ${bundle.validation.errorCount} errors, ${bundle.validation.warningCount} warnings`);
+  if (bundle.errors && bundle.errors.length > 0) {
+    parts.push(`Bundle warnings: ${bundle.errors.join('; ')}`);
+  }
+  return parts.join('\n');
+}
 
 export function SettingsScreen() {
   const showOfflineModal = useUIStore((state) => state.settings.showOfflineModal);
@@ -37,6 +91,12 @@ export function SettingsScreen() {
   const clearTelemetry = useTelemetryStore((state) => state.clear);
   const errorEntries = useErrorLogStore((state) => state.errors);
   const clearErrors = useErrorLogStore((state) => state.clear);
+
+  const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
+  const [validationRanAt, setValidationRanAt] = useState<number | null>(null);
+  const [diagnosticsError, setDiagnosticsError] = useState<string | null>(null);
+  const [repairNotes, setRepairNotes] = useState<string[]>([]);
+  const [repairedCount, setRepairedCount] = useState<number | null>(null);
 
   const rewardLogEntries = useRewardsLogStore((state) => state.entries);
   const clearRewardLog = useRewardsLogStore((state) => state.clear);
@@ -79,20 +139,67 @@ export function SettingsScreen() {
   const handleCopyTelemetry = () => {
     const slice = telemetryEvents.slice(0, 30);
     const text = JSON.stringify(slice, null, 2);
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(text);
-    } else {
-      console.log(text);
-    }
+    void copyToClipboard(text).catch((error) => {
+      console.warn('[Diagnostics] Failed to copy telemetry', error);
+    });
   };
 
   const handleCopyErrors = () => {
     const slice = errorEntries.slice(0, 30);
     const text = JSON.stringify(slice, null, 2);
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(text);
-    } else {
-      console.log(text);
+    void copyToClipboard(text).catch((error) => {
+      console.warn('[Diagnostics] Failed to copy errors', error);
+    });
+  };
+
+  const handleDownloadDiagnostics = () => {
+    try {
+      const bundle = buildDiagnosticsBundle();
+      downloadJson(`cultivation_diagnostics_${new Date(bundle.createdAt).toISOString()}.json`, bundle);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to build diagnostics: ${String(error)}`);
+    }
+  };
+
+  const handleCopyQuickSummary = () => {
+    try {
+      const bundle = buildDiagnosticsBundle();
+      const summary = formatDiagnosticsSummary(bundle);
+      void copyToClipboard(summary).catch((error) => {
+        console.warn('[Diagnostics] Failed to copy summary', error);
+      });
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to copy summary: ${String(error)}`);
+    }
+  };
+
+  const handleRunValidation = () => {
+    try {
+      const issues = runRuntimeValidation();
+      setValidationIssues(issues);
+      setValidationRanAt(Date.now());
+      setRepairedCount(null);
+      setRepairNotes([]);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Validation failed: ${String(error)}`);
+    }
+  };
+
+  const handleApplyRepairs = () => {
+    if (!window.confirm('Apply safe repairs to obvious issues?')) return;
+    try {
+      const result = applySafeRepairs(validationIssues);
+      setRepairNotes(result.notes);
+      setRepairedCount(result.repairedCount);
+      const refreshed = runRuntimeValidation();
+      setValidationIssues(refreshed);
+      setValidationRanAt(Date.now());
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Repairs failed: ${String(error)}`);
     }
   };
 
@@ -253,6 +360,72 @@ export function SettingsScreen() {
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
             <h2 className={'settingsScreenPanelTitle'}>Diagnostics (Dev)</h2>
             <p className={'settingsScreenPanelSubtitle'}>Telemetry + error capture + debug tools.</p>
+
+            <div className={'settingsDiagnosticsActions'}>
+              <button className={'button-standard settingsScreenDebugButton'} onClick={handleDownloadDiagnostics}>
+                Download Diagnostics (.json)
+              </button>
+              <button className={'button-standard settingsScreenDebugButton'} onClick={handleCopyQuickSummary}>
+                Copy Quick Summary
+              </button>
+            </div>
+
+            <div className={'settingsDiagnosticsActions'}>
+              <button className={'button-standard settingsScreenDebugButton'} onClick={handleRunValidation}>
+                Run Validation
+              </button>
+              <button
+                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                onClick={handleApplyRepairs}
+                disabled={validationIssues.length === 0}
+              >
+                Apply Safe Repairs
+              </button>
+            </div>
+
+            {diagnosticsError ? <div className={'settingsDebugError'}>{diagnosticsError}</div> : null}
+
+            <div className={'settingsDiagnosticsList'}>
+              <div className={'settingsDiagnosticsRow'}>
+                <div>
+                  <div className={'settingsDebugLabel'}>Validation</div>
+                  <div className={'settingsDiagnosticsMeta'}>
+                    {validationRanAt ? `Last run: ${new Date(validationRanAt).toLocaleTimeString()}` : 'Not run yet'}
+                  </div>
+                </div>
+                <div className={'settingsDiagnosticsMeta'}>
+                  {validationIssues.length} issue{validationIssues.length === 1 ? '' : 's'}
+                </div>
+              </div>
+
+              {validationIssues.length === 0 ? (
+                <div className={'settingsDiagnosticsEmpty'}>No validation issues detected yet.</div>
+              ) : (
+                <div className={'settingsDiagnosticsEntries'}>
+                  {validationIssues.slice(0, 20).map((issue) => (
+                    <div key={issue.id} className={'settingsDiagnosticsEntry settingsDiagnosticsIssue'}>
+                      <div className={'settingsDiagnosticsRow'}>
+                        <div>
+                          <div className={'settingsDiagnosticsSeverity settingsDiagnosticsSeverity-' + issue.severity}>
+                            {issue.severity.toUpperCase()}
+                          </div>
+                          <div className={'settingsDiagnosticsMeta'}>{issue.id}</div>
+                        </div>
+                        <div className={'settingsDiagnosticsSummary'}>{issue.message}</div>
+                      </div>
+                      {issue.hint ? <div className={'settingsDiagnosticsMeta'}>{issue.hint}</div> : null}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {repairedCount != null ? (
+                <div className={'settingsDiagnosticsMeta'}>
+                  Repairs applied: {repairedCount} {repairedCount === 1 ? 'change' : 'changes'}.
+                  {repairNotes.length > 0 ? ` Notes: ${repairNotes.join('; ')}` : ''}
+                </div>
+              ) : null}
+            </div>
 
             <div className={'settingsDiagnosticsList'}>
               <div className={'settingsDiagnosticsRow'}>

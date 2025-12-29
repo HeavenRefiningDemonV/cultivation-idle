@@ -370,6 +370,10 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
+.settingsDiagnosticsIssue {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
 .settingsDiagnosticsMeta {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.65);
@@ -378,6 +382,27 @@
 .settingsDiagnosticsSummary {
   color: #111827;
   font-weight: 600;
+}
+
+.settingsDiagnosticsSeverity {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.settingsDiagnosticsSeverity-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #991b1b;
+}
+
+.settingsDiagnosticsSeverity-warning {
+  background: rgba(251, 191, 36, 0.2);
+  color: #92400e;
 }
 
 .settingsDiagnosticsCode {
