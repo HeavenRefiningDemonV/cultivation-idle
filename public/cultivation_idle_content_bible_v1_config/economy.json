@@ -492,8 +492,8 @@
         ]
       }
     },
-    "drops": {
-      "outskirts": {
+  "drops": {
+    "outskirts": {
         "mobGoldByCityIndex": [
           [
             6,
@@ -753,6 +753,69 @@
         "manualDropChance": 0.02,
         "manualPityRunGuarantee": 50
       }
+    }
+  },
+  "tuning": {
+    "ttmuBudgets": {
+      "microGoalMinutes": [
+        5,
+        10
+      ],
+      "minorGoalMinutes": [
+        10,
+        30
+      ],
+      "mediumGoalMinutes": [
+        30,
+        90
+      ],
+      "majorGoalHours": [
+        2,
+        6
+      ],
+      "aspirationalGoalHours": [
+        12,
+        48
+      ]
+    },
+    "pityDefaults": {
+      "expeditionsRare": {
+        "pityIncrement": 0.02,
+        "pityCap": 10
+      },
+      "ruinsBossChestRare": {
+        "baseChance": 0.05,
+        "pityIncrement": 0.02,
+        "pityCap": 12
+      }
+    },
+    "ledger": {
+      "notes": "Dev-facing economy ledger metadata. Not used for gameplay directly.",
+      "currencies": {
+        "gold": {
+          "role": "soft loop currency",
+          "expectedSinks": [
+            "manual_refresh",
+            "crafting_convenience"
+          ]
+        },
+        "spiritStones": {
+          "role": "progression currency",
+          "expectedSinks": [
+            "manual_buy",
+            "advanced_crafting"
+          ]
+        },
+        "merit": {
+          "role": "accelerator currency",
+          "expectedSinks": [
+            "manual_focus",
+            "pity_accelerators"
+          ]
+        }
+      },
+      "faucets": [],
+      "sinks": []
     }
   }
 }

@@ -18,12 +18,46 @@ export type OutskirtsDropsConfig = {
   bossSpiritStoneRangeByCityIndex?: Record<number, [number, number]>;
 };
 
+export interface TtmuBudgets {
+  microGoalMinutes?: [number, number];
+  minorGoalMinutes?: [number, number];
+  mediumGoalMinutes?: [number, number];
+  majorGoalHours?: [number, number];
+  aspirationalGoalHours?: [number, number];
+}
+
+export interface PityRuleConfig {
+  baseChance?: number;
+  pityIncrement?: number;
+  pityCap?: number;
+}
+
+export interface PityDefaultsConfig {
+  expeditionsRare?: PityRuleConfig;
+  ruinsBossChestRare?: PityRuleConfig;
+  [key: string]: PityRuleConfig | undefined;
+}
+
+export interface EconomyLedgerConfig {
+  notes?: string;
+  currencies?: Record<string, { role?: string; expectedSinks?: string[] }>;
+  faucets?: unknown[];
+  sinks?: unknown[];
+}
+
+export interface EconomyTuningConfig {
+  ttmuBudgets?: TtmuBudgets;
+  pityDefaults?: PityDefaultsConfig;
+  ledger?: EconomyLedgerConfig;
+}
+
 export interface EconomyConfig {
   version?: string;
   generatedOn?: string;
   paths: PathId[];
   majorRealms: { id: MajorRealmId; name: string; index: number; stretch?: boolean }[];
   manualSystem?: unknown;
+  tuning?: EconomyTuningConfig;
 
   drops?: {
     outskirts?: OutskirtsDropsConfig;

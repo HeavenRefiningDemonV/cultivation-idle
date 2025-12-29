@@ -28,6 +28,7 @@ export function SystemStatusPanel() {
   const contentError = useContentStore((state) => state.error);
   const contentMaps = useContentStore((state) => state.maps);
   const contentRaw = useContentStore((state) => state.raw);
+  const economyConfig = useContentStore((state) => state.raw?.economy);
 
   const [now, setNow] = useState(() => Date.now());
 
@@ -92,6 +93,17 @@ export function SystemStatusPanel() {
       prestigeUpgrades: contentRaw?.prestige_store?.upgrades?.length ?? 0,
     };
   }, [contentMaps, contentRaw]);
+
+  const formatRange = (range?: [number, number]) =>
+    range ? `${range[0]}-${range[1]}` : 'n/a';
+
+  const formatPityRule = (rule?: { baseChance?: number; pityIncrement?: number; pityCap?: number }) => {
+    if (!rule) return 'n/a';
+    const base = rule.baseChance != null ? `${Math.round(rule.baseChance * 1000) / 10}%` : '—';
+    const increment = rule.pityIncrement != null ? `${Math.round(rule.pityIncrement * 1000) / 10}%` : '—';
+    const cap = rule.pityCap ?? '—';
+    return `base ${base} | +${increment} | cap ${cap}`;
+  };
 
   const combatStatus = combatContext?.type ? `Active (${combatContext.type})` : 'Idle';
   const lastSaveLabel = lastSaveAt ? new Date(lastSaveAt).toLocaleTimeString() : 'No save yet';
@@ -229,6 +241,28 @@ export function SystemStatusPanel() {
           <div className={'settingsDebugValue'}>{contentCounts.prestigeUpgrades}</div>
         </div>
       </div>
+
+      {economyConfig?.tuning ? (
+        <div className={'settingsDebugSection'}>
+          <div className={'settingsDebugRow'}>
+            <div className={'settingsDebugLabel'}>Economy Tuning</div>
+            <div className={'settingsDebugValue'}>
+              Budgets — micro: {formatRange(economyConfig.tuning.ttmuBudgets?.microGoalMinutes)} • minor:{' '}
+              {formatRange(economyConfig.tuning.ttmuBudgets?.minorGoalMinutes)} • medium:{' '}
+              {formatRange(economyConfig.tuning.ttmuBudgets?.mediumGoalMinutes)} • major:{' '}
+              {formatRange(economyConfig.tuning.ttmuBudgets?.majorGoalHours)}h • aspirational:{' '}
+              {formatRange(economyConfig.tuning.ttmuBudgets?.aspirationalGoalHours)}h
+            </div>
+          </div>
+          <div className={'settingsDebugRow'}>
+            <div className={'settingsDebugLabel'}>Pity Defaults</div>
+            <div className={'settingsDebugValue'}>
+              Expeditions rare: {formatPityRule(economyConfig.tuning.pityDefaults?.expeditionsRare)} • Ruins boss chest:{' '}
+              {formatPityRule(economyConfig.tuning.pityDefaults?.ruinsBossChestRare)}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
