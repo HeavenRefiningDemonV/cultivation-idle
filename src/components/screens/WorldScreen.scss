@@ -2370,3 +2370,400 @@
 .worldScreenTrackedLink:hover {
   background: #ffffff;
 }
+
+/* Expeditions 2.0 */
+.expeditionBoardPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.expeditionPlanner {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.4);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expeditionPlannerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.expeditionBoardTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.expeditionBoardSubtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.expeditionRareInfo {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.expeditionRareItems {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.expeditionRouteGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.expeditionRouteCard {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  text-align: left;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.expeditionRouteCard:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  transform: translateY(-1px);
+}
+
+.expeditionRouteCard--selected {
+  border-color: rgba(99, 102, 241, 0.9);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5);
+}
+
+.expeditionRouteCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.expeditionRouteTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.expeditionRouteRare {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+.expeditionRouteDescription {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.expeditionRouteItems {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.expeditionRouteItem {
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.expeditionRouteRareItems {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #f9a8d4;
+}
+
+.expeditionDurationRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expeditionDurationChip {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  min-width: 160px;
+  text-align: left;
+  cursor: pointer;
+  color: #e2e8f0;
+}
+
+.expeditionDurationChip--selected {
+  border-color: rgba(99, 102, 241, 0.9);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5);
+}
+
+.expeditionDurationChipHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.expeditionDurationTime {
+  color: #cbd5e1;
+}
+
+.expeditionDurationMeta {
+  font-size: 12px;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.expeditionYieldList {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.expeditionYieldHeader {
+  font-weight: 700;
+}
+
+.expeditionYieldItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.expeditionYieldRare {
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+.expeditionSlots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.expeditionSlotCard {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.4);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expeditionSlotCard--idle {
+  opacity: 0.95;
+}
+
+.expeditionSlotHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.expeditionSlotTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.expeditionSlotMeta {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.expeditionSlotStatus {
+  font-size: 12px;
+  color: #a5b4fc;
+  align-self: center;
+}
+
+.expeditionSlotStatus--ready {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.expeditionProgressBar {
+  width: 100%;
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.expeditionProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  transition: width 0.3s ease;
+}
+
+.expeditionSlotActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expeditionSlotError {
+  color: #f87171;
+  font-size: 12px;
+}
+
+.expeditionCeremonyOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.expeditionCeremonyModal {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  width: min(720px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expeditionCeremonyHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.expeditionCeremonyTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.expeditionCeremonySubtitle {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.expeditionCeremonyClose {
+  background: transparent;
+  border: none;
+  color: #e2e8f0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.expeditionCeremonySpotlight {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(99, 102, 241, 0.12);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expeditionSpotlightLabel {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.expeditionSpotlightItem {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.expeditionSpotlightBadge {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.expeditionRewardList {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expeditionRewardHeader {
+  font-weight: 700;
+}
+
+.expeditionRewardRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.expeditionRewardCurrencies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 6px;
+}
+
+.expeditionCeremonyActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.expeditionCeremonyUse {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.expeditionCeremonyUseLabel {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.expeditionCeremonyUseButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.expeditionCeremonyError {
+  color: #f87171;
+  font-size: 13px;
+}
+
+.worldScreenModuleButton--subtle {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.worldScreenModuleButton--ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
