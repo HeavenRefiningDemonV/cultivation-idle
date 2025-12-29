@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { useUIStore } from '../stores/uiStore';
+import { useCityStore } from '../stores/cityStore';
+import { useBountyStore } from '../stores/bountyStore';
+import { useContentStore } from '../stores/contentStore';
+import { resolveBountyDestination } from '../utils/bountyRouting';
 import { formatNumber } from '../utils/numbers';
 import { SaveService } from '../services/save/SaveService';
 import './Header.scss';
@@ -15,9 +19,40 @@ export function Header() {
   const headerTitle = useUIStore((state) => state.headerTitle);
   const headerSubtitle = useUIStore((state) => state.headerSubtitle);
   const headerTone = useUIStore((state) => state.headerTone);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+
+  const currentCityId = useCityStore((state) => state.currentCityId);
+  const setCurrentCity = useCityStore((state) => state.setCurrentCity);
+  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
+  const trackedBounty = useBountyStore((state) =>
+    currentCityId ? state.getTrackedBounty(currentCityId) : null,
+  );
+  const citiesSorted = useContentStore((state) => state.citiesSorted);
 
   const [lastSavedText, setLastSavedText] = useState<string>('Never');
   const [lastSavedTone, setLastSavedTone] = useState<'neutral' | 'fresh' | 'warn' | 'old'>('neutral');
+
+  const handleTrackedClick = () => {
+    if (!trackedBounty || !currentCityId) return;
+    const city = citiesSorted.find((entry) => entry.id === currentCityId);
+    const destination = resolveBountyDestination({
+      cityId: currentCityId,
+      bountyKind: trackedBounty.kind,
+      cityModules: city?.modules ?? [],
+    });
+
+    const moduleKey =
+      destination.kind === 'module'
+        ? destination.moduleKey
+        : destination.kind === 'moduleChoice'
+          ? destination.options[0]?.moduleKey
+          : null;
+
+    const targetModule = moduleKey ?? 'bounties';
+    setActiveTab('adventure');
+    setCurrentCity(currentCityId);
+    setSelectedModule(currentCityId, targetModule);
+  };
 
   // Update "Last saved" indicator every second
   useEffect(() => {
@@ -75,6 +110,20 @@ export function Header() {
         <div className="titles-container">
           <div className="big-title">{headerTitle}</div>
           <div className="subtitle">{headerSubtitle}</div>
+        </div>
+
+        <div className='headerTrackedBlock'>
+          {trackedBounty && (
+            <button className='headerTrackedBadge' onClick={handleTrackedClick}>
+              <div className='headerTrackedLabel'>Tracked bounty</div>
+              <div className='headerTrackedTitle'>
+                {trackedBounty.title}
+                <span className='headerTrackedProgress'>
+                  {trackedBounty.progress}/{trackedBounty.target}
+                </span>
+              </div>
+            </button>
+          )}
         </div>
 
         <div className='headerSaveBlock'>

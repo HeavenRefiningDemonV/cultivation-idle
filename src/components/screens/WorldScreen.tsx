@@ -9,6 +9,7 @@ import { useOutskirtsStore } from '../../stores/outskirtsStore';
 import { useTrialStore } from '../../stores/trialStore';
 import { useRuinsStore } from '../../stores/ruinsStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
+import { useBountyStore } from '../../stores/bountyStore';
 import { RewardService } from '../../services/rewards';
 import { ApothecaryPanel } from './ApothecaryPanel';
 import { AlchemyPanel } from './AlchemyPanel';
@@ -20,6 +21,7 @@ import { BountyBoardPanel } from './BountyBoardPanel';
 import { ExpeditionBoardPanel } from './ExpeditionBoardPanel';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations';
+import { resolveBountyDestination } from '../../utils/bountyRouting';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
@@ -106,6 +108,7 @@ export function WorldScreen() {
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
   const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const cityFlagsById = useCityStore((state) => state.cityFlagsById);
+  const trackedBounty = useBountyStore((state) => (currentCityId ? state.getTrackedBounty(currentCityId) : null));
 
   const activeActivity = useActivityStore((state) => state.active);
   const startActivity = useActivityStore((state) => state.startActivity);
@@ -145,6 +148,24 @@ export function WorldScreen() {
     if (stored && selectedCity.modules.includes(stored)) return stored;
     return selectedCity.modules?.[0] ?? null;
   }, [selectedCity, selectedModuleByCity]);
+
+  const trackedDestination = useMemo(() => {
+    if (!selectedCity || !trackedBounty) return null;
+    return resolveBountyDestination({
+      cityId: selectedCity.id,
+      bountyKind: trackedBounty.kind,
+      cityModules: selectedCity.modules,
+    });
+  }, [selectedCity, trackedBounty]);
+
+  const isTrackedModuleActive = useMemo(() => {
+    if (!trackedDestination || !selectedModuleKey) return false;
+    if (trackedDestination.kind === 'module') return trackedDestination.moduleKey === selectedModuleKey;
+    if (trackedDestination.kind === 'moduleChoice') {
+      return trackedDestination.options.some((option) => option.moduleKey === selectedModuleKey);
+    }
+    return false;
+  }, [selectedModuleKey, trackedDestination]);
 
   useEffect(() => {
     if (!selectedCity || !selectedModuleKey) return;
@@ -459,6 +480,22 @@ export function WorldScreen() {
                     <div className={'worldScreenRefsEmpty'}>No modules listed for this city.</div>
                   )}
                 </div>
+
+                {trackedBounty && isTrackedModuleActive && (
+                  <div className={'worldScreenTrackedBanner'}>
+                    <div className={'worldScreenTrackedBannerText'}>
+                      Tracked bounty: <span className={'worldScreenTrackedName'}>{trackedBounty.title}</span> —{' '}
+                      {trackedBounty.progress}/{trackedBounty.target}
+                    </div>
+                    <button
+                      className={'worldScreenTrackedLink'}
+                      onClick={() => handleSelectModule('bounties')}
+                      type='button'
+                    >
+                      View bounty board
+                    </button>
+                  </div>
+                )}
 
                 {selectedModuleKey && moduleMeta && (
                   selectedModuleKey === 'outskirts' && outskirtsDef ? (

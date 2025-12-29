@@ -16,6 +16,7 @@ import { CombatMinibarOverlay } from '../app/overlays/CombatMinibarOverlay';
 import { CombatTheaterOverlay } from '../app/overlays/CombatTheaterOverlay';
 import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
+import { NotificationToasts } from './NotificationToasts';
 import './GameLayout.scss';
 
 /**
@@ -98,6 +99,7 @@ export function GameLayout() {
       <CombatMinibarOverlay />
       <CombatTheaterOverlay />
       <LifeStartWizardModal />
+      <NotificationToasts />
     </div>
   );
 }

@@ -77,6 +77,55 @@ header * {
   width: 20%;
 }
 
+.headerTrackedBlock {
+  display: flex;
+  justify-content: center;
+  width: 30%;
+}
+
+.headerTrackedBadge {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  min-width: 220px;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.headerTrackedBadge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.headerTrackedLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #0f172a;
+}
+
+.headerTrackedTitle {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerTrackedProgress {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .headerSaveLabel {
   text-transform: uppercase;
   letter-spacing: 0.12em;
