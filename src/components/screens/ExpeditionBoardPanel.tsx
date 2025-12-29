@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { RewardBundle } from '../../services/rewards';
+import type { RewardBundle } from '../../services/rewards';
 import { normalizeItemList } from '../../utils/itemList';
 import { multiply } from '../../utils/numbers';
 import { useCityStore } from '../../stores/cityStore';
