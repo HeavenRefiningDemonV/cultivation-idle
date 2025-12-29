@@ -214,6 +214,7 @@ function gatherGameState(): SaveData {
     expeditionState: {
       slots: expeditionState.slots,
       active: expeditionState.active.map((run) => ({ ...run })),
+      rareProgressByKey: { ...(expeditionState.rareProgressByKey ?? {}) },
     },
 
     heartLawState: {
@@ -860,7 +861,8 @@ function applySaveData(saveData: SaveData): void {
     const trialState = saveData.trialState ?? defaults.trialState ?? { progressByTrialId: {}, activeTrialSessionId: null };
     const bountyState =
       saveData.bountyState ?? defaults.bountyState ?? { activeByCityId: {}, lastRefreshAtByCityId: {}, trackedByCityId: {} };
-    const expeditionState = saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [] };
+    const expeditionState =
+      saveData.expeditionState ?? defaults.expeditionState ?? { slots: 0, active: [], rareProgressByKey: {} };
   const ruinsState =
     saveData.ruinsState ??
     defaults.ruinsState ?? { progressByRuinId: {}, autoRepeatDefault: false, autoRestart: false, runHistory: [], lastRunSummary: null };
@@ -1040,6 +1042,7 @@ function applySaveData(saveData: SaveData): void {
                 : ((run as { startedAt?: number }).startedAt ?? Date.now()) >>> 0,
           }))
         : [],
+      rareProgressByKey: { ...(expeditionState.rareProgressByKey ?? {}) },
     });
     useExpeditionStore.getState().tick(Date.now());
 

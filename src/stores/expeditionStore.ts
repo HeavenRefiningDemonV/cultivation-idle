@@ -7,6 +7,8 @@ import { multiply } from '../utils/numbers';
 import { normalizeItemList } from '../utils/itemList';
 import { randFloat } from '../utils/rng';
 import { useBountyStore } from './bountyStore';
+import { rollWithPity } from '../services/economy/pity';
+import { useUIStore } from './uiStore';
 
 export type ExpeditionRunStatus = 'running' | 'complete';
 
@@ -25,6 +27,7 @@ export interface ExpeditionRun {
 interface ExpeditionState {
   slots: number;
   active: ExpeditionRun[];
+  rareProgressByKey: Record<string, number>;
   setSlots: (slots: number) => void;
   start: (slotIndex: number, typeId: string, durationId: string, cityId: string, cityIndex: number) => boolean;
   claim: (slotIndex: number) => ClaimExpeditionResult;
@@ -39,6 +42,7 @@ type ClaimExpeditionResult = {
   rolled?: RewardBundle;
   rareDrop?: { itemId: string; qty: number } | null;
   spotlightItemId?: string | null;
+  rarePity?: { failuresBefore: number; guaranteed: boolean; pityCap: number };
 };
 
 type RewardCurrencyBundle = NonNullable<RewardBundle['currencies']>;
@@ -259,25 +263,20 @@ function rollVariance(bundle: RewardBundle, variancePct: number, seed: number): 
   return { bundle: collapseRewardBundle(next), seed: currentSeed >>> 0 };
 }
 
-function rollRareDrop(typeId: string, durationId: string, seed: number): {
-  hit: boolean;
+function pickWeightedRareDrop(
+  typeId: string,
+  seed: number,
+): {
   drop: { itemId: string; qty: number } | null;
   seed: number;
 } {
   const typeDef = findTypeDef(typeId);
-  const durationDef = findDurationDef(durationId);
-  const rareChance = durationDef?.rareChance ?? 0;
   const drops = typeDef?.rareDrops;
-  if (!drops || drops.length === 0 || rareChance <= 0) {
-    return { hit: false, drop: null, seed };
+  if (!drops || drops.length === 0) {
+    return { drop: null, seed };
   }
 
   let currentSeed = seed >>> 0;
-  const roll = randFloat(currentSeed);
-  currentSeed = roll.seed;
-  if (roll.value >= rareChance) {
-    return { hit: false, drop: null, seed: currentSeed };
-  }
 
   const totalWeight = drops.reduce((sum, entry) => {
     const weight = Number.isFinite(entry.weight) && entry.weight !== undefined ? Number(entry.weight) : 1;
@@ -286,8 +285,9 @@ function rollRareDrop(typeId: string, durationId: string, seed: number): {
   }, 0);
 
   if (totalWeight <= 0) {
-    return { hit: false, drop: null, seed: currentSeed };
+    return { drop: null, seed: currentSeed };
   }
+
   const pickRoll = randFloat(currentSeed);
   currentSeed = pickRoll.seed;
   let cursor = pickRoll.value * totalWeight;
@@ -296,12 +296,12 @@ function rollRareDrop(typeId: string, durationId: string, seed: number): {
     const safeWeight = weight > 0 ? weight : 1;
     cursor -= safeWeight;
     if (cursor <= 0) {
-      return { hit: true, drop: { itemId: entry.itemId, qty: entry.qty }, seed: currentSeed };
+      return { drop: { itemId: entry.itemId, qty: entry.qty }, seed: currentSeed };
     }
   }
 
   const fallback = drops[drops.length - 1];
-  return { hit: true, drop: { itemId: fallback.itemId, qty: fallback.qty }, seed: currentSeed };
+  return { drop: { itemId: fallback.itemId, qty: fallback.qty }, seed: currentSeed };
 }
 
 function selectBestDropSpotlight(bundle: RewardBundle, rareDrop?: { itemId: string; qty: number } | null) {
@@ -330,6 +330,7 @@ export const useExpeditionStore = create<ExpeditionState>()(
   immer((set, get) => ({
     slots: 1,
     active: [],
+    rareProgressByKey: {},
 
     setSlots: (slots) => {
       const nextSlots = Number.isFinite(slots) ? Math.max(1, Math.floor(slots)) : 1;
@@ -392,24 +393,71 @@ export const useExpeditionStore = create<ExpeditionState>()(
 
       const durationDef = findDurationDef(run.durationId);
       const variancePct = durationDef?.variancePct ?? 0.15;
+      const baseRareChance = durationDef?.rareChance ?? 0;
+      const pityDefaults = useContentStore.getState().economy?.tuning?.pityDefaults?.expeditionsRare;
+      const pityIncrement = pityDefaults?.pityIncrement ?? 0;
+      const pityCap = pityDefaults?.pityCap ?? 0;
 
       const startSeed = typeof run.seed === 'number' ? run.seed >>> 0 : ((run.startedAt ?? Date.now()) >>> 0);
       const varianceResult = rollVariance(expected, variancePct, startSeed);
-      const rareResult = rollRareDrop(run.expeditionTypeId, run.durationId, varianceResult.seed);
+
+      const progressKey = `${run.expeditionTypeId}::${run.durationId}`;
+      const failuresSoFar = get().rareProgressByKey?.[progressKey] ?? 0;
+
+      let currentSeed = varianceResult.seed;
+      let rareDrop: { itemId: string; qty: number } | null = null;
+      let rarePityMeta: ClaimExpeditionResult['rarePity'];
+      let nextFailures = failuresSoFar;
+
+      if (baseRareChance > 0) {
+        const typeDrops = findTypeDef(run.expeditionTypeId)?.rareDrops;
+        const hasPity = typeDrops && typeDrops.length > 0 && pityCap > 1;
+
+        if (hasPity) {
+          const roll = rollWithPity(
+            {
+              baseChance: baseRareChance,
+              pityIncrement,
+              pityCap,
+            },
+            failuresSoFar,
+            currentSeed,
+          );
+          currentSeed = roll.nextSeed;
+          rarePityMeta = { failuresBefore: failuresSoFar, guaranteed: roll.guaranteed, pityCap };
+
+          if (roll.hit) {
+            const pick = pickWeightedRareDrop(run.expeditionTypeId, currentSeed);
+            currentSeed = pick.seed;
+            rareDrop = pick.drop;
+            nextFailures = 0;
+          } else {
+            nextFailures = roll.nextFailures;
+          }
+        } else if (typeDrops && typeDrops.length > 0) {
+          const roll = randFloat(currentSeed);
+          currentSeed = roll.seed;
+          if (roll.value < baseRareChance) {
+            const pick = pickWeightedRareDrop(run.expeditionTypeId, currentSeed);
+            currentSeed = pick.seed;
+            rareDrop = pick.drop;
+          }
+        }
+      }
 
       let rolledBundle = varianceResult.bundle;
-      if (rareResult.hit && rareResult.drop) {
+      if (rareDrop) {
         rolledBundle = collapseRewardBundle(
           mergeRewardBundles([
             rolledBundle,
             {
-              items: [{ itemId: rareResult.drop.itemId, qty: rareResult.drop.qty }],
+              items: [{ itemId: rareDrop.itemId, qty: rareDrop.qty }],
             },
           ]),
         );
       }
 
-      const spotlightItemId = selectBestDropSpotlight(rolledBundle, rareResult.hit ? rareResult.drop : null);
+      const spotlightItemId = selectBestDropSpotlight(rolledBundle, rareDrop);
 
       RewardService.grantRewards(
         rolledBundle,
@@ -418,8 +466,19 @@ export const useExpeditionStore = create<ExpeditionState>()(
 
       useBountyStore.getState().recordEvent({ type: 'EXPEDITION_COMPLETE', cityId: run.cityId, amount: 1 });
 
+      if (rareDrop) {
+        const itemName = useContentStore.getState().maps.itemsById[rareDrop.itemId]?.name ?? rareDrop.itemId;
+        const message = rarePityMeta?.guaranteed
+          ? `Rare expedition reward (guaranteed)! ${itemName}`
+          : `Rare expedition reward! ${itemName}`;
+        useUIStore.getState().addNotification('success', message, { durationMs: 2000 });
+      }
+
       set((state) => {
         state.active = state.active.filter((entry) => entry.slotIndex !== slotIndex);
+        if (pityCap > 1) {
+          state.rareProgressByKey[progressKey] = Math.min(Math.max(0, nextFailures), Math.max(0, pityCap - 1));
+        }
       });
 
       return {
@@ -427,8 +486,9 @@ export const useExpeditionStore = create<ExpeditionState>()(
         run,
         expected,
         rolled: rolledBundle,
-        rareDrop: rareResult.hit ? rareResult.drop : null,
+        rareDrop,
         spotlightItemId,
+        rarePity: rarePityMeta,
       };
     },
   })),

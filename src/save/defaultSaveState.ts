@@ -268,6 +268,7 @@ export function buildDefaultSaveState(): SaveData {
     expeditionState: {
       slots: expeditionState.slots,
       active: expeditionState.active.map((run) => ({ ...run })),
+      rareProgressByKey: { ...(expeditionState.rareProgressByKey ?? {}) },
     },
     heartLawState: {
       selectedHeartLawId: heartLawState.selectedHeartLawId,
@@ -447,6 +448,11 @@ function isValidExpeditionState(value: unknown): value is SaveData['expeditionSt
   if (!isRecord(value)) return false;
   if (typeof value.slots !== 'number') return false;
   if (!Array.isArray(value.active)) return false;
+  if ('rareProgressByKey' in value && value.rareProgressByKey !== undefined) {
+    if (!isRecord(value.rareProgressByKey)) return false;
+    const entries = Object.values(value.rareProgressByKey as Record<string, unknown>);
+    if (!entries.every((entry) => typeof entry === 'number' && Number.isFinite(entry))) return false;
+  }
   return true;
 }
 

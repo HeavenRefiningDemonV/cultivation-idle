@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { RewardBundle } from '../../services/rewards';
+import { pityProgressPercent } from '../../services/economy/pity';
 import { normalizeItemList } from '../../utils/itemList';
 import { multiply } from '../../utils/numbers';
 import { useCityStore } from '../../stores/cityStore';
@@ -202,11 +203,13 @@ export function ExpeditionBoardPanel() {
   const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const content = useContentStore((state) => state.raw?.expeditions);
+  const economy = useContentStore((state) => state.economy);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const citiesById = useContentStore((state) => state.maps.citiesById);
 
   const slots = useExpeditionStore((state) => state.slots);
   const activeRuns = useExpeditionStore((state) => state.active);
+  const rareProgressByKey = useExpeditionStore((state) => state.rareProgressByKey);
   const start = useExpeditionStore((state) => state.start);
   const claim = useExpeditionStore((state) => state.claim);
 
@@ -253,6 +256,18 @@ export function ExpeditionBoardPanel() {
     return content.durations.find((entry) => entry.id === selectedDurationId) ?? null;
   }, [content, selectedDurationId]);
 
+  const pityDefaults = economy?.tuning?.pityDefaults?.expeditionsRare;
+
+  const selectedPity = useMemo(() => {
+    if (!selectedType || !selectedDuration) return null;
+    const key = `${selectedType.id}::${selectedDuration.id}`;
+    const failures = rareProgressByKey[key] ?? 0;
+    const pityCap = pityDefaults?.pityCap ?? 0;
+    const pityIncrement = pityDefaults?.pityIncrement ?? 0;
+    const chance = Math.min(1, (selectedDuration.rareChance ?? 0) + failures * pityIncrement);
+    return { chance, pityCap, pityIncrement, failures };
+  }, [pityDefaults, rareProgressByKey, selectedDuration, selectedType]);
+
   const expectedBundle = useMemo(() => {
     if (!content || cityIndex == null || !selectedType || !selectedDuration) return null;
     return computeExpectedBundle(cityIndex, selectedType.id, selectedDuration.id, content);
@@ -288,6 +303,14 @@ export function ExpeditionBoardPanel() {
       : null;
     const variance = duration.variancePct ?? 0.15;
     const valueEstimate = previewBundle ? computeValueEstimate(previewBundle, variance, itemsById) : null;
+    const failures = selectedType ? rareProgressByKey[`${selectedType.id}::${duration.id}`] ?? 0 : 0;
+    const pityCap = pityDefaults?.pityCap ?? 0;
+    const pityIncrement = pityDefaults?.pityIncrement ?? 0;
+    const chance = Math.min(1, (duration.rareChance ?? 0) + failures * pityIncrement);
+    const chancePct = Math.round(chance * 100);
+    const showPity = Boolean(selectedType && pityCap > 1);
+    const shardsCap = Math.max(1, pityCap - 1);
+    const progressPct = showPity ? pityProgressPercent(failures, pityCap) * 100 : 0;
     return (
       <button
         key={duration.id}
@@ -298,8 +321,16 @@ export function ExpeditionBoardPanel() {
           <span>{duration.label}</span>
           <span className={'expeditionDurationTime'}>{formatDuration(duration.seconds)}</span>
         </div>
-        <div className={'expeditionDurationMeta'}>Rare: {Math.round((duration.rareChance ?? 0) * 100)}%</div>
+        <div className={'expeditionDurationMeta'}>Rare: {chancePct}%</div>
         {valueEstimate && <div className={'expeditionDurationMeta'}>Yield: {valueEstimate.label}</div>}
+        {showPity ? (
+          <div className={'expeditionPityMeta'}>
+            Intel shards: {failures} / {shardsCap}
+            <div className={'expeditionPityBar expeditionPityBar--inline'}>
+              <div className={'expeditionPityFill'} style={{ width: `${progressPct}%` }} />
+            </div>
+          </div>
+        ) : null}
       </button>
     );
   });
@@ -315,7 +346,7 @@ export function ExpeditionBoardPanel() {
       .sort((a, b) => b.qty - a.qty);
   }, [expectedBundle, variancePct]);
 
-  const rareChancePct = Math.round((selectedDuration?.rareChance ?? 0) * 100);
+  const rareChancePct = Math.round((selectedPity?.chance ?? selectedDuration?.rareChance ?? 0) * 100);
 
   const handleClaim = (slotIndex: number) => {
     const result = claim(slotIndex);
@@ -448,6 +479,20 @@ export function ExpeditionBoardPanel() {
                 <span> — Possible rares: {selectedTypeRareNames.join(', ')}</span>
               ) : null}
             </div>
+            {selectedPity && selectedPity.pityCap > 1 ? (
+              <div className={'expeditionPityBlock'}>
+                <div className={'expeditionPityMeta'}>
+                  Rare chance now: {Math.round(selectedPity.chance * 100)}% · Intel shards: {selectedPity.failures} /{' '}
+                  {Math.max(1, selectedPity.pityCap - 1)}
+                </div>
+                <div className={'expeditionPityBar'}>
+                  <div
+                    className={'expeditionPityFill'}
+                    style={{ width: `${pityProgressPercent(selectedPity.failures, selectedPity.pityCap) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
         )}
       </div>

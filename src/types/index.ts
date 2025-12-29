@@ -468,6 +468,7 @@ export interface SaveData {
   expeditionState?: {
     slots: number;
     active: SaveExpeditionRun[];
+    rareProgressByKey?: Record<string, number>;
   };
 
   heartLawState?: SaveHeartLawState;
