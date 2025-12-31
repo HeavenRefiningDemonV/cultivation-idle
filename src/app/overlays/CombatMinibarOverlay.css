@@ -1,7 +1,7 @@
 .combatMinibarOverlay {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: calc(16px + var(--ui-bottom-nav-total));
   z-index: 1100;
   pointer-events: none;
   display: flex;

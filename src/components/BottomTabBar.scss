@@ -1,9 +1,10 @@
 .bottomTabBar {
   position: fixed;
-  inset: auto 0 max(0.75rem, env(safe-area-inset-bottom)) 0;
+  inset: auto 0 0 0;
   display: flex;
   justify-content: center;
-  pointer-events: none;
+  padding: 0.75rem 0 calc(12px + var(--ui-safe-bottom));
+  pointer-events: auto;
   z-index: 200;
 }
 
@@ -12,6 +13,7 @@
   display: flex;
   justify-content: center;
   padding: 0 1rem;
+  pointer-events: none;
 }
 
 .bottomTabBarList {

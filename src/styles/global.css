@@ -1,5 +1,8 @@
 :root {
   --button-hover-neutral: #d9d9d9;
+  --ui-bottom-nav-height: 72px;
+  --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ui-bottom-nav-total: calc(var(--ui-bottom-nav-height) + var(--ui-safe-bottom));
 }
 
 * {
