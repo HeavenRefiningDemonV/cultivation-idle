@@ -1,0 +1,96 @@
+.cityMapHub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 420px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.06), transparent 36%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.cityMapHubMap {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(16, 24, 40, 0.9), rgba(30, 41, 59, 0.75));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.cityMapHubHotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  border-image: none;
+  font-weight: 600;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.cityMapHubHotspot:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.6);
+  transform: translate(-50%, -50%) scale(1.03);
+}
+
+.cityMapHubHotspot--active {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(59, 130, 246, 0.8);
+  box-shadow: 0 8px 26px rgba(59, 130, 246, 0.35);
+}
+
+.cityMapHubTabs {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 4px 4px 4px;
+  margin: 0 -4px;
+}
+
+.cityMapHubTab {
+  flex: 0 0 auto;
+  min-width: 180px;
+  text-align: left;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  border-image: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.cityMapHubTab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.cityMapHubTab--active {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 8px 26px rgba(59, 130, 246, 0.28);
+}
+
+.cityMapHubTabLabel {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.cityMapHubTabKey {
+  margin-top: 4px;
+  color: #cbd5e1;
+  font-size: 12px;
+}

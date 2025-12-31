@@ -1,0 +1,70 @@
+.worldBuildingModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 48;
+  padding: 16px;
+}
+
+.worldBuildingModal {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  width: min(1100px, 92vw);
+  max-height: 90vh;
+  box-shadow: 0 18px 64px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  color: #e2e8f0;
+}
+
+.worldBuildingModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.worldBuildingModalTitle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.worldBuildingModalSubtitle {
+  margin-top: 4px;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.worldBuildingModalClose {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+  border-image: none;
+}
+
+.worldBuildingModalClose:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.02);
+}
+
+.worldBuildingModalBody {
+  padding: 16px 18px 20px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

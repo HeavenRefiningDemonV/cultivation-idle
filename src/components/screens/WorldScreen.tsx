@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import type { CityDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useCityStore } from '../../stores/cityStore';
@@ -22,6 +22,8 @@ import { ExpeditionBoardPanel } from './ExpeditionBoardPanel';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations';
 import { resolveBountyDestination } from '../../utils/bountyRouting';
+import { CityMapHub } from './CityMapHub';
+import { WorldBuildingModal } from '../modals/WorldBuildingModal';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
@@ -149,6 +151,16 @@ export function WorldScreen() {
     return selectedCity.modules?.[0] ?? null;
   }, [selectedCity, selectedModuleByCity]);
 
+  const [openModuleKey, setOpenModuleKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOpenModuleKey(null);
+  }, [currentCityId]);
+
+  const activeModuleKey = useMemo(() => {
+    return openModuleKey ?? selectedModuleKey;
+  }, [openModuleKey, selectedModuleKey]);
+
   const trackedDestination = useMemo(() => {
     if (!selectedCity || !trackedBounty) return null;
     return resolveBountyDestination({
@@ -159,13 +171,13 @@ export function WorldScreen() {
   }, [selectedCity, trackedBounty]);
 
   const isTrackedModuleActive = useMemo(() => {
-    if (!trackedDestination || !selectedModuleKey) return false;
-    if (trackedDestination.kind === 'module') return trackedDestination.moduleKey === selectedModuleKey;
+    if (!trackedDestination || !activeModuleKey) return false;
+    if (trackedDestination.kind === 'module') return trackedDestination.moduleKey === activeModuleKey;
     if (trackedDestination.kind === 'moduleChoice') {
-      return trackedDestination.options.some((option) => option.moduleKey === selectedModuleKey);
+      return trackedDestination.options.some((option) => option.moduleKey === activeModuleKey);
     }
     return false;
-  }, [selectedModuleKey, trackedDestination]);
+  }, [activeModuleKey, trackedDestination]);
 
   useEffect(() => {
     if (!selectedCity || !selectedModuleKey) return;
@@ -178,16 +190,26 @@ export function WorldScreen() {
   const handleSelectCity = (city: CityDef) => {
     if (!city) return;
     if (!unlockedCityIds.includes(city.id)) return;
+    setOpenModuleKey(null);
     setCurrentCity(city.id);
   };
 
-  const handleSelectModule = (moduleKey: string) => {
-    if (!selectedCity) return;
-    setSelectedModule(selectedCity.id, moduleKey);
-  };
+  const handleOpenModule = useCallback(
+    (moduleKey: string) => {
+      if (!selectedCity) return;
+      if (!selectedCity.modules.includes(moduleKey)) return;
+      setSelectedModule(selectedCity.id, moduleKey);
+      setOpenModuleKey(moduleKey);
+    },
+    [selectedCity, setSelectedModule],
+  );
 
-  const moduleMeta = selectedModuleKey ? getModuleMeta(selectedModuleKey) : null;
-  const moduleRefId = resolveModuleRef(selectedCity, selectedModuleKey);
+  const handleCloseModuleModal = useCallback(() => {
+    setOpenModuleKey(null);
+  }, []);
+
+  const moduleMeta = activeModuleKey ? getModuleMeta(activeModuleKey) : null;
+  const moduleRefId = resolveModuleRef(selectedCity, activeModuleKey);
   const outskirtsDef = moduleRefId ? outskirtsById[moduleRefId] : undefined;
   const outskirtsProgress = moduleRefId
     ? progressByOutskirtsId[moduleRefId] ?? { killsSinceBoss: 0, totalKills: 0, bossDefeated: false }
@@ -358,6 +380,175 @@ export function WorldScreen() {
     setRuinsAutoRepeat(!ruinsAutoRepeatDefault);
   };
 
+  const renderSelectedModuleContent = () => {
+    if (!selectedCity || !activeModuleKey || !moduleMeta) return null;
+
+    if (activeModuleKey === 'outskirts' && outskirtsDef) {
+      return (
+        <div className={'worldScreenPlaceholder'}>
+          <div className={'worldScreenPlaceholderHeader'}>
+            <div className={'worldScreenPlaceholderTitle'}>{outskirtsDef.name ?? moduleMeta.label}</div>
+            <div className={'worldScreenPlaceholderKey'}>{activeModuleKey}</div>
+          </div>
+          <div className={'worldScreenPlaceholderBody'}>
+            <div className={'worldScreenPlaceholderLine'} data-testid="outskirts-progress">
+              Kills to Boss: {outskirtsProgress?.killsSinceBoss ?? 0} / {outskirtsDef.killsToBoss}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Boss: {bossName ?? 'Unknown'} • Defeated: {outskirtsProgress?.bossDefeated ? 'Yes' : 'No'}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Activity: {isOutskirtsActive ? 'Active' : 'Inactive'}
+            </div>
+          </div>
+          <div className={'worldScreenPlaceholderActions'}>
+            <button
+              className={'worldScreenModuleButton worldScreenModuleButton--active'}
+              onClick={handleStartOutskirts}
+              disabled={!outskirtsDef}
+            >
+              Start Farming
+            </button>
+            <button className={'worldScreenModuleButton'} onClick={handleStopOutskirts}>
+              Stop
+            </button>
+            {isBossReady && bossName && (
+              <div className={'worldScreenPlaceholderLine worldScreenBossAlert'}>
+                Boss {bossName} is ready to spawn!
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (activeModuleKey === 'gateTrial' && trialDef) {
+      return (
+        <div className={'worldScreenPlaceholder'}>
+          <div className={'worldScreenPlaceholderHeader'}>
+            <div className={'worldScreenPlaceholderTitle'}>{trialDef.name ?? moduleMeta.label}</div>
+            <div className={'worldScreenPlaceholderKey'}>{activeModuleKey}</div>
+          </div>
+          <div className={'worldScreenPlaceholderBody'}>
+            <div className={'worldScreenPlaceholderLine'}>
+              Eligibility: {trialEligibilityRule}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Activity: {isTrialActive ? 'Active' : 'Inactive'}
+            </div>
+          </div>
+          <div className={'worldScreenPlaceholderActions'}>
+            <button
+              className={'worldScreenModuleButton worldScreenModuleButton--active'}
+              onClick={handleChallengeTrial}
+              disabled={!isTrialEligible || !trialDef}
+            >
+              Challenge Trial
+            </button>
+            <button className={'worldScreenModuleButton'} onClick={handleStopTrial}>
+              Stop
+            </button>
+            {failSafeUnlocked && trialFailSafeCost && (
+              <button className={'worldScreenModuleButton'} onClick={handleFailSafePurchase}>
+                Emergency Gate Item Purchase (
+                {
+                  [
+                    trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
+                    trialFailSafeCost.spiritStones ? `${trialFailSafeCost.spiritStones} Spirit Stones` : null,
+                    trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' / ')
+                }
+                )
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (activeModuleKey === 'meditationHall') return <MeditationHallPanel />;
+    if (activeModuleKey === 'manualPavilion') return <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
+    if (activeModuleKey === 'apothecary') return <ApothecaryPanel shopId={moduleRefId ?? null} />;
+    if (activeModuleKey === 'alchemy') return <AlchemyPanel cityId={selectedCity.id} />;
+    if (activeModuleKey === 'forge') return <ForgePanel cityId={selectedCity.id} />;
+    if (activeModuleKey === 'talismanStudio') return <TalismanPanel cityId={selectedCity.id} />;
+    if (activeModuleKey === 'bounties') return <BountyBoardPanel />;
+    if (activeModuleKey === 'expeditions') return <ExpeditionBoardPanel />;
+
+    if (activeModuleKey === 'ruins' && ruinDef) {
+      return (
+        <div className={'worldScreenPlaceholder'}>
+          <div className={'worldScreenPlaceholderHeader'}>
+            <div className={'worldScreenPlaceholderTitle'}>{ruinDef.name ?? moduleMeta.label}</div>
+            <div className={'worldScreenPlaceholderKey'}>{activeModuleKey}</div>
+          </div>
+          <div className={'worldScreenPlaceholderBody'}>
+            <div className={'worldScreenPlaceholderLine'}>Rooms: {ruinDef.roomCount}</div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Activity: {isRuinsActive ? 'Active' : 'Inactive'}
+              {activeRuin && (
+                <span>
+                  {' '}
+                  (Room {activeRuin.roomIndex + 1}/{activeRuin.roomCount})
+                </span>
+              )}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Runs: {ruinProgress?.totalRuns ?? 0} • Boss kills: {ruinProgress?.bossKills ?? 0}
+            </div>
+            <div className={'worldScreenPlaceholderLine'}>
+              Best time: {ruinProgress?.bestRunSeconds ? `${ruinProgress.bestRunSeconds.toFixed(1)}s` : 'N/A'}
+            </div>
+            {ruinProgress?.lastRun && (
+              <div className={'worldScreenPlaceholderLine'}>
+                Last run: {ruinProgress.lastRun.victory ? 'Victory' : 'Defeat'} in{' '}
+                {ruinProgress.lastRun.seconds.toFixed(1)}s (rooms {ruinProgress.lastRun.roomsCleared})
+              </div>
+            )}
+          </div>
+          <div className={'worldScreenPlaceholderActions'}>
+            <button
+              className={'worldScreenModuleButton worldScreenModuleButton--active'}
+              onClick={handleStartRuins}
+              disabled={!ruinDef}
+            >
+              Start Run
+            </button>
+            <button className={'worldScreenModuleButton'} onClick={handleStopRuins}>
+              Stop
+            </button>
+            <button className={'worldScreenModuleButton'} onClick={handleToggleRuinsAutoRepeat}>
+              Auto-repeat: {ruinsAutoRepeatDefault ? 'On' : 'Off'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className={'worldScreenPlaceholder'}>
+        <div className={'worldScreenPlaceholderHeader'}>
+          <div className={'worldScreenPlaceholderTitle'}>{moduleMeta.label}</div>
+          <div className={'worldScreenPlaceholderKey'}>{activeModuleKey}</div>
+        </div>
+        <div className={'worldScreenPlaceholderBody'}>
+          <div className={'worldScreenPlaceholderLine'}>Coming in {moduleMeta.prompt}</div>
+          <div className={'worldScreenPlaceholderLine'}>
+            Reference ID: {moduleRefId ? moduleRefId : 'No ref id'}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (isLoading) {
     return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
   }
@@ -377,324 +568,115 @@ export function WorldScreen() {
 
   return (
     <div className={'worldScreen'}>
-      <div className={'worldScreenLayout'}>
-        <div className={'worldScreenColumn worldScreenColumnList'}>
-          <div className={'worldScreenSectionHeader'}>
-            <h2>Cities</h2>
-            <p className={'worldScreenSectionSub'}>Select a city to view its activities</p>
-          </div>
-          <div className={'worldScreenCityList'}>
+      <div className={'worldHubTopBar'}>
+        <div>
+          <h2 className={'worldScreenPanelTitle'}>World Hub</h2>
+          <p className={'worldScreenPanelSubtitle'}>Choose a city and enter its buildings</p>
+        </div>
+        <div className={'worldHubCitySelectWrapper'}>
+          <label className={'worldHubCityLabel'} htmlFor="world-city-select">
+            City
+          </label>
+          <select
+            id="world-city-select"
+            className={'worldHubCitySelect'}
+            value={currentCityId ?? ''}
+            onChange={(e) => {
+              const next = citiesSorted.find((city) => city.id === e.target.value);
+              if (next) handleSelectCity(next);
+            }}
+          >
+            <option value="" disabled>
+              Select a city
+            </option>
             {citiesSorted.map((city) => {
-              const isActive = city.id === currentCityId;
               const isUnlocked = unlockedCityIds.includes(city.id);
               return (
-                <button
-                  key={city.id}
-                  className={`worldScreenCityButton ${isActive ? 'worldScreenCityButton--active' : ''} ${
-                    isUnlocked ? '' : 'worldScreenCityButton--locked'
-                  }`}
-                  onClick={() => handleSelectCity(city)}
-                  disabled={!isUnlocked}
-                >
-                  <div className={'worldScreenCityTitle'}>
-                    <span className={'worldScreenCityName'}>{city.name}</span>
-                    <span className={'worldScreenCityIndex'}>City {city.index}</span>
-                  </div>
-                  <div className={'worldScreenCityMeta'}>
-                    Unlocks at realm: {city.unlockMajorRealm}
-                  </div>
-                  {!isUnlocked && <div className={'worldScreenCityLockedBadge'}>Locked</div>}
-                  {city.themeTags && city.themeTags.length > 0 && (
-                    <div className={'worldScreenCityTags'}>
-                      {city.themeTags.map((tag) => (
-                        <span key={tag} className={'worldScreenCityTag'}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </button>
+                <option key={city.id} value={city.id} disabled={!isUnlocked}>
+                  {city.name} {isUnlocked ? '' : '(Locked)'}
+                </option>
               );
             })}
-          </div>
-        </div>
-
-        <div className={'worldScreenColumn worldScreenColumnDetail'}>
-          {!selectedCity ? (
-            <div className={'worldScreenMessage'}>Select a city to view its modules.</div>
-          ) : (
-            <div className={'worldScreenDetailWrapper'}>
-              <div className={'worldScreenPanel'}>
-                <div className={'worldScreenPanelHeader'}>
-                  <div>
-                    <h2 className={'worldScreenPanelTitle'}>{selectedCity.name}</h2>
-                    <p className={'worldScreenPanelSubtitle'}>
-                      Modules: {selectedCity.modules.length} • Realm Gate: {selectedCity.unlockMajorRealm}
-                    </p>
-                  </div>
-                </div>
-                <div className={'worldScreenRefs'}>
-                  <div className={'worldScreenRefsHeader'}>City References</div>
-                  {selectedCity.refs && Object.keys(selectedCity.refs).length > 0 ? (
-                    <dl className={'worldScreenRefsList'}>
-                      {Object.entries(selectedCity.refs).map(([key, value]) => (
-                        <div key={key} className={'worldScreenRefRow'}>
-                          <dt>{key}</dt>
-                          <dd>{value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  ) : (
-                    <div className={'worldScreenRefsEmpty'}>No refs provided</div>
-                  )}
-                </div>
-              </div>
-
-              {inCombat && (
-                <div className={'worldScreenPanel'}>
-                  <RecentTechniqueActivations />
-                </div>
-              )}
-
-              <div className={'worldScreenPanel'}>
-                <div className={'worldScreenPanelHeader'}>
-                  <h3 className={'worldScreenPanelTitle'}>Modules</h3>
-                  <p className={'worldScreenPanelSubtitle'}>Pick a module to preview upcoming content</p>
-                </div>
-                <div className={'worldScreenModules'}>
-                  {selectedCity.modules.map((moduleKey) => {
-                    const meta = getModuleMeta(moduleKey);
-                    const isActive = moduleKey === selectedModuleKey;
-                    return (
-                      <button
-                        key={moduleKey}
-                        className={`worldScreenModuleButton ${isActive ? 'worldScreenModuleButton--active' : ''}`}
-                        onClick={() => handleSelectModule(moduleKey)}
-                      >
-                        <div className={'worldScreenModuleLabel'}>{meta.label}</div>
-                        <div className={'worldScreenModuleKey'}>{moduleKey}</div>
-                      </button>
-                    );
-                  })}
-                  {selectedCity.modules.length === 0 && (
-                    <div className={'worldScreenRefsEmpty'}>No modules listed for this city.</div>
-                  )}
-                </div>
-
-                {trackedBounty && isTrackedModuleActive && (
-                  <div className={'worldScreenTrackedBanner'}>
-                    <div className={'worldScreenTrackedBannerText'}>
-                      Tracked bounty: <span className={'worldScreenTrackedName'}>{trackedBounty.title}</span> —{' '}
-                      {trackedBounty.progress}/{trackedBounty.target}
-                    </div>
-                    <button
-                      className={'worldScreenTrackedLink'}
-                      onClick={() => handleSelectModule('bounties')}
-                      type='button'
-                    >
-                      View bounty board
-                    </button>
-                  </div>
-                )}
-
-                {selectedModuleKey && moduleMeta && (
-                  selectedModuleKey === 'outskirts' && outskirtsDef ? (
-                    <div className={'worldScreenPlaceholder'}>
-                      <div className={'worldScreenPlaceholderHeader'}>
-                        <div className={'worldScreenPlaceholderTitle'}>
-                          {outskirtsDef.name ?? moduleMeta.label}
-                        </div>
-                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
-                      </div>
-                      <div className={'worldScreenPlaceholderBody'}>
-                        <div
-                          className={'worldScreenPlaceholderLine'}
-                          data-testid="outskirts-progress"
-                        >
-                          Kills to Boss: {outskirtsProgress?.killsSinceBoss ?? 0} /{' '}
-                          {outskirtsDef.killsToBoss}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Boss: {bossName ?? 'Unknown'} • Defeated:{' '}
-                          {outskirtsProgress?.bossDefeated ? 'Yes' : 'No'}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Activity: {isOutskirtsActive ? 'Active' : 'Inactive'}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Loop: {isBossReady ? 'Boss encounter ready' : 'Farming mobs'}
-                        </div>
-                        {cityFlags && (
-                          <div className={'worldScreenPlaceholderLine'}>
-                            City Flag — Boss Cleared:{' '}
-                            {cityFlags.outskirtsBossDefeated ? 'Yes' : 'No'}
-                          </div>
-                        )}
-                      </div>
-                      <div className={'worldScreenPlaceholderActions'}>
-                        <button
-                          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-                          onClick={handleStartOutskirts}
-                          data-testid="outskirts-start"
-                          disabled={!outskirtsDef}
-                        >
-                          Start Outskirts
-                        </button>
-                        <button
-                          className={'worldScreenModuleButton'}
-                          onClick={handleStopOutskirts}
-                          data-testid="outskirts-stop"
-                        >
-                          Stop
-                        </button>
-                      </div>
-                    </div>
-                  ) : selectedModuleKey === 'gateTrial' && trialDef ? (
-                    <div className={'worldScreenPlaceholder'}>
-                      <div className={'worldScreenPlaceholderHeader'}>
-                        <div className={'worldScreenPlaceholderTitle'}>
-                          {trialDef.name ?? moduleMeta.label}
-                        </div>
-                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
-                      </div>
-                      <div className={'worldScreenPlaceholderBody'}>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Boss: {trialBossName ?? 'Unknown'}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Gate Item: {gateItemName ?? 'Unknown'} (Owned: {gateItemOwned ? 'Yes' : 'No'})
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Eligibility: {isTrialEligible ? 'Eligible' : 'Not eligible'}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Rule: {trialEligibilityRule}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Attempts: {trialProgress?.attempts ?? 0} / {trialFailSafeThreshold}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Activity: {isTrialActive ? 'Active' : 'Inactive'}
-                        </div>
-                      </div>
-                      <div className={'worldScreenPlaceholderActions'}>
-                        <button
-                          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-                          onClick={handleChallengeTrial}
-                          disabled={!isTrialEligible || !trialDef}
-                        >
-                          Challenge Trial
-                        </button>
-                        <button className={'worldScreenModuleButton'} onClick={handleStopTrial}>
-                          Stop
-                        </button>
-                        {failSafeUnlocked && trialFailSafeCost && (
-                          <button className={'worldScreenModuleButton'} onClick={handleFailSafePurchase}>
-                            Emergency Gate Item Purchase ({
-                              [
-                                trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
-                                trialFailSafeCost.spiritStones
-                                  ? `${trialFailSafeCost.spiritStones} Spirit Stones`
-                                  : null,
-                                trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
-                              ]
-                                .filter(Boolean)
-                                .join(' / ')
-                            })
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ) : selectedModuleKey === 'meditationHall' ? (
-                    <MeditationHallPanel />
-                  ) : selectedModuleKey === 'manualPavilion' ? (
-                    <ManualPavilionPanel pavilionId={moduleRefId ?? null} />
-                  ) : selectedModuleKey === 'apothecary' ? (
-                    <ApothecaryPanel shopId={moduleRefId ?? null} />
-                  ) : selectedModuleKey === 'alchemy' ? (
-                    <AlchemyPanel cityId={selectedCity.id} />
-                  ) : selectedModuleKey === 'forge' ? (
-                    <ForgePanel cityId={selectedCity.id} />
-                  ) : selectedModuleKey === 'talismanStudio' ? (
-                    <TalismanPanel cityId={selectedCity.id} />
-                  ) : selectedModuleKey === 'bounties' ? (
-                    <BountyBoardPanel />
-                  ) : selectedModuleKey === 'expeditions' ? (
-                    <ExpeditionBoardPanel />
-                  ) : selectedModuleKey === 'ruins' && ruinDef ? (
-                    <div className={'worldScreenPlaceholder'}>
-                      <div className={'worldScreenPlaceholderHeader'}>
-                        <div className={'worldScreenPlaceholderTitle'}>
-                          {ruinDef.name ?? moduleMeta.label}
-                        </div>
-                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
-                      </div>
-                      <div className={'worldScreenPlaceholderBody'}>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Rooms: {ruinDef.roomCount}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Activity: {isRuinsActive ? 'Active' : 'Inactive'}
-                          {activeRuin && (
-                            <span>
-                              {' '}
-                              (Room {activeRuin.roomIndex + 1}/{activeRuin.roomCount})
-                            </span>
-                          )}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Runs: {ruinProgress?.totalRuns ?? 0} • Boss kills: {ruinProgress?.bossKills ?? 0}
-                        </div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Best time:{' '}
-                          {ruinProgress?.bestRunSeconds ? `${ruinProgress.bestRunSeconds.toFixed(1)}s` : 'N/A'}
-                        </div>
-                        {ruinProgress?.lastRun && (
-                          <div className={'worldScreenPlaceholderLine'}>
-                            Last run: {ruinProgress.lastRun.victory ? 'Victory' : 'Defeat'} in{' '}
-                            {ruinProgress.lastRun.seconds.toFixed(1)}s (rooms {ruinProgress.lastRun.roomsCleared})
-                          </div>
-                        )}
-                      </div>
-                      <div className={'worldScreenPlaceholderActions'}>
-                        <button
-                          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-                          onClick={handleStartRuins}
-                          disabled={!ruinDef}
-                        >
-                          Start Run
-                        </button>
-                        <button className={'worldScreenModuleButton'} onClick={handleStopRuins}>
-                          Stop
-                        </button>
-                        <button className={'worldScreenModuleButton'} onClick={handleToggleRuinsAutoRepeat}>
-                          Auto-repeat: {ruinsAutoRepeatDefault ? 'On' : 'Off'}
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={'worldScreenPlaceholder'}>
-                      <div className={'worldScreenPlaceholderHeader'}>
-                        <div className={'worldScreenPlaceholderTitle'}>{moduleMeta.label}</div>
-                        <div className={'worldScreenPlaceholderKey'}>{selectedModuleKey}</div>
-                      </div>
-                      <div className={'worldScreenPlaceholderBody'}>
-                        <div className={'worldScreenPlaceholderLine'}>Coming in {moduleMeta.prompt}</div>
-                        <div className={'worldScreenPlaceholderLine'}>
-                          Reference ID: {moduleRefId ? moduleRefId : 'No ref id'}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-          )}
+          </select>
         </div>
       </div>
+
+      {!selectedCity ? (
+        <div className={'worldScreenMessage'}>Select a city to view its modules.</div>
+      ) : (
+        <div className={'worldScreenDetailWrapper'}>
+          <div className={'worldScreenPanel worldScreenCitySummary'}>
+            <div className={'worldScreenPanelHeader'}>
+              <div>
+                <h2 className={'worldScreenPanelTitle'}>{selectedCity.name}</h2>
+                <p className={'worldScreenPanelSubtitle'}>
+                  Modules: {selectedCity.modules.length} • Realm Gate: {selectedCity.unlockMajorRealm}
+                </p>
+              </div>
+              {trackedBounty && isTrackedModuleActive && (
+                <div className={'worldScreenTrackedBanner'}>
+                  <div className={'worldScreenTrackedBannerText'}>
+                    Tracked bounty: <span className={'worldScreenTrackedName'}>{trackedBounty.title}</span> —{' '}
+                    {trackedBounty.progress}/{trackedBounty.target}
+                  </div>
+                  <button
+                    className={'worldScreenTrackedLink'}
+                    onClick={() => handleOpenModule('bounties')}
+                    type="button"
+                  >
+                    View bounty board
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className={'worldScreenRefs'}>
+              <div className={'worldScreenRefsHeader'}>City References</div>
+              {selectedCity.refs && Object.keys(selectedCity.refs).length > 0 ? (
+                <dl className={'worldScreenRefsList'}>
+                  {Object.entries(selectedCity.refs).map(([key, value]) => (
+                    <div key={key} className={'worldScreenRefRow'}>
+                      <dt>{key}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : (
+                <div className={'worldScreenRefsEmpty'}>No refs provided</div>
+              )}
+            </div>
+          </div>
+
+          {inCombat && (
+            <div className={'worldScreenPanel'}>
+              <RecentTechniqueActivations />
+            </div>
+          )}
+
+          <div className={'worldScreenPanel worldScreenHubPanel'}>
+            <div className={'worldScreenPanelHeader'}>
+              <div>
+                <h3 className={'worldScreenPanelTitle'}>{selectedCity.name} Map</h3>
+                <p className={'worldScreenPanelSubtitle'}>Tap a building to enter</p>
+              </div>
+            </div>
+            <CityMapHub
+              modules={selectedCity.modules}
+              activeModuleKey={activeModuleKey}
+              getModuleLabel={(moduleKey) => getModuleMeta(moduleKey).label}
+              onOpenModule={handleOpenModule}
+            />
+          </div>
+        </div>
+      )}
+
+      <WorldBuildingModal
+        open={openModuleKey !== null}
+        title={activeModuleKey ? moduleMeta?.label || activeModuleKey : 'Module'}
+        subtitle={selectedCity && activeModuleKey ? `${selectedCity.name} • ${activeModuleKey}` : undefined}
+        onClose={handleCloseModuleModal}
+      >
+        {renderSelectedModuleContent()}
+      </WorldBuildingModal>
     </div>
   );
 }

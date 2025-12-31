@@ -4,6 +4,7 @@
   height: 100%;
   padding: 16px;
   color: #f8fafc;
+  gap: 12px;
 }
 
 .worldScreenLayout {
@@ -136,7 +137,8 @@
   flex-direction: column;
   gap: 12px;
   height: 100%;
-  overflow: hidden;
+  min-height: 0;
+  flex: 1;
 }
 
 .worldScreenPanel {
@@ -2800,4 +2802,50 @@
 .worldScreenModuleButton--ghost {
   background: transparent;
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.worldHubTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.worldHubCitySelectWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.worldHubCityLabel {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.worldHubCitySelect {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+  min-width: 200px;
+  border-image: none;
+}
+
+.worldHubCitySelect:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+}
+
+.worldScreenCitySummary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.worldScreenHubPanel {
+  flex: 1;
+  min-height: 480px;
 }
