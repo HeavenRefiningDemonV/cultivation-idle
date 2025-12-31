@@ -44,22 +44,6 @@ export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenMod
           );
         })}
       </div>
-      <div className="cityMapHubTabs" aria-label="City buildings">
-        {modules.map((moduleKey) => {
-          const isActive = activeModuleKey === moduleKey;
-          return (
-            <button
-              key={moduleKey}
-              type="button"
-              className={`cityMapHubTab ${isActive ? 'cityMapHubTab--active' : ''}`}
-              onClick={() => onOpenModule(moduleKey)}
-            >
-              <div className="cityMapHubTabLabel">{getModuleLabel(moduleKey)}</div>
-              <div className="cityMapHubTabKey">{moduleKey}</div>
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }
