@@ -14,9 +14,8 @@ import { formatNumber, D } from '../../utils/numbers';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
-import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel';
-import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget';
 import { InsightMomentToast } from '../../ui/cultivation/InsightMomentToast';
+import { DaoHeartModal } from '../modals/DaoHeartModal';
 import './CultivateScreen.scss';
 
 const BREATH_COPY: Record<BreathMode, string> = {
@@ -177,6 +176,7 @@ export function CultivateScreen() {
   const [now, setNow] = useState(Date.now());
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
+  const [showDaoHeartModal, setShowDaoHeartModal] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -444,16 +444,26 @@ export function CultivateScreen() {
         </div>
 
         <div className="cultivationColumn cultivationColumn--right">
-          <SectionShell title="Heart Law" subtitle="Meditation Hall">
-            <HeartLawPanel />
-          </SectionShell>
-
-          <SectionShell title="Study" subtitle="Optional trickle while cultivating">
-            <StudyModeWidget />
+          <SectionShell title="Dao Heart" subtitle="Heart Law and Study controls">
+            <div className="cultivationPanel">
+              <div className="panelHeader">
+                <div>
+                  <div className="panelTitle">Dao Heart</div>
+                  <div className="panelSub">Manage heart law selection and study focus.</div>
+                </div>
+                <button type="button" className="primaryButton" onClick={() => setShowDaoHeartModal(true)}>
+                  Open Dao Heart
+                </button>
+              </div>
+              <div className="inlineMessage inlineMessage--muted">
+                Heart Law and Study are now available inside the Dao Heart modal.
+              </div>
+            </div>
           </SectionShell>
         </div>
       </div>
 
+      {showDaoHeartModal && <DaoHeartModal onClose={() => setShowDaoHeartModal(false)} />}
       {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />

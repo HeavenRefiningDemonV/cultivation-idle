@@ -1,0 +1,57 @@
+.daoHeartModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.daoHeartModalModal {
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  background: linear-gradient(180deg, #0f172a, #111827);
+  border: 3px solid rgba(99, 102, 241, 0.6);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  overflow: auto;
+  padding: 20px 24px 28px;
+}
+
+.daoHeartModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.daoHeartModalTitle {
+  margin: 0;
+  font-size: 28px;
+  color: #e0e7ff;
+  font-family: 'Julee', cursive;
+}
+
+.daoHeartModalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.daoHeartModalSection {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.daoHeartModalSectionTitle {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  color: #c7d2fe;
+}
