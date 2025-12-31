@@ -38,7 +38,8 @@ export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenMod
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
               onClick={() => onOpenModule(moduleKey)}
             >
-              {getModuleLabel(moduleKey)}
+              <span className="cityMapHubHotspotMarker" aria-hidden="true" />
+              <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
             </button>
           );
         })}
