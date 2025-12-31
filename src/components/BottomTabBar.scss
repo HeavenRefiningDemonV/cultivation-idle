@@ -1,0 +1,56 @@
+.bottomTabBar {
+  position: fixed;
+  inset: auto 0 max(0.75rem, env(safe-area-inset-bottom)) 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 200;
+}
+
+.bottomTabBarInner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.bottomTabBarList {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  max-width: 960px;
+  pointer-events: auto;
+}
+
+.bottomTabBarButton {
+  min-width: 7.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: rgba(208, 208, 208, 0.92);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.bottomTabBarButton:hover,
+.bottomTabBarButton:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+.bottomTabBarButton--active {
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.95), rgba(59, 130, 246, 0.95));
+  color: #0c1222;
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.45);
+}
+
+@media (max-width: 640px) {
+  .bottomTabBarButton {
+    min-width: 6.5rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}

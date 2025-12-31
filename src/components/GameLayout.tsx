@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
 import { useUIStore } from '../stores/uiStore';
-import { Header } from './Header';
-import { Sidebar } from './Sidebar';
 import { CultivateScreen } from './screens/CultivateScreen';
 import { StatusScreen } from './screens/StatusScreen';
 import { WorldScreen } from './screens/WorldScreen';
@@ -17,6 +15,7 @@ import { CombatTheaterOverlay } from '../app/overlays/CombatTheaterOverlay';
 import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
 import { NotificationToasts } from './NotificationToasts';
+import { BottomTabBar } from './BottomTabBar';
 import './GameLayout.scss';
 
 /**
@@ -84,13 +83,11 @@ export function GameLayout() {
 
   return (
     <div className={`gameLayoutRoot ${activeTab === 'adventure' ? 'gameLayoutRoot--world' : ''}`}>
-      <Header />
-      <div className="nonheader">
-        <Sidebar />
-        <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
-          {renderContent()}
-        </div>
+      <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
+        {renderContent()}
       </div>
+
+      <BottomTabBar />
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
       {showManualSatchelModal && <ManualSatchelModal />}
