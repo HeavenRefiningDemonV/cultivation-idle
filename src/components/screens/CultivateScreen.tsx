@@ -176,7 +176,7 @@ export function CultivateScreen() {
   const [now, setNow] = useState(Date.now());
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
-  const [showDaoHeartModal, setShowDaoHeartModal] = useState(false);
+  const [showDaoHeart, setShowDaoHeart] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -322,6 +322,17 @@ export function CultivateScreen() {
 
   return (
     <div className="cultivationTab">
+      <div className="cultivationTopRow">
+        <button
+          type="button"
+          className="daoHeartButton"
+          aria-haspopup="dialog"
+          aria-expanded={showDaoHeart}
+          onClick={() => setShowDaoHeart(true)}
+        >
+          Dao Heart
+        </button>
+      </div>
       <CultivationTabHeaderBar
         realmLabel={realmLabel}
         substage={realm.substage}
@@ -442,28 +453,8 @@ export function CultivateScreen() {
             </SectionShell>
           )}
         </div>
-
-        <div className="cultivationColumn cultivationColumn--right">
-          <SectionShell title="Dao Heart" subtitle="Heart Law and Study controls">
-            <div className="cultivationPanel">
-              <div className="panelHeader">
-                <div>
-                  <div className="panelTitle">Dao Heart</div>
-                  <div className="panelSub">Manage heart law selection and study focus.</div>
-                </div>
-                <button type="button" className="primaryButton" onClick={() => setShowDaoHeartModal(true)}>
-                  Open Dao Heart
-                </button>
-              </div>
-              <div className="inlineMessage inlineMessage--muted">
-                Heart Law and Study are now available inside the Dao Heart modal.
-              </div>
-            </div>
-          </SectionShell>
-        </div>
       </div>
-
-      {showDaoHeartModal && <DaoHeartModal onClose={() => setShowDaoHeartModal(false)} />}
+      {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
       {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
