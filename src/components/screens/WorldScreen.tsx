@@ -674,6 +674,7 @@ export function WorldScreen() {
         title={activeModuleKey ? moduleMeta?.label || activeModuleKey : 'Module'}
         subtitle={selectedCity && activeModuleKey ? `${selectedCity.name} • ${activeModuleKey}` : undefined}
         onClose={handleCloseModuleModal}
+        useStore={false}
       >
         {renderSelectedModuleContent()}
       </WorldBuildingModal>

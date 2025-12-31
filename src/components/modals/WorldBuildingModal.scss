@@ -1,11 +1,11 @@
-.worldBuildingModalOverlay {
+.worldBuildingOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 48;
+  z-index: 2100;
   padding: 16px;
 }
 
@@ -22,7 +22,7 @@
   overflow: hidden;
 }
 
-.worldBuildingModalHeader {
+.worldBuildingHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -35,18 +35,18 @@
   z-index: 1;
 }
 
-.worldBuildingModalTitle {
+.worldBuildingTitle {
   font-size: 20px;
   font-weight: 700;
 }
 
-.worldBuildingModalSubtitle {
+.worldBuildingSubtitle {
   margin-top: 4px;
   color: #cbd5e1;
   font-size: 13px;
 }
 
-.worldBuildingModalClose {
+.worldBuildingClose {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.06);
   color: #f8fafc;
@@ -60,13 +60,13 @@
   border-image: none;
 }
 
-.worldBuildingModalClose:hover {
+.worldBuildingClose:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.4);
   transform: scale(1.02);
 }
 
-.worldBuildingModalBody {
+.worldBuildingBody {
   padding: 16px 18px 20px;
   overflow: auto;
   display: flex;
@@ -74,4 +74,18 @@
   gap: 12px;
   flex: 1;
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
+}
+
+.worldBuildingTitleGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.worldBuildingPlaceholder {
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.02);
 }

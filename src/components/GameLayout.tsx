@@ -16,6 +16,7 @@ import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
 import { NotificationToasts } from './NotificationToasts';
 import { BottomTabBar } from './BottomTabBar';
+import { WorldBuildingModal } from './modals/WorldBuildingModal';
 import './GameLayout.scss';
 
 /**
@@ -56,6 +57,7 @@ export function GameLayout() {
   const showSystemStatusOverlay = useUIStore((state) => state.settings.showSystemStatusPanel);
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
+  const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
 
   // Render content based on active tab
@@ -92,6 +94,7 @@ export function GameLayout() {
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
       {showManualSatchelModal && <ManualSatchelModal />}
       {showTechniqueLearnedModal && <TechniqueLearnedModal />}
+      {showWorldBuildingModal && <WorldBuildingModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
       <CombatMinibarOverlay />
       <CombatTheaterOverlay />

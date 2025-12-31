@@ -26,6 +26,19 @@ export type GameTab =
   | 'prestige'
   | 'settings';
 
+export type WorldBuildingKey =
+  | 'outskirts'
+  | 'gateTrial'
+  | 'ruins'
+  | 'meditationHall'
+  | 'apothecary'
+  | 'manualPavilion'
+  | 'alchemy'
+  | 'forge'
+  | 'talismanStudio'
+  | 'bounties'
+  | 'expeditions';
+
 export interface UISettingsState {
   showOfflineModal: boolean;
   showCombatLog: boolean;
@@ -79,6 +92,9 @@ interface UIStateBase {
     | { type: 'equip'; techniqueId: string; preferredSlotType?: 'active' | 'passive' | 'ultimate' };
   techniqueFocusRequest: { techId: string; action?: 'open' | 'upgradeRank' | 'rerollTraits' } | null;
   lifeStartWizardContext: { lastHeartLawId: string | null };
+  showWorldBuildingModal: boolean;
+  worldBuildingModalCityId: string | null;
+  worldBuildingModalKey: WorldBuildingKey | null;
 
   // UI Settings
   settings: UISettingsState;
@@ -133,6 +149,8 @@ export interface UIState extends UIStateBase {
   closeManualSatchel: () => void;
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
   closeTechniqueLearned: () => void;
+  openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey }) => void;
+  closeWorldBuildingModal: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
   openTechniqueLibraryForEquip: (
     techniqueId: string,
@@ -169,6 +187,9 @@ const INITIAL_UI_STATE: UIStateBase = {
   techniqueLibraryIntent: null,
   techniqueFocusRequest: null,
   lifeStartWizardContext: { lastHeartLawId: null },
+  showWorldBuildingModal: false,
+  worldBuildingModalCityId: null,
+  worldBuildingModalKey: null,
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -465,6 +486,22 @@ export const useUIStore = create<UIState>()(
     closeManualSatchel: () => {
       set((state) => {
         state.showManualSatchelModal = false;
+      });
+    },
+
+    openWorldBuildingModal: ({ cityId, buildingKey }) => {
+      set((state) => {
+        state.showWorldBuildingModal = true;
+        state.worldBuildingModalCityId = cityId;
+        state.worldBuildingModalKey = buildingKey;
+      });
+    },
+
+    closeWorldBuildingModal: () => {
+      set((state) => {
+        state.showWorldBuildingModal = false;
+        state.worldBuildingModalCityId = null;
+        state.worldBuildingModalKey = null;
       });
     },
 
