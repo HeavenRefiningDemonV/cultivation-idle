@@ -31,15 +31,15 @@ function formatActivityLabel(type: string | null | undefined): string {
   }
 }
 
-export type CombatTheaterPresentationMode = 'preview' | 'active';
+export type CombatTheaterMode = 'preview' | 'active';
 
 export function CombatTheater({
   onClose,
-  mode = 'active',
+  mode,
   previewOverlay,
 }: {
   onClose: () => void;
-  mode?: CombatTheaterPresentationMode;
+  mode?: CombatTheaterMode;
   previewOverlay?: ReactNode;
 }) {
   const activity = useActivityStore((state) => state.active);
@@ -191,10 +191,12 @@ export function CombatTheater({
     return () => window.clearTimeout(timer);
   }, [aiHint]);
 
-  const isPreview = mode === 'preview';
+  const resolvedMode: CombatTheaterMode = mode ?? (inCombat ? 'active' : 'preview');
+  const isPreview = resolvedMode === 'preview';
+  const isActive = resolvedMode === 'active';
 
   return (
-    <div className={`combat-theater ${isPreview ? 'combat-theater--preview' : ''}`}>
+    <div className={`combat-theater combat-theater--${resolvedMode}`}>
       <div className="combat-theater__header">
         <div>
           <div className="combat-theater__title">Combat Theater</div>
@@ -206,7 +208,7 @@ export function CombatTheater({
                 {(isBoss || currentEnemy.isBoss) && <span className="combat-theater__badge">Boss</span>}
               </>
             )}
-            <span className={`combat-theater__mode-chip combat-theater__mode-chip--${mode}`}>
+            <span className={`combat-theater__mode-chip combat-theater__mode-chip--${resolvedMode}`}>
               {isPreview ? 'Preview' : 'Live'}
             </span>
           </div>
@@ -239,139 +241,150 @@ export function CombatTheater({
         <div className="combat-theater__subheader">{activityLabel}</div>
       </div>
 
-      <div className="combat-theater__controls">
-        <label className="combat-theater__control">
-          <span className="combat-theater__control-label">AI Profile</span>
-          <select
-            value={uiSettings.profile}
-            onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
-          >
-            {AI_PROFILE_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value} title={option.description}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="combat-theater__control combat-theater__control--checkbox">
-          <input
-            type="checkbox"
-            checked={uiSettings.explainAIEnabled}
-            onChange={(e) => setSettings({ explainAIEnabled: e.target.checked })}
-          />
-          <div>
-            <div className="combat-theater__control-label">Explain AI</div>
-            <div className="combat-theater__control-note">
-              {uiSettings.explainAIEnabled
-                ? 'Always show reasoning.'
-                : `Hints remaining: ${uiSettings.explainAIHintsRemaining}`}
-            </div>
-          </div>
-        </label>
-
-        <label className="combat-theater__control combat-theater__control--checkbox">
-          <input
-            type="checkbox"
-            checked={uiSettings.autoRetryOnDeath}
-            onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
-          />
-          <div>
-            <div className="combat-theater__control-label">Auto-retry on defeat</div>
-            <div className="combat-theater__control-note">Restarts Outskirts/Ruins when possible.</div>
-          </div>
-        </label>
-
-        <label className="combat-theater__control combat-theater__control--checkbox">
-          <input
-            type="checkbox"
-            checked={uiSettings.useConsumablesInCombat}
-            onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
-          />
-          <div>
-            <div className="combat-theater__control-label">Use consumables in combat</div>
-            <div className="combat-theater__control-note">Reserved for Medicine Pouch support.</div>
-          </div>
-        </label>
-
-        <label className="combat-theater__control">
-          <span className="combat-theater__control-label">Preferred target</span>
-          <select
-            value={uiSettings.preferredTarget}
-            onChange={(e) => setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })}
-          >
-            <option value="trash">Trash</option>
-            <option value="elite">Elite</option>
-            <option value="boss">Boss</option>
-          </select>
-          <div className="combat-theater__control-note">Used when multiple targets exist.</div>
-        </label>
-      </div>
-
-      {aiHint && <div className="combat-theater__ai-hint">{aiHint.text}</div>}
-
       <ProgressPanel />
 
-      <MedicinePouchStrip />
+      {isActive ? (
+        <div className="combat-theater__controls">
+          <label className="combat-theater__control">
+            <span className="combat-theater__control-label">AI Profile</span>
+            <select
+              value={uiSettings.profile}
+              onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
+            >
+              {AI_PROFILE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value} title={option.description}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <StatusEffectRow />
-
-      <div className="combat-theater__layout">
-        <div className="combat-theater__column">
-          <TechniqueStrip />
-        </div>
-        <div className="combat-theater__column combat-theater__column--secondary">
-          <FightIntelPanel />
-        </div>
-      </div>
-
-      <LootTicker />
-
-      <div className="combat-theater__snapshot">
-        <div className="combat-theater__bar">
-          <div className="combat-theater__bar-label">Player HP</div>
-          <div className="combat-theater__bar-track">
-            <div className="combat-theater__bar-fill combat-theater__bar-fill--player" style={{ width: `${playerHpPct}%` }} />
-            <div className="combat-theater__bar-text">
-              {formatNumber(playerHP)} / {formatNumber(playerMaxHP)} ({playerHpPct.toFixed(1)}%)
+          <label className="combat-theater__control combat-theater__control--checkbox">
+            <input
+              type="checkbox"
+              checked={uiSettings.explainAIEnabled}
+              onChange={(e) => setSettings({ explainAIEnabled: e.target.checked })}
+            />
+            <div>
+              <div className="combat-theater__control-label">Explain AI</div>
+              <div className="combat-theater__control-note">
+                {uiSettings.explainAIEnabled
+                  ? 'Always show reasoning.'
+                  : `Hints remaining: ${uiSettings.explainAIHintsRemaining}`}
+              </div>
             </div>
+          </label>
+
+          <label className="combat-theater__control combat-theater__control--checkbox">
+            <input
+              type="checkbox"
+              checked={uiSettings.autoRetryOnDeath}
+              onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
+            />
+            <div>
+              <div className="combat-theater__control-label">Auto-retry on defeat</div>
+              <div className="combat-theater__control-note">Restarts Outskirts/Ruins when possible.</div>
+            </div>
+          </label>
+
+          <label className="combat-theater__control combat-theater__control--checkbox">
+            <input
+              type="checkbox"
+              checked={uiSettings.useConsumablesInCombat}
+              onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
+            />
+            <div>
+              <div className="combat-theater__control-label">Use consumables in combat</div>
+              <div className="combat-theater__control-note">Reserved for Medicine Pouch support.</div>
+            </div>
+          </label>
+
+          <label className="combat-theater__control">
+            <span className="combat-theater__control-label">Preferred target</span>
+            <select
+              value={uiSettings.preferredTarget}
+              onChange={(e) => setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })}
+            >
+              <option value="trash">Trash</option>
+              <option value="elite">Elite</option>
+              <option value="boss">Boss</option>
+            </select>
+            <div className="combat-theater__control-note">Used when multiple targets exist.</div>
+          </label>
+        </div>
+      ) : null}
+
+      {isActive && aiHint ? <div className="combat-theater__ai-hint">{aiHint.text}</div> : null}
+
+      {isActive ? <MedicinePouchStrip /> : null}
+
+      {isActive ? <StatusEffectRow /> : null}
+
+      {isActive ? (
+        <div className="combat-theater__layout">
+          <div className="combat-theater__column">
+            <TechniqueStrip />
+          </div>
+          <div className="combat-theater__column combat-theater__column--secondary">
+            <FightIntelPanel />
           </div>
         </div>
+      ) : null}
 
-        <div className="combat-theater__bar">
-          <div className="combat-theater__bar-label">Enemy HP</div>
-          <div className="combat-theater__bar-track">
-            <div className="combat-theater__bar-fill combat-theater__bar-fill--enemy" style={{ width: `${enemyHpPct}%` }} />
-            <div className="combat-theater__bar-text">
-              {currentEnemy ? (
-                <span>
-                  {formatNumber(enemyHP)} / {formatNumber(enemyMaxHP)} ({enemyHpPct.toFixed(1)}%)
-                </span>
-              ) : (
-                <span>Waiting for next fight…</span>
-              )}
+      {isActive ? <LootTicker /> : null}
+
+      {isActive ? (
+        <div className="combat-theater__snapshot">
+          <div className="combat-theater__bar">
+            <div className="combat-theater__bar-label">Player HP</div>
+            <div className="combat-theater__bar-track">
+              <div
+                className="combat-theater__bar-fill combat-theater__bar-fill--player"
+                style={{ width: `${playerHpPct}%` }}
+              />
+              <div className="combat-theater__bar-text">
+                {formatNumber(playerHP)} / {formatNumber(playerMaxHP)} ({playerHpPct.toFixed(1)}%)
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className={`combat-theater__safety combat-theater__safety--${safety.tier}`}>
-          <div className="combat-theater__safety-label">{safetyLabel}</div>
-          <ul className="combat-theater__safety-reasons">
-            {safety.reasons.map((reason, idx) => (
-              <li key={idx}>{reason}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
+          <div className="combat-theater__bar">
+            <div className="combat-theater__bar-label">Enemy HP</div>
+            <div className="combat-theater__bar-track">
+              <div className="combat-theater__bar-fill combat-theater__bar-fill--enemy" style={{ width: `${enemyHpPct}%` }} />
+              <div className="combat-theater__bar-text">
+                {currentEnemy ? (
+                  <span>
+                    {formatNumber(enemyHP)} / {formatNumber(enemyMaxHP)} ({enemyHpPct.toFixed(1)}%)
+                  </span>
+                ) : (
+                  <span>Waiting for next fight…</span>
+                )}
+              </div>
+            </div>
+          </div>
 
-      <div className="combat-theater__events">
-        <div className="combat-theater__events-title">Recent techniques</div>
-        {latestTechniqueEntries.length > 0 ? (
-          <ul className="combat-theater__events-list">{latestTechniqueEntries}</ul>
-        ) : (
-          <div className="combat-theater__events-empty">No technique activations yet.</div>
-        )}
-      </div>
+          <div className={`combat-theater__safety combat-theater__safety--${safety.tier}`}>
+            <div className="combat-theater__safety-label">{safetyLabel}</div>
+            <ul className="combat-theater__safety-reasons">
+              {safety.reasons.map((reason, idx) => (
+                <li key={idx}>{reason}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : null}
+
+      {isActive ? (
+        <div className="combat-theater__events">
+          <div className="combat-theater__events-title">Recent techniques</div>
+          {latestTechniqueEntries.length > 0 ? (
+            <ul className="combat-theater__events-list">{latestTechniqueEntries}</ul>
+          ) : (
+            <div className="combat-theater__events-empty">No technique activations yet.</div>
+          )}
+        </div>
+      ) : null}
 
       {isPreview && previewOverlay ? <div className="combat-theater__preview-overlay">{previewOverlay}</div> : null}
     </div>

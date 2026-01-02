@@ -14,7 +14,15 @@
 }
 
 .combat-theater--preview {
-  outline: 1px solid rgba(99, 179, 237, 0.6);
+  border-left: none;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  padding: 14px;
+  gap: 10px;
+  background: rgba(12, 14, 20, 0.94);
+}
+
+.combat-theater--active {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .combat-theater__header {
@@ -169,6 +177,12 @@
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .combat-theater__layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .combat-theater__panel {

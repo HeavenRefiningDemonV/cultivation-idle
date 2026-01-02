@@ -6,12 +6,14 @@ import { useUIStore } from '../../stores/uiStore';
 import { useActivityStore } from '../../stores/activityStore';
 import type { CombatPresentationContext } from '../../stores/uiStore';
 import { COMBAT_ACTIVITY_TYPES } from '../../types/activity';
+import { useCombatStore } from '../../stores/combatStore';
 
 export function CombatPresentationHost() {
-  const { mode, context } = useUIStore((state) => state.combatPresentation);
+  const { context } = useUIStore((state) => state.combatPresentation);
   const isVisible = useUIStore((state) => state.isCombatVisible());
   const isDocked = useUIStore((state) => state.isCombatDocked());
   const activeActivity = useActivityStore((state) => state.active);
+  const inCombat = useCombatStore((state) => state.inCombat);
 
   const derivedContext = useMemo<CombatPresentationContext | null>(() => {
     if (context) return context;
@@ -28,12 +30,12 @@ export function CombatPresentationHost() {
   if (!isVisible && !isDocked) return null;
   if (!derivedContext) return null;
 
+  const theaterMode = inCombat ? 'active' : 'preview';
+
   return createPortal(
     <>
       {isDocked ? <CombatDock context={derivedContext} /> : null}
-      {isVisible ? (
-        <CombatTheaterModal mode={mode === 'preview' ? 'preview' : 'active'} context={derivedContext} />
-      ) : null}
+      {isVisible ? <CombatTheaterModal mode={theaterMode} context={derivedContext} /> : null}
     </>,
     document.body,
   );

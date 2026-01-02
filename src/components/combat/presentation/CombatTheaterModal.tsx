@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { CombatTheater, type CombatTheaterPresentationMode } from '../theater/CombatTheater';
+import { CombatTheater, type CombatTheaterMode } from '../theater/CombatTheater';
 import { useUIStore, type CombatPresentationContext } from '../../../stores/uiStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../stores/outskirtsStore';
@@ -8,6 +8,7 @@ import { useTrialStore } from '../../../stores/trialStore';
 import { useRuinsStore } from '../../../stores/ruinsStore';
 import { useCityStore } from '../../../stores/cityStore';
 import { useInventoryStore } from '../../../stores/inventoryStore';
+import { useCombatStore } from '../../../stores/combatStore';
 import './CombatPresentation.scss';
 
 interface PreviewDetails {
@@ -173,23 +174,25 @@ export function CombatTheaterModal({
   mode,
   context,
 }: {
-  mode: CombatTheaterPresentationMode;
+  mode?: CombatTheaterMode;
   context: CombatPresentationContext;
 }) {
   const closePresentation = useUIStore((state) => state.closeCombatPresentation);
   const startCombat = useUIStore((state) => state.startCombatFromPreview);
+  const inCombat = useCombatStore((state) => state.inCombat);
 
   const previewDetails = usePreviewDetails(context);
+  const resolvedMode: CombatTheaterMode = mode ?? (inCombat ? 'active' : 'preview');
 
   return (
     <div className="combat-presentation-modal">
       <div className="combat-presentation-modal__backdrop" onClick={closePresentation} />
       <div className="combat-presentation-modal__panel">
         <CombatTheater
-          mode={mode}
+          mode={resolvedMode}
           onClose={closePresentation}
           previewOverlay={
-            mode === 'preview' ? (
+            resolvedMode === 'preview' ? (
               <CombatPreviewOverlay details={previewDetails} onStart={startCombat} onClose={closePresentation} />
             ) : undefined
           }
