@@ -1,0 +1,161 @@
+.combatPreviewCard {
+  background: var(--surface-raised);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 auto;
+  max-width: 760px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.combatPreviewCard__hero {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
+  padding: 24px;
+}
+
+.combatPreviewCard--outskirts .combatPreviewCard__hero {
+  background: linear-gradient(135deg, rgba(67, 160, 71, 0.32), rgba(46, 125, 50, 0.18));
+}
+
+.combatPreviewCard--gateTrial .combatPreviewCard__hero {
+  background: linear-gradient(135deg, rgba(126, 87, 194, 0.34), rgba(94, 53, 177, 0.18));
+}
+
+.combatPreviewCard--ruins .combatPreviewCard__hero {
+  background: linear-gradient(135deg, rgba(239, 108, 0, 0.32), rgba(230, 81, 0, 0.18));
+}
+
+.combatPreviewCard__chip {
+  align-self: flex-start;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px 12px;
+  text-transform: uppercase;
+}
+
+.combatPreviewCard__title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-top: 10px;
+}
+
+.combatPreviewCard__subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.combatPreviewCard__status {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.combatPreviewCard__body {
+  padding: 0 24px 8px;
+}
+
+.combatPreviewCard__grid {
+  display: grid;
+  gap: 12px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.combatPreviewCard__item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.combatPreviewCard__label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.combatPreviewCard__value {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.combatPreviewCard__badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.combatPreviewCard__badge {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.combatPreviewCard__progress {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  height: 10px;
+  margin-top: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.combatPreviewCard__progressFill {
+  background: linear-gradient(90deg, #7bffb1, #4caf50);
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.combatPreviewCard__actions {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 24px 20px;
+}
+
+.combatPreviewCard__actions button {
+  flex: 0 0 auto;
+}
+
+.combatPreviewCard__primary {
+  min-width: 140px;
+}
+
+.combatPreviewCard__callout {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin: -4px 24px 10px;
+}
+
+@media (max-width: 720px) {
+  .combatPreviewCard {
+    border-radius: 12px;
+  }
+
+  .combatPreviewCard__hero,
+  .combatPreviewCard__body,
+  .combatPreviewCard__actions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

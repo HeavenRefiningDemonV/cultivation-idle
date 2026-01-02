@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
+
 import { useActivityStore } from '../../../../stores/activityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
 import { resolveModuleRef, pickEnemyFromPool } from '../worldUtils';
+import { CombatTheaterPreviewCard } from './CombatTheaterPreviewCard';
 
 interface OutskirtsBuildingPanelProps {
   cityId: string;
@@ -35,6 +37,10 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const bossName = outskirtsDef ? enemiesById[outskirtsDef.bossId]?.name ?? outskirtsDef.bossId : null;
   const isBossReady = outskirtsDef ? shouldSpawnBoss(outskirtsDef.id, outskirtsDef) : false;
 
+  const killsSinceBoss = outskirtsProgress?.killsSinceBoss ?? 0;
+  const killsToBoss = outskirtsDef?.killsToBoss ?? 0;
+  const progressRatio = killsToBoss ? Math.min(killsSinceBoss / killsToBoss, 1) : 0;
+
   const handleStartOutskirts = () => {
     if (!city || !outskirtsDef) return;
 
@@ -62,53 +68,66 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
 
   if (!outskirtsDef) {
     return (
-      <div className={'worldScreenPlaceholder'}>
-        <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>Outskirts</div>
-          <div className={'worldScreenPlaceholderKey'}>outskirts</div>
+      <CombatTheaterPreviewCard moduleLabel="Outskirts" title="Outskirts" variant="outskirts">
+        <div className="combatPreviewCard__item">
+          <div className="combatPreviewCard__label">Status</div>
+          <div className="combatPreviewCard__value">Unavailable for this city.</div>
         </div>
-        <div className={'worldScreenPlaceholderBody'}>
-          <div className={'worldScreenPlaceholderLine'}>Unavailable for this city.</div>
-        </div>
-      </div>
+      </CombatTheaterPreviewCard>
     );
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{outskirtsDef.name ?? 'Outskirts'}</div>
-        <div className={'worldScreenPlaceholderKey'}>outskirts</div>
+    <CombatTheaterPreviewCard
+      moduleLabel="Outskirts"
+      title={outskirtsDef.name ?? 'Outskirts'}
+      subtitle={`City ${city?.name ?? cityId}`}
+      variant="outskirts"
+      statusLine={`Activity: ${isOutskirtsActive ? 'Active' : 'Inactive'}`}
+      actions={
+        <>
+          <button
+            className="button-standard combatPreviewCard__primary"
+            onClick={handleStartOutskirts}
+            disabled={!outskirtsDef}
+            type="button"
+          >
+            Start Farming
+          </button>
+          <button className="button-standard" onClick={handleStopOutskirts} type="button">
+            Stop
+          </button>
+        </>
+      }
+    >
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Next Encounter</div>
+        <div className="combatPreviewCard__value">{isBossReady ? 'Boss' : 'Mob'}</div>
       </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>
-          {outskirtsProgress?.killsSinceBoss ?? 0} kills since boss — Next: {isBossReady ? 'Boss' : 'Mob'}
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Boss</div>
+        <div className="combatPreviewCard__value">{bossName ?? 'Unknown'}</div>
+      </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Progress to Boss</div>
+        <div className="combatPreviewCard__value">
+          {killsSinceBoss} / {killsToBoss || '?'} kills
         </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Boss: {bossName ?? 'Unknown'} • Defeated: {outskirtsProgress?.bossDefeated ? 'Yes' : 'No'}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Activity: {isOutskirtsActive ? 'Active' : 'Inactive'}
+        <div className="combatPreviewCard__progress">
+          <div className="combatPreviewCard__progressFill" style={{ width: `${progressRatio * 100}%` }} />
         </div>
       </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleStartOutskirts}
-          disabled={!outskirtsDef}
-          type="button"
-        >
-          Start Farming
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleStopOutskirts} type="button">
-          Stop
-        </button>
-        {isBossReady && bossName && (
-          <div className={'worldScreenPlaceholderLine worldScreenBossAlert'}>
-            Boss {bossName} is ready to spawn!
-          </div>
-        )}
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Total Kills</div>
+        <div className="combatPreviewCard__value">{outskirtsProgress?.totalKills ?? 0}</div>
       </div>
-    </div>
+
+      {isBossReady && bossName && (
+        <div className="combatPreviewCard__callout">Boss {bossName} is ready to spawn!</div>
+      )}
+    </CombatTheaterPreviewCard>
   );
 }
