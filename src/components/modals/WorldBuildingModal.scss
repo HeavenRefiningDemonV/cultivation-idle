@@ -22,6 +22,10 @@
   overflow: hidden;
 }
 
+.worldBuildingModal--combatPreview {
+  width: min(820px, calc(100vw - 32px));
+}
+
 .worldBuildingHeader {
   display: flex;
   justify-content: space-between;

@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
+
 import { useActivityStore } from '../../../../stores/activityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useRuinsStore } from '../../../../stores/ruinsStore';
 import { resolveModuleRef } from '../worldUtils';
+import { CombatTheaterPreviewCard } from './CombatTheaterPreviewCard';
 
 interface RuinsBuildingPanelProps {
   cityId: string;
@@ -53,64 +55,75 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
 
   if (!ruinDef) {
     return (
-      <div className={'worldScreenPlaceholder'}>
-        <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>Ruins</div>
-          <div className={'worldScreenPlaceholderKey'}>ruins</div>
+      <CombatTheaterPreviewCard moduleLabel="Ruins" title="Ruins" variant="ruins">
+        <div className="combatPreviewCard__item">
+          <div className="combatPreviewCard__label">Status</div>
+          <div className="combatPreviewCard__value">Unavailable for this city.</div>
         </div>
-        <div className={'worldScreenPlaceholderBody'}>
-          <div className={'worldScreenPlaceholderLine'}>Unavailable for this city.</div>
-        </div>
-      </div>
+      </CombatTheaterPreviewCard>
     );
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{ruinDef.name ?? 'Ruins'}</div>
-        <div className={'worldScreenPlaceholderKey'}>ruins</div>
+    <CombatTheaterPreviewCard
+      moduleLabel="Ruins"
+      title={ruinDef.name ?? 'Ruins'}
+      subtitle={`Rooms: ${ruinDef.roomCount}`}
+      variant="ruins"
+      statusLine={`Activity: ${isRuinsActive ? 'Active' : 'Inactive'}`}
+      actions={
+        <>
+          <button
+            className="button-standard combatPreviewCard__primary"
+            onClick={handleStartRuins}
+            disabled={!ruinDef}
+            type="button"
+          >
+            Start Run
+          </button>
+          <button className="button-standard" onClick={handleStopRuins} type="button">
+            Stop
+          </button>
+          <button className="button-standard" onClick={handleToggleRuinsAutoRepeat} type="button">
+            Auto-repeat: {autoRepeatDefault ? 'On' : 'Off'}
+          </button>
+        </>
+      }
+    >
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Current Room</div>
+        <div className="combatPreviewCard__value">
+          {activeRuin ? `Room ${activeRuin.roomIndex + 1}/${activeRuin.roomCount}` : 'Not in a run'}
+        </div>
       </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>Rooms: {ruinDef.roomCount}</div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Activity: {isRuinsActive ? 'Active' : 'Inactive'}
-          {activeRuin && (
-            <span>
-              {' '}
-              (Room {activeRuin.roomIndex + 1}/{activeRuin.roomCount})
-            </span>
-          )}
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Boss Kills</div>
+        <div className="combatPreviewCard__value">{ruinProgress?.bossKills ?? 0}</div>
+      </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Runs Cleared</div>
+        <div className="combatPreviewCard__value">{ruinProgress?.totalRuns ?? 0}</div>
+      </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Best Time</div>
+        <div className="combatPreviewCard__value">
+          {ruinProgress?.bestRunSeconds ? `${ruinProgress.bestRunSeconds.toFixed(1)}s` : 'N/A'}
         </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Runs: {ruinProgress?.totalRuns ?? 0} • Boss kills: {ruinProgress?.bossKills ?? 0}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Best time: {ruinProgress?.bestRunSeconds ? `${ruinProgress.bestRunSeconds.toFixed(1)}s` : 'N/A'}
-        </div>
-        {ruinProgress?.lastRun && (
-          <div className={'worldScreenPlaceholderLine'}>
-            Last run: {ruinProgress.lastRun.victory ? 'Victory' : 'Defeat'} in {ruinProgress.lastRun.seconds.toFixed(1)}s
+      </div>
+
+      {ruinProgress?.lastRun && (
+        <div className="combatPreviewCard__item">
+          <div className="combatPreviewCard__label">Last Run</div>
+          <div className="combatPreviewCard__value">
+            {ruinProgress.lastRun.victory ? 'Victory' : 'Defeat'} in {ruinProgress.lastRun.seconds.toFixed(1)}s
+            {' '}
             (rooms {ruinProgress.lastRun.roomsCleared})
           </div>
-        )}
-      </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleStartRuins}
-          disabled={!ruinDef}
-          type="button"
-        >
-          Start Run
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleStopRuins} type="button">
-          Stop
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleToggleRuinsAutoRepeat} type="button">
-          Auto-repeat: {autoRepeatDefault ? 'On' : 'Off'}
-        </button>
-      </div>
-    </div>
+        </div>
+      )}
+    </CombatTheaterPreviewCard>
   );
 }

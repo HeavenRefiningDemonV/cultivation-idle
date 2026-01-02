@@ -12,6 +12,7 @@ import { SettingsScreen } from './screens/SettingsScreen';
 import { SystemStatusPanelOverlay } from '../app/overlays/SystemStatusPanel';
 import { CombatMinibarOverlay } from '../app/overlays/CombatMinibarOverlay';
 import { CombatTheaterOverlay } from '../app/overlays/CombatTheaterOverlay';
+import { WorldBuildingDockOverlay } from '../app/overlays/WorldBuildingDockOverlay';
 import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
 import { NotificationToasts } from './NotificationToasts';
@@ -97,6 +98,7 @@ export function GameLayout() {
       {showWorldBuildingModal && <WorldBuildingModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
       <CombatMinibarOverlay />
+      <WorldBuildingDockOverlay />
       <CombatTheaterOverlay />
       <LifeStartWizardModal />
       <NotificationToasts />

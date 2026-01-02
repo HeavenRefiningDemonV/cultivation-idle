@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
+
+import { RewardService } from '../../../../services/rewards';
 import { useActivityStore } from '../../../../stores/activityStore';
 import { useCityStore } from '../../../../stores/cityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useInventoryStore } from '../../../../stores/inventoryStore';
 import { useTrialStore } from '../../../../stores/trialStore';
-import { RewardService } from '../../../../services/rewards';
 import { resolveModuleRef } from '../worldUtils';
+import { CombatTheaterPreviewCard } from './CombatTheaterPreviewCard';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -90,6 +92,29 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
       : String(trialDef.eligibilityRule)
     : 'No eligibility rule provided';
 
+  const parsedEligibility = useMemo(() => {
+    const trimmed = trialEligibilityRule?.trim();
+    if (!trimmed || !trimmed.startsWith('{')) return null;
+    try {
+      const parsed = JSON.parse(trimmed);
+      return typeof parsed === 'object' && parsed ? parsed : null;
+    } catch (err) {
+      console.warn('[GateTrial] Failed to parse eligibility rule', err);
+      return null;
+    }
+  }, [trialEligibilityRule]);
+
+  const formatFailSafeCost = () => {
+    if (!trialFailSafeCost) return '';
+    return [
+      trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
+      trialFailSafeCost.spiritStones ? `${trialFailSafeCost.spiritStones} Spirit Stones` : null,
+      trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
+    ]
+      .filter(Boolean)
+      .join(' / ');
+  };
+
   const handleChallengeTrial = () => {
     if (!city || !trialDef || !isTrialEligible) return;
 
@@ -156,66 +181,80 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
 
   if (!trialDef) {
     return (
-      <div className={'worldScreenPlaceholder'}>
-        <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>Gate Trial</div>
-          <div className={'worldScreenPlaceholderKey'}>gateTrial</div>
+      <CombatTheaterPreviewCard moduleLabel="Gate Trial" title="Gate Trial" variant="gateTrial">
+        <div className="combatPreviewCard__item">
+          <div className="combatPreviewCard__label">Status</div>
+          <div className="combatPreviewCard__value">Unavailable for this city.</div>
         </div>
-        <div className={'worldScreenPlaceholderBody'}>
-          <div className={'worldScreenPlaceholderLine'}>Unavailable for this city.</div>
-        </div>
-      </div>
+      </CombatTheaterPreviewCard>
     );
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{trialDef.name ?? 'Gate Trial'}</div>
-        <div className={'worldScreenPlaceholderKey'}>gateTrial</div>
-      </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>
-          Eligibility: {trialEligibilityRule}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Activity: {isTrialActive ? 'Active' : 'Inactive'}
-        </div>
-      </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleChallengeTrial}
-          disabled={!isTrialEligible || !trialDef}
-          type="button"
-        >
-          Challenge Trial
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleStopTrial} type="button">
-          Stop
-        </button>
-        {failSafeUnlocked && trialFailSafeCost && (
-          <button className={'worldScreenModuleButton'} onClick={handleFailSafePurchase} type="button">
-            Emergency Gate Item Purchase (
-            {
-              [
-                trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
-                trialFailSafeCost.spiritStones ? `${trialFailSafeCost.spiritStones} Spirit Stones` : null,
-                trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
-              ]
-                .filter(Boolean)
-                .join(' / ')
-            }
-            )
+    <CombatTheaterPreviewCard
+      moduleLabel="Gate Trial"
+      title={trialDef.name ?? 'Gate Trial'}
+      subtitle={`Boss: ${trialBossName ?? 'Unknown'}`}
+      variant="gateTrial"
+      statusLine={`Activity: ${isTrialActive ? 'Active' : 'Inactive'}`}
+      actions={
+        <>
+          <button
+            className="button-standard combatPreviewCard__primary"
+            onClick={handleChallengeTrial}
+            disabled={!isTrialEligible || !trialDef}
+            type="button"
+          >
+            Challenge Trial
           </button>
+          <button className="button-standard" onClick={handleStopTrial} type="button">
+            Stop
+          </button>
+          {failSafeUnlocked && trialFailSafeCost && (
+            <button className="button-standard" onClick={handleFailSafePurchase} type="button">
+              Purchase Gate Item ({formatFailSafeCost()})
+            </button>
+          )}
+        </>
+      }
+    >
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Boss</div>
+        <div className="combatPreviewCard__value">{trialBossName ?? 'Unknown'}</div>
+      </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Eligibility</div>
+        {parsedEligibility ? (
+          <div className="combatPreviewCard__badgeRow">
+            {Object.entries(parsedEligibility).map(([key, value]) => (
+              <div key={key} className="combatPreviewCard__badge">
+                {key}: {String(value)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="combatPreviewCard__value">{trialEligibilityRule}</div>
         )}
       </div>
-    </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Required Item</div>
+        <div className="combatPreviewCard__value">{gateItemName ?? 'Unknown'}</div>
+        <div className="combatPreviewCard__badgeRow">
+          <div className="combatPreviewCard__badge">{gateItemOwned ? 'Owned' : 'Missing'}</div>
+        </div>
+      </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Cleared</div>
+        <div className="combatPreviewCard__value">{trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}</div>
+      </div>
+
+      <div className="combatPreviewCard__item">
+        <div className="combatPreviewCard__label">Attempts</div>
+        <div className="combatPreviewCard__value">{trialProgress?.attempts ?? 0}</div>
+      </div>
+    </CombatTheaterPreviewCard>
   );
 }

@@ -93,6 +93,7 @@ interface UIStateBase {
   techniqueFocusRequest: { techId: string; action?: 'open' | 'upgradeRank' | 'rerollTraits' } | null;
   lifeStartWizardContext: { lastHeartLawId: string | null };
   showWorldBuildingModal: boolean;
+  worldBuildingModalMinimized: boolean;
   worldBuildingModalCityId: string | null;
   worldBuildingModalKey: WorldBuildingKey | null;
 
@@ -151,6 +152,8 @@ export interface UIState extends UIStateBase {
   closeTechniqueLearned: () => void;
   openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey }) => void;
   closeWorldBuildingModal: () => void;
+  minimizeWorldBuildingModal: () => void;
+  restoreWorldBuildingModal: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
   openTechniqueLibraryForEquip: (
     techniqueId: string,
@@ -188,6 +191,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   techniqueFocusRequest: null,
   lifeStartWizardContext: { lastHeartLawId: null },
   showWorldBuildingModal: false,
+  worldBuildingModalMinimized: false,
   worldBuildingModalCityId: null,
   worldBuildingModalKey: null,
   settings: {
@@ -492,6 +496,7 @@ export const useUIStore = create<UIState>()(
     openWorldBuildingModal: ({ cityId, buildingKey }) => {
       set((state) => {
         state.showWorldBuildingModal = true;
+        state.worldBuildingModalMinimized = false;
         state.worldBuildingModalCityId = cityId;
         state.worldBuildingModalKey = buildingKey;
       });
@@ -500,9 +505,35 @@ export const useUIStore = create<UIState>()(
     closeWorldBuildingModal: () => {
       set((state) => {
         state.showWorldBuildingModal = false;
+        state.worldBuildingModalMinimized = false;
         state.worldBuildingModalCityId = null;
         state.worldBuildingModalKey = null;
       });
+    },
+
+    minimizeWorldBuildingModal: () => {
+      const { worldBuildingModalCityId, worldBuildingModalKey } = get();
+
+      if (worldBuildingModalCityId && worldBuildingModalKey) {
+        set((state) => {
+          state.showWorldBuildingModal = false;
+          state.worldBuildingModalMinimized = true;
+        });
+        return;
+      }
+
+      get().closeWorldBuildingModal();
+    },
+
+    restoreWorldBuildingModal: () => {
+      const { worldBuildingModalCityId, worldBuildingModalKey } = get();
+
+      if (worldBuildingModalCityId && worldBuildingModalKey) {
+        set((state) => {
+          state.showWorldBuildingModal = true;
+          state.worldBuildingModalMinimized = false;
+        });
+      }
     },
 
     openTechniqueLearned: (payload) => {

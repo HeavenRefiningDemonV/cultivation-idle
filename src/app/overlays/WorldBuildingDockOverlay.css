@@ -1,0 +1,67 @@
+.worldBuildingDockOverlay {
+  position: fixed;
+  left: 16px;
+  bottom: calc(16px + var(--ui-bottom-nav-total));
+  z-index: 1150;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.worldBuildingDockOverlayCard {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 8px;
+  pointer-events: auto;
+  background: rgba(15, 18, 30, 0.95);
+  color: #f5f7ff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  min-width: 240px;
+}
+
+.worldBuildingDockOverlayButton {
+  background: transparent;
+  color: inherit;
+  border: none;
+  padding: 12px 14px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.worldBuildingDockOverlayButton:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.worldBuildingDockOverlayLabel {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.worldBuildingDockOverlaySubLabel {
+  font-size: 13px;
+  color: #c8d1ff;
+}
+
+.worldBuildingDockOverlayDismiss {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f7ff;
+  border: none;
+  padding: 0 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.worldBuildingDockOverlayDismiss:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
