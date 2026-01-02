@@ -1,3 +1,5 @@
+import { useShallow } from 'zustand/shallow';
+
 import { useContentStore } from '../../stores/contentStore';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
 import './WorldBuildingDockOverlay.css';
@@ -24,14 +26,16 @@ export function WorldBuildingDockOverlay() {
     worldBuildingModalKey,
     restoreWorldBuildingModal,
     closeWorldBuildingModal,
-  } = useUIStore((state) => ({
-    showWorldBuildingModal: state.showWorldBuildingModal,
-    worldBuildingModalMinimized: state.worldBuildingModalMinimized,
-    worldBuildingModalCityId: state.worldBuildingModalCityId,
-    worldBuildingModalKey: state.worldBuildingModalKey,
-    restoreWorldBuildingModal: state.restoreWorldBuildingModal,
-    closeWorldBuildingModal: state.closeWorldBuildingModal,
-  }));
+  } = useUIStore(
+    useShallow((state) => ({
+      showWorldBuildingModal: state.showWorldBuildingModal,
+      worldBuildingModalMinimized: state.worldBuildingModalMinimized,
+      worldBuildingModalCityId: state.worldBuildingModalCityId,
+      worldBuildingModalKey: state.worldBuildingModalKey,
+      restoreWorldBuildingModal: state.restoreWorldBuildingModal,
+      closeWorldBuildingModal: state.closeWorldBuildingModal,
+    })),
+  );
 
   const cityName = useContentStore((state) =>
     worldBuildingModalCityId
