@@ -1,52 +1,22 @@
-import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
-import { useContentStore } from '../../stores/contentStore';
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
-import { resolveModuleRef } from '../screens/world/worldUtils';
-import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
-import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel';
-import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel';
-import { MeditationHallPanel } from '../screens/MeditationHallPanel';
-import { ManualPavilionPanel } from '../screens/ManualPavilionPanel';
-import { ApothecaryPanel } from '../screens/ApothecaryPanel';
-import { AlchemyPanel } from '../screens/AlchemyPanel';
-import { ForgePanel } from '../screens/ForgePanel';
-import { TalismanPanel } from '../screens/TalismanPanel';
-import { BountyBoardPanel } from '../screens/BountyBoardPanel';
-import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
+import { useCallback, useEffect, type ReactNode } from 'react';
 import './WorldBuildingModal.scss';
 
 export interface WorldBuildingModalProps {
-  open?: boolean;
-  title?: string;
+  open: boolean;
+  title: string;
   subtitle?: string;
-  onClose?: () => void;
-  children?: ReactNode;
-  useStore?: boolean;
+  onClose: () => void;
+  children: ReactNode;
 }
 
 export function WorldBuildingModal({
-  open: controlledOpen,
-  title: controlledTitle,
-  subtitle: controlledSubtitle,
-  onClose: controlledOnClose,
+  open,
+  title,
+  subtitle,
+  onClose,
   children,
-  useStore = true,
 }: WorldBuildingModalProps) {
-  const storeOpen = useUIStore((state) => state.showWorldBuildingModal);
-  const storeCityId = useUIStore((state) => state.worldBuildingModalCityId);
-  const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
-  const closeFromStore = useUIStore((state) => state.closeWorldBuildingModal);
-  const city = useContentStore((state) => (storeCityId ? state.maps.citiesById[storeCityId] : undefined));
-  const moduleRefId = useMemo(() => resolveModuleRef(city ?? null, storeBuildingKey ?? null), [city, storeBuildingKey]);
-
-  const isStoreMode = useStore;
-  const open = isStoreMode ? storeOpen : Boolean(controlledOpen);
-  const buildingKey: WorldBuildingKey | null | undefined = isStoreMode ? storeBuildingKey : undefined;
-  const close = isStoreMode ? closeFromStore : controlledOnClose || (() => {});
-  const title = isStoreMode
-    ? `${city?.name ?? 'City'} — ${buildingKey ?? ''}`
-    : controlledTitle || 'World Building';
-  const subtitle = isStoreMode ? (storeCityId && buildingKey ? `${storeCityId} • ${buildingKey}` : undefined) : controlledSubtitle;
+  const close = onClose;
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -63,51 +33,17 @@ export function WorldBuildingModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown, open]);
 
-  if ((isStoreMode && (!storeOpen || !storeCityId || !buildingKey)) || (!isStoreMode && !open)) {
+  useEffect(() => {
+    if (!open) return undefined;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [open]);
+
+  if (!open) {
     return null;
-  }
-
-  let content: ReactNode = children;
-
-  if (isStoreMode) {
-    switch (buildingKey) {
-      case 'outskirts':
-        content = <OutskirtsBuildingPanel cityId={storeCityId} />;
-        break;
-      case 'gateTrial':
-        content = <GateTrialBuildingPanel cityId={storeCityId} />;
-        break;
-      case 'ruins':
-        content = <RuinsBuildingPanel cityId={storeCityId} />;
-        break;
-      case 'meditationHall':
-        content = <MeditationHallPanel />;
-        break;
-      case 'manualPavilion':
-        content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
-        break;
-      case 'apothecary':
-        content = <ApothecaryPanel shopId={moduleRefId ?? null} />;
-        break;
-      case 'alchemy':
-        content = <AlchemyPanel cityId={storeCityId} />;
-        break;
-      case 'forge':
-        content = <ForgePanel cityId={storeCityId} />;
-        break;
-      case 'talismanStudio':
-        content = <TalismanPanel cityId={storeCityId} />;
-        break;
-      case 'bounties':
-        content = <BountyBoardPanel />;
-        break;
-      case 'expeditions':
-        content = <ExpeditionBoardPanel />;
-        break;
-      default:
-        content = <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>;
-        break;
-    }
   }
 
   return (
@@ -122,9 +58,7 @@ export function WorldBuildingModal({
             ✕
           </button>
         </div>
-        <div className="worldBuildingBody">
-          {content}
-        </div>
+        <div className="worldBuildingBody">{children}</div>
       </div>
     </div>
   );

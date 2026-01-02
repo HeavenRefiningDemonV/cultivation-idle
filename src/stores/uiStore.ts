@@ -92,9 +92,7 @@ interface UIStateBase {
     | { type: 'equip'; techniqueId: string; preferredSlotType?: 'active' | 'passive' | 'ultimate' };
   techniqueFocusRequest: { techId: string; action?: 'open' | 'upgradeRank' | 'rerollTraits' } | null;
   lifeStartWizardContext: { lastHeartLawId: string | null };
-  showWorldBuildingModal: boolean;
-  worldBuildingModalCityId: string | null;
-  worldBuildingModalKey: WorldBuildingKey | null;
+  worldBuildingModalModuleKey: string | null;
 
   // UI Settings
   settings: UISettingsState;
@@ -149,7 +147,7 @@ export interface UIState extends UIStateBase {
   closeManualSatchel: () => void;
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
   closeTechniqueLearned: () => void;
-  openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey }) => void;
+  openWorldBuildingModal: (moduleKey: WorldBuildingKey | string) => void;
   closeWorldBuildingModal: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
   openTechniqueLibraryForEquip: (
@@ -187,9 +185,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   techniqueLibraryIntent: null,
   techniqueFocusRequest: null,
   lifeStartWizardContext: { lastHeartLawId: null },
-  showWorldBuildingModal: false,
-  worldBuildingModalCityId: null,
-  worldBuildingModalKey: null,
+  worldBuildingModalModuleKey: null,
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -485,23 +481,19 @@ export const useUIStore = create<UIState>()(
 
     closeManualSatchel: () => {
       set((state) => {
-        state.showManualSatchelModal = false;
-      });
-    },
+    state.showManualSatchelModal = false;
+  });
+},
 
-    openWorldBuildingModal: ({ cityId, buildingKey }) => {
+    openWorldBuildingModal: (moduleKey) => {
       set((state) => {
-        state.showWorldBuildingModal = true;
-        state.worldBuildingModalCityId = cityId;
-        state.worldBuildingModalKey = buildingKey;
+        state.worldBuildingModalModuleKey = moduleKey;
       });
     },
 
     closeWorldBuildingModal: () => {
       set((state) => {
-        state.showWorldBuildingModal = false;
-        state.worldBuildingModalCityId = null;
-        state.worldBuildingModalKey = null;
+        state.worldBuildingModalModuleKey = null;
       });
     },
 
