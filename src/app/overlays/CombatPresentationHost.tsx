@@ -19,10 +19,12 @@ export function CombatPresentationHost() {
   const derivedContext = useMemo<CombatPresentationContext | null>(() => {
     if (context) return context;
     if (activeActivity && COMBAT_ACTIVITY_TYPES.includes(activeActivity.type)) {
+      const inferredModuleKey = activeActivity.type === 'trial' ? 'gateTrial' : activeActivity.type;
       return {
         type: activeActivity.type as CombatPresentationContext['type'],
         cityId: activeActivity.cityId ?? activeActivity.payload?.cityId,
         sourceId: activeActivity.sourceId ?? activeActivity.payload?.sourceId,
+        moduleKey: inferredModuleKey,
       };
     }
     return null;

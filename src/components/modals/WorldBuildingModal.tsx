@@ -2,9 +2,6 @@ import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
 import { resolveModuleRef } from '../screens/world/worldUtils';
-import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
-import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel';
-import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel';
 import { MeditationHallPanel } from '../screens/MeditationHallPanel';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel';
 import { ApothecaryPanel } from '../screens/ApothecaryPanel';
@@ -14,6 +11,7 @@ import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
 import './WorldBuildingModal.scss';
+import { isCombatModule, openWorldModule } from '../../systems/world/openWorldModule';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -63,6 +61,13 @@ export function WorldBuildingModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown, open]);
 
+  useEffect(() => {
+    if (!isStoreMode || !open || !storeCityId || !buildingKey) return;
+    if (isCombatModule(buildingKey)) {
+      openWorldModule({ cityId: storeCityId, moduleKey: buildingKey, source: 'world-building-modal' });
+    }
+  }, [buildingKey, isStoreMode, open, openWorldModule, storeCityId]);
+
   if ((isStoreMode && (!storeOpen || !storeCityId || !buildingKey)) || (!isStoreMode && !open)) {
     return null;
   }
@@ -71,15 +76,6 @@ export function WorldBuildingModal({
 
   if (isStoreMode) {
     switch (buildingKey) {
-      case 'outskirts':
-        content = <OutskirtsBuildingPanel cityId={storeCityId} />;
-        break;
-      case 'gateTrial':
-        content = <GateTrialBuildingPanel cityId={storeCityId} />;
-        break;
-      case 'ruins':
-        content = <RuinsBuildingPanel cityId={storeCityId} />;
-        break;
       case 'meditationHall':
         content = <MeditationHallPanel />;
         break;
@@ -105,7 +101,22 @@ export function WorldBuildingModal({
         content = <ExpeditionBoardPanel />;
         break;
       default:
-        content = <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>;
+        content = isCombatModule(buildingKey)
+          ? (
+              <div className="worldBuildingPlaceholder">
+                <div>This building now opens the combat preview.</div>
+                <button
+                  type="button"
+                  className="worldScreenModuleButton"
+                  onClick={() => openWorldModule({ cityId: storeCityId, moduleKey: buildingKey, source: 'world-building-modal' })}
+                >
+                  Open Combat Preview
+                </button>
+              </div>
+            )
+          : (
+              <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>
+            );
         break;
     }
   }

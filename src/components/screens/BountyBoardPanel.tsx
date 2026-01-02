@@ -4,11 +4,11 @@ import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useTrialStore } from '../../stores/trialStore';
-import { useUIStore } from '../../stores/uiStore';
 import { bountyKindToLabel, bountyKindToProgressRule, resolveBountyDestination } from '../../utils/bountyRouting';
 import { formatDurationHMS } from '../../utils/timeFormat';
 import type { RewardBundle } from '../../services/rewards';
 import './BountyBoardPanel.scss';
+import { openWorldModule } from '../../systems/world/openWorldModule';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -60,8 +60,6 @@ export function BountyBoardPanel() {
   const gateTrialEconomy = (economy as any)?.manualSystem?.gateTrials;
 
   const currentCityId = useCityStore((state) => state.currentCityId);
-  const setCurrentCity = useCityStore((state) => state.setCurrentCity);
-  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
 
   const bounties = useBountyStore((state) => (currentCityId ? state.activeByCityId[currentCityId] ?? [] : []));
   const generateForCity = useBountyStore((state) => state.generateForCity);
@@ -76,8 +74,6 @@ export function BountyBoardPanel() {
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
-
-  const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const city = currentCityId ? cityMap[currentCityId] : null;
   const cityIndex = city?.index ?? null;
@@ -128,11 +124,7 @@ export function BountyBoardPanel() {
   const rewardEntries = useMemo(() => (selectedBounty ? formatRewards(selectedBounty.rewards) : []), [selectedBounty]);
 
   const handleGoToModule = (cityId: string, moduleKey: string) => {
-    setActiveTab('adventure');
-    if (currentCityId !== cityId) {
-      setCurrentCity(cityId);
-    }
-    setSelectedModule(cityId, moduleKey);
+    openWorldModule({ cityId, moduleKey, source: 'bounty-go-there' });
   };
 
   const handleTrackToggle = (bountyId: string) => {

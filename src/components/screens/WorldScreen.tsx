@@ -2,13 +2,14 @@ import { useEffect, useMemo, useCallback } from 'react';
 import type { CityDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useCityStore } from '../../stores/cityStore';
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
+import { useUIStore } from '../../stores/uiStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useBountyStore } from '../../stores/bountyStore';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations';
 import { resolveBountyDestination } from '../../utils/bountyRouting';
 import { CityMapHub } from './CityMapHub';
+import { openWorldModule } from '../../systems/world/openWorldModule';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
@@ -69,18 +70,29 @@ export function WorldScreen() {
     return selectedCity.modules?.[0] ?? null;
   }, [selectedCity, selectedModuleByCity]);
 
-  const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const worldModalKey = useUIStore((state) => state.worldBuildingModalKey);
   const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
+  const combatPresentation = useUIStore((state) => state.combatPresentation);
+
+  const combatModuleKey = useMemo(() => {
+    if (!selectedCity) return null;
+    if (combatPresentation.mode === 'hidden' || !combatPresentation.context) return null;
+    if (combatPresentation.context.cityId && combatPresentation.context.cityId !== selectedCity.id) return null;
+    return (
+      combatPresentation.context.moduleKey ??
+      (combatPresentation.context.type === 'trial' ? 'gateTrial' : combatPresentation.context.type)
+    );
+  }, [combatPresentation, selectedCity]);
 
   const activeModuleKey = useMemo(() => {
+    if (combatModuleKey) return combatModuleKey;
     if (showWorldBuildingModal && worldModalCityId && worldModalCityId === selectedCity?.id && worldModalKey) {
       return worldModalKey;
     }
     return selectedModuleKey;
-  }, [selectedCity?.id, selectedModuleKey, showWorldBuildingModal, worldModalCityId, worldModalKey]);
+  }, [combatModuleKey, selectedCity?.id, selectedModuleKey, showWorldBuildingModal, worldModalCityId, worldModalKey]);
 
   const trackedDestination = useMemo(() => {
     if (!selectedCity || !trackedBounty) return null;
@@ -109,13 +121,15 @@ export function WorldScreen() {
   }, [selectedCity, selectedModuleKey, selectedModuleByCity, setSelectedModule]);
 
   useEffect(() => {
-    closeWorldBuildingModal();
-  }, [closeWorldBuildingModal, currentCityId]);
+    if (!showWorldBuildingModal || !selectedCity) return;
+    if (worldModalCityId && worldModalCityId !== selectedCity.id) {
+      closeWorldBuildingModal();
+    }
+  }, [closeWorldBuildingModal, selectedCity, showWorldBuildingModal, worldModalCityId]);
 
   const handleSelectCity = (city: CityDef) => {
     if (!city) return;
     if (!unlockedCityIds.includes(city.id)) return;
-    closeWorldBuildingModal();
     setCurrentCity(city.id);
   };
 
@@ -123,10 +137,9 @@ export function WorldScreen() {
     (moduleKey: string) => {
       if (!selectedCity) return;
       if (!selectedCity.modules.includes(moduleKey)) return;
-      setSelectedModule(selectedCity.id, moduleKey);
-      openWorldBuildingModal({ cityId: selectedCity.id, buildingKey: moduleKey as WorldBuildingKey });
+      openWorldModule({ cityId: selectedCity.id, moduleKey, source: 'world-map' });
     },
-    [openWorldBuildingModal, selectedCity, setSelectedModule],
+    [selectedCity],
   );
 
 

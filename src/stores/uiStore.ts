@@ -70,6 +70,9 @@ export type CombatPresentationContext = {
   type: 'outskirts' | 'trial' | 'ruins';
   cityId?: string;
   sourceId?: string;
+  moduleKey?: string;
+  moduleRefId?: string | null;
+  source?: string;
 };
 
 type CombatPresentationState = {
