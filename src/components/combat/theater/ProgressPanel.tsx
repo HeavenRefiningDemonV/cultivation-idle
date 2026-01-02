@@ -5,7 +5,13 @@ import { OutskirtsProgress } from './panels/OutskirtsProgress';
 import { TrialProgress } from '../../../features/trials/ui/TrialProgress';
 import { RuinsProgress } from '../../../features/ruins/ui/RuinsProgress';
 
-export function ProgressPanel() {
+export type CombatTheaterFocus =
+  | { type: 'outskirts'; id: string }
+  | { type: 'ruins'; id: string }
+  | { type: 'trial'; id: string }
+  | { type: null };
+
+export function ProgressPanel({ focus }: { focus?: CombatTheaterFocus }) {
   const activity = useActivityStore((state) => state.active);
   const combatContext = useCombatStore((state) => state.combatContext);
 
@@ -13,14 +19,15 @@ export function ProgressPanel() {
   const activeType = activity?.type ?? null;
 
   const target = useMemo(() => {
+    if (focus?.type) return focus.type;
     if (activeType) return activeType;
     return contextType;
-  }, [activeType, contextType]);
+  }, [activeType, contextType, focus?.type]);
 
   if (target === 'outskirts') {
     return (
       <div className="combat-theater__panel">
-        <OutskirtsProgress />
+        <OutskirtsProgress outskirtsId={focus?.type === 'outskirts' ? focus.id : undefined} />
       </div>
     );
   }
@@ -28,7 +35,7 @@ export function ProgressPanel() {
   if (target === 'trial') {
     return (
       <div className="combat-theater__panel">
-        <TrialProgress />
+        <TrialProgress trialId={focus?.type === 'trial' ? focus.id : undefined} />
       </div>
     );
   }
@@ -36,7 +43,7 @@ export function ProgressPanel() {
   if (target === 'ruins') {
     return (
       <div className="combat-theater__panel">
-        <RuinsProgress />
+        <RuinsProgress ruinsId={focus?.type === 'ruins' ? focus.id : undefined} />
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { CombatDock } from '../../components/combat/presentation/CombatDock';
 import { useUIStore } from '../../stores/uiStore';
 import { useActivityStore } from '../../stores/activityStore';
 import type { CombatPresentationContext } from '../../stores/uiStore';
+import type { CombatTheaterFocus } from '../../components/combat/theater/ProgressPanel';
 import { COMBAT_ACTIVITY_TYPES } from '../../types/activity';
 import { useCombatStore } from '../../stores/combatStore';
 
@@ -31,11 +32,14 @@ export function CombatPresentationHost() {
   if (!derivedContext) return null;
 
   const theaterMode = inCombat ? 'active' : 'preview';
+  const focus: CombatTheaterFocus = derivedContext.sourceId
+    ? { type: derivedContext.type, id: derivedContext.sourceId }
+    : { type: null };
 
   return createPortal(
     <>
       {isDocked ? <CombatDock context={derivedContext} /> : null}
-      {isVisible ? <CombatTheaterModal mode={theaterMode} context={derivedContext} /> : null}
+      {isVisible ? <CombatTheaterModal mode={theaterMode} context={derivedContext} focus={focus} /> : null}
     </>,
     document.body,
   );

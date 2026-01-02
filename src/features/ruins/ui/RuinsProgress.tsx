@@ -4,7 +4,6 @@ import { useActivityStore } from '../../../stores/activityStore';
 import { useCombatStore } from '../../../stores/combatStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useRuinsStore } from '../../../stores/ruinsStore';
-import { useUIStore } from '../../../stores/uiStore';
 import type { RuinsRunSummary } from '../../../types';
 import { pityProgressPercent } from '../../../services/economy/pity';
 import { formatNumber } from '../../../utils/numbers';
@@ -56,7 +55,7 @@ function summarizeMaterials(
   });
 }
 
-export function RuinsProgress() {
+export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
   const activity = useActivityStore((state) => state.active);
   const combatContext = useCombatStore((state) => state.combatContext);
 
@@ -78,6 +77,7 @@ export function RuinsProgress() {
     lastRunSummary,
     stopRun,
     setAutoRepeat,
+    startRun,
   } = useRuinsStore(
     useShallow((state) => ({
       activeRun: state.activeRun,
@@ -88,18 +88,17 @@ export function RuinsProgress() {
       lastRunSummary: state.lastRunSummary,
       stopRun: state.stopRun,
       setAutoRepeat: state.setAutoRepeat,
+      startRun: state.startRun,
     })),
   );
 
-  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
-  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
-
   const ruinId = useMemo(() => {
+    if (ruinsId) return ruinsId;
     const activityId = activity?.type === 'ruins' ? activity.sourceId ?? activity.payload?.sourceId : null;
     const combatId = combatContext?.type === 'ruins' ? combatContext.sourceId ?? combatContext.ruinsId : null;
     const fallback = activeRun?.ruinId ?? Object.keys(ruinsById)[0] ?? null;
     return activityId ?? combatId ?? fallback;
-  }, [activity, combatContext, activeRun?.ruinId, ruinsById]);
+  }, [activity, combatContext, activeRun?.ruinId, ruinsById, ruinsId]);
 
   const ruinDef = ruinId ? ruinsById[ruinId] : undefined;
   const roomCount = ruinDef?.roomCount ?? activeRun?.roomCount ?? 0;
@@ -127,13 +126,11 @@ export function RuinsProgress() {
   const pityTarget = Math.max(pityCap - 1, 0);
 
   const handleStart = () => {
-    if (ruinId) {
-      openCombatPreview({ type: 'ruins', cityId: ruinDef?.cityId, sourceId: ruinId });
-    }
+    if (!ruinId) return;
+    startRun(ruinId);
   };
 
   const handleStop = () => {
-    stopCombatAndClose();
     stopRun();
   };
 

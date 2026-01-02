@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { CombatTheater, type CombatTheaterMode } from '../theater/CombatTheater';
+import type { CombatTheaterFocus } from '../theater/ProgressPanel';
 import { useUIStore, type CombatPresentationContext } from '../../../stores/uiStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../stores/outskirtsStore';
@@ -173,9 +174,11 @@ function CombatPreviewOverlay({
 export function CombatTheaterModal({
   mode,
   context,
+  focus,
 }: {
   mode?: CombatTheaterMode;
   context: CombatPresentationContext;
+  focus?: CombatTheaterFocus;
 }) {
   const closePresentation = useUIStore((state) => state.closeCombatPresentation);
   const startCombat = useUIStore((state) => state.startCombatFromPreview);
@@ -183,6 +186,8 @@ export function CombatTheaterModal({
 
   const previewDetails = usePreviewDetails(context);
   const resolvedMode: CombatTheaterMode = mode ?? (inCombat ? 'active' : 'preview');
+  const resolvedFocus: CombatTheaterFocus =
+    focus ?? (context.sourceId ? { type: context.type, id: context.sourceId } : { type: null });
 
   return (
     <div className="combat-presentation-modal">
@@ -191,6 +196,7 @@ export function CombatTheaterModal({
         <CombatTheater
           mode={resolvedMode}
           onClose={closePresentation}
+          focus={resolvedFocus}
           previewOverlay={
             resolvedMode === 'preview' ? (
               <CombatPreviewOverlay details={previewDetails} onStart={startCombat} onClose={closePresentation} />

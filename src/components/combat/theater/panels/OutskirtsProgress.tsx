@@ -50,7 +50,7 @@ function summarizeMechanics(mechanics: EnemyMechanic[] | undefined): string[] {
     .slice(0, 2);
 }
 
-export function OutskirtsProgress() {
+export function OutskirtsProgress({ outskirtsId }: { outskirtsId?: string }) {
   const activity = useActivityStore((state) => state.active);
   const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
@@ -74,6 +74,7 @@ export function OutskirtsProgress() {
   const getProgress = useOutskirtsStore((state) => state.getProgress);
 
   const activeOutskirtsId = useMemo(() => {
+    if (outskirtsId) return outskirtsId;
     const active = activity as ActiveActivity | null;
     if (active?.type === 'outskirts') {
       const payloadSourceId = (active.payload as { sourceId?: string } | undefined)?.sourceId;
@@ -83,7 +84,7 @@ export function OutskirtsProgress() {
       return combatContext.sourceId ?? null;
     }
     return null;
-  }, [activity, combatContext]);
+  }, [activity, combatContext, outskirtsId]);
 
   const fallbackOutskirtsId = useMemo(() => Object.keys(outskirtsById)[0] ?? null, [outskirtsById]);
   const outskirtsId = activeOutskirtsId ?? fallbackOutskirtsId;

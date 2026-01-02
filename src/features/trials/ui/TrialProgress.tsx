@@ -6,6 +6,7 @@ import { useContentStore } from '../../../stores/contentStore';
 import { useGameStore } from '../../../stores/gameStore';
 import { useInventoryStore } from '../../../stores/inventoryStore';
 import { useTrialStore } from '../../../stores/trialStore';
+import { useCityStore } from '../../../stores/cityStore';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel';
 import { hpPercent } from '../../../systems/combat/minibarModel';
 import { formatNumber, D } from '../../../utils/numbers';
@@ -32,6 +33,11 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
     enemyHP,
     enemyMaxHP,
     combatShield,
+    startCombat,
+    setAutoAttack,
+    setAutoCombatAI,
+    exitCombat,
+    combatContext,
   } = useCombatStore(
     useShallow((state) => ({
       events: state.events,
@@ -39,6 +45,11 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       enemyHP: state.enemyHP,
       enemyMaxHP: state.enemyMaxHP,
       combatShield: state.combatShield,
+      startCombat: state.startCombat,
+      setAutoAttack: state.setAutoAttack,
+      setAutoCombatAI: state.setAutoCombatAI,
+      exitCombat: state.exitCombat,
+      combatContext: state.combatContext,
     })),
   );
 
@@ -50,20 +61,27 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
     })),
   );
 
+  const startActivity = useActivityStore((state) => state.startActivity);
+  const stopActivity = useActivityStore((state) => state.stopActivity);
   const progress = useTrialStore((state) => state.progressByTrialId[trialId]);
   const playerRealm = useGameStore((state) => state.realm.index);
   const playerStats = useGameStore((state) => state.stats);
   const absorptionShield = useGameStore((state) => state.absorptionShield);
   const getItemCount = useInventoryStore((state) => state.getItemCount);
+  const cityFlagsById = useCityStore((state) => state.cityFlagsById);
 
   const trialDef = trialsById[trialId];
   const bossTemplate = trialDef ? enemiesById[trialDef.bossId] : undefined;
   const lastSummary = progress?.lastAttemptSummary ?? null;
+  const cityFlags = trialDef?.cityId ? cityFlagsById[trialDef.cityId] : undefined;
 
   const recommendation = TRIAL_RECOMMENDATIONS[trialId] ?? {};
-  const requiredItemId = trialDef?.requiredItemId ?? trialDef?.gateItemId;
+  const gateItemId = trialDef?.gateItemId;
+  const gateItemName = gateItemId ? itemsById[gateItemId]?.name ?? gateItemId : 'No gate item';
+  const gateItemOwned = gateItemId ? getItemCount(gateItemId) > 0 : true;
+  const requiredItemId = trialDef?.requiredItemId;
   const requiredItemName = requiredItemId ? itemsById[requiredItemId]?.name ?? requiredItemId : 'No required item';
-  const hasRequiredItem = requiredItemId ? getItemCount(requiredItemId) > 0 : true;
+  const requiredItemOwned = requiredItemId ? getItemCount(requiredItemId) > 0 : true;
 
   const realmRequirement =
     trialDef?.minRealm ?? trialDef?.realmRequirement ?? (typeof recommendation.minRealm === 'number' ? recommendation.minRealm : null);
@@ -89,6 +107,40 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const attemptDurationMs = progress?.attemptStartAt ? now - progress.attemptStartAt : null;
   const attemptsThisSession = progress?.sessionAttempts ?? 0;
   const attemptCap = trialDef?.failSafe?.thresholdAttempts ?? 3;
+
+  const cleared = Boolean(progress?.cleared || cityFlags?.gateTrialCleared);
+  const eligible = Boolean(realmMet && gateItemOwned && requiredItemOwned && !cleared);
+
+  const ineligibleReason = cleared
+    ? 'Already cleared'
+    : !realmMet
+      ? 'Realm too low'
+      : !gateItemOwned
+        ? 'Missing gate item'
+        : !requiredItemOwned
+          ? 'Missing required item'
+          : null;
+
+  const handleStart = () => {
+    if (!trialDef || !eligible) return;
+    startActivity('trial', { cityId: trialDef.cityId, sourceId: trialDef.id });
+    setAutoAttack(true);
+    setAutoCombatAI(true);
+    startCombat(trialDef.bossId, {
+      type: 'trial',
+      cityId: trialDef.cityId,
+      trialId: trialDef.id,
+      gateItemId: trialDef.gateItemId,
+      eligible,
+    });
+  };
+
+  const handleStop = () => {
+    stopActivity('trial-progress-stop');
+    if (combatContext?.type === 'trial') {
+      exitCombat();
+    }
+  };
 
   const summaryDurationText = lastSummary
     ? `${lastSummary.durationSec.toFixed(1)}s`
@@ -122,11 +174,31 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
           </span>
         </div>
         <div className="trial-progress__requirement-row">
-          <span className="trial-progress__badge">Key Item</span>
-          <span className={hasRequiredItem ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
-            {hasRequiredItem ? '✅ Owned' : '❌ Missing'} — {requiredItemName}
+          <span className="trial-progress__badge">Gate Item</span>
+          <span className={gateItemOwned ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
+            {gateItemOwned ? '✅ Owned' : '❌ Missing'} — {gateItemName}
           </span>
         </div>
+        {requiredItemId ? (
+          <div className="trial-progress__requirement-row">
+            <span className="trial-progress__badge">Required Item</span>
+            <span className={requiredItemOwned ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
+              {requiredItemOwned ? '✅ Owned' : '❌ Missing'} — {requiredItemName}
+            </span>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="trial-progress__controls">
+        <button className="button-standard" onClick={handleStart} disabled={!eligible}>
+          Start
+        </button>
+        <button className="button-standard" onClick={handleStop}>
+          Stop
+        </button>
+        {!eligible && ineligibleReason ? (
+          <div className="trial-progress__controls-note">{ineligibleReason}</div>
+        ) : null}
       </div>
 
       <div className="trial-progress__metrics">
@@ -188,7 +260,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   );
 }
 
-export function TrialProgress() {
+export function TrialProgress({ trialId }: { trialId?: string }) {
   const activity = useActivityStore((state) => state.active);
   const combatContext = useCombatStore((state) => state.combatContext);
 
@@ -196,7 +268,8 @@ export function TrialProgress() {
   const activitySourceId = activity?.sourceId;
   const activityPayloadSourceId = activity?.payload?.sourceId;
 
-  const trialId = useMemo(() => {
+  const effectiveTrialId = useMemo(() => {
+    if (trialId) return trialId;
     if (activityType === 'trial') {
       return activitySourceId ?? activityPayloadSourceId ?? null;
     }
@@ -204,11 +277,11 @@ export function TrialProgress() {
       return combatContext.trialId;
     }
     return null;
-  }, [activityPayloadSourceId, activitySourceId, activityType, combatContext]);
+  }, [activityPayloadSourceId, activitySourceId, activityType, combatContext, trialId]);
 
-  if (!trialId) {
+  if (!effectiveTrialId) {
     return <div className="combat-theater__progress-placeholder">No trial selected.</div>;
   }
 
-  return <TrialProgressContent trialId={trialId} />;
+  return <TrialProgressContent trialId={effectiveTrialId} />;
 }

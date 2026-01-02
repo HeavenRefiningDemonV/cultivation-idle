@@ -12,7 +12,7 @@ import { TechniqueStrip } from './TechniqueStrip';
 import { FightIntelPanel } from './FightIntelPanel';
 import { LootTicker } from './LootTicker';
 import { StatusEffectRow } from './StatusEffectRow';
-import { ProgressPanel } from './ProgressPanel';
+import { ProgressPanel, type CombatTheaterFocus } from './ProgressPanel';
 import { AI_PROFILE_OPTIONS, buildAiReason, getTechniqueAiTags } from '../../../systems/combat/aiProfiles';
 import { normalizeTechniqueEffects } from '../../../systems/techniques/effects';
 import { MedicinePouchStrip } from '../MedicinePouchStrip';
@@ -37,10 +37,12 @@ export function CombatTheater({
   onClose,
   mode,
   previewOverlay,
+  focus,
 }: {
   onClose: () => void;
   mode?: CombatTheaterMode;
   previewOverlay?: ReactNode;
+  focus?: CombatTheaterFocus;
 }) {
   const activity = useActivityStore((state) => state.active);
   const showFloatingNumbers = useUIStore((state) => state.settings.showCombatFloatingNumbers);
@@ -241,7 +243,7 @@ export function CombatTheater({
         <div className="combat-theater__subheader">{activityLabel}</div>
       </div>
 
-      <ProgressPanel />
+      <ProgressPanel focus={focus} />
 
       {isActive ? (
         <div className="combat-theater__controls">
