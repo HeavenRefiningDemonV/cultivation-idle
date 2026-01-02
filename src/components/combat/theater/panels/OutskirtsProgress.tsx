@@ -50,7 +50,9 @@ function summarizeMechanics(mechanics: EnemyMechanic[] | undefined): string[] {
     .slice(0, 2);
 }
 
-export function OutskirtsProgress({ outskirtsId }: { outskirtsId?: string }) {
+type OutskirtsProgressProps = { outskirtsId?: string };
+
+export function OutskirtsProgress({ outskirtsId: overrideOutskirtsId }: OutskirtsProgressProps) {
   const activity = useActivityStore((state) => state.active);
   const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
@@ -74,7 +76,7 @@ export function OutskirtsProgress({ outskirtsId }: { outskirtsId?: string }) {
   const getProgress = useOutskirtsStore((state) => state.getProgress);
 
   const activeOutskirtsId = useMemo(() => {
-    if (outskirtsId) return outskirtsId;
+    if (overrideOutskirtsId) return overrideOutskirtsId;
     const active = activity as ActiveActivity | null;
     if (active?.type === 'outskirts') {
       const payloadSourceId = (active.payload as { sourceId?: string } | undefined)?.sourceId;
@@ -84,13 +86,13 @@ export function OutskirtsProgress({ outskirtsId }: { outskirtsId?: string }) {
       return combatContext.sourceId ?? null;
     }
     return null;
-  }, [activity, combatContext, outskirtsId]);
+  }, [activity, combatContext, overrideOutskirtsId]);
 
   const fallbackOutskirtsId = useMemo(() => Object.keys(outskirtsById)[0] ?? null, [outskirtsById]);
-  const outskirtsId = activeOutskirtsId ?? fallbackOutskirtsId;
-  const outskirtsDef = outskirtsId ? outskirtsById[outskirtsId] : undefined;
+  const resolvedOutskirtsId = activeOutskirtsId ?? fallbackOutskirtsId;
+  const outskirtsDef = resolvedOutskirtsId ? outskirtsById[resolvedOutskirtsId] : undefined;
 
-  const progress = outskirtsId ? progressByOutskirtsId[outskirtsId] : undefined;
+  const progress = resolvedOutskirtsId ? progressByOutskirtsId[resolvedOutskirtsId] : undefined;
 
   const killsSinceBoss = progress?.killsSinceBoss ?? 0;
   const killsToBoss = outskirtsDef?.killsToBoss ?? 1;
@@ -164,7 +166,7 @@ export function OutskirtsProgress({ outskirtsId }: { outskirtsId?: string }) {
   const bossActive = Boolean(isBoss || currentEnemy?.isBoss || bossHighlights.lastSpawn);
 
   const headline = outskirtsDef ? HEADLINE_MECHANICS[outskirtsDef.id] : undefined;
-  const realmRequirement = outskirtsId ? ZONE_REALM_REQUIREMENTS[outskirtsId] : undefined;
+  const realmRequirement = resolvedOutskirtsId ? ZONE_REALM_REQUIREMENTS[resolvedOutskirtsId] : undefined;
 
   const lootLines = useMemo(() => {
     return bossHighlights.lootEvents.map((event) => {
