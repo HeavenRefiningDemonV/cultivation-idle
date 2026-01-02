@@ -5,7 +5,6 @@
     "name": "Pinewind Hamlet",
     "unlockMajorRealm": "qi_condensation",
     "modules": [
-      "meditationHall",
       "outskirts",
       "gateTrial",
       "ruins",
@@ -36,7 +35,6 @@
     "name": "Stonecrag Town",
     "unlockMajorRealm": "foundation_establishment",
     "modules": [
-      "meditationHall",
       "outskirts",
       "gateTrial",
       "ruins",
@@ -67,7 +65,6 @@
     "name": "Spirit Cavern City",
     "unlockMajorRealm": "core_formation",
     "modules": [
-      "meditationHall",
       "outskirts",
       "gateTrial",
       "ruins",
@@ -98,7 +95,6 @@
     "name": "Lotusford",
     "unlockMajorRealm": "nascent_soul",
     "modules": [
-      "meditationHall",
       "outskirts",
       "gateTrial",
       "ruins",
@@ -129,7 +125,6 @@
     "name": "Ironpeak Bastion",
     "unlockMajorRealm": "soul_formation",
     "modules": [
-      "meditationHall",
       "outskirts",
       "gateTrial",
       "ruins",

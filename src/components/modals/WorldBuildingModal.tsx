@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
 import { resolveModuleRef } from '../screens/world/worldUtils';
-import { MeditationHallPanel } from '../screens/MeditationHallPanel';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel';
 import { ApothecaryPanel } from '../screens/ApothecaryPanel';
 import { AlchemyPanel } from '../screens/AlchemyPanel';
@@ -66,7 +65,7 @@ export function WorldBuildingModal({
     if (isCombatModule(buildingKey)) {
       openWorldModule({ cityId: storeCityId, moduleKey: buildingKey, source: 'world-building-modal' });
     }
-  }, [buildingKey, isStoreMode, open, openWorldModule, storeCityId]);
+  }, [buildingKey, isStoreMode, open, storeCityId]);
 
   if ((isStoreMode && (!storeOpen || !storeCityId || !buildingKey)) || (!isStoreMode && !open)) {
     return null;
@@ -76,9 +75,6 @@ export function WorldBuildingModal({
 
   if (isStoreMode) {
     switch (buildingKey) {
-      case 'meditationHall':
-        content = <MeditationHallPanel />;
-        break;
       case 'manualPavilion':
         content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
         break;

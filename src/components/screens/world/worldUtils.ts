@@ -1,7 +1,6 @@
 import type { CityDef } from '../../../content';
 
 export const MODULE_REF_KEYS: Record<string, string> = {
-  meditationHall: 'meditationHallId',
   outskirts: 'outskirtsId',
   gateTrial: 'gateTrialId',
   ruins: 'ruinId',

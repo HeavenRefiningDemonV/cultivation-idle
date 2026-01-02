@@ -192,7 +192,7 @@ function HeartLawScrollCard({
       <div className="panelHeader">
         <div>
           <div className="panelTitle">{heartLaw.name}</div>
-          <div className="panelSub">Heart Law • Meditation Hall</div>
+          <div className="panelSub">Heart Law • Dao Heart</div>
         </div>
         <span className="heartLawPattern">{pattern}</span>
       </div>

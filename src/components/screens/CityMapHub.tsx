@@ -2,7 +2,6 @@ import React from 'react';
 import './CityMapHub.scss';
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
-  meditationHall: { leftPct: 24, topPct: 42 },
   manualPavilion: { leftPct: 40, topPct: 30 },
   apothecary: { leftPct: 58, topPct: 48 },
   alchemy: { leftPct: 72, topPct: 35 },

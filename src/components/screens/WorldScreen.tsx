@@ -12,7 +12,6 @@ import { CityMapHub } from './CityMapHub';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
-  meditationHall: { label: 'Meditation Hall', prompt: 'Existing cultivation loop; Heart Laws in Prompt 18' },
   outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },
   gateTrial: { label: 'Gate Trial', prompt: 'Coming in Prompt 6' },
   ruins: { label: 'Ruins', prompt: 'Repeatable ruins runs' },

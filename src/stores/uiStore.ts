@@ -39,7 +39,6 @@ export type WorldBuildingKey =
   | 'outskirts'
   | 'gateTrial'
   | 'ruins'
-  | 'meditationHall'
   | 'apothecary'
   | 'manualPavilion'
   | 'alchemy'
