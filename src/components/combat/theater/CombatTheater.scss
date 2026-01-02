@@ -10,6 +10,11 @@
   overflow-y: auto;
   padding: 16px;
   gap: 12px;
+  position: relative;
+}
+
+.combat-theater--preview {
+  outline: 1px solid rgba(99, 179, 237, 0.6);
 }
 
 .combat-theater__header {
@@ -29,6 +34,26 @@
   gap: 8px;
   align-items: center;
   color: #c7ccd8;
+}
+
+.combat-theater__mode-chip {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.combat-theater__mode-chip--preview {
+  background: rgba(59, 130, 246, 0.15);
+  color: #bfdbfe;
+}
+
+.combat-theater__mode-chip--active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #bbf7d0;
 }
 
 .combat-theater__enemy-name {
@@ -467,4 +492,18 @@
   display: grid;
   gap: 4px;
   color: #e7ebf3;
+}
+
+.combat-theater__preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08), transparent 35%),
+    rgba(8, 12, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(2px);
 }

@@ -7,6 +7,7 @@ import { useInventoryStore } from '../../../../stores/inventoryStore';
 import { useTrialStore } from '../../../../stores/trialStore';
 import { RewardService } from '../../../../services/rewards';
 import { resolveModuleRef } from '../worldUtils';
+import { useUIStore } from '../../../../stores/uiStore';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -29,10 +30,9 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const stopActivity = useActivityStore((state) => state.stopActivity);
 
   const combatContext = useCombatStore((state) => state.combatContext);
-  const startCombat = useCombatStore((state) => state.startCombat);
   const exitCombat = useCombatStore((state) => state.exitCombat);
-  const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
-  const setAutoCombatAI = useCombatStore((state) => state.setAutoCombatAI);
+  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
+  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
@@ -92,26 +92,11 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef || !isTrialEligible) return;
-
-    if (combatContext.type) {
-      exitCombat();
-    }
-
-    stopActivity();
-    startActivity('trial', { cityId, sourceId: trialDef.id });
-    setAutoAttack(true);
-    setAutoCombatAI(true);
-
-    startCombat(trialDef.bossId, {
-      type: 'trial',
-      cityId,
-      trialId: trialDef.id,
-      gateItemId: trialDef.gateItemId,
-      eligible: isTrialEligible,
-    });
+    openCombatPreview({ type: 'trial', cityId, sourceId: trialDef.id });
   };
 
   const handleStopTrial = () => {
+    stopCombatAndClose();
     stopActivity();
     if (combatContext.type === 'trial') {
       exitCombat();

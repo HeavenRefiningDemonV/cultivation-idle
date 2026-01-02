@@ -4,7 +4,6 @@ import { useActivityStore } from '../../stores/activityStore';
 import type { ActiveActivity } from '../../stores/activityStore';
 import { DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN, PLAYER_ATTACK_COOLDOWN, useCombatStore } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
-import { useRuinsStore } from '../../stores/ruinsStore';
 import { useUIStore } from '../../stores/uiStore';
 import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel';
 import { formatNumber } from '../../utils/numbers';
@@ -101,12 +100,13 @@ function CombatMinibarContent({
   const absorptionShield = useGameStore((state) => state.absorptionShield);
   const playerDef = useGameStore((state) => state.stats.def);
   const combatMinibarExpanded = useUIStore((state) => state.settings.combatMinibarExpanded);
-  const combatTheaterOpen = useUIStore((state) => state.combatTheaterOpen);
-  const toggleCombatTheater = useUIStore((state) => state.toggleCombatTheater);
-  const closeCombatTheater = useUIStore((state) => state.closeCombatTheater);
+  const presentationMode = useUIStore((state) => state.combatPresentation.mode);
+  const closeCombatPresentation = useUIStore((state) => state.closeCombatPresentation);
+  const restoreCombatFromDock = useUIStore((state) => state.restoreCombatFromDock);
   const toggleCombatMinibarExpanded = useUIStore((state) => state.toggleCombatMinibarExpanded);
   const combatAIProfile = useUIStore((state) => state.settings.combatAIProfile);
   const setSettings = useUIStore((state) => state.setSettings);
+  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
 
   const [now, setNow] = useState(() => Date.now());
 
@@ -184,15 +184,17 @@ function CombatMinibarContent({
   const stopActivity = () => {
     const confirmed = window.confirm('Stop combat activity? This will end your current run/fight loop.');
     if (!confirmed) return;
+    stopCombatAndClose();
+  };
 
-    if (activity?.type === 'ruins') {
-      useRuinsStore.getState().stopRun();
+  const combatTheaterOpen = presentationMode === 'preview' || presentationMode === 'active';
+
+  const handleToggleTheater = () => {
+    if (combatTheaterOpen) {
+      closeCombatPresentation();
     } else {
-      useActivityStore.getState().stopActivity('combat-minibar-stop');
-      useCombatStore.getState().exitCombat();
+      restoreCombatFromDock();
     }
-
-    closeCombatTheater();
   };
 
   const expandedContent = (
@@ -215,7 +217,7 @@ function CombatMinibarContent({
             </select>
           </label>
           <SafetyBadge tier={safety.tier} reasons={safety.reasons} />
-          <button className="button-standard" onClick={toggleCombatTheater}>
+          <button className="button-standard" onClick={handleToggleTheater}>
             {combatTheaterOpen ? 'Close Theater' : 'Open Theater'}
           </button>
           <button className="button-standard button-standard--danger" onClick={stopActivity}>

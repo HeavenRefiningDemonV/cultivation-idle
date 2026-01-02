@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../stores/activityStore';
 import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../../stores/combatStore';
@@ -31,7 +31,17 @@ function formatActivityLabel(type: string | null | undefined): string {
   }
 }
 
-export function CombatTheater({ onClose }: { onClose: () => void }) {
+export type CombatTheaterPresentationMode = 'preview' | 'active';
+
+export function CombatTheater({
+  onClose,
+  mode = 'active',
+  previewOverlay,
+}: {
+  onClose: () => void;
+  mode?: CombatTheaterPresentationMode;
+  previewOverlay?: ReactNode;
+}) {
   const activity = useActivityStore((state) => state.active);
   const showFloatingNumbers = useUIStore((state) => state.settings.showCombatFloatingNumbers);
   const setSettings = useUIStore((state) => state.setSettings);
@@ -181,8 +191,10 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
     return () => window.clearTimeout(timer);
   }, [aiHint]);
 
+  const isPreview = mode === 'preview';
+
   return (
-    <div className="combat-theater">
+    <div className={`combat-theater ${isPreview ? 'combat-theater--preview' : ''}`}>
       <div className="combat-theater__header">
         <div>
           <div className="combat-theater__title">Combat Theater</div>
@@ -194,6 +206,9 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
                 {(isBoss || currentEnemy.isBoss) && <span className="combat-theater__badge">Boss</span>}
               </>
             )}
+            <span className={`combat-theater__mode-chip combat-theater__mode-chip--${mode}`}>
+              {isPreview ? 'Preview' : 'Live'}
+            </span>
           </div>
         </div>
         <button className="button-standard" onClick={onClose}>
@@ -357,6 +372,8 @@ export function CombatTheater({ onClose }: { onClose: () => void }) {
           <div className="combat-theater__events-empty">No technique activations yet.</div>
         )}
       </div>
+
+      {isPreview && previewOverlay ? <div className="combat-theater__preview-overlay">{previewOverlay}</div> : null}
     </div>
   );
 }

@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { OfflineProgressSummary } from '../systems/offline';
 import type { OfflineCatchupResult } from '../services/time/OfflineCatchup';
+import { useActivityStore } from './activityStore';
+import { useCombatStore } from './combatStore';
+import { useOutskirtsStore } from './outskirtsStore';
+import { useRuinsStore } from './ruinsStore';
+import { useContentStore } from './contentStore';
+import { useTrialStore } from './trialStore';
+import { useCityStore } from './cityStore';
+import { useInventoryStore } from './inventoryStore';
+import { pickEnemyFromPool } from '../components/screens/world/worldUtils';
 
 /**
  * UI notification types
@@ -54,6 +63,19 @@ export interface UISettingsState {
   useConsumablesInCombat: boolean;
   preferredTarget: 'trash' | 'elite' | 'boss';
 }
+
+export type CombatPresentationMode = 'hidden' | 'preview' | 'active' | 'docked';
+
+export type CombatPresentationContext = {
+  type: 'outskirts' | 'trial' | 'ruins';
+  cityId?: string;
+  sourceId?: string;
+};
+
+type CombatPresentationState = {
+  mode: CombatPresentationMode;
+  context: CombatPresentationContext | null;
+};
 
 interface UIStateBase {
   // Active tab
@@ -108,8 +130,7 @@ interface UIStateBase {
   tooltipContent: string;
   tooltipPosition: { x: number; y: number };
 
-  // Combat overlays
-  combatTheaterOpen: boolean;
+  combatPresentation: CombatPresentationState;
 }
 
 /**
@@ -142,9 +163,13 @@ export interface UIState extends UIStateBase {
   setLastOfflineSummary: (summary: OfflineCatchupResult['summary']) => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
   toggleCombatMinibarExpanded: () => void;
-  openCombatTheater: () => void;
-  closeCombatTheater: () => void;
-  toggleCombatTheater: () => void;
+  openCombatPreview: (context: CombatPresentationContext) => void;
+  startCombatFromPreview: () => void;
+  closeCombatPresentation: () => void;
+  restoreCombatFromDock: () => void;
+  stopCombatAndClose: () => void;
+  isCombatVisible: () => boolean;
+  isCombatDocked: () => boolean;
   openManualSatchel: () => void;
   closeManualSatchel: () => void;
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
@@ -210,7 +235,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   tooltipVisible: false,
   tooltipContent: '',
   tooltipPosition: { x: 0, y: 0 },
-  combatTheaterOpen: false,
+  combatPresentation: { mode: 'hidden', context: null },
 };
 
 /**
@@ -459,23 +484,154 @@ export const useUIStore = create<UIState>()(
       });
     },
 
-    openCombatTheater: () => {
+    openCombatPreview: (context) => {
       set((state) => {
-        state.combatTheaterOpen = true;
+        state.combatPresentation.mode = 'preview';
+        state.combatPresentation.context = context;
       });
     },
 
-    closeCombatTheater: () => {
+    startCombatFromPreview: () => {
+      const presentation = get().combatPresentation;
+      const context = presentation.context;
+      if (!context) return;
+
+      const activityStore = useActivityStore.getState();
+      const combatStore = useCombatStore.getState();
+      const activeActivity = activityStore.active;
+
+      if (activeActivity && (activeActivity.type !== context.type || activeActivity.sourceId !== context.sourceId)) {
+        const confirmed = window.confirm('Stop current combat and start the new encounter?');
+        if (!confirmed) return;
+
+        if (activeActivity.type === 'ruins') {
+          useRuinsStore.getState().stopRun();
+        } else {
+          activityStore.stopActivity('combat-presentation-replace');
+          combatStore.exitCombat();
+        }
+      }
+
+      const contentStore = useContentStore.getState();
+
+      if (context.type === 'outskirts') {
+        const outskirtsDef = context.sourceId ? contentStore.maps.outskirtsById[context.sourceId] : undefined;
+        if (!outskirtsDef) {
+          get().addNotification('error', 'Unable to start outskirts: definition missing.');
+          return;
+        }
+
+        const shouldSpawnBoss = useOutskirtsStore.getState().shouldSpawnBoss(outskirtsDef.id, outskirtsDef);
+        const nextEnemyId = shouldSpawnBoss ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
+        if (!nextEnemyId) {
+          get().addNotification('warning', 'No enemy available for this outskirts run.');
+          return;
+        }
+
+        activityStore.startActivity('outskirts', { cityId: context.cityId ?? outskirtsDef.cityId, sourceId: outskirtsDef.id });
+        combatStore.setAutoAttack(true);
+        combatStore.startCombat(nextEnemyId, {
+          type: 'outskirts',
+          cityId: context.cityId ?? outskirtsDef.cityId,
+          sourceId: outskirtsDef.id,
+          cityIndex: outskirtsDef.cityIndex,
+          isBoss: shouldSpawnBoss,
+        });
+      } else if (context.type === 'trial') {
+        const trialDef = context.sourceId ? contentStore.maps.trialsById[context.sourceId] : undefined;
+        if (!trialDef) {
+          get().addNotification('error', 'Unable to start trial: definition missing.');
+          return;
+        }
+
+        const trialProgress = useTrialStore.getState().progressByTrialId[trialDef.id];
+        const trialCityId = context.cityId ?? trialDef.cityId ?? null;
+        const cityFlags = trialCityId ? useCityStore.getState().cityFlagsById[trialCityId] : undefined;
+        const isEligible = !(trialProgress?.cleared || cityFlags?.gateTrialCleared);
+        const hasGateItem = trialDef.gateItemId
+          ? useInventoryStore.getState().getItemCount(trialDef.gateItemId) > 0
+          : true;
+
+        if (!isEligible) {
+          get().addNotification('warning', 'Trial already cleared or locked.');
+          return;
+        }
+
+        if (!hasGateItem) {
+          get().addNotification('warning', 'Missing required gate item.');
+          return;
+        }
+
+        activityStore.startActivity('trial', { cityId: context.cityId ?? trialDef.cityId, sourceId: trialDef.id });
+        combatStore.setAutoAttack(true);
+        combatStore.setAutoCombatAI(true);
+        combatStore.startCombat(trialDef.bossId, {
+          type: 'trial',
+          cityId: context.cityId ?? trialDef.cityId,
+          trialId: trialDef.id,
+          gateItemId: trialDef.gateItemId,
+          eligible: isEligible,
+        });
+      } else if (context.type === 'ruins') {
+        const ruinDef = context.sourceId ? contentStore.maps.ruinsById[context.sourceId] : undefined;
+        if (!ruinDef) {
+          get().addNotification('error', 'Unable to start ruins: definition missing.');
+          return;
+        }
+
+        useRuinsStore.getState().startRun(ruinDef.id);
+      }
+
       set((state) => {
-        state.combatTheaterOpen = false;
+        state.combatPresentation.mode = 'active';
+        state.combatPresentation.context = context;
       });
     },
 
-    toggleCombatTheater: () => {
+    closeCombatPresentation: () => {
       set((state) => {
-        state.combatTheaterOpen = !state.combatTheaterOpen;
+        if (state.combatPresentation.mode === 'preview') {
+          state.combatPresentation.mode = 'hidden';
+          state.combatPresentation.context = null;
+        } else if (state.combatPresentation.mode === 'active') {
+          state.combatPresentation.mode = 'docked';
+        }
       });
     },
+
+    restoreCombatFromDock: () => {
+      set((state) => {
+        if (state.combatPresentation.mode === 'docked') {
+          state.combatPresentation.mode = 'active';
+        }
+      });
+    },
+
+    stopCombatAndClose: () => {
+      const presentation = get().combatPresentation;
+      const context = presentation.context;
+      const activeActivity = useActivityStore.getState().active;
+      const effectiveType = context?.type ?? activeActivity?.type;
+
+      if (effectiveType === 'ruins') {
+        useRuinsStore.getState().stopRun();
+      } else {
+        useActivityStore.getState().stopActivity('combat-presentation-stop');
+        useCombatStore.getState().exitCombat();
+      }
+
+      set((state) => {
+        state.combatPresentation.mode = 'hidden';
+        state.combatPresentation.context = null;
+      });
+    },
+
+    isCombatVisible: () => {
+      const mode = get().combatPresentation.mode;
+      return mode === 'preview' || mode === 'active';
+    },
+
+    isCombatDocked: () => get().combatPresentation.mode === 'docked',
 
     openManualSatchel: () => {
       set((state) => {

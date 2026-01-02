@@ -3,6 +3,7 @@ import { useActivityStore } from '../../../../stores/activityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useRuinsStore } from '../../../../stores/ruinsStore';
+import { useUIStore } from '../../../../stores/uiStore';
 import { resolveModuleRef } from '../worldUtils';
 
 interface RuinsBuildingPanelProps {
@@ -15,7 +16,6 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
 
   const ruinsProgressById = useRuinsStore((state) => state.progressByRuinId);
   const activeRun = useRuinsStore((state) => state.activeRun);
-  const startRun = useRuinsStore((state) => state.startRun);
   const stopRun = useRuinsStore((state) => state.stopRun);
   const setAutoRepeat = useRuinsStore((state) => state.setAutoRepeat);
   const autoRepeatDefault = useRuinsStore((state) => state.autoRepeatDefault);
@@ -25,6 +25,8 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
 
   const combatContext = useCombatStore((state) => state.combatContext);
   const exitCombat = useCombatStore((state) => state.exitCombat);
+  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
+  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
 
   const ruinRefId = useMemo(() => resolveModuleRef(city ?? null, 'ruins'), [city]);
   const ruinDef = ruinRefId ? ruinsById[ruinRefId] : undefined;
@@ -36,10 +38,11 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
 
   const handleStartRuins = () => {
     if (!ruinDef) return;
-    startRun(ruinDef.id);
+    openCombatPreview({ type: 'ruins', cityId, sourceId: ruinDef.id });
   };
 
   const handleStopRuins = () => {
+    stopCombatAndClose();
     stopRun();
     stopActivity();
     if (combatContext.type === 'ruins') {

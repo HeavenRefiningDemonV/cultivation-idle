@@ -4,6 +4,7 @@ import { useActivityStore } from '../../../stores/activityStore';
 import { useCombatStore } from '../../../stores/combatStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useRuinsStore } from '../../../stores/ruinsStore';
+import { useUIStore } from '../../../stores/uiStore';
 import type { RuinsRunSummary } from '../../../types';
 import { pityProgressPercent } from '../../../services/economy/pity';
 import { formatNumber } from '../../../utils/numbers';
@@ -75,7 +76,6 @@ export function RuinsProgress() {
     autoRepeatDefault,
     runHistory,
     lastRunSummary,
-    startRun,
     stopRun,
     setAutoRepeat,
   } = useRuinsStore(
@@ -86,11 +86,13 @@ export function RuinsProgress() {
       autoRepeatDefault: state.autoRepeatDefault,
       runHistory: state.runHistory,
       lastRunSummary: state.lastRunSummary,
-      startRun: state.startRun,
       stopRun: state.stopRun,
       setAutoRepeat: state.setAutoRepeat,
     })),
   );
+
+  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
+  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
 
   const ruinId = useMemo(() => {
     const activityId = activity?.type === 'ruins' ? activity.sourceId ?? activity.payload?.sourceId : null;
@@ -126,11 +128,12 @@ export function RuinsProgress() {
 
   const handleStart = () => {
     if (ruinId) {
-      startRun(ruinId);
+      openCombatPreview({ type: 'ruins', cityId: ruinDef?.cityId, sourceId: ruinId });
     }
   };
 
   const handleStop = () => {
+    stopCombatAndClose();
     stopRun();
   };
 

@@ -3,7 +3,8 @@ import { useActivityStore } from '../../../../stores/activityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
-import { resolveModuleRef, pickEnemyFromPool } from '../worldUtils';
+import { useUIStore } from '../../../../stores/uiStore';
+import { resolveModuleRef } from '../worldUtils';
 
 interface OutskirtsBuildingPanelProps {
   cityId: string;
@@ -18,13 +19,13 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const shouldSpawnBoss = useOutskirtsStore((state) => state.shouldSpawnBoss);
 
   const activeActivity = useActivityStore((state) => state.active);
-  const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
 
   const combatContext = useCombatStore((state) => state.combatContext);
-  const startCombat = useCombatStore((state) => state.startCombat);
   const exitCombat = useCombatStore((state) => state.exitCombat);
-  const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
+
+  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
+  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
 
   const outskirtsRefId = useMemo(() => resolveModuleRef(city ?? null, 'outskirts'), [city]);
   const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
@@ -37,23 +38,11 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
 
   const handleStartOutskirts = () => {
     if (!city || !outskirtsDef) return;
-
-    const nextEnemyId = isBossReady ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
-    if (!nextEnemyId) return;
-
-    startActivity('outskirts', { cityId, sourceId: outskirtsDef.id });
-    setAutoAttack(true);
-
-    startCombat(nextEnemyId, {
-      type: 'outskirts',
-      cityId,
-      sourceId: outskirtsDef.id,
-      cityIndex: outskirtsDef.cityIndex,
-      isBoss: isBossReady,
-    });
+    openCombatPreview({ type: 'outskirts', cityId, sourceId: outskirtsDef.id });
   };
 
   const handleStopOutskirts = () => {
+    stopCombatAndClose();
     stopActivity();
     if (combatContext.type === 'outskirts') {
       exitCombat();
