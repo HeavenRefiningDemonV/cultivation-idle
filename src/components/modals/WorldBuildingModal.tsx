@@ -35,6 +35,7 @@ export function WorldBuildingModal({
   const storeOpen = useUIStore((state) => state.showWorldBuildingModal);
   const storeCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
+  const minimizeFromStore = useUIStore((state) => state.minimizeWorldBuildingModal);
   const closeFromStore = useUIStore((state) => state.closeWorldBuildingModal);
   const city = useContentStore((state) => (storeCityId ? state.maps.citiesById[storeCityId] : undefined));
   const moduleRefId = useMemo(() => resolveModuleRef(city ?? null, storeBuildingKey ?? null), [city, storeBuildingKey]);
@@ -42,7 +43,20 @@ export function WorldBuildingModal({
   const isStoreMode = useStore;
   const open = isStoreMode ? storeOpen : Boolean(controlledOpen);
   const buildingKey: WorldBuildingKey | null | undefined = isStoreMode ? storeBuildingKey : undefined;
-  const close = isStoreMode ? closeFromStore : controlledOnClose || (() => {});
+  const minimizableBuildingKeys: WorldBuildingKey[] = ['outskirts', 'gateTrial', 'ruins'];
+  const isMinimizable = isStoreMode && Boolean(buildingKey && minimizableBuildingKeys.includes(buildingKey));
+  const dismissOrMinimize = useCallback(() => {
+    if (isStoreMode) {
+      if (buildingKey && minimizableBuildingKeys.includes(buildingKey)) {
+        minimizeFromStore();
+      } else {
+        closeFromStore();
+      }
+      return;
+    }
+
+    controlledOnClose?.();
+  }, [buildingKey, closeFromStore, controlledOnClose, isStoreMode, minimizableBuildingKeys, minimizeFromStore]);
   const title = isStoreMode
     ? `${city?.name ?? 'City'} — ${buildingKey ?? ''}`
     : controlledTitle || 'World Building';
@@ -51,10 +65,10 @@ export function WorldBuildingModal({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        close?.();
+        dismissOrMinimize();
       }
     },
-    [close],
+    [dismissOrMinimize],
   );
 
   useEffect(() => {
@@ -110,16 +124,18 @@ export function WorldBuildingModal({
     }
   }
 
+  const modalClassName = `worldBuildingModal${isMinimizable ? ' worldBuildingModal--combatPreview' : ''}`;
+
   return (
-    <div className="worldBuildingOverlay" role="dialog" aria-modal="true" onMouseDown={close}>
-      <div className="worldBuildingModal" onMouseDown={(event) => event.stopPropagation()}>
+    <div className="worldBuildingOverlay" role="dialog" aria-modal="true" onMouseDown={dismissOrMinimize}>
+      <div className={modalClassName} onMouseDown={(event) => event.stopPropagation()}>
         <div className="worldBuildingHeader">
           <div className="worldBuildingTitleGroup">
             <div className="worldBuildingTitle">{title}</div>
             {subtitle && <div className="worldBuildingSubtitle">{subtitle}</div>}
           </div>
-          <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-            ✕
+          <button type="button" className="worldBuildingClose" onClick={dismissOrMinimize} aria-label={isMinimizable ? 'Minimize' : 'Close'}>
+            {isMinimizable ? '—' : '✕'}
           </button>
         </div>
         <div className="worldBuildingBody">
