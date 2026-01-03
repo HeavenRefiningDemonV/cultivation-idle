@@ -67,6 +67,26 @@ export function WorldBuildingModal({
     }
   }, [buildingKey, isStoreMode, open, storeCityId]);
 
+  const backgroundVariant = useMemo(() => {
+    switch (buildingKey) {
+      case 'alchemy':
+        return 'alchemy';
+      case 'apothecary':
+        return 'apothecary';
+      case 'bounties':
+      case 'expeditions':
+        return 'bounty-board';
+      case 'gateTrial':
+      case 'ruins':
+      case 'outskirts':
+        return 'dungeon';
+      case 'forge':
+        return 'forge';
+      default:
+        return 'default';
+    }
+  }, [buildingKey]);
+
   if ((isStoreMode && (!storeOpen || !storeCityId || !buildingKey)) || (!isStoreMode && !open)) {
     return null;
   }
@@ -119,7 +139,10 @@ export function WorldBuildingModal({
 
   return (
     <div className="worldBuildingOverlay" role="dialog" aria-modal="true" onMouseDown={close}>
-      <div className="worldBuildingModal" onMouseDown={(event) => event.stopPropagation()}>
+      <div
+        className={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         <div className="worldBuildingHeader">
           <div className="worldBuildingTitleGroup">
             <div className="worldBuildingTitle">{title}</div>

@@ -82,8 +82,16 @@ export function GameLayout() {
     }
   };
 
+  const rootClassNames = [
+    'gameLayoutRoot',
+    activeTab === 'adventure' ? 'gameLayoutRoot--world' : '',
+    activeTab === 'techniques' ? 'gameLayoutRoot--techniques' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className={`gameLayoutRoot ${activeTab === 'adventure' ? 'gameLayoutRoot--world' : ''}`}>
+    <div className={rootClassNames}>
       <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
         {renderContent()}
       </div>
