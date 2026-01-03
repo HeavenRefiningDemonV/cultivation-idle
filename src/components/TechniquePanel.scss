@@ -1,7 +1,7 @@
 .techniquePanelRoot {
-  background: rgba(30, 41, 59, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(180, 180, 180, 0.5);
+  border-radius: 8px;
   padding: 16px;
   backdrop-filter: blur(8px);
 }
@@ -17,15 +17,15 @@
   font-family: 'Julee', cursive;
   font-size: 20px;
   font-weight: 700;
-  color: #fbbf24;
+  color: #3a3a3a;
   margin: 0;
 }
 
 .techniquePanelOpenLibrary {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
-  color: #0f172a;
+  background: linear-gradient(90deg, #e2e2e2, #cfcfcf);
+  color: #1f1f1f;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 8px 12px;
   font-weight: 700;
   cursor: pointer;
@@ -63,8 +63,8 @@
 .techniquePanelIntentBar {
   height: 12px;
   border-radius: 999px;
-  background: #0f172a;
-  border: 2px solid rgba(168, 85, 247, 0.5);
+  background: #e7e7e7;
+  border: 2px solid rgba(124, 124, 124, 0.45);
   overflow: hidden;
 }
 
@@ -80,11 +80,11 @@
 }
 
 .techniquePanelTechniqueCard {
-  border: 2px solid #374151;
-  border-radius: 14px;
+  border: 2px solid #cfcfcf;
+  border-radius: 8px;
   padding: 12px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
 }
 
@@ -141,9 +141,9 @@
 .techniquePanelProficiencyBar {
   height: 8px;
   border-radius: 999px;
-  background: #0f172a;
+  background: #e7e7e7;
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(150, 150, 150, 0.4);
   margin-bottom: 8px;
 }
 
