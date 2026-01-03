@@ -162,10 +162,6 @@ export function WorldScreen() {
   return (
     <div className={'worldScreen'}>
       <div className={'worldHubTopBar'}>
-        <div>
-          <h2 className={'worldScreenPanelTitle'}>World Hub</h2>
-          <p className={'worldScreenPanelSubtitle'}>Choose a city and enter its buildings</p>
-        </div>
         <div className={'worldHubCitySelectWrapper'}>
           <label className={'worldHubCityLabel'} htmlFor="world-city-select">
             City
@@ -200,12 +196,6 @@ export function WorldScreen() {
         <div className={'worldScreenDetailWrapper'}>
           <div className={'worldScreenPanel worldScreenCitySummary'}>
             <div className={'worldScreenPanelHeader'}>
-              <div>
-                <h2 className={'worldScreenPanelTitle'}>{selectedCity.name}</h2>
-                <p className={'worldScreenPanelSubtitle'}>
-                  Modules: {selectedCity.modules.length} • Realm Gate: {selectedCity.unlockMajorRealm}
-                </p>
-              </div>
               {trackedBounty && isTrackedModuleActive && (
                 <div className={'worldScreenTrackedBanner'}>
                   <div className={'worldScreenTrackedBannerText'}>
@@ -222,21 +212,6 @@ export function WorldScreen() {
                 </div>
               )}
             </div>
-            <div className={'worldScreenRefs'}>
-              <div className={'worldScreenRefsHeader'}>City References</div>
-              {selectedCity.refs && Object.keys(selectedCity.refs).length > 0 ? (
-                <dl className={'worldScreenRefsList'}>
-                  {Object.entries(selectedCity.refs).map(([key, value]) => (
-                    <div key={key} className={'worldScreenRefRow'}>
-                      <dt>{key}</dt>
-                      <dd>{value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <div className={'worldScreenRefsEmpty'}>No refs provided</div>
-              )}
-            </div>
           </div>
 
           {inCombat && (
@@ -246,12 +221,6 @@ export function WorldScreen() {
           )}
 
           <div className={'worldScreenPanel worldScreenHubPanel'}>
-            <div className={'worldScreenPanelHeader'}>
-              <div>
-                <h3 className={'worldScreenPanelTitle'}>{selectedCity.name} Map</h3>
-                <p className={'worldScreenPanelSubtitle'}>Tap a building to enter</p>
-              </div>
-            </div>
             <CityMapHub
               modules={selectedCity.modules}
               activeModuleKey={activeModuleKey}

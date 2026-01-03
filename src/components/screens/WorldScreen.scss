@@ -143,19 +143,7 @@
 }
 
 .worldScreenPanel {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
   overflow: hidden;
-}
-
-.worldScreenPanelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 8px;
 }
 
 .worldScreenPanelTitle {
@@ -1345,6 +1333,7 @@
 }
 
 @media (max-width: 900px) {
+
   .craftWorkspace,
   .craftingLayout {
     grid-template-columns: 1fr;
@@ -2136,10 +2125,6 @@
   font-weight: 600;
 }
 
-.forgeResultValue {
-  font-family: 'Inter', sans-serif;
-}
-
 .forgeStatus {
   padding: 6px 8px;
   border-radius: 8px;
@@ -2354,6 +2339,7 @@
 
 .worldScreenTrackedBannerText {
   font-size: 14px;
+  color: black;
 }
 
 .worldScreenTrackedName {
@@ -2808,17 +2794,12 @@
 .worldHubTopBar {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 12px;
   z-index: 5;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
   padding: 8px 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(6px);
 }
 
 .worldHubCitySelectWrapper {
@@ -2827,32 +2808,14 @@
   gap: 8px;
 }
 
-.worldHubCityLabel {
-  font-size: 13px;
-  color: #e2e8f0;
-}
-
 .worldHubCitySelect {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
+  font-family: 'Julee', cursive;
+  background: #ddd;
+  color: black;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px;
   padding: 8px 10px;
   min-width: 180px;
-  border-image: none;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-}
-
-.worldHubCitySelect:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.26);
-}
-
-.worldHubCitySelect:focus {
-  outline: 2px solid rgba(59, 130, 246, 0.6);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
 .worldScreenCitySummary {
