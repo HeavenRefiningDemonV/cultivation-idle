@@ -6,6 +6,7 @@
   justify-content: center;
   z-index: 40;
   pointer-events: none;
+  background-image: url('../../assets/background/Inside Dungeon.png');
 }
 
 .combat-presentation-modal__backdrop {
@@ -18,15 +19,14 @@
 
 .combat-presentation-modal__panel {
   position: relative;
-  width: min(1200px, 95vw);
-  height: min(820px, 90vh);
+  width: 80rem;
+  height: 45rem;
   pointer-events: auto;
   z-index: 1;
 }
 
 .combat-preview {
   width: min(620px, 90%);
-  background: rgba(18, 26, 38, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 16px;
@@ -61,7 +61,6 @@
 
 .combat-preview__rewards {
   margin-top: 12px;
-  background: rgba(59, 130, 246, 0.08);
   border: 1px solid rgba(59, 130, 246, 0.25);
   border-radius: 8px;
   padding: 10px;
@@ -83,7 +82,6 @@
   right: 16px;
   bottom: 88px;
   width: min(360px, 92vw);
-  background: rgba(12, 17, 28, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
