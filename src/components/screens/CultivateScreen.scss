@@ -275,8 +275,9 @@
   position: relative;
   height: 12px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
   overflow: hidden;
+  border-image: url("../assets/menus/bar_short.png") 1200;
+
 }
 
 .qiProgressBar--pulse .qiProgressFill {
@@ -295,9 +296,11 @@
   0% {
     filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
   }
+
   50% {
     filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
   }
+
   100% {
     filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
   }
