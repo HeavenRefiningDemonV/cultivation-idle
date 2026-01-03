@@ -1,9 +1,9 @@
 .spiritRootDisplayRoot {
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
+  background: linear-gradient(180deg, #f7f7f7, #e5e5e5);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
   padding: 32px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .spiritRootDisplayHeader {
@@ -25,10 +25,10 @@
 }
 
 .spiritRootDisplaySpiritCard {
-  border-radius: 14px;
+  border-radius: 6px;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
 }
 
 .spiritRootDisplayElementFire {
@@ -83,9 +83,9 @@
 }
 
 .spiritRootDisplayBonusCard {
-  background: rgba(30, 41, 59, 0.5);
-  border: 2px solid rgba(71, 85, 105, 0.5);
-  border-radius: 14px;
+  background: #f0f0f0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -135,12 +135,12 @@
 }
 
 .spiritRootDisplayInfoBox {
-  background: rgba(120, 53, 15, 0.2);
-  border: 1px solid rgba(146, 64, 14, 0.3);
-  border-radius: 14px;
+  background: #f6f1e5;
+  border: 1px solid rgba(146, 64, 14, 0.35);
+  border-radius: 6px;
   padding: 16px;
   margin-bottom: 16px;
-  color: rgba(253, 230, 138, 0.85);
+  color: #8a5a1a;
   font-size: 12px;
   line-height: 1.6;
 }
@@ -167,8 +167,8 @@
 }
 
 .spiritRootDisplayRerollButton:disabled {
-  background: #475569;
-  color: #94a3b8;
+  background: #c8c8c8;
+  color: #6b7280;
   cursor: not-allowed;
   opacity: 0.6;
 }
