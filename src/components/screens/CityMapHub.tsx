@@ -1,17 +1,16 @@
-import React from 'react';
 import './CityMapHub.scss';
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
-  manualPavilion: { leftPct: 40, topPct: 30 },
-  apothecary: { leftPct: 58, topPct: 48 },
-  alchemy: { leftPct: 72, topPct: 35 },
-  forge: { leftPct: 34, topPct: 65 },
-  talismanStudio: { leftPct: 50, topPct: 70 },
-  bounties: { leftPct: 65, topPct: 62 },
-  expeditions: { leftPct: 78, topPct: 56 },
-  outskirts: { leftPct: 14, topPct: 62 },
-  gateTrial: { leftPct: 12, topPct: 30 },
-  ruins: { leftPct: 86, topPct: 44 },
+  manualPavilion: { leftPct: 86.6, topPct: 13 },
+  apothecary: { leftPct: 30.5, topPct: 41 },
+  alchemy: { leftPct: 39.4, topPct: 63 },
+  forge: { leftPct: 60.3, topPct: 85 },
+  talismanStudio: { leftPct: 44.5, topPct: 82 },
+  bounties: { leftPct: 27.3, topPct: 80 },
+  expeditions: { leftPct: 27.3, topPct: 85.5 },
+  outskirts: { leftPct: 57, topPct: 45 },
+  gateTrial: { leftPct: 91.2, topPct: 76 },
+  ruins: { leftPct: 73, topPct: 58 },
 };
 
 export interface CityMapHubProps {
@@ -37,7 +36,6 @@ export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenMod
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
               onClick={() => onOpenModule(moduleKey)}
             >
-              <span className="cityMapHubHotspotMarker" aria-hidden="true" />
               <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
             </button>
           );
