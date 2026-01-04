@@ -91,13 +91,17 @@ export function GameLayout() {
     .filter(Boolean)
     .join(' ');
 
-  const rootStyle =
-    activeTab === 'adventure' && layoutBackgroundOverride
-      ? { backgroundImage: `url(${layoutBackgroundOverride})` }
-      : undefined;
+  const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
 
   return (
-    <div className={rootClassNames} style={rootStyle}>
+    <div className={rootClassNames}>
+      {showLayoutBackgroundOverlay ? (
+        <div
+          className="gameLayoutBackgroundOverlay"
+          style={{ backgroundImage: `url(${layoutBackgroundOverride})` }}
+          aria-hidden
+        />
+      ) : null}
       <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
         {renderContent()}
       </div>
