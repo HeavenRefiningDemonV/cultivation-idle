@@ -88,6 +88,9 @@ interface UIStateBase {
   headerSubtitle: string;
   headerTone: 'dark' | 'light';
 
+  // Background overrides
+  layoutBackgroundOverride: string | null;
+
   // Side panel visibility
   showSidePanel: boolean;
 
@@ -142,6 +145,7 @@ export interface UIState extends UIStateBase {
   setActiveTab: (tab: GameTab) => void;
   setHeaderTitles: (title: string, subtitle?: string) => void;
   setHeaderTone: (tone: UIStateBase['headerTone']) => void;
+  setLayoutBackgroundOverride: (backgroundUrl: string | null) => void;
   toggleSidePanel: () => void;
   addNotification: (
     type: UINotification['type'],
@@ -199,6 +203,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   headerTitle: '',
   headerSubtitle: '',
   headerTone: 'dark',
+  layoutBackgroundOverride: null,
   showSidePanel: false,
   notifications: [],
   showPrestigeModal: false,
@@ -281,6 +286,12 @@ export const useUIStore = create<UIState>()(
     setHeaderTone: (tone: UIStateBase['headerTone']) => {
       set((state) => {
         state.headerTone = tone;
+      });
+    },
+
+    setLayoutBackgroundOverride: (backgroundUrl) => {
+      set((state) => {
+        state.layoutBackgroundOverride = backgroundUrl;
       });
     },
 

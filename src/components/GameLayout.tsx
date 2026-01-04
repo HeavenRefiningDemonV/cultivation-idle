@@ -57,6 +57,7 @@ export function GameLayout() {
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
+  const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
 
   // Render content based on active tab
@@ -90,8 +91,13 @@ export function GameLayout() {
     .filter(Boolean)
     .join(' ');
 
+  const rootStyle =
+    activeTab === 'adventure' && layoutBackgroundOverride
+      ? { backgroundImage: `url(${layoutBackgroundOverride})` }
+      : undefined;
+
   return (
-    <div className={rootClassNames}>
+    <div className={rootClassNames} style={rootStyle}>
       <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
         {renderContent()}
       </div>
