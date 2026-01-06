@@ -16,6 +16,7 @@ import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { InsightMomentToast } from '../../ui/cultivation/InsightMomentToast';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
+import cultivator from "../../assets/onscreen/cbg_full.png";
 import './CultivateScreen.scss';
 
 const BREATH_COPY: Record<BreathMode, string> = {
@@ -322,7 +323,8 @@ export function CultivateScreen() {
 
   return (
     <div className="cultivationTab">
-      <div className="cultivationTopRow">
+      <img className="cultivator" src={cultivator}></img>
+      {/* <div className="cultivationTopRow">
         <button
           type="button"
           className="daoHeartButton"
@@ -458,7 +460,7 @@ export function CultivateScreen() {
       {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
-      )}
+      )} */}
     </div>
   );
 }

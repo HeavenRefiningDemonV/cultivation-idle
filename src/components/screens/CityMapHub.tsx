@@ -12,16 +12,16 @@ import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
-  manualPavilion: { leftPct: 86.6, topPct: 13 },
-  apothecary: { leftPct: 30.5, topPct: 41 },
-  alchemy: { leftPct: 39.4, topPct: 63 },
-  forge: { leftPct: 60.3, topPct: 85 },
-  talismanStudio: { leftPct: 44.5, topPct: 82 },
-  bounties: { leftPct: 27.3, topPct: 80 },
-  expeditions: { leftPct: 27.3, topPct: 85.5 },
-  outskirts: { leftPct: 57, topPct: 45 },
-  gateTrial: { leftPct: 91.2, topPct: 76 },
-  ruins: { leftPct: 73, topPct: 58 },
+  manualPavilion: { leftPct: 85.6, topPct: 14.5 },
+  apothecary: { leftPct: 31, topPct: 41.5 },
+  alchemy: { leftPct: 39.8, topPct: 62 },
+  forge: { leftPct: 60.1, topPct: 82 },
+  talismanStudio: { leftPct: 44.8, topPct: 80 },
+  bounties: { leftPct: 28, topPct: 77 },
+  expeditions: { leftPct: 28, topPct: 82.5 },
+  outskirts: { leftPct: 58, topPct: 45.5 },
+  gateTrial: { leftPct: 90, topPct: 74 },
+  ruins: { leftPct: 72, topPct: 57 },
 };
 
 const MODULE_BACKGROUNDS: Record<string, string> = {

@@ -8,6 +8,7 @@
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .gameLayoutRoot--world {
@@ -37,8 +38,6 @@
   box-sizing: border-box;
   height: calc(100vh - var(--ui-bottom-nav-total));
   width: 100vw;
-  padding: 1.5rem;
-  overflow: hidden;
 
 }
 

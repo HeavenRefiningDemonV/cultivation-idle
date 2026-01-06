@@ -3,7 +3,15 @@
   flex-direction: column;
   gap: 16px;
   height: 100%;
-  padding: 8px;
+  overflow: visible;
+}
+
+.cultivator{
+  position: absolute;
+  height: 140vh;
+  left: 50vw;
+  aspect-ratio: 1280/1002;
+  transform: translateX(-55%);
 }
 
 .cultivationHeader {
