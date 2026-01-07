@@ -17,6 +17,8 @@ import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { InsightMomentToast } from '../../ui/cultivation/InsightMomentToast';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
+import qiSign from "../../assets/onscreen/qisign.png";
+import barLong from "../../assets/menus/bar_long.png";
 import './CultivateScreen.scss';
 
 const BREATH_COPY: Record<BreathMode, string> = {
@@ -105,17 +107,20 @@ function CultivationTabHeaderBar({
   );
 }
 
-function QiProgressBar({ current, required, pulse }: { current: string; required: string; pulse?: boolean }) {
+export function QiProgressBar({ current, required, pulse }: { current: string; required: string; pulse?: boolean }) {
   const currentVal = D(current);
   const requiredVal = D(required);
   const pct = requiredVal.greaterThan(0)
     ? Math.min(100, currentVal.div(requiredVal).times(100).toNumber())
     : 0;
   return (
-    <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
-      <div className="qiProgressFill" style={{ width: `${pct}%` }} />
-      <div className="qiProgressText">{pct.toFixed(1)}%</div>
+    <div className="progress-bar">
+      <img className="progress-bar-shape" src={barLong}></img>
+      <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
+        <div className="qiProgressFill" style={{ width: `${pct}%` }} />
+      </div>
     </div>
+
   );
 }
 
@@ -324,7 +329,11 @@ export function CultivateScreen() {
   return (
     <div className="cultivationTab">
       <img className="cultivator" src={cultivator}></img>
-      {/* <div className="cultivationTopRow">
+      <img className="qi-sign rotate" src={qiSign}></img>
+      <div className="qi-progress-bar-container">
+      <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
+      </div>
+      <div className="cultivationTopRow">
         <button
           type="button"
           className="daoHeartButton"
@@ -335,7 +344,7 @@ export function CultivateScreen() {
           Dao Heart
         </button>
       </div>
-      <CultivationTabHeaderBar
+      {/* <CultivationTabHeaderBar
         realmLabel={realmLabel}
         substage={realm.substage}
         qi={qi}
@@ -344,123 +353,122 @@ export function CultivateScreen() {
         activityLabel={activityLabel}
         stability={stability}
         stabilityCap={stabilityCap}
-      />
+      /> */}
 
-      <div className="cultivationGrid">
-        <div className="cultivationColumn cultivationColumn--left">
-          <SectionShell title="Cultivate" subtitle="Control your breath and focus">
-            <div className="cultivationPanel">
-              <div className="panelHeader">
-                <div>
-                  <div className="panelTitle">Cultivate</div>
-                  <div className="panelSub">Foreground activity required to gain Insight and Study</div>
-                </div>
-                <button
-                  type="button"
-                  className={`primaryButton ${isCultivating ? 'primaryButton--secondary' : ''}`}
-                  onClick={toggleCultivation}
-                  disabled={Boolean(blockingActivity)}
-                  title={blockingActivity ? 'Stop your current activity to cultivate' : undefined}
-                >
-                  {isCultivating ? 'Stop Cultivating' : 'Start Cultivating'}
-                </button>
+
+      <div className="cultivationColumn cultivationColumn--left">
+        {/* <SectionShell title="Cultivate" subtitle="Control your breath and focus">
+          <div className="cultivationPanel">
+            <div className="panelHeader">
+              <div>
+                <div className="panelTitle">Cultivate</div>
+                <div className="panelSub">Foreground activity required to gain Insight and Study</div>
               </div>
-              {blockingActivity ? (
-                <div className="inlineMessage inlineMessage--warning">
-                  Currently {activityLabel.toLowerCase()}. Stop that activity to resume cultivation.
-                </div>
-              ) : null}
-              <div className="breathSection">
-                <div className="breathSectionLabel">Breath Cycle</div>
-                <BreathCycleDial value={breathMode} onChange={setBreathMode} />
-              </div>
-              <div className="offlineHint">Offline progress capped at ~{offlineHoursCap}h.</div>
+              <button
+                type="button"
+                className={`primaryButton ${isCultivating ? 'primaryButton--secondary' : ''}`}
+                onClick={toggleCultivation}
+                disabled={Boolean(blockingActivity)}
+                title={blockingActivity ? 'Stop your current activity to cultivate' : undefined}
+              >
+                {isCultivating ? 'Stop Cultivating' : 'Start Cultivating'}
+              </button>
             </div>
+            {blockingActivity ? (
+              <div className="inlineMessage inlineMessage--warning">
+                Currently {activityLabel.toLowerCase()}. Stop that activity to resume cultivation.
+              </div>
+            ) : null}
+            <div className="breathSection">
+              <div className="breathSectionLabel">Breath Cycle</div>
+              <BreathCycleDial value={breathMode} onChange={setBreathMode} />
+            </div>
+            <div className="offlineHint">Offline progress capped at ~{offlineHoursCap}h.</div>
+          </div>
+        </SectionShell> */}
+
+        {/* <SectionShell title="Progress" subtitle="Qi, breakthroughs, and verses"> */}
+          {/* <div className="cultivationPanel">
+            <div className="panelHeader">
+              <div>
+                <div className="panelTitle">Breakthrough Progress</div>
+                <div className="panelSub">{realmStageLabel}</div>
+              </div>
+              <button
+                type="button"
+                className="primaryButton"
+                onClick={() => canBreakthrough && breakthrough()}
+                disabled={!canBreakthrough}
+                title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+              >
+                Attempt Breakthrough
+              </button>
+            </div>
+            <div className="progressRow">
+              <div>
+                <div className="progressLabel">Qi</div>
+                <div className="progressValue">
+                  {formatNumber(qi)} / {formatNumber(breakthroughCost)}
+                </div>
+              </div>
+              <div className={`progressStatus ${canBreakthrough ? 'progressStatus--ready' : ''}`}>
+                {canBreakthrough ? 'Ready' : 'Not ready'}
+              </div>
+            </div>
+            {requiredGateItem ? (
+              <div className="inlineMessage inlineMessage--muted">
+                {hasRequiredToken ? (
+                  <span>
+                    {requiredGateItemDefinition?.name || 'Gate Item'} ready ({gateItemCount}/1)
+                  </span>
+                ) : (
+                  <span>
+                    Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
+                  </span>
+                )}
+              </div>
+            ) : null}
+          </div> */}
+
+          {/* <div className="cultivationPanel">
+            <div className="panelHeader">
+              <div>
+                <div className="panelTitle">Verse Progress</div>
+                <div className="panelSub">
+                  Verse {roman[chapter - 1] ?? chapter} — {heartLawName}
+                </div>
+              </div>
+            </div>
+            <div className="progressRow">
+              <div>
+                <div className="progressLabel">Comprehension</div>
+                <div className="progressValue">{comprehension.toFixed(1)} / {nextRequirement}</div>
+              </div>
+              <div className="progressStatus">{comprehensionPct.toFixed(1)}%</div>
+            </div>
+            <div className="qiProgressBar">
+              <div className="qiProgressFill" style={{ width: `${Math.min(100, comprehensionPct)}%` }} />
+              <div className="qiProgressText">Verse {roman[chapter - 1] ?? chapter}</div>
+            </div>
+          </div> */}
+        {/* </SectionShell> */}
+
+        {/* {insightCard ? (
+          <SectionShell title="Insight" subtitle="Respond before it fades">
+            {insightCard}
           </SectionShell>
-
-          <SectionShell title="Progress" subtitle="Qi, breakthroughs, and verses">
-            <div className="cultivationPanel">
-              <div className="panelHeader">
-                <div>
-                  <div className="panelTitle">Breakthrough Progress</div>
-                  <div className="panelSub">{realmStageLabel}</div>
-                </div>
-                <button
-                  type="button"
-                  className="primaryButton"
-                  onClick={() => canBreakthrough && breakthrough()}
-                  disabled={!canBreakthrough}
-                  title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
-                >
-                  Attempt Breakthrough
-                </button>
-              </div>
-              <div className="progressRow">
-                <div>
-                  <div className="progressLabel">Qi</div>
-                  <div className="progressValue">
-                    {formatNumber(qi)} / {formatNumber(breakthroughCost)}
-                  </div>
-                </div>
-                <div className={`progressStatus ${canBreakthrough ? 'progressStatus--ready' : ''}`}>
-                  {canBreakthrough ? 'Ready' : 'Not ready'}
-                </div>
-              </div>
-              <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
-              {requiredGateItem ? (
-                <div className="inlineMessage inlineMessage--muted">
-                  {hasRequiredToken ? (
-                    <span>
-                      {requiredGateItemDefinition?.name || 'Gate Item'} ready ({gateItemCount}/1)
-                    </span>
-                  ) : (
-                    <span>
-                      Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
-                    </span>
-                  )}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="cultivationPanel">
-              <div className="panelHeader">
-                <div>
-                  <div className="panelTitle">Verse Progress</div>
-                  <div className="panelSub">
-                    Verse {roman[chapter - 1] ?? chapter} — {heartLawName}
-                  </div>
-                </div>
-              </div>
-              <div className="progressRow">
-                <div>
-                  <div className="progressLabel">Comprehension</div>
-                  <div className="progressValue">{comprehension.toFixed(1)} / {nextRequirement}</div>
-                </div>
-                <div className="progressStatus">{comprehensionPct.toFixed(1)}%</div>
-              </div>
-              <div className="qiProgressBar">
-                <div className="qiProgressFill" style={{ width: `${Math.min(100, comprehensionPct)}%` }} />
-                <div className="qiProgressText">Verse {roman[chapter - 1] ?? chapter}</div>
-              </div>
-            </div>
+        ) : (
+          <SectionShell title="Insight" subtitle="Moments surface while cultivating">
+            <div className="inlineMessage inlineMessage--muted">Your mind is steady. Keep cultivating for insight.</div>
           </SectionShell>
-
-          {insightCard ? (
-            <SectionShell title="Insight" subtitle="Respond before it fades">
-              {insightCard}
-            </SectionShell>
-          ) : (
-            <SectionShell title="Insight" subtitle="Moments surface while cultivating">
-              <div className="inlineMessage inlineMessage--muted">Your mind is steady. Keep cultivating for insight.</div>
-            </SectionShell>
-          )}
-        </div>
+        )} */}
       </div>
+
       {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
       {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
-      )} */}
+      )}
     </div>
   );
 }

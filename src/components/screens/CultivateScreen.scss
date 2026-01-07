@@ -1,3 +1,17 @@
+@keyframes rotation {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.rotate {
+  animation: rotation 5s infinite linear;
+}
+
 .cultivationTab {
   display: flex;
   flex-direction: column;
@@ -6,13 +20,88 @@
   overflow: visible;
 }
 
-.cultivator{
-  position: absolute;
+.cultivator {
+  position: fixed;
+  z-index: 0;
   height: 140vh;
   left: 50vw;
   aspect-ratio: 1280/1002;
-  transform: translateX(-55%);
+  transform: translateX(-56%);
 }
+
+.qi-sign {
+  position: fixed;
+  z-index: 1;
+  height: 12vh;
+  width: 12vh;
+  top: 68vh;
+  left: 50%;
+  opacity: 90%;
+  transform: translate(-50%, -50%);
+}
+
+.progress-bar {
+  display: grid;
+  grid-template-areas: "stack";
+}
+
+.progress-bar>img {
+  z-index: 6;
+  grid-area: stack;
+
+  justify-self: center;
+  align-self: center;
+
+  width: 100%;
+}
+
+.qiProgressBar {
+  position: relative;
+  z-index: 5;
+  grid-area: stack;
+  justify-self: center;
+   align-self: center;
+  height: 20%;
+
+  width: 95%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.qiProgressBar--pulse .qiProgressFill {
+  animation: qiPulse 1.8s ease-in-out infinite;
+}
+
+.qiProgressFill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg, #22d3ee, #8b5cf6);
+  transition: width 0.25s ease-out;
+}
+
+@keyframes qiPulse {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+  }
+}
+
+.qi-progress-bar-container {
+  position: fixed;
+  bottom: 10vh;
+  align-self: center;
+  padding: 0 15vw;
+}
+
+/*-------------------------------------------*/
+
 
 .cultivationHeader {
   display: grid;
@@ -88,11 +177,7 @@
 }
 
 .daoHeartButton {
-  background: rgba(255, 255, 255, 0.06);
-  color: #e5e7eb;
-  border: 1px solid rgba(255, 255, 255, 0.14);
   padding: 8px 12px;
-  border-radius: 999px;
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
@@ -279,40 +364,6 @@
   color: #4ade80;
 }
 
-.qiProgressBar {
-  position: relative;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-  border-image: url("../assets/menus/bar_short.png") 1200;
-
-}
-
-.qiProgressBar--pulse .qiProgressFill {
-  animation: qiPulse 1.8s ease-in-out infinite;
-}
-
-.qiProgressFill {
-  position: absolute;
-  inset: 0;
-  width: 0;
-  background: linear-gradient(90deg, #22d3ee, #8b5cf6);
-  transition: width 0.25s ease-out;
-}
-
-@keyframes qiPulse {
-  0% {
-    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
-  }
-
-  50% {
-    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
-  }
-
-  100% {
-    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
-  }
-}
 
 .qiProgressText {
   position: absolute;
