@@ -20,6 +20,15 @@
   overflow: visible;
 }
 
+.daoHeartButton {
+  padding: 8px 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
 .cultivator {
   position: fixed;
   z-index: 0;
@@ -174,14 +183,6 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-}
-
-.daoHeartButton {
-  padding: 8px 12px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .daoHeartButton:hover,
