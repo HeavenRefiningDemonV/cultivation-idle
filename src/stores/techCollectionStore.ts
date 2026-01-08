@@ -5,6 +5,7 @@ import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { randFloat } from '../utils/rng';
 import { useUIStore } from './uiStore';
+import { GameEvents } from '../services/events/GameEvents';
 
 export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
 export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
@@ -741,6 +742,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         target.runes[slotIndex] = runeItemId;
       });
 
+      GameEvents.emit({
+        type: 'techniques/rune_socketed',
+        payload: { techniqueId: techId, slotIndex, runeItemId },
+      });
       return { ok: true };
     },
 
@@ -774,6 +779,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         target.runes[slotIndex] = null;
       });
 
+      GameEvents.emit({
+        type: 'techniques/rune_unsocketed',
+        payload: { techniqueId: techId, slotIndex, runeItemId: runeId },
+      });
       return { ok: true };
     },
 
@@ -876,14 +885,22 @@ export const useTechCollectionStore = create<TechCollectionState>()(
     },
 
     rerollTraits: (techId, options) => {
+      GameEvents.emit({ type: 'techniques/trait_reroll_attempt', payload: { techniqueId: techId } });
       const entry = get().unlockedTechs[techId];
-      if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
+      if (!entry?.unlocked) {
+        GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: false } });
+        return { ok: false, reason: 'Technique not unlocked.' };
+      }
 
       const slots = get().getEffectiveTraitSlots(techId);
-      if (slots <= 0) return { ok: false, reason: 'No trait slots available.' };
+      if (slots <= 0) {
+        GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: false } });
+        return { ok: false, reason: 'No trait slots available.' };
+      }
 
       const content = useContentStore.getState();
       if (!content.maps.itemsById[SOUL_INK_REROLL_ITEM_ID]) {
+        GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: false } });
         return { ok: false, reason: 'Soul ink item missing.' };
       }
 
@@ -892,17 +909,20 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const lockIndex = lockEnabled && requestedLockIndex !== null ? requestedLockIndex : -1;
       const hasValidLock = lockEnabled && lockIndex >= 0 && lockIndex < slots && Boolean(entry.traits[lockIndex]);
       if (lockEnabled && !hasValidLock) {
+        GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: false } });
         return { ok: false, reason: 'invalid_lock', cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: 2 } };
       }
 
       const costQty = hasValidLock ? 2 : 1;
       const inventory = useInventoryStore.getState();
       if (!inventory.canAffordItem(SOUL_INK_REROLL_ITEM_ID, costQty)) {
+        GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: false } });
         return { ok: false, reason: 'insufficient_items', cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
       }
 
       const removed = inventory.spendItem(SOUL_INK_REROLL_ITEM_ID, costQty);
       if (!removed) {
+        GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: false } });
         return { ok: false, reason: 'Unable to consume soul ink.', cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
       }
 
@@ -921,6 +941,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         target.traits = traits.slice(0, slots);
       });
 
+      GameEvents.emit({ type: 'techniques/trait_reroll_result', payload: { techniqueId: techId, ok: true } });
       return { ok: true, lockedIndex: hasValidLock ? lockIndex : undefined, cost: { soulInkItemId: SOUL_INK_REROLL_ITEM_ID, qty: costQty } };
     },
 
@@ -1048,40 +1069,85 @@ export const useTechCollectionStore = create<TechCollectionState>()(
     },
 
     upgradeRank: (techId) => {
+      GameEvents.emit({ type: 'techniques/rank_upgrade_attempt', payload: { techniqueId: techId } });
       const entry = get().unlockedTechs[techId];
-      if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
+      if (!entry?.unlocked) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Technique not unlocked.' },
+        });
+        return { ok: false, reason: 'Technique not unlocked.' };
+      }
 
       const rankCap = get().getRankCap(techId);
-      if (entry.rank >= rankCap) return { ok: false, reason: 'Rank cap reached.' };
+      if (entry.rank >= rankCap) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Rank cap reached.' },
+        });
+        return { ok: false, reason: 'Rank cap reached.' };
+      }
 
       const nextRank = entry.rank + 1;
       const cost = get().getRankUpgradeCost(nextRank);
-      if (!cost) return { ok: false, reason: 'Invalid rank cost.' };
+      if (!cost) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Invalid rank cost.' },
+        });
+        return { ok: false, reason: 'Invalid rank cost.' };
+      }
 
       if (
         cost.requiredGrade &&
         gradeOrder.indexOf(entry.manualGrade) < gradeOrder.indexOf(cost.requiredGrade)
       ) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: `Requires ${cost.requiredGrade} grade.` },
+        });
         return { ok: false, reason: `Requires ${cost.requiredGrade} grade.` };
       }
 
       const fragments = get().fragments[techId] ?? 0;
-      if (fragments < cost.fragmentsRequired) return { ok: false, reason: 'Not enough fragments.' };
+      if (fragments < cost.fragmentsRequired) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Not enough fragments.' },
+        });
+        return { ok: false, reason: 'Not enough fragments.' };
+      }
 
       const content = useContentStore.getState();
       if (!content.maps.itemsById[RUNE_DUST_ITEM_ID]) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Rune dust item missing.' },
+        });
         return { ok: false, reason: 'Rune dust item missing.' };
       }
       if (!content.maps.itemsById[cost.soulInkItemId]) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Soul ink item missing.' },
+        });
         return { ok: false, reason: 'Soul ink item missing.' };
       }
 
       const inventory = useInventoryStore.getState();
       if (!inventory.canAffordItem(RUNE_DUST_ITEM_ID, cost.runeDustRequired)) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Not enough rune dust.' },
+        });
         return { ok: false, reason: 'Not enough rune dust.' };
       }
 
       if (!inventory.canAffordItem(cost.soulInkItemId, cost.soulInkRequired)) {
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Not enough soul ink.' },
+        });
         return { ok: false, reason: 'Not enough soul ink.' };
       }
 
@@ -1095,6 +1161,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         if (removedSoulInk) {
           inventory.addItem(cost.soulInkItemId, cost.soulInkRequired);
         }
+        GameEvents.emit({
+          type: 'techniques/rank_upgrade_failed',
+          payload: { techniqueId: techId, reason: 'Unable to consume materials.' },
+        });
         return { ok: false, reason: 'Unable to consume materials.' };
       }
 
@@ -1107,6 +1177,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
         }
       });
 
+      GameEvents.emit({ type: 'techniques/rank_upgrade_success', payload: { techniqueId: techId, nextRank } });
       return { ok: true };
     },
 

@@ -11,6 +11,7 @@ import { useTrialStore } from './trialStore';
 import { useCityStore } from './cityStore';
 import { useInventoryStore } from './inventoryStore';
 import { pickEnemyFromPool } from '../components/screens/world/worldUtils';
+import { GameEvents } from '../services/events/GameEvents';
 
 /**
  * UI notification types
@@ -263,9 +264,14 @@ export const useUIStore = create<UIState>()(
      * Set the active tab
      */
     setActiveTab: (tab: GameTab) => {
+      const previousTab = get().activeTab;
       set((state) => {
         state.activeTab = tab;
       });
+
+      if (previousTab !== tab) {
+        GameEvents.emit({ type: 'ui/tab_changed', payload: { previous: previousTab, next: tab } });
+      }
 
       console.log(`[UI] Active tab changed to: ${tab}`);
     },
@@ -650,12 +656,14 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.showManualSatchelModal = true;
       });
+      GameEvents.emit({ type: 'satchel/opened', payload: {} });
     },
 
     closeManualSatchel: () => {
       set((state) => {
         state.showManualSatchelModal = false;
       });
+      GameEvents.emit({ type: 'satchel/closed', payload: {} });
     },
 
     openWorldBuildingModal: ({ cityId, buildingKey }) => {
@@ -664,14 +672,22 @@ export const useUIStore = create<UIState>()(
         state.worldBuildingModalCityId = cityId;
         state.worldBuildingModalKey = buildingKey;
       });
+      if (buildingKey === 'manualPavilion') {
+        GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey, cityId } });
+      }
     },
 
     closeWorldBuildingModal: () => {
+      const buildingKey = get().worldBuildingModalKey;
+      const cityId = get().worldBuildingModalCityId;
       set((state) => {
         state.showWorldBuildingModal = false;
         state.worldBuildingModalCityId = null;
         state.worldBuildingModalKey = null;
       });
+      if (buildingKey === 'manualPavilion') {
+        GameEvents.emit({ type: 'pavilion/closed', payload: { buildingKey, cityId } });
+      }
     },
 
     openTechniqueLearned: (payload) => {
@@ -679,13 +695,16 @@ export const useUIStore = create<UIState>()(
         state.showTechniqueLearnedModal = true;
         state.techniqueLearnedPayload = payload;
       });
+      GameEvents.emit({ type: 'techniques/learned_modal_opened', payload: { techniqueId: payload.techId } });
     },
 
     closeTechniqueLearned: () => {
+      const techniqueId = get().techniqueLearnedPayload?.techId ?? null;
       set((state) => {
         state.showTechniqueLearnedModal = false;
         state.techniqueLearnedPayload = null;
       });
+      GameEvents.emit({ type: 'techniques/learned_modal_closed', payload: { techniqueId } });
     },
 
     setTechniqueLibraryIntent: (intent) => {

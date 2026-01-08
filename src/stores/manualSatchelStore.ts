@@ -198,14 +198,21 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       });
       if (!manual) return { ok: false, reason: 'Manual not found.' };
       const manualInstance = manual as ManualInstance;
+      GameEvents.emit({ type: 'manuals/focus_prompt', payload: { manualId: manualInstance.techId } });
       GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manualInstance.techId, progress: 0 } });
       return { ok: true };
     },
 
     applyFocusReward: (now = Date.now()) => {
       const active = get().activeStudy;
-      if (!active) return { ok: false, reason: 'No active study.' };
-      if (active.focusUsed) return { ok: false, reason: 'Focus already applied.' };
+      if (!active) {
+        GameEvents.emit({ type: 'manuals/focus_failed', payload: { reason: 'No active study.' } });
+        return { ok: false, reason: 'No active study.' };
+      }
+      if (active.focusUsed) {
+        GameEvents.emit({ type: 'manuals/focus_failed', payload: { manualId: active.manual.techId, reason: 'Focus already applied.' } });
+        return { ok: false, reason: 'Focus already applied.' };
+      }
       const rewards: FocusRewardType[] = ['time', 'mastery', 'traitQuality'];
       const roll = rewards[Math.floor(Math.random() * rewards.length)];
       set((state) => {
@@ -219,6 +226,7 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
           study.endsAt = now + remaining * 0.9;
         }
       });
+      GameEvents.emit({ type: 'manuals/focus_applied', payload: { manualId: active.manual.techId, reward: roll } });
       GameEvents.emit({ type: 'manuals/studied', payload: { manualId: active.manual.techId, progress: 0.5 } });
       return { ok: true, reward: roll };
     },

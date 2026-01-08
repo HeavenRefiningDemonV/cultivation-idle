@@ -3,6 +3,7 @@ import { audio } from '../services/audio';
 import { useUIStore, type UIState } from '../stores/uiStore';
 import { isSoundId } from '../services/audio/soundIds';
 import type { UINotification } from '../stores/uiStore';
+import { initSoundRouter } from '../services/audio/SoundRouter';
 
 const selectActiveTab = (state: UIState) => state.activeTab;
 const selectNotifications = (state: UIState) => state.notifications;
@@ -47,6 +48,7 @@ const resolveSoundOverride = (target: Element | null): string | null => {
 export function AudioBindings() {
   useEffect(() => {
     audio.init();
+    initSoundRouter();
     const clickOptions: AddEventListenerOptions = { capture: true };
 
     const unsubscribeTab = useUIStore.subscribe(selectActiveTab, (tab, previous) => {
