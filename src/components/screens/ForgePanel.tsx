@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatPrice, getForgeBlueprint, getItemDef, listForgeBlueprintsForCity } from '../../stores/contentStore';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useEquipmentStore } from '../../stores/equipmentStore';
@@ -14,6 +14,7 @@ import type { CraftStep, ForgeSessionOutcome, ForgeStepResult } from '../../syst
 import type { ForgeServiceResult } from '../../services/forgeService';
 import { RewardService } from '../../services/rewards';
 import { listTemperAffixes } from '../../content/temperAffixes';
+import { GameEvents } from '../../services/events/GameEvents';
 
 interface ForgePanelProps {
   cityId: string | null;
@@ -150,6 +151,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
   const [lastForgeOutcome, setLastForgeOutcome] = useState<ForgeSessionOutcome | null>(null);
   const [lastServiceResult, setLastServiceResult] = useState<ForgeServiceResult | null>(null);
+  const lastServiceRef = useRef<ForgeServiceResult | null>(null);
   const [selectedServiceSlot, setSelectedServiceSlot] = useState<'weapon' | 'accessory'>('weapon');
   const affixLabels = useMemo(() => {
     const map: Record<string, string> = {};
@@ -187,6 +189,16 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   useEffect(() => {
     setLastForgeOutcome(null);
   }, [activeSession?.sessionId]);
+
+  useEffect(() => {
+    if (!lastServiceRef.current && lastServiceResult) {
+      GameEvents.emit({ type: 'forge/delta_panel_opened', payload: {} });
+    }
+    if (lastServiceRef.current && !lastServiceResult) {
+      GameEvents.emit({ type: 'forge/delta_panel_closed', payload: {} });
+    }
+    lastServiceRef.current = lastServiceResult;
+  }, [lastServiceResult]);
 
   const blueprints = useMemo(() => {
     if (!cityId) return [];
@@ -877,7 +889,13 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                     'craftingListItem--active': isSelected,
                     'craftSidebarItem--active': isSelected,
                   })}
-                  onClick={() => setSelectedBlueprintId(blueprint.id)}
+                  onClick={() => {
+                    setSelectedBlueprintId(blueprint.id);
+                    GameEvents.emit({
+                      type: 'crafting/recipe_selected',
+                      payload: { station: 'forge', recipeId: blueprint.id },
+                    });
+                  }}
                 >
                   <div className={'craftingListName'}>{sidebarLabel(blueprint.id)}</div>
                   <div className={'craftingListSub'}>{blueprint.id}</div>
@@ -897,7 +915,13 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                       'craftingListItem--active': isSelected,
                       'craftSidebarItem--active': isSelected,
                     })}
-                    onClick={() => setSelectedBlueprintId(bp.id)}
+                    onClick={() => {
+                      setSelectedBlueprintId(bp.id);
+                      GameEvents.emit({
+                        type: 'crafting/recipe_selected',
+                        payload: { station: 'forge', recipeId: bp.id },
+                      });
+                    }}
                   >
                     <div className={'craftingListName'}>{sidebarLabel(bp.id)}</div>
                     <div className={'craftingListSub'}>{bp.id}</div>

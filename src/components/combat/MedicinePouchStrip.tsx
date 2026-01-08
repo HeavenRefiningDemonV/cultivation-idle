@@ -6,6 +6,7 @@ import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
 import { useUIStore } from '../../stores/uiStore';
 import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog';
 import type { MedicinePouchSlotKey } from '../../types';
+import { GameEvents } from '../../services/events/GameEvents';
 import './MedicinePouchStrip.scss';
 
 const slotOrder: MedicinePouchSlotKey[] = ['healing', 'utility', 'specialty'];
@@ -92,6 +93,7 @@ export function MedicinePouchStrip() {
 
     if (data.charges <= 0) {
       setMessages((prev) => ({ ...prev, [slotKey]: 'No charges' }));
+      GameEvents.emit({ type: 'pouch/out_of_charges', payload: { slotKey, itemId: data.itemId ?? undefined, source: 'manual' } });
       return;
     }
 
@@ -114,6 +116,10 @@ export function MedicinePouchStrip() {
 
     markUsed(slotKey, Date.now());
     setMessages((prev) => ({ ...prev, [slotKey]: 'Used' }));
+    const remaining = data.itemId ? getQty(data.itemId) : 0;
+    if (remaining <= 1) {
+      GameEvents.emit({ type: 'pouch/low_charges_warning', payload: { slotKey, itemId: data.itemId ?? undefined, remaining } });
+    }
   };
 
   return (

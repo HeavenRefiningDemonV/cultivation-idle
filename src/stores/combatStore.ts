@@ -48,6 +48,7 @@ import {
   isCombatUsableConsumable,
 } from '../systems/consumables/consumableCatalog';
 import { useMedicinePouchStore } from './medicinePouchStore';
+import { GameEvents } from '../services/events/GameEvents';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -792,6 +793,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         const result = get().consumeCombatConsumable(itemId, 'auto', now);
         if (result.ok) {
+          GameEvents.emit({ type: 'pouch/auto_trigger', payload: { slotKey, itemId } });
+          const remaining = useInventoryStore.getState().getQty(itemId);
+          if (remaining <= 1) {
+            GameEvents.emit({ type: 'pouch/low_charges_warning', payload: { slotKey, itemId, remaining } });
+          }
           pouch.markUsed(slotKey, now);
           break;
         }
@@ -1087,7 +1093,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
     },
 
-    consumeCombatConsumable: (itemId: string, _source: 'auto' | 'manual', now = Date.now()) => {
+    consumeCombatConsumable: (itemId: string, source: 'auto' | 'manual', now = Date.now()) => {
       const state = get();
       if (!state.inCombat || !state.currentEnemy) return { ok: false, reason: 'not_in_combat' };
 
@@ -1100,6 +1106,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       const inventory = useInventoryStore.getState();
       if (!inventory.spendItem(itemId, 1)) {
+        GameEvents.emit({ type: 'pouch/out_of_charges', payload: { itemId, source } });
         return { ok: false, reason: 'no_charges' };
       }
 

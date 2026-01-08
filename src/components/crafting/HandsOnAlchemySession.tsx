@@ -4,6 +4,7 @@ import type { AlchemyHandsOnResult, CraftSession, CraftStep } from '../../system
 import { getItemDef } from '../../stores/contentStore';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
+import { GameEvents } from '../../services/events/GameEvents';
 
 interface HandsOnAlchemySessionProps {
   session: CraftSession;
@@ -169,6 +170,7 @@ export function HandsOnAlchemySession({ session, now, onResult }: HandsOnAlchemy
     if (!success) {
       addImpurities(1);
     }
+    GameEvents.emit({ type: 'alchemy/flame_stable', payload: { ok: success } });
     const stamp = Date.now();
     advanceStep(stamp);
     setStepStartedNow(stamp);
@@ -184,10 +186,12 @@ export function HandsOnAlchemySession({ session, now, onResult }: HandsOnAlchemy
       const stamp = Date.now();
       advanceStep(stamp);
       setStepStartedNow(stamp);
+      GameEvents.emit({ type: 'alchemy/ingredient_added', payload: { itemId, ok: true } });
       setLocalStatus('Ingredient added in order.');
     } else {
       incrementOrderMistake();
       addImpurities(1);
+      GameEvents.emit({ type: 'alchemy/ingredient_added', payload: { itemId, ok: false } });
       setLocalStatus('Wrong ingredient order. Stability lowered.');
     }
   };
@@ -199,6 +203,7 @@ export function HandsOnAlchemySession({ session, now, onResult }: HandsOnAlchemy
     const success = elapsed >= windowInfo.start && elapsed <= windowInfo.end;
     recordScoreParts({ qte: success ? 100 : 60 });
     if (!success) addImpurities(1);
+    GameEvents.emit({ type: 'alchemy/seal_attempt', payload: { ok: success } });
     const stamp = Date.now();
     advanceStep(stamp);
     setStepStartedNow(stamp);
@@ -209,6 +214,7 @@ export function HandsOnAlchemySession({ session, now, onResult }: HandsOnAlchemy
     const result = completeHandsOnSession(Date.now());
     if (result.ok && result.result) {
       setLocalStatus('Batch finished.');
+      GameEvents.emit({ type: 'alchemy/pressure_release', payload: {} });
       onResult?.(result.result);
     } else {
       setLocalStatus('Unable to complete right now.');
@@ -237,6 +243,8 @@ export function HandsOnAlchemySession({ session, now, onResult }: HandsOnAlchemy
               max={MAX_HEAT}
               value={heatSetting}
               onChange={(e) => setHeatSetting(Number(e.target.value))}
+              onMouseUp={() => GameEvents.emit({ type: 'alchemy/flame_adjust', payload: { heat: heatSetting } })}
+              onTouchEnd={() => GameEvents.emit({ type: 'alchemy/flame_adjust', payload: { heat: heatSetting } })}
             />
             <div className="alchemyDialMeta">
               <div>Heat: {heatSetting}</div>
