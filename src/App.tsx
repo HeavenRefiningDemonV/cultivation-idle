@@ -3,6 +3,7 @@ import { GameLayout } from './components/GameLayout';
 import { ContentInitGate } from './components/system/ContentInitGate';
 import { initializeGame } from './systems/gameLoop';
 import { useShopStore } from './stores/shopStore';
+import { audio } from './services/audio';
 import './App.scss';
 
 /**
@@ -11,6 +12,10 @@ import './App.scss';
 function App() {
   const [gameInitialized, setGameInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    audio.init();
+  }, []);
 
   // Initialize game on mount
   useEffect(() => {

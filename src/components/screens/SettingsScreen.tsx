@@ -8,6 +8,7 @@ import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
 import { useTelemetryStore } from '../../stores/telemetryStore';
 import { useErrorLogStore } from '../../stores/errorLogStore';
+import { AudioDebugPanel } from '../../ui/debug/AudioDebugPanel';
 import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle';
 import {
   applySafeRepairs,
@@ -91,6 +92,7 @@ export function SettingsScreen() {
   const clearTelemetry = useTelemetryStore((state) => state.clear);
   const errorEntries = useErrorLogStore((state) => state.errors);
   const clearErrors = useErrorLogStore((state) => state.clear);
+  const isDev = import.meta.env.DEV;
 
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
   const [validationRanAt, setValidationRanAt] = useState<number | null>(null);
@@ -535,6 +537,16 @@ export function SettingsScreen() {
               </button>
             </div>
           </div>
+
+          {isDev ? (
+            <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+              <h2 className={'settingsScreenPanelTitle'}>Audio Debug (Dev)</h2>
+              <p className={'settingsScreenPanelSubtitle'}>
+                Trigger sound playback for any registered SoundId.
+              </p>
+              <AudioDebugPanel />
+            </div>
+          ) : null}
 
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDanger'}`}>
             <h2 className={'settingsScreenPanelTitle'}>Save Management</h2>
