@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { GameEvents } from '../services/events/GameEvents';
 
 export interface RecipeMasteryState {
   alchemy: Record<string, number>;
@@ -48,9 +49,14 @@ export const useRecipeMasteryStore = create<RecipeMasteryStoreState>()(
       void _reason;
       const delta = clampMastery(amount);
       if (delta <= 0) return;
+      const before = clampMastery(get().alchemy[recipeId] ?? 0);
+      const next = clampMastery(before + delta);
       set((state) => {
-        const current = state.alchemy[recipeId] ?? 0;
-        state.alchemy[recipeId] = clampMastery(current + delta);
+        state.alchemy[recipeId] = next;
+      });
+      GameEvents.emit({ type: 'alchemy/mastery_gain', payload: { recipeId, gain: delta, next } });
+      THRESHOLDS.filter((threshold) => before < threshold && next >= threshold).forEach((threshold) => {
+        GameEvents.emit({ type: 'alchemy/mastery_milestone', payload: { recipeId, milestone: threshold } });
       });
     },
 

@@ -33,13 +33,10 @@ export function initSoundRouter() {
 
   GameEvents.on('pavilion/opened', () => {
     playSound('ui_building_enter');
-    if (isSoundId('amb_building_manual_pavilion_loop')) {
-      audio.startAmbience('amb_building_manual_pavilion_loop');
-    }
   });
 
   GameEvents.on('pavilion/closed', () => {
-    audio.stopAmbience({ fadeMs: 400 });
+    playSound('ui_click_secondary');
   });
 
   GameEvents.on('pavilion/refresh_confirmed', () => {
@@ -87,6 +84,276 @@ export function initSoundRouter() {
 
   GameEvents.on('satchel/closed', () => {
     playSound('ui_satchel_close');
+  });
+
+  GameEvents.on('apothecary/opened', () => {
+    playSound('ui_apothecary_open');
+  });
+
+  GameEvents.on('apothecary/closed', () => {
+    playSound('ui_apothecary_close');
+  });
+
+  GameEvents.on('apothecary/item_selected', () => {
+    playSound('ui_apothecary_item_select');
+  });
+
+  GameEvents.on('apothecary/buy_success', () => {
+    playSound('ui_apothecary_buy_success');
+  });
+
+  GameEvents.on('apothecary/buy_failed', () => {
+    playSound('ui_apothecary_buy_fail');
+  });
+
+  GameEvents.on('apothecary/daily_limit_hit', () => {
+    playSound('ui_apothecary_daily_limit_hit');
+  });
+
+  GameEvents.on('apothecary/bundle_buy', (event) => {
+    playSound(event.payload.ok ? 'ui_apothecary_bundle_buy' : 'ui_apothecary_buy_fail');
+  });
+
+  GameEvents.on('pouch/opened', () => {
+    playSound('ui_pouch_open');
+  });
+
+  GameEvents.on('pouch/closed', () => {
+    playSound('ui_pouch_close');
+  });
+
+  GameEvents.on('pouch/slot_selected', () => {
+    playSound('ui_pouch_slot_select');
+  });
+
+  GameEvents.on('pouch/equip', () => {
+    playSound('ui_pouch_equip_item');
+  });
+
+  GameEvents.on('pouch/unequip', () => {
+    playSound('ui_pouch_unequip_item');
+  });
+
+  GameEvents.on('pouch/auto_trigger', () => {
+    playSound('sfx_pouch_auto_use_trigger');
+  });
+
+  GameEvents.on('pouch/out_of_charges', () => {
+    playSound('sfx_pouch_out_of_charges');
+  });
+
+  GameEvents.on('pouch/low_charges_warning', () => {
+    playSound('sfx_pouch_low_charges_warning');
+  });
+
+  GameEvents.on('crafting/opened', () => {
+    playSound('ui_crafting_open');
+  });
+
+  GameEvents.on('crafting/closed', () => {
+    playSound('ui_crafting_close');
+  });
+
+  GameEvents.on('crafting/recipe_selected', () => {
+    playSound('ui_recipe_select');
+  });
+
+  GameEvents.on('crafting/recipe_locked', () => {
+    playSound('ui_recipe_locked');
+  });
+
+  GameEvents.on('crafting/recipe_unlocked', () => {
+    playSound('ui_recipe_unlock');
+  });
+
+  GameEvents.on('crafting/mode_selected', (event) => {
+    const mode = event.payload.mode;
+    if (mode === 'idle') playSound('ui_mode_idle_select');
+    if (mode === 'assisted') playSound('ui_mode_assisted_select');
+    if (mode === 'handsOn') playSound('ui_mode_handson_select');
+  });
+
+  GameEvents.on('crafting/queue_added', () => {
+    playSound('ui_queue_add');
+  });
+
+  GameEvents.on('crafting/queue_completed', () => {
+    playSound('ui_queue_complete');
+  });
+
+  GameEvents.on('crafting/session_started', () => {
+    playSound('ui_queue_start');
+  });
+
+  GameEvents.on('crafting/session_aborted', () => {
+    playSound('ui_queue_remove');
+  });
+
+  GameEvents.on('crafting/session_claimed', () => {
+    playSound('ui_queue_complete');
+  });
+
+  GameEvents.on('crafting/session_completed', () => {
+    playSound('ui_queue_complete');
+  });
+
+  GameEvents.on('crafting/session_backgrounded', () => {
+    playSound('ui_queue_pause');
+  });
+
+  GameEvents.on('crafting/assist_prompt_available', () => {
+    playSound('ui_assist_prompt_appear');
+  });
+
+  GameEvents.on('crafting/assist_prompt_completed', () => {
+    playSound('ui_assist_prompt_success');
+  });
+
+  GameEvents.on('crafting/assist_prompt_failed', () => {
+    playSound('ui_assist_prompt_fail');
+  });
+
+  GameEvents.on('crafting/assist_prompt_timeout', () => {
+    playSound('ui_assist_prompt_timeout');
+  });
+
+  GameEvents.on('alchemy/flame_ignite', () => {
+    playSound('sfx_alchemy_flame_ignite');
+  });
+
+  GameEvents.on('alchemy/flame_adjust', () => {
+    playSound('sfx_alchemy_flame_adjust');
+  });
+
+  GameEvents.on('alchemy/flame_stable', (event) => {
+    playSound(event.payload.ok ? 'sfx_alchemy_flame_stable' : 'sfx_alchemy_flame_surge');
+  });
+
+  GameEvents.on('alchemy/ingredient_added', (event) => {
+    playSound(event.payload.ok ? 'sfx_alchemy_ingredient_add' : 'sfx_alchemy_step_miss');
+  });
+
+  GameEvents.on('alchemy/seal_attempt', (event) => {
+    playSound('sfx_alchemy_seal');
+    playSound(event.payload.ok ? 'sfx_alchemy_step_perfect' : 'sfx_alchemy_step_miss');
+  });
+
+  GameEvents.on('alchemy/pressure_release', () => {
+    playSound('sfx_alchemy_pressure_release');
+  });
+
+  GameEvents.on('alchemy/result', (event) => {
+    if (event.payload.grade === 'perfect') {
+      playSound('sfx_alchemy_result_perfect');
+    } else if (event.payload.grade === 'crude') {
+      playSound('sfx_alchemy_result_crude');
+    } else {
+      playSound('sfx_alchemy_step_good');
+    }
+  });
+
+  GameEvents.on('alchemy/byproduct_gain', () => {
+    playSound('sfx_alchemy_byproduct_gain');
+  });
+
+  GameEvents.on('alchemy/mastery_gain', () => {
+    playSound('sfx_alchemy_mastery_gain');
+  });
+
+  GameEvents.on('alchemy/mastery_milestone', () => {
+    playSound('sfx_alchemy_mastery_milestone');
+  });
+
+  GameEvents.on('forge/furnace_ignite', () => {
+    playSound('sfx_forge_furnace_ignite');
+  });
+
+  GameEvents.on('forge/bellows_pump', () => {
+    playSound('sfx_forge_bellows_pump');
+  });
+
+  GameEvents.on('forge/metal_heat', () => {
+    playSound('sfx_forge_metal_heat');
+  });
+
+  GameEvents.on('forge/hammer_strike', (event) => {
+    playSound(event.payload.intensity === 'heavy' ? 'sfx_forge_hammer_heavy' : 'sfx_forge_hammer_light');
+  });
+
+  GameEvents.on('forge/hammer_complete', () => {
+    playSound('sfx_forge_sparks_burst');
+  });
+
+  GameEvents.on('forge/quench', () => {
+    playSound('sfx_forge_quench');
+  });
+
+  GameEvents.on('forge/temper', () => {
+    playSound('sfx_forge_temper');
+  });
+
+  GameEvents.on('forge/grind', () => {
+    playSound('sfx_forge_grind');
+  });
+
+  GameEvents.on('forge/refine_result', (event) => {
+    playSound(event.payload.ok ? 'sfx_forge_refine_success' : 'sfx_forge_refine_fail');
+  });
+
+  GameEvents.on('forge/temper_result', (event) => {
+    playSound(event.payload.ok ? 'sfx_forge_temper_proc' : 'sfx_forge_temper_no_proc');
+  });
+
+  GameEvents.on('forge/delta_panel_opened', () => {
+    playSound('ui_forge_delta_open');
+  });
+
+  GameEvents.on('forge/delta_panel_closed', () => {
+    playSound('ui_forge_delta_close');
+  });
+
+  GameEvents.on('forge/rune_engrave', () => {
+    playSound('sfx_forge_rune_engrave');
+  });
+
+  GameEvents.on('forge/rune_fuse', () => {
+    playSound('sfx_forge_rune_fuse');
+  });
+
+  GameEvents.on('forge/rune_craft_result', (event) => {
+    playSound(event.payload.ok ? 'sfx_forge_rune_craft_success' : 'sfx_forge_rune_craft_fail');
+  });
+
+  GameEvents.on('forge/rune_dust_gain', () => {
+    playSound('sfx_forge_rune_dust_gain');
+  });
+
+  GameEvents.on('talisman/craft_result', (event) => {
+    playSound(event.payload.ok ? 'sfx_talisman_craft_success' : 'sfx_talisman_craft_fail');
+  });
+
+  GameEvents.on('talisman/paper_pickup', () => {
+    playSound('sfx_talisman_paper_pickup');
+  });
+
+  GameEvents.on('talisman/brush_stroke', () => {
+    playSound('sfx_talisman_brush_stroke');
+  });
+
+  GameEvents.on('talisman/ink_dip', () => {
+    playSound('sfx_talisman_ink_dip');
+  });
+
+  GameEvents.on('talisman/seal_stamp', () => {
+    playSound('sfx_talisman_seal_stamp');
+  });
+
+  GameEvents.on('talisman/activated', () => {
+    playSequence([{ id: 'ui_talisman_equip' }, { id: 'sfx_talisman_trigger', delayMs: 120 }]);
+  });
+
+  GameEvents.on('talisman/expired', () => {
+    playSequence([{ id: 'ui_talisman_unequip' }, { id: 'sfx_talisman_break', delayMs: 120 }]);
   });
 
   GameEvents.on('manuals/studied', (event) => {

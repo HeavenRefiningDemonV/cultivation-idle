@@ -4,6 +4,7 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useProfessionStore } from '../../stores/professionStore';
 import { greaterThanOrEqualTo, multiply } from '../../utils/numbers';
 import { useBuffStore } from '../../stores/buffStore';
+import { GameEvents } from '../../services/events/GameEvents';
 
 interface TalismanPanelProps {
   cityId: string | null;
@@ -272,18 +273,23 @@ export function TalismanPanel({ cityId }: TalismanPanelProps) {
                           className={`worldScreenModuleButton ${affordability.ok ? 'worldScreenModuleButton--active' : ''}`}
                           disabled={!affordability.ok}
                           onClick={() => {
+                            GameEvents.emit({ type: 'talisman/paper_pickup', payload: {} });
+                            GameEvents.emit({ type: 'talisman/ink_dip', payload: {} });
+                            GameEvents.emit({ type: 'talisman/brush_stroke', payload: {} });
                             const result = startTalisman(recipe.id, qty);
                             if (!result.ok) {
                               setRecipeStatus((prev) => ({
                                 ...prev,
                                 [recipe.id]: { type: 'error', message: result.error },
                               }));
+                              GameEvents.emit({ type: 'talisman/craft_result', payload: { ok: false } });
                               return;
                             }
                             setRecipeStatus((prev) => ({
                               ...prev,
                               [recipe.id]: { type: 'success', message: `Queued x${qty}` },
                             }));
+                            GameEvents.emit({ type: 'talisman/seal_stamp', payload: {} });
                           }}
                         >
                           Craft

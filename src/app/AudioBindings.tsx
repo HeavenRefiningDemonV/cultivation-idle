@@ -4,6 +4,7 @@ import { useUIStore, type UIState } from '../stores/uiStore';
 import { isSoundId } from '../services/audio/soundIds';
 import type { UINotification } from '../stores/uiStore';
 import { initSoundRouter } from '../services/audio/SoundRouter';
+import { initAmbienceManager } from '../services/audio/AmbienceManager';
 
 const selectActiveTab = (state: UIState) => state.activeTab;
 const selectNotifications = (state: UIState) => state.notifications;
@@ -49,6 +50,7 @@ export function AudioBindings() {
   useEffect(() => {
     audio.init();
     initSoundRouter();
+    const stopAmbience = initAmbienceManager();
     const clickOptions: AddEventListenerOptions = { capture: true };
 
     const unsubscribeTab = useUIStore.subscribe(selectActiveTab, (tab, previous) => {
@@ -108,6 +110,7 @@ export function AudioBindings() {
       unsubscribeTab();
       unsubscribeNotifications();
       unsubscribeModals();
+      stopAmbience();
       document.removeEventListener('click', handleGlobalClick, clickOptions);
       document.removeEventListener('ui:dropdown_open', handleDropdownOpen as EventListener);
       document.removeEventListener('ui:dropdown_select', handleDropdownSelect as EventListener);

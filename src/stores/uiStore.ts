@@ -675,6 +675,15 @@ export const useUIStore = create<UIState>()(
       if (buildingKey === 'manualPavilion') {
         GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey, cityId } });
       }
+      if (buildingKey === 'apothecary') {
+        GameEvents.emit({ type: 'apothecary/opened', payload: { cityId } });
+      }
+      if (buildingKey === 'alchemy' || buildingKey === 'forge' || buildingKey === 'talismanStudio') {
+        GameEvents.emit({
+          type: 'crafting/opened',
+          payload: { station: buildingKey === 'alchemy' ? 'alchemy' : buildingKey === 'forge' ? 'forge' : 'talisman' },
+        });
+      }
     },
 
     closeWorldBuildingModal: () => {
@@ -687,6 +696,15 @@ export const useUIStore = create<UIState>()(
       });
       if (buildingKey === 'manualPavilion') {
         GameEvents.emit({ type: 'pavilion/closed', payload: { buildingKey, cityId } });
+      }
+      if (buildingKey === 'apothecary') {
+        GameEvents.emit({ type: 'apothecary/closed', payload: { cityId } });
+      }
+      if (buildingKey === 'alchemy' || buildingKey === 'forge' || buildingKey === 'talismanStudio') {
+        GameEvents.emit({
+          type: 'crafting/closed',
+          payload: { station: buildingKey === 'alchemy' ? 'alchemy' : buildingKey === 'forge' ? 'forge' : 'talisman' },
+        });
       }
     },
 

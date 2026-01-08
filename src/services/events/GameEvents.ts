@@ -1,6 +1,8 @@
 import type { RewardBundle, GrantRewardsResult, RewardCurrencyBundle } from '../rewards/types';
 import type { ActiveActivity } from '../../types/activity';
 import type { GameTab, WorldBuildingKey } from '../../stores/uiStore';
+import type { CraftMode, CraftStation, CraftPromptState } from '../../systems/crafting/craftingTypes';
+import type { MedicinePouchSlotKey } from '../../types';
 
 export type RewardsGrantedEvent = {
   type: 'rewards/granted';
@@ -129,6 +131,336 @@ export type SatchelOpenedEvent = {
 export type SatchelClosedEvent = {
   type: 'satchel/closed';
   payload: {};
+};
+
+export type ApothecaryOpenedEvent = {
+  type: 'apothecary/opened';
+  payload: { cityId: string | null };
+};
+
+export type ApothecaryClosedEvent = {
+  type: 'apothecary/closed';
+  payload: { cityId: string | null };
+};
+
+export type ApothecaryItemSelectedEvent = {
+  type: 'apothecary/item_selected';
+  payload: { shopId: string; itemId: string; qty: number };
+};
+
+export type ApothecaryBuySuccessEvent = {
+  type: 'apothecary/buy_success';
+  payload: { shopId: string; itemId: string; qty: number };
+};
+
+export type ApothecaryBuyFailedEvent = {
+  type: 'apothecary/buy_failed';
+  payload: { shopId: string; itemId: string; reason: string };
+};
+
+export type ApothecaryDailyLimitHitEvent = {
+  type: 'apothecary/daily_limit_hit';
+  payload: { shopId: string; itemId: string };
+};
+
+export type ApothecaryBundleBuyEvent = {
+  type: 'apothecary/bundle_buy';
+  payload: { bundleId: string; ok: boolean };
+};
+
+export type PouchOpenedEvent = {
+  type: 'pouch/opened';
+  payload: {};
+};
+
+export type PouchClosedEvent = {
+  type: 'pouch/closed';
+  payload: {};
+};
+
+export type PouchSlotSelectedEvent = {
+  type: 'pouch/slot_selected';
+  payload: { slotKey: MedicinePouchSlotKey };
+};
+
+export type PouchEquippedEvent = {
+  type: 'pouch/equip';
+  payload: { slotKey: MedicinePouchSlotKey; itemId: string };
+};
+
+export type PouchUnequippedEvent = {
+  type: 'pouch/unequip';
+  payload: { slotKey: MedicinePouchSlotKey; itemId: string | null };
+};
+
+export type PouchAutoTriggerEvent = {
+  type: 'pouch/auto_trigger';
+  payload: { slotKey: MedicinePouchSlotKey; itemId: string };
+};
+
+export type PouchOutOfChargesEvent = {
+  type: 'pouch/out_of_charges';
+  payload: { slotKey?: MedicinePouchSlotKey; itemId?: string; source: 'auto' | 'manual' };
+};
+
+export type PouchLowChargesWarningEvent = {
+  type: 'pouch/low_charges_warning';
+  payload: { slotKey?: MedicinePouchSlotKey; itemId?: string; remaining: number };
+};
+
+export type CraftingOpenedEvent = {
+  type: 'crafting/opened';
+  payload: { station: CraftStation };
+};
+
+export type CraftingClosedEvent = {
+  type: 'crafting/closed';
+  payload: { station: CraftStation };
+};
+
+export type CraftingRecipeSelectedEvent = {
+  type: 'crafting/recipe_selected';
+  payload: { station: CraftStation; recipeId: string };
+};
+
+export type CraftingRecipeLockedEvent = {
+  type: 'crafting/recipe_locked';
+  payload: { station: CraftStation; recipeId: string };
+};
+
+export type CraftingRecipeUnlockedEvent = {
+  type: 'crafting/recipe_unlocked';
+  payload: { station: CraftStation; recipeId: string };
+};
+
+export type CraftingModeSelectedEvent = {
+  type: 'crafting/mode_selected';
+  payload: { station: CraftStation; mode: CraftMode };
+};
+
+export type CraftingQueueAddedEvent = {
+  type: 'crafting/queue_added';
+  payload: { station: CraftStation; sourceId: string; qty: number };
+};
+
+export type CraftingQueueCompletedEvent = {
+  type: 'crafting/queue_completed';
+  payload: { station: CraftStation; sourceId: string; qty: number };
+};
+
+export type CraftingSessionStartedEvent = {
+  type: 'crafting/session_started';
+  payload: { station: CraftStation; mode: CraftMode; sourceId: string };
+};
+
+export type CraftingSessionAbortedEvent = {
+  type: 'crafting/session_aborted';
+  payload: { station: CraftStation; mode: CraftMode; sourceId: string };
+};
+
+export type CraftingSessionClaimedEvent = {
+  type: 'crafting/session_claimed';
+  payload: { station: CraftStation; mode: CraftMode; sourceId: string };
+};
+
+export type CraftingSessionCompletedEvent = {
+  type: 'crafting/session_completed';
+  payload: { station: CraftStation; mode: CraftMode; sourceId: string };
+};
+
+export type CraftingSessionBackgroundedEvent = {
+  type: 'crafting/session_backgrounded';
+  payload: { station: CraftStation; mode: CraftMode; sourceId: string; reason: string };
+};
+
+export type CraftingAssistPromptAvailableEvent = {
+  type: 'crafting/assist_prompt_available';
+  payload: { station: CraftStation; promptId: string; promptType: CraftPromptState['type'] };
+};
+
+export type CraftingAssistPromptCompletedEvent = {
+  type: 'crafting/assist_prompt_completed';
+  payload: { station: CraftStation; promptId: string; promptType: CraftPromptState['type'] };
+};
+
+export type CraftingAssistPromptFailedEvent = {
+  type: 'crafting/assist_prompt_failed';
+  payload: { station: CraftStation; promptId: string; promptType: CraftPromptState['type'] };
+};
+
+export type CraftingAssistPromptTimeoutEvent = {
+  type: 'crafting/assist_prompt_timeout';
+  payload: { station: CraftStation; promptId: string; promptType: CraftPromptState['type'] };
+};
+
+export type AlchemyFlameIgniteEvent = {
+  type: 'alchemy/flame_ignite';
+  payload: { recipeId: string };
+};
+
+export type AlchemyFlameAdjustEvent = {
+  type: 'alchemy/flame_adjust';
+  payload: { heat: number };
+};
+
+export type AlchemyFlameStableEvent = {
+  type: 'alchemy/flame_stable';
+  payload: { ok: boolean };
+};
+
+export type AlchemyIngredientAddedEvent = {
+  type: 'alchemy/ingredient_added';
+  payload: { itemId: string; ok: boolean };
+};
+
+export type AlchemySealEvent = {
+  type: 'alchemy/seal_attempt';
+  payload: { ok: boolean };
+};
+
+export type AlchemyPressureReleaseEvent = {
+  type: 'alchemy/pressure_release';
+  payload: {};
+};
+
+export type AlchemyResultEvent = {
+  type: 'alchemy/result';
+  payload: { grade: string };
+};
+
+export type AlchemyByproductGainEvent = {
+  type: 'alchemy/byproduct_gain';
+  payload: { qty: number };
+};
+
+export type AlchemyMasteryGainEvent = {
+  type: 'alchemy/mastery_gain';
+  payload: { recipeId: string; gain: number; next: number };
+};
+
+export type AlchemyMasteryMilestoneEvent = {
+  type: 'alchemy/mastery_milestone';
+  payload: { recipeId: string; milestone: number };
+};
+
+export type ForgeFurnaceIgniteEvent = {
+  type: 'forge/furnace_ignite';
+  payload: { blueprintId: string };
+};
+
+export type ForgeBellowsPumpEvent = {
+  type: 'forge/bellows_pump';
+  payload: {};
+};
+
+export type ForgeMetalHeatEvent = {
+  type: 'forge/metal_heat';
+  payload: {};
+};
+
+export type ForgeHammerStrikeEvent = {
+  type: 'forge/hammer_strike';
+  payload: { intensity: 'light' | 'heavy' };
+};
+
+export type ForgeHammerCompleteEvent = {
+  type: 'forge/hammer_complete';
+  payload: {};
+};
+
+export type ForgeSparksBurstEvent = {
+  type: 'forge/sparks_burst';
+  payload: {};
+};
+
+export type ForgeQuenchEvent = {
+  type: 'forge/quench';
+  payload: {};
+};
+
+export type ForgeTemperEvent = {
+  type: 'forge/temper';
+  payload: {};
+};
+
+export type ForgeGrindEvent = {
+  type: 'forge/grind';
+  payload: {};
+};
+
+export type ForgeRefineResultEvent = {
+  type: 'forge/refine_result';
+  payload: { ok: boolean };
+};
+
+export type ForgeTemperResultEvent = {
+  type: 'forge/temper_result';
+  payload: { ok: boolean };
+};
+
+export type ForgeDeltaPanelOpenedEvent = {
+  type: 'forge/delta_panel_opened';
+  payload: {};
+};
+
+export type ForgeDeltaPanelClosedEvent = {
+  type: 'forge/delta_panel_closed';
+  payload: {};
+};
+
+export type ForgeRuneEngraveEvent = {
+  type: 'forge/rune_engrave';
+  payload: {};
+};
+
+export type ForgeRuneFuseEvent = {
+  type: 'forge/rune_fuse';
+  payload: {};
+};
+
+export type ForgeRuneCraftResultEvent = {
+  type: 'forge/rune_craft_result';
+  payload: { ok: boolean };
+};
+
+export type ForgeRuneDustGainEvent = {
+  type: 'forge/rune_dust_gain';
+  payload: { qty: number };
+};
+
+export type TalismanCraftResultEvent = {
+  type: 'talisman/craft_result';
+  payload: { ok: boolean };
+};
+
+export type TalismanPaperPickupEvent = {
+  type: 'talisman/paper_pickup';
+  payload: {};
+};
+
+export type TalismanBrushStrokeEvent = {
+  type: 'talisman/brush_stroke';
+  payload: {};
+};
+
+export type TalismanInkDipEvent = {
+  type: 'talisman/ink_dip';
+  payload: {};
+};
+
+export type TalismanSealStampEvent = {
+  type: 'talisman/seal_stamp';
+  payload: {};
+};
+
+export type TalismanActivatedEvent = {
+  type: 'talisman/activated';
+  payload: { itemId: string };
+};
+
+export type TalismanExpiredEvent = {
+  type: 'talisman/expired';
+  payload: { itemId: string };
 };
 
 export type ManualFocusPromptEvent = {
@@ -272,6 +604,72 @@ export type GameEvent =
   | PavilionGuaranteeTriggeredEvent
   | SatchelOpenedEvent
   | SatchelClosedEvent
+  | ApothecaryOpenedEvent
+  | ApothecaryClosedEvent
+  | ApothecaryItemSelectedEvent
+  | ApothecaryBuySuccessEvent
+  | ApothecaryBuyFailedEvent
+  | ApothecaryDailyLimitHitEvent
+  | ApothecaryBundleBuyEvent
+  | PouchOpenedEvent
+  | PouchClosedEvent
+  | PouchSlotSelectedEvent
+  | PouchEquippedEvent
+  | PouchUnequippedEvent
+  | PouchAutoTriggerEvent
+  | PouchOutOfChargesEvent
+  | PouchLowChargesWarningEvent
+  | CraftingOpenedEvent
+  | CraftingClosedEvent
+  | CraftingRecipeSelectedEvent
+  | CraftingRecipeLockedEvent
+  | CraftingRecipeUnlockedEvent
+  | CraftingModeSelectedEvent
+  | CraftingQueueAddedEvent
+  | CraftingQueueCompletedEvent
+  | CraftingSessionStartedEvent
+  | CraftingSessionAbortedEvent
+  | CraftingSessionClaimedEvent
+  | CraftingSessionCompletedEvent
+  | CraftingSessionBackgroundedEvent
+  | CraftingAssistPromptAvailableEvent
+  | CraftingAssistPromptCompletedEvent
+  | CraftingAssistPromptFailedEvent
+  | CraftingAssistPromptTimeoutEvent
+  | AlchemyFlameIgniteEvent
+  | AlchemyFlameAdjustEvent
+  | AlchemyFlameStableEvent
+  | AlchemyIngredientAddedEvent
+  | AlchemySealEvent
+  | AlchemyPressureReleaseEvent
+  | AlchemyResultEvent
+  | AlchemyByproductGainEvent
+  | AlchemyMasteryGainEvent
+  | AlchemyMasteryMilestoneEvent
+  | ForgeFurnaceIgniteEvent
+  | ForgeBellowsPumpEvent
+  | ForgeMetalHeatEvent
+  | ForgeHammerStrikeEvent
+  | ForgeHammerCompleteEvent
+  | ForgeSparksBurstEvent
+  | ForgeQuenchEvent
+  | ForgeTemperEvent
+  | ForgeGrindEvent
+  | ForgeRefineResultEvent
+  | ForgeTemperResultEvent
+  | ForgeDeltaPanelOpenedEvent
+  | ForgeDeltaPanelClosedEvent
+  | ForgeRuneEngraveEvent
+  | ForgeRuneFuseEvent
+  | ForgeRuneCraftResultEvent
+  | ForgeRuneDustGainEvent
+  | TalismanCraftResultEvent
+  | TalismanPaperPickupEvent
+  | TalismanBrushStrokeEvent
+  | TalismanInkDipEvent
+  | TalismanSealStampEvent
+  | TalismanActivatedEvent
+  | TalismanExpiredEvent
   | ManualFocusPromptEvent
   | ManualFocusAppliedEvent
   | ManualFocusFailedEvent

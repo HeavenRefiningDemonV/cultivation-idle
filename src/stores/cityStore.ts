@@ -9,7 +9,7 @@ export type CityFlags = {
   ruinsCleared: boolean;
 };
 
-interface CityState {
+export interface CityState {
   currentCityId: string | null;
   unlockedCityIds: string[];
   selectedModuleByCity: Record<string, string>;
