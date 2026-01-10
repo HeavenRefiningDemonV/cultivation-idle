@@ -3,7 +3,7 @@ import { GameLayout } from './components/GameLayout';
 import { ContentInitGate } from './components/system/ContentInitGate';
 import { initializeGame } from './systems/gameLoop';
 import { useShopStore } from './stores/shopStore';
-import bigOverlay from "./assets/texture_overlay.png";
+import paperTexture from "./assets/texture_overlay.png";
 import './App.scss';
 
 /**
@@ -80,7 +80,7 @@ function App() {
   // Render game layout once initialized
   return (
     <ContentInitGate>
-      <img className="paper-texture" src={bigOverlay}></img>
+      <img className="paper-texture" src={paperTexture}></img>
       <GameLayout />
     </ContentInitGate>
   );
