@@ -102,6 +102,7 @@ export function GameLayout() {
           aria-hidden
         />
       ) : null}
+      <div className="gameLayoutTextureOverlay" aria-hidden />
       <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
         {renderContent()}
       </div>

@@ -32,6 +32,19 @@
   z-index: 0;
 }
 
+.gameLayoutTextureOverlay {
+  position: fixed;
+  inset: 0;
+  background-image: url('../assets/texture_overlay.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
 .gameLayoutContent {
   position: relative;
   z-index: 1;
