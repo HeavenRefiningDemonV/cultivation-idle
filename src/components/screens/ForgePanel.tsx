@@ -4,13 +4,10 @@ import { formatPrice, getForgeBlueprint, getItemDef, listForgeBlueprintsForCity 
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useEquipmentStore } from '../../stores/equipmentStore';
 import { useProfessionStore } from '../../stores/professionStore';
-import { useUIStore } from '../../stores/uiStore';
 import { isRefineBlueprint, isRuneBlueprint, isTemperBlueprint } from '../../content';
-import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
-import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
 import { ForgeHandsOnSession } from '../crafting/ForgeHandsOnSession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
-import type { CraftStep, ForgeSessionOutcome, ForgeStepResult } from '../../systems/crafting/craftingTypes';
+import type { ForgeSessionOutcome } from '../../systems/crafting/craftingTypes';
 import type { ForgeServiceResult } from '../../services/forgeService';
 import { RewardService } from '../../services/rewards';
 import { listTemperAffixes } from '../../content/temperAffixes';
@@ -23,7 +20,6 @@ interface ForgePanelProps {
 type StatusMessage = { type: 'success' | 'error'; message: string };
 
 const MAX_QTY = 999;
-const SESSION_QTY = 1;
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -58,61 +54,9 @@ function formatUsageLabel(usage?: string): string | undefined {
   }
 }
 
-function buildAssistedPerformance(step: CraftStep): ForgeStepResult | null {
-  switch (step.type) {
-    case 'HEAT_MATERIAL':
-      return {
-        stepId: step.id,
-        type: 'HEAT_MATERIAL',
-        achievedMin: step.targetMin,
-        achievedMax: step.targetMax,
-        holdMs: step.holdMs,
-      };
-    case 'HAMMER_PATTERN':
-      return {
-        stepId: step.id,
-        type: 'HAMMER_PATTERN',
-        hitsLanded: step.hits,
-        hitsRequired: step.hits,
-        timingScore: 0.75,
-      };
-    case 'QUENCH':
-      return {
-        stepId: step.id,
-        type: 'QUENCH',
-        medium: step.mediumOptions[0] ?? 'water',
-        timingMs: step.timingWindow ? (step.timingWindow.goodMin + step.timingWindow.goodMax) / 2 : undefined,
-      };
-    case 'TEMPER':
-      return {
-        stepId: step.id,
-        type: 'TEMPER',
-        achievedMin: step.targetMin ?? step.targetHeat - 15,
-        achievedMax: step.targetMax ?? step.targetHeat + 15,
-        holdMs: step.holdMs ?? step.durationMs,
-      };
-    case 'ALLOY_MIX': {
-      const choice = step.options[0];
-      return {
-        stepId: step.id,
-        type: 'ALLOY_MIX',
-        choiceId: choice?.id,
-        qualityDelta: choice?.qualityDelta,
-      };
-    }
-    case 'CAST_OR_SHAPE':
-      return { stepId: step.id, type: 'CAST_OR_SHAPE', variant: step.variant, precision: 0.7, success: true };
-    case 'ENGRAVE_RUNE':
-      return { stepId: step.id, type: 'ENGRAVE_RUNE', success: true, precision: 0.65, optional: step.optional };
-    case 'FINISH':
-    default:
-      return null;
-  }
-}
-
 export function ForgePanel({ cityId }: ForgePanelProps) {
-  const startForge = useProfessionStore((state) => state.startForge);
-  const claimForge = useProfessionStore((state) => state.claimForge);
+  const startForgeJob = useProfessionStore((state) => state.startForgeJob);
+  const claimForgeJob = useProfessionStore((state) => state.claimForgeJob);
   const forgeQueue = useProfessionStore((state) => state.forgeQueue);
   const canStartForge = useProfessionStore((state) => state.canStartForge);
   const getForgeJobStatus = useProfessionStore((state) => state.getForgeJobStatus);
@@ -127,21 +71,10 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
 
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
   const setCraftMode = useCraftSessionStore((state) => state.setMode);
-  const startSession = useCraftSessionStore((state) => state.startSession);
-  const abortSession = useCraftSessionStore((state) => state.abortSession);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
-  const recordForgeStepResult = useCraftSessionStore((state) => state.recordForgeStepResult);
-  const updateSessionPrompts = useCraftSessionStore((state) => state.updateActiveSessionPrompts);
-  const completePromptAction = useCraftSessionStore((state) => state.completePrompt);
-  const claimSession = useCraftSessionStore((state) => state.claimActiveSession);
-  const markBackgroundResolving = useCraftSessionStore((state) => state.markBackgroundResolving);
-  const addNotification = useUIStore((state) => state.addNotification);
 
   const activeOtherStation = activeSession && activeSession.station !== 'forge';
   const activeForgeSession = activeSession?.station === 'forge' ? activeSession : null;
-  const activePrompts = activeForgeSession?.prompts ?? [];
-  const promptSummary = summarizePrompts(activePrompts);
-  const availablePrompt = activePrompts.find((prompt) => prompt.status === 'AVAILABLE');
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
@@ -165,22 +98,6 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
     return () => window.clearInterval(handle);
   }, []);
-
-  useEffect(() => {
-    updateSessionPrompts(now);
-  }, [now, updateSessionPrompts]);
-
-  useEffect(() => {
-    if (!activeForgeSession || activeForgeSession.mode !== 'assisted') return;
-    const existingIds = new Set((activeForgeSession.cursor.forgeStepResults ?? []).map((entry) => entry.stepId));
-    activeForgeSession.script.steps.forEach((step) => {
-      if (existingIds.has(step.id)) return;
-      const perf = buildAssistedPerformance(step);
-      if (perf) {
-        recordForgeStepResult(perf);
-      }
-    });
-  }, [activeForgeSession, recordForgeStepResult]);
 
   useEffect(() => {
     setSessionStatus(null);
@@ -227,21 +144,10 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
     }
   }, [blueprints, refineBlueprint?.id, temperBlueprint?.id, runeBlueprints, selectedBlueprintId]);
 
-  useEffect(() => {
-    return () => {
-      if (activeForgeSession?.mode === 'handsOn' && activeForgeSession.cursor.backgroundResolveAt == null) {
-        markBackgroundResolving('navigated');
-      }
-    };
-  }, [activeForgeSession, markBackgroundResolving]);
-
   const selectedBlueprint = useMemo(
     () => blueprints.find((bp) => bp.id === selectedBlueprintId) ?? blueprints[0] ?? null,
     [blueprints, selectedBlueprintId],
   );
-
-  const sessionRemainingMs = activeForgeSession ? Math.max(0, activeForgeSession.endsAt - now) : 0;
-  const sessionReady = activeForgeSession ? now >= activeForgeSession.endsAt : false;
 
   const handleSetQty = (blueprintId: string, value: number) => {
     setQuantities((prev) => ({ ...prev, [blueprintId]: clampQty(value) }));
@@ -275,6 +181,8 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
 
   const isServiceBlueprint = selectedBlueprint ? selectedBlueprint.type === 'service' : false;
   const currentMode = modeByStation.forge;
+  const isHandsOnMode = currentMode === 'handsOn';
+  const queueMode = currentMode === 'assisted' ? 'ASSISTED' : 'IDLE';
 
   useEffect(() => {
     if (isServiceBlueprint && currentMode !== 'idle') {
@@ -296,11 +204,20 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
         </div>
         <div className={'forgeRefineMeta'}>Bonus: +{refineLevelBySlot.weapon * 2}%</div>
         <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          disabled={!equippedWeaponId || refineLevelBySlot.weapon >= refineCap || !refineWeaponAffordability.ok}
+          className={`worldScreenModuleButton ${
+            !isHandsOnMode && equippedWeaponId && refineLevelBySlot.weapon < refineCap && refineWeaponAffordability.ok
+              ? 'worldScreenModuleButton--active'
+              : ''
+          }`}
+          disabled={isHandsOnMode || !equippedWeaponId || refineLevelBySlot.weapon >= refineCap || !refineWeaponAffordability.ok}
           onClick={() => {
             if (!refineBlueprint) return;
-            const result = startForge(refineBlueprint.id, 1, { targetSlot: 'weapon' });
+            const result = startForgeJob({
+              blueprintId: refineBlueprint.id,
+              mode: queueMode,
+              qty: 1,
+              targetSlot: 'weapon',
+            });
             if (!result.ok) {
               setRecipeStatus((prev) => ({
                 ...prev,
@@ -317,6 +234,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           Refine Weapon (+1)
         </button>
         {weaponRefineBlockedReason && <div className={'forgeHint'}>{weaponRefineBlockedReason}</div>}
+        {isHandsOnMode && <div className={'forgeHint'}>Hands-on forging applies to crafted items only.</div>}
       </div>
 
       <div className={'forgeRefineRow'}>
@@ -331,11 +249,22 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
         </div>
         <div className={'forgeRefineMeta'}>Bonus: +{refineLevelBySlot.accessory * 2}%</div>
         <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          disabled={!equippedAccessoryId || refineLevelBySlot.accessory >= refineCap || !refineAccessoryAffordability.ok}
+          className={`worldScreenModuleButton ${
+            !isHandsOnMode && equippedAccessoryId && refineLevelBySlot.accessory < refineCap && refineAccessoryAffordability.ok
+              ? 'worldScreenModuleButton--active'
+              : ''
+          }`}
+          disabled={
+            isHandsOnMode || !equippedAccessoryId || refineLevelBySlot.accessory >= refineCap || !refineAccessoryAffordability.ok
+          }
           onClick={() => {
             if (!refineBlueprint) return;
-            const result = startForge(refineBlueprint.id, 1, { targetSlot: 'accessory' });
+            const result = startForgeJob({
+              blueprintId: refineBlueprint.id,
+              mode: queueMode,
+              qty: 1,
+              targetSlot: 'accessory',
+            });
             if (!result.ok) {
               setRecipeStatus((prev) => ({
                 ...prev,
@@ -520,10 +449,14 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
             </label>
             <div className={'forgeBlueprintActions'}>
               <button
-                className={`worldScreenModuleButton ${affordability.ok ? 'worldScreenModuleButton--active' : ''}`}
-                disabled={!affordability.ok}
+                className={`worldScreenModuleButton ${affordability.ok && !isHandsOnMode ? 'worldScreenModuleButton--active' : ''}`}
+                disabled={!affordability.ok || isHandsOnMode}
                 onClick={() => {
-                  const result = startForge(selectedBlueprint.id, qty);
+                  const result = startForgeJob({
+                    blueprintId: selectedBlueprint.id,
+                    mode: queueMode,
+                    qty,
+                  });
                   if (!result.ok) {
                     setRecipeStatus((prev) => ({
                       ...prev,
@@ -540,14 +473,15 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                 Craft
               </button>
               {!affordability.ok && affordability.reason && <div className={'forgeHint'}>{affordability.reason}</div>}
+              {isHandsOnMode && <div className={'forgeHint'}>Hands-on sessions start below.</div>}
             </div>
           </div>
         )}
 
-        {currentMode !== 'idle' && (
+        {currentMode === 'handsOn' && (
           <div className={'craftingSessionBlock craftSessionCard'}>
             <div className={'craftingSessionNote'}>
-              Sessions craft 1 batch for now. Assisted auto-resolves at a good grade; hands-on is interactive.
+              Hands-on sessions craft 1 batch for now. Complete the minigame to finish.
             </div>
             {activeOtherStation && (
               <div className={'forgeHint'}>Another crafting session is active. Finish or abort it first.</div>
@@ -556,21 +490,19 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
               <button
                 className={'worldScreenModuleButton worldScreenModuleButton--active'}
                 onClick={() => {
-                  const result = startSession({
-                    station: 'forge',
-                    mode: currentMode as 'assisted' | 'handsOn',
-                    sourceId: selectedBlueprint.id,
-                    qty: SESSION_QTY,
-                    now: Date.now(),
+                  const result = startForgeJob({
+                    blueprintId: selectedBlueprint.id,
+                    mode: 'HANDS_ON',
+                    qty: 1,
                   });
                   if (!result.ok) {
-                    setSessionStatus({ type: 'error', message: `Cannot start: ${result.reason}` });
+                    setSessionStatus({ type: 'error', message: result.error });
                     return;
                   }
-                  setSessionStatus({ type: 'success', message: 'Session started' });
+                  setSessionStatus({ type: 'success', message: 'Hands-on session started' });
                 }}
               >
-                Start {currentMode === 'assisted' ? 'Assisted' : 'Hands-on'} session
+                Start Hands-on session
               </button>
             )}
             {activeForgeSession && activeForgeSession.mode === 'handsOn' && (
@@ -600,80 +532,6 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-
-            {activeForgeSession && activeForgeSession.mode === 'assisted' && (
-              <div className={'craftingSessionDetails craftSessionCard'}>
-                <div className={'craftingSessionRow'}>
-                  <div>Session active</div>
-                  <div className={'craftingSessionMeta'}>
-                    {activeForgeSession.mode} · {activeForgeSession.sourceId}
-                  </div>
-                </div>
-                <div className={'craftingSessionMeta'}>
-                  <div>{sessionReady ? 'Ready to claim' : `Time left: ${formatDuration(sessionRemainingMs)}`}</div>
-                  <div>Assisted: {promptSummary.completed}/{promptSummary.total} prompts completed</div>
-                </div>
-
-                {availablePrompt && (
-                  <AssistedPromptCard
-                    prompt={availablePrompt}
-                    now={now}
-                    onComplete={() => {
-                      const result = completePromptAction(availablePrompt.id, Date.now());
-                      if (!result.ok) {
-                        setSessionStatus({ type: 'error', message: 'Prompt not available right now' });
-                        return;
-                      }
-                      const bonusLabel =
-                        availablePrompt.bonus?.yieldPct && availablePrompt.bonus.yieldPct > 0
-                          ? ` (+${availablePrompt.bonus.yieldPct}% yield)`
-                          : '';
-                      const toastLabel = availablePrompt.type === 'ADD_CATALYST' ? 'Catalyst added' : 'Heat stabilized';
-                      addNotification('success', `${toastLabel}${bonusLabel}`, 2500);
-                      setSessionStatus({ type: 'success', message: `${toastLabel}${bonusLabel}` });
-                    }}
-                  />
-                )}
-
-                <div className={'craftingStepList'}>
-                  {activeForgeSession.script.steps.map((step) => (
-                    <div key={step.id} className={'craftingStepItem'}>
-                      <div className={'craftingStepType'}>{step.uiLabel ?? step.type}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className={'craftingSessionActions'}>
-                  <button
-                    className={`worldScreenModuleButton ${sessionReady ? 'worldScreenModuleButton--active' : ''}`}
-                    disabled={!sessionReady}
-                    onClick={() => {
-                      const result = claimSession(Date.now());
-                      if (!result.ok) {
-                        const message = result.reason === 'not_ready' ? 'Session not finished yet' : 'Unable to claim session';
-                        setSessionStatus({ type: 'error', message });
-                        return;
-                      }
-                      const bonusTotal = result.bonus?.bonusItems?.reduce((acc, item) => acc + item.qty, 0) ?? 0;
-                      const summary = result.bonus
-                        ? `Assisted bonus: +${bonusTotal} (${result.bonus.completed}/${result.bonus.total} prompts).`
-                        : 'Session claimed.';
-                      setSessionStatus({ type: 'success', message: summary });
-                    }}
-                  >
-                    Claim session
-                  </button>
-                  <button
-                    className={'worldScreenModuleButton'}
-                    onClick={() => {
-                      abortSession();
-                      setSessionStatus({ type: 'success', message: 'Session aborted and refunded' });
-                    }}
-                  >
-                    Abort session
-                  </button>
-                </div>
               </div>
             )}
 
@@ -737,21 +595,28 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           <div className={'forgeRefineMeta'}>Base chance: {displayedChance.toFixed(1)}%</div>
           <div className={'forgeRefineMeta'}>Tool bonus included</div>
           <button
-            className={'worldScreenModuleButton worldScreenModuleButton--active'}
+            className={`worldScreenModuleButton ${!isHandsOnMode ? 'worldScreenModuleButton--active' : ''}`}
+            disabled={isHandsOnMode}
             onClick={() => {
-              const result = startForge(selectedBlueprint.id, 1, { targetSlot: selectedServiceSlot });
+              const result = startForgeJob({
+                blueprintId: selectedBlueprint.id,
+                mode: queueMode,
+                qty: 1,
+                targetSlot: selectedServiceSlot,
+              });
               if (!result.ok) {
                 setRecipeStatus((prev) => ({ ...prev, [selectedBlueprint.id]: { type: 'error', message: result.error } }));
                 return;
               }
               setRecipeStatus((prev) => ({
                 ...prev,
-                [selectedBlueprint.id]: { type: 'success', message: 'Tempering started (idle)' },
+                [selectedBlueprint.id]: { type: 'success', message: `Tempering started (${queueMode.toLowerCase()})` },
               }));
             }}
           >
-            Temper (Idle)
+            Temper ({queueMode === 'ASSISTED' ? 'Assisted' : 'Idle'})
           </button>
+          {isHandsOnMode && <div className={'forgeHint'}>Hands-on forging applies to crafted items only.</div>}
         </div>
 
         <div className={'forgeBlueprintLabel'}>Current affixes</div>
@@ -964,7 +829,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
 
                   const label = blueprint
                     ? blueprint.type === 'service'
-                      ? `Refine ${job.targetSlot ?? 'equipment'} +${job.qty}`
+                      ? `${blueprint.service === 'temper' ? 'Temper' : 'Refine'} ${job.targetSlot ?? 'equipment'}`
                       : (() => {
                           const outputItemId = blueprint.output?.itemId;
                           const outputName = outputItemId ? getItemDef(outputItemId)?.name ?? outputItemId : blueprint.id;
@@ -989,7 +854,11 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                           className={`worldScreenModuleButton ${done ? 'worldScreenModuleButton--active' : ''}`}
                           disabled={!done}
                           onClick={() => {
-                            const result = claimForge(job.id) as { ok: boolean; error?: string; result?: ForgeServiceResult };
+                            const result = claimForgeJob(job.id) as {
+                              ok: boolean;
+                              error?: string;
+                              result?: { serviceResult?: ForgeServiceResult };
+                            };
                             if (!result.ok) {
                               setQueueStatus((prev) => ({
                                 ...prev,
@@ -997,8 +866,8 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                               }));
                               return;
                             }
-                            if (result.result) {
-                              setLastServiceResult(result.result);
+                            if (result.result?.serviceResult) {
+                              setLastServiceResult(result.result.serviceResult);
                             }
                             setQueueStatus((prev) => ({
                               ...prev,

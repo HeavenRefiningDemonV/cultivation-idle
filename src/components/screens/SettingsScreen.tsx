@@ -3,6 +3,7 @@ import { SaveService } from '../../services/save/SaveService';
 import { useContentStore } from '../../stores/contentStore';
 import { getContentBaseUrl } from '../../content';
 import { RewardService } from '../../services/rewards';
+import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle';
 import { useUIStore } from '../../stores/uiStore';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
@@ -118,23 +119,11 @@ export function SettingsScreen() {
   };
 
   const handleTestGrantRewards = () => {
-    // Pull a random material from the content pack (falls back to legacy ids if content is empty).
-    const maps = useContentStore.getState().maps;
-    const materialIds = Object.values(maps.itemsById)
-      .filter((item) => item && item.category === 'material')
-      .map((item) => item.id);
-
-    const randomMaterialId =
-      materialIds.length > 0 ? materialIds[Math.floor(Math.random() * materialIds.length)] : 'spirit_stone';
-
-    const result = RewardService.grantRewards(
-      {
-        currencies: { gold: '10' },
-        items: [{ itemId: randomMaterialId, qty: 1 }],
-      },
-      'Test Grant Rewards',
-    );
-
+    if (!import.meta.env.DEV) return;
+    const confirmed = window.confirm('Grant large amounts of ALL rewards?');
+    if (!confirmed) return;
+    const bundle = buildMegaRewardBundle();
+    const result = RewardService.grantRewards(bundle, 'debug:mega_grant');
     console.log('[Rewards] Test Grant Rewards result', result);
   };
 
@@ -324,9 +313,9 @@ export function SettingsScreen() {
               <button
                 onClick={handleTestGrantRewards}
                 className={'button-standard settingsScreenDebugButton'}
-                disabled={!contentIsLoaded}
+                disabled={!contentIsLoaded || !import.meta.env.DEV}
               >
-                Test Grant Rewards (10 Gold + 1 Material)
+                Test Grant Rewards (Mega Bundle)
               </button>
               <button
                 onClick={clearRewardLog}

@@ -31,6 +31,7 @@ import type {
   TrialsConfig,
 } from './types';
 import type { LoadedContentRaw } from './loaders';
+import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.ts';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1066,6 +1067,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       itemMap,
       addErr,
     );
+    validateForgeBlueprintStepScript(blueprint, `forge_blueprints.blueprints[${idx}]`, addErr);
   });
 
   talismanRecipes.forEach((talisman, idx) => {

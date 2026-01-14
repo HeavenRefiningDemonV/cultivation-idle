@@ -983,6 +983,12 @@
   gap: 12px;
 }
 
+.forgeHandsOnStepBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .forgeSessionHeader {
   display: flex;
   justify-content: space-between;

@@ -5,7 +5,7 @@ import { resolveModuleRef } from '../screens/world/worldUtils';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel';
 import { ApothecaryPanel } from '../screens/ApothecaryPanel';
 import { AlchemyPanel } from '../screens/AlchemyPanel';
-import { ForgePanel } from '../screens/ForgePanel';
+import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
 import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
@@ -106,7 +106,7 @@ export function WorldBuildingModal({
         content = <AlchemyPanel cityId={storeCityId} />;
         break;
       case 'forge':
-        content = <ForgePanel cityId={storeCityId} />;
+        content = <ForgeWorkshop cityId={storeCityId} />;
         break;
       case 'talismanStudio':
         content = <TalismanPanel cityId={storeCityId} />;
