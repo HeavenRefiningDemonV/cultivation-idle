@@ -300,6 +300,12 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     impactKey: 0,
     impactScore: 0,
   });
+  const [engraveState, setEngraveState] = useState<{ strokes: number; timingSum: number; impactKey: number; impactScore: number }>({
+    strokes: 0,
+    timingSum: 0,
+    impactKey: 0,
+    impactScore: 0,
+  });
   const heatSample = useRef<HeatSampleState>(defaultHeatSample(now, heatSetting));
 
   const performances = session.cursor.forgeStepResults ?? [];
@@ -320,6 +326,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   useEffect(() => {
     heatSample.current = defaultHeatSample(now, heatSetting);
     setHammerState({ attempts: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
+    setEngraveState({ strokes: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
     const existing = performances.find((entry) => entry.stepId === currentStep?.id);
     if (existing && currentStep?.type === 'QUENCH' && 'medium' in existing) {
       setSelectedMedium(existing.medium);
@@ -403,6 +410,36 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     }
   };
 
+  const resolveEngraveStroke = (result: { score: number }) => {
+    if (!currentStep || currentStep.type !== 'ENGRAVE_RUNE') return;
+    const strokesRequired = Math.max(1, Math.floor(currentStep.hits ?? 3));
+    const nextStrokes = engraveState.strokes + 1;
+    const nextTimingSum = engraveState.timingSum + result.score;
+    GameEvents.emit({ type: 'forge/rune_engrave', payload: {} });
+    const nextImpactKey = engraveState.impactKey + 1;
+    setEngraveState({
+      strokes: nextStrokes,
+      timingSum: nextTimingSum,
+      impactKey: nextImpactKey,
+      impactScore: result.score,
+    });
+    if (nextStrokes >= strokesRequired) {
+      const precision = nextStrokes > 0 ? nextTimingSum / nextStrokes : 0;
+      const success = precision >= 0.55;
+      const stamp = Date.now();
+      recordForgeStepResult({
+        stepId: currentStep.id,
+        type: 'ENGRAVE_RUNE',
+        success,
+        precision,
+        optional: currentStep.optional,
+      });
+      advanceStep(stamp);
+      setStepStartedNow(stamp);
+      setLocalStatus(success ? 'Rune engraved.' : 'Engraving completed.');
+    }
+  };
+
   const handleQuench = () => {
     if (!currentStep || currentStep.type !== 'QUENCH') return;
     const stamp = Date.now();
@@ -435,15 +472,6 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     recordForgeStepResult({ stepId: currentStep.id, type: 'CAST_OR_SHAPE', variant: currentStep.variant, success: true, precision: 0.75 });
     advanceStep(stamp);
     setStepStartedNow(stamp);
-  };
-
-  const handleEngrave = () => {
-    if (!currentStep || currentStep.type !== 'ENGRAVE_RUNE') return;
-    const stamp = Date.now();
-    recordForgeStepResult({ stepId: currentStep.id, type: 'ENGRAVE_RUNE', success: true, precision: 0.7 });
-    advanceStep(stamp);
-    setStepStartedNow(stamp);
-    GameEvents.emit({ type: 'forge/rune_engrave', payload: {} });
   };
 
   const handleComplete = () => {
@@ -517,6 +545,30 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               )}
             </div>
           )}
+          {currentStep?.type === 'ENGRAVE_RUNE' && (
+            <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--engrave">
+              <TimingCircleQTE
+                key={`${currentStep.id}-${engraveState.strokes}`}
+                durationMs={820}
+                tolerance={0.26}
+                sizePx={92}
+                label="Engrave"
+                onResolve={(result) => resolveEngraveStroke(result)}
+              />
+              {engraveState.impactKey > 0 && (
+                <div
+                  key={`engrave-impact-${engraveState.impactKey}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${engraveState.impactScore > 0 ? 'hit' : 'miss'}`}
+                />
+              )}
+              {engraveState.impactKey > 0 && engraveState.impactScore > 0 && (
+                <div key={`engrave-sparks-${engraveState.impactKey}`} className="forgeWorkbenchScene__sparks" />
+              )}
+              {engraveState.impactKey > 0 && (
+                <div key={`engrave-shake-${engraveState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+            </div>
+          )}
         </ForgeWorkbenchScene>
 
         <div className="forgeHandsOnStepBlock">
@@ -572,7 +624,18 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
 
           {currentStep?.type === 'CAST_OR_SHAPE' && <ForgeStepCastShape step={currentStep} onConfirm={handleCastConfirm} />}
 
-          {currentStep?.type === 'ENGRAVE_RUNE' && <ForgeStepEngrave step={currentStep} onEngrave={handleEngrave} />}
+          {currentStep?.type === 'ENGRAVE_RUNE' && (
+            <div className="forgeStepCard">
+              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Engrave rune'}</div>
+              <div className="forgeStepBody">
+                <div>Engrave the rune: hit clean strokes.</div>
+                <div className="forgeStepMeta">
+                  Strokes: {Math.min(engraveState.strokes, Math.max(1, Math.floor(currentStep.hits ?? 3)))} /{' '}
+                  {Math.max(1, Math.floor(currentStep.hits ?? 3))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {currentStep?.type === 'FINISH' && (
             <div className="forgeStepCard">
