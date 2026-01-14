@@ -19,6 +19,7 @@ import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import qiSign from "../../assets/onscreen/qisign.png";
 import barLong from "../../assets/menus/bar_long.png";
+import fancyBlock from "../../assets/menus/block_fancy.png";
 import './CultivateScreen.scss';
 
 const BREATH_COPY: Record<BreathMode, string> = {
@@ -180,9 +181,16 @@ export function CultivateScreen() {
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
   const [now, setNow] = useState(Date.now());
+  const [isBreakingThrough, setIsBreakingThrough] = useState(false);
+  const [showDaoHeart, setShowDaoHeart] = useState(false);
+
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
-  const [showDaoHeart, setShowDaoHeart] = useState(false);
+
+  const currentRealm = REALMS[realm.index] ?? REALMS[0];
+  const realmLabel = currentRealm?.name ?? 'Realm';
+  const nextSubstage = realm.substage + 1;
+  const isLastSubstage = nextSubstage > currentRealm.substages;
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -206,11 +214,6 @@ export function CultivateScreen() {
     }
     lastInsightRef.current = insight;
   }, [insight, addNotification]);
-
-  const currentRealm = REALMS[realm.index] ?? REALMS[0];
-  const realmLabel = currentRealm?.name ?? 'Realm';
-  const nextSubstage = realm.substage + 1;
-  const isLastSubstage = nextSubstage > currentRealm.substages;
 
   const requiredGateItem = useMemo(() => {
     const willAdvanceRealm = realm.substage >= currentRealm.substages && realm.index < REALMS.length - 1;
@@ -303,6 +306,20 @@ export function CultivateScreen() {
     [pathPerks],
   );
 
+  const handleBreakthroughClick = useCallback(() => {
+    if (!canBreakthrough || isBreakingThrough) return;
+
+    setIsBreakingThrough(true);
+    setTimeout(() => {
+      breakthrough();
+
+      setTimeout(() => {
+        setIsBreakingThrough(false);
+      }, 1000);
+    }, 2000);
+
+  }, [canBreakthrough, isBreakingThrough, breakthrough]);
+
   useEffect(() => {
     if (realm.index >= 1 && !selectedPath) {
       showPathSelection();
@@ -328,10 +345,11 @@ export function CultivateScreen() {
 
   return (
     <div className="cultivationTab">
+      <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
       <img className="cultivator" src={cultivator}></img>
       <img className="qi-sign rotate" src={qiSign}></img>
       <div className="qi-progress-bar-container">
-      <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
+        <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
       </div>
       <div className="cultivationTopRow">
         <button
@@ -344,7 +362,16 @@ export function CultivateScreen() {
           Dao Heart
         </button>
       </div>
-      {/* <CultivationTabHeaderBar
+      <div className="div-realm">
+        <div className="realm-label">{realmLabel}</div>
+        <div className="realm-substage">Substage {realm.substage}</div>
+      </div>
+      <div className="div-nextrealm">
+        <div className="nr-1">Next Realm</div>
+        <div className="nr-2">Foundation Establishment</div>
+      </div>
+      {/* <div className="qi-count">{qi}</div> */}
+      <CultivationTabHeaderBar
         realmLabel={realmLabel}
         substage={realm.substage}
         qi={qi}
@@ -353,7 +380,7 @@ export function CultivateScreen() {
         activityLabel={activityLabel}
         stability={stability}
         stabilityCap={stabilityCap}
-      /> */}
+      />
 
 
       <div className="cultivationColumn cultivationColumn--left">
@@ -388,22 +415,25 @@ export function CultivateScreen() {
         </SectionShell> */}
 
         {/* <SectionShell title="Progress" subtitle="Qi, breakthroughs, and verses"> */}
-          {/* <div className="cultivationPanel">
+        {/* <div className="cultivationPanel">
             <div className="panelHeader">
               <div>
                 <div className="panelTitle">Breakthrough Progress</div>
                 <div className="panelSub">{realmStageLabel}</div>
-              </div>
-              <button
-                type="button"
-                className="primaryButton"
-                onClick={() => canBreakthrough && breakthrough()}
-                disabled={!canBreakthrough}
-                title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
-              >
-                Attempt Breakthrough
-              </button>
-            </div>
+              </div> */}
+        <div className="fancy-block-container">
+          <img className="fancy-block" src={fancyBlock}></img>
+          <button
+            type="button"
+            className="primaryButton"
+            onClick={handleBreakthroughClick}
+            disabled={!canBreakthrough}
+            title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+          >
+            Attempt Breakthrough
+          </button>
+        </div>
+        {/* </div>
             <div className="progressRow">
               <div>
                 <div className="progressLabel">Qi</div>
@@ -430,7 +460,7 @@ export function CultivateScreen() {
             ) : null}
           </div> */}
 
-          {/* <div className="cultivationPanel">
+        {/* <div className="cultivationPanel">
             <div className="panelHeader">
               <div>
                 <div className="panelTitle">Verse Progress</div>
