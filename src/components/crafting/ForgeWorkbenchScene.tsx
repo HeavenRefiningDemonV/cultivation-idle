@@ -4,10 +4,13 @@ import type { CraftStep } from '../../systems/crafting/craftingTypes';
 import forgeBackground from '../../assets/background/forgewide_empty.png';
 import './ForgeWorkbenchScene.scss';
 
+export type ForgePhaseKind = 'HEAT' | 'STRIKE' | 'SPECIAL' | 'FINISH';
+
 type ForgeWorkbenchSceneProps = {
   stepType: CraftStep['type'] | undefined;
   heatSetting: number;
   hideWorkpiece?: boolean;
+  phaseKind?: ForgePhaseKind;
   children?: ReactNode;
 };
 
@@ -30,14 +33,25 @@ const getStationForStep = (stepType: CraftStep['type'] | undefined): WorkpieceSt
   }
 };
 
+const getStationForPhase = (phaseKind: ForgePhaseKind | undefined, stepType: CraftStep['type'] | undefined): WorkpieceStation => {
+  if (!phaseKind) return getStationForStep(stepType);
+  return phaseKind === 'HEAT' ? 'furnace' : 'anvil';
+};
+
 const getHeatLevel = (heatSetting: number): 'low' | 'mid' | 'high' => {
   if (heatSetting >= 800) return 'high';
   if (heatSetting >= 450) return 'mid';
   return 'low';
 };
 
-export function ForgeWorkbenchScene({ stepType, heatSetting, hideWorkpiece = false, children }: ForgeWorkbenchSceneProps) {
-  const station = getStationForStep(stepType);
+export function ForgeWorkbenchScene({
+  stepType,
+  heatSetting,
+  hideWorkpiece = false,
+  phaseKind,
+  children,
+}: ForgeWorkbenchSceneProps) {
+  const station = getStationForPhase(phaseKind, stepType);
   const heatLevel = getHeatLevel(heatSetting);
 
   return (

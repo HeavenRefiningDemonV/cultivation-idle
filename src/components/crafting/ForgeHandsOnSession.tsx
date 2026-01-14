@@ -11,7 +11,7 @@ import { computeForgeOutcome } from '../../systems/crafting/forgeOutcome';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { GameEvents } from '../../services/events/GameEvents';
-import { ForgeWorkbenchScene } from './ForgeWorkbenchScene';
+import { ForgeWorkbenchScene, type ForgePhaseKind } from './ForgeWorkbenchScene';
 import { TimingCircleQTE } from '../qte/TimingCircleQTE';
 import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte';
 import { ForgeHeatPullOutQTE, type ForgeHeatPullOutResult } from '../../ui/forge/ForgeHeatPullOutQTE';
@@ -31,6 +31,14 @@ interface HeatSampleState {
   lastSample: number;
   completed: boolean;
 }
+
+type ForgePhase = {
+  kind: ForgePhaseKind;
+  stepIndex: number;
+  label: string;
+  cycleIndex?: number;
+  totalCycles?: number;
+};
 
 const MAX_HEAT = 1200;
 const DEFAULT_HEAT_DURATION_MS = 2000;
@@ -144,6 +152,26 @@ const resolveHeatDuration = (step: Extract<CraftStep, { type: 'HEAT_TO' | 'HEAT_
     return Math.max(600, Math.floor(step.withinSec * 1000));
   }
   return DEFAULT_HEAT_DURATION_MS;
+};
+
+const isHeatStep = (step: CraftStep): boolean => step.type === 'HEAT_TO' || step.type === 'HEAT_MATERIAL';
+
+const isStrikeStep = (step: CraftStep): boolean => step.type === 'HAMMER_PATTERN';
+
+const isSpecialStep = (step: CraftStep): boolean =>
+  step.type === 'ENGRAVE_RUNE' || step.type === 'LAY_FORMATION' || (!isHeatStep(step) && !isStrikeStep(step) && step.type !== 'FINISH');
+
+const buildPhaseLabel = (step: CraftStep, heatIndex: number, totalHeats: number, strikeIndex: number, totalStrikes: number): string => {
+  if (isHeatStep(step)) {
+    return `Heat ${heatIndex}/${Math.max(1, totalHeats)}`;
+  }
+  if (isStrikeStep(step)) {
+    return `Strike ${strikeIndex}/${Math.max(1, totalStrikes)}`;
+  }
+  if (step.type === 'ENGRAVE_RUNE') return 'Special: Engrave';
+  if (step.type === 'LAY_FORMATION') return 'Special: Formation';
+  if (step.type === 'FINISH') return 'Finish';
+  return `Special: ${step.uiLabel ?? step.type}`;
 };
 
 function ForgeStepTemper({
@@ -320,12 +348,47 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   const heatSample = useRef<HeatSampleState>(defaultHeatSample(now, heatSetting));
 
   const performances = session.cursor.forgeStepResults ?? [];
+  const performanceByStepId = useMemo(() => {
+    const map = new Map<string, ForgeStepResult>();
+    performances.forEach((entry) => {
+      map.set(entry.stepId, entry);
+    });
+    return map;
+  }, [performances]);
 
   useEffect(() => {
     heatRef.current = heatSetting;
   }, [heatSetting]);
 
   const currentStep = session.script.steps[session.cursor.stepIndex];
+  const phases = useMemo<ForgePhase[]>(() => {
+    const totalHeats = session.script.steps.filter((step) => isHeatStep(step)).length;
+    const totalStrikes = session.script.steps.filter((step) => isStrikeStep(step)).length;
+    let heatIndex = 0;
+    let strikeIndex = 0;
+    return session.script.steps.map((step, stepIndex) => {
+      let kind: ForgePhaseKind = 'SPECIAL';
+      if (isHeatStep(step)) {
+        kind = 'HEAT';
+        heatIndex += 1;
+      } else if (isStrikeStep(step)) {
+        kind = 'STRIKE';
+        strikeIndex += 1;
+      } else if (step.type === 'FINISH') {
+        kind = 'FINISH';
+      } else if (isSpecialStep(step)) {
+        kind = 'SPECIAL';
+      }
+      return {
+        kind,
+        stepIndex,
+        label: buildPhaseLabel(step, heatIndex, totalHeats, strikeIndex, totalStrikes),
+        cycleIndex: kind === 'HEAT' ? heatIndex : kind === 'STRIKE' ? strikeIndex : undefined,
+        totalCycles: kind === 'HEAT' ? totalHeats : kind === 'STRIKE' ? totalStrikes : undefined,
+      };
+    });
+  }, [session.script.steps]);
+  const currentPhase = phases.find((phase) => phase.stepIndex === session.cursor.stepIndex);
   const stepEndsAt = session.cursor.stepEndsAt;
 
   useEffect(() => {
@@ -606,11 +669,45 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     };
   }, [currentStep]);
 
-  const timeline = session.script.steps.map((step, idx) => ({
-    id: step.id,
-    label: step.uiLabel ?? step.type,
-    status: idx < session.cursor.stepIndex ? 'done' : idx === session.cursor.stepIndex ? 'active' : 'pending',
+  const timeline = phases.map((phase) => ({
+    id: session.script.steps[phase.stepIndex]?.id ?? `phase-${phase.stepIndex}`,
+    label: phase.label,
+    status:
+      phase.stepIndex < session.cursor.stepIndex
+        ? 'done'
+        : phase.stepIndex === session.cursor.stepIndex
+          ? 'active'
+          : 'pending',
   }));
+
+  const qualityBuckets = useMemo(() => {
+    const heatSteps = session.script.steps.filter((step) => isHeatStep(step));
+    const strikeSteps = session.script.steps.filter((step) => isStrikeStep(step));
+    const specialSteps = session.script.steps.filter((step) => isSpecialStep(step));
+    const averageScore = (values: number[], fallback: number) => {
+      if (!values.length) return fallback;
+      return clamp01(values.reduce((sum, value) => sum + value, 0) / values.length);
+    };
+    const heatScores = heatSteps.map((step) => {
+      const perf = performanceByStepId.get(step.id);
+      return typeof perf?.timingScore === 'number' ? perf.timingScore : 0.6;
+    });
+    const strikeScores = strikeSteps.map((step) => {
+      const perf = performanceByStepId.get(step.id);
+      return typeof perf?.timingScore === 'number' ? perf.timingScore : 0.6;
+    });
+    const specialScores = specialSteps.map((step) => {
+      const perf = performanceByStepId.get(step.id);
+      if (typeof perf?.timingScore === 'number') return perf.timingScore;
+      if (typeof perf?.precision === 'number') return perf.precision;
+      return 0.6;
+    });
+    return [
+      heatSteps.length ? { key: 'heat', label: 'Heat', score: averageScore(heatScores, 0.6) } : null,
+      strikeSteps.length ? { key: 'hammer', label: 'Hammer', score: averageScore(strikeScores, 0.6) } : null,
+      specialSteps.length ? { key: 'special', label: 'Special', score: averageScore(specialScores, 0.6) } : null,
+    ].filter((bucket): bucket is { key: string; label: string; score: number } => Boolean(bucket));
+  }, [performanceByStepId, session.script.steps]);
 
   const liveOutcome = useMemo(
     () =>
@@ -636,6 +733,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
 
         <ForgeWorkbenchScene
           stepType={currentStep?.type}
+          phaseKind={currentPhase?.kind}
           heatSetting={heatSetting}
           hideWorkpiece={currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL'}
         >
@@ -741,7 +839,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
             <div className="forgeStepCard">
               <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
               <div className="forgeStepBody">
-                <div>Watch the billet glow and pull it out at the target heat.</div>
+                <div>Pull the metal out at the target heat.</div>
                 <div className="forgeStepMeta">Target zone: {heatStepConfig.heatZone}</div>
                 <div className="forgeStepMeta">Timing: {formatMs(heatStepConfig.durationMs)}</div>
               </div>
@@ -791,7 +889,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
             <div className="forgeStepCard">
               <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Engrave rune'}</div>
               <div className="forgeStepBody">
-                <div>Engrave the rune: hit clean strokes.</div>
+                <div>Engrave clean strokes.</div>
                 <div className="forgeStepMeta">
                   Strokes: {Math.min(engraveState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 5)))} /{' '}
                   {Math.max(1, Math.floor(currentStep.hits ?? 5))}
@@ -808,7 +906,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
             <div className="forgeStepCard">
               <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Lay formation'}</div>
               <div className="forgeStepBody">
-                <div>Lay the formation: place each node in rhythm.</div>
+                <div>Lay nodes in sequence.</div>
                 <div className="forgeStepMeta">
                   Strokes: {Math.min(formationState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 4)))} /{' '}
                   {Math.max(1, Math.floor(currentStep.hits ?? 4))}
@@ -837,34 +935,15 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
         <div className="forgeQualityMeter">
           <div className="forgeQualityTitle">Quality &amp; Process</div>
           <div className="forgeQualityRows">
-            <div className="forgeQualityRow">
-              <div>Heat</div>
-              <div className="forgeQualityBar">
-                <div className="forgeQualityFill" style={{ width: `${Math.round(liveOutcome.heatScore * 100)}%` }} />
+            {qualityBuckets.map((bucket) => (
+              <div key={bucket.key} className="forgeQualityRow">
+                <div>{bucket.label}</div>
+                <div className="forgeQualityBar">
+                  <div className="forgeQualityFill" style={{ width: `${Math.round(bucket.score * 100)}%` }} />
+                </div>
+                <div className="forgeQualityValue">{Math.round(bucket.score * 100)}%</div>
               </div>
-              <div className="forgeQualityValue">{Math.round(liveOutcome.heatScore * 100)}%</div>
-            </div>
-            <div className="forgeQualityRow">
-              <div>Hammer</div>
-              <div className="forgeQualityBar">
-                <div className="forgeQualityFill" style={{ width: `${Math.round(liveOutcome.hammerScore * 100)}%` }} />
-              </div>
-              <div className="forgeQualityValue">{Math.round(liveOutcome.hammerScore * 100)}%</div>
-            </div>
-            <div className="forgeQualityRow">
-              <div>Quench</div>
-              <div className="forgeQualityBar">
-                <div className="forgeQualityFill" style={{ width: `${Math.round(liveOutcome.quenchScore * 100)}%` }} />
-              </div>
-              <div className="forgeQualityValue">{Math.round(liveOutcome.quenchScore * 100)}%</div>
-            </div>
-            <div className="forgeQualityRow">
-              <div>Temper</div>
-              <div className="forgeQualityBar">
-                <div className="forgeQualityFill" style={{ width: `${Math.round(liveOutcome.temperScore * 100)}%` }} />
-              </div>
-              <div className="forgeQualityValue">{Math.round(liveOutcome.temperScore * 100)}%</div>
-            </div>
+            ))}
           </div>
         </div>
 
