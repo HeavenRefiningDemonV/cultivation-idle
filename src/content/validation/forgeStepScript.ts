@@ -7,7 +7,7 @@ export type ForgeStepScriptValidation = {
 
 const HEAT_STEPS = new Set<ForgeStepDef['type']>(['HEAT_TO', 'HEAT_MATERIAL']);
 const STRIKE_STEPS = new Set<ForgeStepDef['type']>(['HAMMER_PATTERN']);
-const SPECIAL_STEPS = new Set<ForgeStepDef['type']>(['ENGRAVE_RUNE', 'LAY_FORMATION']);
+const SPECIAL_STEPS = new Set<ForgeStepDef['type']>(['ENGRAVE_RUNE', 'LAY_FORMATION', 'QUENCH', 'TEMPER']);
 const FINISH_STEPS = new Set<ForgeStepDef['type']>(['FINISH']);
 const ALLOWED_STEPS = new Set<ForgeStepDef['type']>([
   ...HEAT_STEPS,
@@ -74,8 +74,8 @@ export function validateForgeStepScript(stepScript: ForgeStepDef[]): ForgeStepSc
     errors.push('Forge step script must end with FINISH.');
   }
 
-  if (specialCount !== 1) {
-    errors.push('Forge step script must include exactly one special step.');
+  if (specialCount > 1) {
+    errors.push('Forge step script may include at most one special step.');
   }
 
   if (heatCount < 3) {
@@ -84,6 +84,10 @@ export function validateForgeStepScript(stepScript: ForgeStepDef[]): ForgeStepSc
 
   if (strikeCount < 2) {
     errors.push('Forge step script must include at least 2 strike steps.');
+  }
+
+  if (expecting !== 'STRIKE') {
+    errors.push('Forge step script must end on a heat step before the optional special/finish.');
   }
 
   return { ok: errors.length === 0, errors };

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsc --project tsconfig.tests.json && node --test tmp-tests/tests/**/*.js",
     "audio:audit": "node --experimental-strip-types scripts/audio/auditAudioAssets.ts",
+    "validate:content": "node --experimental-strip-types scripts/validateContent.ts",
     "preview": "vite preview"
   },
   "dependencies": {

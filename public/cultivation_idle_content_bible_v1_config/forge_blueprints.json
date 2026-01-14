@@ -38,15 +38,27 @@
         "targetSlot": "weapon"
       },
       "stepScript": [
-        { "id": "heat_bar", "type": "HEAT_MATERIAL", "targetMin": 520, "targetMax": 760, "holdMs": 3200 },
-        { "id": "hammer_true", "type": "HAMMER_PATTERN", "hits": 6, "shrinkMs": 780, "tolerance": 0.2 },
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 620, "tolerance": 18 },
         {
-          "id": "quench_sheen",
-          "type": "QUENCH",
-          "mediumOptions": ["oil", "water"],
-          "medium": "oil",
-          "timingWindow": { "goodMin": 1600, "goodMax": 3000, "perfectMin": 2100, "perfectMax": 2500 }
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 720,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "temper_strike_1"
         },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 660, "tolerance": 16 },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 700,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "temper_strike_2"
+        },
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 690, "tolerance": 14 },
         { "id": "temper_edge", "type": "TEMPER", "targetMin": 430, "targetMax": 560, "holdMs": 3000 },
         { "id": "finish_temper", "type": "FINISH", "uiLabel": "Seal edge" }
       ],
@@ -55,6 +67,269 @@
         "masteryMult": 1.05,
         "timeReductionPct": 0.1
       }
+    },
+    {
+      "id": "forge_refine_basic",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 45,
+      "service": "refine",
+      "inputs": {
+        "mat_low_grade_ore": 6,
+        "mat_stone_chunk": 2
+      },
+      "cost": {
+        "gold": 400
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 3
+      },
+      "stepScript": [
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 600, "tolerance": 20 },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 3,
+          "shrinkMs": 700,
+          "tolerance": 0.24,
+          "difficulty": 1,
+          "patternId": "refine_basic_strike_1"
+        },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 630, "tolerance": 18 },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 3,
+          "shrinkMs": 680,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "refine_basic_strike_2"
+        },
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 660, "tolerance": 16 },
+        { "id": "finish_refine_basic", "type": "FINISH", "uiLabel": "Finish refinement" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 6,
+        "masteryMult": 1.02,
+        "timeReductionPct": 0.06
+      },
+      "assistedPrompts": []
+    },
+    {
+      "id": "rune_inscription_basic",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 120,
+      "inputs": {
+        "mat_rune_dust": 6,
+        "mat_spirit_leaf": 2
+      },
+      "cost": {
+        "gold": 1000
+      },
+      "outputs": {
+        "rune_ember_t1": 1
+      },
+      "stepScript": [
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 630, "tolerance": 18 },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 3,
+          "shrinkMs": 700,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "rune_basic_strike_1"
+        },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 670, "tolerance": 16 },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 680,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "rune_basic_strike_2"
+        },
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "engrave_rune",
+          "type": "ENGRAVE_RUNE",
+          "hits": 3,
+          "difficulty": 1,
+          "patternId": "rune_basic_engrave",
+          "optional": false,
+          "runeFamily": "ember"
+        },
+        { "id": "finish_rune", "type": "FINISH", "uiLabel": "Seal rune" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 10,
+        "masteryMult": 1.05,
+        "timeReductionPct": 0.1
+      },
+      "assistedPrompts": []
+    },
+    {
+      "id": "formation_plate_basic",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 120,
+      "inputs": {
+        "mat_quarry_ore": 4,
+        "mat_spirit_dew": 2
+      },
+      "cost": {
+        "gold": 900
+      },
+      "outputs": {
+        "tal_guardian_seal_t1": 1
+      },
+      "stepScript": [
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 620, "tolerance": 18 },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 3,
+          "shrinkMs": 700,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "formation_basic_strike_1"
+        },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 650, "tolerance": 16 },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 680,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "formation_basic_strike_2"
+        },
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 680, "tolerance": 14 },
+        {
+          "id": "lay_formation",
+          "type": "LAY_FORMATION",
+          "hits": 4,
+          "difficulty": 1,
+          "patternId": "formation_basic_lay",
+          "optional": false,
+          "formationId": "guardian_seal"
+        },
+        { "id": "finish_formation", "type": "FINISH", "uiLabel": "Set formation" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 8,
+        "masteryMult": 1.04,
+        "timeReductionPct": 0.08
+      },
+      "assistedPrompts": []
+    },
+    {
+      "id": "forge_refine_advanced",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "forge",
+      "timeSec": 90,
+      "service": "refine",
+      "inputs": {
+        "mat_quarry_ore": 12,
+        "mat_iron_sand": 4
+      },
+      "cost": {
+        "gold": 6000
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 5
+      },
+      "stepScript": [
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 660,
+          "tolerance": 0.2,
+          "difficulty": 2,
+          "patternId": "refine_adv_strike_1"
+        },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 730, "tolerance": 12 },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 5,
+          "shrinkMs": 640,
+          "tolerance": 0.18,
+          "difficulty": 2,
+          "patternId": "refine_adv_strike_2"
+        },
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 760, "tolerance": 10 },
+        { "id": "finish_refine_adv", "type": "FINISH", "uiLabel": "Finish refinement" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 8,
+        "masteryMult": 1.05,
+        "timeReductionPct": 0.08
+      },
+      "assistedPrompts": []
+    },
+    {
+      "id": "rune_inscription_advanced",
+      "unlocksAtCityId": "city_stonecrag_town",
+      "station": "forge",
+      "timeSec": 180,
+      "inputs": {
+        "mat_rune_dust": 12,
+        "mat_earth_essence": 2
+      },
+      "cost": {
+        "gold": 15000
+      },
+      "outputs": {
+        "rune_fortify_t1": 1
+      },
+      "stepScript": [
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 660,
+          "tolerance": 0.2,
+          "difficulty": 2,
+          "patternId": "rune_adv_strike_1"
+        },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 740, "tolerance": 12 },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 5,
+          "shrinkMs": 640,
+          "tolerance": 0.18,
+          "difficulty": 2,
+          "patternId": "rune_adv_strike_2"
+        },
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 770, "tolerance": 10 },
+        {
+          "id": "engrave_rune",
+          "type": "ENGRAVE_RUNE",
+          "hits": 4,
+          "difficulty": 2,
+          "patternId": "rune_adv_engrave",
+          "optional": false,
+          "runeFamily": "fortify"
+        },
+        { "id": "finish_rune_adv", "type": "FINISH", "uiLabel": "Seal rune" }
+      ],
+      "handsOnBonus": {
+        "qualityProcChancePct": 12,
+        "masteryMult": 1.08,
+        "timeReductionPct": 0.1
+      },
+      "assistedPrompts": []
     },
     {
       "id": "forge_rune_ember_t1",
@@ -72,26 +347,37 @@
         "rune_ember_t1": 1
       },
       "stepScript": [
-        { "id": "heat_ingot", "type": "HEAT_MATERIAL", "targetMin": 540, "targetMax": 760, "holdMs": 4200, "jitter": 30 },
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 630, "tolerance": 18 },
         {
-          "id": "alloy_mix",
-          "type": "ALLOY_MIX",
-          "options": [
-            { "id": "steady", "label": "Steady fold", "qualityDelta": 0.05 },
-            { "id": "quick", "label": "Quick stir", "qualityDelta": 0.02 }
-          ]
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 3,
+          "shrinkMs": 700,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "ember_strike_1"
         },
-        { "id": "shape_core", "type": "CAST_OR_SHAPE", "variant": "shape", "difficulty": 0.5 },
-        { "id": "hammer_runes", "type": "HAMMER_PATTERN", "hits": 7, "shrinkMs": 820, "tolerance": 0.18 },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 670, "tolerance": 16 },
         {
-          "id": "quench_set",
-          "type": "QUENCH",
-          "mediumOptions": ["water", "oil"],
-          "medium": "water",
-          "timingWindow": { "goodMin": 1800, "goodMax": 3200, "perfectMin": 2300, "perfectMax": 2700 }
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 680,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "ember_strike_2"
         },
-        { "id": "temper_core", "type": "TEMPER", "targetMin": 430, "targetMax": 560, "holdMs": 3600 },
-        { "id": "engrave_ember", "type": "ENGRAVE_RUNE", "optional": false, "runeFamily": "ember" }
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "engrave_ember",
+          "type": "ENGRAVE_RUNE",
+          "hits": 3,
+          "difficulty": 1,
+          "patternId": "ember_engrave_basic",
+          "optional": false,
+          "runeFamily": "ember"
+        },
+        { "id": "finish_ember", "type": "FINISH", "uiLabel": "Seal rune" }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 12,
@@ -140,26 +426,37 @@
         "rune_stone_t1": 1
       },
       "stepScript": [
-        { "id": "heat_stone", "type": "HEAT_MATERIAL", "targetMin": 500, "targetMax": 720, "holdMs": 3900, "jitter": 25 },
+        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 610, "tolerance": 18 },
         {
-          "id": "mix_quartz",
-          "type": "ALLOY_MIX",
-          "options": [
-            { "id": "slow_fold", "label": "Slow fold", "qualityDelta": 0.06 },
-            { "id": "quick_bind", "label": "Quick bind", "qualityDelta": 0.03 }
-          ]
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 3,
+          "shrinkMs": 690,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "stone_strike_1"
         },
-        { "id": "cast_plate", "type": "CAST_OR_SHAPE", "variant": "cast", "difficulty": 0.45 },
-        { "id": "hammer_faces", "type": "HAMMER_PATTERN", "hits": 6, "shrinkMs": 760, "tolerance": 0.2 },
+        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 650, "tolerance": 16 },
         {
-          "id": "quench_lock",
-          "type": "QUENCH",
-          "mediumOptions": ["water", "oil"],
-          "medium": "oil",
-          "timingWindow": { "goodMin": 1900, "goodMax": 3100, "perfectMin": 2400, "perfectMax": 2800 }
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 670,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "stone_strike_2"
         },
-        { "id": "temper_edge", "type": "TEMPER", "targetMin": 420, "targetMax": 540, "holdMs": 3400 },
-        { "id": "engrave_stone", "type": "ENGRAVE_RUNE", "optional": false, "runeFamily": "stone" }
+        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 680, "tolerance": 14 },
+        {
+          "id": "engrave_stone",
+          "type": "ENGRAVE_RUNE",
+          "hits": 3,
+          "difficulty": 1,
+          "patternId": "stone_engrave_basic",
+          "optional": false,
+          "runeFamily": "stone"
+        },
+        { "id": "finish_stone", "type": "FINISH", "uiLabel": "Set rune core" }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 10,
