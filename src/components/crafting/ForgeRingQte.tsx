@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import type { QteTarget } from '../../features/forge/forgeQtePatterns';
 import './ForgeRingQte.scss';
 
 export type ForgeRingQteRating = 'miss' | 'good' | 'perfect';
@@ -22,6 +23,7 @@ export type ForgeRingQteProps = {
   disabled?: boolean;
   ariaLabel?: string;
   target?: { xPct: number; yPct: number };
+  targets?: QteTarget[];
   renderTarget?: (target: { xPct: number; yPct: number }) => React.ReactNode;
 };
 
@@ -56,6 +58,7 @@ export function ForgeRingQte({
   disabled = false,
   ariaLabel = 'Ring timing quick-time event',
   target,
+  targets,
   renderTarget,
 }: ForgeRingQteProps) {
   const ringRef = useRef<HTMLDivElement | null>(null);
@@ -77,7 +80,12 @@ export function ForgeRingQte({
   const goodWindow = goodWindowMs ?? defaults.goodWindowMs;
   const perfectWindow = perfectWindowMs ?? defaults.perfectWindowMs;
 
-  const targetPosition = useMemo(() => target ?? { xPct: 50, yPct: 50 }, [target]);
+  const targetPosition = useMemo(() => {
+    if (targets && targets.length > 0) {
+      return targets[Math.min(hitIndex, targets.length - 1)];
+    }
+    return target ?? { xPct: 50, yPct: 50 };
+  }, [hitIndex, target, targets]);
 
   const clearTimers = () => {
     if (rafRef.current) {
@@ -164,6 +172,14 @@ export function ForgeRingQte({
   }, [disabled, durationMs, finalizeHit, tick]);
 
   useEffect(() => {
+    scoresRef.current = [];
+    ratingsRef.current = [];
+    landedRef.current = 0;
+    setHitIndex(0);
+    setRating(null);
+  }, [hitsRequired, difficulty, shrinkMs, goodWindowMs, perfectWindowMs, targets, target]);
+
+  useEffect(() => {
     if (disabled) return;
     beginHit();
     return () => {
@@ -191,7 +207,7 @@ export function ForgeRingQte({
     }
   };
 
-  const containerStyle = target
+  const containerStyle = targetPosition
     ? {
         left: `${targetPosition.xPct}%`,
         top: `${targetPosition.yPct}%`,
@@ -200,9 +216,12 @@ export function ForgeRingQte({
       }
     : undefined;
 
+  const ringClass = rating ? `forgeRingQte__ring forgeRingQte__ring--${rating}` : 'forgeRingQte__ring';
+  const containerClass = `forgeRingQte${rating === 'miss' ? ' forgeRingQte--miss' : ''}`;
+
   return (
     <div
-      className="forgeRingQte"
+      className={containerClass}
       style={containerStyle}
       role="button"
       tabIndex={disabled ? -1 : 0}
@@ -212,7 +231,14 @@ export function ForgeRingQte({
       onKeyDown={handleKeyDown}
     >
       {renderTarget ? renderTarget(targetPosition) : <div className="forgeRingQte__target" />}
-      <div ref={ringRef} className="forgeRingQte__ring" />
+      <div ref={ringRef} className={ringClass} />
+      {rating === 'perfect' && (
+        <div key={`sparks-${ratingKey}`} className="forgeRingQte__sparks">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <span key={index} className={`forgeRingQte__spark forgeRingQte__spark--${index}`} />
+          ))}
+        </div>
+      )}
       {rating && (
         <div key={ratingKey} className={`forgeRingQte__rating forgeRingQte__rating--${rating}`}>
           {rating}
