@@ -9,8 +9,9 @@ import { ForgePanel } from '../screens/ForgePanel';
 import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
-import './WorldBuildingModal.scss';
 import { isCombatModule, openWorldModule } from '../../systems/world/openWorldModule';
+import hammer from "../../assets/onscreen/hammer.png";
+import './WorldBuildingModal.scss';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -143,6 +144,7 @@ export function WorldBuildingModal({
         className={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
         onMouseDown={(event) => event.stopPropagation()}
       >
+        {backgroundVariant === "forge" && <img className="hammer" src={hammer}></img>}
         <div className="worldBuildingHeader">
           <div className="worldBuildingTitleGroup">
             <div className="worldBuildingTitle">{title}</div>

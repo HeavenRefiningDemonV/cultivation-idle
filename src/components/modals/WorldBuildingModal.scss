@@ -38,7 +38,7 @@
   z-index: 0;
 }
 
-.worldBuildingModal > * {
+.worldBuildingModal>* {
   position: relative;
   z-index: 1;
 }
@@ -52,7 +52,29 @@
 }
 
 .worldBuildingModal--forge {
-  background-image: url('../../assets/background/forgewide_empty.png');
+  background-image: url('../../assets/background/forgewide_unshaped.png');
+  background-size: cover;
+  background-position: center;
+  animation: forgeProgress 18s step-end forwards;
+}
+
+@keyframes forgeProgress {
+
+  0% {
+    background-image: url('../../assets/background/forgewide_unshaped.png');
+  }
+
+  33.33% {
+    background-image: url('../../assets/background/forgewide_shaping.png');
+  }
+
+  66.66% {
+    background-image: url('../../assets/background/forgewide_shaped.png');
+  }
+
+  100% {
+    background-image: url('../../assets/background/forgewide_shaped.png');
+  }
 }
 
 .worldBuildingHeader {
@@ -115,4 +137,38 @@
   padding: 24px;
   text-align: center;
   color: #cbd5e1;
+}
+
+/*----------------*/
+
+.hammer {
+  position: absolute;
+  height: 180px;
+  right: 220px;
+  bottom: 280px;
+
+  transform-origin: right;
+  animation: hammerStrike 1.2s infinite;
+}
+
+@keyframes hammerStrike {
+
+  0% {
+    transform: rotate(0deg) translateY(0px);
+  }
+
+  80% {
+    transform: rotate(25deg) translateY(-50px);
+    animation-timing-function: ease-in;
+  }
+
+  90% {
+    transform: rotate(25deg) translateY(-50px);
+    animation-timing-function: ease-in;
+  }
+
+  100% {
+    transform: rotate(0deg) translateY(0px);
+    animation-timing-function: ease-out;
+  }
 }
