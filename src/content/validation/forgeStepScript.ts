@@ -8,6 +8,7 @@ export type ForgeStepScriptValidation = {
 const HEAT_STEPS = new Set<ForgeStepDef['type']>(['HEAT_TO', 'HEAT_MATERIAL']);
 const STRIKE_STEPS = new Set<ForgeStepDef['type']>(['HAMMER_PATTERN']);
 const SPECIAL_STEPS = new Set<ForgeStepDef['type']>(['ENGRAVE_RUNE', 'LAY_FORMATION', 'QUENCH', 'TEMPER']);
+const RING_QTE_STEPS = new Set<ForgeStepDef['type']>(['HAMMER_PATTERN', 'ENGRAVE_RUNE', 'LAY_FORMATION']);
 const FINISH_STEPS = new Set<ForgeStepDef['type']>(['FINISH']);
 const ALLOWED_STEPS = new Set<ForgeStepDef['type']>([
   ...HEAT_STEPS,
@@ -16,6 +17,12 @@ const ALLOWED_STEPS = new Set<ForgeStepDef['type']>([
   ...FINISH_STEPS,
 ]);
 
+const MIN_HAMMER_HITS = 2;
+const MAX_HAMMER_HITS = 12;
+const MIN_SPECIAL_HITS = 2;
+const MAX_SPECIAL_HITS = 8;
+const MAX_TOTAL_HAMMER_HITS = 20;
+
 export function validateForgeStepScript(stepScript: ForgeStepDef[]): ForgeStepScriptValidation {
   const errors: string[] = [];
 
@@ -23,71 +30,86 @@ export function validateForgeStepScript(stepScript: ForgeStepDef[]): ForgeStepSc
     return { ok: false, errors: ['Forge step script is empty.'] };
   }
 
-  let heatCount = 0;
-  let strikeCount = 0;
-  let specialCount = 0;
-  let expecting: 'HEAT' | 'STRIKE' = 'HEAT';
+  const expectedSteps = ['HEAT', 'STRIKE', 'HEAT', 'STRIKE', 'HEAT'] as const;
+  const totalSteps = stepScript.length;
+  const lastStep = stepScript[totalSteps - 1];
 
+  if (!lastStep || lastStep.type !== 'FINISH') {
+    errors.push('Forge step script must end with FINISH.');
+  }
+
+  if (totalSteps < 6 || totalSteps > 7) {
+    errors.push('Forge step script must include 6 steps (no special) or 7 steps (with special).');
+  }
+
+  expectedSteps.forEach((expected, index) => {
+    const step = stepScript[index];
+    if (!step) {
+      errors.push(`Missing ${expected.toLowerCase()} step at index ${index}.`);
+      return;
+    }
+    if (expected === 'HEAT' && !HEAT_STEPS.has(step.type)) {
+      errors.push(`Expected a heat step at index ${index}, found "${step.type}".`);
+    }
+    if (expected === 'STRIKE' && !STRIKE_STEPS.has(step.type)) {
+      errors.push(`Expected a hammer step at index ${index}, found "${step.type}".`);
+    }
+  });
+
+  if (totalSteps >= 6 && totalSteps <= 7) {
+    const specialStep = stepScript[5];
+    if (totalSteps === 6) {
+      if (specialStep && specialStep.type !== 'FINISH') {
+        errors.push('Step 6 must be FINISH when no special step is present.');
+      }
+    } else if (totalSteps === 7) {
+      if (specialStep && !SPECIAL_STEPS.has(specialStep.type)) {
+        errors.push(`Expected a special step at index 5, found "${specialStep.type}".`);
+      }
+      if (lastStep && lastStep.type !== 'FINISH') {
+        errors.push('FINISH step must be the last step.');
+      }
+    }
+  }
+
+  let totalHammerHits = 0;
   stepScript.forEach((step, index) => {
     if (!ALLOWED_STEPS.has(step.type)) {
       errors.push(`Unexpected step type "${step.type}" at index ${index}.`);
       return;
     }
 
-    if (FINISH_STEPS.has(step.type)) {
-      if (index !== stepScript.length - 1) {
-        errors.push('FINISH step must be the last step.');
+    if (RING_QTE_STEPS.has(step.type)) {
+      const patternId = (step as { patternId?: unknown }).patternId;
+      if (typeof patternId !== 'string' || patternId.length === 0) {
+        errors.push(`Step "${step.type}" at index ${index} must include a patternId.`);
       }
-      return;
     }
 
-    if (SPECIAL_STEPS.has(step.type)) {
-      if (heatCount < 3 || strikeCount < 2) {
-        errors.push('Special step must occur after at least 3 heat steps and 2 strike steps.');
+    if (step.type === 'HAMMER_PATTERN') {
+      const hits = Math.floor(step.hits);
+      if (!Number.isFinite(hits)) {
+        errors.push(`Hammer step at index ${index} must define hits.`);
+      } else {
+        if (hits < MIN_HAMMER_HITS || hits > MAX_HAMMER_HITS) {
+          errors.push(`Hammer step at index ${index} has hits outside ${MIN_HAMMER_HITS}-${MAX_HAMMER_HITS}.`);
+        }
+        totalHammerHits += hits;
       }
-      if (expecting !== 'STRIKE') {
-        errors.push('Special step must follow a heat step.');
-      }
-      specialCount += 1;
-      return;
     }
 
-    if (HEAT_STEPS.has(step.type)) {
-      if (expecting !== 'HEAT') {
-        errors.push(`Expected a strike step at index ${index}, found heat step.`);
+    if (step.type === 'ENGRAVE_RUNE' || step.type === 'LAY_FORMATION') {
+      const hits = Math.floor(step.hits ?? 0);
+      if (!Number.isFinite(hits) || hits <= 0) {
+        errors.push(`Special step at index ${index} must define hits.`);
+      } else if (hits < MIN_SPECIAL_HITS || hits > MAX_SPECIAL_HITS) {
+        errors.push(`Special step at index ${index} has hits outside ${MIN_SPECIAL_HITS}-${MAX_SPECIAL_HITS}.`);
       }
-      heatCount += 1;
-      expecting = 'STRIKE';
-      return;
-    }
-
-    if (STRIKE_STEPS.has(step.type)) {
-      if (expecting !== 'STRIKE') {
-        errors.push(`Expected a heat step at index ${index}, found strike step.`);
-      }
-      strikeCount += 1;
-      expecting = 'HEAT';
     }
   });
 
-  if (stepScript.length > 0 && stepScript[stepScript.length - 1].type !== 'FINISH') {
-    errors.push('Forge step script must end with FINISH.');
-  }
-
-  if (specialCount > 1) {
-    errors.push('Forge step script may include at most one special step.');
-  }
-
-  if (heatCount < 3) {
-    errors.push('Forge step script must include at least 3 heat steps.');
-  }
-
-  if (strikeCount < 2) {
-    errors.push('Forge step script must include at least 2 strike steps.');
-  }
-
-  if (expecting !== 'STRIKE') {
-    errors.push('Forge step script must end on a heat step before the optional special/finish.');
+  if (totalHammerHits > MAX_TOTAL_HAMMER_HITS) {
+    errors.push(`Total hammer hits exceed ${MAX_TOTAL_HAMMER_HITS}.`);
   }
 
   return { ok: errors.length === 0, errors };

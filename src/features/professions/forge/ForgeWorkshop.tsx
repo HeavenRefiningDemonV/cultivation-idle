@@ -13,6 +13,7 @@ import { useUIStore } from '../../../stores/uiStore';
 import { useActivityStore } from '../../../stores/activityStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
+import { resolveForgeStepScript } from './forgeScriptBuilder';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -150,10 +151,40 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     [blueprints, selectedBlueprintId],
   );
 
+  const resolvedStepScript = useMemo(
+    () => (selectedBlueprint ? resolveForgeStepScript(selectedBlueprint) : []),
+    [selectedBlueprint],
+  );
+
   const stepSummary = useMemo(() => {
-    const steps = selectedBlueprint?.stepScript?.map((step) => step.type) ?? [];
+    const steps = resolvedStepScript.map((step) => step.type);
     return buildStepSummary(steps);
-  }, [selectedBlueprint]);
+  }, [resolvedStepScript]);
+
+  const stepPreview = useMemo(
+    () =>
+      resolvedStepScript.map((step) => {
+        switch (step.type) {
+          case 'HEAT_TO':
+          case 'HEAT_MATERIAL':
+            return { id: step.id, icon: '🔥', label: 'Heat' };
+          case 'HAMMER_PATTERN':
+            return { id: step.id, icon: '🔨', label: 'Strike' };
+          case 'ENGRAVE_RUNE':
+            return { id: step.id, icon: '🔮', label: 'Engrave' };
+          case 'LAY_FORMATION':
+            return { id: step.id, icon: '🧿', label: 'Formation' };
+          case 'TEMPER':
+          case 'QUENCH':
+            return { id: step.id, icon: '✨', label: 'Special' };
+          case 'FINISH':
+            return { id: step.id, icon: '✅', label: 'Finish' };
+          default:
+            return { id: step.id, icon: '•', label: step.type };
+        }
+      }),
+    [resolvedStepScript],
+  );
 
   const outcome = useMemo(() => {
     if (!activeForgeSession) return null;
@@ -385,6 +416,17 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                     </div>
                   </div>
                 )}
+              <div className="forgeWorkshop__stepPreview">
+                {stepPreview.map((step, index) => (
+                  <div key={step.id} className="forgeWorkshop__stepPreviewItem">
+                    <span className="forgeWorkshop__stepIcon" aria-hidden="true">
+                      {step.icon}
+                    </span>
+                    <span className="forgeWorkshop__stepLabel">{step.label}</span>
+                    {index < stepPreview.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
+                  </div>
+                ))}
+              </div>
               <div className="forgeWorkshop__stepSummary">
                 {stepSummary.map((step, index) => (
                   <span key={`${step}-${index}`} className="forgeWorkshop__step">

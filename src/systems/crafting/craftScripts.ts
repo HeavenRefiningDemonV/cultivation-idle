@@ -1,4 +1,5 @@
-import { normalizeForgeBlueprint, isRuneBlueprint } from '../../content/forge';
+import { normalizeForgeBlueprint } from '../../content/forge';
+import { resolveForgeStepScript } from '../../features/professions/forge/forgeScriptBuilder';
 import { useContentStore } from '../../stores/contentStore';
 import { nextSeed, randFloat } from '../../utils/rng';
 import type { CraftScript, CraftStep, ForgeHandsOnBonus, ForgeStepDef } from './craftingTypes';
@@ -180,98 +181,10 @@ export function buildForgeScript(blueprintId: string, seed: number): CraftScript
   const blueprints = useContentStore.getState().raw?.forge_blueprints ?? [];
   const rawBlueprint = blueprints.find((entry) => entry.id === blueprintId);
   const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
-  const roll = createRng(seed);
-  const baseSteps: ForgeStepDef[] = [];
-
-  const targetMin = clampNumber(420 + Math.round(roll() * 220), 200, 950);
-  const targetMax = clampNumber(targetMin + 180 + Math.round(roll() * 140), targetMin + 60, 1100);
-  const holdMs = clampNumber((blueprint?.timeSec ?? 120) * 350 + roll() * 2500, 2000, 9000);
-  baseSteps.push({
-    id: 'heat_material',
-    type: 'HEAT_MATERIAL',
-    uiLabel: 'Heat material',
-    targetMin,
-    targetMax,
-    holdMs,
-    jitter: 25 + Math.round(roll() * 50),
-  });
-
-  baseSteps.push({
-    id: 'alloy_mix',
-    type: 'ALLOY_MIX',
-    uiLabel: 'Mix alloys',
-    options: [
-      { id: 'steady', label: 'Steady fold', qualityDelta: 0.05 },
-      { id: 'quick', label: 'Quick stir', qualityDelta: 0.02 },
-      { id: 'patience', label: 'Patient melding', qualityDelta: 0.08 },
-    ],
-  });
-
-  const castVariant = roll() < 0.5 ? 'cast' : 'shape';
-  baseSteps.push({
-    id: 'cast_shape',
-    type: 'CAST_OR_SHAPE',
-    uiLabel: castVariant === 'cast' ? 'Cast form' : 'Shape billet',
-    variant: castVariant,
-    difficulty: castVariant === 'cast' ? 0.4 : 0.6,
-  });
-
-  const hammerHits = 6 + Math.floor(roll() * 5);
-  const tolerance = clampNumber(0.12 + roll() * 0.12, 0.05, 0.4);
-  const shrinkMs = clampNumber(450 + Math.round(roll() * 500), 300, 1200);
-  baseSteps.push({
-    id: 'hammer_pattern',
-    type: 'HAMMER_PATTERN',
-    uiLabel: 'Hammer pattern',
-    hits: hammerHits,
-    shrinkMs,
-    tolerance,
-  });
-
-  const quenchWindow = clampNumber(2000 + roll() * 1800, 1200, 4200);
-  const perfectMin = Math.max(500, quenchWindow * 0.45);
-  const perfectMax = Math.max(perfectMin + 200, quenchWindow * 0.55);
-  baseSteps.push({
-    id: 'quench',
-    type: 'QUENCH',
-    uiLabel: 'Quench',
-    mediumOptions: ['water', 'oil'],
-    medium: roll() < 0.5 ? 'water' : 'oil',
-    timingWindow: {
-      goodMin: quenchWindow * 0.35,
-      goodMax: quenchWindow * 0.75,
-      perfectMin,
-      perfectMax,
-    },
-  });
-
-  const temperMin = clampNumber(targetMin - 80 + Math.round(roll() * 120), 250, 950);
-  const temperMax = clampNumber(temperMin + 120 + Math.round(roll() * 120), temperMin + 60, 1100);
-  const temperHold = clampNumber((blueprint?.timeSec ?? 90) * 250 + roll() * 1800, 1500, 9000);
-  baseSteps.push({
-    id: 'temper',
-    type: 'TEMPER',
-    uiLabel: 'Temper',
-    targetHeat: clampNumber(temperMin + (temperMax - temperMin) / 2, 200, 1100),
-    targetMin: temperMin,
-    targetMax: temperMax,
-    durationMs: temperHold,
-    holdMs: temperHold,
-  });
-
-  const runeVariant = blueprint ? isRuneBlueprint(blueprint) : blueprintId.startsWith('rune_');
-  if (runeVariant) {
-    baseSteps.push({
-      id: 'engrave',
-      type: 'ENGRAVE_RUNE',
-      uiLabel: 'Engrave rune',
-      optional: false,
-      runeFamily: blueprint?.output?.itemId?.replace('rune_', '') ?? 'rune',
-    });
-  }
+  const resolvedStepScript = blueprint ? resolveForgeStepScript(blueprint) : [];
 
   const scriptSteps: CraftStep[] = ensureFinishStep(
-    blueprint?.stepScript?.length ? buildForgeStepsFromScript(blueprint.stepScript) : buildForgeStepsFromScript(baseSteps),
+    resolvedStepScript.length ? buildForgeStepsFromScript(resolvedStepScript) : [],
     'Finish forging',
   );
 

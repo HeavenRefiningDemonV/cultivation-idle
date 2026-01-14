@@ -266,6 +266,29 @@
   color: rgba(226, 232, 240, 0.8);
 }
 
+.forgeWorkshop__stepPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  align-items: center;
+}
+
+.forgeWorkshop__stepPreviewItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeWorkshop__stepIcon {
+  font-size: 14px;
+}
+
+.forgeWorkshop__stepLabel {
+  font-size: 12px;
+}
+
 .forgeWorkshop__stepArrow {
   margin: 0 4px;
   color: rgba(148, 163, 184, 0.7);
