@@ -220,6 +220,32 @@
   gap: 12px;
 }
 
+.forgeWorkshop__detailSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeWorkshop__slotButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeWorkshop__slotButton {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 33, 0.6);
+  color: inherit;
+  font-size: 12px;
+}
+
+.forgeWorkshop__slotButton--active {
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.2);
+  color: #dbeafe;
+}
+
 .forgeWorkshop__detailLabel {
   font-size: 11px;
   text-transform: uppercase;
@@ -270,6 +296,97 @@
 
 .forgeWorkshop__benefitValue {
   color: #e2e8f0;
+}
+
+.forgeWorkshop__queue {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__queueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.forgeWorkshop__queueTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__queueSub {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__queueEmpty {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__queueList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__queueCard {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 12px;
+  background: rgba(12, 18, 28, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__queueRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.forgeWorkshop__queueName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__queueMeta {
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__queueTiming {
+  font-size: 11px;
+  text-align: right;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__queueActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.forgeWorkshop__queueStatus {
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.forgeWorkshop__queueStatus--success {
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+}
+
+.forgeWorkshop__queueStatus--error {
+  background: rgba(248, 113, 113, 0.18);
+  color: #fecaca;
 }
 
 .forgeWorkshop__meter {
@@ -334,6 +451,71 @@
 .forgeWorkshop__errorBody {
   font-size: 12px;
   color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeResultModal .modalCard {
+  max-width: 720px;
+}
+
+.forgeResultGrade {
+  font-weight: 600;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.forgeResultGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.forgeResultSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeResultRow {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.85);
+  display: flex;
+  justify-content: space-between;
+}
+
+.forgeResultDelta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeResultDeltaRow {
+  display: grid;
+  grid-template-columns: 80px 1fr 70px;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.forgeResultDeltaLabel {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+}
+
+.forgeResultDeltaValues {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgeResultDeltaArrow {
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.forgeResultDeltaValue {
+  text-align: right;
+  font-weight: 600;
+  color: #e2e8f0;
 }
 
 @media (max-width: 1000px) {

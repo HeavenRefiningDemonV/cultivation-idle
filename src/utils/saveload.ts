@@ -685,6 +685,54 @@ function validateSaveData(data: unknown): data is SaveData {
         if ('targetSlot' in job && job.targetSlot !== undefined) {
           if (job.targetSlot !== 'weapon' && job.targetSlot !== 'accessory') return false;
         }
+        if ('mode' in job && job.mode !== undefined) {
+          if (job.mode !== 'IDLE' && job.mode !== 'ASSISTED' && job.mode !== 'HANDS_ON') return false;
+        }
+        if ('status' in job && job.status !== undefined) {
+          if (job.status !== 'QUEUED' && job.status !== 'ACTIVE' && job.status !== 'READY_TO_CLAIM' && job.status !== 'CLAIMED') {
+            return false;
+          }
+        }
+        if ('sessionId' in job && job.sessionId !== undefined && typeof job.sessionId !== 'string') return false;
+        if ('performance' in job && job.performance !== undefined) {
+          if (typeof job.performance !== 'object' || job.performance === null) return false;
+          const perf = job.performance as Record<string, unknown>;
+          const checkNum = (value: unknown) => value === undefined || (typeof value === 'number' && Number.isFinite(value));
+          if (!checkNum(perf.heatScore)) return false;
+          if (!checkNum(perf.hammerScore)) return false;
+          if (!checkNum(perf.specialScore)) return false;
+          if (!checkNum(perf.qualityScore)) return false;
+          if ('stepBreakdown' in perf && perf.stepBreakdown !== undefined) {
+            if (!Array.isArray(perf.stepBreakdown)) return false;
+            for (const entry of perf.stepBreakdown) {
+              if (!entry || typeof entry !== 'object') return false;
+              const record = entry as Record<string, unknown>;
+              if (typeof record.stepId !== 'string') return false;
+              if (typeof record.type !== 'string') return false;
+              if (record.score !== undefined && (typeof record.score !== 'number' || !Number.isFinite(record.score))) return false;
+            }
+          }
+        }
+        if ('resultSnapshot' in job && job.resultSnapshot !== undefined) {
+          if (typeof job.resultSnapshot !== 'object' || job.resultSnapshot === null) return false;
+          const snapshot = job.resultSnapshot as Record<string, unknown>;
+          if (snapshot.outputItemId !== undefined && typeof snapshot.outputItemId !== 'string') return false;
+          if (snapshot.outputBundle !== undefined) {
+            if (typeof snapshot.outputBundle !== 'object' || snapshot.outputBundle === null) return false;
+            const bundle = snapshot.outputBundle as Record<string, unknown>;
+            if (bundle.items !== undefined) {
+              if (!Array.isArray(bundle.items)) return false;
+              for (const item of bundle.items) {
+                if (!item || typeof item !== 'object') return false;
+                const record = item as Record<string, unknown>;
+                if (typeof record.itemId !== 'string') return false;
+                if (typeof record.qty !== 'number') return false;
+              }
+            }
+          }
+          if (snapshot.beforeItem !== undefined && typeof snapshot.beforeItem !== 'object') return false;
+          if (snapshot.afterItem !== undefined && typeof snapshot.afterItem !== 'object') return false;
+        }
         if ('cityId' in job && job.cityId !== undefined && typeof job.cityId !== 'string') return false;
       }
     }

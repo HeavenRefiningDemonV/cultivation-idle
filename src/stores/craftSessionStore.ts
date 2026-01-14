@@ -39,6 +39,7 @@ interface StartSessionArgs {
   sourceId: string;
   qty: number;
   now?: number;
+  skipPayment?: boolean;
 }
 
 interface CraftSessionStoreState extends CraftSessionSaveState {
@@ -520,12 +521,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         useRecipeMasteryStore.getState().gainAlchemyMastery(active.sourceId, 1 * active.qty, 'idle');
         useUIStore.getState().addNotification('success', 'Alchemy session completed (baseline)', 4000);
       } else if (active.station === 'forge') {
-        const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === active.sourceId);
-        const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
-        if (!blueprint || blueprint.type !== 'craft' || !blueprint.output) return;
-        const baseItems = [{ itemId: blueprint.output.itemId, qty: blueprint.output.qty * active.qty }];
-        RewardService.grantRewards({ items: baseItems }, `Forge Session (baseline): ${active.sourceId}`);
-        useUIStore.getState().addNotification('success', 'Forge session completed (baseline)', 4000);
+        // Forge hands-on sessions are resolved via professionStore for claim flow.
       }
 
       set((state) => {
@@ -614,38 +610,46 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           return { ok: false, reason: 'unsupported_station' };
         }
 
-        if (payment.currencies && !inventory.canAffordCurrency(payment.currencies)) {
-          return { ok: false, reason: 'insufficient_currency' };
-        }
-        for (const cost of itemCosts) {
-          if (!inventory.canAffordItem(cost.itemId, cost.qty)) {
-            return { ok: false, reason: 'insufficient_items' };
+        const skipPayment = Boolean(args.skipPayment);
+        if (!skipPayment) {
+          if (payment.currencies && !inventory.canAffordCurrency(payment.currencies)) {
+            return { ok: false, reason: 'insufficient_currency' };
           }
-        }
-
-        const spentCurrencies: Partial<Record<'gold' | 'spiritStones' | 'merit', string>> = {};
-        if (payment.currencies) {
-          const success = inventory.spendCurrencies(payment.currencies);
-          if (!success) return { ok: false, reason: 'spend_failed' };
-          Object.assign(spentCurrencies, payment.currencies);
-        }
-
-        const spentItems: Array<{ itemId: string; qty: number }> = [];
-        for (const cost of itemCosts) {
-          const success = inventory.spendItem(cost.itemId, cost.qty);
-          if (!success) {
-            if (Object.keys(spentCurrencies).length > 0) {
-              (Object.keys(spentCurrencies) as Array<keyof typeof spentCurrencies>).forEach((key) => {
-                const amount = spentCurrencies[key];
-                if (amount !== undefined) {
-                  inventory.addCurrency(key, amount);
-                }
-              });
+          for (const cost of itemCosts) {
+            if (!inventory.canAffordItem(cost.itemId, cost.qty)) {
+              return { ok: false, reason: 'insufficient_items' };
             }
-            spentItems.forEach((entry) => inventory.addItem(entry.itemId, entry.qty));
-            return { ok: false, reason: 'spend_failed' };
           }
-          spentItems.push(cost);
+
+          const spentCurrencies: Partial<Record<'gold' | 'spiritStones' | 'merit', string>> = {};
+          if (payment.currencies) {
+            const success = inventory.spendCurrencies(payment.currencies);
+            if (!success) return { ok: false, reason: 'spend_failed' };
+            Object.assign(spentCurrencies, payment.currencies);
+          }
+
+          const spentItems: Array<{ itemId: string; qty: number }> = [];
+          for (const cost of itemCosts) {
+            const success = inventory.spendItem(cost.itemId, cost.qty);
+            if (!success) {
+              if (Object.keys(spentCurrencies).length > 0) {
+                (Object.keys(spentCurrencies) as Array<keyof typeof spentCurrencies>).forEach((key) => {
+                  const amount = spentCurrencies[key];
+                  if (amount !== undefined) {
+                    inventory.addCurrency(key, amount);
+                  }
+                });
+              }
+              spentItems.forEach((entry) => inventory.addItem(entry.itemId, entry.qty));
+              return { ok: false, reason: 'spend_failed' };
+            }
+            spentItems.push(cost);
+          }
+        } else {
+          itemCosts = [];
+          if (payment.currencies) {
+            payment.currencies = {};
+          }
         }
 
         const initialDuration = script.steps[0] ? getStepDurationMs(script.steps[0]) : undefined;
@@ -679,10 +683,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           prompts,
         };
 
-        if (session.mode === 'handsOn' && session.station === 'forge') {
-          session.cursor.backgroundResolveAt = computeBaselineResolveAt(session);
-          session.cursor.backgroundReason = 'navigated';
-        }
 
         set((state) => {
           state.modeByStation[args.station] = args.mode;
@@ -979,7 +979,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           handsOnBonus: active.script.handsOnBonus ?? blueprint.handsOnBonus,
           seed: active.seed,
         });
-        const rewardItems = [{ itemId: blueprint.output.itemId, qty: blueprint.output.qty * active.qty }];
 
         set((state) => {
           if (state.activeSession) {
@@ -990,10 +989,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           }
         });
 
-        if (rewardItems.length > 0) {
-          RewardService.grantRewards({ items: rewardItems }, `Forge Hands-on: ${active.sourceId}`);
-        }
-
         GameEvents.emit({
           type: 'crafting/session_completed',
           payload: { station: active.station, mode: active.mode, sourceId: active.sourceId },
@@ -1002,8 +997,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         set((state) => {
           state.activeSession = null;
         });
-
-        useUIStore.getState().addNotification('success', 'Hands-on forge complete', 3500);
 
         return { ok: true, result: outcome };
       }
@@ -1141,19 +1134,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
               ? activeSession.prompts
               : instantiatePrompts(promptDefs, activeSession.startedAt, endsAt, activeSession.seed);
           activeSession = { ...activeSession, endsAt, prompts };
-        }
-      }
-      if (activeSession && activeSession.mode === 'handsOn' && activeSession.station === 'forge') {
-        const currentResolve = activeSession.cursor.backgroundResolveAt;
-        if (currentResolve == null) {
-          activeSession = {
-            ...activeSession,
-            cursor: {
-              ...activeSession.cursor,
-              backgroundResolveAt: computeBaselineResolveAt(activeSession),
-              backgroundReason: activeSession.cursor.backgroundReason ?? 'navigated',
-            },
-          };
         }
       }
       set(() => ({ modeByStation: nextModes, activeSession }));

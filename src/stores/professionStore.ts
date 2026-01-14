@@ -5,14 +5,14 @@ import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
 import { getForgeBlueprint } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
 import { useContentStore } from './contentStore';
-import { useEquipmentStore } from './equipmentStore';
-import { useGameStore } from './gameStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
 import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 import { applyRefineService, applyTemperService } from '../services/forgeService';
 import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
 import { GameEvents } from '../services/events/GameEvents';
+import { useActivityStore } from './activityStore';
+import { useCraftSessionStore } from './craftSessionStore';
 
 export type AlchemyJob = {
   id: string;
@@ -34,6 +34,24 @@ export type TalismanJob = {
 
 export type ActionResult = { ok: true; result?: unknown } | { ok: false; error: string };
 
+export type ForgeJobMode = 'IDLE' | 'ASSISTED' | 'HANDS_ON';
+export type ForgeJobStatus = 'QUEUED' | 'ACTIVE' | 'READY_TO_CLAIM' | 'CLAIMED';
+
+export type ForgeJobPerformance = {
+  heatScore?: number;
+  hammerScore?: number;
+  specialScore?: number;
+  qualityScore?: number;
+  stepBreakdown?: Array<{ stepId: string; type: string; score?: number }>;
+};
+
+export type ForgeJobResultSnapshot = {
+  outputItemId?: string;
+  outputBundle?: { items?: Array<{ itemId: string; qty: number }> };
+  beforeItem?: Record<string, unknown>;
+  afterItem?: Record<string, unknown>;
+};
+
 export type ForgeJob = {
   id: string;
   blueprintId: string;
@@ -42,6 +60,11 @@ export type ForgeJob = {
   endsAt: number;
   targetSlot?: 'weapon' | 'accessory';
   cityId: string;
+  mode?: ForgeJobMode;
+  status?: ForgeJobStatus;
+  sessionId?: string;
+  performance?: ForgeJobPerformance;
+  resultSnapshot?: ForgeJobResultSnapshot;
 };
 
 interface ProfessionState {
@@ -52,13 +75,25 @@ interface ProfessionState {
   startAlchemy: (recipeId: string, qty: number) => ActionResult;
   startTalisman: (recipeId: string, qty: number) => ActionResult;
   startForge: (blueprintId: string, qty: number, options?: { targetSlot?: ForgeJob['targetSlot'] }) => ActionResult;
+  startForgeJob: (args: {
+    blueprintId: string;
+    mode: ForgeJobMode;
+    qty?: number;
+    targetSlot?: ForgeJob['targetSlot'];
+    targetItemInstanceId?: string;
+  }) => ActionResult;
+  completeForgeSession: (args: {
+    sessionId: string;
+    performance?: ForgeJobPerformance;
+  }) => ActionResult;
+  claimForgeJob: (jobId: string) => ActionResult;
   tick: (now: number) => void;
   applyOffline: (now: number) => void;
   claimAlchemy: (jobId: string) => ActionResult;
   claimTalisman: (jobId: string) => ActionResult;
   claimForge: (jobId: string) => ActionResult;
   getForgeJobs: () => ForgeJob[];
-  getForgeJobStatus: (job: ForgeJob, now?: number) => { done: boolean; remainingSec: number };
+  getForgeJobStatus: (job: ForgeJob, now?: number) => { done: boolean; remainingSec: number; status: ForgeJobStatus };
   canStartForge: (
     blueprintId: string,
     qty: number,
@@ -79,6 +114,64 @@ const hashSeed = (value: string): number => {
 const MAX_ALCHEMY_QTY = 999;
 const MAX_TALISMAN_QTY = 999;
 const MAX_FORGE_QTY = 999;
+const DEFAULT_FORGE_PERFORMANCE = 0.6;
+const ASSISTED_FORGE_PERFORMANCE = 0.7;
+
+const resolveForgeMode = (value: ForgeJob['mode']): ForgeJobMode => {
+  if (value === 'ASSISTED' || value === 'HANDS_ON' || value === 'IDLE') return value;
+  return 'IDLE';
+};
+
+const resolveForgeStatus = (value: ForgeJob['status'], fallback: ForgeJobStatus): ForgeJobStatus => {
+  if (value === 'QUEUED' || value === 'ACTIVE' || value === 'READY_TO_CLAIM' || value === 'CLAIMED') return value;
+  return fallback;
+};
+
+const buildBaselinePerformance = (mode: ForgeJobMode, qualityOverride?: number): ForgeJobPerformance => {
+  const base = mode === 'ASSISTED' ? ASSISTED_FORGE_PERFORMANCE : DEFAULT_FORGE_PERFORMANCE;
+  const qualityScore = typeof qualityOverride === 'number' ? qualityOverride : Math.round(base * 100);
+  return {
+    heatScore: base,
+    hammerScore: base,
+    specialScore: base,
+    qualityScore,
+  };
+};
+
+const computePerformanceQuality = (performance?: ForgeJobPerformance): ForgeJobPerformance => {
+  if (!performance) return buildBaselinePerformance('IDLE');
+  const values: number[] = [];
+  if (typeof performance.heatScore === 'number') values.push(performance.heatScore);
+  if (typeof performance.hammerScore === 'number') values.push(performance.hammerScore);
+  if (typeof performance.specialScore === 'number') values.push(performance.specialScore);
+  const average = values.length > 0 ? values.reduce((sum, value) => sum + value, 0) / values.length : DEFAULT_FORGE_PERFORMANCE;
+  const clamped = Math.max(0, Math.min(1, average));
+  return {
+    ...performance,
+    heatScore: performance.heatScore ?? clamped,
+    hammerScore: performance.hammerScore ?? clamped,
+    specialScore: performance.specialScore ?? clamped,
+    qualityScore: performance.qualityScore ?? Math.round(clamped * 100),
+  };
+};
+
+const resolveForgeTimingStatus = (job: ForgeJob, now: number): ForgeJobStatus => {
+  const mode = resolveForgeMode(job.mode);
+  if (mode === 'HANDS_ON') {
+    return resolveForgeStatus(job.status, 'ACTIVE');
+  }
+  const startedAt = Number.isFinite(job.startedAt) ? job.startedAt : now;
+  const endsAt = Number.isFinite(job.endsAt) ? job.endsAt : startedAt;
+  if (now < startedAt) return 'QUEUED';
+  if (now >= endsAt) return 'READY_TO_CLAIM';
+  return 'ACTIVE';
+};
+
+const resolveTemperBonusChance = (blueprint: ReturnType<typeof getForgeBlueprint>, performance: ForgeJobPerformance): number => {
+  if (!blueprint?.handsOnBonus?.temperProcChancePct) return 0;
+  const score = (performance.qualityScore ?? Math.round(DEFAULT_FORGE_PERFORMANCE * 100)) / 100;
+  return blueprint.handsOnBonus.temperProcChancePct * Math.max(0, Math.min(1, score));
+};
 
 const currencyLabels: Record<CurrencyKey, string> = {
   gold: 'Gold',
@@ -364,12 +457,13 @@ export const useProfessionStore = create<ProfessionState>()(
       return { ok: true };
     },
 
-    startForge: (blueprintId, qty, options) => {
+    startForgeJob: ({ blueprintId, mode, qty = 1, targetSlot }) => {
       const parsedQty = Math.floor(qty);
       if (!Number.isFinite(parsedQty) || parsedQty <= 0) {
         return { ok: false, error: 'Invalid quantity' };
       }
       const amount = Math.min(parsedQty, MAX_FORGE_QTY);
+      const resolvedMode = resolveForgeMode(mode);
 
       const blueprint = getForgeBlueprint(blueprintId);
       if (!blueprint) {
@@ -380,7 +474,6 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Missing output' };
       }
 
-      const targetSlot = options?.targetSlot;
       if (blueprint.type === 'service' && (blueprint.service === 'refine' || blueprint.service === 'temper')) {
         if (!targetSlot || (targetSlot !== 'weapon' && targetSlot !== 'accessory')) {
           return { ok: false, error: 'Select a target slot' };
@@ -389,9 +482,23 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Unsupported service' };
       }
 
+      if (resolvedMode === 'HANDS_ON' && blueprint.type !== 'craft') {
+        return { ok: false, error: 'Hands-on forging is only available for crafted items' };
+      }
+
       const cityId = resolveActiveCityId();
       if (!cityId) {
         return { ok: false, error: 'Select a city first' };
+      }
+
+      const activityStore = useActivityStore.getState();
+      if (resolvedMode === 'HANDS_ON' && activityStore.active && activityStore.active.type !== 'forge') {
+        return { ok: false, error: 'Finish the current activity first' };
+      }
+
+      const craftSessionStore = useCraftSessionStore.getState();
+      if (resolvedMode === 'HANDS_ON' && craftSessionStore.activeSession) {
+        return { ok: false, error: 'Another crafting session is active' };
       }
 
       const inventory = useInventoryStore.getState();
@@ -424,7 +531,7 @@ export const useProfessionStore = create<ProfessionState>()(
         const perJob = Math.max(0, Math.floor(entry.qty));
         if (!entry.itemId || perJob <= 0) continue;
         const requiredQty = perJob * amount;
-        const removed = inventory.removeItem(entry.itemId, requiredQty);
+        const removed = inventory.spendItem(entry.itemId, requiredQty);
         if (!removed) {
           removedItems.forEach((item) => {
             inventory.addItem(item.itemId, item.qty);
@@ -435,7 +542,7 @@ export const useProfessionStore = create<ProfessionState>()(
       }
 
       if (Object.keys(costs).length > 0) {
-        const spent = inventory.spendCurrencies(costs);
+        const spent = RewardService.spendCurrency(costs, `forge:${blueprintId}`);
         if (!spent) {
           removedItems.forEach((item) => {
             inventory.addItem(item.itemId, item.qty);
@@ -444,28 +551,230 @@ export const useProfessionStore = create<ProfessionState>()(
         }
       }
 
-      const durationMs = Math.max(0, blueprint.timeSec) * amount * 1000;
       const now = Date.now();
+      let sessionId: string | undefined;
+      if (resolvedMode === 'HANDS_ON') {
+        const sessionResult = craftSessionStore.startSession({
+          station: 'forge',
+          mode: 'handsOn',
+          sourceId: blueprintId,
+          qty: amount,
+          now,
+          skipPayment: true,
+        });
+        if (!sessionResult.ok) {
+          removedItems.forEach((item) => {
+            inventory.addItem(item.itemId, item.qty);
+          });
+          if (Object.keys(costs).length > 0) {
+            (Object.keys(costs) as CurrencyKey[]).forEach((key) => {
+              const refund = costs[key];
+              if (refund) inventory.addCurrency(key, refund);
+            });
+          }
+          return { ok: false, error: `Cannot start session: ${sessionResult.reason}` };
+        }
+        sessionId = sessionResult.sessionId;
+        activityStore.startActivity('forge', { cityId, sourceId: blueprintId, jobId: sessionId }, 'forge_session_start');
+      }
+
+      const durationMs = Math.max(0, blueprint.timeSec) * amount * 1000;
       const lastJob = get().forgeQueue.at(-1);
-      const startedAt = lastJob ? Math.max(now, lastJob.endsAt) : now;
-      const endsAt = startedAt + durationMs;
+      const scheduledStart = lastJob ? Math.max(now, lastJob.endsAt) : now;
+      const startedAt = resolvedMode === 'HANDS_ON' ? now : scheduledStart;
+      const endsAt = resolvedMode === 'HANDS_ON' ? now : startedAt + durationMs;
+      const status = resolveForgeTimingStatus({ ...({} as ForgeJob), mode: resolvedMode, startedAt, endsAt }, now);
+      const jobId = makeJobId();
 
       set((state) => {
         state.forgeQueue.push({
-          id: makeJobId(),
+          id: jobId,
           blueprintId,
           qty: amount,
           startedAt,
           endsAt,
           targetSlot,
           cityId,
+          mode: resolvedMode,
+          status,
+          sessionId,
         });
       });
 
       GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'forge', sourceId: blueprintId, qty: amount } });
 
-      return { ok: true };
+      return { ok: true, result: { jobId, sessionId } };
     },
+
+    completeForgeSession: ({ sessionId, performance }) => {
+      const job = get().forgeQueue.find((entry) => entry.sessionId === sessionId);
+      if (!job) {
+        return { ok: false, error: 'Forge session not found' };
+      }
+
+      const craftSessionStore = useCraftSessionStore.getState();
+      const activeSession = craftSessionStore.activeSession;
+      let outcomePerformance = performance;
+      let outcomeResult: unknown = null;
+
+      if (!outcomePerformance && activeSession && activeSession.sessionId === sessionId) {
+        const result = craftSessionStore.completeHandsOnSession(Date.now());
+        if (!result.ok || !result.result || !('scoreOverall' in result.result)) {
+          return { ok: false, error: 'Unable to complete session' };
+        }
+        const outcome = result.result;
+        outcomeResult = outcome;
+        outcomePerformance = {
+          heatScore: outcome.heatScore,
+          hammerScore: outcome.hammerScore,
+          specialScore: outcome.temperScore,
+          qualityScore: Math.round(outcome.scoreOverall * 100),
+          stepBreakdown: activeSession.cursor.forgeStepResults?.map((entry) => ({
+            stepId: entry.stepId,
+            type: entry.type,
+            score: entry.timingScore,
+          })),
+        };
+      }
+      if (performance && activeSession && activeSession.sessionId === sessionId) {
+        useCraftSessionStore.setState({ activeSession: null });
+      }
+
+      const finalPerformance = computePerformanceQuality(
+        outcomePerformance ?? buildBaselinePerformance('HANDS_ON'),
+      );
+      const now = Date.now();
+
+      set((state) => {
+        state.forgeQueue = state.forgeQueue.map((entry) =>
+          entry.id === job.id
+            ? {
+                ...entry,
+                status: 'READY_TO_CLAIM',
+                performance: finalPerformance,
+                endsAt: now,
+              }
+            : entry,
+        );
+      });
+
+      useActivityStore.getState().stopActivity('forge_complete');
+
+      return { ok: true, result: { performance: finalPerformance, outcome: outcomeResult } };
+    },
+
+    claimForgeJob: (jobId) => {
+      const job = get().forgeQueue.find((entry) => entry.id === jobId);
+      if (!job) {
+        return { ok: false, error: 'Job not found' };
+      }
+
+      const now = Date.now();
+      const status = resolveForgeTimingStatus(job, now);
+      if (status !== 'READY_TO_CLAIM' && status !== 'CLAIMED') {
+        return { ok: false, error: 'Job not ready' };
+      }
+
+      const blueprint = getForgeBlueprint(job.blueprintId);
+      if (!blueprint) {
+        return { ok: false, error: 'Blueprint not found' };
+      }
+
+      const mode = resolveForgeMode(job.mode);
+      const performance = computePerformanceQuality(
+        job.performance ?? buildBaselinePerformance(mode),
+      );
+      const reason =
+        mode === 'ASSISTED'
+          ? 'forge/complete_assisted'
+          : mode === 'HANDS_ON'
+            ? 'forge/complete_hands_on'
+            : 'forge/complete_idle';
+
+      let serviceResult: ReturnType<typeof applyRefineService> | ReturnType<typeof applyTemperService> | null = null;
+      const resultSnapshot: ForgeJobResultSnapshot = {};
+
+      if (blueprint.type === 'craft') {
+        const outputItem = blueprint.output?.itemId;
+        const outputQty = blueprint.output?.qty ?? 1;
+        if (outputItem) {
+          const items = [{ itemId: outputItem, qty: Math.max(1, Math.floor(outputQty)) * job.qty }];
+          RewardService.grantRewards({ items }, reason);
+          resultSnapshot.outputItemId = outputItem;
+          resultSnapshot.outputBundle = { items };
+        } else {
+          RewardService.grantRewards({}, reason);
+        }
+      }
+
+      if (blueprint.type === 'service' && job.targetSlot) {
+        if (blueprint.service === 'refine') {
+          serviceResult = applyRefineService({ blueprint, slot: job.targetSlot, qty: job.qty });
+          if (!serviceResult.success) {
+            GameEvents.emit({ type: 'forge/refine_result', payload: { ok: false } });
+            return { ok: false, error: 'Refine failed' };
+          }
+        } else if (blueprint.service === 'temper') {
+          const seed = Math.abs(hashSeed(job.id));
+          serviceResult = applyTemperService({
+            blueprint,
+            slot: job.targetSlot,
+            qty: job.qty,
+            seed,
+            bonusChancePct: resolveTemperBonusChance(blueprint, performance),
+          });
+        }
+
+        if (serviceResult) {
+          resultSnapshot.beforeItem = serviceResult.beforeStats;
+          resultSnapshot.afterItem = serviceResult.afterStats;
+        }
+
+        RewardService.grantRewards({}, reason);
+      }
+
+      set((state) => {
+        state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
+      });
+
+      GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'forge', sourceId: job.blueprintId, qty: job.qty } });
+      if (blueprint.type === 'craft') {
+        GameEvents.emit({ type: 'forge/rune_craft_result', payload: { ok: true } });
+      }
+      if (serviceResult?.type === 'refine') {
+        GameEvents.emit({ type: 'forge/refine_result', payload: { ok: Boolean(serviceResult.success) } });
+      }
+      if (serviceResult?.type === 'temper') {
+        GameEvents.emit({ type: 'forge/temper_result', payload: { ok: Boolean(serviceResult.success) } });
+      }
+
+      const cityId =
+        job.cityId ??
+        useCityStore.getState().currentCityId ??
+        useCityStore.getState().unlockedCityIds[0] ??
+        'city_pinewind_hamlet';
+      useBountyStore.getState().recordEvent({ type: 'CRAFT_COMPLETE', cityId, amount: 1 });
+
+      return {
+        ok: true,
+        result: {
+          jobId: job.id,
+          blueprintId: job.blueprintId,
+          mode,
+          performance,
+          resultSnapshot,
+          serviceResult,
+        },
+      };
+    },
+
+    startForge: (blueprintId, qty, options) =>
+      get().startForgeJob({
+        blueprintId,
+        mode: 'IDLE',
+        qty,
+        targetSlot: options?.targetSlot,
+      }),
 
     tick: (now) => {
       const lastTickAt = get().lastTickAt;
@@ -479,6 +788,53 @@ export const useProfessionStore = create<ProfessionState>()(
 
     applyOffline: (now) => {
       get().tick(now);
+      const craftSession = useCraftSessionStore.getState().activeSession;
+      const activeForgeSession =
+        craftSession && craftSession.station === 'forge' && craftSession.mode === 'handsOn' ? craftSession : null;
+      let shouldClearForgeSession = false;
+      let sawForgeSessionMatch = false;
+
+      set((state) => {
+        state.forgeQueue = state.forgeQueue.map((job) => {
+          const mode = resolveForgeMode(job.mode);
+          let status = resolveForgeTimingStatus(job, now);
+          let performance = job.performance;
+          let endsAt = job.endsAt;
+
+          if (mode === 'HANDS_ON') {
+            if (activeForgeSession && job.sessionId === activeForgeSession.sessionId) {
+              sawForgeSessionMatch = true;
+              if (status === 'ACTIVE') {
+                status = 'READY_TO_CLAIM';
+                performance = buildBaselinePerformance('HANDS_ON');
+                endsAt = now;
+                shouldClearForgeSession = true;
+              }
+            } else if (!activeForgeSession && status === 'ACTIVE') {
+              status = 'READY_TO_CLAIM';
+              performance = buildBaselinePerformance('HANDS_ON');
+              endsAt = now;
+            }
+          }
+
+          return {
+            ...job,
+            mode,
+            status,
+            performance,
+            endsAt,
+          };
+        });
+      });
+
+      if (activeForgeSession && !sawForgeSessionMatch) {
+        shouldClearForgeSession = true;
+      }
+
+      if (shouldClearForgeSession) {
+        useCraftSessionStore.setState({ activeSession: null });
+        useActivityStore.getState().stopActivity('forge_offline');
+      }
     },
 
     claimAlchemy: (jobId) => {
@@ -573,80 +929,18 @@ export const useProfessionStore = create<ProfessionState>()(
       return { ok: true };
     },
 
-    claimForge: (jobId) => {
-      const job = get().forgeQueue.find((entry) => entry.id === jobId);
-      if (!job) {
-        return { ok: false, error: 'Job not found' };
-      }
-
-      const now = Date.now();
-      if (now < job.endsAt) {
-        return { ok: false, error: 'Job not ready' };
-      }
-
-      const blueprint = getForgeBlueprint(job.blueprintId);
-      if (!blueprint) {
-        return { ok: false, error: 'Blueprint not found' };
-      }
-
-      let serviceResult: ReturnType<typeof applyRefineService> | ReturnType<typeof applyTemperService> | null = null;
-
-      if (blueprint.type === 'craft') {
-        const outputItem = blueprint.output?.itemId;
-        const outputQty = blueprint.output?.qty ?? 1;
-        if (outputItem) {
-          RewardService.grantRewards(
-            { items: [{ itemId: outputItem, qty: Math.max(1, Math.floor(outputQty)) * job.qty }] },
-            `Forge: ${job.blueprintId}`,
-          );
-        }
-      }
-
-      if (blueprint.type === 'service' && job.targetSlot) {
-        if (blueprint.service === 'refine') {
-          serviceResult = applyRefineService({ blueprint, slot: job.targetSlot, qty: job.qty });
-          if (!serviceResult.success) {
-            GameEvents.emit({ type: 'forge/refine_result', payload: { ok: false } });
-            return { ok: false, error: 'Refine failed' };
-          }
-        } else if (blueprint.service === 'temper') {
-          const seed = Math.abs(hashSeed(job.id));
-          serviceResult = applyTemperService({ blueprint, slot: job.targetSlot, qty: job.qty, seed });
-        }
-      }
-
-      set((state) => {
-        state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
-      });
-
-      GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'forge', sourceId: job.blueprintId, qty: job.qty } });
-      if (blueprint.type === 'craft') {
-        GameEvents.emit({ type: 'forge/rune_craft_result', payload: { ok: true } });
-      }
-      if (serviceResult?.type === 'refine') {
-        GameEvents.emit({ type: 'forge/refine_result', payload: { ok: Boolean(serviceResult.success) } });
-      }
-      if (serviceResult?.type === 'temper') {
-        GameEvents.emit({ type: 'forge/temper_result', payload: { ok: Boolean(serviceResult.success) } });
-      }
-
-      const cityId =
-        job.cityId ??
-        useCityStore.getState().currentCityId ??
-        useCityStore.getState().unlockedCityIds[0] ??
-        'city_pinewind_hamlet';
-      useBountyStore.getState().recordEvent({ type: 'CRAFT_COMPLETE', cityId, amount: 1 });
-
-      return { ok: true, result: serviceResult ?? undefined };
-    },
+    claimForge: (jobId) => get().claimForgeJob(jobId),
 
     getForgeJobs: () => get().forgeQueue,
 
     getForgeJobStatus: (job, now = Date.now()) => {
-      const remainingMs = Math.max(0, job.endsAt - now);
+      const status = resolveForgeTimingStatus(job, now);
+      const mode = resolveForgeMode(job.mode);
+      const remainingMs = mode === 'HANDS_ON' ? 0 : Math.max(0, job.endsAt - now);
       return {
-        done: remainingMs === 0,
+        done: status === 'READY_TO_CLAIM',
         remainingSec: Math.ceil(remainingMs / 1000),
+        status,
       };
     },
   })),

@@ -1,17 +1,38 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
+import type { PlayerStats } from '../../../types';
 
 import { ForgeMinigame } from './ForgeMinigame';
 import { ErrorBoundary } from '../../../ui/feedback/ErrorBoundary';
 import { UsedForLinks } from '../../../components/crafting/UsedForLinks';
 import { computeForgeOutcome } from '../../../systems/crafting/forgeOutcome';
-import { listForgeBlueprints, getItemDef } from '../../../stores/contentStore';
+import { listForgeBlueprints, getForgeBlueprint, getItemDef } from '../../../stores/contentStore';
 import { useCraftSessionStore } from '../../../stores/craftSessionStore';
 import { useProfessionStore } from '../../../stores/professionStore';
 import { useUIStore } from '../../../stores/uiStore';
 import { useActivityStore } from '../../../stores/activityStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
+import { buildItemDelta } from './forgeDelta';
 import './ForgeWorkshop.scss';
+
+type ForgeClaimResult = {
+  jobId: string;
+  blueprintId: string;
+  mode: 'IDLE' | 'ASSISTED' | 'HANDS_ON';
+  performance: {
+    heatScore?: number;
+    hammerScore?: number;
+    specialScore?: number;
+    qualityScore?: number;
+  };
+  resultSnapshot?: {
+    outputItemId?: string;
+    outputBundle?: { items?: Array<{ itemId: string; qty: number }> };
+    beforeItem?: Record<string, unknown>;
+    afterItem?: Record<string, unknown>;
+  };
+  serviceResult?: { type?: string };
+};
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -61,13 +82,24 @@ const getProduceSummary = (blueprintId?: string | null): string => {
   return `${item?.name ?? blueprint.output.itemId} ×${blueprint.output.qty}`;
 };
 
+const resolveQualityLabel = (qualityScore?: number): string => {
+  const score = typeof qualityScore === 'number' ? qualityScore : 0;
+  if (score >= 90) return 'Perfect';
+  if (score >= 75) return 'Good';
+  if (score >= 60) return 'Solid';
+  return 'Rough';
+};
+
 export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const setCraftMode = useCraftSessionStore((state) => state.setMode);
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
-  const startSession = useCraftSessionStore((state) => state.startSession);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
-  const startForge = useProfessionStore((state) => state.startForge);
+  const startForgeJob = useProfessionStore((state) => state.startForgeJob);
+  const claimForgeJob = useProfessionStore((state) => state.claimForgeJob);
+  const forgeQueue = useProfessionStore((state) => state.forgeQueue);
+  const canStartForge = useProfessionStore((state) => state.canStartForge);
+  const getForgeJobStatus = useProfessionStore((state) => state.getForgeJobStatus);
   const activeActivity = useActivityStore((state) => state.active);
 
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
@@ -75,6 +107,9 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const [query, setQuery] = useState('');
   const [now, setNow] = useState(() => Date.now());
   const [sessionStatus, setSessionStatus] = useState<string | null>(null);
+  const [queueStatus, setQueueStatus] = useState<Record<string, { type: 'success' | 'error'; message: string }>>({});
+  const [selectedServiceSlot, setSelectedServiceSlot] = useState<'weapon' | 'accessory'>('weapon');
+  const [lastClaimResult, setLastClaimResult] = useState<ForgeClaimResult | null>(null);
 
   const currentMode = modeByStation.forge ?? 'idle';
 
@@ -141,34 +176,47 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     };
   }, [activeForgeSession, outcome]);
 
-  const canStart = Boolean(selectedBlueprint && selectedBlueprint.type === 'craft');
+  const resultBlueprint = useMemo(() => {
+    if (!lastClaimResult) return null;
+    return listForgeBlueprints().find((entry) => entry.id === lastClaimResult.blueprintId) ?? null;
+  }, [lastClaimResult]);
+
+  const resultDelta = useMemo(() => {
+    if (!lastClaimResult?.resultSnapshot?.beforeItem || !lastClaimResult?.resultSnapshot?.afterItem) return null;
+    return buildItemDelta(
+      lastClaimResult.resultSnapshot.beforeItem as unknown as PlayerStats,
+      lastClaimResult.resultSnapshot.afterItem as unknown as PlayerStats,
+    );
+  }, [lastClaimResult]);
+
+  const showTechniquesCta = Boolean(resultBlueprint && isRuneBlueprint(resultBlueprint));
+
+  const selectedTargetSlot = selectedBlueprint?.type === 'service' ? selectedServiceSlot : undefined;
+  const startEligibility = selectedBlueprint ? canStartForge(selectedBlueprint.id, 1, selectedTargetSlot) : { ok: false };
+  const isHandsOnMode = currentMode === 'handsOn';
+  const canStart = Boolean(
+    selectedBlueprint &&
+      startEligibility.ok &&
+      !(isHandsOnMode && selectedBlueprint.type === 'service'),
+  );
   const isLocked = Boolean(selectedBlueprint?.cityId && cityId && selectedBlueprint.cityId !== cityId);
-  const isBlocked = Boolean(activeOtherStation || activeActivity);
+  const isBlocked = Boolean(activeOtherStation || (activeActivity && activeActivity.type !== 'forge'));
 
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
     setSessionStatus(null);
-    if (currentMode === 'idle') {
-      const result = startForge(selectedBlueprint.id, 1);
-      if (!result.ok) {
-        setSessionStatus(result.error ?? 'Unable to start');
-        return;
-      }
-      setSessionStatus('Queued forging.');
-      return;
-    }
-    const result = startSession({
-      station: 'forge',
-      mode: currentMode as 'assisted' | 'handsOn',
-      sourceId: selectedBlueprint.id,
+    const mode = currentMode === 'handsOn' ? 'HANDS_ON' : currentMode === 'assisted' ? 'ASSISTED' : 'IDLE';
+    const result = startForgeJob({
+      blueprintId: selectedBlueprint.id,
+      mode,
       qty: 1,
-      now: Date.now(),
+      targetSlot: selectedTargetSlot,
     });
     if (!result.ok) {
-      setSessionStatus(`Cannot start: ${result.reason}`);
+      setSessionStatus(result.error ?? 'Unable to start');
       return;
     }
-    setSessionStatus('Session started.');
+    setSessionStatus(mode === 'HANDS_ON' ? 'Hands-on session started.' : 'Queued forging.');
   };
 
   return (
@@ -222,8 +270,11 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 {!selectedBlueprint && <div className="forgeWorkshop__idleHint">Choose a blueprint from the list.</div>}
                 {isBlocked && <div className="forgeWorkshop__idleHint">Finish the active activity to start forging.</div>}
                 {isLocked && <div className="forgeWorkshop__idleHint">Unlock this blueprint in another city.</div>}
-                {!canStart && selectedBlueprint?.type === 'service' && (
-                  <div className="forgeWorkshop__idleHint">Service blueprints start from the queue panel.</div>
+                {isHandsOnMode && selectedBlueprint?.type === 'service' && (
+                  <div className="forgeWorkshop__idleHint">Hands-on forging is only for crafted items.</div>
+                )}
+                {!canStart && startEligibility.reason && (
+                  <div className="forgeWorkshop__idleHint">{startEligibility.reason}</div>
                 )}
               </div>
             )}
@@ -308,6 +359,32 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                   <div className="forgeWorkshop__detailValue">{getProduceSummary(selectedBlueprint.id)}</div>
                 </div>
               </div>
+              {selectedBlueprint.type === 'service' &&
+                (selectedBlueprint.service === 'refine' || selectedBlueprint.service === 'temper') && (
+                  <div className="forgeWorkshop__detailSection">
+                    <div className="forgeWorkshop__detailLabel">Target slot</div>
+                    <div className="forgeWorkshop__slotButtons">
+                      <button
+                        type="button"
+                        className={classNames('forgeWorkshop__slotButton', {
+                          'forgeWorkshop__slotButton--active': selectedServiceSlot === 'weapon',
+                        })}
+                        onClick={() => setSelectedServiceSlot('weapon')}
+                      >
+                        Weapon
+                      </button>
+                      <button
+                        type="button"
+                        className={classNames('forgeWorkshop__slotButton', {
+                          'forgeWorkshop__slotButton--active': selectedServiceSlot === 'accessory',
+                        })}
+                        onClick={() => setSelectedServiceSlot('accessory')}
+                      >
+                        Accessory
+                      </button>
+                    </div>
+                  </div>
+                )}
               <div className="forgeWorkshop__stepSummary">
                 {stepSummary.map((step, index) => (
                   <span key={`${step}-${index}`} className="forgeWorkshop__step">
@@ -348,6 +425,95 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
         </div>
       </div>
 
+      <div className="forgeWorkshop__queue">
+        <div className="forgeWorkshop__queueHeader">
+          <div className="forgeWorkshop__queueTitle">Forge Queue</div>
+          <div className="forgeWorkshop__queueSub">Jobs process in order.</div>
+        </div>
+        {forgeQueue.length === 0 ? (
+          <div className="forgeWorkshop__queueEmpty">No forge jobs queued.</div>
+        ) : (
+          <div className="forgeWorkshop__queueList">
+            {forgeQueue.map((job) => {
+              const blueprint = getForgeBlueprint(job.blueprintId);
+              const status = getForgeJobStatus(job, now);
+              const done = status.done;
+              const remainingMs = Math.max(0, job.endsAt - now);
+              const queueMessage = queueStatus[job.id];
+              const label = blueprint
+                ? blueprint.type === 'service'
+                  ? `${blueprint.service === 'temper' ? 'Temper' : 'Refine'} ${job.targetSlot ?? 'equipment'}`
+                  : (() => {
+                      const outputItemId = blueprint.output?.itemId;
+                      const outputName = outputItemId ? getItemDef(outputItemId)?.name ?? outputItemId : blueprint.id;
+                      return `Craft ${outputName} x${job.qty}`;
+                    })()
+                : job.blueprintId;
+              const statusLabel =
+                status.status === 'READY_TO_CLAIM'
+                  ? 'Ready to claim'
+                  : status.status === 'QUEUED'
+                    ? 'Queued'
+                    : job.mode === 'HANDS_ON'
+                      ? 'Hands-on in progress'
+                      : 'In progress';
+              const modeLabel = job.mode === 'HANDS_ON' ? 'Hands-on' : job.mode === 'ASSISTED' ? 'Assisted' : 'Idle';
+
+              return (
+                <div key={job.id} className="forgeWorkshop__queueCard">
+                  <div className="forgeWorkshop__queueRow">
+                    <div>
+                      <div className="forgeWorkshop__queueName">{label}</div>
+                      <div className="forgeWorkshop__queueMeta">
+                        {blueprint?.id ?? job.blueprintId} · {modeLabel}
+                      </div>
+                    </div>
+                    <div className="forgeWorkshop__queueTiming">
+                      <div>{statusLabel}</div>
+                      <div>{done ? '00:00' : status.status === 'ACTIVE' ? `${Math.ceil(remainingMs / 1000)}s` : '--'}</div>
+                    </div>
+                  </div>
+                  <div className="forgeWorkshop__queueActions">
+                    <button
+                      type="button"
+                      className={classNames('worldScreenModuleButton', { 'worldScreenModuleButton--active': done })}
+                      disabled={!done}
+                      onClick={() => {
+                        const result = claimForgeJob(job.id) as { ok: boolean; error?: string; result?: ForgeClaimResult };
+                        if (!result.ok) {
+                          setQueueStatus((prev) => ({
+                            ...prev,
+                            [job.id]: { type: 'error', message: result.error ?? 'Unable to claim' },
+                          }));
+                          return;
+                        }
+                        if (result.result) {
+                          setLastClaimResult(result.result);
+                        }
+                        setQueueStatus((prev) => ({
+                          ...prev,
+                          [job.id]: { type: 'success', message: 'Claimed' },
+                        }));
+                      }}
+                    >
+                      Claim
+                    </button>
+                  </div>
+                  {queueMessage && (
+                    <div
+                      className={`forgeWorkshop__queueStatus forgeWorkshop__queueStatus--${queueMessage.type}`}
+                      role={queueMessage.type === 'error' ? 'alert' : 'status'}
+                    >
+                      {queueMessage.message}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       <div className="forgeWorkshop__meter">
         <div className="forgeWorkshop__meterHeader">Quality &amp; Process</div>
         {qualityBuckets ? (
@@ -380,6 +546,108 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           <div className="forgeWorkshop__meterEmpty">Play hands-on to improve these.</div>
         )}
       </div>
+
+      {lastClaimResult && (
+        <div className="modalOverlay forgeResultModal">
+          <div className="modalCard">
+            <div className="modalHeader">
+              <div>
+                <div className="modalTitle">Forging Complete</div>
+                <div className="modalSubtitle">{resultBlueprint?.name ?? lastClaimResult.blueprintId}</div>
+              </div>
+              <div className="forgeResultGrade">{resolveQualityLabel(lastClaimResult.performance?.qualityScore)}</div>
+            </div>
+
+            <div className="modalBody">
+              <div className="forgeResultGrid">
+                <div className="forgeResultSection">
+                  <div className="sectionLabel">Output</div>
+                  {lastClaimResult.resultSnapshot?.outputBundle?.items?.length ? (
+                    lastClaimResult.resultSnapshot.outputBundle.items.map((entry) => {
+                      const def = getItemDef(entry.itemId);
+                      return (
+                        <div key={entry.itemId} className="forgeResultRow">
+                          <div>{def?.name ?? entry.itemId}</div>
+                          <div className="resultQty">x{entry.qty}</div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="forgeResultRow">Service applied.</div>
+                  )}
+                </div>
+
+                <div className="forgeResultSection">
+                  <div className="sectionLabel">Quality</div>
+                  <div className="forgeResultRow">Score: {Math.round(lastClaimResult.performance?.qualityScore ?? 0)}%</div>
+                  <div className="forgeResultRow">
+                    Heat: {Math.round((lastClaimResult.performance?.heatScore ?? 0) * 100)}%
+                  </div>
+                  <div className="forgeResultRow">
+                    Hammer: {Math.round((lastClaimResult.performance?.hammerScore ?? 0) * 100)}%
+                  </div>
+                  {lastClaimResult.performance?.specialScore !== undefined && (
+                    <div className="forgeResultRow">
+                      Special: {Math.round(lastClaimResult.performance.specialScore * 100)}%
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {resultDelta && (
+                <div className="forgeResultSection">
+                  <div className="sectionLabel">Before → After</div>
+                  <div className="forgeResultDelta">
+                    {resultDelta.lines.map((line) => (
+                      <div key={line.label} className="forgeResultDeltaRow">
+                        <div className="forgeResultDeltaLabel">{line.label}</div>
+                        <div className="forgeResultDeltaValues">
+                          <span>{line.before}</span>
+                          <span className="forgeResultDeltaArrow">→</span>
+                          <span>{line.after}</span>
+                        </div>
+                        <div className="forgeResultDeltaValue">{line.delta}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="modalActions">
+              <button
+                type="button"
+                className="worldScreenModuleButton"
+                onClick={() => {
+                  setActiveTab('inventory');
+                  setLastClaimResult(null);
+                }}
+              >
+                Equip / View item
+              </button>
+              {showTechniquesCta && (
+                <button
+                  type="button"
+                  className="worldScreenModuleButton"
+                  onClick={() => {
+                    setActiveTab('techniques');
+                    setLastClaimResult(null);
+                  }}
+                >
+                  Go to Techniques
+                </button>
+              )}
+              <button
+                type="button"
+                className="worldScreenModuleButton worldScreenModuleButton--active"
+                onClick={() => setLastClaimResult(null)}
+              >
+                Forge again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

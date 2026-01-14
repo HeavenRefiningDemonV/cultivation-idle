@@ -9,6 +9,7 @@ import type {
 } from '../../systems/crafting/craftingTypes';
 import { computeForgeOutcome } from '../../systems/crafting/forgeOutcome';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
+import { useProfessionStore } from '../../stores/professionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { GameEvents } from '../../services/events/GameEvents';
 import { ForgeWorkbenchScene, type ForgePhaseKind } from './ForgeWorkbenchScene';
@@ -334,7 +335,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   const recordForgeStepResult = useCraftSessionStore((state) => state.recordForgeStepResult);
   const markBackgroundResolving = useCraftSessionStore((state) => state.markBackgroundResolving);
   const abortSession = useCraftSessionStore((state) => state.abortSession);
-  const completeHandsOnSession = useCraftSessionStore((state) => state.completeHandsOnSession);
+  const completeForgeSession = useProfessionStore((state) => state.completeForgeSession);
   const addNotification = useUIStore((state) => state.addNotification);
 
   const heatSetting = session.cursor.heatSetting ?? 300;
@@ -729,9 +730,12 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   };
 
   const handleComplete = () => {
-    const result = completeHandsOnSession(Date.now());
-    if (result.ok && result.result && 'scoreOverall' in result.result) {
-      onOutcome?.(result.result as ForgeSessionOutcome);
+    const result = completeForgeSession({ sessionId: session.sessionId });
+    if (result.ok && result.result) {
+      const outcome = (result.result as { outcome?: ForgeSessionOutcome }).outcome ?? null;
+      if (outcome) {
+        onOutcome?.(outcome);
+      }
       addNotification('success', 'Forge session complete.', 2500);
       GameEvents.emit({ type: 'forge/grind', payload: {} });
     } else {

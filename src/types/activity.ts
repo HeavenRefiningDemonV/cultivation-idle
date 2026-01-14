@@ -1,4 +1,4 @@
-export type ForegroundActivityType = 'meditate' | 'outskirts' | 'trial' | 'ruins';
+export type ForegroundActivityType = 'meditate' | 'outskirts' | 'trial' | 'ruins' | 'forge';
 
 export type ForegroundActivityPayload = {
   cityId?: string;

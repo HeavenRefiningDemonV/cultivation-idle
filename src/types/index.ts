@@ -594,6 +594,22 @@ export interface SaveData {
       endsAt: number;
       targetSlot?: 'weapon' | 'accessory';
       cityId?: string;
+      mode?: 'IDLE' | 'ASSISTED' | 'HANDS_ON';
+      status?: 'QUEUED' | 'ACTIVE' | 'READY_TO_CLAIM' | 'CLAIMED';
+      sessionId?: string;
+      performance?: {
+        heatScore?: number;
+        hammerScore?: number;
+        specialScore?: number;
+        qualityScore?: number;
+        stepBreakdown?: Array<{ stepId: string; type: string; score?: number }>;
+      };
+      resultSnapshot?: {
+        outputItemId?: string;
+        outputBundle?: { items?: Array<{ itemId: string; qty: number }> };
+        beforeItem?: Record<string, unknown>;
+        afterItem?: Record<string, unknown>;
+      };
     }>;
     lastTickAt: number;
   };
