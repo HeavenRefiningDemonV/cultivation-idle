@@ -114,6 +114,8 @@ const getStepDurationMs = (step: CraftStep): number | undefined => {
       return undefined;
     case 'ENGRAVE_RUNE':
       return undefined;
+    case 'LAY_FORMATION':
+      return undefined;
     case 'QUENCH':
       return step.timingWindow ? Math.max(step.timingWindow.goodMax, step.timingWindow.perfectMax) : undefined;
     case 'HEAT_TO':
@@ -207,9 +209,22 @@ const sanitizeForgeStepResult = (raw: unknown): ForgeStepResult | null => {
       return {
         stepId: record.stepId,
         type: 'ENGRAVE_RUNE',
+        hitsLanded: num(record.hitsLanded),
+        hitsRequired: num(record.hitsRequired),
+        timingScore: num(record.timingScore),
         success: typeof record.success === 'boolean' ? record.success : undefined,
         precision: num(record.precision),
         optional: typeof record.optional === 'boolean' ? record.optional : undefined,
+        patternId: typeof record.patternId === 'string' ? record.patternId : undefined,
+      };
+    case 'LAY_FORMATION':
+      return {
+        stepId: record.stepId,
+        type: 'LAY_FORMATION',
+        hitsLanded: num(record.hitsLanded) ?? 0,
+        hitsRequired: num(record.hitsRequired) ?? 0,
+        timingScore: num(record.timingScore),
+        patternId: typeof record.patternId === 'string' ? record.patternId : undefined,
       };
     default:
       return null;

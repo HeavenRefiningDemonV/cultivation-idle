@@ -51,6 +51,8 @@ function toCraftStepFromForgeDef(def: ForgeStepDef): CraftStep {
         hits: Math.max(1, Math.floor(def.hits)),
         shrinkMs: Math.max(200, Math.floor(def.shrinkMs)),
         tolerance: Math.max(0.01, Math.min(1, def.tolerance)),
+        difficulty: def.difficulty,
+        patternId: def.patternId,
       };
     case 'QUENCH':
       return {
@@ -78,8 +80,22 @@ function toCraftStepFromForgeDef(def: ForgeStepDef): CraftStep {
         id: def.id,
         type: 'ENGRAVE_RUNE',
         uiLabel: def.uiLabel ?? 'Engrave rune',
+        hits: def.hits,
+        difficulty: def.difficulty,
+        patternId: def.patternId,
         optional: def.optional,
         runeFamily: def.runeFamily,
+      };
+    case 'LAY_FORMATION':
+      return {
+        id: def.id,
+        type: 'LAY_FORMATION',
+        uiLabel: def.uiLabel ?? 'Lay formation',
+        hits: def.hits,
+        difficulty: def.difficulty,
+        patternId: def.patternId,
+        optional: def.optional,
+        formationId: def.formationId,
       };
     default:
       return def as CraftStep;

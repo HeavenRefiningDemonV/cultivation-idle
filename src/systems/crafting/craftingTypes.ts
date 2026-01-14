@@ -15,7 +15,8 @@ export type CraftStepType =
   | 'ALLOY_MIX'
   | 'CAST_OR_SHAPE'
   | 'HAMMER_PATTERN'
-  | 'ENGRAVE_RUNE';
+  | 'ENGRAVE_RUNE'
+  | 'LAY_FORMATION';
 
 export type CraftPromptType = 'STABILIZE_FLAME' | 'ADD_CATALYST';
 
@@ -132,13 +133,28 @@ export type CraftStep =
       hits: number;
       shrinkMs: number;
       tolerance: number;
+      difficulty?: number;
+      patternId?: string;
     }
   | {
       id: string;
       type: 'ENGRAVE_RUNE';
       uiLabel?: string;
+      hits?: number;
+      difficulty?: number;
+      patternId?: string;
       optional?: boolean;
       runeFamily?: string;
+    }
+  | {
+      id: string;
+      type: 'LAY_FORMATION';
+      uiLabel?: string;
+      hits?: number;
+      difficulty?: number;
+      patternId?: string;
+      optional?: boolean;
+      formationId?: string;
     }
   | {
       id: string;
@@ -158,12 +174,15 @@ export interface CraftScript {
 export type ForgeStepDef = Extract<
   CraftStep,
   | { type: 'HEAT_MATERIAL' }
+  | { type: 'HEAT_TO' }
   | { type: 'ALLOY_MIX' }
   | { type: 'CAST_OR_SHAPE' }
   | { type: 'HAMMER_PATTERN' }
   | { type: 'QUENCH' }
   | { type: 'TEMPER' }
   | { type: 'ENGRAVE_RUNE' }
+  | { type: 'LAY_FORMATION' }
+  | { type: 'FINISH' }
 >;
 
 export type ForgeStepResult =
@@ -210,9 +229,21 @@ export type ForgeStepResult =
   | {
       stepId: string;
       type: 'ENGRAVE_RUNE';
+      hitsLanded?: number;
+      hitsRequired?: number;
+      timingScore?: number;
       success?: boolean;
       precision?: number;
       optional?: boolean;
+      patternId?: string;
+    }
+  | {
+      stepId: string;
+      type: 'LAY_FORMATION';
+      hitsLanded: number;
+      hitsRequired: number;
+      timingScore?: number;
+      patternId?: string;
     };
 
 export type ForgeHandsOnBonus = {
