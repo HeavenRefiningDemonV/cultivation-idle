@@ -7,6 +7,7 @@ import './ForgeWorkbenchScene.scss';
 type ForgeWorkbenchSceneProps = {
   stepType: CraftStep['type'] | undefined;
   heatSetting: number;
+  hideWorkpiece?: boolean;
   children?: ReactNode;
 };
 
@@ -35,7 +36,7 @@ const getHeatLevel = (heatSetting: number): 'low' | 'mid' | 'high' => {
   return 'low';
 };
 
-export function ForgeWorkbenchScene({ stepType, heatSetting, children }: ForgeWorkbenchSceneProps) {
+export function ForgeWorkbenchScene({ stepType, heatSetting, hideWorkpiece = false, children }: ForgeWorkbenchSceneProps) {
   const station = getStationForStep(stepType);
   const heatLevel = getHeatLevel(heatSetting);
 
@@ -48,10 +49,12 @@ export function ForgeWorkbenchScene({ stepType, heatSetting, children }: ForgeWo
       <div className="forgeWorkbenchScene__overlay">
         <div className="forgeWorkbenchScene__anchor forgeWorkbenchScene__anchor--furnace" aria-hidden="true" />
         <div className="forgeWorkbenchScene__anchor forgeWorkbenchScene__anchor--anvil" aria-hidden="true" />
-        <div
-          className={`forgeWorkbenchScene__workpiece forgeWorkbenchScene__workpiece--${station} forgeWorkbenchScene__workpiece--${heatLevel}`}
-          aria-hidden="true"
-        />
+        {!hideWorkpiece && (
+          <div
+            className={`forgeWorkbenchScene__workpiece forgeWorkbenchScene__workpiece--${station} forgeWorkbenchScene__workpiece--${heatLevel}`}
+            aria-hidden="true"
+          />
+        )}
         {children && <div className="forgeWorkbenchScene__content">{children}</div>}
       </div>
     </div>

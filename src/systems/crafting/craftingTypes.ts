@@ -59,6 +59,8 @@ export type CraftStep =
       uiLabel?: string;
       targetHeat: number;
       tolerance: number;
+      zone?: string;
+      withinSec?: number;
     }
   | {
       id: string;
@@ -112,6 +114,8 @@ export type CraftStep =
       targetMax: number;
       holdMs: number;
       jitter?: number;
+      zone?: string;
+      withinSec?: number;
     }
   | {
       id: string;
@@ -192,6 +196,14 @@ export type ForgeStepResult =
       achievedMin?: number;
       achievedMax?: number;
       holdMs?: number;
+      timingScore?: number;
+      heatZone?: string;
+    }
+  | {
+      stepId: string;
+      type: 'HEAT_TO';
+      timingScore?: number;
+      heatZone?: string;
     }
   | {
       stepId: string;

@@ -58,6 +58,11 @@ function scoreHeatRange(
   return clamp01(total);
 }
 
+function scoreHeatTiming(performance?: { timingScore?: number }, rng?: () => number): number {
+  if (typeof performance?.timingScore === 'number') return clamp01(performance.timingScore);
+  return rng ? 0.55 + rng() * 0.1 : 0.6;
+}
+
 function scoreHammerPattern(
   hits: number,
   tolerance: number,
@@ -177,7 +182,16 @@ export function computeForgeOutcome(params: {
     switch (step.type) {
       case 'HEAT_MATERIAL': {
         const perf = findPerformance(params.performances, step.id, 'HEAT_MATERIAL');
-        heatScores.push(scoreHeatRange(step.targetMin, step.targetMax, step.holdMs, perf, rng));
+        if (typeof perf?.timingScore === 'number') {
+          heatScores.push(scoreHeatTiming(perf, rng));
+        } else {
+          heatScores.push(scoreHeatRange(step.targetMin, step.targetMax, step.holdMs, perf, rng));
+        }
+        break;
+      }
+      case 'HEAT_TO': {
+        const perf = findPerformance(params.performances, step.id, 'HEAT_TO');
+        heatScores.push(scoreHeatTiming(perf, rng));
         break;
       }
       case 'HAMMER_PATTERN': {

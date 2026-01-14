@@ -93,7 +93,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
+  pointer-events: auto;
+}
+
+.forgeWorkbenchScene__furnaceSlot {
+  position: absolute;
+  left: 20%;
+  top: 63%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
 }
 
 .forgeWorkbenchScene__anvilSlot {

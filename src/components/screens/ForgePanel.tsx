@@ -67,6 +67,15 @@ function buildAssistedPerformance(step: CraftStep): ForgeStepResult | null {
         achievedMin: step.targetMin,
         achievedMax: step.targetMax,
         holdMs: step.holdMs,
+        timingScore: 0.75,
+        heatZone: step.zone,
+      };
+    case 'HEAT_TO':
+      return {
+        stepId: step.id,
+        type: 'HEAT_TO',
+        timingScore: 0.75,
+        heatZone: step.zone,
       };
     case 'HAMMER_PATTERN':
       return {

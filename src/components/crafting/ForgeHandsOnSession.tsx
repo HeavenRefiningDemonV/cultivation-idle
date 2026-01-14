@@ -14,6 +14,7 @@ import { GameEvents } from '../../services/events/GameEvents';
 import { ForgeWorkbenchScene } from './ForgeWorkbenchScene';
 import { TimingCircleQTE } from '../qte/TimingCircleQTE';
 import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte';
+import { ForgeHeatPullOutQTE, type ForgeHeatPullOutResult } from '../../ui/forge/ForgeHeatPullOutQTE';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;
@@ -32,6 +33,14 @@ interface HeatSampleState {
 }
 
 const MAX_HEAT = 1200;
+const DEFAULT_HEAT_DURATION_MS = 2000;
+
+const HEAT_ZONE_TARGETS: Record<string, number> = {
+  EMBER: 0.55,
+  STEADY: 0.7,
+  ROARING: 0.82,
+  SURGE: 0.92,
+};
 
 const defaultHeatSample = (now: number, heat: number): HeatSampleState => ({
   min: heat,
@@ -98,68 +107,44 @@ function HeatGauge({
   );
 }
 
-function ForgeStepHeatMaterial({
-  step,
-  heat,
-  timeRemaining,
-  onHeatChange,
-  onComplete,
-}: {
-  step: Extract<CraftStep, { type: 'HEAT_MATERIAL' }>;
-  heat: number;
-  timeRemaining: number | undefined;
-  onHeatChange: (value: number) => void;
-  onComplete: () => void;
-}) {
-  return (
-    <div className="forgeStepCard">
-      <div className="forgeStepTitle">{step.uiLabel ?? 'Heat material'}</div>
-      <div className="forgeStepBody">
-        <div>Raise the material into the target band, then hold it steady.</div>
-        <HeatGauge heat={heat} targetMin={step.targetMin} targetMax={step.targetMax} onChange={onHeatChange} />
-        <div className="forgeStepMeta">{timeRemaining !== undefined ? `${formatMs(timeRemaining)} left` : 'No timer'}</div>
-        <button
-          type="button"
-          className="worldScreenModuleButton worldScreenModuleButton--active"
-          onClick={onComplete}
-        >
-          Lock heat
-        </button>
-      </div>
-    </div>
-  );
-}
+const clamp01 = (value: number): number => Math.max(0, Math.min(1, value));
 
-function ForgeStepHeatTo({
-  step,
-  heat,
-  onHeatChange,
-  onComplete,
-}: {
-  step: Extract<CraftStep, { type: 'HEAT_TO' }>;
-  heat: number;
-  onHeatChange: (value: number) => void;
-  onComplete: () => void;
-}) {
-  const targetMin = Math.max(0, step.targetHeat - step.tolerance);
-  const targetMax = Math.max(targetMin, step.targetHeat + step.tolerance);
-  return (
-    <div className="forgeStepCard">
-      <div className="forgeStepTitle">{step.uiLabel ?? 'Heat forge'}</div>
-      <div className="forgeStepBody">
-        <div>Heat to the target band, then lock it in.</div>
-        <HeatGauge heat={heat} targetMin={targetMin} targetMax={targetMax} onChange={onHeatChange} />
-        <button
-          type="button"
-          className="worldScreenModuleButton worldScreenModuleButton--active"
-          onClick={onComplete}
-        >
-          Lock heat
-        </button>
-      </div>
-    </div>
-  );
-}
+const resolveHeatZone = (zone?: string, targetPct?: number): string => {
+  if (zone) return zone.toUpperCase();
+  if (targetPct === undefined) return 'STEADY';
+  if (targetPct <= 0.58) return 'EMBER';
+  if (targetPct <= 0.74) return 'STEADY';
+  if (targetPct <= 0.86) return 'ROARING';
+  return 'SURGE';
+};
+
+const resolveHeatTargetPct = (step: Extract<CraftStep, { type: 'HEAT_TO' | 'HEAT_MATERIAL' }>): number => {
+  const zoneTarget = step.zone ? HEAT_ZONE_TARGETS[step.zone.toUpperCase()] : undefined;
+  if (typeof zoneTarget === 'number') return clamp01(zoneTarget);
+  if (step.type === 'HEAT_MATERIAL') {
+    const center = (step.targetMin + step.targetMax) / 2;
+    return clamp01(center / MAX_HEAT);
+  }
+  return clamp01(step.targetHeat / MAX_HEAT);
+};
+
+const resolveHeatTolerancePct = (
+  step: Extract<CraftStep, { type: 'HEAT_TO' | 'HEAT_MATERIAL' }>,
+  targetPct: number,
+): number => {
+  const baseTolerance =
+    step.type === 'HEAT_MATERIAL' ? Math.max(1, step.targetMax - step.targetMin) / 2 : Math.max(1, step.tolerance);
+  const normalized = baseTolerance / MAX_HEAT;
+  const adjusted = normalized * (1.12 - targetPct * 0.35);
+  return clamp01(Math.max(0.018, Math.min(0.18, adjusted)));
+};
+
+const resolveHeatDuration = (step: Extract<CraftStep, { type: 'HEAT_TO' | 'HEAT_MATERIAL' }>): number => {
+  if (typeof step.withinSec === 'number' && Number.isFinite(step.withinSec)) {
+    return Math.max(600, Math.floor(step.withinSec * 1000));
+  }
+  return DEFAULT_HEAT_DURATION_MS;
+};
 
 function ForgeStepTemper({
   step,
@@ -328,6 +313,10 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     impactKey: 0,
     impactScore: 0,
   });
+  const [heatState, setHeatState] = useState<{ impactKey: number; impactScore: number }>({
+    impactKey: 0,
+    impactScore: 0,
+  });
   const heatSample = useRef<HeatSampleState>(defaultHeatSample(now, heatSetting));
 
   const performances = session.cursor.forgeStepResults ?? [];
@@ -346,10 +335,17 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   }, [session.cursor.stepStartedAt, session.cursor.stepIndex, session.sessionId, now, setStepStartedNow]);
 
   useEffect(() => {
+    if (!currentStep || (currentStep.type !== 'HEAT_TO' && currentStep.type !== 'HEAT_MATERIAL')) return;
+    GameEvents.emit({ type: 'forge/furnace_ignite', payload: {} });
+    GameEvents.emit({ type: 'forge/metal_heat', payload: {} });
+  }, [currentStep?.id, currentStep?.type]);
+
+  useEffect(() => {
     heatSample.current = defaultHeatSample(now, heatSetting);
     setHammerState({ attempts: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
     setEngraveState({ attempts: 0, impactKey: 0, impactScore: 0 });
     setFormationState({ attempts: 0, impactKey: 0, impactScore: 0 });
+    setHeatState({ impactKey: 0, impactScore: 0 });
     const existing = performances.find((entry) => entry.stepId === currentStep?.id);
     if (existing && currentStep?.type === 'QUENCH' && 'medium' in existing) {
       setSelectedMedium(existing.medium);
@@ -359,9 +355,9 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   }, [currentStep?.id, heatSetting, now, performances, currentStep]);
 
   useEffect(() => {
-    if (!currentStep || (currentStep.type !== 'HEAT_MATERIAL' && currentStep.type !== 'TEMPER')) return;
-    const targetMin = currentStep.type === 'HEAT_MATERIAL' ? currentStep.targetMin : currentStep.targetMin ?? currentStep.targetHeat - 20;
-    const targetMax = currentStep.type === 'HEAT_MATERIAL' ? currentStep.targetMax : currentStep.targetMax ?? currentStep.targetHeat + 20;
+    if (!currentStep || currentStep.type !== 'TEMPER') return;
+    const targetMin = currentStep.targetMin ?? currentStep.targetHeat - 20;
+    const targetMax = currentStep.targetMax ?? currentStep.targetHeat + 20;
 
     const interval = window.setInterval(() => {
       const stamp = Date.now();
@@ -381,7 +377,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   }, [currentStep?.id, currentStep?.type, stepEndsAt]);
 
   const finalizeHeat = (stamp: number) => {
-    if (!currentStep || (currentStep.type !== 'HEAT_MATERIAL' && currentStep.type !== 'TEMPER')) return;
+    if (!currentStep || currentStep.type !== 'TEMPER') return;
     if (heatSample.current.completed) return;
     heatSample.current.completed = true;
     recordForgeStepResult({
@@ -395,11 +391,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     advanceStep(nextStamp);
     setStepStartedNow(nextStamp);
     setLocalStatus('Heat captured for this step.');
-    if (currentStep.type === 'HEAT_MATERIAL') {
-      GameEvents.emit({ type: 'forge/metal_heat', payload: {} });
-    } else {
-      GameEvents.emit({ type: 'forge/temper', payload: {} });
-    }
+    GameEvents.emit({ type: 'forge/temper', payload: {} });
   };
 
   const resolveHammerStrike = (result: { score: number }) => {
@@ -431,6 +423,31 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       setStepStartedNow(stamp);
       setLocalStatus('Pattern forged.');
     }
+  };
+
+  const handleHeatResolve = (result: ForgeHeatPullOutResult) => {
+    if (!currentStep || (currentStep.type !== 'HEAT_TO' && currentStep.type !== 'HEAT_MATERIAL')) return;
+    const targetPct = resolveHeatTargetPct(currentStep);
+    const heatZone = resolveHeatZone(currentStep.zone, targetPct);
+    setHeatState((prev) => ({
+      impactKey: prev.impactKey + 1,
+      impactScore: result.timingScore,
+    }));
+    recordForgeStepResult({
+      stepId: currentStep.id,
+      type: currentStep.type,
+      timingScore: result.timingScore,
+      heatZone,
+    });
+    const stamp = Date.now();
+    advanceStep(stamp);
+    setStepStartedNow(stamp);
+    if (result.grade === 'miss') {
+      GameEvents.emit({ type: 'forge/hammer_strike', payload: { intensity: 'light' } });
+    } else {
+      GameEvents.emit({ type: 'forge/hammer_complete', payload: {} });
+    }
+    setLocalStatus(result.grade === 'perfect' ? 'Perfect heat pull.' : result.grade === 'good' ? 'Heat pulled cleanly.' : 'Heat missed.');
   };
 
   const handleEngraveHit = (rating: ForgeRingQteRating) => {
@@ -536,15 +553,6 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     setLocalStatus('Quenched. Moving on.');
   };
 
-  const handleHeatToComplete = () => {
-    if (!currentStep || currentStep.type !== 'HEAT_TO') return;
-    const stamp = Date.now();
-    advanceStep(stamp);
-    setStepStartedNow(stamp);
-    GameEvents.emit({ type: 'forge/metal_heat', payload: {} });
-    setLocalStatus('Heat locked in.');
-  };
-
   const handleTemperComplete = () => {
     const stamp = Date.now();
     finalizeHeat(stamp);
@@ -586,6 +594,18 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
 
   const timeRemaining = stepEndsAt ? Math.max(0, stepEndsAt - now) : undefined;
 
+  const heatStepConfig = useMemo(() => {
+    if (!currentStep || (currentStep.type !== 'HEAT_TO' && currentStep.type !== 'HEAT_MATERIAL')) return null;
+    const targetPct = resolveHeatTargetPct(currentStep);
+    const tolerancePct = resolveHeatTolerancePct(currentStep, targetPct);
+    return {
+      durationMs: resolveHeatDuration(currentStep),
+      targetPct,
+      tolerancePct,
+      heatZone: resolveHeatZone(currentStep.zone, targetPct),
+    };
+  }, [currentStep]);
+
   const timeline = session.script.steps.map((step, idx) => ({
     id: step.id,
     label: step.uiLabel ?? step.type,
@@ -614,7 +634,35 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
           <div className="forgeSessionMeta">Step {session.cursor.stepIndex + 1}/{session.script.steps.length}</div>
         </div>
 
-        <ForgeWorkbenchScene stepType={currentStep?.type} heatSetting={heatSetting}>
+        <ForgeWorkbenchScene
+          stepType={currentStep?.type}
+          heatSetting={heatSetting}
+          hideWorkpiece={currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL'}
+        >
+          {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
+            <div className="forgeWorkbenchScene__furnaceSlot">
+              <ForgeHeatPullOutQTE
+                key={currentStep.id}
+                durationMs={heatStepConfig.durationMs}
+                targetPct={heatStepConfig.targetPct}
+                tolerancePct={heatStepConfig.tolerancePct}
+                onResolve={handleHeatResolve}
+                ariaLabel="Pull the heated billet from the furnace"
+              />
+              {heatState.impactKey > 0 && (
+                <div
+                  key={`heat-impact-${heatState.impactKey}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${heatState.impactScore > 0 ? 'hit' : 'miss'}`}
+                />
+              )}
+              {heatState.impactKey > 0 && heatState.impactScore > 0 && (
+                <div key={`heat-sparks-${heatState.impactKey}`} className="forgeWorkbenchScene__sparks" />
+              )}
+              {heatState.impactKey > 0 && (
+                <div key={`heat-shake-${heatState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+            </div>
+          )}
           {currentStep?.type === 'HAMMER_PATTERN' && (
             <div className="forgeWorkbenchScene__anvilSlot">
               <TimingCircleQTE
@@ -689,28 +737,15 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
         </ForgeWorkbenchScene>
 
         <div className="forgeHandsOnStepBlock">
-          {currentStep?.type === 'HEAT_TO' && (
-            <ForgeStepHeatTo
-              step={currentStep}
-              heat={heatSetting}
-              onHeatChange={(value) => {
-                setHeatSetting(clampHeat(value));
-                GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
-              }}
-              onComplete={handleHeatToComplete}
-            />
-          )}
-          {currentStep?.type === 'HEAT_MATERIAL' && (
-            <ForgeStepHeatMaterial
-              step={currentStep}
-              heat={heatSetting}
-              timeRemaining={timeRemaining}
-              onHeatChange={(value) => {
-                setHeatSetting(clampHeat(value));
-                GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
-              }}
-              onComplete={() => finalizeHeat(Date.now())}
-            />
+          {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
+            <div className="forgeStepCard">
+              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
+              <div className="forgeStepBody">
+                <div>Watch the billet glow and pull it out at the target heat.</div>
+                <div className="forgeStepMeta">Target zone: {heatStepConfig.heatZone}</div>
+                <div className="forgeStepMeta">Timing: {formatMs(heatStepConfig.durationMs)}</div>
+              </div>
+            </div>
           )}
 
           {currentStep?.type === 'HAMMER_PATTERN' && (

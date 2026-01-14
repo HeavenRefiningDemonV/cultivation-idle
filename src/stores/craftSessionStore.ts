@@ -163,6 +163,15 @@ const sanitizeForgeStepResult = (raw: unknown): ForgeStepResult | null => {
         achievedMin: num(record.achievedMin),
         achievedMax: num(record.achievedMax),
         holdMs: num(record.holdMs),
+        timingScore: num(record.timingScore),
+        heatZone: typeof record.heatZone === 'string' ? record.heatZone : undefined,
+      };
+    case 'HEAT_TO':
+      return {
+        stepId: record.stepId,
+        type: 'HEAT_TO',
+        timingScore: num(record.timingScore),
+        heatZone: typeof record.heatZone === 'string' ? record.heatZone : undefined,
       };
     case 'ALLOY_MIX':
       return {
