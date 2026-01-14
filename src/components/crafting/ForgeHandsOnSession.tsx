@@ -11,6 +11,7 @@ import { computeForgeOutcome } from '../../systems/crafting/forgeOutcome';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { GameEvents } from '../../services/events/GameEvents';
+import { ForgeWorkbenchScene } from './ForgeWorkbenchScene';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;
@@ -539,73 +540,77 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
           <div className="forgeSessionMeta">Step {session.cursor.stepIndex + 1}/{session.script.steps.length}</div>
         </div>
 
-        {currentStep?.type === 'HEAT_MATERIAL' && (
-          <ForgeStepHeatMaterial
-            step={currentStep}
-            heat={heatSetting}
-            timeRemaining={timeRemaining}
-            onHeatChange={(value) => {
-              setHeatSetting(clampHeat(value));
-              GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
-            }}
-            onComplete={() => finalizeHeat(Date.now())}
-          />
-        )}
+        <ForgeWorkbenchScene stepType={currentStep?.type} heatSetting={heatSetting} />
 
-        {currentStep?.type === 'HAMMER_PATTERN' && (
-          <ForgeStepHammerPattern
-            step={currentStep}
-            hitsLanded={hammerState.hits}
-            averageScore={hammerState.hits > 0 ? hammerState.timing / hammerState.hits : 0}
-            onStrike={handleStrike}
-            onComplete={completeHammerStep}
-          />
-        )}
+        <div className="forgeHandsOnStepBlock">
+          {currentStep?.type === 'HEAT_MATERIAL' && (
+            <ForgeStepHeatMaterial
+              step={currentStep}
+              heat={heatSetting}
+              timeRemaining={timeRemaining}
+              onHeatChange={(value) => {
+                setHeatSetting(clampHeat(value));
+                GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
+              }}
+              onComplete={() => finalizeHeat(Date.now())}
+            />
+          )}
 
-        {currentStep?.type === 'QUENCH' && (
-          <ForgeStepQuench
-            step={currentStep}
-            elapsed={elapsedForStep}
-            selectedMedium={selectedMedium}
-            onSelectMedium={setSelectedMedium}
-            onQuench={handleQuench}
-          />
-        )}
+          {currentStep?.type === 'HAMMER_PATTERN' && (
+            <ForgeStepHammerPattern
+              step={currentStep}
+              hitsLanded={hammerState.hits}
+              averageScore={hammerState.hits > 0 ? hammerState.timing / hammerState.hits : 0}
+              onStrike={handleStrike}
+              onComplete={completeHammerStep}
+            />
+          )}
 
-        {currentStep?.type === 'TEMPER' && (
-          <ForgeStepTemper
-            step={currentStep}
-            heat={heatSetting}
-            timeRemaining={timeRemaining}
-            onHeatChange={(value) => {
-              setHeatSetting(clampHeat(value));
-              GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
-            }}
-            onComplete={handleTemperComplete}
-          />
-        )}
+          {currentStep?.type === 'QUENCH' && (
+            <ForgeStepQuench
+              step={currentStep}
+              elapsed={elapsedForStep}
+              selectedMedium={selectedMedium}
+              onSelectMedium={setSelectedMedium}
+              onQuench={handleQuench}
+            />
+          )}
 
-        {currentStep?.type === 'ALLOY_MIX' && <ForgeStepAlloyMix step={currentStep} onSelect={handleAlloyChoice} />}
+          {currentStep?.type === 'TEMPER' && (
+            <ForgeStepTemper
+              step={currentStep}
+              heat={heatSetting}
+              timeRemaining={timeRemaining}
+              onHeatChange={(value) => {
+                setHeatSetting(clampHeat(value));
+                GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
+              }}
+              onComplete={handleTemperComplete}
+            />
+          )}
 
-        {currentStep?.type === 'CAST_OR_SHAPE' && <ForgeStepCastShape step={currentStep} onConfirm={handleCastConfirm} />}
+          {currentStep?.type === 'ALLOY_MIX' && <ForgeStepAlloyMix step={currentStep} onSelect={handleAlloyChoice} />}
 
-        {currentStep?.type === 'ENGRAVE_RUNE' && <ForgeStepEngrave step={currentStep} onEngrave={handleEngrave} />}
+          {currentStep?.type === 'CAST_OR_SHAPE' && <ForgeStepCastShape step={currentStep} onConfirm={handleCastConfirm} />}
 
-        {currentStep?.type === 'FINISH' && (
-          <div className="forgeStepCard">
-            <div className="forgeStepTitle">Finish forging</div>
-            <div className="forgeStepBody">
-              <div>Complete the batch and claim results.</div>
-              <button
-                type="button"
-                className="worldScreenModuleButton worldScreenModuleButton--active"
-                onClick={handleComplete}
-              >
-                Complete forging
-              </button>
+          {currentStep?.type === 'ENGRAVE_RUNE' && <ForgeStepEngrave step={currentStep} onEngrave={handleEngrave} />}
+
+          {currentStep?.type === 'FINISH' && (
+            <div className="forgeStepCard">
+              <div className="forgeStepTitle">Finish forging</div>
+              <div className="forgeStepBody">
+                <div>Complete the batch and claim results.</div>
+                <button
+                  type="button"
+                  className="worldScreenModuleButton worldScreenModuleButton--active"
+                  onClick={handleComplete}
+                >
+                  Complete forging
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="forgeQualityMeter">
           <div className="forgeQualityTitle">Quality &amp; Process</div>
