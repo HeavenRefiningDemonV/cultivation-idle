@@ -12,6 +12,7 @@ import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { GameEvents } from '../../services/events/GameEvents';
 import { ForgeWorkbenchScene } from './ForgeWorkbenchScene';
+import { TimingCircleQTE } from '../qte/TimingCircleQTE';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;
@@ -162,51 +163,6 @@ function ForgeStepTemper({
   );
 }
 
-function ForgeStepHammerPattern({
-  step,
-  hitsLanded,
-  onStrike,
-  averageScore,
-  onComplete,
-}: {
-  step: Extract<CraftStep, { type: 'HAMMER_PATTERN' }>;
-  hitsLanded: number;
-  onStrike: () => void;
-  averageScore: number;
-  onComplete: () => void;
-}) {
-  return (
-    <div className="forgeStepCard">
-      <div className="forgeStepTitle">{step.uiLabel ?? 'Hammer pattern'}</div>
-      <div className="forgeStepBody">
-        <div>Follow the rhythm and land {step.hits} strikes.</div>
-        <div className="forgeHammerMeter">
-          <div className="forgeHammerProgress" style={{ width: `${Math.min(100, (hitsLanded / step.hits) * 100)}%` }} />
-        </div>
-        <div className="forgeStepMeta">Timing score: {Math.round(averageScore * 100)}%</div>
-        <div className="forgeHammerActions">
-          <button
-            type="button"
-            className="worldScreenModuleButton worldScreenModuleButton--active"
-            onClick={onStrike}
-            disabled={hitsLanded >= step.hits}
-          >
-            Strike
-          </button>
-          <button
-            type="button"
-            className="worldScreenModuleButton"
-            onClick={onComplete}
-            disabled={hitsLanded < step.hits}
-          >
-            Next step
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function ForgeStepQuench({
   step,
   elapsed,
@@ -338,7 +294,12 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   const heatRef = useRef(heatSetting);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
   const [selectedMedium, setSelectedMedium] = useState<'water' | 'oil' | 'brine'>('water');
-  const [hammerState, setHammerState] = useState<{ hits: number; timing: number }>({ hits: 0, timing: 0 });
+  const [hammerState, setHammerState] = useState<{ attempts: number; timingSum: number; impactKey: number; impactScore: number }>({
+    attempts: 0,
+    timingSum: 0,
+    impactKey: 0,
+    impactScore: 0,
+  });
   const heatSample = useRef<HeatSampleState>(defaultHeatSample(now, heatSetting));
 
   const performances = session.cursor.forgeStepResults ?? [];
@@ -358,7 +319,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
 
   useEffect(() => {
     heatSample.current = defaultHeatSample(now, heatSetting);
-    setHammerState({ hits: 0, timing: 0 });
+    setHammerState({ attempts: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
     const existing = performances.find((entry) => entry.stepId === currentStep?.id);
     if (existing && currentStep?.type === 'QUENCH' && 'medium' in existing) {
       setSelectedMedium(existing.medium);
@@ -411,44 +372,35 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     }
   };
 
-  const handleStrike = () => {
+  const resolveHammerStrike = (result: { score: number }) => {
     if (!currentStep || currentStep.type !== 'HAMMER_PATTERN') return;
-    const stamp = Date.now();
-    const started = session.cursor.stepStartedAt ?? stamp;
-    const elapsed = stamp - started;
-    const targetBeat = (hammerState.hits + 1) * currentStep.shrinkMs;
-    const diff = Math.abs(elapsed - targetBeat);
-    const toleranceWindow = Math.max(150, currentStep.shrinkMs * currentStep.tolerance);
-    const score = Math.max(0, 1 - diff / Math.max(toleranceWindow, 1));
-    const nextHits = Math.min(currentStep.hits, hammerState.hits + 1);
-    const nextTiming = hammerState.timing + score;
-    setHammerState({ hits: nextHits, timing: nextTiming });
+    const nextAttempts = hammerState.attempts + 1;
+    const nextTimingSum = hammerState.timingSum + result.score;
     GameEvents.emit({
       type: 'forge/hammer_strike',
-      payload: { intensity: score >= 0.75 ? 'heavy' : 'light' },
+      payload: { intensity: result.score > 0.75 ? 'heavy' : 'light' },
     });
-    if (nextHits >= currentStep.hits) {
+    const nextImpactKey = hammerState.impactKey + 1;
+    setHammerState({
+      attempts: nextAttempts,
+      timingSum: nextTimingSum,
+      impactKey: nextImpactKey,
+      impactScore: result.score,
+    });
+    if (nextAttempts >= currentStep.hits) {
+      const stamp = Date.now();
+      GameEvents.emit({ type: 'forge/hammer_complete', payload: {} });
       recordForgeStepResult({
         stepId: currentStep.id,
         type: 'HAMMER_PATTERN',
-        hitsLanded: nextHits,
+        hitsLanded: nextAttempts,
         hitsRequired: currentStep.hits,
-        timingScore: nextTiming / nextHits,
+        timingScore: nextAttempts > 0 ? nextTimingSum / nextAttempts : 0,
       });
+      advanceStep(stamp);
+      setStepStartedNow(stamp);
+      setLocalStatus('Pattern forged.');
     }
-  };
-
-  const completeHammerStep = () => {
-    if (!currentStep || currentStep.type !== 'HAMMER_PATTERN') return;
-    const stamp = Date.now();
-    if (hammerState.hits < currentStep.hits) {
-      setLocalStatus('Land the remaining strikes first.');
-      return;
-    }
-    advanceStep(stamp);
-    setStepStartedNow(stamp);
-    GameEvents.emit({ type: 'forge/hammer_complete', payload: {} });
-    setLocalStatus('Pattern forged.');
   };
 
   const handleQuench = () => {
@@ -540,7 +492,32 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
           <div className="forgeSessionMeta">Step {session.cursor.stepIndex + 1}/{session.script.steps.length}</div>
         </div>
 
-        <ForgeWorkbenchScene stepType={currentStep?.type} heatSetting={heatSetting} />
+        <ForgeWorkbenchScene stepType={currentStep?.type} heatSetting={heatSetting}>
+          {currentStep?.type === 'HAMMER_PATTERN' && (
+            <div className="forgeWorkbenchScene__anvilSlot">
+              <TimingCircleQTE
+                key={`${currentStep.id}-${hammerState.attempts}`}
+                durationMs={currentStep.shrinkMs}
+                tolerance={currentStep.tolerance}
+                sizePx={96}
+                label="Strike"
+                onResolve={(result) => resolveHammerStrike(result)}
+              />
+              {hammerState.impactKey > 0 && (
+                <div
+                  key={`impact-${hammerState.impactKey}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${hammerState.impactScore > 0 ? 'hit' : 'miss'}`}
+                />
+              )}
+              {hammerState.impactKey > 0 && hammerState.impactScore > 0 && (
+                <div key={`sparks-${hammerState.impactKey}`} className="forgeWorkbenchScene__sparks" />
+              )}
+              {hammerState.impactKey > 0 && (
+                <div key={`shake-${hammerState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+            </div>
+          )}
+        </ForgeWorkbenchScene>
 
         <div className="forgeHandsOnStepBlock">
           {currentStep?.type === 'HEAT_MATERIAL' && (
@@ -557,13 +534,15 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
           )}
 
           {currentStep?.type === 'HAMMER_PATTERN' && (
-            <ForgeStepHammerPattern
-              step={currentStep}
-              hitsLanded={hammerState.hits}
-              averageScore={hammerState.hits > 0 ? hammerState.timing / hammerState.hits : 0}
-              onStrike={handleStrike}
-              onComplete={completeHammerStep}
-            />
+            <div className="forgeStepCard">
+              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Hammer pattern'}</div>
+              <div className="forgeStepBody">
+                <div>Click when the ring meets the circle.</div>
+                <div className="forgeStepMeta">
+                  Strikes: {Math.min(hammerState.attempts, currentStep.hits)} / {currentStep.hits}
+                </div>
+              </div>
+            </div>
           )}
 
           {currentStep?.type === 'QUENCH' && (

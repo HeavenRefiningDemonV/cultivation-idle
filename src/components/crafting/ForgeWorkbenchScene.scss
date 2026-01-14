@@ -95,3 +95,89 @@
   justify-content: center;
   pointer-events: none;
 }
+
+.forgeWorkbenchScene__anvilSlot {
+  position: absolute;
+  left: 64%;
+  top: 64%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  gap: 8px;
+}
+
+.forgeWorkbenchScene__impact {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 999px;
+  opacity: 0;
+  animation: forgeImpactPulse 180ms ease-out forwards;
+}
+
+.forgeWorkbenchScene__impact--hit {
+  border: 2px solid rgba(251, 191, 36, 0.7);
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.5);
+}
+
+.forgeWorkbenchScene__impact--miss {
+  border: 2px solid rgba(248, 113, 113, 0.6);
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.4);
+}
+
+.forgeWorkbenchScene__sparks {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.8) 0%, rgba(251, 191, 36, 0) 70%);
+  animation: forgeSparks 240ms ease-out forwards;
+  pointer-events: none;
+}
+
+.forgeWorkbenchScene__workpieceShake {
+  position: absolute;
+  width: 70px;
+  height: 18px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  animation: forgeWorkpieceShake 160ms ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes forgeImpactPulse {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes forgeSparks {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes forgeWorkpieceShake {
+  0% {
+    transform: translate(-2px, -1px) rotate(-1deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(2px, -3px) rotate(1.5deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+}
