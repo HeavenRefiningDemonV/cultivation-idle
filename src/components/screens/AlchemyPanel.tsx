@@ -14,6 +14,7 @@ import { HandsOnAlchemySession } from '../crafting/HandsOnAlchemySession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
 import { AlchemyResultModal } from '../modals/AlchemyResultModal';
 import type { AlchemyHandsOnResult } from '../../systems/crafting/craftingTypes';
+import { GameEvents } from '../../services/events/GameEvents';
 
 interface AlchemyPanelProps {
   cityId: string | null;
@@ -335,7 +336,13 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                     'craftingListItem--active': isSelected,
                     'craftSidebarItem--active': isSelected,
                   })}
-                  onClick={() => setSelectedRecipeId(recipe.id)}
+                  onClick={() => {
+                    setSelectedRecipeId(recipe.id);
+                    GameEvents.emit({
+                      type: 'crafting/recipe_selected',
+                      payload: { station: 'alchemy', recipeId: recipe.id },
+                    });
+                  }}
                 >
                   <div className={'craftingListName'}>{outputName}</div>
                   <div className={'craftingListSub'}>{recipe.id}</div>

@@ -8,6 +8,7 @@ import { useRewardsLogStore } from '../../stores/rewardsLogStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
 import { useTelemetryStore } from '../../stores/telemetryStore';
 import { useErrorLogStore } from '../../stores/errorLogStore';
+import { AudioDebugPanel } from '../../ui/debug/AudioDebugPanel';
 import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle';
 import {
   applySafeRepairs,
@@ -91,6 +92,7 @@ export function SettingsScreen() {
   const clearTelemetry = useTelemetryStore((state) => state.clear);
   const errorEntries = useErrorLogStore((state) => state.errors);
   const clearErrors = useErrorLogStore((state) => state.clear);
+  const isDev = import.meta.env.DEV;
 
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
   const [validationRanAt, setValidationRanAt] = useState<number | null>(null);
@@ -357,6 +359,7 @@ export function SettingsScreen() {
             </div>
           </div>
 
+
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
             <h2 className={'settingsScreenPanelTitle'}>Diagnostics (Dev)</h2>
             <p className={'settingsScreenPanelSubtitle'}>Telemetry + error capture + debug tools.</p>
@@ -536,6 +539,16 @@ export function SettingsScreen() {
             </div>
           </div>
 
+          {isDev ? (
+            <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+              <h2 className={'settingsScreenPanelTitle'}>Audio Debug (Dev)</h2>
+              <p className={'settingsScreenPanelSubtitle'}>
+                Trigger sound playback for any registered SoundId.
+              </p>
+              <AudioDebugPanel />
+            </div>
+          ) : null}
+
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDanger'}`}>
             <h2 className={'settingsScreenPanelTitle'}>Save Management</h2>
             <p className={'settingsScreenPanelSubtitle'}>
@@ -641,48 +654,6 @@ export function SettingsScreen() {
             </div>
           </div>
 
-          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
-            <h2 className={'settingsScreenPanelTitle'}>Rewards Debug</h2>
-            <p className={'settingsScreenPanelSubtitle'}>Validate the central reward pipeline (currencies + items).</p>
-
-            <div className={'settingsRewardsActions'}>
-              <button
-                onClick={handleTestGrantRewards}
-                className={'button-standard settingsScreenDebugButton'}
-                disabled={!contentIsLoaded}
-              >
-                Test Grant Rewards (10 Gold + 1 Material)
-              </button>
-              <button
-                onClick={clearRewardLog}
-                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
-                disabled={rewardLogEntries.length === 0}
-              >
-                Clear Reward Log
-              </button>
-            </div>
-
-            <div className={'settingsRewardsLog'}>
-              <div className={'settingsDebugLabel'}>Recent Grants</div>
-              {rewardLogEntries.length === 0 ? (
-                <div className={'settingsRewardsEmpty'}>No reward grants yet.</div>
-              ) : (
-                <div className={'settingsRewardsList'}>
-                  {rewardLogEntries.slice(0, 6).map((entry) => (
-                    <div key={entry.id} className={'settingsRewardsEntry'}>
-                      <div className={'settingsRewardsEntryHeader'}>
-                        <span className={'settingsRewardsEntryReason'}>{entry.reason}</span>
-                        <span className={'settingsRewardsEntryTime'}>
-                          {new Date(entry.timestamp).toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <div className={'settingsRewardsEntrySummary'}>{entry.summary}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -706,49 +677,6 @@ export function SettingsScreen() {
               >
                 Delete &amp; Restart
               </button>
-            </div>
-          </div>
-
-          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
-            <h2 className={'settingsScreenPanelTitle'}>Rewards Debug</h2>
-            <p className={'settingsScreenPanelSubtitle'}>Validate the central reward pipeline (currencies + items).</p>
-
-            <div className={'settingsRewardsActions'}>
-              <button
-                onClick={handleTestGrantRewards}
-                className={'button-standard settingsScreenDebugButton'}
-                disabled={!contentIsLoaded}
-              >
-                Test Grant Rewards (10 Gold + 1 Material)
-              </button>
-              <button
-                onClick={clearRewardLog}
-                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
-                disabled={rewardLogEntries.length === 0}
-              >
-                Clear Reward Log
-              </button>
-            </div>
-
-            <div className={'settingsRewardsLog'}>
-              <div className={'settingsDebugLabel'}>Recent Grants</div>
-              {rewardLogEntries.length === 0 ? (
-                <div className={'settingsRewardsEmpty'}>No reward grants yet.</div>
-              ) : (
-                <div className={'settingsRewardsList'}>
-                  {rewardLogEntries.slice(0, 6).map((entry) => (
-                    <div key={entry.id} className={'settingsRewardsEntry'}>
-                      <div className={'settingsRewardsEntryHeader'}>
-                        <span className={'settingsRewardsEntryReason'}>{entry.reason}</span>
-                        <span className={'settingsRewardsEntryTime'}>
-                          {new Date(entry.timestamp).toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <div className={'settingsRewardsEntrySummary'}>{entry.summary}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>

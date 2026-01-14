@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
+import { GameEvents } from '../services/events/GameEvents';
 
 export type TalismanBonuses = {
   goldDropBonusPct?: number;
@@ -102,6 +103,8 @@ export const useBuffStore = create<BuffState>()(
         });
       });
 
+      GameEvents.emit({ type: 'talisman/activated', payload: { itemId } });
+
       return { ok: true };
     },
 
@@ -110,8 +113,12 @@ export const useBuffStore = create<BuffState>()(
       if (active.length === 0) return;
       const filtered = active.filter((entry) => entry.endsAt > now);
       if (filtered.length === active.length) return;
+      const expired = active.filter((entry) => entry.endsAt <= now);
       set((state) => {
         state.activeTalismans = filtered;
+      });
+      expired.forEach((entry) => {
+        GameEvents.emit({ type: 'talisman/expired', payload: { itemId: entry.itemId } });
       });
     },
 

@@ -128,20 +128,67 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
     refreshStock: (pavilionId: string, now = Date.now()) => {
       const content = useContentStore.getState();
       if (!content.isLoaded || !content.maps.pavilionsById[pavilionId]) {
+        GameEvents.emit({
+          type: 'pavilion/refresh_denied',
+          payload: { pavilionId, reason: 'content_loading' },
+        });
         return { ok: false, reason: 'content_loading' };
       }
       const existing = get().stockByPavilionId[pavilionId];
       if (!existing) {
         get().ensureStock(pavilionId, now);
+        const pavilionEntry = content.maps.pavilionsById[pavilionId];
+        GameEvents.emit({
+          type: 'pavilion/refresh_confirmed',
+          payload: {
+            pavilionId,
+            cityId: pavilionEntry?.cityId ?? 'unknown',
+            cityIndex: pavilionEntry?.cityIndex ?? 0,
+            at: now,
+          },
+        });
         return { ok: true };
       }
       if (now < existing.nextRefreshAt) {
+        GameEvents.emit({
+          type: 'pavilion/refresh_denied',
+          payload: { pavilionId, reason: 'not_ready' },
+        });
         return { ok: false, reason: 'not_ready' };
       }
+      const previousPity = { ...existing.pity };
       const refreshed = generateRefresh(existing, now);
       set((state) => {
         state.stockByPavilionId[pavilionId] = refreshed;
       });
+      GameEvents.emit({
+        type: 'pavilion/refresh_confirmed',
+        payload: { pavilionId, cityId: refreshed.cityId, cityIndex: refreshed.cityIndex, at: now },
+      });
+      if (previousPity.featuredEpic !== refreshed.pity.featuredEpic || previousPity.featuredLegendary !== refreshed.pity.featuredLegendary) {
+        if (
+          previousPity.featuredLegendary > 0 &&
+          refreshed.pity.featuredLegendary === 0
+        ) {
+          GameEvents.emit({
+            type: 'pavilion/guarantee_trigger',
+            payload: { previous: previousPity, next: refreshed.pity },
+          });
+        } else if (previousPity.featuredEpic > 0 && refreshed.pity.featuredEpic === 0) {
+          GameEvents.emit({
+            type: 'pavilion/pity_major',
+            payload: { previous: previousPity, next: refreshed.pity },
+          });
+        } else if (
+          refreshed.pity.featuredEpic > previousPity.featuredEpic ||
+          refreshed.pity.featuredLegendary > previousPity.featuredLegendary
+        ) {
+          GameEvents.emit({
+            type: 'pavilion/pity_increment',
+            payload: { previous: previousPity, next: refreshed.pity },
+          });
+        }
+      }
       GameEvents.emit({
         type: 'pavilion/stock_refreshed',
         payload: { pavilionId, cityId: refreshed.cityId, cityIndex: refreshed.cityIndex, at: now },
@@ -152,7 +199,17 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
     getStock: (pavilionId: string) => get().stockByPavilionId[pavilionId] ?? null,
 
     buyManual: ({ pavilionId, stockId, mode = 'buy' }) => {
+      let attemptEmitted = false;
+      const emitFailure = (reason: string) => {
+        if (attemptEmitted) {
+          GameEvents.emit({
+            type: 'pavilion/buy_failed',
+            payload: { pavilionId, slotIndex: stockId, reason },
+          });
+        }
+      };
       if (get().isPurchasing) {
+        emitFailure('purchase_in_progress');
         return { ok: false, reason: 'purchase_in_progress' };
       }
 
@@ -161,6 +218,7 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
           state.lastError = reason;
           state.isPurchasing = false;
         });
+        emitFailure(reason);
         return { ok: false, reason };
       };
 
@@ -183,16 +241,21 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
       if (slot.notSold) return fail('not_sold_here');
       if (slot.sealed) return fail('sealed');
 
+      const purchaseMode: 'buy' | 'buyAndStudy' = mode === 'buyAndStudy' ? 'buyAndStudy' : 'buy';
+      GameEvents.emit({
+        type: 'pavilion/buy_attempt',
+        payload: { pavilionId, slotIndex: stockId, techniqueId: slot.techniqueId, mode: purchaseMode },
+      });
+      attemptEmitted = true;
+
       const cost = normalizeCost(slot.price);
       if (!cost) return fail('invalid_cost');
       if (!inventory.canAffordCurrency(cost)) return fail('insufficient_funds');
-
       const ownedEntry = techCollection.ensureTechState(slot.techniqueId);
       const hasTech = techCollection.hasTech(slot.techniqueId);
       const duplicate = determineDuplicate(slot, hasTech, ownedEntry.manualGrade, ownedEntry.rarity);
       const manualId = manualIdForSlot(slot);
       const manualName = content.maps.techniquesById[slot.techniqueId]?.name ?? slot.techniqueId;
-      const purchaseMode: 'buy' | 'buyAndStudy' = mode === 'buyAndStudy' ? 'buyAndStudy' : 'buy';
       const satchelState = useManualSatchelStore.getState();
       const existingManualIds = new Set(
         satchelState.manuals
@@ -284,6 +347,10 @@ export const useManualPavilionStore = create<ManualPavilionStoreState>()(
       GameEvents.emit({
         type: 'manuals/purchased',
         payload: { manualId, techniqueId: slot.techniqueId, cost },
+      });
+      GameEvents.emit({
+        type: 'pavilion/buy_success',
+        payload: { pavilionId, slotIndex: stockId, techniqueId: slot.techniqueId, outcome: result.outcome, mode: purchaseMode },
       });
 
       return result;

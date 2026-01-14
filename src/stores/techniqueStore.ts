@@ -269,10 +269,13 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       set((state) => {
         state.selectedLoadoutId = id;
       });
+      GameEvents.emit({ type: 'techniques/loadout_changed', payload: { loadoutId: id } });
     },
 
     setSlotCounts: ({ active, passive }) => {
       const current = get();
+      const previousActive = current.activeSlots;
+      const previousPassive = current.passiveSlots;
       const nextActive = clampSlotCount(active ?? current.activeSlots, BASE_ACTIVE_SLOTS);
       const nextPassive = clampSlotCount(passive ?? current.passiveSlots, BASE_PASSIVE_SLOTS);
       if (nextActive === current.activeSlots && nextPassive === current.passiveSlots) return;
@@ -286,6 +289,18 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
           loadout.slots.passive = normalizeSlots(loadout.slots.passive, progression.displayed.passive);
         });
       });
+
+      if (nextActive > previousActive) {
+        for (let index = previousActive; index < nextActive; index += 1) {
+          GameEvents.emit({ type: 'techniques/slot_unlocked', payload: { slotType: 'active', slotIndex: index } });
+        }
+      }
+
+      if (nextPassive > previousPassive) {
+        for (let index = previousPassive; index < nextPassive; index += 1) {
+          GameEvents.emit({ type: 'techniques/slot_unlocked', payload: { slotType: 'passive', slotIndex: index } });
+        }
+      }
     },
 
     setAiProfile: (loadoutId, profile) => {
@@ -308,6 +323,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       const state = get();
       const loadout = state.loadouts.find((l) => l.id === (loadoutId ?? state.selectedLoadoutId));
       if (!loadout) {
+        GameEvents.emit({
+          type: 'techniques/equip_failed',
+          payload: { techniqueId: techId, slotType, slotIndex, reason: 'invalid_loadout' },
+        });
         return { ok: false as const, reason: 'invalid_slot', message: 'Unknown loadout' };
       }
 
@@ -322,6 +341,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
           : 1;
 
       if (slotIndex < 0 || slotIndex >= displayedLimit || (slotType === 'ultimate' && slotIndex !== 0)) {
+        GameEvents.emit({
+          type: 'techniques/equip_failed',
+          payload: { techniqueId: techId, slotType, slotIndex, reason: 'invalid_slot' },
+        });
         return {
           ok: false,
           reason: 'invalid_slot',
@@ -331,6 +354,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
 
       if (!unlocked) {
         const requirement = get().getSlotUnlockRequirement(slotType, slotIndex);
+        GameEvents.emit({
+          type: 'techniques/equip_failed',
+          payload: { techniqueId: techId, slotType, slotIndex, reason: 'locked' },
+        });
         return {
           ok: false,
           reason: 'locked',
@@ -342,12 +369,20 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       if (techId !== '') {
         const unlockedTech = useTechCollectionStore.getState().hasTech(techId);
         if (!unlockedTech) {
+          GameEvents.emit({
+            type: 'techniques/equip_failed',
+            payload: { techniqueId: techId, slotType, slotIndex, reason: 'missing_tech' },
+          });
           return { ok: false, reason: 'missing_tech', message: 'Technique not learned yet.' };
         }
 
         const techniqueDef = useContentStore.getState().maps.techniquesById?.[techId];
         if (!techniqueDef) {
           console.warn(`[TechniqueStore] Attempted to equip unknown technique: ${techId}`);
+          GameEvents.emit({
+            type: 'techniques/equip_failed',
+            payload: { techniqueId: techId, slotType, slotIndex, reason: 'missing_tech' },
+          });
           return { ok: false, reason: 'missing_tech', message: 'Technique data missing.' };
         }
 
@@ -358,6 +393,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         const article = ['A', 'E', 'I', 'O', 'U'].includes(typeLabel[0] ?? '') ? 'an' : 'a';
 
         if (slotType === 'active' && !isActiveTech) {
+          GameEvents.emit({
+            type: 'techniques/equip_failed',
+            payload: { techniqueId: techId, slotType, slotIndex, reason: 'wrong_type' },
+          });
           return {
             ok: false,
             reason: 'wrong_type',
@@ -365,6 +404,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
           };
         }
         if (slotType === 'passive' && !isPassiveTech) {
+          GameEvents.emit({
+            type: 'techniques/equip_failed',
+            payload: { techniqueId: techId, slotType, slotIndex, reason: 'wrong_type' },
+          });
           return {
             ok: false,
             reason: 'wrong_type',
@@ -372,6 +415,10 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
           };
         }
         if (slotType === 'ultimate' && !isUltimateTech) {
+          GameEvents.emit({
+            type: 'techniques/equip_failed',
+            payload: { techniqueId: techId, slotType, slotIndex, reason: 'wrong_type' },
+          });
           return {
             ok: false,
             reason: 'wrong_type',
@@ -379,6 +426,13 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
           };
         }
       }
+
+      const previousTechId =
+        slotType === 'active'
+          ? loadout.slots.active[slotIndex]
+          : slotType === 'passive'
+          ? loadout.slots.passive[slotIndex]
+          : loadout.slots.ultimate ?? '';
 
       set((draft) => {
         const targetLoadout = draft.loadouts.find((l) => l.id === (loadoutId ?? draft.selectedLoadoutId));
@@ -408,6 +462,16 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       GameEvents.emit({
         type: 'techniques/equipped',
         payload: { techniqueId: techId, slot: slotIndex, slotType },
+      });
+      const action: 'equip' | 'swap' | 'unequip' =
+        techId === ''
+          ? 'unequip'
+          : previousTechId && previousTechId !== '' && previousTechId !== techId
+          ? 'swap'
+          : 'equip';
+      GameEvents.emit({
+        type: 'techniques/equip_changed',
+        payload: { techniqueId: techId, slotType, slotIndex, action },
       });
 
       return { ok: true };

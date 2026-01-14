@@ -16,6 +16,7 @@ import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
 import { NotificationToasts } from './NotificationToasts';
 import { BottomTabBar } from './BottomTabBar';
 import { WorldBuildingModal } from './modals/WorldBuildingModal';
+import { AudioBindings } from '../app/AudioBindings';
 import './GameLayout.scss';
 
 /**
@@ -95,6 +96,7 @@ export function GameLayout() {
 
   return (
     <div className={rootClassNames}>
+      <AudioBindings />
       {showLayoutBackgroundOverlay ? (
         <div
           className="gameLayoutBackgroundOverlay"
