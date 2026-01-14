@@ -129,7 +129,9 @@ export const RewardService = {
     const ok = inventory.spendCurrencies(costs);
     if (!ok) {
       console.warn('[RewardService] Failed to spend currency', reason, costs);
+      return false;
     }
+    GameEvents.emit({ type: 'rewards/spent', payload: { costs, reason } });
     return ok;
   },
 };

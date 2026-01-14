@@ -4,6 +4,7 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
 import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog';
 import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types';
+import { GameEvents } from '../../services/events/GameEvents';
 import './MedicinePouchPanel.scss';
 
 type SlotConfigField = 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly';
@@ -61,6 +62,13 @@ export function MedicinePouchPanel() {
     return () => window.clearInterval(handle);
   }, []);
 
+  useEffect(() => {
+    GameEvents.emit({ type: 'pouch/opened', payload: {} });
+    return () => {
+      GameEvents.emit({ type: 'pouch/closed', payload: {} });
+    };
+  }, []);
+
   const availableOptions = useMemo(
     () =>
       Object.entries(inventoryItems)
@@ -90,6 +98,16 @@ export function MedicinePouchPanel() {
       setSlotConfig(slotKey, { [field]: value } as Partial<typeof slot>);
     };
 
+    const handleEquip = (value: string | null) => {
+      GameEvents.emit({ type: 'pouch/slot_selected', payload: { slotKey } });
+      equip(slotKey, value);
+      if (value) {
+        GameEvents.emit({ type: 'pouch/equip', payload: { slotKey, itemId: value } });
+      } else {
+        GameEvents.emit({ type: 'pouch/unequip', payload: { slotKey, itemId: equippedId } });
+      }
+    };
+
     return (
       <div key={slotKey} className={'medicinePouchCard'}>
         <div className={'medicinePouchCardHeader'}>
@@ -115,7 +133,7 @@ export function MedicinePouchPanel() {
             id={`${slotKey}-select`}
             className={'medicinePouchSelect'}
             value={equippedId ?? ''}
-            onChange={(e) => equip(slotKey, e.target.value || null)}
+            onChange={(e) => handleEquip(e.target.value || null)}
           >
             <option value="">(Empty)</option>
             {availableOptions.map((option) => (
@@ -124,7 +142,7 @@ export function MedicinePouchPanel() {
               </option>
             ))}
           </select>
-          <button className={'medicinePouchButton medicinePouchButton--ghost'} onClick={() => equip(slotKey, null)}>
+          <button className={'medicinePouchButton medicinePouchButton--ghost'} onClick={() => handleEquip(null)}>
             Clear
           </button>
         </div>

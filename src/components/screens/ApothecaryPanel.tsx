@@ -7,6 +7,7 @@ import { RewardService } from '../../services/rewards';
 import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
+import { GameEvents } from '../../services/events/GameEvents';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
@@ -165,12 +166,26 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
     const handlePurchase = (qty: number) => {
       if (qty <= 0) return;
+      GameEvents.emit({
+        type: 'apothecary/item_selected',
+        payload: { shopId: apothecary.id, itemId: stockEntry.itemId, qty },
+      });
       const result = buy(apothecary.id, stockEntry.id, qty);
       if (!result.ok) {
         setStatusByStock((prev) => ({
           ...prev,
           [stockEntry.id]: { type: 'error', message: result.error || 'Purchase failed.' },
         }));
+        GameEvents.emit({
+          type: 'apothecary/buy_failed',
+          payload: { shopId: apothecary.id, itemId: stockEntry.itemId, reason: result.error || 'Purchase failed.' },
+        });
+        if (result.error && /daily limit|sold out/i.test(result.error)) {
+          GameEvents.emit({
+            type: 'apothecary/daily_limit_hit',
+            payload: { shopId: apothecary.id, itemId: stockEntry.itemId },
+          });
+        }
         return;
       }
 
@@ -182,6 +197,10 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           message: `Purchased ${grantedQty} × ${itemName}.`,
         },
       }));
+      GameEvents.emit({
+        type: 'apothecary/buy_success',
+        payload: { shopId: apothecary.id, itemId: stockEntry.itemId, qty: grantedQty },
+      });
     };
 
     return (
@@ -238,6 +257,10 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const status = statusByBundle[bundle.id];
 
     const handlePurchase = () => {
+      GameEvents.emit({
+        type: 'apothecary/item_selected',
+        payload: { shopId: apothecary.id, itemId: bundle.items[0]?.itemId ?? bundle.id, qty: 1 },
+      });
       const reason = `apothecary_bundle:${bundle.id}`;
       const spent = RewardService.spendCurrency(bundle.cost, reason);
       if (!spent) {
@@ -245,6 +268,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           ...prev,
           [bundle.id]: { type: 'error', message: 'Not enough currency for this bundle.' },
         }));
+        GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: bundle.id, ok: false } });
         return;
       }
 
@@ -253,6 +277,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         ...prev,
         [bundle.id]: { type: 'success', message: 'Bundle purchased. Items delivered to inventory.' },
       }));
+      GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: bundle.id, ok: true } });
     };
 
     return (

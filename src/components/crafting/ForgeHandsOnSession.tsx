@@ -10,6 +10,7 @@ import type {
 import { computeForgeOutcome } from '../../systems/crafting/forgeOutcome';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
+import { GameEvents } from '../../services/events/GameEvents';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;
@@ -402,6 +403,11 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     advanceStep(nextStamp);
     setStepStartedNow(nextStamp);
     setLocalStatus('Heat captured for this step.');
+    if (currentStep.type === 'HEAT_MATERIAL') {
+      GameEvents.emit({ type: 'forge/metal_heat', payload: {} });
+    } else {
+      GameEvents.emit({ type: 'forge/temper', payload: {} });
+    }
   };
 
   const handleStrike = () => {
@@ -416,6 +422,10 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     const nextHits = Math.min(currentStep.hits, hammerState.hits + 1);
     const nextTiming = hammerState.timing + score;
     setHammerState({ hits: nextHits, timing: nextTiming });
+    GameEvents.emit({
+      type: 'forge/hammer_strike',
+      payload: { intensity: score >= 0.75 ? 'heavy' : 'light' },
+    });
     if (nextHits >= currentStep.hits) {
       recordForgeStepResult({
         stepId: currentStep.id,
@@ -436,6 +446,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     }
     advanceStep(stamp);
     setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/hammer_complete', payload: {} });
     setLocalStatus('Pattern forged.');
   };
 
@@ -446,6 +457,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     recordForgeStepResult({ stepId: currentStep.id, type: 'QUENCH', medium: selectedMedium, timingMs: elapsed });
     advanceStep(stamp);
     setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/quench', payload: {} });
     setLocalStatus('Quenched. Moving on.');
   };
 
@@ -460,6 +472,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     const stamp = Date.now();
     advanceStep(stamp);
     setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/rune_fuse', payload: {} });
     setLocalStatus('Alloys combined.');
   };
 
@@ -477,6 +490,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     recordForgeStepResult({ stepId: currentStep.id, type: 'ENGRAVE_RUNE', success: true, precision: 0.7 });
     advanceStep(stamp);
     setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/rune_engrave', payload: {} });
   };
 
   const handleComplete = () => {
@@ -484,6 +498,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     if (result.ok && result.result && 'scoreOverall' in result.result) {
       onOutcome?.(result.result as ForgeSessionOutcome);
       addNotification('success', 'Forge session complete.', 2500);
+      GameEvents.emit({ type: 'forge/grind', payload: {} });
     } else {
       setLocalStatus('Unable to complete right now.');
     }
@@ -529,7 +544,10 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
             step={currentStep}
             heat={heatSetting}
             timeRemaining={timeRemaining}
-            onHeatChange={(value) => setHeatSetting(clampHeat(value))}
+            onHeatChange={(value) => {
+              setHeatSetting(clampHeat(value));
+              GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
+            }}
             onComplete={() => finalizeHeat(Date.now())}
           />
         )}
@@ -559,7 +577,10 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
             step={currentStep}
             heat={heatSetting}
             timeRemaining={timeRemaining}
-            onHeatChange={(value) => setHeatSetting(clampHeat(value))}
+            onHeatChange={(value) => {
+              setHeatSetting(clampHeat(value));
+              GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
+            }}
             onComplete={handleTemperComplete}
           />
         )}

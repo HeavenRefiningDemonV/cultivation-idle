@@ -12,6 +12,7 @@ import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierFo
 import { applyRefineService, applyTemperService } from '../services/forgeService';
 import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
+import { GameEvents } from '../services/events/GameEvents';
 
 export type AlchemyJob = {
   id: string;
@@ -199,6 +200,8 @@ export const useProfessionStore = create<ProfessionState>()(
         });
       });
 
+      GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'alchemy', sourceId: recipeId, qty: amount } });
+
       return { ok: true };
     },
 
@@ -307,6 +310,8 @@ export const useProfessionStore = create<ProfessionState>()(
           cityId,
         });
       });
+
+      GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'talisman', sourceId: recipeId, qty: amount } });
 
       return { ok: true };
     },
@@ -457,6 +462,8 @@ export const useProfessionStore = create<ProfessionState>()(
         });
       });
 
+      GameEvents.emit({ type: 'crafting/queue_added', payload: { station: 'forge', sourceId: blueprintId, qty: amount } });
+
       return { ok: true };
     },
 
@@ -502,6 +509,8 @@ export const useProfessionStore = create<ProfessionState>()(
       set((state) => {
         state.alchemyQueue = state.alchemyQueue.filter((entry) => entry.id !== jobId);
       });
+
+      GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'alchemy', sourceId: job.recipeId, qty: job.qty } });
 
       const cityId =
         job.cityId ??
@@ -551,6 +560,9 @@ export const useProfessionStore = create<ProfessionState>()(
         state.talismanQueue = state.talismanQueue.filter((entry) => entry.id !== jobId);
       });
 
+      GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'talisman', sourceId: job.recipeId, qty: job.qty } });
+      GameEvents.emit({ type: 'talisman/craft_result', payload: { ok: true } });
+
       const cityId =
         job.cityId ??
         useCityStore.getState().currentCityId ??
@@ -594,6 +606,7 @@ export const useProfessionStore = create<ProfessionState>()(
         if (blueprint.service === 'refine') {
           serviceResult = applyRefineService({ blueprint, slot: job.targetSlot, qty: job.qty });
           if (!serviceResult.success) {
+            GameEvents.emit({ type: 'forge/refine_result', payload: { ok: false } });
             return { ok: false, error: 'Refine failed' };
           }
         } else if (blueprint.service === 'temper') {
@@ -605,6 +618,17 @@ export const useProfessionStore = create<ProfessionState>()(
       set((state) => {
         state.forgeQueue = state.forgeQueue.filter((entry) => entry.id !== jobId);
       });
+
+      GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'forge', sourceId: job.blueprintId, qty: job.qty } });
+      if (blueprint.type === 'craft') {
+        GameEvents.emit({ type: 'forge/rune_craft_result', payload: { ok: true } });
+      }
+      if (serviceResult?.type === 'refine') {
+        GameEvents.emit({ type: 'forge/refine_result', payload: { ok: Boolean(serviceResult.success) } });
+      }
+      if (serviceResult?.type === 'temper') {
+        GameEvents.emit({ type: 'forge/temper_result', payload: { ok: Boolean(serviceResult.success) } });
+      }
 
       const cityId =
         job.cityId ??

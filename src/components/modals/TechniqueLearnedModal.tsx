@@ -4,6 +4,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore';
 import { useTechCollectionStore } from '../../stores/techCollectionStore';
+import { GameEvents } from '../../services/events/GameEvents';
 
 function recommendProfile(tags?: string[]) {
   const lowered = (tags ?? []).map((tag) => tag.toLowerCase());
@@ -86,6 +87,7 @@ export function TechniqueLearnedModal() {
 
   const handleEquip = () => {
     if (!payload) return;
+    GameEvents.emit({ type: 'techniques/equip_now_clicked', payload: { techniqueId: payload.techId } });
     const targetLoadout = loadouts.find((l) => l.id === loadoutId) ?? loadouts[0];
     if (!targetLoadout) {
       addNotification('error', 'No loadout available to equip.');

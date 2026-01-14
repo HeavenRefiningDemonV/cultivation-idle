@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { REALMS } from '../../constants';
 import { useContentStore } from '../../stores/contentStore';
@@ -19,6 +19,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
 import { RankUpgradeRitualModal } from '../modals/RankUpgradeRitualModal';
 import { TraitRerollModal } from '../modals/TraitRerollModal';
+import { GameEvents } from '../../services/events/GameEvents';
 import './TechniqueLibraryScreen.scss';
 
 type InlineMessage = { type: 'error' | 'info' | 'success'; text: string } | null;
@@ -137,6 +138,8 @@ export function TechniqueLibraryScreen() {
   const [runeSelections, setRuneSelections] = useState<Record<number, string>>({});
   const [showRankModal, setShowRankModal] = useState(false);
   const [showTraitModal, setShowTraitModal] = useState(false);
+  const previousRankModal = useRef(false);
+  const previousTraitModal = useRef(false);
   const [now, setNow] = useState(() => Date.now());
 
   // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
@@ -473,6 +476,22 @@ export function TechniqueLibraryScreen() {
   }, [clearTechniqueFocusRequest, techniqueFocusRequest]);
 
   useEffect(() => {
+    if (!selectedTechniqueId) return;
+    if (!previousRankModal.current && showRankModal) {
+      GameEvents.emit({ type: 'techniques/rank_upgrade_opened', payload: { techniqueId: selectedTechniqueId } });
+    }
+    previousRankModal.current = showRankModal;
+  }, [selectedTechniqueId, showRankModal]);
+
+  useEffect(() => {
+    if (!selectedTechniqueId) return;
+    if (!previousTraitModal.current && showTraitModal) {
+      GameEvents.emit({ type: 'techniques/trait_reroll_opened', payload: { techniqueId: selectedTechniqueId } });
+    }
+    previousTraitModal.current = showTraitModal;
+  }, [selectedTechniqueId, showTraitModal]);
+
+  useEffect(() => {
     const { type, index } = selectedSlot;
     if (type === 'ultimate' && !progression.unlocked.ultimate) {
       setSelectedSlot({ type: 'active', index: 0 });
@@ -499,10 +518,12 @@ export function TechniqueLibraryScreen() {
 
         const realmName = requirement?.realmName || 'a higher realm';
         setInlineMessage({ type: 'error', text: `That slot is locked. Unlocks at: ${realmName}.` });
+        GameEvents.emit({ type: 'techniques/slot_locked', payload: { slotType: slot.type, slotIndex: slot.index } });
         return;
       }
 
       setSelectedSlot(slot);
+      GameEvents.emit({ type: 'techniques/slot_selected', payload: { slotType: slot.type, slotIndex: slot.index } });
       setInlineMessage(null);
     },
     [progression.unlockRequirements, progression.unlocked],
