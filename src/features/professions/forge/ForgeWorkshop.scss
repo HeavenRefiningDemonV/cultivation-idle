@@ -1,0 +1,353 @@
+.forgeWorkshop {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #e2e8f0;
+}
+
+.forgeWorkshop__banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.7);
+}
+
+.forgeWorkshop__bannerTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.forgeWorkshop__bannerBody {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.forgeWorkshop__bannerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeWorkshop__usedFor {
+  margin-left: auto;
+}
+
+.forgeWorkshop__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+}
+
+.forgeWorkshop__workbench {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__workbenchFrame {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 16, 24, 0.6);
+  padding: 12px;
+  min-height: 380px;
+}
+
+.forgeWorkshop__idleBench {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  color: #cbd5e1;
+}
+
+.forgeWorkshop__idleTitle {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__idleHint {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__ctaDisabled {
+  opacity: 0.65;
+}
+
+.forgeWorkshop__status {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeWorkshop__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forgeWorkshop__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__search {
+  border-radius: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 33, 0.8);
+  color: inherit;
+}
+
+.forgeWorkshop__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forgeWorkshop__chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeWorkshop__chip--active {
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.forgeWorkshop__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.forgeWorkshop__listEmpty {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 33, 0.5);
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+  text-align: center;
+}
+
+.forgeWorkshop__row {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(15, 23, 33, 0.5);
+  color: inherit;
+}
+
+.forgeWorkshop__row--active {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.forgeWorkshop__row--locked {
+  opacity: 0.7;
+}
+
+.forgeWorkshop__rowIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.forgeWorkshop__rowTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__rowMeta {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__rowLock {
+  font-size: 11px;
+  color: rgba(248, 113, 113, 0.9);
+}
+
+.forgeWorkshop__detail {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__detailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.forgeWorkshop__detailTitle {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.forgeWorkshop__detailMeta {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.forgeWorkshop__detailLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__detailValue {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.forgeWorkshop__stepSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.forgeWorkshop__stepArrow {
+  margin: 0 4px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.forgeWorkshop__modeCopy {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__benefits {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 6px;
+}
+
+.forgeWorkshop__benefitRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.forgeWorkshop__benefitLabel {
+  color: rgba(226, 232, 240, 0.75);
+}
+
+.forgeWorkshop__benefitValue {
+  color: #e2e8f0;
+}
+
+.forgeWorkshop__meter {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.6);
+}
+
+.forgeWorkshop__meterHeader {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.forgeWorkshop__meterGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.forgeWorkshop__meterRow {
+  display: grid;
+  grid-template-columns: 1fr 160px 48px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.forgeWorkshop__meterBar {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.forgeWorkshop__meterBar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.6), rgba(59, 130, 246, 0.7));
+}
+
+.forgeWorkshop__meterEmpty {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__error {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(30, 15, 20, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__errorTitle {
+  font-weight: 600;
+}
+
+.forgeWorkshop__errorBody {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+@media (max-width: 1000px) {
+  .forgeWorkshop__body {
+    grid-template-columns: 1fr;
+  }
+
+  .forgeWorkshop__banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .forgeWorkshop__bannerActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
