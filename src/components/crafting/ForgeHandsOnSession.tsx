@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type {
   CraftSession,
   CraftStep,
@@ -12,7 +12,7 @@ import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { GameEvents } from '../../services/events/GameEvents';
 import { ForgeWorkbenchScene, type ForgePhaseKind } from './ForgeWorkbenchScene';
-import { TimingCircleQTE } from '../qte/TimingCircleQTE';
+import { TimingCircleQTE, type TimingCircleResult } from '../qte/TimingCircleQTE';
 import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte';
 import { ForgeHeatPullOutQTE, type ForgeHeatPullOutResult } from '../../ui/forge/ForgeHeatPullOutQTE';
 
@@ -174,6 +174,22 @@ const buildPhaseLabel = (step: CraftStep, heatIndex: number, totalHeats: number,
   return `Special: ${step.uiLabel ?? step.type}`;
 };
 
+const buildSparkBurst = (grade: 'perfect' | 'good' | 'miss', keyPrefix: string) => {
+  if (grade === 'miss') return null;
+  const count = grade === 'perfect' ? 8 : 6;
+  return (
+    <div key={`${keyPrefix}-sparks`} className={`forgeWorkbenchScene__sparkBurst forgeWorkbenchScene__sparkBurst--${grade}`}>
+      {Array.from({ length: count }).map((_, index) => (
+        <span
+          key={`${keyPrefix}-spark-${index}`}
+          className="forgeWorkbenchScene__spark"
+          style={{ '--spark-angle': `${(360 / count) * index}deg` } as CSSProperties}
+        />
+      ))}
+    </div>
+  );
+};
+
 function ForgeStepTemper({
   step,
   heat,
@@ -325,26 +341,55 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   const heatRef = useRef(heatSetting);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
   const [selectedMedium, setSelectedMedium] = useState<'water' | 'oil' | 'brine'>('water');
-  const [hammerState, setHammerState] = useState<{ attempts: number; timingSum: number; impactKey: number; impactScore: number }>({
+  const [hammerState, setHammerState] = useState<{
+    attempts: number;
+    timingSum: number;
+    impactKey: number;
+    impactScore: number;
+    impactGrade: 'perfect' | 'good' | 'miss';
+  }>({
     attempts: 0,
     timingSum: 0,
     impactKey: 0,
     impactScore: 0,
+    impactGrade: 'miss',
   });
-  const [engraveState, setEngraveState] = useState<{ attempts: number; impactKey: number; impactScore: number }>({
+  const [engraveState, setEngraveState] = useState<{
+    attempts: number;
+    impactKey: number;
+    impactScore: number;
+    impactGrade: 'perfect' | 'good' | 'miss';
+  }>({
     attempts: 0,
     impactKey: 0,
     impactScore: 0,
+    impactGrade: 'miss',
   });
-  const [formationState, setFormationState] = useState<{ attempts: number; impactKey: number; impactScore: number }>({
+  const [formationState, setFormationState] = useState<{
+    attempts: number;
+    impactKey: number;
+    impactScore: number;
+    impactGrade: 'perfect' | 'good' | 'miss';
+  }>({
     attempts: 0,
     impactKey: 0,
     impactScore: 0,
+    impactGrade: 'miss',
   });
-  const [heatState, setHeatState] = useState<{ impactKey: number; impactScore: number }>({
+  const [heatState, setHeatState] = useState<{
+    impactKey: number;
+    impactScore: number;
+    impactGrade: 'perfect' | 'good' | 'miss';
+  }>({
     impactKey: 0,
     impactScore: 0,
+    impactGrade: 'miss',
   });
+  const [workpieceMoving, setWorkpieceMoving] = useState(false);
+  const [workpieceCooling, setWorkpieceCooling] = useState(false);
+  const coolingRef = useRef<{ startedAt: number; active: boolean }>({ startedAt: 0, active: false });
+  const lastStationRef = useRef<'furnace' | 'anvil' | null>(null);
+  const moveTimeoutRef = useRef<number | null>(null);
   const heatSample = useRef<HeatSampleState>(defaultHeatSample(now, heatSetting));
 
   const performances = session.cursor.forgeStepResults ?? [];
@@ -398,6 +443,40 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   }, [session.cursor.stepStartedAt, session.cursor.stepIndex, session.sessionId, now, setStepStartedNow]);
 
   useEffect(() => {
+    const interval = window.setInterval(() => {
+      if (!coolingRef.current.active) return;
+      if (Date.now() - coolingRef.current.startedAt >= 6000) {
+        coolingRef.current.active = false;
+        setWorkpieceCooling(false);
+      }
+    }, 500);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const station = currentPhase?.kind === 'HEAT' ? 'furnace' : 'anvil';
+    if (lastStationRef.current && lastStationRef.current !== station) {
+      setWorkpieceMoving(true);
+      if (moveTimeoutRef.current) {
+        window.clearTimeout(moveTimeoutRef.current);
+      }
+      moveTimeoutRef.current = window.setTimeout(() => {
+        setWorkpieceMoving(false);
+      }, 380);
+    }
+    if (currentPhase?.kind === 'HEAT') {
+      coolingRef.current.active = false;
+      setWorkpieceCooling(false);
+    }
+    lastStationRef.current = station;
+    return () => {
+      if (moveTimeoutRef.current) {
+        window.clearTimeout(moveTimeoutRef.current);
+      }
+    };
+  }, [currentPhase?.kind]);
+
+  useEffect(() => {
     if (!currentStep || (currentStep.type !== 'HEAT_TO' && currentStep.type !== 'HEAT_MATERIAL')) return;
     GameEvents.emit({ type: 'forge/furnace_ignite', payload: {} });
     GameEvents.emit({ type: 'forge/metal_heat', payload: {} });
@@ -405,10 +484,10 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
 
   useEffect(() => {
     heatSample.current = defaultHeatSample(now, heatSetting);
-    setHammerState({ attempts: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
-    setEngraveState({ attempts: 0, impactKey: 0, impactScore: 0 });
-    setFormationState({ attempts: 0, impactKey: 0, impactScore: 0 });
-    setHeatState({ impactKey: 0, impactScore: 0 });
+    setHammerState({ attempts: 0, timingSum: 0, impactKey: 0, impactScore: 0, impactGrade: 'miss' });
+    setEngraveState({ attempts: 0, impactKey: 0, impactScore: 0, impactGrade: 'miss' });
+    setFormationState({ attempts: 0, impactKey: 0, impactScore: 0, impactGrade: 'miss' });
+    setHeatState({ impactKey: 0, impactScore: 0, impactGrade: 'miss' });
     const existing = performances.find((entry) => entry.stepId === currentStep?.id);
     if (existing && currentStep?.type === 'QUENCH' && 'medium' in existing) {
       setSelectedMedium(existing.medium);
@@ -457,10 +536,11 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     GameEvents.emit({ type: 'forge/temper', payload: {} });
   };
 
-  const resolveHammerStrike = (result: { score: number }) => {
+  const resolveHammerStrike = (result: TimingCircleResult) => {
     if (!currentStep || currentStep.type !== 'HAMMER_PATTERN') return;
     const nextAttempts = hammerState.attempts + 1;
     const nextTimingSum = hammerState.timingSum + result.score;
+    const impactGrade = result.grade;
     GameEvents.emit({
       type: 'forge/hammer_strike',
       payload: { intensity: result.score > 0.75 ? 'heavy' : 'light' },
@@ -471,6 +551,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       timingSum: nextTimingSum,
       impactKey: nextImpactKey,
       impactScore: result.score,
+      impactGrade,
     });
     if (nextAttempts >= currentStep.hits) {
       const stamp = Date.now();
@@ -495,7 +576,10 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     setHeatState((prev) => ({
       impactKey: prev.impactKey + 1,
       impactScore: result.timingScore,
+      impactGrade: result.grade,
     }));
+    coolingRef.current = { startedAt: Date.now(), active: true };
+    setWorkpieceCooling(true);
     recordForgeStepResult({
       stepId: currentStep.id,
       type: currentStep.type,
@@ -518,6 +602,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       attempts: prev.attempts + 1,
       impactKey: prev.impactKey + 1,
       impactScore: rating === 'perfect' ? 1 : rating === 'good' ? 0.6 : 0,
+      impactGrade: rating,
     }));
     if (rating !== 'miss') {
       GameEvents.emit({ type: 'forge/rune_engrave', payload: {} });
@@ -530,6 +615,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       ...prev,
       impactKey: prev.impactKey + 1,
       impactScore: result.timingScore,
+      impactGrade: result.timingScore >= 0.85 ? 'perfect' : result.timingScore > 0 ? 'good' : 'miss',
     }));
     const success = result.hitsLanded >= result.hitsRequired && result.timingScore >= 0.55;
     const stamp = Date.now();
@@ -557,6 +643,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       ...prev,
       impactKey: prev.impactKey + 1,
       impactScore: 0,
+      impactGrade: 'miss',
     }));
     const stamp = Date.now();
     recordForgeStepResult({
@@ -580,6 +667,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       attempts: prev.attempts + 1,
       impactKey: prev.impactKey + 1,
       impactScore: rating === 'perfect' ? 1 : rating === 'good' ? 0.6 : 0,
+      impactGrade: rating,
     }));
   };
 
@@ -589,6 +677,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
       ...prev,
       impactKey: prev.impactKey + 1,
       impactScore: result.timingScore,
+      impactGrade: result.timingScore >= 0.85 ? 'perfect' : result.timingScore > 0 ? 'good' : 'miss',
     }));
     const stamp = Date.now();
     recordForgeStepResult({
@@ -736,6 +825,8 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
           phaseKind={currentPhase?.kind}
           heatSetting={heatSetting}
           hideWorkpiece={currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL'}
+          workpieceMoving={workpieceMoving}
+          workpieceCooling={workpieceCooling && currentPhase?.kind !== 'HEAT'}
         >
           {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
             <div className="forgeWorkbenchScene__furnaceSlot">
@@ -750,14 +841,18 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               {heatState.impactKey > 0 && (
                 <div
                   key={`heat-impact-${heatState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${heatState.impactScore > 0 ? 'hit' : 'miss'}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${heatState.impactGrade}`}
                 />
               )}
-              {heatState.impactKey > 0 && heatState.impactScore > 0 && (
-                <div key={`heat-sparks-${heatState.impactKey}`} className="forgeWorkbenchScene__sparks" />
-              )}
+              {heatState.impactKey > 0 && buildSparkBurst(heatState.impactGrade, `heat-${heatState.impactKey}`)}
               {heatState.impactKey > 0 && (
                 <div key={`heat-shake-${heatState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+              {heatState.impactKey > 0 && (
+                <div
+                  key={`heat-pulse-${heatState.impactKey}`}
+                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${heatState.impactGrade}`}
+                />
               )}
             </div>
           )}
@@ -774,14 +869,18 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               {hammerState.impactKey > 0 && (
                 <div
                   key={`impact-${hammerState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${hammerState.impactScore > 0 ? 'hit' : 'miss'}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${hammerState.impactGrade}`}
                 />
               )}
-              {hammerState.impactKey > 0 && hammerState.impactScore > 0 && (
-                <div key={`sparks-${hammerState.impactKey}`} className="forgeWorkbenchScene__sparks" />
-              )}
+              {hammerState.impactKey > 0 && buildSparkBurst(hammerState.impactGrade, `hammer-${hammerState.impactKey}`)}
               {hammerState.impactKey > 0 && (
                 <div key={`shake-${hammerState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+              {hammerState.impactKey > 0 && (
+                <div
+                  key={`pulse-${hammerState.impactKey}`}
+                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${hammerState.impactGrade}`}
+                />
               )}
             </div>
           )}
@@ -798,14 +897,18 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               {engraveState.impactKey > 0 && (
                 <div
                   key={`engrave-impact-${engraveState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${engraveState.impactScore > 0 ? 'hit' : 'miss'}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${engraveState.impactGrade}`}
                 />
               )}
-              {engraveState.impactKey > 0 && engraveState.impactScore > 0 && (
-                <div key={`engrave-sparks-${engraveState.impactKey}`} className="forgeWorkbenchScene__sparks" />
-              )}
+              {engraveState.impactKey > 0 && buildSparkBurst(engraveState.impactGrade, `engrave-${engraveState.impactKey}`)}
               {engraveState.impactKey > 0 && (
                 <div key={`engrave-shake-${engraveState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+              {engraveState.impactKey > 0 && (
+                <div
+                  key={`engrave-pulse-${engraveState.impactKey}`}
+                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${engraveState.impactGrade}`}
+                />
               )}
             </div>
           )}
@@ -821,14 +924,18 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               {formationState.impactKey > 0 && (
                 <div
                   key={`formation-impact-${formationState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${formationState.impactScore > 0 ? 'hit' : 'miss'}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${formationState.impactGrade}`}
                 />
               )}
-              {formationState.impactKey > 0 && formationState.impactScore > 0 && (
-                <div key={`formation-sparks-${formationState.impactKey}`} className="forgeWorkbenchScene__sparks" />
-              )}
+              {formationState.impactKey > 0 && buildSparkBurst(formationState.impactGrade, `formation-${formationState.impactKey}`)}
               {formationState.impactKey > 0 && (
                 <div key={`formation-shake-${formationState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+              {formationState.impactKey > 0 && (
+                <div
+                  key={`formation-pulse-${formationState.impactKey}`}
+                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${formationState.impactGrade}`}
+                />
               )}
             </div>
           )}

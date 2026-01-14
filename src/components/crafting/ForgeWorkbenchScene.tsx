@@ -11,6 +11,8 @@ type ForgeWorkbenchSceneProps = {
   heatSetting: number;
   hideWorkpiece?: boolean;
   phaseKind?: ForgePhaseKind;
+  workpieceMoving?: boolean;
+  workpieceCooling?: boolean;
   children?: ReactNode;
 };
 
@@ -49,10 +51,22 @@ export function ForgeWorkbenchScene({
   heatSetting,
   hideWorkpiece = false,
   phaseKind,
+  workpieceMoving = false,
+  workpieceCooling = false,
   children,
 }: ForgeWorkbenchSceneProps) {
   const station = getStationForPhase(phaseKind, stepType);
   const heatLevel = getHeatLevel(heatSetting);
+
+  const workpieceClass = [
+    'forgeWorkbenchScene__workpiece',
+    `forgeWorkbenchScene__workpiece--${station}`,
+    `forgeWorkbenchScene__workpiece--${heatLevel}`,
+    workpieceMoving ? 'forgeWorkbenchScene__workpiece--moving' : '',
+    workpieceCooling ? 'forgeWorkbenchScene__workpiece--cooling' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className="forgeWorkbenchScene">
@@ -64,10 +78,7 @@ export function ForgeWorkbenchScene({
         <div className="forgeWorkbenchScene__anchor forgeWorkbenchScene__anchor--furnace" aria-hidden="true" />
         <div className="forgeWorkbenchScene__anchor forgeWorkbenchScene__anchor--anvil" aria-hidden="true" />
         {!hideWorkpiece && (
-          <div
-            className={`forgeWorkbenchScene__workpiece forgeWorkbenchScene__workpiece--${station} forgeWorkbenchScene__workpiece--${heatLevel}`}
-            aria-hidden="true"
-          />
+          <div className={workpieceClass} aria-hidden="true" />
         )}
         {children && <div className="forgeWorkbenchScene__content">{children}</div>}
       </div>
