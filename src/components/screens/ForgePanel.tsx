@@ -103,7 +103,26 @@ function buildAssistedPerformance(step: CraftStep): ForgeStepResult | null {
     case 'CAST_OR_SHAPE':
       return { stepId: step.id, type: 'CAST_OR_SHAPE', variant: step.variant, precision: 0.7, success: true };
     case 'ENGRAVE_RUNE':
-      return { stepId: step.id, type: 'ENGRAVE_RUNE', success: true, precision: 0.65, optional: step.optional };
+      return {
+        stepId: step.id,
+        type: 'ENGRAVE_RUNE',
+        hitsLanded: step.hits ?? 5,
+        hitsRequired: step.hits ?? 5,
+        timingScore: 0.78,
+        patternId: step.patternId,
+        success: true,
+        precision: 0.78,
+        optional: step.optional,
+      };
+    case 'LAY_FORMATION':
+      return {
+        stepId: step.id,
+        type: 'LAY_FORMATION',
+        hitsLanded: step.hits ?? 4,
+        hitsRequired: step.hits ?? 4,
+        timingScore: 0.76,
+        patternId: step.patternId,
+      };
     case 'FINISH':
     default:
       return null;

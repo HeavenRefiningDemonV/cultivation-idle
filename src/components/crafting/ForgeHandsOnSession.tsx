@@ -13,6 +13,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { GameEvents } from '../../services/events/GameEvents';
 import { ForgeWorkbenchScene } from './ForgeWorkbenchScene';
 import { TimingCircleQTE } from '../qte/TimingCircleQTE';
+import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;
@@ -117,6 +118,37 @@ function ForgeStepHeatMaterial({
         <div>Raise the material into the target band, then hold it steady.</div>
         <HeatGauge heat={heat} targetMin={step.targetMin} targetMax={step.targetMax} onChange={onHeatChange} />
         <div className="forgeStepMeta">{timeRemaining !== undefined ? `${formatMs(timeRemaining)} left` : 'No timer'}</div>
+        <button
+          type="button"
+          className="worldScreenModuleButton worldScreenModuleButton--active"
+          onClick={onComplete}
+        >
+          Lock heat
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ForgeStepHeatTo({
+  step,
+  heat,
+  onHeatChange,
+  onComplete,
+}: {
+  step: Extract<CraftStep, { type: 'HEAT_TO' }>;
+  heat: number;
+  onHeatChange: (value: number) => void;
+  onComplete: () => void;
+}) {
+  const targetMin = Math.max(0, step.targetHeat - step.tolerance);
+  const targetMax = Math.max(targetMin, step.targetHeat + step.tolerance);
+  return (
+    <div className="forgeStepCard">
+      <div className="forgeStepTitle">{step.uiLabel ?? 'Heat forge'}</div>
+      <div className="forgeStepBody">
+        <div>Heat to the target band, then lock it in.</div>
+        <HeatGauge heat={heat} targetMin={targetMin} targetMax={targetMax} onChange={onHeatChange} />
         <button
           type="button"
           className="worldScreenModuleButton worldScreenModuleButton--active"
@@ -266,20 +298,6 @@ function ForgeStepCastShape({ step, onConfirm }: { step: Extract<CraftStep, { ty
   );
 }
 
-function ForgeStepEngrave({ step, onEngrave }: { step: Extract<CraftStep, { type: 'ENGRAVE_RUNE' }>; onEngrave: () => void }) {
-  return (
-    <div className="forgeStepCard">
-      <div className="forgeStepTitle">{step.uiLabel ?? 'Engrave rune'} </div>
-      <div className="forgeStepBody">
-        <div>Etch the rune cleanly. Optional steps can be skipped if needed.</div>
-        <button type="button" className="worldScreenModuleButton worldScreenModuleButton--active" onClick={onEngrave}>
-          Engrave
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutcome }: ForgeHandsOnSessionProps) {
   const setHeatSetting = useCraftSessionStore((state) => state.setHeatSetting);
   const setStepStartedNow = useCraftSessionStore((state) => state.setStepStartedNow);
@@ -300,9 +318,13 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     impactKey: 0,
     impactScore: 0,
   });
-  const [engraveState, setEngraveState] = useState<{ strokes: number; timingSum: number; impactKey: number; impactScore: number }>({
-    strokes: 0,
-    timingSum: 0,
+  const [engraveState, setEngraveState] = useState<{ attempts: number; impactKey: number; impactScore: number }>({
+    attempts: 0,
+    impactKey: 0,
+    impactScore: 0,
+  });
+  const [formationState, setFormationState] = useState<{ attempts: number; impactKey: number; impactScore: number }>({
+    attempts: 0,
     impactKey: 0,
     impactScore: 0,
   });
@@ -326,7 +348,8 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   useEffect(() => {
     heatSample.current = defaultHeatSample(now, heatSetting);
     setHammerState({ attempts: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
-    setEngraveState({ strokes: 0, timingSum: 0, impactKey: 0, impactScore: 0 });
+    setEngraveState({ attempts: 0, impactKey: 0, impactScore: 0 });
+    setFormationState({ attempts: 0, impactKey: 0, impactScore: 0 });
     const existing = performances.find((entry) => entry.stepId === currentStep?.id);
     if (existing && currentStep?.type === 'QUENCH' && 'medium' in existing) {
       setSelectedMedium(existing.medium);
@@ -410,34 +433,96 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     }
   };
 
-  const resolveEngraveStroke = (result: { score: number }) => {
-    if (!currentStep || currentStep.type !== 'ENGRAVE_RUNE') return;
-    const strokesRequired = Math.max(1, Math.floor(currentStep.hits ?? 3));
-    const nextStrokes = engraveState.strokes + 1;
-    const nextTimingSum = engraveState.timingSum + result.score;
-    GameEvents.emit({ type: 'forge/rune_engrave', payload: {} });
-    const nextImpactKey = engraveState.impactKey + 1;
-    setEngraveState({
-      strokes: nextStrokes,
-      timingSum: nextTimingSum,
-      impactKey: nextImpactKey,
-      impactScore: result.score,
-    });
-    if (nextStrokes >= strokesRequired) {
-      const precision = nextStrokes > 0 ? nextTimingSum / nextStrokes : 0;
-      const success = precision >= 0.55;
-      const stamp = Date.now();
-      recordForgeStepResult({
-        stepId: currentStep.id,
-        type: 'ENGRAVE_RUNE',
-        success,
-        precision,
-        optional: currentStep.optional,
-      });
-      advanceStep(stamp);
-      setStepStartedNow(stamp);
-      setLocalStatus(success ? 'Rune engraved.' : 'Engraving completed.');
+  const handleEngraveHit = (rating: ForgeRingQteRating) => {
+    setEngraveState((prev) => ({
+      attempts: prev.attempts + 1,
+      impactKey: prev.impactKey + 1,
+      impactScore: rating === 'perfect' ? 1 : rating === 'good' ? 0.6 : 0,
+    }));
+    if (rating !== 'miss') {
+      GameEvents.emit({ type: 'forge/rune_engrave', payload: {} });
     }
+  };
+
+  const handleEngraveComplete = (result: { hitsLanded: number; hitsRequired: number; timingScore: number }) => {
+    if (!currentStep || currentStep.type !== 'ENGRAVE_RUNE') return;
+    setEngraveState((prev) => ({
+      ...prev,
+      impactKey: prev.impactKey + 1,
+      impactScore: result.timingScore,
+    }));
+    const success = result.hitsLanded >= result.hitsRequired && result.timingScore >= 0.55;
+    const stamp = Date.now();
+    recordForgeStepResult({
+      stepId: currentStep.id,
+      type: 'ENGRAVE_RUNE',
+      hitsLanded: result.hitsLanded,
+      hitsRequired: result.hitsRequired,
+      timingScore: result.timingScore,
+      patternId: currentStep.patternId,
+      success,
+      precision: result.timingScore,
+      optional: currentStep.optional,
+    });
+    advanceStep(stamp);
+    setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/rune_fuse', payload: {} });
+    setLocalStatus(success ? 'Rune engraved.' : 'Engraving completed.');
+  };
+
+  const handleEngraveSkip = () => {
+    if (!currentStep || currentStep.type !== 'ENGRAVE_RUNE') return;
+    const hitsRequired = Math.max(1, Math.floor(currentStep.hits ?? 5));
+    setEngraveState((prev) => ({
+      ...prev,
+      impactKey: prev.impactKey + 1,
+      impactScore: 0,
+    }));
+    const stamp = Date.now();
+    recordForgeStepResult({
+      stepId: currentStep.id,
+      type: 'ENGRAVE_RUNE',
+      hitsLanded: 0,
+      hitsRequired,
+      timingScore: 0,
+      patternId: currentStep.patternId,
+      success: false,
+      precision: 0,
+      optional: true,
+    });
+    advanceStep(stamp);
+    setStepStartedNow(stamp);
+    setLocalStatus('Engraving skipped.');
+  };
+
+  const handleFormationHit = (rating: ForgeRingQteRating) => {
+    setFormationState((prev) => ({
+      attempts: prev.attempts + 1,
+      impactKey: prev.impactKey + 1,
+      impactScore: rating === 'perfect' ? 1 : rating === 'good' ? 0.6 : 0,
+    }));
+  };
+
+  const handleFormationComplete = (result: { hitsLanded: number; hitsRequired: number; timingScore: number }) => {
+    if (!currentStep || currentStep.type !== 'LAY_FORMATION') return;
+    setFormationState((prev) => ({
+      ...prev,
+      impactKey: prev.impactKey + 1,
+      impactScore: result.timingScore,
+    }));
+    const stamp = Date.now();
+    recordForgeStepResult({
+      stepId: currentStep.id,
+      type: 'LAY_FORMATION',
+      hitsLanded: result.hitsLanded,
+      hitsRequired: result.hitsRequired,
+      timingScore: result.timingScore,
+      patternId: currentStep.patternId,
+    });
+    advanceStep(stamp);
+    setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/rune_fuse', payload: {} });
+    setLocalStatus('Formation set.');
   };
 
   const handleQuench = () => {
@@ -449,6 +534,15 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     setStepStartedNow(stamp);
     GameEvents.emit({ type: 'forge/quench', payload: {} });
     setLocalStatus('Quenched. Moving on.');
+  };
+
+  const handleHeatToComplete = () => {
+    if (!currentStep || currentStep.type !== 'HEAT_TO') return;
+    const stamp = Date.now();
+    advanceStep(stamp);
+    setStepStartedNow(stamp);
+    GameEvents.emit({ type: 'forge/metal_heat', payload: {} });
+    setLocalStatus('Heat locked in.');
   };
 
   const handleTemperComplete = () => {
@@ -547,13 +641,13 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
           )}
           {currentStep?.type === 'ENGRAVE_RUNE' && (
             <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--engrave">
-              <TimingCircleQTE
-                key={`${currentStep.id}-${engraveState.strokes}`}
-                durationMs={820}
-                tolerance={0.26}
-                sizePx={92}
-                label="Engrave"
-                onResolve={(result) => resolveEngraveStroke(result)}
+              <ForgeRingQte
+                hitsRequired={Math.max(1, Math.floor(currentStep.hits ?? 5))}
+                difficulty={currentStep.difficulty >= 3 ? 'hard' : currentStep.difficulty === 2 ? 'medium' : 'easy'}
+                shrinkMs={currentStep.shrinkMs ?? 820}
+                onHit={(rating) => handleEngraveHit(rating)}
+                onComplete={(result) => handleEngraveComplete(result)}
+                ariaLabel="Engrave rune"
               />
               {engraveState.impactKey > 0 && (
                 <div
@@ -569,9 +663,43 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               )}
             </div>
           )}
+          {currentStep?.type === 'LAY_FORMATION' && (
+            <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--formation">
+              <ForgeRingQte
+                hitsRequired={Math.max(1, Math.floor(currentStep.hits ?? 4))}
+                difficulty={currentStep.difficulty >= 3 ? 'hard' : currentStep.difficulty === 2 ? 'medium' : 'easy'}
+                onHit={(rating) => handleFormationHit(rating)}
+                onComplete={(result) => handleFormationComplete(result)}
+                ariaLabel="Lay formation"
+              />
+              {formationState.impactKey > 0 && (
+                <div
+                  key={`formation-impact-${formationState.impactKey}`}
+                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${formationState.impactScore > 0 ? 'hit' : 'miss'}`}
+                />
+              )}
+              {formationState.impactKey > 0 && formationState.impactScore > 0 && (
+                <div key={`formation-sparks-${formationState.impactKey}`} className="forgeWorkbenchScene__sparks" />
+              )}
+              {formationState.impactKey > 0 && (
+                <div key={`formation-shake-${formationState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+              )}
+            </div>
+          )}
         </ForgeWorkbenchScene>
 
         <div className="forgeHandsOnStepBlock">
+          {currentStep?.type === 'HEAT_TO' && (
+            <ForgeStepHeatTo
+              step={currentStep}
+              heat={heatSetting}
+              onHeatChange={(value) => {
+                setHeatSetting(clampHeat(value));
+                GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
+              }}
+              onComplete={handleHeatToComplete}
+            />
+          )}
           {currentStep?.type === 'HEAT_MATERIAL' && (
             <ForgeStepHeatMaterial
               step={currentStep}
@@ -630,8 +758,25 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
               <div className="forgeStepBody">
                 <div>Engrave the rune: hit clean strokes.</div>
                 <div className="forgeStepMeta">
-                  Strokes: {Math.min(engraveState.strokes, Math.max(1, Math.floor(currentStep.hits ?? 3)))} /{' '}
-                  {Math.max(1, Math.floor(currentStep.hits ?? 3))}
+                  Strokes: {Math.min(engraveState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 5)))} /{' '}
+                  {Math.max(1, Math.floor(currentStep.hits ?? 5))}
+                </div>
+                {currentStep.optional && (
+                  <button type="button" className="worldScreenModuleButton" onClick={handleEngraveSkip}>
+                    Skip engraving
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+          {currentStep?.type === 'LAY_FORMATION' && (
+            <div className="forgeStepCard">
+              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Lay formation'}</div>
+              <div className="forgeStepBody">
+                <div>Lay the formation: place each node in rhythm.</div>
+                <div className="forgeStepMeta">
+                  Strokes: {Math.min(formationState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 4)))} /{' '}
+                  {Math.max(1, Math.floor(currentStep.hits ?? 4))}
                 </div>
               </div>
             </div>

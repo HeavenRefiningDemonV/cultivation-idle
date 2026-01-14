@@ -124,6 +124,19 @@ function scoreEngrave(performance?: Extract<ForgeStepResult, { type: 'ENGRAVE_RU
   return clamp01(precision * 0.7 + success * 0.3);
 }
 
+function scoreRingQteStep(params: {
+  hitsLanded?: number;
+  hitsRequired?: number;
+  timingScore?: number;
+}): number {
+  const hitsRequired = params.hitsRequired ?? 0;
+  const hitsLanded = params.hitsLanded ?? 0;
+  const completionRatio = hitsRequired > 0 ? hitsLanded / hitsRequired : 0;
+  const completionScore = clamp01(0.25 + 0.75 * completionRatio);
+  const timingScore = clamp01(params.timingScore ?? 0);
+  return clamp01(completionScore * (0.55 + 0.45 * timingScore));
+}
+
 function scoreCastOrShape(performance?: Extract<ForgeStepResult, { type: 'CAST_OR_SHAPE' }>, rng?: () => number): number {
   if (!performance) return rng ? 0.55 + rng() * 0.1 : 0.55;
   const base = clamp01(performance.precision ?? 0.65);
@@ -197,7 +210,16 @@ export function computeForgeOutcome(params: {
       }
       case 'ENGRAVE_RUNE': {
         const perf = findPerformance(params.performances, step.id, 'ENGRAVE_RUNE');
-        temperScores.push(scoreEngrave(perf, rng));
+        if (perf?.hitsRequired || perf?.hitsLanded || perf?.timingScore !== undefined) {
+          temperScores.push(scoreRingQteStep(perf));
+        } else {
+          temperScores.push(scoreEngrave(perf, rng));
+        }
+        break;
+      }
+      case 'LAY_FORMATION': {
+        const perf = findPerformance(params.performances, step.id, 'LAY_FORMATION');
+        temperScores.push(scoreRingQteStep(perf ?? {}));
         break;
       }
       default:
@@ -214,7 +236,18 @@ export function computeForgeOutcome(params: {
   const hammerScore = avg(hammerScores, 0.6);
   const quenchScore = avg(quenchScores, 0.6);
   const temperScore = avg(temperScores, 0.6);
-  const scoreOverall = clamp01((heatScore + hammerScore + quenchScore + temperScore) / 4);
+  const bucketScores: Array<{ score: number; present: boolean }> = [
+    { score: heatScore, present: heatScores.length > 0 },
+    { score: hammerScore, present: hammerScores.length > 0 },
+    { score: quenchScore, present: quenchScores.length > 0 },
+    { score: temperScore, present: temperScores.length > 0 },
+  ];
+  const activeBuckets = bucketScores.filter((bucket) => bucket.present).map((bucket) => bucket.score);
+  const scoreOverall = clamp01(
+    activeBuckets.length > 0
+      ? activeBuckets.reduce((sum, value) => sum + value, 0) / activeBuckets.length
+      : 0.6,
+  );
 
   const bonus = params.handsOnBonus ?? {};
   const timeReductionPctApplied = scaleBonus(bonus.timeReductionPct, scoreOverall);
