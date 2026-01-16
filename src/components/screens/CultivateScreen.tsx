@@ -3,7 +3,7 @@ import { REALMS } from '../../constants';
 import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
 import { GATE_ITEMS } from '../../systems/loot';
 import { useActivityStore } from '../../stores/activityStore';
-import { useContentStore } from '../../stores/contentStore';
+import { useContentStore, getItemDef } from '../../stores/contentStore';
 import { useCultivationStore } from '../../stores/cultivationStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
@@ -15,11 +15,11 @@ import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
-import qiSign from "../../assets/onscreen/qisign.png";
 import barLong from "../../assets/menus/bar_long.png";
 import fancyBlock from "../../assets/menus/block_fancy.png";
 import { VerseProgressMiniBar } from '../../ui/cultivation/VerseProgressMiniBar';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
+import { DantianOrb } from '../../ui/cultivation/DantianOrb';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -29,18 +29,35 @@ const ACTIVITY_LABELS: Record<string, string> = {
   ruins: 'Ruins',
 };
 
-export function QiProgressBar({ current, required, pulse }: { current: string; required: string; pulse?: boolean }) {
+export function QiProgressBar({
+  current,
+  required,
+  pulse,
+  isReady,
+  rateLabel,
+}: {
+  current: string;
+  required: string;
+  pulse?: boolean;
+  isReady?: boolean;
+  rateLabel?: string;
+}) {
   const currentVal = D(current);
   const requiredVal = D(required);
   const pct = requiredVal.greaterThan(0)
     ? Math.min(100, currentVal.div(requiredVal).times(100).toNumber())
     : 0;
   return (
-    <div className="progress-bar">
+    <div className={`progress-bar ${isReady ? 'progress-bar--ready' : ''}`}>
       <img className="progress-bar-shape" src={barLong} alt="" aria-hidden="true" />
       <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
         <div className="qiProgressFill" style={{ width: `${pct}%` }} />
+        <div className="qiProgressLabel">
+          Qi: {formatNumber(current)} / {formatNumber(required)}
+        </div>
+        {rateLabel ? <div className="qiProgressRate">+{rateLabel}/s</div> : null}
       </div>
+      {isReady ? <div className="qiProgressReady">Ready</div> : null}
     </div>
 
   );
@@ -126,6 +143,11 @@ export function CultivateScreen() {
     return getItemCount(requiredGateItem);
   }, [getItemCount, requiredGateItem]);
 
+  const requiredGateItemDefinition = useMemo(() => {
+    if (!requiredGateItem) return null;
+    return getItemDef(requiredGateItem) || null;
+  }, [requiredGateItem]);
+
   const hasRequiredToken = useMemo(() => {
     if (!requiredGateItem) return true;
     return gateItemCount > 0;
@@ -156,24 +178,67 @@ export function CultivateScreen() {
     ? heartLawsById[selectedHeartLawId]?.name ?? selectedHeartLawId
     : 'No Heart Law selected';
 
+  const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
+  const heartLawTags = (heartLawDef?.daoTags ?? []).map((tag) => tag.toLowerCase());
+
   const hasPerkForRealm = useCallback(
     (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
     [pathPerks],
   );
 
+  const [breakthroughLabel, setBreakthroughLabel] = useState<'idle' | 'gathering' | 'success'>('idle');
+  const breakthroughTimeoutsRef = useRef<number[]>([]);
+
   const handleBreakthroughClick = useCallback(() => {
     if (!canBreakthrough || isBreakingThrough) return;
 
     setIsBreakingThrough(true);
-    setTimeout(() => {
+    setBreakthroughLabel('gathering');
+    const startTimeout = window.setTimeout(() => {
       breakthrough();
 
-      setTimeout(() => {
+      setBreakthroughLabel('success');
+      const finishTimeout = window.setTimeout(() => {
         setIsBreakingThrough(false);
-      }, 1000);
+        setBreakthroughLabel('idle');
+      }, 600);
+      breakthroughTimeoutsRef.current.push(finishTimeout);
     }, 2000);
+    breakthroughTimeoutsRef.current.push(startTimeout);
 
   }, [canBreakthrough, isBreakingThrough, breakthrough]);
+
+  useEffect(() => {
+    return () => {
+      breakthroughTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      breakthroughTimeoutsRef.current = [];
+    };
+  }, []);
+
+  const requiredQi = D(breakthroughCost || '0');
+  const currentQi = D(qi);
+  const missingQi = requiredQi.minus(currentQi);
+  const qiRatio = requiredQi.greaterThan(0)
+    ? currentQi.div(requiredQi).toNumber()
+    : 0;
+  const isNearReady = qiRatio >= 0.9 && !canBreakthrough;
+
+  const breakthroughRequirementLabel = (() => {
+    if (!hasEnoughQi) {
+      return `Need ${formatNumber(Math.max(0, missingQi.toNumber()))} Qi`;
+    }
+    if (requiredGateItem && !hasRequiredToken) {
+      return `Requires ${requiredGateItemDefinition?.name || requiredGateItem} (${gateItemCount}/1)`;
+    }
+    return 'Ready';
+  })();
+
+  const breakthroughButtonLabel =
+    breakthroughLabel === 'gathering'
+      ? 'Gathering Qi...'
+      : breakthroughLabel === 'success'
+        ? 'Breakthrough!'
+        : 'Attempt Breakthrough';
 
   useEffect(() => {
     if (realm.index >= 1 && !selectedPath) {
@@ -202,7 +267,12 @@ export function CultivateScreen() {
     <div className="cultivationTab">
       <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
       <img className="cultivator" src={cultivator} alt="" aria-hidden="true" />
-      <img className="qi-sign rotate" src={qiSign} alt="" aria-hidden="true" />
+      <DantianOrb
+        heartLawTags={heartLawTags}
+        isCultivating={isCultivating}
+        isNearReady={isNearReady}
+        isReady={canBreakthrough}
+      />
       <button
         type="button"
         className="daoHeartSealButton"
@@ -229,7 +299,13 @@ export function CultivateScreen() {
             <span className="realmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
           </div>
         </div>
-        <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
+        <QiProgressBar
+          current={qi}
+          required={breakthroughCost || '0'}
+          pulse={isCultivating}
+          isReady={canBreakthrough}
+          rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+        />
         <VerseProgressMiniBar
           chapter={chapter}
           comprehension={comprehension}
@@ -242,11 +318,12 @@ export function CultivateScreen() {
             type="button"
             className="button-standard cultivationBreakthroughButton"
             onClick={handleBreakthroughClick}
-            disabled={!canBreakthrough}
+            disabled={!canBreakthrough || isBreakingThrough}
             title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
           >
-            Attempt Breakthrough
+            {breakthroughButtonLabel}
           </button>
+          <div className="cultivationBreakthroughHint">{breakthroughRequirementLabel}</div>
         </div>
       </div>
       {/* <div className="qi-count">{qi}</div> */}

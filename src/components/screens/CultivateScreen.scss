@@ -1,17 +1,3 @@
-@keyframes rotation {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-.rotate {
-  animation: rotation 5s infinite linear;
-}
-
 .cultivationTab {
   display: flex;
   flex-direction: column;
@@ -30,20 +16,10 @@
   transform: translateX(-56%);
 }
 
-.qi-sign {
-  position: fixed;
-  z-index: 1;
-  height: 12vh;
-  width: 12vh;
-  top: 55%;
-  left: 50%;
-  opacity: 90%;
-  transform: translate(-50%, -50%);
-}
-
 .progress-bar {
   display: grid;
   grid-template-areas: "stack";
+  position: relative;
 }
 
 .progress-bar>img {
@@ -65,35 +41,77 @@
   height: 22%;
 
   width: 95%;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
 }
 
 .qiProgressBar--pulse .qiProgressFill {
-  animation: qiPulse 1.8s ease-in-out infinite;
+  animation: qiPulse 2.4s ease-in-out infinite;
 }
 
 .qiProgressFill {
   position: absolute;
   inset: 0;
   width: 0;
-  background: linear-gradient(90deg, #22d3ee, #8b5cf6);
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(148, 163, 184, 0.75));
   transition: width 0.25s ease-out;
 }
 
 @keyframes qiPulse {
   0% {
-    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+    filter: brightness(0.95);
+    opacity: 0.7;
   }
 
   50% {
-    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
+    filter: brightness(1.05);
+    opacity: 0.9;
   }
 
   100% {
-    filter: drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+    filter: brightness(0.95);
+    opacity: 0.7;
   }
 }
 
+.qiProgressLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(11, 16, 32, 0.8);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.qiProgressRate {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(11, 16, 32, 0.7);
+}
+
+.progress-bar--ready .progress-bar-shape {
+  filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.55));
+}
+
+.qiProgressReady {
+  position: absolute;
+  right: 12px;
+  top: -8px;
+  background: rgba(234, 179, 8, 0.9);
+  color: #2d1b06;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 /**/
 
 /*IMPORTANT DON'T TOUCH -AYŞE*/
@@ -447,6 +465,15 @@
   color: #0b1020;
 }
 
+.cultivationBreakthroughHint {
+  grid-area: stack;
+  margin-top: 46px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(11, 16, 32, 0.7);
+  text-align: center;
+}
+
 .qiProgressText {
   position: absolute;
   inset: 0;
@@ -510,7 +537,7 @@
   transform: translate(-50%, -50%);
   width: 0;
   height: 0;
-  z-index: -1;
+  z-index: 18;
   pointer-events: none;
 }
 
