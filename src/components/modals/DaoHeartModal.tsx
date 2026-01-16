@@ -1,5 +1,4 @@
-import { useEffect, type MouseEvent } from 'react';
-import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel';
+import { useEffect, useState, type MouseEvent } from 'react';
 import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget';
 import './DaoHeartModal.scss';
 
@@ -8,6 +7,8 @@ interface DaoHeartModalProps {
 }
 
 export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
+  const [activeTab, setActiveTab] = useState<'heart-law' | 'study'>('heart-law');
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
 
@@ -45,21 +46,56 @@ export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
       >
         <div className="daoHeartModalHeader">
           <h2 className="daoHeartModalTitle">Dao Heart</h2>
-          <button type="button" className="primaryButton primaryButton--secondary" onClick={onClose}>
-            Close
+          <button
+            type="button"
+            className="daoHeartModalClose"
+            onClick={onClose}
+            aria-label="Close Dao Heart"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="daoHeartModalTabs" role="tablist" aria-label="Dao Heart tabs">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'heart-law'}
+            className={`daoHeartModalTab ${activeTab === 'heart-law' ? 'daoHeartModalTab--active' : ''}`}
+            onClick={() => setActiveTab('heart-law')}
+          >
+            Heart Law
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'study'}
+            className={`daoHeartModalTab ${activeTab === 'study' ? 'daoHeartModalTab--active' : ''}`}
+            onClick={() => setActiveTab('study')}
+          >
+            Study
           </button>
         </div>
 
         <div className="daoHeartModalBody">
-          <section className="daoHeartModalSection">
-            <h3 className="daoHeartModalSectionTitle">Heart Law</h3>
-            <HeartLawPanel />
-          </section>
+          {activeTab === 'heart-law' ? (
+            <section className="daoHeartModalSection" role="tabpanel">
+              <div className="daoHeartModalMindPlaceholder">
+                <div className="daoHeartModalMindRadial">Heart Law Mind View (coming soon)</div>
+                <div className="daoHeartModalMindTextPanel">
+                  Focus your Dao Heart to refine inner law and align your cultivation path.
+                </div>
+              </div>
+            </section>
+          ) : null}
 
-          <section className="daoHeartModalSection">
-            <h3 className="daoHeartModalSectionTitle">Study</h3>
-            <StudyModeWidget />
-          </section>
+          {activeTab === 'study' ? (
+            <section className="daoHeartModalSection" role="tabpanel">
+              <div className="daoHeartModalStudyWrap">
+                <StudyModeWidget />
+              </div>
+            </section>
+          ) : null}
         </div>
       </div>
     </div>
