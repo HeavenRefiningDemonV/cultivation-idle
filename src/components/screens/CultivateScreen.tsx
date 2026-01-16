@@ -98,10 +98,6 @@ export function CultivateScreen() {
 
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
   const [showDaoHeart, setShowDaoHeart] = useState(false);
-  const [headerCollapsed, setHeaderCollapsed] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.localStorage.getItem('ui.cultivation.headerCollapsed') === 'true';
-  });
 
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
@@ -111,10 +107,6 @@ export function CultivateScreen() {
   useEffect(() => {
     setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
   }, [setHeaderTitles]);
-
-  useEffect(() => {
-    window.localStorage.setItem('ui.cultivation.headerCollapsed', String(headerCollapsed));
-  }, [headerCollapsed]);
 
   useEffect(() => {
     const previous = lastInsightRef.current;
@@ -285,14 +277,14 @@ export function CultivateScreen() {
         <CultivationHeaderRibbon
           realmLabel={realmLabel}
           substage={realm.substage}
+          realmIndex={realm.index}
           qi={qi}
           qiPerSecond={headerRate}
           rateTooltip={rateTooltip}
           activityLabel={activityLabel}
+          activityType={activeActivity?.type ?? null}
           stability={stability}
           stabilityCap={stabilityCap}
-          collapsed={headerCollapsed}
-          onToggleCollapsed={() => setHeaderCollapsed((value) => !value)}
         />
       </div>
       <div className="cultivationHudRail">

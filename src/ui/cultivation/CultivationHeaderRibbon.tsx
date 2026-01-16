@@ -1,41 +1,75 @@
-import { Activity, Gauge, Mountain, Shield, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
 import { formatNumber } from '../../utils/numbers';
 import './CultivationHeaderRibbon.scss';
 
 type CultivationHeaderRibbonProps = {
   realmLabel: string;
   substage: number;
+  realmIndex?: number;
   qi: string;
   qiPerSecond: string;
   rateTooltip: string;
   activityLabel: string;
+  activityType: string | null;
   stability: number;
   stabilityCap: number;
-  collapsed: boolean;
-  onToggleCollapsed: () => void;
 };
+
+function getRealmIcon(realmLabel: string, realmIndex?: number) {
+  if (realmIndex === 0 || /condensation/i.test(realmLabel)) {
+    return <Cloud size={16} aria-hidden="true" />;
+  }
+  if (/golden core/i.test(realmLabel)) {
+    return <Sun size={16} aria-hidden="true" />;
+  }
+  return <Mountain size={16} aria-hidden="true" />;
+}
 
 export function CultivationHeaderRibbon({
   realmLabel,
   substage,
+  realmIndex,
   qi,
   qiPerSecond,
   rateTooltip,
   activityLabel,
+  activityType,
   stability,
   stabilityCap,
-  collapsed,
-  onToggleCollapsed,
 }: CultivationHeaderRibbonProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const ribbonId = 'cultivationHeaderRibbonPanel';
   const stabilityPct = stabilityCap > 0 ? Math.min(100, (stability / stabilityCap) * 100) : 0;
+  const stabilityTone = stabilityPct >= 70 ? 'ok' : stabilityPct >= 30 ? 'warn' : 'danger';
+  const activityTone = activityType === 'meditate' ? 'active' : activityType ? 'busy' : 'idle';
+  const activityTooltip =
+    activityTone === 'active'
+      ? 'Meditating. Insight and Study are active.'
+      : activityTone === 'busy'
+        ? 'Foreground activity running. Meditation unavailable.'
+        : 'Qi flows passively. Meditate to gain Insight/Study.';
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stored = window.localStorage.getItem('ui.cultivation.headerCollapsed') === '1';
+    setCollapsed(stored);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('ui.cultivation.headerCollapsed', collapsed ? '1' : '0');
+  }, [collapsed]);
 
   return (
     <div className={`cultivationHeaderRibbon ${collapsed ? 'cultivationHeaderRibbon--collapsed' : ''}`}>
-      <div className="cultivationHeaderRibbonContent">
-        <div className="cultivationHeaderRibbonGrid">
+      <div className="cultivationHeaderRibbonContent" id={ribbonId}>
+        <div className={`cultivationHeaderRibbonGrid ${collapsed ? 'cultivationHeaderRibbonGrid--collapsed' : ''}`}>
           <div className="cultivationHeaderRibbonItem">
             <div className="cultivationHeaderRibbonLabel">
-              <Mountain size={14} aria-hidden="true" />
+              <span className="cultivationHeaderRealmIcon" aria-hidden="true">
+                {getRealmIcon(realmLabel, realmIndex)}
+              </span>
               Realm
             </div>
             <div className="cultivationHeaderRibbonValue">{realmLabel}</div>
@@ -46,7 +80,12 @@ export function CultivationHeaderRibbon({
               <Sparkles size={14} aria-hidden="true" />
               Qi
             </div>
-            <div className="cultivationHeaderRibbonValue">{formatNumber(qi)}</div>
+            <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
+              <span className={`cultivationHeaderQiOrb cultivationHeaderQiOrb--${isCultivating(activityType)}`}>
+                <span className="cultivationHeaderQiOrbCore" aria-hidden="true" />
+              </span>
+              {formatNumber(qi)}
+            </div>
           </div>
           <div className="cultivationHeaderRibbonItem" title={rateTooltip}>
             <div className="cultivationHeaderRibbonLabel">
@@ -54,7 +93,7 @@ export function CultivationHeaderRibbon({
               Cultivation Rate
             </div>
             <div className="cultivationHeaderRibbonValue">{formatNumber(qiPerSecond)} /s</div>
-            <div className="cultivationHeaderRibbonSub">Hover for breakdown</div>
+            {!collapsed ? <div className="cultivationHeaderRibbonSub">Hover for breakdown</div> : null}
           </div>
           {!collapsed ? (
             <>
@@ -73,29 +112,44 @@ export function CultivationHeaderRibbon({
                   <Activity size={14} aria-hidden="true" />
                   Foreground Activity
                 </div>
-                <div className="cultivationHeaderRibbonValue">{activityLabel}</div>
+                <div className="cultivationHeaderRibbonValue">
+                  <span
+                    className={`cultivationHeaderActivityBadge cultivationHeaderActivityBadge--${activityTone}`}
+                    title={activityTooltip}
+                  >
+                    <span className="cultivationHeaderActivityBreath" aria-hidden="true" />
+                    {activityLabel}
+                  </span>
+                </div>
               </div>
             </>
-          ) : null}
+          ) : (
+            <div className="cultivationHeaderRibbonCollapsedMeta">
+              <div className="cultivationHeaderRibbonIndicator" title={`Stability ${Math.round(stabilityPct)}%`}>
+                <span
+                  className={`cultivationHeaderStabilityDot cultivationHeaderStabilityDot--${stabilityTone}`}
+                  aria-hidden="true"
+                />
+                <span>{Math.round(stabilityPct)}%</span>
+              </div>
+              <div
+                className={`cultivationHeaderActivityBadge cultivationHeaderActivityBadge--${activityTone}`}
+                title={activityTooltip}
+              >
+                <span className="cultivationHeaderActivityBreath" aria-hidden="true" />
+                {activityLabel}
+              </div>
+            </div>
+          )}
         </div>
-        {collapsed ? (
-          <div className="cultivationHeaderRibbonExtras">
-            <div className="cultivationHeaderRibbonIndicator" title={`Stability ${Math.round(stabilityPct)}%`}>
-              <Shield size={12} aria-hidden="true" />
-              <span>{Math.round(stabilityPct)}%</span>
-            </div>
-            <div className="cultivationHeaderRibbonIndicator" title={`Activity: ${activityLabel}`}>
-              <Activity size={12} aria-hidden="true" />
-              <span>{activityLabel}</span>
-            </div>
-          </div>
-        ) : null}
       </div>
       <button
         type="button"
         className="cultivationHeaderRibbonToggle"
-        onClick={onToggleCollapsed}
-        aria-label={collapsed ? 'Expand header ribbon' : 'Collapse header ribbon'}
+        onClick={() => setCollapsed((value) => !value)}
+        aria-label={collapsed ? 'Expand cultivation header' : 'Collapse cultivation header'}
+        aria-expanded={!collapsed}
+        aria-controls={ribbonId}
       >
         <span aria-hidden="true" className="cultivationHeaderRibbonToggleIcon">
           {collapsed ? '▾' : '▴'}
@@ -103,4 +157,8 @@ export function CultivationHeaderRibbon({
       </button>
     </div>
   );
+}
+
+function isCultivating(activityType: string | null) {
+  return activityType === 'meditate' ? 'active' : 'passive';
 }

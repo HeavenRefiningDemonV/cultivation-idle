@@ -26,6 +26,11 @@
   gap: 10px 16px;
 }
 
+.cultivationHeaderRibbonGrid--collapsed {
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  align-items: center;
+}
+
 .cultivationHeaderRibbonItem {
   display: flex;
   flex-direction: column;
@@ -46,6 +51,98 @@
   font-weight: 700;
   font-size: 18px;
   color: #0b1020;
+}
+
+.cultivationHeaderRibbonValue--qi {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cultivationHeaderQiOrb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(226, 232, 240, 0.8), rgba(148, 163, 184, 0.6));
+  box-shadow: 0 0 6px rgba(148, 163, 184, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cultivationHeaderQiOrb--active {
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.75);
+}
+
+.cultivationHeaderQiOrbCore {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.8);
+}
+
+.cultivationHeaderRealmIcon {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(11, 16, 32, 0.6);
+}
+
+.cultivationHeaderRibbonCollapsedMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cultivationHeaderStabilityDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  background: rgba(148, 163, 184, 0.8);
+}
+
+.cultivationHeaderStabilityDot--ok {
+  background: rgba(34, 197, 94, 0.9);
+}
+
+.cultivationHeaderStabilityDot--warn {
+  background: rgba(234, 179, 8, 0.9);
+}
+
+.cultivationHeaderStabilityDot--danger {
+  background: rgba(239, 68, 68, 0.9);
+}
+
+.cultivationHeaderActivityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(11, 16, 32, 0.15);
+}
+
+.cultivationHeaderActivityBadge--active {
+  background: rgba(191, 219, 254, 0.8);
+}
+
+.cultivationHeaderActivityBadge--busy {
+  background: rgba(252, 211, 77, 0.6);
+}
+
+.cultivationHeaderActivityBadge--idle {
+  background: rgba(226, 232, 240, 0.6);
+}
+
+.cultivationHeaderActivityBreath {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.7);
 }
 
 .cultivationHeaderRibbonSub {
@@ -75,8 +172,8 @@
 .cultivationHeaderRibbonToggle {
   align-self: center;
   margin-bottom: 6px;
-  width: 32px;
-  height: 20px;
+  width: 44px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
