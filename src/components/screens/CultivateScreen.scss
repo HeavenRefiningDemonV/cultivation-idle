@@ -1,10 +1,17 @@
 .cultivationScreenRoot {
   position: relative;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 16px;
+  width: 100%;
   height: 100%;
   overflow: hidden;
+  --cultivation-hud-max-w: 980px;
+  --cultivation-hud-side-pad: 40px;
+  --cultivation-anchor-y: 56%;
+  --cultivation-stack-gap-1: 10px;
+  --cultivation-stack-gap-2: 14px;
+  --qi-frame-h: 44px;
+  --qi-track-h: 18px;
+  --verse-frame-h: 30px;
+  --verse-track-h: 12px;
 }
 
 .cultivationSceneLayer {
@@ -16,62 +23,69 @@
 
 .cultivationCultivatorArt {
   position: absolute;
-  height: 124vh;
+  height: clamp(860px, 120vh, 1180px);
   left: 50%;
   aspect-ratio: 1280/1002;
-  top: -6vh;
+  top: 0;
   transform: translateX(-56%);
 }
 
 .cultivationHeaderRail {
-  position: relative;
-  z-index: 6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 10px 24px 0;
 }
 
 .cultivationHudRail {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: clamp(180px, 28vh, 320px);
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
 }
 
 .cultivationHudStack {
-  width: min(900px, calc(100vw - 48px));
+  position: absolute;
+  left: 50%;
+  top: var(--cultivation-anchor-y);
+  transform: translateX(-50%);
+  width: min(var(--cultivation-hud-max-w), calc(100% - var(--cultivation-hud-side-pad) * 2));
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--cultivation-stack-gap-1);
   align-items: center;
+  pointer-events: auto;
+  margin-top: calc(var(--qi-frame-h) * -0.5);
 }
 
 .progress-bar {
-  display: grid;
-  grid-template-areas: "stack";
   position: relative;
+  width: 100%;
+  height: var(--qi-frame-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .progress-bar>img {
-  z-index: 6;
-  grid-area: stack;
-
-  justify-self: center;
-  align-self: center;
-
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   width: 100%;
+  height: 100%;
+  object-fit: fill;
 }
 
 .qiProgressBar {
   position: relative;
-  z-index: 5;
-  grid-area: stack;
-  justify-self: center;
-  align-self: center;
-  height: 22%;
-
-  width: 95%;
-  background: rgba(255, 255, 255, 0.12);
+  z-index: 1;
+  width: calc(100% - 64px);
+  height: var(--qi-track-h);
+  background: rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  border-radius: 999px;
 }
 
 .qiProgressBar--pulse .qiProgressFill {
@@ -214,6 +228,8 @@
   justify-content: space-between;
   gap: 12px;
   align-items: center;
+  margin-bottom: 8px;
+  pointer-events: none;
 }
 
 .cultivationRealmTag {
@@ -222,14 +238,16 @@
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(12, 16, 26, 0.75);
+  background: rgba(15, 18, 28, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
+  color: rgba(255, 255, 255, 0.85);
   font-size: 12px;
   font-weight: 600;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  max-width: 48%;
-  flex-wrap: wrap;
+  max-width: 46%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cultivationRealmTag--next {
@@ -248,39 +266,44 @@
 
 .cultivationBreakthroughRow {
   position: relative;
-  width: min(520px, 100%);
-  display: grid;
-  grid-template-areas: "stack";
+  width: clamp(320px, 44vw, 520px);
+  aspect-ratio: 1280 / 720;
+  display: flex;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
+  margin-top: var(--cultivation-stack-gap-2);
   z-index: 2;
 }
 
 .cultivationBreakthroughPlate {
-  grid-area: stack;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  z-index: 1;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .cultivationBreakthroughButton {
-  grid-area: stack;
-  z-index: 2;
-  width: min(320px, 80%);
-  font-size: 18px;
+  z-index: 1;
+  width: min(72%, 420px);
+  height: 44px;
+  font-size: 16px;
   font-weight: 700;
-  padding: 10px 16px;
+  padding: 0 14px;
   background: transparent;
   color: #0b1020;
 }
 
 .cultivationBreakthroughHint {
-  grid-area: stack;
-  margin-top: 46px;
+  position: absolute;
+  bottom: 10px;
   font-size: 12px;
   font-weight: 600;
   color: rgba(11, 16, 32, 0.7);
   text-align: center;
+  width: 100%;
 }
 
 .breakthrough-effects {
@@ -292,6 +315,39 @@
   height: 0;
   z-index: 18;
   pointer-events: none;
+}
+
+.cultivationSceneLayer .dantianOrb {
+  position: absolute;
+  top: var(--cultivation-anchor-y);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 900px) {
+  .cultivationScreenRoot {
+    --cultivation-hud-side-pad: 24px;
+  }
+
+  .cultivationBreakthroughRow {
+    width: clamp(300px, 56vw, 460px);
+  }
+}
+
+@media (max-width: 480px) {
+  .cultivationScreenRoot {
+    --qi-frame-h: 40px;
+    --verse-frame-h: 26px;
+  }
+
+  .cultivationBreakthroughButton {
+    width: 86%;
+    font-size: 15px;
+  }
+
+  .cultivationRealmTag {
+    max-width: 44%;
+  }
 }
 
 .breakthrough-effects.animate::before {
