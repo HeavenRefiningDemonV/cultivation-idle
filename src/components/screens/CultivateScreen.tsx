@@ -19,6 +19,7 @@ import qiSign from "../../assets/onscreen/qisign.png";
 import barLong from "../../assets/menus/bar_long.png";
 import fancyBlock from "../../assets/menus/block_fancy.png";
 import { VerseProgressMiniBar } from '../../ui/cultivation/VerseProgressMiniBar';
+import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -27,55 +28,6 @@ const ACTIVITY_LABELS: Record<string, string> = {
   trial: 'Trial',
   ruins: 'Ruins',
 };
-
-function CultivationTabHeaderBar({
-  realmLabel,
-  substage,
-  qi,
-  qiPerSecond,
-  rateTooltip,
-  activityLabel,
-  stability,
-  stabilityCap,
-}: {
-  realmLabel: string;
-  substage: number;
-  qi: string;
-  qiPerSecond: string;
-  rateTooltip: string;
-  activityLabel: string;
-  stability: number;
-  stabilityCap: number;
-}) {
-  const stabilityPct = stabilityCap > 0 ? Math.min(100, (stability / stabilityCap) * 100) : 0;
-  return (
-    <div className="cultivationHeader">
-      <div className="cultivationHeaderItem">
-        <div className="cultivationHeaderLabel">Realm</div>
-        <div className="cultivationHeaderValue">{realmLabel}</div>
-        <div className="cultivationHeaderSub">Stage {substage}</div>
-      </div>
-      <div className="cultivationHeaderItem">
-        <div className="cultivationHeaderLabel">Qi</div>
-        <div className="cultivationHeaderValue">{formatNumber(qi)}</div>
-      </div>
-      <div className="cultivationHeaderItem" title={rateTooltip}>
-        <div className="cultivationHeaderLabel">Cultivation Rate</div>
-        <div className="cultivationHeaderValue">{formatNumber(qiPerSecond)} /s</div>
-        <div className="cultivationHeaderSub">Hover for breakdown</div>
-      </div>
-      <div className="cultivationHeaderItem">
-        <div className="cultivationHeaderLabel">Stability</div>
-        <div className="cultivationHeaderValue">{Math.round(stabilityPct)}%</div>
-        <div className="cultivationHeaderSub">{stability}/{stabilityCap}</div>
-      </div>
-      <div className="cultivationHeaderItem">
-        <div className="cultivationHeaderLabel">Foreground Activity</div>
-        <div className="cultivationHeaderValue">{activityLabel}</div>
-      </div>
-    </div>
-  );
-}
 
 export function QiProgressBar({ current, required, pulse }: { current: string; required: string; pulse?: boolean }) {
   const currentVal = D(current);
@@ -129,6 +81,10 @@ export function CultivateScreen() {
 
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
   const [showDaoHeart, setShowDaoHeart] = useState(false);
+  const [headerCollapsed, setHeaderCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem('ui.cultivation.headerCollapsed') === 'true';
+  });
 
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
@@ -138,6 +94,10 @@ export function CultivateScreen() {
   useEffect(() => {
     setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
   }, [setHeaderTitles]);
+
+  useEffect(() => {
+    window.localStorage.setItem('ui.cultivation.headerCollapsed', String(headerCollapsed));
+  }, [headerCollapsed]);
 
   useEffect(() => {
     const previous = lastInsightRef.current;
@@ -290,7 +250,7 @@ export function CultivateScreen() {
         </div>
       </div>
       {/* <div className="qi-count">{qi}</div> */}
-      <CultivationTabHeaderBar
+      <CultivationHeaderRibbon
         realmLabel={realmLabel}
         substage={realm.substage}
         qi={qi}
@@ -299,6 +259,8 @@ export function CultivateScreen() {
         activityLabel={activityLabel}
         stability={stability}
         stabilityCap={stabilityCap}
+        collapsed={headerCollapsed}
+        onToggleCollapsed={() => setHeaderCollapsed((value) => !value)}
       />
 
 

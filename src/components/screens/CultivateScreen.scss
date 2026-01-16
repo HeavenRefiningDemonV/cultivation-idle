@@ -116,43 +116,6 @@
 /*-------------------------------------------*/
 
 
-.cultivationHeader {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  z-index: 6;
-  background: rgba(15, 18, 28, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
-  margin: 0 40px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
-}
-
-.cultivationHeaderItem {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cultivationHeaderLabel {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #9ca3af;
-}
-
-.cultivationHeaderValue {
-  font-weight: 700;
-  font-size: 18px;
-  color: #e5e7eb;
-}
-
-.cultivationHeaderSub {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
 .cultivationGrid {
   display: grid;
   grid-template-columns: 1fr;
