@@ -1,0 +1,210 @@
+.heartLawMindView {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #1f2937;
+}
+
+.heartLawMindHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.heartLawMindTitle {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.heartLawMindSubtitle {
+  font-size: 13px;
+  color: rgba(31, 41, 55, 0.7);
+}
+
+.heartLawMindSeals {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.heartLawMindSeal {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(185, 28, 28, 0.12);
+  color: rgba(185, 28, 28, 0.8);
+  border: 1px solid rgba(185, 28, 28, 0.25);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.heartLawMindRadial {
+  position: relative;
+  height: 320px;
+  display: grid;
+  place-items: center;
+}
+
+.heartLawMindRingSegments {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  mask: radial-gradient(circle, transparent 56%, black 58%);
+  opacity: 0.6;
+}
+
+.heartLawMindRing {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+}
+
+.heartLawMindRingBase {
+  fill: none;
+  stroke: rgba(148, 131, 99, 0.35);
+  stroke-width: 10;
+}
+
+.heartLawMindRingProgress {
+  fill: none;
+  stroke: rgba(219, 165, 61, 0.75);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.heartLawMindOrb {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(248, 250, 252, 0.9), rgba(203, 213, 225, 0.65));
+  border: 1px solid rgba(148, 131, 99, 0.4);
+  box-shadow: inset 0 0 18px rgba(120, 94, 54, 0.1);
+}
+
+.heartLawMindNodes {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+}
+
+.heartLawMindNode {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: rotate(var(--angle)) translate(0, -120px) rotate(calc(var(--angle) * -1));
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 131, 99, 0.4);
+  background: rgba(248, 250, 252, 0.8);
+  color: rgba(31, 41, 55, 0.7);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.heartLawMindNode.is-unlocked {
+  background: rgba(227, 213, 184, 0.85);
+  color: rgba(31, 41, 55, 0.85);
+}
+
+.heartLawMindNode.is-current {
+  background: rgba(240, 202, 131, 0.9);
+  box-shadow: 0 0 0 2px rgba(240, 202, 131, 0.5);
+  color: rgba(31, 41, 55, 0.95);
+}
+
+.heartLawMindNode.is-selected {
+  transform: rotate(var(--angle)) translate(0, -120px) rotate(calc(var(--angle) * -1)) scale(1.06);
+}
+
+.heartLawMindNode:hover,
+.heartLawMindNode:focus-visible {
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.2);
+  outline: none;
+}
+
+.heartLawMindPanel {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(148, 131, 99, 0.35);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: inset 0 0 14px rgba(120, 94, 54, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.heartLawMindRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.heartLawMindResonance {
+  font-weight: 600;
+}
+
+.heartLawMindProgress {
+  color: rgba(31, 41, 55, 0.65);
+}
+
+.heartLawMindVerseSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heartLawMindVerseTitle {
+  font-weight: 700;
+}
+
+.heartLawMindVerseText {
+  color: rgba(31, 41, 55, 0.8);
+  font-size: 13px;
+}
+
+.heartLawMindFooter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.heartLawMindRequirement,
+.heartLawMindEta {
+  color: rgba(31, 41, 55, 0.65);
+}
+
+.heartLawMindChangeButton {
+  padding: 8px 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .heartLawMindRadial {
+    height: 280px;
+  }
+
+  .heartLawMindRingSegments,
+  .heartLawMindRing,
+  .heartLawMindNodes {
+    width: 200px;
+    height: 200px;
+  }
+
+  .heartLawMindNode {
+    transform: rotate(var(--angle)) translate(0, -100px) rotate(calc(var(--angle) * -1));
+  }
+}

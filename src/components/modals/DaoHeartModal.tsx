@@ -1,5 +1,6 @@
 import { useEffect, useState, type MouseEvent } from 'react';
 import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget';
+import { HeartLawMindView } from '../../ui/cultivation/heartLaw/HeartLawMindView';
 import './DaoHeartModal.scss';
 
 interface DaoHeartModalProps {
@@ -80,12 +81,7 @@ export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
         <div className="daoHeartModalBody">
           {activeTab === 'heart-law' ? (
             <section className="daoHeartModalSection" role="tabpanel">
-              <div className="daoHeartModalMindPlaceholder">
-                <div className="daoHeartModalMindRadial">Heart Law Mind View (coming soon)</div>
-                <div className="daoHeartModalMindTextPanel">
-                  Focus your Dao Heart to refine inner law and align your cultivation path.
-                </div>
-              </div>
+              <HeartLawMindView />
             </section>
           ) : null}
 
