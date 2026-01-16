@@ -11,6 +11,8 @@ import { resolveBountyDestination } from '../../utils/bountyRouting';
 import { CityMapHub } from './CityMapHub';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 
+const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
+
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },
   gateTrial: { label: 'Gate Trial', prompt: 'Coming in Prompt 6' },
@@ -62,12 +64,17 @@ export function WorldScreen() {
     return citiesSorted.find((city) => city.id === currentCityId) ?? null;
   }, [citiesSorted, currentCityId]);
 
+  const visibleCityModules = useMemo(() => {
+    if (!selectedCity) return [];
+    return selectedCity.modules.filter((moduleKey) => !WORLD_SCREEN_HIDDEN_MODULES.has(moduleKey));
+  }, [selectedCity]);
+
   const selectedModuleKey = useMemo(() => {
     if (!selectedCity) return null;
     const stored = selectedModuleByCity[selectedCity.id];
-    if (stored && selectedCity.modules.includes(stored)) return stored;
-    return selectedCity.modules?.[0] ?? null;
-  }, [selectedCity, selectedModuleByCity]);
+    if (stored && visibleCityModules.includes(stored)) return stored;
+    return visibleCityModules?.[0] ?? null;
+  }, [selectedCity, selectedModuleByCity, visibleCityModules]);
 
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const worldModalKey = useUIStore((state) => state.worldBuildingModalKey);
@@ -135,10 +142,10 @@ export function WorldScreen() {
   const handleOpenModule = useCallback(
     (moduleKey: string) => {
       if (!selectedCity) return;
-      if (!selectedCity.modules.includes(moduleKey)) return;
+      if (!visibleCityModules.includes(moduleKey)) return;
       openWorldModule({ cityId: selectedCity.id, moduleKey, source: 'world-map' });
     },
-    [selectedCity],
+    [selectedCity, visibleCityModules],
   );
 
 
@@ -222,7 +229,7 @@ export function WorldScreen() {
 
           <div className={'worldScreenPanel worldScreenHubPanel'}>
             <CityMapHub
-              modules={selectedCity.modules}
+              modules={visibleCityModules}
               activeModuleKey={activeModuleKey}
               getModuleLabel={(moduleKey) => getModuleMeta(moduleKey).label}
               onOpenModule={handleOpenModule}

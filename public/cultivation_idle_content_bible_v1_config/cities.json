@@ -7,12 +7,9 @@
     "modules": [
       "outskirts",
       "gateTrial",
-      "ruins",
       "manualPavilion",
       "apothecary",
-      "alchemy",
       "forge",
-      "talismanStudio",
       "bounties",
       "expeditions"
     ],
@@ -37,12 +34,9 @@
     "modules": [
       "outskirts",
       "gateTrial",
-      "ruins",
       "manualPavilion",
       "apothecary",
-      "alchemy",
       "forge",
-      "talismanStudio",
       "bounties",
       "expeditions"
     ],
@@ -67,12 +61,9 @@
     "modules": [
       "outskirts",
       "gateTrial",
-      "ruins",
       "manualPavilion",
       "apothecary",
-      "alchemy",
       "forge",
-      "talismanStudio",
       "bounties",
       "expeditions"
     ],
@@ -97,12 +88,9 @@
     "modules": [
       "outskirts",
       "gateTrial",
-      "ruins",
       "manualPavilion",
       "apothecary",
-      "alchemy",
       "forge",
-      "talismanStudio",
       "bounties",
       "expeditions"
     ],
@@ -127,12 +115,9 @@
     "modules": [
       "outskirts",
       "gateTrial",
-      "ruins",
       "manualPavilion",
       "apothecary",
-      "alchemy",
       "forge",
-      "talismanStudio",
       "bounties",
       "expeditions"
     ],

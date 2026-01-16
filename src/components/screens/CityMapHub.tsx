@@ -11,6 +11,8 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 
+const HIDDEN_HUB_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
+
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
   apothecary: { leftPct: 31, topPct: 41.5 },
@@ -63,6 +65,7 @@ export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenMod
     <div className="cityMapHub">
       <div className="cityMapHubMap" aria-label="City map">
         {modules.map((moduleKey) => {
+          if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
           const isActive = activeModuleKey === moduleKey;
