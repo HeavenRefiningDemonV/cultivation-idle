@@ -69,11 +69,11 @@
 
 .combat-minibar__bar-track {
   position: relative;
-  background: #111827;
-  border-radius: 8px;
+  background: #ededed;
+  border-radius: 4px;
   overflow: hidden;
   min-height: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .combat-minibar__bar-fill {
@@ -145,7 +145,7 @@
 .combat-minibar__timer-progress {
   position: relative;
   height: 8px;
-  background: #0f172a;
+  background: #e6e6e6;
   border-radius: 6px;
   overflow: hidden;
 }

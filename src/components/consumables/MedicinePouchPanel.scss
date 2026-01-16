@@ -1,10 +1,10 @@
 .medicinePouchPanel {
   margin-bottom: 16px;
   padding: 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #0f172a;
-  color: #e2e8f0;
+  border: 1px solid #d1d1d1;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #2d2d2d;
 }
 
 .medicinePouchPanelHeader {
@@ -22,12 +22,12 @@
 
 .medicinePouchSubtitle {
   font-size: 13px;
-  color: #cbd5e1;
+  color: #4a4a4a;
 }
 
 .medicinePouchFootnote {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5c5c5c;
   text-align: right;
 }
 
@@ -38,9 +38,9 @@
 }
 
 .medicinePouchCard {
-  border: 1px solid #1e293b;
-  background: #111827;
-  border-radius: 10px;
+  border: 1px solid #d1d1d1;
+  background: #ffffff;
+  border-radius: 8px;
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -61,13 +61,13 @@
 
 .medicinePouchCardSubtitle {
   font-size: 13px;
-  color: #cbd5e1;
+  color: #4a4a4a;
 }
 
 .medicinePouchTag {
   padding: 4px 8px;
-  background: #0ea5e9;
-  color: #0b1220;
+  background: #dedede;
+  color: #1f1f1f;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 700;
@@ -77,7 +77,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #cbd5e1;
+  color: #3a3a3a;
 }
 
 .medicinePouchField {
@@ -100,27 +100,27 @@
 .medicinePouchSelect,
 .medicinePouchInput {
   flex: 1;
-  background: #0b1220;
-  border: 1px solid #1f2937;
-  color: #e2e8f0;
-  border-radius: 6px;
+  background: #f0f0f0;
+  border: 1px solid #c7c7c7;
+  color: #2d2d2d;
+  border-radius: 4px;
   padding: 6px;
 }
 
 .medicinePouchButton {
-  background: #0ea5e9;
+  background: #d1d1d1;
   border: none;
-  color: #0b1220;
+  color: #1f1f1f;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 4px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .medicinePouchButton--ghost {
   background: transparent;
-  color: #94a3b8;
-  border: 1px solid #1f2937;
+  color: #5c5c5c;
+  border: 1px solid #c7c7c7;
 }
 
 .medicinePouchCheckbox {
@@ -128,10 +128,10 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #cbd5e1;
+  color: #3a3a3a;
 }
 
 .medicinePouchHint {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5c5c5c;
 }

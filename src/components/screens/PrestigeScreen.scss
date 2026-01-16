@@ -397,13 +397,13 @@
 }
 
 .prestigeScreenModalCard {
-  background: #111827;
-  border: 3px solid #ff6b6b;
-  border-radius: 14px;
+  background: #f5f5f5;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
   padding: 24px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
 .prestigeScreenModalTitle {
@@ -414,7 +414,7 @@
 }
 
 .prestigeScreenModalText {
-  color: #ffffff;
+  color: #1f2937;
   margin: 0 0 16px 0;
 }
 
@@ -430,7 +430,7 @@
 .prestigeScreenModalButton {
   flex: 1;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 4px;
   border: none;
   font-weight: 700;
   color: #000000;
@@ -439,7 +439,7 @@
 }
 
 .prestigeScreenModalCancel {
-  background: #374151;
+  background: #d9d9d9;
 }
 
 .prestigeScreenModalConfirm {

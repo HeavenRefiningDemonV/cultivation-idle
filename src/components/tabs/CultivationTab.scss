@@ -7,11 +7,11 @@
 }
 
 .cultivationTabPanel {
-  background-color: rgba(26, 26, 26, 0.85);
-  border: 1px solid #374151;
-  border-radius: 14px;
+  background: linear-gradient(180deg, #f7f7f7, #e1e1e1);
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
   padding: 32px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .cultivationTabTopPanel {
@@ -128,11 +128,11 @@
 }
 
 .cultivationTabStatCard {
-  background-color: #111827;
-  border: 1px solid #374151;
-  border-radius: 14px;
+  background: #f0f0f0;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
   padding: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .cultivationTabStatCardLabel {
@@ -174,17 +174,17 @@
 
 .cultivationTabFocusCard {
   padding: 16px;
-  border: 2px solid #374151;
-  border-radius: 14px;
-  background: rgba(45, 55, 72, 0.35);
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.04);
   text-align: left;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .cultivationTabFocusCardActive {
-  border-color: #7dd3fc;
-  background: rgba(125, 211, 252, 0.08);
-  box-shadow: 0 0 20px rgba(125, 211, 252, 0.25);
+  border-color: #9ac5d7;
+  background: rgba(125, 211, 252, 0.12);
+  box-shadow: 0 0 12px rgba(125, 211, 252, 0.25);
 }
 
 .cultivationTabFocusTitle {
@@ -247,7 +247,7 @@
 .cultivationTabBreakthroughButton {
   padding: 16px 32px;
   border: none;
-  border-radius: 14px;
+  border-radius: 6px;
   font-size: 20px;
   font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
@@ -261,8 +261,8 @@
 }
 
 .cultivationTabBreakthroughDisabled {
-  background: #374151;
-  color: #000000;
+  background: #c8c8c8;
+  color: #5a5a5a;
   cursor: not-allowed;
 }
 
@@ -277,11 +277,11 @@
 }
 
 .cultivationTabUpgradeCard {
-  background: rgba(55, 65, 81, 0.35);
-  border: 1px solid #374151;
-  border-radius: 14px;
+  background: #efefef;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
   padding: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .cultivationTabIdleCard {
@@ -334,7 +334,7 @@
 .cultivationTabUpgradeButton {
   width: 100%;
   padding: 8px 16px;
-  border-radius: 10px;
+  border-radius: 4px;
   font-weight: 600;
   border: none;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
@@ -347,8 +347,8 @@
 }
 
 .cultivationTabUpgradeButtonDisabled {
-  background: #374151;
-  color: #000000;
+  background: #c8c8c8;
+  color: #5a5a5a;
   cursor: not-allowed;
 }
 
