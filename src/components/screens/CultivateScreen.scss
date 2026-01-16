@@ -1,19 +1,48 @@
-.cultivationTab {
-  display: flex;
-  flex-direction: column;
+.cultivationScreenRoot {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
   gap: 16px;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
 }
 
-.cultivator {
-  position: fixed;
+.cultivationSceneLayer {
+  position: absolute;
+  inset: 0;
   z-index: 0;
+  pointer-events: none;
+}
+
+.cultivationCultivatorArt {
+  position: absolute;
   height: 124vh;
-  left: 50vw;
+  left: 50%;
   aspect-ratio: 1280/1002;
   top: -6vh;
   transform: translateX(-56%);
+}
+
+.cultivationHeaderRail {
+  position: relative;
+  z-index: 6;
+}
+
+.cultivationHudRail {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: clamp(180px, 28vh, 320px);
+}
+
+.cultivationHudStack {
+  width: min(900px, calc(100vw - 48px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
 .progress-bar {
@@ -134,38 +163,6 @@
 /*-------------------------------------------*/
 
 
-.cultivationGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  align-items: start;
-}
-
-.cultivationColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cultivationSection {
-  background: rgba(18, 23, 36, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
-}
-
-.cultivationSection summary {
-  list-style: none;
-  display: none;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.cultivationSection summary::-webkit-details-marker {
-  display: none;
-}
-
 .daoHeartSealButton {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 84px);
@@ -207,199 +204,11 @@
   transform: translateY(0);
 }
 
-.primaryButton {
-  color: #0b1020;
-  background: transparent;
-  width: 30vh;
-  z-index: 12;
-  justify-self: center;
-  align-self: center;
-  border: none;
-  padding: 10px 14px;
-  font-weight: 700;
-  font-family: 'Protest Revolution';
-  font-size: 3vh;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.primaryButton:hover {
-  transform: translateY(-1px);
-  background: none;
-  border: none;
-}
-
-.primaryButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.primaryButton--secondary {
-  background: linear-gradient(90deg, #334155, #0ea5e9);
-  color: #e2e8f0;
-}
-
-.sectionToggleHint {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.sectionBody {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cultivationPanel {
-  background: rgba(10, 13, 22, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.panelHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.panelTitle {
-  font-weight: 700;
-  font-size: 16px;
-  color: #f3f4f6;
-}
-
-.panelSub {
-  font-size: 13px;
-  color: #a5b4fc;
-}
-
-.inlineMessage {
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.inlineMessage--warning {
-  background: rgba(248, 180, 0, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  color: #fcd34d;
-}
-
-.inlineMessage--muted {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: #cbd5e1;
-}
-
-.breathSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.breathSectionLabel {
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.breathDial {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 8px;
-}
-
-.breathDialOption {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  padding: 10px;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease;
-  color: #e5e7eb;
-}
-
-.breathDialOption:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.breathDialOption--active {
-  border-color: #22d3ee;
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
-  background: rgba(34, 211, 238, 0.08);
-}
-
-.breathDialLabel {
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.breathDialHint {
-  font-size: 12px;
-  color: #a5b4fc;
-}
-
-.offlineHint {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.progressRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.progressLabel {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #9ca3af;
-}
-
-.progressValue {
-  font-weight: 700;
-  font-size: 15px;
-  color: #e5e7eb;
-}
-
-.progressStatus {
-  font-weight: 700;
-  color: #f97316;
-}
-
-.progressStatus--ready {
-  color: #4ade80;
-}
-
-.cultivationProgressStack {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(var(--ui-bottom-nav-total) + 16px);
-  width: min(980px, calc(100vw - 40px));
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 20;
-  align-items: center;
-}
-
-.cultivationProgressStack .progress-bar {
+.cultivationHudStack .progress-bar {
   width: 100%;
 }
 
-.realmTags {
+.cultivationRealmTags {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -407,7 +216,7 @@
   align-items: center;
 }
 
-.realmTag {
+.cultivationRealmTag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -423,16 +232,16 @@
   flex-wrap: wrap;
 }
 
-.realmTag--next {
+.cultivationRealmTag--next {
   justify-content: flex-end;
   text-align: right;
 }
 
-.realmTagIcon {
+.cultivationRealmTagIcon {
   font-size: 14px;
 }
 
-.realmTagSub {
+.cultivationRealmTagSub {
   font-weight: 500;
   color: rgba(226, 232, 240, 0.7);
 }
@@ -473,62 +282,6 @@
   color: rgba(11, 16, 32, 0.7);
   text-align: center;
 }
-
-.qiProgressText {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: #0b1020;
-  font-weight: 700;
-  mix-blend-mode: screen;
-}
-
-.insightChoices {
-  display: grid;
-  gap: 8px;
-}
-
-.insightChoice {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 8px;
-}
-
-.insightChoiceTitle {
-  font-weight: 700;
-  color: #e5e7eb;
-}
-
-.insightChoiceDesc {
-  font-size: 13px;
-  color: #cbd5e1;
-}
-
-.insightDefault {
-  font-size: 12px;
-  color: #a5b4fc;
-}
-
-@media (max-width: 900px) {
-  .cultivationGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .cultivationSection summary {
-    display: flex;
-    padding: 4px 0;
-  }
-
-  .sectionBody {
-    margin-top: 6px;
-  }
-}
-
-/*-------------------*/
 
 .breakthrough-effects {
   position: absolute;

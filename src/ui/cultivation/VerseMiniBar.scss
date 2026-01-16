@@ -1,0 +1,49 @@
+.verseMiniBar {
+  display: grid;
+  grid-template-areas: "stack";
+  width: min(520px, 100%);
+  align-self: center;
+  opacity: 0.85;
+}
+
+.verseMiniBarFrame {
+  grid-area: stack;
+  justify-self: center;
+  align-self: center;
+  width: 100%;
+  z-index: 1;
+}
+
+.verseMiniBarTrack {
+  grid-area: stack;
+  position: relative;
+  justify-self: center;
+  align-self: center;
+  width: 92%;
+  height: 16%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.verseMiniBarFill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg, rgba(100, 116, 139, 0.6), rgba(148, 163, 184, 0.7));
+  transition: width 0.25s ease-out;
+}
+
+.verseMiniBarLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(5, 10, 20, 0.75);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.35);
+}

@@ -17,7 +17,7 @@ import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import barLong from "../../assets/menus/bar_long.png";
 import fancyBlock from "../../assets/menus/block_fancy.png";
-import { VerseProgressMiniBar } from '../../ui/cultivation/VerseProgressMiniBar';
+import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb';
 import './CultivateScreen.scss';
@@ -174,10 +174,6 @@ export function CultivateScreen() {
   const isCultivating = activeActivity?.type === 'meditate';
   const headerRate = effectiveRate.toString();
 
-  const heartLawName = selectedHeartLawId
-    ? heartLawsById[selectedHeartLawId]?.name ?? selectedHeartLawId
-    : 'No Heart Law selected';
-
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
   const heartLawTags = (heartLawDef?.daoTags ?? []).map((tag) => tag.toLowerCase());
 
@@ -264,15 +260,17 @@ export function CultivateScreen() {
   ]);
 
   return (
-    <div className="cultivationTab">
+    <div className="cultivationScreenRoot">
       <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
-      <img className="cultivator" src={cultivator} alt="" aria-hidden="true" />
-      <DantianOrb
-        heartLawTags={heartLawTags}
-        isCultivating={isCultivating}
-        isNearReady={isNearReady}
-        isReady={canBreakthrough}
-      />
+      <div className="cultivationSceneLayer" aria-hidden="true">
+        <img className="cultivationCultivatorArt" src={cultivator} alt="" />
+        <DantianOrb
+          heartLawTags={heartLawTags}
+          isCultivating={isCultivating}
+          isNearReady={isNearReady}
+          isReady={canBreakthrough}
+        />
+      </div>
       <button
         type="button"
         className="daoHeartSealButton"
@@ -283,161 +281,59 @@ export function CultivateScreen() {
       >
         Dao
       </button>
-      <div className="cultivationProgressStack">
-        <div className="realmTags">
-          <div className="realmTag realmTag--current">
-            <span className="realmTagIcon" aria-hidden="true">
-              ⛰
-            </span>
-            <span className="realmTagText">{realmLabel}</span>
-            <span className="realmTagSub">Stage {realm.substage}</span>
-          </div>
-          <div className="realmTag realmTag--next">
-            <span className="realmTagIcon" aria-hidden="true">
-              ➜
-            </span>
-            <span className="realmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
-          </div>
-        </div>
-        <QiProgressBar
-          current={qi}
-          required={breakthroughCost || '0'}
-          pulse={isCultivating}
-          isReady={canBreakthrough}
-          rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+      <div className="cultivationHeaderRail">
+        <CultivationHeaderRibbon
+          realmLabel={realmLabel}
+          substage={realm.substage}
+          qi={qi}
+          qiPerSecond={headerRate}
+          rateTooltip={rateTooltip}
+          activityLabel={activityLabel}
+          stability={stability}
+          stabilityCap={stabilityCap}
+          collapsed={headerCollapsed}
+          onToggleCollapsed={() => setHeaderCollapsed((value) => !value)}
         />
-        <VerseProgressMiniBar
-          chapter={chapter}
-          comprehension={comprehension}
-          nextRequirement={nextRequirement}
-          heartLawName={heartLawName}
-        />
-        <div className="cultivationBreakthroughRow">
-          <img className="cultivationBreakthroughPlate" src={fancyBlock} alt="" aria-hidden="true" />
-          <button
-            type="button"
-            className="button-standard cultivationBreakthroughButton"
-            onClick={handleBreakthroughClick}
-            disabled={!canBreakthrough || isBreakingThrough}
-            title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
-          >
-            {breakthroughButtonLabel}
-          </button>
-          <div className="cultivationBreakthroughHint">{breakthroughRequirementLabel}</div>
-        </div>
       </div>
-      {/* <div className="qi-count">{qi}</div> */}
-      <CultivationHeaderRibbon
-        realmLabel={realmLabel}
-        substage={realm.substage}
-        qi={qi}
-        qiPerSecond={headerRate}
-        rateTooltip={rateTooltip}
-        activityLabel={activityLabel}
-        stability={stability}
-        stabilityCap={stabilityCap}
-        collapsed={headerCollapsed}
-        onToggleCollapsed={() => setHeaderCollapsed((value) => !value)}
-      />
-
-
-      <div className="cultivationColumn cultivationColumn--left">
-        {/* <SectionShell title="Cultivate" subtitle="Control your breath and focus">
-          <div className="cultivationPanel">
-            <div className="panelHeader">
-              <div>
-                <div className="panelTitle">Cultivate</div>
-                <div className="panelSub">Foreground activity required to gain Insight and Study</div>
-              </div>
-              <button
-                type="button"
-                className={`primaryButton ${isCultivating ? 'primaryButton--secondary' : ''}`}
-                onClick={toggleCultivation}
-                disabled={Boolean(blockingActivity)}
-                title={blockingActivity ? 'Stop your current activity to cultivate' : undefined}
-              >
-                {isCultivating ? 'Stop Cultivating' : 'Start Cultivating'}
-              </button>
+      <div className="cultivationHudRail">
+        <div className="cultivationHudStack">
+          <div className="cultivationRealmTags">
+            <div className="cultivationRealmTag cultivationRealmTag--current">
+              <span className="cultivationRealmTagIcon" aria-hidden="true">
+                ⛰
+              </span>
+              <span className="cultivationRealmTagText">{realmLabel}</span>
+              <span className="cultivationRealmTagSub">Stage {realm.substage}</span>
             </div>
-            {blockingActivity ? (
-              <div className="inlineMessage inlineMessage--warning">
-                Currently {activityLabel.toLowerCase()}. Stop that activity to resume cultivation.
-              </div>
-            ) : null}
-            <div className="breathSection">
-              <div className="breathSectionLabel">Breath Cycle</div>
-              <BreathCycleDial value={breathMode} onChange={setBreathMode} />
+            <div className="cultivationRealmTag cultivationRealmTag--next">
+              <span className="cultivationRealmTagIcon" aria-hidden="true">
+                ➜
+              </span>
+              <span className="cultivationRealmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
             </div>
-            <div className="offlineHint">Offline progress capped at ~{offlineHoursCap}h.</div>
           </div>
-        </SectionShell> */}
-
-        {/* <SectionShell title="Progress" subtitle="Qi, breakthroughs, and verses"> */}
-        {/* <div className="cultivationPanel">
-            <div className="panelHeader">
-              <div>
-                <div className="panelTitle">Breakthrough Progress</div>
-                <div className="panelSub">{realmStageLabel}</div>
-              </div> */}
-        {/* </div>
-            <div className="progressRow">
-              <div>
-                <div className="progressLabel">Qi</div>
-                <div className="progressValue">
-                  {formatNumber(qi)} / {formatNumber(breakthroughCost)}
-                </div>
-              </div>
-              <div className={`progressStatus ${canBreakthrough ? 'progressStatus--ready' : ''}`}>
-                {canBreakthrough ? 'Ready' : 'Not ready'}
-              </div>
-            </div>
-            {requiredGateItem ? (
-              <div className="inlineMessage inlineMessage--muted">
-                {hasRequiredToken ? (
-                  <span>
-                    {requiredGateItemDefinition?.name || 'Gate Item'} ready ({gateItemCount}/1)
-                  </span>
-                ) : (
-                  <span>
-                    Requires {requiredGateItemDefinition?.name || requiredGateItem} ({gateItemCount}/1)
-                  </span>
-                )}
-              </div>
-            ) : null}
-          </div> */}
-
-        {/* <div className="cultivationPanel">
-            <div className="panelHeader">
-              <div>
-                <div className="panelTitle">Verse Progress</div>
-                <div className="panelSub">
-                  Verse {roman[chapter - 1] ?? chapter} — {heartLawName}
-                </div>
-              </div>
-            </div>
-            <div className="progressRow">
-              <div>
-                <div className="progressLabel">Comprehension</div>
-                <div className="progressValue">{comprehension.toFixed(1)} / {nextRequirement}</div>
-              </div>
-              <div className="progressStatus">{comprehensionPct.toFixed(1)}%</div>
-            </div>
-            <div className="qiProgressBar">
-              <div className="qiProgressFill" style={{ width: `${Math.min(100, comprehensionPct)}%` }} />
-              <div className="qiProgressText">Verse {roman[chapter - 1] ?? chapter}</div>
-            </div>
-          </div> */}
-        {/* </SectionShell> */}
-
-        {/* {insightCard ? (
-          <SectionShell title="Insight" subtitle="Respond before it fades">
-            {insightCard}
-          </SectionShell>
-        ) : (
-          <SectionShell title="Insight" subtitle="Moments surface while cultivating">
-            <div className="inlineMessage inlineMessage--muted">Your mind is steady. Keep cultivating for insight.</div>
-          </SectionShell>
-        )} */}
+          <QiProgressBar
+            current={qi}
+            required={breakthroughCost || '0'}
+            pulse={isCultivating}
+            isReady={canBreakthrough}
+            rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+          />
+          <VerseMiniBar chapter={chapter} comprehension={comprehension} nextRequirement={nextRequirement} />
+          <div className="cultivationBreakthroughRow">
+            <img className="cultivationBreakthroughPlate" src={fancyBlock} alt="" aria-hidden="true" />
+            <button
+              type="button"
+              className="button-standard cultivationBreakthroughButton"
+              onClick={handleBreakthroughClick}
+              disabled={!canBreakthrough || isBreakingThrough}
+              title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+            >
+              {breakthroughButtonLabel}
+            </button>
+            <div className="cultivationBreakthroughHint">{breakthroughRequirementLabel}</div>
+          </div>
+        </div>
       </div>
 
       {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
