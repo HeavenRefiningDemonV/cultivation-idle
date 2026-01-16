@@ -20,21 +20,13 @@
   overflow: visible;
 }
 
-.daoHeartButton {
-  padding: 8px 12px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  z-index: 10;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-}
-
 .cultivator {
   position: fixed;
   z-index: 0;
-  height: 140vh;
+  height: 124vh;
   left: 50vw;
   aspect-ratio: 1280/1002;
+  top: -6vh;
   transform: translateX(-56%);
 }
 
@@ -43,7 +35,7 @@
   z-index: 1;
   height: 12vh;
   width: 12vh;
-  top: 68vh;
+  top: 55%;
   left: 50%;
   opacity: 90%;
   transform: translate(-50%, -50%);
@@ -70,7 +62,7 @@
   grid-area: stack;
   justify-self: center;
   align-self: center;
-  height: 20%;
+  height: 22%;
 
   width: 95%;
   background: rgba(255, 255, 255, 0.08);
@@ -102,68 +94,7 @@
   }
 }
 
-.qi-progress-bar-container {
-  position: fixed;
-  bottom: 10vh;
-  align-self: center;
-  padding: 0 15vw;
-}
-
 /**/
-
-.fancy-block-container {
-  position: absolute;
-  top: 27vh;
-  color: #0b1020;
-  z-index: 12;
-  align-self: center;
-  border: none;
-  display: grid;
-  grid-template-areas: "stack";
-  width: 39vh;
-}
-
-.fancy-block {
-  position: absolute;
-  justify-self: center;
-  align-self: center;
-  z-index: 10;
-  width: 39vh;
-  height: 15vh;
-}
-
-.primaryButton {
-  color: #0b1020;
-  background: transparent;
-  width: 30vh;
-  z-index: 12;
-  justify-self: center;
-  align-self: center;
-  border: none;
-  padding: 10px 14px;
-  font-weight: 700;
-  font-family: 'Protest Revolution';
-  font-size: 3vh;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.primaryButton:hover {
-  transform: translateY(-1px);
-  background: none;
-  border: none;
-}
-
-.primaryButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.primaryButton--secondary {
-  background: linear-gradient(90deg, #334155, #0ea5e9);
-  color: #e2e8f0;
-}
 
 /*IMPORTANT DON'T TOUCH -AYŞE*/
 
@@ -180,66 +111,6 @@
   border-image-outset: 20px 26px;
 
   border-image-repeat: stretch;
-}
-
-.div-realm {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  width: 15.625rem;
-  left: 12vw;
-  bottom: 11vh;
-  z-index: 11;
-
-  font-size: 3vh;
-  font-weight: 600;
-
-  .realm-label,
-  .realm-substage {
-    /*#22d3ee, #8b5cf6*/
-    color: #b0e6ff;
-    -webkit-text-stroke: 0.5vh #8b5cf6;
-    paint-order: stroke fill;
-    text-shadow:
-      0 0 2vh rgb(0, 77, 118),
-      0 0 1vh rgba(3, 105, 161, 1),
-      0 0 0.9vh rgba(3, 105, 161, 1),
-      0 0 0.8vh rgba(3, 105, 161, 1),
-      0 0 1vh rgba(3, 105, 161, 1);
-  }
-}
-
-.div-nextrealm {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  width: 15.625rem;
-  right: 12vw;
-  bottom: 11vh;
-  z-index: 11;
-
-  font-size: 3vh;
-  font-weight: 600;
-
-  .nr-1,
-  .nr-2 {
-    /*#22d3ee, #8b5cf6*/
-    color: #b0e6ff;
-    -webkit-text-stroke: 0.5vh #8b5cf6;
-    paint-order: stroke fill;
-    text-shadow:
-      0 0 2vh rgb(0, 77, 118),
-      0 0 1vh rgba(3, 105, 161, 1),
-      0 0 0.9vh rgba(3, 105, 161, 1),
-      0 0 0.8vh rgba(3, 105, 161, 1),
-      0 0 1vh rgba(3, 105, 161, 1);
-  }
 }
 
 /*-------------------------------------------*/
@@ -314,21 +185,78 @@
   display: none;
 }
 
-.cultivationTopRow {
-  display: flex;
-  justify-content: flex-start;
+.daoHeartSealButton {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 84px);
+  left: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  z-index: 21;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  border-image: none;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.25), transparent 55%),
+    radial-gradient(circle at center, rgba(133, 0, 0, 0.85), rgba(78, 6, 6, 0.95));
+  color: #fdf2f8;
+  border: 2px solid rgba(30, 10, 10, 0.6);
+  box-shadow:
+    inset 0 0 6px rgba(255, 255, 255, 0.25),
+    0 6px 14px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.daoHeartButton:hover,
-.daoHeartButton:focus-visible {
-  background: rgba(34, 211, 238, 0.12);
-  border-color: rgba(34, 211, 238, 0.4);
+.daoHeartSealButton:hover,
+.daoHeartSealButton:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0 10px rgba(255, 255, 255, 0.35),
+    0 8px 18px rgba(0, 0, 0, 0.45);
+  border-image: none;
   outline: none;
 }
 
-.daoHeartButton:active {
-  transform: translateY(1px);
+.daoHeartSealButton:active {
+  transform: translateY(0);
+}
+
+.primaryButton {
+  color: #0b1020;
+  background: transparent;
+  width: 30vh;
+  z-index: 12;
+  justify-self: center;
+  align-self: center;
+  border: none;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-family: 'Protest Revolution';
+  font-size: 3vh;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  background: none;
+  border: none;
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.primaryButton--secondary {
+  background: linear-gradient(90deg, #334155, #0ea5e9);
+  color: #e2e8f0;
 }
 
 .sectionToggleHint {
@@ -473,6 +401,88 @@
   color: #4ade80;
 }
 
+.cultivationProgressStack {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--ui-bottom-nav-total) + 16px);
+  width: min(980px, calc(100vw - 40px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 20;
+  align-items: center;
+}
+
+.cultivationProgressStack .progress-bar {
+  width: 100%;
+}
+
+.realmTags {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.realmTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(12, 16, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  max-width: 48%;
+  flex-wrap: wrap;
+}
+
+.realmTag--next {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.realmTagIcon {
+  font-size: 14px;
+}
+
+.realmTagSub {
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.cultivationBreakthroughRow {
+  position: relative;
+  width: min(520px, 100%);
+  display: grid;
+  grid-template-areas: "stack";
+  align-items: center;
+  justify-items: center;
+  z-index: 2;
+}
+
+.cultivationBreakthroughPlate {
+  grid-area: stack;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+
+.cultivationBreakthroughButton {
+  grid-area: stack;
+  z-index: 2;
+  width: min(320px, 80%);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 10px 16px;
+  background: transparent;
+  color: #0b1020;
+}
 
 .qiProgressText {
   position: absolute;

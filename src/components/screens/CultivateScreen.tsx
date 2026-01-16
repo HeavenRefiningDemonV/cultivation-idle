@@ -1,32 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { REALMS } from '../../constants';
-import { getBreathModeMultipliers, INSIGHT_BURSTS } from '../../content/tuning/cultivationTuning';
-import { MAX_OFFLINE_MS } from '../../systems/offline';
+import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
 import { GATE_ITEMS } from '../../systems/loot';
 import { useActivityStore } from '../../stores/activityStore';
-import { useContentStore, getItemDef } from '../../stores/contentStore';
+import { useContentStore } from '../../stores/contentStore';
 import { useCultivationStore } from '../../stores/cultivationStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
-import type { BreathMode, InsightChoiceId, InsightMomentState } from '../../types';
+import type { InsightMomentState } from '../../types';
 import { formatNumber, D } from '../../utils/numbers';
 import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
-import { InsightMomentToast } from '../../ui/cultivation/InsightMomentToast';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import qiSign from "../../assets/onscreen/qisign.png";
 import barLong from "../../assets/menus/bar_long.png";
 import fancyBlock from "../../assets/menus/block_fancy.png";
+import { VerseProgressMiniBar } from '../../ui/cultivation/VerseProgressMiniBar';
 import './CultivateScreen.scss';
-
-const BREATH_COPY: Record<BreathMode, string> = {
-  balanced: 'Even flow. Standard Qi and Insight.',
-  safe: 'Slower Qi. More stable. Slightly more Insight.',
-  fast: 'Faster Qi. Less stable. Slightly less Insight.',
-};
 
 const ACTIVITY_LABELS: Record<string, string> = {
   meditate: 'Cultivating',
@@ -34,30 +27,6 @@ const ACTIVITY_LABELS: Record<string, string> = {
   trial: 'Trial',
   ruins: 'Ruins',
 };
-
-function BreathCycleDial({ value, onChange }: { value: BreathMode; onChange: (mode: BreathMode) => void }) {
-  const options: { label: string; mode: BreathMode; description: string }[] = [
-    { label: 'Safe', mode: 'safe', description: BREATH_COPY.safe },
-    { label: 'Balanced', mode: 'balanced', description: BREATH_COPY.balanced },
-    { label: 'Fast', mode: 'fast', description: BREATH_COPY.fast },
-  ];
-
-  return (
-    <div className="breathDial" role="group" aria-label="Breath Cycle">
-      {options.map((opt) => (
-        <button
-          key={opt.mode}
-          type="button"
-          className={`breathDialOption ${value === opt.mode ? 'breathDialOption--active' : ''}`}
-          onClick={() => onChange(opt.mode)}
-        >
-          <div className="breathDialLabel">{opt.label}</div>
-          <div className="breathDialHint">{opt.description}</div>
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function CultivationTabHeaderBar({
   realmLabel,
@@ -116,7 +85,7 @@ export function QiProgressBar({ current, required, pulse }: { current: string; r
     : 0;
   return (
     <div className="progress-bar">
-      <img className="progress-bar-shape" src={barLong}></img>
+      <img className="progress-bar-shape" src={barLong} alt="" aria-hidden="true" />
       <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
         <div className="qiProgressFill" style={{ width: `${pct}%` }} />
       </div>
@@ -124,23 +93,6 @@ export function QiProgressBar({ current, required, pulse }: { current: string; r
 
   );
 }
-
-function SectionShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
-  return (
-    <details className="cultivationSection" open>
-      <summary>
-        <div>
-          <div className="panelTitle">{title}</div>
-          {subtitle ? <div className="panelSub">{subtitle}</div> : null}
-        </div>
-        <span className="sectionToggleHint">Tap to collapse</span>
-      </summary>
-      <div className="sectionBody">{children}</div>
-    </details>
-  );
-}
-
-const roman = ['I', 'II', 'III', 'IV', 'V'];
 
 export function CultivateScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
@@ -162,11 +114,7 @@ export function CultivateScreen() {
   const pathPerks = useGameStore((state) => state.pathPerks);
 
   const activeActivity = useActivityStore((state) => state.active);
-  const startActivity = useActivityStore((state) => state.startActivity);
-  const stopActivity = useActivityStore((state) => state.stopActivity);
-
   const breathMode = useCultivationStore((state) => state.breathMode);
-  const setBreathMode = useCultivationStore((state) => state.setBreathMode);
   const insight = useCultivationStore((state) => state.insight);
   const chapter = useCultivationStore((state) => state.chapter);
   const comprehension = useCultivationStore((state) => state.comprehension);
@@ -174,13 +122,11 @@ export function CultivateScreen() {
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const nextRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter());
-  const resolveInsight = useCultivationStore((state) => state.resolveInsight);
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
-  const [now, setNow] = useState(Date.now());
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
   const [showDaoHeart, setShowDaoHeart] = useState(false);
 
@@ -189,14 +135,6 @@ export function CultivateScreen() {
 
   const currentRealm = REALMS[realm.index] ?? REALMS[0];
   const realmLabel = currentRealm?.name ?? 'Realm';
-  const nextSubstage = realm.substage + 1;
-  const isLastSubstage = nextSubstage > currentRealm.substages;
-
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
   useEffect(() => {
     setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
   }, [setHeaderTitles]);
@@ -228,11 +166,6 @@ export function CultivateScreen() {
     return getItemCount(requiredGateItem);
   }, [getItemCount, requiredGateItem]);
 
-  const requiredGateItemDefinition = useMemo(() => {
-    if (!requiredGateItem) return null;
-    return getItemDef(requiredGateItem) || null;
-  }, [requiredGateItem]);
-
   const hasRequiredToken = useMemo(() => {
     if (!requiredGateItem) return true;
     return gateItemCount > 0;
@@ -257,49 +190,11 @@ export function CultivateScreen() {
 
   const activityLabel = activeActivity ? ACTIVITY_LABELS[activeActivity.type] ?? 'Busy' : 'Idle';
   const isCultivating = activeActivity?.type === 'meditate';
-  const blockingActivity = activeActivity && activeActivity.type !== 'meditate';
-
-  const toggleCultivation = useCallback(() => {
-    if (blockingActivity) return;
-    if (isCultivating) {
-      stopActivity('cultivation_stop');
-    } else {
-      startActivity('meditate', undefined, 'cultivation_start');
-    }
-  }, [blockingActivity, isCultivating, startActivity, stopActivity]);
-
-  const handleInsightChoice = useCallback(
-    (choiceId: InsightChoiceId) => {
-      manualInsightHandled.current = true;
-      resolveInsight(choiceId);
-      let message = 'Insight resolved.';
-      if (choiceId === 'contemplate') {
-        message = `Insight gained: +${INSIGHT_BURSTS.comprehension} Comprehension`;
-      } else if (choiceId === 'drawQi') {
-        message = `Qi surged (+${INSIGHT_BURSTS.qiSecondsWorth}s worth of Qi income)`;
-      } else {
-        message = 'Foundation stabilized.';
-      }
-      addNotification('success', message, 3500);
-    },
-    [resolveInsight, addNotification],
-  );
-
   const headerRate = effectiveRate.toString();
-  const offlineHoursCap = Math.round(MAX_OFFLINE_MS / (1000 * 60 * 60));
 
   const heartLawName = selectedHeartLawId
     ? heartLawsById[selectedHeartLawId]?.name ?? selectedHeartLawId
     : 'No Heart Law selected';
-
-  const comprehensionPct = nextRequirement > 0 ? Math.min(100, (comprehension / nextRequirement) * 100) : 100;
-
-  const realmStageLabel = isLastSubstage ? 'Maximum stage reached' : `Stage ${realm.substage} → ${nextSubstage}`;
-
-  const insightCard =
-    insight && insight.pending ? (
-      <InsightMomentToast insight={insight} now={now} onChoose={handleInsightChoice} />
-    ) : null;
 
   const hasPerkForRealm = useCallback(
     (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
@@ -346,29 +241,53 @@ export function CultivateScreen() {
   return (
     <div className="cultivationTab">
       <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
-      <img className="cultivator" src={cultivator}></img>
-      <img className="qi-sign rotate" src={qiSign}></img>
-      <div className="qi-progress-bar-container">
+      <img className="cultivator" src={cultivator} alt="" aria-hidden="true" />
+      <img className="qi-sign rotate" src={qiSign} alt="" aria-hidden="true" />
+      <button
+        type="button"
+        className="daoHeartSealButton"
+        aria-label="Open Dao Heart"
+        aria-haspopup="dialog"
+        aria-expanded={showDaoHeart}
+        onClick={() => setShowDaoHeart(true)}
+      >
+        Dao
+      </button>
+      <div className="cultivationProgressStack">
+        <div className="realmTags">
+          <div className="realmTag realmTag--current">
+            <span className="realmTagIcon" aria-hidden="true">
+              ⛰
+            </span>
+            <span className="realmTagText">{realmLabel}</span>
+            <span className="realmTagSub">Stage {realm.substage}</span>
+          </div>
+          <div className="realmTag realmTag--next">
+            <span className="realmTagIcon" aria-hidden="true">
+              ➜
+            </span>
+            <span className="realmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
+          </div>
+        </div>
         <QiProgressBar current={qi} required={breakthroughCost} pulse={isCultivating} />
-      </div>
-      <div className="cultivationTopRow">
-        <button
-          type="button"
-          className="daoHeartButton"
-          aria-haspopup="dialog"
-          aria-expanded={showDaoHeart}
-          onClick={() => setShowDaoHeart(true)}
-        >
-          Dao Heart
-        </button>
-      </div>
-      <div className="div-realm">
-        <div className="realm-label">{realmLabel}</div>
-        <div className="realm-substage">Substage {realm.substage}</div>
-      </div>
-      <div className="div-nextrealm">
-        <div className="nr-1">Next Realm</div>
-        <div className="nr-2">Foundation Establishment</div>
+        <VerseProgressMiniBar
+          chapter={chapter}
+          comprehension={comprehension}
+          nextRequirement={nextRequirement}
+          heartLawName={heartLawName}
+        />
+        <div className="cultivationBreakthroughRow">
+          <img className="cultivationBreakthroughPlate" src={fancyBlock} alt="" aria-hidden="true" />
+          <button
+            type="button"
+            className="button-standard cultivationBreakthroughButton"
+            onClick={handleBreakthroughClick}
+            disabled={!canBreakthrough}
+            title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+          >
+            Attempt Breakthrough
+          </button>
+        </div>
       </div>
       {/* <div className="qi-count">{qi}</div> */}
       <CultivationTabHeaderBar
@@ -421,18 +340,6 @@ export function CultivateScreen() {
                 <div className="panelTitle">Breakthrough Progress</div>
                 <div className="panelSub">{realmStageLabel}</div>
               </div> */}
-        <div className="fancy-block-container">
-          <img className="fancy-block" src={fancyBlock}></img>
-          <button
-            type="button"
-            className="primaryButton"
-            onClick={handleBreakthroughClick}
-            disabled={!canBreakthrough}
-            title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
-          >
-            Attempt Breakthrough
-          </button>
-        </div>
         {/* </div>
             <div className="progressRow">
               <div>
