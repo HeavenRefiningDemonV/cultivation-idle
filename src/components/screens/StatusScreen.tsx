@@ -63,9 +63,15 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
 /**
  * Stat Card Component (for grouped stats)
  */
-function StatCard({ title, children }: { title: string; children: React.ReactNode }) {
+type StatCardProps = {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+};
+
+function StatCard({ title, children, className = '' }: StatCardProps) {
   return (
-    <div className={'statusScreenStatCard'}>
+    <div className={`statusScreenStatCard statusScreenCardBase ${className}`}>
       <h3 className={'statusScreenStatCardTitle'}>{title}</h3>
       <div className={'statusScreenStatList'}>{children}</div>
     </div>
@@ -105,7 +111,6 @@ export function StatusScreen() {
 
   return (
     <div className={'statusScreenRoot'}>
-
       {/* Main Content */}
       <div className={'statusScreenContent'}>
         {/* Main Grid Layout */}
@@ -113,7 +118,7 @@ export function StatusScreen() {
           {/* LEFT COLUMN */}
           <div className={'statusScreenColumn'}>
             {/* Cultivation Progress Section */}
-            <div className={'statusScreenPanel'}>
+            <div className={'statusScreenPanel statusScreenCardBase'}>
               <SectionHeader icon="⚡" title="Cultivation Progress" />
 
               <StatRow label="Current Realm" value={currentRealm.name} tone="gold" />
@@ -165,16 +170,14 @@ export function StatusScreen() {
             </StatCard>
 
             {/* Additional Info */}
-            <div className={'statusScreenMiscPanel'}>
-              <StatCard title="Miscellaneous">
-                <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
-                <StatRow
-                  label="Player Luck"
-                  value={formatNumber(useGameStore.getState().playerLuck || 0)}
-                  tone="pink"
-                />
-              </StatCard>
-            </div>
+            <StatCard title="Miscellaneous" className="statusScreenMiscPanel">
+              <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
+              <StatRow
+                label="Player Luck"
+                value={formatNumber(useGameStore.getState().playerLuck || 0)}
+                tone="pink"
+              />
+            </StatCard>
           </div>
         </div>
       </div>
