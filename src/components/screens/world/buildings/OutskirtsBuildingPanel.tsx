@@ -7,7 +7,7 @@ import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
 import { useUIStore } from '../../../../stores/uiStore';
 import { resolveModuleRef } from '../worldUtils';
 import cultivatorFight from "../../../../assets/onscreen/cultivator_backshots.png"
-import barLong from "../../../../assets/menus/bar_long.png";
+import barShort from "../../../../assets/menus/bar_short.png";
 import { hpPercent } from '../../../../systems/combat/minibarModel';
 import { formatNumber } from '../../../../utils/numbers';
 
@@ -92,7 +92,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               <div className="opponent-name">You</div>
               <div className="opponent-hp">{playerHpLabel}</div>
               <div className="combat-hp-bar">
-                <img className="combat-hp-bar__shape" src={barLong} alt="" aria-hidden="true" />
+                <img className="combat-hp-bar__shape" src={barShort} alt="" aria-hidden="true" />
                 <div className="combat-hp-bar__track">
                   <div className="combat-hp-bar__fill" style={{ width: `${playerHpPct}%` }} />
                 </div>
@@ -103,7 +103,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               <div className="opponent-name">{currentEnemy?.name ?? bossName ?? 'No active enemy'}</div>
               <div className="opponent-hp">{enemyHpLabel}</div>
               <div className="combat-hp-bar">
-                <img className="combat-hp-bar__shape" src={barLong} alt="" aria-hidden="true" />
+                <img className="combat-hp-bar__shape" src={barShort} alt="" aria-hidden="true" />
                 <div className="combat-hp-bar__track">
                   <div className="combat-hp-bar__fill" style={{ width: `${enemyHpPct}%` }} />
                 </div>
