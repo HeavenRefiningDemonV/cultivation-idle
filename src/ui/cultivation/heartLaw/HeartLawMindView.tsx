@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { INITIAL_REALM } from '../../../constants';
 import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning';
 import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic';
@@ -9,6 +9,7 @@ import { useGameStore } from '../../../stores/gameStore';
 import { usePrestigeStore } from '../../../stores/prestigeStore';
 import type { HeartLawChapter } from '../../../content';
 import { ChangeHeartLawModal } from './ChangeHeartLawModal';
+import { RadialVerseRing } from './RadialVerseRing';
 import './HeartLawMindView.scss';
 
 const roman = ['I', 'II', 'III', 'IV', 'V'];
@@ -50,23 +51,6 @@ function summarizeEffects(effects: unknown): string {
     }
   });
   return parts.length > 0 ? parts.join(' • ') : 'No recorded effects.';
-}
-
-function buildSegmentGradient(currentChapter: number) {
-  const colors = Array.from({ length: 5 }).map((_, index) => {
-    const verse = index + 1;
-    if (verse < currentChapter) return '#d9c7a7';
-    if (verse === currentChapter) return '#d8b058';
-    return '#cbd5e1';
-  });
-
-  return colors
-    .map((color, index) => {
-      const start = index * 72;
-      const end = (index + 1) * 72;
-      return `${color} ${start}deg ${end}deg`;
-    })
-    .join(', ');
 }
 
 export function HeartLawMindView() {
@@ -130,14 +114,6 @@ export function HeartLawMindView() {
     selectHeartLaw(id);
   };
 
-  const ringStyle: CSSProperties = {
-    background: `conic-gradient(${buildSegmentGradient(chapter)})`,
-  };
-
-  const ringRadius = 84;
-  const circumference = 2 * Math.PI * ringRadius;
-  const dash = (progressPct / 100) * circumference;
-
   return (
     <div className="heartLawMindView">
       <div className="heartLawMindHeader">
@@ -160,41 +136,13 @@ export function HeartLawMindView() {
       </div>
 
       <div className="heartLawMindRadial">
-        <div className="heartLawMindRingSegments" style={ringStyle} />
-        <svg className="heartLawMindRing" viewBox="0 0 200 200" aria-hidden="true">
-          <circle className="heartLawMindRingBase" cx="100" cy="100" r={ringRadius} />
-          <circle
-            className="heartLawMindRingProgress"
-            cx="100"
-            cy="100"
-            r={ringRadius}
-            strokeDasharray={`${dash} ${circumference - dash}`}
-          />
-        </svg>
+        <RadialVerseRing
+          currentVerse={chapter}
+          selectedVerse={selectedVerse}
+          progressToNextPct={progressPct}
+          onSelectVerse={setSelectedVerse}
+        />
         <div className="heartLawMindOrb" />
-        <div className="heartLawMindNodes" role="group" aria-label="Verse selection">
-          {Array.from({ length: 5 }).map((_, index) => {
-            const verse = index + 1;
-            const isUnlocked = verse < chapter;
-            const isCurrent = verse === chapter;
-            const isSelected = verse === selectedVerse;
-            const angle = -90 + index * 72;
-            return (
-              <button
-                key={verse}
-                type="button"
-                className={`heartLawMindNode ${isUnlocked ? 'is-unlocked' : ''} ${isCurrent ? 'is-current' : ''} ${
-                  isSelected ? 'is-selected' : ''
-                }`}
-                style={{ ['--angle' as string]: `${angle}deg` }}
-                onClick={() => setSelectedVerse(verse)}
-                aria-pressed={isSelected}
-              >
-                {roman[index]}
-              </button>
-            );
-          })}
-        </div>
       </div>
 
       <div className="heartLawMindPanel">
