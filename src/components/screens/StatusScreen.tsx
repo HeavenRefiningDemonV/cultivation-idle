@@ -171,18 +171,21 @@ export function StatusScreen() {
                   value={formatNumber(stats.hp)}
                   icon={<Heart size={16} />}
                   tone="hp"
+                  pulseKey={stats.hp}
                 />
                 <CombatStatTile
                   label="Attack Power"
                   value={formatNumber(stats.atk)}
                   icon={<Sword size={16} />}
                   tone="offense"
+                  pulseKey={stats.atk}
                 />
                 <CombatStatTile
                   label="Defense"
                   value={formatNumber(stats.def)}
                   icon={<Shield size={16} />}
                   tone="defense"
+                  pulseKey={stats.def}
                 />
                 <CombatStatTile
                   label="HP Regen/s"

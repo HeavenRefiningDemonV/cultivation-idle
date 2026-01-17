@@ -36,6 +36,10 @@
   border-color: rgba(12, 18, 34, 0.2);
 }
 
+.combatStatTile.is-pulsing {
+  animation: combatTilePulse 220ms ease-out;
+}
+
 .combatStatTile__top {
   display: flex;
   align-items: center;
@@ -139,5 +143,24 @@
 @media (max-width: 520px) {
   .combatStatTilesGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combatStatTile.is-pulsing {
+    animation: none;
+  }
+}
+
+@keyframes combatTilePulse {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
