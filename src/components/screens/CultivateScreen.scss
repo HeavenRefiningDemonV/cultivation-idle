@@ -65,7 +65,7 @@
 .progress-bar {
   position: relative;
   width: 100%;
-  height: var(--qi-frame-h);
+  height: 100px;
   display: grid;
   grid-template-areas: "stack";
   align-items: center;
@@ -87,7 +87,7 @@
   z-index: 1;
   grid-area: stack;
   place-self: center;
-  width: calc(100% - (var(--qi-track-inset-x) * 2));
+  width: 900px;
   height: var(--qi-track-h);
   background: rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -283,9 +283,9 @@
 
 .cultivationBreakthroughPlate {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: 010;
+  width: 0%;
+  height: 0%;
   object-fit: fill;
   z-index: 0;
   pointer-events: none;

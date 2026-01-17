@@ -19,7 +19,7 @@
   position: absolute;
   inset: 0;
   background-image: url("../../assets/menus/bar_short.png");
-  background-size: calc(100% * var(--verse-frame-scale-x)) 100%;
+  background-size: calc(40% * var(--verse-frame-scale-x)) 200%;
   background-repeat: no-repeat;
   background-position: center;
   opacity: 0.95;
@@ -29,7 +29,7 @@
 
 .verseMiniBar__track {
   position: relative;
-  width: calc(100% - (var(--verse-track-inset-x) * 2));
+  width: calc(50% - (var(--verse-track-inset-x) * 2));
   height: var(--verse-track-h);
   background: var(--verse-track-bg);
   border-radius: 999px;
