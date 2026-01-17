@@ -30,12 +30,23 @@
   stroke: var(--dao-accent-2, #f2c46b);
 }
 
+.radialVerseRing__segment--selected {
+  stroke: var(--dao-accent, #d5a24c);
+  stroke-width: 14;
+  stroke-opacity: 0.2;
+}
+
 .radialVerseRing__segmentHit {
   fill: none;
   stroke: transparent;
   stroke-width: 24;
   pointer-events: stroke;
   cursor: pointer;
+}
+
+.radialVerseRing__marker {
+  fill: var(--dao-accent, #d5a24c);
+  filter: drop-shadow(0 0 6px rgba(213, 162, 76, 0.35));
 }
 
 .radialVerseRing__nodes {
@@ -71,12 +82,23 @@
 
 .radialVerseRing__nodeBtn.is-selected {
   transform: scale(1.06);
+  box-shadow:
+    0 0 0 2px rgba(213, 162, 76, 0.35),
+    0 0 10px rgba(213, 162, 76, 0.25);
 }
 
 .radialVerseRing__nodeBtn:hover,
 .radialVerseRing__nodeBtn:focus-visible {
   box-shadow: 0 6px 12px rgba(15, 23, 42, 0.2);
   outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radialVerseRing__nodeBtn,
+  .radialVerseRing__segment--selected,
+  .radialVerseRing__marker {
+    transition: none !important;
+  }
 }
 
 .radialVerseRing__nodeLabel {

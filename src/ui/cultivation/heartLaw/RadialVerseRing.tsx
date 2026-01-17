@@ -96,15 +96,27 @@ export function RadialVerseRing({
             />
           ))}
         {segments
+          .filter((segment) => segment.verse === selectedVerse)
+          .map((segment) => (
+            <path
+              key={`selected-${segment.verse}`}
+              className="radialVerseRing__segment radialVerseRing__segment--selected"
+              d={describeArc(CX, CY, RING_R, segment.start, segment.end)}
+            />
+          ))}
+        {segments
           .filter((segment) => segment.verse === currentVerse && clampedProgress > 0)
           .map((segment) => {
             const progressEnd = segment.start + (segment.end - segment.start) * (clampedProgress / 100);
+            const markerPoint = polarToCartesian(CX, CY, RING_R, progressEnd % 360);
             return (
-              <path
-                key={`progress-${segment.verse}`}
-                className="radialVerseRing__segment radialVerseRing__segment--progress"
-                d={describeArc(CX, CY, RING_R, segment.start, progressEnd)}
-              />
+              <g key={`progress-${segment.verse}`}>
+                <path
+                  className="radialVerseRing__segment radialVerseRing__segment--progress"
+                  d={describeArc(CX, CY, RING_R, segment.start, progressEnd)}
+                />
+                <circle className="radialVerseRing__marker" cx={markerPoint.x} cy={markerPoint.y} r="2.8" />
+              </g>
             );
           })}
         {segments.map((segment) => (
