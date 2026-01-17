@@ -40,7 +40,7 @@ export function WorldBuildingModal({
   const isStoreMode = useStore;
   const open = isStoreMode ? storeOpen : Boolean(controlledOpen);
   const buildingKey: WorldBuildingKey | null | undefined = isStoreMode ? storeBuildingKey : undefined;
-  const close = isStoreMode ? closeFromStore : controlledOnClose || (() => {});
+  const close = isStoreMode ? closeFromStore : controlledOnClose || (() => { });
   const title = isStoreMode
     ? `${city?.name ?? 'City'} — ${buildingKey ?? ''}`
     : controlledTitle || 'World Building';
@@ -114,12 +114,19 @@ export function WorldBuildingModal({
       case 'expeditions':
         content = <ExpeditionBoardPanel />;
         break;
+
+      // case 'outskirts':
+      //   content = <ExpeditionBoardPanel />;
+      //   break;
+      // case 'gateTrial':
+      //   content = <ExpeditionBoardPanel />;
+      //   break;
       default:
         content = isCombatModule(buildingKey)
           ? null
           : (
-              <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>
-            );
+            <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>
+          );
         break;
     }
   }
@@ -131,15 +138,9 @@ export function WorldBuildingModal({
         onMouseDown={(event) => event.stopPropagation()}
       >
         {backgroundVariant === "forge" && <img className="hammer" src={hammer}></img>}
-        <div className="worldBuildingHeader">
-          <div className="worldBuildingTitleGroup">
-            <div className="worldBuildingTitle">{title}</div>
-            {subtitle && <div className="worldBuildingSubtitle">{subtitle}</div>}
-          </div>
-          <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-            ✕
-          </button>
-        </div>
+        <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
+          ✕
+        </button>
         <div className="worldBuildingBody">{content}</div>
       </div>
     </div>

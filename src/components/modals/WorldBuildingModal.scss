@@ -81,17 +81,6 @@
   }
 }
 
-.worldBuildingHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 18px;
-  gap: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
 
 .worldBuildingTitle {
   font-size: 20px;
@@ -104,21 +93,23 @@
 }
 
 .worldBuildingClose {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f8fafc;
-  border-radius: 999px;
+  border: none;
+  background: transparent;
+  z-index: 600;
+
   width: 32px;
   height: 32px;
+  font-weight: 700;
+  color: black;
+
+  position: absolute;
+  right: 0;
+  top: 0;
+
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
-}
-
-.worldBuildingClose:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: scale(1.02);
 }
 
 .worldBuildingBody {
