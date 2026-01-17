@@ -9,11 +9,11 @@ import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
 import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
-import { GateTrialModal } from './GateTrialModal';
-import { OutskirtsModal } from './OutskirtsModal';
 import { isCombatModule } from '../../systems/world/openWorldModule';
 import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
+import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
+import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -113,10 +113,10 @@ export function WorldBuildingModal({
         content = <ExpeditionBoardPanel />;
         break;
       case 'outskirts':
-        content = <OutskirtsModal cityId={storeCityId} />;
+        content = <OutskirtsBuildingPanel cityId={storeCityId} />;
         break;
       case 'gateTrial':
-        content = <GateTrialModal cityId={storeCityId} />;
+        content = <GateTrialBuildingPanel cityId={storeCityId} />;
         break;
 
       default:

@@ -5,6 +5,9 @@ import { useContentStore } from '../../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
 import { useUIStore } from '../../../../stores/uiStore';
 import { resolveModuleRef } from '../worldUtils';
+import cultivatorFight from "../../../../assets/onscreen/cultivator_backshots.png"
+
+import "./CombatStyles.scss";
 
 interface OutskirtsBuildingPanelProps {
   cityId: string;
@@ -65,40 +68,37 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
 
   return (
     <div className={'worldScreenPlaceholder'}>
-      <div className="combat-side-panel"></div>
-      {/* <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{outskirtsDef.name ?? 'Outskirts'}</div>
-        <div className={'worldScreenPlaceholderKey'}>outskirts</div>
-      </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>
-          {outskirtsProgress?.killsSinceBoss ?? 0} kills since boss — Next: {isBossReady ? 'Boss' : 'Mob'}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Boss: {bossName ?? 'Unknown'} • Defeated: {outskirtsProgress?.bossDefeated ? 'Yes' : 'No'}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Activity: {isOutskirtsActive ? 'Active' : 'Inactive'}
-        </div>
-      </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleStartOutskirts}
-          disabled={!outskirtsDef}
-          type="button"
-        >
-          Start Farming
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleStopOutskirts} type="button">
-          Stop
-        </button>
-        {isBossReady && bossName && (
-          <div className={'worldScreenPlaceholderLine worldScreenBossAlert'}>
-            Boss {bossName} is ready to spawn!
+      <div className="combat-div">
+
+        <div className="combat-side-panel"></div>
+        <div className="combat-main">
+
+          <div className="healthbars-ui">
+            <div className="healthbar-wrapper">
+              <div className="opponent-name">You</div>
+              <div className="opponent-hp">{/*player hp in numbers here*/}</div>
+              {/*player hp bar here*/}
+            </div>
+
+            <div className="healthbar-wrapper">
+              <div className="opponent-name">{/*opponent name here*/}</div>
+              <div className="opponent-hp">{/*player hp in numbers here*/}</div>
+              {/*opponent hp bar here*/}
+            </div>
           </div>
-        )}
-      </div> */}
+
+          <div className="images-div"> {/* do not touch anything in this div */}
+            <div className="cultivator-image-wrapper">
+              <img className="cultivator-image" src={cultivatorFight}></img>
+            </div>
+            <div className="enemy-image-wrapper">
+              <div className="enemy-image"></div>
+              <div className="enemy-stats"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
