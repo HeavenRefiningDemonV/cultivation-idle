@@ -4,7 +4,8 @@ import { useActivityStore } from '../../stores/activityStore';
 import type { ActiveActivity } from '../../stores/activityStore';
 import { DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN, PLAYER_ATTACK_COOLDOWN, useCombatStore } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
-import { useUIStore } from '../../stores/uiStore';
+import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
+import { isCombatModule } from '../../systems/world/openWorldModule';
 import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel';
 import { formatNumber } from '../../utils/numbers';
 import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles';
@@ -100,9 +101,10 @@ function CombatMinibarContent({
   const absorptionShield = useGameStore((state) => state.absorptionShield);
   const playerDef = useGameStore((state) => state.stats.def);
   const combatMinibarExpanded = useUIStore((state) => state.settings.combatMinibarExpanded);
-  const presentationMode = useUIStore((state) => state.combatPresentation.mode);
-  const closeCombatPresentation = useUIStore((state) => state.closeCombatPresentation);
-  const restoreCombatFromDock = useUIStore((state) => state.restoreCombatFromDock);
+  const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
+  const worldBuildingModalKey = useUIStore((state) => state.worldBuildingModalKey);
+  const openWorldBuildingModal = useUIStore((state) => state.openWorldBuildingModal);
+  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const toggleCombatMinibarExpanded = useUIStore((state) => state.toggleCombatMinibarExpanded);
   const combatAIProfile = useUIStore((state) => state.settings.combatAIProfile);
   const setSettings = useUIStore((state) => state.setSettings);
@@ -187,13 +189,18 @@ function CombatMinibarContent({
     stopCombatAndClose();
   };
 
-  const combatTheaterOpen = presentationMode === 'preview' || presentationMode === 'active';
+  const combatBuildingKey: WorldBuildingKey | null =
+    activity?.type === 'trial' ? 'gateTrial' : activity?.type === 'outskirts' || activity?.type === 'ruins' ? activity.type : null;
+  const combatTheaterOpen = Boolean(
+    showWorldBuildingModal && combatBuildingKey && isCombatModule(worldBuildingModalKey ?? '') && worldBuildingModalKey === combatBuildingKey,
+  );
+  const activityCityId = activity?.cityId ?? activity?.payload?.cityId ?? null;
 
   const handleToggleTheater = () => {
     if (combatTheaterOpen) {
-      closeCombatPresentation();
-    } else {
-      restoreCombatFromDock();
+      closeWorldBuildingModal();
+    } else if (combatBuildingKey && activityCityId) {
+      openWorldBuildingModal({ cityId: activityCityId, buildingKey: combatBuildingKey });
     }
   };
 

@@ -504,9 +504,16 @@ export const useUIStore = create<UIState>()(
     },
 
     openCombatPreview: (context) => {
+      const buildingKey: WorldBuildingKey =
+        (context.moduleKey as WorldBuildingKey) ?? (context.type === 'trial' ? 'gateTrial' : context.type);
+      if (!context.cityId) return;
+
       set((state) => {
-        state.combatPresentation.mode = 'preview';
-        state.combatPresentation.context = context;
+        state.combatPresentation.mode = 'hidden';
+        state.combatPresentation.context = null;
+        state.showWorldBuildingModal = true;
+        state.worldBuildingModalCityId = context.cityId ?? null;
+        state.worldBuildingModalKey = buildingKey;
       });
     },
 

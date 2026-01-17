@@ -9,7 +9,7 @@ import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
 import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
-import { isCombatModule, openWorldModule } from '../../systems/world/openWorldModule';
+import { isCombatModule } from '../../systems/world/openWorldModule';
 import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
 
@@ -61,12 +61,7 @@ export function WorldBuildingModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown, open]);
 
-  useEffect(() => {
-    if (!isStoreMode || !open || !storeCityId || !buildingKey) return;
-    if (isCombatModule(buildingKey)) {
-      openWorldModule({ cityId: storeCityId, moduleKey: buildingKey, source: 'world-building-modal' });
-    }
-  }, [buildingKey, isStoreMode, open, storeCityId]);
+  const isCombatPreview = Boolean(isStoreMode && buildingKey && isCombatModule(buildingKey));
 
   const backgroundVariant = useMemo(() => {
     switch (buildingKey) {
@@ -80,7 +75,7 @@ export function WorldBuildingModal({
       case 'gateTrial':
       case 'ruins':
       case 'outskirts':
-        return 'dungeon';
+        return 'inside-dungeon';
       case 'forge':
         return 'forge';
       default:
@@ -94,7 +89,9 @@ export function WorldBuildingModal({
 
   let content: ReactNode = children;
 
-  if (isStoreMode) {
+  if (isCombatPreview) {
+    content = null;
+  } else if (isStoreMode) {
     switch (buildingKey) {
       case 'manualPavilion':
         content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
@@ -119,18 +116,7 @@ export function WorldBuildingModal({
         break;
       default:
         content = isCombatModule(buildingKey)
-          ? (
-              <div className="worldBuildingPlaceholder">
-                <div>This building now opens the combat preview.</div>
-                <button
-                  type="button"
-                  className="worldScreenModuleButton"
-                  onClick={() => openWorldModule({ cityId: storeCityId, moduleKey: buildingKey, source: 'world-building-modal' })}
-                >
-                  Open Combat Preview
-                </button>
-              </div>
-            )
+          ? null
           : (
               <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>
             );
@@ -145,18 +131,18 @@ export function WorldBuildingModal({
         onMouseDown={(event) => event.stopPropagation()}
       >
         {backgroundVariant === "forge" && <img className="hammer" src={hammer}></img>}
-        <div className="worldBuildingHeader">
-          <div className="worldBuildingTitleGroup">
-            <div className="worldBuildingTitle">{title}</div>
-            {subtitle && <div className="worldBuildingSubtitle">{subtitle}</div>}
+        {!isCombatPreview && (
+          <div className="worldBuildingHeader">
+            <div className="worldBuildingTitleGroup">
+              <div className="worldBuildingTitle">{title}</div>
+              {subtitle && <div className="worldBuildingSubtitle">{subtitle}</div>}
+            </div>
+            <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
+              ✕
+            </button>
           </div>
-          <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-            ✕
-          </button>
-        </div>
-        <div className="worldBuildingBody">
-          {content}
-        </div>
+        )}
+        {!isCombatPreview && <div className="worldBuildingBody">{content}</div>}
       </div>
     </div>
   );
