@@ -5,48 +5,51 @@
   border: 5px solid transparent;
   border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
-  padding: 24px;
+  padding: 22px 22px 18px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
+  margin-bottom: 16px;
 }
 
 .spiritAltarRoot::before {
   content: "";
   position: absolute;
-  inset: 0;
-  opacity: 0;
-  filter: blur(10px);
+  inset: -20px;
+  opacity: 0.14;
+  filter: blur(12px);
   pointer-events: none;
+  background: radial-gradient(circle at 30% 30%, rgba(12, 18, 34, 0.08), transparent 60%);
 }
 
 .spiritAltarRoot[data-element="fire"]::before {
-  opacity: 0.14;
-  background: radial-gradient(circle at 30% 30%, rgba(249, 115, 22, 1), transparent 60%);
+  background: radial-gradient(circle at 25% 25%, rgba(249, 115, 22, 1), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(239, 68, 68, 1), transparent 65%);
 }
 
 .spiritAltarRoot[data-element="water"]::before {
-  opacity: 0.14;
-  background: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 1), transparent 60%);
+  background: radial-gradient(circle at 25% 25%, rgba(14, 165, 233, 1), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(34, 211, 238, 1), transparent 65%);
 }
 
 .spiritAltarRoot[data-element="earth"]::before {
-  opacity: 0.14;
-  background: radial-gradient(circle at 30% 30%, rgba(217, 119, 6, 1), transparent 60%);
+  background: radial-gradient(circle at 25% 25%, rgba(245, 158, 11, 1), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(161, 98, 7, 1), transparent 65%);
 }
 
 .spiritAltarRoot[data-element="metal"]::before {
-  opacity: 0.14;
-  background: radial-gradient(circle at 30% 30%, rgba(148, 163, 184, 1), transparent 60%);
+  background: radial-gradient(circle at 25% 25%, rgba(148, 163, 184, 1), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(229, 231, 235, 1), transparent 65%);
 }
 
 .spiritAltarRoot[data-element="wood"]::before {
-  opacity: 0.14;
-  background: radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 1), transparent 60%);
+  background: radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 1), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(132, 204, 22, 1), transparent 65%);
 }
 
 .spiritAltarRoot[data-element="none"]::before {
-  opacity: 0;
+  opacity: 0.06;
+  background: radial-gradient(circle at 30% 30%, rgba(12, 18, 34, 0.12), transparent 60%);
 }
 
 .spiritAltarRoot > * {
@@ -59,7 +62,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .spiritAltarTitle {
@@ -74,6 +77,7 @@
   margin: 0;
   font-size: 20px;
   font-weight: 700;
+  color: rgba(12, 18, 34, 0.92);
 }
 
 .spiritAltarTitleIcon {
@@ -83,13 +87,16 @@
 
 .spiritAltarGradeSeal {
   font-family: 'Julee', cursive;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
   border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   border: 1px solid rgba(12, 18, 34, 0.18);
-  background: rgba(12, 18, 34, 0.08);
+  background: rgba(255, 255, 255, 0.3);
   color: rgba(12, 18, 34, 0.85);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
 .spiritAltarGradeSeal--0 {
@@ -112,19 +119,65 @@
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 12px;
+  gap: 10px;
+  padding: 10px 0 6px;
   margin-bottom: 18px;
+}
+
+.spiritAltarCrest::before {
+  content: "";
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(0, 0, 0, 0.04) 70%);
+  border: 1px solid rgba(12, 18, 34, 0.16);
+  box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.18);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
 }
 
 .spiritAltarCrestRing {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
+  z-index: 1;
+}
+
+.spiritAltarCrestRing::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  opacity: 0.1;
+  background:
+    radial-gradient(circle, transparent 0 52%, rgba(12, 18, 34, 0.16) 52% 53%, transparent 53%),
+    conic-gradient(
+      from 0deg,
+      rgba(12, 18, 34, 0.14) 0 8deg,
+      transparent 8deg 18deg,
+      rgba(12, 18, 34, 0.1) 18deg 24deg,
+      transparent 24deg 36deg
+    );
+  animation: spiritMandalaSpin 28s linear infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .spiritAltarPurityRing {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-90deg);
+  z-index: 1;
 }
 
 .spiritAltarPurityRingBase {
@@ -135,29 +188,32 @@
 
 .spiritAltarPurityRingProg {
   fill: none;
-  stroke: rgba(2, 132, 199, 0.8);
+  stroke: rgba(12, 18, 34, 0.18);
   stroke-width: 8;
   stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: 50% 50%;
+  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.1));
+  transition: stroke-dashoffset 220ms ease-out;
 }
 
 .spiritAltarGlyph {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 54px;
-  height: 54px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: rgba(255, 255, 255, 0.95);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(12, 18, 34, 0.18);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  color: rgba(12, 18, 34, 0.8);
 }
 
 .spiritAltarCrestRing .spiritAltarGlyph {
   position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .spiritAltarGlyph svg {
@@ -165,8 +221,104 @@
   height: 26px;
 }
 
+.spiritAltarRoot[data-element="fire"] .spiritAltarPurityRingProg {
+  stroke: rgba(249, 115, 22, 0.95);
+}
+
+.spiritAltarRoot[data-element="water"] .spiritAltarPurityRingProg {
+  stroke: rgba(14, 165, 233, 0.95);
+}
+
+.spiritAltarRoot[data-element="wood"] .spiritAltarPurityRingProg {
+  stroke: rgba(34, 197, 94, 0.95);
+}
+
+.spiritAltarRoot[data-element="metal"] .spiritAltarPurityRingProg {
+  stroke: rgba(148, 163, 184, 0.95);
+}
+
+.spiritAltarRoot[data-element="earth"] .spiritAltarPurityRingProg {
+  stroke: rgba(245, 158, 11, 0.95);
+}
+
+.spiritAltarRoot[data-element="fire"] .spiritAltarGlyph {
+  box-shadow: 0 8px 18px rgba(249, 115, 22, 0.25);
+}
+
+.spiritAltarRoot[data-element="water"] .spiritAltarGlyph {
+  box-shadow: 0 8px 18px rgba(14, 165, 233, 0.22);
+}
+
+.spiritAltarRoot[data-element="wood"] .spiritAltarGlyph {
+  box-shadow: 0 8px 18px rgba(34, 197, 94, 0.2);
+}
+
+.spiritAltarRoot[data-element="metal"] .spiritAltarGlyph {
+  box-shadow: 0 8px 18px rgba(148, 163, 184, 0.22);
+}
+
+.spiritAltarRoot[data-element="earth"] .spiritAltarGlyph {
+  box-shadow: 0 8px 18px rgba(245, 158, 11, 0.22);
+}
+
+.spiritAltarMotes {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  animation: spiritOrbit 16s linear infinite;
+}
+
+.spiritAltarMote {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0.22;
+  background: radial-gradient(circle, rgba(12, 18, 34, 0.55), transparent 70%);
+  filter: blur(0.3px);
+}
+
+.spiritAltarMote--1 {
+  transform: rotate(20deg) translateX(78px);
+}
+
+.spiritAltarMote--2 {
+  transform: rotate(140deg) translateX(84px);
+}
+
+.spiritAltarMote--3 {
+  transform: rotate(240deg) translateX(74px);
+}
+
+.spiritAltarRoot[data-element="fire"] .spiritAltarMote {
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.55), transparent 70%);
+}
+
+.spiritAltarRoot[data-element="water"] .spiritAltarMote {
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.55), transparent 70%);
+}
+
+.spiritAltarRoot[data-element="wood"] .spiritAltarMote {
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.55), transparent 70%);
+}
+
+.spiritAltarRoot[data-element="metal"] .spiritAltarMote {
+  background: radial-gradient(circle, rgba(148, 163, 184, 0.55), transparent 70%);
+}
+
+.spiritAltarRoot[data-element="earth"] .spiritAltarMote {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.55), transparent 70%);
+}
+
 .spiritAltarCrestText {
   text-align: center;
+  position: relative;
+  z-index: 2;
 }
 
 .spiritAltarElementName {
@@ -185,14 +337,15 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin-bottom: 16px;
+  margin-top: 14px;
+  margin-bottom: 12px;
 }
 
 .spiritAltarChip {
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.45);
   border: 1px solid rgba(12, 18, 34, 0.14);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 10px 10px;
   text-align: center;
 }
 
@@ -207,20 +360,22 @@
 .spiritAltarChipValue {
   font-size: 16px;
   font-weight: 900;
-  color: rgba(12, 18, 34, 0.9);
+  color: rgba(12, 18, 34, 0.92);
 }
 
 .spiritAltarChip--total {
   border-color: rgba(2, 132, 199, 0.28);
   background: rgba(2, 132, 199, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(2, 132, 199, 0.15);
 }
 
 .spiritAltarElementBonus {
-  background: rgba(255, 255, 255, 0.55);
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.35);
   border: 1px solid rgba(12, 18, 34, 0.14);
   border-radius: 12px;
   padding: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .spiritAltarElementBonusLabel {
@@ -239,11 +394,12 @@
 }
 
 .spiritAltarAbout {
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  margin-top: 12px;
+  border: 1px solid rgba(12, 18, 34, 0.12);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.45);
-  padding: 8px 12px;
-  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.28);
+  padding: 10px 12px;
+  margin-bottom: 12px;
 }
 
 .spiritAltarAboutSummary {
@@ -251,13 +407,17 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 900;
   color: rgba(12, 18, 34, 0.7);
   list-style: none;
 }
 
 .spiritAltarAboutSummary::-webkit-details-marker {
   display: none;
+}
+
+.spiritAltarAboutSummary::marker {
+  content: '';
 }
 
 .spiritAltarAboutIcon {
@@ -275,11 +435,12 @@
 .spiritAltarFooter {
   display: grid;
   gap: 8px;
+  margin-top: 14px;
 }
 
 .spiritAltarRerollButton {
   width: 100%;
-  font-weight: 800;
+  font-weight: 900;
   padding: 12px 16px;
   font-family: 'Julee', cursive;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
@@ -321,4 +482,69 @@
 
 .spiritRootDisplayElementWood {
   background: linear-gradient(90deg, #22c55e, #047857);
+}
+
+.spiritAltarGlyph.spiritRootDisplayElementFire {
+  background: radial-gradient(circle at 30% 30%, rgba(249, 115, 22, 0.35), rgba(255, 255, 255, 0.35));
+}
+
+.spiritAltarGlyph.spiritRootDisplayElementWater {
+  background: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 0.35), rgba(255, 255, 255, 0.35));
+}
+
+.spiritAltarGlyph.spiritRootDisplayElementEarth {
+  background: radial-gradient(circle at 30% 30%, rgba(245, 158, 11, 0.35), rgba(255, 255, 255, 0.35));
+}
+
+.spiritAltarGlyph.spiritRootDisplayElementMetal {
+  background: radial-gradient(circle at 30% 30%, rgba(148, 163, 184, 0.35), rgba(255, 255, 255, 0.35));
+}
+
+.spiritAltarGlyph.spiritRootDisplayElementWood {
+  background: radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 0.35), rgba(255, 255, 255, 0.35));
+}
+
+@keyframes spiritMandalaSpin {
+  to {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+@keyframes spiritOrbit {
+  to {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .spiritAltarCrest::before {
+    width: 140px;
+    height: 140px;
+  }
+
+  .spiritAltarCrestRing {
+    width: 140px;
+    height: 140px;
+  }
+
+  .spiritAltarCrestRing::before {
+    width: 130px;
+    height: 130px;
+  }
+
+  .spiritAltarPurityRing {
+    width: 120px;
+    height: 120px;
+  }
+
+  .spiritAltarChips {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spiritAltarCrestRing::before,
+  .spiritAltarMotes {
+    animation: none !important;
+  }
 }

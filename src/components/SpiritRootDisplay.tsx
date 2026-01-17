@@ -124,6 +124,12 @@ export function SpiritRootDisplay() {
           </svg>
         </div>
 
+        <div className="spiritAltarMotes" aria-hidden>
+          <span className="spiritAltarMote spiritAltarMote--1" />
+          <span className="spiritAltarMote spiritAltarMote--2" />
+          <span className="spiritAltarMote spiritAltarMote--3" />
+        </div>
+
         <div className={`spiritAltarGlyph ${ELEMENT_COLORS[spiritRoot.element]}`} aria-hidden>
           {ELEMENT_ICONS[spiritRoot.element]}
         </div>
