@@ -1,6 +1,6 @@
 .verseMiniBar {
   position: relative;
-  width: 94%;
+  width: 100%;
   height: var(--verse-frame-h);
   display: flex;
   align-items: center;
@@ -8,8 +8,8 @@
   opacity: 0.9;
   --verse-frame-h: 28px;
   --verse-track-h: 10px;
-  --verse-frame-scale-x: 1.96;
-  --verse-track-inset-x: 78px;
+  --verse-frame-scale-x: 1.9632;
+  --verse-track-inset-x: 64px;
   --verse-track-bg: rgba(255, 255, 255, 0.07);
   --verse-fill-a: rgba(34, 211, 238, 0.55);
   --verse-fill-b: rgba(139, 92, 246, 0.55);
@@ -76,8 +76,7 @@
   .verseMiniBar {
     --verse-frame-h: 26px;
     --verse-track-h: 9px;
-    --verse-track-inset-x: 56px;
-    width: 100%;
+    --verse-track-inset-x: 48px;
   }
 
   .verseMiniBar__labelText,
