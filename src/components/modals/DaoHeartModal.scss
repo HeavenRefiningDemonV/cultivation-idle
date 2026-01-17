@@ -51,7 +51,109 @@
     transparent 6px
   );
   opacity: 0.4;
+  z-index: 0;
+}
+
+.daoHeartModalFx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   z-index: 1;
+  opacity: 1;
+}
+
+.daoHeartFxWash {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, var(--dao-wash-a), transparent 60%),
+    radial-gradient(circle at 70% 55%, var(--dao-wash-b), transparent 65%);
+  filter: blur(10px);
+  opacity: 0.55;
+  animation: daoWashDrift 14s ease-in-out infinite alternate;
+}
+
+.daoHeartFxMandala {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: clamp(260px, 40vw, 420px);
+  height: clamp(260px, 40vw, 420px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: 0.14;
+  mix-blend-mode: multiply;
+  background:
+    radial-gradient(circle at center, transparent 0 48%, rgba(12, 18, 34, 0.14) 48% 49%, transparent 49%),
+    radial-gradient(circle at center, rgba(12, 18, 34, 0.08), transparent 70%),
+    conic-gradient(
+      from 0deg,
+      rgba(12, 18, 34, 0.1) 0 10deg,
+      transparent 10deg 20deg,
+      rgba(12, 18, 34, 0.08) 20deg 26deg,
+      transparent 26deg 36deg,
+      rgba(12, 18, 34, 0.1) 36deg 46deg,
+      transparent 46deg 56deg,
+      rgba(12, 18, 34, 0.08) 56deg 62deg,
+      transparent 62deg 72deg,
+      rgba(12, 18, 34, 0.1) 72deg 82deg,
+      transparent 82deg 92deg
+    );
+  animation: daoMandalaSpin 28s linear infinite;
+}
+
+.daoHeartFxOrbit {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+}
+
+.daoHeartFxOrbit--a {
+  animation: daoOrbitA 12s linear infinite;
+}
+
+.daoHeartFxOrbit--b {
+  animation: daoOrbitB 18s linear infinite reverse;
+}
+
+.daoHeartMote {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--dao-accent), transparent 70%);
+  opacity: 0.75;
+  filter: blur(0.2px);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.12);
+  transform: rotate(var(--ang)) translateX(var(--r));
+}
+
+.daoHeartMote--1 {
+  --ang: 15deg;
+  --r: 150px;
+}
+
+.daoHeartMote--2 {
+  --ang: 140deg;
+  --r: 175px;
+}
+
+.daoHeartMote--3 {
+  --ang: 260deg;
+  --r: 165px;
+}
+
+.daoHeartMote--4 {
+  --ang: 70deg;
+  --r: 130px;
+}
+
+.daoHeartMote--5 {
+  --ang: 210deg;
+  --r: 145px;
 }
 
 .daoHeartModalScroll {
@@ -205,4 +307,74 @@
 .daoHeartModalModal .verseNode--current {
   border-color: rgba(245, 158, 11, 0.6);
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+[data-dao-element='fire'] .daoHeartMote {
+  opacity: 0.85;
+  animation: daoMoteFlicker 2.4s ease-in-out infinite;
+}
+
+[data-dao-element='water'] .daoHeartMote {
+  filter: blur(0.6px);
+  opacity: 0.7;
+}
+
+[data-dao-element='metal'] .daoHeartMote {
+  opacity: 0.55;
+}
+
+[data-dao-element='earth'] .daoHeartFxWash {
+  opacity: 0.65;
+  animation-duration: 18s;
+}
+
+[data-dao-element='wood'] .daoHeartMote {
+  opacity: 0.72;
+}
+
+@keyframes daoWashDrift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-10px, 12px) scale(1.03);
+  }
+}
+
+@keyframes daoMandalaSpin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes daoOrbitA {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes daoOrbitB {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes daoMoteFlicker {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daoHeartFxWash,
+  .daoHeartFxMandala,
+  .daoHeartFxOrbit {
+    animation: none !important;
+  }
 }

@@ -116,6 +116,19 @@ export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
         aria-label="Dao Heart"
         onClick={handleModalClick}
       >
+        <div className="daoHeartModalFx" aria-hidden="true">
+          <div className="daoHeartFxWash" />
+          <div className="daoHeartFxMandala" />
+          <div className="daoHeartFxOrbit daoHeartFxOrbit--a">
+            <span className="daoHeartMote daoHeartMote--1" />
+            <span className="daoHeartMote daoHeartMote--2" />
+            <span className="daoHeartMote daoHeartMote--3" />
+          </div>
+          <div className="daoHeartFxOrbit daoHeartFxOrbit--b">
+            <span className="daoHeartMote daoHeartMote--4" />
+            <span className="daoHeartMote daoHeartMote--5" />
+          </div>
+        </div>
         <div className="daoHeartModalScroll">
           <div className="daoHeartModalHeader">
             <div className="daoHeartModalHeaderText">
