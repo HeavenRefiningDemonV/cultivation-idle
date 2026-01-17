@@ -7,7 +7,9 @@ import { useUIStore } from '../../stores/uiStore';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
+import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader';
 import './StatusScreen.scss';
+import '../../ui/status/StatusSummaryHeader.scss';
 
 type StatTone =
   | 'gold'
@@ -104,6 +106,13 @@ export function StatusScreen() {
   // Calculate some derived stats
   const currentRealm = REALMS[realm.index];
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
+  const realmName = currentRealm.name;
+  const stageText = `Stage ${realm.substage}/${currentRealm.substages}`;
+  const qiText = formatNumber(qi);
+  const qiPerSecondText = `${formatNumber(qiPerSecond)}/s`;
+  const focusModeText = focusMode.toUpperCase();
+  const totalAurasText = formatNumber(totalAuras);
+  const hasQiFlow = qiPerSecond > 0;
 
   useEffect(() => {
     setHeaderTitles('Character Status', 'View your cultivation progress and combat statistics');
@@ -113,6 +122,16 @@ export function StatusScreen() {
     <div className={'statusScreenRoot'}>
       {/* Main Content */}
       <div className={'statusScreenContent'}>
+        <StatusSummaryHeader
+          realmName={realmName}
+          realmIndex={realm.index}
+          stageText={stageText}
+          qiText={qiText}
+          qiPerSecondText={qiPerSecondText}
+          focusModeText={focusModeText}
+          totalAurasText={totalAurasText}
+          hasQiFlow={hasQiFlow}
+        />
         {/* Main Grid Layout */}
         <div className={'statusScreenGrid'}>
           {/* LEFT COLUMN */}
