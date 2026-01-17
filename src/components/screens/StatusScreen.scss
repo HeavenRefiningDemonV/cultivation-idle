@@ -112,11 +112,6 @@
   font-size: 14px;
 }
 
-.statusScreenStatRow:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
 .statusScreenStatLabel {
   color: rgba(12, 18, 34, 0.72);
 }
@@ -141,14 +136,14 @@
 }
 
 .statusScreenEquipmentCard {
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(30, 41, 59, 0.5);
   border-radius: 10px;
   padding: 12px;
-  border: 1px solid rgba(12, 18, 34, 0.18);
+  border: 1px solid rgba(88, 28, 135, 0.5);
 }
 
 .statusScreenEquipmentCardAccessory {
-  border-color: rgba(8, 145, 178, 0.35);
+  border-color: rgba(8, 145, 178, 0.5);
 }
 
 .statusScreenEquipmentNamePurple {
@@ -168,15 +163,15 @@
 }
 
 .statusScreenEquipmentStats {
-  color: rgba(12, 18, 34, 0.72);
+  color: #e5e7eb;
   font-size: 12px;
   margin-top: 8px;
 }
 
 .statusScreenEquipmentEmpty {
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(12, 18, 34, 0.18);
-  color: rgba(12, 18, 34, 0.6);
+  background: rgba(30, 41, 59, 0.3);
+  border: 1px solid rgba(51, 65, 85, 1);
+  color: rgba(148, 163, 184, 0.8);
   font-size: 14px;
   padding: 12px;
   border-radius: 10px;
