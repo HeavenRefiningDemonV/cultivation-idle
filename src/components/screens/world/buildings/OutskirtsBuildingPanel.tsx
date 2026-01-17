@@ -65,7 +65,8 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
 
   return (
     <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
+      <div className="combat-side-panel"></div>
+      {/* <div className={'worldScreenPlaceholderHeader'}>
         <div className={'worldScreenPlaceholderTitle'}>{outskirtsDef.name ?? 'Outskirts'}</div>
         <div className={'worldScreenPlaceholderKey'}>outskirts</div>
       </div>
@@ -97,7 +98,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
             Boss {bossName} is ready to spawn!
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
