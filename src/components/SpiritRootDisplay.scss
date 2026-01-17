@@ -1,4 +1,4 @@
-.spiritRootDisplayRoot {
+.spiritAltarRoot {
   position: relative;
   overflow: hidden;
   background: rgba(208, 208, 208, 0.92);
@@ -11,8 +11,8 @@
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
 }
 
-.spiritRootDisplayRoot::before {
-  content: '';
+.spiritAltarRoot::before {
+  content: "";
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -20,65 +20,287 @@
   pointer-events: none;
 }
 
-.spiritRootDisplayRoot[data-element="fire"]::before {
+.spiritAltarRoot[data-element="fire"]::before {
   opacity: 0.14;
   background: radial-gradient(circle at 30% 30%, rgba(249, 115, 22, 1), transparent 60%);
 }
 
-.spiritRootDisplayRoot[data-element="water"]::before {
+.spiritAltarRoot[data-element="water"]::before {
   opacity: 0.14;
   background: radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 1), transparent 60%);
 }
 
-.spiritRootDisplayRoot[data-element="earth"]::before {
+.spiritAltarRoot[data-element="earth"]::before {
   opacity: 0.14;
   background: radial-gradient(circle at 30% 30%, rgba(217, 119, 6, 1), transparent 60%);
 }
 
-.spiritRootDisplayRoot[data-element="metal"]::before {
+.spiritAltarRoot[data-element="metal"]::before {
   opacity: 0.14;
   background: radial-gradient(circle at 30% 30%, rgba(148, 163, 184, 1), transparent 60%);
 }
 
-.spiritRootDisplayRoot[data-element="wood"]::before {
+.spiritAltarRoot[data-element="wood"]::before {
   opacity: 0.14;
   background: radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 1), transparent 60%);
 }
 
-.spiritRootDisplayRoot[data-element="none"]::before {
+.spiritAltarRoot[data-element="none"]::before {
   opacity: 0;
 }
 
-.spiritRootDisplayRoot > * {
+.spiritAltarRoot > * {
   position: relative;
   z-index: 1;
 }
 
-.spiritRootDisplayHeader {
+.spiritAltarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.spiritAltarTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Julee', cursive;
+  color: #0c1222;
+}
+
+.spiritAltarTitle h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.spiritAltarTitleIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.spiritAltarGradeSeal {
+  font-family: 'Julee', cursive;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(12, 18, 34, 0.18);
+  background: rgba(12, 18, 34, 0.08);
+  color: rgba(12, 18, 34, 0.85);
+}
+
+.spiritAltarGradeSeal--0 {
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.spiritAltarGradeSeal--1 { color: #6b7280; }
+.spiritAltarGradeSeal--2 { color: #16a34a; }
+.spiritAltarGradeSeal--3 { color: #2563eb; }
+.spiritAltarGradeSeal--4 { color: #a855f7; }
+.spiritAltarGradeSeal--5 { color: #d97706; }
+
+.spiritAltarPlaceholder {
+  text-align: center;
+  padding: 18px 0;
+  color: rgba(12, 18, 34, 0.7);
+}
+
+.spiritAltarCrest {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.spiritAltarCrestRing {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.spiritAltarPurityRing {
+  width: 120px;
+  height: 120px;
+}
+
+.spiritAltarPurityRingBase {
+  fill: none;
+  stroke: rgba(12, 18, 34, 0.12);
+  stroke-width: 8;
+}
+
+.spiritAltarPurityRingProg {
+  fill: none;
+  stroke: rgba(2, 132, 199, 0.8);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.spiritAltarGlyph {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.95);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.spiritAltarCrestRing .spiritAltarGlyph {
+  position: absolute;
+}
+
+.spiritAltarGlyph svg {
+  width: 26px;
+  height: 26px;
+}
+
+.spiritAltarCrestText {
+  text-align: center;
+}
+
+.spiritAltarElementName {
+  text-transform: capitalize;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.9);
+}
+
+.spiritAltarPurityValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.spiritAltarChips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.spiritAltarChip {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.spiritAltarChipLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.spiritAltarChipValue {
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(12, 18, 34, 0.9);
+}
+
+.spiritAltarChip--total {
+  border-color: rgba(2, 132, 199, 0.28);
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.spiritAltarElementBonus {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.spiritAltarElementBonusLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.62);
+}
+
+.spiritAltarElementBonusValue {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.78);
+}
+
+.spiritAltarAbout {
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.45);
+  padding: 8px 12px;
+  margin-bottom: 16px;
+}
+
+.spiritAltarAboutSummary {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Julee', cursive;
-  font-size: 20px;
+  cursor: pointer;
   font-weight: 700;
-  color: #0c1222;
-  margin: 0 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.16);
+  color: rgba(12, 18, 34, 0.7);
+  list-style: none;
 }
 
-.spiritRootDisplayPlaceholderText {
-  color: rgba(12, 18, 34, 0.75);
-  font-size: 14px;
+.spiritAltarAboutSummary::-webkit-details-marker {
+  display: none;
+}
+
+.spiritAltarAboutIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.spiritAltarAboutBody {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(12, 18, 34, 0.7);
+}
+
+.spiritAltarFooter {
+  display: grid;
+  gap: 8px;
+}
+
+.spiritAltarRerollButton {
+  width: 100%;
+  font-weight: 800;
+  padding: 12px 16px;
+  font-family: 'Julee', cursive;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+.spiritAltarRerollButton:hover:enabled {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+.spiritAltarRerollButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.spiritAltarWarning {
   text-align: center;
-  padding: 16px 0;
-}
-
-.spiritRootDisplaySpiritCard {
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .spiritRootDisplayElementFire {
@@ -99,137 +321,4 @@
 
 .spiritRootDisplayElementWood {
   background: linear-gradient(90deg, #22c55e, #047857);
-}
-
-.spiritRootDisplaySpiritContent {
-  text-align: center;
-  display: grid;
-  gap: 8px;
-}
-
-.spiritRootDisplayQualityText {
-  font-size: 30px;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.spiritRootDisplayQuality1 { color: #9ca3af; }
-.spiritRootDisplayQuality2 { color: #4ade80; }
-.spiritRootDisplayQuality3 { color: #60a5fa; }
-.spiritRootDisplayQuality4 { color: #a855f7; }
-.spiritRootDisplayQuality5 { color: #fb923c; }
-
-.spiritRootDisplayElementLabel {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.92);
-  text-transform: capitalize;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
-}
-
-.spiritRootDisplayPurityText {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-.spiritRootDisplayBonusCard {
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  color: rgba(12, 18, 34, 0.78);
-}
-
-.spiritRootDisplayBonusHeader {
-  font-weight: 600;
-  color: rgba(12, 18, 34, 0.85);
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-
-.spiritRootDisplayBonusList {
-  display: grid;
-  gap: 8px;
-  font-size: 14px;
-}
-
-.spiritRootDisplayBonusRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.spiritRootDisplayBonusLabel { color: rgba(12, 18, 34, 0.7); }
-
-.spiritRootDisplayBonusValueGreen { color: #4ade80; }
-
-.spiritRootDisplayBonusValueBlue { color: #60a5fa; }
-
-.spiritRootDisplayBonusTotal {
-  padding-top: 8px;
-  border-top: 1px solid rgba(12, 18, 34, 0.18);
-}
-
-.spiritRootDisplayBonusTotalValue {
-  color: #ca8a04;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.spiritRootDisplayElementBonus {
-  padding-top: 8px;
-  border-top: 1px solid rgba(12, 18, 34, 0.18);
-  color: rgba(12, 18, 34, 0.7);
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.spiritRootDisplayElementBonus span {
-  color: rgba(12, 18, 34, 0.75);
-}
-
-.spiritRootDisplayElementBonus div {
-  color: #0891b2;
-  font-weight: 600;
-}
-
-.spiritRootDisplayInfoBox {
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  color: rgba(12, 18, 34, 0.78);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.spiritRootDisplayInfoHighlight { font-weight: 700; }
-
-.spiritRootDisplayRerollButton {
-  width: 100%;
-  font-weight: 800;
-  padding: 12px 16px;
-  font-family: 'Julee', cursive;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
-  cursor: pointer;
-}
-
-.spiritRootDisplayRerollButton:hover:enabled {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-}
-
-.spiritRootDisplayRerollButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.spiritRootDisplayWarningText {
-  margin-top: 8px;
-  text-align: center;
-  color: #ef4444;
-  font-size: 14px;
 }
