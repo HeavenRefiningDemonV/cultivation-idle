@@ -8,8 +8,19 @@ import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader';
+import { CombatStatTile } from '../../ui/status/CombatStatTile';
+import {
+  Crosshair,
+  Droplets,
+  Footprints,
+  Heart,
+  Shield,
+  Sparkles,
+  Sword,
+} from 'lucide-react';
 import './StatusScreen.scss';
 import '../../ui/status/StatusSummaryHeader.scss';
+import '../../ui/status/CombatStatTile.scss';
 
 type StatTone =
   | 'gold'
@@ -154,26 +165,56 @@ export function StatusScreen() {
 
             {/* Combat Statistics */}
             <StatCard title="Combat Statistics">
-              <StatRow label="Max HP" value={formatNumber(stats.hp)} tone="green" />
-              <StatRow label="Attack Power" value={formatNumber(stats.atk)} tone="red" />
-              <StatRow label="Defense" value={formatNumber(stats.def)} tone="blue" />
-              <StatRow label="HP Regen/s" value={formatNumber(stats.regen)} tone="green" />
-              <StatRow
-                label="Critical Rate"
-                value={formatPercentFromValue(stats.crit)}
-                tone="yellow"
-              />
-              <StatRow
-                label="Critical Damage"
-                value={formatPercentFromValue(stats.critDmg, 0)}
-                tone="yellow"
-              />
-              <StatRow
-                label="Dodge Chance"
-                value={formatPercentFromValue(stats.dodge)}
-                tone="cyan"
-              />
-              <StatRow label="Total Enemies Defeated" value={totalEnemiesDefeated} tone="red" />
+              <div className="combatStatTilesGrid">
+                <CombatStatTile
+                  label="Max HP"
+                  value={formatNumber(stats.hp)}
+                  icon={<Heart size={16} />}
+                  tone="hp"
+                />
+                <CombatStatTile
+                  label="Attack Power"
+                  value={formatNumber(stats.atk)}
+                  icon={<Sword size={16} />}
+                  tone="offense"
+                />
+                <CombatStatTile
+                  label="Defense"
+                  value={formatNumber(stats.def)}
+                  icon={<Shield size={16} />}
+                  tone="defense"
+                />
+                <CombatStatTile
+                  label="HP Regen/s"
+                  value={formatNumber(stats.regen)}
+                  icon={<Droplets size={16} />}
+                  tone="recovery"
+                />
+                <CombatStatTile
+                  label="Critical Rate"
+                  value={formatPercentFromValue(stats.crit)}
+                  icon={<Crosshair size={16} />}
+                  tone="crit"
+                />
+                <CombatStatTile
+                  label="Critical Damage"
+                  value={formatPercentFromValue(stats.critDmg, 0)}
+                  icon={<Sparkles size={16} />}
+                  tone="crit"
+                />
+                <CombatStatTile
+                  label="Dodge Chance"
+                  value={formatPercentFromValue(stats.dodge)}
+                  icon={<Footprints size={16} />}
+                  tone="evasion"
+                />
+                <CombatStatTile
+                  label="Total Enemies Defeated"
+                  value={formatNumber(totalEnemiesDefeated)}
+                  icon={<Sword size={16} />}
+                  tone="neutral"
+                />
+              </div>
             </StatCard>
           </div>
 

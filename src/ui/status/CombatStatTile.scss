@@ -1,0 +1,84 @@
+.combatStatTilesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.combatStatTile {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: rgba(12, 18, 34, 0.78);
+}
+
+.combatStatTile__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.combatStatTile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(12, 18, 34, 0.7);
+}
+
+.combatStatTile__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.combatStatTile__valueRow {
+  display: flex;
+  align-items: baseline;
+}
+
+.combatStatTile__value {
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(12, 18, 34, 0.92);
+}
+
+.combatStatTile__sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.58);
+}
+
+.combatStatTile--hp .combatStatTile__value {
+  color: #16a34a;
+}
+
+.combatStatTile--offense .combatStatTile__value {
+  color: #dc2626;
+}
+
+.combatStatTile--defense .combatStatTile__value {
+  color: #2563eb;
+}
+
+.combatStatTile--recovery .combatStatTile__value {
+  color: #16a34a;
+}
+
+.combatStatTile--crit .combatStatTile__value {
+  color: #ca8a04;
+}
+
+.combatStatTile--evasion .combatStatTile__value {
+  color: #0891b2;
+}
+
+@media (max-width: 520px) {
+  .combatStatTilesGrid {
+    grid-template-columns: 1fr;
+  }
+}
