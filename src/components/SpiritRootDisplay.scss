@@ -22,6 +22,10 @@
   background: radial-gradient(circle at 30% 30%, rgba(12, 18, 34, 0.08), transparent 60%);
 }
 
+.spiritAltarRoot.is-rerolled::before {
+  opacity: 0.2;
+}
+
 .spiritAltarRoot[data-element="fire"]::before {
   background: radial-gradient(circle at 25% 25%, rgba(249, 115, 22, 1), transparent 60%),
     radial-gradient(circle at 70% 60%, rgba(239, 68, 68, 1), transparent 65%);
@@ -193,6 +197,10 @@
   stroke-linecap: round;
   filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.1));
   transition: stroke-dashoffset 220ms ease-out;
+}
+
+.spiritAltarRoot.is-rerolled .spiritAltarPurityRingProg {
+  animation: spiritRingFlash 420ms ease-out;
 }
 
 .spiritAltarGlyph {
@@ -546,5 +554,21 @@
   .spiritAltarCrestRing::before,
   .spiritAltarMotes {
     animation: none !important;
+  }
+
+  .spiritAltarRoot.is-rerolled .spiritAltarPurityRingProg {
+    animation: none !important;
+  }
+}
+
+@keyframes spiritRingFlash {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+  }
+  40% {
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.18));
+  }
+  100% {
+    filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
   }
 }

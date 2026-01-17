@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Droplet, Flame, Hexagon, Info, Leaf, Mountain, Sparkles } from 'lucide-react';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
@@ -59,6 +60,15 @@ export function SpiritRootDisplay() {
   const rerollCost = usePrestigeStore((state) => state.getSpiritRootRerollCost());
 
   const gold = useInventoryStore((state) => state.gold);
+  const [justRerolled, setJustRerolled] = useState(false);
+
+  useEffect(() => {
+    if (!justRerolled) {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => setJustRerolled(false), 420);
+    return () => window.clearTimeout(timeout);
+  }, [justRerolled]);
 
   // If no spirit root exists yet, show placeholder
   if (!spiritRoot) {
@@ -92,11 +102,17 @@ export function SpiritRootDisplay() {
     const success = rerollSpiritRoot();
     if (!success) {
       console.log('[SpiritRoot] Reroll failed - not enough gold');
+      return;
     }
+    setJustRerolled(true);
   };
 
   return (
-    <div className="spiritAltarRoot" data-element={spiritRoot.element} data-grade={spiritRoot.grade}>
+    <div
+      className={`spiritAltarRoot ${justRerolled ? 'is-rerolled' : ''}`}
+      data-element={spiritRoot.element}
+      data-grade={spiritRoot.grade}
+    >
       <div className="spiritAltarHeader">
         <div className="spiritAltarTitle">
           <Sparkles className="spiritAltarTitleIcon" aria-hidden />
