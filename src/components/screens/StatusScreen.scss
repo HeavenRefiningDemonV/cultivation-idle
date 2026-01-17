@@ -21,7 +21,7 @@
   font-family: 'Julee', cursive;
   font-size: 36px;
   font-weight: 700;
-  color: #fbbf24;
+  color: rgba(12, 18, 34, 0.9);
   margin-bottom: 8px;
 }
 
@@ -42,22 +42,38 @@
   gap: 24px;
 }
 
-.statusScreenPanel {
-  background: rgba(26, 26, 26, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
+.statusScreenCardBase {
+  background: rgba(208, 208, 208, 0.92);
+  border: 5px solid transparent;
+  border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-radius: 0;
   padding: 24px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.statusScreenPanel {
 }
 
 .statusScreenSectionHeader {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 2px solid rgba(251, 191, 36, 0.3);
+  border-bottom: 1px solid rgba(12, 18, 34, 0.18);
+}
+
+.statusScreenSectionHeader::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 32px;
+  height: 2px;
+  background: rgba(12, 18, 34, 0.2);
 }
 
 .statusScreenSectionIcon {
@@ -68,21 +84,16 @@
   font-family: 'Julee', cursive;
   font-size: 20px;
   font-weight: 700;
-  color: #fbbf24;
+  color: rgba(12, 18, 34, 0.9);
 }
 
 .statusScreenStatCard {
-  background: rgba(26, 26, 26, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
-  padding: 24px;
-  backdrop-filter: blur(6px);
 }
 
 .statusScreenStatCardTitle {
   font-family: 'Julee', cursive;
   font-weight: 700;
-  color: #fbbf24;
+  color: rgba(12, 18, 34, 0.9);
   margin-bottom: 16px;
 }
 
@@ -97,24 +108,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  border-bottom: 1px solid rgba(12, 18, 34, 0.12);
   font-size: 14px;
 }
 
 .statusScreenStatLabel {
-  color: #000000;
+  color: rgba(12, 18, 34, 0.72);
 }
 
 .statusScreenStatValue {
   font-weight: 700;
+  color: rgba(12, 18, 34, 0.92);
 }
 
 .statusScreenEquipmentSection {
-  background: rgba(26, 26, 26, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
-  padding: 24px;
-  backdrop-filter: blur(6px);
+  @extend .statusScreenCardBase;
 }
 
 .statusScreenEquipmentBlock {
@@ -170,22 +178,17 @@
 }
 
 .statusScreenMiscPanel {
-  background: rgba(26, 26, 26, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
-  padding: 24px;
-  backdrop-filter: blur(6px);
 }
 
-.statusScreenStatGold { color: #fbbf24; }
-.statusScreenStatQi { color: #7dd3fc; }
-.statusScreenStatGreen { color: #34d399; }
-.statusScreenStatRed { color: #f87171; }
-.statusScreenStatBlue { color: #60a5fa; }
-.statusScreenStatYellow { color: #facc15; }
-.statusScreenStatCyan { color: #22d3ee; }
-.statusScreenStatPink { color: #f9a8d4; }
-.statusScreenStatMuted { color: #cbd5e1; }
+.statusScreenStatGold { color: #d97706; }
+.statusScreenStatQi { color: #0284c7; }
+.statusScreenStatGreen { color: #16a34a; }
+.statusScreenStatRed { color: #dc2626; }
+.statusScreenStatBlue { color: #2563eb; }
+.statusScreenStatYellow { color: #ca8a04; }
+.statusScreenStatCyan { color: #0891b2; }
+.statusScreenStatPink { color: #db2777; }
+.statusScreenStatMuted { color: rgba(12, 18, 34, 0.58); }
 
 @media (min-width: 1024px) {
   .statusScreenGrid {

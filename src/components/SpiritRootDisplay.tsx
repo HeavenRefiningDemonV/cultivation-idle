@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { Droplet, Flame, Hexagon, Info, Leaf, Mountain, Sparkles } from 'lucide-react';
 import { usePrestigeStore } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { formatNumber, D } from '../utils/numbers';
@@ -13,17 +15,6 @@ const QUALITY_NAMES: Record<SpiritRootGrade, string> = {
   3: 'Uncommon',
   4: 'Rare',
   5: 'Legendary',
-};
-
-/**
- * Quality colors mapped to CSS module classes
- */
-const QUALITY_COLORS: Record<SpiritRootGrade, string> = {
-  1: 'spiritRootDisplayQuality1',
-  2: 'spiritRootDisplayQuality2',
-  3: 'spiritRootDisplayQuality3',
-  4: 'spiritRootDisplayQuality4',
-  5: 'spiritRootDisplayQuality5',
 };
 
 /**
@@ -48,6 +39,14 @@ const ELEMENT_BONUS_DESCRIPTIONS: Record<SpiritRootElement, string> = {
   wood: '+10% HP Regen, +10% Qi/s',
 };
 
+const ELEMENT_ICONS: Record<SpiritRootElement, React.ReactNode> = {
+  fire: <Flame aria-hidden />,
+  water: <Droplet aria-hidden />,
+  earth: <Mountain aria-hidden />,
+  metal: <Hexagon aria-hidden />,
+  wood: <Leaf aria-hidden />,
+};
+
 /**
  * Spirit Root Display Component
  * Shows the player's spirit root quality, element, purity, and bonuses
@@ -61,18 +60,28 @@ export function SpiritRootDisplay() {
   const rerollCost = usePrestigeStore((state) => state.getSpiritRootRerollCost());
 
   const gold = useInventoryStore((state) => state.gold);
+  const [justRerolled, setJustRerolled] = useState(false);
+
+  useEffect(() => {
+    if (!justRerolled) {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => setJustRerolled(false), 420);
+    return () => window.clearTimeout(timeout);
+  }, [justRerolled]);
 
   // If no spirit root exists yet, show placeholder
   if (!spiritRoot) {
     return (
-      <div className={'spiritRootDisplayRoot'}>
-        <h3 className={'spiritRootDisplayHeader'}>
-          <span>🌟</span>
-          <span>Spirit Root</span>
-        </h3>
-        <p className={'spiritRootDisplayPlaceholderText'}>
-          Your spirit root is being awakened...
-        </p>
+      <div className="spiritAltarRoot" data-element="none" data-grade="0">
+        <div className="spiritAltarHeader">
+          <div className="spiritAltarTitle">
+            <Sparkles className="spiritAltarTitleIcon" aria-hidden />
+            <h3>Spirit Root</h3>
+          </div>
+          <div className="spiritAltarGradeSeal spiritAltarGradeSeal--0">Dormant</div>
+        </div>
+        <div className="spiritAltarPlaceholder">Your spirit root is being awakened...</div>
       </div>
     );
   }
@@ -81,6 +90,10 @@ export function SpiritRootDisplay() {
   const qualityMult = getQualityMultiplier();
   const purityMult = getPurityMultiplier();
   const totalMult = getTotalMultiplier();
+  const ringRadius = 46;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const purityPercent = Math.min(100, Math.max(0, spiritRoot.purity));
+  const ringOffset = ringCircumference * (1 - purityPercent / 100);
 
   const canAfford = D(gold).gte(rerollCost);
 
@@ -89,75 +102,111 @@ export function SpiritRootDisplay() {
     const success = rerollSpiritRoot();
     if (!success) {
       console.log('[SpiritRoot] Reroll failed - not enough gold');
+      return;
     }
+    setJustRerolled(true);
   };
 
   return (
-    <div className={'spiritRootDisplayRoot'}>
-      <h3 className={'spiritRootDisplayHeader'}>
-        <span>🌟</span>
-        <span>Spirit Root</span>
-      </h3>
-
-      <div className={`${'spiritRootDisplaySpiritCard'} ${ELEMENT_COLORS[spiritRoot.element]}`}>
-        <div className={'spiritRootDisplaySpiritContent'}>
-          <div className={`${'spiritRootDisplayQualityText'} ${QUALITY_COLORS[spiritRoot.grade]}`}>
-            {QUALITY_NAMES[spiritRoot.grade]}
-          </div>
-
-          <div className={'spiritRootDisplayElementLabel'}>{spiritRoot.element} Element</div>
-
-          <div className={'spiritRootDisplayPurityText'}>{spiritRoot.purity}% Purity</div>
+    <div
+      className={`spiritAltarRoot ${justRerolled ? 'is-rerolled' : ''}`}
+      data-element={spiritRoot.element}
+      data-grade={spiritRoot.grade}
+    >
+      <div className="spiritAltarHeader">
+        <div className="spiritAltarTitle">
+          <Sparkles className="spiritAltarTitleIcon" aria-hidden />
+          <h3>Spirit Root</h3>
+        </div>
+        <div className={`spiritAltarGradeSeal spiritAltarGradeSeal--${spiritRoot.grade}`}>
+          {QUALITY_NAMES[spiritRoot.grade]}
         </div>
       </div>
 
-      <div className={'spiritRootDisplayBonusCard'}>
-        <h4 className={'spiritRootDisplayBonusHeader'}>Bonuses:</h4>
-        <div className={'spiritRootDisplayBonusList'}>
-          <div className={'spiritRootDisplayBonusRow'}>
-            <span className={'spiritRootDisplayBonusLabel'}>Quality Multiplier:</span>
-            <span className={'spiritRootDisplayBonusValueGreen'}>{qualityMult.toFixed(2)}x</span>
-          </div>
+      <div className="spiritAltarCrest">
+        <div className="spiritAltarCrestRing" aria-hidden>
+          <svg className="spiritAltarPurityRing" viewBox="0 0 120 120">
+            <circle className="spiritAltarPurityRingBase" cx="60" cy="60" r={ringRadius} />
+            <circle
+              className="spiritAltarPurityRingProg"
+              cx="60"
+              cy="60"
+              r={ringRadius}
+              style={{
+                strokeDasharray: `${ringCircumference}`,
+                strokeDashoffset: `${ringOffset}`,
+              }}
+            />
+          </svg>
+        </div>
 
-          <div className={'spiritRootDisplayBonusRow'}>
-            <span className={'spiritRootDisplayBonusLabel'}>Purity Multiplier:</span>
-            <span className={'spiritRootDisplayBonusValueBlue'}>{purityMult.toFixed(2)}x</span>
-          </div>
+        <div className="spiritAltarMotes" aria-hidden>
+          <span className="spiritAltarMote spiritAltarMote--1" />
+          <span className="spiritAltarMote spiritAltarMote--2" />
+          <span className="spiritAltarMote spiritAltarMote--3" />
+        </div>
 
-          <div className={`${'spiritRootDisplayBonusRow'} ${'spiritRootDisplayBonusTotal'}`}>
-            <span className={'spiritRootDisplayBonusHeader'}>Total Multiplier:</span>
-            <span className={'spiritRootDisplayBonusTotalValue'}>{totalMult.toFixed(2)}x</span>
-          </div>
+        <div className={`spiritAltarGlyph ${ELEMENT_COLORS[spiritRoot.element]}`} aria-hidden>
+          {ELEMENT_ICONS[spiritRoot.element]}
+        </div>
 
-          <div className={'spiritRootDisplayElementBonus'}>
-            <span>Element Bonus:</span>
-            <div>{ELEMENT_BONUS_DESCRIPTIONS[spiritRoot.element]}</div>
-          </div>
+        <div className="spiritAltarCrestText">
+          <div className="spiritAltarElementName">{spiritRoot.element} Element</div>
+          <div className="spiritAltarPurityValue">{spiritRoot.purity}% Purity</div>
         </div>
       </div>
 
-      <div className={'spiritRootDisplayInfoBox'}>
-        <span className={'spiritRootDisplayInfoHighlight'}>About Spirit Roots:</span> Your spirit root determines
-        your cultivation potential. Higher quality and purity provide greater stat multipliers that apply to all
-        your stats. Each element grants unique bonuses to specific abilities.
+      <div className="spiritAltarChips">
+        <div className="spiritAltarChip">
+          <div className="spiritAltarChipLabel">Quality</div>
+          <div className="spiritAltarChipValue">{qualityMult.toFixed(2)}x</div>
+        </div>
+        <div className="spiritAltarChip">
+          <div className="spiritAltarChipLabel">Purity</div>
+          <div className="spiritAltarChipValue">{purityMult.toFixed(2)}x</div>
+        </div>
+        <div className="spiritAltarChip spiritAltarChip--total">
+          <div className="spiritAltarChipLabel">Total</div>
+          <div className="spiritAltarChipValue">{totalMult.toFixed(2)}x</div>
+        </div>
       </div>
 
-      <button
-        onClick={handleReroll}
-        disabled={!canAfford}
-        className={'button-standard spiritRootDisplayRerollButton'}
-        title={!canAfford ? `Need ${formatNumber(rerollCost.toString())} gold` : 'Reroll your spirit root'}
-      >
-        {canAfford
-          ? `🔄 Reroll Spirit Root (${formatNumber(rerollCost.toString())}g)`
-          : `🔒 Not Enough Gold (${formatNumber(rerollCost.toString())}g)`}
-      </button>
+      <div className="spiritAltarElementBonus">
+        <div className="spiritAltarElementBonusLabel">Element Bonus</div>
+        <div className="spiritAltarElementBonusValue">
+          {ELEMENT_BONUS_DESCRIPTIONS[spiritRoot.element]}
+        </div>
+      </div>
 
-      {!canAfford && (
-        <p className={'spiritRootDisplayWarningText'}>
-          Need {formatNumber(D(rerollCost).minus(gold).toString())} more gold
-        </p>
-      )}
+      <details className="spiritAltarAbout">
+        <summary className="spiritAltarAboutSummary">
+          <Info className="spiritAltarAboutIcon" aria-hidden />
+          About Spirit Roots
+        </summary>
+        <div className="spiritAltarAboutBody">
+          Your spirit root determines your cultivation potential. Higher quality and purity provide greater stat
+          multipliers that apply to all your stats. Each element grants unique bonuses to specific abilities.
+        </div>
+      </details>
+
+      <div className="spiritAltarFooter">
+        <button
+          onClick={handleReroll}
+          disabled={!canAfford}
+          className="button-standard spiritAltarRerollButton"
+          title={!canAfford ? `Need ${formatNumber(rerollCost.toString())} gold` : 'Reroll your spirit root'}
+        >
+          {canAfford
+            ? `🔄 Reroll Spirit Root (${formatNumber(rerollCost.toString())}g)`
+            : `🔒 Not Enough Gold (${formatNumber(rerollCost.toString())}g)`}
+        </button>
+
+        {!canAfford && (
+          <div className="spiritAltarWarning">
+            Need {formatNumber(D(rerollCost).minus(gold).toString())} more gold
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,171 @@
+.statusSummaryPanel {
+  margin-bottom: 24px;
+  padding: 18px 18px 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.statusSummaryGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.statusSummaryBlock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statusSummaryBlock:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: rgba(12, 18, 34, 0.14);
+}
+
+.statusSummaryLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.statusSummaryIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: rgba(12, 18, 34, 0.7);
+  opacity: 0.95;
+}
+
+.statusSummaryQiOrb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(34, 211, 238, 0.95),
+    rgba(139, 92, 246, 0.7) 70%,
+    rgba(12, 18, 34, 0.1) 100%
+  );
+  box-shadow: 0 0 6px rgba(34, 211, 238, 0.28);
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.statusSummaryQiOrb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0.1;
+  background-image: url("../../assets/onscreen/qisign.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 80% 80%;
+}
+
+.statusSummaryQiOrb.is-flowing {
+  animation: statusQiPulse 2.6s ease-in-out infinite;
+}
+
+.statusSummaryLabel {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(12, 18, 34, 0.62);
+  font-weight: 700;
+}
+
+.statusSummaryValueRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusSummaryValue {
+  font-size: 20px;
+  font-weight: 900;
+  color: rgba(12, 18, 34, 0.92);
+  line-height: 1.05;
+}
+
+.statusSummaryValue--qi {
+  color: rgba(2, 132, 199, 0.95);
+}
+
+.statusSummaryFocusChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(12, 18, 34, 0.88);
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(12, 18, 34, 0.14);
+}
+
+.statusSummarySubRow {
+  display: flex;
+  align-items: center;
+}
+
+.statusSummarySub {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.58);
+  font-weight: 700;
+}
+
+@keyframes statusQiPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(34, 211, 238, 0.22);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.34);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(34, 211, 238, 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusSummaryQiOrb.is-flowing {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .statusSummaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statusSummaryBlock--mode {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .statusSummaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statusSummaryBlock::before {
+    display: none;
+  }
+
+  .statusSummaryValue {
+    font-size: 18px;
+  }
+}

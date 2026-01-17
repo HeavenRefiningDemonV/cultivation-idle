@@ -7,7 +7,20 @@ import { useUIStore } from '../../stores/uiStore';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
+import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader';
+import { CombatStatTile } from '../../ui/status/CombatStatTile';
+import {
+  Crosshair,
+  Droplets,
+  Footprints,
+  Heart,
+  Shield,
+  Sparkles,
+  Sword,
+} from 'lucide-react';
 import './StatusScreen.scss';
+import '../../ui/status/StatusSummaryHeader.scss';
+import '../../ui/status/CombatStatTile.scss';
 
 type StatTone =
   | 'gold'
@@ -63,9 +76,15 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
 /**
  * Stat Card Component (for grouped stats)
  */
-function StatCard({ title, children }: { title: string; children: React.ReactNode }) {
+type StatCardProps = {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+};
+
+function StatCard({ title, children, className = '' }: StatCardProps) {
   return (
-    <div className={'statusScreenStatCard'}>
+    <div className={`statusScreenStatCard statusScreenCardBase ${className}`}>
       <h3 className={'statusScreenStatCardTitle'}>{title}</h3>
       <div className={'statusScreenStatList'}>{children}</div>
     </div>
@@ -98,6 +117,13 @@ export function StatusScreen() {
   // Calculate some derived stats
   const currentRealm = REALMS[realm.index];
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
+  const realmName = currentRealm.name;
+  const stageText = `Stage ${realm.substage}/${currentRealm.substages}`;
+  const qiText = formatNumber(qi);
+  const qiPerSecondText = `${formatNumber(qiPerSecond)}/s`;
+  const focusModeText = focusMode.toUpperCase();
+  const totalAurasText = formatNumber(totalAuras);
+  const hasQiFlow = qiPerSecond > 0;
 
   useEffect(() => {
     setHeaderTitles('Character Status', 'View your cultivation progress and combat statistics');
@@ -105,15 +131,24 @@ export function StatusScreen() {
 
   return (
     <div className={'statusScreenRoot'}>
-
       {/* Main Content */}
       <div className={'statusScreenContent'}>
+        <StatusSummaryHeader
+          realmName={realmName}
+          realmIndex={realm.index}
+          stageText={stageText}
+          qiText={qiText}
+          qiPerSecondText={qiPerSecondText}
+          focusModeText={focusModeText}
+          totalAurasText={totalAurasText}
+          hasQiFlow={hasQiFlow}
+        />
         {/* Main Grid Layout */}
         <div className={'statusScreenGrid'}>
           {/* LEFT COLUMN */}
           <div className={'statusScreenColumn'}>
             {/* Cultivation Progress Section */}
-            <div className={'statusScreenPanel'}>
+            <div className={'statusScreenPanel statusScreenCardBase'}>
               <SectionHeader icon="⚡" title="Cultivation Progress" />
 
               <StatRow label="Current Realm" value={currentRealm.name} tone="gold" />
@@ -130,26 +165,59 @@ export function StatusScreen() {
 
             {/* Combat Statistics */}
             <StatCard title="Combat Statistics">
-              <StatRow label="Max HP" value={formatNumber(stats.hp)} tone="green" />
-              <StatRow label="Attack Power" value={formatNumber(stats.atk)} tone="red" />
-              <StatRow label="Defense" value={formatNumber(stats.def)} tone="blue" />
-              <StatRow label="HP Regen/s" value={formatNumber(stats.regen)} tone="green" />
-              <StatRow
-                label="Critical Rate"
-                value={formatPercentFromValue(stats.crit)}
-                tone="yellow"
-              />
-              <StatRow
-                label="Critical Damage"
-                value={formatPercentFromValue(stats.critDmg, 0)}
-                tone="yellow"
-              />
-              <StatRow
-                label="Dodge Chance"
-                value={formatPercentFromValue(stats.dodge)}
-                tone="cyan"
-              />
-              <StatRow label="Total Enemies Defeated" value={totalEnemiesDefeated} tone="red" />
+              <div className="combatStatTilesGrid">
+                <CombatStatTile
+                  label="Max HP"
+                  value={formatNumber(stats.hp)}
+                  icon={<Heart size={16} />}
+                  tone="hp"
+                  pulseKey={stats.hp}
+                />
+                <CombatStatTile
+                  label="Attack Power"
+                  value={formatNumber(stats.atk)}
+                  icon={<Sword size={16} />}
+                  tone="offense"
+                  pulseKey={stats.atk}
+                />
+                <CombatStatTile
+                  label="Defense"
+                  value={formatNumber(stats.def)}
+                  icon={<Shield size={16} />}
+                  tone="defense"
+                  pulseKey={stats.def}
+                />
+                <CombatStatTile
+                  label="HP Regen/s"
+                  value={formatNumber(stats.regen)}
+                  icon={<Droplets size={16} />}
+                  tone="recovery"
+                />
+                <CombatStatTile
+                  label="Critical Rate"
+                  value={formatPercentFromValue(stats.crit)}
+                  icon={<Crosshair size={16} />}
+                  tone="crit"
+                />
+                <CombatStatTile
+                  label="Critical Damage"
+                  value={formatPercentFromValue(stats.critDmg, 0)}
+                  icon={<Sparkles size={16} />}
+                  tone="crit"
+                />
+                <CombatStatTile
+                  label="Dodge Chance"
+                  value={formatPercentFromValue(stats.dodge)}
+                  icon={<Footprints size={16} />}
+                  tone="evasion"
+                />
+                <CombatStatTile
+                  label="Total Enemies Defeated"
+                  value={formatNumber(totalEnemiesDefeated)}
+                  icon={<Sword size={16} />}
+                  tone="neutral"
+                />
+              </div>
             </StatCard>
           </div>
 
@@ -165,16 +233,14 @@ export function StatusScreen() {
             </StatCard>
 
             {/* Additional Info */}
-            <div className={'statusScreenMiscPanel'}>
-              <StatCard title="Miscellaneous">
-                <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
-                <StatRow
-                  label="Player Luck"
-                  value={formatNumber(useGameStore.getState().playerLuck || 0)}
-                  tone="pink"
-                />
-              </StatCard>
-            </div>
+            <StatCard title="Miscellaneous" className="statusScreenMiscPanel">
+              <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
+              <StatRow
+                label="Player Luck"
+                value={formatNumber(useGameStore.getState().playerLuck || 0)}
+                tone="pink"
+              />
+            </StatCard>
           </div>
         </div>
       </div>
