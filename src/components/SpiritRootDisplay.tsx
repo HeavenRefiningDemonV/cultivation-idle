@@ -65,7 +65,7 @@ export function SpiritRootDisplay() {
   // If no spirit root exists yet, show placeholder
   if (!spiritRoot) {
     return (
-      <div className={'spiritRootDisplayRoot'}>
+      <div className={'spiritRootDisplayRoot'} data-element="none" data-grade="0">
         <h3 className={'spiritRootDisplayHeader'}>
           <span>🌟</span>
           <span>Spirit Root</span>
@@ -93,7 +93,11 @@ export function SpiritRootDisplay() {
   };
 
   return (
-    <div className={'spiritRootDisplayRoot'}>
+    <div
+      className={'spiritRootDisplayRoot'}
+      data-element={spiritRoot.element}
+      data-grade={spiritRoot.grade}
+    >
       <h3 className={'spiritRootDisplayHeader'}>
         <span>🌟</span>
         <span>Spirit Root</span>
