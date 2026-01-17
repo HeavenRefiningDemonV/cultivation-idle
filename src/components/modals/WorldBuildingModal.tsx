@@ -131,18 +131,16 @@ export function WorldBuildingModal({
         onMouseDown={(event) => event.stopPropagation()}
       >
         {backgroundVariant === "forge" && <img className="hammer" src={hammer}></img>}
-        {!isCombatPreview && (
-          <div className="worldBuildingHeader">
-            <div className="worldBuildingTitleGroup">
-              <div className="worldBuildingTitle">{title}</div>
-              {subtitle && <div className="worldBuildingSubtitle">{subtitle}</div>}
-            </div>
-            <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-              ✕
-            </button>
+        <div className="worldBuildingHeader">
+          <div className="worldBuildingTitleGroup">
+            <div className="worldBuildingTitle">{title}</div>
+            {subtitle && <div className="worldBuildingSubtitle">{subtitle}</div>}
           </div>
-        )}
-        {!isCombatPreview && <div className="worldBuildingBody">{content}</div>}
+          <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
+            ✕
+          </button>
+        </div>
+        <div className="worldBuildingBody">{content}</div>
       </div>
     </div>
   );
