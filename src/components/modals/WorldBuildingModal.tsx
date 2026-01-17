@@ -9,6 +9,8 @@ import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
 import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
+import { GateTrialModal } from './GateTrialModal';
+import { OutskirtsModal } from './OutskirtsModal';
 import { isCombatModule } from '../../systems/world/openWorldModule';
 import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
@@ -61,8 +63,6 @@ export function WorldBuildingModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown, open]);
 
-  const isCombatPreview = Boolean(isStoreMode && buildingKey && isCombatModule(buildingKey));
-
   const backgroundVariant = useMemo(() => {
     switch (buildingKey) {
       case 'alchemy':
@@ -89,9 +89,7 @@ export function WorldBuildingModal({
 
   let content: ReactNode = children;
 
-  if (isCombatPreview) {
-    content = null;
-  } else if (isStoreMode) {
+  if (isStoreMode) {
     switch (buildingKey) {
       case 'manualPavilion':
         content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
@@ -114,13 +112,13 @@ export function WorldBuildingModal({
       case 'expeditions':
         content = <ExpeditionBoardPanel />;
         break;
+      case 'outskirts':
+        content = <OutskirtsModal cityId={storeCityId} />;
+        break;
+      case 'gateTrial':
+        content = <GateTrialModal cityId={storeCityId} />;
+        break;
 
-      // case 'outskirts':
-      //   content = <ExpeditionBoardPanel />;
-      //   break;
-      // case 'gateTrial':
-      //   content = <ExpeditionBoardPanel />;
-      //   break;
       default:
         content = isCombatModule(buildingKey)
           ? null
