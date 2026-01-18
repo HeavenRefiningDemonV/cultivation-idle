@@ -1,300 +1,353 @@
-.equipmentDrawerOverlay {
+/* Inventory v2 – Equipment Drawer */
+.inventoryEquipDrawerOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  z-index: 320;
   display: flex;
   justify-content: flex-end;
-  z-index: 320;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
-.equipmentDrawerOverlay[data-open='true'] {
+.inventoryEquipDrawerOverlayOpen {
   opacity: 1;
   pointer-events: auto;
 }
 
-.equipmentDrawerPanel {
-  width: min(420px, 96vw);
+.inventoryEquipDrawerPanel {
+  width: min(520px, 92vw);
   height: 100%;
-  background: rgba(232, 232, 232, 0.96);
-  box-shadow: -12px 0 24px rgba(0, 0, 0, 0.25);
   padding: 18px;
+  background: linear-gradient(180deg, rgba(22, 26, 35, 0.96), rgba(8, 10, 15, 0.96)),
+    radial-gradient(circle at top, rgba(251, 191, 36, 0.08), transparent 55%),
+    radial-gradient(circle at 20% 15%, rgba(125, 211, 252, 0.12), transparent 55%);
+  border-left: 2px solid rgba(251, 191, 36, 0.35);
+  box-shadow: -12px 0 28px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   gap: 16px;
   transform: translateX(100%);
-  transition: transform 0.25s ease;
+  transition: transform 220ms ease;
 }
 
-.equipmentDrawerPanel[data-open='true'] {
+.inventoryEquipDrawerPanelOpen {
   transform: translateX(0);
 }
 
-.equipmentDrawerHeader {
+.inventoryEquipHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 
-.equipmentDrawerTitle {
-  font-size: 20px;
-  font-weight: 800;
-  color: rgba(12, 18, 34, 0.92);
+.inventoryEquipTitle {
+  font-size: 22px;
+  font-weight: 900;
+  color: rgba(232, 232, 232, 0.95);
+  letter-spacing: 0.02em;
 }
 
-.equipmentDrawerSubtitle {
+.inventoryEquipSubtitle {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.65);
+  color: rgba(148, 163, 184, 0.8);
   margin-top: 4px;
 }
 
-.equipmentDrawerClose {
+.inventoryEquipClose {
   border: none;
-  background: rgba(12, 18, 34, 0.08);
+  background: rgba(15, 23, 42, 0.6);
+  color: rgba(248, 250, 252, 0.95);
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 16px;
+  transition: filter 0.15s ease;
 }
 
-.equipmentDrawerStage {
+.inventoryEquipClose:hover {
+  filter: brightness(1.1);
+}
+
+.inventoryEquipStage {
   position: relative;
-  min-height: 260px;
+  min-height: 320px;
   display: grid;
   place-items: center;
 }
 
-.equipmentDrawerRune {
+.inventoryEquipRune {
   position: absolute;
-  width: 170px;
-  height: 170px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(125, 211, 252, 0.22), rgba(59, 130, 246, 0.05));
-  box-shadow: 0 0 24px rgba(59, 130, 246, 0.2);
-  animation: equipmentRuneShimmer 3s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.22), rgba(168, 85, 247, 0.08), transparent 60%);
+  box-shadow: 0 0 28px rgba(125, 211, 252, 0.25);
+  animation: inventoryEquipRuneShimmer 10s ease-in-out infinite;
 }
 
-.equipmentDrawerSilhouette {
+.inventoryEquipSilhouette {
   position: relative;
-  width: 76px;
-  height: 170px;
+  width: 88px;
+  height: 210px;
   border-radius: 40px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.35));
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.6));
   box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.08);
 }
 
-.equipmentDrawerSlotLeft,
-.equipmentDrawerSlotRight {
+.inventoryEquipSlotWeapon,
+.inventoryEquipSlotAccessory {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  --equip-slot-translate: translateY(-50%);
 }
 
-.equipmentDrawerSlotLeft {
-  left: 0;
+.inventoryEquipSlotWeapon {
+  left: 18px;
 }
 
-.equipmentDrawerSlotRight {
-  right: 0;
+.inventoryEquipSlotAccessory {
+  right: 18px;
 }
 
-.equipmentDrawerSlot {
-  width: 150px;
-  min-height: 120px;
-  padding: 12px;
-  border-radius: 16px;
-  border: 2px solid rgba(12, 18, 34, 0.16);
-  background: rgba(255, 255, 255, 0.6);
-  display: flex;
-  flex-direction: column;
+.inventoryEquipSlot {
+  width: 108px;
+  min-height: 108px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(26, 26, 26, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  display: grid;
+  align-content: center;
+  justify-items: center;
   gap: 6px;
-  align-items: flex-start;
+  color: rgba(226, 232, 240, 0.9);
   cursor: pointer;
-  position: relative;
   transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transform: var(--equip-slot-translate) translateY(0) scale(1);
 }
 
-.equipmentDrawerSlot:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.18);
+.inventoryEquipSlot:hover {
+  transform: var(--equip-slot-translate) translateY(-2px) scale(1);
+  border-color: rgba(148, 163, 184, 0.6);
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.35);
 }
 
-.equipmentDrawerSlotFilled {
-  background: rgba(255, 255, 255, 0.75);
+.inventoryEquipSlotFilled {
+  background: rgba(17, 24, 39, 0.7);
 }
 
-.equipmentDrawerSlotSelected {
-  border-color: rgba(59, 130, 246, 0.6);
-  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.18), 0 12px 20px rgba(0, 0, 0, 0.2);
+.inventoryEquipSlotSelected {
+  border-color: rgba(125, 211, 252, 0.55);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.18), 0 12px 20px rgba(0, 0, 0, 0.4);
 }
 
-.equipmentDrawerSlotCompatible {
+.inventoryEquipSlotCompatible {
   border-color: rgba(125, 211, 252, 0.75);
+  box-shadow: 0 0 18px rgba(125, 211, 252, 0.45);
+  animation: inventoryEquipCompatiblePulse 2.6s ease-in-out infinite;
 }
 
-.equipmentDrawerSlotPulse {
-  animation: equipmentSlotPulse 0.6s ease-out;
+.inventoryEquipSlotPulse {
+  animation: inventoryEquipPulse 0.6s ease-out;
 }
 
-.equipmentDrawerSlotIcon {
-  font-size: 22px;
+.inventoryEquipSlotIcon {
+  font-size: 24px;
 }
 
-.equipmentDrawerSlotLabel {
-  font-size: 12px;
-  font-weight: 800;
-  color: rgba(12, 18, 34, 0.75);
+.inventoryEquipSlotLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(148, 163, 184, 0.8);
 }
 
-.equipmentDrawerSlotItem {
-  font-size: 13px;
+.inventoryEquipSlotItem {
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(12, 18, 34, 0.9);
+  text-align: center;
+  max-width: 96px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.equipmentDrawerSlotEmpty {
-  font-size: 12px;
-  color: rgba(12, 18, 34, 0.6);
+.inventoryEquipSlotEmpty {
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.7);
 }
 
-.equipmentDrawerSlotChip {
-  align-self: flex-start;
+.inventoryEquipSlotChip {
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.15);
-  color: rgba(12, 18, 34, 0.9);
-  font-size: 10px;
+  background: rgba(251, 191, 36, 0.18);
+  color: rgba(251, 191, 36, 0.95);
+  font-size: 9px;
   font-weight: 700;
 }
 
-.equipmentDrawerSlotHint {
-  font-size: 10px;
-  color: rgba(59, 130, 246, 0.9);
+.inventoryEquipSlotHint {
+  font-size: 9px;
+  color: rgba(125, 211, 252, 0.9);
   font-weight: 700;
 }
 
-.equipmentDrawerDetails {
+.inventoryEquipDetails {
   flex: 1;
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(12, 18, 34, 0.12);
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(100, 116, 139, 0.4);
+  color: rgba(226, 232, 240, 0.9);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.equipmentDrawerEmptyTitle {
+.inventoryEquipDetailContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inventoryEquipEmptyTitle {
   font-weight: 700;
   margin-bottom: 6px;
 }
 
-.equipmentDrawerEmptyText {
+.inventoryEquipEmptyText {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.65);
+  color: rgba(148, 163, 184, 0.75);
 }
 
-.equipmentDrawerDetailHeader {
+.inventoryEquipDetailHeader {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.equipmentDrawerDetailSlot {
+.inventoryEquipDetailSlot {
   font-weight: 800;
   font-size: 14px;
 }
 
-.equipmentDrawerDetailChip {
+.inventoryEquipDetailChip {
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(251, 191, 36, 0.18);
+  color: rgba(251, 191, 36, 0.95);
 }
 
-.equipmentDrawerDetailName {
+.inventoryEquipDetailName {
   font-size: 16px;
   font-weight: 800;
 }
 
-.equipmentDrawerDetailDescription {
+.inventoryEquipDetailDescription {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.65);
+  color: rgba(148, 163, 184, 0.75);
 }
 
-.equipmentDrawerStatList {
+.inventoryEquipStatList {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-top: 6px;
 }
 
-.equipmentDrawerStatRow {
+.inventoryEquipStatRow {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.08);
+  border-bottom: 1px solid rgba(100, 116, 139, 0.35);
   padding-bottom: 4px;
 }
 
-.equipmentDrawerActions {
+.inventoryEquipStatLabel {
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.inventoryEquipStatValue {
+  font-weight: 700;
+}
+
+.inventoryEquipActions {
   margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.equipmentDrawerActionButton {
+.inventoryEquipActionButton {
   padding: 8px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(12, 18, 34, 0.15);
-  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: rgba(248, 250, 252, 0.95);
   cursor: pointer;
   font-weight: 700;
   font-size: 12px;
 }
 
-.equipmentDrawerActionButton--primary {
-  background: rgba(59, 130, 246, 0.18);
-  border-color: rgba(59, 130, 246, 0.4);
+.inventoryEquipActionButton--primary {
+  border-color: rgba(125, 211, 252, 0.45);
+  background: rgba(59, 130, 246, 0.2);
 }
 
-@keyframes equipmentRuneShimmer {
+@keyframes inventoryEquipRuneShimmer {
   0%,
   100% {
-    opacity: 0.75;
+    opacity: 0.7;
+    transform: translateY(0);
   }
   50% {
     opacity: 1;
+    transform: translateY(-4px);
   }
 }
 
-@keyframes equipmentSlotPulse {
-  0% {
-    transform: scale(1);
+@keyframes inventoryEquipCompatiblePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(125, 211, 252, 0.35);
   }
   50% {
-    transform: scale(1.03);
-  }
-  100% {
-    transform: scale(1);
+    box-shadow: 0 0 18px rgba(125, 211, 252, 0.55);
   }
 }
 
-@media (max-width: 640px) {
-  .equipmentDrawerPanel {
+@keyframes inventoryEquipPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(125, 211, 252, 0);
+    transform: var(--equip-slot-translate) scale(1);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(125, 211, 252, 0.55);
+    transform: var(--equip-slot-translate) scale(1.03);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(125, 211, 252, 0);
+    transform: var(--equip-slot-translate) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .inventoryEquipDrawerPanel {
     width: 100%;
   }
 
-  .equipmentDrawerStage {
-    min-height: 220px;
+  .inventoryEquipStage {
+    min-height: 280px;
   }
 
-  .equipmentDrawerSlot {
-    width: 130px;
+  .inventoryEquipSlot {
+    width: 90px;
+    min-height: 90px;
   }
 }

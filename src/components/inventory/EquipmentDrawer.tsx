@@ -199,106 +199,110 @@ export default function EquipmentDrawer({
       <button
         type="button"
         key={slot}
-        className={`equipmentDrawerSlot ${rarityClass}${equipped ? ' equipmentDrawerSlotFilled' : ''}${
-          isSelected ? ' equipmentDrawerSlotSelected' : ''
-        }${compatible ? ' equipmentDrawerSlotCompatible' : ''}${isPulse ? ' equipmentDrawerSlotPulse' : ''}`}
+        className={`inventoryEquipSlot ${rarityClass}${equipped ? ' inventoryEquipSlotFilled' : ''}${
+          isSelected ? ' inventoryEquipSlotSelected' : ''
+        }${compatible ? ' inventoryEquipSlotCompatible' : ''}${isPulse ? ' inventoryEquipSlotPulse' : ''}`}
         onClick={() => handleSlotClick(slot)}
         aria-label={`${SLOT_CONFIG[slot].label} slot`}
       >
-        <div className="equipmentDrawerSlotIcon" aria-hidden="true">
+        <div className="inventoryEquipSlotIcon" aria-hidden="true">
           {SLOT_CONFIG[slot].icon}
         </div>
-        <div className="equipmentDrawerSlotLabel">{SLOT_CONFIG[slot].label}</div>
+        <div className="inventoryEquipSlotLabel">{SLOT_CONFIG[slot].label}</div>
         {equipped ? (
           <>
-            <div className="equipmentDrawerSlotItem">{equipped?.name ?? equippedId ?? 'Equipped'}</div>
-            <div className="equipmentDrawerSlotChip">Equipped</div>
+            <div className="inventoryEquipSlotItem">{equipped?.name ?? equippedId ?? 'Equipped'}</div>
+            <div className="inventoryEquipSlotChip">Equipped</div>
           </>
         ) : (
-          <div className="equipmentDrawerSlotEmpty">Empty</div>
+          <div className="inventoryEquipSlotEmpty">Empty</div>
         )}
-        {compatible ? <div className="equipmentDrawerSlotHint">Click to Equip</div> : null}
+        {compatible ? <div className="inventoryEquipSlotHint">Click to Equip</div> : null}
       </button>
     );
   };
 
   return (
     <div
-      className="equipmentDrawerOverlay"
-      data-open={open}
+      className={`inventoryEquipDrawerOverlay${open ? ' inventoryEquipDrawerOverlayOpen' : ''}`}
       onClick={() => {
         if (open) onClose();
       }}
       aria-hidden={!open}
     >
-      <div className="equipmentDrawerPanel" data-open={open} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-        <div className="equipmentDrawerHeader">
+      <div
+        className={`inventoryEquipDrawerPanel${open ? ' inventoryEquipDrawerPanelOpen' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="inventoryEquipHeader">
           <div>
-            <div className="equipmentDrawerTitle">Equipment</div>
-            <div className="equipmentDrawerSubtitle">Select an item in your satchel, then click a slot to equip.</div>
+            <div className="inventoryEquipTitle">Equipment</div>
+            <div className="inventoryEquipSubtitle">Select an item in your satchel, then click a slot to equip.</div>
           </div>
-          <button type="button" className="equipmentDrawerClose" onClick={onClose} aria-label="Close equipment drawer">
+          <button type="button" className="inventoryEquipClose" onClick={onClose} aria-label="Close equipment drawer">
             ✕
           </button>
         </div>
 
-        <div className="equipmentDrawerStage">
-          <div className="equipmentDrawerRune" aria-hidden="true" />
-          <div className="equipmentDrawerSilhouette" aria-hidden="true" />
-          <div className="equipmentDrawerSlotLeft">
+        <div className="inventoryEquipStage">
+          <div className="inventoryEquipRune" aria-hidden="true" />
+          <div className="inventoryEquipSilhouette" aria-hidden="true" />
+          <div className="inventoryEquipSlotWeapon">
             {renderSlot('weapon', equippedWeapon, equippedWeaponId)}
           </div>
-          <div className="equipmentDrawerSlotRight">
+          <div className="inventoryEquipSlotAccessory">
             {renderSlot('accessory', equippedAccessory, equippedAccessoryId)}
           </div>
         </div>
 
-        <div className="equipmentDrawerDetails">
+        <div className="inventoryEquipDetails">
           {!selectedSlot ? (
-            <div className="equipmentDrawerEmpty">
-              <div className="equipmentDrawerEmptyTitle">Choose a slot to inspect</div>
-              <div className="equipmentDrawerEmptyText">Equipment grants lasting bonuses to your cultivator.</div>
+            <div className="inventoryEquipEmpty">
+              <div className="inventoryEquipEmptyTitle">Choose a slot to inspect</div>
+              <div className="inventoryEquipEmptyText">Equipment grants lasting bonuses to your cultivator.</div>
             </div>
           ) : (
-            <div className="equipmentDrawerDetailContent">
-              <div className="equipmentDrawerDetailHeader">
-                <div className="equipmentDrawerDetailSlot">{SLOT_CONFIG[selectedSlot].label}</div>
-                {selectedSlotDef ? <div className="equipmentDrawerDetailChip">Equipped</div> : null}
+            <div className="inventoryEquipDetailContent">
+              <div className="inventoryEquipDetailHeader">
+                <div className="inventoryEquipDetailSlot">{SLOT_CONFIG[selectedSlot].label}</div>
+                {selectedSlotDef ? <div className="inventoryEquipDetailChip">Equipped</div> : null}
               </div>
               {selectedSlotDef ? (
                 <>
-                  <div className="equipmentDrawerDetailName">{selectedSlotDef.name}</div>
+                  <div className="inventoryEquipDetailName">{selectedSlotDef.name}</div>
                   {selectedSlotDef.description ? (
-                    <p className="equipmentDrawerDetailDescription">{selectedSlotDef.description}</p>
+                    <p className="inventoryEquipDetailDescription">{selectedSlotDef.description}</p>
                   ) : null}
                   {equippedDetails.length > 0 ? (
-                    <div className="equipmentDrawerStatList">
+                    <div className="inventoryEquipStatList">
                       {equippedDetails.map((stat) => (
-                        <div key={stat.label} className="equipmentDrawerStatRow">
-                          <span className="equipmentDrawerStatLabel">{stat.label}</span>
-                          <span className="equipmentDrawerStatValue">{stat.value}</span>
+                        <div key={stat.label} className="inventoryEquipStatRow">
+                          <span className="inventoryEquipStatLabel">{stat.label}</span>
+                          <span className="inventoryEquipStatValue">{stat.value}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="equipmentDrawerDetailDescription">No stat bonuses listed.</div>
+                    <div className="inventoryEquipDetailDescription">No stat bonuses listed.</div>
                   )}
                 </>
               ) : (
-                <div className="equipmentDrawerDetailDescription">
+                <div className="inventoryEquipDetailDescription">
                   Empty slot. Equip an item to channel its power into your cultivator.
                 </div>
               )}
-              <div className="equipmentDrawerActions">
+              <div className="inventoryEquipActions">
                 {selectedSlotDef ? (
-                  <button type="button" className="equipmentDrawerActionButton" onClick={() => handleUnequip(selectedSlot)}>
+                  <button type="button" className="inventoryEquipActionButton" onClick={() => handleUnequip(selectedSlot)}>
                     Unequip
                   </button>
                 ) : null}
                 {pendingReplaceSlot === selectedSlot && selectedItemId && selectedItemName && slotIsCompatible(selectedSlot) ? (
                   <button
                     type="button"
-                    className="equipmentDrawerActionButton equipmentDrawerActionButton--primary"
+                    className="inventoryEquipActionButton inventoryEquipActionButton--primary"
                     onClick={() => handleEquip(selectedSlot, true)}
                   >
                     Replace {selectedSlotDef?.name ?? 'Empty'} → {selectedItemName}
