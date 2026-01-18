@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import './ManualSatchelModal.scss';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -7,11 +8,28 @@ import { useTechCollectionStore } from '../../stores/techCollectionStore';
 import { formatDurationHMS } from '../../utils/timeFormat';
 
 type FocusStage = 'idle' | 'arming' | 'focusing' | 'result';
+type ManualSortMode = 'newest' | 'rarity' | 'grade' | 'name';
+
+const RARITY_SORT_ORDER: Record<string, number> = {
+  legendary: 5,
+  epic: 4,
+  rare: 3,
+  uncommon: 2,
+  common: 1,
+};
+
+const GRADE_SORT_ORDER: Record<string, number> = {
+  mystic: 4,
+  heaven: 3,
+  earth: 2,
+  mortal: 1,
+};
 
 export function ManualSatchelModal() {
   const showModal = useUIStore((state) => state.showManualSatchelModal);
   const closeModal = useUIStore((state) => state.closeManualSatchel);
   const addNotification = useUIStore((state) => state.addNotification);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const manuals = useManualSatchelStore((state) => state.manuals);
   const activeStudy = useManualSatchelStore((state) => state.activeStudy);
   const startStudy = useManualSatchelStore((state) => state.startStudy);
@@ -26,11 +44,32 @@ export function ManualSatchelModal() {
   const [focusCountdown, setFocusCountdown] = useState(10);
   const [focusResult, setFocusResult] = useState<string | null>(null);
   const [focusRunning, setFocusRunning] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [confirmDismantleId, setConfirmDismantleId] = useState<string | null>(null);
+  const [expandedManualId, setExpandedManualId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortMode, setSortMode] = useState<ManualSortMode>('newest');
+  const [hideKnown, setHideKnown] = useState(true);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!showModal) return undefined;
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(handle);
+  }, [showModal]);
+
+  useEffect(() => {
+    if (!showModal) return undefined;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [closeModal, showModal]);
+
+  useEffect(() => {
+    if (!showModal) return;
+    closeButtonRef.current?.focus();
   }, [showModal]);
 
   useEffect(() => {
@@ -67,20 +106,78 @@ export function ManualSatchelModal() {
       setFocusCountdown(10);
       setFocusRunning(false);
       setFocusResult(null);
+      setShowHelp(false);
+      setConfirmDismantleId(null);
+      setExpandedManualId(null);
     }
   }, [showModal]);
 
-  const manualList = useMemo(() => {
-    return [...manuals].sort((a, b) => b.acquiredAt - a.acquiredAt);
-  }, [manuals]);
+  useEffect(() => {
+    if (confirmDismantleId && !manuals.some((manual) => manual.id === confirmDismantleId)) {
+      setConfirmDismantleId(null);
+    }
+    if (expandedManualId && !manuals.some((manual) => manual.id === expandedManualId)) {
+      setExpandedManualId(null);
+    }
+  }, [confirmDismantleId, expandedManualId, manuals]);
+
+  const manualRows = useMemo(() => {
+    const trimmedQuery = searchQuery.trim().toLowerCase();
+    const rows = manuals.map((manual) => {
+      const tech = techniquesById[manual.techId];
+      const name = tech?.name ?? manual.techId;
+      const type = (tech as { type?: string })?.type ?? 'unknown';
+      const known = hasTech(manual.techId);
+      const searchText = `${name} ${manual.techId} ${type}`.toLowerCase();
+      return {
+        manual,
+        tech,
+        name,
+        type,
+        known,
+        searchText,
+      };
+    });
+
+    const filtered = rows.filter((row) => {
+      if (hideKnown && row.known) return false;
+      if (!trimmedQuery) return true;
+      return row.searchText.includes(trimmedQuery);
+    });
+
+    const compareByName = (a: (typeof filtered)[number], b: (typeof filtered)[number]) =>
+      a.name.localeCompare(b.name);
+
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortMode) {
+        case 'rarity': {
+          const rarityDelta =
+            (RARITY_SORT_ORDER[b.manual.rarity] ?? 0) - (RARITY_SORT_ORDER[a.manual.rarity] ?? 0);
+          if (rarityDelta !== 0) return rarityDelta;
+          return b.manual.acquiredAt - a.manual.acquiredAt || compareByName(a, b);
+        }
+        case 'grade': {
+          const gradeDelta =
+            (GRADE_SORT_ORDER[b.manual.grade] ?? 0) - (GRADE_SORT_ORDER[a.manual.grade] ?? 0);
+          if (gradeDelta !== 0) return gradeDelta;
+          return b.manual.acquiredAt - a.manual.acquiredAt || compareByName(a, b);
+        }
+        case 'name':
+          return compareByName(a, b);
+        case 'newest':
+        default:
+          return b.manual.acquiredAt - a.manual.acquiredAt || compareByName(a, b);
+      }
+    });
+
+    return sorted;
+  }, [hasTech, hideKnown, manuals, searchQuery, sortMode, techniquesById]);
 
   const handleDismantle = (id: string) => {
     const manual = manuals.find((entry) => entry.id === id);
     if (!manual) return;
-    // eslint-disable-next-line no-alert
-    const confirm = window.confirm(`Dismantle manual for ${techniquesById[manual.techId]?.name ?? manual.techId}?`);
-    if (!confirm) return;
     const result = dismantleManual(id);
+    setConfirmDismantleId(null);
     if (result.ok && result.fragmentsGained != null) {
       addNotification('success', `Dismantled manual → +${result.fragmentsGained} fragments for ${manual.techId}`);
     } else if (!result.ok) {
@@ -88,17 +185,17 @@ export function ManualSatchelModal() {
     }
   };
 
-  const handleStudy = (id: string) => {
-    const manual = manuals.find((entry) => entry.id === id);
-    if (!manual) return;
+  const handleStudy = (manualId: string, techName: string) => {
     if (activeStudy) {
       addNotification('warning', 'Already studying a manual.');
       return;
     }
-    const result = startStudy(id);
+    const result = startStudy(manualId);
     if (!result.ok) {
       addNotification('error', result.reason ?? 'Unable to start study.');
+      return;
     }
+    addNotification('success', `Began studying ${techName}.`);
   };
 
   const startFocus = () => {
@@ -127,8 +224,8 @@ export function ManualSatchelModal() {
     const canFocus = !activeStudy.focusUsed && now < activeStudy.endsAt;
 
     return (
-      <div className={'manualSatchelSection'}>
-        <div className={'manualSatchelSectionHeader'}>
+      <div className={'manualSatchelCard manualSatchelCardActive'}>
+        <div className={'manualSatchelCardHeader'}>
           <div>
             <div className={'manualSatchelTitleLine'}>Active Study</div>
             <div className={'manualSatchelTechName'}>{tech?.name ?? activeStudy.manual.techId}</div>
@@ -170,9 +267,11 @@ export function ManualSatchelModal() {
           </div>
         )}
         {focusStage === 'focusing' && (
-          <div className={'manualSatchelFocusCard'}>
+          <div className={'manualSatchelFocusCard manualSatchelFocusCardActive'}>
             <div className={'manualSatchelFocusTitle'}>Focused Study</div>
-            <div className={'manualSatchelFocusText'}>Channeling... {focusCountdown}s</div>
+            <div className={'manualSatchelFocusText'}>
+              Channeling... <span className={'manualSatchelFocusCountdown'}>{focusCountdown}s</span>
+            </div>
             <div className={'manualSatchelProgressBar'}>
               <div
                 className={'manualSatchelProgressFill'}
@@ -201,62 +300,195 @@ export function ManualSatchelModal() {
     );
   };
 
-  const renderManualRow = (manualId: string) => {
-    const manual = manuals.find((entry) => entry.id === manualId);
-    if (!manual) return null;
-    const tech = techniquesById[manual.techId];
-    const known = hasTech(manual.techId);
+  const renderManualRow = (row: (typeof manualRows)[number]) => {
+    const { manual, tech, known, name, type } = row;
     const studyDisabled = Boolean(activeStudy) || known;
+    const expanded = expandedManualId === manual.id;
+    const confirmDismantle = confirmDismantleId === manual.id;
+    const description = (tech as { description?: string; note?: string })?.description ?? (tech as { note?: string })?.note;
+    const studyLabel = activeStudy ? 'Already Studying' : known ? 'Known' : 'Study Manual';
+    const disabledReason = activeStudy
+      ? 'You can only study one manual at a time.'
+      : known
+        ? 'Technique already known; dismantle for fragments.'
+        : null;
     return (
       <div key={manual.id} className={'manualSatchelRow'}>
-        <div className={'manualSatchelRowMain'}>
-          <div className={'manualSatchelRowName'}>{tech?.name ?? manual.techId}</div>
-          <div className={'manualSatchelRowMeta'}>
-            <span className={`manualBadge rarity-${manual.rarity}`}>{manual.rarity}</span>
-            <span className={'manualBadge'}>{manual.grade}</span>
-            <span className={'manualBadge'}>{tech?.type ?? 'unknown'}</span>
-            {known && <span className={'manualBadge manualBadgeKnown'}>Known</span>}
+        <button
+          className={'manualSatchelRowHeader'}
+          type="button"
+          onClick={() => setExpandedManualId((prev) => (prev === manual.id ? null : manual.id))}
+        >
+          <span className={`manualSatchelRowSpine rarity-${manual.rarity}`} aria-hidden="true" />
+          <div className={'manualSatchelRowMain'}>
+            <div className={'manualSatchelRowName'}>{name}</div>
+            <div className={'manualSatchelRowMeta'}>
+              <span className={`manualBadge rarity-${manual.rarity}`}>{manual.rarity}</span>
+              <span className={'manualBadge'}>{manual.grade}</span>
+              <span className={'manualBadge'}>{type}</span>
+              {known && <span className={'manualBadge manualBadgeKnown'}>Known</span>}
+            </div>
           </div>
-        </div>
-        <div className={'manualSatchelRowActions'}>
-          <button className={'manualSatchelButton'} disabled={studyDisabled} onClick={() => handleStudy(manual.id)}>
-            Study Manual
-          </button>
-          <button className={'manualSatchelButton manualSatchelButtonSecondary'} onClick={() => handleDismantle(manual.id)}>
-            Dismantle
-          </button>
-        </div>
+          <span className={'manualSatchelRowChevron'}>{expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
+        </button>
+        {expanded && (
+          <div className={'manualSatchelRowDetails'}>
+            {description ? <div className={'manualSatchelRowDescription'}>{description}</div> : null}
+            <div className={'manualSatchelRowActions'}>
+              <button
+                className={'manualSatchelButton'}
+                disabled={studyDisabled}
+                onClick={() => handleStudy(manual.id, name)}
+                type="button"
+              >
+                {studyLabel}
+              </button>
+              {!confirmDismantle ? (
+                <button
+                  className={'manualSatchelButton manualSatchelButtonSecondary'}
+                  onClick={() => setConfirmDismantleId(manual.id)}
+                  type="button"
+                >
+                  Dismantle
+                </button>
+              ) : null}
+            </div>
+            {confirmDismantle ? (
+              <div className={'manualSatchelRowConfirm'}>
+                <div className={'manualSatchelRowWarning'}>Dismantle this manual into fragments?</div>
+                <div className={'manualSatchelRowConfirmActions'}>
+                  <button
+                    className={'manualSatchelButton manualSatchelButtonSecondary'}
+                    type="button"
+                    onClick={() => setConfirmDismantleId(null)}
+                  >
+                    Cancel
+                  </button>
+                  <button className={'manualSatchelButton'} type="button" onClick={() => handleDismantle(manual.id)}>
+                    Confirm Dismantle
+                  </button>
+                </div>
+              </div>
+            ) : null}
+            {studyDisabled && disabledReason ? (
+              <div className={'manualSatchelRowDisabledReason'}>{disabledReason}</div>
+            ) : null}
+          </div>
+        )}
       </div>
     );
   };
 
   return (
-    <div className={'manualSatchelOverlay'}>
-      <div className={'manualSatchelModal'}>
+    <div className={'manualSatchelOverlay'} onClick={closeModal}>
+      <div
+        className={'manualSatchelModal'}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Manual Satchel"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={'manualSatchelHeader'}>
-          <div>
-            <div className={'manualSatchelTitle'}>Manual Satchel</div>
-            <div className={'manualSatchelBlurb'}>Buy Manual → Study Manual → Technique Learned → Equip Technique → Auto-Used in Combat</div>
+          <div className={'manualSatchelHeaderLeft'}>
+            <div className={'manualSatchelTitle'}>
+              <span className={'manualSatchelTitleIcon'} aria-hidden="true">
+                🧺
+              </span>
+              Manual Satchel
+            </div>
+            <div className={'manualSatchelSubtitle'}>Your study kit for unlocking techniques.</div>
+            <button className={'manualSatchelHelpToggle'} onClick={() => setShowHelp((prev) => !prev)} type="button">
+              {showHelp ? 'Hide help' : 'How it works'}
+            </button>
           </div>
-          <button className={'manualSatchelClose'} onClick={closeModal}>
-            ✕
-          </button>
+          <div className={'manualSatchelHeaderRight'}>
+            <button
+              className={'manualSatchelLibraryButton'}
+              type="button"
+              onClick={() => {
+                closeModal();
+                setActiveTab('techniques');
+              }}
+            >
+              Technique Library
+            </button>
+            <button
+              className={'manualSatchelClose'}
+              onClick={closeModal}
+              ref={closeButtonRef}
+              aria-label="Close manual satchel"
+              type="button"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
-        {renderActiveStudy()}
-
-        <div className={'manualSatchelSection'}>
-          <div className={'manualSatchelSectionHeader'}>
-            <div className={'manualSatchelTitleLine'}>Owned Manuals</div>
-            <div className={'manualSatchelCount'}>
-              {manuals.length} in satchel{activeStudy ? ' • 1 studying' : ''}
-            </div>
+        {showHelp ? (
+          <div className={'manualSatchelHelpCard'}>
+            <div className={'manualSatchelHelpRow'}>🛍️ Buy manuals at the Manual Pavilion.</div>
+            <div className={'manualSatchelHelpRow'}>📖 Study one manual at a time.</div>
+            <div className={'manualSatchelHelpRow'}>✨ Finish study to unlock a technique.</div>
+            <div className={'manualSatchelHelpRow'}>⚔️ Equip techniques in the Techniques tab.</div>
           </div>
-          {manualList.length === 0 && <div className={'manualSatchelEmpty'}>No manuals yet.</div>}
-          {manualList.length > 0 && <div className={'manualSatchelList'}>{manualList.map((manual) => renderManualRow(manual.id))}</div>}
+        ) : null}
+
+        <div className={'manualSatchelBody'}>
+          <section className={'manualSatchelColumn manualSatchelColumn--left'}>
+            {activeStudy ? (
+              renderActiveStudy()
+            ) : (
+              <div className={'manualSatchelCard manualSatchelCardEmpty'}>
+                <div className={'manualSatchelTitleLine'}>Active Study</div>
+                <div className={'manualSatchelEmpty'}>No manual currently studied.</div>
+              </div>
+            )}
+          </section>
+
+          <section className={'manualSatchelColumn manualSatchelColumn--right'}>
+            <div className={'manualSatchelCard'}>
+              <div className={'manualSatchelCardHeader'}>
+                <div className={'manualSatchelTitleLine'}>Owned Manuals</div>
+                <div className={'manualSatchelCount'}>
+                  {manuals.length} in satchel{activeStudy ? ' • 1 studying' : ''}
+                </div>
+              </div>
+              <div className={'manualSatchelTools'}>
+                <input
+                  className={'manualSatchelSearch'}
+                  type="search"
+                  placeholder="Search manuals..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                />
+                <select
+                  className={'manualSatchelSort'}
+                  value={sortMode}
+                  onChange={(event) => setSortMode(event.target.value as ManualSortMode)}
+                >
+                  <option value="newest">Newest</option>
+                  <option value="rarity">Rarity</option>
+                  <option value="grade">Grade</option>
+                  <option value="name">Name</option>
+                </select>
+                <label className={'manualSatchelToggle'}>
+                  <input
+                    type="checkbox"
+                    checked={hideKnown}
+                    onChange={(event) => setHideKnown(event.target.checked)}
+                  />
+                  Hide Known
+                </label>
+              </div>
+              {manuals.length === 0 && <div className={'manualSatchelEmpty'}>No manuals yet.</div>}
+              {manuals.length > 0 && manualRows.length === 0 && (
+                <div className={'manualSatchelEmpty'}>No manuals match your filters.</div>
+              )}
+              {manualRows.length > 0 && <div className={'manualSatchelList'}>{manualRows.map(renderManualRow)}</div>}
+            </div>
+          </section>
         </div>
       </div>
     </div>
   );
 }
-

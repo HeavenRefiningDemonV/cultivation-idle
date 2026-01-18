@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { GameEvents } from '../services/events/GameEvents';
+import { GameEvents, type RewardsGrantedEvent } from '../services/events/GameEvents';
 
 export type RewardsLogEntry = {
   id: string;
@@ -46,11 +46,19 @@ export const useRewardsLogStore = create<RewardsLogState>()(
   })),
 );
 
-GameEvents.on('rewards/granted', (event) => {
+const rewardsGrantedListener = (event: RewardsGrantedEvent) => {
   const { reason, summary, timestamp } = event.payload;
   useRewardsLogStore.getState().addEntry({
     reason,
     summary,
     timestamp,
   });
-});
+};
+
+GameEvents.on('rewards/granted', rewardsGrantedListener);
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    GameEvents.off('rewards/granted', rewardsGrantedListener);
+  });
+}

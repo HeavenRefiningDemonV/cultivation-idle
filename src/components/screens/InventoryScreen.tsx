@@ -1,85 +1,78 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Backpack, Coins, Gem, Medal, User, X } from 'lucide-react';
+import { Backpack, Coins, Gem, Medal } from 'lucide-react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef } from '../../stores/contentStore';
 import { useBuffStore } from '../../stores/buffStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import { useEquipmentStore } from '../../stores/equipmentStore';
+import EquipmentDrawer from '../inventory/EquipmentDrawer';
+import InventorySlotTile from '../inventory/InventorySlotTile';
+import type { DisplayStack } from '../inventory/inventoryTypes';
+import type { ItemDefinition } from '../../types';
 import './InventoryScreen.scss';
-
-type DisplayStack = {
-  stackId: string;
-  itemId: string;
-  quantity: number;
-  name: string;
-  description?: string;
-  type: string;
-  rarity?: string;
-  level?: number;
-  maxStack?: number;
-  stackable?: boolean;
-  value?: string | number;
-  note?: string;
-  usage?: string;
-};
 
 type InventorySlot =
   | { kind: 'item'; stack: DisplayStack; slotIndex: number }
   | { kind: 'empty'; slotIndex: number };
 
-const POCKET_ORDER = ['consumable', 'talisman', 'rune', 'reagent', 'material', 'crate', 'token', 'gateItem', 'misc'];
-
-const POCKET_LABELS: Record<string, string> = {
-  all: 'All',
-  consumable: 'Consumables',
-  talisman: 'Talismans',
-  rune: 'Runes',
-  reagent: 'Reagents',
-  material: 'Materials',
-  crate: 'Crates',
-  token: 'Tokens',
-  gateItem: 'Gate Items',
-  misc: 'Misc',
-};
-
-const POCKET_TYPE_MAP: Record<string, string[]> = {
-  all: [],
-  consumable: ['consumable'],
-  talisman: ['talisman'],
-  rune: ['rune'],
-  reagent: ['reagent'],
-  material: ['material'],
-  crate: ['crate'],
-  token: ['token'],
-  gateItem: ['gateItem'],
-  misc: ['misc'],
-};
-
 const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 const RARITY_RANK = new Map(RARITY_ORDER.map((rarity, index) => [rarity, index]));
+const RARITY_SORT_RANK: Record<string, number> = {
+  mythic: 6,
+  legendary: 5,
+  epic: 4,
+  rare: 3,
+  uncommon: 2,
+  common: 1,
+};
+const TYPE_SORT_RANK: Record<string, number> = {
+  weapon: 1,
+  accessory: 2,
+  consumable: 3,
+  material: 4,
+  treasure: 5,
+  misc: 99,
+};
 const DEFAULT_MAX_SLOTS = 36;
+const INVENTORY_FILTERS_KEY = 'inventory.v2.filters';
+const BASE_KNOWN_TYPES = ['weapon', 'accessory', 'consumable', 'material', 'treasure'];
+const OPTIONAL_TYPES = ['talisman', 'rune', 'reagent'];
+const SORT_MODES = ['rarity_desc', 'name_asc', 'qty_desc', 'type_then_rarity', 'new_first'] as const;
+const DEFAULT_FILTERS = {
+  activePocketId: 'all',
+  searchQuery: '',
+  sortMode: 'rarity_desc',
+} as const;
+
+type PocketDef = {
+  id: string;
+  label: string;
+  icon: string;
+  predicate: (def: ItemDefinition) => boolean;
+};
 
 const formatPocketLabel = (category: string) => {
-  if (POCKET_LABELS[category]) return POCKET_LABELS[category];
   return category
     .replace(/([A-Z])/g, ' $1')
     .replace(/[_-]/g, ' ')
     .replace(/^./, (char) => char.toUpperCase());
 };
 
-const sortStacks = (stacks: DisplayStack[]) => {
-  return [...stacks].sort((a, b) => {
-    const rarityA = RARITY_RANK.get((a.rarity ?? '').toLowerCase()) ?? -1;
-    const rarityB = RARITY_RANK.get((b.rarity ?? '').toLowerCase()) ?? -1;
-    if (rarityA !== rarityB) return rarityB - rarityA;
+const getDefType = (def: ItemDefinition) => {
+  const maybeDef = def as ItemDefinition & { category?: string; type?: string };
+  return maybeDef.type ?? maybeDef.category ?? 'misc';
+};
 
-    const levelA = a.level ?? 0;
-    const levelB = b.level ?? 0;
-    if (levelA !== levelB) return levelB - levelA;
+const getRaritySortRank = (rarity?: string) => RARITY_SORT_RANK[(rarity ?? '').toLowerCase()] ?? 0;
 
-    return a.name.localeCompare(b.name);
-  });
+const getTypeSortRank = (type?: string) => TYPE_SORT_RANK[(type ?? '').toLowerCase()] ?? 98;
+
+const compareFallback = (a: DisplayStack, b: DisplayStack) => {
+  const nameCompare = a.name.localeCompare(b.name);
+  if (nameCompare !== 0) return nameCompare;
+  const itemCompare = a.itemId.localeCompare(b.itemId);
+  if (itemCompare !== 0) return itemCompare;
+  return a.stackId.localeCompare(b.stackId);
 };
 
 export default function InventoryScreen() {
@@ -89,12 +82,22 @@ export default function InventoryScreen() {
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
   const addNotification = useUIStore((state) => state.addNotification);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
-  const equippedWeaponId = useEquipmentStore((state) => state.equippedWeaponId);
-  const equippedAccessoryId = useEquipmentStore((state) => state.equippedAccessoryId);
-  const [activePocket, setActivePocket] = useState('all');
+  const [activePocketId, setActivePocketId] = useState(DEFAULT_FILTERS.activePocketId);
+  const [searchQuery, setSearchQuery] = useState(DEFAULT_FILTERS.searchQuery);
+  const [sortMode, setSortMode] = useState(DEFAULT_FILTERS.sortMode);
   const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
-  const [equipmentOverlayOpen, setEquipmentOverlayOpen] = useState(false);
+  const [equipmentDrawerOpen, setEquipmentDrawerOpen] = useState(false);
+  const [fullPulse, setFullPulse] = useState(false);
+  const [selectionLostPulse, setSelectionLostPulse] = useState(false);
+  const [selectionLostMessage, setSelectionLostMessage] = useState(false);
+  const prevStackIdsRef = useRef<Set<string>>(new Set());
+  const fullPulseTimeoutRef = useRef<number | null>(null);
+  const wasFullRef = useRef(false);
+  const selectionLostTimeoutRef = useRef<number | null>(null);
+  const selectionLostMessageTimeoutRef = useRef<number | null>(null);
+  const [newStackIds, setNewStackIds] = useState<Set<string>>(new Set());
   const warnedMissingDefs = useRef(new Set<string>());
+  const filtersLoadedRef = useRef(false);
 
   const { displayStacks, missingItemIds } = useMemo(() => {
     const missing: string[] = [];
@@ -141,34 +144,226 @@ export default function InventoryScreen() {
     [displayStacks],
   );
 
-  const countsByCategory = useMemo(() => {
-    const counts: Record<string, number> = { all: nonCurrencyStacks.length };
+  const pocketDefinitions = useMemo(() => {
+    const extraTypeSet = new Set<string>();
     nonCurrencyStacks.forEach((stack) => {
-      const category = stack.type ?? 'misc';
-      counts[category] = (counts[category] ?? 0) + 1;
+      if (!stack.type || BASE_KNOWN_TYPES.includes(stack.type)) return;
+      if (stack.type === 'currency') return;
+      extraTypeSet.add(stack.type);
+    });
+
+    const extraTypes = [...extraTypeSet];
+    const orderedExtras = [
+      ...OPTIONAL_TYPES.filter((type) => extraTypeSet.has(type)),
+      ...extraTypes.filter((type) => !OPTIONAL_TYPES.includes(type)).sort(),
+    ];
+    const knownTypes = new Set([...BASE_KNOWN_TYPES, ...orderedExtras]);
+
+    const basePockets: PocketDef[] = [
+      { id: 'all', label: 'All', icon: '🧺', predicate: () => true },
+      { id: 'weapon', label: 'Weapons', icon: '🗡️', predicate: (def) => getDefType(def) === 'weapon' },
+      { id: 'accessory', label: 'Accessories', icon: '🧿', predicate: (def) => getDefType(def) === 'accessory' },
+      { id: 'consumable', label: 'Consumables', icon: '🧪', predicate: (def) => getDefType(def) === 'consumable' },
+      { id: 'material', label: 'Materials', icon: '🪨', predicate: (def) => getDefType(def) === 'material' },
+      { id: 'treasure', label: 'Treasures', icon: '💎', predicate: (def) => getDefType(def) === 'treasure' },
+    ];
+
+    const extraPockets = orderedExtras.map((type) => ({
+      id: type,
+      label: formatPocketLabel(type),
+      icon: '📦',
+      predicate: (def: ItemDefinition) => getDefType(def) === type,
+    }));
+
+    const miscPocket: PocketDef = {
+      id: 'misc',
+      label: 'Misc',
+      icon: '📦',
+      predicate: (def) => !knownTypes.has(getDefType(def)),
+    };
+
+    return [...basePockets, ...extraPockets, miscPocket];
+  }, [nonCurrencyStacks]);
+
+  const pocketIdSet = useMemo(() => new Set(pocketDefinitions.map((pocket) => pocket.id)), [pocketDefinitions]);
+
+  useEffect(() => {
+    if (filtersLoadedRef.current) return;
+    if (pocketIdSet.size === 0) return;
+    const stored = localStorage.getItem(INVENTORY_FILTERS_KEY);
+    if (!stored) {
+      filtersLoadedRef.current = true;
+      return;
+    }
+    try {
+      const parsed = JSON.parse(stored) as {
+        activePocketId?: unknown;
+        searchQuery?: unknown;
+        sortMode?: unknown;
+      };
+      const nextPocketId =
+        typeof parsed.activePocketId === 'string' && pocketIdSet.has(parsed.activePocketId)
+          ? parsed.activePocketId
+          : DEFAULT_FILTERS.activePocketId;
+      const nextSearchQuery = typeof parsed.searchQuery === 'string' ? parsed.searchQuery : DEFAULT_FILTERS.searchQuery;
+      const nextSortMode =
+        typeof parsed.sortMode === 'string' && SORT_MODES.includes(parsed.sortMode as (typeof SORT_MODES)[number])
+          ? parsed.sortMode
+          : DEFAULT_FILTERS.sortMode;
+      setActivePocketId(nextPocketId);
+      setSearchQuery(nextSearchQuery);
+      setSortMode(nextSortMode);
+    } catch {
+      setActivePocketId(DEFAULT_FILTERS.activePocketId);
+      setSearchQuery(DEFAULT_FILTERS.searchQuery);
+      setSortMode(DEFAULT_FILTERS.sortMode);
+    } finally {
+      filtersLoadedRef.current = true;
+    }
+  }, [pocketIdSet]);
+
+  useEffect(() => {
+    if (!pocketIdSet.has(activePocketId)) {
+      setActivePocketId(DEFAULT_FILTERS.activePocketId);
+      return;
+    }
+    const payload = {
+      activePocketId,
+      searchQuery,
+      sortMode,
+    };
+    localStorage.setItem(INVENTORY_FILTERS_KEY, JSON.stringify(payload));
+  }, [activePocketId, pocketIdSet, searchQuery, sortMode]);
+
+  useEffect(() => {
+    const currentIds = new Set(nonCurrencyStacks.map((stack) => stack.stackId));
+    const newIds: string[] = [];
+    currentIds.forEach((id) => {
+      if (!prevStackIdsRef.current.has(id)) {
+        newIds.push(id);
+      }
+    });
+
+    if (newIds.length > 0) {
+      setNewStackIds((prev) => {
+        const next = new Set(prev);
+        newIds.forEach((id) => next.add(id));
+        return next;
+      });
+
+      newIds.forEach((id) => {
+        window.setTimeout(() => {
+          setNewStackIds((prev) => {
+            if (!prev.has(id)) return prev;
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        }, 4000);
+      });
+    }
+
+    prevStackIdsRef.current = currentIds;
+  }, [nonCurrencyStacks]);
+
+  const pocketCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    pocketDefinitions.forEach((pocket) => {
+      counts[pocket.id] = 0;
+    });
+    nonCurrencyStacks.forEach((stack) => {
+      const def = getItemDef(stack.itemId);
+      if (!def) return;
+      pocketDefinitions.forEach((pocket) => {
+        if (pocket.predicate(def)) {
+          counts[pocket.id] = (counts[pocket.id] ?? 0) + 1;
+        }
+      });
     });
     return counts;
-  }, [nonCurrencyStacks]);
-
-  const pockets = useMemo(() => {
-    const categories = new Set(nonCurrencyStacks.map((stack) => stack.type ?? 'misc'));
-    const extras = [...categories].filter((category) => !POCKET_ORDER.includes(category)).sort();
-    return ['all', ...POCKET_ORDER, ...extras];
-  }, [nonCurrencyStacks]);
+  }, [nonCurrencyStacks, pocketDefinitions]);
 
   const maxSlots = DEFAULT_MAX_SLOTS;
-  const usedSlots = nonCurrencyStacks.length;
+  const usedSlots = Object.keys(items).length;
   const freeSlots = Math.max(0, maxSlots - usedSlots);
+  const searchQueryTrimmed = useMemo(() => searchQuery.trim().toLowerCase(), [searchQuery]);
+  const isFilterActive = activePocketId !== 'all' || searchQueryTrimmed !== '';
+  const capacityPct = Math.min(100, Math.max(0, (usedSlots / maxSlots) * 100));
+  const isFull = usedSlots >= maxSlots;
+  const isNearFull = !isFull && usedSlots / maxSlots >= 0.85;
+
+  const activePocket = useMemo(
+    () => pocketDefinitions.find((pocket) => pocket.id === activePocketId) ?? pocketDefinitions[0],
+    [activePocketId, pocketDefinitions],
+  );
+
+  const pocketFilteredStacks = useMemo(() => {
+    if (!activePocket) return [];
+    if (activePocket.id === 'all') return nonCurrencyStacks;
+    return nonCurrencyStacks.filter((stack) => {
+      const def = getItemDef(stack.itemId);
+      if (!def) return false;
+      return activePocket.predicate(def);
+    });
+  }, [activePocket, nonCurrencyStacks]);
+
+  const searchedStacks = useMemo(() => {
+    if (searchQueryTrimmed === '') return pocketFilteredStacks;
+    return pocketFilteredStacks.filter((stack) => {
+      const haystack = [
+        stack.name,
+        stack.itemId,
+        stack.description ?? '',
+        stack.type ?? '',
+        stack.rarity ?? '',
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(searchQueryTrimmed);
+    });
+  }, [pocketFilteredStacks, searchQueryTrimmed]);
+
+  const sortedStacks = useMemo(() => {
+    const stacks = [...searchedStacks];
+    stacks.sort((a, b) => {
+      switch (sortMode) {
+        case 'name_asc': {
+          return compareFallback(a, b);
+        }
+        case 'qty_desc': {
+          const qtyDiff = b.quantity - a.quantity;
+          if (qtyDiff !== 0) return qtyDiff;
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+        case 'type_then_rarity': {
+          const typeDiff = getTypeSortRank(a.type) - getTypeSortRank(b.type);
+          if (typeDiff !== 0) return typeDiff;
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+        case 'new_first': {
+          const newDiff = Number(newStackIds.has(b.stackId)) - Number(newStackIds.has(a.stackId));
+          if (newDiff !== 0) return newDiff;
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+        case 'rarity_desc':
+        default: {
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+      }
+    });
+    return stacks;
+  }, [newStackIds, searchedStacks, sortMode]);
 
   const { filteredStacks, visibleSlots, hasOverflow } = useMemo(() => {
-    const isAll = activePocket === 'all';
-    const typeFilter = POCKET_TYPE_MAP[activePocket] ?? [activePocket];
-    const stacks = isAll
-      ? nonCurrencyStacks
-      : nonCurrencyStacks.filter((stack) => typeFilter.includes(stack.type ?? 'misc'));
-
-    const sortedStacks = sortStacks(stacks);
-    if (isAll) {
+    if (!isFilterActive) {
       const overflow = sortedStacks.length > maxSlots;
       const cappedStacks = overflow ? sortedStacks.slice(0, maxSlots) : sortedStacks;
       const emptySlots = overflow ? 0 : freeSlots;
@@ -196,7 +391,7 @@ export default function InventoryScreen() {
     }
 
     return { filteredStacks: sortedStacks, visibleSlots: slots, hasOverflow: false };
-  }, [activePocket, freeSlots, maxSlots, nonCurrencyStacks]);
+  }, [freeSlots, isFilterActive, maxSlots, sortedStacks]);
 
   const selectedStack = useMemo(() => {
     if (!selectedStackId) return null;
@@ -206,7 +401,23 @@ export default function InventoryScreen() {
   useEffect(() => {
     if (!selectedStackId) return;
     const stillExists = displayStacks.some((stack) => stack.stackId === selectedStackId);
-    if (!stillExists) setSelectedStackId(null);
+    if (!stillExists) {
+      setSelectedStackId(null);
+      setSelectionLostPulse(true);
+      setSelectionLostMessage(true);
+      if (selectionLostTimeoutRef.current) {
+        window.clearTimeout(selectionLostTimeoutRef.current);
+      }
+      if (selectionLostMessageTimeoutRef.current) {
+        window.clearTimeout(selectionLostMessageTimeoutRef.current);
+      }
+      selectionLostTimeoutRef.current = window.setTimeout(() => {
+        setSelectionLostPulse(false);
+      }, 350);
+      selectionLostMessageTimeoutRef.current = window.setTimeout(() => {
+        setSelectionLostMessage(false);
+      }, 1500);
+    }
   }, [displayStacks, selectedStackId]);
 
   useEffect(() => {
@@ -216,18 +427,84 @@ export default function InventoryScreen() {
   }, [selectedStackId, visibleSlots]);
 
   useEffect(() => {
-    if (!pockets.includes(activePocket)) {
-      setActivePocket('all');
+    if (!selectedStackId) return;
+    const stillMatches = sortedStacks.some((stack) => stack.stackId === selectedStackId);
+    if (!stillMatches) setSelectedStackId(null);
+  }, [activePocketId, searchQueryTrimmed, selectedStackId, sortedStacks]);
+
+  useEffect(() => {
+    if (isFull && !wasFullRef.current) {
+      setFullPulse(true);
+      if (fullPulseTimeoutRef.current) {
+        window.clearTimeout(fullPulseTimeoutRef.current);
+      }
+      fullPulseTimeoutRef.current = window.setTimeout(() => {
+        setFullPulse(false);
+      }, 650);
     }
-  }, [activePocket, pockets]);
+    wasFullRef.current = isFull;
+  }, [isFull, usedSlots]);
 
-  const selectedCategoryLabel = formatPocketLabel(activePocket);
+  useEffect(() => {
+    return () => {
+      if (fullPulseTimeoutRef.current) {
+        window.clearTimeout(fullPulseTimeoutRef.current);
+      }
+      if (selectionLostTimeoutRef.current) {
+        window.clearTimeout(selectionLostTimeoutRef.current);
+      }
+      if (selectionLostMessageTimeoutRef.current) {
+        window.clearTimeout(selectionLostMessageTimeoutRef.current);
+      }
+    };
+  }, []);
 
-  const weaponName = equippedWeaponId ? getItemDef(equippedWeaponId)?.name ?? equippedWeaponId : 'None';
-  const accessoryName = equippedAccessoryId ? getItemDef(equippedAccessoryId)?.name ?? equippedAccessoryId : 'None';
+  const selectedCategoryLabel = activePocket?.label ?? 'All';
+
+  const pocketNewIndicators = useMemo(() => {
+    const indicators: Record<string, boolean> = {};
+    pocketDefinitions.forEach((pocket) => {
+      indicators[pocket.id] = false;
+    });
+    if (newStackIds.size === 0) return indicators;
+    nonCurrencyStacks.forEach((stack) => {
+      if (!newStackIds.has(stack.stackId)) return;
+      const def = getItemDef(stack.itemId);
+      if (!def) return;
+      pocketDefinitions.forEach((pocket) => {
+        if (pocket.predicate(def)) {
+          indicators[pocket.id] = true;
+        }
+      });
+    });
+    return indicators;
+  }, [newStackIds, nonCurrencyStacks, pocketDefinitions]);
+
+  const clearSelection = () => setSelectedStackId(null);
+
+  const handleSelectStack = (stackId: string) => {
+    setSelectedStackId(stackId);
+    setNewStackIds((prev) => {
+      if (!prev.has(stackId)) return prev;
+      const next = new Set(prev);
+      next.delete(stackId);
+      return next;
+    });
+  };
+
+  const selectedItemInfo = useMemo(() => {
+    if (!selectedStackId) return { id: null, type: null, name: null };
+    const stack = displayStacks.find((entry) => entry.stackId === selectedStackId);
+    if (!stack) return { id: null, type: null, name: null };
+    return { id: stack.itemId, type: stack.type ?? null, name: stack.name };
+  }, [displayStacks, selectedStackId]);
 
   return (
-    <div className="inventoryScreenRoot">
+    <div
+      className={`inventoryScreenRoot${isFull ? ' is-full' : ''}${isNearFull ? ' is-nearfull' : ''}${
+        isFilterActive ? ' is-filtered' : ''
+      }${fullPulse ? ' is-fullPulse' : ''}`}
+    >
       <div className="inventoryScreenHeader inventoryPanelBase">
         <div className="inventoryHeaderLeft">
           <div className="inventoryHeaderTitle">Spatial Ring Inventory</div>
@@ -250,6 +527,17 @@ export default function InventoryScreen() {
             <span className="inventoryCurrencyValue">{currencies.merit}</span>
           </div>
         </div>
+        <div className="inventoryHeaderCapacity" aria-label="Inventory capacity">
+          <span className="inventoryHeaderCapacityIcon" aria-hidden="true">
+            ⭕
+          </span>
+          <span className="inventoryHeaderCapacityText">
+            {usedSlots}/{maxSlots}
+          </span>
+          <span className="inventoryHeaderCapacityBar" aria-hidden="true">
+            <span className="inventoryHeaderCapacityFill" style={{ width: `${capacityPct}%` }} />
+          </span>
+        </div>
         <div className="inventoryHeaderActions">
           <button
             className="button-standard inventoryHeaderIconButton"
@@ -261,37 +549,53 @@ export default function InventoryScreen() {
             <span className="inventoryHeaderBadge">{satchelCount}</span>
           </button>
           <button
-            className="button-standard inventoryHeaderIconButton"
+            className="button-standard inventoryHeaderIconButton inventoryHeaderEquipmentButton"
             type="button"
-            onClick={() => setEquipmentOverlayOpen((prev) => !prev)}
-            aria-label="Toggle equipment overview"
-            data-active={equipmentOverlayOpen}
+            onClick={() => setEquipmentDrawerOpen(true)}
+            aria-label="Open equipment drawer"
+            title="Equipment"
           >
-            <User size={18} aria-hidden="true" />
+            <span aria-hidden="true">☯</span>
+            <span className="inventoryHeaderEquipmentLabel">Equipment</span>
           </button>
         </div>
       </div>
 
       <div className="inventoryScreenBody">
         <nav className="inventoryPocketRail inventoryPanelBase" aria-label="Inventory pockets">
-          <div className="inventoryPocketTitle">Pockets</div>
+          <div className="inventoryPocketRailHeader">
+            <div className="inventoryPocketRailTitle">Pockets</div>
+            <div className="inventoryPocketRailMeta">
+              {usedSlots} / {maxSlots}
+            </div>
+          </div>
           <div className="inventoryPocketList">
-            {pockets.map((category) => {
-              const count = countsByCategory[category] ?? 0;
-              const isDisabled = category !== 'all' && count === 0;
-              const isActive = activePocket === category;
+            {pocketDefinitions.map((pocket) => {
+              const count = pocketCounts[pocket.id] ?? 0;
+              const isDisabled = pocket.id !== 'all' && count === 0;
+              const isActive = activePocketId === pocket.id;
+              const hasNew = pocketNewIndicators[pocket.id];
               return (
                 <button
-                  key={category}
+                  key={pocket.id}
                   className={`inventoryPocketButton${isActive ? ' inventoryPocketButton--active' : ''}${
                     isDisabled ? ' inventoryPocketButton--disabled' : ''
                   }`}
                   type="button"
-                  onClick={() => setActivePocket(category)}
+                  onClick={() => setActivePocketId(pocket.id)}
                   disabled={isDisabled}
+                  aria-pressed={isActive}
+                  title={pocket.label}
                 >
-                  <span className="inventoryPocketLabel">{formatPocketLabel(category)}</span>
-                  <span className="inventoryPocketCount">{count}</span>
+                  <span className="inventoryPocketHole" aria-hidden="true" />
+                  <span className="inventoryPocketIcon" aria-hidden="true">
+                    {pocket.icon}
+                  </span>
+                  <span className="inventoryPocketLabel">{pocket.label}</span>
+                  <span className="inventoryPocketCount" aria-hidden="true">
+                    {count}
+                  </span>
+                  {hasNew ? <span className="inventoryPocketNewDot" aria-hidden="true" /> : null}
                 </button>
               );
             })}
@@ -299,56 +603,112 @@ export default function InventoryScreen() {
         </nav>
 
         <main className="inventoryRingPanel inventoryPanelBase">
-          <div className="inventoryRingSubheader">
-            <div className="inventoryRingTitle">
-              <span className="inventoryRingPocket">{selectedCategoryLabel}</span>
-              <span className="inventoryRingCount">{filteredStacks.length} items</span>
+          <div className="inventoryRingSubheader inventoryPanelBase">
+            <div className="inventoryRingSubheaderLeft">
+              <div className="inventoryRingPocketTitle">{selectedCategoryLabel}</div>
+              <div className="inventoryRingPocketMeta">
+                Showing {filteredStacks.length} items
+                {searchQueryTrimmed !== '' ? ` • Search: "${searchQueryTrimmed}"` : ''}
+              </div>
+              {isFilterActive ? <span className="inventoryFilterChip">Filter Active</span> : null}
+              {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
             </div>
-            {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
-          </div>
-          <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
-            <div className="inventorySlotGrid" role="grid">
-              {visibleSlots.map((slot) =>
-                slot.kind === 'item' ? (
+            <div className="inventoryRingSubheaderRight">
+              <div className="inventorySearch">
+                <span className="inventorySearchIcon" aria-hidden="true">
+                  🔍
+                </span>
+                <input
+                  className="inventorySearchInput"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search items..."
+                  aria-label="Search inventory items"
+                />
+                {searchQueryTrimmed !== '' ? (
                   <button
-                    key={slot.slotIndex}
-                    className={`inventorySlotTile${
-                      selectedStackId === slot.stack.stackId ? ' inventorySlotTile--selected' : ''
-                    }`}
                     type="button"
-                    onClick={() => setSelectedStackId(slot.stack.stackId)}
-                    role="gridcell"
+                    className="inventorySearchClear"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                    title="Clear search"
                   >
-                    <div className="inventorySlotTileHeader">
-                      <span className="inventorySlotTileName">{slot.stack.name}</span>
-                      <span className="inventorySlotTileQty">x{slot.stack.quantity}</span>
-                    </div>
-                    <div className="inventorySlotTileMeta">{formatPocketLabel(slot.stack.type)}</div>
+                    ✕
                   </button>
-                ) : (
-                  <div
-                    key={slot.slotIndex}
-                    className="inventorySlotTile inventorySlotTileEmpty"
-                    aria-hidden="true"
-                  />
-                ),
-              )}
+                ) : null}
+              </div>
+              <div className="inventorySort">
+                <span className="inventorySortLabel">Sort</span>
+                <select
+                  className="inventorySortSelect"
+                  value={sortMode}
+                  onChange={(event) => setSortMode(event.target.value)}
+                  aria-label="Sort inventory items"
+                >
+                  <option value="rarity_desc">Rarity (High → Low)</option>
+                  <option value="name_asc">Name (A → Z)</option>
+                  <option value="qty_desc">Quantity (High → Low)</option>
+                  <option value="type_then_rarity">Type → Rarity</option>
+                  <option value="new_first">New (Newest first)</option>
+                </select>
+              </div>
+              {isFilterActive ? (
+                <button
+                  type="button"
+                  className="inventoryToolsReset"
+                  onClick={() => {
+                    setActivePocketId('all');
+                    setSearchQuery('');
+                    setSelectedStackId(null);
+                  }}
+                  aria-label="Reset filters"
+                  title="Reset filters"
+                >
+                  Reset
+                </button>
+              ) : null}
+            </div>
+          </div>
+          <div className="inventoryRingFrame">
+            <div className="inventoryRingInner">
+              <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
+                <div className="inventorySlotGrid" role="grid">
+                  {visibleSlots.map((slot) =>
+                    slot.kind === 'item' ? (
+                      <InventorySlotTile
+                        key={slot.slotIndex}
+                        stack={slot.stack}
+                        isSelected={selectedStackId === slot.stack.stackId}
+                        isNew={newStackIds.has(slot.stack.stackId)}
+                        onSelect={() => handleSelectStack(slot.stack.stackId)}
+                      />
+                    ) : (
+                      <div
+                        key={slot.slotIndex}
+                        className="inventorySlotTile inventorySlotTileEmpty"
+                        aria-hidden="true"
+                      />
+                    ),
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </main>
 
-        <aside className="inventoryInspector inventoryPanelBase">
+        <aside className={`inventoryInspector inventoryPanelBase${selectionLostPulse ? ' is-pulse' : ''}`}>
           <div className="inventoryInspectorScroll">
             {!selectedStack ? (
               <div className="inventoryInspectorEmpty">
                 <div className="inventoryInspectorTitle">Select an item to inspect</div>
                 <div className="inventoryInspectorCopy">Tap a slot to see details. Manual Satchel tips live there too.</div>
+                {selectionLostMessage ? <div className="inventoryInspectorPulseNote">Item equipped.</div> : null}
               </div>
             ) : (
               <div className="inventoryInspectorContent">
                 <div className="inventoryInspectorHeader">
                   <div>
-                    <div className="inventoryInspectorName">{selectedStack.name}</div>
+                    <div className="inventoryInspectorName inventoryInspectorTitle">{selectedStack.name}</div>
                     <div className="inventoryInspectorMeta">
                       <span className="inventoryCategoryBadge">{formatPocketLabel(selectedStack.type)}</span>
                       <span className="inventoryInspectorQty">x{selectedStack.quantity}</span>
@@ -409,36 +769,14 @@ export default function InventoryScreen() {
         </aside>
       </div>
 
-      {equipmentOverlayOpen ? (
-        <div className="inventoryEquipmentOverlay" role="dialog" aria-modal="true" aria-label="Equipment overview">
-          <div className="inventoryEquipmentPanel inventoryPanelBase">
-            <div className="inventoryEquipmentHeader">
-              <div>
-                <div className="inventoryEquipmentTitle">Cultivator Equipment</div>
-                <div className="inventoryEquipmentSubtitle">Quick view of your equipped gear.</div>
-              </div>
-              <button
-                className="button-standard inventoryEquipmentClose"
-                type="button"
-                onClick={() => setEquipmentOverlayOpen(false)}
-                aria-label="Close equipment overview"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
-            </div>
-            <div className="inventoryEquipmentGrid">
-              <div className="inventoryEquipmentRow">
-                <span className="inventoryEquipmentLabel">Weapon</span>
-                <span className="inventoryEquipmentValue">{weaponName}</span>
-              </div>
-              <div className="inventoryEquipmentRow">
-                <span className="inventoryEquipmentLabel">Accessory</span>
-                <span className="inventoryEquipmentValue">{accessoryName}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <EquipmentDrawer
+        open={equipmentDrawerOpen}
+        onClose={() => setEquipmentDrawerOpen(false)}
+        selectedItemId={selectedItemInfo.id}
+        selectedItemType={selectedItemInfo.type}
+        selectedItemName={selectedItemInfo.name}
+        onRequestClearSelection={clearSelection}
+      />
     </div>
   );
 }
