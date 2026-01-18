@@ -519,6 +519,7 @@ export default function InventoryScreen() {
                   aria-pressed={isActive}
                   title={pocket.label}
                 >
+                  <span className="inventoryPocketHole" aria-hidden="true" />
                   <span className="inventoryPocketIcon" aria-hidden="true">
                     {pocket.icon}
                   </span>
@@ -599,25 +600,29 @@ export default function InventoryScreen() {
               ) : null}
             </div>
           </div>
-          <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
-            <div className="inventorySlotGrid" role="grid">
-              {visibleSlots.map((slot) =>
-                slot.kind === 'item' ? (
-                  <InventorySlotTile
-                    key={slot.slotIndex}
-                    stack={slot.stack}
-                    isSelected={selectedStackId === slot.stack.stackId}
-                    isNew={newStackIds.has(slot.stack.stackId)}
-                    onSelect={() => handleSelectStack(slot.stack.stackId)}
-                  />
-                ) : (
-                  <div
-                    key={slot.slotIndex}
-                    className="inventorySlotTile inventorySlotTileEmpty"
-                    aria-hidden="true"
-                  />
-                ),
-              )}
+          <div className="inventoryRingFrame">
+            <div className="inventoryRingInner">
+              <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
+                <div className="inventorySlotGrid" role="grid">
+                  {visibleSlots.map((slot) =>
+                    slot.kind === 'item' ? (
+                      <InventorySlotTile
+                        key={slot.slotIndex}
+                        stack={slot.stack}
+                        isSelected={selectedStackId === slot.stack.stackId}
+                        isNew={newStackIds.has(slot.stack.stackId)}
+                        onSelect={() => handleSelectStack(slot.stack.stackId)}
+                      />
+                    ) : (
+                      <div
+                        key={slot.slotIndex}
+                        className="inventorySlotTile inventorySlotTileEmpty"
+                        aria-hidden="true"
+                      />
+                    ),
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -633,7 +638,7 @@ export default function InventoryScreen() {
               <div className="inventoryInspectorContent">
                 <div className="inventoryInspectorHeader">
                   <div>
-                    <div className="inventoryInspectorName">{selectedStack.name}</div>
+                    <div className="inventoryInspectorName inventoryInspectorTitle">{selectedStack.name}</div>
                     <div className="inventoryInspectorMeta">
                       <span className="inventoryCategoryBadge">{formatPocketLabel(selectedStack.type)}</span>
                       <span className="inventoryInspectorQty">x{selectedStack.quantity}</span>
