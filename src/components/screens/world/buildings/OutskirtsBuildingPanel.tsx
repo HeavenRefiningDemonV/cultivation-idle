@@ -23,6 +23,21 @@ function clamp01(value: number): number {
   return value;
 }
 
+function darkenHexColor(color: string, factor: number): string {
+  if (!color.startsWith('#')) return color;
+  const normalized = color.length === 4
+    ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
+    : color;
+  if (normalized.length !== 7) return color;
+  const rgb = Number.parseInt(normalized.slice(1), 16);
+  if (Number.isNaN(rgb)) return color;
+  const clamped = clamp01(factor);
+  const r = Math.round(((rgb >> 16) & 0xff) * clamped);
+  const g = Math.round(((rgb >> 8) & 0xff) * clamped);
+  const b = Math.round((rgb & 0xff) * clamped);
+  return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+}
+
 interface OutskirtsBuildingPanelProps {
   cityId: string;
 }
@@ -254,7 +269,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                    <div
                      key={`${entry.timestamp}-${index}`}
                      className="combat-log__entry"
-                     style={{ color: entry.color }}
+                     style={{ color: darkenHexColor(entry.color, 0.7) }}
                    >
                      {entry.text}
                    </div>
