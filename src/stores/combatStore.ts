@@ -75,7 +75,7 @@ export const DEFENSE_CONSTANT_K = 100;
  */
 export const PLAYER_ATTACK_COOLDOWN = 1000;  // 1 second between attacks
 export const ENEMY_ATTACK_COOLDOWN = 1500;   // 1.5 seconds between enemy attacks
-const MAX_COMBAT_LOG_ENTRIES = 100;   // Limit log size for performance
+const MAX_COMBAT_LOG_ENTRIES = 6; // Keep only visible combat log entries
 const OUTSKIRTS_NEXT_FIGHT_DELAY_MS = 700;
 const MAX_TECHNIQUE_LOG_ENTRIES = 50;
 const MAX_COMBAT_EVENT_ENTRIES = 200;
@@ -1268,7 +1268,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Check if enemy dodges
       const dodgeRoll = Math.random() * 100;
       if (dodgeRoll < enemy.dodge) {
-        get().addLogEntry('player', `${enemy.name} dodged your attack!`, '#94a3b8');
+        get().addLogEntry('player', `You attacked ${enemy.name} but it missed!`, '#94a3b8');
         set((state) => {
           state.lastAttackTime = now;
         });
@@ -1297,8 +1297,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       get().addLogEntry(
         isCrit ? 'damage' : 'player',
         isCrit
-          ? `Critical hit! You deal ${appliedDamage.toFixed(0)} damage!`
-          : `You deal ${appliedDamage.toFixed(0)} damage.`,
+          ? `Critical hit! You attacked ${enemy.name} for ${appliedDamage.toFixed(0)} damage!`
+          : `You attacked ${enemy.name} for ${appliedDamage.toFixed(0)} damage!`,
         isCrit ? '#f59e0b' : '#60a5fa'
       );
 
@@ -1346,7 +1346,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Check if player dodges
       const dodgeRoll = Math.random() * 100;
       if (dodgeRoll < effectiveStats.dodge) {
-        get().addLogEntry('enemy', `You dodged ${enemy.name}'s attack!`, '#94a3b8');
+        get().addLogEntry('enemy', `${enemy.name} attacked but it missed!`, '#94a3b8');
         set((state) => {
           state.lastEnemyAttackTime = now;
         });
@@ -1389,17 +1389,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const absorptionNote = absorbedAmount.greaterThan(0) ? ` (${absorbedAmount.toFixed(0)} absorbed)` : '';
 
       if (damageAfterAbsorption.lessThanOrEqualTo(0)) {
-        get().addLogEntry(
-          'system',
-          `${enemy.name}'s attack was absorbed by your shield!`,
-          '#22c55e'
-        );
+        get().addLogEntry('system', `${enemy.name} attacked, but your shield absorbed it!`, '#22c55e');
       } else {
         get().addLogEntry(
           isCrit ? 'damage' : 'enemy',
           isCrit
-            ? `${enemy.name} lands a critical hit! Takes ${appliedDamage.toFixed(0)} damage!${absorptionNote}`
-            : `${enemy.name} deals ${appliedDamage.toFixed(0)} damage.${absorptionNote}`,
+            ? `${enemy.name} landed a critical hit for ${appliedDamage.toFixed(0)} damage!${absorptionNote}`
+            : `${enemy.name} attacked you for ${appliedDamage.toFixed(0)} damage!${absorptionNote}`,
           isCrit ? '#ef4444' : '#f87171'
         );
       }
@@ -1455,10 +1451,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       // Add victory message
       if (isBoss) {
-        get().addLogEntry('victory', `🏆 BOSS DEFEATED! ${enemy.name} has fallen!`, '#fbbf24');
+        get().addLogEntry('victory', `🏆 You defeated the boss ${enemy.name}!`, '#fbbf24');
         emitEvent({ type: 'BOSS_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
       } else {
-        get().addLogEntry('victory', `Victory! ${enemy.name} has been defeated!`, '#22c55e');
+        get().addLogEntry('victory', `You defeated ${enemy.name}!`, '#22c55e');
       }
 
       const gameStore = useGameStore.getState();

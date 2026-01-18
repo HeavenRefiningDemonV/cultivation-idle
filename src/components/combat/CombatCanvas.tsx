@@ -39,7 +39,7 @@ export function CombatCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
-  const lastLogLengthRef = useRef<number>(0);
+  const lastLogTimestampRef = useRef<number>(0);
 
   // Combat store
   const currentZone = useCombatStore((state) => state.currentZone);
@@ -216,13 +216,13 @@ export function CombatCanvas({
    */
   useEffect(() => {
     if (!inCombat || combatLog.length === 0) {
-      lastLogLengthRef.current = 0;
+      lastLogTimestampRef.current = 0;
       return;
     }
 
-    if (combatLog.length > lastLogLengthRef.current) {
-      const newEntries = combatLog.slice(lastLogLengthRef.current);
-      lastLogLengthRef.current = combatLog.length;
+    const newEntries = combatLog.filter((entry) => entry.timestamp > lastLogTimestampRef.current);
+    if (newEntries.length > 0) {
+      lastLogTimestampRef.current = newEntries[newEntries.length - 1].timestamp;
 
       for (const entry of newEntries) {
         // Parse damage from log entry
@@ -459,7 +459,7 @@ export function CombatCanvas({
       setEnemyX(baseEnemyX);
       playerAnimRef.current = null;
       enemyAnimRef.current = null;
-      lastLogLengthRef.current = 0;
+      lastLogTimestampRef.current = 0;
     }
   }, [baseEnemyX, basePlayerX, damageNumbers, inCombat, particlePool]);
 

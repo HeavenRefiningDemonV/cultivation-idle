@@ -84,12 +84,14 @@
   display: grid;
   grid-template-columns: repeat(20, minmax(0, 1fr));
   gap: 4px;
+  align-items: end;
+  height: 28px;
 }
 
 .outskirts-progress__segment {
-  height: 10px;
+  height: 100%;
   background: rgba(148, 163, 184, 0.25);
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .outskirts-progress__segment--filled {

@@ -329,7 +329,7 @@ export function CombatView() {
               {combatLog.length === 0 ? (
                 <p className={'adventureScreenCombatLogEmpty'}>No messages yet...</p>
               ) : (
-                combatLog.slice(-20).reverse().map((log, idx) => (
+                combatLog.slice(-6).map((log, idx) => (
                   <div key={`${log.timestamp}-${idx}`} className={log.color || 'adventureScreenCombatLogDefault'}>
                     {log.text}
                   </div>

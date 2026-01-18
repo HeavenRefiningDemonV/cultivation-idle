@@ -330,13 +330,13 @@ export function formatLootMessage(loot: LootResult): string[] {
 
   // Gold message
   if (loot.gold && loot.gold !== '0') {
-    messages.push(`Gained ${loot.gold} gold`);
+    messages.push(`You gained ${loot.gold} gold!`);
   }
 
   // Item messages
   for (const item of loot.items) {
     const rarityTag = item.rarity !== 'common' ? ` [${item.rarity.toUpperCase()}]` : '';
-    messages.push(`${item.quantity}x ${item.itemId}${rarityTag}`);
+    messages.push(`You found ${item.quantity}x ${item.itemId}${rarityTag}!`);
   }
 
   // Pity message

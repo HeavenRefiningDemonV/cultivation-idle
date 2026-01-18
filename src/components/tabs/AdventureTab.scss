@@ -341,8 +341,8 @@
   border: 1px solid #374151;
   border-radius: 14px;
   padding: 16px;
-  height: 256px;
-  overflow-y: auto;
+  min-height: 256px;
+  overflow: hidden;
 }
 
 .adventureTabCombatLogList {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useCombatStore } from '../../stores/combatStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -75,20 +75,15 @@ function HPBar({
  */
 function CombatLog() {
   const combatLog = useCombatStore((state) => state.combatLog);
-  const logEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [combatLog]);
+  const visibleEntries = combatLog.slice(-6);
 
   return (
     <div className={'adventureTabCombatLogContainer'}>
       <div className={'adventureTabCombatLogList'}>
-        {combatLog.length === 0 ? (
+        {visibleEntries.length === 0 ? (
           <div className={'adventureTabCombatLogEmpty'}>Combat log is empty</div>
         ) : (
-          combatLog.map((entry, index) => (
+          visibleEntries.map((entry, index) => (
             <div
               key={index}
               className={'adventureTabCombatLogEntry'}
@@ -98,7 +93,6 @@ function CombatLog() {
             </div>
           ))
         )}
-        <div ref={logEndRef} />
       </div>
     </div>
   );
