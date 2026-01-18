@@ -267,10 +267,40 @@
                 width: 50%;
                 justify-content: flex-start;
                 align-items: center;
+                position: relative;
 
                 .enemy-image {
                     height: 300px;
                     width: 300px;
+                }
+
+                .enemy-hit-overlay {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                }
+
+                .enemy-hit-text {
+                    position: absolute;
+                    transform: translate(-50%, -50%);
+                    font-family: "Protest Revolution";
+                    font-weight: 700;
+                    font-size: 22px;
+                    color: #f8fafc;
+                    text-shadow:
+                        0 2px 6px rgba(0, 0, 0, 0.5),
+                        0 0 12px rgba(0, 0, 0, 0.35);
+                    animation: enemy-hit-float 0.9s ease-out forwards;
+                }
+
+                .enemy-hit-text--crit {
+                    color: #ef4444;
+                    font-size: 30px;
+                }
+
+                .enemy-hit-text--dodge {
+                    color: #3b82f6;
+                    font-size: 24px;
                 }
             }
 
@@ -336,5 +366,17 @@
 
     100% {
         transform: translateX(0);
+    }
+}
+
+@keyframes enemy-hit-float {
+    0% {
+        transform: translate(-50%, -50%) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translateY(-40px);
+        opacity: 0;
     }
 }

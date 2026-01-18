@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../../stores/activityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
@@ -20,6 +20,17 @@ import wolfPup from "../../../../assets/enemies/wolfpup.png";
 import "./CombatStyles.scss";
 
 const SEGMENT_COUNT = 14;
+const FLOATING_TEXT_DURATION_MS = 900;
+
+type FloatingHitKind = 'normal' | 'crit' | 'dodge';
+
+type FloatingHit = {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  kind: FloatingHitKind;
+};
 
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;
@@ -41,6 +52,15 @@ function darkenHexColor(color: string, factor: number): string {
   const g = Math.round(((rgb >> 8) & 0xff) * clamped);
   const b = Math.round((rgb & 0xff) * clamped);
   return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function randomBetween(min: number, max: number): number {
+  return Math.random() * (max - min) + min;
+}
+
+function extractDamageAmount(text: string): string | null {
+  const match = text.match(/for ([\d,.]+)/i);
+  return match ? match[1] : null;
 }
 
 interface OutskirtsBuildingPanelProps {
@@ -107,6 +127,9 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const filledSegments = Math.floor(progressRatio * SEGMENT_COUNT);
   const lastLogTimestampRef = useRef(0);
   const combatMainRef = useRef<HTMLDivElement | null>(null);
+  const [floatingHits, setFloatingHits] = useState<FloatingHit[]>([]);
+  const floatingHitIdRef = useRef(0);
+  const floatingHitTimeoutsRef = useRef<Map<string, number>>(new Map());
 
   const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
     const container = combatMainRef.current;
@@ -158,6 +181,40 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
         text.includes('attacked you') ||
         text.includes('landed a critical hit') ||
         text.includes('attacked, but your shield absorbed it');
+      const isPlayerCrit = entry.type === 'damage' || text.includes('Critical hit!');
+      const damageAmount = isPlayerAttack && !isPlayerAttackMiss ? extractDamageAmount(text) : null;
+
+      if (isPlayerAttackMiss) {
+        const id = `hit-${floatingHitIdRef.current++}`;
+        const newHit: FloatingHit = {
+          id,
+          text: 'Dodge!',
+          x: randomBetween(30, 70),
+          y: randomBetween(20, 70),
+          kind: 'dodge',
+        };
+        setFloatingHits((prev) => [...prev, newHit]);
+        const timeoutId = window.setTimeout(() => {
+          setFloatingHits((prev) => prev.filter((hit) => hit.id !== id));
+          floatingHitTimeoutsRef.current.delete(id);
+        }, FLOATING_TEXT_DURATION_MS);
+        floatingHitTimeoutsRef.current.set(id, timeoutId);
+      } else if (damageAmount) {
+        const id = `hit-${floatingHitIdRef.current++}`;
+        const newHit: FloatingHit = {
+          id,
+          text: damageAmount,
+          x: randomBetween(25, 75),
+          y: randomBetween(15, 65),
+          kind: isPlayerCrit ? 'crit' : 'normal',
+        };
+        setFloatingHits((prev) => [...prev, newHit]);
+        const timeoutId = window.setTimeout(() => {
+          setFloatingHits((prev) => prev.filter((hit) => hit.id !== id));
+          floatingHitTimeoutsRef.current.delete(id);
+        }, FLOATING_TEXT_DURATION_MS);
+        floatingHitTimeoutsRef.current.set(id, timeoutId);
+      }
 
       if (isEnemyAttackMiss) {
         triggerMotion('player', 'dodge');
@@ -179,6 +236,15 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       }
     }
   }, [combatLog]);
+
+  useEffect(() => {
+    return () => {
+      floatingHitTimeoutsRef.current.forEach((timeoutId) => {
+        window.clearTimeout(timeoutId);
+      });
+      floatingHitTimeoutsRef.current.clear();
+    };
+  }, []);
 
   useEffect(() => {
     const container = combatMainRef.current;
@@ -402,6 +468,17 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
             <div className="enemy-image-wrapper">
               <img className="enemy-image" src={wildBoar}></img>
               <div className="enemy-stats"></div>
+              <div className="enemy-hit-overlay" aria-hidden="true">
+                {floatingHits.map((hit) => (
+                  <span
+                    key={hit.id}
+                    className={`enemy-hit-text enemy-hit-text--${hit.kind}`}
+                    style={{ left: `${hit.x}%`, top: `${hit.y}%` }}
+                  >
+                    {hit.text}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
