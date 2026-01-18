@@ -10,6 +10,31 @@
         width: 300px;
         background-color: #ddd;
         border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 0 10px 0 0 / 5px;
+        padding: 24px 18px;
+        gap: 20px;
+
+        .combat-side-panel__section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .combat-side-panel__title {
+            color: #141414;
+            font-family: "Protest Revolution";
+            font-size: 26px;
+        }
+
+        .combat-side-panel__subtitle {
+            color: #2d2d2d;
+            font-size: 14px;
+        }
+
+        .combat-side-panel__actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 
     .combat-main {
@@ -80,6 +105,10 @@
                     background: #4b0d0d;
                     transition: width 0.25s ease-out;
                 }
+            }
+
+            .healthbar-wrapper--inactive {
+                visibility: hidden;
             }
         }
 

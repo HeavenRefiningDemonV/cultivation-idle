@@ -5,7 +5,7 @@ import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
 import { useUIStore } from '../../../../stores/uiStore';
-import { resolveModuleRef } from '../worldUtils';
+import { pickEnemyFromPool, resolveModuleRef } from '../worldUtils';
 import cultivatorFight from "../../../../assets/onscreen/cultivator_backshots.png"
 import barShort from "../../../../assets/menus/bar_short.png";
 import { hpPercent } from '../../../../systems/combat/minibarModel';
@@ -23,10 +23,14 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
 
   const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
+  const activity = useActivityStore((state) => state.active);
+  const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
 
   const combatContext = useCombatStore((state) => state.combatContext);
   const exitCombat = useCombatStore((state) => state.exitCombat);
+  const setAutoAttack = useCombatStore((state) => state.setAutoAttack);
+  const startCombat = useCombatStore((state) => state.startCombat);
   const { currentEnemy, playerHP, playerMaxHP, enemyHP, enemyMaxHP } = useCombatStore(
     useShallow((state) => ({
       currentEnemy: state.currentEnemy,
@@ -37,8 +41,8 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     })),
   );
 
-  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
+  const getProgress = useOutskirtsStore((state) => state.getProgress);
 
   const outskirtsRefId = useMemo(() => resolveModuleRef(city ?? null, 'outskirts'), [city]);
   const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
@@ -55,7 +59,19 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
 
   const handleStartOutskirts = () => {
     if (!city || !outskirtsDef) return;
-    openCombatPreview({ type: 'outskirts', cityId, sourceId: outskirtsDef.id });
+    const progressSnapshot = getProgress(outskirtsDef.id);
+    const nextIsBoss = progressSnapshot.killsSinceBoss >= outskirtsDef.killsToBoss;
+    const nextEnemyId = nextIsBoss ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
+    if (!nextEnemyId) return;
+    startActivity('outskirts', { cityId, sourceId: outskirtsDef.id });
+    setAutoAttack(true);
+    startCombat(nextEnemyId, {
+      type: 'outskirts',
+      cityId,
+      sourceId: outskirtsDef.id,
+      cityIndex: outskirtsDef.cityIndex,
+      isBoss: nextIsBoss,
+    });
   };
 
   const handleStopOutskirts = () => {
@@ -65,6 +81,12 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       exitCombat();
     }
   };
+
+  const isOutskirtsActive =
+    combatContext.type === 'outskirts' ||
+    (activity?.type === 'outskirts' &&
+      (activity?.sourceId === outskirtsDef?.id ||
+        (activity?.payload as { sourceId?: string } | undefined)?.sourceId === outskirtsDef?.id));
 
   if (!outskirtsDef) {
     return (
@@ -84,7 +106,26 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     <div className={'worldScreenPlaceholder'}>
       <div className="combat-div">
 
-        <div className="combat-side-panel"></div>
+        <div className="combat-side-panel">
+          <div className="combat-side-panel__section">
+            <div className="combat-side-panel__title">Outskirts Combat</div>
+            <div className="combat-side-panel__subtitle">
+              {isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
+            </div>
+            <div className="combat-side-panel__actions">
+              <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>
+                Start
+              </button>
+              <button
+                className="button-standard button-standard--ghost"
+                onClick={handleStopOutskirts}
+                disabled={!isOutskirtsActive}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="combat-main">
 
           <div className="healthbars-ui">
@@ -99,7 +140,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               </div>
             </div>
 
-            <div className="healthbar-wrapper">
+            <div className={`healthbar-wrapper${currentEnemy ? '' : ' healthbar-wrapper--inactive'}`}>
               <div className="opponent-name">{currentEnemy?.name ?? bossName ?? 'No active enemy'}</div>
               <div className="opponent-hp">{enemyHpLabel}</div>
               <div className="combat-hp-bar">
