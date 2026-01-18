@@ -63,6 +63,17 @@ export function CombatCanvas({
   const basePlayerX = 150;
   const baseEnemyX = 650;
   const entityY = height / 2;
+  const enemyHitRadius = 32;
+  const playerHitRadius = 28;
+
+  const getRandomOffset = useCallback((radius: number) => {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * radius;
+    return {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+    };
+  }, []);
 
   /**
    * Get background colors for current zone
@@ -228,6 +239,7 @@ export function CombatCanvas({
         // Parse damage from log entry
         const damageMatch = entry.text.match(/(\d+) damage/);
         const isCrit = entry.text.includes('Critical');
+        const isMiss = entry.text.toLowerCase().includes('missed');
 
         if (entry.type === 'player' && damageMatch) {
           // Player attacks enemy
@@ -253,7 +265,14 @@ export function CombatCanvas({
           // Damage number at enemy position
           setTimeout(() => {
             if (showFloatingNumbers) {
-              damageNumbers.spawn(baseEnemyX, entityY - 50, damage, isCrit);
+              const offset = getRandomOffset(enemyHitRadius);
+              damageNumbers.spawn({
+                x: baseEnemyX + offset.x,
+                y: entityY - 20 + offset.y,
+                text: Math.floor(damage).toString(),
+                color: isCrit ? '#ef4444' : '#ffffff',
+                fontSize: isCrit ? 24 : 16,
+              });
             }
 
             // Particles on hit
@@ -270,6 +289,20 @@ export function CombatCanvas({
               screenShake.shake(15, 0.2);
             } else {
               screenShake.shake(5, 0.1);
+            }
+          }, 200);
+        } else if (entry.type === 'player' && isMiss) {
+          // Enemy dodges player attack
+          setTimeout(() => {
+            if (showFloatingNumbers) {
+              const offset = getRandomOffset(enemyHitRadius);
+              damageNumbers.spawn({
+                x: baseEnemyX + offset.x,
+                y: entityY - 20 + offset.y,
+                text: 'Dodge!',
+                color: '#38bdf8',
+                fontSize: 18,
+              });
             }
           }, 200);
         } else if (entry.type === 'enemy' && damageMatch) {
@@ -296,7 +329,14 @@ export function CombatCanvas({
           // Damage number at player position
           setTimeout(() => {
             if (showFloatingNumbers) {
-              damageNumbers.spawn(basePlayerX, entityY - 50, damage, isCrit);
+              const offset = getRandomOffset(playerHitRadius);
+              damageNumbers.spawn({
+                x: basePlayerX + offset.x,
+                y: entityY - 20 + offset.y,
+                text: Math.floor(damage).toString(),
+                color: isCrit ? '#ef4444' : '#ffffff',
+                fontSize: isCrit ? 22 : 16,
+              });
             }
 
             // Particles on hit
@@ -330,6 +370,7 @@ export function CombatCanvas({
     damageNumbers,
     entityY,
     flashEffect,
+    getRandomOffset,
     inCombat,
     particlePool,
     screenShake,
