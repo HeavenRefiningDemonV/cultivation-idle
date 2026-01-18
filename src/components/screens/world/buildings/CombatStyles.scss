@@ -220,6 +220,27 @@
             height: 460px;
             display: flex;
 
+            .combat-motion {
+                animation-duration: 220ms;
+                animation-timing-function: ease-out;
+            }
+
+            .combat-motion--player-attack {
+                animation-name: combat-player-attack;
+            }
+
+            .combat-motion--player-dodge {
+                animation-name: combat-player-dodge;
+            }
+
+            .combat-motion--enemy-attack {
+                animation-name: combat-enemy-attack;
+            }
+
+            .combat-motion--enemy-dodge {
+                animation-name: combat-enemy-dodge;
+            }
+
             .cultivator-image-wrapper {
                 display: flex;
                 flex-direction: column;
@@ -248,8 +269,60 @@
                     width: 300px;
                 }
             }
+
+            .enemy-image-wrapper--inactive {
+                visibility: hidden;
+            }
         }
     }
 
 
+}
+
+@keyframes combat-player-attack {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(20px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-player-dodge {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-10px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-enemy-attack {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-20px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-enemy-dodge {
+    0% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(10px);
+    }
+    100% {
+        transform: translateX(0);
+    }
 }

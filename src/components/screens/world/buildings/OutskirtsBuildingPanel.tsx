@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../../stores/activityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
@@ -105,6 +105,92 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const killsToBoss = outskirtsDef?.killsToBoss ?? 1;
   const progressRatio = clamp01(killsSinceBoss / Math.max(1, killsToBoss));
   const filledSegments = Math.floor(progressRatio * SEGMENT_COUNT);
+  const lastLogTimestampRef = useRef(0);
+  const combatMainRef = useRef<HTMLDivElement | null>(null);
+
+  const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
+    const container = combatMainRef.current;
+    if (!container) return;
+    const selector = target === 'player' ? '.cultivator-image-wrapper' : '.enemy-image-wrapper';
+    const className = target === 'player'
+      ? kind === 'attack'
+        ? 'combat-motion--player-attack'
+        : 'combat-motion--player-dodge'
+      : kind === 'attack'
+        ? 'combat-motion--enemy-attack'
+        : 'combat-motion--enemy-dodge';
+    const element = container.querySelector<HTMLElement>(selector);
+    if (!element) return;
+
+    element.classList.remove(
+      'combat-motion',
+      'combat-motion--player-attack',
+      'combat-motion--player-dodge',
+      'combat-motion--enemy-attack',
+      'combat-motion--enemy-dodge',
+    );
+    void element.offsetWidth;
+    element.classList.add('combat-motion', className);
+
+    const handleAnimationEnd = () => {
+      element.classList.remove('combat-motion', className);
+      element.removeEventListener('animationend', handleAnimationEnd);
+    };
+    element.addEventListener('animationend', handleAnimationEnd);
+  };
+
+  useEffect(() => {
+    if (combatLog.length === 0) {
+      lastLogTimestampRef.current = 0;
+      return;
+    }
+
+    const newEntries = combatLog.filter((entry) => entry.timestamp > lastLogTimestampRef.current);
+    if (newEntries.length === 0) return;
+    lastLogTimestampRef.current = newEntries[newEntries.length - 1].timestamp;
+
+    for (const entry of newEntries) {
+      const text = entry.text;
+      const isPlayerAttack = text.includes('You attacked');
+      const isPlayerAttackMiss = isPlayerAttack && text.includes('missed');
+      const isEnemyAttackMiss = entry.type === 'enemy' && text.includes('attacked but it missed');
+      const isEnemyAttack =
+        text.includes('attacked you') ||
+        text.includes('landed a critical hit') ||
+        text.includes('attacked, but your shield absorbed it');
+
+      if (isEnemyAttackMiss) {
+        triggerMotion('player', 'dodge');
+        continue;
+      }
+
+      if (isPlayerAttackMiss) {
+        triggerMotion('enemy', 'dodge');
+        continue;
+      }
+
+      if (isPlayerAttack) {
+        triggerMotion('player', 'attack');
+        continue;
+      }
+
+      if (isEnemyAttack) {
+        triggerMotion('enemy', 'attack');
+      }
+    }
+  }, [combatLog]);
+
+  useEffect(() => {
+    const container = combatMainRef.current;
+    if (!container) return;
+    const enemyWrapper = container.querySelector<HTMLElement>('.enemy-image-wrapper');
+    if (!enemyWrapper) return;
+    if (currentEnemy) {
+      enemyWrapper.classList.remove('enemy-image-wrapper--inactive');
+    } else {
+      enemyWrapper.classList.add('enemy-image-wrapper--inactive');
+    }
+  }, [currentEnemy]);
 
   const handleStartOutskirts = () => {
     if (!city || !outskirtsDef) return;
@@ -283,7 +369,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
              </div>
           </div>
         </div>
-        <div className="combat-main">
+        <div className="combat-main" ref={combatMainRef}>
 
           <div className="healthbars-ui">
             <div className="healthbar-wrapper">
