@@ -153,6 +153,25 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
             </div>
           </div>
           <div className="combat-side-panel__section combat-side-panel__section--menu">
+            <div className="combat-side-panel__title">Boss Cadence</div>
+            <div className="combat-side-panel__meter">
+              <div className="combat-side-panel__segments">
+                {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
+                  const filled = idx < filledSegments;
+                  return (
+                    <div
+                      key={idx}
+                      className={`combat-side-panel__segment${filled ? ' combat-side-panel__segment--filled' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+              <div className="combat-side-panel__meter-text">
+                {killsSinceBoss} / {killsToBoss}
+              </div>
+            </div>
+          </div>
+          <div className="combat-side-panel__section combat-side-panel__section--menu">
             <div className="combat-side-panel__title">Combat Options</div>
             <div className="combat-side-panel__controls">
               <label className="combat-side-panel__control">
@@ -223,24 +242,9 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               </label>
             </div>
           </div>
-          <div className="combat-side-panel__section combat-side-panel__section--menu">
-            <div className="combat-side-panel__title">Boss Cadence</div>
-            <div className="combat-side-panel__meter">
-              <div className="combat-side-panel__segments">
-                {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
-                  const filled = idx < filledSegments;
-                  return (
-                    <div
-                      key={idx}
-                      className={`combat-side-panel__segment${filled ? ' combat-side-panel__segment--filled' : ''}`}
-                    />
-                  );
-                })}
-              </div>
-              <div className="combat-side-panel__meter-text">
-                {killsSinceBoss} / {killsToBoss}
-              </div>
-            </div>
+          <div className="combat-side-panel__section combat-side-panel__section--menu fone">
+             <div className="combat-side-panel__title">Combat Log</div>
+             <div className="combat-log"></div>
           </div>
         </div>
         <div className="combat-main">
