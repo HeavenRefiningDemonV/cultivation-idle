@@ -7,6 +7,9 @@
   overflow: hidden;
   --inv-slot: 84px;
   --inv-slot-gap: 10px;
+  --inv-ink: rgba(12, 18, 34, 0.92);
+  --inv-paper: rgba(232, 232, 232, 0.92);
+  --inv-paper2: rgba(255, 255, 255, 0.55);
 }
 
 .inventoryPanelBase {
@@ -116,27 +119,29 @@
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   overflow: auto;
 }
 
 .inventoryPocketRailHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(12, 18, 34, 0.14);
 }
 
 .inventoryPocketRailTitle {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(12, 18, 34, 0.7);
+  font-weight: 800;
+  color: var(--inv-ink);
 }
 
 .inventoryPocketRailMeta {
-  font-size: 11px;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-family: var(--font-mono, inherit);
   color: rgba(12, 18, 34, 0.65);
 }
 
@@ -151,52 +156,87 @@
   text-align: left;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: 10px;
   position: relative;
   padding: 10px 10px;
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid rgba(12, 18, 34, 0.14);
   border-image: none;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   font-size: 13px;
+  transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.inventoryPocketButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.18);
 }
 
 .inventoryPocketIcon {
-  font-size: 16px;
-  margin-right: 6px;
+  width: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
 }
 
 .inventoryPocketLabel {
   flex: 1;
+  font-weight: 800;
+  color: rgba(12, 18, 34, 0.9);
 }
 
 .inventoryPocketButton--active {
-  background: linear-gradient(135deg, rgba(125, 211, 252, 0.85), rgba(59, 130, 246, 0.75));
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.8), rgba(59, 130, 246, 0.7));
   border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.16), 0 12px 20px rgba(0, 0, 0, 0.2);
   color: #0c1222;
 }
 
 .inventoryPocketButton--disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .inventoryPocketCount {
-  margin-left: auto;
+  min-width: 24px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 12px;
-  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
 }
 
 .inventoryPocketNewDot {
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
   background: rgba(251, 191, 36, 0.95);
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.45);
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.55);
+  animation: invNewDotPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes invNewDotPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
 }
 
 .inventoryRingPanel {
@@ -221,11 +261,13 @@
 .inventoryRingSubheaderLeft {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  min-width: 180px;
 }
 
 .inventoryRingPocketTitle {
-  font-weight: 700;
+  font-weight: 900;
+  color: rgba(12, 18, 34, 0.92);
 }
 
 .inventoryRingPocketMeta {
@@ -236,77 +278,86 @@
 .inventoryRingSubheaderRight {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .inventorySearch {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.7);
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.55);
   border: 1px solid rgba(12, 18, 34, 0.14);
   border-radius: 999px;
+  padding: 6px 10px;
+  min-width: 220px;
 }
 
 .inventorySearchIcon {
-  font-size: 12px;
-  color: rgba(12, 18, 34, 0.6);
+  opacity: 0.7;
 }
 
 .inventorySearchInput {
+  flex: 1;
   border: none;
   background: transparent;
-  font-size: 12px;
-  color: #0c1222;
-  width: 140px;
+  outline: none;
+  font-weight: 600;
+  color: rgba(12, 18, 34, 0.92);
 }
 
 .inventorySearchInput::placeholder {
   color: rgba(12, 18, 34, 0.5);
 }
 
-.inventorySearchInput:focus {
-  outline: none;
+.inventorySearch:focus-within {
+  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.18);
 }
 
 .inventorySearchClear {
   border: none;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.92);
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 12px;
-  color: rgba(12, 18, 34, 0.6);
 }
 
 .inventorySort {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 8px;
 }
 
 .inventorySortLabel {
-  color: rgba(12, 18, 34, 0.6);
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(12, 18, 34, 0.7);
 }
 
 .inventorySortSelect {
+  padding: 7px 10px;
+  border-radius: 999px;
   border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.7);
-  padding: 4px 8px;
-  font-size: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.92);
 }
 
 .inventoryToolsReset {
-  border: none;
-  background: rgba(15, 23, 42, 0.08);
+  padding: 7px 12px;
   border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: rgba(12, 18, 34, 0.92);
+  font-weight: 900;
   cursor: pointer;
+}
+
+.inventoryToolsReset:hover {
+  filter: brightness(0.98);
 }
 
 .inventoryOverflowWarning {
@@ -658,6 +709,10 @@
     justify-content: flex-start;
   }
 
+  .inventorySearch {
+    min-width: 160px;
+  }
+
   .inventorySearchInput {
     width: 100%;
   }
@@ -690,5 +745,6 @@
     width: auto;
     padding: 8px 12px;
     border-radius: 999px;
+    white-space: nowrap;
   }
 }
