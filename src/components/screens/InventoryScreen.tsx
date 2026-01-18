@@ -6,23 +6,9 @@ import { useBuffStore } from '../../stores/buffStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useEquipmentStore } from '../../stores/equipmentStore';
+import InventorySlotTile from '../inventory/InventorySlotTile';
+import type { DisplayStack } from '../inventory/inventoryTypes';
 import './InventoryScreen.scss';
-
-type DisplayStack = {
-  stackId: string;
-  itemId: string;
-  quantity: number;
-  name: string;
-  description?: string;
-  type: string;
-  rarity?: string;
-  level?: number;
-  maxStack?: number;
-  stackable?: boolean;
-  value?: string | number;
-  note?: string;
-  usage?: string;
-};
 
 type InventorySlot =
   | { kind: 'item'; stack: DisplayStack; slotIndex: number }
@@ -94,6 +80,8 @@ export default function InventoryScreen() {
   const [activePocket, setActivePocket] = useState('all');
   const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
   const [equipmentOverlayOpen, setEquipmentOverlayOpen] = useState(false);
+  const prevStackIdsRef = useRef<Set<string>>(new Set());
+  const [newStackIds, setNewStackIds] = useState<Set<string>>(new Set());
   const warnedMissingDefs = useRef(new Set<string>());
 
   const { displayStacks, missingItemIds } = useMemo(() => {
@@ -140,6 +128,37 @@ export default function InventoryScreen() {
     () => displayStacks.filter((stack) => stack.type !== 'currency' && stack.itemId !== 'currency'),
     [displayStacks],
   );
+
+  useEffect(() => {
+    const currentIds = new Set(nonCurrencyStacks.map((stack) => stack.stackId));
+    const newIds: string[] = [];
+    currentIds.forEach((id) => {
+      if (!prevStackIdsRef.current.has(id)) {
+        newIds.push(id);
+      }
+    });
+
+    if (newIds.length > 0) {
+      setNewStackIds((prev) => {
+        const next = new Set(prev);
+        newIds.forEach((id) => next.add(id));
+        return next;
+      });
+
+      newIds.forEach((id) => {
+        window.setTimeout(() => {
+          setNewStackIds((prev) => {
+            if (!prev.has(id)) return prev;
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+        }, 4000);
+      });
+    }
+
+    prevStackIdsRef.current = currentIds;
+  }, [nonCurrencyStacks]);
 
   const countsByCategory = useMemo(() => {
     const counts: Record<string, number> = { all: nonCurrencyStacks.length };
@@ -226,6 +245,16 @@ export default function InventoryScreen() {
   const weaponName = equippedWeaponId ? getItemDef(equippedWeaponId)?.name ?? equippedWeaponId : 'None';
   const accessoryName = equippedAccessoryId ? getItemDef(equippedAccessoryId)?.name ?? equippedAccessoryId : 'None';
 
+  const handleSelectStack = (stackId: string) => {
+    setSelectedStackId(stackId);
+    setNewStackIds((prev) => {
+      if (!prev.has(stackId)) return prev;
+      const next = new Set(prev);
+      next.delete(stackId);
+      return next;
+    });
+  };
+
   return (
     <div className="inventoryScreenRoot">
       <div className="inventoryScreenHeader inventoryPanelBase">
@@ -310,21 +339,13 @@ export default function InventoryScreen() {
             <div className="inventorySlotGrid" role="grid">
               {visibleSlots.map((slot) =>
                 slot.kind === 'item' ? (
-                  <button
+                  <InventorySlotTile
                     key={slot.slotIndex}
-                    className={`inventorySlotTile${
-                      selectedStackId === slot.stack.stackId ? ' inventorySlotTile--selected' : ''
-                    }`}
-                    type="button"
-                    onClick={() => setSelectedStackId(slot.stack.stackId)}
-                    role="gridcell"
-                  >
-                    <div className="inventorySlotTileHeader">
-                      <span className="inventorySlotTileName">{slot.stack.name}</span>
-                      <span className="inventorySlotTileQty">x{slot.stack.quantity}</span>
-                    </div>
-                    <div className="inventorySlotTileMeta">{formatPocketLabel(slot.stack.type)}</div>
-                  </button>
+                    stack={slot.stack}
+                    isSelected={selectedStackId === slot.stack.stackId}
+                    isNew={newStackIds.has(slot.stack.stackId)}
+                    onSelect={() => handleSelectStack(slot.stack.stackId)}
+                  />
                 ) : (
                   <div
                     key={slot.slotIndex}
