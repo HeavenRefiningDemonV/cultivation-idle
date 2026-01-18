@@ -12,6 +12,11 @@ import { hpPercent } from '../../../../systems/combat/minibarModel';
 import { formatNumber } from '../../../../utils/numbers';
 import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles';
 
+import forestRabbit from "../../../../assets/enemies/forestrabbit.png";
+import spiritDeer from "../../../../assets/enemies/spiritdeer.png";
+import wildBoar from "../../../../assets/enemies/widboar.png";
+import wolfPup from "../../../../assets/enemies/wolfpup.png";
+
 import "./CombatStyles.scss";
 
 const SEGMENT_COUNT = 14;
@@ -309,7 +314,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               <img className="cultivator-image" src={cultivatorFight}></img>
             </div>
             <div className="enemy-image-wrapper">
-              <div className="enemy-image"></div>
+              <img className="enemy-image" src={wildBoar}></img>
               <div className="enemy-stats"></div>
             </div>
           </div>
