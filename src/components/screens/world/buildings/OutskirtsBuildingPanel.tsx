@@ -10,6 +10,7 @@ import cultivatorFight from "../../../../assets/onscreen/cultivator_backshots.pn
 import barShort from "../../../../assets/menus/bar_short.png";
 import { hpPercent } from '../../../../systems/combat/minibarModel';
 import { formatNumber } from '../../../../utils/numbers';
+import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles';
 
 import "./CombatStyles.scss";
 
@@ -42,6 +43,15 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   );
 
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
+  const setSettings = useUIStore((state) => state.setSettings);
+  const uiSettings = useUIStore(
+    useShallow((state) => ({
+      profile: state.settings.combatAIProfile,
+      preferredTarget: state.settings.preferredTarget,
+      autoRetryOnDeath: state.settings.autoRetryOnDeath,
+      useConsumablesInCombat: state.settings.useConsumablesInCombat,
+    })),
+  );
   const getProgress = useOutskirtsStore((state) => state.getProgress);
 
   const outskirtsRefId = useMemo(() => resolveModuleRef(city ?? null, 'outskirts'), [city]);
@@ -123,6 +133,56 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               >
                 Stop
               </button>
+            </div>
+          </div>
+          <div className="combat-side-panel__section combat-side-panel__section--menu">
+            <div className="combat-side-panel__title">Combat Options</div>
+            <div className="combat-side-panel__controls">
+              <label className="combat-side-panel__control">
+                <span className="combat-side-panel__control-label">AI Profile</span>
+                <select
+                  value={uiSettings.profile}
+                  onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
+                >
+                  {AI_PROFILE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="combat-side-panel__control">
+                <span className="combat-side-panel__control-label">Preferred target</span>
+                <select
+                  value={uiSettings.preferredTarget}
+                  onChange={(e) =>
+                    setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })
+                  }
+                >
+                  <option value="trash">Trash</option>
+                  <option value="elite">Elite</option>
+                  <option value="boss">Boss</option>
+                </select>
+              </label>
+
+              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
+                <input
+                  type="checkbox"
+                  checked={uiSettings.useConsumablesInCombat}
+                  onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
+                />
+                <span className="combat-side-panel__control-label">Auto use items</span>
+              </label>
+
+              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
+                <input
+                  type="checkbox"
+                  checked={uiSettings.autoRetryOnDeath}
+                  onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
+                />
+                <span className="combat-side-panel__control-label">Auto retry</span>
+              </label>
             </div>
           </div>
         </div>

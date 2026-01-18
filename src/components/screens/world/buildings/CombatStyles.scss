@@ -11,7 +11,7 @@
         background-color: #ddd;
         border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 0 10px 0 0 / 5px;
         padding: 24px 18px;
-        gap: 20px;
+        gap: 16px;
 
         .combat-side-panel__section {
             display: flex;
@@ -34,6 +34,39 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+        }
+
+        .combat-side-panel__section--menu {
+            gap: 10px;
+        }
+
+        .combat-side-panel__controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .combat-side-panel__control {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            color: #1f1f1f;
+            font-size: 14px;
+
+            select {
+                height: 32px;
+                padding: 4px 8px;
+            }
+        }
+
+        .combat-side-panel__control--checkbox {
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .combat-side-panel__control-label {
+            font-size: 13px;
         }
     }
 
