@@ -223,6 +223,41 @@
   padding-right: 4px;
 }
 
+.manualSatchelTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.manualSatchelSearch,
+.manualSatchelSort {
+  border: 1px solid rgba(12, 18, 34, 0.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(12, 18, 34, 0.85);
+}
+
+.manualSatchelSearch {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.manualSatchelSort {
+  flex: 0 0 auto;
+}
+
+.manualSatchelToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.75);
+}
+
 .manualSatchelRow {
   padding: 12px;
   border: 1px solid rgba(12, 18, 34, 0.12);
@@ -233,11 +268,23 @@
   gap: 8px;
 }
 
-.manualSatchelRowMain {
+.manualSatchelRowHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.manualSatchelRowMain {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .manualSatchelRowName {
@@ -250,10 +297,55 @@
   gap: 6px;
 }
 
+.manualSatchelRowChevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(12, 18, 34, 0.7);
+}
+
+.manualSatchelRowDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manualSatchelRowDescription {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.75);
+}
+
 .manualSatchelRowActions {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.manualSatchelRowConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(254, 242, 242, 0.7);
+}
+
+.manualSatchelRowWarning {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(153, 27, 27, 0.85);
+}
+
+.manualSatchelRowConfirmActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.manualSatchelRowDisabledReason {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.6);
 }
 
 .manualSatchelButton {
@@ -330,6 +422,11 @@
 
   .manualSatchelBody {
     grid-template-columns: 1fr;
+  }
+
+  .manualSatchelTools {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .manualSatchelRowActions {
