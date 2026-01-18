@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import './ManualSatchelModal.scss';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -12,6 +12,7 @@ export function ManualSatchelModal() {
   const showModal = useUIStore((state) => state.showManualSatchelModal);
   const closeModal = useUIStore((state) => state.closeManualSatchel);
   const addNotification = useUIStore((state) => state.addNotification);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const manuals = useManualSatchelStore((state) => state.manuals);
   const activeStudy = useManualSatchelStore((state) => state.activeStudy);
   const startStudy = useManualSatchelStore((state) => state.startStudy);
@@ -26,11 +27,27 @@ export function ManualSatchelModal() {
   const [focusCountdown, setFocusCountdown] = useState(10);
   const [focusResult, setFocusResult] = useState<string | null>(null);
   const [focusRunning, setFocusRunning] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!showModal) return undefined;
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(handle);
+  }, [showModal]);
+
+  useEffect(() => {
+    if (!showModal) return undefined;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [closeModal, showModal]);
+
+  useEffect(() => {
+    if (!showModal) return;
+    closeButtonRef.current?.focus();
   }, [showModal]);
 
   useEffect(() => {
@@ -67,6 +84,7 @@ export function ManualSatchelModal() {
       setFocusCountdown(10);
       setFocusRunning(false);
       setFocusResult(null);
+      setShowHelp(false);
     }
   }, [showModal]);
 
@@ -127,8 +145,8 @@ export function ManualSatchelModal() {
     const canFocus = !activeStudy.focusUsed && now < activeStudy.endsAt;
 
     return (
-      <div className={'manualSatchelSection'}>
-        <div className={'manualSatchelSectionHeader'}>
+      <div className={'manualSatchelCard'}>
+        <div className={'manualSatchelCardHeader'}>
           <div>
             <div className={'manualSatchelTitleLine'}>Active Study</div>
             <div className={'manualSatchelTechName'}>{tech?.name ?? activeStudy.manual.techId}</div>
@@ -231,32 +249,82 @@ export function ManualSatchelModal() {
   };
 
   return (
-    <div className={'manualSatchelOverlay'}>
-      <div className={'manualSatchelModal'}>
+    <div className={'manualSatchelOverlay'} onClick={closeModal}>
+      <div
+        className={'manualSatchelModal'}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Manual Satchel"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={'manualSatchelHeader'}>
-          <div>
+          <div className={'manualSatchelHeaderLeft'}>
             <div className={'manualSatchelTitle'}>Manual Satchel</div>
-            <div className={'manualSatchelBlurb'}>Buy Manual → Study Manual → Technique Learned → Equip Technique → Auto-Used in Combat</div>
+            <div className={'manualSatchelSubtitle'}>Your study kit for unlocking techniques.</div>
+            <button className={'manualSatchelHelpToggle'} onClick={() => setShowHelp((prev) => !prev)} type="button">
+              {showHelp ? 'Hide help' : 'How it works'}
+            </button>
           </div>
-          <button className={'manualSatchelClose'} onClick={closeModal}>
-            ✕
-          </button>
+          <div className={'manualSatchelHeaderRight'}>
+            <button
+              className={'manualSatchelLibraryButton'}
+              type="button"
+              onClick={() => {
+                closeModal();
+                setActiveTab('techniques');
+              }}
+            >
+              Technique Library
+            </button>
+            <button
+              className={'manualSatchelClose'}
+              onClick={closeModal}
+              ref={closeButtonRef}
+              aria-label="Close manual satchel"
+              type="button"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
-        {renderActiveStudy()}
-
-        <div className={'manualSatchelSection'}>
-          <div className={'manualSatchelSectionHeader'}>
-            <div className={'manualSatchelTitleLine'}>Owned Manuals</div>
-            <div className={'manualSatchelCount'}>
-              {manuals.length} in satchel{activeStudy ? ' • 1 studying' : ''}
-            </div>
+        {showHelp ? (
+          <div className={'manualSatchelHelpCard'}>
+            <div className={'manualSatchelHelpRow'}>🛍️ Buy manuals at the Manual Pavilion.</div>
+            <div className={'manualSatchelHelpRow'}>📖 Study one manual at a time.</div>
+            <div className={'manualSatchelHelpRow'}>✨ Finish study to unlock a technique.</div>
+            <div className={'manualSatchelHelpRow'}>⚔️ Equip techniques in the Techniques tab.</div>
           </div>
-          {manualList.length === 0 && <div className={'manualSatchelEmpty'}>No manuals yet.</div>}
-          {manualList.length > 0 && <div className={'manualSatchelList'}>{manualList.map((manual) => renderManualRow(manual.id))}</div>}
+        ) : null}
+
+        <div className={'manualSatchelBody'}>
+          <section className={'manualSatchelColumn manualSatchelColumn--left'}>
+            {activeStudy ? (
+              renderActiveStudy()
+            ) : (
+              <div className={'manualSatchelCard manualSatchelCardEmpty'}>
+                <div className={'manualSatchelTitleLine'}>Active Study</div>
+                <div className={'manualSatchelEmpty'}>No manual currently studied.</div>
+              </div>
+            )}
+          </section>
+
+          <section className={'manualSatchelColumn manualSatchelColumn--right'}>
+            <div className={'manualSatchelCard'}>
+              <div className={'manualSatchelCardHeader'}>
+                <div className={'manualSatchelTitleLine'}>Owned Manuals</div>
+                <div className={'manualSatchelCount'}>
+                  {manuals.length} in satchel{activeStudy ? ' • 1 studying' : ''}
+                </div>
+              </div>
+              {manualList.length === 0 && <div className={'manualSatchelEmpty'}>No manuals yet.</div>}
+              {manualList.length > 0 && (
+                <div className={'manualSatchelList'}>{manualList.map((manual) => renderManualRow(manual.id))}</div>
+              )}
+            </div>
+          </section>
         </div>
       </div>
     </div>
   );
 }
-
