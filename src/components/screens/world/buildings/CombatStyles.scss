@@ -10,19 +10,20 @@
         width: 300px;
         background-color: #ddd;
         border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 0 10px 0 0 / 5px;
-        padding: 24px 18px;
-        gap: 20px;
+        padding: 20px 16px;
+        gap: 12px;
 
         .combat-side-panel__section {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 7px;
+            margin-bottom: 5px;
         }
 
         .combat-side-panel__title {
             color: #141414;
             font-family: "Protest Revolution";
-            font-size: 26px;
+            font-size: 22px;
         }
 
         .combat-side-panel__subtitle {
@@ -34,6 +35,76 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+        }
+
+        .combat-side-panel__controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .combat-side-panel__control {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: #1f1f1f;
+            font-size: 13px;
+
+            select {
+                height: 28px;
+                padding: 2px 6px;
+                background-color: #e4e4e4;
+                border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 3px;
+            }
+        }
+
+        .combat-side-panel__control--checkbox {
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .combat-side-panel__control-label {
+            font-size: 12px;
+        }
+
+        .combat-side-panel__meter {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .combat-side-panel__segments {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+        }
+
+        .combat-side-panel__segment {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .combat-side-panel__segment--filled {
+            background: #1f4d7a;
+        }
+
+        .combat-side-panel__meter-text {
+            font-size: 12px;
+            color: #2b2b2b;
+        }
+
+        .fone {
+            flex: 1;
+
+            .combat-log {
+                background-color: #888888;
+                border-radius: 3px;
+                height: 100%;
+                width: 100%;
+                padding: .3125rem;
+            }
         }
     }
 
@@ -60,10 +131,28 @@
                     color: black;
                     font-family: "Protest Revolution";
                     font-size: 30px;
+                    text-shadow:
+                        0px 0px 50px white,
+                        0px 0px 40px white,
+                        0px 0px 30px white,
+                        0px 0px 10px white,
+                        0px 0px 10px white,
+                        0px 0px 5px white;
+                    -webkit-text-stroke: 0.1em white;
+                    paint-order: stroke;
                 }
 
                 .opponent-hp {
                     font-size: 20px;
+                    text-shadow:
+                        0px 0px 50px white,
+                        0px 0px 40px white,
+                        0px 0px 30px white,
+                        0px 0px 10px white,
+                        0px 0px 10px white,
+                        0px 0px 5px white;
+                    -webkit-text-stroke: 0.1em white;
+                    paint-order: stroke;
                 }
 
                 .combat-hp-bar {
