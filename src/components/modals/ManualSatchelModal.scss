@@ -2,20 +2,22 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  padding: 24px;
+  z-index: 3000;
 }
 
 .manualSatchelModal {
-  background: rgba(232, 232, 232, 0.92);
+  background: rgba(208, 208, 208, 0.92);
   color: rgba(12, 18, 34, 0.9);
   border: 5px solid transparent;
   border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
-  width: min(960px, 90vw);
-  max-height: 90vh;
+  width: min(1040px, 94vw);
+  max-height: 92vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -43,13 +45,21 @@
 }
 
 .manualSatchelTitle {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manualSatchelTitleIcon {
+  font-size: 18px;
+  opacity: 0.8;
 }
 
 .manualSatchelSubtitle {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.65);
+  color: rgba(12, 18, 34, 0.6);
 }
 
 .manualSatchelHelpToggle {
@@ -66,9 +76,9 @@
 .manualSatchelLibraryButton {
   background: rgba(59, 130, 246, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
   color: rgba(12, 18, 34, 0.9);
@@ -78,10 +88,10 @@
   background: rgba(12, 18, 34, 0.08);
   border: none;
   color: rgba(12, 18, 34, 0.8);
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -102,9 +112,9 @@
 
 .manualSatchelBody {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) minmax(280px, 1.1fr);
-  gap: 16px;
-  padding: 0 20px 20px;
+  grid-template-columns: 360px 1fr;
+  gap: 12px;
+  padding: 12px 14px;
   min-height: 0;
   flex: 1;
 }
@@ -116,15 +126,36 @@
   min-height: 0;
 }
 
+.manualSatchelColumn--right .manualSatchelCard {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .manualSatchelCard {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.45);
   border: 1px solid rgba(12, 18, 34, 0.14);
   border-radius: 12px;
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-height: 0;
+}
+
+.manualSatchelCardActive {
+  position: relative;
+  overflow: hidden;
+}
+
+.manualSatchelCardActive::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(125, 211, 252, 0.55), rgba(34, 197, 94, 0.35), transparent);
 }
 
 .manualSatchelCardEmpty {
@@ -155,8 +186,10 @@
 }
 
 .manualSatchelTimer {
-  font-size: 14px;
-  color: rgba(12, 18, 34, 0.65);
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.75);
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 }
 
 .manualSatchelProgress {
@@ -166,7 +199,7 @@
 .manualSatchelProgressBar {
   position: relative;
   height: 10px;
-  background: rgba(12, 18, 34, 0.15);
+  background: rgba(12, 18, 34, 0.12);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -175,8 +208,10 @@
   position: absolute;
   inset: 0;
   width: 0;
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.85), rgba(16, 163, 74, 0.9));
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.85), rgba(34, 197, 94, 0.85));
+  background-size: 200% 100%;
   transition: width 0.3s ease;
+  animation: manualSatchelShimmer 2.8s ease-in-out infinite;
 }
 
 .manualSatchelProgressText {
@@ -194,9 +229,13 @@
 .manualSatchelFocusCard {
   margin-top: 12px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.75);
+  background: radial-gradient(circle at center, rgba(125, 211, 252, 0.25), rgba(255, 255, 255, 0.75) 60%);
   border: 1px solid rgba(12, 18, 34, 0.12);
   border-radius: 8px;
+}
+
+.manualSatchelFocusCardActive {
+  animation: manualSatchelPulse 2.6s ease-in-out infinite;
 }
 
 .manualSatchelFocusTitle {
@@ -210,6 +249,11 @@
   margin-bottom: 8px;
 }
 
+.manualSatchelFocusCountdown {
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .manualSatchelFocusActions {
   display: flex;
   gap: 8px;
@@ -221,6 +265,8 @@
   gap: 10px;
   overflow-y: auto;
   padding-right: 4px;
+  flex: 1;
+  min-height: 0;
 }
 
 .manualSatchelTools {
@@ -261,16 +307,22 @@
 .manualSatchelRow {
   padding: 12px;
   border: 1px solid rgba(12, 18, 34, 0.12);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.manualSatchelRow:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(12, 18, 34, 0.12);
 }
 
 .manualSatchelRowHeader {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   gap: 12px;
   background: transparent;
@@ -279,12 +331,21 @@
   text-align: left;
   cursor: pointer;
   color: inherit;
+  width: 100%;
+}
+
+.manualSatchelRowSpine {
+  width: 6px;
+  border-radius: 999px;
+  background: rgba(12, 18, 34, 0.2);
+  flex: 0 0 auto;
 }
 
 .manualSatchelRowMain {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
 }
 
 .manualSatchelRowName {
@@ -308,6 +369,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px dashed rgba(12, 18, 34, 0.18);
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .manualSatchelRowDescription {
@@ -383,39 +448,89 @@
   display: inline-flex;
   align-items: center;
   padding: 2px 6px;
-  background: rgba(12, 18, 34, 0.12);
-  border-radius: 4px;
-  font-size: 12px;
-  text-transform: capitalize;
+  border-radius: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(12, 18, 34, 0.2);
+  background: rgba(255, 255, 255, 0.65);
+  color: rgba(12, 18, 34, 0.75);
 }
 
 .manualBadgeKnown {
-  background: rgba(34, 197, 94, 0.8);
+  background: rgba(34, 197, 94, 0.3);
   color: #0b0f1a;
+  border-color: rgba(34, 197, 94, 0.5);
 }
 
 .rarity-common {
-  background: rgba(12, 18, 34, 0.12);
+  background: rgba(148, 163, 184, 0.3);
+  border-color: rgba(100, 116, 139, 0.4);
+}
+
+.manualSatchelRowSpine.rarity-common {
+  background: rgba(100, 116, 139, 0.7);
 }
 
 .rarity-uncommon {
-  background: rgba(6, 78, 59, 0.6);
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+}
+
+.manualSatchelRowSpine.rarity-uncommon {
+  background: rgba(34, 197, 94, 0.7);
 }
 
 .rarity-rare {
-  background: rgba(29, 78, 216, 0.7);
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.manualSatchelRowSpine.rarity-rare {
+  background: rgba(59, 130, 246, 0.7);
 }
 
 .rarity-epic {
-  background: rgba(109, 40, 217, 0.7);
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.manualSatchelRowSpine.rarity-epic {
+  background: rgba(168, 85, 247, 0.7);
 }
 
 .rarity-legendary {
-  background: rgba(202, 138, 4, 0.8);
+  background: rgba(234, 179, 8, 0.25);
   color: #0b0f1a;
+  border-color: rgba(234, 179, 8, 0.6);
 }
 
-@media (max-width: 720px) {
+.manualSatchelRowSpine.rarity-legendary {
+  background: rgba(234, 179, 8, 0.8);
+}
+
+@keyframes manualSatchelShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes manualSatchelPulse {
+  0%,
+  100% {
+    opacity: 0.92;
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
+  }
+}
+
+@media (max-width: 860px) {
   .manualSatchelModal {
     width: 96vw;
   }

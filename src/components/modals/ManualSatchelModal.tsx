@@ -224,7 +224,7 @@ export function ManualSatchelModal() {
     const canFocus = !activeStudy.focusUsed && now < activeStudy.endsAt;
 
     return (
-      <div className={'manualSatchelCard'}>
+      <div className={'manualSatchelCard manualSatchelCardActive'}>
         <div className={'manualSatchelCardHeader'}>
           <div>
             <div className={'manualSatchelTitleLine'}>Active Study</div>
@@ -267,9 +267,11 @@ export function ManualSatchelModal() {
           </div>
         )}
         {focusStage === 'focusing' && (
-          <div className={'manualSatchelFocusCard'}>
+          <div className={'manualSatchelFocusCard manualSatchelFocusCardActive'}>
             <div className={'manualSatchelFocusTitle'}>Focused Study</div>
-            <div className={'manualSatchelFocusText'}>Channeling... {focusCountdown}s</div>
+            <div className={'manualSatchelFocusText'}>
+              Channeling... <span className={'manualSatchelFocusCountdown'}>{focusCountdown}s</span>
+            </div>
             <div className={'manualSatchelProgressBar'}>
               <div
                 className={'manualSatchelProgressFill'}
@@ -317,6 +319,7 @@ export function ManualSatchelModal() {
           type="button"
           onClick={() => setExpandedManualId((prev) => (prev === manual.id ? null : manual.id))}
         >
+          <span className={`manualSatchelRowSpine rarity-${manual.rarity}`} aria-hidden="true" />
           <div className={'manualSatchelRowMain'}>
             <div className={'manualSatchelRowName'}>{name}</div>
             <div className={'manualSatchelRowMeta'}>
@@ -387,7 +390,12 @@ export function ManualSatchelModal() {
       >
         <div className={'manualSatchelHeader'}>
           <div className={'manualSatchelHeaderLeft'}>
-            <div className={'manualSatchelTitle'}>Manual Satchel</div>
+            <div className={'manualSatchelTitle'}>
+              <span className={'manualSatchelTitleIcon'} aria-hidden="true">
+                🧺
+              </span>
+              Manual Satchel
+            </div>
             <div className={'manualSatchelSubtitle'}>Your study kit for unlocking techniques.</div>
             <button className={'manualSatchelHelpToggle'} onClick={() => setShowHelp((prev) => !prev)} type="button">
               {showHelp ? 'Hide help' : 'How it works'}
