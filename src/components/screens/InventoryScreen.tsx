@@ -125,22 +125,22 @@ export default function InventoryScreen() {
   return (
     <div className="inventoryScreenRoot">
       <div className="inventoryScreenHeader inventoryPanelBase">
-        <div className="inventoryHeaderTitle">
-          <span className="inventoryHeaderEyebrow">Spatial Ring</span>
-          <h2>Inventory</h2>
+        <div className="inventoryHeaderLeft">
+          <div className="inventoryHeaderTitle">Spatial Ring Inventory</div>
+          <div className="inventoryHeaderSubtitle">Treasures secured within your pocket realm.</div>
         </div>
-        <div className="inventoryCurrencyStrip">
-          <div className="inventoryCurrencyPill">
+        <div className="inventoryHeaderCurrencyStrip">
+          <div className="inventoryCurrencyChip">
             <Coins size={16} aria-hidden="true" />
             <span className="inventoryCurrencyLabel">Gold</span>
             <span className="inventoryCurrencyValue">{currencies.gold}</span>
           </div>
-          <div className="inventoryCurrencyPill">
+          <div className="inventoryCurrencyChip">
             <Gem size={16} aria-hidden="true" />
             <span className="inventoryCurrencyLabel">Spirit Stones</span>
             <span className="inventoryCurrencyValue">{currencies.spiritStones}</span>
           </div>
-          <div className="inventoryCurrencyPill">
+          <div className="inventoryCurrencyChip">
             <Medal size={16} aria-hidden="true" />
             <span className="inventoryCurrencyLabel">Merit</span>
             <span className="inventoryCurrencyValue">{currencies.merit}</span>
@@ -148,16 +148,16 @@ export default function InventoryScreen() {
         </div>
         <div className="inventoryHeaderActions">
           <button
-            className="inventoryIconButton"
+            className="button-standard inventoryHeaderIconButton"
             type="button"
             onClick={openManualSatchel}
             aria-label="Open manual satchel"
           >
             <Backpack size={18} aria-hidden="true" />
-            <span className="inventoryIconBadge">{satchelCount}</span>
+            <span className="inventoryHeaderBadge">{satchelCount}</span>
           </button>
           <button
-            className="inventoryIconButton"
+            className="button-standard inventoryHeaderIconButton"
             type="button"
             onClick={() => setEquipmentOverlayOpen((prev) => !prev)}
             aria-label="Toggle equipment overview"
@@ -179,11 +179,12 @@ export default function InventoryScreen() {
               return (
                 <button
                   key={category}
-                  className="inventoryPocketButton"
+                  className={`inventoryPocketButton${isActive ? ' inventoryPocketButton--active' : ''}${
+                    isDisabled ? ' inventoryPocketButton--disabled' : ''
+                  }`}
                   type="button"
                   onClick={() => setActivePocket(category)}
                   disabled={isDisabled}
-                  data-active={isActive}
                 >
                   <span className="inventoryPocketLabel">{formatPocketLabel(category)}</span>
                   <span className="inventoryPocketCount">{count}</span>
@@ -193,8 +194,8 @@ export default function InventoryScreen() {
           </div>
         </nav>
 
-        <main className="inventoryRingPanel">
-          <div className="inventoryRingHeader">
+        <main className="inventoryRingPanel inventoryPanelBase">
+          <div className="inventoryRingSubheader">
             <div className="inventoryRingTitle">
               <span className="inventoryRingPocket">{selectedCategoryLabel}</span>
               <span className="inventoryRingCount">{filteredItems.length} items</span>
@@ -208,10 +209,9 @@ export default function InventoryScreen() {
                 {filteredItems.map((item) => (
                   <button
                     key={item.itemId}
-                    className="inventoryItemTile"
+                    className={`inventoryItemTile${selectedItemId === item.itemId ? ' inventoryItemTile--selected' : ''}`}
                     type="button"
                     onClick={() => setSelectedItemId(item.itemId)}
-                    data-selected={selectedItemId === item.itemId}
                   >
                     <div className="inventoryItemTileHeader">
                       <span className="inventoryItemTileName">{item.name}</span>
@@ -230,83 +230,87 @@ export default function InventoryScreen() {
         </main>
 
         <aside className="inventoryInspector inventoryPanelBase">
-          {!selectedItem ? (
-            <div className="inventoryInspectorEmpty">
-              <div className="inventoryInspectorTitle">Select an item</div>
-              <div className="inventoryInspectorCopy">Tap a tile to see details. Manual Satchel tips live there too.</div>
-            </div>
-          ) : (
-            <div className="inventoryInspectorContent">
-              <div className="inventoryInspectorHeader">
-                <div>
-                  <div className="inventoryInspectorName">{selectedItem.name}</div>
-                  <div className="inventoryInspectorMeta">
-                    <span className="inventoryCategoryBadge">{formatPocketLabel(selectedItem.category)}</span>
-                    <span className="inventoryInspectorQty">x{selectedItem.qty}</span>
+          <div className="inventoryInspectorScroll">
+            {!selectedItem ? (
+              <div className="inventoryInspectorEmpty">
+                <div className="inventoryInspectorTitle">Select an item to inspect</div>
+                <div className="inventoryInspectorCopy">Tap a tile to see details. Manual Satchel tips live there too.</div>
+              </div>
+            ) : (
+              <div className="inventoryInspectorContent">
+                <div className="inventoryInspectorHeader">
+                  <div>
+                    <div className="inventoryInspectorName">{selectedItem.name}</div>
+                    <div className="inventoryInspectorMeta">
+                      <span className="inventoryCategoryBadge">{formatPocketLabel(selectedItem.category)}</span>
+                      <span className="inventoryInspectorQty">x{selectedItem.qty}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {selectedItem.description ? <p className="inventoryInspectorDescription">{selectedItem.description}</p> : null}
-              {selectedItem.note ? <p className="inventoryInspectorNote">{selectedItem.note}</p> : null}
-              <div className="inventoryInspectorDetails">
-                <div className="inventoryInspectorDetail">
-                  <span className="inventoryInspectorLabel">Item ID</span>
-                  <span className="inventoryInspectorValue inventoryInspectorValue--mono">{selectedItem.itemId}</span>
+                {selectedItem.description ? (
+                  <p className="inventoryInspectorDescription">{selectedItem.description}</p>
+                ) : null}
+                {selectedItem.note ? <p className="inventoryInspectorNote">{selectedItem.note}</p> : null}
+                <div className="inventoryInspectorDetails">
+                  <div className="inventoryInspectorDetail">
+                    <span className="inventoryInspectorLabel">Item ID</span>
+                    <span className="inventoryInspectorValue inventoryInspectorValue--mono">{selectedItem.itemId}</span>
+                  </div>
+                  {selectedItem.stackSize ? (
+                    <div className="inventoryInspectorDetail">
+                      <span className="inventoryInspectorLabel">Stack Size</span>
+                      <span className="inventoryInspectorValue">{selectedItem.stackSize}</span>
+                    </div>
+                  ) : null}
+                  {selectedItem.usage ? (
+                    <div className="inventoryInspectorDetail">
+                      <span className="inventoryInspectorLabel">Usage</span>
+                      <span className="inventoryInspectorValue">{selectedItem.usage.replace(/_/g, ' ')}</span>
+                    </div>
+                  ) : null}
+                  {typeof selectedItem.sellValue === 'number' ? (
+                    <div className="inventoryInspectorDetail">
+                      <span className="inventoryInspectorLabel">Sell Value</span>
+                      <span className="inventoryInspectorValue">{selectedItem.sellValue}</span>
+                    </div>
+                  ) : null}
                 </div>
-                {selectedItem.stackSize ? (
-                  <div className="inventoryInspectorDetail">
-                    <span className="inventoryInspectorLabel">Stack Size</span>
-                    <span className="inventoryInspectorValue">{selectedItem.stackSize}</span>
-                  </div>
-                ) : null}
-                {selectedItem.usage ? (
-                  <div className="inventoryInspectorDetail">
-                    <span className="inventoryInspectorLabel">Usage</span>
-                    <span className="inventoryInspectorValue">{selectedItem.usage.replace(/_/g, ' ')}</span>
-                  </div>
-                ) : null}
-                {typeof selectedItem.sellValue === 'number' ? (
-                  <div className="inventoryInspectorDetail">
-                    <span className="inventoryInspectorLabel">Sell Value</span>
-                    <span className="inventoryInspectorValue">{selectedItem.sellValue}</span>
-                  </div>
-                ) : null}
+                <div className="inventoryInspectorActions">
+                  {selectedItem.category === 'talisman' && selectedItem.qty > 0 ? (
+                    <button
+                      className="button-standard inventoryPrimaryButton"
+                      type="button"
+                      onClick={() => {
+                        const result = activateTalisman(selectedItem.itemId);
+                        if (!result.ok) {
+                          addNotification('error', result.error);
+                          return;
+                        }
+                        addNotification('success', 'Activated talisman.');
+                      }}
+                    >
+                      Activate Talisman
+                    </button>
+                  ) : (
+                    <div className="inventoryInspectorEmptyAction">No actions available.</div>
+                  )}
+                </div>
               </div>
-              <div className="inventoryInspectorActions">
-                {selectedItem.category === 'talisman' && selectedItem.qty > 0 ? (
-                  <button
-                    className="inventoryPrimaryButton"
-                    type="button"
-                    onClick={() => {
-                      const result = activateTalisman(selectedItem.itemId);
-                      if (!result.ok) {
-                        addNotification('error', result.error);
-                        return;
-                      }
-                      addNotification('success', 'Activated talisman.');
-                    }}
-                  >
-                    Activate Talisman
-                  </button>
-                ) : (
-                  <div className="inventoryInspectorEmptyAction">No actions available.</div>
-                )}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </aside>
       </div>
 
       {equipmentOverlayOpen ? (
         <div className="inventoryEquipmentOverlay" role="dialog" aria-modal="true" aria-label="Equipment overview">
-          <div className="inventoryEquipmentPanel">
+          <div className="inventoryEquipmentPanel inventoryPanelBase">
             <div className="inventoryEquipmentHeader">
               <div>
                 <div className="inventoryEquipmentTitle">Cultivator Equipment</div>
                 <div className="inventoryEquipmentSubtitle">Quick view of your equipped gear.</div>
               </div>
               <button
-                className="inventoryIconButton"
+                className="button-standard inventoryEquipmentClose"
                 type="button"
                 onClick={() => setEquipmentOverlayOpen(false)}
                 aria-label="Close equipment overview"
