@@ -208,28 +208,105 @@
 }
 
 .inventoryRingSubheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 10px 12px;
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(12, 18, 34, 0.14);
   border-radius: 12px;
+}
+
+.inventoryRingSubheaderLeft {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.inventoryRingTitle {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-}
-
-.inventoryRingPocket {
+.inventoryRingPocketTitle {
   font-weight: 700;
 }
 
-.inventoryRingCount {
+.inventoryRingPocketMeta {
   font-size: 12px;
   color: rgba(12, 18, 34, 0.7);
+}
+
+.inventoryRingSubheaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.inventorySearch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  border-radius: 999px;
+}
+
+.inventorySearchIcon {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.inventorySearchInput {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  color: #0c1222;
+  width: 140px;
+}
+
+.inventorySearchInput::placeholder {
+  color: rgba(12, 18, 34, 0.5);
+}
+
+.inventorySearchInput:focus {
+  outline: none;
+}
+
+.inventorySearchClear {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.inventorySort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.inventorySortLabel {
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.inventorySortSelect {
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.inventoryToolsReset {
+  border: none;
+  background: rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .inventoryOverflowWarning {
@@ -569,6 +646,20 @@
   .inventoryScreenHeader {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .inventoryRingSubheader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .inventoryRingSubheaderRight {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .inventorySearchInput {
+    width: 100%;
   }
 
   .inventoryScreenBody {

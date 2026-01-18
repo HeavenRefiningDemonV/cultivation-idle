@@ -17,10 +17,27 @@ type InventorySlot =
 
 const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
 const RARITY_RANK = new Map(RARITY_ORDER.map((rarity, index) => [rarity, index]));
+const RARITY_SORT_RANK: Record<string, number> = {
+  mythic: 6,
+  legendary: 5,
+  epic: 4,
+  rare: 3,
+  uncommon: 2,
+  common: 1,
+};
+const TYPE_SORT_RANK: Record<string, number> = {
+  weapon: 1,
+  accessory: 2,
+  consumable: 3,
+  material: 4,
+  treasure: 5,
+  misc: 99,
+};
 const DEFAULT_MAX_SLOTS = 36;
 const INVENTORY_FILTERS_KEY = 'inventory.v2.filters';
 const BASE_KNOWN_TYPES = ['weapon', 'accessory', 'consumable', 'material', 'treasure'];
 const OPTIONAL_TYPES = ['talisman', 'rune', 'reagent'];
+const SORT_MODES = ['rarity_desc', 'name_asc', 'qty_desc', 'type_then_rarity', 'new_first'] as const;
 const DEFAULT_FILTERS = {
   activePocketId: 'all',
   searchQuery: '',
@@ -46,18 +63,16 @@ const getDefType = (def: ItemDefinition) => {
   return maybeDef.type ?? maybeDef.category ?? 'misc';
 };
 
-const sortStacks = (stacks: DisplayStack[]) => {
-  return [...stacks].sort((a, b) => {
-    const rarityA = RARITY_RANK.get((a.rarity ?? '').toLowerCase()) ?? -1;
-    const rarityB = RARITY_RANK.get((b.rarity ?? '').toLowerCase()) ?? -1;
-    if (rarityA !== rarityB) return rarityB - rarityA;
+const getRaritySortRank = (rarity?: string) => RARITY_SORT_RANK[(rarity ?? '').toLowerCase()] ?? 0;
 
-    const levelA = a.level ?? 0;
-    const levelB = b.level ?? 0;
-    if (levelA !== levelB) return levelB - levelA;
+const getTypeSortRank = (type?: string) => TYPE_SORT_RANK[(type ?? '').toLowerCase()] ?? 98;
 
-    return a.name.localeCompare(b.name);
-  });
+const compareFallback = (a: DisplayStack, b: DisplayStack) => {
+  const nameCompare = a.name.localeCompare(b.name);
+  if (nameCompare !== 0) return nameCompare;
+  const itemCompare = a.itemId.localeCompare(b.itemId);
+  if (itemCompare !== 0) return itemCompare;
+  return a.stackId.localeCompare(b.stackId);
 };
 
 export default function InventoryScreen() {
@@ -186,7 +201,10 @@ export default function InventoryScreen() {
           ? parsed.activePocketId
           : DEFAULT_FILTERS.activePocketId;
       const nextSearchQuery = typeof parsed.searchQuery === 'string' ? parsed.searchQuery : DEFAULT_FILTERS.searchQuery;
-      const nextSortMode = typeof parsed.sortMode === 'string' ? parsed.sortMode : DEFAULT_FILTERS.sortMode;
+      const nextSortMode =
+        typeof parsed.sortMode === 'string' && SORT_MODES.includes(parsed.sortMode as (typeof SORT_MODES)[number])
+          ? parsed.sortMode
+          : DEFAULT_FILTERS.sortMode;
       setActivePocketId(nextPocketId);
       setSearchQuery(nextSearchQuery);
       setSortMode(nextSortMode);
@@ -263,24 +281,81 @@ export default function InventoryScreen() {
   const maxSlots = DEFAULT_MAX_SLOTS;
   const usedSlots = nonCurrencyStacks.length;
   const freeSlots = Math.max(0, maxSlots - usedSlots);
+  const searchQueryTrimmed = useMemo(() => searchQuery.trim().toLowerCase(), [searchQuery]);
+  const isFilterActive = activePocketId !== 'all' || searchQueryTrimmed !== '';
 
   const activePocket = useMemo(
     () => pocketDefinitions.find((pocket) => pocket.id === activePocketId) ?? pocketDefinitions[0],
     [activePocketId, pocketDefinitions],
   );
 
-  const { filteredStacks, visibleSlots, hasOverflow } = useMemo(() => {
-    const isAll = activePocket?.id === 'all';
-    const stacks = isAll
-        ? nonCurrencyStacks
-        : nonCurrencyStacks.filter((stack) => {
-            const def = getItemDef(stack.itemId);
-            if (!def) return false;
-            return activePocket.predicate(def);
-          });
+  const pocketFilteredStacks = useMemo(() => {
+    if (!activePocket) return [];
+    if (activePocket.id === 'all') return nonCurrencyStacks;
+    return nonCurrencyStacks.filter((stack) => {
+      const def = getItemDef(stack.itemId);
+      if (!def) return false;
+      return activePocket.predicate(def);
+    });
+  }, [activePocket, nonCurrencyStacks]);
 
-    const sortedStacks = sortStacks(stacks);
-    if (isAll) {
+  const searchedStacks = useMemo(() => {
+    if (searchQueryTrimmed === '') return pocketFilteredStacks;
+    return pocketFilteredStacks.filter((stack) => {
+      const haystack = [
+        stack.name,
+        stack.itemId,
+        stack.description ?? '',
+        stack.type ?? '',
+        stack.rarity ?? '',
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(searchQueryTrimmed);
+    });
+  }, [pocketFilteredStacks, searchQueryTrimmed]);
+
+  const sortedStacks = useMemo(() => {
+    const stacks = [...searchedStacks];
+    stacks.sort((a, b) => {
+      switch (sortMode) {
+        case 'name_asc': {
+          return compareFallback(a, b);
+        }
+        case 'qty_desc': {
+          const qtyDiff = b.quantity - a.quantity;
+          if (qtyDiff !== 0) return qtyDiff;
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+        case 'type_then_rarity': {
+          const typeDiff = getTypeSortRank(a.type) - getTypeSortRank(b.type);
+          if (typeDiff !== 0) return typeDiff;
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+        case 'new_first': {
+          const newDiff = Number(newStackIds.has(b.stackId)) - Number(newStackIds.has(a.stackId));
+          if (newDiff !== 0) return newDiff;
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+        case 'rarity_desc':
+        default: {
+          const rarityDiff = getRaritySortRank(b.rarity) - getRaritySortRank(a.rarity);
+          if (rarityDiff !== 0) return rarityDiff;
+          return compareFallback(a, b);
+        }
+      }
+    });
+    return stacks;
+  }, [newStackIds, searchedStacks, sortMode]);
+
+  const { filteredStacks, visibleSlots, hasOverflow } = useMemo(() => {
+    if (!isFilterActive) {
       const overflow = sortedStacks.length > maxSlots;
       const cappedStacks = overflow ? sortedStacks.slice(0, maxSlots) : sortedStacks;
       const emptySlots = overflow ? 0 : freeSlots;
@@ -308,7 +383,7 @@ export default function InventoryScreen() {
     }
 
     return { filteredStacks: sortedStacks, visibleSlots: slots, hasOverflow: false };
-  }, [activePocket, freeSlots, maxSlots, nonCurrencyStacks]);
+  }, [freeSlots, isFilterActive, maxSlots, sortedStacks]);
 
   const selectedStack = useMemo(() => {
     if (!selectedStackId) return null;
@@ -326,6 +401,12 @@ export default function InventoryScreen() {
     const visible = visibleSlots.some((slot) => slot.kind === 'item' && slot.stack.stackId === selectedStackId);
     if (!visible) setSelectedStackId(null);
   }, [selectedStackId, visibleSlots]);
+
+  useEffect(() => {
+    if (!selectedStackId) return;
+    const stillMatches = sortedStacks.some((stack) => stack.stackId === selectedStackId);
+    if (!stillMatches) setSelectedStackId(null);
+  }, [activePocketId, searchQueryTrimmed, selectedStackId, sortedStacks]);
 
   const selectedCategoryLabel = activePocket?.label ?? 'All';
 
@@ -448,12 +529,70 @@ export default function InventoryScreen() {
         </nav>
 
         <main className="inventoryRingPanel inventoryPanelBase">
-          <div className="inventoryRingSubheader">
-            <div className="inventoryRingTitle">
-              <span className="inventoryRingPocket">{selectedCategoryLabel}</span>
-              <span className="inventoryRingCount">{filteredStacks.length} items</span>
+          <div className="inventoryRingSubheader inventoryPanelBase">
+            <div className="inventoryRingSubheaderLeft">
+              <div className="inventoryRingPocketTitle">{selectedCategoryLabel}</div>
+              <div className="inventoryRingPocketMeta">
+                Showing {filteredStacks.length} items
+                {searchQueryTrimmed !== '' ? ` • Search: "${searchQueryTrimmed}"` : ''}
+              </div>
+              {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
             </div>
-            {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
+            <div className="inventoryRingSubheaderRight">
+              <div className="inventorySearch">
+                <span className="inventorySearchIcon" aria-hidden="true">
+                  🔍
+                </span>
+                <input
+                  className="inventorySearchInput"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search items..."
+                  aria-label="Search inventory items"
+                />
+                {searchQueryTrimmed !== '' ? (
+                  <button
+                    type="button"
+                    className="inventorySearchClear"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                    title="Clear search"
+                  >
+                    ✕
+                  </button>
+                ) : null}
+              </div>
+              <div className="inventorySort">
+                <span className="inventorySortLabel">Sort</span>
+                <select
+                  className="inventorySortSelect"
+                  value={sortMode}
+                  onChange={(event) => setSortMode(event.target.value)}
+                  aria-label="Sort inventory items"
+                >
+                  <option value="rarity_desc">Rarity (High → Low)</option>
+                  <option value="name_asc">Name (A → Z)</option>
+                  <option value="qty_desc">Quantity (High → Low)</option>
+                  <option value="type_then_rarity">Type → Rarity</option>
+                  <option value="new_first">New (Newest first)</option>
+                </select>
+              </div>
+              {isFilterActive ? (
+                <button
+                  type="button"
+                  className="inventoryToolsReset"
+                  onClick={() => {
+                    setActivePocketId('all');
+                    setSearchQuery('');
+                    setSelectedStackId(null);
+                  }}
+                  aria-label="Reset filters"
+                  title="Reset filters"
+                >
+                  Reset
+                </button>
+              ) : null}
+            </div>
           </div>
           <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
             <div className="inventorySlotGrid" role="grid">
