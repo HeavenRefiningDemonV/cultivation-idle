@@ -14,6 +14,15 @@ import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles';
 
 import "./CombatStyles.scss";
 
+const SEGMENT_COUNT = 14;
+
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  if (value < 0) return 0;
+  if (value > 1) return 1;
+  return value;
+}
+
 interface OutskirtsBuildingPanelProps {
   cityId: string;
 }
@@ -52,6 +61,10 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       useConsumablesInCombat: state.settings.useConsumablesInCombat,
     })),
   );
+  const autoContinue = useOutskirtsStore((state) => state.autoContinue);
+  const stopAtBoss = useOutskirtsStore((state) => state.stopAtBoss);
+  const setAutoContinue = useOutskirtsStore((state) => state.setAutoContinue);
+  const setStopAtBoss = useOutskirtsStore((state) => state.setStopAtBoss);
   const getProgress = useOutskirtsStore((state) => state.getProgress);
 
   const outskirtsRefId = useMemo(() => resolveModuleRef(city ?? null, 'outskirts'), [city]);
@@ -66,6 +79,10 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const enemyHpLabel = currentEnemy
     ? `${formatNumber(enemyHP)} / ${formatNumber(enemyMaxHP)} (${enemyHpPct.toFixed(1)}%)`
     : 'Waiting for next fight…';
+  const killsSinceBoss = outskirtsProgress?.killsSinceBoss ?? 0;
+  const killsToBoss = outskirtsDef?.killsToBoss ?? 1;
+  const progressRatio = clamp01(killsSinceBoss / Math.max(1, killsToBoss));
+  const filledSegments = Math.floor(progressRatio * SEGMENT_COUNT);
 
   const handleStartOutskirts = () => {
     if (!city || !outskirtsDef) return;
@@ -183,6 +200,46 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 />
                 <span className="combat-side-panel__control-label">Auto retry</span>
               </label>
+            </div>
+          </div>
+          <div className="combat-side-panel__section combat-side-panel__section--menu">
+            <div className="combat-side-panel__title">Run Options</div>
+            <div className="combat-side-panel__controls">
+              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
+                <input
+                  type="checkbox"
+                  checked={autoContinue}
+                  onChange={(e) => setAutoContinue(e.target.checked)}
+                />
+                <span className="combat-side-panel__control-label">Auto-continue</span>
+              </label>
+              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
+                <input
+                  type="checkbox"
+                  checked={stopAtBoss}
+                  onChange={(e) => setStopAtBoss(e.target.checked)}
+                />
+                <span className="combat-side-panel__control-label">Stop at boss</span>
+              </label>
+            </div>
+          </div>
+          <div className="combat-side-panel__section combat-side-panel__section--menu">
+            <div className="combat-side-panel__title">Boss Cadence</div>
+            <div className="combat-side-panel__meter">
+              <div className="combat-side-panel__segments">
+                {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
+                  const filled = idx < filledSegments;
+                  return (
+                    <div
+                      key={idx}
+                      className={`combat-side-panel__segment${filled ? ' combat-side-panel__segment--filled' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+              <div className="combat-side-panel__meter-text">
+                {killsSinceBoss} / {killsToBoss}
+              </div>
             </div>
           </div>
         </div>
