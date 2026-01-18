@@ -1,0 +1,300 @@
+.equipmentDrawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 320;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.equipmentDrawerOverlay[data-open='true'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.equipmentDrawerPanel {
+  width: min(420px, 96vw);
+  height: 100%;
+  background: rgba(232, 232, 232, 0.96);
+  box-shadow: -12px 0 24px rgba(0, 0, 0, 0.25);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+}
+
+.equipmentDrawerPanel[data-open='true'] {
+  transform: translateX(0);
+}
+
+.equipmentDrawerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.equipmentDrawerTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: rgba(12, 18, 34, 0.92);
+}
+
+.equipmentDrawerSubtitle {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.65);
+  margin-top: 4px;
+}
+
+.equipmentDrawerClose {
+  border: none;
+  background: rgba(12, 18, 34, 0.08);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.equipmentDrawerStage {
+  position: relative;
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+}
+
+.equipmentDrawerRune {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(125, 211, 252, 0.22), rgba(59, 130, 246, 0.05));
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.2);
+  animation: equipmentRuneShimmer 3s ease-in-out infinite;
+}
+
+.equipmentDrawerSilhouette {
+  position: relative;
+  width: 76px;
+  height: 170px;
+  border-radius: 40px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.35));
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.08);
+}
+
+.equipmentDrawerSlotLeft,
+.equipmentDrawerSlotRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.equipmentDrawerSlotLeft {
+  left: 0;
+}
+
+.equipmentDrawerSlotRight {
+  right: 0;
+}
+
+.equipmentDrawerSlot {
+  width: 150px;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 2px solid rgba(12, 18, 34, 0.16);
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.equipmentDrawerSlot:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.18);
+}
+
+.equipmentDrawerSlotFilled {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.equipmentDrawerSlotSelected {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.18), 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.equipmentDrawerSlotCompatible {
+  border-color: rgba(125, 211, 252, 0.75);
+}
+
+.equipmentDrawerSlotPulse {
+  animation: equipmentSlotPulse 0.6s ease-out;
+}
+
+.equipmentDrawerSlotIcon {
+  font-size: 22px;
+}
+
+.equipmentDrawerSlotLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(12, 18, 34, 0.75);
+}
+
+.equipmentDrawerSlotItem {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.9);
+}
+
+.equipmentDrawerSlotEmpty {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.6);
+}
+
+.equipmentDrawerSlotChip {
+  align-self: flex-start;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.15);
+  color: rgba(12, 18, 34, 0.9);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.equipmentDrawerSlotHint {
+  font-size: 10px;
+  color: rgba(59, 130, 246, 0.9);
+  font-weight: 700;
+}
+
+.equipmentDrawerDetails {
+  flex: 1;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(12, 18, 34, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.equipmentDrawerEmptyTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.equipmentDrawerEmptyText {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.65);
+}
+
+.equipmentDrawerDetailHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.equipmentDrawerDetailSlot {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.equipmentDrawerDetailChip {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.equipmentDrawerDetailName {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.equipmentDrawerDetailDescription {
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.65);
+}
+
+.equipmentDrawerStatList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.equipmentDrawerStatRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(12, 18, 34, 0.08);
+  padding-bottom: 4px;
+}
+
+.equipmentDrawerActions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.equipmentDrawerActionButton {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(12, 18, 34, 0.15);
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.equipmentDrawerActionButton--primary {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+@keyframes equipmentRuneShimmer {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes equipmentSlotPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .equipmentDrawerPanel {
+    width: 100%;
+  }
+
+  .equipmentDrawerStage {
+    min-height: 220px;
+  }
+
+  .equipmentDrawerSlot {
+    width: 130px;
+  }
+}
