@@ -81,15 +81,17 @@
 }
 
 .outskirts-progress__segments {
-  display: grid;
-  grid-template-columns: repeat(20, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: 4px;
-  align-items: end;
-  height: 28px;
+  align-items: flex-end;
+  height: 32px;
 }
 
 .outskirts-progress__segment {
+  width: 6px;
   height: 100%;
+  flex: 0 0 auto;
   background: rgba(148, 163, 184, 0.25);
   border-radius: 2px;
 }

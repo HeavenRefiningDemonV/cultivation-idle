@@ -178,14 +178,15 @@ export function OutskirtsProgress({ outskirtsId: overrideOutskirtsId }: Outskirt
 
   const handleStart = () => {
     if (!outskirtsDef) return;
+    if (inCombat) {
+      exitCombat();
+    }
     const progressSnapshot = getProgress(outskirtsDef.id);
     const nextIsBoss = progressSnapshot.killsSinceBoss >= outskirtsDef.killsToBoss;
     const nextEnemyId = nextIsBoss ? outskirtsDef.bossId : pickEnemyFromPool(outskirtsDef.mobPool);
     if (!nextEnemyId) return;
 
     startActivity('outskirts', { cityId: outskirtsDef.cityId, sourceId: outskirtsDef.id });
-    setAutoAttack(true);
-
     startCombat(nextEnemyId, {
       type: 'outskirts',
       cityId: outskirtsDef.cityId,
@@ -193,6 +194,7 @@ export function OutskirtsProgress({ outskirtsId: overrideOutskirtsId }: Outskirt
       cityIndex: outskirtsDef.cityIndex,
       isBoss: nextIsBoss,
     });
+    setAutoAttack(true);
   };
 
   const handleStop = () => {
