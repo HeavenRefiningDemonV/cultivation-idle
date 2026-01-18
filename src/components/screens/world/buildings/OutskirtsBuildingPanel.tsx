@@ -121,7 +121,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 onClick={handleStopOutskirts}
                 disabled={!isOutskirtsActive}
               >
-                Close
+                Stop
               </button>
             </div>
           </div>
@@ -135,7 +135,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               <div className="combat-hp-bar">
                 <img className="combat-hp-bar__shape" src={barShort} alt="" aria-hidden="true" />
                 <div className="combat-hp-bar__track">
-                  <div className="combat-hp-bar__fill" style={{ width: `${playerHpPct}%` }} />
+                  <div className="combat-hp-bar__fill" style={{ width: `${currentEnemy ? playerHpPct : 100}%` }} />
                 </div>
               </div>
             </div>
