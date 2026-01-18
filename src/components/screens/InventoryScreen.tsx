@@ -87,7 +87,14 @@ export default function InventoryScreen() {
   const [sortMode, setSortMode] = useState(DEFAULT_FILTERS.sortMode);
   const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
   const [equipmentDrawerOpen, setEquipmentDrawerOpen] = useState(false);
+  const [fullPulse, setFullPulse] = useState(false);
+  const [selectionLostPulse, setSelectionLostPulse] = useState(false);
+  const [selectionLostMessage, setSelectionLostMessage] = useState(false);
   const prevStackIdsRef = useRef<Set<string>>(new Set());
+  const fullPulseTimeoutRef = useRef<number | null>(null);
+  const wasFullRef = useRef(false);
+  const selectionLostTimeoutRef = useRef<number | null>(null);
+  const selectionLostMessageTimeoutRef = useRef<number | null>(null);
   const [newStackIds, setNewStackIds] = useState<Set<string>>(new Set());
   const warnedMissingDefs = useRef(new Set<string>());
   const filtersLoadedRef = useRef(false);
@@ -277,10 +284,13 @@ export default function InventoryScreen() {
   }, [nonCurrencyStacks, pocketDefinitions]);
 
   const maxSlots = DEFAULT_MAX_SLOTS;
-  const usedSlots = nonCurrencyStacks.length;
+  const usedSlots = Object.keys(items).length;
   const freeSlots = Math.max(0, maxSlots - usedSlots);
   const searchQueryTrimmed = useMemo(() => searchQuery.trim().toLowerCase(), [searchQuery]);
   const isFilterActive = activePocketId !== 'all' || searchQueryTrimmed !== '';
+  const capacityPct = Math.min(100, Math.max(0, (usedSlots / maxSlots) * 100));
+  const isFull = usedSlots >= maxSlots;
+  const isNearFull = !isFull && usedSlots / maxSlots >= 0.85;
 
   const activePocket = useMemo(
     () => pocketDefinitions.find((pocket) => pocket.id === activePocketId) ?? pocketDefinitions[0],
@@ -391,7 +401,23 @@ export default function InventoryScreen() {
   useEffect(() => {
     if (!selectedStackId) return;
     const stillExists = displayStacks.some((stack) => stack.stackId === selectedStackId);
-    if (!stillExists) setSelectedStackId(null);
+    if (!stillExists) {
+      setSelectedStackId(null);
+      setSelectionLostPulse(true);
+      setSelectionLostMessage(true);
+      if (selectionLostTimeoutRef.current) {
+        window.clearTimeout(selectionLostTimeoutRef.current);
+      }
+      if (selectionLostMessageTimeoutRef.current) {
+        window.clearTimeout(selectionLostMessageTimeoutRef.current);
+      }
+      selectionLostTimeoutRef.current = window.setTimeout(() => {
+        setSelectionLostPulse(false);
+      }, 350);
+      selectionLostMessageTimeoutRef.current = window.setTimeout(() => {
+        setSelectionLostMessage(false);
+      }, 1500);
+    }
   }, [displayStacks, selectedStackId]);
 
   useEffect(() => {
@@ -405,6 +431,33 @@ export default function InventoryScreen() {
     const stillMatches = sortedStacks.some((stack) => stack.stackId === selectedStackId);
     if (!stillMatches) setSelectedStackId(null);
   }, [activePocketId, searchQueryTrimmed, selectedStackId, sortedStacks]);
+
+  useEffect(() => {
+    if (isFull && !wasFullRef.current) {
+      setFullPulse(true);
+      if (fullPulseTimeoutRef.current) {
+        window.clearTimeout(fullPulseTimeoutRef.current);
+      }
+      fullPulseTimeoutRef.current = window.setTimeout(() => {
+        setFullPulse(false);
+      }, 650);
+    }
+    wasFullRef.current = isFull;
+  }, [isFull, usedSlots]);
+
+  useEffect(() => {
+    return () => {
+      if (fullPulseTimeoutRef.current) {
+        window.clearTimeout(fullPulseTimeoutRef.current);
+      }
+      if (selectionLostTimeoutRef.current) {
+        window.clearTimeout(selectionLostTimeoutRef.current);
+      }
+      if (selectionLostMessageTimeoutRef.current) {
+        window.clearTimeout(selectionLostMessageTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const selectedCategoryLabel = activePocket?.label ?? 'All';
 
@@ -447,7 +500,11 @@ export default function InventoryScreen() {
   }, [displayStacks, selectedStackId]);
 
   return (
-    <div className="inventoryScreenRoot">
+    <div
+      className={`inventoryScreenRoot${isFull ? ' is-full' : ''}${isNearFull ? ' is-nearfull' : ''}${
+        isFilterActive ? ' is-filtered' : ''
+      }${fullPulse ? ' is-fullPulse' : ''}`}
+    >
       <div className="inventoryScreenHeader inventoryPanelBase">
         <div className="inventoryHeaderLeft">
           <div className="inventoryHeaderTitle">Spatial Ring Inventory</div>
@@ -469,6 +526,17 @@ export default function InventoryScreen() {
             <span className="inventoryCurrencyLabel">Merit</span>
             <span className="inventoryCurrencyValue">{currencies.merit}</span>
           </div>
+        </div>
+        <div className="inventoryHeaderCapacity" aria-label="Inventory capacity">
+          <span className="inventoryHeaderCapacityIcon" aria-hidden="true">
+            ⭕
+          </span>
+          <span className="inventoryHeaderCapacityText">
+            {usedSlots}/{maxSlots}
+          </span>
+          <span className="inventoryHeaderCapacityBar" aria-hidden="true">
+            <span className="inventoryHeaderCapacityFill" style={{ width: `${capacityPct}%` }} />
+          </span>
         </div>
         <div className="inventoryHeaderActions">
           <button
@@ -542,6 +610,7 @@ export default function InventoryScreen() {
                 Showing {filteredStacks.length} items
                 {searchQueryTrimmed !== '' ? ` • Search: "${searchQueryTrimmed}"` : ''}
               </div>
+              {isFilterActive ? <span className="inventoryFilterChip">Filter Active</span> : null}
               {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
             </div>
             <div className="inventoryRingSubheaderRight">
@@ -627,12 +696,13 @@ export default function InventoryScreen() {
           </div>
         </main>
 
-        <aside className="inventoryInspector inventoryPanelBase">
+        <aside className={`inventoryInspector inventoryPanelBase${selectionLostPulse ? ' is-pulse' : ''}`}>
           <div className="inventoryInspectorScroll">
             {!selectedStack ? (
               <div className="inventoryInspectorEmpty">
                 <div className="inventoryInspectorTitle">Select an item to inspect</div>
                 <div className="inventoryInspectorCopy">Tap a slot to see details. Manual Satchel tips live there too.</div>
+                {selectionLostMessage ? <div className="inventoryInspectorPulseNote">Item equipped.</div> : null}
               </div>
             ) : (
               <div className="inventoryInspectorContent">

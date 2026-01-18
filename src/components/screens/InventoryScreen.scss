@@ -85,6 +85,63 @@
   gap: 10px;
 }
 
+.inventoryHeaderCapacity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: var(--inv-paper-inset);
+  border: 1px solid rgba(12, 18, 34, 0.14);
+  font-size: 12px;
+}
+
+.inventoryHeaderCapacityIcon {
+  opacity: 0.7;
+}
+
+.inventoryHeaderCapacityText {
+  font-weight: 800;
+  color: var(--inv-ink);
+}
+
+.inventoryHeaderCapacityBar {
+  width: 80px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(12, 18, 34, 0.14);
+  overflow: hidden;
+}
+
+.inventoryHeaderCapacityFill {
+  height: 100%;
+  background: rgba(125, 211, 252, 0.75);
+  border-radius: inherit;
+  transition: width 0.2s ease;
+}
+
+.inventoryScreenRoot.is-nearfull .inventoryHeaderCapacityText {
+  color: rgba(245, 158, 11, 0.95);
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.18);
+}
+
+.inventoryScreenRoot.is-full .inventoryHeaderCapacityText {
+  color: rgba(239, 68, 68, 0.95);
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.22);
+}
+
+.inventoryScreenRoot.is-nearfull .inventoryHeaderCapacityFill {
+  background: rgba(245, 158, 11, 0.85);
+}
+
+.inventoryScreenRoot.is-full .inventoryHeaderCapacityFill {
+  background: rgba(239, 68, 68, 0.85);
+}
+
+.inventoryScreenRoot.is-fullPulse .inventoryHeaderCapacity {
+  animation: invFullPulse 650ms ease-out;
+}
+
 .inventoryHeaderIconButton {
   width: 40px;
   height: 40px;
@@ -293,6 +350,31 @@
   }
 }
 
+@keyframes invFullPulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes invInspectorPulse {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.28);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 @keyframes invVoidDrift {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -339,7 +421,9 @@
   .inventorySlotRarityEpic::before,
   .inventorySlotRarityLegendary::before,
   .inventorySlotRarityMythic::before,
-  .inventorySlotTileNewDot {
+  .inventorySlotTileNewDot,
+  .inventoryScreenRoot.is-fullPulse .inventoryHeaderCapacity,
+  .inventoryInspector.is-pulse {
     animation: none !important;
   }
 }
@@ -378,6 +462,19 @@
 .inventoryRingPocketMeta {
   font-size: 12px;
   color: rgba(12, 18, 34, 0.7);
+}
+
+.inventoryFilterChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: rgba(125, 211, 252, 0.14);
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(12, 18, 34, 0.88);
+  margin-top: 6px;
 }
 
 .inventoryRingSubheaderRight {
@@ -750,6 +847,10 @@
   overflow: hidden;
 }
 
+.inventoryInspector.is-pulse {
+  animation: invInspectorPulse 350ms ease-out;
+}
+
 .inventoryInspectorScroll {
   flex: 1;
   min-height: 0;
@@ -764,6 +865,13 @@
   text-align: center;
   padding: 24px 12px;
   color: rgba(12, 18, 34, 0.7);
+}
+
+.inventoryInspectorPulseNote {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(12, 18, 34, 0.8);
 }
 
 .inventoryInspectorTitle {
