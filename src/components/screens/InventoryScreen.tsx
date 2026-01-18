@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Backpack, Coins, Gem, Medal, User, X } from 'lucide-react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef } from '../../stores/contentStore';
@@ -8,17 +8,25 @@ import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useEquipmentStore } from '../../stores/equipmentStore';
 import './InventoryScreen.scss';
 
-type DisplayItem = {
+type DisplayStack = {
+  stackId: string;
   itemId: string;
-  qty: number;
+  quantity: number;
   name: string;
-  category: string;
-  stackSize?: number;
   description?: string;
+  type: string;
+  rarity?: string;
+  level?: number;
+  maxStack?: number;
+  stackable?: boolean;
+  value?: string | number;
   note?: string;
   usage?: string;
-  sellValue?: number;
 };
+
+type InventorySlot =
+  | { kind: 'item'; stack: DisplayStack; slotIndex: number }
+  | { kind: 'empty'; slotIndex: number };
 
 const POCKET_ORDER = ['consumable', 'talisman', 'rune', 'reagent', 'material', 'crate', 'token', 'gateItem', 'misc'];
 
@@ -35,12 +43,43 @@ const POCKET_LABELS: Record<string, string> = {
   misc: 'Misc',
 };
 
+const POCKET_TYPE_MAP: Record<string, string[]> = {
+  all: [],
+  consumable: ['consumable'],
+  talisman: ['talisman'],
+  rune: ['rune'],
+  reagent: ['reagent'],
+  material: ['material'],
+  crate: ['crate'],
+  token: ['token'],
+  gateItem: ['gateItem'],
+  misc: ['misc'],
+};
+
+const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+const RARITY_RANK = new Map(RARITY_ORDER.map((rarity, index) => [rarity, index]));
+const DEFAULT_MAX_SLOTS = 36;
+
 const formatPocketLabel = (category: string) => {
   if (POCKET_LABELS[category]) return POCKET_LABELS[category];
   return category
     .replace(/([A-Z])/g, ' $1')
     .replace(/[_-]/g, ' ')
     .replace(/^./, (char) => char.toUpperCase());
+};
+
+const sortStacks = (stacks: DisplayStack[]) => {
+  return [...stacks].sort((a, b) => {
+    const rarityA = RARITY_RANK.get((a.rarity ?? '').toLowerCase()) ?? -1;
+    const rarityB = RARITY_RANK.get((b.rarity ?? '').toLowerCase()) ?? -1;
+    if (rarityA !== rarityB) return rarityB - rarityA;
+
+    const levelA = a.level ?? 0;
+    const levelB = b.level ?? 0;
+    if (levelA !== levelB) return levelB - levelA;
+
+    return a.name.localeCompare(b.name);
+  });
 };
 
 export default function InventoryScreen() {
@@ -53,63 +92,128 @@ export default function InventoryScreen() {
   const equippedWeaponId = useEquipmentStore((state) => state.equippedWeaponId);
   const equippedAccessoryId = useEquipmentStore((state) => state.equippedAccessoryId);
   const [activePocket, setActivePocket] = useState('all');
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
   const [equipmentOverlayOpen, setEquipmentOverlayOpen] = useState(false);
+  const warnedMissingDefs = useRef(new Set<string>());
 
-  const displayItems = useMemo<DisplayItem[]>(() => {
-    return Object.entries(items)
-      .map(([itemId, qty]) => {
+  const { displayStacks, missingItemIds } = useMemo(() => {
+    const missing: string[] = [];
+    const stacks = Object.entries(items)
+      .map(([itemId, quantity]) => {
         const def = getItemDef(itemId);
-        const category = (def?.category ?? 'misc').toString();
+        if (!def) {
+          missing.push(itemId);
+          return null;
+        }
+        const extra = def as { rarity?: string; level?: number; type?: string; maxStack?: number; value?: string | number };
         return {
+          stackId: itemId,
           itemId,
-          qty,
-          name: def?.name ?? itemId,
-          category,
-          stackSize: def?.stackSize,
-          description: def?.description,
-          note: def?.note,
-          usage: def?.usage,
-          sellValue: def?.sellValue,
-        };
+          quantity,
+          name: def.name ?? itemId,
+          description: def.description,
+          type: extra.type ?? def.category,
+          rarity: extra.rarity,
+          level: extra.level,
+          maxStack: extra.maxStack ?? def.stackSize,
+          stackable: extra.type ? extra.type !== 'currency' : def.stackSize !== 0,
+          value: extra.value ?? def.sellValue,
+          note: def.note,
+          usage: def.usage,
+        } satisfies DisplayStack;
       })
-      .sort((a, b) => {
-        if (a.category !== b.category) return a.category.localeCompare(b.category);
-        return a.name.localeCompare(b.name);
-      });
+      .filter((stack): stack is DisplayStack => Boolean(stack));
+
+    return { displayStacks: stacks, missingItemIds: missing };
   }, [items]);
 
-  const nonCurrencyItems = useMemo(() => displayItems.filter((item) => item.category !== 'currency'), [displayItems]);
+  useEffect(() => {
+    if (missingItemIds.length === 0) return;
+    missingItemIds.forEach((itemId) => {
+      if (warnedMissingDefs.current.has(itemId)) return;
+      warnedMissingDefs.current.add(itemId);
+      console.warn(`[Inventory] Missing item definition for ${itemId}`);
+    });
+  }, [missingItemIds]);
+
+  const nonCurrencyStacks = useMemo(
+    () => displayStacks.filter((stack) => stack.type !== 'currency' && stack.itemId !== 'currency'),
+    [displayStacks],
+  );
 
   const countsByCategory = useMemo(() => {
-    const counts: Record<string, number> = { all: nonCurrencyItems.length };
-    nonCurrencyItems.forEach((item) => {
-      counts[item.category] = (counts[item.category] ?? 0) + 1;
+    const counts: Record<string, number> = { all: nonCurrencyStacks.length };
+    nonCurrencyStacks.forEach((stack) => {
+      const category = stack.type ?? 'misc';
+      counts[category] = (counts[category] ?? 0) + 1;
     });
     return counts;
-  }, [nonCurrencyItems]);
+  }, [nonCurrencyStacks]);
 
   const pockets = useMemo(() => {
-    const categories = new Set(nonCurrencyItems.map((item) => item.category));
+    const categories = new Set(nonCurrencyStacks.map((stack) => stack.type ?? 'misc'));
     const extras = [...categories].filter((category) => !POCKET_ORDER.includes(category)).sort();
     return ['all', ...POCKET_ORDER, ...extras];
-  }, [nonCurrencyItems]);
+  }, [nonCurrencyStacks]);
 
-  const filteredItems = useMemo(() => {
-    if (activePocket === 'all') return nonCurrencyItems;
-    return nonCurrencyItems.filter((item) => item.category === activePocket);
-  }, [activePocket, nonCurrencyItems]);
+  const maxSlots = DEFAULT_MAX_SLOTS;
+  const usedSlots = nonCurrencyStacks.length;
+  const freeSlots = Math.max(0, maxSlots - usedSlots);
 
-  const selectedItem = useMemo(() => {
-    if (!selectedItemId) return null;
-    return displayItems.find((item) => item.itemId === selectedItemId) ?? null;
-  }, [displayItems, selectedItemId]);
+  const { filteredStacks, visibleSlots, hasOverflow } = useMemo(() => {
+    const isAll = activePocket === 'all';
+    const typeFilter = POCKET_TYPE_MAP[activePocket] ?? [activePocket];
+    const stacks = isAll
+      ? nonCurrencyStacks
+      : nonCurrencyStacks.filter((stack) => typeFilter.includes(stack.type ?? 'misc'));
+
+    const sortedStacks = sortStacks(stacks);
+    if (isAll) {
+      const overflow = sortedStacks.length > maxSlots;
+      const cappedStacks = overflow ? sortedStacks.slice(0, maxSlots) : sortedStacks;
+      const emptySlots = overflow ? 0 : freeSlots;
+      const slots: InventorySlot[] = cappedStacks.map((stack, index) => ({
+        kind: 'item',
+        stack,
+        slotIndex: index,
+      }));
+
+      for (let i = 0; i < emptySlots; i += 1) {
+        slots.push({ kind: 'empty', slotIndex: slots.length });
+      }
+
+      return { filteredStacks: sortedStacks, visibleSlots: slots, hasOverflow: overflow };
+    }
+
+    const slots: InventorySlot[] = sortedStacks.map((stack, index) => ({
+      kind: 'item',
+      stack,
+      slotIndex: index,
+    }));
+
+    for (let i = 0; i < freeSlots; i += 1) {
+      slots.push({ kind: 'empty', slotIndex: slots.length });
+    }
+
+    return { filteredStacks: sortedStacks, visibleSlots: slots, hasOverflow: false };
+  }, [activePocket, freeSlots, maxSlots, nonCurrencyStacks]);
+
+  const selectedStack = useMemo(() => {
+    if (!selectedStackId) return null;
+    return displayStacks.find((stack) => stack.stackId === selectedStackId) ?? null;
+  }, [displayStacks, selectedStackId]);
 
   useEffect(() => {
-    if (selectedItemId && !filteredItems.some((item) => item.itemId === selectedItemId)) {
-      setSelectedItemId(null);
-    }
-  }, [filteredItems, selectedItemId]);
+    if (!selectedStackId) return;
+    const stillExists = displayStacks.some((stack) => stack.stackId === selectedStackId);
+    if (!stillExists) setSelectedStackId(null);
+  }, [displayStacks, selectedStackId]);
+
+  useEffect(() => {
+    if (!selectedStackId) return;
+    const visible = visibleSlots.some((slot) => slot.kind === 'item' && slot.stack.stackId === selectedStackId);
+    if (!visible) setSelectedStackId(null);
+  }, [selectedStackId, visibleSlots]);
 
   useEffect(() => {
     if (!pockets.includes(activePocket)) {
@@ -198,90 +302,94 @@ export default function InventoryScreen() {
           <div className="inventoryRingSubheader">
             <div className="inventoryRingTitle">
               <span className="inventoryRingPocket">{selectedCategoryLabel}</span>
-              <span className="inventoryRingCount">{filteredItems.length} items</span>
+              <span className="inventoryRingCount">{filteredStacks.length} items</span>
             </div>
+            {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
           </div>
-          <div className="inventoryRingScroll" role="region" aria-label="Inventory items">
-            {filteredItems.length === 0 ? (
-              <div className="inventoryGridEmpty">No items in this pocket.</div>
-            ) : (
-              <div className="inventoryItemGrid">
-                {filteredItems.map((item) => (
+          <div className="inventoryRingScroll" role="region" aria-label="Void Ring inventory slots">
+            <div className="inventorySlotGrid" role="grid">
+              {visibleSlots.map((slot) =>
+                slot.kind === 'item' ? (
                   <button
-                    key={item.itemId}
-                    className={`inventoryItemTile${selectedItemId === item.itemId ? ' inventoryItemTile--selected' : ''}`}
+                    key={slot.slotIndex}
+                    className={`inventorySlotTile${
+                      selectedStackId === slot.stack.stackId ? ' inventorySlotTile--selected' : ''
+                    }`}
                     type="button"
-                    onClick={() => setSelectedItemId(item.itemId)}
+                    onClick={() => setSelectedStackId(slot.stack.stackId)}
+                    role="gridcell"
                   >
-                    <div className="inventoryItemTileHeader">
-                      <span className="inventoryItemTileName">{item.name}</span>
-                      <span className="inventoryItemTileQty">x{item.qty}</span>
+                    <div className="inventorySlotTileHeader">
+                      <span className="inventorySlotTileName">{slot.stack.name}</span>
+                      <span className="inventorySlotTileQty">x{slot.stack.quantity}</span>
                     </div>
-                    <div className="inventoryItemTileMeta">
-                      <span className="inventoryItemTileCategory">{formatPocketLabel(item.category)}</span>
-                      {item.stackSize ? <span className="inventoryItemTileStack">Stack {item.stackSize}</span> : null}
-                    </div>
-                    <div className="inventoryItemTileId">{item.itemId}</div>
+                    <div className="inventorySlotTileMeta">{formatPocketLabel(slot.stack.type)}</div>
                   </button>
-                ))}
-              </div>
-            )}
+                ) : (
+                  <div
+                    key={slot.slotIndex}
+                    className="inventorySlotTile inventorySlotTileEmpty"
+                    aria-hidden="true"
+                  />
+                ),
+              )}
+            </div>
           </div>
         </main>
 
         <aside className="inventoryInspector inventoryPanelBase">
           <div className="inventoryInspectorScroll">
-            {!selectedItem ? (
+            {!selectedStack ? (
               <div className="inventoryInspectorEmpty">
                 <div className="inventoryInspectorTitle">Select an item to inspect</div>
-                <div className="inventoryInspectorCopy">Tap a tile to see details. Manual Satchel tips live there too.</div>
+                <div className="inventoryInspectorCopy">Tap a slot to see details. Manual Satchel tips live there too.</div>
               </div>
             ) : (
               <div className="inventoryInspectorContent">
                 <div className="inventoryInspectorHeader">
                   <div>
-                    <div className="inventoryInspectorName">{selectedItem.name}</div>
+                    <div className="inventoryInspectorName">{selectedStack.name}</div>
                     <div className="inventoryInspectorMeta">
-                      <span className="inventoryCategoryBadge">{formatPocketLabel(selectedItem.category)}</span>
-                      <span className="inventoryInspectorQty">x{selectedItem.qty}</span>
+                      <span className="inventoryCategoryBadge">{formatPocketLabel(selectedStack.type)}</span>
+                      <span className="inventoryInspectorQty">x{selectedStack.quantity}</span>
                     </div>
                   </div>
                 </div>
-                {selectedItem.description ? (
-                  <p className="inventoryInspectorDescription">{selectedItem.description}</p>
+                {selectedStack.description ? (
+                  <p className="inventoryInspectorDescription">{selectedStack.description}</p>
                 ) : null}
-                {selectedItem.note ? <p className="inventoryInspectorNote">{selectedItem.note}</p> : null}
+                {selectedStack.note ? <p className="inventoryInspectorNote">{selectedStack.note}</p> : null}
                 <div className="inventoryInspectorDetails">
                   <div className="inventoryInspectorDetail">
                     <span className="inventoryInspectorLabel">Item ID</span>
-                    <span className="inventoryInspectorValue inventoryInspectorValue--mono">{selectedItem.itemId}</span>
+                    <span className="inventoryInspectorValue inventoryInspectorValue--mono">{selectedStack.itemId}</span>
                   </div>
-                  {selectedItem.stackSize ? (
+                  {selectedStack.maxStack ? (
                     <div className="inventoryInspectorDetail">
                       <span className="inventoryInspectorLabel">Stack Size</span>
-                      <span className="inventoryInspectorValue">{selectedItem.stackSize}</span>
+                      <span className="inventoryInspectorValue">{selectedStack.maxStack}</span>
                     </div>
                   ) : null}
-                  {selectedItem.usage ? (
+                  {selectedStack.usage ? (
                     <div className="inventoryInspectorDetail">
                       <span className="inventoryInspectorLabel">Usage</span>
-                      <span className="inventoryInspectorValue">{selectedItem.usage.replace(/_/g, ' ')}</span>
+                      <span className="inventoryInspectorValue">{selectedStack.usage.replace(/_/g, ' ')}</span>
                     </div>
                   ) : null}
-                  {typeof selectedItem.sellValue === 'number' ? (
+                  {selectedStack.value !== undefined ? (
                     <div className="inventoryInspectorDetail">
                       <span className="inventoryInspectorLabel">Sell Value</span>
-                      <span className="inventoryInspectorValue">{selectedItem.sellValue}</span>
+                      <span className="inventoryInspectorValue">{selectedStack.value}</span>
                     </div>
                   ) : null}
                 </div>
                 <div className="inventoryInspectorActions">
-                  {selectedItem.category === 'talisman' && selectedItem.qty > 0 ? (
+                  {selectedStack.type === 'talisman' && selectedStack.quantity > 0 ? (
                     <button
                       className="button-standard inventoryPrimaryButton"
                       type="button"
                       onClick={() => {
-                        const result = activateTalisman(selectedItem.itemId);
+                        const result = activateTalisman(selectedStack.itemId);
                         if (!result.ok) {
                           addNotification('error', result.error);
                           return;
