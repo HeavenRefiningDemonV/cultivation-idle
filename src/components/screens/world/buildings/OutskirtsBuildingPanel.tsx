@@ -61,6 +61,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       useConsumablesInCombat: state.settings.useConsumablesInCombat,
     })),
   );
+  const combatLog = useCombatStore((state) => state.combatLog);
   const autoContinue = useOutskirtsStore((state) => state.autoContinue);
   const stopAtBoss = useOutskirtsStore((state) => state.stopAtBoss);
   const setAutoContinue = useOutskirtsStore((state) => state.setAutoContinue);
@@ -79,6 +80,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const enemyHpLabel = currentEnemy
     ? `${formatNumber(enemyHP)} / ${formatNumber(enemyMaxHP)} (${enemyHpPct.toFixed(1)}%)`
     : 'Waiting for next fight…';
+  const visibleLogEntries = combatLog.slice(-6);
   const killsSinceBoss = outskirtsProgress?.killsSinceBoss ?? 0;
   const killsToBoss = outskirtsDef?.killsToBoss ?? 1;
   const progressRatio = clamp01(killsSinceBoss / Math.max(1, killsToBoss));
@@ -244,7 +246,21 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
           </div>
           <div className="combat-side-panel__section combat-side-panel__section--menu fone">
              <div className="combat-side-panel__title">Combat Log</div>
-             <div className="combat-log"></div>
+             <div className="combat-log">
+               {visibleLogEntries.length === 0 ? (
+                 <div className="combat-log__empty">Combat log is empty</div>
+               ) : (
+                 visibleLogEntries.map((entry, index) => (
+                   <div
+                     key={`${entry.timestamp}-${index}`}
+                     className="combat-log__entry"
+                     style={{ color: entry.color }}
+                   >
+                     {entry.text}
+                   </div>
+                 ))
+               )}
+             </div>
           </div>
         </div>
         <div className="combat-main">

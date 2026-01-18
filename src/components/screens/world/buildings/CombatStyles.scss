@@ -104,6 +104,20 @@
                 height: 100%;
                 width: 100%;
                 padding: .3125rem;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                overflow-y: auto;
+                font-size: 12px;
+                color: #111111;
+            }
+
+            .combat-log__entry {
+                line-height: 1.4;
+            }
+
+            .combat-log__empty {
+                color: rgba(0, 0, 0, 0.6);
             }
         }
     }
