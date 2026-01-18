@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Backpack, Coins, Gem, Medal, User, X } from 'lucide-react';
+import { Backpack, Coins, Gem, Medal } from 'lucide-react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef } from '../../stores/contentStore';
 import { useBuffStore } from '../../stores/buffStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import { useEquipmentStore } from '../../stores/equipmentStore';
+import EquipmentDrawer from '../inventory/EquipmentDrawer';
 import InventorySlotTile from '../inventory/InventorySlotTile';
 import type { DisplayStack } from '../inventory/inventoryTypes';
 import type { ItemDefinition } from '../../types';
@@ -82,13 +82,11 @@ export default function InventoryScreen() {
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
   const addNotification = useUIStore((state) => state.addNotification);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
-  const equippedWeaponId = useEquipmentStore((state) => state.equippedWeaponId);
-  const equippedAccessoryId = useEquipmentStore((state) => state.equippedAccessoryId);
   const [activePocketId, setActivePocketId] = useState(DEFAULT_FILTERS.activePocketId);
   const [searchQuery, setSearchQuery] = useState(DEFAULT_FILTERS.searchQuery);
   const [sortMode, setSortMode] = useState(DEFAULT_FILTERS.sortMode);
   const [selectedStackId, setSelectedStackId] = useState<string | null>(null);
-  const [equipmentOverlayOpen, setEquipmentOverlayOpen] = useState(false);
+  const [equipmentDrawerOpen, setEquipmentDrawerOpen] = useState(false);
   const prevStackIdsRef = useRef<Set<string>>(new Set());
   const [newStackIds, setNewStackIds] = useState<Set<string>>(new Set());
   const warnedMissingDefs = useRef(new Set<string>());
@@ -429,8 +427,7 @@ export default function InventoryScreen() {
     return indicators;
   }, [newStackIds, nonCurrencyStacks, pocketDefinitions]);
 
-  const weaponName = equippedWeaponId ? getItemDef(equippedWeaponId)?.name ?? equippedWeaponId : 'None';
-  const accessoryName = equippedAccessoryId ? getItemDef(equippedAccessoryId)?.name ?? equippedAccessoryId : 'None';
+  const clearSelection = () => setSelectedStackId(null);
 
   const handleSelectStack = (stackId: string) => {
     setSelectedStackId(stackId);
@@ -441,6 +438,13 @@ export default function InventoryScreen() {
       return next;
     });
   };
+
+  const selectedItemInfo = useMemo(() => {
+    if (!selectedStackId) return { id: null, type: null, name: null };
+    const stack = displayStacks.find((entry) => entry.stackId === selectedStackId);
+    if (!stack) return { id: null, type: null, name: null };
+    return { id: stack.itemId, type: stack.type ?? null, name: stack.name };
+  }, [displayStacks, selectedStackId]);
 
   return (
     <div className="inventoryScreenRoot">
@@ -477,13 +481,14 @@ export default function InventoryScreen() {
             <span className="inventoryHeaderBadge">{satchelCount}</span>
           </button>
           <button
-            className="button-standard inventoryHeaderIconButton"
+            className="button-standard inventoryHeaderIconButton inventoryHeaderEquipmentButton"
             type="button"
-            onClick={() => setEquipmentOverlayOpen((prev) => !prev)}
-            aria-label="Toggle equipment overview"
-            data-active={equipmentOverlayOpen}
+            onClick={() => setEquipmentDrawerOpen(true)}
+            aria-label="Open equipment drawer"
+            title="Equipment"
           >
-            <User size={18} aria-hidden="true" />
+            <span aria-hidden="true">☯</span>
+            <span className="inventoryHeaderEquipmentLabel">Equipment</span>
           </button>
         </div>
       </div>
@@ -689,36 +694,14 @@ export default function InventoryScreen() {
         </aside>
       </div>
 
-      {equipmentOverlayOpen ? (
-        <div className="inventoryEquipmentOverlay" role="dialog" aria-modal="true" aria-label="Equipment overview">
-          <div className="inventoryEquipmentPanel inventoryPanelBase">
-            <div className="inventoryEquipmentHeader">
-              <div>
-                <div className="inventoryEquipmentTitle">Cultivator Equipment</div>
-                <div className="inventoryEquipmentSubtitle">Quick view of your equipped gear.</div>
-              </div>
-              <button
-                className="button-standard inventoryEquipmentClose"
-                type="button"
-                onClick={() => setEquipmentOverlayOpen(false)}
-                aria-label="Close equipment overview"
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
-            </div>
-            <div className="inventoryEquipmentGrid">
-              <div className="inventoryEquipmentRow">
-                <span className="inventoryEquipmentLabel">Weapon</span>
-                <span className="inventoryEquipmentValue">{weaponName}</span>
-              </div>
-              <div className="inventoryEquipmentRow">
-                <span className="inventoryEquipmentLabel">Accessory</span>
-                <span className="inventoryEquipmentValue">{accessoryName}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <EquipmentDrawer
+        open={equipmentDrawerOpen}
+        onClose={() => setEquipmentDrawerOpen(false)}
+        selectedItemId={selectedItemInfo.id}
+        selectedItemType={selectedItemInfo.type}
+        selectedItemName={selectedItemInfo.name}
+        onRequestClearSelection={clearSelection}
+      />
     </div>
   );
 }
