@@ -120,11 +120,24 @@
   overflow: auto;
 }
 
-.inventoryPocketTitle {
+.inventoryPocketRailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.inventoryPocketRailTitle {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(12, 18, 34, 0.7);
+}
+
+.inventoryPocketRailMeta {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(12, 18, 34, 0.65);
 }
 
 .inventoryPocketList {
@@ -138,7 +151,8 @@
   text-align: left;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  position: relative;
   padding: 10px 10px;
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid rgba(12, 18, 34, 0.14);
@@ -146,6 +160,15 @@
   border-radius: 12px;
   cursor: pointer;
   font-size: 13px;
+}
+
+.inventoryPocketIcon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.inventoryPocketLabel {
+  flex: 1;
 }
 
 .inventoryPocketButton--active {
@@ -160,8 +183,20 @@
 }
 
 .inventoryPocketCount {
+  margin-left: auto;
   font-size: 12px;
   font-family: 'JetBrains Mono', monospace;
+}
+
+.inventoryPocketNewDot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.95);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.45);
 }
 
 .inventoryRingPanel {
@@ -545,7 +580,11 @@
     align-items: center;
   }
 
-  .inventoryPocketTitle {
+  .inventoryPocketRailHeader {
+    display: none;
+  }
+
+  .inventoryPocketRailTitle {
     display: none;
   }
 
