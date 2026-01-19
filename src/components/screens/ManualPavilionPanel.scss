@@ -1,8 +1,10 @@
 .manualPavilionPanel--v2 {
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  padding: 10px;
 }
 
 .pavilionTopRibbon {
@@ -45,6 +47,11 @@
   color: #cbd5e1;
 }
 
+.pavilionLoopHint {
+  font-size: 12px;
+  color: rgba(203, 213, 225, 0.85);
+}
+
 .pavilionRefreshBar {
   display: flex;
   align-items: center;
@@ -71,9 +78,33 @@
 }
 
 .pavilionShelfWall {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.pavilionShelfStage {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: min(760px, 62vw) 1fr;
+  gap: 12px;
+}
+
+.pavilionShelfSafeZone {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.pavilionShelfAmbientZone {
+  min-height: 260px;
 }
 
 .pavilionBottomStrip {
@@ -106,7 +137,7 @@
 
 .pavilionShelfRowRail {
   position: relative;
-  padding: 12px 10px 14px;
+  padding: 6px 0;
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(120, 53, 15, 0.22), rgba(69, 26, 3, 0.35)),
@@ -128,14 +159,71 @@
   pointer-events: none;
 }
 
-.pavilionShelfRowSpines {
+.pavilionShelfRowItems {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  overflow-x: auto;
-  overflow-y: visible;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pavilionShelfItem {
+  position: relative;
+  width: 260px;
+  min-height: 110px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.45);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.pavilionShelfItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.25);
+}
+
+.pavilionShelfItem--selected {
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.55), 0 18px 30px rgba(0, 0, 0, 0.3);
+}
+
+.pavilionShelfItem--sealed,
+.pavilionShelfItem--notSold,
+.pavilionShelfItem--sold {
+  opacity: 0.7;
+  filter: grayscale(0.7);
+}
+
+.pavilionShelfItemTop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pavilionShelfItemName {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.96);
+}
+
+.pavilionShelfItemBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pavilionShelfItemBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pavilionShelfItemPrice {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.85);
 }
 
 .pavilionSpine {
@@ -466,13 +554,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2200;
   padding: 16px;
+  z-index: 2300;
 }
 
 .pavilionDetailModal {
-  width: min(720px, 96vw);
-  max-height: min(80vh, 760px);
+  width: min(760px, 96vw);
+  max-height: 82vh;
   overflow: auto;
   position: relative;
   border-radius: 12px;
@@ -561,6 +649,11 @@
   gap: 12px;
 }
 
+.pavilionHistoryToggleRow {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .pavilionHistoryTitle {
   font-weight: 600;
 }
@@ -643,4 +736,18 @@
   outline: 2px solid #fbbf24;
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
   transition: outline 0.3s ease;
+}
+
+@media (max-width: 860px) {
+  .pavilionTopRibbon {
+    grid-template-columns: 1fr;
+  }
+
+  .pavilionShelfStage {
+    grid-template-columns: 1fr;
+  }
+
+  .pavilionShelfAmbientZone {
+    display: none;
+  }
 }
