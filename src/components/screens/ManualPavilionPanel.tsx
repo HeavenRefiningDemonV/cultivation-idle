@@ -182,7 +182,7 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
         <span className="pavilionSpineBadge pavilionSpineBadge--rarity">{rarityLabel(slot.rarity)}</span>
         <span className="pavilionSpineBadge">{gradeLabel(slot.grade)}</span>
       </div>
-      <div className="pavilionSpineTitle">{technique?.name ?? slot.techniqueId}</div>
+      <div className="pavilionSpineName">{technique?.name ?? slot.techniqueId}</div>
       {typeLabel && <div className="pavilionSpineType">{typeLabel}</div>}
       {state !== 'available' && <div className={`pavilionSpineOverlay pavilionSpineOverlay--${state}`} />}
     </button>
@@ -339,6 +339,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   };
 
   const renderShelfRow = (title: string, shelfKey: string, slots: PavilionStockSlot[], hint?: string) => {
+    const countLabel = `${slots.length} in stock`;
     const spineEntries: Array<{ key: string; slot: PavilionStockSlot | null; technique?: TechniqueDef }> = [
       ...slots.map((slot) => ({
         key: `slot-${slot.slotIndex}`,
@@ -351,10 +352,13 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       <div className={`pavilionShelfRow pavilionShelfRow--${shelfKey}`}>
         <div className={'pavilionShelfRowHeader'}>
           <div className={'pavilionShelfRowTitle'}>{title}</div>
-          {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
+          <div className={'pavilionShelfRowMeta'}>
+            <div className={'pavilionShelfRowCount'}>{countLabel}</div>
+            {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
+          </div>
         </div>
         <div className={'pavilionShelfRowRail'}>
-          <div className={'pavilionShelfRowSpines'} role="list">
+          <div className={'pavilionShelfRowContent'} role="list">
             {spineEntries.map((entry) => (
               <BookSpineSlot
                 key={entry.key}
@@ -396,6 +400,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     const pathLabel = technique?.path ?? 'Unknown';
     const typeLabel = technique?.type ? technique.type.toUpperCase() : 'Unknown';
     const roleLabel = technique?.role ?? 'General';
+    const tags = technique?.tags ?? [];
     return (
       <div className={'pavilionDetail'}>
         <div className={'pavilionDetailHeader'}>
@@ -412,6 +417,15 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           <div className={'pavilionDetailLine'}>
             Path: {pathLabel} • Type: {typeLabel} • Role: {roleLabel}
           </div>
+          {tags.length > 0 && (
+            <div className={'pavilionDetailTags'}>
+              {tags.map((tag) => (
+                <span key={tag} className={'pavilionBadge'}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
           <div className={'pavilionDetailLine'}>{synthesizeCombatSummary(technique)}</div>
           {technique?.cooldownSec != null && (
             <div className={'pavilionDetailLine'}>Cooldown: {technique.cooldownSec}s</div>
@@ -421,7 +435,6 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
               Resource Cost: {technique.resourceCost} {technique.resourceModel}
             </div>
           )}
-          <div className={'pavilionDetailLine'}>Tags: {technique?.tags?.join(', ') || 'None'}</div>
           <div className={'pavilionDetailLine pavilionDetailHint'}>Traits appear after studying.</div>
           {selectedSlot.notSold && (
             <div className={'pavilionDetailLine pavilionCardNotSold'}>Not sold here in this city tier.</div>
@@ -429,26 +442,28 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           {selectedSlot.sold && <div className={'pavilionDetailLine pavilionCardSold'}>Sold out.</div>}
           <div className={'pavilionDetailLine'}>Price: {costLabel}</div>
         </div>
-        <div className={'pavilionDetailActions'}>
-          <button
-            className={'worldScreenModuleButton'}
-            disabled={Boolean(purchaseDisabledReason)}
-            title={purchaseDisabledReason}
-            onClick={() => handlePurchase('buy')}
-          >
-            Buy Manual
-          </button>
-          <button
-            className={'worldScreenModuleButton'}
-            disabled={Boolean(studyDisabledReason)}
-            title={studyDisabledReason}
-            onClick={() => handlePurchase('buyAndStudy')}
-          >
-            Buy &amp; Study Now
-          </button>
+        <div className={'pavilionDetailFooter'}>
+          <div className={'pavilionDetailActions'}>
+            <button
+              className={'worldScreenModuleButton'}
+              disabled={Boolean(purchaseDisabledReason)}
+              title={purchaseDisabledReason}
+              onClick={() => handlePurchase('buy')}
+            >
+              Buy Manual
+            </button>
+            <button
+              className={'worldScreenModuleButton'}
+              disabled={Boolean(studyDisabledReason)}
+              title={studyDisabledReason}
+              onClick={() => handlePurchase('buyAndStudy')}
+            >
+              Buy &amp; Study Now
+            </button>
+          </div>
+          {errorMessage && <div className={'pavilionPurchaseError'}>Purchase failed: {errorMessage}</div>}
+          {renderPurchaseResult()}
         </div>
-        {errorMessage && <div className={'pavilionPurchaseError'}>Purchase failed: {errorMessage}</div>}
-        {renderPurchaseResult()}
       </div>
     );
   };
