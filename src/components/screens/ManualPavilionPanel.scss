@@ -66,14 +66,52 @@
 }
 
 .pavilionRefreshLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
   color: #e2e8f0;
+}
+
+.pavilionRefreshBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(34, 197, 94, 0.18);
+  color: rgba(187, 247, 208, 0.95);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.08);
+}
+
+.pavilionRefreshButton--ready {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25), 0 0 18px rgba(34, 197, 94, 0.25);
 }
 
 .pavilionShelfWall {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.pavilionShelfWall--flash {
+  animation: pavilionShelfFlash 450ms ease-out 1;
+}
+
+@keyframes pavilionShelfFlash {
+  0% {
+    filter: brightness(1);
+  }
+  25% {
+    filter: brightness(1.06);
+  }
+  100% {
+    filter: brightness(1);
+  }
 }
 
 .pavilionBottomStrip {
@@ -355,6 +393,10 @@
   .pavilionSpine[data-state='available'][data-rarity='epic'],
   .pavilionSpine[data-state='available'][data-rarity='legendary'] {
     animation: none !important;
+  }
+
+  .pavilionShelfWall--flash {
+    animation: none;
   }
 }
 

@@ -198,6 +198,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const requestTechniqueFocus = useUIStore((state) => state.requestTechniqueFocus);
+  const addNotification = useUIStore((state) => state.addNotification);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
 
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
@@ -207,6 +208,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [hovered, setHovered] = useState<{ slotIndex: number; rect: DOMRect } | null>(null);
   const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [refreshFlash, setRefreshFlash] = useState(0);
+  const [flashOn, setFlashOn] = useState(false);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
@@ -243,6 +246,19 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       setSelectedManualSlotId(null);
     }
   }, [selectedManualSlotId, stock]);
+
+  useEffect(() => {
+    if (!stock) return;
+    setHovered(null);
+    setSelectedManualSlotId((prev) => (prev != null ? null : prev));
+  }, [stock?.generatedAt, stock]);
+
+  useEffect(() => {
+    if (refreshFlash === 0) return;
+    setFlashOn(true);
+    const timeout = window.setTimeout(() => setFlashOn(false), 450);
+    return () => window.clearTimeout(timeout);
+  }, [refreshFlash]);
 
   const gradeCap = deriveGradeCap(realmIndex);
   const gradeSold = normalizeGradeValue(
@@ -293,7 +309,60 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   const handleRefresh = () => {
     if (!pavilionId) return;
-    refreshStock(pavilionId, Date.now());
+    const timestamp = Date.now();
+    const remainingMs = stock ? Math.max(0, stock.nextRefreshAt - timestamp) : 0;
+    const ready = stock ? timestamp >= stock.nextRefreshAt : false;
+
+    if (stock && !ready) {
+      const remainingLabel = formatDurationHMS(remainingMs);
+      addNotification('info', `Restock not ready — ${remainingLabel} remaining.`, 2500);
+      return;
+    }
+
+    const result = refreshStock(pavilionId, timestamp);
+    if (!result.ok) {
+      let reasonMessage = `Refresh failed: ${result.reason ?? 'Unknown error'}`;
+      switch (result.reason) {
+        case 'not_ready':
+          reasonMessage = 'Restock not ready yet.';
+          break;
+        case 'content_missing':
+          reasonMessage = 'Pavilion data missing.';
+          break;
+        case 'stock_missing':
+          reasonMessage = 'Stock missing — reopen pavilion.';
+          break;
+        case 'pavilion_missing':
+          reasonMessage = 'No pavilion in this city.';
+          break;
+        case 'content_loading':
+          reasonMessage = 'Content still loading.';
+          break;
+        default:
+          break;
+      }
+      addNotification('warning', reasonMessage, 2500);
+      return;
+    }
+
+    const updatedStock = useManualPavilionStore.getState().stockByPavilionId[pavilionId];
+    let message = 'Pavilion restocked.';
+    const latestHistory = updatedStock?.history?.[updatedStock.history.length - 1];
+    if (latestHistory?.featured) {
+      const featuredName =
+        techniquesById[latestHistory.featured.techniqueId]?.name ?? latestHistory.featured.techniqueId;
+      message = `Restocked — Featured: ${featuredName} (${rarityLabel(latestHistory.featured.rarity)})`;
+    } else if (selectedManualSlotId != null) {
+      message = 'Pavilion restocked — select a manual.';
+    }
+
+    if (selectedManualSlotId != null) {
+      setSelectedManualSlotId(null);
+      setSelectedSlotId(null);
+    }
+    setHovered(null);
+    setRefreshFlash((prev) => prev + 1);
+    addNotification('success', message, 2500);
   };
 
   const handlePurchase = (mode: 'buy' | 'buyAndStudy') => {
@@ -434,7 +503,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return (
       <div className={'pavilionRefreshBar pavilionRefreshBar--inline'}>
         <div className={'pavilionRefreshMeta'}>
-          <div className={'pavilionRefreshLine'}>Next refresh in: {formatDurationHMS(remaining)}</div>
+          <div className={'pavilionRefreshLine'}>
+            <span>Next refresh: {ready ? 'Ready' : formatDurationHMS(remaining)}</span>
+            {ready && <span className="pavilionRefreshBadge">Ready</span>}
+          </div>
           <div className={'pavilionPityLine'}>
             <span title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter.">
               Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed
@@ -442,7 +514,16 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
             <span>Legendary pity: {stock.pity.featuredLegendary}/{pityLegendaryMax}</span>
           </div>
         </div>
-        <button className={'worldScreenModuleButton'} onClick={handleRefresh} disabled={!ready}>
+        <button
+          className={`worldScreenModuleButton pavilionRefreshButton${ready ? ' pavilionRefreshButton--ready' : ''}`}
+          onClick={handleRefresh}
+          title={
+            ready
+              ? 'Refresh pavilion stock.'
+              : `Restock not ready. ${formatDurationHMS(remaining)} remaining.`
+          }
+          type="button"
+        >
           Refresh
         </button>
       </div>
@@ -572,7 +653,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           </button>
         </div>
       </div>
-      <div className={'pavilionShelfWall'}>
+      <div className={`pavilionShelfWall${flashOn ? ' pavilionShelfWall--flash' : ''}`}>
         {renderShelfRow('Common Shelf', 'common', shelves.common, 14, 'Heaven/Earth/Martial manuals')}
         {renderShelfRow('Advanced Shelf', 'advanced', shelves.advanced, 12, 'Refined techniques')}
         {renderShelfRow('Rare Shelf', 'rare', shelves.rare, 10, 'Uncommon paths')}
