@@ -80,6 +80,106 @@ function formatPurchaseError(reason?: string | null) {
   return purchaseErrorCopy[reason] ?? reason;
 }
 
+type SpineState = 'placeholder' | 'available' | 'sealed' | 'notSold' | 'sold';
+
+function getRoleBadge(role?: string): { icon: string; short: string; label: string; key: string } {
+  switch (role) {
+    case 'offense':
+      return { icon: '⚔', short: 'ATK', label: 'Offense', key: 'offense' };
+    case 'defense':
+      return { icon: '🛡', short: 'DEF', label: 'Defense', key: 'defense' };
+    case 'utility':
+      return { icon: '🧿', short: 'UTIL', label: 'Utility', key: 'utility' };
+    default:
+      return { icon: '◎', short: 'GEN', label: 'General', key: 'general' };
+  }
+}
+
+function gradeAbbrev(grade: ManualGrade): string {
+  switch (grade) {
+    case 'earth':
+      return 'E';
+    case 'heaven':
+      return 'H';
+    case 'mystic':
+      return 'Y';
+    case 'mortal':
+    default:
+      return 'M';
+  }
+}
+
+function normalizePath(path?: string) {
+  if (path === 'heaven' || path === 'earth' || path === 'martial') {
+    return path;
+  }
+  return 'unknown';
+}
+
+function resolveSpineState(slot: PavilionStockSlot | null): SpineState {
+  if (!slot) return 'placeholder';
+  if (slot.sold) return 'sold';
+  if (slot.sealed) return 'sealed';
+  if (slot.notSold) return 'notSold';
+  return 'available';
+}
+
+interface BookSpineSlotProps {
+  slot: PavilionStockSlot | null;
+  technique?: TechniqueDef;
+  isSelected: boolean;
+  onSelect: () => void;
+}
+
+function BookSpineSlot({ slot, technique, isSelected, onSelect }: BookSpineSlotProps) {
+  const state = resolveSpineState(slot);
+  const path = normalizePath(technique?.path);
+  const roleBadge = getRoleBadge(technique?.role);
+  const roleKey = roleBadge.key;
+
+  if (!slot) {
+    return (
+      <div
+        className={'pavilionSpine pavilionSpine--placeholder'}
+        data-state="placeholder"
+        data-path="unknown"
+        data-rarity="common"
+        data-role="general"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  const titleParts = [
+    technique?.name ?? slot.techniqueId,
+    `${gradeLabel(slot.grade)} ${rarityLabel(slot.rarity)}`,
+    state !== 'available' ? state : 'Available',
+  ];
+
+  return (
+    <button
+      type="button"
+      className={`pavilionSpine ${isSelected ? 'pavilionSpine--selected' : ''}`}
+      data-state={state}
+      data-path={path}
+      data-rarity={slot.rarity}
+      data-role={roleKey}
+      onClick={onSelect}
+      title={titleParts.join(' • ')}
+    >
+      <div className="pavilionSpineTop">
+        <span className="pavilionSpineGradeMark">{gradeAbbrev(slot.grade)}</span>
+      </div>
+      <div className="pavilionSpineName">{technique?.name ?? slot.techniqueId}</div>
+      <div className="pavilionSpineBottom">
+        <span className="pavilionSpineRoleIcon">{roleBadge.icon}</span>
+        <span className="pavilionSpineRoleText">{roleBadge.short}</span>
+      </div>
+      {state !== 'available' && <div className={`pavilionSpineOverlay pavilionSpineOverlay--${state}`} />}
+    </button>
+  );
+}
+
 export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const isContentLoaded = useContentStore((state) => state.isLoaded);
   const isContentLoading = useContentStore((state) => state.isLoading);
@@ -224,47 +324,46 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     requestTechniqueFocus(techId, 'upgradeRank');
   };
 
-  const renderShelfItemCard = (slot: PavilionStockSlot) => {
-    const technique = getTechniqueMeta(slot.techniqueId, techniquesById);
-    const isSelected = selectedSlot?.slotIndex === slot.slotIndex;
-    const sold = Boolean(slot.sold);
+  const renderShelfRow = (
+    title: string,
+    shelfKey: string,
+    slots: PavilionStockSlot[],
+    desiredCapacity: number,
+    hint?: string,
+  ) => {
+    const desired = Math.max(desiredCapacity, slots.length);
+    const placeholdersNeeded = Math.max(0, desired - slots.length);
+    const spineEntries: Array<{ key: string; slot: PavilionStockSlot | null; technique?: TechniqueDef }> = [
+      ...slots.map((slot) => ({
+        key: `slot-${slot.slotIndex}`,
+        slot,
+        technique: techniquesById[slot.techniqueId],
+      })),
+      ...Array.from({ length: placeholdersNeeded }, (_, index) => ({
+        key: `ph-${shelfKey}-${index}`,
+        slot: null,
+      })),
+    ];
+
     return (
-      <div
-        key={slot.slotIndex}
-        className={`pavilionCard ${isSelected ? 'pavilionCard--selected' : ''} ${slot.sealed ? 'pavilionCard--sealed' : ''} ${
-          sold ? 'pavilionCard--sold' : ''
-        }`}
-        onClick={() => handleSelect(slot)}
-      >
-        <div className={'pavilionCardHeader'}>
-          <div className={'pavilionCardTitle'}>{technique?.name ?? slot.techniqueId}</div>
-          <div className={'pavilionCardMeta'}>
-            <span className={`pavilionBadge rarity-${slot.rarity}`}>{rarityLabel(slot.rarity)}</span>
-            <span className={'pavilionBadge'}>{gradeLabel(slot.grade)}</span>
-            <span className={'pavilionBadge typeBadge'}>{technique?.type ?? 'unknown'}</span>
+      <div className={`pavilionShelfRow pavilionShelfRow--${shelfKey}`}>
+        <div className={'pavilionShelfRowHeader'}>
+          <div className={'pavilionShelfRowTitle'}>{title}</div>
+          {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
+        </div>
+        <div className={'pavilionShelfRowRail'}>
+          <div className={'pavilionShelfRowSpines'} role="list">
+            {spineEntries.map((entry) => (
+              <BookSpineSlot
+                key={entry.key}
+                slot={entry.slot}
+                technique={entry.technique}
+                isSelected={entry.slot?.slotIndex === selectedSlot?.slotIndex}
+                onSelect={() => entry.slot && handleSelect(entry.slot)}
+              />
+            ))}
           </div>
         </div>
-        <div className={'pavilionCardBody'}>
-          <div className={'pavilionCardLine'}>Path: {(technique?.path ?? 'Unknown').toString()}</div>
-          <div className={'pavilionCardLine'}>Role: {technique?.role ?? '—'}</div>
-          {slot.notSold ? (
-            <div className={'pavilionCardLine pavilionCardNotSold'}>Not sold here</div>
-          ) : (
-            <div className={'pavilionCardLine'}>Price: {formatPrice(slot.price) || 'Free'}</div>
-          )}
-          {sold && <div className={'pavilionCardLine pavilionCardSold'}>Sold out</div>}
-          {slot.sealed && <div className={'pavilionCardLine pavilionCardNotSold'}>Sealed (grade locked)</div>}
-        </div>
-      </div>
-    );
-  };
-
-  const renderShelfRow = (title: string, slots: PavilionStockSlot[]) => {
-    if (!slots || slots.length === 0) return null;
-    return (
-      <div className={'pavilionShelf'}>
-        <div className={'pavilionShelfHeader'}>{title}</div>
-        <div className={'pavilionShelfGrid'}>{slots.map((slot) => renderShelfItemCard(slot))}</div>
       </div>
     );
   };
@@ -540,10 +639,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         </div>
       </div>
       <div className={'pavilionShelfWall'}>
-        {renderShelfRow('Common Shelf', shelves.common)}
-        {renderShelfRow('Advanced Shelf', shelves.advanced)}
-        {renderShelfRow('Rare Shelf', shelves.rare)}
-        {renderShelfRow('Featured Shelf', shelves.featured)}
+        {renderShelfRow('Common Shelf', 'common', shelves.common, 14, 'Heaven/Earth/Martial manuals')}
+        {renderShelfRow('Advanced Shelf', 'advanced', shelves.advanced, 12, 'Refined techniques')}
+        {renderShelfRow('Rare Shelf', 'rare', shelves.rare, 10, 'Uncommon paths')}
+        {renderShelfRow('Featured Shelf', 'featured', shelves.featured, 8, 'Limited highlights')}
       </div>
       <div className={'pavilionBottomStrip'}>{renderHistoryCollapsible()}</div>
       {detailOpen && (
