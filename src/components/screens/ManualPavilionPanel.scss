@@ -1,73 +1,33 @@
-.manualPavilionPanel {
-  display: grid;
-  grid-template-columns: 280px 1fr 360px;
-  gap: 16px;
-  padding: 12px;
-}
-
-.pavilionLeft {
-  background: #0f172a;
-  border: 1px solid #1e293b;
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.pavilionCenter {
-  background: #0b1221;
-  border: 1px solid #1e293b;
-  border-radius: 8px;
-  padding: 12px;
+.manualPavilionPanel--v2 {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.pavilionRight {
-  background: #0f172a;
-  border: 1px solid #1e293b;
-  border-radius: 8px;
   padding: 12px;
 }
 
-.pavilionMicrocopy {
-  font-size: 12px;
-  color: #cbd5e1;
-  margin-bottom: 12px;
+.pavilionTopRibbon {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: start;
 }
 
-.pavilionFilterGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.pavilionFilterGroup label {
+.pavilionTopLeft {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 13px;
 }
 
-.pavilionFilterGroup select {
-  background: #1e293b;
-  color: #e2e8f0;
-  border: 1px solid #334155;
-  padding: 6px 8px;
-  border-radius: 4px;
-}
-
-.pavilionHeader {
+.pavilionTopCenter {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
   align-items: center;
+  justify-content: center;
 }
 
-.pavilionHeaderActions {
+.pavilionTopRight {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
 .pavilionTitle {
@@ -80,15 +40,15 @@
   color: #cbd5e1;
 }
 
+.pavilionMicrocopyInline {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
 .pavilionRefreshBar {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.pavilionRefreshLine {
-  font-size: 13px;
-  color: #e2e8f0;
 }
 
 .pavilionPityLine {
@@ -99,10 +59,25 @@
   gap: 4px;
 }
 
-.pavilionShelves {
+.pavilionRefreshMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pavilionRefreshLine {
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.pavilionShelfWall {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.pavilionBottomStrip {
+  margin-top: 6px;
 }
 
 .pavilionShelfHeader {
@@ -213,10 +188,48 @@
   opacity: 0.6;
 }
 
+.pavilionDetailOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2200;
+  padding: 16px;
+}
+
+.pavilionDetailModal {
+  width: min(720px, 96vw);
+  max-height: min(80vh, 760px);
+  overflow: auto;
+  position: relative;
+  border-radius: 12px;
+  padding: 14px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.pavilionDetailClose {
+  position: sticky;
+  top: 0;
+  margin-left: auto;
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+}
+
 .pavilionDetail {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 8px;
 }
 
 .pavilionDetailHeader {
@@ -270,9 +283,15 @@
   padding: 10px;
 }
 
+.pavilionHistoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
 .pavilionHistoryTitle {
   font-weight: 600;
-  margin-bottom: 6px;
 }
 
 .pavilionHistoryLine {
@@ -295,8 +314,22 @@
   margin-top: 2px;
 }
 
-.pavilionRefreshLine span {
-  display: block;
+.pavilionHistoryBody {
+  margin-top: 6px;
+}
+
+.pavilionHistoryToggle {
+  background: transparent;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.pavilionHistoryToggle:hover {
+  border-color: #64748b;
 }
 
 .pavilionPityLine span {

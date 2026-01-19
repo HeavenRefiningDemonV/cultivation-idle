@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import './ManualPavilionPanel.scss';
-import type { PathId, TechniqueDef } from '../../content';
+import type { TechniqueDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useManualPavilionStore } from '../../stores/manualPavilionStore';
+import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
 import { useGameStore } from '../../stores/gameStore';
 import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
 import { formatPrice } from '../../stores/contentStore';
 import { formatDurationHMS } from '../../utils/timeFormat';
 import { useInventoryStore } from '../../stores/inventoryStore';
-import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
 
@@ -16,18 +16,7 @@ interface ManualPavilionPanelProps {
   pavilionId: string | null;
 }
 
-type FilterValue<T> = T | 'all';
-
-interface FiltersState {
-  type: FilterValue<TechniqueDef['type']>;
-  path: FilterValue<PathId>;
-  role: FilterValue<string>;
-  grade: FilterValue<ManualGrade>;
-  rarity: FilterValue<ManualRarity>;
-}
-
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
-const rarityOrder: ManualRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 const purchaseErrorCopy: Record<string, string> = {
   insufficient_funds: 'Not enough currency for this purchase.',
   already_sold: 'This manual has already been purchased.',
@@ -71,10 +60,6 @@ function synthesizeCombatSummary(technique?: TechniqueDef) {
   return parts.join(' ');
 }
 
-function gradeIsHigher(a: ManualGrade, b: ManualGrade) {
-  return gradeOrder.indexOf(a) > gradeOrder.indexOf(b);
-}
-
 function rarityLabel(value: ManualRarity) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -88,19 +73,6 @@ function deriveGradeCap(realmIndex: number): ManualGrade {
   if (realmIndex >= 4) return 'heaven';
   if (realmIndex >= 2) return 'earth';
   return 'mortal';
-}
-
-function isSlotMatchingFilters(
-  slot: PavilionStockSlot,
-  technique: TechniqueDef | undefined,
-  filters: FiltersState,
-) {
-  if (filters.type !== 'all' && technique?.type !== filters.type) return false;
-  if (filters.path !== 'all' && technique?.path !== filters.path) return false;
-  if (filters.role !== 'all' && technique?.role !== filters.role) return false;
-  if (filters.grade !== 'all' && slot.grade !== filters.grade) return false;
-  if (filters.rarity !== 'all' && slot.rarity !== filters.rarity) return false;
-  return true;
 }
 
 function formatPurchaseError(reason?: string | null) {
@@ -127,15 +99,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const requestTechniqueFocus = useUIStore((state) => state.requestTechniqueFocus);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
 
-  const [filters, setFilters] = useState<FiltersState>({
-    type: 'all',
-    path: 'all',
-    role: 'all',
-    grade: 'all',
-    rarity: 'all',
-  });
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
@@ -148,6 +115,21 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     setPurchaseResult(null);
     setPurchaseError(null);
   }, [selectedSlotId, stock?.generatedAt]);
+
+  useEffect(() => {
+    if (!detailOpen) return;
+    const onKeyDownCapture = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      setDetailOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDownCapture, { capture: true });
+    return () => {
+      window.removeEventListener('keydown', onKeyDownCapture, { capture: true } as EventListenerOptions);
+    };
+  }, [detailOpen]);
 
   useEffect(() => {
     if (pavilionId && isContentLoaded && pavilion) {
@@ -174,24 +156,11 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const pityEpicMax = manualSystem?.pavilions?.pity?.featuredEpicPityToGuarantee ?? 10;
   const pityLegendaryMax = manualSystem?.pavilions?.pity?.featuredLegendaryPityToGuarantee ?? 30;
 
-  const filteredSlots = useMemo(() => {
-    if (!stock) return [] as PavilionStockSlot[];
-    return stock.slots.filter((slot) => isSlotMatchingFilters(slot, techniquesById[slot.techniqueId], filters));
-  }, [filters, stock, techniquesById]);
-
   const selectedSlot = useMemo(() => {
     const direct = stock?.slots.find((slot) => slot.slotIndex === selectedSlotId);
     if (direct) return direct;
-    return filteredSlots[0];
-  }, [filteredSlots, selectedSlotId, stock]);
-
-  const availableRoles = useMemo(() => {
-    const roles = new Set<string>();
-    Object.values(techniquesById).forEach((tech) => {
-      if (tech?.role) roles.add(tech.role);
-    });
-    return Array.from(roles).sort();
-  }, [techniquesById]);
+    return stock?.slots[0];
+  }, [selectedSlotId, stock]);
 
   const shelves = useMemo(() => {
     const grouped: Record<string, PavilionStockSlot[]> = {
@@ -200,15 +169,20 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       rare: [],
       featured: [],
     };
-    (filteredSlots.length ? filteredSlots : stock?.slots ?? []).forEach((slot) => {
+    (stock?.slots ?? []).forEach((slot) => {
       const shelf = slot.shelf === 'filler' ? 'common' : slot.shelf;
       grouped[shelf] = grouped[shelf] || [];
       grouped[shelf].push(slot);
     });
     return grouped;
-  }, [filteredSlots, stock]);
+  }, [stock]);
 
-  const handleSelect = (slot: PavilionStockSlot) => setSelectedSlotId(slot.slotIndex);
+  const handleSelect = (slot: PavilionStockSlot) => {
+    setSelectedSlotId(slot.slotIndex);
+    setDetailOpen(true);
+  };
+
+  const closeDetail = () => setDetailOpen(false);
 
   const handleRefresh = () => {
     if (!pavilionId) return;
@@ -250,84 +224,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     requestTechniqueFocus(techId, 'upgradeRank');
   };
 
-  const renderFilters = () => {
-    const gradeOptions: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
-    const typeOptions: Array<TechniqueDef['type']> = ['active', 'passive', 'ultimate'];
-    const pathOptions: PathId[] = ['heaven', 'earth', 'martial'];
-
-    const gradeDisabled = (grade: ManualGrade) => gradeIsHigher(grade, gradeSold as ManualGrade) || gradeIsHigher(grade, gradeCap);
-
-    return (
-      <div className={'pavilionFilters'}>
-        <div className={'pavilionMicrocopy'}>Buy Manual → Study Manual → Equip Technique → Auto-used in combat</div>
-        <div className={'pavilionFilterGroup'}>
-          <label>
-            Type
-            <select value={filters.type} onChange={(e) => setFilters((prev) => ({ ...prev, type: e.target.value as FiltersState['type'] }))}>
-              <option value="all">All</option>
-              {typeOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Path
-            <select value={filters.path} onChange={(e) => setFilters((prev) => ({ ...prev, path: e.target.value as FiltersState['path'] }))}>
-              <option value="all">All</option>
-              {pathOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Role
-            <select value={filters.role} onChange={(e) => setFilters((prev) => ({ ...prev, role: e.target.value as FiltersState['role'] }))}>
-              <option value="all">All</option>
-              {availableRoles.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Grade
-            <select
-              value={filters.grade}
-              onChange={(e) => setFilters((prev) => ({ ...prev, grade: e.target.value as FiltersState['grade'] }))}
-            >
-              <option value="all">All</option>
-              {gradeOptions.map((grade) => (
-                <option key={grade} value={grade} disabled={gradeDisabled(grade)}>
-                  {gradeLabel(grade)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Rarity
-            <select
-              value={filters.rarity}
-              onChange={(e) => setFilters((prev) => ({ ...prev, rarity: e.target.value as FiltersState['rarity'] }))}
-            >
-              <option value="all">All</option>
-              {rarityOrder.map((rarity) => (
-                <option key={rarity} value={rarity}>
-                  {rarityLabel(rarity)}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </div>
-    );
-  };
-
-  const renderCard = (slot: PavilionStockSlot) => {
+  const renderShelfItemCard = (slot: PavilionStockSlot) => {
     const technique = getTechniqueMeta(slot.techniqueId, techniquesById);
     const isSelected = selectedSlot?.slotIndex === slot.slotIndex;
     const sold = Boolean(slot.sold);
@@ -362,17 +259,17 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     );
   };
 
-  const renderShelf = (title: string, slots: PavilionStockSlot[]) => {
+  const renderShelfRow = (title: string, slots: PavilionStockSlot[]) => {
     if (!slots || slots.length === 0) return null;
     return (
       <div className={'pavilionShelf'}>
         <div className={'pavilionShelfHeader'}>{title}</div>
-        <div className={'pavilionShelfGrid'}>{slots.map((slot) => renderCard(slot))}</div>
+        <div className={'pavilionShelfGrid'}>{slots.map((slot) => renderShelfItemCard(slot))}</div>
       </div>
     );
   };
 
-  const renderDetailPanel = () => {
+  const renderDetailContent = () => {
     if (!selectedSlot) {
       return <div className={'pavilionDetailEmpty'}>Select a manual to see details.</div>;
     }
@@ -496,49 +393,64 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     );
   };
 
-  const renderHistory = () => {
+  const renderHistoryCollapsible = () => {
     if (!stock) return null;
     const entries = stock.history.slice(-3).reverse();
     return (
       <div className={'pavilionHistory'}>
-        <div className={'pavilionHistoryTitle'}>Recent refreshes</div>
-        {entries.length === 0 && <div className={'pavilionHistoryLine'}>No refreshes yet.</div>}
-        {entries.map((entry, idx) => {
-          const featuredName = entry.featured
-            ? techniquesById[entry.featured.techniqueId]?.name ?? entry.featured.techniqueId
-            : '—';
-          const rareSummary = entry.rares?.map((rare) => techniquesById[rare.techniqueId]?.name ?? rare.techniqueId).join(', ');
-          const timeLabel = new Date(entry.at).toLocaleTimeString();
-          const agoMs = now - entry.at;
-          const agoMinutes = Math.floor(agoMs / 60000);
-          const relativeLabel = agoMinutes >= 1 ? `${agoMinutes}m ago` : 'just now';
-          return (
-            <div key={idx} className={'pavilionHistoryLine'}>
-              <div>
-                <div className={'pavilionHistoryTime'}>
-                  {timeLabel} ({relativeLabel})
+        <div className={'pavilionHistoryHeader'}>
+          <div className={'pavilionHistoryTitle'}>Recent refreshes</div>
+          <button
+            className={'pavilionHistoryToggle'}
+            onClick={() => setHistoryOpen((prev) => !prev)}
+            type="button"
+          >
+            {historyOpen ? 'Hide' : 'Show'}
+          </button>
+        </div>
+        {historyOpen && (
+          <div className={'pavilionHistoryBody'}>
+            {entries.length === 0 && <div className={'pavilionHistoryLine'}>No refreshes yet.</div>}
+            {entries.map((entry, idx) => {
+              const featuredName = entry.featured
+                ? techniquesById[entry.featured.techniqueId]?.name ?? entry.featured.techniqueId
+                : '—';
+              const rareSummary = entry.rares
+                ?.map((rare) => techniquesById[rare.techniqueId]?.name ?? rare.techniqueId)
+                .join(', ');
+              const timeLabel = new Date(entry.at).toLocaleTimeString();
+              const agoMs = now - entry.at;
+              const agoMinutes = Math.floor(agoMs / 60000);
+              const relativeLabel = agoMinutes >= 1 ? `${agoMinutes}m ago` : 'just now';
+              return (
+                <div key={idx} className={'pavilionHistoryLine'}>
+                  <div>
+                    <div className={'pavilionHistoryTime'}>
+                      {timeLabel} ({relativeLabel})
+                    </div>
+                    <div className={'pavilionHistoryEntry'}>
+                      Featured: {featuredName} {entry.featured ? `(${rarityLabel(entry.featured.rarity)})` : ''}
+                    </div>
+                    {entry.rares && entry.rares.length > 0 && (
+                      <div className={'pavilionHistoryEntry'}>Rares: {rareSummary}</div>
+                    )}
+                  </div>
                 </div>
-                <div className={'pavilionHistoryEntry'}>
-                  Featured: {featuredName} {entry.featured ? `(${rarityLabel(entry.featured.rarity)})` : ''}
-                </div>
-                {entry.rares && entry.rares.length > 0 && (
-                  <div className={'pavilionHistoryEntry'}>Rares: {rareSummary}</div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   };
 
-  const renderRefreshBar = () => {
+  const renderRefreshBarInline = () => {
     if (!stock) return null;
     const remaining = Math.max(0, stock.nextRefreshAt - now);
     const ready = now >= stock.nextRefreshAt;
     return (
-      <div className={'pavilionRefreshBar'}>
-        <div>
+      <div className={'pavilionRefreshBar pavilionRefreshBar--inline'}>
+        <div className={'pavilionRefreshMeta'}>
           <div className={'pavilionRefreshLine'}>Next refresh in: {formatDurationHMS(remaining)}</div>
           <div className={'pavilionPityLine'}>
             <span title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter.">
@@ -606,33 +518,54 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     );
   }
 
+  const pavilionTitle = pavilion.id.replace(/_/g, ' ') || 'Manual Pavilion';
+
   return (
-    <div className={'manualPavilionPanel'}>
-      <div className={'pavilionLeft'}>{renderFilters()}</div>
-      <div className={'pavilionCenter'}>
-        <div className={'pavilionHeader'}>
-          <div>
-            <div className={'pavilionTitle'}>{pavilion.id.replace(/_/g, ' ') || 'Manual Pavilion'}</div>
-            <div className={'pavilionSubtitle'}>
-              Grade sold: {gradeLabel(gradeSold as ManualGrade)} • Grade cap: {gradeLabel(gradeCap)}
-            </div>
+    <div className={'manualPavilionPanel manualPavilionPanel--v2'}>
+      <div className={'pavilionTopRibbon'}>
+        <div className={'pavilionTopLeft'}>
+          <div className={'pavilionTitle'}>{pavilionTitle}</div>
+          <div className={'pavilionSubtitle'}>
+            Grade sold: {gradeLabel(gradeSold as ManualGrade)} • Grade cap: {gradeLabel(gradeCap)}
           </div>
-          <div className={'pavilionHeaderActions'}>
-            <button className={'worldScreenModuleButton'} onClick={openManualSatchel}>
-              Manual Satchel ({satchelCount})
-            </button>
-            {renderRefreshBar()}
+          <div className={'pavilionMicrocopyInline'}>
+            Buy Manual → Study Manual → Equip Technique → Auto-used in combat
           </div>
         </div>
-        <div className={'pavilionShelves'}>
-          {renderShelf('Common Shelf', shelves.common)}
-          {renderShelf('Advanced Shelf', shelves.advanced)}
-          {renderShelf('Rare Shelf', shelves.rare)}
-          {renderShelf('Featured Shelf', shelves.featured)}
+        <div className={'pavilionTopCenter'}>{renderRefreshBarInline()}</div>
+        <div className={'pavilionTopRight'}>
+          <button className={'worldScreenModuleButton pavilionSatchelButton'} onClick={openManualSatchel}>
+            Satchel ({satchelCount})
+          </button>
         </div>
-        {renderHistory()}
       </div>
-      <div className={'pavilionRight'}>{renderDetailPanel()}</div>
+      <div className={'pavilionShelfWall'}>
+        {renderShelfRow('Common Shelf', shelves.common)}
+        {renderShelfRow('Advanced Shelf', shelves.advanced)}
+        {renderShelfRow('Rare Shelf', shelves.rare)}
+        {renderShelfRow('Featured Shelf', shelves.featured)}
+      </div>
+      <div className={'pavilionBottomStrip'}>{renderHistoryCollapsible()}</div>
+      {detailOpen && (
+        <div className={'pavilionDetailOverlay'} role="presentation" onMouseDown={closeDetail}>
+          <div
+            className={'pavilionDetailModal'}
+            role="dialog"
+            aria-modal="true"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button
+              className={'pavilionDetailClose'}
+              type="button"
+              onClick={closeDetail}
+              aria-label="Close detail"
+            >
+              ✕
+            </button>
+            {renderDetailContent()}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
