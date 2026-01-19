@@ -94,6 +94,15 @@ type PavilionToast = {
   timeoutMs?: number;
 };
 
+type PurchaseFx = {
+  slotIndex: number;
+  techniqueName: string;
+  outcome: 'acquired' | 'duplicate' | 'failed';
+  message?: string;
+  at: number;
+  studiedNow?: boolean;
+};
+
 function getRoleBadge(role?: string): { icon: string; short: string; label: string; key: string } {
   switch (role) {
     case 'offense':
@@ -127,6 +136,8 @@ interface BookSpineSlotProps {
   technique?: TechniqueDef;
   isSelected: boolean;
   rarePing: boolean;
+  purchaseOutcome: PurchaseFx['outcome'] | null;
+  purchaseActive: boolean;
   onSelect: () => void;
   onHover: (slotIndex: number, rect: DOMRect) => void;
   onClearHover: () => void;
@@ -137,6 +148,8 @@ function BookSpineSlot({
   technique,
   isSelected,
   rarePing,
+  purchaseOutcome,
+  purchaseActive,
   onSelect,
   onHover,
   onClearHover,
@@ -170,6 +183,8 @@ function BookSpineSlot({
   };
 
   const locked = slot.notSold || slot.sealed;
+  const purchaseClass =
+    purchaseActive && purchaseOutcome ? `pavilionSpine--purchaseFx pavilionSpine--purchaseFx-${purchaseOutcome}` : '';
   return (
     <button
       type="button"
@@ -180,6 +195,7 @@ function BookSpineSlot({
         slot.sold ? 'pavilionSpine--sold' : '',
         locked ? 'pavilionSpine--locked' : '',
         rarePing ? 'pavilionSpine--rarePing' : '',
+        purchaseClass,
       ]
         .filter(Boolean)
         .join(' ')}
@@ -234,14 +250,24 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [refreshPending, setRefreshPending] = useState(false);
+  const [purchasePendingSlot, setPurchasePendingSlot] = useState<number | null>(null);
   const [hovered, setHovered] = useState<{ slotIndex: number; rect: DOMRect } | null>(null);
   const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [toasts, setToasts] = useState<PavilionToast[]>([]);
   const [restockFxOn, setRestockFxOn] = useState(false);
   const [restockPulseToken, setRestockPulseToken] = useState(0);
+  const [lastPurchaseFx, setLastPurchaseFx] = useState<PurchaseFx | null>(null);
+  const [currencyPulse, setCurrencyPulse] = useState({ gold: false, stones: false, merit: false });
+  const [satchelPing, setSatchelPing] = useState(false);
   const toastIdRef = useRef(1);
   const refreshTimeoutRef = useRef<number | null>(null);
+  const currencyPulseTimeoutRef = useRef<number | null>(null);
+  const satchelPingTimeoutRef = useRef<number | null>(null);
+  const prevGoldRef = useRef(currencies.gold ?? '0');
+  const prevStonesRef = useRef(currencies.spiritStones ?? '0');
+  const prevMeritRef = useRef(currencies.merit ?? '0');
+  const prevSatchelCountRef = useRef(satchelCount);
   const prevStockKeyRef = useRef<string | null>(null);
   const firstStockSeenRef = useRef(false);
   const closeDetail = useCallback(() => setDetailOpen(false), []);
@@ -270,6 +296,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       if (refreshTimeoutRef.current) {
         window.clearTimeout(refreshTimeoutRef.current);
       }
+      if (currencyPulseTimeoutRef.current) {
+        window.clearTimeout(currencyPulseTimeoutRef.current);
+      }
+      if (satchelPingTimeoutRef.current) {
+        window.clearTimeout(satchelPingTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -277,6 +309,42 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     setPurchaseResult(null);
     setPurchaseError(null);
   }, [selectedSlotId, stock?.generatedAt]);
+
+  useEffect(() => {
+    const gold = currencies.gold ?? '0';
+    const stones = currencies.spiritStones ?? '0';
+    const merit = currencies.merit ?? '0';
+    const nextPulse = {
+      gold: gold !== prevGoldRef.current,
+      stones: stones !== prevStonesRef.current,
+      merit: merit !== prevMeritRef.current,
+    };
+    if (nextPulse.gold || nextPulse.stones || nextPulse.merit) {
+      setCurrencyPulse(nextPulse);
+      if (currencyPulseTimeoutRef.current) {
+        window.clearTimeout(currencyPulseTimeoutRef.current);
+      }
+      currencyPulseTimeoutRef.current = window.setTimeout(() => {
+        setCurrencyPulse({ gold: false, stones: false, merit: false });
+      }, 520);
+    }
+    prevGoldRef.current = gold;
+    prevStonesRef.current = stones;
+    prevMeritRef.current = merit;
+  }, [currencies.gold, currencies.merit, currencies.spiritStones]);
+
+  useEffect(() => {
+    if (satchelCount > prevSatchelCountRef.current) {
+      setSatchelPing(true);
+      if (satchelPingTimeoutRef.current) {
+        window.clearTimeout(satchelPingTimeoutRef.current);
+      }
+      satchelPingTimeoutRef.current = window.setTimeout(() => {
+        setSatchelPing(false);
+      }, 900);
+    }
+    prevSatchelCountRef.current = satchelCount;
+  }, [satchelCount]);
 
   useEffect(() => {
     if (!detailOpen) return;
@@ -417,32 +485,77 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   const handlePurchase = (mode: 'buy' | 'buyAndStudy') => {
     if (!pavilionId || !selectedSlot) return;
-    const result = buyManual({ pavilionId, stockId: selectedSlot.slotIndex, mode });
-    if (!result.ok) {
-      setPurchaseError(result.reason || 'purchase_failed');
-      setPurchaseResult(null);
-      return;
-    }
+    if (purchasePendingSlot != null) return;
+    setPurchasePendingSlot(selectedSlot.slotIndex);
+    const technique = getTechniqueMeta(selectedSlot.techniqueId, techniquesById);
+    try {
+      const result = buyManual({ pavilionId, stockId: selectedSlot.slotIndex, mode });
+      if (!result.ok) {
+        const message = formatPurchaseError(result.reason) ?? 'Purchase failed.';
+        setPurchaseError(result.reason || 'purchase_failed');
+        setPurchaseResult(null);
+        setLastPurchaseFx({
+          slotIndex: selectedSlot.slotIndex,
+          techniqueName: technique?.name ?? selectedSlot.techniqueId,
+          outcome: 'failed',
+          message,
+          at: Date.now(),
+        });
+        pushToast({ kind: 'error', title: 'Purchase failed', message });
+        return;
+      }
 
-    let finalResult: ManualPurchaseResult & { studied?: boolean } = result;
-    if (mode === 'buyAndStudy' && result.outcome === 'manualGranted') {
-      const satchel = useManualSatchelStore.getState();
-      const manualId =
-        result.manualInstanceId ||
-        satchel.manuals.find(
-          (manual) =>
-            manual.techId === result.techId && manual.grade === result.grade && manual.rarity === result.rarity,
-        )?.id;
-      if (manualId) {
-        const studyResult = satchel.startStudy(manualId);
-        if (studyResult.ok) {
-          finalResult = { ...result, studied: true };
+      let finalResult: ManualPurchaseResult & { studied?: boolean } = result;
+      if (mode === 'buyAndStudy' && result.outcome === 'manualGranted') {
+        const satchel = useManualSatchelStore.getState();
+        const manualId =
+          result.manualInstanceId ||
+          satchel.manuals.find(
+            (manual) =>
+              manual.techId === result.techId && manual.grade === result.grade && manual.rarity === result.rarity,
+          )?.id;
+        if (manualId) {
+          const studyResult = satchel.startStudy(manualId);
+          if (studyResult.ok) {
+            finalResult = { ...result, studied: true };
+          }
         }
       }
-    }
 
-    setPurchaseError(null);
-    setPurchaseResult(finalResult);
+      setPurchaseError(null);
+      setPurchaseResult(finalResult);
+
+      if (finalResult.outcome === 'duplicateConverted') {
+        setLastPurchaseFx({
+          slotIndex: selectedSlot.slotIndex,
+          techniqueName: finalResult.manualName,
+          outcome: 'duplicate',
+          at: Date.now(),
+        });
+        pushToast({
+          kind: 'success',
+          title: 'Duplicate manual converted',
+          message: `${finalResult.manualName}\nConverted to fragments (see Techniques for upgrades).`,
+          actions: [{ label: 'Open Satchel', onClick: () => openManualSatchel() }],
+        });
+      } else {
+        setLastPurchaseFx({
+          slotIndex: selectedSlot.slotIndex,
+          techniqueName: finalResult.manualName,
+          outcome: 'acquired',
+          at: Date.now(),
+          studiedNow: finalResult.studied,
+        });
+        pushToast({
+          kind: 'success',
+          title: 'Manual acquired',
+          message: `${finalResult.manualName}\nAdded to Satchel. Next: Study → Equip in Techniques.`,
+          actions: [{ label: 'Open Satchel', onClick: () => openManualSatchel() }],
+        });
+      }
+    } finally {
+      setPurchasePendingSlot(null);
+    }
   };
 
   const handleUpgradeNow = (techId: string) => {
@@ -469,9 +582,16 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
             {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
           </div>
         </div>
-          <div className={'pavilionShelfRowRail'}>
-            <div className={'pavilionShelfRowContent'} role="list">
-              {spineEntries.map((entry) => (
+        <div className={'pavilionShelfRowRail'}>
+          <div className={'pavilionShelfRowContent'} role="list">
+            {spineEntries.map((entry) => {
+              const isJustPurchased = Boolean(
+                entry.slot &&
+                  lastPurchaseFx &&
+                  lastPurchaseFx.slotIndex === entry.slot.slotIndex &&
+                  now - lastPurchaseFx.at < 1400,
+              );
+              return (
                 <BookSpineSlot
                   key={entry.key}
                   slot={entry.slot}
@@ -485,11 +605,14 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
                         !entry.slot.sold,
                     )
                   }
+                  purchaseOutcome={isJustPurchased ? lastPurchaseFx?.outcome ?? null : null}
+                  purchaseActive={isJustPurchased}
                   onSelect={() => entry.slot && handleSelect(entry.slot)}
                   onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
                   onClearHover={clearHover}
                 />
-              ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -511,12 +634,34 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           ? 'Sealed (grade locked)'
           : !canAfford
             ? 'Not enough currency'
-            : isPurchasing
+            : purchasePendingSlot != null
               ? 'Purchase in progress'
-              : undefined;
+              : isPurchasing
+                ? 'Purchase in progress'
+                : undefined;
     const studyDisabledReason =
       purchaseDisabledReason ?? 'Buy & Study Now performs an instant study in this milestone.';
     const errorMessage = formatPurchaseError(purchaseError || lastPurchaseError);
+    const bannerActive = Boolean(
+      selectedSlot &&
+        lastPurchaseFx &&
+        lastPurchaseFx.slotIndex === selectedSlot.slotIndex &&
+        now - lastPurchaseFx.at < 2000,
+    );
+    const bannerKind =
+      lastPurchaseFx?.outcome === 'failed' ? 'error' : lastPurchaseFx?.outcome === 'duplicate' ? 'info' : 'success';
+    const bannerTitle =
+      lastPurchaseFx?.outcome === 'failed'
+        ? 'Purchase failed'
+        : lastPurchaseFx?.outcome === 'duplicate'
+          ? 'Duplicate'
+          : 'Acquired';
+    const bannerMessage =
+      lastPurchaseFx?.outcome === 'failed'
+        ? lastPurchaseFx.message ?? 'Purchase failed.'
+        : lastPurchaseFx?.outcome === 'duplicate'
+          ? 'Converted to fragments.'
+          : 'Added to Satchel.';
     const pathLabel = technique?.path ?? 'Unknown';
     const typeLabel = technique?.type ? technique.type.toUpperCase() : 'Unknown';
     const roleLabel = technique?.role ?? 'General';
@@ -533,6 +678,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
             <span className={'pavilionBadge'}>{gradeLabel(selectedSlot.grade)}</span>
           </div>
         </div>
+        {bannerActive && (
+          <div className={`pavilionPurchaseBanner pavilionPurchaseBanner--${bannerKind}`}>
+            <div className={'pavilionPurchaseBannerTitle'}>{bannerTitle}</div>
+            <div className={'pavilionPurchaseBannerMsg'}>{bannerMessage}</div>
+          </div>
+        )}
         <div className={'pavilionDetailBody'}>
           <div className={'pavilionDetailLine'}>
             Path: {pathLabel} • Type: {typeLabel} • Role: {roleLabel}
@@ -820,23 +971,30 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         <div className={'pavilionTopCenter'}>{renderRefreshBarInline()}</div>
         <div className={'pavilionTopRight'}>
           <div className={'pavilionWalletChips'}>
-            <div className={'pavilionWalletChip'}>
+            <div className={`pavilionWalletChip pavilionCurrencyChip${currencyPulse.gold ? ' pavilionCurrencyChip--pulse' : ''}`}>
               <Coins size={14} />
               <span>Gold</span>
               <strong>{currencies.gold ?? '0'}</strong>
             </div>
-            <div className={'pavilionWalletChip'}>
+            <div
+              className={`pavilionWalletChip pavilionCurrencyChip${currencyPulse.stones ? ' pavilionCurrencyChip--pulse' : ''}`}
+            >
               <Gem size={14} />
               <span>Spirit Stones</span>
               <strong>{currencies.spiritStones ?? '0'}</strong>
             </div>
-            <div className={'pavilionWalletChip'}>
+            <div
+              className={`pavilionWalletChip pavilionCurrencyChip${currencyPulse.merit ? ' pavilionCurrencyChip--pulse' : ''}`}
+            >
               <Medal size={14} />
               <span>Merit</span>
               <strong>{currencies.merit ?? '0'}</strong>
             </div>
           </div>
-          <button className={'worldScreenModuleButton pavilionSatchelButton'} onClick={openManualSatchel}>
+          <button
+            className={`worldScreenModuleButton pavilionSatchelButton${satchelPing ? ' pavilionSatchelButton--ping' : ''}`}
+            onClick={openManualSatchel}
+          >
             <Backpack size={16} />
             Satchel ({satchelCount})
           </button>

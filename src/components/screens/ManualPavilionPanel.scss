@@ -78,10 +78,30 @@
   font-weight: 700;
 }
 
+.pavilionCurrencyChip--pulse {
+  animation: pavilionCurrencyPulse 520ms ease-out both;
+}
+
+@keyframes pavilionCurrencyPulse {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .pavilionSatchelButton {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.pavilionSatchelButton--ping {
+  animation: pavilionSatchelPing 900ms ease-out both;
 }
 
 .pavilionRefreshBar {
@@ -442,6 +462,42 @@
   animation: pavilionRarePing 900ms ease-out both;
 }
 
+.pavilionSpine--purchaseFx {
+  position: relative;
+  animation: pavilionPurchasePop 520ms ease-out both;
+}
+
+.pavilionSpine--purchaseFx::after {
+  content: 'ACQUIRED';
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 1000;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.18);
+  color: rgba(226, 232, 240, 0.95);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  animation: pavilionStampIn 900ms ease-out both;
+}
+
+.pavilionSpine--purchaseFx-duplicate::after {
+  content: 'DUPLICATE';
+  color: rgba(251, 191, 36, 0.95);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+.pavilionSpine--purchaseFx-failed::after {
+  content: 'FAILED';
+  color: rgba(248, 113, 113, 0.95);
+  border-color: rgba(248, 113, 113, 0.28);
+}
+
 .pavilionSpine[data-state='available'].pavilionSpine--rarity-epic,
 .pavilionSpine[data-state='available'].pavilionSpine--rarity-legendary {
   animation: pavilionRareBreath 3.2s ease-in-out infinite;
@@ -492,6 +548,51 @@
   }
 }
 
+@keyframes pavilionPurchasePop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  20% {
+    transform: translateY(-6px) scale(1.04);
+  }
+  55% {
+    transform: translateY(0) scale(0.995);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pavilionStampIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-16deg) scale(0.92);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-16deg) scale(1.04);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-16deg) scale(1);
+  }
+}
+
+@keyframes pavilionSatchelPing {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  35% {
+    transform: scale(1.04);
+    box-shadow: 0 0 18px rgba(59, 130, 246, 0.18);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pavilionSpine {
     transition: none;
@@ -503,7 +604,11 @@
   }
 
   .pavilionShelfWall--restockFx .pavilionSpine,
-  .pavilionSpine--rarePing {
+  .pavilionSpine--rarePing,
+  .pavilionSpine--purchaseFx,
+  .pavilionSpine--purchaseFx::after,
+  .pavilionCurrencyChip--pulse,
+  .pavilionSatchelButton--ping {
     animation: none !important;
   }
 }
@@ -742,6 +847,37 @@
   flex-direction: column;
   gap: 10px;
   margin-top: 8px;
+}
+
+.pavilionPurchaseBanner {
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pavilionPurchaseBanner--success {
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.pavilionPurchaseBanner--error {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.pavilionPurchaseBanner--info {
+  border-color: rgba(251, 191, 36, 0.18);
+}
+
+.pavilionPurchaseBannerTitle {
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.pavilionPurchaseBannerMsg {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 2px;
 }
 
 .pavilionDetailHeader {
