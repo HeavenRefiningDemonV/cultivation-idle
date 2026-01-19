@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FocusEvent, MouseEvent } from 'react';
+import { Backpack, ChevronDown, ChevronUp, Coins, Gem, Medal } from 'lucide-react';
 import './ManualPavilionPanel.scss';
 import type { TechniqueDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
@@ -96,20 +97,6 @@ function getRoleBadge(role?: string): { icon: string; short: string; label: stri
   }
 }
 
-function gradeAbbrev(grade: ManualGrade): string {
-  switch (grade) {
-    case 'earth':
-      return 'E';
-    case 'heaven':
-      return 'H';
-    case 'mystic':
-      return 'Y';
-    case 'mortal':
-    default:
-      return 'M';
-  }
-}
-
 function normalizePath(path?: string) {
   if (path === 'heaven' || path === 'earth' || path === 'martial') {
     return path;
@@ -137,8 +124,7 @@ interface BookSpineSlotProps {
 function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClearHover }: BookSpineSlotProps) {
   const state = resolveSpineState(slot);
   const path = normalizePath(technique?.path);
-  const roleBadge = getRoleBadge(technique?.role);
-  const roleKey = roleBadge.key;
+  const typeLabel = technique?.type ? technique.type.toUpperCase() : null;
 
   if (!slot) {
     return (
@@ -164,14 +150,21 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
     onHover(slot.slotIndex, rect);
   };
 
+  const locked = slot.notSold || slot.sealed;
   return (
     <button
       type="button"
-      className={`pavilionSpine ${isSelected ? 'pavilionSpine--selected' : ''}`}
+      className={[
+        'pavilionSpine',
+        `pavilionSpine--rarity-${slot.rarity}`,
+        isSelected ? 'pavilionSpine--selected' : '',
+        slot.sold ? 'pavilionSpine--sold' : '',
+        locked ? 'pavilionSpine--locked' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       data-state={state}
       data-path={path}
-      data-rarity={slot.rarity}
-      data-role={roleKey}
       onClick={onSelect}
       onMouseEnter={handleHover}
       onMouseLeave={onClearHover}
@@ -185,14 +178,12 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
       }}
       title={titleParts.join(' • ')}
     >
-      <div className="pavilionSpineTop">
-        <span className="pavilionSpineGradeMark">{gradeAbbrev(slot.grade)}</span>
+      <div className="pavilionSpineBadges">
+        <span className="pavilionSpineBadge pavilionSpineBadge--rarity">{rarityLabel(slot.rarity)}</span>
+        <span className="pavilionSpineBadge">{gradeLabel(slot.grade)}</span>
       </div>
       <div className="pavilionSpineName">{technique?.name ?? slot.techniqueId}</div>
-      <div className="pavilionSpineBottom">
-        <span className="pavilionSpineRoleIcon">{roleBadge.icon}</span>
-        <span className="pavilionSpineRoleText">{roleBadge.short}</span>
-      </div>
+      {typeLabel && <div className="pavilionSpineType">{typeLabel}</div>}
       {state !== 'available' && <div className={`pavilionSpineOverlay pavilionSpineOverlay--${state}`} />}
     </button>
   );
@@ -212,6 +203,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const lastPurchaseError = useManualPavilionStore((state) => state.lastError);
   const realmIndex = useGameStore((state) => state.realm.index);
   const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
+  const currencies = useInventoryStore((state) => state.currencies);
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const requestTechniqueFocus = useUIStore((state) => state.requestTechniqueFocus);
@@ -224,6 +216,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [hovered, setHovered] = useState<{ slotIndex: number; rect: DOMRect } | null>(null);
   const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const closeDetail = useCallback(() => setDetailOpen(false), []);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
@@ -242,13 +235,13 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
-      setDetailOpen(false);
+      closeDetail();
     };
     window.addEventListener('keydown', onKeyDownCapture, { capture: true });
     return () => {
       window.removeEventListener('keydown', onKeyDownCapture, { capture: true } as EventListenerOptions);
     };
-  }, [detailOpen]);
+  }, [closeDetail, detailOpen]);
 
   useEffect(() => {
     if (pavilionId && isContentLoaded && pavilion) {
@@ -257,13 +250,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   }, [ensureStock, isContentLoaded, pavilion, pavilionId]);
 
   useEffect(() => {
-    if (!stock || stock.slots.length === 0) return;
-    if (selectedSlotId == null) {
-      setSelectedSlotId(stock.slots[0]?.slotIndex ?? null);
+    if (!stock) return;
+    if (stock.slots.length === 0) {
+      if (selectedSlotId !== null) setSelectedSlotId(null);
       return;
     }
-    const exists = stock.slots.some((slot) => slot.slotIndex === selectedSlotId);
-    if (!exists) {
+    if (selectedSlotId == null || !stock.slots.some((slot) => slot.slotIndex === selectedSlotId)) {
       setSelectedSlotId(stock.slots[0]?.slotIndex ?? null);
     }
   }, [selectedSlotId, stock]);
@@ -276,9 +268,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const pityLegendaryMax = manualSystem?.pavilions?.pity?.featuredLegendaryPityToGuarantee ?? 30;
 
   const selectedSlot = useMemo(() => {
-    const direct = stock?.slots.find((slot) => slot.slotIndex === selectedSlotId);
-    if (direct) return direct;
-    return stock?.slots[0];
+    if (!stock) return null;
+    if (selectedSlotId != null) {
+      const direct = stock.slots.find((slot) => slot.slotIndex === selectedSlotId);
+      if (direct) return direct;
+    }
+    return stock.slots[0] ?? null;
   }, [selectedSlotId, stock]);
 
   const shelves = useMemo(() => {
@@ -301,7 +296,6 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     setDetailOpen(true);
   };
 
-  const closeDetail = () => setDetailOpen(false);
   const clearHover = () => setHovered(null);
 
   const handleRefresh = () => {
@@ -344,24 +338,13 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     requestTechniqueFocus(techId, 'upgradeRank');
   };
 
-  const renderShelfRow = (
-    title: string,
-    shelfKey: string,
-    slots: PavilionStockSlot[],
-    desiredCapacity: number,
-    hint?: string,
-  ) => {
-    const desired = Math.max(desiredCapacity, slots.length);
-    const placeholdersNeeded = Math.max(0, desired - slots.length);
+  const renderShelfRow = (title: string, shelfKey: string, slots: PavilionStockSlot[], hint?: string) => {
+    const countLabel = `${slots.length} in stock`;
     const spineEntries: Array<{ key: string; slot: PavilionStockSlot | null; technique?: TechniqueDef }> = [
       ...slots.map((slot) => ({
         key: `slot-${slot.slotIndex}`,
         slot,
         technique: techniquesById[slot.techniqueId],
-      })),
-      ...Array.from({ length: placeholdersNeeded }, (_, index) => ({
-        key: `ph-${shelfKey}-${index}`,
-        slot: null,
       })),
     ];
 
@@ -369,10 +352,13 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       <div className={`pavilionShelfRow pavilionShelfRow--${shelfKey}`}>
         <div className={'pavilionShelfRowHeader'}>
           <div className={'pavilionShelfRowTitle'}>{title}</div>
-          {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
+          <div className={'pavilionShelfRowMeta'}>
+            <div className={'pavilionShelfRowCount'}>{countLabel}</div>
+            {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
+          </div>
         </div>
         <div className={'pavilionShelfRowRail'}>
-          <div className={'pavilionShelfRowSpines'} role="list">
+          <div className={'pavilionShelfRowContent'} role="list">
             {spineEntries.map((entry) => (
               <BookSpineSlot
                 key={entry.key}
@@ -411,6 +397,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     const studyDisabledReason =
       purchaseDisabledReason ?? 'Buy & Study Now performs an instant study in this milestone.';
     const errorMessage = formatPurchaseError(purchaseError || lastPurchaseError);
+    const pathLabel = technique?.path ?? 'Unknown';
+    const typeLabel = technique?.type ? technique.type.toUpperCase() : 'Unknown';
+    const roleLabel = technique?.role ?? 'General';
+    const tags = technique?.tags ?? [];
     return (
       <div className={'pavilionDetail'}>
         <div className={'pavilionDetailHeader'}>
@@ -424,6 +414,18 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           </div>
         </div>
         <div className={'pavilionDetailBody'}>
+          <div className={'pavilionDetailLine'}>
+            Path: {pathLabel} • Type: {typeLabel} • Role: {roleLabel}
+          </div>
+          {tags.length > 0 && (
+            <div className={'pavilionDetailTags'}>
+              {tags.map((tag) => (
+                <span key={tag} className={'pavilionBadge'}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
           <div className={'pavilionDetailLine'}>{synthesizeCombatSummary(technique)}</div>
           {technique?.cooldownSec != null && (
             <div className={'pavilionDetailLine'}>Cooldown: {technique.cooldownSec}s</div>
@@ -433,34 +435,35 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
               Resource Cost: {technique.resourceCost} {technique.resourceModel}
             </div>
           )}
-          <div className={'pavilionDetailLine'}>Tags: {technique?.tags?.join(', ') || 'None'}</div>
-          <div className={'pavilionDetailLine pavilionDetailPlaceholder'}>Traits appear after studying.</div>
+          <div className={'pavilionDetailLine pavilionDetailHint'}>Traits appear after studying.</div>
           {selectedSlot.notSold && (
             <div className={'pavilionDetailLine pavilionCardNotSold'}>Not sold here in this city tier.</div>
           )}
           {selectedSlot.sold && <div className={'pavilionDetailLine pavilionCardSold'}>Sold out.</div>}
           <div className={'pavilionDetailLine'}>Price: {costLabel}</div>
         </div>
-        <div className={'pavilionDetailActions'}>
-          <button
-            className={'worldScreenModuleButton'}
-            disabled={Boolean(purchaseDisabledReason)}
-            title={purchaseDisabledReason}
-            onClick={() => handlePurchase('buy')}
-          >
-            Buy Manual
-          </button>
-          <button
-            className={'worldScreenModuleButton'}
-            disabled={Boolean(studyDisabledReason)}
-            title={studyDisabledReason}
-            onClick={() => handlePurchase('buyAndStudy')}
-          >
-            Buy &amp; Study Now
-          </button>
+        <div className={'pavilionDetailFooter'}>
+          <div className={'pavilionDetailActions'}>
+            <button
+              className={'worldScreenModuleButton'}
+              disabled={Boolean(purchaseDisabledReason)}
+              title={purchaseDisabledReason}
+              onClick={() => handlePurchase('buy')}
+            >
+              Buy Manual
+            </button>
+            <button
+              className={'worldScreenModuleButton'}
+              disabled={Boolean(studyDisabledReason)}
+              title={studyDisabledReason}
+              onClick={() => handlePurchase('buyAndStudy')}
+            >
+              Buy &amp; Study Now
+            </button>
+          </div>
+          {errorMessage && <div className={'pavilionPurchaseError'}>Purchase failed: {errorMessage}</div>}
+          {renderPurchaseResult()}
         </div>
-        {errorMessage && <div className={'pavilionPurchaseError'}>Purchase failed: {errorMessage}</div>}
-        {renderPurchaseResult()}
       </div>
     );
   };
@@ -520,13 +523,13 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return (
       <div className={'pavilionHistory'}>
         <div className={'pavilionHistoryHeader'}>
-          <div className={'pavilionHistoryTitle'}>Recent refreshes</div>
           <button
             className={'pavilionHistoryToggle'}
             onClick={() => setHistoryOpen((prev) => !prev)}
             type="button"
           >
-            {historyOpen ? 'Hide' : 'Show'}
+            <span>Recent refreshes</span>
+            {historyOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
         </div>
         {historyOpen && (
@@ -569,17 +572,17 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     if (!stock) return null;
     const remaining = Math.max(0, stock.nextRefreshAt - now);
     const ready = now >= stock.nextRefreshAt;
+    const restockLabel = ready ? 'Restock: Ready' : `Restock in: ${formatDurationHMS(remaining)}`;
     return (
       <div className={'pavilionRefreshBar pavilionRefreshBar--inline'}>
         <div className={'pavilionRefreshMeta'}>
-          <div className={'pavilionRefreshLine'}>Next refresh in: {formatDurationHMS(remaining)}</div>
-          <div className={'pavilionPityLine'}>
-            <span title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter.">
-              Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed
-            </span>
-            <span>
-              Legendary pity: {stock.pity.featuredLegendary}/{pityLegendaryMax}
-            </span>
+          <div className={'pavilionRefreshLine'}>{restockLabel}</div>
+          <div
+            className={'pavilionPityLine'}
+            title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter."
+          >
+            Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed • Legendary: {stock.pity.featuredLegendary}
+            /{pityLegendaryMax}
           </div>
         </div>
         <button className={'worldScreenModuleButton'} onClick={handleRefresh} disabled={!ready}>
@@ -670,44 +673,63 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           <div className={'pavilionSubtitle'}>
             Grade sold: {gradeLabel(gradeSold as ManualGrade)} • Grade cap: {gradeLabel(gradeCap)}
           </div>
-          <div className={'pavilionMicrocopyInline'}>
-            Buy Manual → Study Manual → Equip Technique → Auto-used in combat
-          </div>
         </div>
         <div className={'pavilionTopCenter'}>{renderRefreshBarInline()}</div>
         <div className={'pavilionTopRight'}>
+          <div className={'pavilionWalletChips'}>
+            <div className={'pavilionWalletChip'}>
+              <Coins size={14} />
+              <span>Gold</span>
+              <strong>{currencies.gold ?? '0'}</strong>
+            </div>
+            <div className={'pavilionWalletChip'}>
+              <Gem size={14} />
+              <span>Spirit Stones</span>
+              <strong>{currencies.spiritStones ?? '0'}</strong>
+            </div>
+            <div className={'pavilionWalletChip'}>
+              <Medal size={14} />
+              <span>Merit</span>
+              <strong>{currencies.merit ?? '0'}</strong>
+            </div>
+          </div>
           <button className={'worldScreenModuleButton pavilionSatchelButton'} onClick={openManualSatchel}>
+            <Backpack size={16} />
             Satchel ({satchelCount})
           </button>
         </div>
       </div>
       <div className={'pavilionShelfWall'}>
-        {renderShelfRow('Common Shelf', 'common', shelves.common, 14, 'Heaven/Earth/Martial manuals')}
-        {renderShelfRow('Advanced Shelf', 'advanced', shelves.advanced, 12, 'Refined techniques')}
-        {renderShelfRow('Rare Shelf', 'rare', shelves.rare, 10, 'Uncommon paths')}
-        {renderShelfRow('Featured Shelf', 'featured', shelves.featured, 8, 'Limited highlights')}
+        {renderShelfRow('Common Shelf', 'common', shelves.common, 'Heaven/Earth/Martial manuals')}
+        {renderShelfRow('Advanced Shelf', 'advanced', shelves.advanced, 'Refined techniques')}
+        {renderShelfRow('Rare Shelf', 'rare', shelves.rare, 'Uncommon paths')}
+        {renderShelfRow('Featured Shelf', 'featured', shelves.featured, 'Limited highlights')}
       </div>
-      <div className={'pavilionBottomStrip'}>{renderHistoryCollapsible()}</div>
-      {detailOpen && (
-        <div className={'pavilionDetailOverlay'} role="presentation" onMouseDown={closeDetail}>
-          <div
-            className={'pavilionDetailModal'}
-            role="dialog"
-            aria-modal="true"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <button
-              className={'pavilionDetailClose'}
-              type="button"
-              onClick={closeDetail}
-              aria-label="Close detail"
-            >
-              ✕
-            </button>
-            {renderDetailContent()}
-          </div>
+      <div className={'pavilionReadingDesk'}>
+        <div className={'pavilionReadingDeskSurface'}>
+          {detailOpen && selectedSlot ? (
+            <div className={'pavilionDetailDrawer'} role="dialog" aria-modal="false">
+              <div className={'pavilionDetailDrawerHeader'}>
+                <div className={'pavilionDetailDrawerTitle'}>Reading Desk</div>
+                <button
+                  className={'pavilionDetailClose'}
+                  type="button"
+                  onClick={closeDetail}
+                  aria-label="Close detail"
+                >
+                  ✕
+                </button>
+              </div>
+              {renderDetailContent()}
+            </div>
+          ) : (
+            <div className={'pavilionDetailPlaceholder'}>
+              Select a manual spine to open the reading desk.
+            </div>
+          )}
         </div>
-      )}
+        <div className={'pavilionReadingDeskHistory'}>{renderHistoryCollapsible()}</div>
+      </div>
       {hovered && hoveredSlot && (
         <div className="pavilionSpineTooltipLayer" aria-hidden="true">
           <div
