@@ -4,19 +4,35 @@ import './ManualPavilionPanel.scss';
 import type { TechniqueDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useManualPavilionStore } from '../../stores/manualPavilionStore';
+import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
 import { useGameStore } from '../../stores/gameStore';
 import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
 import { formatPrice } from '../../stores/contentStore';
 import { formatDurationHMS } from '../../utils/timeFormat';
+import { useInventoryStore } from '../../stores/inventoryStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
-import { ManualDetailModal } from '../modals/ManualDetailModal';
+import { getManualTierIcon, getManualPathIcon, getManualTypeIcon, resolveManualType } from '../../features/manuals/manualIconMap';
+import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
 }
 
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
+const purchaseErrorCopy: Record<string, string> = {
+  insufficient_funds: 'Not enough currency for this purchase.',
+  already_sold: 'This manual has already been purchased.',
+  not_sold_here: 'This manual is not sold in this pavilion.',
+  sealed: 'This manual is sealed behind a higher grade.',
+  invalid_cost: 'Invalid price for this manual.',
+  stock_missing: 'Pavilion stock missing. Try refreshing.',
+  slot_missing: 'Manual slot missing. Try refreshing.',
+  purchase_in_progress: 'Another purchase is already in progress.',
+  spend_failed: 'Unable to spend currency for this purchase.',
+  content_loading: 'Content is still loading.',
+};
+
 function normalizeGradeValue(value?: string | null): ManualGrade {
   if (value && (gradeOrder as string[]).includes(value)) {
     return value as ManualGrade;
@@ -39,6 +55,11 @@ function deriveGradeCap(realmIndex: number): ManualGrade {
   return 'mortal';
 }
 
+function formatPurchaseError(reason?: string | null) {
+  if (!reason) return null;
+  return purchaseErrorCopy[reason] ?? reason;
+}
+
 type SpineState = 'placeholder' | 'available' | 'sealed' | 'notSold' | 'sold';
 
 function getRoleBadge(role?: string): { icon: string; short: string; label: string; key: string } {
@@ -51,20 +72,6 @@ function getRoleBadge(role?: string): { icon: string; short: string; label: stri
       return { icon: '🧿', short: 'UTIL', label: 'Utility', key: 'utility' };
     default:
       return { icon: '◎', short: 'GEN', label: 'General', key: 'general' };
-  }
-}
-
-function gradeAbbrev(grade: ManualGrade): string {
-  switch (grade) {
-    case 'earth':
-      return 'E';
-    case 'heaven':
-      return 'H';
-    case 'mystic':
-      return 'Y';
-    case 'mortal':
-    default:
-      return 'M';
   }
 }
 
@@ -87,7 +94,7 @@ interface BookSpineSlotProps {
   slot: PavilionStockSlot | null;
   technique?: TechniqueDef;
   isSelected: boolean;
-  onSelect: () => void;
+  onSelect: (event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>) => void;
   onHover: (slotIndex: number, rect: DOMRect) => void;
   onClearHover: () => void;
 }
@@ -97,6 +104,7 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
   const path = normalizePath(technique?.path);
   const roleBadge = getRoleBadge(technique?.role);
   const roleKey = roleBadge.key;
+  const tierIcon = slot ? getManualTierIcon(slot.grade) : null;
 
   if (!slot) {
     return (
@@ -138,13 +146,15 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          onSelect();
+          onSelect(event);
         }
       }}
       title={titleParts.join(' • ')}
     >
       <div className="pavilionSpineTop">
-        <span className="pavilionSpineGradeMark">{gradeAbbrev(slot.grade)}</span>
+        <span className="pavilionSpineGradeMark" aria-label={tierIcon?.label}>
+          {tierIcon?.icon}
+        </span>
       </div>
       <div className="pavilionSpineName">{technique?.name ?? slot.techniqueId}</div>
       <div className="pavilionSpineBottom">
@@ -165,8 +175,14 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const ensureStock = useManualPavilionStore((state) => state.ensureStock);
   const refreshStock = useManualPavilionStore((state) => state.refreshStock);
   const stock = useManualPavilionStore((state) => (pavilionId ? state.stockByPavilionId[pavilionId] : null));
+  const buyManual = useManualPavilionStore((state) => state.buyManual);
+  const isPurchasing = useManualPavilionStore((state) => state.isPurchasing);
+  const lastPurchaseError = useManualPavilionStore((state) => state.lastError);
   const realmIndex = useGameStore((state) => state.realm.index);
+  const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
   const openManualSatchel = useUIStore((state) => state.openManualSatchel);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const requestTechniqueFocus = useUIStore((state) => state.requestTechniqueFocus);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
 
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
@@ -174,6 +190,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [now, setNow] = useState(() => Date.now());
   const [historyOpen, setHistoryOpen] = useState(false);
   const [hovered, setHovered] = useState<{ slotIndex: number; rect: DOMRect } | null>(null);
+  const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
@@ -181,19 +199,9 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   }, []);
 
   useEffect(() => {
-    if (selectedManualSlotId == null) return;
-    const onKeyDownCapture = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation?.();
-      setSelectedManualSlotId(null);
-    };
-    window.addEventListener('keydown', onKeyDownCapture, { capture: true });
-    return () => {
-      window.removeEventListener('keydown', onKeyDownCapture, { capture: true } as EventListenerOptions);
-    };
-  }, [selectedManualSlotId]);
+    setPurchaseResult(null);
+    setPurchaseError(null);
+  }, [selectedSlotId, stock?.generatedAt]);
 
   useEffect(() => {
     if (pavilionId && isContentLoaded && pavilion) {
@@ -254,9 +262,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return grouped;
   }, [stock]);
 
-  const handleSelect = (slot: PavilionStockSlot) => {
+  const handleSelect = (slot: PavilionStockSlot, event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>) => {
     setSelectedSlotId(slot.slotIndex);
     setSelectedManualSlotId(slot.slotIndex);
+    if (event.type === 'click') {
+      (event.currentTarget as HTMLButtonElement)?.focus();
+    }
   };
 
   const closeDetail = () => setSelectedManualSlotId(null);
@@ -265,6 +276,40 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const handleRefresh = () => {
     if (!pavilionId) return;
     refreshStock(pavilionId, Date.now());
+  };
+
+  const handlePurchase = (mode: 'buy' | 'buyAndStudy') => {
+    if (!pavilionId || !selectedManualSlot) return;
+    const result = buyManual({ pavilionId, stockId: selectedManualSlot.slotIndex, mode });
+    if (!result.ok) {
+      setPurchaseError(result.reason || 'purchase_failed');
+      setPurchaseResult(null);
+      return;
+    }
+
+    let finalResult: ManualPurchaseResult & { studied?: boolean } = result;
+    if (mode === 'buyAndStudy' && result.outcome === 'manualGranted') {
+      const satchel = useManualSatchelStore.getState();
+      const manualId =
+        result.manualInstanceId ||
+        satchel.manuals.find(
+          (manual) => manual.techId === result.techId && manual.grade === result.grade && manual.rarity === result.rarity,
+        )?.id;
+      if (manualId) {
+        const studyResult = satchel.startStudy(manualId);
+        if (studyResult.ok) {
+          finalResult = { ...result, studied: true };
+        }
+      }
+    }
+
+    setPurchaseError(null);
+    setPurchaseResult(finalResult);
+  };
+
+  const handleUpgradeNow = (techId: string) => {
+    setActiveTab('techniques');
+    requestTechniqueFocus(techId, 'upgradeRank');
   };
 
   const renderShelfRow = (
@@ -302,7 +347,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
                 slot={entry.slot}
                 technique={entry.technique}
                 isSelected={entry.slot?.slotIndex === selectedSlot?.slotIndex}
-                onSelect={() => entry.slot && handleSelect(entry.slot)}
+                onSelect={(event) => entry.slot && handleSelect(entry.slot, event)}
                 onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
                 onClearHover={clearHover}
               />
@@ -376,9 +421,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
             <span title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter.">
               Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed
             </span>
-            <span>
-              Legendary pity: {stock.pity.featuredLegendary}/{pityLegendaryMax}
-            </span>
+            <span>Legendary pity: {stock.pity.featuredLegendary}/{pityLegendaryMax}</span>
           </div>
         </div>
         <button className={'worldScreenModuleButton'} onClick={handleRefresh} disabled={!ready}>
@@ -442,7 +485,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const hoveredSlot = hovered ? stock.slots.find((slot) => slot.slotIndex === hovered.slotIndex) : undefined;
   const hoveredTechnique = hoveredSlot ? techniquesById[hoveredSlot.techniqueId] : undefined;
   const hoveredRole = getRoleBadge(hoveredTechnique?.role);
-  const hoveredPath = hoveredTechnique?.path ? hoveredTechnique.path.toString() : 'Unknown';
+  const hoveredPath = getManualPathIcon(hoveredTechnique?.path).label;
+  const hoveredType = getManualTypeIcon(resolveManualType(hoveredTechnique)).label;
   const hoveredState = hoveredSlot ? resolveSpineState(hoveredSlot) : 'placeholder';
   const tooltipAnchorLeft = hovered ? hovered.rect.left + hovered.rect.width / 2 : 0;
   const windowWidth = typeof window === 'undefined' ? null : window.innerWidth;
@@ -460,6 +504,36 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           ? 'Sealed (grade locked)'
           : `Price: ${formatPrice(hoveredSlot.price) || 'Free'}`
     : '';
+
+  const selectedTechnique = selectedManualSlot ? techniquesById[selectedManualSlot.techniqueId] : undefined;
+  const manualDetailData: ManualDetailData | null = selectedManualSlot
+    ? {
+        slot: selectedManualSlot,
+        technique: selectedTechnique,
+      }
+    : null;
+
+  const canAfford = selectedManualSlot?.price ? canAffordCurrency(selectedManualSlot.price) : true;
+  const purchaseDisabledReason = selectedManualSlot?.sold
+    ? 'Already purchased'
+    : selectedManualSlot?.notSold
+      ? 'Not sold here'
+      : selectedManualSlot?.sealed
+        ? 'Sealed (grade locked)'
+        : !canAfford
+          ? 'Not enough currency'
+          : isPurchasing
+            ? 'Purchase in progress'
+            : undefined;
+  const studyDisabledReason = purchaseDisabledReason ?? 'Buy & Study Now performs an instant study in this milestone.';
+  const errorMessage = formatPurchaseError(purchaseError || lastPurchaseError);
+
+  const purchaseState: ManualPurchaseState = {
+    errorMessage,
+    purchaseDisabledReason,
+    studyDisabledReason,
+    purchaseResult: purchaseResult ?? undefined,
+  };
 
   return (
     <div className={'manualPavilionPanel manualPavilionPanel--v2'}>
@@ -487,33 +561,30 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         {renderShelfRow('Featured Shelf', 'featured', shelves.featured, 8, 'Limited highlights')}
       </div>
       <div className={'pavilionBottomStrip'}>{renderHistoryCollapsible()}</div>
-      {selectedManualSlot && (
-        <ManualDetailModal
-          title={techniquesById[selectedManualSlot.techniqueId]?.name ?? selectedManualSlot.techniqueId}
-          subtitle={selectedManualSlot.techniqueId}
-          onClose={closeDetail}
-        />
-      )}
+      <ManualDetailModal
+        open={Boolean(selectedManualSlot)}
+        manual={manualDetailData}
+        onClose={closeDetail}
+        onPurchase={handlePurchase}
+        onUpgradeNow={handleUpgradeNow}
+        purchaseState={purchaseState}
+      />
       {hovered && hoveredSlot && (
         <div className="pavilionSpineTooltipLayer" aria-hidden="true">
           <div
             className="pavilionSpineTooltip"
             style={{ left: computedTooltipLeft, top: tooltipTop, transform: tooltipTransform }}
           >
-            <div className="pavilionSpineTooltipTitle">
-              {hoveredTechnique?.name ?? hoveredSlot.techniqueId}
-            </div>
+            <div className="pavilionSpineTooltipTitle">{hoveredTechnique?.name ?? hoveredSlot.techniqueId}</div>
             <div className="pavilionSpineTooltipBadges">
               <span>{rarityLabel(hoveredSlot.rarity)}</span>
               <span>{gradeLabel(hoveredSlot.grade)}</span>
               <span>{hoveredPath}</span>
               <span>{hoveredRole.label}</span>
-              <span>{hoveredTechnique?.type ?? 'unknown'}</span>
+              <span>{hoveredType}</span>
             </div>
             <div className="pavilionSpineTooltipLine">{hoveredPriceLine}</div>
-            {hoveredState !== 'available' && (
-              <div className="pavilionSpineTooltipLine">Status: {hoveredState}</div>
-            )}
+            {hoveredState !== 'available' && <div className="pavilionSpineTooltipLine">Status: {hoveredState}</div>}
             <div className="pavilionSpineTooltipMicro">Buy → Satchel → Study → Techniques</div>
           </div>
         </div>
