@@ -238,6 +238,58 @@
   background: rgba(51, 65, 85, 0.7);
 }
 
+.pavilionSpineTooltipLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2400;
+}
+
+.pavilionSpineTooltip {
+  position: fixed;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pavilionSpineTooltipTitle {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.pavilionSpineTooltipBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.pavilionSpineTooltipBadges span {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 999px;
+  padding: 2px 6px;
+}
+
+.pavilionSpineTooltipLine {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.pavilionSpineTooltipMicro {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
 .pavilionBadge {
   background: #1f2937;
   color: #e2e8f0;

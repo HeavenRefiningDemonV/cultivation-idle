@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { FocusEvent, MouseEvent } from 'react';
 import './ManualPavilionPanel.scss';
 import type { TechniqueDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
@@ -129,9 +130,11 @@ interface BookSpineSlotProps {
   technique?: TechniqueDef;
   isSelected: boolean;
   onSelect: () => void;
+  onHover: (slotIndex: number, rect: DOMRect) => void;
+  onClearHover: () => void;
 }
 
-function BookSpineSlot({ slot, technique, isSelected, onSelect }: BookSpineSlotProps) {
+function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClearHover }: BookSpineSlotProps) {
   const state = resolveSpineState(slot);
   const path = normalizePath(technique?.path);
   const roleBadge = getRoleBadge(technique?.role);
@@ -156,6 +159,11 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect }: BookSpineSlotP
     state !== 'available' ? state : 'Available',
   ];
 
+  const handleHover = (event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    onHover(slot.slotIndex, rect);
+  };
+
   return (
     <button
       type="button"
@@ -165,6 +173,16 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect }: BookSpineSlotP
       data-rarity={slot.rarity}
       data-role={roleKey}
       onClick={onSelect}
+      onMouseEnter={handleHover}
+      onMouseLeave={onClearHover}
+      onFocus={handleHover}
+      onBlur={onClearHover}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect();
+        }
+      }}
       title={titleParts.join(' • ')}
     >
       <div className="pavilionSpineTop">
@@ -203,6 +221,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [now, setNow] = useState(() => Date.now());
   const [historyOpen, setHistoryOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [hovered, setHovered] = useState<{ slotIndex: number; rect: DOMRect } | null>(null);
   const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
@@ -283,6 +302,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   };
 
   const closeDetail = () => setDetailOpen(false);
+  const clearHover = () => setHovered(null);
 
   const handleRefresh = () => {
     if (!pavilionId) return;
@@ -360,6 +380,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
                 technique={entry.technique}
                 isSelected={entry.slot?.slotIndex === selectedSlot?.slotIndex}
                 onSelect={() => entry.slot && handleSelect(entry.slot)}
+                onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
+                onClearHover={clearHover}
               />
             ))}
           </div>
@@ -618,6 +640,27 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   }
 
   const pavilionTitle = pavilion.id.replace(/_/g, ' ') || 'Manual Pavilion';
+  const hoveredSlot = hovered ? stock.slots.find((slot) => slot.slotIndex === hovered.slotIndex) : undefined;
+  const hoveredTechnique = hoveredSlot ? techniquesById[hoveredSlot.techniqueId] : undefined;
+  const hoveredRole = getRoleBadge(hoveredTechnique?.role);
+  const hoveredPath = hoveredTechnique?.path ? hoveredTechnique.path.toString() : 'Unknown';
+  const hoveredState = hoveredSlot ? resolveSpineState(hoveredSlot) : 'placeholder';
+  const tooltipAnchorLeft = hovered ? hovered.rect.left + hovered.rect.width / 2 : 0;
+  const windowWidth = typeof window === 'undefined' ? null : window.innerWidth;
+  const maxTooltipLeft = windowWidth ? windowWidth - 12 : tooltipAnchorLeft;
+  const computedTooltipLeft = Math.min(maxTooltipLeft, Math.max(12, tooltipAnchorLeft));
+  const shouldFlipTooltip = hovered ? hovered.rect.top < 120 : false;
+  const tooltipTop = hovered ? (shouldFlipTooltip ? hovered.rect.bottom + 10 : hovered.rect.top - 10) : 0;
+  const tooltipTransform = shouldFlipTooltip ? 'translate(-50%, 0)' : 'translate(-50%, -100%)';
+  const hoveredPriceLine = hoveredSlot
+    ? hoveredSlot.notSold
+      ? 'Not sold here'
+      : hoveredSlot.sold
+        ? 'Sold out (refresh to restock)'
+        : hoveredSlot.sealed
+          ? 'Sealed (grade locked)'
+          : `Price: ${formatPrice(hoveredSlot.price) || 'Free'}`
+    : '';
 
   return (
     <div className={'manualPavilionPanel manualPavilionPanel--v2'}>
@@ -662,6 +705,30 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
               ✕
             </button>
             {renderDetailContent()}
+          </div>
+        </div>
+      )}
+      {hovered && hoveredSlot && (
+        <div className="pavilionSpineTooltipLayer" aria-hidden="true">
+          <div
+            className="pavilionSpineTooltip"
+            style={{ left: computedTooltipLeft, top: tooltipTop, transform: tooltipTransform }}
+          >
+            <div className="pavilionSpineTooltipTitle">
+              {hoveredTechnique?.name ?? hoveredSlot.techniqueId}
+            </div>
+            <div className="pavilionSpineTooltipBadges">
+              <span>{rarityLabel(hoveredSlot.rarity)}</span>
+              <span>{gradeLabel(hoveredSlot.grade)}</span>
+              <span>{hoveredPath}</span>
+              <span>{hoveredRole.label}</span>
+              <span>{hoveredTechnique?.type ?? 'unknown'}</span>
+            </div>
+            <div className="pavilionSpineTooltipLine">{hoveredPriceLine}</div>
+            {hoveredState !== 'available' && (
+              <div className="pavilionSpineTooltipLine">Status: {hoveredState}</div>
+            )}
+            <div className="pavilionSpineTooltipMicro">Buy → Satchel → Study → Techniques</div>
           </div>
         </div>
       )}
