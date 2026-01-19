@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FocusEvent, MouseEvent } from 'react';
 import { Backpack, ChevronDown, ChevronUp, Coins, Gem, Medal } from 'lucide-react';
 import './ManualPavilionPanel.scss';
@@ -84,6 +84,16 @@ function formatPurchaseError(reason?: string | null) {
 
 type SpineState = 'placeholder' | 'available' | 'sealed' | 'notSold' | 'sold';
 
+type PavilionToastKind = 'info' | 'success' | 'error';
+type PavilionToast = {
+  id: number;
+  kind: PavilionToastKind;
+  title: string;
+  message?: string;
+  actions?: Array<{ label: string; onClick: () => void }>;
+  timeoutMs?: number;
+};
+
 function getRoleBadge(role?: string): { icon: string; short: string; label: string; key: string } {
   switch (role) {
     case 'offense':
@@ -116,12 +126,21 @@ interface BookSpineSlotProps {
   slot: PavilionStockSlot | null;
   technique?: TechniqueDef;
   isSelected: boolean;
+  rarePing: boolean;
   onSelect: () => void;
   onHover: (slotIndex: number, rect: DOMRect) => void;
   onClearHover: () => void;
 }
 
-function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClearHover }: BookSpineSlotProps) {
+function BookSpineSlot({
+  slot,
+  technique,
+  isSelected,
+  rarePing,
+  onSelect,
+  onHover,
+  onClearHover,
+}: BookSpineSlotProps) {
   const state = resolveSpineState(slot);
   const path = normalizePath(technique?.path);
   const typeLabel = technique?.type ? technique.type.toUpperCase() : null;
@@ -160,6 +179,7 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
         isSelected ? 'pavilionSpine--selected' : '',
         slot.sold ? 'pavilionSpine--sold' : '',
         locked ? 'pavilionSpine--locked' : '',
+        rarePing ? 'pavilionSpine--rarePing' : '',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -213,14 +233,44 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [now, setNow] = useState(() => Date.now());
   const [historyOpen, setHistoryOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [refreshPending, setRefreshPending] = useState(false);
   const [hovered, setHovered] = useState<{ slotIndex: number; rect: DOMRect } | null>(null);
   const [purchaseResult, setPurchaseResult] = useState<(ManualPurchaseResult & { studied?: boolean }) | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<PavilionToast[]>([]);
+  const [restockFxOn, setRestockFxOn] = useState(false);
+  const [restockPulseToken, setRestockPulseToken] = useState(0);
+  const toastIdRef = useRef(1);
+  const refreshTimeoutRef = useRef<number | null>(null);
+  const prevStockKeyRef = useRef<string | null>(null);
+  const firstStockSeenRef = useRef(false);
   const closeDetail = useCallback(() => setDetailOpen(false), []);
+
+  const pushToast = useCallback((toast: Omit<PavilionToast, 'id'>) => {
+    const id = toastIdRef.current++;
+    const toastEntry: PavilionToast = { id, timeoutMs: 3200, ...toast };
+    setToasts((prev) => [...prev, toastEntry]);
+    const timeout = toastEntry.timeoutMs ?? 3200;
+    window.setTimeout(() => {
+      setToasts((prev) => prev.filter((entry) => entry.id !== id));
+    }, timeout);
+  }, []);
+
+  const dismissToast = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((entry) => entry.id !== id));
+  }, []);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(handle);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        window.clearTimeout(refreshTimeoutRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -267,6 +317,52 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const pityEpicMax = manualSystem?.pavilions?.pity?.featuredEpicPityToGuarantee ?? 10;
   const pityLegendaryMax = manualSystem?.pavilions?.pity?.featuredLegendaryPityToGuarantee ?? 30;
 
+  const stockKey = useMemo(() => {
+    if (!stock) return 'none';
+    if (stock.generatedAt) return `generated-${stock.generatedAt}`;
+    const stockId = (stock as { stockId?: string | number }).stockId;
+    if (stockId != null) return `stock-${stockId}`;
+    const seed = (stock as { seed?: string | number }).seed;
+    if (seed != null) return `seed-${seed}`;
+    const lastRefreshAt = (stock as { lastRefreshAt?: string | number }).lastRefreshAt;
+    if (lastRefreshAt != null) return `refresh-${lastRefreshAt}`;
+    const fallback = stock.slots
+      .map((slot) => `${slot.slotIndex}:${slot.techniqueId}:${slot.rarity}:${slot.grade}:${slot.sold}`)
+      .join('|');
+    return `fallback-${fallback}`;
+  }, [stock]);
+
+  const buildPitySummaryLine = useCallback(() => {
+    if (!stock) return '';
+    return `Pity: ${stock.pity.featuredEpic}/${pityEpicMax} → Epic guaranteed\nLegendary pity: ${stock.pity.featuredLegendary}/${pityLegendaryMax}`;
+  }, [pityEpicMax, pityLegendaryMax, stock]);
+
+  useEffect(() => {
+    const prev = prevStockKeyRef.current;
+    prevStockKeyRef.current = stockKey;
+
+    if (!firstStockSeenRef.current) {
+      firstStockSeenRef.current = true;
+      return;
+    }
+    if (prev === stockKey) return;
+
+    setRestockFxOn(true);
+    setRestockPulseToken((value) => value + 1);
+    setRefreshPending(false);
+    if (refreshTimeoutRef.current) {
+      window.clearTimeout(refreshTimeoutRef.current);
+      refreshTimeoutRef.current = null;
+    }
+    window.setTimeout(() => setRestockFxOn(false), 650);
+
+    pushToast({
+      kind: 'info',
+      title: 'New stock arrived',
+      message: buildPitySummaryLine(),
+    });
+  }, [buildPitySummaryLine, pushToast, stockKey]);
+
   const selectedSlot = useMemo(() => {
     if (!stock) return null;
     if (selectedSlotId != null) {
@@ -299,8 +395,24 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const clearHover = () => setHovered(null);
 
   const handleRefresh = () => {
-    if (!pavilionId) return;
-    refreshStock(pavilionId, Date.now());
+    if (!pavilionId || !stock) return;
+    if (refreshPending) return;
+    const ready = now >= stock.nextRefreshAt;
+    if (!ready) return;
+    setRefreshPending(true);
+    if (refreshTimeoutRef.current) {
+      window.clearTimeout(refreshTimeoutRef.current);
+    }
+    refreshTimeoutRef.current = window.setTimeout(() => {
+      setRefreshPending(false);
+    }, 2500);
+    try {
+      refreshStock(pavilionId, Date.now());
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to refresh stock.';
+      pushToast({ kind: 'error', title: 'Refresh failed', message });
+      setRefreshPending(false);
+    }
   };
 
   const handlePurchase = (mode: 'buy' | 'buyAndStudy') => {
@@ -357,19 +469,27 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
             {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
           </div>
         </div>
-        <div className={'pavilionShelfRowRail'}>
-          <div className={'pavilionShelfRowContent'} role="list">
-            {spineEntries.map((entry) => (
-              <BookSpineSlot
-                key={entry.key}
-                slot={entry.slot}
-                technique={entry.technique}
-                isSelected={entry.slot?.slotIndex === selectedSlot?.slotIndex}
-                onSelect={() => entry.slot && handleSelect(entry.slot)}
-                onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
-                onClearHover={clearHover}
-              />
-            ))}
+          <div className={'pavilionShelfRowRail'}>
+            <div className={'pavilionShelfRowContent'} role="list">
+              {spineEntries.map((entry) => (
+                <BookSpineSlot
+                  key={entry.key}
+                  slot={entry.slot}
+                  technique={entry.technique}
+                  isSelected={entry.slot?.slotIndex === selectedSlot?.slotIndex}
+                  rarePing={
+                    Boolean(
+                      restockFxOn &&
+                        entry.slot &&
+                        (entry.slot.rarity === 'epic' || entry.slot.rarity === 'legendary') &&
+                        !entry.slot.sold,
+                    )
+                  }
+                  onSelect={() => entry.slot && handleSelect(entry.slot)}
+                  onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
+                  onClearHover={clearHover}
+                />
+              ))}
           </div>
         </div>
       </div>
@@ -536,6 +656,17 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           <div className={'pavilionHistoryBody'}>
             {entries.length === 0 && <div className={'pavilionHistoryLine'}>No refreshes yet.</div>}
             {entries.map((entry, idx) => {
+              const notable = { legendary: 0, epic: 0, rare: 0 };
+              if (entry.featured) {
+                if (entry.featured.rarity === 'legendary') notable.legendary += 1;
+                if (entry.featured.rarity === 'epic') notable.epic += 1;
+                if (entry.featured.rarity === 'rare') notable.rare += 1;
+              }
+              (entry.rares ?? []).forEach((rare) => {
+                if (rare.rarity === 'legendary') notable.legendary += 1;
+                if (rare.rarity === 'epic') notable.epic += 1;
+                if (rare.rarity === 'rare') notable.rare += 1;
+              });
               const featuredName = entry.featured
                 ? techniquesById[entry.featured.techniqueId]?.name ?? entry.featured.techniqueId
                 : '—';
@@ -551,6 +682,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
                   <div>
                     <div className={'pavilionHistoryTime'}>
                       {timeLabel} ({relativeLabel})
+                    </div>
+                    <div className={'pavilionHistoryEntry'}>
+                      {agoMinutes >= 1 ? `${agoMinutes}m ago` : 'Just now'} — Legendary: {notable.legendary} • Epic:{' '}
+                      {notable.epic} • Rare: {notable.rare}
                     </div>
                     <div className={'pavilionHistoryEntry'}>
                       Featured: {featuredName} {entry.featured ? `(${rarityLabel(entry.featured.rarity)})` : ''}
@@ -576,17 +711,25 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return (
       <div className={'pavilionRefreshBar pavilionRefreshBar--inline'}>
         <div className={'pavilionRefreshMeta'}>
-          <div className={'pavilionRefreshLine'}>{restockLabel}</div>
-          <div
-            className={'pavilionPityLine'}
-            title="Featured shelf rolls improve over time. If you haven’t seen an Epic in Y rolls, the next roll is guaranteed Epic. Legendary has a separate counter."
-          >
-            Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed • Legendary: {stock.pity.featuredLegendary}
-            /{pityLegendaryMax}
+          <div className={'pavilionRefreshLine'}>
+            {restockLabel}
+            {restockFxOn && <span className={'pavilionRestockBadge'}>Restocked</span>}
+          </div>
+          <div className={'pavilionPityBlock'}>
+            <div className={'pavilionPityLine'}>
+              Pity: {stock.pity.featuredEpic}/{pityEpicMax} → Epic guaranteed
+            </div>
+            <div className={'pavilionPityLine'}>Legendary pity: {stock.pity.featuredLegendary}/{pityLegendaryMax}</div>
+            <div
+              className={'pavilionPityHelp'}
+              title="Each refresh increases pity by 1. At 10 you are guaranteed an Epic. At 30 you are guaranteed a Legendary. Pity resets when the guarantee triggers."
+            >
+              How it works
+            </div>
           </div>
         </div>
-        <button className={'worldScreenModuleButton'} onClick={handleRefresh} disabled={!ready}>
-          Refresh
+        <button className={'worldScreenModuleButton'} onClick={handleRefresh} disabled={!ready || refreshPending}>
+          {refreshPending ? 'Refreshing...' : 'Refresh'}
         </button>
       </div>
     );
@@ -699,7 +842,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           </button>
         </div>
       </div>
-      <div className={'pavilionShelfWall'}>
+      <div
+        className={`pavilionShelfWall${restockFxOn ? ' pavilionShelfWall--restockFx' : ''}`}
+        data-restock-token={restockPulseToken}
+      >
         {renderShelfRow('Common Shelf', 'common', shelves.common, 'Heaven/Earth/Martial manuals')}
         {renderShelfRow('Advanced Shelf', 'advanced', shelves.advanced, 'Refined techniques')}
         {renderShelfRow('Rare Shelf', 'rare', shelves.rare, 'Uncommon paths')}
@@ -754,6 +900,37 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           </div>
         </div>
       )}
+      <div className="pavilionToastStack" aria-live="polite">
+        {toasts.map((toast) => (
+          <div key={toast.id} className={`pavilionToast pavilionToast--${toast.kind}`}>
+            <div className="pavilionToastHeader">
+              <div className="pavilionToastTitle">{toast.title}</div>
+              <button
+                type="button"
+                className="pavilionToastClose"
+                onClick={() => dismissToast(toast.id)}
+              >
+                ✕
+              </button>
+            </div>
+            {toast.message && <div className="pavilionToastMessage">{toast.message}</div>}
+            {toast.actions && toast.actions.length > 0 && (
+              <div className="pavilionToastActions">
+                {toast.actions.map((action, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="pavilionToastActionBtn"
+                    onClick={action.onClick}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

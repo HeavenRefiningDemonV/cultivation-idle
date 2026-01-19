@@ -95,6 +95,21 @@
   color: rgba(148, 163, 184, 0.65);
 }
 
+.pavilionPityBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pavilionPityHelp {
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.7);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: help;
+  width: fit-content;
+}
+
 .pavilionRefreshMeta {
   display: flex;
   flex-direction: column;
@@ -104,6 +119,19 @@
 .pavilionRefreshLine {
   font-size: 13px;
   color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pavilionRestockBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.9);
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.28);
 }
 
 .pavilionShelfWall {
@@ -117,6 +145,10 @@
   gap: 14px;
   min-height: 0;
   overflow: hidden;
+}
+
+.pavilionShelfWall--restockFx .pavilionSpine {
+  animation: pavilionRestockShuffle 620ms ease both;
 }
 
 .pavilionReadingDesk {
@@ -406,6 +438,10 @@
   opacity: 0.75;
 }
 
+.pavilionSpine--rarePing {
+  animation: pavilionRarePing 900ms ease-out both;
+}
+
 .pavilionSpine[data-state='available'].pavilionSpine--rarity-epic,
 .pavilionSpine[data-state='available'].pavilionSpine--rarity-legendary {
   animation: pavilionRareBreath 3.2s ease-in-out infinite;
@@ -421,6 +457,41 @@
   }
 }
 
+@keyframes pavilionRestockShuffle {
+  0% {
+    transform: translateY(0);
+    filter: blur(0px);
+    opacity: 1;
+  }
+  35% {
+    transform: translateY(6px);
+    filter: blur(2px);
+    opacity: 0.35;
+  }
+  70% {
+    transform: translateY(-2px);
+    filter: blur(0px);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(0);
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes pavilionRarePing {
+  0% {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  35% {
+    box-shadow: 0 0 18px rgba(234, 179, 8, 0.18);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pavilionSpine {
     transition: none;
@@ -428,6 +499,11 @@
 
   .pavilionSpine[data-state='available'].pavilionSpine--rarity-epic,
   .pavilionSpine[data-state='available'].pavilionSpine--rarity-legendary {
+    animation: none !important;
+  }
+
+  .pavilionShelfWall--restockFx .pavilionSpine,
+  .pavilionSpine--rarePing {
     animation: none !important;
   }
 }
@@ -513,6 +589,82 @@
 .pavilionSpineTooltipMicro {
   font-size: 11px;
   color: #94a3b8;
+}
+
+.pavilionToastStack {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(360px, 40%);
+  pointer-events: none;
+  z-index: 2400;
+}
+
+.pavilionToast {
+  pointer-events: auto;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(10, 14, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.pavilionToast--success {
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.pavilionToast--error {
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.pavilionToast--info {
+  border-color: rgba(59, 130, 246, 0.18);
+}
+
+.pavilionToastHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pavilionToastTitle {
+  font-weight: 900;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.pavilionToastClose {
+  background: transparent;
+  border: 0;
+  color: rgba(226, 232, 240, 0.85);
+  cursor: pointer;
+}
+
+.pavilionToastMessage {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.92);
+  white-space: pre-line;
+}
+
+.pavilionToastActions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pavilionToastActionBtn {
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(226, 232, 240, 0.95);
+  cursor: pointer;
 }
 
 .pavilionBadge {
