@@ -128,6 +128,11 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
   const pathIcon = getManualPathIcon(technique?.path);
   const typeIcon = getManualTypeIcon(manualType);
 
+  const prefersReducedMotion = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
+
   const sections = useMemo(() => {
     if (!manual) return [] as Array<{ id: string; title: string; content: ReactNode }>;
     const costLabel = formatPrice(manual.slot.price) || 'Free';
@@ -379,13 +384,13 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
     if (!container) return;
     const section = container.querySelector<HTMLElement>(`[data-section-id="${id}"]`);
     if (!section) return;
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    section.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
   };
 
   const handleBackToTop = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    container.scrollTo({ top: 0, behavior: 'smooth' });
+    container.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
   };
 
   const hasBackToTop = scrollState.canScrollUp;

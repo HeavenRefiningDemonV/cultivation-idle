@@ -12,7 +12,12 @@ import { formatDurationHMS } from '../../utils/timeFormat';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
-import { getManualTierIcon, getManualPathIcon, getManualTypeIcon, resolveManualType } from '../../features/manuals/manualIconMap';
+import {
+  getManualTierIcon,
+  getManualPathIcon,
+  getManualTypeIcon,
+  resolveManualType,
+} from '../../features/manuals/manualIconMap';
 import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal';
 
 interface ManualPavilionPanelProps {
@@ -105,6 +110,8 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
   const roleBadge = getRoleBadge(technique?.role);
   const roleKey = roleBadge.key;
   const tierIcon = slot ? getManualTierIcon(slot.grade) : null;
+  const pathIcon = getManualPathIcon(technique?.path);
+  const typeIcon = getManualTypeIcon(resolveManualType(technique));
 
   if (!slot) {
     return (
@@ -160,6 +167,14 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
       <div className="pavilionSpineBottom">
         <span className="pavilionSpineRoleIcon">{roleBadge.icon}</span>
         <span className="pavilionSpineRoleText">{roleBadge.short}</span>
+      </div>
+      <div className="pavilionSpineMeta" aria-label="Manual metadata">
+        <span className="pavilionSpineMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
+          {pathIcon.icon}
+        </span>
+        <span className="pavilionSpineMetaIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
+          {typeIcon.icon}
+        </span>
       </div>
       {state !== 'available' && <div className={`pavilionSpineOverlay pavilionSpineOverlay--${state}`} />}
     </button>
@@ -262,7 +277,10 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return grouped;
   }, [stock]);
 
-  const handleSelect = (slot: PavilionStockSlot, event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>) => {
+  const handleSelect = (
+    slot: PavilionStockSlot,
+    event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>,
+  ) => {
     setSelectedSlotId(slot.slotIndex);
     setSelectedManualSlotId(slot.slotIndex);
     if (event.type === 'click') {
