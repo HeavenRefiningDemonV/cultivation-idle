@@ -95,6 +95,16 @@ function techniqueTypeLabel(technique?: TechniqueDef) {
   return technique.type === 'passive' ? 'Passive' : 'Active';
 }
 
+function formatTechniquePath(path?: TechniqueDef['path']) {
+  if (!path) return 'Unknown';
+  return path.toString();
+}
+
+function formatTechniqueRole(role?: TechniqueDef['role']) {
+  if (!role) return 'Unknown';
+  return role.toString();
+}
+
 export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const isContentLoaded = useContentStore((state) => state.isLoaded);
   const isContentLoading = useContentStore((state) => state.isLoading);
@@ -138,7 +148,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation?.();
-      setDetailOpen(false);
+      closeDetail();
     };
     window.addEventListener('keydown', onKeyDownCapture, { capture: true });
     return () => {
@@ -197,6 +207,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   const handleSelect = (slot: PavilionStockSlot) => {
     setSelectedSlotId(slot.slotIndex);
+    setDetailOpen(true);
   };
 
   const closeDetail = () => setDetailOpen(false);
@@ -304,6 +315,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
       return <div className={'pavilionDetailEmpty'}>Select a manual to see details.</div>;
     }
     const technique = getTechniqueMeta(selectedSlot.techniqueId, techniquesById);
+    const techniquePath = formatTechniquePath(technique?.path);
+    const techniqueRole = formatTechniqueRole(technique?.role);
     const costLabel = formatPrice(selectedSlot.price) || 'Free';
     const canAfford = selectedSlot.price ? canAffordCurrency(selectedSlot.price) : true;
     const purchaseDisabledReason = selectedSlot.sold
@@ -334,6 +347,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         </div>
         <div className={'pavilionDetailBody'}>
           <div className={'pavilionDetailLine'}>{synthesizeCombatSummary(technique)}</div>
+          <div className={'pavilionDetailLine'}>Path: {techniquePath}</div>
+          <div className={'pavilionDetailLine'}>Role: {techniqueRole}</div>
           {technique?.cooldownSec != null && (
             <div className={'pavilionDetailLine'}>Cooldown: {technique.cooldownSec}s</div>
           )}
@@ -349,6 +364,9 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           )}
           {selectedSlot.sold && <div className={'pavilionDetailLine pavilionCardSold'}>Sold out.</div>}
           <div className={'pavilionDetailLine'}>Price: {costLabel}</div>
+          {purchaseDisabledReason && (
+            <div className={'pavilionDetailLine pavilionCardNotSold'}>Locked: {purchaseDisabledReason}</div>
+          )}
         </div>
         <div className={'pavilionDetailActions'}>
           <button
@@ -574,7 +592,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         </div>
       </div>
       <div className={'pavilionBottomStrip'}>{renderHistoryCollapsible()}</div>
-      {detailOpen && (
+      {detailOpen && selectedSlot && (
         <div className={'pavilionDetailOverlay'} role="presentation" onMouseDown={closeDetail}>
           <div
             className={'pavilionDetailModal'}
