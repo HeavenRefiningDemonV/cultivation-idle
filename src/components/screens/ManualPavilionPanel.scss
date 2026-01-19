@@ -238,6 +238,128 @@
   opacity: 0.6;
 }
 
+.pavilionDetailOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  z-index: 2300;
+}
+
+.pavilionDetailModal {
+  width: min(760px, 96vw);
+  max-height: 82vh;
+  overflow: auto;
+  position: relative;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.pavilionDetailClose {
+  position: sticky;
+  top: 0;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+}
+
+.pavilionDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.pavilionDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pavilionDetailName {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pavilionDetailId {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.pavilionDetailBody {
+  background: #0b1221;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.pavilionDetailLine {
+  color: #e2e8f0;
+}
+
+.pavilionDetailPlaceholder {
+  color: #94a3b8;
+}
+
+.pavilionDetailActions {
+  display: flex;
+  gap: 8px;
+}
+
+.pavilionDetailEmpty {
+  color: #94a3b8;
+}
+
+.pavilionPurchaseResult {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #e2e8f0;
+  gap: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pavilionPurchaseResult--duplicate {
+  border-color: #7c3aed;
+}
+
+.pavilionPurchaseResult--error {
+  border-color: #ef4444;
+  color: #fecdd3;
+}
+
+.pavilionPurchaseError {
+  margin-top: 8px;
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.pavilionResultTitle {
+  font-weight: 700;
+  color: #c084fc;
+}
+
 .pavilionHistory {
   background: #0f172a;
   border: 1px solid #1f2937;
