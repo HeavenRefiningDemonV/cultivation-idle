@@ -19,6 +19,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
 import { RankUpgradeRitualModal } from '../modals/RankUpgradeRitualModal';
 import { TraitRerollModal } from '../modals/TraitRerollModal';
+import { TechniqueDetailModal } from '../modals/TechniqueDetailModal';
 import { GameEvents } from '../../services/events/GameEvents';
 import { resolveTechniqueType } from '../../features/manuals/manualIconMap';
 import { TechniqueSpine } from '../techniques/TechniqueSpine';
@@ -140,8 +141,10 @@ export function TechniqueLibraryScreen() {
   const [runeSelections, setRuneSelections] = useState<Record<number, string>>({});
   const [showRankModal, setShowRankModal] = useState(false);
   const [showTraitModal, setShowTraitModal] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
   const previousRankModal = useRef(false);
   const previousTraitModal = useRef(false);
+  const detailCloseRef = useRef<HTMLButtonElement | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
   // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
@@ -435,6 +438,12 @@ export function TechniqueLibraryScreen() {
     ensureRunes(selectedTechniqueId);
     setRuneSelections({});
   }, [ensureRunes, ensureTraits, selectedTechniqueId]);
+
+  useEffect(() => {
+    if (!selectedTechniqueId && detailOpen) {
+      setDetailOpen(false);
+    }
+  }, [detailOpen, selectedTechniqueId]);
 
   useEffect(() => {
     if (techniqueLibraryIntent?.type !== 'equip') return;
@@ -880,6 +889,7 @@ export function TechniqueLibraryScreen() {
                     onSelect={() => {
                       setSelectedTechniqueId(tech.id);
                       setInlineMessage(null);
+                      setDetailOpen(true);
                     }}
                   />
                 </div>
@@ -1335,6 +1345,13 @@ export function TechniqueLibraryScreen() {
           </div>
         </aside>
       </div>
+
+      <TechniqueDetailModal
+        open={detailOpen}
+        techniqueId={selectedTechniqueId}
+        onClose={() => setDetailOpen(false)}
+        initialFocusRef={detailCloseRef}
+      />
     </div>
   );
 }
