@@ -208,6 +208,73 @@
   text-overflow: ellipsis;
 }
 
+.techniquesPanel--v2 .techShelfWall {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.techniquesPanel--v2 .techShelfRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.techniquesPanel--v2 .techShelfRowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(245, 245, 245, 0.7);
+}
+
+.techniquesPanel--v2 .techShelfRowTitle {
+  font-weight: 700;
+}
+
+.techniquesPanel--v2 .techShelfRowCount {
+  font-weight: 600;
+  color: rgba(164, 255, 190, 0.85);
+}
+
+.techniquesPanel--v2 .techShelfRowRail {
+  background: rgba(10, 12, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px;
+  overflow-x: auto;
+}
+
+.techniquesPanel--v2 .techShelfRowSpines {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  min-height: 180px;
+}
+
+.techniquesPanel--v2 .techShelfRowSpine {
+  display: flex;
+}
+
+.techniquesPanel--v2 .techShelfRowSpine--placeholder .techSpine--placeholder {
+  background: rgba(12, 16, 24, 0.5);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+  cursor: default;
+}
+
+.techniquesPanel--v2 .techShelfRowSpine--placeholder .techSpine--placeholder::before {
+  display: none;
+}
+
+.techniquesPanel--v2 .techShelfRowSpine--placeholder .techSpine--placeholder:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+  transform: none;
+}
+
 @media (max-width: 900px) {
   .techniquesPanel--v2 .techTopRibbon {
     grid-template-columns: 1fr;

@@ -20,6 +20,8 @@ import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techn
 import { RankUpgradeRitualModal } from '../modals/RankUpgradeRitualModal';
 import { TraitRerollModal } from '../modals/TraitRerollModal';
 import { GameEvents } from '../../services/events/GameEvents';
+import { resolveTechniqueType } from '../../features/manuals/manualIconMap';
+import { TechniqueSpine } from '../techniques/TechniqueSpine';
 import './TechniqueLibraryScreen.scss';
 
 type InlineMessage = { type: 'error' | 'info' | 'success'; text: string } | null;
@@ -377,6 +379,8 @@ export function TechniqueLibraryScreen() {
     return list;
   }, [favoritesOnly, gradeFilter, ownedTechniques, pathFilter, roleFilter, sortKey, typeFilter]);
 
+  const visibleTechniques = useMemo(() => filteredTechniques, [filteredTechniques]);
+
   const selectedOwned = useMemo(
     () => ownedTechniques.find((tech) => tech.id === selectedTechniqueId),
     [ownedTechniques, selectedTechniqueId],
@@ -400,7 +404,7 @@ export function TechniqueLibraryScreen() {
   }, []);
 
   useEffect(() => {
-    if (ownedTechniques.length === 0) {
+    if (visibleTechniques.length === 0) {
       if (selectedTechniqueId !== null) {
         setSelectedTechniqueId(null);
       }
@@ -408,13 +412,13 @@ export function TechniqueLibraryScreen() {
     }
 
     const hasSelection = selectedTechniqueId
-      ? ownedTechniques.some((tech) => tech.id === selectedTechniqueId)
+      ? visibleTechniques.some((tech) => tech.id === selectedTechniqueId)
       : false;
 
     if (!hasSelection) {
-      setSelectedTechniqueId(ownedTechniques[0].id);
+      setSelectedTechniqueId(visibleTechniques[0].id);
     }
-  }, [ownedTechniques, selectedTechniqueId]);
+  }, [selectedTechniqueId, visibleTechniques]);
 
   useEffect(() => {
     setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
@@ -817,6 +821,85 @@ export function TechniqueLibraryScreen() {
     </div>
   );
 
+  const groupedShelves = useMemo(() => {
+    const active: OwnedTechniqueView[] = [];
+    const passive: OwnedTechniqueView[] = [];
+    const ultimate: OwnedTechniqueView[] = [];
+    const other: OwnedTechniqueView[] = [];
+
+    visibleTechniques.forEach((tech) => {
+      const typeKey = resolveTechniqueType(tech.def);
+      if (typeKey === 'ultimate') {
+        ultimate.push(tech);
+      } else if (typeKey === 'passive') {
+        passive.push(tech);
+      } else if (typeKey === 'active') {
+        active.push(tech);
+      } else {
+        other.push(tech);
+      }
+    });
+
+    return { active, passive, ultimate, other };
+  }, [visibleTechniques]);
+
+  const renderTechShelfRow = (
+    title: string,
+    entries: OwnedTechniqueView[],
+    capacity: number,
+  ) => {
+    const slotsToRender = Math.max(capacity, entries.length);
+    const placeholders = Math.max(0, slotsToRender - entries.length);
+
+    return (
+      <div className="techShelfRow">
+        <div className="techShelfRowHeader">
+          <div className="techShelfRowTitle">{title}</div>
+          <div className="techShelfRowCount">{entries.length}</div>
+        </div>
+        <div className="techShelfRowRail">
+          <div className="techShelfRowSpines">
+            {entries.map((tech) => {
+              const displayName = tech.name || tech.id;
+              const tierKey = normalizeGrade(tech.def?.tier ?? tech.def?.tier);
+              const pathKey = tech.def?.path ?? 'unknown';
+              const typeKey = resolveTechniqueType(tech.def);
+              return (
+                <div key={tech.id} id={`tech-card-${tech.id}`} className="techShelfRowSpine">
+                  <TechniqueSpine
+                    id={tech.id}
+                    title={displayName}
+                    rarity={tech.rarity}
+                    tierKey={tierKey}
+                    pathKey={pathKey}
+                    typeKey={typeKey}
+                    rank={tech.rank}
+                    mastery={tech.masteryLevel}
+                    equipped={activeLoadoutEquipped.has(tech.id)}
+                    selected={selectedTechniqueId === tech.id}
+                    onSelect={() => {
+                      setSelectedTechniqueId(tech.id);
+                      setInlineMessage(null);
+                    }}
+                  />
+                </div>
+              );
+            })}
+            {Array.from({ length: placeholders }).map((_, index) => (
+              <div
+                key={`${title}-placeholder-${index}`}
+                className="techShelfRowSpine techShelfRowSpine--placeholder"
+                aria-hidden="true"
+              >
+                <div className="techSpine techSpine--placeholder" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="techniquesPanel techniquesPanel--v2">
       <header className="techTopRibbon">
@@ -940,7 +1023,7 @@ export function TechniqueLibraryScreen() {
           <div className="techniqueLibraryColumn techniqueLibraryColumn--center">
             <div className="techniqueLibraryPanel">
               <div className="techniqueLibraryPanelHeader">Owned Techniques</div>
-              <div className="techniqueLibraryOwnedList">
+              <div className="techShelfWall">
                 {isContentLoading ? (
                   <div className="techniqueLibraryEmptyState">Loading techniques...</div>
                 ) : ownedTechniques.length === 0 ? (
@@ -956,47 +1039,13 @@ export function TechniqueLibraryScreen() {
                 ) : filteredTechniques.length === 0 ? (
                   <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>
                 ) : (
-                  filteredTechniques.map((tech) => {
-                    const isSelected = selectedTechniqueId === tech.id;
-                    const displayName = tech.name || tech.id;
-                    const equippedInActiveLoadout = activeLoadoutEquipped.has(tech.id);
-                    const typeLabel = tech.typeLabel;
-                    const pathLabel = tech.path ?? 'Unknown';
-                    const gradeValue = gradeLabel(tech.grade);
-
-                    return (
-                      <button
-                        type="button"
-                        key={tech.id}
-                        id={`tech-card-${tech.id}`}
-                        className={`techLibraryItem techLibraryItem--compact ${isSelected ? 'is-selected' : ''}`}
-                        onClick={() => {
-                          setSelectedTechniqueId(tech.id);
-                          setInlineMessage(null);
-                        }}
-                      >
-                        <div className="techLibraryItemTop">
-                          <div className="techLibraryItemName">
-                            {displayName}
-                            {tech.favorite && <span className="techLibraryItemFavorite">★</span>}
-                          </div>
-                          <div className="techLibraryItemBadges">
-                            <span className="techBadge techBadge--tier">{gradeValue}</span>
-                            <span className="techBadge techBadge--path">{pathLabel}</span>
-                            <span className="techBadge techBadge--type">{typeLabel}</span>
-                            {equippedInActiveLoadout && (
-                              <span className="techBadge techBadge--equipped">Equipped</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="techLibraryItemBottom">
-                          <div className="techLibraryItemMeta">
-                            Mastery {tech.masteryLevel}/100 • {formatRankLabel(tech.rank)}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
+                  <>
+                    {renderTechShelfRow('Active Techniques', groupedShelves.active, 14)}
+                    {renderTechShelfRow('Passive Techniques', groupedShelves.passive, 12)}
+                    {renderTechShelfRow('Ultimate Techniques', groupedShelves.ultimate, 8)}
+                    {groupedShelves.other.length > 0 &&
+                      renderTechShelfRow('Other Techniques', groupedShelves.other, 8)}
+                  </>
                 )}
               </div>
             </div>
