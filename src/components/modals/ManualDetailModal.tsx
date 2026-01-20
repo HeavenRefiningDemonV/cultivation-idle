@@ -4,12 +4,7 @@ import { createPortal } from 'react-dom';
 import type { TechniqueDef } from '../../content';
 import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
 import type { ManualPurchaseResult as StoreManualPurchaseResult } from '../../stores/manualPavilionStore';
-import {
-  getManualPathIcon,
-  getManualTierIcon,
-  getManualTypeIcon,
-  resolveManualType,
-} from '../../features/manuals/manualIconMap';
+import { getManualPathIcon, getManualRoleIcon, getManualTierIcon } from '../../features/manuals/manualIconMap';
 import { formatPrice } from '../../stores/contentStore';
 
 export interface ManualDetailData {
@@ -132,10 +127,9 @@ export function ManualDetailModal({
 
   const manualId = manual?.slot.techniqueId ?? null;
   const technique = manual?.technique;
-  const manualType = resolveManualType(technique);
   const tierIcon = manual ? getManualTierIcon(manual.slot.grade) : null;
   const pathIcon = getManualPathIcon(technique?.path);
-  const typeIcon = getManualTypeIcon(manualType);
+  const typeIcon = getManualRoleIcon(technique?.role);
 
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === 'undefined') return false;

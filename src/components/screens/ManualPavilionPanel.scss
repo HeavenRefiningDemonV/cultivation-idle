@@ -230,8 +230,34 @@
   user-select: none;
 }
 
+.pavilionSpine::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 60%, rgba(0, 0, 0, 0.18));
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pavilionSpine::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .pavilionSpine:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   z-index: 3;
 }
 
@@ -241,7 +267,12 @@
 }
 
 .pavilionSpine--selected {
+  transform: translateY(-6px);
   box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.55), 0 18px 30px rgba(0, 0, 0, 0.3);
+}
+
+.pavilionSpine--selected:hover {
+  transform: translateY(-8px);
 }
 
 .pavilionSpine--justPurchased {
@@ -252,7 +283,7 @@
   transform: translateY(-6px);
 }
 
-.pavilionSpine[data-path='heaven'] {
+.pavilionSpine[data-state='available'][data-path='heaven'] {
   background: linear-gradient(
     180deg,
     color-mix(in oklab, var(--pavilion-water) 45%, transparent 55%),
@@ -260,7 +291,7 @@
   );
 }
 
-.pavilionSpine[data-path='earth'] {
+.pavilionSpine[data-state='available'][data-path='earth'] {
   background: linear-gradient(
     180deg,
     color-mix(in oklab, var(--pavilion-earth) 45%, transparent 55%),
@@ -268,7 +299,7 @@
   );
 }
 
-.pavilionSpine[data-path='martial'] {
+.pavilionSpine[data-state='available'][data-path='martial'] {
   background: linear-gradient(
     180deg,
     color-mix(in oklab, var(--pavilion-fire) 45%, transparent 55%),
@@ -401,13 +432,45 @@
 
 .pavilionSpineOverlay--sealed {
   background:
-    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.1), transparent 55%),
-    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1) 0 6px, transparent 6px 14px);
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.18), transparent 55%),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.18) 0 6px, transparent 6px 14px);
+}
+
+.pavilionSpineOverlay--sealed::after {
+  content: 'SEALED';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+  color: rgba(226, 232, 240, 0.85);
+  background: rgba(15, 23, 42, 0.4);
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
 
 .pavilionSpineOverlay--notSold {
   background:
-    repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.14) 0 8px, transparent 8px 16px);
+    repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0 6px, transparent 6px 12px);
+}
+
+.pavilionSpineOverlay--notSold::after {
+  content: 'NOT SOLD';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  font-weight: 800;
+  color: rgba(248, 113, 113, 0.85);
+  background: rgba(15, 23, 42, 0.35);
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
 }
 
 .pavilionSpineOverlay--sold::after {

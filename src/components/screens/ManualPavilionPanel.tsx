@@ -12,12 +12,7 @@ import { formatDurationHMS } from '../../utils/timeFormat';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
-import {
-  getManualTierIcon,
-  getManualPathIcon,
-  getManualTypeIcon,
-  resolveManualType,
-} from '../../features/manuals/manualIconMap';
+import { getManualTierIcon, getManualPathIcon, getManualRoleIcon } from '../../features/manuals/manualIconMap';
 import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal';
 
 interface ManualPavilionPanelProps {
@@ -121,7 +116,7 @@ function BookSpineSlot({
   const roleKey = roleBadge.key;
   const tierIcon = slot ? getManualTierIcon(slot.grade) : null;
   const pathIcon = getManualPathIcon(technique?.path);
-  const typeIcon = getManualTypeIcon(resolveManualType(technique));
+  const typeIcon = getManualRoleIcon(technique?.role);
 
   if (!slot) {
     return (
@@ -170,17 +165,13 @@ function BookSpineSlot({
       }}
       title={titleParts.join(' • ')}
     >
-      <div className="pavilionSpineTop">
-        <span className="pavilionSpineGradeMark" aria-label={tierIcon?.label}>
-          {tierIcon?.icon}
-        </span>
-      </div>
       <div className="pavilionSpineName">{technique?.name ?? slot.techniqueId}</div>
-      <div className="pavilionSpineBottom">
-        <span className="pavilionSpineRoleIcon">{roleBadge.icon}</span>
-        <span className="pavilionSpineRoleText">{roleBadge.short}</span>
-      </div>
       <div className="pavilionSpineMeta" aria-label="Manual metadata">
+        {tierIcon && (
+          <span className="pavilionSpineMetaIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
+            {tierIcon.icon}
+          </span>
+        )}
         <span className="pavilionSpineMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
           {pathIcon.icon}
         </span>
@@ -640,9 +631,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const pavilionTitle = pavilion.id.replace(/_/g, ' ') || 'Manual Pavilion';
   const hoveredSlot = hovered ? stock.slots.find((slot) => slot.slotIndex === hovered.slotIndex) : undefined;
   const hoveredTechnique = hoveredSlot ? techniquesById[hoveredSlot.techniqueId] : undefined;
-  const hoveredRole = getRoleBadge(hoveredTechnique?.role);
   const hoveredPath = getManualPathIcon(hoveredTechnique?.path).label;
-  const hoveredType = getManualTypeIcon(resolveManualType(hoveredTechnique)).label;
+  const hoveredType = getManualRoleIcon(hoveredTechnique?.role).label;
   const hoveredState = hoveredSlot ? resolveSpineState(hoveredSlot) : 'placeholder';
   const tooltipAnchorLeft = hovered ? hovered.rect.left + hovered.rect.width / 2 : 0;
   const windowWidth = typeof window === 'undefined' ? null : window.innerWidth;
@@ -741,7 +731,6 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
               <span>{rarityLabel(hoveredSlot.rarity)}</span>
               <span>{gradeLabel(hoveredSlot.grade)}</span>
               <span>{hoveredPath}</span>
-              <span>{hoveredRole.label}</span>
               <span>{hoveredType}</span>
             </div>
             <div className="pavilionSpineTooltipLine">{hoveredPriceLine}</div>

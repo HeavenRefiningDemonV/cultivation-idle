@@ -3,6 +3,7 @@ import type { TechniqueDef } from '../../content';
 import type { PathId } from '../../content/types';
 
 export type ManualType = 'active' | 'passive' | 'ultimate';
+export type ManualRole = 'offense' | 'defense' | 'utility' | 'general';
 
 export const resolveManualType = (technique: Pick<TechniqueDef, 'type' | 'tags'> | undefined): ManualType => {
   if (!technique) return 'active';
@@ -30,6 +31,13 @@ const MANUAL_TYPE_ICONS: Record<ManualType, { icon: string; label: string }> = {
   ultimate: { icon: '☄', label: 'Ultimate Technique' },
 };
 
+const MANUAL_ROLE_ICONS: Record<ManualRole, { icon: string; label: string }> = {
+  offense: { icon: '⚔', label: 'Offense' },
+  defense: { icon: '🛡', label: 'Defense' },
+  utility: { icon: '🧿', label: 'Utility' },
+  general: { icon: '◎', label: 'General' },
+};
+
 export const getManualTierIcon = (grade: ManualGrade) => MANUAL_TIER_ICONS[grade] ?? MANUAL_TIER_ICONS.mortal;
 
 export const getManualPathIcon = (path?: string | null) => {
@@ -40,3 +48,10 @@ export const getManualPathIcon = (path?: string | null) => {
 };
 
 export const getManualTypeIcon = (type: ManualType) => MANUAL_TYPE_ICONS[type] ?? MANUAL_TYPE_ICONS.active;
+
+export const getManualRoleIcon = (role?: string | null) => {
+  if (role === 'offense' || role === 'defense' || role === 'utility') {
+    return MANUAL_ROLE_ICONS[role];
+  }
+  return MANUAL_ROLE_ICONS.general;
+};
