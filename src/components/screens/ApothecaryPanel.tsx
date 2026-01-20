@@ -415,7 +415,15 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     <div className={'apothecaryPanel'}>
       <MedicinePouchPanel />
       <div className={'apothecaryHeaderCard'}>
-        <div>
+        <div className={'apothecaryHeaderVfx'} aria-hidden="true">
+          <div className={'apothecaryVfxVignette apothecaryVfxVignette--magic'} />
+          <div className={'apothecaryVfxVignette apothecaryVfxVignette--souls'} />
+          <div className={'apothecaryVfxCore'}>
+            <div className={'apothecaryVfxRune'} />
+            <div className={'apothecaryVfxCrystal'} />
+          </div>
+        </div>
+        <div className={'apothecaryHeaderInfo'}>
           <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>
           <div className={'apothecarySubheading'}>
             Buy remedies for combat and cultivation. Daily limits reset at local midnight.
