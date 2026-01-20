@@ -12,6 +12,7 @@ import {
 } from '../../stores/techCollectionStore';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
+import { useUIStore } from '../../stores/uiStore';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
 import { RankUpgradeRitualModal } from './RankUpgradeRitualModal';
 import { TraitRerollModal } from './TraitRerollModal';
@@ -27,15 +28,21 @@ export interface TechniqueDetailModalProps {
   initialAction?: 'upgradeRank' | 'rerollTraits' | null;
   onInitialActionHandled?: () => void;
   onClose: () => void;
+  onSlotPulse?: (slot: { type: SlotType; index: number }, action: 'equip' | 'unequip') => void;
   initialFocusRef?: React.RefObject<HTMLElement>;
 }
 
-type ActionMessageScope = 'equip' | 'upgrade' | 'runes' | 'traits';
+type ActionMessageScope = 'upgrade' | 'runes' | 'traits';
 
 type ActionMessage = {
   type: 'error' | 'info' | 'success';
   text: string;
   scope: ActionMessageScope;
+} | null;
+
+type EquipFeedback = {
+  type: 'error' | 'info' | 'success';
+  text: string;
 } | null;
 
 const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
@@ -71,6 +78,12 @@ const gradeLabel = (value?: string) => {
   return safe.charAt(0).toUpperCase() + safe.slice(1);
 };
 
+const slotGlyphMap: Record<SlotType, string> = {
+  active: '⚔',
+  passive: '⛩',
+  ultimate: '☄',
+};
+
 export function TechniqueDetailModal({
   open,
   techniqueId,
@@ -79,6 +92,7 @@ export function TechniqueDetailModal({
   initialAction,
   onInitialActionHandled,
   onClose,
+  onSlotPulse,
   initialFocusRef,
 }: TechniqueDetailModalProps) {
   const titleId = useId();
@@ -86,10 +100,20 @@ export function TechniqueDetailModal({
   const [showRankModal, setShowRankModal] = useState(false);
   const [showTraitModal, setShowTraitModal] = useState(false);
   const [actionMessage, setActionMessage] = useState<ActionMessage>(null);
+  const [equipFeedback, setEquipFeedback] = useState<EquipFeedback>(null);
+  const [equipConfirm, setEquipConfirm] = useState<{
+    slot: { type: SlotType; index: number };
+    slotKey: string;
+    slotLabel: string;
+    existingTechId: string;
+    existingTechName: string;
+  } | null>(null);
+  const [shakeSlotKey, setShakeSlotKey] = useState<string | null>(null);
   const [showTopShadow, setShowTopShadow] = useState(false);
   const [showBottomShadow, setShowBottomShadow] = useState(false);
   const previousRankModal = useRef(false);
   const previousTraitModal = useRef(false);
+  const confirmCancelRef = useRef<HTMLButtonElement | null>(null);
 
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
@@ -122,6 +146,7 @@ export function TechniqueDetailModal({
   const getNextMasteryMilestoneHelper = useTechCollectionStore((state) => state.getNextMasteryMilestone);
   const getMasteryMilestoneEffectsHelper = useTechCollectionStore((state) => state.getMasteryMilestoneEffects);
   const inventoryItems = useInventoryStore((state) => state.items);
+  const addNotification = useUIStore((state) => state.addNotification);
 
   const technique = useMemo(
     () => resolveTechnique(techniquesById, techniqueId),
@@ -267,42 +292,67 @@ export function TechniqueDetailModal({
     return null;
   }, [selectedLoadout, techniqueId]);
 
-  const handleEquip = useCallback(
-    (slot: { type: SlotType; index: number }, action: 'equip' | 'unequip') => {
+  const triggerShake = useCallback((slotKey: string) => {
+    setShakeSlotKey(slotKey);
+    window.setTimeout(() => setShakeSlotKey((current) => (current === slotKey ? null : current)), 450);
+  }, []);
+
+  const emitEquipFeedback = useCallback((type: 'error' | 'info' | 'success', text: string) => {
+    setEquipFeedback({ type, text });
+  }, []);
+
+  const handleEquipAction = useCallback(
+    (
+      slot: { type: SlotType; index: number },
+      action: 'equip' | 'unequip',
+      context?: { replacedName?: string },
+    ) => {
       if (!techniqueId || !selectedLoadout) return;
       const techId = action === 'equip' ? techniqueId : '';
       const result = equipTechnique(slot.type, slot.index, techId, selectedLoadout.id);
-      if (result.ok) {
-        setActionMessage({
-          type: 'success',
-          scope: 'equip',
-          text:
-            action === 'equip'
-              ? `Equipped in ${slotLabel(slot)} on ${selectedLoadout.name}.`
-              : `Unequipped from ${slotLabel(slot)}.`,
-        });
-      } else {
+      if (!result.ok) {
         const unlockText = result.unlockAt ? ` Unlocks at: ${result.unlockAt.realmName}.` : '';
-        setActionMessage({
-          type: 'error',
-          scope: 'equip',
-          text: `${result.message}${unlockText}`,
-        });
+        const message = `${result.message}${unlockText}`;
+        emitEquipFeedback('error', message);
+        triggerShake(`${slot.type}-${slot.index}`);
+        return;
       }
+
+      const slotText = slotLabel(slot);
+      let message = '';
+      if (action === 'unequip') {
+        message = `Unequipped ${displayName}.`;
+      } else if (context?.replacedName) {
+        message = `Replaced ${context.replacedName} with ${displayName} in ${slotText}.`;
+      } else if (equippedSlot && (equippedSlot.type !== slot.type || equippedSlot.index !== slot.index)) {
+        message = `Equipped ${displayName} → ${slotText} (from ${slotLabel(equippedSlot)}).`;
+      } else {
+        message = `Equipped ${displayName} → ${slotText}.`;
+      }
+
+      emitEquipFeedback(action === 'unequip' ? 'info' : 'success', message);
+      addNotification(action === 'unequip' ? 'info' : 'success', message, 2200);
+      onSlotPulse?.(slot, action);
     },
-    [equipTechnique, selectedLoadout, techniqueId],
+    [
+      addNotification,
+      displayName,
+      emitEquipFeedback,
+      equipTechnique,
+      equippedSlot,
+      onSlotPulse,
+      selectedLoadout,
+      techniqueId,
+      triggerShake,
+    ],
   );
 
   const handleFavoriteToggle = useCallback(() => {
     if (!techniqueId) return;
     const willFavorite = !(selectedEntry?.favorite ?? false);
     toggleFavorite(techniqueId);
-    setActionMessage({
-      type: 'info',
-      scope: 'equip',
-      text: willFavorite ? 'Added to favorites.' : 'Removed from favorites.',
-    });
-  }, [selectedEntry?.favorite, techniqueId, toggleFavorite]);
+    emitEquipFeedback('info', willFavorite ? 'Added to favorites.' : 'Removed from favorites.');
+  }, [emitEquipFeedback, selectedEntry?.favorite, techniqueId, toggleFavorite]);
 
   const handleSocketRune = useCallback(
     (slotIndex: number) => {
@@ -349,7 +399,21 @@ export function TechniqueDetailModal({
   useEffect(() => {
     if (!open) return;
     setActionMessage(null);
+    setEquipFeedback(null);
+    setEquipConfirm(null);
   }, [open, techniqueId]);
+
+  useEffect(() => {
+    if (!equipFeedback) return;
+    const durationMs = equipFeedback.type === 'error' ? 3600 : 2200;
+    const timer = window.setTimeout(() => setEquipFeedback(null), durationMs);
+    return () => window.clearTimeout(timer);
+  }, [equipFeedback]);
+
+  useEffect(() => {
+    if (!equipConfirm) return;
+    window.requestAnimationFrame(() => confirmCancelRef.current?.focus());
+  }, [equipConfirm]);
 
   const nextRankCost = nextRankInfo?.cost;
   const rankUpgradeDisabledReason = !nextRankInfo
@@ -374,26 +438,163 @@ export function TechniqueDetailModal({
     ? (rankMultiplier(nextRankInfo.nextRank) / rankMultiplier(selectedEntry.rank ?? 1) - 1) * 100
     : 10;
 
-  const equipSlots = useMemo(() => {
-    if (!selectedLoadout) return [];
-    const slots: Array<{ type: SlotType; index: number }> = [];
+  const compatibleSlotType = useMemo(() => {
+    const resolved = resolveTechniqueType(technique ?? undefined);
+    if (resolved === 'active' || resolved === 'passive' || resolved === 'ultimate') return resolved;
+    return null;
+  }, [technique]);
+
+  const equipSlotOptions = useMemo(() => {
+    if (!selectedLoadout || !compatibleSlotType) return [];
+    const slots: Array<{
+      type: SlotType;
+      index: number;
+      slotKey: string;
+      label: string;
+      shortLabel: string;
+      glyph: string;
+      techId: string | null;
+      techName: string | null;
+      isUnlocked: boolean;
+      unlockLabel?: string;
+    }> = [];
     const activeCount = progression.displayed.active;
     const passiveCount = progression.displayed.passive;
 
-    for (let idx = 0; idx < activeCount; idx += 1) {
-      slots.push({ type: 'active', index: idx });
+    const addSlot = (type: SlotType, index: number, techId: string | null, unlockLabel?: string, isUnlocked = true) => {
+      const label = slotLabel({ type, index });
+      const shortLabel = type === 'ultimate' ? 'Ult' : `${type === 'active' ? 'A' : 'P'}${index + 1}`;
+      slots.push({
+        type,
+        index,
+        slotKey: `${type}-${index}`,
+        label,
+        shortLabel,
+        glyph: slotGlyphMap[type],
+        techId,
+        techName: techId ? techniquesById[techId]?.name ?? techId : null,
+        isUnlocked,
+        unlockLabel,
+      });
+    };
+
+    if (compatibleSlotType === 'active') {
+      for (let idx = 0; idx < activeCount; idx += 1) {
+        const isUnlocked = idx < progression.unlocked.active;
+        const requirement = progression.unlockRequirements.active[idx];
+        addSlot(
+          'active',
+          idx,
+          selectedLoadout.slots.active[idx] ?? null,
+          requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
+          isUnlocked,
+        );
+      }
     }
 
-    for (let idx = 0; idx < passiveCount; idx += 1) {
-      slots.push({ type: 'passive', index: idx });
+    if (compatibleSlotType === 'passive') {
+      for (let idx = 0; idx < passiveCount; idx += 1) {
+        const isUnlocked = idx < progression.unlocked.passive;
+        const requirement = progression.unlockRequirements.passive[idx];
+        addSlot(
+          'passive',
+          idx,
+          selectedLoadout.slots.passive[idx] ?? null,
+          requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
+          isUnlocked,
+        );
+      }
     }
 
-    slots.push({ type: 'ultimate', index: 0 });
+    if (compatibleSlotType === 'ultimate') {
+      addSlot(
+        'ultimate',
+        0,
+        selectedLoadout.slots.ultimate ?? null,
+        progression.unlockRequirements.ultimate?.realmName
+          ? `Unlocks at ${progression.unlockRequirements.ultimate.realmName}`
+          : undefined,
+        progression.unlocked.ultimate,
+      );
+    }
+
     return slots;
-  }, [progression.displayed.active, progression.displayed.passive, selectedLoadout]);
+  }, [
+    compatibleSlotType,
+    progression.displayed.active,
+    progression.displayed.passive,
+    progression.unlockRequirements.active,
+    progression.unlockRequirements.passive,
+    progression.unlockRequirements.ultimate,
+    progression.unlocked.active,
+    progression.unlocked.passive,
+    progression.unlocked.ultimate,
+    selectedLoadout,
+    techniquesById,
+  ]);
 
   const actionMessageFor = (scope: ActionMessageScope) =>
     actionMessage && actionMessage.scope === scope ? actionMessage : null;
+
+  const equipStatusLine = useMemo(() => {
+    if (isMissing) return 'Technique data missing.';
+    if (equippedSlot) return `Equipped in: ${slotLabel(equippedSlot)}`;
+    return `Not equipped in ${selectedLoadout?.name ?? 'this loadout'}.`;
+  }, [equippedSlot, isMissing, selectedLoadout?.name]);
+
+  const handleSlotChipClick = useCallback(
+    (slot: {
+      type: SlotType;
+      index: number;
+      slotKey: string;
+      techId: string | null;
+      techName: string | null;
+      isUnlocked: boolean;
+      unlockLabel?: string;
+    }) => {
+      if (!techniqueId || !selectedLoadout) return;
+      onSelectSlot({ type: slot.type, index: slot.index });
+      setEquipConfirm(null);
+
+      if (!slot.isUnlocked) {
+        const unlockText = slot.unlockLabel ? ` ${slot.unlockLabel}.` : '';
+        emitEquipFeedback('error', `Slot locked.${unlockText}`.trim());
+        triggerShake(slot.slotKey);
+        return;
+      }
+
+      if (slot.techId === techniqueId) {
+        emitEquipFeedback('info', `Already equipped in ${slotLabel(slot)}.`);
+        return;
+      }
+
+      if (slot.techId) {
+        setEquipConfirm({
+          slot: { type: slot.type, index: slot.index },
+          slotKey: slot.slotKey,
+          slotLabel: slotLabel(slot),
+          existingTechId: slot.techId,
+          existingTechName: slot.techName ?? slot.techId,
+        });
+        return;
+      }
+
+      handleEquipAction({ type: slot.type, index: slot.index }, 'equip');
+    },
+    [emitEquipFeedback, handleEquipAction, onSelectSlot, selectedLoadout, techniqueId, triggerShake],
+  );
+
+  const handleConfirmReplace = useCallback(() => {
+    if (!equipConfirm) return;
+    handleEquipAction(equipConfirm.slot, 'equip', { replacedName: equipConfirm.existingTechName });
+    setEquipConfirm(null);
+  }, [equipConfirm, handleEquipAction]);
+
+  const handleUnequipClick = useCallback(() => {
+    if (!equippedSlot) return;
+    setEquipConfirm(null);
+    handleEquipAction(equippedSlot, 'unequip');
+  }, [equippedSlot, handleEquipAction]);
 
   return (
     <Dialog
@@ -406,30 +607,132 @@ export function TechniqueDetailModal({
       <div className="techniqueDetailModalPosition">
         <DialogPanel className="techniqueDetailModalPanel" aria-labelledby={titleId}>
           <header className="techniqueDetailModalHeader">
-            <div className="techniqueDetailModalHeaderMain">
-              <DialogTitle id={titleId} className="techniqueDetailModalTitle">
-                {displayName}
-              </DialogTitle>
-              <div className="techniqueDetailModalMeta" aria-label="Technique metadata">
-                <span className="techniqueDetailModalMetaIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
-                  {tierIcon.icon}
-                </span>
-                <span className="techniqueDetailModalMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
-                  {pathIcon.icon}
-                </span>
-                <span className="techniqueDetailModalMetaIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
-                  {typeIcon.icon}
-                </span>
+            <div className="techniqueDetailModalHeaderRow">
+              <div className="techniqueDetailModalHeaderMain">
+                <DialogTitle id={titleId} className="techniqueDetailModalTitle" title={displayName}>
+                  {displayName}
+                </DialogTitle>
+                <div className="techniqueDetailModalMeta" aria-label="Technique metadata">
+                  <span
+                    className="techniqueDetailModalMetaIcon"
+                    role="img"
+                    aria-label={tierIcon.label}
+                    title={tierIcon.label}
+                  >
+                    {tierIcon.icon}
+                  </span>
+                  <span
+                    className="techniqueDetailModalMetaIcon"
+                    role="img"
+                    aria-label={pathIcon.label}
+                    title={pathIcon.label}
+                  >
+                    {pathIcon.icon}
+                  </span>
+                  <span
+                    className="techniqueDetailModalMetaIcon"
+                    role="img"
+                    aria-label={typeIcon.label}
+                    title={typeIcon.label}
+                  >
+                    {typeIcon.icon}
+                  </span>
+                </div>
               </div>
+              <button
+                ref={initialFocusRef}
+                type="button"
+                className="techniqueDetailModalClose"
+                onClick={onClose}
+              >
+                Close
+              </button>
             </div>
-            <button
-              ref={initialFocusRef}
-              type="button"
-              className="techniqueDetailModalClose"
-              onClick={onClose}
-            >
-              Close
-            </button>
+            <div className="techniqueDetailModalEquipStrip" aria-label="Equip technique">
+              <div className="techniqueDetailModalEquipStatusRow">
+                <div className="techniqueDetailModalEquipStatus" title={equipStatusLine}>
+                  {equipStatusLine}
+                </div>
+                <div className="techniqueDetailModalEquipActions">
+                  <button
+                    className="techniqueDetailModalEquipButton"
+                    onClick={handleFavoriteToggle}
+                    disabled={isMissing || !techniqueId}
+                    type="button"
+                  >
+                    {selectedEntry?.favorite ? '★ Fav' : '☆ Fav'}
+                  </button>
+                  {equippedSlot && (
+                    <button
+                      className="techniqueDetailModalEquipButton"
+                      onClick={handleUnequipClick}
+                      disabled={isMissing || !techniqueId}
+                      type="button"
+                    >
+                      Unequip
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="techniqueDetailModalEquipChips">
+                {equipSlotOptions.length ? (
+                  equipSlotOptions.map((slot) => {
+                    const isSelected = selectedSlot.type === slot.type && selectedSlot.index === slot.index;
+                    return (
+                      <button
+                        key={slot.slotKey}
+                        type="button"
+                        className={`techniqueDetailModalEquipChip ${
+                          isSelected ? 'is-selected' : ''
+                        } ${shakeSlotKey === slot.slotKey ? 'is-shaking' : ''}`}
+                        onClick={() => handleSlotChipClick(slot)}
+                        disabled={isMissing || !techniqueId || !slot.isUnlocked}
+                        title={slot.isUnlocked ? slot.label : slot.unlockLabel ?? slot.label}
+                      >
+                        <span className="techniqueDetailModalEquipChipIcon" aria-hidden="true">
+                          {slot.glyph}
+                        </span>
+                        <span className="techniqueDetailModalEquipChipLabel">{slot.shortLabel}</span>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="techniqueDetailModalEquipEmpty">
+                    {compatibleSlotType ? 'No compatible slots available.' : 'Unknown technique type.'}
+                  </div>
+                )}
+              </div>
+              {equipConfirm && (
+                <div className="techniqueDetailModalEquipConfirm" role="alertdialog" aria-live="polite">
+                  <div className="techniqueDetailModalEquipConfirmText">
+                    Replace <strong>{equipConfirm.existingTechName}</strong> with{' '}
+                    <strong>{displayName}</strong> in {equipConfirm.slotLabel}?
+                  </div>
+                  <div className="techniqueDetailModalEquipConfirmActions">
+                    <button
+                      ref={confirmCancelRef}
+                      type="button"
+                      className="techniqueDetailModalEquipButton"
+                      onClick={() => setEquipConfirm(null)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="techniqueDetailModalEquipButton is-primary"
+                      onClick={handleConfirmReplace}
+                    >
+                      Replace
+                    </button>
+                  </div>
+                </div>
+              )}
+              {equipFeedback && (
+                <div className={`techniqueDetailModalEquipFeedback is-${equipFeedback.type}`} role="status" aria-live="polite">
+                  {equipFeedback.text}
+                </div>
+              )}
+            </div>
           </header>
 
           <div className={`techniqueDetailModalScrollShadow techniqueDetailModalScrollShadow--top ${showTopShadow ? 'is-visible' : ''}`} />
@@ -458,7 +761,7 @@ export function TechniqueDetailModal({
                 <span className="techniqueDetailModalChip">Rank {selectedRank}</span>
               </div>
               <div className="techniqueDetailModalMetaLine">
-                {equippedSlot ? `Equipped in slot: ${slotLabel(equippedSlot)}` : 'Not equipped in this loadout.'}
+                Loadout: {selectedLoadout?.name ?? '—'}
               </div>
             </section>
 
@@ -597,77 +900,6 @@ export function TechniqueDetailModal({
                   )}
                 </div>
               </div>
-            </section>
-
-            <section
-              className={`techniqueDetailModalSection ${isMissing ? 'is-disabled' : ''}`}
-              aria-disabled={isMissing}
-            >
-              <h4>Equip / Loadout</h4>
-              <div className="techniqueDetailModalSlotList">
-                {equipSlots.map((slot) => {
-                  const isUnlocked =
-                    slot.type === 'ultimate'
-                      ? progression.unlocked.ultimate
-                      : slot.index < (slot.type === 'active' ? progression.unlocked.active : progression.unlocked.passive);
-                  const requirement =
-                    slot.type === 'ultimate'
-                      ? progression.unlockRequirements.ultimate
-                      : progression.unlockRequirements[slot.type][slot.index];
-                  const techId =
-                    slot.type === 'ultimate'
-                      ? selectedLoadout?.slots.ultimate
-                      : selectedLoadout?.slots[slot.type]?.[slot.index];
-                  const techName = techId ? techniquesById[techId]?.name ?? techId : null;
-                  const isEquippedHere = techId === techniqueId && Boolean(techniqueId);
-                  const buttonLabel = isEquippedHere ? 'Unequip' : techId ? 'Swap Here' : 'Equip Here';
-                  const isSelected = selectedSlot.type === slot.type && selectedSlot.index === slot.index;
-                  return (
-                    <div
-                      key={`${slot.type}-${slot.index}`}
-                      className={`techniqueDetailModalSlotRow ${isSelected ? 'is-selected' : ''} ${isUnlocked ? '' : 'is-locked'}`}
-                    >
-                      <button
-                        type="button"
-                        className="techniqueDetailModalSlotSelect"
-                        onClick={() => onSelectSlot(slot)}
-                        disabled={!isUnlocked}
-                      >
-                        <div className="techniqueDetailModalSlotLabel">{slotLabel(slot)}</div>
-                        <div className="techniqueDetailModalSlotValue">
-                          {isUnlocked ? techName ?? '(Empty)' : '(Locked)'}
-                        </div>
-                        {!isUnlocked && requirement?.realmName && (
-                          <div className="techniqueDetailModalSlotHint">Unlocks at: {requirement.realmName}</div>
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="techniqueDetailModalPrimaryButton"
-                        onClick={() => handleEquip(slot, isEquippedHere ? 'unequip' : 'equip')}
-                        disabled={!isUnlocked || isMissing || !techniqueId || !selectedLoadout}
-                      >
-                        {buttonLabel}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="techniqueDetailModalActionRow">
-                <button
-                  className="techniqueDetailModalSecondaryButton"
-                  onClick={handleFavoriteToggle}
-                  disabled={isMissing || !techniqueId}
-                  type="button"
-                >
-                  {selectedEntry?.favorite ? 'Unfavorite' : 'Favorite'}
-                </button>
-              </div>
-              {actionMessageFor('equip') && (
-                <div className={`techniqueDetailModalActionMessage is-${actionMessageFor('equip')?.type}`}>
-                  {actionMessageFor('equip')?.text}
-                </div>
-              )}
             </section>
 
             <section

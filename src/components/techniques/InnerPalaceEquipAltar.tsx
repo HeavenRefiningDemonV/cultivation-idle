@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import type { TechniqueDef } from '../../content';
 import type { EquipResult, SlotType } from '../../stores/techniqueStore';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
@@ -26,6 +26,8 @@ export interface InnerPalaceEquipAltarProps {
   slots: InnerPalaceSlot[];
   selectedTechId: string | null;
   selectedSlotKey?: string | null;
+  highlightedTechId?: string | null;
+  flashSlot?: { key: string; tone: 'equip' | 'unequip' } | null;
   techniquesById: Record<string, TechniqueDef | undefined>;
   onRequestViewTech: (techId: string) => void;
   onRequestEquip: (slotType: SlotType, slotIndex: number, techId: string) => EquipResult;
@@ -51,6 +53,8 @@ export function InnerPalaceEquipAltar({
   slots,
   selectedTechId,
   selectedSlotKey,
+  highlightedTechId,
+  flashSlot,
   techniquesById,
   onRequestViewTech,
   onRequestEquip,
@@ -62,12 +66,14 @@ export function InnerPalaceEquipAltar({
 }: InnerPalaceEquipAltarProps) {
   const [popoverSlotKey, setPopoverSlotKey] = useState<string | null>(null);
   const [shakeSlotKey, setShakeSlotKey] = useState<string | null>(null);
+  const [flashState, setFlashState] = useState<{ key: string; tone: 'equip' | 'unequip' } | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const popoverFirstActionRef = useRef<HTMLButtonElement | null>(null);
   const slotButtonRefs = useRef(new Map<string, HTMLButtonElement | null>());
 
   const selectedTechnique = selectedTechId ? techniquesById[selectedTechId] : undefined;
   const selectedTechniqueName = selectedTechnique?.name ?? selectedTechId ?? 'Unknown technique';
+  const highlightedTechnique = highlightedTechId ? techniquesById[highlightedTechId] : undefined;
 
   const slotByKey = useMemo(() => {
     const map = new Map<string, InnerPalaceSlot>();
@@ -128,6 +134,19 @@ export function InnerPalaceEquipAltar({
     window.setTimeout(() => setShakeSlotKey((current) => (current === slotKey ? null : current)), 450);
   };
 
+  const triggerFlash = useCallback((slotKey: string, tone: 'equip' | 'unequip') => {
+    setFlashState({ key: slotKey, tone });
+    window.setTimeout(
+      () => setFlashState((current) => (current?.key === slotKey ? null : current)),
+      450,
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!flashSlot) return;
+    triggerFlash(flashSlot.key, flashSlot.tone);
+  }, [flashSlot, triggerFlash]);
+
   const handleEquipAttempt = (slot: InnerPalaceSlot, techId: string) => {
     const result = onRequestEquip(slot.slotType, slot.slotIndex, techId);
     if (!result.ok) {
@@ -140,6 +159,7 @@ export function InnerPalaceEquipAltar({
     }
 
     setFeedback({ tone: 'success', message: `Equipped ${selectedTechniqueName} to ${slot.label}.` });
+    triggerFlash(slot.key, 'equip');
     onClearSelectedTech?.();
   };
 
@@ -152,6 +172,7 @@ export function InnerPalaceEquipAltar({
     }
     const unequippedName = popoverTechniqueName;
     setFeedback({ tone: 'success', message: `Unequipped ${unequippedName} from ${slot.label}.` });
+    triggerFlash(slot.key, 'unequip');
   };
 
   const handleSlotClick = (slot: InnerPalaceSlot) => {
@@ -241,6 +262,9 @@ export function InnerPalaceEquipAltar({
           const canEquipSelected = Boolean(
             selectedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts),
           );
+          const shouldHighlight = Boolean(
+            highlightedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(highlightedTechnique, slot.accepts),
+          );
           const state = slot.isUnlocked ? (slot.techId ? 'occupied' : 'empty') : 'locked';
 
           return (
@@ -250,7 +274,7 @@ export function InnerPalaceEquipAltar({
               type="button"
               className={`innerPalaceSlot ${isSelected ? 'is-selected' : ''} ${
                 shakeSlotKey === slot.key ? 'is-shaking' : ''
-              }`}
+              } ${flashState?.key === slot.key ? 'is-flashing' : ''}`}
               style={{
                 ['--slot-angle' as string]: `${slot.ringPosition.angle}deg`,
                 ['--slot-radius' as string]: `${slot.ringPosition.radius}px`,
@@ -260,6 +284,8 @@ export function InnerPalaceEquipAltar({
               data-path={technique?.path ?? 'unknown'}
               data-rarity={rarityKey}
               data-can-equip={canEquipSelected ? 'true' : 'false'}
+              data-highlighted={shouldHighlight ? 'true' : 'false'}
+              data-flash-tone={flashState?.key === slot.key ? flashState?.tone : undefined}
               aria-label={`${slot.label}: ${
                 slot.techId ? displayName : 'Empty slot'
               }${slot.isUnlocked ? '' : ' (Locked)'}`}

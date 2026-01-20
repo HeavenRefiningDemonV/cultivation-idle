@@ -105,6 +105,7 @@ export function TechniqueLibraryScreen() {
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<SlotSelection>({ type: 'active', index: 0 });
   const [altarFeedback, setAltarFeedback] = useState<InnerPalaceFeedback | null>(null);
+  const [altarFlashSlot, setAltarFlashSlot] = useState<{ key: string; tone: 'equip' | 'unequip' } | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('power');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [pathFilter, setPathFilter] = useState<string>('all');
@@ -462,6 +463,7 @@ export function TechniqueLibraryScreen() {
   ]);
 
   const selectedSlotKey = `${selectedSlot.type}-${selectedSlot.index}`;
+  const highlightedTechId = detailOpen ? selectedTechniqueId : null;
 
   const selectedTechDef = selectedTechniqueId ? techniquesById[selectedTechniqueId] : undefined;
   const selectedType = techniqueType(selectedTechDef);
@@ -756,6 +758,8 @@ export function TechniqueLibraryScreen() {
                 slots={slotConfigs}
                 selectedTechId={selectedTechniqueId}
                 selectedSlotKey={selectedSlotKey}
+                highlightedTechId={highlightedTechId}
+                flashSlot={altarFlashSlot}
                 techniquesById={techniquesById}
                 onRequestViewTech={(techId) => {
                   setSelectedTechniqueId(techId);
@@ -851,6 +855,11 @@ export function TechniqueLibraryScreen() {
         initialAction={detailIntent}
         onInitialActionHandled={() => setDetailIntent(null)}
         initialFocusRef={detailCloseRef}
+        onSlotPulse={(slot, action) => {
+          const key = `${slot.type}-${slot.index}`;
+          setAltarFlashSlot(null);
+          window.requestAnimationFrame(() => setAltarFlashSlot({ key, tone: action }));
+        }}
       />
     </div>
   );
