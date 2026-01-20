@@ -14,16 +14,18 @@ import type { CastingPolicy, EquipResult, SlotType } from '../../stores/techniqu
 import { useTechniqueStore } from '../../stores/techniqueStore';
 import { useUIStore } from '../../stores/uiStore';
 import { TechniqueDetailModal } from '../modals/TechniqueDetailModal';
+import {
+  TechniqueFilterDrawer,
+  type GradeFilter,
+  type SortKey,
+  type TypeFilter,
+} from '../modals/TechniqueFilterDrawer';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
 import { TechniqueSpine } from '../techniques/TechniqueSpine';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar';
 import './TechniqueLibraryScreen.scss';
 
 type SlotSelection = { type: SlotType; index: number };
-
-type SortKey = 'power' | 'recent' | 'used' | 'rarity';
-type TypeFilter = 'all' | 'active' | 'passive' | 'ultimate';
-type GradeFilter = 'all' | 'mortal' | 'earth' | 'heaven' | 'mystic';
 
 type OwnedTechniqueView = {
   id: string;
@@ -114,7 +116,9 @@ export function TechniqueLibraryScreen() {
   const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailIntent, setDetailIntent] = useState<'upgradeRank' | 'rerollTraits' | null>(null);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const detailCloseRef = useRef<HTMLButtonElement | null>(null);
+  const filterButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
   const loadouts = useTechniqueStore((state) => state.loadouts);
@@ -477,92 +481,13 @@ export function TechniqueLibraryScreen() {
   const selectedPathIcon = getPathIcon(selectedTechDef?.path ?? 'unknown');
   const selectedTypeIcon = getTypeIcon(resolveTechniqueType(selectedTechDef));
 
-  const filterControls = (
-    <div className="techniqueLibraryFilters">
-      <div className="techniqueLibraryFilter">
-        <label htmlFor="techSort">Sort</label>
-        <select
-          id="techSort"
-          value={sortKey}
-          onChange={(e) => setSortKey(e.target.value as SortKey)}
-        >
-          <option value="power">Power</option>
-          <option value="recent">Recently Learned</option>
-          <option value="used">Most Used</option>
-          <option value="rarity">Rarity</option>
-        </select>
-      </div>
-      <div className="techniqueLibraryFilter">
-        <label htmlFor="techType">Type</label>
-        <select
-          id="techType"
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-        >
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="passive">Passive</option>
-          <option value="ultimate">Ultimate</option>
-        </select>
-      </div>
-      <div className="techniqueLibraryFilter">
-        <label htmlFor="techPath">Path</label>
-        <select
-          id="techPath"
-          value={pathFilter}
-          onChange={(e) => setPathFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-          {uniquePaths.map((path) => (
-            <option key={path} value={path}>
-              {path}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="techniqueLibraryFilter">
-        <label htmlFor="techRole">Role</label>
-        <select
-          id="techRole"
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-          {uniqueRoles.map((role) => (
-            <option key={role} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="techniqueLibraryFilter">
-        <label htmlFor="techGrade">Grade</label>
-        <select
-          id="techGrade"
-          value={gradeFilter}
-          onChange={(e) => setGradeFilter(e.target.value as GradeFilter)}
-        >
-          <option value="all">All</option>
-          <option value="mortal">Mortal</option>
-          <option value="earth">Earth</option>
-          <option value="heaven">Heaven</option>
-          <option value="mystic">Mystic</option>
-        </select>
-      </div>
-      <div className="techniqueLibraryFilter techniqueLibraryFilter--checkbox">
-        <label htmlFor="techFavorites">Favorites only</label>
-        <input
-          id="techFavorites"
-          type="checkbox"
-          checked={favoritesOnly}
-          onChange={(e) => setFavoritesOnly(e.target.checked)}
-        />
-      </div>
-      <button className="techniqueLibraryReset" onClick={resetFilters} type="button">
-        Reset filters
-      </button>
-    </div>
-  );
+  const hasActiveFilters =
+    sortKey !== 'power' ||
+    typeFilter !== 'all' ||
+    pathFilter !== 'all' ||
+    roleFilter !== 'all' ||
+    gradeFilter !== 'all' ||
+    favoritesOnly;
 
   const groupedShelves = useMemo(() => {
     const active: OwnedTechniqueView[] = [];
@@ -651,7 +576,6 @@ export function TechniqueLibraryScreen() {
           <div className="techTitle">Techniques</div>
           <div className="techSubtitle">{equippedSummary}</div>
         </div>
-        <div className="techTopCenter">{filterControls}</div>
         <div className="techTopRight">
           <div className="techTopLoadout">
             <label htmlFor="techLoadoutSelect">Loadout</label>
@@ -721,7 +645,18 @@ export function TechniqueLibraryScreen() {
         <section className="techLibraryStage">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--center">
             <div className="techniqueLibraryPanel">
-              <div className="techniqueLibraryPanelHeader">Owned Techniques</div>
+              <div className="techniqueLibraryPanelHeader techniqueLibraryPanelHeader--row">
+                <span>Owned Techniques</span>
+                <button
+                  ref={filterButtonRef}
+                  type="button"
+                  className="techniqueLibraryFilterButton"
+                  data-active={hasActiveFilters ? 'true' : 'false'}
+                  onClick={() => setFilterDrawerOpen(true)}
+                >
+                  ⌁ Filters
+                </button>
+              </div>
               <div className="techShelfWall">
                 {isContentLoading ? (
                   <div className="techniqueLibraryEmptyState">Loading techniques...</div>
@@ -860,6 +795,26 @@ export function TechniqueLibraryScreen() {
           setAltarFlashSlot(null);
           window.requestAnimationFrame(() => setAltarFlashSlot({ key, tone: action }));
         }}
+      />
+      <TechniqueFilterDrawer
+        open={filterDrawerOpen}
+        sortKey={sortKey}
+        typeFilter={typeFilter}
+        pathFilter={pathFilter}
+        roleFilter={roleFilter}
+        gradeFilter={gradeFilter}
+        favoritesOnly={favoritesOnly}
+        uniquePaths={uniquePaths}
+        uniqueRoles={uniqueRoles}
+        onSortChange={setSortKey}
+        onTypeFilterChange={setTypeFilter}
+        onPathFilterChange={setPathFilter}
+        onRoleFilterChange={setRoleFilter}
+        onGradeFilterChange={setGradeFilter}
+        onFavoritesChange={setFavoritesOnly}
+        onReset={resetFilters}
+        onClose={() => setFilterDrawerOpen(false)}
+        triggerRef={filterButtonRef}
       />
     </div>
   );
