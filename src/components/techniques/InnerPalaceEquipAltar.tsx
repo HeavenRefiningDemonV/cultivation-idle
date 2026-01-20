@@ -14,7 +14,6 @@ export type InnerPalaceSlot = {
   techId: string | null;
   isUnlocked: boolean;
   unlockLabel?: string;
-  ringPosition: { angle: number; radius: number };
 };
 
 export type InnerPalaceFeedback = {
@@ -67,6 +66,8 @@ export function InnerPalaceEquipAltar({
   const [popoverSlotKey, setPopoverSlotKey] = useState<string | null>(null);
   const [shakeSlotKey, setShakeSlotKey] = useState<string | null>(null);
   const [flashState, setFlashState] = useState<{ key: string; tone: 'equip' | 'unequip' } | null>(null);
+  const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const popoverFirstActionRef = useRef<HTMLButtonElement | null>(null);
   const slotButtonRefs = useRef(new Map<string, HTMLButtonElement | null>());
@@ -129,6 +130,19 @@ export function InnerPalaceEquipAltar({
     };
   }, [popoverSlotKey]);
 
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return undefined;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      setStageSize({ width, height });
+    });
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
   const triggerShake = (slotKey: string) => {
     setShakeSlotKey(slotKey);
     window.setTimeout(() => setShakeSlotKey((current) => (current === slotKey ? null : current)), 450);
@@ -146,6 +160,32 @@ export function InnerPalaceEquipAltar({
     if (!flashSlot) return;
     triggerFlash(flashSlot.key, flashSlot.tone);
   }, [flashSlot, triggerFlash]);
+
+  const orderedSlots = useMemo(() => {
+    const order: SlotType[] = ['active', 'passive', 'ultimate'];
+    return [...slots].sort((a, b) => {
+      const typeDelta = order.indexOf(a.slotType) - order.indexOf(b.slotType);
+      if (typeDelta !== 0) return typeDelta;
+      return a.slotIndex - b.slotIndex;
+    });
+  }, [slots]);
+
+  const slotPositions = useMemo(() => {
+    const slotCount = orderedSlots.length || 1;
+    const size = Math.min(stageSize.width, stageSize.height);
+    if (size <= 0) return new Map<string, { left: number; top: number }>();
+    const radius = size * 0.38;
+    const center = size / 2;
+    const positions = new Map<string, { left: number; top: number }>();
+    orderedSlots.forEach((slot, index) => {
+      const angleDeg = -90 + (360 / slotCount) * index;
+      const angleRad = (angleDeg * Math.PI) / 180;
+      const left = center + radius * Math.cos(angleRad);
+      const top = center + radius * Math.sin(angleRad);
+      positions.set(slot.key, { left, top });
+    });
+    return positions;
+  }, [orderedSlots, stageSize.height, stageSize.width]);
 
   const handleEquipAttempt = (slot: InnerPalaceSlot, techId: string) => {
     const result = onRequestEquip(slot.slotType, slot.slotIndex, techId);
@@ -246,11 +286,11 @@ export function InnerPalaceEquipAltar({
         <div className="innerPalaceSubtitle">Seat your techniques around the core.</div>
       </div>
 
-      <div className="innerPalaceStage">
+      <div className="innerPalaceStage" ref={stageRef}>
         <div className="innerPalaceCore" aria-hidden="true" />
         <div className="innerPalaceRing" aria-hidden="true" />
 
-        {slots.map((slot) => {
+        {orderedSlots.map((slot) => {
           const technique = slot.techId ? techniquesById[slot.techId] : undefined;
           const displayName = technique?.name ?? slot.techId ?? slot.label;
           const rarityKey = normalizeRarity(technique?.rarity);
@@ -266,6 +306,7 @@ export function InnerPalaceEquipAltar({
             highlightedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(highlightedTechnique, slot.accepts),
           );
           const state = slot.isUnlocked ? (slot.techId ? 'occupied' : 'empty') : 'locked';
+          const position = slotPositions.get(slot.key);
 
           return (
             <button
@@ -276,8 +317,8 @@ export function InnerPalaceEquipAltar({
                 shakeSlotKey === slot.key ? 'is-shaking' : ''
               } ${flashState?.key === slot.key ? 'is-flashing' : ''}`}
               style={{
-                ['--slot-angle' as string]: `${slot.ringPosition.angle}deg`,
-                ['--slot-radius' as string]: `${slot.ringPosition.radius}px`,
+                left: position?.left ?? '50%',
+                top: position?.top ?? '50%',
               }}
               data-slot-type={slot.slotType}
               data-state={state}
@@ -318,7 +359,11 @@ export function InnerPalaceEquipAltar({
                       {slotGlyphMap[slot.accepts]}
                     </div>
                     <div className="innerPalaceSlotLabel">{slot.label}</div>
-                    {!slot.isUnlocked && <div className="innerPalaceSlotLocked">Locked</div>}
+                    {!slot.isUnlocked && (
+                      <div className="innerPalaceSlotLocked">
+                        <span aria-hidden="true">🔒</span> Locked
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

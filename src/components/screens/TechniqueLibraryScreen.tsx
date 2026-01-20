@@ -397,13 +397,6 @@ export function TechniqueLibraryScreen() {
     const slots: InnerPalaceSlot[] = [];
     const activeCount = progression.displayed.active;
     const passiveCount = progression.displayed.passive;
-    const activeStep = activeCount > 0 ? 360 / activeCount : 360;
-    const passiveStep = passiveCount > 0 ? 360 / passiveCount : 360;
-    const activeStart = -90;
-    const passiveStart = -90 + passiveStep / 2;
-    const activeRadius = 170;
-    const passiveRadius = 120;
-    const ultimateRadius = 210;
 
     Array.from({ length: activeCount }).forEach((_, index) => {
       const techId = selectedLoadout?.slots.active[index] ?? '';
@@ -417,7 +410,6 @@ export function TechniqueLibraryScreen() {
         techId: techId || null,
         isUnlocked: index < progression.unlocked.active,
         unlockLabel: requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
-        ringPosition: { angle: activeStart + activeStep * index, radius: activeRadius },
       });
     });
 
@@ -433,7 +425,6 @@ export function TechniqueLibraryScreen() {
         techId: techId || null,
         isUnlocked: index < progression.unlocked.passive,
         unlockLabel: requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
-        ringPosition: { angle: passiveStart + passiveStep * index, radius: passiveRadius },
       });
     });
 
@@ -448,7 +439,6 @@ export function TechniqueLibraryScreen() {
       unlockLabel: progression.unlockRequirements.ultimate?.realmName
         ? `Unlocks at ${progression.unlockRequirements.ultimate.realmName}`
         : undefined,
-      ringPosition: { angle: -90, radius: ultimateRadius },
     });
 
     return slots;
