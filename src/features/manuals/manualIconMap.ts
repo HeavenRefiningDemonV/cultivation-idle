@@ -1,6 +1,7 @@
 import type { ManualGrade } from './pavilionStockTypes';
 import type { TechniqueDef } from '../../content';
 import type { PathId } from '../../content/types';
+import { normalizeGrade } from '../../stores/techCollectionStore';
 
 export type ManualType = 'active' | 'passive' | 'ultimate';
 export type ManualRole = 'offense' | 'defense' | 'utility' | 'general';
@@ -10,6 +11,18 @@ export const resolveManualType = (technique: Pick<TechniqueDef, 'type' | 'tags'>
   if (technique.type === 'ultimate') return 'ultimate';
   if (technique.type === 'passive' || technique.tags?.includes('passive')) return 'passive';
   return 'active';
+};
+
+export type TechniqueTypeKey = ManualType | 'unknown';
+
+export const resolveTechniqueType = (
+  technique: Pick<TechniqueDef, 'type' | 'tags'> | undefined,
+): TechniqueTypeKey => {
+  if (!technique) return 'unknown';
+  if (technique.type === 'ultimate') return 'ultimate';
+  if (technique.type === 'passive' || technique.tags?.includes('passive')) return 'passive';
+  if (technique.type === 'active') return 'active';
+  return 'unknown';
 };
 
 const MANUAL_TIER_ICONS: Record<ManualGrade, { icon: string; label: string }> = {
@@ -54,4 +67,34 @@ export const getManualRoleIcon = (role?: string | null) => {
     return MANUAL_ROLE_ICONS[role];
   }
   return MANUAL_ROLE_ICONS.general;
+};
+
+const unknownPathIcon = { icon: '◎', label: 'Unknown Path', key: 'unknown' };
+const unknownTypeIcon = { icon: '◎', label: 'Unknown Type', key: 'unknown' };
+
+export const getTierIcon = (gradeOrTierValue?: string | null) => {
+  const grade = normalizeGrade(gradeOrTierValue ?? undefined);
+  const icon = MANUAL_TIER_ICONS[grade] ?? MANUAL_TIER_ICONS.mortal;
+  return { ...icon, key: grade };
+};
+
+export const getPathIcon = (pathValue?: string | null) => {
+  if (pathValue === 'heaven' || pathValue === 'earth' || pathValue === 'martial') {
+    const icon = MANUAL_PATH_ICONS[pathValue];
+    return { ...icon, key: pathValue };
+  }
+  return unknownPathIcon;
+};
+
+export const getTypeIcon = (techniqueOrTypeValue?: Pick<TechniqueDef, 'type' | 'tags'> | string | null) => {
+  if (typeof techniqueOrTypeValue === 'string') {
+    const type = resolveTechniqueType({ type: techniqueOrTypeValue });
+    if (type === 'unknown') return unknownTypeIcon;
+    const icon = MANUAL_TYPE_ICONS[type] ?? MANUAL_TYPE_ICONS.active;
+    return { ...icon, key: type };
+  }
+  const type = resolveTechniqueType(techniqueOrTypeValue ?? undefined);
+  if (type === 'unknown') return unknownTypeIcon;
+  const icon = MANUAL_TYPE_ICONS[type] ?? MANUAL_TYPE_ICONS.active;
+  return { ...icon, key: type };
 };
