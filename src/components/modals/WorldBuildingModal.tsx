@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
 import { resolveModuleRef } from '../screens/world/worldUtils';
@@ -14,6 +14,7 @@ import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
 import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel';
+import { Modal } from '../../ui/primitives/Modal';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -47,21 +48,6 @@ export function WorldBuildingModal({
     ? `${city?.name ?? 'City'} — ${buildingKey ?? ''}`
     : controlledTitle || 'World Building';
   const subtitle = isStoreMode ? (storeCityId && buildingKey ? `${storeCityId} • ${buildingKey}` : undefined) : controlledSubtitle;
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        close?.();
-      }
-    },
-    [close],
-  );
-
-  useEffect(() => {
-    if (!open) return undefined;
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown, open]);
 
   const backgroundVariant = useMemo(() => {
     switch (buildingKey) {
@@ -130,17 +116,18 @@ export function WorldBuildingModal({
   }
 
   return (
-    <div className="worldBuildingOverlay" role="dialog" aria-modal="true" onMouseDown={close}>
-      <div
-        className={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        {backgroundVariant === "forge" && <img className="hammer" src={hammer}></img>}
-        <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-          ✕
-        </button>
-        <div className="worldBuildingBody">{content}</div>
-      </div>
-    </div>
+    <Modal
+      open={open}
+      onClose={close}
+      overlayClassName="worldBuildingOverlay"
+      panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
+      ariaLabel={title}
+    >
+      {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
+      <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
+        ✕
+      </button>
+      <div className="worldBuildingBody">{content}</div>
+    </Modal>
   );
 }
