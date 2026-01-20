@@ -1,3 +1,134 @@
+.techniquesPanel--v2 {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  overflow: hidden;
+  color: #f5f5f5;
+}
+
+.techniquesPanel--v2 .techTopRibbon {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.techniquesPanel--v2 .techTopLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.techniquesPanel--v2 .techTitle {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.techniquesPanel--v2 .techSubtitle {
+  font-size: 13px;
+  color: rgba(245, 245, 245, 0.75);
+}
+
+.techniquesPanel--v2 .techTopCenter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.techniquesPanel--v2 .techTopRight {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.techniquesPanel--v2 .techTopLoadout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.techniquesPanel--v2 .techTopLoadout select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #f5f5f5;
+  padding: 6px;
+}
+
+.techniquesPanel--v2 .techStage {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: clamp(280px, 28vw, 360px) minmax(0, 1fr) clamp(280px, 30vw, 380px);
+  gap: 12px;
+}
+
+.techniquesPanel--v2 .techLoadoutBoard {
+  min-height: 0;
+  overflow: auto;
+}
+
+.techniquesPanel--v2 .techLibraryStage {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+}
+
+.techniquesPanel--v2 .techInspectorDock {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.techniquesPanel--v2 .techniqueLibraryColumn {
+  min-height: 0;
+}
+
+.techniquesPanel--v2 .techniqueLibraryColumn--center {
+  flex: 1;
+}
+
+.techniquesPanel--v2 .techniqueLibraryColumn--center .techniqueLibraryPanel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.techniquesPanel--v2 .techniqueLibraryOwnedList {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+.techniquesPanel--v2 .techniqueLibraryDetail {
+  max-height: none;
+  min-height: 0;
+  flex: 1;
+}
+
+.techniquesPanel--v2 .techniqueLibraryFilters {
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .techniquesPanel--v2 .techTopRibbon {
+    grid-template-columns: 1fr;
+  }
+
+  .techniquesPanel--v2 .techStage {
+    grid-template-columns: 1fr;
+  }
+
+  .techniquesPanel--v2 .techInspectorDock {
+    display: none;
+  }
+}
+
 .techniqueLibraryRoot {
   display: flex;
   gap: 16px;

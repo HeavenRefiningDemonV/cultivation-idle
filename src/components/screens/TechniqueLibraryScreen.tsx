@@ -172,6 +172,7 @@ export function TechniqueLibraryScreen() {
   const getNextMasteryMilestoneHelper = useTechCollectionStore((state) => state.getNextMasteryMilestone);
   const getMasteryMilestoneEffectsHelper = useTechCollectionStore((state) => state.getMasteryMilestoneEffects);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
+  const isContentLoading = useContentStore((state) => state.isLoading);
   const runesById = useContentStore((state) => state.maps.runesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const heavenBonus = useContentStore(
@@ -201,6 +202,18 @@ export function TechniqueLibraryScreen() {
   const selectedCastingPolicy: CastingPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
 
   const isBossFight = isBossFlag || combatContextType === 'trial';
+
+  const activeCap = progression.unlocked.active;
+  const passiveCap = progression.unlocked.passive;
+  const ultimateCap = progression.unlocked.ultimate ? 1 : 0;
+  const activeEquipped = selectedLoadout?.slots.active.filter(Boolean).length ?? 0;
+  const passiveEquipped = selectedLoadout?.slots.passive.filter(Boolean).length ?? 0;
+  const ultimateEquipped = selectedLoadout?.slots.ultimate ? 1 : 0;
+  const equippedCount = activeEquipped + passiveEquipped + ultimateEquipped;
+  const equippedCap = activeCap + passiveCap + ultimateCap;
+  const equippedSummary = selectedLoadout
+    ? `Equipped: ${equippedCount}/${equippedCap} • Active: ${activeEquipped}/${activeCap} • Passive: ${passiveEquipped}/${passiveCap}`
+    : 'Equipped: —';
 
   const loadoutLabels = useMemo(
     () => loadouts.map((loadout, idx) => ({ id: loadout.id, label: String.fromCharCode(65 + idx), name: loadout.name })),
@@ -716,616 +729,653 @@ export function TechniqueLibraryScreen() {
     return `Last cast: ${formatDistanceToNowStrict(lastCastAt, { addSuffix: true })}`;
   };
 
+  const filterControls = (
+    <div className="techniqueLibraryFilters">
+      <div className="techniqueLibraryFilter">
+        <label htmlFor="techSort">Sort</label>
+        <select
+          id="techSort"
+          value={sortKey}
+          onChange={(e) => setSortKey(e.target.value as SortKey)}
+        >
+          <option value="power">Power</option>
+          <option value="recent">Recently Learned</option>
+          <option value="used">Most Used</option>
+          <option value="rarity">Rarity</option>
+        </select>
+      </div>
+      <div className="techniqueLibraryFilter">
+        <label htmlFor="techType">Type</label>
+        <select
+          id="techType"
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
+        >
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="passive">Passive</option>
+          <option value="ultimate">Ultimate</option>
+        </select>
+      </div>
+      <div className="techniqueLibraryFilter">
+        <label htmlFor="techPath">Path</label>
+        <select
+          id="techPath"
+          value={pathFilter}
+          onChange={(e) => setPathFilter(e.target.value)}
+        >
+          <option value="all">All</option>
+          {uniquePaths.map((path) => (
+            <option key={path} value={path}>
+              {path}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="techniqueLibraryFilter">
+        <label htmlFor="techRole">Role</label>
+        <select
+          id="techRole"
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+        >
+          <option value="all">All</option>
+          {uniqueRoles.map((role) => (
+            <option key={role} value={role}>
+              {role}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="techniqueLibraryFilter">
+        <label htmlFor="techGrade">Grade</label>
+        <select
+          id="techGrade"
+          value={gradeFilter}
+          onChange={(e) => setGradeFilter(e.target.value as GradeFilter)}
+        >
+          <option value="all">All</option>
+          <option value="mortal">Mortal</option>
+          <option value="earth">Earth</option>
+          <option value="heaven">Heaven</option>
+          <option value="mystic">Mystic</option>
+        </select>
+      </div>
+      <div className="techniqueLibraryFilter techniqueLibraryFilter--checkbox">
+        <label htmlFor="techFavorites">Favorites only</label>
+        <input
+          id="techFavorites"
+          type="checkbox"
+          checked={favoritesOnly}
+          onChange={(e) => setFavoritesOnly(e.target.checked)}
+        />
+      </div>
+      <button className="techniqueLibraryReset" onClick={resetFilters} type="button">
+        Reset filters
+      </button>
+    </div>
+  );
+
   return (
-    <div className="techniqueLibraryRoot">
-      <div className="techniqueLibraryColumn techniqueLibraryColumn--left">
-        <div className="techniqueLibraryPanel">
-          <div className="techniqueLibraryPanelHeader">Loadouts</div>
-          <div className="techniqueLibraryLoadouts">
-            {loadouts.map((loadout) => (
-              <button
-                key={loadout.id}
-                className={`techniqueLibraryLoadout ${loadout.id === selectedLoadout?.id ? 'is-active' : ''}`}
-                onClick={() => setSelectedLoadout(loadout.id)}
-              >
-                <div className="techniqueLibraryLoadoutName">{loadout.name}</div>
-                <div className="techniqueLibraryLoadoutMeta">
-                  Casting: {castingPolicyLabels[loadout.castingPolicy]}
-                </div>
-              </button>
-            ))}
+    <div className="techniquesPanel techniquesPanel--v2">
+      <header className="techTopRibbon">
+        <div className="techTopLeft">
+          <div className="techTitle">Techniques</div>
+          <div className="techSubtitle">{equippedSummary}</div>
+        </div>
+        <div className="techTopCenter">{filterControls}</div>
+        <div className="techTopRight">
+          <div className="techTopLoadout">
+            <label htmlFor="techLoadoutSelect">Loadout</label>
+            <select
+              id="techLoadoutSelect"
+              value={selectedLoadoutId}
+              onChange={(event) => setSelectedLoadout(event.target.value)}
+            >
+              {loadouts.map((loadout) => (
+                <option key={loadout.id} value={loadout.id}>
+                  {loadout.name}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+      </header>
 
-          <div className="techniqueLibraryCastingPolicy">
-            <div className="techniqueLibraryCastingPolicyLabel">Casting Policy</div>
-            <div className="techniqueLibraryCastingPolicyButtons">
-              {castingPolicies.map((policy) => {
-                const active = selectedCastingPolicy === policy;
-                return (
+      <div className="techStage">
+        <section className="techLoadoutBoard">
+          <div className="techniqueLibraryColumn techniqueLibraryColumn--left">
+            <div className="techniqueLibraryPanel">
+              <div className="techniqueLibraryPanelHeader">Loadouts</div>
+              <div className="techniqueLibraryLoadouts">
+                {loadouts.map((loadout) => (
                   <button
-                    key={policy}
-                    type="button"
-                    className={`techniqueLibraryCastingPolicyButton ${active ? 'is-active' : ''}`}
-                    onClick={() => selectedLoadout && setCastingPolicy(selectedLoadout.id, policy)}
-                    title={castingPolicyHelp[policy]}
-                    disabled={!selectedLoadout}
+                    key={loadout.id}
+                    className={`techniqueLibraryLoadout ${loadout.id === selectedLoadout?.id ? 'is-active' : ''}`}
+                    onClick={() => setSelectedLoadout(loadout.id)}
                   >
-                    {castingPolicyLabels[policy]}
+                    <div className="techniqueLibraryLoadoutName">{loadout.name}</div>
+                    <div className="techniqueLibraryLoadoutMeta">
+                      Casting: {castingPolicyLabels[loadout.castingPolicy]}
+                    </div>
                   </button>
-                );
-              })}
-            </div>
-            <div className="techniqueLibraryCastingPolicyHelp">
-              {castingPolicyHelp[selectedCastingPolicy]}
-            </div>
-          </div>
-        </div>
-
-        <div className="techniqueLibraryPanel">
-          <div className="techniqueLibraryPanelHeader">Slots</div>
-          <div className="techniqueLibrarySlots">
-            <div className="techniqueLibrarySlotGroupLabel">Active Techniques</div>
-            {Array.from({ length: progression.displayed.active }).map((_, idx) =>
-              renderSlotRow({ type: 'active', index: idx }, selectedLoadout?.slots.active[idx]),
-            )}
-
-            <div className="techniqueLibrarySlotGroupLabel">Passive Techniques</div>
-            {Array.from({ length: progression.displayed.passive }).map((_, idx) =>
-              renderSlotRow({ type: 'passive', index: idx }, selectedLoadout?.slots.passive[idx]),
-            )}
-
-            <div className="techniqueLibrarySlotGroupLabel">Ultimate</div>
-            {renderSlotRow({ type: 'ultimate', index: 0 }, selectedLoadout?.slots.ultimate)}
-          </div>
-        </div>
-
-        <div className="techniqueLibraryPanel">
-          <div className="techniqueLibraryPanelHeader">Equipment Proof (This Loadout)</div>
-          <div className="techniqueLibraryProofList">
-            {equipmentProofRows.length === 0 && (
-              <div className="techniqueLibraryEmpty">No techniques equipped in this loadout.</div>
-            )}
-            {equipmentProofRows.map((row) => (
-              <div
-                key={`${row.slotType}-${row.slotIndex}-${row.techId}`}
-                className="techniqueLibraryProofRow"
-              >
-                <div className="techniqueLibraryProofIcon">{row.icon || typeIcon(row.slotType)}</div>
-                <div className="techniqueLibraryProofBody">
-                  <div className="techniqueLibraryProofHeader">
-                    <div className="techniqueLibraryProofName">{row.name}</div>
-                    <div className="techniqueLibraryProofSlot">{row.slotLabel}</div>
-                  </div>
-                  <div className="techniqueLibraryProofStats">
-                    <div>{formatCastRate(row)}</div>
-                    <div>{formatLastCast(row.lastCastAt)}</div>
-                    <div>{formatMasteryRate(row)}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="techniqueLibraryColumn techniqueLibraryColumn--center">
-        <div className="techniqueLibraryPanel">
-          <div className="techniqueLibraryPanelHeader">Owned Techniques</div>
-          <div className="techniqueLibraryFilters">
-            <div className="techniqueLibraryFilter">
-              <label htmlFor="techSort">Sort</label>
-              <select
-                id="techSort"
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as SortKey)}
-              >
-                <option value="power">Power</option>
-                <option value="recent">Recently Learned</option>
-                <option value="used">Most Used</option>
-                <option value="rarity">Rarity</option>
-              </select>
-            </div>
-            <div className="techniqueLibraryFilter">
-              <label htmlFor="techType">Type</label>
-              <select
-                id="techType"
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
-              >
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="passive">Passive</option>
-                <option value="ultimate">Ultimate</option>
-              </select>
-            </div>
-            <div className="techniqueLibraryFilter">
-              <label htmlFor="techPath">Path</label>
-              <select
-                id="techPath"
-                value={pathFilter}
-                onChange={(e) => setPathFilter(e.target.value)}
-              >
-                <option value="all">All</option>
-                {uniquePaths.map((path) => (
-                  <option key={path} value={path}>
-                    {path}
-                  </option>
                 ))}
-              </select>
-            </div>
-            <div className="techniqueLibraryFilter">
-              <label htmlFor="techRole">Role</label>
-              <select
-                id="techRole"
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-              >
-                <option value="all">All</option>
-                {uniqueRoles.map((role) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="techniqueLibraryFilter">
-              <label htmlFor="techGrade">Grade</label>
-              <select
-                id="techGrade"
-                value={gradeFilter}
-                onChange={(e) => setGradeFilter(e.target.value as GradeFilter)}
-              >
-                <option value="all">All</option>
-                <option value="mortal">Mortal</option>
-                <option value="earth">Earth</option>
-                <option value="heaven">Heaven</option>
-                <option value="mystic">Mystic</option>
-              </select>
-            </div>
-            <div className="techniqueLibraryFilter techniqueLibraryFilter--checkbox">
-              <label htmlFor="techFavorites">Favorites only</label>
-              <input
-                id="techFavorites"
-                type="checkbox"
-                checked={favoritesOnly}
-                onChange={(e) => setFavoritesOnly(e.target.checked)}
-              />
-            </div>
-            <button className="techniqueLibraryReset" onClick={resetFilters} type="button">
-              Reset filters
-            </button>
-          </div>
-          <div className="techniqueLibraryOwnedList">
-            {ownedTechniques.length === 0 ? (
-              <div className="techniqueLibraryEmptyState">
-                <p>
-                  No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the
-                  Technique.
-                </p>
-                <button className="techniqueLibraryLinkButton" onClick={handleManualPavilionNavigation}>
-                  Go to Manual Pavilion
-                </button>
               </div>
-            ) : filteredTechniques.length === 0 ? (
-              <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>
-            ) : (
-              filteredTechniques.map((tech) => {
-                const type = techniqueType(tech.def);
-                const entry = unlockedTechs[tech.id];
-                const isSelected = selectedTechniqueId === tech.id;
-                const masteryValue = Math.min(100, Math.max(0, tech.masteryPct * 100));
-                const nextMilestone = getNextMasteryMilestoneHelper(tech.masteryLevel);
-                const rankCap = getRankCap(tech.id);
-                const nextRank = getNextRankCost(tech.id);
-                const fragmentsOwned = fragments[tech.id] ?? 0;
-                const fragmentsNeeded = nextRank?.cost.fragmentsRequired ?? 0;
-                const traitInfo = getTraitSlotBreakdown(tech.id);
-                const traitCount = entry?.traits?.length ?? 0;
-                const displayTraitSlots = Math.max(traitInfo.raritySlots, traitInfo.gradeCap);
-                const unlockedEmpty = Math.max(traitInfo.effectiveSlots - traitCount, 0);
-                const lockedSlots = Math.max(displayTraitSlots - traitInfo.effectiveSlots, 0);
-                const rerollItemName = itemsById[SOUL_INK_REROLL_ITEM_ID]?.name ?? 'Soul Ink';
-                const equippedLabels = equippedInfo.map[tech.id];
-                const canUpgradeRank = Boolean(
-                  nextRank &&
-                    tech.rank < rankCap &&
-                    fragmentsOwned >= (fragmentsNeeded ?? 0) &&
-                    nextRank.cost.runeDustRequired === 0 &&
-                    nextRank.cost.soulInkRequired === 0,
-                );
 
-                return (
-                  <div
-                    key={tech.id}
-                    id={`tech-card-${tech.id}`}
-                    className={`techniqueLibraryOwnedCard ${isSelected ? 'is-selected' : ''}`}
-                    onClick={() => {
-                      setSelectedTechniqueId(tech.id);
-                      setInlineMessage(null);
-                    }}
-                  >
-                    <div className="techniqueLibraryOwnedHeader">
-                      <div className="techniqueLibraryOwnedTitleRow">
-                        <div className="techniqueLibraryOwnedName">{tech.name}</div>
-                        {tech.favorite && <span className="techniqueLibraryFavorite">★</span>}
-                      </div>
-                      <div className="techniqueLibraryOwnedBadges">
-                        <span className={`techniqueLibraryTypeBadge type-${type}`}>
-                          {tech.typeLabel}
-                        </span>
-                        {tech.path && <span className="techniqueLibraryBadge">{tech.path}</span>}
-                        {tech.role && <span className="techniqueLibraryBadge">{tech.role}</span>}
-                        <span className={`techniqueLibraryBadge rarity-${tech.rarity}`}>{rarityLabel(tech.rarity)}</span>
-                        <span className={`techniqueLibraryBadge grade-${tech.grade}`}>{gradeLabel(tech.grade)}</span>
-                        <span className="techniqueLibraryBadge rankBadge">{formatRankLabel(tech.rank)}</span>
-                        {equippedLabels && (
-                          <span
-                            className="techniqueLibraryBadge equippedBadge"
-                            title={
-                              loadoutLabels
-                                .filter((label) => equippedLabels.includes(label.label))
-                                .map((label) => `${label.label}: ${label.name}`)
-                                .join(', ')
-                            }
-                          >
-                            Equipped: {equippedLabels.join(', ')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="techniqueLibraryTrack">
-                      <div className="techniqueLibraryTrackHeader">
-                        <span>Mastery: {tech.masteryLevel}/100</span>
-                        {nextMilestone ? (
-                          <span className="techniqueLibraryTrackHint">Next: {nextMilestone.effectsSummary.join(', ')}</span>
-                        ) : (
-                          <span className="techniqueLibraryTrackHint">Maxed</span>
-                        )}
-                      </div>
-                      <div className="techniqueLibraryProgressBar">
-                        <div className="techniqueLibraryProgressFill" style={{ width: `${masteryValue}%` }} />
-                        {[25, 50, 75, 100].map((mark) => (
-                          <div
-                            key={mark}
-                            className={`techniqueLibraryProgressTick ${masteryValue >= mark ? 'is-reached' : ''}`}
-                            style={{ left: `${mark}%` }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="techniqueLibraryTrack">
-                      <div className="techniqueLibraryTrackHeader">
-                        <span>
-                          Rank {tech.rank}/{rankCap}
-                        </span>
-                        <span className="techniqueLibraryTrackHint">
-                          Fragments: {fragmentsOwned}/{fragmentsNeeded ?? '—'}
-                        </span>
-                      </div>
-                      <div className="techniqueLibraryRankRow">
-                        <div className="techniqueLibraryRankPips">
-                          {Array.from({ length: rankCap }).map((_, idx) => (
-                            <div
-                              key={idx}
-                              className={`techniqueLibraryRankPip ${idx < tech.rank ? 'is-filled' : ''}`}
-                            />
-                          ))}
-                        </div>
-                        {canUpgradeRank && <span className="techniqueLibraryUpgradeHint">Upgrade ready</span>}
-                      </div>
-                    </div>
-
-                    <div className="techniqueLibraryTrack">
-                      <div className="techniqueLibraryTrackHeader">
-                        <span>
-                          Sub-Insights: {traitCount}/{traitInfo.effectiveSlots}
-                        </span>
-                        <span className="techniqueLibraryTrackHint">Reroll: 1× {rerollItemName}</span>
-                      </div>
-                      <div className="techniqueLibraryTraitPips">
-                        {Array.from({ length: traitCount }).map((_, idx) => (
-                          <div key={`trait-filled-${idx}`} className="techniqueLibraryTraitPip is-filled" />
-                        ))}
-                        {Array.from({ length: unlockedEmpty }).map((_, idx) => (
-                          <div key={`trait-empty-${idx}`} className="techniqueLibraryTraitPip" />
-                        ))}
-                        {Array.from({ length: lockedSlots }).map((_, idx) => (
-                          <div key={`trait-locked-${idx}`} className="techniqueLibraryTraitPip is-locked" />
-                        ))}
-                      </div>
-                      <div className="techniqueLibraryTraitHint">
-                        Rarity slots: {traitInfo.raritySlots} · Grade cap: {traitInfo.gradeCap} → {traitInfo.effectiveSlots}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="techniqueLibraryColumn techniqueLibraryColumn--right">
-        <div className="techniqueLibraryPanel">
-          <div className="techniqueLibraryPanelHeader">Technique Details</div>
-          <div className="techniqueLibraryDetail">
-            {selectedTechniqueId ? (
-              <>
-                <div className="techniqueLibraryDetailTitleRow">
-                  <h3 className="techniqueLibraryDetailTitle">{selectedTechDef?.name || selectedTechniqueId}</h3>
-                  {selectedOwned?.favorite && <span className="techniqueLibraryFavorite">★</span>}
-                </div>
-                <div className="techniqueLibraryDetailBadges">
-                  <span className={`techniqueLibraryTypeBadge type-${selectedType}`}>
-                    {selectedType === 'ultimate'
-                      ? 'Ultimate'
-                      : selectedType === 'passive'
-                        ? 'Passive'
-                        : 'Active'}
-                  </span>
-                  <span className={`techniqueLibraryBadge rarity-${selectedOwned?.rarity ?? 'common'}`}>
-                    {rarityLabel(selectedOwned?.rarity)}
-                  </span>
-                  <span className={`techniqueLibraryBadge grade-${selectedOwned?.grade ?? 'mortal'}`}>
-                    {gradeLabel(selectedOwned?.grade)}
-                  </span>
-                  {selectedTechDef?.path && <span className="techniqueLibraryBadge">{selectedTechDef.path}</span>}
-                  {selectedTechDef?.role && <span className="techniqueLibraryBadge">{selectedTechDef.role}</span>}
-                  <span className="techniqueLibraryRank">{formatRankLabel(selectedOwned?.rank ?? 1)}</span>
-                </div>
-
-                <div className="techniqueLibraryProgressGrid">
-                  <div className="techniqueLibraryProgressCard">
-                    <div className="techniqueLibraryProgressHeader">
-                      <span>Mastery Track</span>
-                      {masteryMilestoneEffects.cosmeticTitle && masteryLevel >= 100 && (
-                        <span className="techniqueLibraryTrackHint">Title: {masteryMilestoneEffects.cosmeticTitle}</span>
-                      )}
-                    </div>
-                    <div className="techniqueLibraryProgressBar">
-                      <div
-                        className="techniqueLibraryProgressFill"
-                        style={{ width: `${Math.min(100, Math.max(0, (selectedOwned?.masteryPct ?? 0) * 100))}%` }}
-                      />
-                      {[25, 50, 75, 100].map((mark) => (
-                        <div
-                          key={mark}
-                          className={`techniqueLibraryProgressTick ${masteryLevel >= mark ? 'is-reached' : ''}`}
-                          style={{ left: `${mark}%` }}
-                        />
-                      ))}
-                    </div>
-                    <div className="techniqueLibraryProgressLabel">
-                      Mastery {masteryLevel}/100 · Cooldown reduction: {(masteryCdr * 100).toFixed(1)}% · Cost reduction:
-                      {(masteryCostReduction * 100).toFixed(1)}%
-                    </div>
-                    {nextMilestoneDetail && (
-                      <div className="techniqueLibraryTrackHint">Next unlock: {nextMilestoneDetail.effectsSummary.join(', ')}</div>
-                    )}
-                  </div>
-
-                  <div className="techniqueLibraryProgressCard">
-                    <div className="techniqueLibraryProgressHeader">
-                      <span>Rank Progress</span>
-                      <span className="techniqueLibraryTrackHint">Cap: {rankCapSelected}</span>
-                    </div>
-                    <div className="techniqueLibraryRankRow">
-                      <div className="techniqueLibraryRankPips">
-                        {Array.from({ length: rankCapSelected || 1 }).map((_, idx) => (
-                          <div
-                            key={idx}
-                            className={`techniqueLibraryRankPip ${idx < (selectedOwned?.rank ?? 1) ? 'is-filled' : ''}`}
-                          />
-                        ))}
-                      </div>
-                      {nextRankInfo ? (
-                        <div className="techniqueLibraryTrackHint">
-                          Next rank ({nextRankInfo.nextRank}): {nextRankInfo.cost.fragmentsRequired} fragments ·
-                          {nextRankInfo.cost.runeDustRequired} rune dust · {nextRankInfo.cost.soulInkRequired} soul ink
-                        </div>
-                      ) : (
-                        <div className="techniqueLibraryTrackHint">Rank cap reached for current grade.</div>
-                      )}
-                    </div>
-                    <div className="techniqueLibraryTrackHint">
-                      Fragments owned: {fragmentsOwnedSelected}/{nextRankInfo?.cost.fragmentsRequired ?? '—'}
-                    </div>
-                    <div className="techniqueLibraryRankActions">
-                      <div className="techniqueLibraryTrackHint">
-                        {nextRankInfo
-                          ? `Power increase on upgrade: +${rankPowerDeltaPct.toFixed(0)}%`
-                          : 'Rank cap reached: no further power at this grade.'}
-                      </div>
-                      <button
-                        className="techniqueLibrarySecondaryButton"
-                        onClick={() => setShowRankModal(true)}
-                        disabled={Boolean(rankUpgradeDisabledReason)}
-                        title={rankUpgradeDisabledReason ?? undefined}
-                      >
-                        Upgrade Rank
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="techniqueLibraryProgressCard">
-                    <div className="techniqueLibraryProgressHeader">
-                      <span>Sub-Insights</span>
-                      <span className="techniqueLibraryTrackHint">
-                        Slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap})
-                      </span>
-                    </div>
-                    <div className="techniqueLibraryTraitPips">
-                      {selectedTraits.map((_, idx) => (
-                        <div key={`trait-detail-filled-${idx}`} className="techniqueLibraryTraitPip is-filled" />
-                      ))}
-                      {Array.from({ length: Math.max(traitInfoSelected.effectiveSlots - selectedTraits.length, 0) }).map(
-                        (_, idx) => (
-                          <div key={`trait-detail-empty-${idx}`} className="techniqueLibraryTraitPip" />
-                        ),
-                      )}
-                      {Array.from({ length: Math.max(traitInfoSelected.raritySlots - traitInfoSelected.effectiveSlots, 0) }).map(
-                        (_, idx) => (
-                          <div key={`trait-detail-locked-${idx}`} className="techniqueLibraryTraitPip is-locked" />
-                        ),
-                      )}
-                    </div>
-                    <div className="techniqueLibraryTrackHint">
-                      Rarity slots: {traitInfoSelected.raritySlots} · Grade cap: {traitInfoSelected.gradeCap} →
-                      {traitInfoSelected.effectiveSlots}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="techniqueLibraryDetailSection">
-                  <h4>Core Art Effect</h4>
-                  {primaryEffects.length ? (
-                    <ul className="techniqueLibraryEffectList">
-                      {summarizeEffects(primaryEffects).map((line) => (
-                        <li key={line}>{line}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>{effectText}</p>
-                  )}
-                </div>
-
-                <div className="techniqueLibraryDetailSection">
-                  <h4>Secondary Effect</h4>
-                  {masteryLevel >= 75 ? (
-                    secondaryEffects.length ? (
-                      <ul className="techniqueLibraryEffectList">
-                        {summarizeEffects(secondaryEffects).map((line) => (
-                          <li key={line}>
-                            <em>(Secondary)</em> {line}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No secondary effects defined.</p>
-                    )
-                  ) : (
-                    <p>Secondary effect locked until Mastery 75.</p>
-                  )}
-                  {selectedOwned?.grade === 'heaven' && masteryLevel >= 75 && (
-                    <div className="techniqueLibraryTrackHint">
-                      Heaven bonus: Secondary potency +{(((heavenBonus as number | undefined) ?? 0.25) * 100).toFixed(0)}%
-                    </div>
-                  )}
-                </div>
-
-                <div className="techniqueLibraryDetailSection">
-                  <h4>Sub-Insights (Traits)</h4>
-                  <div className="techniqueLibraryTrackHint">
-                    Trait slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap}) →
-                    {traitInfoSelected.effectiveSlots}
-                  </div>
-                  {traitInfoSelected.effectiveSlots === 0 && <p>No Sub-Insight slots available for this technique.</p>}
-                  {selectedTraits.length === 0 && traitInfoSelected.effectiveSlots > 0 && (
-                    <p>No traits yet. Re-scribe to discover fresh insights.</p>
-                  )}
-                  {selectedTraits.map((trait, idx) => {
-                    const def = getTraitDefinition(trait.id);
-                    const range = getTraitRollRangeLabel(trait.id);
-                    const quality = getTraitQualityPct(trait);
-                    const label = def?.name || def?.label || trait.id;
-                    const valuePct = trait.value ?? trait.valuePct ?? 0;
+              <div className="techniqueLibraryCastingPolicy">
+                <div className="techniqueLibraryCastingPolicyLabel">Casting Policy</div>
+                <div className="techniqueLibraryCastingPolicyButtons">
+                  {castingPolicies.map((policy) => {
+                    const active = selectedCastingPolicy === policy;
                     return (
-                      <div key={`${trait.id}-${idx}`} className="techniqueLibraryTraitRow">
-                        <div className="techniqueLibraryTraitMain">
-                          <div className="techniqueLibraryTraitName">{label}</div>
-                          <div className="techniqueLibraryTraitValue">{(valuePct * 100).toFixed(1)}%</div>
+                      <button
+                        key={policy}
+                        type="button"
+                        className={`techniqueLibraryCastingPolicyButton ${active ? 'is-active' : ''}`}
+                        onClick={() => selectedLoadout && setCastingPolicy(selectedLoadout.id, policy)}
+                        title={castingPolicyHelp[policy]}
+                        disabled={!selectedLoadout}
+                      >
+                        {castingPolicyLabels[policy]}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="techniqueLibraryCastingPolicyHelp">
+                  {castingPolicyHelp[selectedCastingPolicy]}
+                </div>
+              </div>
+            </div>
+
+            <div className="techniqueLibraryPanel">
+              <div className="techniqueLibraryPanelHeader">Slots</div>
+              <div className="techniqueLibrarySlots">
+                <div className="techniqueLibrarySlotGroupLabel">Active Techniques</div>
+                {Array.from({ length: progression.displayed.active }).map((_, idx) =>
+                  renderSlotRow({ type: 'active', index: idx }, selectedLoadout?.slots.active[idx]),
+                )}
+
+                <div className="techniqueLibrarySlotGroupLabel">Passive Techniques</div>
+                {Array.from({ length: progression.displayed.passive }).map((_, idx) =>
+                  renderSlotRow({ type: 'passive', index: idx }, selectedLoadout?.slots.passive[idx]),
+                )}
+
+                <div className="techniqueLibrarySlotGroupLabel">Ultimate</div>
+                {renderSlotRow({ type: 'ultimate', index: 0 }, selectedLoadout?.slots.ultimate)}
+              </div>
+            </div>
+
+            <div className="techniqueLibraryPanel">
+              <div className="techniqueLibraryPanelHeader">Equipment Proof (This Loadout)</div>
+              <div className="techniqueLibraryProofList">
+                {equipmentProofRows.length === 0 && (
+                  <div className="techniqueLibraryEmpty">No techniques equipped in this loadout.</div>
+                )}
+                {equipmentProofRows.map((row) => (
+                  <div
+                    key={`${row.slotType}-${row.slotIndex}-${row.techId}`}
+                    className="techniqueLibraryProofRow"
+                  >
+                    <div className="techniqueLibraryProofIcon">{row.icon || typeIcon(row.slotType)}</div>
+                    <div className="techniqueLibraryProofBody">
+                      <div className="techniqueLibraryProofHeader">
+                        <div className="techniqueLibraryProofName">{row.name}</div>
+                        <div className="techniqueLibraryProofSlot">{row.slotLabel}</div>
+                      </div>
+                      <div className="techniqueLibraryProofStats">
+                        <div>{formatCastRate(row)}</div>
+                        <div>{formatLastCast(row.lastCastAt)}</div>
+                        <div>{formatMasteryRate(row)}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="techLibraryStage">
+          <div className="techniqueLibraryColumn techniqueLibraryColumn--center">
+            <div className="techniqueLibraryPanel">
+              <div className="techniqueLibraryPanelHeader">Owned Techniques</div>
+              <div className="techniqueLibraryOwnedList">
+                {isContentLoading ? (
+                  <div className="techniqueLibraryEmptyState">Loading techniques...</div>
+                ) : ownedTechniques.length === 0 ? (
+                  <div className="techniqueLibraryEmptyState">
+                    <p>
+                      No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the
+                      Technique.
+                    </p>
+                    <button className="techniqueLibraryLinkButton" onClick={handleManualPavilionNavigation}>
+                      Go to Manual Pavilion
+                    </button>
+                  </div>
+                ) : filteredTechniques.length === 0 ? (
+                  <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>
+                ) : (
+                  filteredTechniques.map((tech) => {
+                    const type = techniqueType(tech.def);
+                    const entry = unlockedTechs[tech.id];
+                    const isSelected = selectedTechniqueId === tech.id;
+                    const masteryValue = Math.min(100, Math.max(0, tech.masteryPct * 100));
+                    const nextMilestone = getNextMasteryMilestoneHelper(tech.masteryLevel);
+                    const rankCap = getRankCap(tech.id);
+                    const nextRank = getNextRankCost(tech.id);
+                    const fragmentsOwned = fragments[tech.id] ?? 0;
+                    const fragmentsNeeded = nextRank?.cost.fragmentsRequired ?? 0;
+                    const traitInfo = getTraitSlotBreakdown(tech.id);
+                    const traitCount = entry?.traits?.length ?? 0;
+                    const displayTraitSlots = Math.max(traitInfo.raritySlots, traitInfo.gradeCap);
+                    const unlockedEmpty = Math.max(traitInfo.effectiveSlots - traitCount, 0);
+                    const lockedSlots = Math.max(displayTraitSlots - traitInfo.effectiveSlots, 0);
+                    const rerollItemName = itemsById[SOUL_INK_REROLL_ITEM_ID]?.name ?? 'Soul Ink';
+                    const equippedLabels = equippedInfo.map[tech.id];
+                    const canUpgradeRank = Boolean(
+                      nextRank &&
+                        tech.rank < rankCap &&
+                        fragmentsOwned >= (fragmentsNeeded ?? 0) &&
+                        nextRank.cost.runeDustRequired === 0 &&
+                        nextRank.cost.soulInkRequired === 0,
+                    );
+
+                    return (
+                      <div
+                        key={tech.id}
+                        id={`tech-card-${tech.id}`}
+                        className={`techniqueLibraryOwnedCard ${isSelected ? 'is-selected' : ''}`}
+                        onClick={() => {
+                          setSelectedTechniqueId(tech.id);
+                          setInlineMessage(null);
+                        }}
+                      >
+                        <div className="techniqueLibraryOwnedHeader">
+                          <div className="techniqueLibraryOwnedTitleRow">
+                            <div className="techniqueLibraryOwnedName">{tech.name}</div>
+                            {tech.favorite && <span className="techniqueLibraryFavorite">★</span>}
+                          </div>
+                          <div className="techniqueLibraryOwnedBadges">
+                            <span className={`techniqueLibraryTypeBadge type-${type}`}>
+                              {tech.typeLabel}
+                            </span>
+                            {tech.path && <span className="techniqueLibraryBadge">{tech.path}</span>}
+                            {tech.role && <span className="techniqueLibraryBadge">{tech.role}</span>}
+                            <span className={`techniqueLibraryBadge rarity-${tech.rarity}`}>{rarityLabel(tech.rarity)}</span>
+                            <span className={`techniqueLibraryBadge grade-${tech.grade}`}>{gradeLabel(tech.grade)}</span>
+                            <span className="techniqueLibraryBadge rankBadge">{formatRankLabel(tech.rank)}</span>
+                            {equippedLabels && (
+                              <span
+                                className="techniqueLibraryBadge equippedBadge"
+                                title={
+                                  loadoutLabels
+                                    .filter((label) => equippedLabels.includes(label.label))
+                                    .map((label) => `${label.label}: ${label.name}`)
+                                    .join(', ')
+                                }
+                              >
+                                Equipped: {equippedLabels.join(', ')}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="techniqueLibraryTraitQuality">
-                          <div className="techniqueLibraryTraitRange">{range}</div>
-                          <div className="techniqueLibraryTraitQualityBar">
-                            <div className="techniqueLibraryTraitQualityFill" style={{ width: `${quality * 100}%` }} />
+
+                        <div className="techniqueLibraryTrack">
+                          <div className="techniqueLibraryTrackHeader">
+                            <span>Mastery: {tech.masteryLevel}/100</span>
+                            {nextMilestone ? (
+                              <span className="techniqueLibraryTrackHint">Next: {nextMilestone.effectsSummary.join(', ')}</span>
+                            ) : (
+                              <span className="techniqueLibraryTrackHint">Maxed</span>
+                            )}
+                          </div>
+                          <div className="techniqueLibraryProgressBar">
+                            <div className="techniqueLibraryProgressFill" style={{ width: `${masteryValue}%` }} />
+                            {[25, 50, 75, 100].map((mark) => (
+                              <div
+                                key={mark}
+                                className={`techniqueLibraryProgressTick ${masteryValue >= mark ? 'is-reached' : ''}`}
+                                style={{ left: `${mark}%` }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="techniqueLibraryTrack">
+                          <div className="techniqueLibraryTrackHeader">
+                            <span>
+                              Rank {tech.rank}/{rankCap}
+                            </span>
+                            <span className="techniqueLibraryTrackHint">
+                              Fragments: {fragmentsOwned}/{fragmentsNeeded ?? '—'}
+                            </span>
+                          </div>
+                          <div className="techniqueLibraryRankRow">
+                            <div className="techniqueLibraryRankPips">
+                              {Array.from({ length: rankCap }).map((_, idx) => (
+                                <div
+                                  key={idx}
+                                  className={`techniqueLibraryRankPip ${idx < tech.rank ? 'is-filled' : ''}`}
+                                />
+                              ))}
+                            </div>
+                            {canUpgradeRank && <span className="techniqueLibraryUpgradeHint">Upgrade ready</span>}
+                          </div>
+                        </div>
+
+                        <div className="techniqueLibraryTrack">
+                          <div className="techniqueLibraryTrackHeader">
+                            <span>
+                              Sub-Insights: {traitCount}/{traitInfo.effectiveSlots}
+                            </span>
+                            <span className="techniqueLibraryTrackHint">Reroll: 1× {rerollItemName}</span>
+                          </div>
+                          <div className="techniqueLibraryTraitPips">
+                            {Array.from({ length: traitCount }).map((_, idx) => (
+                              <div key={`trait-filled-${idx}`} className="techniqueLibraryTraitPip is-filled" />
+                            ))}
+                            {Array.from({ length: unlockedEmpty }).map((_, idx) => (
+                              <div key={`trait-empty-${idx}`} className="techniqueLibraryTraitPip" />
+                            ))}
+                            {Array.from({ length: lockedSlots }).map((_, idx) => (
+                              <div key={`trait-locked-${idx}`} className="techniqueLibraryTraitPip is-locked" />
+                            ))}
+                          </div>
+                          <div className="techniqueLibraryTraitHint">
+                            Rarity slots: {traitInfo.raritySlots} · Grade cap: {traitInfo.gradeCap} → {traitInfo.effectiveSlots}
                           </div>
                         </div>
                       </div>
                     );
-                  })}
-                  <div className="techniqueLibraryTraitActions">
-                    <div className="techniqueLibraryTrackHint">
-                      Reroll: 1× {rerollItemName}. Lock 1 trait: +1× {rerollItemName} (choose in modal).
-                    </div>
-                    <button
-                      className="techniqueLibraryPrimaryButton"
-                      onClick={() => setShowTraitModal(true)}
-                      disabled={Boolean(rerollDisabledReason)}
-                      title={rerollDisabledReason ?? undefined}
-                    >
-                      Reroll Sub-Insights
-                    </button>
-                  </div>
-                </div>
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
 
-                <div className="techniqueLibraryDetailSection">
-                  <h4>Runes</h4>
-                  <div className="techniqueLibraryRuneSockets">
-                    {runeDisplay.map((runeId, idx) => (
-                      <div key={`rune-${idx}`} className="techniqueLibraryRuneRow">
-                        <div className="techniqueLibraryRuneSlotLabel">Socket {idx + 1}</div>
-                        <div className={`techniqueLibraryRunePill ${runeId ? 'is-filled' : ''}`}>
-                          {runeId ? itemsById[runeId]?.name ?? runeId : 'Empty'}
+        <aside className="techInspectorDock" aria-hidden="true">
+          <div className="techniqueLibraryColumn techniqueLibraryColumn--right">
+            <div className="techniqueLibraryPanel">
+              <div className="techniqueLibraryPanelHeader">Technique Details</div>
+              <div className="techniqueLibraryDetail">
+                {selectedTechniqueId ? (
+                  <>
+                    <div className="techniqueLibraryDetailTitleRow">
+                      <h3 className="techniqueLibraryDetailTitle">{selectedTechDef?.name || selectedTechniqueId}</h3>
+                      {selectedOwned?.favorite && <span className="techniqueLibraryFavorite">★</span>}
+                    </div>
+                    <div className="techniqueLibraryDetailBadges">
+                      <span className={`techniqueLibraryTypeBadge type-${selectedType}`}>
+                        {selectedType === 'ultimate'
+                          ? 'Ultimate'
+                          : selectedType === 'passive'
+                            ? 'Passive'
+                            : 'Active'}
+                      </span>
+                      <span className={`techniqueLibraryBadge rarity-${selectedOwned?.rarity ?? 'common'}`}>
+                        {rarityLabel(selectedOwned?.rarity)}
+                      </span>
+                      <span className={`techniqueLibraryBadge grade-${selectedOwned?.grade ?? 'mortal'}`}>
+                        {gradeLabel(selectedOwned?.grade)}
+                      </span>
+                      {selectedTechDef?.path && <span className="techniqueLibraryBadge">{selectedTechDef.path}</span>}
+                      {selectedTechDef?.role && <span className="techniqueLibraryBadge">{selectedTechDef.role}</span>}
+                      <span className="techniqueLibraryRank">{formatRankLabel(selectedOwned?.rank ?? 1)}</span>
+                    </div>
+
+                    <div className="techniqueLibraryProgressGrid">
+                      <div className="techniqueLibraryProgressCard">
+                        <div className="techniqueLibraryProgressHeader">
+                          <span>Mastery Track</span>
+                          {masteryMilestoneEffects.cosmeticTitle && masteryLevel >= 100 && (
+                            <span className="techniqueLibraryTrackHint">Title: {masteryMilestoneEffects.cosmeticTitle}</span>
+                          )}
                         </div>
-                        <select
-                          value={runeSelections[idx] ?? ''}
-                          onChange={(e) => setRuneSelections((prev) => ({ ...prev, [idx]: e.target.value }))}
-                        >
-                          <option value="">Select Rune</option>
-                          {availableRunes.map((rune) => (
-                            <option key={rune.id} value={rune.id} disabled={rune.qty <= 0}>
-                              {rune.name} ({rune.qty})
-                            </option>
+                        <div className="techniqueLibraryProgressBar">
+                          <div
+                            className="techniqueLibraryProgressFill"
+                            style={{ width: `${Math.min(100, Math.max(0, (selectedOwned?.masteryPct ?? 0) * 100))}%` }}
+                          />
+                          {[25, 50, 75, 100].map((mark) => (
+                            <div
+                              key={mark}
+                              className={`techniqueLibraryProgressTick ${masteryLevel >= mark ? 'is-reached' : ''}`}
+                              style={{ left: `${mark}%` }}
+                            />
                           ))}
-                        </select>
-                        <button className="techniqueLibrarySecondaryButton" onClick={() => handleSocketRune(idx)}>
-                          Socket
-                        </button>
-                        {runeId && (
-                          <button className="techniqueLibraryLinkButton" onClick={() => handleUnsocketRune(idx)}>
-                            Unsocket
-                          </button>
+                        </div>
+                        <div className="techniqueLibraryProgressLabel">
+                          Mastery {masteryLevel}/100 · Cooldown reduction: {(masteryCdr * 100).toFixed(1)}% · Cost reduction:
+                          {(masteryCostReduction * 100).toFixed(1)}%
+                        </div>
+                        {nextMilestoneDetail && (
+                          <div className="techniqueLibraryTrackHint">Next unlock: {nextMilestoneDetail.effectsSummary.join(', ')}</div>
                         )}
                       </div>
-                    ))}
-                    {runeSlots === 0 && <div className="techniqueLibraryTrackHint">No rune sockets for this grade.</div>}
-                  </div>
-                </div>
 
-                <div className="techniqueLibraryButtons">
-                  <button
-                    className="techniqueLibraryPrimaryButton"
-                    disabled={equipDisabled}
-                    onClick={handleEquip}
-                  >
-                    {equipButtonLabel}
-                  </button>
-                  <button className="techniqueLibrarySecondaryButton" onClick={handleFavoriteToggle}>
-                    {selectedOwned?.favorite ? 'Unfavorite' : 'Favorite'}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="techniqueLibraryEmptyDetail">Select a technique to see details and equip it.</div>
+                      <div className="techniqueLibraryProgressCard">
+                        <div className="techniqueLibraryProgressHeader">
+                          <span>Rank Progress</span>
+                          <span className="techniqueLibraryTrackHint">Cap: {rankCapSelected}</span>
+                        </div>
+                        <div className="techniqueLibraryRankRow">
+                          <div className="techniqueLibraryRankPips">
+                            {Array.from({ length: rankCapSelected || 1 }).map((_, idx) => (
+                              <div
+                                key={idx}
+                                className={`techniqueLibraryRankPip ${idx < (selectedOwned?.rank ?? 1) ? 'is-filled' : ''}`}
+                              />
+                            ))}
+                          </div>
+                          {nextRankInfo ? (
+                            <div className="techniqueLibraryTrackHint">
+                              Next rank ({nextRankInfo.nextRank}): {nextRankInfo.cost.fragmentsRequired} fragments ·
+                              {nextRankInfo.cost.runeDustRequired} rune dust · {nextRankInfo.cost.soulInkRequired} soul ink
+                            </div>
+                          ) : (
+                            <div className="techniqueLibraryTrackHint">Rank cap reached for current grade.</div>
+                          )}
+                        </div>
+                        <div className="techniqueLibraryTrackHint">
+                          Fragments owned: {fragmentsOwnedSelected}/{nextRankInfo?.cost.fragmentsRequired ?? '—'}
+                        </div>
+                        <div className="techniqueLibraryRankActions">
+                          <div className="techniqueLibraryTrackHint">
+                            {nextRankInfo
+                              ? `Power increase on upgrade: +${rankPowerDeltaPct.toFixed(0)}%`
+                              : 'Rank cap reached: no further power at this grade.'}
+                          </div>
+                          <button
+                            className="techniqueLibrarySecondaryButton"
+                            onClick={() => setShowRankModal(true)}
+                            disabled={Boolean(rankUpgradeDisabledReason)}
+                            title={rankUpgradeDisabledReason ?? undefined}
+                          >
+                            Upgrade Rank
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="techniqueLibraryProgressCard">
+                        <div className="techniqueLibraryProgressHeader">
+                          <span>Sub-Insights</span>
+                          <span className="techniqueLibraryTrackHint">
+                            Slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap})
+                          </span>
+                        </div>
+                        <div className="techniqueLibraryTraitPips">
+                          {selectedTraits.map((_, idx) => (
+                            <div key={`trait-detail-filled-${idx}`} className="techniqueLibraryTraitPip is-filled" />
+                          ))}
+                          {Array.from({ length: Math.max(traitInfoSelected.effectiveSlots - selectedTraits.length, 0) }).map(
+                            (_, idx) => (
+                              <div key={`trait-detail-empty-${idx}`} className="techniqueLibraryTraitPip" />
+                            ),
+                          )}
+                          {Array.from({ length: Math.max(traitInfoSelected.raritySlots - traitInfoSelected.effectiveSlots, 0) }).map(
+                            (_, idx) => (
+                              <div key={`trait-detail-locked-${idx}`} className="techniqueLibraryTraitPip is-locked" />
+                            ),
+                          )}
+                        </div>
+                        <div className="techniqueLibraryTrackHint">
+                          Rarity slots: {traitInfoSelected.raritySlots} · Grade cap: {traitInfoSelected.gradeCap} →
+                          {traitInfoSelected.effectiveSlots}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="techniqueLibraryDetailSection">
+                      <h4>Core Art Effect</h4>
+                      {primaryEffects.length ? (
+                        <ul className="techniqueLibraryEffectList">
+                          {summarizeEffects(primaryEffects).map((line) => (
+                            <li key={line}>{line}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>{effectText}</p>
+                      )}
+                    </div>
+
+                    <div className="techniqueLibraryDetailSection">
+                      <h4>Secondary Effect</h4>
+                      {masteryLevel >= 75 ? (
+                        secondaryEffects.length ? (
+                          <ul className="techniqueLibraryEffectList">
+                            {summarizeEffects(secondaryEffects).map((line) => (
+                              <li key={line}>
+                                <em>(Secondary)</em> {line}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No secondary effects defined.</p>
+                        )
+                      ) : (
+                        <p>Secondary effect locked until Mastery 75.</p>
+                      )}
+                      {selectedOwned?.grade === 'heaven' && masteryLevel >= 75 && (
+                        <div className="techniqueLibraryTrackHint">
+                          Heaven bonus: Secondary potency +{(((heavenBonus as number | undefined) ?? 0.25) * 100).toFixed(0)}%
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="techniqueLibraryDetailSection">
+                      <h4>Sub-Insights (Traits)</h4>
+                      <div className="techniqueLibraryTrackHint">
+                        Trait slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap}) →
+                        {traitInfoSelected.effectiveSlots}
+                      </div>
+                      {traitInfoSelected.effectiveSlots === 0 && <p>No Sub-Insight slots available for this technique.</p>}
+                      {selectedTraits.length === 0 && traitInfoSelected.effectiveSlots > 0 && (
+                        <p>No traits yet. Re-scribe to discover fresh insights.</p>
+                      )}
+                      {selectedTraits.map((trait, idx) => {
+                        const def = getTraitDefinition(trait.id);
+                        const range = getTraitRollRangeLabel(trait.id);
+                        const quality = getTraitQualityPct(trait);
+                        const label = def?.name || def?.label || trait.id;
+                        const valuePct = trait.value ?? trait.valuePct ?? 0;
+                        return (
+                          <div key={`${trait.id}-${idx}`} className="techniqueLibraryTraitRow">
+                            <div className="techniqueLibraryTraitMain">
+                              <div className="techniqueLibraryTraitName">{label}</div>
+                              <div className="techniqueLibraryTraitValue">{(valuePct * 100).toFixed(1)}%</div>
+                            </div>
+                            <div className="techniqueLibraryTraitQuality">
+                              <div className="techniqueLibraryTraitRange">{range}</div>
+                              <div className="techniqueLibraryTraitQualityBar">
+                                <div className="techniqueLibraryTraitQualityFill" style={{ width: `${quality * 100}%` }} />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      <div className="techniqueLibraryTraitActions">
+                        <div className="techniqueLibraryTrackHint">
+                          Reroll: 1× {rerollItemName}. Lock 1 trait: +1× {rerollItemName} (choose in modal).
+                        </div>
+                        <button
+                          className="techniqueLibraryPrimaryButton"
+                          onClick={() => setShowTraitModal(true)}
+                          disabled={Boolean(rerollDisabledReason)}
+                          title={rerollDisabledReason ?? undefined}
+                        >
+                          Reroll Sub-Insights
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="techniqueLibraryDetailSection">
+                      <h4>Runes</h4>
+                      <div className="techniqueLibraryRuneSockets">
+                        {runeDisplay.map((runeId, idx) => (
+                          <div key={`rune-${idx}`} className="techniqueLibraryRuneRow">
+                            <div className="techniqueLibraryRuneSlotLabel">Socket {idx + 1}</div>
+                            <div className={`techniqueLibraryRunePill ${runeId ? 'is-filled' : ''}`}>
+                              {runeId ? itemsById[runeId]?.name ?? runeId : 'Empty'}
+                            </div>
+                            <select
+                              value={runeSelections[idx] ?? ''}
+                              onChange={(e) => setRuneSelections((prev) => ({ ...prev, [idx]: e.target.value }))}
+                            >
+                              <option value="">Select Rune</option>
+                              {availableRunes.map((rune) => (
+                                <option key={rune.id} value={rune.id} disabled={rune.qty <= 0}>
+                                  {rune.name} ({rune.qty})
+                                </option>
+                              ))}
+                            </select>
+                            <button className="techniqueLibrarySecondaryButton" onClick={() => handleSocketRune(idx)}>
+                              Socket
+                            </button>
+                            {runeId && (
+                              <button className="techniqueLibraryLinkButton" onClick={() => handleUnsocketRune(idx)}>
+                                Unsocket
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        {runeSlots === 0 && <div className="techniqueLibraryTrackHint">No rune sockets for this grade.</div>}
+                      </div>
+                    </div>
+
+                    <div className="techniqueLibraryButtons">
+                      <button
+                        className="techniqueLibraryPrimaryButton"
+                        disabled={equipDisabled}
+                        onClick={handleEquip}
+                      >
+                        {equipButtonLabel}
+                      </button>
+                      <button className="techniqueLibrarySecondaryButton" onClick={handleFavoriteToggle}>
+                        {selectedOwned?.favorite ? 'Unfavorite' : 'Favorite'}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="techniqueLibraryEmptyDetail">Select a technique to see details and equip it.</div>
+                )}
+              </div>
+            </div>
+
+            {showRankModal && selectedTechniqueId && (
+              <RankUpgradeRitualModal techId={selectedTechniqueId} onClose={() => setShowRankModal(false)} />
+            )}
+            {showTraitModal && selectedTechniqueId && (
+              <TraitRerollModal techId={selectedTechniqueId} onClose={() => setShowTraitModal(false)} />
+            )}
+
+            {inlineMessage && (
+              <div className={`techniqueLibraryInlineMessage inline-${inlineMessage.type}`}>
+                {inlineMessage.text}
+              </div>
             )}
           </div>
-        </div>
-
-        {showRankModal && selectedTechniqueId && (
-          <RankUpgradeRitualModal techId={selectedTechniqueId} onClose={() => setShowRankModal(false)} />
-        )}
-        {showTraitModal && selectedTechniqueId && (
-          <TraitRerollModal techId={selectedTechniqueId} onClose={() => setShowTraitModal(false)} />
-        )}
-
-        {inlineMessage && (
-          <div className={`techniqueLibraryInlineMessage inline-${inlineMessage.type}`}>
-            {inlineMessage.text}
-          </div>
-        )}
+        </aside>
       </div>
     </div>
   );
