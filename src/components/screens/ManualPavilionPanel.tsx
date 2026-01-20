@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FocusEvent, MouseEvent } from 'react';
 import './ManualPavilionPanel.scss';
 import type { TechniqueDef } from '../../content';
@@ -26,16 +26,17 @@ interface ManualPavilionPanelProps {
 
 const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const purchaseErrorCopy: Record<string, string> = {
-  insufficient_funds: 'Not enough currency for this purchase.',
-  already_sold: 'This manual has already been purchased.',
-  not_sold_here: 'This manual is not sold in this pavilion.',
-  sealed: 'This manual is sealed behind a higher grade.',
+  insufficient_funds: 'Not enough currency.',
+  sealed: 'This manual is sealed by grade.',
+  already_sold: 'Already purchased.',
+  not_sold_here: 'Not sold in this pavilion.',
+  spend_failed: 'Unable to spend currency (try again).',
+  content_missing: 'Content missing (reload).',
+  content_loading: 'Content is still loading.',
+  purchase_in_progress: 'Purchase already in progress.',
   invalid_cost: 'Invalid price for this manual.',
   stock_missing: 'Pavilion stock missing. Try refreshing.',
   slot_missing: 'Manual slot missing. Try refreshing.',
-  purchase_in_progress: 'Another purchase is already in progress.',
-  spend_failed: 'Unable to spend currency for this purchase.',
-  content_loading: 'Content is still loading.',
 };
 
 function normalizeGradeValue(value?: string | null): ManualGrade {
@@ -62,7 +63,7 @@ function deriveGradeCap(realmIndex: number): ManualGrade {
 
 function formatPurchaseError(reason?: string | null) {
   if (!reason) return null;
-  return purchaseErrorCopy[reason] ?? reason;
+  return purchaseErrorCopy[reason] ?? reason.replace(/_/g, ' ');
 }
 
 type SpineState = 'placeholder' | 'available' | 'sealed' | 'notSold' | 'sold';
@@ -99,12 +100,21 @@ interface BookSpineSlotProps {
   slot: PavilionStockSlot | null;
   technique?: TechniqueDef;
   isSelected: boolean;
+  isJustPurchased: boolean;
   onSelect: (event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>) => void;
   onHover: (slotIndex: number, rect: DOMRect) => void;
   onClearHover: () => void;
 }
 
-function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClearHover }: BookSpineSlotProps) {
+function BookSpineSlot({
+  slot,
+  technique,
+  isSelected,
+  isJustPurchased,
+  onSelect,
+  onHover,
+  onClearHover,
+}: BookSpineSlotProps) {
   const state = resolveSpineState(slot);
   const path = normalizePath(technique?.path);
   const roleBadge = getRoleBadge(technique?.role);
@@ -140,7 +150,9 @@ function BookSpineSlot({ slot, technique, isSelected, onSelect, onHover, onClear
   return (
     <button
       type="button"
-      className={`pavilionSpine ${isSelected ? 'pavilionSpine--selected' : ''}`}
+      className={`pavilionSpine ${isSelected ? 'pavilionSpine--selected' : ''} ${
+        isJustPurchased ? 'pavilionSpine--justPurchased' : ''
+      }`}
       data-state={state}
       data-path={path}
       data-rarity={slot.rarity}
@@ -200,6 +212,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const requestTechniqueFocus = useUIStore((state) => state.requestTechniqueFocus);
   const addNotification = useUIStore((state) => state.addNotification);
   const satchelCount = useManualSatchelStore((state) => state.manuals.length + (state.activeStudy ? 1 : 0));
+  const activeStudy = useManualSatchelStore((state) => state.activeStudy);
 
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedManualSlotId, setSelectedManualSlotId] = useState<number | null>(null);
@@ -210,6 +223,8 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [refreshFlash, setRefreshFlash] = useState(0);
   const [flashOn, setFlashOn] = useState(false);
+  const [justPurchasedSlotId, setJustPurchasedSlotId] = useState<number | null>(null);
+  const purchasePulseTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);
@@ -251,7 +266,20 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     if (!stock) return;
     setHovered(null);
     setSelectedManualSlotId((prev) => (prev != null ? null : prev));
+    setJustPurchasedSlotId(null);
+    if (purchasePulseTimeoutRef.current) {
+      window.clearTimeout(purchasePulseTimeoutRef.current);
+      purchasePulseTimeoutRef.current = null;
+    }
   }, [stock?.generatedAt, stock]);
+
+  useEffect(() => {
+    return () => {
+      if (purchasePulseTimeoutRef.current) {
+        window.clearTimeout(purchasePulseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (refreshFlash === 0) return;
@@ -304,7 +332,11 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     }
   };
 
-  const closeDetail = () => setSelectedManualSlotId(null);
+  const closeDetail = () => {
+    setSelectedManualSlotId(null);
+    setPurchaseResult(null);
+    setPurchaseError(null);
+  };
   const clearHover = () => setHovered(null);
 
   const handleRefresh = () => {
@@ -367,31 +399,55 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   const handlePurchase = (mode: 'buy' | 'buyAndStudy') => {
     if (!pavilionId || !selectedManualSlot) return;
+    setPurchaseResult(null);
+    setPurchaseError(null);
     const result = buyManual({ pavilionId, stockId: selectedManualSlot.slotIndex, mode });
     if (!result.ok) {
-      setPurchaseError(result.reason || 'purchase_failed');
+      const reason = result.reason || 'purchase_failed';
+      setPurchaseError(reason);
+      const friendly = formatPurchaseError(reason);
+      addNotification('error', friendly ? `Purchase failed: ${friendly}` : 'Purchase failed.', 3000);
       setPurchaseResult(null);
       return;
     }
 
     let finalResult: ManualPurchaseResult & { studied?: boolean } = result;
     if (mode === 'buyAndStudy' && result.outcome === 'manualGranted') {
-      const satchel = useManualSatchelStore.getState();
-      const manualId =
-        result.manualInstanceId ||
-        satchel.manuals.find(
-          (manual) => manual.techId === result.techId && manual.grade === result.grade && manual.rarity === result.rarity,
-        )?.id;
-      if (manualId) {
-        const studyResult = satchel.startStudy(manualId);
+      if (result.manualInstanceId) {
+        const studyResult = useManualSatchelStore.getState().startStudy(result.manualInstanceId);
         if (studyResult.ok) {
           finalResult = { ...result, studied: true };
+          addNotification('success', 'Study started.', 2500);
+        } else {
+          addNotification(
+            'info',
+            `Purchased, but could not start study${studyResult.reason ? ` (${studyResult.reason}).` : '.'}`,
+            3000,
+          );
         }
+      } else {
+        addNotification('info', 'Purchased, but could not start study (missing manual instance).', 3000);
       }
     }
 
     setPurchaseError(null);
     setPurchaseResult(finalResult);
+    if (finalResult.outcome === 'manualGranted') {
+      const manualName =
+        (selectedManualSlot ? techniquesById[selectedManualSlot.techniqueId]?.name : undefined) ??
+        finalResult.manualName ??
+        finalResult.techId ??
+        'manual';
+      addNotification('success', `Purchased "${manualName}".`, 2500);
+    } else if (finalResult.outcome === 'duplicateConverted') {
+      addNotification('info', `Duplicate converted (+${finalResult.fragmentsGained} fragments).`, 2500);
+    }
+
+    setJustPurchasedSlotId(selectedManualSlot.slotIndex);
+    if (purchasePulseTimeoutRef.current) {
+      window.clearTimeout(purchasePulseTimeoutRef.current);
+    }
+    purchasePulseTimeoutRef.current = window.setTimeout(() => setJustPurchasedSlotId(null), 700);
   };
 
   const handleUpgradeNow = (techId: string) => {
@@ -434,6 +490,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
                 slot={entry.slot}
                 technique={entry.technique}
                 isSelected={entry.slot?.slotIndex === selectedSlot?.slotIndex}
+                isJustPurchased={entry.slot?.slotIndex === justPurchasedSlotId}
                 onSelect={(event) => entry.slot && handleSelect(entry.slot, event)}
                 onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
                 onClearHover={clearHover}
@@ -616,15 +673,19 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   const purchaseDisabledReason = selectedManualSlot?.sold
     ? 'Already purchased'
     : selectedManualSlot?.notSold
-      ? 'Not sold here'
+      ? 'Not sold in this city'
       : selectedManualSlot?.sealed
-        ? 'Sealed (grade locked)'
+        ? 'Sealed (higher grade required)'
         : !canAfford
           ? 'Not enough currency'
           : isPurchasing
             ? 'Purchase in progress'
             : undefined;
-  const studyDisabledReason = purchaseDisabledReason ?? 'Buy & Study Now performs an instant study in this milestone.';
+  const studyDisabledReason = purchaseDisabledReason
+    ? purchaseDisabledReason
+    : activeStudy
+      ? 'Already studying a manual'
+      : undefined;
   const errorMessage = formatPurchaseError(purchaseError || lastPurchaseError);
 
   const purchaseState: ManualPurchaseState = {
@@ -666,6 +727,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
         onClose={closeDetail}
         onPurchase={handlePurchase}
         onUpgradeNow={handleUpgradeNow}
+        onOpenSatchel={openManualSatchel}
         purchaseState={purchaseState}
       />
       {hovered && hoveredSlot && (

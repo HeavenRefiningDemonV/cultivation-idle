@@ -32,6 +32,7 @@ interface ManualDetailModalProps {
   onClose: () => void;
   onPurchase: (mode: 'buy' | 'buyAndStudy') => void;
   onUpgradeNow: (techId: string) => void;
+  onOpenSatchel: () => void;
   purchaseState: ManualPurchaseState;
 }
 
@@ -111,7 +112,15 @@ const getFocusableElements = (container: HTMLElement | null) => {
   );
 };
 
-export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgradeNow, purchaseState }: ManualDetailModalProps) {
+export function ManualDetailModal({
+  open,
+  manual,
+  onClose,
+  onPurchase,
+  onUpgradeNow,
+  onOpenSatchel,
+  purchaseState,
+}: ManualDetailModalProps) {
   const titleId = useId();
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -144,7 +153,7 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
         ? `${technique.resourceCost} ${technique.resourceModel}`
         : '—';
 
-    return [
+    const baseSections = [
       {
         id: 'overview',
         title: 'Overview',
@@ -220,6 +229,7 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
                 disabled={Boolean(purchaseState.purchaseDisabledReason)}
                 title={purchaseState.purchaseDisabledReason}
                 onClick={() => onPurchase('buy')}
+                type="button"
               >
                 Buy Manual
               </button>
@@ -228,6 +238,7 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
                 disabled={Boolean(purchaseState.studyDisabledReason)}
                 title={purchaseState.studyDisabledReason}
                 onClick={() => onPurchase('buyAndStudy')}
+                type="button"
               >
                 Buy &amp; Study Now
               </button>
@@ -235,12 +246,25 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
             {purchaseState.errorMessage && (
               <div className={'pavilionPurchaseError'}>Purchase failed: {purchaseState.errorMessage}</div>
             )}
-            {purchaseState.purchaseResult && renderPurchaseResult(purchaseState.purchaseResult, onUpgradeNow)}
           </div>
         ),
       },
     ];
-  }, [manual, onPurchase, onUpgradeNow, purchaseState, technique, typeIcon.label, pathIcon.label]);
+
+    if (purchaseState.purchaseResult) {
+      baseSections.push({
+        id: 'result',
+        title: 'Result',
+        content: (
+          <div className="pavilionDetailPanel">
+            {renderPurchaseResult(purchaseState.purchaseResult, onUpgradeNow, onOpenSatchel)}
+          </div>
+        ),
+      });
+    }
+
+    return baseSections;
+  }, [manual, onPurchase, onUpgradeNow, onOpenSatchel, purchaseState, technique, typeIcon.label, pathIcon.label]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -492,7 +516,11 @@ export function ManualDetailModal({ open, manual, onClose, onPurchase, onUpgrade
   );
 }
 
-function renderPurchaseResult(result: ManualPurchaseResult, onUpgradeNow: (techId: string) => void) {
+function renderPurchaseResult(
+  result: ManualPurchaseResult,
+  onUpgradeNow: (techId: string) => void,
+  onOpenSatchel: () => void,
+) {
   if (!result.ok) {
     return (
       <div className={'pavilionPurchaseResult pavilionPurchaseResult--error'}>
@@ -511,11 +539,14 @@ function renderPurchaseResult(result: ManualPurchaseResult, onUpgradeNow: (techI
           Added to Manual Satchel
           {typeof result.satchelCount === 'number' ? ` (${result.satchelCount} owned in this grade/rarity).` : '.'}
         </div>
-        {result.studied && <div>Technique Learned (studied instantly).</div>}
+        {result.studied && <div>Studying now.</div>}
         <div>
           {result.manualName} • {gradeLabel(result.grade ?? 'mortal')} • {rarityLabel(result.rarity ?? 'common')}
         </div>
         <div>Cost: {costText}</div>
+        <button className={'worldScreenModuleButton'} onClick={onOpenSatchel} type="button">
+          Open Satchel
+        </button>
       </div>
     );
   }
@@ -532,7 +563,7 @@ function renderPurchaseResult(result: ManualPurchaseResult, onUpgradeNow: (techI
       </div>
       <div>{progressLine}</div>
       {result.techId && (
-        <button className={'worldScreenModuleButton'} onClick={() => onUpgradeNow(result.techId)}>
+        <button className={'worldScreenModuleButton'} onClick={() => onUpgradeNow(result.techId)} type="button">
           Upgrade now
         </button>
       )}

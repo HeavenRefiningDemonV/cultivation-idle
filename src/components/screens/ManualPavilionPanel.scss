@@ -207,6 +207,14 @@
   box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.55), 0 18px 30px rgba(0, 0, 0, 0.3);
 }
 
+.pavilionSpine--justPurchased {
+  animation: spinePurchasedPulse 650ms ease-out 1;
+}
+
+.pavilionSpine--justPurchased:hover {
+  transform: translateY(-6px);
+}
+
 .pavilionSpine[data-path='heaven'] {
   background: linear-gradient(180deg, rgba(125, 211, 252, 0.42), rgba(30, 58, 138, 0.22));
 }
@@ -385,6 +393,21 @@
   }
 }
 
+@keyframes spinePurchasedPulse {
+  0% {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+  35% {
+    transform: translateY(-4px);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pavilionSpine {
     transition: none;
@@ -393,6 +416,10 @@
   .pavilionSpine[data-state='available'][data-rarity='epic'],
   .pavilionSpine[data-state='available'][data-rarity='legendary'] {
     animation: none !important;
+  }
+
+  .pavilionSpine--justPurchased {
+    animation: none;
   }
 
   .pavilionShelfWall--flash {
