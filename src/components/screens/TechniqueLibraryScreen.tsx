@@ -215,30 +215,14 @@ export function TechniqueLibraryScreen() {
     ? `Equipped: ${equippedCount}/${equippedCap} • Active: ${activeEquipped}/${activeCap} • Passive: ${passiveEquipped}/${passiveCap}`
     : 'Equipped: —';
 
-  const loadoutLabels = useMemo(
-    () => loadouts.map((loadout, idx) => ({ id: loadout.id, label: String.fromCharCode(65 + idx), name: loadout.name })),
-    [loadouts],
-  );
-
-  const equippedInfo = useMemo(() => {
+  const activeLoadoutEquipped = useMemo(() => {
     const ids = new Set<string>();
-    const map: Record<string, string[]> = {};
-
-    loadouts.forEach((loadout, idx) => {
-      const label = String.fromCharCode(65 + idx);
-      const add = (id?: string | null) => {
-        if (!id) return;
-        ids.add(id);
-        map[id] = map[id] ? [...new Set([...map[id], label])] : [label];
-      };
-
-      loadout.slots.active.forEach(add);
-      loadout.slots.passive.forEach(add);
-      add(loadout.slots.ultimate);
-    });
-
-    return { ids, map };
-  }, [loadouts]);
+    if (!selectedLoadout) return ids;
+    selectedLoadout.slots.active.forEach((id) => id && ids.add(id));
+    selectedLoadout.slots.passive.forEach((id) => id && ids.add(id));
+    if (selectedLoadout.slots.ultimate) ids.add(selectedLoadout.slots.ultimate);
+    return ids;
+  }, [selectedLoadout]);
 
   const equipmentProofRows = useMemo<EquipmentProofRow[]>(() => {
     if (!selectedLoadout) return [];
@@ -414,6 +398,23 @@ export function TechniqueLibraryScreen() {
     setGradeFilter('all');
     setFavoritesOnly(false);
   }, []);
+
+  useEffect(() => {
+    if (ownedTechniques.length === 0) {
+      if (selectedTechniqueId !== null) {
+        setSelectedTechniqueId(null);
+      }
+      return;
+    }
+
+    const hasSelection = selectedTechniqueId
+      ? ownedTechniques.some((tech) => tech.id === selectedTechniqueId)
+      : false;
+
+    if (!hasSelection) {
+      setSelectedTechniqueId(ownedTechniques[0].id);
+    }
+  }, [ownedTechniques, selectedTechniqueId]);
 
   useEffect(() => {
     setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
@@ -956,136 +957,44 @@ export function TechniqueLibraryScreen() {
                   <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>
                 ) : (
                   filteredTechniques.map((tech) => {
-                    const type = techniqueType(tech.def);
-                    const entry = unlockedTechs[tech.id];
                     const isSelected = selectedTechniqueId === tech.id;
-                    const masteryValue = Math.min(100, Math.max(0, tech.masteryPct * 100));
-                    const nextMilestone = getNextMasteryMilestoneHelper(tech.masteryLevel);
-                    const rankCap = getRankCap(tech.id);
-                    const nextRank = getNextRankCost(tech.id);
-                    const fragmentsOwned = fragments[tech.id] ?? 0;
-                    const fragmentsNeeded = nextRank?.cost.fragmentsRequired ?? 0;
-                    const traitInfo = getTraitSlotBreakdown(tech.id);
-                    const traitCount = entry?.traits?.length ?? 0;
-                    const displayTraitSlots = Math.max(traitInfo.raritySlots, traitInfo.gradeCap);
-                    const unlockedEmpty = Math.max(traitInfo.effectiveSlots - traitCount, 0);
-                    const lockedSlots = Math.max(displayTraitSlots - traitInfo.effectiveSlots, 0);
-                    const rerollItemName = itemsById[SOUL_INK_REROLL_ITEM_ID]?.name ?? 'Soul Ink';
-                    const equippedLabels = equippedInfo.map[tech.id];
-                    const canUpgradeRank = Boolean(
-                      nextRank &&
-                        tech.rank < rankCap &&
-                        fragmentsOwned >= (fragmentsNeeded ?? 0) &&
-                        nextRank.cost.runeDustRequired === 0 &&
-                        nextRank.cost.soulInkRequired === 0,
-                    );
+                    const displayName = tech.name || tech.id;
+                    const equippedInActiveLoadout = activeLoadoutEquipped.has(tech.id);
+                    const typeLabel = tech.typeLabel;
+                    const pathLabel = tech.path ?? 'Unknown';
+                    const gradeValue = gradeLabel(tech.grade);
 
                     return (
-                      <div
+                      <button
+                        type="button"
                         key={tech.id}
                         id={`tech-card-${tech.id}`}
-                        className={`techniqueLibraryOwnedCard ${isSelected ? 'is-selected' : ''}`}
+                        className={`techLibraryItem techLibraryItem--compact ${isSelected ? 'is-selected' : ''}`}
                         onClick={() => {
                           setSelectedTechniqueId(tech.id);
                           setInlineMessage(null);
                         }}
                       >
-                        <div className="techniqueLibraryOwnedHeader">
-                          <div className="techniqueLibraryOwnedTitleRow">
-                            <div className="techniqueLibraryOwnedName">{tech.name}</div>
-                            {tech.favorite && <span className="techniqueLibraryFavorite">★</span>}
+                        <div className="techLibraryItemTop">
+                          <div className="techLibraryItemName">
+                            {displayName}
+                            {tech.favorite && <span className="techLibraryItemFavorite">★</span>}
                           </div>
-                          <div className="techniqueLibraryOwnedBadges">
-                            <span className={`techniqueLibraryTypeBadge type-${type}`}>
-                              {tech.typeLabel}
-                            </span>
-                            {tech.path && <span className="techniqueLibraryBadge">{tech.path}</span>}
-                            {tech.role && <span className="techniqueLibraryBadge">{tech.role}</span>}
-                            <span className={`techniqueLibraryBadge rarity-${tech.rarity}`}>{rarityLabel(tech.rarity)}</span>
-                            <span className={`techniqueLibraryBadge grade-${tech.grade}`}>{gradeLabel(tech.grade)}</span>
-                            <span className="techniqueLibraryBadge rankBadge">{formatRankLabel(tech.rank)}</span>
-                            {equippedLabels && (
-                              <span
-                                className="techniqueLibraryBadge equippedBadge"
-                                title={
-                                  loadoutLabels
-                                    .filter((label) => equippedLabels.includes(label.label))
-                                    .map((label) => `${label.label}: ${label.name}`)
-                                    .join(', ')
-                                }
-                              >
-                                Equipped: {equippedLabels.join(', ')}
-                              </span>
+                          <div className="techLibraryItemBadges">
+                            <span className="techBadge techBadge--tier">{gradeValue}</span>
+                            <span className="techBadge techBadge--path">{pathLabel}</span>
+                            <span className="techBadge techBadge--type">{typeLabel}</span>
+                            {equippedInActiveLoadout && (
+                              <span className="techBadge techBadge--equipped">Equipped</span>
                             )}
                           </div>
                         </div>
-
-                        <div className="techniqueLibraryTrack">
-                          <div className="techniqueLibraryTrackHeader">
-                            <span>Mastery: {tech.masteryLevel}/100</span>
-                            {nextMilestone ? (
-                              <span className="techniqueLibraryTrackHint">Next: {nextMilestone.effectsSummary.join(', ')}</span>
-                            ) : (
-                              <span className="techniqueLibraryTrackHint">Maxed</span>
-                            )}
-                          </div>
-                          <div className="techniqueLibraryProgressBar">
-                            <div className="techniqueLibraryProgressFill" style={{ width: `${masteryValue}%` }} />
-                            {[25, 50, 75, 100].map((mark) => (
-                              <div
-                                key={mark}
-                                className={`techniqueLibraryProgressTick ${masteryValue >= mark ? 'is-reached' : ''}`}
-                                style={{ left: `${mark}%` }}
-                              />
-                            ))}
+                        <div className="techLibraryItemBottom">
+                          <div className="techLibraryItemMeta">
+                            Mastery {tech.masteryLevel}/100 • {formatRankLabel(tech.rank)}
                           </div>
                         </div>
-
-                        <div className="techniqueLibraryTrack">
-                          <div className="techniqueLibraryTrackHeader">
-                            <span>
-                              Rank {tech.rank}/{rankCap}
-                            </span>
-                            <span className="techniqueLibraryTrackHint">
-                              Fragments: {fragmentsOwned}/{fragmentsNeeded ?? '—'}
-                            </span>
-                          </div>
-                          <div className="techniqueLibraryRankRow">
-                            <div className="techniqueLibraryRankPips">
-                              {Array.from({ length: rankCap }).map((_, idx) => (
-                                <div
-                                  key={idx}
-                                  className={`techniqueLibraryRankPip ${idx < tech.rank ? 'is-filled' : ''}`}
-                                />
-                              ))}
-                            </div>
-                            {canUpgradeRank && <span className="techniqueLibraryUpgradeHint">Upgrade ready</span>}
-                          </div>
-                        </div>
-
-                        <div className="techniqueLibraryTrack">
-                          <div className="techniqueLibraryTrackHeader">
-                            <span>
-                              Sub-Insights: {traitCount}/{traitInfo.effectiveSlots}
-                            </span>
-                            <span className="techniqueLibraryTrackHint">Reroll: 1× {rerollItemName}</span>
-                          </div>
-                          <div className="techniqueLibraryTraitPips">
-                            {Array.from({ length: traitCount }).map((_, idx) => (
-                              <div key={`trait-filled-${idx}`} className="techniqueLibraryTraitPip is-filled" />
-                            ))}
-                            {Array.from({ length: unlockedEmpty }).map((_, idx) => (
-                              <div key={`trait-empty-${idx}`} className="techniqueLibraryTraitPip" />
-                            ))}
-                            {Array.from({ length: lockedSlots }).map((_, idx) => (
-                              <div key={`trait-locked-${idx}`} className="techniqueLibraryTraitPip is-locked" />
-                            ))}
-                          </div>
-                          <div className="techniqueLibraryTraitHint">
-                            Rarity slots: {traitInfo.raritySlots} · Grade cap: {traitInfo.gradeCap} → {traitInfo.effectiveSlots}
-                          </div>
-                        </div>
-                      </div>
+                      </button>
                     );
                   })
                 )}
