@@ -13,15 +13,11 @@ import {
 } from '../../stores/techCollectionStore';
 import type { CastingPolicy, SlotType } from '../../stores/techniqueStore';
 import { useTechniqueStore } from '../../stores/techniqueStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useUIStore } from '../../stores/uiStore';
-import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
-import { RankUpgradeRitualModal } from '../modals/RankUpgradeRitualModal';
-import { TraitRerollModal } from '../modals/TraitRerollModal';
 import { TechniqueDetailModal } from '../modals/TechniqueDetailModal';
 import { GameEvents } from '../../services/events/GameEvents';
-import { resolveTechniqueType } from '../../features/manuals/manualIconMap';
+import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
 import { TechniqueSpine } from '../techniques/TechniqueSpine';
 import './TechniqueLibraryScreen.scss';
 
@@ -122,8 +118,6 @@ const gradeLabel = (value?: string) => {
 
 const gradeOrder: string[] = ['mortal', 'earth', 'heaven', 'mystic'];
 const rarityOrder: string[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-const SOUL_INK_REROLL_ITEM_ID = 'reagent_soul_ink_t0';
-const RUNE_DUST_ITEM_ID = 'mat_rune_dust';
 const castingPolicies: CastingPolicy[] = ['aggressive', 'balanced', 'defensive'];
 
 const formatRankLabel = (rank: number) => `Rank ${rank}`;
@@ -138,12 +132,8 @@ export function TechniqueLibraryScreen() {
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [gradeFilter, setGradeFilter] = useState<GradeFilter>('all');
   const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
-  const [runeSelections, setRuneSelections] = useState<Record<number, string>>({});
-  const [showRankModal, setShowRankModal] = useState(false);
-  const [showTraitModal, setShowTraitModal] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
-  const previousRankModal = useRef(false);
-  const previousTraitModal = useRef(false);
+  const [detailIntent, setDetailIntent] = useState<'upgradeRank' | 'rerollTraits' | null>(null);
   const detailCloseRef = useRef<HTMLButtonElement | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -152,37 +142,14 @@ export function TechniqueLibraryScreen() {
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
   const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
   const setCastingPolicy = useTechniqueStore((state) => state.setCastingPolicy);
-  const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
   const getCombatEquippedTechIds = useTechniqueStore((state) => state.getCombatEquippedTechIds);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
-  const toggleFavorite = useTechCollectionStore((state) => state.toggleFavorite);
-  const getTraitSlotBreakdown = useTechCollectionStore((state) => state.getTraitSlotBreakdown);
-  const getEffectiveTraitSlots = useTechCollectionStore((state) => state.getEffectiveTraitSlots);
-  const ensureTraits = useTechCollectionStore((state) => state.ensureTraits);
-  const getTraitDefinition = useTechCollectionStore((state) => state.getTraitDefinition);
-  const getTraitRollRangeLabel = useTechCollectionStore((state) => state.getTraitRollRangeLabel);
-  const getTraitQualityPct = useTechCollectionStore((state) => state.getTraitQualityPct);
-  const getEffectiveRuneSlots = useTechCollectionStore((state) => state.getEffectiveRuneSlots);
-  const ensureRunes = useTechCollectionStore((state) => state.ensureRunes);
-  const socketRune = useTechCollectionStore((state) => state.socketRune);
-  const unsocketRune = useTechCollectionStore((state) => state.unsocketRune);
-  const getNextRankCost = useTechCollectionStore((state) => state.getNextRankCost);
-  const getRankCap = useTechCollectionStore((state) => state.getRankCap);
-  const fragments = useTechCollectionStore((state) => state.fragments);
-  const getMasteryCooldownReductionPct = useTechCollectionStore((state) => state.getMasteryCooldownReductionPct);
-  const getMasteryCostReductionPct = useTechCollectionStore((state) => state.getMasteryCostReductionPct);
   const getTraitModifiers = useTechCollectionStore((state) => state.getTraitModifiers);
   const getRuneModifiers = useTechCollectionStore((state) => state.getRuneModifiers);
-  const getNextMasteryMilestoneHelper = useTechCollectionStore((state) => state.getNextMasteryMilestone);
-  const getMasteryMilestoneEffectsHelper = useTechCollectionStore((state) => state.getMasteryMilestoneEffects);
+  const getMasteryCooldownReductionPct = useTechCollectionStore((state) => state.getMasteryCooldownReductionPct);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const isContentLoading = useContentStore((state) => state.isLoading);
-  const runesById = useContentStore((state) => state.maps.runesById);
-  const itemsById = useContentStore((state) => state.maps.itemsById);
-  const heavenBonus = useContentStore(
-    (state) => state.raw?.economy?.manualSystem?.grades?.heaven?.mastery75PotencyBonus,
-  );
   const realmIndex = useGameStore((state) => state.realm.index);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
@@ -190,7 +157,6 @@ export function TechniqueLibraryScreen() {
   const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
-  const inventoryItems = useInventoryStore((state) => state.items);
   const isBossFlag = useCombatStore((state) => state.isBoss);
   const combatContextType = useCombatStore((state) => state.combatContext?.type);
 
@@ -270,7 +236,7 @@ export function TechniqueLibraryScreen() {
         effectiveCooldownSec,
         castsPerHour,
         masteryPerHour,
-        icon: (def as any)?.icon ?? null,
+        icon: (def as { icon?: string | null } | undefined)?.icon ?? null,
       });
     };
 
@@ -389,14 +355,6 @@ export function TechniqueLibraryScreen() {
     [ownedTechniques, selectedTechniqueId],
   );
 
-  const availableRunes = useMemo(() => {
-    return Object.keys(runesById).map((id) => ({
-      id,
-      name: itemsById[id]?.name ?? id,
-      qty: inventoryItems[id] ?? 0,
-    }));
-  }, [inventoryItems, itemsById, runesById]);
-
   const resetFilters = useCallback(() => {
     setSortKey('power');
     setTypeFilter('all');
@@ -433,15 +391,9 @@ export function TechniqueLibraryScreen() {
   }, []);
 
   useEffect(() => {
-    if (!selectedTechniqueId) return;
-    ensureTraits(selectedTechniqueId);
-    ensureRunes(selectedTechniqueId);
-    setRuneSelections({});
-  }, [ensureRunes, ensureTraits, selectedTechniqueId]);
-
-  useEffect(() => {
     if (!selectedTechniqueId && detailOpen) {
       setDetailOpen(false);
+      setDetailIntent(null);
     }
   }, [detailOpen, selectedTechniqueId]);
 
@@ -493,30 +445,18 @@ export function TechniqueLibraryScreen() {
       }
 
       if (action === 'upgradeRank') {
-        setShowRankModal(true);
+        setDetailIntent('upgradeRank');
+        setDetailOpen(true);
       } else if (action === 'rerollTraits') {
-        setShowTraitModal(true);
+        setDetailIntent('rerollTraits');
+        setDetailOpen(true);
+      } else {
+        setDetailOpen(true);
       }
     });
 
     clearTechniqueFocusRequest();
   }, [clearTechniqueFocusRequest, techniqueFocusRequest]);
-
-  useEffect(() => {
-    if (!selectedTechniqueId) return;
-    if (!previousRankModal.current && showRankModal) {
-      GameEvents.emit({ type: 'techniques/rank_upgrade_opened', payload: { techniqueId: selectedTechniqueId } });
-    }
-    previousRankModal.current = showRankModal;
-  }, [selectedTechniqueId, showRankModal]);
-
-  useEffect(() => {
-    if (!selectedTechniqueId) return;
-    if (!previousTraitModal.current && showTraitModal) {
-      GameEvents.emit({ type: 'techniques/trait_reroll_opened', payload: { techniqueId: selectedTechniqueId } });
-    }
-    previousTraitModal.current = showTraitModal;
-  }, [selectedTechniqueId, showTraitModal]);
 
   useEffect(() => {
     const { type, index } = selectedSlot;
@@ -554,64 +494,6 @@ export function TechniqueLibraryScreen() {
       setInlineMessage(null);
     },
     [progression.unlockRequirements, progression.unlocked],
-  );
-
-  const handleEquip = useCallback(() => {
-    if (!selectedTechniqueId || !selectedLoadout) return;
-
-    const result = equipTechnique(selectedSlot.type, selectedSlot.index, selectedTechniqueId, selectedLoadout.id);
-
-    if (result.ok) {
-      setInlineMessage({
-        type: 'success',
-        text: `Equipped to ${slotLabel(selectedSlot)} on ${selectedLoadout.name}.`,
-      });
-    } else {
-      const unlockText = result.unlockAt ? ` Unlocks at: ${result.unlockAt.realmName}.` : '';
-      setInlineMessage({ type: 'error', text: `${result.message}${unlockText}` });
-    }
-  }, [equipTechnique, selectedLoadout, selectedSlot, selectedTechniqueId]);
-
-  const handleFavoriteToggle = useCallback(() => {
-    if (!selectedTechniqueId) return;
-    const willFavorite = !(selectedOwned?.favorite ?? false);
-    toggleFavorite(selectedTechniqueId);
-    setInlineMessage({
-      type: 'info',
-      text: willFavorite ? 'Added to favorites.' : 'Removed from favorites.',
-    });
-  }, [selectedOwned?.favorite, selectedTechniqueId, toggleFavorite]);
-
-  const handleSocketRune = useCallback(
-    (slotIndex: number) => {
-      if (!selectedTechniqueId) return;
-      const selection = runeSelections[slotIndex] ?? availableRunes.find((entry) => entry.qty > 0)?.id;
-      if (!selection) {
-        setInlineMessage({ type: 'error', text: 'No runes available to socket.' });
-        return;
-      }
-
-      const result = socketRune(selectedTechniqueId, slotIndex, selection);
-      if (result.ok) {
-        setInlineMessage({ type: 'success', text: `Socketed rune into slot ${slotIndex + 1}.` });
-      } else {
-        setInlineMessage({ type: 'error', text: result.reason ?? 'Unable to socket rune.' });
-      }
-    },
-    [availableRunes, runeSelections, selectedTechniqueId, socketRune],
-  );
-
-  const handleUnsocketRune = useCallback(
-    (slotIndex: number) => {
-      if (!selectedTechniqueId) return;
-      const result = unsocketRune(selectedTechniqueId, slotIndex);
-      if (result.ok) {
-        setInlineMessage({ type: 'info', text: `Removed rune from slot ${slotIndex + 1}.` });
-      } else {
-        setInlineMessage({ type: 'error', text: result.reason ?? 'Unable to remove rune.' });
-      }
-    },
-    [selectedTechniqueId, unsocketRune],
   );
 
   const handleManualPavilionNavigation = useCallback(() => {
@@ -660,67 +542,15 @@ export function TechniqueLibraryScreen() {
 
   const selectedTechDef = selectedTechniqueId ? techniquesById[selectedTechniqueId] : undefined;
   const selectedType = techniqueType(selectedTechDef);
-  const effectText = selectedTechDef
-    ? String(selectedTechDef.effect ?? 'No effect description available.')
-    : 'No effect description available.';
-  const selectedEntry = selectedTechniqueId ? unlockedTechs[selectedTechniqueId] : undefined;
-  const masteryLevel = selectedOwned?.masteryLevel ?? masteryLevelFromXp(selectedEntry?.masteryXp ?? 0);
-  const masteryCdr = selectedTechniqueId ? getMasteryCooldownReductionPct(selectedTechniqueId) : 0;
-  const masteryCostReduction = selectedTechniqueId ? getMasteryCostReductionPct(selectedTechniqueId) : 0;
-  const masteryMilestoneEffects = getMasteryMilestoneEffectsHelper(masteryLevel);
-  const nextMilestoneDetail = getNextMasteryMilestoneHelper(masteryLevel);
-  const rankCapSelected = selectedTechniqueId ? getRankCap(selectedTechniqueId) : 0;
-  const nextRankInfo = selectedTechniqueId ? getNextRankCost(selectedTechniqueId) : null;
-  const fragmentsOwnedSelected = selectedTechniqueId ? fragments[selectedTechniqueId] ?? 0 : 0;
-  const traitInfoSelected = selectedTechniqueId
-    ? getTraitSlotBreakdown(selectedTechniqueId)
-    : { raritySlots: 0, gradeCap: 0, effectiveSlots: 0, rarity: 'common', grade: 'mortal' as const };
-  const selectedTraits = selectedEntry?.traits ?? [];
-  const rerollItemName = itemsById[SOUL_INK_REROLL_ITEM_ID]?.name ?? 'Soul Ink';
-  const runeSlots = selectedTechniqueId ? getEffectiveRuneSlots(selectedTechniqueId) : 0;
-  const runeDisplay = useMemo(
-    () => Array.from({ length: runeSlots }, (_, idx) => selectedEntry?.runes?.[idx] ?? null),
-    [runeSlots, selectedEntry?.runes],
-  );
-  const primaryEffects = useMemo(
-    () => (selectedTechDef ? normalizeTechniqueEffects(selectedTechDef, { includeSecondary: false }) : []),
-    [selectedTechDef],
-  );
-  const secondaryEffects = useMemo(
-    () =>
-      selectedTechDef
-        ? normalizeTechniqueEffects(selectedTechDef, { includeSecondary: true }).filter((effect) => effect.source === 'secondary')
-        : [],
-    [selectedTechDef],
-  );
-  const selectedSlotTechId = selectedLoadout
-    ? selectedSlot.type === 'ultimate'
-      ? selectedLoadout.slots.ultimate
-      : selectedLoadout.slots[selectedSlot.type]?.[selectedSlot.index]
-    : '';
-
-  const equipButtonLabel = selectedSlotTechId && selectedSlotTechId !== selectedTechniqueId ? 'Swap' : 'Equip';
-  const equipDisabled = !selectedTechniqueId || !selectedLoadout;
-  const nextRankCost = nextRankInfo?.cost;
-  const rankUpgradeDisabledReason = !nextRankInfo
-    ? 'Rank cap reached for current grade.'
-    : fragmentsOwnedSelected < (nextRankCost?.fragmentsRequired ?? 0)
-      ? 'Not enough fragments.'
-      : (inventoryItems[RUNE_DUST_ITEM_ID] ?? 0) < (nextRankCost?.runeDustRequired ?? 0)
-        ? 'Not enough rune dust.'
-        : (inventoryItems[nextRankCost?.soulInkItemId ?? ''] ?? 0) < (nextRankCost?.soulInkRequired ?? 0)
-          ? 'Not enough soul ink.'
-          : null;
-  const rerollDisabledReason =
-    traitInfoSelected.effectiveSlots <= 0
-      ? 'No trait slots available.'
-      : (inventoryItems[SOUL_INK_REROLL_ITEM_ID] ?? 0) <= 0
-        ? 'Need Soul Ink to reroll traits.'
-        : null;
-  const rankPowerDeltaPct = selectedOwned && nextRankInfo
-    ? (rankMultiplier(nextRankInfo.nextRank) / rankMultiplier(selectedOwned.rank) - 1) * 100
-    : 10;
-
+  const selectedRank = selectedOwned?.rank ?? 1;
+  const selectedTier = normalizeGrade(selectedTechDef?.tier ?? selectedOwned?.grade);
+  const selectedRarity = normalizeRarity(selectedOwned?.rarity ?? selectedTechDef?.rarity);
+  const summaryCooldown = selectedTechDef?.cooldownSec ? `${selectedTechDef.cooldownSec}s cooldown` : 'No cooldown';
+  const summaryRole = selectedTechDef?.role ? `${selectedTechDef.role} role` : `${selectedType} technique`;
+  const summaryLine = selectedTechDef ? `Rank ${selectedRank} • ${summaryCooldown} • ${summaryRole}` : '';
+  const selectedTierIcon = getTierIcon(selectedTier);
+  const selectedPathIcon = getPathIcon(selectedTechDef?.path ?? 'unknown');
+  const selectedTypeIcon = getTypeIcon(resolveTechniqueType(selectedTechDef));
   const formatCastRate = (row: EquipmentProofRow) => {
     if (row.slotType === 'passive') return 'Cast rate: Passive (always on)';
     if (row.effectiveCooldownSec) {
@@ -890,6 +720,7 @@ export function TechniqueLibraryScreen() {
                       setSelectedTechniqueId(tech.id);
                       setInlineMessage(null);
                       setDetailOpen(true);
+                      setDetailIntent(null);
                     }}
                   />
                 </div>
@@ -1062,18 +893,43 @@ export function TechniqueLibraryScreen() {
           </div>
         </section>
 
-        <aside className="techInspectorDock" aria-hidden="true">
+        <aside className="techInspectorDock">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--right">
-            <div className="techniqueLibraryPanel">
-              <div className="techniqueLibraryPanelHeader">Technique Details</div>
-              <div className="techniqueLibraryDetail">
+            <div className="techniqueLibraryPanel techniqueLibraryPanel--summary">
+              <div className="techniqueLibraryPanelHeader">Selected Technique</div>
+              <div className="techniqueLibrarySummary">
                 {selectedTechniqueId ? (
                   <>
-                    <div className="techniqueLibraryDetailTitleRow">
-                      <h3 className="techniqueLibraryDetailTitle">{selectedTechDef?.name || selectedTechniqueId}</h3>
-                      {selectedOwned?.favorite && <span className="techniqueLibraryFavorite">★</span>}
+                    <div className="techniqueLibrarySummaryHeader">
+                      <div className="techniqueLibrarySummaryTitle">{selectedTechDef?.name || selectedTechniqueId}</div>
+                      <div className="techniqueLibrarySummaryIcons" aria-label="Technique metadata">
+                        <span
+                          className="techniqueLibrarySummaryIcon"
+                          role="img"
+                          aria-label={selectedTierIcon.label}
+                          title={selectedTierIcon.label}
+                        >
+                          {selectedTierIcon.icon}
+                        </span>
+                        <span
+                          className="techniqueLibrarySummaryIcon"
+                          role="img"
+                          aria-label={selectedPathIcon.label}
+                          title={selectedPathIcon.label}
+                        >
+                          {selectedPathIcon.icon}
+                        </span>
+                        <span
+                          className="techniqueLibrarySummaryIcon"
+                          role="img"
+                          aria-label={selectedTypeIcon.label}
+                          title={selectedTypeIcon.label}
+                        >
+                          {selectedTypeIcon.icon}
+                        </span>
+                      </div>
                     </div>
-                    <div className="techniqueLibraryDetailBadges">
+                    <div className="techniqueLibrarySummaryChips">
                       <span className={`techniqueLibraryTypeBadge type-${selectedType}`}>
                         {selectedType === 'ultimate'
                           ? 'Ultimate'
@@ -1081,261 +937,31 @@ export function TechniqueLibraryScreen() {
                             ? 'Passive'
                             : 'Active'}
                       </span>
-                      <span className={`techniqueLibraryBadge rarity-${selectedOwned?.rarity ?? 'common'}`}>
-                        {rarityLabel(selectedOwned?.rarity)}
-                      </span>
-                      <span className={`techniqueLibraryBadge grade-${selectedOwned?.grade ?? 'mortal'}`}>
-                        {gradeLabel(selectedOwned?.grade)}
-                      </span>
+                      <span className={`techniqueLibraryBadge rarity-${selectedRarity}`}>{rarityLabel(selectedRarity)}</span>
+                      <span className={`techniqueLibraryBadge grade-${selectedTier}`}>{gradeLabel(selectedTier)}</span>
                       {selectedTechDef?.path && <span className="techniqueLibraryBadge">{selectedTechDef.path}</span>}
                       {selectedTechDef?.role && <span className="techniqueLibraryBadge">{selectedTechDef.role}</span>}
-                      <span className="techniqueLibraryRank">{formatRankLabel(selectedOwned?.rank ?? 1)}</span>
+                      <span className="techniqueLibrarySummaryRank">{formatRankLabel(selectedRank)}</span>
                     </div>
-
-                    <div className="techniqueLibraryProgressGrid">
-                      <div className="techniqueLibraryProgressCard">
-                        <div className="techniqueLibraryProgressHeader">
-                          <span>Mastery Track</span>
-                          {masteryMilestoneEffects.cosmeticTitle && masteryLevel >= 100 && (
-                            <span className="techniqueLibraryTrackHint">Title: {masteryMilestoneEffects.cosmeticTitle}</span>
-                          )}
-                        </div>
-                        <div className="techniqueLibraryProgressBar">
-                          <div
-                            className="techniqueLibraryProgressFill"
-                            style={{ width: `${Math.min(100, Math.max(0, (selectedOwned?.masteryPct ?? 0) * 100))}%` }}
-                          />
-                          {[25, 50, 75, 100].map((mark) => (
-                            <div
-                              key={mark}
-                              className={`techniqueLibraryProgressTick ${masteryLevel >= mark ? 'is-reached' : ''}`}
-                              style={{ left: `${mark}%` }}
-                            />
-                          ))}
-                        </div>
-                        <div className="techniqueLibraryProgressLabel">
-                          Mastery {masteryLevel}/100 · Cooldown reduction: {(masteryCdr * 100).toFixed(1)}% · Cost reduction:
-                          {(masteryCostReduction * 100).toFixed(1)}%
-                        </div>
-                        {nextMilestoneDetail && (
-                          <div className="techniqueLibraryTrackHint">Next unlock: {nextMilestoneDetail.effectsSummary.join(', ')}</div>
-                        )}
-                      </div>
-
-                      <div className="techniqueLibraryProgressCard">
-                        <div className="techniqueLibraryProgressHeader">
-                          <span>Rank Progress</span>
-                          <span className="techniqueLibraryTrackHint">Cap: {rankCapSelected}</span>
-                        </div>
-                        <div className="techniqueLibraryRankRow">
-                          <div className="techniqueLibraryRankPips">
-                            {Array.from({ length: rankCapSelected || 1 }).map((_, idx) => (
-                              <div
-                                key={idx}
-                                className={`techniqueLibraryRankPip ${idx < (selectedOwned?.rank ?? 1) ? 'is-filled' : ''}`}
-                              />
-                            ))}
-                          </div>
-                          {nextRankInfo ? (
-                            <div className="techniqueLibraryTrackHint">
-                              Next rank ({nextRankInfo.nextRank}): {nextRankInfo.cost.fragmentsRequired} fragments ·
-                              {nextRankInfo.cost.runeDustRequired} rune dust · {nextRankInfo.cost.soulInkRequired} soul ink
-                            </div>
-                          ) : (
-                            <div className="techniqueLibraryTrackHint">Rank cap reached for current grade.</div>
-                          )}
-                        </div>
-                        <div className="techniqueLibraryTrackHint">
-                          Fragments owned: {fragmentsOwnedSelected}/{nextRankInfo?.cost.fragmentsRequired ?? '—'}
-                        </div>
-                        <div className="techniqueLibraryRankActions">
-                          <div className="techniqueLibraryTrackHint">
-                            {nextRankInfo
-                              ? `Power increase on upgrade: +${rankPowerDeltaPct.toFixed(0)}%`
-                              : 'Rank cap reached: no further power at this grade.'}
-                          </div>
-                          <button
-                            className="techniqueLibrarySecondaryButton"
-                            onClick={() => setShowRankModal(true)}
-                            disabled={Boolean(rankUpgradeDisabledReason)}
-                            title={rankUpgradeDisabledReason ?? undefined}
-                          >
-                            Upgrade Rank
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="techniqueLibraryProgressCard">
-                        <div className="techniqueLibraryProgressHeader">
-                          <span>Sub-Insights</span>
-                          <span className="techniqueLibraryTrackHint">
-                            Slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap})
-                          </span>
-                        </div>
-                        <div className="techniqueLibraryTraitPips">
-                          {selectedTraits.map((_, idx) => (
-                            <div key={`trait-detail-filled-${idx}`} className="techniqueLibraryTraitPip is-filled" />
-                          ))}
-                          {Array.from({ length: Math.max(traitInfoSelected.effectiveSlots - selectedTraits.length, 0) }).map(
-                            (_, idx) => (
-                              <div key={`trait-detail-empty-${idx}`} className="techniqueLibraryTraitPip" />
-                            ),
-                          )}
-                          {Array.from({ length: Math.max(traitInfoSelected.raritySlots - traitInfoSelected.effectiveSlots, 0) }).map(
-                            (_, idx) => (
-                              <div key={`trait-detail-locked-${idx}`} className="techniqueLibraryTraitPip is-locked" />
-                            ),
-                          )}
-                        </div>
-                        <div className="techniqueLibraryTrackHint">
-                          Rarity slots: {traitInfoSelected.raritySlots} · Grade cap: {traitInfoSelected.gradeCap} →
-                          {traitInfoSelected.effectiveSlots}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="techniqueLibraryDetailSection">
-                      <h4>Core Art Effect</h4>
-                      {primaryEffects.length ? (
-                        <ul className="techniqueLibraryEffectList">
-                          {summarizeEffects(primaryEffects).map((line) => (
-                            <li key={line}>{line}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>{effectText}</p>
-                      )}
-                    </div>
-
-                    <div className="techniqueLibraryDetailSection">
-                      <h4>Secondary Effect</h4>
-                      {masteryLevel >= 75 ? (
-                        secondaryEffects.length ? (
-                          <ul className="techniqueLibraryEffectList">
-                            {summarizeEffects(secondaryEffects).map((line) => (
-                              <li key={line}>
-                                <em>(Secondary)</em> {line}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No secondary effects defined.</p>
-                        )
-                      ) : (
-                        <p>Secondary effect locked until Mastery 75.</p>
-                      )}
-                      {selectedOwned?.grade === 'heaven' && masteryLevel >= 75 && (
-                        <div className="techniqueLibraryTrackHint">
-                          Heaven bonus: Secondary potency +{(((heavenBonus as number | undefined) ?? 0.25) * 100).toFixed(0)}%
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="techniqueLibraryDetailSection">
-                      <h4>Sub-Insights (Traits)</h4>
-                      <div className="techniqueLibraryTrackHint">
-                        Trait slots = min(Rarity {traitInfoSelected.raritySlots}, Grade cap {traitInfoSelected.gradeCap}) →
-                        {traitInfoSelected.effectiveSlots}
-                      </div>
-                      {traitInfoSelected.effectiveSlots === 0 && <p>No Sub-Insight slots available for this technique.</p>}
-                      {selectedTraits.length === 0 && traitInfoSelected.effectiveSlots > 0 && (
-                        <p>No traits yet. Re-scribe to discover fresh insights.</p>
-                      )}
-                      {selectedTraits.map((trait, idx) => {
-                        const def = getTraitDefinition(trait.id);
-                        const range = getTraitRollRangeLabel(trait.id);
-                        const quality = getTraitQualityPct(trait);
-                        const label = def?.name || def?.label || trait.id;
-                        const valuePct = trait.value ?? trait.valuePct ?? 0;
-                        return (
-                          <div key={`${trait.id}-${idx}`} className="techniqueLibraryTraitRow">
-                            <div className="techniqueLibraryTraitMain">
-                              <div className="techniqueLibraryTraitName">{label}</div>
-                              <div className="techniqueLibraryTraitValue">{(valuePct * 100).toFixed(1)}%</div>
-                            </div>
-                            <div className="techniqueLibraryTraitQuality">
-                              <div className="techniqueLibraryTraitRange">{range}</div>
-                              <div className="techniqueLibraryTraitQualityBar">
-                                <div className="techniqueLibraryTraitQualityFill" style={{ width: `${quality * 100}%` }} />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      <div className="techniqueLibraryTraitActions">
-                        <div className="techniqueLibraryTrackHint">
-                          Reroll: 1× {rerollItemName}. Lock 1 trait: +1× {rerollItemName} (choose in modal).
-                        </div>
-                        <button
-                          className="techniqueLibraryPrimaryButton"
-                          onClick={() => setShowTraitModal(true)}
-                          disabled={Boolean(rerollDisabledReason)}
-                          title={rerollDisabledReason ?? undefined}
-                        >
-                          Reroll Sub-Insights
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="techniqueLibraryDetailSection">
-                      <h4>Runes</h4>
-                      <div className="techniqueLibraryRuneSockets">
-                        {runeDisplay.map((runeId, idx) => (
-                          <div key={`rune-${idx}`} className="techniqueLibraryRuneRow">
-                            <div className="techniqueLibraryRuneSlotLabel">Socket {idx + 1}</div>
-                            <div className={`techniqueLibraryRunePill ${runeId ? 'is-filled' : ''}`}>
-                              {runeId ? itemsById[runeId]?.name ?? runeId : 'Empty'}
-                            </div>
-                            <select
-                              value={runeSelections[idx] ?? ''}
-                              onChange={(e) => setRuneSelections((prev) => ({ ...prev, [idx]: e.target.value }))}
-                            >
-                              <option value="">Select Rune</option>
-                              {availableRunes.map((rune) => (
-                                <option key={rune.id} value={rune.id} disabled={rune.qty <= 0}>
-                                  {rune.name} ({rune.qty})
-                                </option>
-                              ))}
-                            </select>
-                            <button className="techniqueLibrarySecondaryButton" onClick={() => handleSocketRune(idx)}>
-                              Socket
-                            </button>
-                            {runeId && (
-                              <button className="techniqueLibraryLinkButton" onClick={() => handleUnsocketRune(idx)}>
-                                Unsocket
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                        {runeSlots === 0 && <div className="techniqueLibraryTrackHint">No rune sockets for this grade.</div>}
-                      </div>
-                    </div>
-
-                    <div className="techniqueLibraryButtons">
+                    <div className="techniqueLibrarySummaryLine">{summaryLine}</div>
+                    <div className="techniqueLibrarySummaryActions">
                       <button
                         className="techniqueLibraryPrimaryButton"
-                        disabled={equipDisabled}
-                        onClick={handleEquip}
+                        onClick={() => {
+                          setDetailIntent(null);
+                          setDetailOpen(true);
+                        }}
+                        type="button"
                       >
-                        {equipButtonLabel}
-                      </button>
-                      <button className="techniqueLibrarySecondaryButton" onClick={handleFavoriteToggle}>
-                        {selectedOwned?.favorite ? 'Unfavorite' : 'Favorite'}
+                        Open Details
                       </button>
                     </div>
                   </>
                 ) : (
-                  <div className="techniqueLibraryEmptyDetail">Select a technique to see details and equip it.</div>
+                  <div className="techniqueLibraryEmptyDetail">Select a technique to view details.</div>
                 )}
               </div>
             </div>
-
-            {showRankModal && selectedTechniqueId && (
-              <RankUpgradeRitualModal techId={selectedTechniqueId} onClose={() => setShowRankModal(false)} />
-            )}
-            {showTraitModal && selectedTechniqueId && (
-              <TraitRerollModal techId={selectedTechniqueId} onClose={() => setShowTraitModal(false)} />
-            )}
 
             {inlineMessage && (
               <div className={`techniqueLibraryInlineMessage inline-${inlineMessage.type}`}>
@@ -1350,6 +976,10 @@ export function TechniqueLibraryScreen() {
         open={detailOpen}
         techniqueId={selectedTechniqueId}
         onClose={() => setDetailOpen(false)}
+        selectedSlot={selectedSlot}
+        onSelectSlot={setSelectedSlot}
+        initialAction={detailIntent}
+        onInitialActionHandled={() => setDetailIntent(null)}
         initialFocusRef={detailCloseRef}
       />
     </div>
