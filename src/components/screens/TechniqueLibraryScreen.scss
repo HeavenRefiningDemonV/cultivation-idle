@@ -285,7 +285,15 @@
   }
 
   .techniquesPanel--v2 .techInspectorDock {
-    display: none;
+    order: 0;
+  }
+
+  .techniquesPanel--v2 .techLibraryStage {
+    order: 1;
+  }
+
+  .techniquesPanel--v2 .techLoadoutBoard {
+    order: 2;
   }
 }
 
@@ -341,6 +349,10 @@
   border-radius: 10px;
   padding: 12px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+}
+
+.techniqueLibraryPanel--altar {
+  padding: 16px;
 }
 
 .techniqueLibraryPanelHeader {

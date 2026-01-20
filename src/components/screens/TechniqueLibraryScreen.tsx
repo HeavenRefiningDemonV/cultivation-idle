@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { formatDistanceToNowStrict } from 'date-fns';
 import { REALMS } from '../../constants';
 import { useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -11,17 +10,14 @@ import {
   rankMultiplier,
   useTechCollectionStore,
 } from '../../stores/techCollectionStore';
-import type { CastingPolicy, SlotType } from '../../stores/techniqueStore';
+import type { CastingPolicy, EquipResult, SlotType } from '../../stores/techniqueStore';
 import { useTechniqueStore } from '../../stores/techniqueStore';
-import { useCombatStore } from '../../stores/combatStore';
 import { useUIStore } from '../../stores/uiStore';
 import { TechniqueDetailModal } from '../modals/TechniqueDetailModal';
-import { GameEvents } from '../../services/events/GameEvents';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
 import { TechniqueSpine } from '../techniques/TechniqueSpine';
+import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar';
 import './TechniqueLibraryScreen.scss';
-
-type InlineMessage = { type: 'error' | 'info' | 'success'; text: string } | null;
 
 type SlotSelection = { type: SlotType; index: number };
 
@@ -46,20 +42,6 @@ type OwnedTechniqueView = {
   lastCastAt: number;
   favorite: boolean;
   powerScore: number;
-};
-
-type EquipmentProofRow = {
-  slotType: SlotType;
-  slotIndex: number;
-  slotLabel: string;
-  techId: string;
-  name: string;
-  def?: ReturnType<typeof useContentStore.getState>['maps']['techniquesById'][string];
-  lastCastAt: number | null;
-  effectiveCooldownSec: number | null;
-  castsPerHour: number | null;
-  masteryPerHour: number | null;
-  icon?: string | null;
 };
 
 const rarityWeight: Record<string, number> = {
@@ -96,15 +78,12 @@ const techniqueType = (technique: { type?: string; tags?: string[] } | undefined
   return 'active';
 };
 
+const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+
 const slotLabel = (slot: SlotSelection) => {
   if (slot.type === 'ultimate') return 'Ultimate';
-  return `${slot.type === 'active' ? 'Active' : 'Passive'} ${slot.index + 1}`;
-};
-
-const typeIcon = (type: SlotType) => {
-  if (type === 'ultimate') return '☄';
-  if (type === 'passive') return '⛩';
-  return '⚔';
+  const numeral = romanNumerals[slot.index] ?? `${slot.index + 1}`;
+  return `${slot.type === 'active' ? 'Active' : 'Passive'} ${numeral}`;
 };
 
 const rarityLabel = (value?: string) => {
@@ -125,7 +104,7 @@ const formatRankLabel = (rank: number) => `Rank ${rank}`;
 export function TechniqueLibraryScreen() {
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<SlotSelection>({ type: 'active', index: 0 });
-  const [inlineMessage, setInlineMessage] = useState<InlineMessage>(null);
+  const [altarFeedback, setAltarFeedback] = useState<InnerPalaceFeedback | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('power');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [pathFilter, setPathFilter] = useState<string>('all');
@@ -135,19 +114,15 @@ export function TechniqueLibraryScreen() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailIntent, setDetailIntent] = useState<'upgradeRank' | 'rerollTraits' | null>(null);
   const detailCloseRef = useRef<HTMLButtonElement | null>(null);
-  const [now, setNow] = useState(() => Date.now());
 
   // Select stable slices individually to avoid recreating snapshots (React 19 external-store loop safeguard).
   const loadouts = useTechniqueStore((state) => state.loadouts);
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
   const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
   const setCastingPolicy = useTechniqueStore((state) => state.setCastingPolicy);
+  const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
-  const getCombatEquippedTechIds = useTechniqueStore((state) => state.getCombatEquippedTechIds);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
-  const getTraitModifiers = useTechCollectionStore((state) => state.getTraitModifiers);
-  const getRuneModifiers = useTechCollectionStore((state) => state.getRuneModifiers);
-  const getMasteryCooldownReductionPct = useTechCollectionStore((state) => state.getMasteryCooldownReductionPct);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const isContentLoading = useContentStore((state) => state.isLoading);
   const realmIndex = useGameStore((state) => state.realm.index);
@@ -157,8 +132,6 @@ export function TechniqueLibraryScreen() {
   const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
-  const isBossFlag = useCombatStore((state) => state.isBoss);
-  const combatContextType = useCombatStore((state) => state.combatContext?.type);
 
   const progression = useMemo(
     () => getSlotProgressionSnapshot(realmIndex),
@@ -171,8 +144,6 @@ export function TechniqueLibraryScreen() {
   );
 
   const selectedCastingPolicy: CastingPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
-
-  const isBossFight = isBossFlag || combatContextType === 'trial';
 
   const activeCap = progression.unlocked.active;
   const passiveCap = progression.unlocked.passive;
@@ -194,70 +165,6 @@ export function TechniqueLibraryScreen() {
     if (selectedLoadout.slots.ultimate) ids.add(selectedLoadout.slots.ultimate);
     return ids;
   }, [selectedLoadout]);
-
-  const equipmentProofRows = useMemo<EquipmentProofRow[]>(() => {
-    if (!selectedLoadout) return [];
-
-    const rows: EquipmentProofRow[] = [];
-    const combatEquipped = getCombatEquippedTechIds(selectedLoadout.id);
-
-    const addRow = (slotType: SlotType, slotIndex: number, techId: string | null | undefined) => {
-      if (!techId) return;
-      if (
-        (slotType === 'active' && !combatEquipped.active.includes(techId)) ||
-        (slotType === 'passive' && !combatEquipped.passive.includes(techId)) ||
-        (slotType === 'ultimate' && combatEquipped.ultimate !== techId)
-      ) {
-        return;
-      }
-      const def = techniquesById[techId];
-      const meta = unlockedTechs[techId];
-      const traitMods = getTraitModifiers(techId, isBossFight);
-      const runeMods = getRuneModifiers(techId, def);
-      const masteryCdrPct = getMasteryCooldownReductionPct(techId);
-      const totalCooldownReductionPct = Math.min(
-        0.3,
-        (traitMods?.cooldownReductionPct ?? 0) + (runeMods?.cooldownReductionPct ?? 0) + (masteryCdrPct ?? 0),
-      );
-      const baseCooldown = def?.cooldownSec ?? 0;
-      const effectiveCooldownSec = baseCooldown > 0 ? Math.max(0.5, baseCooldown * (1 - totalCooldownReductionPct)) : null;
-      const castsPerHour = effectiveCooldownSec ? 3600 / effectiveCooldownSec : null;
-      const masteryGainPct = traitMods?.masteryGainPct ?? 0;
-      const masteryPerHour = slotType === 'passive' ? null : castsPerHour ? castsPerHour * (1 + masteryGainPct) : null;
-
-      rows.push({
-        slotType,
-        slotIndex,
-        slotLabel: slotLabel({ type: slotType, index: slotIndex }),
-        techId,
-        name: def?.name ?? techId,
-        def,
-        lastCastAt: meta?.lastCastAt ?? null,
-        effectiveCooldownSec,
-        castsPerHour,
-        masteryPerHour,
-        icon: (def as { icon?: string | null } | undefined)?.icon ?? null,
-      });
-    };
-
-    selectedLoadout.slots.active.forEach((id, idx) => addRow('active', idx, id));
-    selectedLoadout.slots.passive.forEach((id, idx) => addRow('passive', idx, id));
-
-    if (selectedLoadout.slots.ultimate) {
-      addRow('ultimate', 0, selectedLoadout.slots.ultimate);
-    }
-
-    return rows;
-  }, [
-    getMasteryCooldownReductionPct,
-    getRuneModifiers,
-    getTraitModifiers,
-    getCombatEquippedTechIds,
-    isBossFight,
-    selectedLoadout,
-    techniquesById,
-    unlockedTechs,
-  ]);
 
   const ownedTechniques = useMemo<OwnedTechniqueView[]>(() => {
     return Object.entries(unlockedTechs)
@@ -386,11 +293,6 @@ export function TechniqueLibraryScreen() {
   }, [setHeaderTitles]);
 
   useEffect(() => {
-    const interval = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     if (!selectedTechniqueId && detailOpen) {
       setDetailOpen(false);
       setDetailIntent(null);
@@ -408,16 +310,16 @@ export function TechniqueLibraryScreen() {
 
     if (preferred === 'ultimate' && !unlockedCounts.ultimate) {
       const realmName = progression.unlockRequirements.ultimate?.realmName || REALMS[3]?.name || 'later realms';
-      setInlineMessage({
-        type: 'error',
-        text: `You learned an Ultimate technique, but the Ultimate slot is locked until ${realmName}.`,
+      setAltarFeedback({
+        tone: 'error',
+        message: `You learned an Ultimate technique, but the Ultimate slot is locked until ${realmName}.`,
       });
     } else if (preferred === 'active' && unlockedCounts.active <= 0) {
       const realmName = progression.unlockRequirements.active[0]?.realmName || REALMS[1]?.name || 'later realms';
-      setInlineMessage({ type: 'error', text: `No active slots are available yet. Unlocks at: ${realmName}.` });
+      setAltarFeedback({ tone: 'error', message: `No active slots are available yet. Unlocks at: ${realmName}.` });
     } else if (preferred === 'passive' && unlockedCounts.passive <= 0) {
       const realmName = progression.unlockRequirements.passive[0]?.realmName || REALMS[2]?.name || 'later realms';
-      setInlineMessage({ type: 'error', text: `No passive slots are available yet. Unlocks at: ${realmName}.` });
+      setAltarFeedback({ tone: 'error', message: `No passive slots are available yet. Unlocks at: ${realmName}.` });
     } else {
       setSelectedSlot(defaultSelection);
     }
@@ -470,75 +372,96 @@ export function TechniqueLibraryScreen() {
     }
   }, [progression.unlocked, selectedSlot]);
 
-  const handleSlotClick = useCallback(
-    (slot: SlotSelection) => {
-      const isUnlocked =
-        slot.type === 'ultimate'
-          ? progression.unlocked.ultimate
-          : slot.index < (slot.type === 'active' ? progression.unlocked.active : progression.unlocked.passive);
-
-      if (!isUnlocked) {
-        const requirement =
-          slot.type === 'ultimate'
-            ? progression.unlockRequirements.ultimate
-            : progression.unlockRequirements[slot.type][slot.index];
-
-        const realmName = requirement?.realmName || 'a higher realm';
-        setInlineMessage({ type: 'error', text: `That slot is locked. Unlocks at: ${realmName}.` });
-        GameEvents.emit({ type: 'techniques/slot_locked', payload: { slotType: slot.type, slotIndex: slot.index } });
-        return;
-      }
-
-      setSelectedSlot(slot);
-      GameEvents.emit({ type: 'techniques/slot_selected', payload: { slotType: slot.type, slotIndex: slot.index } });
-      setInlineMessage(null);
-    },
-    [progression.unlockRequirements, progression.unlocked],
-  );
-
   const handleManualPavilionNavigation = useCallback(() => {
     setActiveTab('adventure');
   }, [setActiveTab]);
 
-  const renderSlotRow = (slot: SlotSelection, techId: string | null | undefined) => {
-    const isSelected = selectedSlot.type === slot.type && selectedSlot.index === slot.index;
-    const isUnlocked =
-      slot.type === 'ultimate'
-        ? progression.unlocked.ultimate
-        : slot.index < (slot.type === 'active' ? progression.unlocked.active : progression.unlocked.passive);
-    const requirement =
-      slot.type === 'ultimate'
-        ? progression.unlockRequirements.ultimate
-        : progression.unlockRequirements[slot.type][slot.index];
-    const techName = techId ? techniquesById[techId]?.name || techId : '';
+  const handleEquipTechnique = useCallback(
+    (slotType: SlotType, slotIndex: number, techId: string): EquipResult =>
+      equipTechnique(slotType, slotIndex, techId, selectedLoadout?.id),
+    [equipTechnique, selectedLoadout?.id],
+  );
 
-    return (
-      <div
-        key={`${slot.type}-${slot.index}`}
-        className={`techniqueLibrarySlotRow ${isSelected ? 'is-selected' : ''} ${isUnlocked ? '' : 'is-locked'}`}
-        onClick={() => handleSlotClick(slot)}
-        title={!isUnlocked ? 'Breakthrough to unlock this meridian.' : undefined}
-      >
-        <div className="techniqueLibrarySlotLabel">{slotLabel(slot)}</div>
-        <div className="techniqueLibrarySlotContent">
-          {isUnlocked ? (
-            techName ? (
-              <span className="techniqueLibrarySlotTechName">{techName}</span>
-            ) : (
-              <span className="techniqueLibrarySlotEmpty">(Empty)</span>
-            )
-          ) : (
-            <div className="techniqueLibrarySlotLocked">
-              <div>(Locked)</div>
-              {requirement?.realmName && (
-                <div className="techniqueLibrarySlotSubtext">Unlocks at: {requirement.realmName}</div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const handleUnequipTechnique = useCallback(
+    (slotType: SlotType, slotIndex: number): EquipResult =>
+      equipTechnique(slotType, slotIndex, '', selectedLoadout?.id),
+    [equipTechnique, selectedLoadout?.id],
+  );
+
+  const slotConfigs = useMemo<InnerPalaceSlot[]>(() => {
+    const slots: InnerPalaceSlot[] = [];
+    const activeCount = progression.displayed.active;
+    const passiveCount = progression.displayed.passive;
+    const activeStep = activeCount > 0 ? 360 / activeCount : 360;
+    const passiveStep = passiveCount > 0 ? 360 / passiveCount : 360;
+    const activeStart = -90;
+    const passiveStart = -90 + passiveStep / 2;
+    const activeRadius = 170;
+    const passiveRadius = 120;
+    const ultimateRadius = 210;
+
+    Array.from({ length: activeCount }).forEach((_, index) => {
+      const techId = selectedLoadout?.slots.active[index] ?? '';
+      const requirement = progression.unlockRequirements.active[index];
+      slots.push({
+        key: `active-${index}`,
+        label: slotLabel({ type: 'active', index }),
+        accepts: 'active',
+        slotType: 'active',
+        slotIndex: index,
+        techId: techId || null,
+        isUnlocked: index < progression.unlocked.active,
+        unlockLabel: requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
+        ringPosition: { angle: activeStart + activeStep * index, radius: activeRadius },
+      });
+    });
+
+    Array.from({ length: passiveCount }).forEach((_, index) => {
+      const techId = selectedLoadout?.slots.passive[index] ?? '';
+      const requirement = progression.unlockRequirements.passive[index];
+      slots.push({
+        key: `passive-${index}`,
+        label: slotLabel({ type: 'passive', index }),
+        accepts: 'passive',
+        slotType: 'passive',
+        slotIndex: index,
+        techId: techId || null,
+        isUnlocked: index < progression.unlocked.passive,
+        unlockLabel: requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
+        ringPosition: { angle: passiveStart + passiveStep * index, radius: passiveRadius },
+      });
+    });
+
+    slots.push({
+      key: 'ultimate-0',
+      label: 'Ultimate',
+      accepts: 'ultimate',
+      slotType: 'ultimate',
+      slotIndex: 0,
+      techId: selectedLoadout?.slots.ultimate ?? null,
+      isUnlocked: progression.unlocked.ultimate,
+      unlockLabel: progression.unlockRequirements.ultimate?.realmName
+        ? `Unlocks at ${progression.unlockRequirements.ultimate.realmName}`
+        : undefined,
+      ringPosition: { angle: -90, radius: ultimateRadius },
+    });
+
+    return slots;
+  }, [
+    progression.displayed.active,
+    progression.displayed.passive,
+    progression.unlockRequirements.active,
+    progression.unlockRequirements.passive,
+    progression.unlockRequirements.ultimate,
+    progression.unlocked.active,
+    progression.unlocked.passive,
+    progression.unlocked.ultimate,
+    selectedLoadout?.slots.active,
+    selectedLoadout?.slots.passive,
+    selectedLoadout?.slots.ultimate,
+  ]);
+
+  const selectedSlotKey = `${selectedSlot.type}-${selectedSlot.index}`;
 
   const selectedTechDef = selectedTechniqueId ? techniquesById[selectedTechniqueId] : undefined;
   const selectedType = techniqueType(selectedTechDef);
@@ -551,27 +474,6 @@ export function TechniqueLibraryScreen() {
   const selectedTierIcon = getTierIcon(selectedTier);
   const selectedPathIcon = getPathIcon(selectedTechDef?.path ?? 'unknown');
   const selectedTypeIcon = getTypeIcon(resolveTechniqueType(selectedTechDef));
-  const formatCastRate = (row: EquipmentProofRow) => {
-    if (row.slotType === 'passive') return 'Cast rate: Passive (always on)';
-    if (row.effectiveCooldownSec) {
-      const perHour = row.castsPerHour != null ? row.castsPerHour.toFixed(0) : '—';
-      return `Cast rate (est.): ≈ 1 / ${row.effectiveCooldownSec.toFixed(1)}s (≈ ${perHour}/hr)`;
-    }
-    return 'Cast rate (est.): —';
-  };
-
-  const formatMasteryRate = (row: EquipmentProofRow) => {
-    if (row.slotType === 'passive') return 'Mastery: Passive (no xp)';
-    if (row.masteryPerHour != null) return `Mastery (est.): ≈ ${row.masteryPerHour.toFixed(0)} xp/hr`;
-    return 'Mastery (est.): —';
-  };
-
-  const formatLastCast = (lastCastAt: number | null) => {
-    if (!lastCastAt) return 'Last cast: Never';
-    // `now` exists purely to refresh the relative time every second.
-    void now;
-    return `Last cast: ${formatDistanceToNowStrict(lastCastAt, { addSuffix: true })}`;
-  };
 
   const filterControls = (
     <div className="techniqueLibraryFilters">
@@ -718,9 +620,8 @@ export function TechniqueLibraryScreen() {
                     selected={selectedTechniqueId === tech.id}
                     onSelect={() => {
                       setSelectedTechniqueId(tech.id);
-                      setInlineMessage(null);
-                      setDetailOpen(true);
                       setDetailIntent(null);
+                      setAltarFeedback(null);
                     }}
                   />
                 </div>
@@ -812,51 +713,6 @@ export function TechniqueLibraryScreen() {
               </div>
             </div>
 
-            <div className="techniqueLibraryPanel">
-              <div className="techniqueLibraryPanelHeader">Slots</div>
-              <div className="techniqueLibrarySlots">
-                <div className="techniqueLibrarySlotGroupLabel">Active Techniques</div>
-                {Array.from({ length: progression.displayed.active }).map((_, idx) =>
-                  renderSlotRow({ type: 'active', index: idx }, selectedLoadout?.slots.active[idx]),
-                )}
-
-                <div className="techniqueLibrarySlotGroupLabel">Passive Techniques</div>
-                {Array.from({ length: progression.displayed.passive }).map((_, idx) =>
-                  renderSlotRow({ type: 'passive', index: idx }, selectedLoadout?.slots.passive[idx]),
-                )}
-
-                <div className="techniqueLibrarySlotGroupLabel">Ultimate</div>
-                {renderSlotRow({ type: 'ultimate', index: 0 }, selectedLoadout?.slots.ultimate)}
-              </div>
-            </div>
-
-            <div className="techniqueLibraryPanel">
-              <div className="techniqueLibraryPanelHeader">Equipment Proof (This Loadout)</div>
-              <div className="techniqueLibraryProofList">
-                {equipmentProofRows.length === 0 && (
-                  <div className="techniqueLibraryEmpty">No techniques equipped in this loadout.</div>
-                )}
-                {equipmentProofRows.map((row) => (
-                  <div
-                    key={`${row.slotType}-${row.slotIndex}-${row.techId}`}
-                    className="techniqueLibraryProofRow"
-                  >
-                    <div className="techniqueLibraryProofIcon">{row.icon || typeIcon(row.slotType)}</div>
-                    <div className="techniqueLibraryProofBody">
-                      <div className="techniqueLibraryProofHeader">
-                        <div className="techniqueLibraryProofName">{row.name}</div>
-                        <div className="techniqueLibraryProofSlot">{row.slotLabel}</div>
-                      </div>
-                      <div className="techniqueLibraryProofStats">
-                        <div>{formatCastRate(row)}</div>
-                        <div>{formatLastCast(row.lastCastAt)}</div>
-                        <div>{formatMasteryRate(row)}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
@@ -895,6 +751,25 @@ export function TechniqueLibraryScreen() {
 
         <aside className="techInspectorDock">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--right">
+            <div className="techniqueLibraryPanel techniqueLibraryPanel--altar">
+              <InnerPalaceEquipAltar
+                slots={slotConfigs}
+                selectedTechId={selectedTechniqueId}
+                selectedSlotKey={selectedSlotKey}
+                techniquesById={techniquesById}
+                onRequestViewTech={(techId) => {
+                  setSelectedTechniqueId(techId);
+                  setDetailIntent(null);
+                  setDetailOpen(true);
+                }}
+                onRequestEquip={handleEquipTechnique}
+                onRequestUnequip={handleUnequipTechnique}
+                onSelectSlot={(slotType, slotIndex) => setSelectedSlot({ type: slotType, index: slotIndex })}
+                onClearSelectedTech={() => setSelectedTechniqueId(null)}
+                feedback={altarFeedback}
+                onFeedback={setAltarFeedback}
+              />
+            </div>
             <div className="techniqueLibraryPanel techniqueLibraryPanel--summary">
               <div className="techniqueLibraryPanelHeader">Selected Technique</div>
               <div className="techniqueLibrarySummary">
@@ -963,11 +838,6 @@ export function TechniqueLibraryScreen() {
               </div>
             </div>
 
-            {inlineMessage && (
-              <div className={`techniqueLibraryInlineMessage inline-${inlineMessage.type}`}>
-                {inlineMessage.text}
-              </div>
-            )}
           </div>
         </aside>
       </div>
