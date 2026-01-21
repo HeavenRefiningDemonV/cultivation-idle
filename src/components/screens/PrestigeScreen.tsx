@@ -8,8 +8,9 @@ import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
 import type { PrestigeUpgradeDef } from '../../content';
 import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
-import { PrestigeEdictSpine } from '../prestige/PrestigeEdictSpine';
+import type { PrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
+import { PrestigeUpgradePanelCard } from '../prestige/PrestigeUpgradePanelCard';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -21,7 +22,6 @@ export function PrestigeScreen() {
   const calculateAPGain = usePrestigeStore((state) => state.calculateAPGain);
   const canPrestige = usePrestigeStore((state) => state.canPrestige);
   const performPrestige = usePrestigeStore((state) => state.performPrestige);
-  const purchaseUpgrade = usePrestigeStore((state) => state.purchaseUpgrade);
   const getCurrentLevel = usePrestigeStore((state) => state.getCurrentLevel);
   const getMaxLevel = usePrestigeStore((state) => state.getMaxLevel);
   const getNextLevelCost = usePrestigeStore((state) => state.getNextLevelCost);
@@ -32,9 +32,9 @@ export function PrestigeScreen() {
   const realm = useGameStore((state) => state.realm);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [sellBeforePrestige, setSellBeforePrestige] = useState(false);
-  const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const stageRef = useRef<HTMLElement | null>(null);
+  const [selectedUpgradeId, setSelectedUpgradeId] = useState<string | null>(null);
+  const decreesAreaRef = useRef<HTMLDivElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
 
@@ -120,9 +120,17 @@ export function PrestigeScreen() {
       .filter((section) => section.upgrades.length > 0);
   }, [upgradeList]);
 
+  const categoryLabelMap = useMemo(() => {
+    const map = new Map<PrestigeCategoryKey, string>();
+    PRESTIGE_CATEGORIES.forEach((category) => {
+      map.set(category.key, category.title);
+    });
+    return map;
+  }, []);
+
   useEffect(() => {
-    const stageElement = stageRef.current;
-    if (!stageElement || categorizedUpgrades.length === 0) return;
+    const scrollContainer = decreesAreaRef.current;
+    if (!scrollContainer || categorizedUpgrades.length === 0) return;
 
     if (!activeCategory) {
       setActiveCategory(categorizedUpgrades[0]?.category.key ?? null);
@@ -141,7 +149,7 @@ export function PrestigeScreen() {
         }
       },
       {
-        root: stageElement,
+        root: scrollContainer,
         rootMargin: '0px 0px -60% 0px',
         threshold: [0.2, 0.4, 0.6],
       },
@@ -161,42 +169,38 @@ export function PrestigeScreen() {
     }, 0);
   }, [getCurrentLevel, upgradeList]);
 
-  const handlePurchase = (upgradeId: string) => {
-    const result = purchaseUpgrade(upgradeId);
-    if (!result.ok) {
-      setPurchaseMessage(result.reason ?? 'Purchase failed');
-    } else {
-      setPurchaseMessage(null);
-    }
-  };
-
   const scrollToCategory = (key: string) => {
     const target = document.getElementById(`prestige-category-${key}`);
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const renderUpgradeSpine = (upgrade: PrestigeUpgradeDef) => {
+  const renderUpgradePanel = (upgrade: PrestigeUpgradeDef) => {
     const currentLevel = getCurrentLevel(upgrade.id);
     const maxLevel = getMaxLevel(upgrade.id);
     const isMaxed = currentLevel >= maxLevel;
     const nextCost = getNextLevelCost(upgrade.id);
     const prereqCheck = checkPrereqs(upgrade.id);
-    const canAfford = nextCost !== null && totalAP >= nextCost;
     const isLocked = !prereqCheck.ok;
-    const cost = nextCost ?? 0;
+    const costLabel = nextCost === null ? 'Maxed' : `${nextCost} AP`;
+    const categoryKey = getPrestigeCategoryKey(upgrade.id);
+    const categoryMeta = getPrestigeCategoryIcon(categoryKey);
+    const categoryLabel = categoryLabelMap.get(categoryKey) ?? 'Decree';
 
     return (
-      <PrestigeEdictSpine
+      <PrestigeUpgradePanelCard
         key={upgrade.id}
         upgrade={upgrade}
         level={currentLevel}
         maxLevel={maxLevel}
-        cost={cost}
-        canAfford={canAfford}
+        costLabel={costLabel}
         locked={isLocked}
-        lockedReason={prereqCheck.reason}
         isPurchasing={false}
-        onPurchase={() => handlePurchase(upgrade.id)}
+        isMaxed={isMaxed}
+        isSelected={selectedUpgradeId === upgrade.id}
+        categoryLabel={categoryLabel}
+        CategoryIcon={categoryMeta.Icon}
+        onSelect={() => setSelectedUpgradeId(upgrade.id)}
+        lockedReason={prereqCheck.reason}
       />
     );
   };
@@ -240,11 +244,7 @@ export function PrestigeScreen() {
             </div>
           </header>
 
-          {purchaseMessage && (
-            <div className={'prestigeMessage prestigeMessage--error'}>{purchaseMessage}</div>
-          )}
-
-          <main className={'prestigeStage'} ref={stageRef}>
+          <main className={'prestigeStage'}>
             <section className={'prestigeHeroGrid'}>
               <div className={'prestigeHeroPanel prestigeHeroPanel--ritual'}>
                 {/* Prestige Action */}
@@ -320,8 +320,8 @@ export function PrestigeScreen() {
                 </div>
               </div>
 
-              <div className={'prestigeDecreeWallContainer'}>
-                <nav className={'prestigeCategoryIndex'} aria-label="Prestige categories">
+              <div className={'prestigeDecreesArea'} ref={decreesAreaRef}>
+                <nav className={'prestigeDecreesCategoryBar'} aria-label="Prestige categories">
                   {categorizedUpgrades.map((section) => {
                     const iconMeta = getPrestigeCategoryIcon(section.category.key);
                     const isActive = activeCategory === section.category.key;
@@ -338,7 +338,7 @@ export function PrestigeScreen() {
                     );
                   })}
                 </nav>
-                <div className={'prestigeDecreeWall'}>
+                <div className={'prestigeDecreesList'}>
                   {categorizedUpgrades.length === 0 && (
                     <div className={'prestigeDecreesEmpty'}>No decrees available at this stage.</div>
                   )}
@@ -353,8 +353,8 @@ export function PrestigeScreen() {
                         <div className={'prestigeDecreeTitle'}>{section.category.title}</div>
                         <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
                       </header>
-                      <div className={'prestigeDecreeGrid'}>
-                        {section.upgrades.map((upgrade) => renderUpgradeSpine(upgrade))}
+                      <div className={'prestigeDecreesGrid'}>
+                        {section.upgrades.map((upgrade) => renderUpgradePanel(upgrade))}
                       </div>
                     </section>
                   ))}
