@@ -49,7 +49,8 @@ export function TechniqueSpine({
   const pathIcon = useMemo(() => getPathIcon(pathKey), [pathKey]);
   const typeIcon = useMemo(() => getTypeIcon(typeKey ?? undefined), [typeKey]);
 
-  const state: TechniqueSpineState = disabledReason ? 'locked' : equipped ? 'equipped' : 'available';
+  const isLocked = Boolean(disabledReason);
+  const state: TechniqueSpineState = isLocked ? 'locked' : equipped ? 'equipped' : 'available';
 
   const ariaLabel = useMemo(() => {
     const rarityLabel = formatRarity(rarity);
@@ -100,7 +101,23 @@ export function TechniqueSpine({
         <span className="techSpineTierIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
           {tierIcon.icon}
         </span>
-        {equipped && <span className="techSpineEquippedMark" aria-label="Equipped" />}
+        <div className="techSpineStatus" aria-hidden={!equipped && !selected && !isLocked}>
+          {selected && (
+            <span className="techSpineStatusBadge techSpineStatusBadge--selected" aria-label="Selected">
+              ◆
+            </span>
+          )}
+          {equipped && !isLocked && (
+            <span className="techSpineStatusBadge techSpineStatusBadge--equipped" aria-label="Equipped">
+              ✓
+            </span>
+          )}
+          {isLocked && (
+            <span className="techSpineStatusBadge techSpineStatusBadge--locked" aria-label="Locked">
+              🔒
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="techSpineTitle" title={title || id}>

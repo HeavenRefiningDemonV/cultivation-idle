@@ -649,9 +649,17 @@ export function TechniqueLibraryScreen() {
               </div>
               <div className="techShelfWall">
                 {isContentLoading ? (
-                  <div className="techniqueLibraryEmptyState">Loading techniques...</div>
+                  <div className="techniqueLibraryEmptyState">
+                    <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
+                      ⏳
+                    </div>
+                    Loading techniques...
+                  </div>
                 ) : ownedTechniques.length === 0 ? (
                   <div className="techniqueLibraryEmptyState">
+                    <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
+                      📜
+                    </div>
                     <p>
                       No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the
                       Technique.
@@ -661,7 +669,12 @@ export function TechniqueLibraryScreen() {
                     </button>
                   </div>
                 ) : filteredTechniques.length === 0 ? (
-                  <div className="techniqueLibraryEmptyState">No techniques match the current filters.</div>
+                  <div className="techniqueLibraryEmptyState">
+                    <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
+                      🧭
+                    </div>
+                    No techniques match the current filters.
+                  </div>
                 ) : (
                   <>
                     {renderTechShelfRow('Active Techniques', groupedShelves.active, 14)}

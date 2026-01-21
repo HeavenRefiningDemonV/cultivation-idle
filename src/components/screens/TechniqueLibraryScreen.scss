@@ -7,6 +7,7 @@
   padding: 12px;
   overflow: hidden;
   color: #f5f5f5;
+  background: radial-gradient(circle at top, rgba(32, 44, 66, 0.45), rgba(8, 10, 16, 0.85));
 }
 
 .techniquesPanel--v2 .techTopRibbon {
@@ -23,14 +24,14 @@
 }
 
 .techniquesPanel--v2 .techTitle {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .techniquesPanel--v2 .techSubtitle {
-  font-size: 13px;
-  color: rgba(245, 245, 245, 0.75);
+  font-size: 12px;
+  color: rgba(218, 231, 255, 0.7);
 }
 
 .techniquesPanel--v2 .techTopRight {
@@ -46,8 +47,8 @@
 }
 
 .techniquesPanel--v2 .techTopLoadout select {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(20, 28, 40, 0.8);
+  border: 1px solid rgba(148, 200, 255, 0.2);
   border-radius: 6px;
   color: #f5f5f5;
   padding: 6px;
@@ -127,9 +128,9 @@
 .techniquesPanel--v2 .techniqueLibraryFilterButton {
   border-radius: 999px;
   padding: 4px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  color: #f5f5f5;
+  border: 1px solid rgba(148, 200, 255, 0.25);
+  background: rgba(14, 20, 30, 0.8);
+  color: #e7f4ff;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -147,8 +148,8 @@
   min-height: 56px;
   padding: 8px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(20, 24, 35, 0.8);
+  border: 1px solid rgba(148, 200, 255, 0.12);
+  background: rgba(16, 22, 32, 0.86);
   text-align: left;
   color: inherit;
   cursor: pointer;
@@ -219,7 +220,7 @@
 
 .techniquesPanel--v2 .techLibraryItemMeta {
   font-size: 12px;
-  color: #a0b7d8;
+  color: #b2c6e6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -243,8 +244,8 @@
   justify-content: space-between;
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(245, 245, 245, 0.7);
+  letter-spacing: 0.14em;
+  color: rgba(217, 231, 255, 0.72);
 }
 
 .techniquesPanel--v2 .techShelfRowTitle {
@@ -257,11 +258,12 @@
 }
 
 .techniquesPanel--v2 .techShelfRowRail {
-  background: rgba(10, 12, 20, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(20, 26, 36, 0.9), rgba(8, 10, 16, 0.9));
+  border: 1px solid rgba(148, 200, 255, 0.16);
   border-radius: 14px;
   padding: 10px;
   overflow-x: auto;
+  box-shadow: inset 0 0 0 1px rgba(10, 14, 20, 0.5);
 }
 
 .techniquesPanel--v2 .techShelfRowSpines {
@@ -361,11 +363,11 @@
 }
 
 .techniqueLibraryPanel {
-  background: rgba(21, 26, 36, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(20, 28, 40, 0.9), rgba(12, 16, 24, 0.85));
+  border: 1px solid rgba(148, 200, 255, 0.18);
+  border-radius: 12px;
   padding: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 18px rgba(5, 7, 12, 0.45);
 }
 
 .techniqueLibraryPanel--altar {
@@ -374,9 +376,11 @@
 
 .techniqueLibraryPanelHeader {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   margin-bottom: 8px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #dbeaff;
 }
 
 .techniqueLibraryFilters {
@@ -395,8 +399,8 @@
 
 .techniqueLibraryFilter select,
 .techniqueLibraryFilter input[type='checkbox'] {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(16, 24, 36, 0.9);
+  border: 1px solid rgba(148, 200, 255, 0.18);
   border-radius: 6px;
   color: #f5f5f5;
   padding: 6px;
@@ -412,8 +416,8 @@
   align-self: flex-start;
   margin-top: auto;
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(12, 18, 28, 0.85);
+  border: 1px solid rgba(148, 200, 255, 0.2);
   border-radius: 6px;
   color: #f5f5f5;
   cursor: pointer;
@@ -428,8 +432,8 @@
 .techniqueLibraryLoadout {
   width: 100%;
   text-align: left;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid transparent;
+  background: rgba(14, 20, 30, 0.75);
+  border: 1px solid rgba(148, 200, 255, 0.12);
   color: inherit;
   border-radius: 8px;
   padding: 10px;
@@ -442,8 +446,8 @@
 }
 
 .techniqueLibraryLoadout.is-active {
-  border-color: #6cc7ff;
-  background: rgba(108, 199, 255, 0.08);
+  border-color: rgba(108, 199, 255, 0.7);
+  background: rgba(24, 44, 68, 0.6);
 }
 
 .techniqueLibraryLoadoutName {
@@ -478,8 +482,8 @@
 .techniqueLibraryCastingPolicyButton {
   flex: 1;
   padding: 6px 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 22, 32, 0.7);
+  border: 1px solid rgba(148, 200, 255, 0.16);
   color: #f5f5f5;
   border-radius: 6px;
   cursor: pointer;
@@ -487,8 +491,8 @@
 }
 
 .techniqueLibraryCastingPolicyButton.is-active {
-  border-color: #6cc7ff;
-  background: rgba(108, 199, 255, 0.12);
+  border-color: rgba(108, 199, 255, 0.7);
+  background: rgba(38, 76, 120, 0.5);
 }
 
 .techniqueLibraryCastingPolicyButton:disabled {
@@ -518,8 +522,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid transparent;
+  background: rgba(14, 20, 30, 0.7);
+  border: 1px solid rgba(148, 200, 255, 0.08);
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
@@ -531,14 +535,14 @@
 }
 
 .techniqueLibrarySlotRow.is-selected {
-  border-color: #8be28b;
-  background: rgba(139, 226, 139, 0.08);
+  border-color: rgba(139, 226, 139, 0.7);
+  background: rgba(40, 70, 60, 0.55);
 }
 
 .techniqueLibrarySlotRow.is-locked {
   cursor: not-allowed;
   opacity: 0.8;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(10, 14, 20, 0.7);
 }
 
 .techniqueLibrarySlotLabel {
@@ -557,7 +561,7 @@
 .techniqueLibrarySlotLocked {
   text-align: right;
   font-size: 12px;
-  color: #d299ff;
+  color: #d5b7ff;
 }
 
 .techniqueLibrarySlotSubtext {
@@ -805,19 +809,28 @@
 }
 
 .techniqueLibraryEmptyState {
-  padding: 12px;
+  padding: 18px;
   text-align: center;
-  opacity: 0.8;
-  font-size: 14px;
+  font-size: 13px;
+  color: rgba(219, 234, 255, 0.85);
+  border: 1px dashed rgba(148, 200, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(12, 16, 24, 0.75);
 }
 
 .techniqueLibraryEmptyState p {
   margin: 0 0 8px;
 }
 
+.techniqueLibraryEmptyStateIcon {
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: rgba(205, 231, 255, 0.8);
+}
+
 .techniqueLibraryLinkButton {
-  background: linear-gradient(90deg, #38bdf8, #60a5fa);
-  color: #0b111d;
+  background: linear-gradient(90deg, #6cc7ff, #9de7c1);
+  color: #07131f;
   border: none;
   border-radius: 8px;
   padding: 8px 12px;
@@ -860,7 +873,7 @@
 }
 
 .techniqueLibraryDetailSection {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(12, 18, 28, 0.7);
   border-radius: 8px;
   padding: 10px;
   line-height: 1.4;
