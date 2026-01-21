@@ -277,6 +277,48 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.prestigeDecreeWallContainer {
+  background: rgba(17, 24, 39, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prestigeCategoryIndex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prestigeCategoryIndex button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.55);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.prestigeCategoryIndex button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.prestigeCategoryIndex button.is-active {
+  color: #ffffff;
+  border-color: rgba(251, 191, 36, 0.6);
+  background: rgba(88, 28, 135, 0.45);
+}
+
 .prestigeDecreeWall {
   display: flex;
   flex-direction: column;

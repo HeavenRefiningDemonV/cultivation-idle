@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { getItemDef, useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -9,6 +9,7 @@ import { RewardService } from '../../services/rewards';
 import type { PrestigeUpgradeDef } from '../../content';
 import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
 import { PrestigeEdictSpine } from '../prestige/PrestigeEdictSpine';
+import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -32,6 +33,8 @@ export function PrestigeScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [sellBeforePrestige, setSellBeforePrestige] = useState(false);
   const [purchaseMessage, setPurchaseMessage] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const stageRef = useRef<HTMLElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
 
@@ -117,6 +120,41 @@ export function PrestigeScreen() {
       .filter((section) => section.upgrades.length > 0);
   }, [upgradeList]);
 
+  useEffect(() => {
+    const stageElement = stageRef.current;
+    if (!stageElement || categorizedUpgrades.length === 0) return;
+
+    if (!activeCategory) {
+      setActiveCategory(categorizedUpgrades[0]?.category.key ?? null);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const top = visible[0];
+        if (!top) return;
+        const key = top.target.getAttribute('data-category-key');
+        if (key) {
+          setActiveCategory(key);
+        }
+      },
+      {
+        root: stageElement,
+        rootMargin: '0px 0px -60% 0px',
+        threshold: [0.2, 0.4, 0.6],
+      },
+    );
+
+    categorizedUpgrades.forEach((section) => {
+      const target = document.getElementById(`prestige-category-${section.category.key}`);
+      if (target) observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, [activeCategory, categorizedUpgrades]);
+
   const purchasedUpgradeCount = useMemo(() => {
     return upgradeList.reduce((count, upgrade) => {
       return count + (getCurrentLevel(upgrade.id) > 0 ? 1 : 0);
@@ -130,6 +168,11 @@ export function PrestigeScreen() {
     } else {
       setPurchaseMessage(null);
     }
+  };
+
+  const scrollToCategory = (key: string) => {
+    const target = document.getElementById(`prestige-category-${key}`);
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const renderUpgradeSpine = (upgrade: PrestigeUpgradeDef) => {
@@ -201,7 +244,7 @@ export function PrestigeScreen() {
             <div className={'prestigeMessage prestigeMessage--error'}>{purchaseMessage}</div>
           )}
 
-          <main className={'prestigeStage'}>
+          <main className={'prestigeStage'} ref={stageRef}>
             <section className={'prestigeHeroGrid'}>
               <div className={'prestigeHeroPanel prestigeHeroPanel--ritual'}>
                 {/* Prestige Action */}
@@ -277,21 +320,45 @@ export function PrestigeScreen() {
                 </div>
               </div>
 
-              <div className={'prestigeDecreeWall'}>
-                {categorizedUpgrades.length === 0 && (
-                  <div className={'prestigeDecreesEmpty'}>No decrees available at this stage.</div>
-                )}
-                {categorizedUpgrades.map((section) => (
-                  <section key={section.category.key} className={'prestigeDecreeSection'}>
-                    <header className={'prestigeDecreeHeader'}>
-                      <div className={'prestigeDecreeTitle'}>{section.category.title}</div>
-                      <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
-                    </header>
-                    <div className={'prestigeDecreeGrid'}>
-                      {section.upgrades.map((upgrade) => renderUpgradeSpine(upgrade))}
-                    </div>
-                  </section>
-                ))}
+              <div className={'prestigeDecreeWallContainer'}>
+                <nav className={'prestigeCategoryIndex'} aria-label="Prestige categories">
+                  {categorizedUpgrades.map((section) => {
+                    const iconMeta = getPrestigeCategoryIcon(section.category.key);
+                    const isActive = activeCategory === section.category.key;
+                    return (
+                      <button
+                        key={section.category.key}
+                        type="button"
+                        className={isActive ? 'is-active' : undefined}
+                        onClick={() => scrollToCategory(section.category.key)}
+                      >
+                        <iconMeta.Icon aria-hidden="true" />
+                        <span>{section.category.title}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+                <div className={'prestigeDecreeWall'}>
+                  {categorizedUpgrades.length === 0 && (
+                    <div className={'prestigeDecreesEmpty'}>No decrees available at this stage.</div>
+                  )}
+                  {categorizedUpgrades.map((section) => (
+                    <section
+                      key={section.category.key}
+                      id={`prestige-category-${section.category.key}`}
+                      data-category-key={section.category.key}
+                      className={'prestigeDecreeSection'}
+                    >
+                      <header className={'prestigeDecreeHeader'}>
+                        <div className={'prestigeDecreeTitle'}>{section.category.title}</div>
+                        <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
+                      </header>
+                      <div className={'prestigeDecreeGrid'}>
+                        {section.upgrades.map((upgrade) => renderUpgradeSpine(upgrade))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
               </div>
             </section>
           </main>
