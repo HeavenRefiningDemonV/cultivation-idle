@@ -53,6 +53,10 @@
   pointer-events: none;
 }
 
+.innerPalaceStage[data-core-pulse='equip'] .innerPalaceCore {
+  animation: innerPalaceCorePulse 0.6s ease-out;
+}
+
 .innerPalaceStage::after {
   content: '';
   position: absolute;
@@ -133,6 +137,17 @@
   border-color: rgba(200, 150, 255, 0.4);
 }
 
+.innerPalaceSlot[data-state='locked'] .innerPalaceSlotFrame::after {
+  content: '';
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  border: 1px dashed rgba(210, 170, 255, 0.5);
+  box-shadow: inset 0 0 12px rgba(80, 40, 120, 0.35);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
 .innerPalaceSlot[data-can-equip='true'] .innerPalaceSlotFrame {
   border-color: rgba(160, 242, 207, 0.9);
   box-shadow: 0 0 20px rgba(110, 225, 178, 0.35);
@@ -159,11 +174,11 @@
 }
 
 .innerPalaceSlot.is-flashing[data-flash-tone='equip'] .innerPalaceSlotFrame {
-  animation: innerPalaceFlashIn 0.45s ease;
+  animation: innerPalaceFlashIn 0.6s ease;
 }
 
 .innerPalaceSlot.is-flashing[data-flash-tone='unequip'] .innerPalaceSlotFrame {
-  animation: innerPalaceFlashOut 0.45s ease;
+  animation: innerPalaceFlashOut 0.6s ease;
 }
 
 .innerPalaceSlotSpine {
@@ -200,6 +215,8 @@
   max-height: 72px;
   text-align: center;
   line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .innerPalaceSlotLabel {
@@ -310,6 +327,23 @@
   }
 }
 
+@keyframes innerPalaceCorePulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 30px rgba(96, 224, 184, 0.35), inset 0 0 20px rgba(8, 12, 16, 0.6);
+  }
+
+  40% {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow: 0 0 45px rgba(140, 255, 210, 0.6), inset 0 0 24px rgba(8, 12, 16, 0.6);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 32px rgba(96, 224, 184, 0.35), inset 0 0 20px rgba(8, 12, 16, 0.6);
+  }
+}
+
 @keyframes innerPalaceShake {
   0% {
     transform: translate(-50%, -50%);
@@ -370,6 +404,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .innerPalaceCore {
+    animation: none;
+  }
+
+  .innerPalaceStage[data-core-pulse='equip'] .innerPalaceCore {
     animation: none;
   }
 

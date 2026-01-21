@@ -27,6 +27,8 @@ const formatRarity = (rarity?: string) => {
   return rarity.charAt(0).toUpperCase() + rarity.slice(1);
 };
 
+const unknownTierIcon = { icon: '◎', label: 'Unknown Tier', key: 'unknown' };
+
 export function TechniqueSpine({
   id,
   title,
@@ -45,9 +47,9 @@ export function TechniqueSpine({
 }: TechniqueSpineProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const tierIcon = useMemo(() => getTierIcon(tierKey), [tierKey]);
-  const pathIcon = useMemo(() => getPathIcon(pathKey), [pathKey]);
-  const typeIcon = useMemo(() => getTypeIcon(typeKey ?? undefined), [typeKey]);
+  const tierIcon = useMemo(() => (tierKey ? getTierIcon(tierKey) : unknownTierIcon), [tierKey]);
+  const pathIcon = useMemo(() => getPathIcon(pathKey ?? null), [pathKey]);
+  const typeIcon = useMemo(() => getTypeIcon(typeKey ?? 'unknown'), [typeKey]);
 
   const isLocked = Boolean(disabledReason);
   const state: TechniqueSpineState = isLocked ? 'locked' : equipped ? 'equipped' : 'available';
@@ -97,6 +99,7 @@ export function TechniqueSpine({
       onFocus={handleHover}
       onBlur={handleClearHover}
     >
+      <span className="techSpinePress" aria-hidden="true" />
       <div className="techSpineTop">
         <span className="techSpineTierIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
           {tierIcon.icon}

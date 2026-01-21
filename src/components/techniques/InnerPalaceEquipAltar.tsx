@@ -66,6 +66,7 @@ export function InnerPalaceEquipAltar({
   const [popoverSlotKey, setPopoverSlotKey] = useState<string | null>(null);
   const [shakeSlotKey, setShakeSlotKey] = useState<string | null>(null);
   const [flashState, setFlashState] = useState<{ key: string; tone: 'equip' | 'unequip' } | null>(null);
+  const [corePulseTone, setCorePulseTone] = useState<'equip' | null>(null);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const stageRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
@@ -150,10 +151,11 @@ export function InnerPalaceEquipAltar({
 
   const triggerFlash = useCallback((slotKey: string, tone: 'equip' | 'unequip') => {
     setFlashState({ key: slotKey, tone });
-    window.setTimeout(
-      () => setFlashState((current) => (current?.key === slotKey ? null : current)),
-      450,
-    );
+    if (tone === 'equip') {
+      setCorePulseTone('equip');
+      window.setTimeout(() => setCorePulseTone(null), 600);
+    }
+    window.setTimeout(() => setFlashState((current) => (current?.key === slotKey ? null : current)), 600);
   }, []);
 
   useEffect(() => {
@@ -229,7 +231,7 @@ export function InnerPalaceEquipAltar({
     const hasTechEquipped = Boolean(slot.techId);
     const compatible = hasSelected ? isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts) : false;
 
-      if (hasTechEquipped) {
+    if (hasTechEquipped) {
       if (hasSelected && !compatible) {
         setFeedback({
           tone: 'error',
@@ -286,7 +288,7 @@ export function InnerPalaceEquipAltar({
         <div className="innerPalaceSubtitle">Seat your techniques around the core.</div>
       </div>
 
-      <div className="innerPalaceStage" ref={stageRef}>
+      <div className="innerPalaceStage" ref={stageRef} data-core-pulse={corePulseTone ?? undefined}>
         <div className="innerPalaceCore" aria-hidden="true" />
         <div className="innerPalaceRing" aria-hidden="true" />
 
@@ -296,7 +298,7 @@ export function InnerPalaceEquipAltar({
           const rarityKey = normalizeRarity(technique?.rarity);
           const gradeKey = normalizeGrade(technique?.tier);
           const pathIcon = getPathIcon(technique?.path ?? null);
-          const tierIcon = getTierIcon(gradeKey);
+          const tierIcon = technique?.tier ? getTierIcon(gradeKey) : { icon: '◎', label: 'Unknown Tier', key: 'unknown' };
           const typeIcon = getTypeIcon(resolveTechniqueType(technique));
           const isSelected = selectedSlotKey === slot.key;
           const canEquipSelected = Boolean(

@@ -89,11 +89,11 @@ const slotLabel = (slot: SlotSelection) => {
 };
 
 const rarityLabel = (value?: string) => {
-  const safe = value ?? 'common';
+  const safe = value ?? 'unknown';
   return safe.charAt(0).toUpperCase() + safe.slice(1);
 };
 const gradeLabel = (value?: string) => {
-  const safe = value ?? 'mortal';
+  const safe = value ?? 'unknown';
   return safe.charAt(0).toUpperCase() + safe.slice(1);
 };
 
@@ -462,12 +462,16 @@ export function TechniqueLibraryScreen() {
   const selectedTechDef = selectedTechniqueId ? techniquesById[selectedTechniqueId] : undefined;
   const selectedType = techniqueType(selectedTechDef);
   const selectedRank = selectedOwned?.rank ?? 1;
-  const selectedTier = normalizeGrade(selectedTechDef?.tier ?? selectedOwned?.grade);
-  const selectedRarity = normalizeRarity(selectedOwned?.rarity ?? selectedTechDef?.rarity);
+  const selectedTierValue = selectedTechDef?.tier ?? selectedOwned?.def?.tier ?? null;
+  const selectedTier = selectedTierValue ? normalizeGrade(selectedTierValue) : 'unknown';
+  const selectedRarityValue = selectedTechDef?.rarity ?? selectedOwned?.def?.rarity ?? null;
+  const selectedRarity = selectedRarityValue ? normalizeRarity(selectedRarityValue) : 'unknown';
   const summaryCooldown = selectedTechDef?.cooldownSec ? `${selectedTechDef.cooldownSec}s cooldown` : 'No cooldown';
   const summaryRole = selectedTechDef?.role ? `${selectedTechDef.role} role` : `${selectedType} technique`;
   const summaryLine = selectedTechDef ? `Rank ${selectedRank} • ${summaryCooldown} • ${summaryRole}` : '';
-  const selectedTierIcon = getTierIcon(selectedTier);
+  const selectedTierIcon = selectedTierValue
+    ? getTierIcon(selectedTier)
+    : { icon: '◎', label: 'Unknown Tier', key: 'unknown' };
   const selectedPathIcon = getPathIcon(selectedTechDef?.path ?? 'unknown');
   const selectedTypeIcon = getTypeIcon(resolveTechniqueType(selectedTechDef));
 
@@ -585,6 +589,9 @@ export function TechniqueLibraryScreen() {
       </header>
 
       <div className="techStage">
+        <div className="techStageVfx" aria-hidden="true">
+          <div className="techStageVfxGlow" />
+        </div>
         <section className="techLoadoutBoard">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--left">
             <div className="techniqueLibraryPanel">
