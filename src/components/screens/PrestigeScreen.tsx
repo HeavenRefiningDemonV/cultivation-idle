@@ -6,6 +6,8 @@ import { useHeartLawStore } from '../../stores/heartLawStore';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
+import type { PrestigeUpgradeDef } from '../../content';
+import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -95,6 +97,25 @@ export function PrestigeScreen() {
     return getPrestigeUpgrades();
   }, [getPrestigeUpgrades, isContentLoaded]);
 
+  const categorizedUpgrades = useMemo(() => {
+    const buckets = new Map<ReturnType<typeof getPrestigeCategoryKey>, PrestigeUpgradeDef[]>();
+    upgradeList.forEach((upgrade) => {
+      const key = getPrestigeCategoryKey(upgrade.id);
+      const list = buckets.get(key) ?? [];
+      list.push(upgrade);
+      buckets.set(key, list);
+    });
+
+    return PRESTIGE_CATEGORIES
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .map((category) => ({
+        category,
+        upgrades: buckets.get(category.key) ?? [],
+      }))
+      .filter((section) => section.upgrades.length > 0);
+  }, [upgradeList]);
+
   const purchasedUpgradeCount = useMemo(() => {
     return upgradeList.reduce((count, upgrade) => {
       return count + (getCurrentLevel(upgrade.id) > 0 ? 1 : 0);
@@ -108,6 +129,88 @@ export function PrestigeScreen() {
     } else {
       setPurchaseMessage(null);
     }
+  };
+
+  const renderUpgradeCard = (upgrade: PrestigeUpgradeDef) => {
+    const currentLevel = getCurrentLevel(upgrade.id);
+    const maxLevel = getMaxLevel(upgrade.id);
+    const isMaxed = currentLevel >= maxLevel;
+    const nextCost = getNextLevelCost(upgrade.id);
+    const prereqCheck = checkPrereqs(upgrade.id);
+    const canAfford = nextCost !== null && totalAP >= nextCost;
+    const isLocked = !prereqCheck.ok;
+    const cardClasses = ['prestigeScreenShopCard'];
+
+    if (isMaxed) cardClasses.push('prestigeScreenShopMaxed');
+    else if (isLocked) cardClasses.push('prestigeScreenShopLocked');
+    else if (canAfford) cardClasses.push('prestigeScreenShopAffordable');
+
+    return (
+      <div key={upgrade.id} className={cardClasses.join(' ')}>
+        <div className={'prestigeScreenShopHeader'}>
+          <h3 className={'prestigeScreenShopName'}>{upgrade.name}</h3>
+          {isMaxed && <span className={'prestigeScreenShopTagMax'}>MAX</span>}
+          {isLocked && <span className={'prestigeScreenShopTagLocked'}>LOCKED</span>}
+        </div>
+        <p className={'prestigeScreenShopDescription'}>{upgrade.description}</p>
+
+        <div className={'prestigeScreenShopLevel'}>
+          <div className={'prestigeScreenShopLevelRow'}>
+            <span className={'prestigeScreenInfoLabel'}>Level</span>
+            <span className={'prestigeScreenInfoValue'}>
+              {currentLevel} / {maxLevel}
+            </span>
+          </div>
+          <div className={'prestigeScreenShopProgress'}>
+            <div
+              className={'prestigeScreenShopProgressFill'}
+              style={{ width: `${maxLevel ? (currentLevel / maxLevel) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+
+        {currentLevel > 0 && (
+          <div className={'prestigeScreenShopEffect'}>
+            <div className={'prestigeScreenShopEffectLabel'}>Current Effect:</div>
+            <div className={'prestigeScreenShopEffectValue'}>
+              {upgrade.type === 'multiplier' && typeof upgrade.effectPerLevel === 'number'
+                ? `+${(upgrade.effectPerLevel * currentLevel * 100).toFixed(0)}% ${upgrade.stat ?? ''}`
+                : 'Unlocked'}
+            </div>
+          </div>
+        )}
+
+        {!isMaxed && !isLocked && (
+          <div className={'prestigeScreenShopActions'}>
+            <div className={'prestigeScreenShopCost'}>
+              <span className={'prestigeScreenInfoLabel'}>Cost: </span>
+              <span
+                className={`${'prestigeScreenShopCostValue'} ${
+                  canAfford ? 'prestigeScreenShopCostReady' : 'prestigeScreenShopCostMissing'
+                }`}
+              >
+                {nextCost ?? 'N/A'} AP
+              </span>
+            </div>
+            <button
+              onClick={() => handlePurchase(upgrade.id)}
+              disabled={!canAfford}
+              className={`${'button-standard'} ${'prestigeScreenShopButton'} ${
+                canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'
+              }`}
+            >
+              Purchase
+            </button>
+          </div>
+        )}
+
+        {isLocked && (
+          <div className={'prestigeScreenLockedNote'}>
+            {prereqCheck.reason ?? 'Unlock condition not met'}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const realmNames = [
@@ -229,87 +332,21 @@ export function PrestigeScreen() {
                 </div>
               </div>
 
-              <div className={'prestigeDecreesGrid'}>
-                {upgradeList.length === 0 && (
+              <div className={'prestigeDecreeWall'}>
+                {categorizedUpgrades.length === 0 && (
                   <div className={'prestigeDecreesEmpty'}>No decrees available at this stage.</div>
                 )}
-                {upgradeList.map((upgrade) => {
-                  const currentLevel = getCurrentLevel(upgrade.id);
-                  const maxLevel = getMaxLevel(upgrade.id);
-                  const isMaxed = currentLevel >= maxLevel;
-                  const nextCost = getNextLevelCost(upgrade.id);
-                  const prereqCheck = checkPrereqs(upgrade.id);
-                  const canAfford = nextCost !== null && totalAP >= nextCost;
-                  const isLocked = !prereqCheck.ok;
-                  const cardClasses = ['prestigeScreenShopCard'];
-
-                  if (isMaxed) cardClasses.push('prestigeScreenShopMaxed');
-                  else if (isLocked) cardClasses.push('prestigeScreenShopLocked');
-                  else if (canAfford) cardClasses.push('prestigeScreenShopAffordable');
-
-                  return (
-                    <div key={upgrade.id} className={cardClasses.join(' ')}>
-                      <div className={'prestigeScreenShopHeader'}>
-                        <h3 className={'prestigeScreenShopName'}>{upgrade.name}</h3>
-                        {isMaxed && <span className={'prestigeScreenShopTagMax'}>MAX</span>}
-                        {isLocked && <span className={'prestigeScreenShopTagLocked'}>LOCKED</span>}
-                      </div>
-                      <p className={'prestigeScreenShopDescription'}>{upgrade.description}</p>
-
-                      <div className={'prestigeScreenShopLevel'}>
-                        <div className={'prestigeScreenShopLevelRow'}>
-                          <span className={'prestigeScreenInfoLabel'}>Level</span>
-                          <span className={'prestigeScreenInfoValue'}>
-                            {currentLevel} / {maxLevel}
-                          </span>
-                        </div>
-                        <div className={'prestigeScreenShopProgress'}>
-                          <div
-                            className={'prestigeScreenShopProgressFill'}
-                            style={{ width: `${maxLevel ? (currentLevel / maxLevel) * 100 : 0}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {currentLevel > 0 && (
-                        <div className={'prestigeScreenShopEffect'}>
-                          <div className={'prestigeScreenShopEffectLabel'}>Current Effect:</div>
-                          <div className={'prestigeScreenShopEffectValue'}>
-                            {upgrade.type === 'multiplier' && typeof upgrade.effectPerLevel === 'number'
-                              ? `+${(upgrade.effectPerLevel * currentLevel * 100).toFixed(0)}% ${upgrade.stat ?? ''}`
-                              : 'Unlocked'}
-                          </div>
-                        </div>
-                      )}
-
-                      {!isMaxed && !isLocked && (
-                        <div className={'prestigeScreenShopActions'}>
-                          <div className={'prestigeScreenShopCost'}>
-                            <span className={'prestigeScreenInfoLabel'}>Cost: </span>
-                            <span className={`${'prestigeScreenShopCostValue'} ${canAfford ? 'prestigeScreenShopCostReady' : 'prestigeScreenShopCostMissing'}`}>
-                              {nextCost ?? 'N/A'} AP
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => handlePurchase(upgrade.id)}
-                            disabled={!canAfford}
-                            className={`${'button-standard'} ${'prestigeScreenShopButton'} ${
-                              canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'
-                            }`}
-                          >
-                            Purchase
-                          </button>
-                        </div>
-                      )}
-
-                      {isLocked && (
-                        <div className={'prestigeScreenLockedNote'}>
-                          {prereqCheck.reason ?? 'Unlock condition not met'}
-                        </div>
-                      )}
+                {categorizedUpgrades.map((section) => (
+                  <section key={section.category.key} className={'prestigeDecreeSection'}>
+                    <header className={'prestigeDecreeHeader'}>
+                      <div className={'prestigeDecreeTitle'}>{section.category.title}</div>
+                      <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
+                    </header>
+                    <div className={'prestigeDecreeGrid'}>
+                      {section.upgrades.map((upgrade) => renderUpgradeCard(upgrade))}
                     </div>
-                  );
-                })}
+                  </section>
+                ))}
               </div>
             </section>
           </main>

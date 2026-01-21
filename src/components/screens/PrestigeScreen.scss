@@ -272,16 +272,45 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
-.prestigeDecreesGrid {
+.prestigeDecreesEmpty {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.prestigeDecreeWall {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prestigeDecreeSection {
+  display: grid;
+  gap: 10px;
+}
+
+.prestigeDecreeHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prestigeDecreeTitle {
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.prestigeDecreeSubtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.prestigeDecreeGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 10px;
   align-items: stretch;
-}
-
-.prestigeDecreesEmpty {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
 }
 
 .prestigeScreenShopSection {
