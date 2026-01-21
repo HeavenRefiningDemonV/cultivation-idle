@@ -11,6 +11,7 @@ export interface PrestigeCategoryDef {
   key: PrestigeCategoryKey;
   title: string;
   subtitle: string;
+  iconLabel: string;
   order: number;
 }
 
@@ -19,42 +20,49 @@ export const PRESTIGE_CATEGORIES: PrestigeCategoryDef[] = [
     key: 'laws',
     title: 'Heavenly Laws',
     subtitle: 'Cultivation foundations, heart laws, and core efficiency.',
+    iconLabel: 'Heavenly Laws',
     order: 1,
   },
   {
     key: 'combat',
     title: 'Martial Ascension',
     subtitle: 'Battle-focused power and boss progression upgrades.',
+    iconLabel: 'Combat',
     order: 2,
   },
   {
     key: 'techniques',
     title: 'Secret Techniques',
     subtitle: 'Technique mastery, slots, and fragment growth.',
+    iconLabel: 'Techniques',
     order: 3,
   },
   {
     key: 'crafting',
     title: 'Celestial Crafting',
     subtitle: 'Expand queues and accelerate artisan production.',
+    iconLabel: 'Crafting',
     order: 4,
   },
   {
     key: 'automation',
     title: 'Endless Routines',
     subtitle: 'Automate upkeep and loot management.',
+    iconLabel: 'Automation',
     order: 5,
   },
   {
     key: 'unlocks',
     title: 'Worldly Unlocks',
     subtitle: 'Open new systems, halls, and expeditions.',
+    iconLabel: 'Unlocks',
     order: 6,
   },
   {
     key: 'misc',
     title: 'Other Decrees',
     subtitle: 'Unsorted blessings awaiting classification.',
+    iconLabel: 'Miscellaneous',
     order: 7,
   },
 ];

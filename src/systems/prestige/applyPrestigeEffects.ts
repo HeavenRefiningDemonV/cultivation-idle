@@ -1,4 +1,6 @@
 import type { PrestigeUpgradeDef } from '../../content';
+
+export type { PrestigeUpgradeDef } from '../../content';
 import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore } from '../../stores/expeditionStore';
 import { useHeartLawStore } from '../../stores/heartLawStore';

@@ -8,6 +8,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
 import type { PrestigeUpgradeDef } from '../../content';
 import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
+import { PrestigeEdictSpine } from '../prestige/PrestigeEdictSpine';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -131,7 +132,7 @@ export function PrestigeScreen() {
     }
   };
 
-  const renderUpgradeCard = (upgrade: PrestigeUpgradeDef) => {
+  const renderUpgradeSpine = (upgrade: PrestigeUpgradeDef) => {
     const currentLevel = getCurrentLevel(upgrade.id);
     const maxLevel = getMaxLevel(upgrade.id);
     const isMaxed = currentLevel >= maxLevel;
@@ -139,77 +140,21 @@ export function PrestigeScreen() {
     const prereqCheck = checkPrereqs(upgrade.id);
     const canAfford = nextCost !== null && totalAP >= nextCost;
     const isLocked = !prereqCheck.ok;
-    const cardClasses = ['prestigeScreenShopCard'];
-
-    if (isMaxed) cardClasses.push('prestigeScreenShopMaxed');
-    else if (isLocked) cardClasses.push('prestigeScreenShopLocked');
-    else if (canAfford) cardClasses.push('prestigeScreenShopAffordable');
+    const cost = nextCost ?? 0;
 
     return (
-      <div key={upgrade.id} className={cardClasses.join(' ')}>
-        <div className={'prestigeScreenShopHeader'}>
-          <h3 className={'prestigeScreenShopName'}>{upgrade.name}</h3>
-          {isMaxed && <span className={'prestigeScreenShopTagMax'}>MAX</span>}
-          {isLocked && <span className={'prestigeScreenShopTagLocked'}>LOCKED</span>}
-        </div>
-        <p className={'prestigeScreenShopDescription'}>{upgrade.description}</p>
-
-        <div className={'prestigeScreenShopLevel'}>
-          <div className={'prestigeScreenShopLevelRow'}>
-            <span className={'prestigeScreenInfoLabel'}>Level</span>
-            <span className={'prestigeScreenInfoValue'}>
-              {currentLevel} / {maxLevel}
-            </span>
-          </div>
-          <div className={'prestigeScreenShopProgress'}>
-            <div
-              className={'prestigeScreenShopProgressFill'}
-              style={{ width: `${maxLevel ? (currentLevel / maxLevel) * 100 : 0}%` }}
-            />
-          </div>
-        </div>
-
-        {currentLevel > 0 && (
-          <div className={'prestigeScreenShopEffect'}>
-            <div className={'prestigeScreenShopEffectLabel'}>Current Effect:</div>
-            <div className={'prestigeScreenShopEffectValue'}>
-              {upgrade.type === 'multiplier' && typeof upgrade.effectPerLevel === 'number'
-                ? `+${(upgrade.effectPerLevel * currentLevel * 100).toFixed(0)}% ${upgrade.stat ?? ''}`
-                : 'Unlocked'}
-            </div>
-          </div>
-        )}
-
-        {!isMaxed && !isLocked && (
-          <div className={'prestigeScreenShopActions'}>
-            <div className={'prestigeScreenShopCost'}>
-              <span className={'prestigeScreenInfoLabel'}>Cost: </span>
-              <span
-                className={`${'prestigeScreenShopCostValue'} ${
-                  canAfford ? 'prestigeScreenShopCostReady' : 'prestigeScreenShopCostMissing'
-                }`}
-              >
-                {nextCost ?? 'N/A'} AP
-              </span>
-            </div>
-            <button
-              onClick={() => handlePurchase(upgrade.id)}
-              disabled={!canAfford}
-              className={`${'button-standard'} ${'prestigeScreenShopButton'} ${
-                canAfford ? 'prestigeScreenShopButtonReady' : 'prestigeScreenShopButtonDisabled'
-              }`}
-            >
-              Purchase
-            </button>
-          </div>
-        )}
-
-        {isLocked && (
-          <div className={'prestigeScreenLockedNote'}>
-            {prereqCheck.reason ?? 'Unlock condition not met'}
-          </div>
-        )}
-      </div>
+      <PrestigeEdictSpine
+        key={upgrade.id}
+        upgrade={upgrade}
+        level={currentLevel}
+        maxLevel={maxLevel}
+        cost={cost}
+        canAfford={canAfford}
+        locked={isLocked}
+        lockedReason={prereqCheck.reason}
+        isPurchasing={false}
+        onPurchase={() => handlePurchase(upgrade.id)}
+      />
     );
   };
 
@@ -343,7 +288,7 @@ export function PrestigeScreen() {
                       <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
                     </header>
                     <div className={'prestigeDecreeGrid'}>
-                      {section.upgrades.map((upgrade) => renderUpgradeCard(upgrade))}
+                      {section.upgrades.map((upgrade) => renderUpgradeSpine(upgrade))}
                     </div>
                   </section>
                 ))}
