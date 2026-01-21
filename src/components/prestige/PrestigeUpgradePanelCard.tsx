@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, MouseEvent } from 'react';
 import type { LucideProps } from 'lucide-react';
 import type { PrestigeUpgradeDef } from '../../content';
 
@@ -14,7 +14,7 @@ interface PrestigeUpgradePanelCardProps {
   isPurchasing: boolean;
   categoryLabel: string;
   CategoryIcon: ComponentType<LucideProps>;
-  onSelect: () => void;
+  onSelect: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
 export function PrestigeUpgradePanelCard({

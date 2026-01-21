@@ -11,6 +11,7 @@ import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from '../../features/pres
 import type { PrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
 import { PrestigeUpgradePanelCard } from '../prestige/PrestigeUpgradePanelCard';
+import { PrestigeUpgradeModal } from '../modals/PrestigeUpgradeModal';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -22,6 +23,7 @@ export function PrestigeScreen() {
   const calculateAPGain = usePrestigeStore((state) => state.calculateAPGain);
   const canPrestige = usePrestigeStore((state) => state.canPrestige);
   const performPrestige = usePrestigeStore((state) => state.performPrestige);
+  const purchaseUpgrade = usePrestigeStore((state) => state.purchaseUpgrade);
   const getCurrentLevel = usePrestigeStore((state) => state.getCurrentLevel);
   const getMaxLevel = usePrestigeStore((state) => state.getMaxLevel);
   const getNextLevelCost = usePrestigeStore((state) => state.getNextLevelCost);
@@ -34,7 +36,10 @@ export function PrestigeScreen() {
   const [sellBeforePrestige, setSellBeforePrestige] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedUpgradeId, setSelectedUpgradeId] = useState<string | null>(null);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [isPurchasing, setIsPurchasing] = useState(false);
   const decreesAreaRef = useRef<HTMLDivElement | null>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
 
@@ -169,6 +174,49 @@ export function PrestigeScreen() {
     }, 0);
   }, [getCurrentLevel, upgradeList]);
 
+  const selectedUpgrade = useMemo(() => {
+    if (!selectedUpgradeId) return null;
+    return upgradeList.find((upgrade) => upgrade.id === selectedUpgradeId) ?? null;
+  }, [selectedUpgradeId, upgradeList]);
+
+  const selectedUpgradeLevel = selectedUpgradeId ? getCurrentLevel(selectedUpgradeId) : 0;
+  const selectedUpgradeCost = selectedUpgradeId ? getNextLevelCost(selectedUpgradeId) : null;
+  const selectedUpgradePrereq = selectedUpgradeId ? checkPrereqs(selectedUpgradeId) : { ok: true };
+  const selectedUpgradeLocked = selectedUpgradePrereq ? !selectedUpgradePrereq.ok : false;
+  const selectedUpgradePrereqs = useMemo(() => {
+    if (!selectedUpgrade?.prereq) return [];
+    const nameMap = new Map<string, string>();
+    upgradeList.forEach((upgrade) => {
+      nameMap.set(upgrade.id, upgrade.name);
+    });
+    return selectedUpgrade.prereq.map((prereq) => ({
+      id: prereq.upgradeId,
+      name: nameMap.get(prereq.upgradeId) ?? prereq.upgradeId,
+      requiredLevel: prereq.minLevel,
+      currentLevel: getCurrentLevel(prereq.upgradeId),
+    }));
+  }, [getCurrentLevel, selectedUpgrade, upgradeList]);
+
+  const handleUpgradePurchase = () => {
+    if (!selectedUpgradeId) return;
+    setIsPurchasing(true);
+    const result = purchaseUpgrade(selectedUpgradeId);
+    if (!result.ok) {
+      setPurchaseError(result.reason ?? 'Purchase failed');
+    } else {
+      setPurchaseError(null);
+    }
+    setIsPurchasing(false);
+  };
+
+  const handleModalClose = () => {
+    setSelectedUpgradeId(null);
+    setPurchaseError(null);
+    requestAnimationFrame(() => {
+      lastFocusedRef.current?.focus();
+    });
+  };
+
   const scrollToCategory = (key: string) => {
     const target = document.getElementById(`prestige-category-${key}`);
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -194,12 +242,16 @@ export function PrestigeScreen() {
         maxLevel={maxLevel}
         costLabel={costLabel}
         locked={isLocked}
-        isPurchasing={false}
+        isPurchasing={isPurchasing}
         isMaxed={isMaxed}
         isSelected={selectedUpgradeId === upgrade.id}
         categoryLabel={categoryLabel}
         CategoryIcon={categoryMeta.Icon}
-        onSelect={() => setSelectedUpgradeId(upgrade.id)}
+        onSelect={(event) => {
+          lastFocusedRef.current = event.currentTarget;
+          setPurchaseError(null);
+          setSelectedUpgradeId(upgrade.id);
+        }}
         lockedReason={prereqCheck.reason}
       />
     );
@@ -362,6 +414,21 @@ export function PrestigeScreen() {
               </div>
             </section>
           </main>
+
+          <PrestigeUpgradeModal
+            open={Boolean(selectedUpgrade)}
+            upgradeId={selectedUpgradeId}
+            upgradeDef={selectedUpgrade}
+            currentLevel={selectedUpgradeLevel}
+            nextCost={selectedUpgradeCost}
+            totalAP={totalAP}
+            locked={selectedUpgradeLocked}
+            lockedReason={selectedUpgradePrereq?.reason}
+            prereqList={selectedUpgradePrereqs}
+            onClose={handleModalClose}
+            onPurchase={handleUpgradePurchase}
+            purchaseState={{ errorMessage: purchaseError, isPurchasing }}
+          />
 
           {/* Prestige History */}
           {prestigeRuns.length > 0 && (

@@ -472,6 +472,229 @@
   color: #f3e8ff;
 }
 
+.prestigeUpgradeOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 80;
+}
+
+.prestigeUpgradeModal {
+  width: min(900px, 96vw);
+  max-height: 90vh;
+  background: linear-gradient(180deg, rgba(250, 234, 205, 0.98), rgba(232, 210, 170, 0.96));
+  border: 2px solid rgba(140, 88, 30, 0.6);
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.prestigeUpgradeModalHeader {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  background: linear-gradient(180deg, rgba(250, 234, 205, 0.98), rgba(240, 218, 180, 0.92));
+  border-bottom: 1px solid rgba(140, 88, 30, 0.3);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+}
+
+.prestigeUpgradeModalTitle {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.95);
+}
+
+.prestigeUpgradeModalSubtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(72, 45, 18, 0.8);
+}
+
+.prestigeUpgradeModalHeaderMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prestigeUpgradeModalHeaderIcons {
+  display: flex;
+  gap: 6px;
+  color: rgba(72, 45, 18, 0.8);
+}
+
+.prestigeUpgradeModalIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.prestigeUpgradeModalClose {
+  border: none;
+  background: rgba(72, 45, 18, 0.15);
+  color: rgba(72, 45, 18, 0.9);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prestigeUpgradeModalScroll {
+  position: relative;
+  overflow-y: auto;
+  padding: 0 20px 20px;
+}
+
+.prestigeUpgradeModalSection {
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(140, 88, 30, 0.2);
+}
+
+.prestigeUpgradeModalSection:last-child {
+  border-bottom: none;
+}
+
+.prestigeUpgradeModalSectionTitle {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(72, 45, 18, 0.85);
+}
+
+.prestigeUpgradeModalOverview p {
+  margin: 0;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeUpgradeModalEffects {
+  display: grid;
+  gap: 12px;
+}
+
+.prestigeUpgradeModalSubheading {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: rgba(72, 45, 18, 0.85);
+}
+
+.prestigeUpgradeModalList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeUpgradeModalList li.is-missing {
+  color: rgba(120, 68, 32, 0.85);
+}
+
+.prestigeUpgradeModalList li.is-met {
+  color: rgba(28, 110, 70, 0.85);
+}
+
+.prestigeUpgradeModalEmpty {
+  color: rgba(72, 45, 18, 0.7);
+  font-size: 13px;
+}
+
+.prestigeUpgradeModalAlert {
+  background: rgba(120, 68, 32, 0.15);
+  border: 1px solid rgba(120, 68, 32, 0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  color: rgba(72, 45, 18, 0.9);
+  font-size: 13px;
+}
+
+.prestigeUpgradeModalActions {
+  display: grid;
+  gap: 10px;
+}
+
+.prestigeUpgradeModalActionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.prestigeUpgradeModalButton {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(124, 61, 20, 0.9);
+  color: #f8e6c8;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prestigeUpgradeModalButton:disabled {
+  background: rgba(90, 70, 54, 0.8);
+  cursor: not-allowed;
+}
+
+.prestigeUpgradeModalCost {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(72, 45, 18, 0.2);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeUpgradeModalMeta {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.prestigeUpgradeModalError {
+  color: rgba(148, 52, 32, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.prestigeUpgradeScrollShadow {
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.prestigeUpgradeScrollShadow--top {
+  top: 0;
+  background: linear-gradient(180deg, rgba(245, 222, 179, 0.95), rgba(245, 222, 179, 0));
+}
+
+.prestigeUpgradeScrollShadow--bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(232, 210, 170, 0.95), rgba(232, 210, 170, 0));
+}
+
 .prestigeScreenShopSection {
   display: grid;
   gap: 12px;
