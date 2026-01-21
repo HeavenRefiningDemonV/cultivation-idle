@@ -38,6 +38,10 @@ export function PrestigeScreen() {
   const [selectedUpgradeId, setSelectedUpgradeId] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [flashUpgradeId, setFlashUpgradeId] = useState<string | null>(null);
+  const [apPulse, setApPulse] = useState(false);
+  const [purchaseToast, setPurchaseToast] = useState<string | null>(null);
+  const [purchaseSuccessMessage, setPurchaseSuccessMessage] = useState<string | null>(null);
   const decreesAreaRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
@@ -179,9 +183,21 @@ export function PrestigeScreen() {
     return upgradeList.find((upgrade) => upgrade.id === selectedUpgradeId) ?? null;
   }, [selectedUpgradeId, upgradeList]);
 
-  const selectedUpgradeLevel = selectedUpgradeId ? getCurrentLevel(selectedUpgradeId) : 0;
-  const selectedUpgradeCost = selectedUpgradeId ? getNextLevelCost(selectedUpgradeId) : null;
-  const selectedUpgradePrereq = selectedUpgradeId ? checkPrereqs(selectedUpgradeId) : { ok: true };
+  const missingUpgradeMessage = 'This decree is no longer available.';
+  const isMissingUpgrade = Boolean(selectedUpgradeId && !selectedUpgrade);
+
+  useEffect(() => {
+    if (!isMissingUpgrade) return;
+    setPurchaseError(missingUpgradeMessage);
+    setPurchaseSuccessMessage(null);
+  }, [isMissingUpgrade, missingUpgradeMessage]);
+
+  const selectedUpgradeLevel = selectedUpgradeId && !isMissingUpgrade ? getCurrentLevel(selectedUpgradeId) : 0;
+  const selectedUpgradeCost = selectedUpgradeId && !isMissingUpgrade ? getNextLevelCost(selectedUpgradeId) : null;
+  const selectedUpgradePrereq =
+    selectedUpgradeId && !isMissingUpgrade
+      ? checkPrereqs(selectedUpgradeId)
+      : { ok: false, reason: selectedUpgradeId ? missingUpgradeMessage : undefined };
   const selectedUpgradeLocked = selectedUpgradePrereq ? !selectedUpgradePrereq.ok : false;
   const selectedUpgradePrereqs = useMemo(() => {
     if (!selectedUpgrade?.prereq) return [];
@@ -197,14 +213,37 @@ export function PrestigeScreen() {
     }));
   }, [getCurrentLevel, selectedUpgrade, upgradeList]);
 
+  const resolvePurchaseError = (reason?: string) => {
+    if (!reason) return 'Purchase failed.';
+    if (reason.toLowerCase().includes('not enough')) return 'Not enough Ascension Points.';
+    if (reason.toLowerCase().includes('already maxed')) return 'Max level reached.';
+    if (reason.toLowerCase().includes('requires')) return `Locked: ${reason.replace('Requires', '').trim()}`;
+    return reason;
+  };
+
   const handleUpgradePurchase = () => {
     if (!selectedUpgradeId) return;
+    if (!selectedUpgrade) {
+      setPurchaseError(missingUpgradeMessage);
+      setPurchaseSuccessMessage(null);
+      return;
+    }
     setIsPurchasing(true);
     const result = purchaseUpgrade(selectedUpgradeId);
     if (!result.ok) {
-      setPurchaseError(result.reason ?? 'Purchase failed');
+      setPurchaseError(resolvePurchaseError(result.reason));
+      setPurchaseSuccessMessage(null);
     } else {
       setPurchaseError(null);
+      const newLevel = getCurrentLevel(selectedUpgradeId);
+      const upgradeName = selectedUpgrade?.name ?? 'Decree';
+      setFlashUpgradeId(selectedUpgradeId);
+      setApPulse(true);
+      setPurchaseSuccessMessage(`Decree Inscribed — ${upgradeName} is now Lv ${newLevel}`);
+      setPurchaseToast(`Purchased: ${upgradeName} Lv ${newLevel}`);
+      window.setTimeout(() => setFlashUpgradeId(null), 450);
+      window.setTimeout(() => setApPulse(false), 450);
+      window.setTimeout(() => setPurchaseToast(null), 2000);
     }
     setIsPurchasing(false);
   };
@@ -212,6 +251,7 @@ export function PrestigeScreen() {
   const handleModalClose = () => {
     setSelectedUpgradeId(null);
     setPurchaseError(null);
+    setPurchaseSuccessMessage(null);
     requestAnimationFrame(() => {
       lastFocusedRef.current?.focus();
     });
@@ -245,11 +285,13 @@ export function PrestigeScreen() {
         isPurchasing={isPurchasing}
         isMaxed={isMaxed}
         isSelected={selectedUpgradeId === upgrade.id}
+        isFlash={flashUpgradeId === upgrade.id}
         categoryLabel={categoryLabel}
         CategoryIcon={categoryMeta.Icon}
         onSelect={(event) => {
           lastFocusedRef.current = event.currentTarget;
           setPurchaseError(null);
+          setPurchaseSuccessMessage(null);
           setSelectedUpgradeId(upgrade.id);
         }}
         lockedReason={prereqCheck.reason}
@@ -283,7 +325,7 @@ export function PrestigeScreen() {
             </div>
             <div className={'prestigeTopCenter'}>
               <div className={'prestigeSystemPill prestigeScreenApCard'}>
-                <div className={'prestigeScreenApValue'}>{totalAP}</div>
+                <div className={`prestigeScreenApValue${apPulse ? ' is-pulse' : ''}`}>{totalAP}</div>
                 <div className={'prestigeScreenApLabel'}>Ascension Points Available</div>
                 <div className={'prestigeScreenApMeta'}>
                   {lifetimeAP} Total Earned • {prestigeCount} Reincarnations
@@ -416,7 +458,7 @@ export function PrestigeScreen() {
           </main>
 
           <PrestigeUpgradeModal
-            open={Boolean(selectedUpgrade)}
+            open={Boolean(selectedUpgradeId)}
             upgradeId={selectedUpgradeId}
             upgradeDef={selectedUpgrade}
             currentLevel={selectedUpgradeLevel}
@@ -427,8 +469,18 @@ export function PrestigeScreen() {
             prereqList={selectedUpgradePrereqs}
             onClose={handleModalClose}
             onPurchase={handleUpgradePurchase}
-            purchaseState={{ errorMessage: purchaseError, isPurchasing }}
+            purchaseState={{
+              errorMessage: purchaseError,
+              isPurchasing,
+              successMessage: purchaseSuccessMessage,
+            }}
           />
+
+          {purchaseToast && (
+            <div className="prestigePurchaseToast" aria-live="polite">
+              {purchaseToast}
+            </div>
+          )}
 
           {/* Prestige History */}
           {prestigeRuns.length > 0 && (

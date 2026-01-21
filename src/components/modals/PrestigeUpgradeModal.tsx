@@ -20,6 +20,7 @@ interface PrestigeUpgradeModalProps {
   purchaseState: {
     errorMessage?: string | null;
     isPurchasing?: boolean;
+    successMessage?: string | null;
   };
 }
 
@@ -85,7 +86,15 @@ export function PrestigeUpgradeModal({
   const categoryIcon = categoryKey ? getPrestigeCategoryIcon(categoryKey) : null;
 
   const sections = useMemo(() => {
-    if (!upgradeDef) return [] as Array<{ id: string; title: string; content: ReactNode }>;
+    if (!upgradeDef) {
+      return [
+        {
+          id: 'missing',
+          title: 'Overview',
+          content: <div className="prestigeUpgradeModalEmpty">Upgrade data unavailable.</div>,
+        },
+      ] as Array<{ id: string; title: string; content: ReactNode }>;
+    }
     const description = upgradeDef.description ?? 'A decree etched into the cycle of reincarnation.';
 
     const currentEffectLines: string[] = [];
@@ -206,6 +215,9 @@ export function PrestigeUpgradeModal({
               </span>
             </div>
             <div className="prestigeUpgradeModalMeta">AP available: {totalAP}</div>
+            {purchaseState.successMessage && (
+              <div className="prestigePurchaseResult">{purchaseState.successMessage}</div>
+            )}
             {purchaseState.errorMessage && (
               <div className="prestigeUpgradeModalError">{purchaseState.errorMessage}</div>
             )}
@@ -213,7 +225,20 @@ export function PrestigeUpgradeModal({
         ),
       },
     ];
-  }, [currentLevel, isMaxed, locked, lockedReason, nextCost, onPurchase, prereqList, purchaseState.errorMessage, purchaseState.isPurchasing, totalAP, upgradeDef]);
+  }, [
+    currentLevel,
+    isMaxed,
+    locked,
+    lockedReason,
+    nextCost,
+    onPurchase,
+    prereqList,
+    purchaseState.errorMessage,
+    purchaseState.isPurchasing,
+    purchaseState.successMessage,
+    totalAP,
+    upgradeDef,
+  ]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -259,7 +284,7 @@ export function PrestigeUpgradeModal({
     return () => observer.disconnect();
   }, [open, sections.length]);
 
-  if (!open || !upgradeDef) return null;
+  if (!open) return null;
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Escape') {
@@ -315,7 +340,7 @@ export function PrestigeUpgradeModal({
         <div className="prestigeUpgradeModalHeader">
           <div>
             <h2 className="prestigeUpgradeModalTitle" id={titleId}>
-              {upgradeDef.name}
+              {upgradeDef?.name ?? 'Unknown Decree'}
             </h2>
             {categoryIcon && (
               <div className="prestigeUpgradeModalSubtitle">
@@ -349,6 +374,9 @@ export function PrestigeUpgradeModal({
           {scrollState.canScrollDown && (
             <div className="prestigeUpgradeScrollShadow prestigeUpgradeScrollShadow--bottom" />
           )}
+          <div className="prestigeUpgradeModalLive" aria-live="polite">
+            {purchaseState.successMessage}
+          </div>
           {sections.map((section) => (
             <section key={section.id} className="prestigeUpgradeModalSection" data-section-id={section.id}>
               <h3 className="prestigeUpgradeModalSectionTitle">{section.title}</h3>

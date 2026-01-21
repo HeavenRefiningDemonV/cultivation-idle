@@ -396,6 +396,10 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 10px 18px rgba(90, 50, 10, 0.3);
 }
 
+.prestigeUpgradePanel.is-flash {
+  animation: prestigeDecreeFlash 420ms ease-out;
+}
+
 .prestigeUpgradePanel:focus-visible {
   outline: 2px solid rgba(251, 191, 36, 0.6);
   outline-offset: 2px;
@@ -470,6 +474,20 @@
 .prestigeBadge--owned {
   background: rgba(88, 28, 135, 0.55);
   color: #f3e8ff;
+}
+
+.prestigePurchaseToast {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #fef3c7;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.35);
 }
 
 .prestigeUpgradeOverlay {
@@ -674,6 +692,72 @@
   color: rgba(148, 52, 32, 0.9);
   font-size: 13px;
   font-weight: 600;
+}
+
+.prestigePurchaseResult {
+  border: 1px solid rgba(140, 88, 30, 0.45);
+  background: rgba(250, 234, 205, 0.9);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(72, 45, 18, 0.9);
+}
+
+.prestigeUpgradeModalLive {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.prestigeScreenApValue.is-pulse {
+  animation: prestigeApPulse 420ms ease-out;
+}
+
+@keyframes prestigeDecreeFlash {
+  0% {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    transform: translateY(0);
+  }
+  40% {
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.5);
+    transform: translateY(-2px);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes prestigeApPulse {
+  0% {
+    color: #e9d5ff;
+    text-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+  40% {
+    color: #fef3c7;
+    text-shadow: 0 0 18px rgba(251, 191, 36, 0.6);
+  }
+  100% {
+    color: #e9d5ff;
+    text-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prestigeUpgradePanel,
+  .prestigeUpgradePanel:hover,
+  .prestigeUpgradePanel.is-flash,
+  .prestigeScreenApValue.is-pulse {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
 }
 
 .prestigeUpgradeScrollShadow {

@@ -11,6 +11,7 @@ interface PrestigeUpgradePanelCardProps {
   lockedReason?: string;
   isMaxed: boolean;
   isSelected: boolean;
+  isFlash: boolean;
   isPurchasing: boolean;
   categoryLabel: string;
   CategoryIcon: ComponentType<LucideProps>;
@@ -26,6 +27,7 @@ export function PrestigeUpgradePanelCard({
   lockedReason,
   isMaxed,
   isSelected,
+  isFlash,
   isPurchasing,
   categoryLabel,
   CategoryIcon,
@@ -38,7 +40,7 @@ export function PrestigeUpgradePanelCard({
       type="button"
       className={`prestigeUpgradePanel${locked ? ' is-locked' : ''}${isMaxed ? ' is-maxed' : ''}${
         isSelected ? ' is-selected' : ''
-      }`}
+      }${isFlash ? ' is-flash' : ''}`}
       aria-disabled={locked}
       onClick={onSelect}
       title={lockedReason}
