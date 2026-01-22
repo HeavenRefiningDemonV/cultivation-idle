@@ -59,7 +59,10 @@ export function PrestigeUpgradePanelCard({
           <div className="prestigeUpgradePanel__level">
             Lv {level}/{Math.max(1, maxLevel)}
           </div>
-          <div className="prestigeUpgradePanel__cost">Cost: {costLabel}</div>
+          <div className="prestigeUpgradePanel__cost">
+            Cost: {costLabel}
+            {locked && <span className="prestigeUpgradePanel__lockHint">Locked</span>}
+          </div>
         </div>
       </div>
       <div className="prestigeUpgradePanel__badges">

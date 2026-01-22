@@ -420,6 +420,7 @@
 
 .prestigeDecreesPanel {
   padding: 14px;
+  max-width: 100%;
 }
 
 .prestigeDecreesHeader {
@@ -456,6 +457,28 @@
   gap: 12px;
   max-height: min(520px, 65vh);
   overflow: auto;
+  position: relative;
+}
+
+.prestigeDecreesArea::before,
+.prestigeDecreesArea::after {
+  content: '';
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.prestigeDecreesArea::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.65), rgba(17, 24, 39, 0));
+}
+
+.prestigeDecreesArea::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(17, 24, 39, 0.65), rgba(17, 24, 39, 0));
 }
 
 .prestigeDecreesCategoryBar {
@@ -474,7 +497,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 4px 8px;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.35);
   background: rgba(15, 23, 42, 0.55);
@@ -494,6 +517,7 @@
   color: #ffffff;
   border-color: rgba(251, 191, 36, 0.6);
   background: rgba(88, 28, 135, 0.45);
+  box-shadow: 0 6px 12px rgba(251, 191, 36, 0.2);
 }
 
 .prestigeDecreesList {
@@ -505,12 +529,18 @@
 .prestigeDecreeSection {
   display: grid;
   gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .prestigeDecreeHeader {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .prestigeDecreeTitle {
@@ -527,8 +557,9 @@
 
 .prestigeDecreesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 260px));
   gap: 12px;
+  justify-content: start;
 }
 
 .prestigeUpgradePanel {
@@ -612,7 +643,18 @@
 }
 
 .prestigeUpgradePanel__cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: rgba(72, 45, 18, 0.9);
+}
+
+.prestigeUpgradePanel__lockHint {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(148, 52, 32, 0.8);
 }
 
 .prestigeUpgradePanel__badges {
