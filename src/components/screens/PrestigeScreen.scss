@@ -113,11 +113,20 @@
   overflow: hidden;
   border-radius: 18px;
   padding: 20px;
-  background: linear-gradient(140deg, rgba(15, 23, 42, 0.7), rgba(30, 41, 59, 0.55));
-  border: 1px solid rgba(251, 191, 36, 0.25);
-  box-shadow: 0 12px 32px rgba(10, 10, 15, 0.4);
+  background: linear-gradient(160deg, rgba(12, 16, 26, 0.85), rgba(24, 32, 46, 0.7));
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 12px 32px rgba(10, 10, 15, 0.45);
   display: grid;
   gap: 14px;
+}
+
+.prestigeAltarCard::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  pointer-events: none;
 }
 
 .prestigeAltarHeader {
@@ -143,15 +152,26 @@
   min-height: 150px;
 }
 
+.prestigeAltarSealArea::before {
+  content: '';
+  position: absolute;
+  width: min(260px, 70%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  opacity: 0.25;
+  animation: prestigeRuneSpin 48s linear infinite;
+}
+
 .prestigeAltarSeal {
   width: min(280px, 80%);
   aspect-ratio: 1;
   border-radius: 50%;
-  border: 1px solid rgba(251, 191, 36, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   background-image:
-    radial-gradient(circle at center, rgba(251, 191, 36, 0.14), rgba(88, 28, 135, 0.18) 45%, rgba(15, 23, 42, 0) 70%),
-    repeating-radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0 2px, transparent 2px 14px);
-  box-shadow: inset 0 0 40px rgba(251, 191, 36, 0.12);
+    radial-gradient(circle at center, rgba(212, 175, 55, 0.14), rgba(65, 94, 120, 0.18) 45%, rgba(15, 23, 42, 0) 70%),
+    repeating-radial-gradient(circle at center, rgba(212, 175, 55, 0.22) 0 2px, transparent 2px 14px);
+  box-shadow: inset 0 0 40px rgba(212, 175, 55, 0.12);
 }
 
 .prestigeAltarGlow {
@@ -159,7 +179,7 @@
   width: min(360px, 90%);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, rgba(251, 191, 36, 0) 70%);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.32) 0%, rgba(212, 175, 55, 0) 70%);
   opacity: 0.35;
   filter: blur(6px);
   transition: opacity 0.2s ease;
@@ -167,19 +187,19 @@
 
 .prestigeAltarGlow.is-active {
   opacity: 0.7;
-  animation: prestigeAltarPulse 3s ease-in-out infinite;
+  animation: prestigeAltarPulse 5s ease-in-out infinite;
 }
 
 .prestigeAltarParticles {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(251, 191, 36, 0.3) 0 1px, transparent 1px),
-    radial-gradient(circle, rgba(226, 232, 240, 0.25) 0 1px, transparent 1px);
-  background-size: 120px 120px, 160px 160px;
+    radial-gradient(circle, rgba(212, 175, 55, 0.22) 0 1px, transparent 1px),
+    radial-gradient(circle, rgba(226, 232, 240, 0.18) 0 1px, transparent 1px);
+  background-size: 140px 140px, 200px 200px;
   background-position: 0 0, 40px 60px;
-  opacity: 0.4;
-  animation: prestigeAltarDrift 12s linear infinite;
+  opacity: 0.35;
+  animation: prestigeAltarDrift 18s linear infinite;
   pointer-events: none;
 }
 
@@ -204,12 +224,23 @@
   font-size: 32px;
   font-weight: 700;
   color: #fef3c7;
+  position: relative;
 }
 
 .prestigeAltarApValue.is-pulse {
   animation: prestigeApPulse 420ms ease-out;
 }
 
+.prestigeAltarApValue.is-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -10px -16px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  opacity: 0;
+  animation: prestigeApRipple 420ms ease-out;
+  pointer-events: none;
+}
 .prestigeAltarApLabel {
   font-size: 13px;
   color: rgba(226, 232, 240, 0.8);
@@ -265,17 +296,40 @@
 }
 
 .prestigeAltarPrimaryButton.is-ready {
-  background: linear-gradient(120deg, rgba(251, 191, 36, 0.95), rgba(217, 119, 6, 0.95));
-  color: rgba(30, 16, 2, 0.9);
-  box-shadow: 0 12px 24px rgba(251, 191, 36, 0.35);
+  background: linear-gradient(120deg, rgba(212, 175, 55, 0.95), rgba(170, 120, 32, 0.95));
+  color: rgba(34, 18, 2, 0.9);
+  box-shadow: 0 12px 24px rgba(212, 175, 55, 0.28);
+  position: relative;
   cursor: pointer;
 }
 
 .prestigeAltarPrimaryButton.is-locked {
-  background: rgba(71, 85, 105, 0.7);
-  color: rgba(226, 232, 240, 0.7);
+  background: rgba(71, 85, 105, 0.55);
+  color: rgba(226, 232, 240, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.35);
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.prestigeAltarPrimaryButton.is-ready::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  opacity: 0.6;
+  animation: prestigeAuraTrace 6s linear infinite;
+  pointer-events: none;
+}
+
+.prestigeAltarPrimaryButton.is-ready:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(212, 175, 55, 0.35);
+}
+
+.prestigeAltarPrimaryButton.is-ready:active {
+  transform: translateY(0);
+  filter: saturate(0.95);
 }
 
 .prestigeAltarSecondaryButton {
@@ -575,11 +629,12 @@
   text-align: left;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
 }
 
 .prestigeUpgradePanel:hover {
-  transform: translateY(-2px);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 12px 20px rgba(90, 50, 10, 0.2);
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), 0 10px 16px rgba(90, 50, 10, 0.18);
 }
 
 .prestigeUpgradePanel.is-locked {
@@ -587,6 +642,28 @@
   opacity: 0.7;
 }
 
+.prestigeUpgradePanel.is-locked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(120, 68, 32, 0.18), transparent 60%);
+  pointer-events: none;
+}
+
+.prestigeUpgradePanel[data-state='owned']::after {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 74, 33, 0.25);
+  opacity: 0.35;
+  background: radial-gradient(circle, rgba(120, 74, 33, 0.12), rgba(120, 74, 33, 0));
+  pointer-events: none;
+}
 .prestigeUpgradePanel.is-maxed {
   border-color: rgba(24, 140, 92, 0.6);
 }
@@ -716,7 +793,7 @@
   width: min(720px, 94vw);
   max-height: 90vh;
   background: linear-gradient(180deg, rgba(245, 222, 179, 0.98), rgba(214, 192, 150, 0.95));
-  border: 2px solid rgba(120, 74, 33, 0.5);
+  border: 2px solid rgba(212, 175, 55, 0.4);
   border-radius: 18px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   display: flex;
@@ -763,6 +840,27 @@
   display: grid;
   gap: 16px;
   overflow: auto;
+}
+
+.prestigeBreakdownContent::before,
+.prestigeBreakdownContent::after {
+  content: '';
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.prestigeBreakdownContent::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(245, 222, 179, 0.95), rgba(245, 222, 179, 0));
+}
+
+.prestigeBreakdownContent::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(214, 192, 150, 0.9), rgba(214, 192, 150, 0));
 }
 
 .prestigeBreakdownSummary {
@@ -860,7 +958,7 @@
   width: min(900px, 96vw);
   max-height: 90vh;
   background: linear-gradient(180deg, rgba(250, 234, 205, 0.98), rgba(232, 210, 170, 0.96));
-  border: 2px solid rgba(140, 88, 30, 0.6);
+  border: 2px solid rgba(212, 175, 55, 0.45);
   border-radius: 18px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
   display: flex;
@@ -932,6 +1030,27 @@
   position: relative;
   overflow-y: auto;
   padding: 0 20px 20px;
+}
+
+.prestigeUpgradeModalScroll::before,
+.prestigeUpgradeModalScroll::after {
+  content: '';
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.prestigeUpgradeModalScroll::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(250, 234, 205, 0.95), rgba(250, 234, 205, 0));
+}
+
+.prestigeUpgradeModalScroll::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(232, 210, 170, 0.9), rgba(232, 210, 170, 0));
 }
 
 .prestigeUpgradeModalSection {
@@ -1097,6 +1216,27 @@
   }
 }
 
+@keyframes prestigeAuraTrace {
+  0% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes prestigeRuneSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes prestigeApPulse {
   0% {
     color: #fef3c7;
@@ -1109,6 +1249,17 @@
   100% {
     color: #fef3c7;
     text-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes prestigeApRipple {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
   }
 }
 
@@ -1137,7 +1288,9 @@
   .prestigeAltarGlow,
   .prestigeAltarParticles,
   .prestigeAltarApValue.is-pulse,
-  .prestigeRitualModal::before {
+  .prestigeRitualModal::before,
+  .prestigeAltarSealArea::before,
+  .prestigeAltarPrimaryButton.is-ready::after {
     animation: none;
     transition: none;
     transform: none;
@@ -1382,8 +1535,8 @@
   position: relative;
   width: min(860px, 96vw);
   max-height: 92vh;
-  background: linear-gradient(180deg, rgba(250, 234, 205, 0.98), rgba(210, 186, 145, 0.95));
-  border: 2px solid rgba(140, 88, 30, 0.55);
+  background: linear-gradient(180deg, rgba(250, 234, 205, 0.98), rgba(214, 192, 150, 0.95));
+  border: 2px solid rgba(212, 175, 55, 0.5);
   border-radius: 18px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
   display: flex;
@@ -1395,11 +1548,11 @@
   content: '';
   position: absolute;
   inset: 10% 15%;
-  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.12), transparent 70%);
-  border: 1px solid rgba(140, 88, 30, 0.15);
+  background: radial-gradient(circle at center, rgba(212, 175, 55, 0.1), transparent 70%);
+  border: 1px solid rgba(212, 175, 55, 0.15);
   border-radius: 50%;
   opacity: 0.35;
-  animation: prestigeRitualSpin 26s linear infinite;
+  animation: prestigeRitualSpin 42s linear infinite;
   pointer-events: none;
 }
 
@@ -1453,6 +1606,27 @@
   display: grid;
   gap: 16px;
   overflow: auto;
+}
+
+.prestigeRitualScroll::before,
+.prestigeRitualScroll::after {
+  content: '';
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.prestigeRitualScroll::before {
+  top: 0;
+  background: linear-gradient(180deg, rgba(250, 234, 205, 0.95), rgba(250, 234, 205, 0));
+}
+
+.prestigeRitualScroll::after {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(214, 192, 150, 0.92), rgba(214, 192, 150, 0));
 }
 
 .prestigeRitualSection {
@@ -1582,10 +1756,10 @@
   font-size: 16px;
   font-weight: 700;
   color: rgba(62, 30, 6, 0.95);
-  background: linear-gradient(120deg, rgba(251, 191, 36, 0.95), rgba(217, 119, 6, 0.95));
+  background: linear-gradient(120deg, rgba(212, 175, 55, 0.95), rgba(170, 120, 32, 0.95));
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 12px 24px rgba(251, 191, 36, 0.35);
+  box-shadow: 0 12px 24px rgba(212, 175, 55, 0.3);
 }
 
 .prestigeRitualConfirmButton.is-locked {
