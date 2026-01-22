@@ -23,6 +23,76 @@ export function setInventoryStoreGetter(getter: () => InventoryState) {
   _getInventoryStore = getter;
 }
 
+type ApBreakdownState = {
+  totalAP: number;
+  lifetimeAP: number;
+  prestigeCount: number;
+  highestRealmReached: number;
+  runStartTime: number;
+};
+
+const buildApBreakdown = (state: ApBreakdownState, gameStore: GameState | null): ApBreakdown => {
+  if (!gameStore) {
+    return {
+      availableNow: state.totalAP,
+      totalEarned: state.lifetimeAP,
+      reincarnations: state.prestigeCount,
+      potentialGain: 0,
+      rows: [
+        {
+          key: 'unavailable',
+          label: 'Breakdown unavailable',
+          value: 0,
+          hint: 'Load into a run to calculate potential gains.',
+        },
+      ],
+    };
+  }
+
+  const currentRealm = gameStore.realm;
+  const realmIndex = Math.max(state.highestRealmReached, currentRealm?.index ?? 0);
+  const realmDefinition = REALMS[realmIndex] || REALMS[0];
+  const substageProgress = Math.max(
+    0,
+    ((currentRealm?.substage ?? 1) - 1) / Math.max(1, realmDefinition.substages),
+  );
+
+  const realmBonus = Math.max(0, realmIndex - 1) * 10; // Only award AP after Foundation
+  const substageBonus = Math.floor(substageProgress * 5);
+
+  const runTimeHours = (Date.now() - state.runStartTime) / (1000 * 60 * 60);
+  const timeBonus = Math.max(0, Math.floor(runTimeHours));
+
+  const potentialGain = Math.max(0, Math.floor(realmBonus + substageBonus + timeBonus));
+
+  return {
+    availableNow: state.totalAP,
+    totalEarned: state.lifetimeAP,
+    reincarnations: state.prestigeCount,
+    potentialGain,
+    rows: [
+      {
+        key: 'realm',
+        label: 'Realm advancement',
+        value: realmBonus,
+        hint: 'Higher realms grant more AP.',
+      },
+      {
+        key: 'substage',
+        label: 'Substage progress',
+        value: substageBonus,
+        hint: 'Partial realm progress yields bonus AP.',
+      },
+      {
+        key: 'time',
+        label: 'Time cultivated',
+        value: timeBonus,
+        hint: 'Every hour adds potential AP.',
+      },
+    ],
+  };
+};
+
 export interface PrestigeRun {
   runNumber: number;
   realmReached: number;
@@ -30,6 +100,21 @@ export interface PrestigeRun {
   timeSpent: number;
   timestamp: number;
 }
+
+export type ApBreakdownRow = {
+  key: string;
+  label: string;
+  value: number;
+  hint?: string;
+};
+
+export type ApBreakdown = {
+  availableNow: number;
+  totalEarned: number;
+  reincarnations: number;
+  potentialGain: number;
+  rows: ApBreakdownRow[];
+};
 
 interface PrestigeState {
   totalAP: number;
@@ -49,6 +134,7 @@ interface PrestigeState {
 
   // Methods
   calculateAPGain: () => number;
+  getApBreakdown: () => ApBreakdown;
   canPrestige: () => boolean;
   performPrestige: () => void;
   purchaseUpgrade: (upgradeId: string) => { ok: boolean; reason?: string };
@@ -128,25 +214,15 @@ export const usePrestigeStore = create<PrestigeState>()(
     ...createInitialPrestigeState(),
 
     calculateAPGain: () => {
-      if (!_getGameStore) return 0;
-      const gameStore = _getGameStore();
       const state = get();
-      const currentRealm = gameStore.realm;
+      const gameStore = _getGameStore ? _getGameStore() : null;
+      return buildApBreakdown(state, gameStore).potentialGain;
+    },
 
-      const realmIndex = Math.max(state.highestRealmReached, currentRealm?.index ?? 0);
-      const realmDefinition = REALMS[realmIndex] || REALMS[0];
-      const substageProgress = Math.max(
-        0,
-        ((currentRealm?.substage ?? 1) - 1) / Math.max(1, realmDefinition.substages)
-      );
-
-      const realmBonus = Math.max(0, realmIndex - 1) * 10; // Only award AP after Foundation
-      const substageBonus = Math.floor(substageProgress * 5);
-
-      const runTimeHours = (Date.now() - state.runStartTime) / (1000 * 60 * 60);
-      const timeBonus = Math.max(0, Math.floor(runTimeHours));
-
-      return Math.max(0, Math.floor(realmBonus + substageBonus + timeBonus));
+    getApBreakdown: () => {
+      const state = get();
+      const gameStore = _getGameStore ? _getGameStore() : null;
+      return buildApBreakdown(state, gameStore);
     },
 
     canPrestige: () => {

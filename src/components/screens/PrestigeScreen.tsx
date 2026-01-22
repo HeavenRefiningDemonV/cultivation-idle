@@ -12,6 +12,7 @@ import type { PrestigeCategoryKey } from '../../features/prestige/prestigeCatego
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
 import { PrestigeUpgradePanelCard } from '../prestige/PrestigeUpgradePanelCard';
 import { PrestigeUpgradeModal } from '../modals/PrestigeUpgradeModal';
+import { ApBreakdownModal } from '../modals/ApBreakdownModal';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -28,6 +29,7 @@ export function PrestigeScreen() {
   const getMaxLevel = usePrestigeStore((state) => state.getMaxLevel);
   const getNextLevelCost = usePrestigeStore((state) => state.getNextLevelCost);
   const checkPrereqs = usePrestigeStore((state) => state.checkPrereqs);
+  const getApBreakdown = usePrestigeStore((state) => state.getApBreakdown);
   const isContentLoaded = useContentStore((state) => state.isLoaded);
   const getPrestigeUpgrades = useContentStore((state) => state.getPrestigeUpgrades);
 
@@ -42,12 +44,14 @@ export function PrestigeScreen() {
   const [apPulse, setApPulse] = useState(false);
   const [purchaseToast, setPurchaseToast] = useState<string | null>(null);
   const [purchaseSuccessMessage, setPurchaseSuccessMessage] = useState<string | null>(null);
+  const [isApBreakdownOpen, setIsApBreakdownOpen] = useState(false);
   const decreesAreaRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
 
   const apGain = calculateAPGain();
+  const apBreakdown = getApBreakdown();
   const canPrestigeNow = canPrestige();
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
   const prestigeLockHint = canPrestigeNow
@@ -358,7 +362,11 @@ export function PrestigeScreen() {
                       </div>
                     </div>
                     <div className={'prestigeAltarMetaActions'}>
-                      <button type="button" className={'prestigeAltarBreakdownButton'}>
+                      <button
+                        type="button"
+                        className={'prestigeAltarBreakdownButton'}
+                        onClick={() => setIsApBreakdownOpen(true)}
+                      >
                         AP breakdown
                       </button>
                       <div className={'prestigeAltarMetaText'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
@@ -474,6 +482,13 @@ export function PrestigeScreen() {
               </div>
             </section>
           </main>
+
+          <ApBreakdownModal
+            open={isApBreakdownOpen}
+            breakdown={apBreakdown}
+            isSealed={!canPrestigeNow}
+            onClose={() => setIsApBreakdownOpen(false)}
+          />
 
           <PrestigeUpgradeModal
             open={Boolean(selectedUpgradeId)}
