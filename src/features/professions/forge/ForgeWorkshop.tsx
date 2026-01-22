@@ -108,6 +108,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const [query, setQuery] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queueOpen, setQueueOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [tierFilter, setTierFilter] = useState<'all' | number>('all');
   const [sortMode, setSortMode] = useState<'name' | 'tier' | 'time'>('name');
   const [now, setNow] = useState(() => Date.now());
@@ -310,6 +311,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           <div className={classNames('forgeWorkshopRibbon__status', { 'forgeWorkshopRibbon__status--idle': !ribbonStatus })}>
             {ribbonStatus ?? 'Select a blueprint to begin.'}
           </div>
+          <div className="forgeWorkshopRibbon__microcopy">Select → Prepare → Forge → Claim</div>
           {isBlocked && <div className="forgeWorkshopRibbon__notice">Finish the active activity to start forging.</div>}
         </div>
         <div className="forgeWorkshopRibbon__right">
@@ -410,6 +412,8 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
             {filteredBlueprints.map((blueprint) => {
               const output = blueprint.output ? getItemDef(blueprint.output.itemId)?.name ?? blueprint.output.itemId : null;
               const locked = Boolean(blueprint.cityId && cityId && blueprint.cityId !== cityId);
+              const rowCategory =
+                blueprint.service ?? blueprint.tags?.[0] ?? (blueprint.type === 'craft' ? 'Craft' : 'Service');
               return (
                 <button
                   key={blueprint.id}
@@ -427,6 +431,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                       {blueprint.cityIndex ? `Tier ${blueprint.cityIndex}` : 'Tier —'}
                       {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
                     </div>
+                    {rowCategory && <span className="forgeWorkshop__rowChip">{rowCategory}</span>}
                     {locked && <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>}
                   </div>
                 </button>
@@ -494,7 +499,10 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                       <div className="forgeWorkshop__detailTitle">{selectedBlueprint.name ?? selectedBlueprint.id}</div>
                       <div className="forgeWorkshop__detailMeta">Produces: {getProduceSummary(selectedBlueprint.id)}</div>
                     </div>
-                    <div className="forgeWorkshop__detailMeta">Base time: {Math.round(selectedBlueprint.timeSec)}s</div>
+                    <div className="forgeWorkshop__detailMeta">
+                      {selectedBlueprint.cityIndex ? `Tier ${selectedBlueprint.cityIndex}` : 'Tier —'} · Base time:{' '}
+                      {Math.round(selectedBlueprint.timeSec)}s
+                    </div>
                   </div>
                   <div className="forgeWorkshop__detailGrid">
                     <div>
@@ -537,25 +545,44 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                         </div>
                       </div>
                     )}
-                  <div className="forgeWorkshop__stepPreview">
-                    {stepPreview.map((step, index) => (
-                      <div key={step.id} className="forgeWorkshop__stepPreviewItem">
-                        <span className="forgeWorkshop__stepIcon" aria-hidden="true">
-                          {step.icon}
-                        </span>
-                        <span className="forgeWorkshop__stepLabel">{step.label}</span>
-                        {index < stepPreview.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
+                  <button
+                    type="button"
+                    className="forgeWorkshop__detailToggle"
+                    onClick={() => setDetailsOpen((prev) => !prev)}
+                  >
+                    {detailsOpen ? 'Less details ▾' : 'More details ▸'}
+                  </button>
+                  {detailsOpen && (
+                    <div className="forgeWorkshop__detailExtras">
+                      <div className="forgeWorkshop__stepPreview">
+                        {stepPreview.map((step, index) => (
+                          <div key={step.id} className="forgeWorkshop__stepPreviewItem">
+                            <span className="forgeWorkshop__stepIcon" aria-hidden="true">
+                              {step.icon}
+                            </span>
+                            <span className="forgeWorkshop__stepLabel">{step.label}</span>
+                            {index < stepPreview.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  <div className="forgeWorkshop__stepSummary">
-                    {stepSummary.map((step, index) => (
-                      <span key={`${step}-${index}`} className="forgeWorkshop__step">
-                        {step}
-                        {index < stepSummary.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
-                      </span>
-                    ))}
-                  </div>
+                      <div className="forgeWorkshop__stepSummary">
+                        {stepSummary.map((step, index) => (
+                          <span key={`${step}-${index}`} className="forgeWorkshop__step">
+                            {step}
+                            {index < stepSummary.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="forgeWorkshop__benefits">
+                        {BENEFITS.map((benefit) => (
+                          <div key={benefit.mode} className="forgeWorkshop__benefitRow">
+                            <div className="forgeWorkshop__benefitLabel">{benefit.label}</div>
+                            <div className="forgeWorkshop__benefitValue">{benefit.detail}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="craftingModeSelector">
                     <div className="craftingModeLabel">Mode</div>
                     <div className="craftingModeButtons craftModeTabs">
@@ -575,14 +602,6 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                     </div>
                     <div className="forgeWorkshop__modeCopy">{MODE_COPY[currentMode]}</div>
                   </div>
-                  <div className="forgeWorkshop__benefits">
-                    {BENEFITS.map((benefit) => (
-                      <div key={benefit.mode} className="forgeWorkshop__benefitRow">
-                        <div className="forgeWorkshop__benefitLabel">{benefit.label}</div>
-                        <div className="forgeWorkshop__benefitValue">{benefit.detail}</div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               )}
             </div>
@@ -597,7 +616,10 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 <div className="forgeWorkshop__queueSub">Jobs process in order.</div>
               </div>
               {forgeQueue.length === 0 ? (
-                <div className="forgeWorkshop__queueEmpty">No forge jobs queued.</div>
+                <div className="forgeWorkshop__queueEmpty">
+                  <div>No jobs queued.</div>
+                  <div>Start forging to queue work.</div>
+                </div>
               ) : (
                 <div className="forgeWorkshop__queueList">
                   {forgeQueue.map((job) => {
