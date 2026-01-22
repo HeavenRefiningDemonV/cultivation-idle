@@ -5,6 +5,263 @@
   color: #e2e8f0;
 }
 
+.forgeWorkshop--v2 {
+  gap: 12px;
+}
+
+.forgeWorkshop--v2 .forgeWorkshopRibbon {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  background: var(--panel-bg, rgba(12, 18, 28, 0.78));
+  box-shadow: var(--panel-shadow, none);
+}
+
+.forgeWorkshopRibbon__left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.forgeWorkshopRibbon__title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.forgeWorkshopRibbon__subtitle {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshopRibbon__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forgeWorkshopRibbon__usedFor {
+  font-size: 11px;
+}
+
+.forgeWorkshopRibbon__center {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 32px;
+  justify-content: center;
+}
+
+.forgeWorkshopRibbon__status {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.forgeWorkshopRibbon__status--idle {
+  color: rgba(226, 232, 240, 0.65);
+}
+
+.forgeWorkshopRibbon__microcopy {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.forgeWorkshopRibbon__notice {
+  font-size: 11px;
+  color: rgba(248, 113, 113, 0.9);
+}
+
+.forgeWorkshopRibbon__right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.forgeWorkshopRibbon__toggle {
+  position: relative;
+  border-radius: 999px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 33, 0.6);
+  color: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.forgeWorkshopRibbon__toggle.is-active {
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.forgeWorkshopRibbon__dot {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(248, 113, 113, 0.95);
+  box-shadow: 0 0 6px rgba(248, 113, 113, 0.7);
+}
+
+.forgeWorkshop--v2 .forgeWorkshopStage {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 12px;
+  min-height: 0;
+  align-items: start;
+}
+
+.forgeWorkshop--v2 .forgeWorkshopStage--queueOpen {
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) minmax(260px, 340px);
+}
+
+.forgeWorkshopDrawer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  background: var(--panel-bg, rgba(10, 16, 24, 0.6));
+}
+
+.forgeWorkshopDrawer__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.forgeWorkshopDrawer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.forgeWorkshopDrawer__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forgeWorkshopDrawer__sub {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshopDrawer__search {
+  display: flex;
+}
+
+.forgeWorkshopDrawer__advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.5);
+}
+
+.forgeWorkshopDrawer__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.forgeWorkshopDrawer__label {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.65);
+}
+
+.forgeWorkshopDrawer__tiers,
+.forgeWorkshopDrawer__sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forgeWorkshopDrawer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+
+.forgeWorkshopWorkbench {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.forgeWorkshopWorkbench__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  background: var(--panel-bg, rgba(10, 16, 24, 0.55));
+  min-height: 0;
+}
+
+.forgeWorkshopWorkbench__top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshopWorkbench__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.forgeWorkshopWorkbench__empty {
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 33, 0.45);
+  padding: 14px;
+}
+
+.forgeWorkshopWorkbench__emptyTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forgeWorkshopWorkbench__emptyBody {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshopQueueRail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.forgeWorkshopQueueRail .forgeWorkshop__queue,
+.forgeWorkshopQueueRail .forgeWorkshop__meter {
+  border-radius: 12px;
+  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  background: var(--panel-bg, rgba(10, 16, 24, 0.6));
+  padding: 12px;
+}
+
 .forgeWorkshop__banner {
   display: flex;
   align-items: center;
@@ -50,7 +307,7 @@
 .forgeWorkshop__workbenchFrame {
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(10, 16, 24, 0.6);
+  background: var(--panel-bg, rgba(10, 16, 24, 0.6));
   padding: 12px;
   min-height: 380px;
 }
@@ -144,9 +401,9 @@
 .forgeWorkshop__row {
   display: grid;
   grid-template-columns: 36px 1fr;
-  gap: 10px;
+  gap: 8px;
   text-align: left;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(15, 23, 33, 0.5);
@@ -154,8 +411,8 @@
 }
 
 .forgeWorkshop__row--active {
-  border-color: rgba(59, 130, 246, 0.6);
-  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(148, 163, 184, 0.6);
+  background: rgba(59, 130, 246, 0.08);
 }
 
 .forgeWorkshop__row--locked {
@@ -175,10 +432,25 @@
 .forgeWorkshop__rowTitle {
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .forgeWorkshop__rowMeta {
   font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+  line-height: 1.2;
+}
+
+.forgeWorkshop__rowChip {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.6);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: rgba(226, 232, 240, 0.7);
 }
 
@@ -190,8 +462,8 @@
 .forgeWorkshop__detail {
   border-radius: 12px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 33, 0.6);
+  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
+  background: var(--panel-bg, rgba(15, 23, 33, 0.6));
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -202,6 +474,33 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
+}
+
+.forgeWorkshop__detailActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.forgeDetailsButton {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.forgeWorkshop__detailSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__detailSummary span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.5);
 }
 
 .forgeWorkshop__detailTitle {
@@ -351,6 +650,9 @@
 .forgeWorkshop__queueEmpty {
   font-size: 12px;
   color: rgba(226, 232, 240, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .forgeWorkshop__queueList {
@@ -476,6 +778,337 @@
   color: rgba(226, 232, 240, 0.7);
 }
 
+.forgeBlueprintModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2200;
+  padding: 16px;
+  backdrop-filter: blur(6px);
+}
+
+.forgeBlueprintModal {
+  width: min(720px, 92vw);
+  max-height: min(80vh, 720px);
+  border-radius: 16px;
+  border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.12));
+  background: var(--panel-bg, rgba(10, 16, 24, 0.92));
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.forgeBlueprintModal__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.forgeBlueprintModal__header {
+  position: sticky;
+  top: 0;
+  background: rgba(10, 16, 24, 0.95);
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.forgeBlueprintModal__title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forgeBlueprintModal__meta {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.forgeBlueprintModal__close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.forgeBlueprintModal__close:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.8);
+  outline-offset: 2px;
+}
+
+.forgeBlueprintModal__body {
+  padding: 16px 18px 20px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-gutter: stable both-edges;
+  position: relative;
+}
+
+.forgeBlueprintModal__body--toc {
+  gap: 12px;
+}
+
+.forgeBlueprintModal__scrollShadow {
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 18px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 150ms ease;
+}
+
+.forgeBlueprintModal__scrollShadow.is-visible {
+  opacity: 1;
+}
+
+.forgeBlueprintModal__scrollShadow--top {
+  top: 0;
+  margin-bottom: -18px;
+  background: linear-gradient(to bottom, rgba(10, 16, 24, 0.9), rgba(10, 16, 24, 0));
+}
+
+.forgeBlueprintModal__scrollShadow--bottom {
+  bottom: 0;
+  margin-top: -18px;
+  background: linear-gradient(to top, rgba(10, 16, 24, 0.9), rgba(10, 16, 24, 0));
+}
+
+.forgeBlueprintModal__toc {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+  position: sticky;
+  top: 12px;
+  align-self: start;
+}
+
+.forgeBlueprintModal__tocTitle {
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__tocButton {
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.forgeBlueprintModal__tocButton.is-active {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.16);
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.forgeBlueprintModal__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.forgeBlueprintModal__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scroll-margin-top: 12px;
+}
+
+.forgeBlueprintModal__section h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeBlueprintModal__summary {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forgeBlueprintModal__chips span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.6);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeBlueprintModal__overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.forgeBlueprintModal__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(226, 232, 240, 0.6);
+}
+
+.forgeBlueprintModal__value {
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__requirements {
+  display: grid;
+  gap: 6px;
+}
+
+.forgeBlueprintModal__requirementRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.5);
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__requirementQty {
+  font-weight: 600;
+}
+
+.forgeBlueprintModal__callout {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(30, 24, 12, 0.6);
+  font-size: 12px;
+  color: rgba(253, 230, 138, 0.95);
+}
+
+.forgeBlueprintModal__stepPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  align-items: center;
+}
+
+.forgeBlueprintModal__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__stepSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeBlueprintModal__stepArrow {
+  margin: 0 4px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.forgeBlueprintModal__advanced {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.forgeBlueprintModal__advanced summary {
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeBlueprintModal__advancedGrid {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.forgeBlueprintModal__advancedRow {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+  align-items: baseline;
+}
+
+@media (min-width: 900px) {
+  .forgeBlueprintModal__body--toc {
+    display: grid;
+    grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 18px;
+    row-gap: 16px;
+  }
+
+  .forgeBlueprintModal__toc {
+    display: flex;
+  }
+
+  .forgeBlueprintModal__content {
+    grid-column: 2;
+  }
+
+  .forgeBlueprintModal__scrollShadow {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forgeBlueprintModal__scrollShadow {
+    transition: none;
+  }
+}
+
+.forgeBlueprintModal__empty {
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.75);
+}
+
 .forgeResultModal .modalCard {
   max-width: 720px;
 }
@@ -554,5 +1187,31 @@
   .forgeWorkshop__bannerActions {
     width: 100%;
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .forgeWorkshop--v2 .forgeWorkshopRibbon {
+    grid-template-columns: 1fr;
+  }
+
+  .forgeWorkshopRibbon__right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .forgeWorkshop--v2 .forgeWorkshopStage,
+  .forgeWorkshop--v2 .forgeWorkshopStage--queueOpen {
+    grid-template-columns: 1fr;
+  }
+
+  .forgeWorkshopDrawer,
+  .forgeWorkshopWorkbench,
+  .forgeWorkshopQueueRail {
+    width: 100%;
+  }
+
+  .forgeWorkshopQueueRail {
+    order: 3;
   }
 }
