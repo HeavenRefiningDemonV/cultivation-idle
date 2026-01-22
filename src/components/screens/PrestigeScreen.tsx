@@ -47,6 +47,7 @@ export function PrestigeScreen() {
   const [purchaseSuccessMessage, setPurchaseSuccessMessage] = useState<string | null>(null);
   const [isApBreakdownOpen, setIsApBreakdownOpen] = useState(false);
   const [ritualError, setRitualError] = useState<string | null>(null);
+  const [showBenefitDetails, setShowBenefitDetails] = useState(false);
   const decreesAreaRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const ritualTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -61,6 +62,10 @@ export function PrestigeScreen() {
     ? 'You are ready to reincarnate.'
     : 'Reach Foundation Establishment to unlock Reincarnation.';
   const prestigeActionLabel = canPrestigeNow ? 'Begin Reincarnation Ritual' : 'Reincarnation Sealed';
+  const keepBenefits = ['Keep all Ascension Points', 'Keep all AP upgrades', 'Keep spirit root floor level'];
+  const resetCosts = ['Reset cultivation progress', 'Reset inventory & gold'];
+  const visibleKeepBenefits = showBenefitDetails ? keepBenefits : keepBenefits.slice(0, 2);
+  const visibleResetCosts = showBenefitDetails ? resetCosts : resetCosts.slice(0, 1);
 
   const sellAllItems = () => {
     const inventory = useInventoryStore.getState();
@@ -382,13 +387,6 @@ export function PrestigeScreen() {
                       </div>
                     </div>
                     <div className={'prestigeAltarMetaActions'}>
-                      <button
-                        type="button"
-                        className={'prestigeAltarBreakdownButton'}
-                        onClick={() => setIsApBreakdownOpen(true)}
-                      >
-                        AP breakdown
-                      </button>
                       <div className={'prestigeAltarMetaText'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
                     </div>
                   </div>
@@ -428,6 +426,16 @@ export function PrestigeScreen() {
               </div>
 
               <aside className={'prestigeRitualRight'}>
+                <div className={'prestigeRitualSidebarHeader'}>
+                  <div className={'prestigeRitualSidebarTitle'}>Ritual Details</div>
+                  <button
+                    type="button"
+                    className={'prestigeAltarBreakdownButton'}
+                    onClick={() => setIsApBreakdownOpen(true)}
+                  >
+                    AP breakdown
+                  </button>
+                </div>
                 <div className={'prestigeScreenInfoGrid'}>
                   <div className={'prestigeScreenInfoCard'}>
                     <h3 className={'prestigeScreenInfoTitle'}>Current Run</h3>
@@ -445,14 +453,31 @@ export function PrestigeScreen() {
 
                   <div className={'prestigeScreenInfoCard'}>
                     <h3 className={'prestigeScreenInfoTitle'}>Reincarnation Benefits</h3>
-                    <ul className={'prestigeScreenBenefitsList'}>
-                      <li>✓ Keep all Ascension Points</li>
-                      <li>✓ Keep all AP upgrades</li>
-                      <li>✓ Keep spirit root floor level</li>
-                      <li>✓ Unlock new content faster</li>
-                      <li>✗ Reset cultivation progress</li>
-                      <li>✗ Reset inventory & gold</li>
-                    </ul>
+                    <div className={'prestigeScreenBenefitsGroups'}>
+                      <div className={'prestigeScreenBenefitsGroup'}>
+                        <div className={'prestigeScreenBenefitsLabel'}>Keeps</div>
+                        <ul className={'prestigeScreenBenefitsList'}>
+                          {visibleKeepBenefits.map((benefit) => (
+                            <li key={benefit}>✓ {benefit}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className={'prestigeScreenBenefitsGroup'}>
+                        <div className={'prestigeScreenBenefitsLabel'}>Resets</div>
+                        <ul className={'prestigeScreenBenefitsList is-warning'}>
+                          {visibleResetCosts.map((cost) => (
+                            <li key={cost}>✗ {cost}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={'prestigeScreenBenefitsToggle'}
+                      onClick={() => setShowBenefitDetails((value) => !value)}
+                    >
+                      {showBenefitDetails ? 'Hide full benefits' : 'View full benefits'}
+                    </button>
                   </div>
                 </div>
               </aside>
