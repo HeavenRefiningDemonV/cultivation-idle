@@ -1014,6 +1014,15 @@
   }
 }
 
+@keyframes prestigeRitualSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes prestigeAltarDrift {
   0% {
     background-position: 0 0, 40px 60px;
@@ -1029,7 +1038,8 @@
   .prestigeUpgradePanel.is-flash,
   .prestigeAltarGlow,
   .prestigeAltarParticles,
-  .prestigeAltarApValue.is-pulse {
+  .prestigeAltarApValue.is-pulse,
+  .prestigeRitualModal::before {
     animation: none;
     transition: none;
     transform: none;
@@ -1259,66 +1269,258 @@
   align-items: center;
 }
 
-.prestigeScreenModalOverlay {
+.prestigeRitualOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(10, 10, 15, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  z-index: 50;
-  backdrop-filter: blur(6px);
-}
-
-.prestigeScreenModalCard {
-  background: #111827;
-  border: 3px solid #ff6b6b;
-  border-radius: 14px;
   padding: 24px;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  z-index: 95;
 }
 
-.prestigeScreenModalTitle {
-  margin: 0 0 12px 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #ff6b6b;
-}
-
-.prestigeScreenModalText {
-  color: #ffffff;
-  margin: 0 0 16px 0;
-}
-
-.prestigeScreenModalHighlight {
-  color: #c084fc;
-}
-
-.prestigeScreenModalActions {
+.prestigeRitualModal {
+  position: relative;
+  width: min(860px, 96vw);
+  max-height: 92vh;
+  background: linear-gradient(180deg, rgba(250, 234, 205, 0.98), rgba(210, 186, 145, 0.95));
+  border: 2px solid rgba(140, 88, 30, 0.55);
+  border-radius: 18px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
   display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.prestigeRitualModal::before {
+  content: '';
+  position: absolute;
+  inset: 10% 15%;
+  background: radial-gradient(circle at center, rgba(251, 191, 36, 0.12), transparent 70%);
+  border: 1px solid rgba(140, 88, 30, 0.15);
+  border-radius: 50%;
+  opacity: 0.35;
+  animation: prestigeRitualSpin 26s linear infinite;
+  pointer-events: none;
+}
+
+.prestigeRitualModal.is-sealed::before {
+  opacity: 0.15;
+}
+
+.prestigeRitualHeader {
+  display: flex;
+  justify-content: space-between;
   gap: 12px;
+  padding: 18px 22px;
+  background: rgba(250, 234, 205, 0.98);
+  border-bottom: 1px solid rgba(140, 88, 30, 0.25);
+  z-index: 1;
 }
 
-.prestigeScreenModalButton {
-  flex: 1;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
+.prestigeRitualTitle {
+  margin: 0;
+  font-size: 22px;
   font-weight: 700;
-  color: #000000;
+  color: rgba(62, 30, 6, 0.95);
+}
+
+.prestigeRitualSubtitle {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.prestigeRitualClose {
+  border: none;
+  background: rgba(72, 45, 18, 0.15);
+  color: rgba(72, 45, 18, 0.9);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: filter 0.2s ease;
 }
 
-.prestigeScreenModalCancel {
-  background: #374151;
+.prestigeRitualBody {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-.prestigeScreenModalConfirm {
-  background: linear-gradient(90deg, #ef4444, #b91c1c);
+.prestigeRitualScroll {
+  padding: 18px 22px 12px;
+  display: grid;
+  gap: 16px;
+  overflow: auto;
+}
+
+.prestigeRitualSection {
+  display: grid;
+  gap: 10px;
+}
+
+.prestigeRitualSectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(72, 45, 18, 0.8);
+}
+
+.prestigeRitualSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(140, 88, 30, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.prestigeRitualLabel {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.prestigeRitualValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.95);
+}
+
+.prestigeRitualValue.is-muted {
+  color: rgba(120, 68, 32, 0.7);
+}
+
+.prestigeRitualValue.is-accent {
+  color: rgba(140, 88, 30, 0.95);
+}
+
+.prestigeRitualHint {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.65);
+}
+
+.prestigeRitualList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeRitualList.is-warning {
+  color: rgba(120, 68, 32, 0.85);
+}
+
+.prestigeRitualBreakdownSummary {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeRitualBreakdownRows {
+  display: grid;
+  gap: 8px;
+}
+
+.prestigeRitualBreakdownRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(140, 88, 30, 0.2);
+}
+
+.prestigeRitualRowLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeRitualRowHint {
+  font-size: 11px;
+  color: rgba(72, 45, 18, 0.65);
+}
+
+.prestigeRitualRowValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeRitualWarning {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(120, 68, 32, 0.9);
+}
+
+.prestigeRitualFooter {
+  padding: 16px 22px 22px;
+  border-top: 1px solid rgba(140, 88, 30, 0.2);
+  background: rgba(250, 234, 205, 0.95);
+  display: grid;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.prestigeRitualFooterNote {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.7);
+}
+
+.prestigeRitualConfirmButton {
+  position: relative;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.95);
+  background: linear-gradient(120deg, rgba(251, 191, 36, 0.95), rgba(217, 119, 6, 0.95));
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 12px 24px rgba(251, 191, 36, 0.35);
+}
+
+.prestigeRitualConfirmButton.is-locked {
+  background: rgba(148, 163, 184, 0.4);
+  color: rgba(72, 45, 18, 0.5);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.prestigeRitualHoldFill {
+  position: absolute;
+  inset: 0;
+  background: rgba(251, 191, 36, 0.35);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.05s linear;
+}
+
+.prestigeRitualHoldLabel {
+  position: relative;
+  z-index: 1;
+}
+
+.prestigeRitualStatus {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.prestigeRitualError {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(148, 52, 32, 0.9);
 }
 
 @media (max-width: 920px) {
@@ -1344,7 +1546,7 @@
     padding: 16px;
   }
 
-  .prestigeScreenModalActions {
-    flex-direction: column;
+  .prestigeRitualFooter {
+    padding-bottom: 18px;
   }
 }

@@ -13,6 +13,7 @@ import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIc
 import { PrestigeUpgradePanelCard } from '../prestige/PrestigeUpgradePanelCard';
 import { PrestigeUpgradeModal } from '../modals/PrestigeUpgradeModal';
 import { ApBreakdownModal } from '../modals/ApBreakdownModal';
+import { PrestigeRitualModal } from '../modals/PrestigeRitualModal';
 import { D } from '../../utils/numbers';
 import './PrestigeScreen.scss';
 
@@ -45,8 +46,10 @@ export function PrestigeScreen() {
   const [purchaseToast, setPurchaseToast] = useState<string | null>(null);
   const [purchaseSuccessMessage, setPurchaseSuccessMessage] = useState<string | null>(null);
   const [isApBreakdownOpen, setIsApBreakdownOpen] = useState(false);
+  const [ritualError, setRitualError] = useState<string | null>(null);
   const decreesAreaRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
+  const ritualTriggerRef = useRef<HTMLButtonElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
 
@@ -86,6 +89,7 @@ export function PrestigeScreen() {
     setSellBeforePrestige(shouldSellAll);
 
     if (requirePrestigeConfirm) {
+      setRitualError(null);
       setShowConfirmation(true);
       return;
     }
@@ -98,15 +102,31 @@ export function PrestigeScreen() {
     performPrestige();
   };
 
-  const confirmPrestige = () => {
-    if (sellBeforePrestige) {
-      sellAllItems();
-    }
-    const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
-    setLifeStartWizardContext(lastHeartLawId ?? null);
-    performPrestige();
+  const closeRitualModal = () => {
     setShowConfirmation(false);
+    setRitualError(null);
     setSellBeforePrestige(false);
+    requestAnimationFrame(() => {
+      ritualTriggerRef.current?.focus();
+    });
+  };
+
+  const handleRitualConfirm = () => {
+    setRitualError(null);
+    try {
+      if (sellBeforePrestige) {
+        sellAllItems();
+      }
+      const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
+      setLifeStartWizardContext(lastHeartLawId ?? null);
+      performPrestige();
+      setSellBeforePrestige(false);
+      return true;
+    } catch (error) {
+      console.warn('[Prestige] Ritual failed', error);
+      setRitualError('Ritual failed. Please try again.');
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -377,7 +397,10 @@ export function PrestigeScreen() {
                     <div className={'prestigeAltarButtons'}>
                       <button
                         type="button"
-                        onClick={() => handlePrestige(false)}
+                        onClick={(event) => {
+                          ritualTriggerRef.current = event.currentTarget;
+                          handlePrestige(false);
+                        }}
                         disabled={!canPrestigeNow}
                         className={`prestigeAltarPrimaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
                       >
@@ -385,7 +408,10 @@ export function PrestigeScreen() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handlePrestige(true)}
+                        onClick={(event) => {
+                          ritualTriggerRef.current = event.currentTarget;
+                          handlePrestige(true);
+                        }}
                         disabled={!canPrestigeNow}
                         className={`prestigeAltarSecondaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
                       >
@@ -490,6 +516,19 @@ export function PrestigeScreen() {
             onClose={() => setIsApBreakdownOpen(false)}
           />
 
+          <PrestigeRitualModal
+            open={showConfirmation}
+            apGain={apGain}
+            breakdown={apBreakdown}
+            canPrestigeNow={canPrestigeNow}
+            lockReason={prestigeLockHint}
+            currentRealm={realmNames[realm?.index || 0] || 'Unknown'}
+            sellBeforePrestige={sellBeforePrestige}
+            errorMessage={ritualError}
+            onClose={closeRitualModal}
+            onConfirm={handleRitualConfirm}
+          />
+
           <PrestigeUpgradeModal
             open={Boolean(selectedUpgradeId)}
             upgradeId={selectedUpgradeId}
@@ -541,40 +580,6 @@ export function PrestigeScreen() {
             </details>
           )}
 
-          {/* Confirmation Modal */}
-          {showConfirmation && (
-            <div className={'prestigeScreenModalOverlay'}>
-              <div className={'prestigeScreenModalCard'}>
-                <h2 className={'prestigeScreenModalTitle'}>Confirm Reincarnation</h2>
-                <p className={'prestigeScreenModalText'}>
-                  Are you sure you want to reincarnate? This will reset your cultivation progress, but you'll gain{' '}
-                  <strong className={'prestigeScreenModalHighlight'}>{apGain} AP</strong> to purchase permanent upgrades.
-                </p>
-                {sellBeforePrestige && (
-                  <p className={'prestigeScreenModalText'}>
-                    All inventory items will be sold for gold before the reset.
-                  </p>
-                )}
-                <div className={'prestigeScreenModalActions'}>
-                  <button
-                    onClick={() => {
-                      setShowConfirmation(false);
-                      setSellBeforePrestige(false);
-                    }}
-                    className={`${'button-standard'} ${'prestigeScreenModalButton'} ${'prestigeScreenModalCancel'}`}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={confirmPrestige}
-                    className={`${'button-standard'} ${'prestigeScreenModalButton'} ${'prestigeScreenModalConfirm'}`}
-                  >
-                    Reincarnate
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
