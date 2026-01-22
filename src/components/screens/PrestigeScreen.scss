@@ -36,7 +36,7 @@
 
 .prestigeTopRibbon {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: start;
 }
@@ -45,12 +45,6 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.prestigeTopCenter {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
 }
 
 .prestigeTopRight {
@@ -85,31 +79,6 @@
   color: #000000;
 }
 
-.prestigeScreenApCard {
-  background: linear-gradient(90deg, rgba(88, 28, 135, 0.6), rgba(190, 24, 93, 0.5));
-  border: 2px solid rgba(168, 85, 247, 0.45);
-  border-radius: 14px;
-  padding: 24px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
-
-.prestigeScreenApValue {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #e9d5ff;
-}
-
-.prestigeScreenApLabel {
-  color: #e0e7ff;
-  font-size: 20px;
-}
-
-.prestigeScreenApMeta {
-  color: #c084fc;
-  font-size: 14px;
-}
-
 .prestigeStage {
   flex: 1;
   min-height: 0;
@@ -120,14 +89,216 @@
   padding-right: 4px;
 }
 
-.prestigeHeroGrid {
+.prestigeRitualStage {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+  gap: 16px;
+  align-items: stretch;
 }
 
-.prestigeHeroPanel {
+.prestigeRitualLeft,
+.prestigeRitualRight {
   min-width: 0;
+}
+
+.prestigeAltarCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 24px;
+  background: linear-gradient(140deg, rgba(15, 23, 42, 0.75), rgba(30, 41, 59, 0.65));
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  box-shadow: 0 12px 32px rgba(10, 10, 15, 0.4);
+  display: grid;
+  gap: 18px;
+}
+
+.prestigeAltarHeader {
+  display: grid;
+  gap: 6px;
+}
+
+.prestigeAltarTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fef3c7;
+}
+
+.prestigeAltarSubtitle {
+  color: rgba(226, 232, 240, 0.8);
+  font-size: 14px;
+}
+
+.prestigeAltarSealArea {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+}
+
+.prestigeAltarSeal {
+  width: min(320px, 80%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background-image:
+    radial-gradient(circle at center, rgba(251, 191, 36, 0.14), rgba(88, 28, 135, 0.18) 45%, rgba(15, 23, 42, 0) 70%),
+    repeating-radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0 2px, transparent 2px 14px);
+  box-shadow: inset 0 0 40px rgba(251, 191, 36, 0.12);
+}
+
+.prestigeAltarGlow {
+  position: absolute;
+  width: min(360px, 90%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.35) 0%, rgba(251, 191, 36, 0) 70%);
+  opacity: 0.35;
+  filter: blur(6px);
+  transition: opacity 0.2s ease;
+}
+
+.prestigeAltarGlow.is-active {
+  opacity: 0.7;
+  animation: prestigeAltarPulse 3s ease-in-out infinite;
+}
+
+.prestigeAltarParticles {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(251, 191, 36, 0.3) 0 1px, transparent 1px),
+    radial-gradient(circle, rgba(226, 232, 240, 0.25) 0 1px, transparent 1px);
+  background-size: 120px 120px, 160px 160px;
+  background-position: 0 0, 40px 60px;
+  opacity: 0.4;
+  animation: prestigeAltarDrift 12s linear infinite;
+  pointer-events: none;
+}
+
+.prestigeAltarMetaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.prestigeAltarApBadge {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  min-width: 220px;
+}
+
+.prestigeAltarApValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fef3c7;
+}
+
+.prestigeAltarApValue.is-pulse {
+  animation: prestigeApPulse 420ms ease-out;
+}
+
+.prestigeAltarApLabel {
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.prestigeAltarApMeta {
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.85);
+}
+
+.prestigeAltarMetaActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.prestigeAltarMetaText {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.prestigeAltarBreakdownButton {
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  color: #fef3c7;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.prestigeAltarActionRow {
+  display: grid;
+  gap: 8px;
+}
+
+.prestigeAltarButtons {
+  display: grid;
+  gap: 10px;
+}
+
+.prestigeAltarPrimaryButton {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-size: 18px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.prestigeAltarPrimaryButton.is-ready {
+  background: linear-gradient(120deg, rgba(251, 191, 36, 0.95), rgba(217, 119, 6, 0.95));
+  color: rgba(30, 16, 2, 0.9);
+  box-shadow: 0 12px 24px rgba(251, 191, 36, 0.35);
+  cursor: pointer;
+}
+
+.prestigeAltarPrimaryButton.is-locked {
+  background: rgba(71, 85, 105, 0.7);
+  color: rgba(226, 232, 240, 0.7);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.prestigeAltarSecondaryButton {
+  width: 100%;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(15, 23, 42, 0.65);
+  color: rgba(226, 232, 240, 0.9);
+  cursor: pointer;
+}
+
+.prestigeAltarSecondaryButton.is-locked {
+  border-color: rgba(100, 116, 139, 0.4);
+  color: rgba(148, 163, 184, 0.7);
+  cursor: not-allowed;
+}
+
+.prestigeAltarLockHint {
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.prestigeAltarMicrocopy {
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .prestigeScreenInfoGrid {
@@ -163,11 +334,11 @@
 }
 
 .prestigeScreenInfoLabel {
-  color: #000000;
+  color: rgba(226, 232, 240, 0.8);
 }
 
 .prestigeScreenInfoValue {
-  color: #000000;
+  color: #fef3c7;
   font-weight: 600;
 }
 
@@ -177,7 +348,7 @@
 }
 
 .prestigeScreenInfoLabelMuted {
-  color: #000000;
+  color: rgba(148, 163, 184, 0.8);
   margin-left: 8px;
 }
 
@@ -187,66 +358,8 @@
   padding: 0;
   display: grid;
   gap: 4px;
-  color: #000000;
+  color: rgba(226, 232, 240, 0.85);
   font-size: 14px;
-}
-
-.prestigeScreenPrestigeSection {
-  background: linear-gradient(90deg, rgba(88, 28, 135, 0.45), rgba(190, 24, 93, 0.35));
-  border: 2px solid rgba(168, 85, 247, 0.4);
-  border-radius: 14px;
-  padding: 24px;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  display: grid;
-  gap: 12px;
-}
-
-.prestigeScreenPrestigeTitle {
-  font-size: 30px;
-  font-weight: 700;
-  color: #fbbf24;
-  margin: 0;
-}
-
-.prestigeScreenPrestigeText {
-  color: #000000;
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.prestigeScreenPrestigeActions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.prestigeScreenPrestigeButton {
-  width: 100%;
-  padding: 16px 32px;
-  border-radius: 14px;
-  border: none;
-  font-size: 20px;
-  font-weight: 700;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-}
-
-.prestigeScreenPrestigeReady {
-  background: linear-gradient(90deg, #9333ea, #db2777);
-  color: #000000;
-  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.35);
-  cursor: pointer;
-}
-
-.prestigeScreenPrestigeLocked {
-  background: #374151;
-  color: #000000;
-  cursor: not-allowed;
-}
-
-.prestigeScreenPrestigeHint {
-  color: #000000;
-  margin: 0;
 }
 
 .prestigeDecreesPanel {
@@ -715,10 +828,6 @@
   border: 0;
 }
 
-.prestigeScreenApValue.is-pulse {
-  animation: prestigeApPulse 420ms ease-out;
-}
-
 @keyframes prestigeDecreeFlash {
   0% {
     box-shadow: 0 0 0 rgba(0, 0, 0, 0);
@@ -734,18 +843,39 @@
   }
 }
 
+@keyframes prestigeAltarPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @keyframes prestigeApPulse {
   0% {
-    color: #e9d5ff;
+    color: #fef3c7;
     text-shadow: 0 0 0 rgba(251, 191, 36, 0);
   }
   40% {
-    color: #fef3c7;
+    color: #fde68a;
     text-shadow: 0 0 18px rgba(251, 191, 36, 0.6);
   }
   100% {
-    color: #e9d5ff;
+    color: #fef3c7;
     text-shadow: 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes prestigeAltarDrift {
+  0% {
+    background-position: 0 0, 40px 60px;
+  }
+  100% {
+    background-position: 120px 160px, 160px 200px;
   }
 }
 
@@ -753,7 +883,9 @@
   .prestigeUpgradePanel,
   .prestigeUpgradePanel:hover,
   .prestigeUpgradePanel.is-flash,
-  .prestigeScreenApValue.is-pulse {
+  .prestigeAltarGlow,
+  .prestigeAltarParticles,
+  .prestigeAltarApValue.is-pulse {
     animation: none;
     transition: none;
     transform: none;
@@ -1050,16 +1182,16 @@
     grid-template-columns: 1fr;
   }
 
-  .prestigeTopCenter {
-    justify-content: flex-start;
-  }
-
   .prestigeTopRight {
     align-items: flex-start;
   }
 
-  .prestigeHeroGrid {
+  .prestigeRitualStage {
     grid-template-columns: 1fr;
+  }
+
+  .prestigeAltarMetaActions {
+    align-items: flex-start;
   }
 }
 

@@ -50,6 +50,10 @@ export function PrestigeScreen() {
   const apGain = calculateAPGain();
   const canPrestigeNow = canPrestige();
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
+  const prestigeLockHint = canPrestigeNow
+    ? 'You are ready to reincarnate.'
+    : 'Reach Foundation Establishment to unlock Reincarnation.';
+  const prestigeActionLabel = canPrestigeNow ? 'Begin Reincarnation Ritual' : 'Reincarnation Sealed';
 
   const sellAllItems = () => {
     const inventory = useInventoryStore.getState();
@@ -323,59 +327,73 @@ export function PrestigeScreen() {
                 Restart your cultivation journey with powerful blessings.
               </div>
             </div>
-            <div className={'prestigeTopCenter'}>
-              <div className={'prestigeSystemPill prestigeScreenApCard'}>
-                <div className={`prestigeScreenApValue${apPulse ? ' is-pulse' : ''}`}>{totalAP}</div>
-                <div className={'prestigeScreenApLabel'}>Ascension Points Available</div>
-                <div className={'prestigeScreenApMeta'}>
-                  {lifetimeAP} Total Earned • {prestigeCount} Reincarnations
-                </div>
-              </div>
-            </div>
             <div className={'prestigeTopRight'}>
-              <div className={'prestigeTopMetaLine'}>Unspent Ascension Points: {totalAP}</div>
               <div className={'prestigeTopMetaLine'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
             </div>
           </header>
 
           <main className={'prestigeStage'}>
-            <section className={'prestigeHeroGrid'}>
-              <div className={'prestigeHeroPanel prestigeHeroPanel--ritual'}>
-                {/* Prestige Action */}
-                <div className={'prestigeScreenPrestigeSection'}>
-                  <h2 className={'prestigeScreenPrestigeTitle'}>Reincarnate &amp; Grow Stronger</h2>
-                  <p className={'prestigeScreenPrestigeText'}>
-                    Each reincarnation grants Ascension Points to unlock permanent upgrades. You'll return to the mortal realm but
-                    with newfound power and potential.
-                  </p>
-                  <div className={'prestigeScreenPrestigeActions'}>
-                    <button
-                      onClick={() => handlePrestige(false)}
-                      disabled={!canPrestigeNow}
-                      className={`${'button-standard'} ${'prestigeScreenPrestigeButton'} ${
-                        canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'
-                      }`}
-                    >
-                      {canPrestigeNow ? 'Reincarnate Now' : 'Not Ready Yet'}
-                    </button>
-                    <button
-                      onClick={() => handlePrestige(true)}
-                      disabled={!canPrestigeNow}
-                      className={`${'button-standard'} ${'prestigeScreenPrestigeButton'} ${
-                        canPrestigeNow ? 'prestigeScreenPrestigeReady' : 'prestigeScreenPrestigeLocked'
-                      }`}
-                    >
-                      {canPrestigeNow ? 'Sell All & Reincarnate' : 'Not Ready Yet'}
-                    </button>
+            <section className={'prestigeRitualStage'}>
+              <div className={'prestigeRitualLeft'}>
+                <div className={'prestigeAltarCard'}>
+                  <header className={'prestigeAltarHeader'}>
+                    <div className={'prestigeAltarTitle'}>Reincarnate &amp; Grow Stronger</div>
+                    <div className={'prestigeAltarSubtitle'}>
+                      Reincarnation grants Ascension Points to unlock permanent blessings.
+                    </div>
+                  </header>
+
+                  <div className={'prestigeAltarSealArea'} aria-hidden="true">
+                    <div className={'prestigeAltarSeal'} />
+                    <div className={`prestigeAltarGlow${canPrestigeNow ? ' is-active' : ''}`} />
+                    <div className={'prestigeAltarParticles'} />
                   </div>
-                  {!canPrestigeNow && (
-                    <p className={'prestigeScreenPrestigeHint'}>Reach Foundation Establishment to unlock Reincarnation.</p>
-                  )}
+
+                  <div className={'prestigeAltarMetaRow'}>
+                    <div className={'prestigeAltarApBadge'}>
+                      <div className={`prestigeAltarApValue${apPulse ? ' is-pulse' : ''}`}>{totalAP}</div>
+                      <div className={'prestigeAltarApLabel'}>Ascension Points Available</div>
+                      <div className={'prestigeAltarApMeta'}>
+                        {lifetimeAP} Total Earned • {prestigeCount} Reincarnations
+                      </div>
+                    </div>
+                    <div className={'prestigeAltarMetaActions'}>
+                      <button type="button" className={'prestigeAltarBreakdownButton'}>
+                        AP breakdown
+                      </button>
+                      <div className={'prestigeAltarMetaText'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
+                    </div>
+                  </div>
+
+                  <div className={'prestigeAltarActionRow'}>
+                    <div className={'prestigeAltarButtons'}>
+                      <button
+                        type="button"
+                        onClick={() => handlePrestige(false)}
+                        disabled={!canPrestigeNow}
+                        className={`prestigeAltarPrimaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
+                      >
+                        {prestigeActionLabel}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePrestige(true)}
+                        disabled={!canPrestigeNow}
+                        className={`prestigeAltarSecondaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
+                      >
+                        Sell All &amp; Reincarnate
+                      </button>
+                    </div>
+                    <div className={'prestigeAltarLockHint'}>{prestigeLockHint}</div>
+                  </div>
+
+                  <div className={'prestigeAltarMicrocopy'}>
+                    Keep blessings. Reset the mortal coil. Return stronger.
+                  </div>
                 </div>
               </div>
 
-              <div className={'prestigeHeroPanel prestigeHeroPanel--root'}>
-                {/* Current Run & Benefits */}
+              <aside className={'prestigeRitualRight'}>
                 <div className={'prestigeScreenInfoGrid'}>
                   <div className={'prestigeScreenInfoCard'}>
                     <h3 className={'prestigeScreenInfoTitle'}>Current Run</h3>
@@ -403,7 +421,7 @@ export function PrestigeScreen() {
                     </ul>
                   </div>
                 </div>
-              </div>
+              </aside>
             </section>
 
             <section className={'prestigeDecreesPanel worldScreenPanel'}>
