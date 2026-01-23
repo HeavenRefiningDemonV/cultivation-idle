@@ -823,6 +823,12 @@
 .forgeBlueprintModal__title {
   font-size: 18px;
   font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .forgeBlueprintModal__meta {
@@ -839,6 +845,13 @@
   color: inherit;
   font-size: 18px;
   cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.forgeBlueprintModal__close:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.8);
+  outline-offset: 2px;
 }
 
 .forgeBlueprintModal__body {
@@ -847,13 +860,88 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
+  position: relative;
+}
+
+.forgeBlueprintModal__body--toc {
+  gap: 12px;
+}
+
+.forgeBlueprintModal__scrollShadow {
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 18px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 150ms ease;
+}
+
+.forgeBlueprintModal__scrollShadow.is-visible {
+  opacity: 1;
+}
+
+.forgeBlueprintModal__scrollShadow--top {
+  top: 0;
+  margin-bottom: -18px;
+  background: linear-gradient(to bottom, rgba(10, 16, 24, 0.9), rgba(10, 16, 24, 0));
+}
+
+.forgeBlueprintModal__scrollShadow--bottom {
+  bottom: 0;
+  margin-top: -18px;
+  background: linear-gradient(to top, rgba(10, 16, 24, 0.9), rgba(10, 16, 24, 0));
+}
+
+.forgeBlueprintModal__toc {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+  position: sticky;
+  top: 12px;
+  align-self: start;
+}
+
+.forgeBlueprintModal__tocTitle {
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__tocButton {
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.forgeBlueprintModal__tocButton.is-active {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.16);
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.forgeBlueprintModal__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 .forgeBlueprintModal__section {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  scroll-margin-top: 12px;
 }
 
 .forgeBlueprintModal__section h3 {
@@ -986,6 +1074,34 @@
   grid-template-columns: 140px 1fr;
   gap: 10px;
   align-items: baseline;
+}
+
+@media (min-width: 900px) {
+  .forgeBlueprintModal__body--toc {
+    display: grid;
+    grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 18px;
+    row-gap: 16px;
+  }
+
+  .forgeBlueprintModal__toc {
+    display: flex;
+  }
+
+  .forgeBlueprintModal__content {
+    grid-column: 2;
+  }
+
+  .forgeBlueprintModal__scrollShadow {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forgeBlueprintModal__scrollShadow {
+    transition: none;
+  }
 }
 
 .forgeBlueprintModal__empty {
