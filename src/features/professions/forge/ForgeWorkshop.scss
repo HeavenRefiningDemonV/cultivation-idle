@@ -133,6 +133,15 @@
   background: var(--panel-bg, rgba(10, 16, 24, 0.6));
 }
 
+.forgeWorkshopDrawer__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
 .forgeWorkshopDrawer__header {
   display: flex;
   justify-content: space-between;
@@ -188,8 +197,6 @@
   flex-direction: column;
   gap: 6px;
   min-height: 0;
-  overflow: auto;
-  padding-right: 4px;
 }
 
 .forgeWorkshopWorkbench {
