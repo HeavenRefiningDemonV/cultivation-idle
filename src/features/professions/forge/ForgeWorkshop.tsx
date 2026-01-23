@@ -1,8 +1,9 @@
 import classNames from 'classnames';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { PlayerStats } from '../../../types';
 
 import { ForgeMinigame } from './ForgeMinigame';
+import { ForgeBlueprintDetailModal } from './ForgeBlueprintDetailModal';
 import { ErrorBoundary } from '../../../ui/feedback/ErrorBoundary';
 import { UsedForLinks } from '../../../components/crafting/UsedForLinks';
 import { computeForgeOutcome } from '../../../systems/crafting/forgeOutcome';
@@ -13,7 +14,6 @@ import { useUIStore } from '../../../stores/uiStore';
 import { useActivityStore } from '../../../stores/activityStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
-import { resolveForgeStepScript } from './forgeScriptBuilder';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -49,32 +49,7 @@ const MODE_COPY = {
   handsOn: 'Play the session. Best quality / best proc chance.',
 } as const;
 
-const BENEFITS = [
-  { mode: 'idle' as const, label: 'Idle', detail: 'Baseline' },
-  { mode: 'assisted' as const, label: 'Assisted', detail: '+Small quality floor' },
-  { mode: 'handsOn' as const, label: 'Hands-on', detail: '+Quality proc chance / +Mastery' },
-];
-
-const buildStepSummary = (stepTypes: string[]): string[] => {
-  if (stepTypes.length === 0) return ['Heat', 'Strike', 'Heat', 'Strike', 'Heat', 'Special', 'Finish'];
-  return stepTypes.map((type) => {
-    switch (type) {
-      case 'HEAT_TO':
-      case 'HEAT_MATERIAL':
-        return 'Heat';
-      case 'HAMMER_PATTERN':
-        return 'Strike';
-      case 'ENGRAVE_RUNE':
-      case 'LAY_FORMATION':
-        return 'Special';
-      case 'FINISH':
-        return 'Finish';
-      default:
-        return 'Special';
-    }
-  });
-};
-
+ 
 const getProduceSummary = (blueprintId?: string | null): string => {
   if (!blueprintId) return '—';
   const blueprint = listForgeBlueprints().find((entry) => entry.id === blueprintId);
@@ -116,6 +91,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const [queueStatus, setQueueStatus] = useState<Record<string, { type: 'success' | 'error'; message: string }>>({});
   const [selectedServiceSlot, setSelectedServiceSlot] = useState<'weapon' | 'accessory'>('weapon');
   const [lastClaimResult, setLastClaimResult] = useState<ForgeClaimResult | null>(null);
+  const detailsOpenerRef = useRef<HTMLButtonElement | null>(null);
 
   const currentMode = modeByStation.forge ?? 'idle';
 
@@ -180,41 +156,6 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const selectedBlueprint = useMemo(
     () => blueprints.find((blueprint) => blueprint.id === selectedBlueprintId) ?? null,
     [blueprints, selectedBlueprintId],
-  );
-
-  const resolvedStepScript = useMemo(
-    () => (selectedBlueprint ? resolveForgeStepScript(selectedBlueprint) : []),
-    [selectedBlueprint],
-  );
-
-  const stepSummary = useMemo(() => {
-    const steps = resolvedStepScript.map((step) => step.type);
-    return buildStepSummary(steps);
-  }, [resolvedStepScript]);
-
-  const stepPreview = useMemo(
-    () =>
-      resolvedStepScript.map((step) => {
-        switch (step.type) {
-          case 'HEAT_TO':
-          case 'HEAT_MATERIAL':
-            return { id: step.id, icon: '🔥', label: 'Heat' };
-          case 'HAMMER_PATTERN':
-            return { id: step.id, icon: '🔨', label: 'Strike' };
-          case 'ENGRAVE_RUNE':
-            return { id: step.id, icon: '🔮', label: 'Engrave' };
-          case 'LAY_FORMATION':
-            return { id: step.id, icon: '🧿', label: 'Formation' };
-          case 'TEMPER':
-          case 'QUENCH':
-            return { id: step.id, icon: '✨', label: 'Special' };
-          case 'FINISH':
-            return { id: step.id, icon: '✅', label: 'Finish' };
-          default:
-            return { id: step.id, icon: '•', label: step.type };
-        }
-      }),
-    [resolvedStepScript],
   );
 
   const outcome = useMemo(() => {
@@ -490,6 +431,14 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                   <div className="forgeWorkshopWorkbench__emptyBody">
                     Choose a design, confirm materials, and begin the forge ritual.
                   </div>
+                  <button
+                    type="button"
+                    className="worldScreenModuleButton forgeDetailsButton"
+                    disabled
+                    title="Select a blueprint first"
+                  >
+                    Details
+                  </button>
                 </div>
               )}
               {selectedBlueprint && (
@@ -497,26 +446,23 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                   <div className="forgeWorkshop__detailHeader">
                     <div>
                       <div className="forgeWorkshop__detailTitle">{selectedBlueprint.name ?? selectedBlueprint.id}</div>
-                      <div className="forgeWorkshop__detailMeta">Produces: {getProduceSummary(selectedBlueprint.id)}</div>
+                      <div className="forgeWorkshop__detailMeta">{getProduceSummary(selectedBlueprint.id)}</div>
                     </div>
-                    <div className="forgeWorkshop__detailMeta">
-                      {selectedBlueprint.cityIndex ? `Tier ${selectedBlueprint.cityIndex}` : 'Tier —'} · Base time:{' '}
-                      {Math.round(selectedBlueprint.timeSec)}s
-                    </div>
-                  </div>
-                  <div className="forgeWorkshop__detailGrid">
-                    <div>
-                      <div className="forgeWorkshop__detailLabel">Inputs</div>
-                      {selectedBlueprint.costs.items.length === 0 && <div className="forgeWorkshop__detailValue">None</div>}
-                      {selectedBlueprint.costs.items.map((entry) => (
-                        <div key={entry.itemId} className="forgeWorkshop__detailValue">
-                          {getItemDef(entry.itemId)?.name ?? entry.itemId} ×{entry.qty}
-                        </div>
-                      ))}
-                    </div>
-                    <div>
-                      <div className="forgeWorkshop__detailLabel">Output</div>
-                      <div className="forgeWorkshop__detailValue">{getProduceSummary(selectedBlueprint.id)}</div>
+                    <div className="forgeWorkshop__detailActions">
+                      <div className="forgeWorkshop__detailMeta">
+                        {selectedBlueprint.cityIndex ? `Tier ${selectedBlueprint.cityIndex}` : 'Tier —'} ·{' '}
+                        {Math.round(selectedBlueprint.timeSec)}s
+                      </div>
+                      <button
+                        ref={detailsOpenerRef}
+                        type="button"
+                        className="worldScreenModuleButton forgeDetailsButton"
+                        onClick={() => setDetailsOpen(true)}
+                        disabled={!selectedBlueprint}
+                        title={!selectedBlueprint ? 'Select a blueprint first' : 'Open blueprint details'}
+                      >
+                        Details
+                      </button>
                     </div>
                   </div>
                   {selectedBlueprint.type === 'service' &&
@@ -545,44 +491,6 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                         </div>
                       </div>
                     )}
-                  <button
-                    type="button"
-                    className="forgeWorkshop__detailToggle"
-                    onClick={() => setDetailsOpen((prev) => !prev)}
-                  >
-                    {detailsOpen ? 'Less details ▾' : 'More details ▸'}
-                  </button>
-                  {detailsOpen && (
-                    <div className="forgeWorkshop__detailExtras">
-                      <div className="forgeWorkshop__stepPreview">
-                        {stepPreview.map((step, index) => (
-                          <div key={step.id} className="forgeWorkshop__stepPreviewItem">
-                            <span className="forgeWorkshop__stepIcon" aria-hidden="true">
-                              {step.icon}
-                            </span>
-                            <span className="forgeWorkshop__stepLabel">{step.label}</span>
-                            {index < stepPreview.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="forgeWorkshop__stepSummary">
-                        {stepSummary.map((step, index) => (
-                          <span key={`${step}-${index}`} className="forgeWorkshop__step">
-                            {step}
-                            {index < stepSummary.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="forgeWorkshop__benefits">
-                        {BENEFITS.map((benefit) => (
-                          <div key={benefit.mode} className="forgeWorkshop__benefitRow">
-                            <div className="forgeWorkshop__benefitLabel">{benefit.label}</div>
-                            <div className="forgeWorkshop__benefitValue">{benefit.detail}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                   <div className="craftingModeSelector">
                     <div className="craftingModeLabel">Mode</div>
                     <div className="craftingModeButtons craftModeTabs">
@@ -839,6 +747,12 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           </div>
         </div>
       )}
+      <ForgeBlueprintDetailModal
+        open={detailsOpen}
+        blueprintId={selectedBlueprint?.id ?? null}
+        onClose={() => setDetailsOpen(false)}
+        openerRef={detailsOpenerRef}
+      />
     </div>
   );
 }
