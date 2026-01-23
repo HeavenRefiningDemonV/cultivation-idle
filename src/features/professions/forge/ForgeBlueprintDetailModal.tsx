@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import { Modal } from '../../../ui/primitives/Modal';
 import { getForgeBlueprint, getItemDef } from '../../../stores/contentStore';
+import { useCraftSessionStore } from '../../../stores/craftSessionStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { resolveForgeStepScript } from './forgeScriptBuilder';
 import { getForgeStepIconInfo } from './forgeStepIconMap';
@@ -22,6 +23,12 @@ const buildStepPreview = (steps: ReturnType<typeof resolveForgeStepScript>): Ste
     return { id: step.id, icon: info.icon, label: info.label, ariaLabel: info.ariaLabel };
   });
 
+const MODE_COPY = {
+  idle: 'Fast, baseline quality.',
+  assisted: "Mostly automatic, lands 'Good' performance.",
+  handsOn: 'Play the session. Best quality / best proc chance.',
+} as const;
+
 export function ForgeBlueprintDetailModal({
   open,
   blueprintId,
@@ -40,12 +47,15 @@ export function ForgeBlueprintDetailModal({
   const requirementsRef = useRef<HTMLElement | null>(null);
   const processRef = useRef<HTMLElement | null>(null);
   const handsOnRef = useRef<HTMLElement | null>(null);
+  const modeRef = useRef<HTMLElement | null>(null);
   const advancedRef = useRef<HTMLElement | null>(null);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
 
   const blueprint = useMemo(() => (blueprintId ? getForgeBlueprint(blueprintId) ?? null : null), [blueprintId]);
+  const currentMode = useCraftSessionStore((state) => state.modeByStation.forge ?? 'idle');
+  const setMode = useCraftSessionStore((state) => state.setMode);
   const resolvedSteps = useMemo(() => (blueprint ? resolveForgeStepScript(blueprint) : []), [blueprint]);
   const stepPreview = useMemo(() => buildStepPreview(resolvedSteps), [resolvedSteps]);
   const stepSummary = useMemo(
@@ -67,6 +77,7 @@ export function ForgeBlueprintDetailModal({
       { id: 'requirements', label: 'Requirements', ref: requirementsRef },
       { id: 'process', label: 'Process', ref: processRef },
       { id: 'hands-on', label: 'Hands-on vs Auto', ref: handsOnRef },
+      { id: 'mode', label: 'Mode', ref: modeRef },
       { id: 'advanced', label: 'Advanced', ref: advancedRef },
     ],
     [],
@@ -454,6 +465,29 @@ export function ForgeBlueprintDetailModal({
                   <div className="forgeBlueprintModal__value">
                     Assisted mode automates steps; hands-on focuses on precision and timing.
                   </div>
+                </section>
+
+                <section
+                  ref={modeRef}
+                  data-section-id="mode"
+                  className="forgeBlueprintModal__section"
+                >
+                  <h3>Mode</h3>
+                  <div className="forgeBlueprintModal__modeControls">
+                    {(['idle', 'assisted', 'handsOn'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        className={classNames('forgeBlueprintModal__modeButton', {
+                          'forgeBlueprintModal__modeButton--active': currentMode === mode,
+                        })}
+                        onClick={() => setMode('forge', mode)}
+                      >
+                        {mode === 'idle' ? 'Idle' : mode === 'assisted' ? 'Assisted' : 'Hands-on'}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="forgeBlueprintModal__value">{MODE_COPY[currentMode]}</div>
                 </section>
 
                 <section

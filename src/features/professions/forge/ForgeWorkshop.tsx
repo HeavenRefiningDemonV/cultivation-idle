@@ -5,7 +5,6 @@ import type { PlayerStats } from '../../../types';
 import { ForgeMinigame } from './ForgeMinigame';
 import { ForgeBlueprintDetailModal } from './ForgeBlueprintDetailModal';
 import { ErrorBoundary } from '../../../ui/feedback/ErrorBoundary';
-import { UsedForLinks } from '../../../components/crafting/UsedForLinks';
 import { computeForgeOutcome } from '../../../systems/crafting/forgeOutcome';
 import { listForgeBlueprints, getForgeBlueprint, getItemDef } from '../../../stores/contentStore';
 import { useCraftSessionStore } from '../../../stores/craftSessionStore';
@@ -14,6 +13,8 @@ import { useUIStore } from '../../../stores/uiStore';
 import { useActivityStore } from '../../../stores/activityStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
+import { ForgeActionDock } from './ForgeActionDock';
+import { ForgeStepStrip } from './ForgeStepStrip';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -43,21 +44,6 @@ const FILTERS = [
   { id: 'components', label: 'Components' },
 ];
 
-const MODE_COPY = {
-  idle: 'Fast, baseline quality.',
-  assisted: "Mostly automatic, lands 'Good' performance.",
-  handsOn: 'Play the session. Best quality / best proc chance.',
-} as const;
-
- 
-const getProduceSummary = (blueprintId?: string | null): string => {
-  if (!blueprintId) return '—';
-  const blueprint = listForgeBlueprints().find((entry) => entry.id === blueprintId);
-  if (!blueprint?.output) return blueprint?.service ? `${blueprint.service} service` : '—';
-  const item = getItemDef(blueprint.output.itemId);
-  return `${item?.name ?? blueprint.output.itemId} ×${blueprint.output.qty}`;
-};
-
 const resolveQualityLabel = (qualityScore?: number): string => {
   const score = typeof qualityScore === 'number' ? qualityScore : 0;
   if (score >= 90) return 'Perfect';
@@ -68,7 +54,7 @@ const resolveQualityLabel = (qualityScore?: number): string => {
 
 export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const setActiveTab = useUIStore((state) => state.setActiveTab);
-  const setCraftMode = useCraftSessionStore((state) => state.setMode);
+  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
   const startForgeJob = useProfessionStore((state) => state.startForgeJob);
@@ -92,6 +78,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const [selectedServiceSlot, setSelectedServiceSlot] = useState<'weapon' | 'accessory'>('weapon');
   const [lastClaimResult, setLastClaimResult] = useState<ForgeClaimResult | null>(null);
   const detailsOpenerRef = useRef<HTMLButtonElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const currentMode = modeByStation.forge ?? 'idle';
 
@@ -208,8 +195,6 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const hasCurrencyCost = Boolean(
     selectedBlueprint && (selectedBlueprint.costs.gold > 0 || selectedBlueprint.costs.spiritStones > 0),
   );
-  const processStepCount = selectedBlueprint?.stepScript?.length ?? 0;
-  const handsOnAvailable = Boolean(selectedBlueprint?.handsOnBonus);
   const queueSummary = useMemo(() => {
     let ready = 0;
     forgeQueue.forEach((job) => {
@@ -220,6 +205,16 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     return { total: forgeQueue.length, ready };
   }, [forgeQueue, getForgeJobStatus, now]);
   const ribbonStatus = sessionStatus ?? (activeForgeSession ? 'Hands-on session active.' : null);
+  const currentStepIndex = useMemo(() => {
+    if (queueSummary.ready > 0) return 3;
+    if (activeForgeSession) return 2;
+    if (selectedBlueprint) return 1;
+    return 0;
+  }, [activeForgeSession, queueSummary.ready, selectedBlueprint]);
+
+  const focusBlueprintLibrary = () => {
+    searchInputRef.current?.focus();
+  };
 
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
@@ -242,24 +237,25 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     <div className="forgeWorkshop forgeWorkshop--v2">
       <header className="forgeWorkshopRibbon">
         <div className="forgeWorkshopRibbon__left">
-          <div className="forgeWorkshopRibbon__title">Forge Workshop</div>
-          <div className="forgeWorkshopRibbon__subtitle">Refine gear and craft runes that empower techniques.</div>
-          <div className="forgeWorkshopRibbon__actions">
-            <button type="button" className="worldScreenModuleButton" onClick={() => setActiveTab('techniques')}>
+          <div className="forgeWorkshopRibbon__titleRow">
+            <div className="forgeWorkshopRibbon__title">Forge Workshop</div>
+            <button
+              type="button"
+              className="forgeWorkshopRibbon__link"
+              onClick={() => setActiveTab('techniques')}
+            >
               Techniques
             </button>
-            <button type="button" className="worldScreenModuleButton" onClick={() => setActiveTab('inventory')}>
+            <button type="button" className="forgeWorkshopRibbon__link" onClick={() => setActiveTab('inventory')}>
               Equipment
             </button>
           </div>
-          <UsedForLinks usageText="Techniques and equipment upgrades" className="forgeWorkshopRibbon__usedFor" />
+          <div className="forgeWorkshopRibbon__subtitle">Refine gear and craft runes.</div>
+          {ribbonStatus && <div className="forgeWorkshopRibbon__status">{ribbonStatus}</div>}
+          {isBlocked && <div className="forgeWorkshopRibbon__notice">Finish the active activity to start forging.</div>}
         </div>
         <div className="forgeWorkshopRibbon__center">
-          <div className={classNames('forgeWorkshopRibbon__status', { 'forgeWorkshopRibbon__status--idle': !ribbonStatus })}>
-            {ribbonStatus ?? 'Select a blueprint to begin.'}
-          </div>
-          <div className="forgeWorkshopRibbon__microcopy">Select → Prepare → Forge → Claim</div>
-          {isBlocked && <div className="forgeWorkshopRibbon__notice">Finish the active activity to start forging.</div>}
+          <ForgeStepStrip currentStep={currentStepIndex} />
         </div>
         <div className="forgeWorkshopRibbon__right">
           <button
@@ -276,6 +272,9 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
             onClick={() => setFiltersOpen((prev) => !prev)}
           >
             Filters {filtersOpen ? '▾' : '▸'}
+          </button>
+          <button type="button" className="forgeWorkshopRibbon__close" onClick={closeWorldBuildingModal} aria-label="Close">
+            ✕
           </button>
         </div>
       </header>
@@ -295,6 +294,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 placeholder="Search blueprints"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
+                ref={searchInputRef}
               />
             </div>
             {filtersOpen && (
@@ -406,128 +406,86 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 )}
                 {!activeForgeSession && (
                   <div className="forgeWorkshop__idleBench">
-                    <div className="forgeWorkshop__idleTitle">Select a blueprint to begin.</div>
-                    <div className="forgeWorkshop__idleHint">Choose a design, check materials, then start forging.</div>
-                    {selectedBlueprint && (
+                    <div className="forgeWorkshop__idleCard">
+                      <div className="forgeWorkshop__idleTitle">Select a blueprint</div>
+                      <div className="forgeWorkshop__idleHint">Choose a design from the library to prepare the forge.</div>
                       <button
                         type="button"
                         className={classNames('worldScreenModuleButton', 'worldScreenModuleButton--active', {
-                          forgeWorkshop__ctaDisabled: !canStart || isLocked || isBlocked,
+                          forgeWorkshop__ctaDisabled: Boolean(selectedBlueprint) && (!canStart || isLocked || isBlocked),
                         })}
-                        disabled={!canStart || isLocked || isBlocked}
-                        onClick={handleStart}
+                        disabled={Boolean(selectedBlueprint) && (!canStart || isLocked || isBlocked)}
+                        onClick={selectedBlueprint ? handleStart : focusBlueprintLibrary}
                       >
-                        Start {currentMode === 'idle' ? 'Idle' : currentMode === 'assisted' ? 'Assisted' : 'Hands-on'}
+                        {selectedBlueprint ? 'Start' : 'Choose Blueprint'}
                       </button>
-                    )}
-                    {!selectedBlueprint && <div className="forgeWorkshop__idleHint">Blueprint list is on the left.</div>}
-                    {isLocked && <div className="forgeWorkshop__idleHint">Unlock this blueprint in another city.</div>}
-                    {isHandsOnMode && selectedBlueprint?.type === 'service' && (
-                      <div className="forgeWorkshop__idleHint">Hands-on forging is only for crafted items.</div>
-                    )}
-                    {!canStart && startEligibility.reason && (
-                      <div className="forgeWorkshop__idleHint">{startEligibility.reason}</div>
-                    )}
+                      {isLocked && (
+                        <div className="forgeWorkshop__idleHint">
+                          Unlock in another city.{' '}
+                          <button type="button" className="forgeWorkshop__inlineLink" onClick={() => setDetailsOpen(true)}>
+                            More
+                          </button>
+                        </div>
+                      )}
+                      {isHandsOnMode && selectedBlueprint?.type === 'service' && (
+                        <div className="forgeWorkshop__idleHint">Hands-on forging is only for crafted items.</div>
+                      )}
+                      {!canStart && startEligibility.reason && (
+                        <div className="forgeWorkshop__idleHint">
+                          {startEligibility.reason}{' '}
+                          <button type="button" className="forgeWorkshop__inlineLink" onClick={() => setDetailsOpen(true)}>
+                            Details
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
             <div className="forgeWorkshopWorkbench__bottom">
-              {!selectedBlueprint && (
-                <div className="forgeWorkshopWorkbench__empty">
-                  <div className="forgeWorkshopWorkbench__emptyTitle">Select a blueprint to begin.</div>
-                  <div className="forgeWorkshopWorkbench__emptyBody">
-                    Choose a design, confirm materials, and begin the forge ritual.
-                  </div>
-                  <button
-                    type="button"
-                    className="worldScreenModuleButton forgeDetailsButton"
-                    disabled
-                    title="Select a blueprint first"
-                  >
-                    Details
-                  </button>
-                </div>
-              )}
-              {selectedBlueprint && (
-                <div className="forgeWorkshop__detail">
-                  <div className="forgeWorkshop__detailHeader">
-                    <div>
-                      <div className="forgeWorkshop__detailTitle">{selectedBlueprint.name ?? selectedBlueprint.id}</div>
-                      <div className="forgeWorkshop__detailMeta">{getProduceSummary(selectedBlueprint.id)}</div>
-                    </div>
-                    <div className="forgeWorkshop__detailActions">
-                      <div className="forgeWorkshop__detailMeta">
-                        {selectedBlueprint.cityIndex ? `Tier ${selectedBlueprint.cityIndex}` : 'Tier —'} ·{' '}
-                        {Math.round(selectedBlueprint.timeSec)}s
-                      </div>
+              <ForgeActionDock
+                selectedBlueprint={selectedBlueprint}
+                canStart={canStart}
+                isLocked={isLocked}
+                isBlocked={isBlocked}
+                activeForgeSession={activeForgeSession}
+                queueReady={queueSummary.ready}
+                requirementCount={requirementCount}
+                hasCurrencyCost={hasCurrencyCost}
+                onStart={handleStart}
+                onOpenDetails={() => setDetailsOpen(true)}
+                onFocusLibrary={focusBlueprintLibrary}
+                onOpenQueue={() => setQueueOpen(true)}
+                detailsRef={detailsOpenerRef}
+              />
+              {selectedBlueprint &&
+                selectedBlueprint.type === 'service' &&
+                (selectedBlueprint.service === 'refine' || selectedBlueprint.service === 'temper') && (
+                  <div className="forgeWorkshop__detailSection">
+                    <div className="forgeWorkshop__detailLabel">Target slot</div>
+                    <div className="forgeWorkshop__slotButtons">
                       <button
-                        ref={detailsOpenerRef}
                         type="button"
-                        className="worldScreenModuleButton forgeDetailsButton"
-                        onClick={() => setDetailsOpen(true)}
-                        disabled={!selectedBlueprint}
-                        title={!selectedBlueprint ? 'Select a blueprint first' : 'Open blueprint details'}
+                        className={classNames('forgeWorkshop__slotButton', {
+                          'forgeWorkshop__slotButton--active': selectedServiceSlot === 'weapon',
+                        })}
+                        onClick={() => setSelectedServiceSlot('weapon')}
                       >
-                        Details
+                        Weapon
+                      </button>
+                      <button
+                        type="button"
+                        className={classNames('forgeWorkshop__slotButton', {
+                          'forgeWorkshop__slotButton--active': selectedServiceSlot === 'accessory',
+                        })}
+                        onClick={() => setSelectedServiceSlot('accessory')}
+                      >
+                        Accessory
                       </button>
                     </div>
                   </div>
-                  <div className="forgeWorkshop__detailSummary">
-                    <span>
-                      {requirementCount > 0 ? `Requires ${requirementCount} materials` : 'No materials required'}
-                    </span>
-                    {hasCurrencyCost && <span>Currency costs apply</span>}
-                    <span>{processStepCount > 0 ? `Process: ${processStepCount} steps` : 'Process: Auto'}</span>
-                    <span>{handsOnAvailable ? 'Hands-on available' : 'Auto only'}</span>
-                  </div>
-                  {selectedBlueprint.type === 'service' &&
-                    (selectedBlueprint.service === 'refine' || selectedBlueprint.service === 'temper') && (
-                      <div className="forgeWorkshop__detailSection">
-                        <div className="forgeWorkshop__detailLabel">Target slot</div>
-                        <div className="forgeWorkshop__slotButtons">
-                          <button
-                            type="button"
-                            className={classNames('forgeWorkshop__slotButton', {
-                              'forgeWorkshop__slotButton--active': selectedServiceSlot === 'weapon',
-                            })}
-                            onClick={() => setSelectedServiceSlot('weapon')}
-                          >
-                            Weapon
-                          </button>
-                          <button
-                            type="button"
-                            className={classNames('forgeWorkshop__slotButton', {
-                              'forgeWorkshop__slotButton--active': selectedServiceSlot === 'accessory',
-                            })}
-                            onClick={() => setSelectedServiceSlot('accessory')}
-                          >
-                            Accessory
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  <div className="craftingModeSelector">
-                    <div className="craftingModeLabel">Mode</div>
-                    <div className="craftingModeButtons craftModeTabs">
-                      {(['idle', 'assisted', 'handsOn'] as const).map((mode) => (
-                        <button
-                          key={mode}
-                          type="button"
-                          className={classNames('craftingModeButton craftModeTab', {
-                            'craftingModeButton--active': currentMode === mode,
-                            'craftModeTab--active': currentMode === mode,
-                          })}
-                          onClick={() => setCraftMode('forge', mode)}
-                        >
-                          {mode === 'idle' ? 'Idle' : mode === 'assisted' ? 'Assisted' : 'Hands-on'}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="forgeWorkshop__modeCopy">{MODE_COPY[currentMode]}</div>
-                  </div>
-                </div>
-              )}
+                )}
             </div>
           </div>
         </main>
