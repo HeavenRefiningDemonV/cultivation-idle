@@ -280,116 +280,115 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
         </div>
       </header>
 
-      <div className={classNames('forgeWorkshopStage', { 'forgeWorkshopStage--queueOpen': queueOpen })}>
-        <aside className="forgeWorkshopDrawer">
+      <div className="forgeWorkshop__scroll">
+        <div className={classNames('forgeWorkshopStage', { 'forgeWorkshopStage--queueOpen': queueOpen })}>
+          <aside className="forgeWorkshopDrawer">
           <div className="forgeWorkshopDrawer__header">
             <div>
               <div className="forgeWorkshopDrawer__title">Blueprint Library</div>
               <div className="forgeWorkshopDrawer__sub">{filteredBlueprints.length} designs</div>
             </div>
           </div>
-          <div className="forgeWorkshopDrawer__scroll">
-            <div className="forgeWorkshopDrawer__search">
-              <input
-                className="forgeWorkshop__search"
-                placeholder="Search blueprints"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </div>
-            {filtersOpen && (
-              <div className="forgeWorkshopDrawer__advanced">
-                <div className="forgeWorkshopDrawer__section">
-                  <div className="forgeWorkshopDrawer__label">Type</div>
-                  <div className="forgeWorkshop__chips">
-                    {FILTERS.map((filter) => (
-                      <button
-                        key={filter.id}
-                        type="button"
-                        className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': filterId === filter.id })}
-                        onClick={() => setFilterId(filter.id)}
-                      >
-                        {filter.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="forgeWorkshopDrawer__section">
-                  <div className="forgeWorkshopDrawer__label">Tier</div>
-                  <div className="forgeWorkshopDrawer__tiers">
+          <div className="forgeWorkshopDrawer__search">
+            <input
+              className="forgeWorkshop__search"
+              placeholder="Search blueprints"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+          {filtersOpen && (
+            <div className="forgeWorkshopDrawer__advanced">
+              <div className="forgeWorkshopDrawer__section">
+                <div className="forgeWorkshopDrawer__label">Type</div>
+                <div className="forgeWorkshop__chips">
+                  {FILTERS.map((filter) => (
                     <button
+                      key={filter.id}
                       type="button"
-                      className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === 'all' })}
-                      onClick={() => setTierFilter('all')}
+                      className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': filterId === filter.id })}
+                      onClick={() => setFilterId(filter.id)}
                     >
-                      All
+                      {filter.label}
                     </button>
-                    {availableTiers.map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === tier })}
-                        onClick={() => setTierFilter(tier)}
-                      >
-                        Tier {tier}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="forgeWorkshopDrawer__section">
-                  <div className="forgeWorkshopDrawer__label">Sort</div>
-                  <div className="forgeWorkshopDrawer__sort">
-                    {(['name', 'tier', 'time'] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': sortMode === mode })}
-                        onClick={() => setSortMode(mode)}
-                      >
-                        {mode === 'name' ? 'Name' : mode === 'tier' ? 'Tier' : 'Time'}
-                      </button>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </div>
-            )}
-            <div className="forgeWorkshopDrawer__list">
-              {filteredBlueprints.length === 0 && (
-                <div className="forgeWorkshop__listEmpty">No blueprints match this filter.</div>
-              )}
-              {filteredBlueprints.map((blueprint) => {
-                const output = blueprint.output ? getItemDef(blueprint.output.itemId)?.name ?? blueprint.output.itemId : null;
-                const locked = Boolean(blueprint.cityId && cityId && blueprint.cityId !== cityId);
-                const rowCategory =
-                  blueprint.service ?? blueprint.tags?.[0] ?? (blueprint.type === 'craft' ? 'Craft' : 'Service');
-                return (
+              <div className="forgeWorkshopDrawer__section">
+                <div className="forgeWorkshopDrawer__label">Tier</div>
+                <div className="forgeWorkshopDrawer__tiers">
                   <button
-                    key={blueprint.id}
                     type="button"
-                    className={classNames('forgeWorkshop__row', {
-                      'forgeWorkshop__row--active': blueprint.id === selectedBlueprintId,
-                      'forgeWorkshop__row--locked': locked,
-                    })}
-                    onClick={() => setSelectedBlueprintId(blueprint.id)}
+                    className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === 'all' })}
+                    onClick={() => setTierFilter('all')}
                   >
-                    <div className="forgeWorkshop__rowIcon">{blueprint.name?.slice(0, 1) ?? '◆'}</div>
-                    <div className="forgeWorkshop__rowBody">
-                      <div className="forgeWorkshop__rowTitle">{blueprint.name ?? blueprint.id}</div>
-                      <div className="forgeWorkshop__rowMeta">
-                        {blueprint.cityIndex ? `Tier ${blueprint.cityIndex}` : 'Tier —'}
-                        {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
-                      </div>
-                      {rowCategory && <span className="forgeWorkshop__rowChip">{rowCategory}</span>}
-                      {locked && <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>}
-                    </div>
+                    All
                   </button>
-                );
-              })}
+                  {availableTiers.map((tier) => (
+                    <button
+                      key={tier}
+                      type="button"
+                      className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === tier })}
+                      onClick={() => setTierFilter(tier)}
+                    >
+                      Tier {tier}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="forgeWorkshopDrawer__section">
+                <div className="forgeWorkshopDrawer__label">Sort</div>
+                <div className="forgeWorkshopDrawer__sort">
+                  {(['name', 'tier', 'time'] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': sortMode === mode })}
+                      onClick={() => setSortMode(mode)}
+                    >
+                      {mode === 'name' ? 'Name' : mode === 'tier' ? 'Tier' : 'Time'}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
+          )}
+          <div className="forgeWorkshopDrawer__list">
+            {filteredBlueprints.length === 0 && (
+              <div className="forgeWorkshop__listEmpty">No blueprints match this filter.</div>
+            )}
+            {filteredBlueprints.map((blueprint) => {
+              const output = blueprint.output ? getItemDef(blueprint.output.itemId)?.name ?? blueprint.output.itemId : null;
+              const locked = Boolean(blueprint.cityId && cityId && blueprint.cityId !== cityId);
+              const rowCategory =
+                blueprint.service ?? blueprint.tags?.[0] ?? (blueprint.type === 'craft' ? 'Craft' : 'Service');
+              return (
+                <button
+                  key={blueprint.id}
+                  type="button"
+                  className={classNames('forgeWorkshop__row', {
+                    'forgeWorkshop__row--active': blueprint.id === selectedBlueprintId,
+                    'forgeWorkshop__row--locked': locked,
+                  })}
+                  onClick={() => setSelectedBlueprintId(blueprint.id)}
+                >
+                  <div className="forgeWorkshop__rowIcon">{blueprint.name?.slice(0, 1) ?? '◆'}</div>
+                  <div className="forgeWorkshop__rowBody">
+                    <div className="forgeWorkshop__rowTitle">{blueprint.name ?? blueprint.id}</div>
+                    <div className="forgeWorkshop__rowMeta">
+                      {blueprint.cityIndex ? `Tier ${blueprint.cityIndex}` : 'Tier —'}
+                      {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
+                    </div>
+                    {rowCategory && <span className="forgeWorkshop__rowChip">{rowCategory}</span>}
+                    {locked && <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>}
+                  </div>
+                </button>
+              );
+            })}
           </div>
-        </aside>
+          </aside>
 
-        <main className="forgeWorkshopWorkbench">
+          <main className="forgeWorkshopWorkbench">
           <div className="forgeWorkshopWorkbench__panel">
             <div className="forgeWorkshopWorkbench__top">
               <div className="forgeWorkshop__workbenchFrame">
@@ -530,10 +529,10 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               )}
             </div>
           </div>
-        </main>
+          </main>
 
-        {queueOpen && (
-          <aside className="forgeWorkshopQueueRail">
+          {queueOpen && (
+            <aside className="forgeWorkshopQueueRail">
             <div className="forgeWorkshop__queue">
               <div className="forgeWorkshop__queueHeader">
                 <div className="forgeWorkshop__queueTitle">Forge Queue</div>
@@ -659,7 +658,9 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               )}
             </div>
           </aside>
-        )}
+            </aside>
+          )}
+        </div>
       </div>
 
       {lastClaimResult && (
