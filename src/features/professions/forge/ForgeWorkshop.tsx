@@ -204,6 +204,12 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   );
   const isLocked = Boolean(selectedBlueprint?.cityId && cityId && selectedBlueprint.cityId !== cityId);
   const isBlocked = Boolean(activeOtherStation || (activeActivity && activeActivity.type !== 'forge'));
+  const requirementCount = selectedBlueprint ? selectedBlueprint.costs.items.length : 0;
+  const hasCurrencyCost = Boolean(
+    selectedBlueprint && (selectedBlueprint.costs.gold > 0 || selectedBlueprint.costs.spiritStones > 0),
+  );
+  const processStepCount = selectedBlueprint?.stepScript?.length ?? 0;
+  const handsOnAvailable = Boolean(selectedBlueprint?.handsOnBonus);
   const queueSummary = useMemo(() => {
     let ready = 0;
     forgeQueue.forEach((job) => {
@@ -464,6 +470,14 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                         Details
                       </button>
                     </div>
+                  </div>
+                  <div className="forgeWorkshop__detailSummary">
+                    <span>
+                      {requirementCount > 0 ? `Requires ${requirementCount} materials` : 'No materials required'}
+                    </span>
+                    {hasCurrencyCost && <span>Currency costs apply</span>}
+                    <span>{processStepCount > 0 ? `Process: ${processStepCount} steps` : 'Process: Auto'}</span>
+                    <span>{handsOnAvailable ? 'Hands-on available' : 'Auto only'}</span>
                   </div>
                   {selectedBlueprint.type === 'service' &&
                     (selectedBlueprint.service === 'refine' || selectedBlueprint.service === 'temper') && (

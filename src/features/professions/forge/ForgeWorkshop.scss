@@ -481,6 +481,21 @@
   padding: 4px 10px;
 }
 
+.forgeWorkshop__detailSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeWorkshop__detailSummary span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.5);
+}
+
 .forgeWorkshop__detailTitle {
   font-size: 15px;
   font-weight: 600;
@@ -825,6 +840,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  scrollbar-gutter: stable;
 }
 
 .forgeBlueprintModal__section {
@@ -835,6 +851,29 @@
 
 .forgeBlueprintModal__section h3 {
   font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeBlueprintModal__summary {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forgeBlueprintModal__chips span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.6);
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(226, 232, 240, 0.7);
@@ -858,13 +897,34 @@
   color: rgba(226, 232, 240, 0.85);
 }
 
-.forgeBlueprintModal__list {
-  margin: 0;
-  padding-left: 18px;
+.forgeBlueprintModal__requirements {
   display: grid;
   gap: 6px;
+}
+
+.forgeBlueprintModal__requirementRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 33, 0.5);
   font-size: 13px;
   color: rgba(226, 232, 240, 0.85);
+}
+
+.forgeBlueprintModal__requirementQty {
+  font-weight: 600;
+}
+
+.forgeBlueprintModal__callout {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(30, 24, 12, 0.6);
+  font-size: 12px;
+  color: rgba(253, 230, 138, 0.95);
 }
 
 .forgeBlueprintModal__stepPreview {
@@ -893,6 +953,32 @@
 .forgeBlueprintModal__stepArrow {
   margin: 0 4px;
   color: rgba(148, 163, 184, 0.7);
+}
+
+.forgeBlueprintModal__advanced {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.forgeBlueprintModal__advanced summary {
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeBlueprintModal__advancedGrid {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.forgeBlueprintModal__advancedRow {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px;
+  align-items: baseline;
 }
 
 .forgeBlueprintModal__empty {
