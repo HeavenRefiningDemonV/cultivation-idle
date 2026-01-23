@@ -5,6 +5,7 @@
   color: #e2e8f0;
   height: 100%;
   min-height: 0;
+  position: relative;
 }
 
 .forgeWorkshop--v2 {
@@ -85,6 +86,114 @@
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* Step 3C: overlay shells */
+.forgeOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 10, 18, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.forgeOverlayPanel {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  width: min(420px, 90vw);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 18, 28, 0.95);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.forgeOverlayPanel--left {
+  left: 12px;
+}
+
+.forgeOverlayPanel--right {
+  right: 12px;
+}
+
+.forgeOverlayPanel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.forgeOverlayPanel__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.forgeOverlayPanel__subtitle {
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.forgeOverlayPanel__close {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 33, 0.6);
+  color: inherit;
+  font-size: 11px;
+  padding: 4px 8px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.forgeOverlayPanel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.forgeOverlayPanel__list {
+  padding-right: 4px;
+}
+
+.forgeOverlayPanel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeOverlayPanel__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.forgeOverlayPanel__reset,
+.forgeOverlayPanel__apply {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 33, 0.6);
+  color: inherit;
+  font-size: 11px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.forgeOverlayPanel__apply {
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+}
+
+.forgeOverlayPanel__footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
 }
 
 /* Step 3B: compact header layout */
@@ -200,6 +309,11 @@
   align-items: stretch;
   flex: 1;
   overflow: hidden;
+}
+
+/* Step 3C: focus mode collapses the library column */
+.forgeWorkshopStage--focus {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .forgeWorkshop--v2 .forgeWorkshopStage--queueOpen {

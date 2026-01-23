@@ -14,6 +14,7 @@ import { useActivityStore } from '../../../stores/activityStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
 import { ForgeActionDock } from './ForgeActionDock';
+import { ForgeOverlayPanel } from './ForgeOverlayPanel';
 import { ForgeStepStrip } from './ForgeStepStrip';
 import './ForgeWorkshop.scss';
 
@@ -70,6 +71,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queueOpen, setQueueOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [libraryDrawerOpen, setLibraryDrawerOpen] = useState(false);
   const [tierFilter, setTierFilter] = useState<'all' | number>('all');
   const [sortMode, setSortMode] = useState<'name' | 'tier' | 'time'>('name');
   const [now, setNow] = useState(() => Date.now());
@@ -79,6 +81,9 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const [lastClaimResult, setLastClaimResult] = useState<ForgeClaimResult | null>(null);
   const detailsOpenerRef = useRef<HTMLButtonElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const filtersButtonRef = useRef<HTMLButtonElement | null>(null);
+  const queueButtonRef = useRef<HTMLButtonElement | null>(null);
+  const blueprintsButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const currentMode = modeByStation.forge ?? 'idle';
 
@@ -211,10 +216,29 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     if (selectedBlueprint) return 1;
     return 0;
   }, [activeForgeSession, queueSummary.ready, selectedBlueprint]);
+  const isFocusMode = Boolean(activeForgeSession) || queueSummary.ready > 0;
 
   const focusBlueprintLibrary = () => {
+    if (isFocusMode) {
+      setLibraryDrawerOpen(true);
+      setFiltersOpen(false);
+      setQueueOpen(false);
+      return;
+    }
     searchInputRef.current?.focus();
   };
+
+  const resetFilters = () => {
+    setFilterId('all');
+    setTierFilter('all');
+    setSortMode('name');
+  };
+
+  useEffect(() => {
+    if (!isFocusMode) {
+      setLibraryDrawerOpen(false);
+    }
+  }, [isFocusMode]);
 
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
@@ -233,8 +257,10 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     setSessionStatus(mode === 'HANDS_ON' ? 'Hands-on session started.' : 'Queued forging.');
   };
 
+  const isOverlayOpen = filtersOpen || queueOpen || libraryDrawerOpen;
+
   return (
-    <div className="forgeWorkshop forgeWorkshop--v2">
+    <div className={classNames('forgeWorkshop', 'forgeWorkshop--v2', { 'forgeWorkshop--focus': isFocusMode, 'forgeWorkshop--overlayOpen': isOverlayOpen })}>
       <header className="forgeWorkshopRibbon">
         <div className="forgeWorkshopRibbon__left">
           <div className="forgeWorkshopRibbon__titleRow">
@@ -258,18 +284,42 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           <ForgeStepStrip currentStep={currentStepIndex} />
         </div>
         <div className="forgeWorkshopRibbon__right">
+          {isFocusMode && (
+            <button
+              ref={blueprintsButtonRef}
+              type="button"
+              className="forgeWorkshopRibbon__toggle"
+              onClick={() => {
+                setLibraryDrawerOpen(true);
+                setFiltersOpen(false);
+                setQueueOpen(false);
+              }}
+            >
+              Back to Library
+            </button>
+          )}
           <button
+            ref={queueButtonRef}
             type="button"
             className={classNames('forgeWorkshopRibbon__toggle', { 'is-active': queueOpen })}
-            onClick={() => setQueueOpen((prev) => !prev)}
+            onClick={() => {
+              setQueueOpen((prev) => !prev);
+              setFiltersOpen(false);
+              setLibraryDrawerOpen(false);
+            }}
           >
             Queue ({queueSummary.total}) • Ready {queueSummary.ready}
             {queueSummary.ready > 0 && <span className="forgeWorkshopRibbon__dot" aria-hidden="true" />}
           </button>
           <button
+            ref={filtersButtonRef}
             type="button"
             className={classNames('forgeWorkshopRibbon__toggle', { 'is-active': filtersOpen })}
-            onClick={() => setFiltersOpen((prev) => !prev)}
+            onClick={() => {
+              setFiltersOpen((prev) => !prev);
+              setQueueOpen(false);
+              setLibraryDrawerOpen(false);
+            }}
           >
             Filters {filtersOpen ? '▾' : '▸'}
           </button>
@@ -279,8 +329,8 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
         </div>
       </header>
 
-      <div className={classNames('forgeWorkshopStage', { 'forgeWorkshopStage--queueOpen': queueOpen })}>
-        <aside className="forgeWorkshopDrawer">
+      <div className={classNames('forgeWorkshopStage', { 'forgeWorkshopStage--focus': isFocusMode })}>
+        {!isFocusMode && <aside className="forgeWorkshopDrawer">
           <div className="forgeWorkshopDrawer__header">
             <div>
               <div className="forgeWorkshopDrawer__title">Blueprint Library</div>
@@ -297,62 +347,6 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 ref={searchInputRef}
               />
             </div>
-            {filtersOpen && (
-              <div className="forgeWorkshopDrawer__advanced">
-                <div className="forgeWorkshopDrawer__section">
-                  <div className="forgeWorkshopDrawer__label">Type</div>
-                  <div className="forgeWorkshop__chips">
-                    {FILTERS.map((filter) => (
-                      <button
-                        key={filter.id}
-                        type="button"
-                        className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': filterId === filter.id })}
-                        onClick={() => setFilterId(filter.id)}
-                      >
-                        {filter.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="forgeWorkshopDrawer__section">
-                  <div className="forgeWorkshopDrawer__label">Tier</div>
-                  <div className="forgeWorkshopDrawer__tiers">
-                    <button
-                      type="button"
-                      className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === 'all' })}
-                      onClick={() => setTierFilter('all')}
-                    >
-                      All
-                    </button>
-                    {availableTiers.map((tier) => (
-                      <button
-                        key={tier}
-                        type="button"
-                        className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === tier })}
-                        onClick={() => setTierFilter(tier)}
-                      >
-                        Tier {tier}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="forgeWorkshopDrawer__section">
-                  <div className="forgeWorkshopDrawer__label">Sort</div>
-                  <div className="forgeWorkshopDrawer__sort">
-                    {(['name', 'tier', 'time'] as const).map((mode) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': sortMode === mode })}
-                        onClick={() => setSortMode(mode)}
-                      >
-                        {mode === 'name' ? 'Name' : mode === 'tier' ? 'Tier' : 'Time'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
             <div className="forgeWorkshopDrawer__list">
               {filteredBlueprints.length === 0 && (
                 <div className="forgeWorkshop__listEmpty">No blueprints match this filter.</div>
@@ -387,7 +381,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               })}
             </div>
           </div>
-        </aside>
+        </aside>}
 
         <main className="forgeWorkshopWorkbench">
           <div className="forgeWorkshopWorkbench__panel">
@@ -490,135 +484,288 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           </div>
         </main>
 
-        {queueOpen && (
-          <aside className="forgeWorkshopQueueRail">
-            <div className="forgeWorkshop__queue">
-              <div className="forgeWorkshop__queueHeader">
-                <div className="forgeWorkshop__queueTitle">Forge Queue</div>
-                <div className="forgeWorkshop__queueSub">Jobs process in order.</div>
-              </div>
-              {forgeQueue.length === 0 ? (
-                <div className="forgeWorkshop__queueEmpty">
-                  <div>No jobs queued.</div>
-                  <div>Start forging to queue work.</div>
-                </div>
-              ) : (
-                <div className="forgeWorkshop__queueList">
-                  {forgeQueue.map((job) => {
-                    const blueprint = getForgeBlueprint(job.blueprintId);
-                    const status = getForgeJobStatus(job, now);
-                    const done = status.done;
-                    const remainingMs = Math.max(0, job.endsAt - now);
-                    const queueMessage = queueStatus[job.id];
-                    const label = blueprint
-                      ? blueprint.type === 'service'
-                        ? `${blueprint.service === 'temper' ? 'Temper' : 'Refine'} ${job.targetSlot ?? 'equipment'}`
-                        : (() => {
-                            const outputItemId = blueprint.output?.itemId;
-                            const outputName = outputItemId ? getItemDef(outputItemId)?.name ?? outputItemId : blueprint.id;
-                            return `Craft ${outputName} x${job.qty}`;
-                          })()
-                      : job.blueprintId;
-                    const statusLabel =
-                      status.status === 'READY_TO_CLAIM'
-                        ? 'Ready to claim'
-                        : status.status === 'QUEUED'
-                          ? 'Queued'
-                          : job.mode === 'HANDS_ON'
-                            ? 'Hands-on in progress'
-                            : 'In progress';
-                    const modeLabel = job.mode === 'HANDS_ON' ? 'Hands-on' : job.mode === 'ASSISTED' ? 'Assisted' : 'Idle';
-
-                    return (
-                      <div key={job.id} className="forgeWorkshop__queueCard">
-                        <div className="forgeWorkshop__queueRow">
-                          <div>
-                            <div className="forgeWorkshop__queueName">{label}</div>
-                            <div className="forgeWorkshop__queueMeta">
-                              {blueprint?.id ?? job.blueprintId} · {modeLabel}
-                            </div>
-                          </div>
-                          <div className="forgeWorkshop__queueTiming">
-                            <div>{statusLabel}</div>
-                            <div>{done ? '00:00' : status.status === 'ACTIVE' ? `${Math.ceil(remainingMs / 1000)}s` : '--'}</div>
-                          </div>
-                        </div>
-                        <div className="forgeWorkshop__queueActions">
-                          <button
-                            type="button"
-                            className={classNames('worldScreenModuleButton', { 'worldScreenModuleButton--active': done })}
-                            disabled={!done}
-                            onClick={() => {
-                              const result = claimForgeJob(job.id) as { ok: boolean; error?: string; result?: ForgeClaimResult };
-                              if (!result.ok) {
-                                setQueueStatus((prev) => ({
-                                  ...prev,
-                                  [job.id]: { type: 'error', message: result.error ?? 'Unable to claim' },
-                                }));
-                                return;
-                              }
-                              if (result.result) {
-                                setLastClaimResult(result.result);
-                              }
-                              setQueueStatus((prev) => ({
-                                ...prev,
-                                [job.id]: { type: 'success', message: 'Claimed' },
-                              }));
-                            }}
-                          >
-                            Claim
-                          </button>
-                        </div>
-                        {queueMessage && (
-                          <div
-                            className={`forgeWorkshop__queueStatus forgeWorkshop__queueStatus--${queueMessage.type}`}
-                            role={queueMessage.type === 'error' ? 'alert' : 'status'}
-                          >
-                            {queueMessage.message}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className="forgeWorkshop__meter">
-              <div className="forgeWorkshop__meterHeader">Quality &amp; Process</div>
-              {qualityBuckets ? (
-                <div className="forgeWorkshop__meterGrid">
-                  <div className="forgeWorkshop__meterRow">
-                    <div>Heat correctness</div>
-                    <div className="forgeWorkshop__meterBar">
-                      <span style={{ width: `${Math.round(qualityBuckets.heat * 100)}%` }} />
-                    </div>
-                    <div>{Math.round(qualityBuckets.heat * 100)}%</div>
-                  </div>
-                  <div className="forgeWorkshop__meterRow">
-                    <div>Hammer accuracy</div>
-                    <div className="forgeWorkshop__meterBar">
-                      <span style={{ width: `${Math.round(qualityBuckets.hammer * 100)}%` }} />
-                    </div>
-                    <div>{Math.round(qualityBuckets.hammer * 100)}%</div>
-                  </div>
-                  {qualityBuckets.special !== undefined && (
-                    <div className="forgeWorkshop__meterRow">
-                      <div>Special precision</div>
-                      <div className="forgeWorkshop__meterBar">
-                        <span style={{ width: `${Math.round(qualityBuckets.special * 100)}%` }} />
-                      </div>
-                      <div>{Math.round(qualityBuckets.special * 100)}%</div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="forgeWorkshop__meterEmpty">Play hands-on to improve these.</div>
-              )}
-            </div>
-          </aside>
-        )}
       </div>
+
+      <ForgeOverlayPanel
+        open={libraryDrawerOpen && isFocusMode}
+        title="Blueprint Library"
+        side="left"
+        onClose={() => setLibraryDrawerOpen(false)}
+        triggerRef={blueprintsButtonRef}
+      >
+        <div className="forgeOverlayPanel__header">
+          <div>
+            <div className="forgeOverlayPanel__title">Blueprint Library</div>
+            <div className="forgeOverlayPanel__subtitle">{filteredBlueprints.length} designs</div>
+          </div>
+          <button type="button" className="forgeOverlayPanel__close" onClick={() => setLibraryDrawerOpen(false)}>
+            Close
+          </button>
+        </div>
+        <div className="forgeOverlayPanel__body">
+          <div className="forgeWorkshopDrawer__search">
+            <input
+              className="forgeWorkshop__search"
+              placeholder="Search blueprints"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+          <div className="forgeWorkshopDrawer__list forgeOverlayPanel__list">
+            {filteredBlueprints.length === 0 && (
+              <div className="forgeWorkshop__listEmpty">No blueprints match this filter.</div>
+            )}
+            {filteredBlueprints.map((blueprint) => {
+              const output = blueprint.output ? getItemDef(blueprint.output.itemId)?.name ?? blueprint.output.itemId : null;
+              const locked = Boolean(blueprint.cityId && cityId && blueprint.cityId !== cityId);
+              const rowCategory =
+                blueprint.service ?? blueprint.tags?.[0] ?? (blueprint.type === 'craft' ? 'Craft' : 'Service');
+              return (
+                <button
+                  key={blueprint.id}
+                  type="button"
+                  className={classNames('forgeWorkshop__row', {
+                    'forgeWorkshop__row--active': blueprint.id === selectedBlueprintId,
+                    'forgeWorkshop__row--locked': locked,
+                  })}
+                  onClick={() => {
+                    setSelectedBlueprintId(blueprint.id);
+                    setLibraryDrawerOpen(false);
+                  }}
+                >
+                  <div className="forgeWorkshop__rowIcon">{blueprint.name?.slice(0, 1) ?? '◆'}</div>
+                  <div className="forgeWorkshop__rowBody">
+                    <div className="forgeWorkshop__rowTitle">{blueprint.name ?? blueprint.id}</div>
+                    <div className="forgeWorkshop__rowMeta">
+                      {blueprint.cityIndex ? `Tier ${blueprint.cityIndex}` : 'Tier —'}
+                      {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
+                    </div>
+                    {rowCategory && <span className="forgeWorkshop__rowChip">{rowCategory}</span>}
+                    {locked && <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </ForgeOverlayPanel>
+
+      <ForgeOverlayPanel
+        open={filtersOpen}
+        title="Forge Filters"
+        side="right"
+        onClose={() => setFiltersOpen(false)}
+        triggerRef={filtersButtonRef}
+      >
+        <div className="forgeOverlayPanel__header">
+          <div>
+            <div className="forgeOverlayPanel__title">Filters</div>
+            <div className="forgeOverlayPanel__subtitle">Refine the library without leaving the forge.</div>
+          </div>
+          <button type="button" className="forgeOverlayPanel__close" onClick={() => setFiltersOpen(false)}>
+            Close
+          </button>
+        </div>
+        <div className="forgeOverlayPanel__body">
+          <div className="forgeOverlayPanel__section">
+            <div className="forgeWorkshopDrawer__label">Type</div>
+            <div className="forgeWorkshop__chips">
+              {FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': filterId === filter.id })}
+                  onClick={() => setFilterId(filter.id)}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="forgeOverlayPanel__section">
+            <div className="forgeWorkshopDrawer__label">Tier</div>
+            <div className="forgeWorkshopDrawer__tiers">
+              <button
+                type="button"
+                className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === 'all' })}
+                onClick={() => setTierFilter('all')}
+              >
+                All
+              </button>
+              {availableTiers.map((tier) => (
+                <button
+                  key={tier}
+                  type="button"
+                  className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': tierFilter === tier })}
+                  onClick={() => setTierFilter(tier)}
+                >
+                  Tier {tier}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="forgeOverlayPanel__section">
+            <div className="forgeWorkshopDrawer__label">Sort</div>
+            <div className="forgeWorkshopDrawer__sort">
+              {(['name', 'tier', 'time'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': sortMode === mode })}
+                  onClick={() => setSortMode(mode)}
+                >
+                  {mode === 'name' ? 'Name' : mode === 'tier' ? 'Tier' : 'Time'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="forgeOverlayPanel__actions">
+          <button type="button" className="forgeOverlayPanel__reset" onClick={resetFilters}>
+            Reset
+          </button>
+          <button type="button" className="forgeOverlayPanel__apply" onClick={() => setFiltersOpen(false)}>
+            Apply
+          </button>
+        </div>
+      </ForgeOverlayPanel>
+
+      <ForgeOverlayPanel
+        open={queueOpen}
+        title="Forge Queue"
+        side="right"
+        onClose={() => setQueueOpen(false)}
+        triggerRef={queueButtonRef}
+      >
+        <div className="forgeOverlayPanel__header">
+          <div>
+            <div className="forgeOverlayPanel__title">Forge Queue</div>
+            <div className="forgeOverlayPanel__subtitle">Jobs process in order.</div>
+          </div>
+          <button type="button" className="forgeOverlayPanel__close" onClick={() => setQueueOpen(false)}>
+            Close
+          </button>
+        </div>
+        <div className="forgeOverlayPanel__body">
+          {forgeQueue.length === 0 ? (
+            <div className="forgeWorkshop__queueEmpty">
+              <div>No jobs queued.</div>
+              <div>Start forging to queue work.</div>
+            </div>
+          ) : (
+            <div className="forgeWorkshop__queueList">
+              {forgeQueue.map((job) => {
+                const blueprint = getForgeBlueprint(job.blueprintId);
+                const status = getForgeJobStatus(job, now);
+                const done = status.done;
+                const remainingMs = Math.max(0, job.endsAt - now);
+                const queueMessage = queueStatus[job.id];
+                const label = blueprint
+                  ? blueprint.type === 'service'
+                    ? `${blueprint.service === 'temper' ? 'Temper' : 'Refine'} ${job.targetSlot ?? 'equipment'}`
+                    : (() => {
+                        const outputItemId = blueprint.output?.itemId;
+                        const outputName = outputItemId ? getItemDef(outputItemId)?.name ?? outputItemId : blueprint.id;
+                        return `Craft ${outputName} x${job.qty}`;
+                      })()
+                  : job.blueprintId;
+                const statusLabel =
+                  status.status === 'READY_TO_CLAIM'
+                    ? 'Ready to claim'
+                    : status.status === 'QUEUED'
+                      ? 'Queued'
+                      : job.mode === 'HANDS_ON'
+                        ? 'Hands-on in progress'
+                        : 'In progress';
+                const modeLabel = job.mode === 'HANDS_ON' ? 'Hands-on' : job.mode === 'ASSISTED' ? 'Assisted' : 'Idle';
+
+                return (
+                  <div key={job.id} className="forgeWorkshop__queueCard">
+                    <div className="forgeWorkshop__queueRow">
+                      <div>
+                        <div className="forgeWorkshop__queueName">{label}</div>
+                        <div className="forgeWorkshop__queueMeta">
+                          {blueprint?.id ?? job.blueprintId} · {modeLabel}
+                        </div>
+                      </div>
+                      <div className="forgeWorkshop__queueTiming">
+                        <div>{statusLabel}</div>
+                        <div>{done ? '00:00' : status.status === 'ACTIVE' ? `${Math.ceil(remainingMs / 1000)}s` : '--'}</div>
+                      </div>
+                    </div>
+                    <div className="forgeWorkshop__queueActions">
+                      <button
+                        type="button"
+                        className={classNames('worldScreenModuleButton', { 'worldScreenModuleButton--active': done })}
+                        disabled={!done}
+                        onClick={() => {
+                          const result = claimForgeJob(job.id) as { ok: boolean; error?: string; result?: ForgeClaimResult };
+                          if (!result.ok) {
+                            setQueueStatus((prev) => ({
+                              ...prev,
+                              [job.id]: { type: 'error', message: result.error ?? 'Unable to claim' },
+                            }));
+                            return;
+                          }
+                          if (result.result) {
+                            setLastClaimResult(result.result);
+                          }
+                          setQueueStatus((prev) => ({
+                            ...prev,
+                            [job.id]: { type: 'success', message: 'Claimed' },
+                          }));
+                        }}
+                      >
+                        Claim
+                      </button>
+                    </div>
+                    {queueMessage && (
+                      <div
+                        className={`forgeWorkshop__queueStatus forgeWorkshop__queueStatus--${queueMessage.type}`}
+                        role={queueMessage.type === 'error' ? 'alert' : 'status'}
+                      >
+                        {queueMessage.message}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div className="forgeOverlayPanel__footer">
+          <div className="forgeWorkshop__meterHeader">Quality &amp; Process</div>
+          {qualityBuckets ? (
+            <div className="forgeWorkshop__meterGrid">
+              <div className="forgeWorkshop__meterRow">
+                <div>Heat correctness</div>
+                <div className="forgeWorkshop__meterBar">
+                  <span style={{ width: `${Math.round(qualityBuckets.heat * 100)}%` }} />
+                </div>
+                <div>{Math.round(qualityBuckets.heat * 100)}%</div>
+              </div>
+              <div className="forgeWorkshop__meterRow">
+                <div>Hammer accuracy</div>
+                <div className="forgeWorkshop__meterBar">
+                  <span style={{ width: `${Math.round(qualityBuckets.hammer * 100)}%` }} />
+                </div>
+                <div>{Math.round(qualityBuckets.hammer * 100)}%</div>
+              </div>
+              {qualityBuckets.special !== undefined && (
+                <div className="forgeWorkshop__meterRow">
+                  <div>Special precision</div>
+                  <div className="forgeWorkshop__meterBar">
+                    <span style={{ width: `${Math.round(qualityBuckets.special * 100)}%` }} />
+                  </div>
+                  <div>{Math.round(qualityBuckets.special * 100)}%</div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="forgeWorkshop__meterEmpty">Play hands-on to improve these.</div>
+          )}
+        </div>
+      </ForgeOverlayPanel>
 
       {lastClaimResult && (
         <div className="modalOverlay forgeResultModal">
