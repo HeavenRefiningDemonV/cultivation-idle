@@ -3,21 +3,10 @@
   flex-direction: column;
   gap: 16px;
   color: #e2e8f0;
-  min-height: 0;
 }
 
 .forgeWorkshop--v2 {
   gap: 12px;
-}
-
-.forgeWorkshop__scroll {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 .forgeWorkshop--v2 .forgeWorkshopRibbon {
@@ -30,9 +19,6 @@
   border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08));
   background: var(--panel-bg, rgba(12, 18, 28, 0.78));
   box-shadow: var(--panel-shadow, none);
-  position: sticky;
-  top: 0;
-  z-index: 5;
 }
 
 .forgeWorkshopRibbon__left {
@@ -147,6 +133,15 @@
   background: var(--panel-bg, rgba(10, 16, 24, 0.6));
 }
 
+.forgeWorkshopDrawer__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
 .forgeWorkshopDrawer__header {
   display: flex;
   justify-content: space-between;
@@ -202,11 +197,6 @@
   flex-direction: column;
   gap: 6px;
   min-height: 0;
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 4px;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
 
 .forgeWorkshopWorkbench {

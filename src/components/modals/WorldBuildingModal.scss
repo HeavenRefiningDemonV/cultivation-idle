@@ -16,8 +16,8 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  width: min(80rem, 96vw);
-  height: min(45rem, 90vh);
+  width: 80rem;
+  height: 45rem;
   display: flex;
   flex-direction: column;
   color: #e2e8f0;
@@ -111,16 +111,17 @@
   line-height: 1;
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
 }
+
+/*
 .worldBuildingBody {
+  padding: 16px 18px 20px;
+  overflow: auto;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   flex: 1;
-  min-height: 0;
-  padding: 12px;
-  overflow: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 }
+  */
 
 .worldBuildingTitleGroup {
   display: flex;
