@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import './ForgeHandsOnHudRail.scss';
 
@@ -56,6 +56,34 @@ export function ForgeHandsOnHudRail({
 }: ForgeHandsOnHudRailProps) {
   const detailsDisabled = !onOpenDetails;
   const detailsTitle = detailsDisabled ? 'Select a blueprint to view details.' : 'Open full details';
+  const instructionRef = useRef<HTMLDivElement | null>(null);
+  const [instructionTruncated, setInstructionTruncated] = useState(false);
+  const overallPercent = Math.round(overallScore * 100);
+
+  useEffect(() => {
+    const element = instructionRef.current;
+    if (!element) return undefined;
+
+    const updateTruncation = () => {
+      setInstructionTruncated(element.scrollHeight > element.clientHeight + 1);
+    };
+
+    updateTruncation();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(updateTruncation);
+      observer.observe(element);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateTruncation);
+    return () => window.removeEventListener('resize', updateTruncation);
+  }, [instruction]);
+
+  const meterRows = [
+    { id: 'overall', label: 'Overall', value: overallScore, showValue: true },
+    ...meters.map((meter) => ({ ...meter, showValue: false })),
+  ];
 
   return (
     <div className="forgeHandsOnHudRail">
@@ -85,8 +113,19 @@ export function ForgeHandsOnHudRail({
 
       <div className="forgeHandsOnHudRail__body">
         <div className="forgeHandsOnHudRail__card">
-          <div className="forgeHandsOnHudRail__instruction" title={instruction}>
-            {instruction}
+          <div className="forgeHandsOnHudRail__instructionRow">
+            <div ref={instructionRef} className="forgeHandsOnHudRail__instruction" title={instruction}>
+              {instruction}
+            </div>
+            {instructionTruncated && onOpenDetails && (
+              <button
+                type="button"
+                className="forgeHandsOnHudRail__moreLink"
+                onClick={onOpenDetails}
+              >
+                More
+              </button>
+            )}
           </div>
           {metaLines.length > 0 && (
             <div className="forgeHandsOnHudRail__meta">
@@ -101,26 +140,35 @@ export function ForgeHandsOnHudRail({
         {controls && <div className="forgeHandsOnHudRail__controls">{controls}</div>}
 
         <div className="forgeHandsOnHudRail__card">
-          <div className="forgeHandsOnHudRail__meterHeader">
-            <div className="forgeHandsOnHudRail__meterLabel">Overall</div>
-            <div className="forgeHandsOnHudRail__meterValue">{Math.round(overallScore * 100)}%</div>
-          </div>
-          <div className="forgeHandsOnHudRail__meterBar">
-            <div className="forgeHandsOnHudRail__meterFill" style={{ width: `${Math.round(overallScore * 100)}%` }} />
-          </div>
-          <div className="forgeHandsOnHudRail__meterGrid">
-            {meters.map((meter) => (
-              <div key={meter.id} className="forgeHandsOnHudRail__meterRow">
-                <div>{meter.label}</div>
-                <div className="forgeHandsOnHudRail__miniBar">
-                  <div
-                    className="forgeHandsOnHudRail__miniFill"
-                    style={{ width: `${Math.round(meter.value * 100)}%` }}
-                  />
+          <div className="forgeHandsOnHudRail__meters">
+            {meterRows.map((meter) => {
+              const percent = Math.round(meter.value * 100);
+              return (
+                <div
+                  key={meter.id}
+                  className={classNames('forgeHandsOnHudRail__meterRow', {
+                    'forgeHandsOnHudRail__meterRow--overall': meter.id === 'overall',
+                  })}
+                >
+                  <div className="forgeHandsOnHudRail__meterLabel">
+                    <span
+                      className={classNames(
+                        'forgeHandsOnHudRail__meterIcon',
+                        `forgeHandsOnHudRail__meterIcon--${meter.id}`,
+                      )}
+                      aria-hidden="true"
+                    />
+                    <span>{meter.label}</span>
+                  </div>
+                  <div className="forgeHandsOnHudRail__meterTrack">
+                    <div className="forgeHandsOnHudRail__meterFill" style={{ width: `${percent}%` }} />
+                  </div>
+                  {meter.showValue && (
+                    <div className="forgeHandsOnHudRail__meterValue">{overallPercent}%</div>
+                  )}
                 </div>
-                <div className="forgeHandsOnHudRail__meterValue">{Math.round(meter.value * 100)}%</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

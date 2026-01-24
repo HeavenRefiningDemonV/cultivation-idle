@@ -1010,8 +1010,16 @@ export function ForgeHandsOnSession({
                   <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
                   <div className="forgeStepBody">
                     <div>Pull the metal out at the target heat.</div>
-                    <div className="forgeStepMeta">Target zone: {heatStepConfig.heatZone}</div>
-                    <div className="forgeStepMeta">Timing: {formatMs(heatStepConfig.durationMs)}</div>
+                    <div className="forgeHandsOnHudRail__metaRow">
+                      <div className="forgeHandsOnHudRail__metaGroup">
+                        <span className="forgeHandsOnHudRail__metaLabel">Target zone</span>
+                        <span className="forgeHandsOnHudRail__chip">{heatStepConfig.heatZone}</span>
+                      </div>
+                      <div className="forgeHandsOnHudRail__metaGroup">
+                        <span className="forgeHandsOnHudRail__metaLabel">Timer</span>
+                        <span className="forgeHandsOnHudRail__timer">{formatMs(heatStepConfig.durationMs)}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
