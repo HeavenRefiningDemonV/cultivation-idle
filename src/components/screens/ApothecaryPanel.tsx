@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useShopStore } from '../../stores/shopStore';
@@ -72,10 +72,37 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const [statusByStock, setStatusByStock] = useState<Record<string, StatusMessage>>({});
   const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
   const [statusByService, setStatusByService] = useState<Record<string, StatusMessage>>({});
+  const [pouchOpen, setPouchOpen] = useState(false);
+  const pouchModalRef = useRef<HTMLDivElement | null>(null);
+  const pouchOpenerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     ensureDayKeyCurrent();
   }, [ensureDayKeyCurrent]);
+
+  useEffect(() => {
+    if (!pouchOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      setPouchOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [pouchOpen]);
+
+  useEffect(() => {
+    if (pouchOpen) {
+      pouchOpenerRef.current = document.activeElement as HTMLElement | null;
+      window.requestAnimationFrame(() => {
+        pouchModalRef.current?.focus();
+      });
+      return;
+    }
+
+    pouchOpenerRef.current?.focus();
+  }, [pouchOpen]);
 
   const stock = apothecary?.stock ?? [];
 
@@ -131,6 +158,10 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     { key: 'services', label: 'Services' },
     { key: 'bundles', label: 'Bundles' },
   ];
+
+  const renderMedicinePouchContent = (): ReactNode => <MedicinePouchPanel />;
+
+  const closePouch = () => setPouchOpen(false);
 
   const renderStatus = (status?: StatusMessage) =>
     status ? (
@@ -412,52 +443,83 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   };
 
   return (
-    <div className={'apothecaryPanel'}>
-      <MedicinePouchPanel />
-      <div className={'apothecaryHeaderCard'}>
-        <div className={'apothecaryHeaderVfx'} aria-hidden="true">
-          <div className={'apothecaryVfxVignette apothecaryVfxVignette--magic'} />
-          <div className={'apothecaryVfxVignette apothecaryVfxVignette--souls'} />
-          <div className={'apothecaryVfxCore'}>
-            <div className={'apothecaryVfxRune'} />
-            <div className={'apothecaryVfxCrystal'} />
-          </div>
-        </div>
-        <div className={'apothecaryHeaderInfo'}>
+    <div className={'apothecaryPanel apothecaryPanel--v2'}>
+      <header className={'apothecaryTopRibbon'}>
+        <div className={'apothecaryTopLeft'}>
           <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>
           <div className={'apothecarySubheading'}>
             Buy remedies for combat and cultivation. Daily limits reset at local midnight.
           </div>
           <div className={'apothecaryDayKey'}>Day: {dayKey}</div>
         </div>
-        <div className={'apothecaryWallet'}>
-          <div className={'apothecaryWalletLabel'}>Wallet</div>
-          <div className={'apothecaryWalletGrid'}>
-            <span>Gold</span>
-            <strong>{currencies.gold ?? '0'}</strong>
-            <span>Spirit Stones</span>
-            <strong>{currencies.spiritStones ?? '0'}</strong>
-            <span>Merit</span>
-            <strong>{currencies.merit ?? '0'}</strong>
+        <div className={'apothecaryTopRight'}>
+          <div className={'apothecaryWallet'}>
+            <div className={'apothecaryWalletLabel'}>Wallet</div>
+            <div className={'apothecaryWalletGrid'}>
+              <span>Gold</span>
+              <strong>{currencies.gold ?? '0'}</strong>
+              <span>Spirit Stones</span>
+              <strong>{currencies.spiritStones ?? '0'}</strong>
+              <span>Merit</span>
+              <strong>{currencies.merit ?? '0'}</strong>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="apothecaryPouchButton"
+            onClick={() => setPouchOpen(true)}
+            aria-label="Open Medicine Pouch"
+            title="Medicine Pouch"
+          >
+            🧪
+          </button>
+        </div>
+      </header>
+
+      <div className={'apothecaryStage'}>
+        <div className={'apothecarySafeZone'}>
+          <div className={'apothecaryShelfTabs'}>
+            {shelfOptions.map((option) => (
+              <button
+                key={option.key}
+                className={`worldScreenModuleButton apothecaryShelfTab${
+                  activeShelf === option.key ? ' apothecaryShelfTab--active worldScreenModuleButton--active' : ''
+                }`}
+                onClick={() => setActiveShelf(option.key)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+
+          {renderShelf(activeShelf)}
+        </div>
+        <div className={'apothecaryAmbientZone'} aria-hidden="true" />
+      </div>
+
+      {pouchOpen && (
+        <div className="apothecaryPouchOverlay" onMouseDown={closePouch}>
+          <div
+            className="apothecaryPouchModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="apothecaryPouchTitle"
+            onMouseDown={(event) => event.stopPropagation()}
+            tabIndex={-1}
+            ref={pouchModalRef}
+          >
+            <div className="apothecaryPouchHeader">
+              <div id="apothecaryPouchTitle" className="apothecaryPouchTitle">
+                Medicine Pouch
+              </div>
+              <button type="button" className="apothecaryPouchClose" onClick={closePouch} aria-label="Close">
+                ✕
+              </button>
+            </div>
+            <div className="apothecaryPouchBody">{renderMedicinePouchContent()}</div>
           </div>
         </div>
-      </div>
-
-      <div className={'apothecaryShelfTabs'}>
-        {shelfOptions.map((option) => (
-          <button
-            key={option.key}
-            className={`worldScreenModuleButton apothecaryShelfTab${
-              activeShelf === option.key ? ' apothecaryShelfTab--active worldScreenModuleButton--active' : ''
-            }`}
-            onClick={() => setActiveShelf(option.key)}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-
-      {renderShelf(activeShelf)}
+      )}
     </div>
   );
 }
