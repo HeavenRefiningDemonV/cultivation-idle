@@ -453,7 +453,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           <div className={'apothecaryDayKey'}>Day: {dayKey}</div>
         </div>
         <div className={'apothecaryTopRight'}>
-          <div className={'apothecaryWallet'}>
+          <div className={'apothecaryWallet apothecaryPanelFrame'}>
             <div className={'apothecaryWalletLabel'}>Wallet</div>
             <div className={'apothecaryWalletGrid'}>
               <span>Gold</span>
@@ -478,21 +478,23 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
       <div className={'apothecaryStage'}>
         <div className={'apothecarySafeZone'}>
-          <div className={'apothecaryShelfTabs'}>
-            {shelfOptions.map((option) => (
-              <button
-                key={option.key}
-                className={`worldScreenModuleButton apothecaryShelfTab${
-                  activeShelf === option.key ? ' apothecaryShelfTab--active worldScreenModuleButton--active' : ''
-                }`}
-                onClick={() => setActiveShelf(option.key)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+          <div className={'apothecaryStoreFrame apothecaryPanelFrame'}>
+            <div className={'apothecaryShelfTabs'}>
+              {shelfOptions.map((option) => (
+                <button
+                  key={option.key}
+                  className={`worldScreenModuleButton apothecaryShelfTab${
+                    activeShelf === option.key ? ' apothecaryShelfTab--active worldScreenModuleButton--active' : ''
+                  }`}
+                  onClick={() => setActiveShelf(option.key)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
 
-          {renderShelf(activeShelf)}
+            {renderShelf(activeShelf)}
+          </div>
         </div>
         <div className={'apothecaryAmbientZone'} aria-hidden="true" />
       </div>
