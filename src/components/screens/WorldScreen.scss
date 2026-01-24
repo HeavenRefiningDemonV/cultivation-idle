@@ -1876,6 +1876,31 @@
   gap: 12px;
 }
 
+.forgePanel--v2 {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.forgeTopRibbon {
+  flex: 0 0 auto;
+}
+
+.forgeStage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.forgeStage__legacy {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+}
+
 .forgePanelHeader {
   display: flex;
   justify-content: space-between;
