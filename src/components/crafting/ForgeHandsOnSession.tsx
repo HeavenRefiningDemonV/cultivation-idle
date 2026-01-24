@@ -981,219 +981,223 @@ export function ForgeHandsOnSession({
   ]);
 
   return (
-    <div className="handsOnSessionCard forgeHandsOnLayout forgeHandsOnLayout--rail">
-      <div className="forgeHandsOnRail">
-        <ForgeHandsOnHudRail
-          blueprintName={blueprintName ?? session.sourceId}
-          stepTitle={stepTitle}
-          stepIndex={session.cursor.stepIndex + 1}
-          stepCount={session.script.steps.length}
-          instruction={stepInstruction}
-          metaLines={stepMetaLines}
-          actionHint={actionHint}
-          meters={qualityBuckets.map((bucket) => ({ id: bucket.key, label: bucket.label, value: bucket.score }))}
-          overallScore={liveOutcome.scoreOverall}
-          steps={timeline.map((item) => ({ id: item.id, label: item.label, status: item.status }))}
-          stepsExpanded={stepsExpanded}
-          onToggleSteps={() => setStepsExpanded((prev) => !prev)}
-          onOpenDetails={onOpenDetails}
-          onLeave={() => markBackgroundResolving('closed')}
-          onAbort={() => {
-            const confirmed = window.confirm('Abort this hands-on session? Progress will be lost.');
-            if (!confirmed) return;
-            abortSession();
-          }}
-          controls={
-            <>
-              {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
-                <div className="forgeStepCard">
-                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
-                  <div className="forgeStepBody">
-                    <div>Pull the metal out at the target heat.</div>
-                    <div className="forgeHandsOnHudRail__metaRow">
-                      <div className="forgeHandsOnHudRail__metaGroup">
-                        <span className="forgeHandsOnHudRail__metaLabel">Target zone</span>
-                        <span className="forgeHandsOnHudRail__chip">{heatStepConfig.heatZone}</span>
+    <div className="handsOnSessionCard forgeHandsOnSession">
+      <div className="forgeHandsOnStage forgeHandsOnStage--overlay">
+        <div className="forgeHandsOnStage__content">
+          <ForgeWorkbenchScene
+            stepType={currentStep?.type}
+            phaseKind={currentPhase?.kind}
+            heatSetting={heatSetting}
+            hideWorkpiece={currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL'}
+            workpieceMoving={workpieceMoving}
+            workpieceCooling={workpieceCooling && currentPhase?.kind !== 'HEAT'}
+          >
+            {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
+              <div className="forgeWorkbenchScene__furnaceSlot">
+                <ForgeHeatPullOutQTE
+                  key={currentStep.id}
+                  durationMs={heatStepConfig.durationMs}
+                  targetPct={heatStepConfig.targetPct}
+                  tolerancePct={heatStepConfig.tolerancePct}
+                  onResolve={handleHeatResolve}
+                  ariaLabel="Pull the heated billet from the furnace"
+                />
+                {heatState.impactKey > 0 && (
+                  <div
+                    key={`heat-impact-${heatState.impactKey}`}
+                    className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${heatState.impactGrade}`}
+                  />
+                )}
+                {heatState.impactKey > 0 && buildSparkBurst(heatState.impactGrade, `heat-${heatState.impactKey}`)}
+                {heatState.impactKey > 0 && (
+                  <div key={`heat-shake-${heatState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+                )}
+                {heatState.impactKey > 0 && (
+                  <div
+                    key={`heat-pulse-${heatState.impactKey}`}
+                    className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${heatState.impactGrade}`}
+                  />
+                )}
+              </div>
+            )}
+            {currentStep?.type === 'HAMMER_PATTERN' && (
+              <div className="forgeWorkbenchScene__anvilSlot">
+                <TimingCircleQTE
+                  key={`${currentStep.id}-${hammerState.attempts}`}
+                  durationMs={currentStep.shrinkMs}
+                  tolerance={currentStep.tolerance}
+                  sizePx={96}
+                  label="Strike"
+                  onResolve={(result) => resolveHammerStrike(result)}
+                />
+                {hammerState.impactKey > 0 && (
+                  <div
+                    key={`impact-${hammerState.impactKey}`}
+                    className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${hammerState.impactGrade}`}
+                  />
+                )}
+                {hammerState.impactKey > 0 && buildSparkBurst(hammerState.impactGrade, `hammer-${hammerState.impactKey}`)}
+                {hammerState.impactKey > 0 && (
+                  <div key={`shake-${hammerState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+                )}
+                {hammerState.impactKey > 0 && (
+                  <div
+                    key={`pulse-${hammerState.impactKey}`}
+                    className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${hammerState.impactGrade}`}
+                  />
+                )}
+              </div>
+            )}
+            {currentStep?.type === 'ENGRAVE_RUNE' && (
+              <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--engrave">
+                <ForgeRingQte
+                  hitsRequired={Math.max(1, Math.floor(currentStep.hits ?? 5))}
+                  difficulty={currentStep.difficulty >= 3 ? 'hard' : currentStep.difficulty === 2 ? 'medium' : 'easy'}
+                  shrinkMs={currentStep.shrinkMs ?? 820}
+                  onHit={(rating) => handleEngraveHit(rating)}
+                  onComplete={(result) => handleEngraveComplete(result)}
+                  ariaLabel="Engrave rune"
+                />
+                {engraveState.impactKey > 0 && (
+                  <div
+                    key={`engrave-impact-${engraveState.impactKey}`}
+                    className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${engraveState.impactGrade}`}
+                  />
+                )}
+                {engraveState.impactKey > 0 &&
+                  buildSparkBurst(engraveState.impactGrade, `engrave-${engraveState.impactKey}`)}
+                {engraveState.impactKey > 0 && (
+                  <div key={`engrave-shake-${engraveState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+                )}
+                {engraveState.impactKey > 0 && (
+                  <div
+                    key={`engrave-pulse-${engraveState.impactKey}`}
+                    className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${engraveState.impactGrade}`}
+                  />
+                )}
+              </div>
+            )}
+            {currentStep?.type === 'LAY_FORMATION' && (
+              <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--formation">
+                <ForgeRingQte
+                  hitsRequired={Math.max(1, Math.floor(currentStep.hits ?? 4))}
+                  difficulty={currentStep.difficulty >= 3 ? 'hard' : currentStep.difficulty === 2 ? 'medium' : 'easy'}
+                  onHit={(rating) => handleFormationHit(rating)}
+                  onComplete={(result) => handleFormationComplete(result)}
+                  ariaLabel="Lay formation"
+                />
+                {formationState.impactKey > 0 && (
+                  <div
+                    key={`formation-impact-${formationState.impactKey}`}
+                    className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${formationState.impactGrade}`}
+                  />
+                )}
+                {formationState.impactKey > 0 &&
+                  buildSparkBurst(formationState.impactGrade, `formation-${formationState.impactKey}`)}
+                {formationState.impactKey > 0 && (
+                  <div key={`formation-shake-${formationState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
+                )}
+                {formationState.impactKey > 0 && (
+                  <div
+                    key={`formation-pulse-${formationState.impactKey}`}
+                    className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${formationState.impactGrade}`}
+                  />
+                )}
+              </div>
+            )}
+          </ForgeWorkbenchScene>
+        </div>
+
+        <div className="forgeHandsOnHudOverlay">
+          <ForgeHandsOnHudRail
+            blueprintName={blueprintName ?? session.sourceId}
+            stepTitle={stepTitle}
+            stepIndex={session.cursor.stepIndex + 1}
+            stepCount={session.script.steps.length}
+            instruction={stepInstruction}
+            metaLines={stepMetaLines}
+            actionHint={actionHint}
+            meters={qualityBuckets.map((bucket) => ({ id: bucket.key, label: bucket.label, value: bucket.score }))}
+            overallScore={liveOutcome.scoreOverall}
+            steps={timeline.map((item) => ({ id: item.id, label: item.label, status: item.status }))}
+            stepsExpanded={stepsExpanded}
+            onToggleSteps={() => setStepsExpanded((prev) => !prev)}
+            onOpenDetails={onOpenDetails}
+            onLeave={() => markBackgroundResolving('closed')}
+            onAbort={() => {
+              const confirmed = window.confirm('Abort this hands-on session? Progress will be lost.');
+              if (!confirmed) return;
+              abortSession();
+            }}
+            controls={
+              <>
+                {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
+                  <div className="forgeStepCard">
+                    <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
+                    <div className="forgeStepBody">
+                      <div>Pull the metal out at the target heat.</div>
+                      <div className="forgeHandsOnHudRail__metaRow">
+                        <div className="forgeHandsOnHudRail__metaGroup">
+                          <span className="forgeHandsOnHudRail__metaLabel">Target zone</span>
+                          <span className="forgeHandsOnHudRail__chip">{heatStepConfig.heatZone}</span>
+                        </div>
+                        <div className="forgeHandsOnHudRail__metaGroup">
+                          <span className="forgeHandsOnHudRail__metaLabel">Timer</span>
+                          <span className="forgeHandsOnHudRail__timer">{formatMs(heatStepConfig.durationMs)}</span>
+                        </div>
                       </div>
-                      <div className="forgeHandsOnHudRail__metaGroup">
-                        <span className="forgeHandsOnHudRail__metaLabel">Timer</span>
-                        <span className="forgeHandsOnHudRail__timer">{formatMs(heatStepConfig.durationMs)}</span>
+                    </div>
+                  </div>
+                )}
+
+                {currentStep?.type === 'HAMMER_PATTERN' && (
+                  <div className="forgeStepCard">
+                    <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Hammer pattern'}</div>
+                    <div className="forgeStepBody">
+                      <div>Click when the ring meets the circle.</div>
+                      <div className="forgeStepMeta">
+                        Strikes: {Math.min(hammerState.attempts, currentStep.hits)} / {currentStep.hits}
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {currentStep?.type === 'HAMMER_PATTERN' && (
-                <div className="forgeStepCard">
-                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Hammer pattern'}</div>
-                  <div className="forgeStepBody">
-                    <div>Click when the ring meets the circle.</div>
-                    <div className="forgeStepMeta">
-                      Strikes: {Math.min(hammerState.attempts, currentStep.hits)} / {currentStep.hits}
+                {stepControls}
+
+                {currentStep?.type === 'ENGRAVE_RUNE' && (
+                  <div className="forgeStepCard">
+                    <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Engrave rune'}</div>
+                    <div className="forgeStepBody">
+                      <div>Engrave clean strokes.</div>
+                      <div className="forgeStepMeta">
+                        Strokes: {Math.min(engraveState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 5)))} /{' '}
+                        {Math.max(1, Math.floor(currentStep.hits ?? 5))}
+                      </div>
+                      {currentStep.optional && (
+                        <button type="button" className="worldScreenModuleButton" onClick={handleEngraveSkip}>
+                          Skip engraving
+                        </button>
+                      )}
                     </div>
                   </div>
-                </div>
-              )}
-
-              {stepControls}
-
-              {currentStep?.type === 'ENGRAVE_RUNE' && (
-                <div className="forgeStepCard">
-                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Engrave rune'}</div>
-                  <div className="forgeStepBody">
-                    <div>Engrave clean strokes.</div>
-                    <div className="forgeStepMeta">
-                      Strokes: {Math.min(engraveState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 5)))} /{' '}
-                      {Math.max(1, Math.floor(currentStep.hits ?? 5))}
-                    </div>
-                    {currentStep.optional && (
-                      <button type="button" className="worldScreenModuleButton" onClick={handleEngraveSkip}>
-                        Skip engraving
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-              {currentStep?.type === 'LAY_FORMATION' && (
-                <div className="forgeStepCard">
-                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Lay formation'}</div>
-                  <div className="forgeStepBody">
-                    <div>Lay nodes in sequence.</div>
-                    <div className="forgeStepMeta">
-                      Strokes: {Math.min(formationState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 4)))} /{' '}
-                      {Math.max(1, Math.floor(currentStep.hits ?? 4))}
+                )}
+                {currentStep?.type === 'LAY_FORMATION' && (
+                  <div className="forgeStepCard">
+                    <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Lay formation'}</div>
+                    <div className="forgeStepBody">
+                      <div>Lay nodes in sequence.</div>
+                      <div className="forgeStepMeta">
+                        Strokes: {Math.min(formationState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 4)))} /{' '}
+                        {Math.max(1, Math.floor(currentStep.hits ?? 4))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </>
-          }
-          statusMessage={localStatus}
-        />
-      </div>
-
-      <div className="forgeHandsOnStage">
-        <ForgeWorkbenchScene
-          stepType={currentStep?.type}
-          phaseKind={currentPhase?.kind}
-          heatSetting={heatSetting}
-          hideWorkpiece={currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL'}
-          workpieceMoving={workpieceMoving}
-          workpieceCooling={workpieceCooling && currentPhase?.kind !== 'HEAT'}
-        >
-          {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
-            <div className="forgeWorkbenchScene__furnaceSlot">
-              <ForgeHeatPullOutQTE
-                key={currentStep.id}
-                durationMs={heatStepConfig.durationMs}
-                targetPct={heatStepConfig.targetPct}
-                tolerancePct={heatStepConfig.tolerancePct}
-                onResolve={handleHeatResolve}
-                ariaLabel="Pull the heated billet from the furnace"
-              />
-              {heatState.impactKey > 0 && (
-                <div
-                  key={`heat-impact-${heatState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${heatState.impactGrade}`}
-                />
-              )}
-              {heatState.impactKey > 0 && buildSparkBurst(heatState.impactGrade, `heat-${heatState.impactKey}`)}
-              {heatState.impactKey > 0 && (
-                <div key={`heat-shake-${heatState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
-              )}
-              {heatState.impactKey > 0 && (
-                <div
-                  key={`heat-pulse-${heatState.impactKey}`}
-                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${heatState.impactGrade}`}
-                />
-              )}
-            </div>
-          )}
-          {currentStep?.type === 'HAMMER_PATTERN' && (
-            <div className="forgeWorkbenchScene__anvilSlot">
-              <TimingCircleQTE
-                key={`${currentStep.id}-${hammerState.attempts}`}
-                durationMs={currentStep.shrinkMs}
-                tolerance={currentStep.tolerance}
-                sizePx={96}
-                label="Strike"
-                onResolve={(result) => resolveHammerStrike(result)}
-              />
-              {hammerState.impactKey > 0 && (
-                <div
-                  key={`impact-${hammerState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${hammerState.impactGrade}`}
-                />
-              )}
-              {hammerState.impactKey > 0 && buildSparkBurst(hammerState.impactGrade, `hammer-${hammerState.impactKey}`)}
-              {hammerState.impactKey > 0 && (
-                <div key={`shake-${hammerState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
-              )}
-              {hammerState.impactKey > 0 && (
-                <div
-                  key={`pulse-${hammerState.impactKey}`}
-                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${hammerState.impactGrade}`}
-                />
-              )}
-            </div>
-          )}
-          {currentStep?.type === 'ENGRAVE_RUNE' && (
-            <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--engrave">
-              <ForgeRingQte
-                hitsRequired={Math.max(1, Math.floor(currentStep.hits ?? 5))}
-                difficulty={currentStep.difficulty >= 3 ? 'hard' : currentStep.difficulty === 2 ? 'medium' : 'easy'}
-                shrinkMs={currentStep.shrinkMs ?? 820}
-                onHit={(rating) => handleEngraveHit(rating)}
-                onComplete={(result) => handleEngraveComplete(result)}
-                ariaLabel="Engrave rune"
-              />
-              {engraveState.impactKey > 0 && (
-                <div
-                  key={`engrave-impact-${engraveState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${engraveState.impactGrade}`}
-                />
-              )}
-              {engraveState.impactKey > 0 && buildSparkBurst(engraveState.impactGrade, `engrave-${engraveState.impactKey}`)}
-              {engraveState.impactKey > 0 && (
-                <div key={`engrave-shake-${engraveState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
-              )}
-              {engraveState.impactKey > 0 && (
-                <div
-                  key={`engrave-pulse-${engraveState.impactKey}`}
-                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${engraveState.impactGrade}`}
-                />
-              )}
-            </div>
-          )}
-          {currentStep?.type === 'LAY_FORMATION' && (
-            <div className="forgeWorkbenchScene__anvilSlot forgeWorkbenchScene__anvilSlot--formation">
-              <ForgeRingQte
-                hitsRequired={Math.max(1, Math.floor(currentStep.hits ?? 4))}
-                difficulty={currentStep.difficulty >= 3 ? 'hard' : currentStep.difficulty === 2 ? 'medium' : 'easy'}
-                onHit={(rating) => handleFormationHit(rating)}
-                onComplete={(result) => handleFormationComplete(result)}
-                ariaLabel="Lay formation"
-              />
-              {formationState.impactKey > 0 && (
-                <div
-                  key={`formation-impact-${formationState.impactKey}`}
-                  className={`forgeWorkbenchScene__impact forgeWorkbenchScene__impact--${formationState.impactGrade}`}
-                />
-              )}
-              {formationState.impactKey > 0 && buildSparkBurst(formationState.impactGrade, `formation-${formationState.impactKey}`)}
-              {formationState.impactKey > 0 && (
-                <div key={`formation-shake-${formationState.impactKey}`} className="forgeWorkbenchScene__workpieceShake" />
-              )}
-              {formationState.impactKey > 0 && (
-                <div
-                  key={`formation-pulse-${formationState.impactKey}`}
-                  className={`forgeWorkbenchScene__pulse forgeWorkbenchScene__pulse--${formationState.impactGrade}`}
-                />
-              )}
-            </div>
-          )}
-        </ForgeWorkbenchScene>
+                )}
+              </>
+            }
+            statusMessage={localStatus}
+          />
+        </div>
       </div>
     </div>
   );

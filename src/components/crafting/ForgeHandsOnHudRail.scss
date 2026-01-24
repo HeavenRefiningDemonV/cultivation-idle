@@ -6,6 +6,13 @@
   min-height: 0;
 }
 
+.forgeHandsOnSession {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
 .forgeHandsOnRail {
   min-width: 0;
   max-width: min(340px, 30vw);
@@ -23,11 +30,36 @@
   justify-content: center;
 }
 
+.forgeHandsOnStage--overlay {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.forgeHandsOnStage__content {
+  min-height: 0;
+  height: 100%;
+}
+
+.forgeHandsOnHudOverlay {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 12px;
+  width: min(340px, 30vw);
+  max-height: calc(100% - 24px);
+  display: flex;
+  pointer-events: auto;
+  z-index: 2;
+}
+
 .forgeHandsOnHudRail {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
+  height: 100%;
   border-radius: 14px;
   border: 1px solid rgba(226, 232, 240, 0.12);
   background: linear-gradient(145deg, rgba(12, 18, 28, 0.82), rgba(10, 14, 22, 0.9));
@@ -104,6 +136,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
@@ -254,6 +287,14 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.forgeHandsOnHudRail__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .forgeHandsOnHudRail__status {

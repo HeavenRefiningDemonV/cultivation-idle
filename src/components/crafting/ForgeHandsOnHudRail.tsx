@@ -172,17 +172,6 @@ export function ForgeHandsOnHudRail({
           </div>
         </div>
 
-        <div className="forgeHandsOnHudRail__actions">
-          <button type="button" className="worldScreenModuleButton" onClick={onLeave}>
-            Leave
-          </button>
-          <button type="button" className="worldScreenModuleButton" onClick={onAbort}>
-            Abort
-          </button>
-        </div>
-
-        {statusMessage && <div className="forgeHandsOnHudRail__status">{statusMessage}</div>}
-
         {stepsExpanded && (
           <div className="forgeHandsOnHudRail__steps">
             <div className="forgeHandsOnHudRail__stepsTitle">Steps</div>
@@ -198,6 +187,19 @@ export function ForgeHandsOnHudRail({
             </div>
           </div>
         )}
+      </div>
+
+      <div className="forgeHandsOnHudRail__footer">
+        <div className="forgeHandsOnHudRail__actions">
+          <button type="button" className="worldScreenModuleButton" onClick={onLeave}>
+            Leave
+          </button>
+          <button type="button" className="worldScreenModuleButton" onClick={onAbort}>
+            Abort
+          </button>
+        </div>
+
+        {statusMessage && <div className="forgeHandsOnHudRail__status">{statusMessage}</div>}
       </div>
     </div>
   );

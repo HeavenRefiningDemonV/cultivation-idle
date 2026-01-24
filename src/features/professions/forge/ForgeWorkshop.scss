@@ -8,6 +8,7 @@
   position: relative;
   overflow-x: hidden;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .forgeWorkshop * {
@@ -16,6 +17,18 @@
 
 .forgeWorkshop--v2 {
   gap: 12px;
+}
+
+.forgeWorkshop--handsOn .forgeWorkshopWorkbench,
+.forgeWorkshop--handsOn .forgeWorkshopWorkbench__panel,
+.forgeWorkshop--handsOn .forgeWorkshopWorkbench__top {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.forgeWorkshop--handsOn .forgeWorkshopWorkbench__top,
+.forgeWorkshop--handsOn .forgeWorkshop__workbenchFrame {
+  flex: 1;
 }
 
 .forgeWorkshop--v2 .forgeWorkshopRibbon {
@@ -294,6 +307,11 @@
 .forgeWorkshopRibbon__toggle.is-active {
   border-color: rgba(59, 130, 246, 0.7);
   background: rgba(59, 130, 246, 0.18);
+}
+
+.forgeWorkshopRibbon__toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .forgeWorkshopRibbon__dot {
