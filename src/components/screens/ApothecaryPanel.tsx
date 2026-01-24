@@ -83,6 +83,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const stock = apothecary?.stock ?? [];
   const pouchSlots = useMedicinePouchStore((state) => state.slots);
   const badgeCount = Object.values(pouchSlots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
+  const badgeDisplay = badgeCount > 9 ? '9+' : `${badgeCount}`;
   const hasReadyPouchItem = Object.values(pouchSlots || {}).some(
     (slot) => Boolean(slot?.enabled && slot?.equippedItemId && getQty(slot.equippedItemId) > 0),
   );
@@ -452,9 +453,12 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             <span className="apothecaryPouchIcon" aria-hidden="true">
               🧪
             </span>
-            <span className="apothecaryPouchBadge" aria-label={`${badgeCount} items`}>
-              {badgeCount}
-            </span>
+            {badgeCount > 0 && (
+              <span className="apothecaryPouchBadge" aria-label={`${badgeCount} items`}>
+                {badgeDisplay}
+              </span>
+            )}
+            {hasReadyPouchItem && <span className="apothecaryPouchReadyDot" aria-hidden="true" />}
           </button>
         </div>
       </header>

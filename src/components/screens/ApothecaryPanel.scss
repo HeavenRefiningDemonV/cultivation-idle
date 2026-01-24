@@ -123,6 +123,19 @@
   border: 1px solid rgba(15, 23, 42, 0.2);
 }
 
+.apothecaryPouchReadyDot {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+  border: 1px solid rgba(15, 23, 42, 0.6);
+  animation: pouch-ready-pulse 1.6s ease-in-out infinite;
+}
+
 .apothecaryHeaderCard {
   position: relative;
   display: grid;
@@ -525,5 +538,24 @@
 @media (prefers-reduced-motion: reduce) {
   .apothecaryPouchIconButton {
     transition: none;
+  }
+
+  .apothecaryPouchReadyDot {
+    animation: none;
+  }
+}
+
+@keyframes pouch-ready-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.6;
   }
 }

@@ -226,6 +226,8 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
     );
   };
 
+  const equippedCount = Object.values(slots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
+
   return (
     <div className={`medicinePouchPanel${variant === 'modal' ? ' medicinePouchPanel--modal' : ''}`}>
       {variant === 'default' && (
@@ -239,6 +241,13 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
           <div className={'medicinePouchFootnote'}>
             Auto-use requires enabling “Use consumables in combat” in Combat Theater controls.
           </div>
+        </div>
+      )}
+
+      {variant === 'modal' && equippedCount === 0 && (
+        <div className={'medicinePouchEmptyState'}>
+          <div className={'medicinePouchEmptyTitle'}>Your pouch is empty.</div>
+          <div className={'medicinePouchEmptyBody'}>Stock up at the apothecary to prepare for combat.</div>
         </div>
       )}
 
