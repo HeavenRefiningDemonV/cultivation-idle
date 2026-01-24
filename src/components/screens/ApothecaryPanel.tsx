@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
+import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
 import { useShopStore } from '../../stores/shopStore';
 import { randFloat } from '../../utils/rng';
 import { RewardService } from '../../services/rewards';
 import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
-import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
 import { GameEvents } from '../../services/events/GameEvents';
 import './ApothecaryPanel.scss';
 
@@ -73,38 +73,17 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
   const [statusByService, setStatusByService] = useState<Record<string, StatusMessage>>({});
   const [pouchOpen, setPouchOpen] = useState(false);
-  const pouchModalRef = useRef<HTMLDivElement | null>(null);
-  const pouchOpenerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     ensureDayKeyCurrent();
   }, [ensureDayKeyCurrent]);
 
-  useEffect(() => {
-    if (!pouchOpen) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      event.stopPropagation();
-      setPouchOpen(false);
-    };
-    window.addEventListener('keydown', handleKeyDown, { capture: true });
-    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
-  }, [pouchOpen]);
-
-  useEffect(() => {
-    if (pouchOpen) {
-      pouchOpenerRef.current = document.activeElement as HTMLElement | null;
-      window.requestAnimationFrame(() => {
-        pouchModalRef.current?.focus();
-      });
-      return;
-    }
-
-    pouchOpenerRef.current?.focus();
-  }, [pouchOpen]);
-
   const stock = apothecary?.stock ?? [];
+  const pouchSlots = useMedicinePouchStore((state) => state.slots);
+  const badgeCount = Object.values(pouchSlots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
+  const hasReadyPouchItem = Object.values(pouchSlots || {}).some(
+    (slot) => Boolean(slot?.enabled && slot?.equippedItemId && getQty(slot.equippedItemId) > 0),
+  );
 
   const combatStock = useMemo(
     () =>
@@ -158,10 +137,6 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     { key: 'services', label: 'Services' },
     { key: 'bundles', label: 'Bundles' },
   ];
-
-  const renderMedicinePouchContent = (): ReactNode => <MedicinePouchPanel />;
-
-  const closePouch = () => setPouchOpen(false);
 
   const renderStatus = (status?: StatusMessage) =>
     status ? (
@@ -466,12 +441,17 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           </div>
           <button
             type="button"
-            className="apothecaryPouchButton"
+            className={`apothecaryPouchIconButton${hasReadyPouchItem ? ' apothecaryPouchIconButton--ready' : ''}`}
             onClick={() => setPouchOpen(true)}
             aria-label="Open Medicine Pouch"
             title="Medicine Pouch"
           >
-            🧪
+            <span className="apothecaryPouchIcon" aria-hidden="true">
+              🧪
+            </span>
+            <span className="apothecaryPouchBadge" aria-label={`${badgeCount} items`}>
+              {badgeCount}
+            </span>
           </button>
         </div>
       </header>
@@ -500,25 +480,18 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
       </div>
 
       {pouchOpen && (
-        <div className="apothecaryPouchOverlay" onMouseDown={closePouch}>
+        <div className="medicinePouchOverlay" role="presentation" onMouseDown={() => setPouchOpen(false)}>
           <div
-            className="apothecaryPouchModal"
+            className="medicinePouchModal"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="apothecaryPouchTitle"
+            aria-label="Medicine Pouch"
             onMouseDown={(event) => event.stopPropagation()}
-            tabIndex={-1}
-            ref={pouchModalRef}
           >
-            <div className="apothecaryPouchHeader">
-              <div id="apothecaryPouchTitle" className="apothecaryPouchTitle">
-                Medicine Pouch
-              </div>
-              <button type="button" className="apothecaryPouchClose" onClick={closePouch} aria-label="Close">
-                ✕
-              </button>
-            </div>
-            <div className="apothecaryPouchBody">{renderMedicinePouchContent()}</div>
+            <button type="button" className="medicinePouchClose" onClick={() => setPouchOpen(false)}>
+              ✕
+            </button>
+            <div className="medicinePouchModalBody">TODO: Medicine Pouch Modal (Prompt 2B)</div>
           </div>
         </div>
       )}
