@@ -251,7 +251,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             <div className={'apothecaryTag'}>{tag}</div>
             {showSealStamp && <span className={`apothecarySealStamp apothecarySealStamp--${rarity}`}>Seal</span>}
             {blockedReason && (
-              <span className={'apothecarySealBadge'} title={blockedReason}>
+              <span className={'apothecarySealBadge apothecaryTooltip'} data-tooltip={blockedReason}>
                 Blocked
               </span>
             )}
@@ -483,6 +483,11 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
               <strong>{currencies.merit ?? '0'}</strong>
             </div>
           </div>
+        </div>
+      </header>
+
+      <div className={'apothecaryStage'}>
+        <div className={'apothecaryPouchTrigger'}>
           <button
             type="button"
             className={`apothecaryPouchIconButton uiPanelChrome uiPanelChrome--flat${
@@ -504,9 +509,6 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             {hasReadyPouchItem && <span className="apothecaryPouchReadyDot" aria-hidden="true" />}
           </button>
         </div>
-      </header>
-
-      <div className={'apothecaryStage'}>
         <div className={'apothecarySafeZone'}>
           <div className={'apothecaryStoreFrame uiPanelChrome uiPanelChrome--raised'}>
             <div className={'apothecaryShelfTabs'}>

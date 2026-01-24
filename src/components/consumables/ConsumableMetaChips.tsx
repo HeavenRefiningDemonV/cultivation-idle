@@ -29,9 +29,10 @@ export function ConsumableMetaChips({
       {chips.map((chip) => (
         <span
           key={chip.key}
-          className={`consumableMetaChip consumableMetaChip--${chip.key}`}
-          title={chip.tooltip}
+          className={`consumableMetaChip consumableMetaChip--${chip.key} apothecaryTooltip`}
+          data-tooltip={chip.tooltip}
           aria-label={chip.tooltip}
+          tabIndex={0}
         >
           <span className="consumableMetaChipIcon" aria-hidden="true">
             {chip.icon}
