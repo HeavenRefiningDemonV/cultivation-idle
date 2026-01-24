@@ -47,7 +47,11 @@ function formatCooldownLabel(ms: number) {
   return `${seconds}s`;
 }
 
-export function MedicinePouchPanel() {
+interface MedicinePouchPanelProps {
+  variant?: 'default' | 'modal';
+}
+
+export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelProps) {
   const slots = useMedicinePouchStore((state) => state.slots);
   const equip = useMedicinePouchStore((state) => state.equip);
   const setSlotConfig = useMedicinePouchStore((state) => state.setSlotConfig);
@@ -223,18 +227,20 @@ export function MedicinePouchPanel() {
   };
 
   return (
-    <div className={'medicinePouchPanel'}>
-      <div className={'medicinePouchPanelHeader'}>
-        <div>
-          <div className={'medicinePouchTitle'}>Medicine Pouch</div>
-          <div className={'medicinePouchSubtitle'}>
-            Configure automatic combat consumables. Auto-use respects the combat toggle.
+    <div className={`medicinePouchPanel${variant === 'modal' ? ' medicinePouchPanel--modal' : ''}`}>
+      {variant === 'default' && (
+        <div className={'medicinePouchPanelHeader'}>
+          <div>
+            <div className={'medicinePouchTitle'}>Medicine Pouch</div>
+            <div className={'medicinePouchSubtitle'}>
+              Configure automatic combat consumables. Auto-use respects the combat toggle.
+            </div>
+          </div>
+          <div className={'medicinePouchFootnote'}>
+            Auto-use requires enabling “Use consumables in combat” in Combat Theater controls.
           </div>
         </div>
-        <div className={'medicinePouchFootnote'}>
-          Auto-use requires enabling “Use consumables in combat” in Combat Theater controls.
-        </div>
-      </div>
+      )}
 
       <div className={'medicinePouchGrid'}>
         {(['healing', 'utility', 'specialty'] as MedicinePouchSlotKey[]).map((slotKey) => renderSlotControls(slotKey))}

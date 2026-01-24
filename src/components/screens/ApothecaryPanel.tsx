@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
@@ -8,6 +8,7 @@ import { RewardService } from '../../services/rewards';
 import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import { GameEvents } from '../../services/events/GameEvents';
+import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
@@ -73,6 +74,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
   const [statusByService, setStatusByService] = useState<Record<string, StatusMessage>>({});
   const [pouchOpen, setPouchOpen] = useState(false);
+  const pouchButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     ensureDayKeyCurrent();
@@ -445,6 +447,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             onClick={() => setPouchOpen(true)}
             aria-label="Open Medicine Pouch"
             title="Medicine Pouch"
+            ref={pouchButtonRef}
           >
             <span className="apothecaryPouchIcon" aria-hidden="true">
               🧪
@@ -479,22 +482,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         <div className={'apothecaryAmbientZone'} aria-hidden="true" />
       </div>
 
-      {pouchOpen && (
-        <div className="medicinePouchOverlay" role="presentation" onMouseDown={() => setPouchOpen(false)}>
-          <div
-            className="medicinePouchModal"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Medicine Pouch"
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <button type="button" className="medicinePouchClose" onClick={() => setPouchOpen(false)}>
-              ✕
-            </button>
-            <div className="medicinePouchModalBody">TODO: Medicine Pouch Modal (Prompt 2B)</div>
-          </div>
-        </div>
-      )}
+      <MedicinePouchModal open={pouchOpen} onClose={() => setPouchOpen(false)} anchorRef={pouchButtonRef} />
     </div>
   );
 }
