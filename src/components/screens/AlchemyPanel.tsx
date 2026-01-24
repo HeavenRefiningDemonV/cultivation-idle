@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
@@ -129,6 +129,8 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const [now, setNow] = useState(() => Date.now());
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<{ result: AlchemyHandsOnResult; recipeId: string } | null>(null);
+  const readyJobsRef = useRef<Set<string>>(new Set());
+  const readyNotificationPrimedRef = useRef(false);
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 500);
@@ -403,6 +405,30 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const ringRadius = 42;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const ringOffset = ringCircumference * (1 - (queueModel.readyCount > 0 ? 1 : brewProgress));
+  const cauldronState =
+    queueModel.readyCount > 0
+      ? 'ready'
+      : queueModel.activeBrewingJob
+        ? 'brewing'
+        : queueModel.queuedCount > 0
+          ? 'queued'
+          : 'idle';
+  const showSteam = Boolean(queueModel.activeBrewingJob || activeAlchemySession);
+
+  useEffect(() => {
+    const readyIds = new Set(readyLedgerRows.map((row) => row.jobId));
+    if (!readyNotificationPrimedRef.current) {
+      readyNotificationPrimedRef.current = true;
+      readyJobsRef.current = readyIds;
+      return;
+    }
+    readyLedgerRows.forEach((row) => {
+      if (!readyJobsRef.current.has(row.jobId)) {
+        addNotification('success', `Brew complete: ${row.name}`, 3000);
+      }
+    });
+    readyJobsRef.current = readyIds;
+  }, [addNotification, readyLedgerRows]);
 
   return (
     <div className={'alchemyPanel alchemyPanel--workbench'}>
@@ -463,6 +489,8 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
             className={classNames('alchemyWorkbenchCard alchemyWorkbenchCard--cauldron', {
               'is-ready': queueModel.readyCount > 0,
             })}
+            data-state={cauldronState}
+            data-steam={showSteam}
           >
             <div className={'alchemyCauldronHeader'}>
               <div className={'alchemyWorkbenchTitle'}>Cauldron</div>
@@ -541,7 +569,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
             {queueModel.readyCount > 0 && (
               <div className={'alchemyCauldronActions'}>
                 <button
-                  className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                  className={'worldScreenModuleButton worldScreenModuleButton--active alchemyClaimButton alchemyClaimButton--ready'}
                   onClick={() => {
                     const readyJob = queueModel.readyJobs[0];
                     if (!readyJob) return;
@@ -557,7 +585,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                 </button>
                 {queueModel.readyCount > 1 && (
                   <button
-                    className={'worldScreenModuleButton'}
+                    className={'worldScreenModuleButton alchemyClaimButton alchemyClaimButton--ready'}
                     onClick={() => {
                       let claimed = 0;
                       for (const job of queueModel.readyJobs) {
@@ -715,6 +743,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                     <button
                       className={`worldScreenModuleButton ${affordability.ok ? 'worldScreenModuleButton--active' : ''}`}
                       disabled={!affordability.ok}
+                      title={!affordability.ok ? affordability.reason : undefined}
                       onClick={() => {
                         const result = startAlchemy(selectedRecipe.id, qty);
                         if (!result.ok) {
@@ -733,7 +762,12 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                       Craft
                     </button>
                     {!affordability.ok && affordability.reason && (
-                      <div className={'alchemyRecipeHint'}>{affordability.reason}</div>
+                      <>
+                        <div className={'alchemyRecipeHint'}>{affordability.reason}</div>
+                        <span className={'alchemySealBadge'} title={affordability.reason}>
+                          Blocked
+                        </span>
+                      </>
                     )}
                   </div>
                 </div>
@@ -959,6 +993,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                   <div
                     key={row.jobId}
                     className={classNames('alchemyLedgerRow', `alchemyLedgerRow--${row.state}`)}
+                    data-state={row.state}
                   >
                     <div className={'alchemyLedgerRowMain'}>
                       <div className={'alchemyLedgerStatus'}>
@@ -973,7 +1008,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                       <div className={'alchemyLedgerTime'}>{row.timeLabel}</div>
                       {row.state === 'ready' && (
                         <button
-                          className={'worldScreenModuleButton alchemyLedgerClaim'}
+                          className={'worldScreenModuleButton alchemyLedgerClaim alchemyClaimButton alchemyClaimButton--ready'}
                           onClick={() => {
                             const result = claimAlchemy(row.jobId);
                             if (!result.ok) {

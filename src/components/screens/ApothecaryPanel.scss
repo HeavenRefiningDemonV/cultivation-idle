@@ -365,6 +365,22 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.apothecaryCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(199, 165, 107, 0.5);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.3);
+}
+
+.apothecaryCard:focus-within {
+  box-shadow: 0 0 0 2px rgba(248, 202, 138, 0.45), 0 8px 16px rgba(15, 23, 42, 0.3);
+}
+
+.apothecaryCard[data-state='blocked'] {
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .apothecaryCardBody {
@@ -409,6 +425,51 @@
   color: #1f160d;
   font-size: 12px;
   white-space: nowrap;
+}
+
+.apothecaryTagRow {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.apothecarySealStamp {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(226, 232, 240, 0.12);
+  border: 1px solid rgba(226, 232, 240, 0.3);
+  color: #e2e8f0;
+  box-shadow: 0 0 0 rgba(34, 197, 94, 0);
+}
+
+.apothecarySealStamp--rare {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+}
+
+.apothecarySealStamp--epic {
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.25);
+}
+
+.apothecarySealStamp--legendary {
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.28);
+}
+
+.apothecarySealBadge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  color: #fee2e2;
 }
 
 .apothecaryCardMeta {
@@ -517,6 +578,16 @@
   background: rgba(248, 113, 113, 0.12);
   border-color: rgba(248, 113, 113, 0.35);
   color: #fecdd3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apothecaryCard {
+    transition: none;
+  }
+
+  .apothecaryCard:hover {
+    transform: none;
+  }
 }
 
 .apothecaryEmpty {

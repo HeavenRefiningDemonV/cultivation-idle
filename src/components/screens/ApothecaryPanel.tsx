@@ -173,6 +173,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const itemDef = getItemDef(stockEntry.itemId);
     const itemName = itemDef?.name ?? stockEntry.itemId;
     const description = itemDef?.description || itemDef?.id || 'No description yet.';
+    const rarity = itemDef?.rarity?.toLowerCase();
     const consumableSpec = getConsumableSpec(stockEntry.itemId);
     const perPurchaseQty = stockEntry.qty ?? 1;
     const purchased = getPurchased(apothecary.id, stockEntry.id);
@@ -183,8 +184,13 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const maxUnlimitedQty = Math.min(99, itemDef?.stackSize ?? 99);
     const maxBuyQty = limit == null ? maxUnlimitedQty : remaining ?? 0;
 
-    const canBuyOne = remaining !== 0 && canBuy(apothecary.id, stockEntry.id, 1).ok;
-    const canBuyMax = maxBuyQty > 0 && canBuy(apothecary.id, stockEntry.id, maxBuyQty).ok;
+    const canBuyOneResult = remaining !== 0 ? canBuy(apothecary.id, stockEntry.id, 1) : { ok: false, error: 'Sold out' };
+    const canBuyMaxResult =
+      maxBuyQty > 0 ? canBuy(apothecary.id, stockEntry.id, maxBuyQty) : { ok: false, error: 'Sold out' };
+    const canBuyOne = canBuyOneResult.ok;
+    const canBuyMax = canBuyMaxResult.ok;
+    const blockedReason = canBuyOneResult.ok ? null : canBuyOneResult.error ?? 'Blocked';
+    const showSealStamp = rarity === 'rare' || rarity === 'epic' || rarity === 'legendary';
 
     const status = statusByStock[stockEntry.id];
     const tag = usageLabel(itemDef?.usage);
@@ -235,13 +241,21 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     };
 
     return (
-      <div key={stockEntry.id} className={'apothecaryCard'}>
+      <div key={stockEntry.id} className={'apothecaryCard'} data-state={blockedReason ? 'blocked' : 'available'}>
         <div className={'apothecaryCardHeader'}>
           <div>
             <div className={'apothecaryCardTitle'}>{itemName}</div>
             <div className={'apothecaryCardSubtitle'}>{description}</div>
           </div>
-          <div className={'apothecaryTag'}>{tag}</div>
+          <div className={'apothecaryTagRow'}>
+            <div className={'apothecaryTag'}>{tag}</div>
+            {showSealStamp && <span className={`apothecarySealStamp apothecarySealStamp--${rarity}`}>Seal</span>}
+            {blockedReason && (
+              <span className={'apothecarySealBadge'} title={blockedReason}>
+                Blocked
+              </span>
+            )}
+          </div>
         </div>
 
         <div className={'apothecaryCardMeta'}>
@@ -270,6 +284,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             className={`worldScreenModuleButton apothecaryActionButton${canBuyOne ? ' worldScreenModuleButton--active' : ''}`}
             onClick={() => handlePurchase(1)}
             disabled={!canBuyOne}
+            title={!canBuyOne ? canBuyOneResult.error : undefined}
           >
             Buy 1
           </button>
@@ -277,6 +292,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             className={`worldScreenModuleButton apothecaryActionButton${canBuyMax ? ' worldScreenModuleButton--active' : ''}`}
             onClick={() => handlePurchase(maxBuyQty)}
             disabled={!canBuyMax}
+            title={!canBuyMax ? canBuyMaxResult.error : undefined}
           >
             Buy Max
           </button>
