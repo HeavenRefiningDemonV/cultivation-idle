@@ -1,0 +1,49 @@
+.consumableMetaChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.consumableMetaChips--compact {
+  gap: 4px;
+}
+
+.consumableMetaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.45);
+  color: #f2f2f2;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.consumableMetaChips--compact .consumableMetaChip {
+  padding: 1px 5px;
+  font-size: 10px;
+}
+
+.consumableMetaChipIcon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.consumableMetaChipText {
+  line-height: 1;
+}
+
+.consumableMetaChip:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(30, 41, 59, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consumableMetaChip {
+    transition: none;
+  }
+}
