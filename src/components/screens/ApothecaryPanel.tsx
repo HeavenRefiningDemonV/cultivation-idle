@@ -7,7 +7,10 @@ import { randFloat } from '../../utils/rng';
 import { RewardService } from '../../services/rewards';
 import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
+import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
 import { GameEvents } from '../../services/events/GameEvents';
+import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
+import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import './ApothecaryPanel.scss';
 
@@ -52,6 +55,18 @@ function usageLabel(usage?: string) {
       return 'Combat / World';
     default:
       return 'General';
+  }
+}
+
+function usageToChipUsage(usage?: string): 'combat' | 'cultivation' | 'both' {
+  switch (usage) {
+    case 'combat_only':
+      return 'combat';
+    case 'cultivate_only':
+      return 'cultivation';
+    case 'combat_or_world':
+    default:
+      return 'both';
   }
 }
 
@@ -158,6 +173,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const itemDef = getItemDef(stockEntry.itemId);
     const itemName = itemDef?.name ?? stockEntry.itemId;
     const description = itemDef?.description || itemDef?.id || 'No description yet.';
+    const consumableSpec = getConsumableSpec(stockEntry.itemId);
     const perPurchaseQty = stockEntry.qty ?? 1;
     const purchased = getPurchased(apothecary.id, stockEntry.id);
     const remaining = getRemainingToday(apothecary.id, stockEntry.id, stockEntry.dailyLimit);
@@ -172,6 +188,12 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
     const status = statusByStock[stockEntry.id];
     const tag = usageLabel(itemDef?.usage);
+    const chips = buildPotionMetaChips({
+      itemId: stockEntry.itemId,
+      usage: usageToChipUsage(itemDef?.usage),
+      stackSize: itemDef?.stackSize,
+      spec: consumableSpec,
+    });
 
     const handlePurchase = (qty: number) => {
       if (qty <= 0) return;
@@ -225,6 +247,9 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         <div className={'apothecaryCardMeta'}>
           <span className={'apothecaryMetaLine'}>Owned: {owned}</span>
           <span className={'apothecaryMetaLine'}>Price: {formatPrice(stockEntry.price) || 'Free'}</span>
+        </div>
+        <div className={'apothecaryCardChips'}>
+          <ConsumableMetaChips chips={chips} />
         </div>
 
         <div className={'apothecaryLimitBlock'}>
