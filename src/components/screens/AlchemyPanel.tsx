@@ -9,6 +9,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
 import { getAlchemyTimeMultiplier } from '../../systems/crafting/alchemyBonuses';
 import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
+import { formatDurationHMS } from '../../utils/timeFormat';
 import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
 import { HandsOnAlchemySession } from '../crafting/HandsOnAlchemySession';
 import { UsedForLinks } from '../crafting/UsedForLinks';
@@ -21,10 +22,24 @@ interface AlchemyPanelProps {
 }
 
 type StatusMessage = { type: 'success' | 'error'; message: string };
+type QueueToast = { kind: 'success' | 'error'; message: string } | null;
 
 type CurrencyCosts = Partial<Record<'gold' | 'spiritStones' | 'merit', string>>;
 
 type RecipeCostMap = Partial<Record<'gold' | 'spiritStones' | 'merit', number>>;
+type BrewState = 'ready' | 'brewing' | 'queued';
+
+interface BrewLedgerRow {
+  jobId: string;
+  recipeId: string;
+  name: string;
+  qty: number;
+  startedAt: number;
+  endsAt: number;
+  state: BrewState;
+  progress01: number;
+  timeLabel: string;
+}
 
 const MAX_QTY = 999;
 
@@ -109,7 +124,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
 
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [recipeStatus, setRecipeStatus] = useState<Record<string, StatusMessage>>({});
-  const [queueStatus, setQueueStatus] = useState<Record<string, StatusMessage>>({});
+  const [queueToast, setQueueToast] = useState<QueueToast>(null);
   const [sessionStatus, setSessionStatus] = useState<StatusMessage | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
@@ -127,6 +142,12 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   useEffect(() => {
     setSessionStatus(null);
   }, [activeSession?.sessionId]);
+
+  useEffect(() => {
+    if (!queueToast) return;
+    const handle = window.setTimeout(() => setQueueToast(null), 4500);
+    return () => window.clearTimeout(handle);
+  }, [queueToast]);
 
   const visibleRecipes = useMemo(() => {
     if (!cityId) return recipes;
@@ -322,6 +343,45 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     };
   }, [now, queue]);
 
+  const brewLedgerRows = useMemo<BrewLedgerRow[]>(() => {
+    return queue.map((job) => {
+      const recipe = recipes.find((entry) => entry.id === job.recipeId);
+      const outputId = recipe ? Object.keys(recipe.outputs ?? {})[0] : undefined;
+      const name = (outputId ? getItemDef(outputId)?.name : undefined) ?? recipe?.id ?? job.recipeId;
+      const isReady = now >= job.endsAt;
+      const isBrewing = now >= job.startedAt && now < job.endsAt;
+      const state: BrewState = isReady ? 'ready' : isBrewing ? 'brewing' : 'queued';
+      const duration = Math.max(1, job.endsAt - job.startedAt);
+      const progress01 = isReady ? 1 : isBrewing ? Math.min(1, (now - job.startedAt) / duration) : 0;
+      const timeLabel = isReady
+        ? 'Ready'
+        : isBrewing
+          ? `${formatDurationHMS(job.endsAt - now)} remaining`
+          : `Starts in ${formatDurationHMS(job.startedAt - now)}`;
+
+      return {
+        jobId: job.id,
+        recipeId: job.recipeId,
+        name,
+        qty: job.qty,
+        startedAt: job.startedAt,
+        endsAt: job.endsAt,
+        state,
+        progress01,
+        timeLabel,
+      };
+    });
+  }, [now, queue, recipes]);
+
+  const readyLedgerRows = useMemo(
+    () => brewLedgerRows.filter((row) => row.state === 'ready').sort((a, b) => a.endsAt - b.endsAt),
+    [brewLedgerRows],
+  );
+  const brewingLedgerRow = brewLedgerRows.find((row) => row.state === 'brewing') ?? null;
+  const ledgerLastEndsAt = brewLedgerRows.reduce((max, row) => Math.max(max, row.endsAt), 0);
+  const ledgerEta =
+    ledgerLastEndsAt > 0 ? formatDurationHMS(Math.max(0, ledgerLastEndsAt - now)) : null;
+
   const activeJobRecipe = queueModel.activeBrewingJob
     ? recipes.find((entry) => entry.id === queueModel.activeBrewingJob?.recipeId)
     : null;
@@ -487,16 +547,10 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                     if (!readyJob) return;
                     const result = claimAlchemy(readyJob.id);
                     if (!result.ok) {
-                      setQueueStatus((prev) => ({
-                        ...prev,
-                        [readyJob.id]: { type: 'error', message: result.error },
-                      }));
+                      setQueueToast({ kind: 'error', message: result.error });
                       return;
                     }
-                    setQueueStatus((prev) => ({
-                      ...prev,
-                      [readyJob.id]: { type: 'success', message: 'Claimed' },
-                    }));
+                    setQueueToast({ kind: 'success', message: 'Claimed 1 batch.' });
                   }}
                 >
                   Claim Ready
@@ -505,19 +559,18 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
                   <button
                     className={'worldScreenModuleButton'}
                     onClick={() => {
-                      queueModel.readyJobs.forEach((job) => {
+                      let claimed = 0;
+                      for (const job of queueModel.readyJobs) {
                         const result = claimAlchemy(job.id);
                         if (!result.ok) {
-                          setQueueStatus((prev) => ({
-                            ...prev,
-                            [job.id]: { type: 'error', message: result.error },
-                          }));
+                          setQueueToast({ kind: 'error', message: result.error });
                           return;
                         }
-                        setQueueStatus((prev) => ({
-                          ...prev,
-                          [job.id]: { type: 'success', message: 'Claimed' },
-                        }));
+                        claimed += 1;
+                      }
+                      setQueueToast({
+                        kind: 'success',
+                        message: `Claimed ${claimed} batch${claimed === 1 ? '' : 'es'}.`,
                       });
                     }}
                   >
@@ -859,66 +912,91 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
           )}
 
           <section className={'alchemyWorkbenchCard alchemyWorkbenchCard--queue'}>
-            <div className={'alchemySectionHeader'}>
-              <div className={'alchemySectionTitle'}>Brew Ledger</div>
-              <div className={'alchemySectionSub'}>Jobs process one at a time.</div>
+            <div className={'alchemyLedgerHeader'}>
+              <div>
+                <div className={'alchemySectionTitle'}>Brew Ledger</div>
+                <div className={'alchemyLedgerSummary'}>
+                  {brewLedgerRows.length} queued • {readyLedgerRows.length} ready
+                  {brewingLedgerRow ? ` • Brewing now: ${brewingLedgerRow.name}` : ''}
+                  {ledgerEta ? ` • ETA ${ledgerEta}` : ''}
+                </div>
+              </div>
+              {readyLedgerRows.length > 0 && (
+                <button
+                  className={'worldScreenModuleButton alchemyLedgerClaimAll'}
+                  onClick={() => {
+                    let claimed = 0;
+                    for (const row of readyLedgerRows) {
+                      const result = claimAlchemy(row.jobId);
+                      if (!result.ok) {
+                        setQueueToast({ kind: 'error', message: result.error });
+                        return;
+                      }
+                      claimed += 1;
+                    }
+                    setQueueToast({
+                      kind: 'success',
+                      message: `Claimed ${claimed} batch${claimed === 1 ? '' : 'es'}.`,
+                    });
+                  }}
+                >
+                  Claim All Ready ({readyLedgerRows.length})
+                </button>
+              )}
             </div>
 
-            {queue.length === 0 ? (
+            {queueToast && (
+              <div className={`alchemyLedgerToast alchemyLedgerToast--${queueToast.kind}`}>
+                {queueToast.message}
+              </div>
+            )}
+
+            {brewLedgerRows.length === 0 ? (
               <div className={'alchemyQueueEmpty'}>Ledger is empty.</div>
             ) : (
-              <div className={'alchemyQueueList'}>
-                {queue.map((job) => {
-                  const recipe = recipes.find((entry) => entry.id === job.recipeId);
-                  const remainingMs = Math.max(0, job.endsAt - now);
-                  const ready = now >= job.endsAt;
-                  const status = queueStatus[job.id];
-
-                  return (
-                    <div key={job.id} className={'alchemyQueueCard'}>
-                      <div className={'alchemyQueueHeader'}>
-                        <div>
-                          <div className={'alchemyQueueName'}>{recipe?.id ?? job.recipeId}</div>
-                          <div className={'alchemyQueueMeta'}>Qty: {job.qty}</div>
-                        </div>
-                        <div className={'alchemyQueueTiming'}>
-                          <div>{ready ? 'Ready to claim' : 'In progress'}</div>
-                          <div>{ready ? '00:00' : formatDuration(remainingMs)}</div>
-                        </div>
+              <div className={'alchemyLedger'}>
+                {brewLedgerRows.map((row) => (
+                  <div
+                    key={row.jobId}
+                    className={classNames('alchemyLedgerRow', `alchemyLedgerRow--${row.state}`)}
+                  >
+                    <div className={'alchemyLedgerRowMain'}>
+                      <div className={'alchemyLedgerStatus'}>
+                        <span className={'alchemyLedgerDot'} aria-hidden="true" />
+                        <span className={'alchemyLedgerLabel'}>
+                          {row.state === 'ready' ? 'Ready' : row.state === 'brewing' ? 'Brewing' : 'Queued'}
+                        </span>
                       </div>
-                      <div className={'alchemyQueueActions'}>
+                      <div className={'alchemyLedgerName'}>
+                        {row.name} ×{row.qty}
+                      </div>
+                      <div className={'alchemyLedgerTime'}>{row.timeLabel}</div>
+                      {row.state === 'ready' && (
                         <button
-                          className={`worldScreenModuleButton ${ready ? 'worldScreenModuleButton--active' : ''}`}
-                          disabled={!ready}
+                          className={'worldScreenModuleButton alchemyLedgerClaim'}
                           onClick={() => {
-                            const result = claimAlchemy(job.id);
+                            const result = claimAlchemy(row.jobId);
                             if (!result.ok) {
-                              setQueueStatus((prev) => ({
-                                ...prev,
-                                [job.id]: { type: 'error', message: result.error },
-                              }));
+                              setQueueToast({ kind: 'error', message: result.error });
                               return;
                             }
-                            setQueueStatus((prev) => ({
-                              ...prev,
-                              [job.id]: { type: 'success', message: 'Claimed' },
-                            }));
+                            setQueueToast({ kind: 'success', message: 'Claimed 1 batch.' });
                           }}
                         >
                           Claim
                         </button>
-                      </div>
-                      {status && (
-                        <div
-                          className={`alchemyStatus alchemyStatus--${status.type}`}
-                          role={status.type === 'error' ? 'alert' : 'status'}
-                        >
-                          {status.message}
-                        </div>
                       )}
                     </div>
-                  );
-                })}
+                    {row.state === 'brewing' && (
+                      <div className={'alchemyLedgerProgress'}>
+                        <div
+                          className={'alchemyLedgerProgressFill'}
+                          style={{ width: `${Math.round(row.progress01 * 100)}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </section>

@@ -1929,6 +1929,133 @@
   gap: 8px;
 }
 
+.alchemyLedgerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.alchemyLedgerSummary {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.alchemyLedgerClaimAll {
+  padding: 6px 12px;
+}
+
+.alchemyLedgerToast {
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.alchemyLedgerToast--success {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  color: #bbf7d0;
+}
+
+.alchemyLedgerToast--error {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #fecdd3;
+}
+
+.alchemyLedger {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.alchemyLedgerRow {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alchemyLedgerRow--brewing {
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.alchemyLedgerRow--ready {
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.alchemyLedgerRowMain {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.alchemyLedgerStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.alchemyLedgerDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.6);
+}
+
+.alchemyLedgerRow--brewing .alchemyLedgerDot {
+  background: #38bdf8;
+}
+
+.alchemyLedgerRow--ready .alchemyLedgerDot {
+  background: #4ade80;
+}
+
+.alchemyLedgerName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.alchemyLedgerTime {
+  font-size: 12px;
+  color: #cbd5e1;
+  text-align: right;
+}
+
+.alchemyLedgerClaim {
+  padding: 4px 10px;
+}
+
+.alchemyLedgerProgress {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.alchemyLedgerProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(129, 140, 248, 0.9));
+  transition: width 0.3s ease;
+}
+
 .alchemyWorkbenchTitle {
   font-size: 14px;
   font-weight: 700;
@@ -2193,6 +2320,15 @@
     justify-items: center;
     text-align: center;
   }
+
+  .alchemyLedgerRowMain {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .alchemyLedgerTime {
+    text-align: left;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2205,6 +2341,10 @@
   .alchemyCauldronSteam::before,
   .alchemyCauldronSteam::after {
     animation: none;
+  }
+
+  .alchemyLedgerProgressFill {
+    transition: none;
   }
 }
 
