@@ -1,3 +1,5 @@
+@use '../../styles/uiPanelChrome';
+
 .apothecaryPanel {
   display: flex;
   flex-direction: column;
@@ -11,6 +13,25 @@
   flex-direction: column;
   gap: 12px;
   padding: 12px;
+  --apoth-wood-0: #1b140f;
+  --apoth-wood-1: #261c14;
+  --apoth-paper-0: rgba(214, 198, 166, 0.12);
+  --apoth-brass: #c7a56b;
+  --apoth-jade: #34d399;
+  --apoth-cinnabar: #ef4444;
+  --apoth-ink: #f8fafc;
+  --apoth-muted: #cbd5e1;
+  color: var(--apoth-ink);
+}
+
+.apothecaryPanel--v2 .uiPanelChrome--raised {
+  --panel-chrome-bg: linear-gradient(135deg, rgba(38, 28, 20, 0.95), rgba(22, 16, 12, 0.92));
+  --panel-chrome-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.apothecaryPanel--v2 .uiPanelChrome--flat {
+  --panel-chrome-bg: linear-gradient(135deg, rgba(38, 28, 20, 0.75), rgba(22, 16, 12, 0.7));
+  --panel-chrome-shadow: 0 8px 16px rgba(0, 0, 0, 0.28);
 }
 
 .apothecaryTopRibbon {
@@ -54,26 +75,17 @@
   pointer-events: none;
 }
 
-.apothecaryPanelFrame {
-  border-radius: 12px;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
-  background: rgba(208, 208, 208, 0.08);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
-  padding: 12px;
-}
-
 .apothecaryStoreFrame {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 12px;
 }
 
 .apothecaryPouchIconButton {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: 0;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -86,7 +98,6 @@
 .apothecaryPouchIconButton:hover,
 .apothecaryPouchIconButton:focus-visible {
   transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.14);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
 }
 
@@ -96,7 +107,6 @@
 }
 
 .apothecaryPouchIconButton--ready {
-  border-color: rgba(148, 163, 184, 0.7);
   box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.4), 0 6px 14px rgba(0, 0, 0, 0.2);
 }
 
@@ -285,26 +295,25 @@
 }
 
 .apothecaryHeading {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   margin-bottom: 4px;
+  color: var(--apoth-ink);
 }
 
 .apothecarySubheading {
-  color: #cbd5e1;
+  color: var(--apoth-muted);
   font-size: 13px;
   margin-bottom: 6px;
 }
 
 .apothecaryDayKey {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--apoth-muted);
 }
 
 .apothecaryWallet {
-  padding: 0;
-  background: transparent;
-  border: none;
+  padding: 12px;
   align-self: start;
 }
 
@@ -312,7 +321,7 @@
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: #cbd5e1;
+  color: var(--apoth-muted);
   margin-bottom: 8px;
 }
 
@@ -340,8 +349,8 @@
 
 .apothecaryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
 }
 
 .apothecaryGrid--bundles,
@@ -350,13 +359,12 @@
 }
 
 .apothecaryCard {
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.55);
-  padding: 12px;
+  @extend .uiPanelChrome;
+  @extend .uiPanelChrome--flat;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .apothecaryCardBody {
@@ -375,25 +383,30 @@
 .apothecaryCardTitle {
   font-size: 16px;
   font-weight: 700;
+  color: var(--apoth-ink);
 }
 
 .apothecaryCardSubtitle {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--apoth-muted);
   margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .apothecaryCard--bundle .apothecaryCardSubtitle,
 .apothecaryCard--service .apothecaryCardSubtitle {
-  color: #e2e8f0;
+  color: var(--apoth-muted);
 }
 
 .apothecaryTag {
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.18);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #bfdbfe;
+  background: rgba(199, 165, 107, 0.2);
+  border: 1px solid rgba(199, 165, 107, 0.4);
+  color: #1f160d;
   font-size: 12px;
   white-space: nowrap;
 }
@@ -403,14 +416,14 @@
   gap: 12px;
   flex-wrap: wrap;
   font-size: 13px;
-  color: #e2e8f0;
+  color: var(--apoth-muted);
 }
 
 .apothecaryMetaLine {
   padding: 4px 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  background: var(--apoth-paper-0);
+  border: 1px solid rgba(199, 165, 107, 0.35);
 }
 
 .apothecaryCardChips {

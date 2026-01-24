@@ -107,7 +107,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
     () => (
       <div className="medicinePouchOverlay" role="presentation" onMouseDown={onClose}>
         <div
-          className="medicinePouchModal"
+          className="medicinePouchModal uiPanelChrome uiPanelChrome--raised"
           role="dialog"
           aria-modal="true"
           aria-label="Medicine Pouch"

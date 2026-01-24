@@ -456,7 +456,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           <div className={'apothecaryDayKey'}>Day: {dayKey}</div>
         </div>
         <div className={'apothecaryTopRight'}>
-          <div className={'apothecaryWallet apothecaryPanelFrame'}>
+          <div className={'apothecaryWallet uiPanelChrome uiPanelChrome--raised'}>
             <div className={'apothecaryWalletLabel'}>Wallet</div>
             <div className={'apothecaryWalletGrid'}>
               <span>Gold</span>
@@ -469,7 +469,9 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           </div>
           <button
             type="button"
-            className={`apothecaryPouchIconButton${hasReadyPouchItem ? ' apothecaryPouchIconButton--ready' : ''}`}
+            className={`apothecaryPouchIconButton uiPanelChrome uiPanelChrome--flat${
+              hasReadyPouchItem ? ' apothecaryPouchIconButton--ready' : ''
+            }`}
             onClick={() => setPouchOpen(true)}
             aria-label="Open Medicine Pouch"
             title="Medicine Pouch"
@@ -490,7 +492,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
       <div className={'apothecaryStage'}>
         <div className={'apothecarySafeZone'}>
-          <div className={'apothecaryStoreFrame apothecaryPanelFrame'}>
+          <div className={'apothecaryStoreFrame uiPanelChrome uiPanelChrome--raised'}>
             <div className={'apothecaryShelfTabs'}>
               {shelfOptions.map((option) => (
                 <button
