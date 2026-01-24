@@ -308,27 +308,41 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     };
   }, [activeAlchemySession, markBackgroundResolving]);
 
-  const readyQueueCount = queue.filter((job) => now >= job.endsAt).length;
-  const activeQueueJob = queue.find((job) => now >= job.startedAt && now < job.endsAt) ?? null;
-  const queuedCount = queue.length;
-  const activeJobRecipe = activeQueueJob
-    ? recipes.find((entry) => entry.id === activeQueueJob.recipeId)
+  const queueModel = useMemo(() => {
+    const readyJobs = queue.filter((job) => now >= job.endsAt);
+    const activeBrewingJob = queue.find((job) => now >= job.startedAt && now < job.endsAt) ?? null;
+    const nextQueuedJob = queue.find((job) => now < job.startedAt) ?? null;
+
+    return {
+      readyJobs,
+      readyCount: readyJobs.length,
+      activeBrewingJob,
+      nextQueuedJob,
+      queuedCount: queue.length,
+    };
+  }, [now, queue]);
+
+  const activeJobRecipe = queueModel.activeBrewingJob
+    ? recipes.find((entry) => entry.id === queueModel.activeBrewingJob?.recipeId)
     : null;
   const activeJobOutputId = activeJobRecipe ? Object.keys(activeJobRecipe.outputs ?? {})[0] : undefined;
   const activeJobName =
     (activeJobOutputId ? getItemDef(activeJobOutputId)?.name : undefined) ??
     activeJobRecipe?.id ??
-    activeQueueJob?.recipeId ??
+    queueModel.activeBrewingJob?.recipeId ??
     'Unknown brew';
-  const activeJobRemaining = activeQueueJob ? Math.max(0, activeQueueJob.endsAt - now) : 0;
-  const cauldronSummary =
-    queuedCount === 0
-      ? 'Cauldron idle — queue empty.'
-      : readyQueueCount > 0
-        ? `Ready to decant: ${readyQueueCount} batch${readyQueueCount > 1 ? 'es' : ''}.`
-        : activeQueueJob
-          ? `Brewing: ${activeJobName} ×${activeQueueJob.qty} — ${formatDuration(activeJobRemaining)}`
-          : `Queued: ${queuedCount} batch${queuedCount > 1 ? 'es' : ''}.`;
+  const activeJobRemaining = queueModel.activeBrewingJob
+    ? Math.max(0, queueModel.activeBrewingJob.endsAt - now)
+    : 0;
+  const activeJobDuration = queueModel.activeBrewingJob
+    ? Math.max(1, queueModel.activeBrewingJob.endsAt - queueModel.activeBrewingJob.startedAt)
+    : 1;
+  const brewProgress = queueModel.activeBrewingJob
+    ? Math.min(1, Math.max(0, (now - queueModel.activeBrewingJob.startedAt) / activeJobDuration))
+    : 0;
+  const ringRadius = 42;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+  const ringOffset = ringCircumference * (1 - (queueModel.readyCount > 0 ? 1 : brewProgress));
 
   return (
     <div className={'alchemyPanel alchemyPanel--workbench'}>
@@ -385,9 +399,133 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
         </aside>
 
         <main className={'alchemyWorkbench'}>
-          <section className={'alchemyWorkbenchCard alchemyWorkbenchCard--cauldronSummary'}>
-            <div className={'alchemyWorkbenchTitle'}>Cauldron</div>
-            <div className={'alchemyWorkbenchSummary'}>{cauldronSummary}</div>
+          <section
+            className={classNames('alchemyWorkbenchCard alchemyWorkbenchCard--cauldron', {
+              'is-ready': queueModel.readyCount > 0,
+            })}
+          >
+            <div className={'alchemyCauldronHeader'}>
+              <div className={'alchemyWorkbenchTitle'}>Cauldron</div>
+              {queueModel.activeBrewingJob && (
+                <span className={'alchemyBrewPill'}>
+                  Brewing · {formatDuration(activeJobRemaining)}
+                </span>
+              )}
+            </div>
+            <div className={'alchemyCauldronBody'}>
+              <div className={'alchemyCauldronViz'} aria-hidden="true">
+                <div className={'alchemyCauldronRing'}>
+                  <svg viewBox="0 0 120 120" className={'alchemyCauldronRingSvg'}>
+                    <circle
+                      className={'alchemyCauldronRingTrack'}
+                      cx="60"
+                      cy="60"
+                      r={ringRadius}
+                    />
+                    <circle
+                      className={'alchemyCauldronRingProgress'}
+                      cx="60"
+                      cy="60"
+                      r={ringRadius}
+                      strokeDasharray={ringCircumference}
+                      strokeDashoffset={ringOffset}
+                    />
+                  </svg>
+                </div>
+                <div className={'alchemyCauldronPot'}>
+                  <div className={'alchemyCauldronLiquid'} />
+                  <div className={'alchemyCauldronBubbles'} />
+                  <div className={'alchemyCauldronSteam'} />
+                </div>
+              </div>
+              <div className={'alchemyCauldronCopy'}>
+                {queueModel.queuedCount === 0 && (
+                  <>
+                    <div className={'alchemyWorkbenchSummary'}>
+                      The cauldron is cold. Select a recipe and begin refining.
+                    </div>
+                    <div className={'alchemyCauldronSubtext'}>Queue is empty.</div>
+                  </>
+                )}
+                {queueModel.readyCount > 0 && (
+                  <>
+                    <div className={'alchemyWorkbenchSummary'}>
+                      Ready to decant: {queueModel.readyCount} batch
+                      {queueModel.readyCount > 1 ? 'es' : ''}.
+                    </div>
+                    <div className={'alchemyCauldronSubtext'}>
+                      Claim to move results into your pouch.
+                    </div>
+                  </>
+                )}
+                {queueModel.readyCount === 0 && queueModel.activeBrewingJob && (
+                  <>
+                    <div className={'alchemyWorkbenchSummary'}>
+                      Brewing: {activeJobName} ×{queueModel.activeBrewingJob.qty}
+                    </div>
+                    <div className={'alchemyCauldronSubtext'}>
+                      Time remaining: {formatDuration(activeJobRemaining)}
+                    </div>
+                  </>
+                )}
+                {queueModel.readyCount === 0 &&
+                  !queueModel.activeBrewingJob &&
+                  queueModel.queuedCount > 0 && (
+                    <div className={'alchemyWorkbenchSummary'}>
+                      Queue primed with {queueModel.queuedCount} batch
+                      {queueModel.queuedCount > 1 ? 'es' : ''}.
+                    </div>
+                  )}
+              </div>
+            </div>
+            {queueModel.readyCount > 0 && (
+              <div className={'alchemyCauldronActions'}>
+                <button
+                  className={'worldScreenModuleButton worldScreenModuleButton--active'}
+                  onClick={() => {
+                    const readyJob = queueModel.readyJobs[0];
+                    if (!readyJob) return;
+                    const result = claimAlchemy(readyJob.id);
+                    if (!result.ok) {
+                      setQueueStatus((prev) => ({
+                        ...prev,
+                        [readyJob.id]: { type: 'error', message: result.error },
+                      }));
+                      return;
+                    }
+                    setQueueStatus((prev) => ({
+                      ...prev,
+                      [readyJob.id]: { type: 'success', message: 'Claimed' },
+                    }));
+                  }}
+                >
+                  Claim Ready
+                </button>
+                {queueModel.readyCount > 1 && (
+                  <button
+                    className={'worldScreenModuleButton'}
+                    onClick={() => {
+                      queueModel.readyJobs.forEach((job) => {
+                        const result = claimAlchemy(job.id);
+                        if (!result.ok) {
+                          setQueueStatus((prev) => ({
+                            ...prev,
+                            [job.id]: { type: 'error', message: result.error },
+                          }));
+                          return;
+                        }
+                        setQueueStatus((prev) => ({
+                          ...prev,
+                          [job.id]: { type: 'success', message: 'Claimed' },
+                        }));
+                      });
+                    }}
+                  >
+                    Claim All Ready ({queueModel.readyCount})
+                  </button>
+                )}
+              </div>
+            )}
           </section>
 
           {!selectedRecipe ? (

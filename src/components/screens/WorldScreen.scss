@@ -1759,6 +1759,176 @@
   gap: 10px;
 }
 
+.alchemyWorkbenchCard--cauldron {
+  position: relative;
+  overflow: hidden;
+}
+
+.alchemyWorkbenchCard--cauldron.is-ready {
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.18);
+}
+
+.alchemyCauldronHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.alchemyBrewPill {
+  font-size: 12px;
+  color: #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.alchemyCauldronBody {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.alchemyCauldronViz {
+  position: relative;
+  height: 140px;
+  width: 140px;
+  display: grid;
+  place-items: center;
+}
+
+.alchemyCauldronRing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.alchemyCauldronRingSvg {
+  width: 120px;
+  height: 120px;
+  transform: rotate(-90deg);
+}
+
+.alchemyCauldronRingTrack {
+  fill: none;
+  stroke: rgba(148, 163, 184, 0.25);
+  stroke-width: 8;
+}
+
+.alchemyCauldronRingProgress {
+  fill: none;
+  stroke: rgba(56, 189, 248, 0.9);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+}
+
+.alchemyWorkbenchCard--cauldron.is-ready .alchemyCauldronRingProgress {
+  stroke: rgba(74, 222, 128, 0.95);
+  filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5));
+}
+
+.alchemyCauldronPot {
+  position: relative;
+  width: 90px;
+  height: 70px;
+  border-radius: 0 0 40px 40px;
+  background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+  border: 2px solid rgba(148, 163, 184, 0.4);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.45);
+}
+
+.alchemyCauldronPot::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 6px;
+  right: 6px;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.5), rgba(15, 23, 42, 0.9));
+  border: 2px solid rgba(148, 163, 184, 0.4);
+}
+
+.alchemyCauldronLiquid {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 12px;
+  height: 24px;
+  border-radius: 999px 999px 16px 16px;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(129, 140, 248, 0.7));
+  opacity: 0.85;
+}
+
+.alchemyCauldronBubbles::before,
+.alchemyCauldronBubbles::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(224, 242, 254, 0.75);
+  left: 24px;
+  bottom: 18px;
+  animation: alchemyBubble 2.8s ease-in-out infinite;
+}
+
+.alchemyCauldronBubbles::after {
+  width: 4px;
+  height: 4px;
+  left: 50px;
+  bottom: 16px;
+  animation-delay: 1.2s;
+}
+
+.alchemyCauldronSteam::before,
+.alchemyCauldronSteam::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.4);
+  top: -8px;
+  left: 20px;
+  filter: blur(1px);
+  animation: alchemySteam 3.2s ease-in-out infinite;
+}
+
+.alchemyCauldronSteam::after {
+  width: 12px;
+  height: 12px;
+  left: 50px;
+  animation-delay: 1.4s;
+}
+
+.alchemyWorkbenchCard--cauldron.is-ready .alchemyCauldronLiquid {
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.45);
+}
+
+.alchemyCauldronCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alchemyCauldronSubtext {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.alchemyCauldronActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .alchemyWorkbenchTitle {
   font-size: 14px;
   font-weight: 700;
@@ -2016,6 +2186,49 @@
 
   .alchemyRecipeRackItem {
     min-width: 220px;
+  }
+
+  .alchemyCauldronBody {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alchemyCauldronRingProgress {
+    transition: none;
+  }
+
+  .alchemyCauldronBubbles::before,
+  .alchemyCauldronBubbles::after,
+  .alchemyCauldronSteam::before,
+  .alchemyCauldronSteam::after {
+    animation: none;
+  }
+}
+
+@keyframes alchemyBubble {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes alchemySteam {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-8px);
+    opacity: 0.8;
   }
 }
 
