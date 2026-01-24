@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { getItemDef } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
+import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
 import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog';
 import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types';
 import { GameEvents } from '../../services/events/GameEvents';
+import { ConsumableMetaChips } from './ConsumableMetaChips';
 import './MedicinePouchPanel.scss';
 
 type SlotConfigField = 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly';
@@ -13,6 +15,12 @@ const slotLabels: Record<MedicinePouchSlotKey, string> = {
   healing: 'Healing',
   utility: 'Utility',
   specialty: 'Specialty',
+};
+
+const slotIcons: Record<MedicinePouchSlotKey, string> = {
+  healing: '❤',
+  utility: '🧰',
+  specialty: '✦',
 };
 
 const triggerOptions: { value: MedicinePouchTrigger; label: string }[] = [
@@ -37,14 +45,16 @@ function usageLabel(usage?: 'combat_only' | 'combat_or_world' | 'cultivate_only'
   }
 }
 
-function formatCooldownLabel(ms: number) {
-  const seconds = Math.max(0, Math.ceil(ms / 1000));
-  if (seconds >= 60) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+function usageToChipUsage(usage?: 'combat_only' | 'combat_or_world' | 'cultivate_only') {
+  switch (usage) {
+    case 'combat_only':
+      return 'combat';
+    case 'cultivate_only':
+      return 'cultivation';
+    case 'combat_or_world':
+    default:
+      return 'both';
   }
-  return `${seconds}s`;
 }
 
 interface MedicinePouchPanelProps {
@@ -97,6 +107,16 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
     const shouldShowThreshold =
       slot.trigger === 'hpBelowPct' || slot.trigger === 'qiBelowPct' || slot.trigger === 'intentBelowPct';
     const usage = itemDef?.usage;
+    const chips = itemDef
+      ? buildPotionMetaChips({
+          itemId: equippedId ?? itemDef.id,
+          usage: usageToChipUsage(usage),
+          stackSize: itemDef.stackSize,
+          spec,
+          charges,
+          remainingCooldownMs,
+        })
+      : [];
 
     const handleConfigChange = (field: SlotConfigField, value: unknown) => {
       setSlotConfig(slotKey, { [field]: value } as Partial<typeof slot>);
@@ -116,7 +136,12 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
       <div key={slotKey} className={'medicinePouchCard'}>
         <div className={'medicinePouchCardHeader'}>
           <div>
-            <div className={'medicinePouchCardTitle'}>{slotLabels[slotKey]}</div>
+            <div className={'medicinePouchCardTitle'}>
+              <span className={'medicinePouchSlotIcon'} aria-hidden="true">
+                {slotIcons[slotKey]}
+              </span>
+              {slotLabels[slotKey]} Slot
+            </div>
             <div className={'medicinePouchCardSubtitle'}>
               {equippedId ? itemDef?.name ?? equippedId : 'Empty'}
             </div>
@@ -124,10 +149,11 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
           <div className={'medicinePouchTag'}>{usageLabel(usage)}</div>
         </div>
 
-        <div className={'medicinePouchMeta'}>
-          <div>Charges: {charges}</div>
-          <div>Cooldown: {formatCooldownLabel(remainingCooldownMs)}</div>
-        </div>
+        {chips.length > 0 && (
+          <div className={'medicinePouchChips'}>
+            <ConsumableMetaChips chips={chips} compact />
+          </div>
+        )}
 
         <div className={'medicinePouchField'}>
           <label className={'medicinePouchLabel'} htmlFor={`${slotKey}-select`}>

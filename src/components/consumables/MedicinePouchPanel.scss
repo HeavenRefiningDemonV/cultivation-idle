@@ -105,6 +105,11 @@
   font-size: 15px;
 }
 
+.medicinePouchSlotIcon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
 .medicinePouchCardSubtitle {
   font-size: 13px;
   color: #cbd5e1;
@@ -119,11 +124,9 @@
   font-weight: 700;
 }
 
-.medicinePouchMeta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: #cbd5e1;
+.medicinePouchChips {
+  margin-top: 6px;
+  margin-bottom: 6px;
 }
 
 .medicinePouchField {
