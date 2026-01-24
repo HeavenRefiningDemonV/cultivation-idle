@@ -395,6 +395,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                       blueprintName={selectedBlueprint?.name ?? selectedBlueprint?.id}
                       bonus={selectedBlueprint?.handsOnBonus}
                       onOutcome={() => setSessionStatus('Hands-on session complete.')}
+                      onOpenDetails={() => setDetailsOpen(true)}
                     />
                   </ErrorBoundary>
                 )}

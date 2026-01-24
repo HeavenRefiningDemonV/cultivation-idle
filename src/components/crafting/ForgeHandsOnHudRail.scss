@@ -1,0 +1,296 @@
+.forgeHandsOnLayout.forgeHandsOnLayout--rail {
+  display: grid;
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.forgeHandsOnRail {
+  min-width: 0;
+  max-width: 340px;
+  width: 100%;
+  display: flex;
+  min-height: 0;
+  overflow-x: hidden;
+}
+
+.forgeHandsOnStage {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.forgeHandsOnHudRail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  background: linear-gradient(145deg, rgba(12, 18, 28, 0.82), rgba(10, 14, 22, 0.9));
+  box-shadow: 0 12px 30px rgba(8, 12, 20, 0.25);
+  padding: 12px;
+  min-height: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.forgeHandsOnHudRail__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.forgeHandsOnHudRail__titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.forgeHandsOnHudRail__titleMeta {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.forgeHandsOnHudRail__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forgeHandsOnHudRail__subtitle {
+  font-size: 12px;
+  color: rgba(203, 213, 225, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.forgeHandsOnHudRail__headerActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.forgeHandsOnHudRail__ghostButton {
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 33, 0.5);
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.forgeHandsOnHudRail__ghostButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.forgeHandsOnHudRail__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.forgeHandsOnHudRail__card {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(8, 12, 20, 0.55);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeHandsOnHudRail__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeHandsOnHudRail__instruction {
+  font-size: 13px;
+  color: #e2e8f0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.forgeHandsOnHudRail__meta {
+  font-size: 11px;
+  color: rgba(203, 213, 225, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.forgeHandsOnHudRail__hint {
+  font-size: 12px;
+  color: rgba(248, 250, 252, 0.85);
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.forgeHandsOnHudRail__meterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.forgeHandsOnHudRail__meterBar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.forgeHandsOnHudRail__meterFill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(56, 189, 248, 0.7));
+}
+
+.forgeHandsOnHudRail__meterGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.forgeHandsOnHudRail__meterRow {
+  display: grid;
+  grid-template-columns: 70px 1fr 42px;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgeHandsOnHudRail__miniBar {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  overflow: hidden;
+}
+
+.forgeHandsOnHudRail__miniFill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  background: linear-gradient(90deg, rgba(248, 113, 113, 0.7), rgba(244, 114, 182, 0.7));
+}
+
+.forgeHandsOnHudRail__meterValue {
+  text-align: right;
+  font-size: 11px;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.forgeHandsOnHudRail__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.forgeHandsOnHudRail__status {
+  font-size: 12px;
+  color: #bbf7d0;
+  border-radius: 10px;
+  padding: 6px 8px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.forgeHandsOnHudRail__steps {
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeHandsOnHudRail__stepsTitle {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.forgeHandsOnHudRail__stepsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forgeHandsOnHudRail__stepPill {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 33, 0.6);
+  color: rgba(226, 232, 240, 0.9);
+}
+
+.forgeHandsOnHudRail__stepPill--active {
+  border-color: rgba(34, 197, 94, 0.6);
+  background: rgba(34, 197, 94, 0.15);
+  color: #bbf7d0;
+}
+
+.forgeHandsOnHudRail__stepPill--done {
+  opacity: 0.65;
+}
+
+.forgeHandsOnHudRail__stepPill--pending {
+  opacity: 0.85;
+}
+
+.forgeHandsOnHudRail .forgeStepCard {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(8, 12, 20, 0.35);
+  padding: 8px;
+}
+
+.forgeHandsOnHudRail .forgeStepTitle {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.forgeHandsOnHudRail .forgeStepBody {
+  gap: 6px;
+}
+
+.forgeHandsOnHudRail .forgeStepMeta {
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .forgeHandsOnLayout.forgeHandsOnLayout--rail {
+    grid-template-columns: 1fr;
+  }
+
+  .forgeHandsOnRail {
+    max-width: 100%;
+  }
+}

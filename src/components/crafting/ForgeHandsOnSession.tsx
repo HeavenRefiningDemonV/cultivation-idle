@@ -16,6 +16,7 @@ import { ForgeWorkbenchScene, type ForgePhaseKind } from './ForgeWorkbenchScene'
 import { TimingCircleQTE, type TimingCircleResult } from '../qte/TimingCircleQTE';
 import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte';
 import { ForgeHeatPullOutQTE, type ForgeHeatPullOutResult } from '../../ui/forge/ForgeHeatPullOutQTE';
+import { ForgeHandsOnHudRail } from './ForgeHandsOnHudRail';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;
@@ -23,6 +24,7 @@ interface ForgeHandsOnSessionProps {
   blueprintName?: string;
   bonus?: ForgeHandsOnBonus;
   onOutcome?: (outcome: ForgeSessionOutcome) => void;
+  onOpenDetails?: () => void;
 }
 
 interface HeatSampleState {
@@ -328,7 +330,14 @@ function ForgeStepCastShape({ step, onConfirm }: { step: Extract<CraftStep, { ty
   );
 }
 
-export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutcome }: ForgeHandsOnSessionProps) {
+export function ForgeHandsOnSession({
+  session,
+  now,
+  blueprintName,
+  bonus,
+  onOutcome,
+  onOpenDetails,
+}: ForgeHandsOnSessionProps) {
   const setHeatSetting = useCraftSessionStore((state) => state.setHeatSetting);
   const setStepStartedNow = useCraftSessionStore((state) => state.setStepStartedNow);
   const advanceStep = useCraftSessionStore((state) => state.advanceStep);
@@ -341,6 +350,7 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
   const heatSetting = session.cursor.heatSetting ?? 300;
   const heatRef = useRef(heatSetting);
   const [localStatus, setLocalStatus] = useState<string | null>(null);
+  const [stepsExpanded, setStepsExpanded] = useState(false);
   const [selectedMedium, setSelectedMedium] = useState<'water' | 'oil' | 'brine'>('water');
   const [hammerState, setHammerState] = useState<{
     attempts: number;
@@ -813,17 +823,249 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
     [session.script, performances, bonus, session.seed],
   );
 
-  return (
-    <div className="handsOnSessionCard forgeHandsOnLayout">
-      <div className="forgeHandsOnMain">
-        <div className="forgeSessionHeader">
-          <div>
-            <div className="forgeSessionTitle">Hands-on: {blueprintName ?? session.sourceId}</div>
-            <div className="forgeSessionSub">Interactive forging steps. Leaving switches to baseline resolve.</div>
-          </div>
-          <div className="forgeSessionMeta">Step {session.cursor.stepIndex + 1}/{session.script.steps.length}</div>
-        </div>
+  const stepTitle = useMemo(() => {
+    if (!currentStep) return 'Prepare';
+    if (currentStep.type === 'FINISH') return 'Finish forging';
+    return currentStep.uiLabel ?? currentStep.type.replace(/_/g, ' ').toLowerCase();
+  }, [currentStep]);
 
+  const stepInstruction = useMemo(() => {
+    if (!currentStep) return 'Await the next forging instruction.';
+    switch (currentStep.type) {
+      case 'HEAT_TO':
+      case 'HEAT_MATERIAL':
+        return 'Heat the billet and pull it out in the target band.';
+      case 'HAMMER_PATTERN':
+        return 'Strike when the ring meets the circle for clean hits.';
+      case 'QUENCH':
+        return 'Quench at the right moment to lock the temper.';
+      case 'TEMPER':
+        return 'Hold within the temper band until the timer completes.';
+      case 'ALLOY_MIX':
+        return 'Blend the alloy additives in the right ratio.';
+      case 'CAST_OR_SHAPE':
+        return 'Choose the shaping method and commit.';
+      case 'ENGRAVE_RUNE':
+        return 'Engrave steady strokes to fix the rune.';
+      case 'LAY_FORMATION':
+        return 'Lay formation nodes in order without breaks.';
+      case 'FINISH':
+        return 'Finalize the batch and claim the results.';
+      default:
+        return 'Complete the current step.';
+    }
+  }, [currentStep]);
+
+  const stepMetaLines = useMemo(() => {
+    if (!currentStep) return [];
+    if ((currentStep.type === 'HEAT_TO' || currentStep.type === 'HEAT_MATERIAL') && heatStepConfig) {
+      return [`Target zone: ${heatStepConfig.heatZone}`, `Timing: ${formatMs(heatStepConfig.durationMs)}`];
+    }
+    if (currentStep.type === 'HAMMER_PATTERN') {
+      return [`Strikes: ${Math.min(hammerState.attempts, currentStep.hits)} / ${currentStep.hits}`];
+    }
+    if (currentStep.type === 'ENGRAVE_RUNE') {
+      const total = Math.max(1, Math.floor(currentStep.hits ?? 5));
+      return [`Strokes: ${Math.min(engraveState.attempts, total)} / ${total}`];
+    }
+    if (currentStep.type === 'LAY_FORMATION') {
+      const total = Math.max(1, Math.floor(currentStep.hits ?? 4));
+      return [`Strokes: ${Math.min(formationState.attempts, total)} / ${total}`];
+    }
+    if (currentStep.type === 'TEMPER') {
+      return [timeRemaining !== undefined ? `Timer: ${formatMs(timeRemaining)}` : 'Timer: --'];
+    }
+    if (currentStep.type === 'QUENCH') {
+      return [`Medium: ${selectedMedium ?? 'Choose'}`];
+    }
+    return [];
+  }, [
+    currentStep,
+    heatStepConfig,
+    hammerState.attempts,
+    engraveState.attempts,
+    formationState.attempts,
+    timeRemaining,
+    selectedMedium,
+  ]);
+
+  const actionHint = useMemo(() => {
+    if (!currentStep) return undefined;
+    switch (currentStep.type) {
+      case 'HEAT_TO':
+      case 'HEAT_MATERIAL':
+        return 'Hold to pull when the glow hits the target zone.';
+      case 'HAMMER_PATTERN':
+        return 'Tap to strike on the beat.';
+      case 'QUENCH':
+        return 'Tap to quench at the right moment.';
+      case 'TEMPER':
+        return 'Adjust heat and confirm when stable.';
+      case 'ALLOY_MIX':
+        return 'Choose the alloy mix.';
+      case 'CAST_OR_SHAPE':
+        return 'Select a shaping approach.';
+      case 'ENGRAVE_RUNE':
+        return 'Tap to carve clean strokes.';
+      case 'LAY_FORMATION':
+        return 'Tap to place the formation nodes.';
+      case 'FINISH':
+        return 'Complete forging to claim the batch.';
+      default:
+        return undefined;
+    }
+  }, [currentStep]);
+
+  const stepControls = useMemo(() => {
+    if (!currentStep) return null;
+    if (currentStep.type === 'QUENCH') {
+      return (
+        <ForgeStepQuench
+          step={currentStep}
+          elapsed={elapsedForStep}
+          selectedMedium={selectedMedium}
+          onSelectMedium={setSelectedMedium}
+          onQuench={handleQuench}
+        />
+      );
+    }
+    if (currentStep.type === 'TEMPER') {
+      return (
+        <ForgeStepTemper
+          step={currentStep}
+          heat={heatSetting}
+          timeRemaining={timeRemaining}
+          onHeatChange={(value) => {
+            setHeatSetting(clampHeat(value));
+            GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
+          }}
+          onComplete={handleTemperComplete}
+        />
+      );
+    }
+    if (currentStep.type === 'ALLOY_MIX') {
+      return <ForgeStepAlloyMix step={currentStep} onSelect={handleAlloyChoice} />;
+    }
+    if (currentStep.type === 'CAST_OR_SHAPE') {
+      return <ForgeStepCastShape step={currentStep} onConfirm={handleCastConfirm} />;
+    }
+    if (currentStep.type === 'FINISH') {
+      return (
+        <div className="forgeStepCard">
+          <div className="forgeStepTitle">Finish forging</div>
+          <div className="forgeStepBody">
+            <div>Complete the batch and claim results.</div>
+            <button
+              type="button"
+              className="worldScreenModuleButton worldScreenModuleButton--active"
+              onClick={handleComplete}
+            >
+              Complete forging
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }, [
+    currentStep,
+    elapsedForStep,
+    selectedMedium,
+    heatSetting,
+    timeRemaining,
+    handleQuench,
+    handleTemperComplete,
+    handleAlloyChoice,
+    handleCastConfirm,
+    handleComplete,
+  ]);
+
+  return (
+    <div className="handsOnSessionCard forgeHandsOnLayout forgeHandsOnLayout--rail">
+      <div className="forgeHandsOnRail">
+        <ForgeHandsOnHudRail
+          blueprintName={blueprintName ?? session.sourceId}
+          stepTitle={stepTitle}
+          stepIndex={session.cursor.stepIndex + 1}
+          stepCount={session.script.steps.length}
+          instruction={stepInstruction}
+          metaLines={stepMetaLines}
+          actionHint={actionHint}
+          meters={qualityBuckets.map((bucket) => ({ id: bucket.key, label: bucket.label, value: bucket.score }))}
+          overallScore={liveOutcome.scoreOverall}
+          steps={timeline.map((item) => ({ id: item.id, label: item.label, status: item.status }))}
+          stepsExpanded={stepsExpanded}
+          onToggleSteps={() => setStepsExpanded((prev) => !prev)}
+          onOpenDetails={onOpenDetails}
+          onLeave={() => markBackgroundResolving('closed')}
+          onAbort={() => {
+            const confirmed = window.confirm('Abort this hands-on session? Progress will be lost.');
+            if (!confirmed) return;
+            abortSession();
+          }}
+          controls={
+            <>
+              {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
+                <div className="forgeStepCard">
+                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
+                  <div className="forgeStepBody">
+                    <div>Pull the metal out at the target heat.</div>
+                    <div className="forgeStepMeta">Target zone: {heatStepConfig.heatZone}</div>
+                    <div className="forgeStepMeta">Timing: {formatMs(heatStepConfig.durationMs)}</div>
+                  </div>
+                </div>
+              )}
+
+              {currentStep?.type === 'HAMMER_PATTERN' && (
+                <div className="forgeStepCard">
+                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Hammer pattern'}</div>
+                  <div className="forgeStepBody">
+                    <div>Click when the ring meets the circle.</div>
+                    <div className="forgeStepMeta">
+                      Strikes: {Math.min(hammerState.attempts, currentStep.hits)} / {currentStep.hits}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {stepControls}
+
+              {currentStep?.type === 'ENGRAVE_RUNE' && (
+                <div className="forgeStepCard">
+                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Engrave rune'}</div>
+                  <div className="forgeStepBody">
+                    <div>Engrave clean strokes.</div>
+                    <div className="forgeStepMeta">
+                      Strokes: {Math.min(engraveState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 5)))} /{' '}
+                      {Math.max(1, Math.floor(currentStep.hits ?? 5))}
+                    </div>
+                    {currentStep.optional && (
+                      <button type="button" className="worldScreenModuleButton" onClick={handleEngraveSkip}>
+                        Skip engraving
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+              {currentStep?.type === 'LAY_FORMATION' && (
+                <div className="forgeStepCard">
+                  <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Lay formation'}</div>
+                  <div className="forgeStepBody">
+                    <div>Lay nodes in sequence.</div>
+                    <div className="forgeStepMeta">
+                      Strokes: {Math.min(formationState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 4)))} /{' '}
+                      {Math.max(1, Math.floor(currentStep.hits ?? 4))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          }
+          statusMessage={localStatus}
+        />
+      </div>
+
+      <div className="forgeHandsOnStage">
         <ForgeWorkbenchScene
           stepType={currentStep?.type}
           phaseKind={currentPhase?.kind}
@@ -944,149 +1186,6 @@ export function ForgeHandsOnSession({ session, now, blueprintName, bonus, onOutc
             </div>
           )}
         </ForgeWorkbenchScene>
-
-        <div className="forgeHandsOnStepBlock">
-          {(currentStep?.type === 'HEAT_TO' || currentStep?.type === 'HEAT_MATERIAL') && heatStepConfig && (
-            <div className="forgeStepCard">
-              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Heat billet'}</div>
-              <div className="forgeStepBody">
-                <div>Pull the metal out at the target heat.</div>
-                <div className="forgeStepMeta">Target zone: {heatStepConfig.heatZone}</div>
-                <div className="forgeStepMeta">Timing: {formatMs(heatStepConfig.durationMs)}</div>
-              </div>
-            </div>
-          )}
-
-          {currentStep?.type === 'HAMMER_PATTERN' && (
-            <div className="forgeStepCard">
-              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Hammer pattern'}</div>
-              <div className="forgeStepBody">
-                <div>Click when the ring meets the circle.</div>
-                <div className="forgeStepMeta">
-                  Strikes: {Math.min(hammerState.attempts, currentStep.hits)} / {currentStep.hits}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {currentStep?.type === 'QUENCH' && (
-            <ForgeStepQuench
-              step={currentStep}
-              elapsed={elapsedForStep}
-              selectedMedium={selectedMedium}
-              onSelectMedium={setSelectedMedium}
-              onQuench={handleQuench}
-            />
-          )}
-
-          {currentStep?.type === 'TEMPER' && (
-            <ForgeStepTemper
-              step={currentStep}
-              heat={heatSetting}
-              timeRemaining={timeRemaining}
-              onHeatChange={(value) => {
-                setHeatSetting(clampHeat(value));
-                GameEvents.emit({ type: 'forge/bellows_pump', payload: {} });
-              }}
-              onComplete={handleTemperComplete}
-            />
-          )}
-
-          {currentStep?.type === 'ALLOY_MIX' && <ForgeStepAlloyMix step={currentStep} onSelect={handleAlloyChoice} />}
-
-          {currentStep?.type === 'CAST_OR_SHAPE' && <ForgeStepCastShape step={currentStep} onConfirm={handleCastConfirm} />}
-
-          {currentStep?.type === 'ENGRAVE_RUNE' && (
-            <div className="forgeStepCard">
-              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Engrave rune'}</div>
-              <div className="forgeStepBody">
-                <div>Engrave clean strokes.</div>
-                <div className="forgeStepMeta">
-                  Strokes: {Math.min(engraveState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 5)))} /{' '}
-                  {Math.max(1, Math.floor(currentStep.hits ?? 5))}
-                </div>
-                {currentStep.optional && (
-                  <button type="button" className="worldScreenModuleButton" onClick={handleEngraveSkip}>
-                    Skip engraving
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-          {currentStep?.type === 'LAY_FORMATION' && (
-            <div className="forgeStepCard">
-              <div className="forgeStepTitle">{currentStep.uiLabel ?? 'Lay formation'}</div>
-              <div className="forgeStepBody">
-                <div>Lay nodes in sequence.</div>
-                <div className="forgeStepMeta">
-                  Strokes: {Math.min(formationState.attempts, Math.max(1, Math.floor(currentStep.hits ?? 4)))} /{' '}
-                  {Math.max(1, Math.floor(currentStep.hits ?? 4))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {currentStep?.type === 'FINISH' && (
-            <div className="forgeStepCard">
-              <div className="forgeStepTitle">Finish forging</div>
-              <div className="forgeStepBody">
-                <div>Complete the batch and claim results.</div>
-                <button
-                  type="button"
-                  className="worldScreenModuleButton worldScreenModuleButton--active"
-                  onClick={handleComplete}
-                >
-                  Complete forging
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="forgeQualityMeter">
-          <div className="forgeQualityTitle">Quality &amp; Process</div>
-          <div className="forgeQualityRows">
-            {qualityBuckets.map((bucket) => (
-              <div key={bucket.key} className="forgeQualityRow">
-                <div>{bucket.label}</div>
-                <div className="forgeQualityBar">
-                  <div className="forgeQualityFill" style={{ width: `${Math.round(bucket.score * 100)}%` }} />
-                </div>
-                <div className="forgeQualityValue">{Math.round(bucket.score * 100)}%</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="forgeHandsOnActions">
-          <button type="button" className="worldScreenModuleButton" onClick={() => markBackgroundResolving('closed')}>
-            Leave session
-          </button>
-          <button type="button" className="worldScreenModuleButton" onClick={() => abortSession()}>
-            Abort
-          </button>
-        </div>
-        {localStatus && <div className="forgeStatus forgeStatus--success">{localStatus}</div>}
-      </div>
-
-      <div className="forgeHandsOnSidebar">
-        <div className="forgeTimeline">
-          <div className="forgeTimelineTitle">Steps</div>
-          <div className="forgeTimelineList">
-            {timeline.map((item) => (
-              <div key={item.id} className={classNames('forgeTimelineItem', `forgeTimelineItem--${item.status}`)}>
-                <div className="forgeTimelineLabel">{item.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="forgeOutcomePreview">
-          <div className="forgeOutcomeTitle">Live preview</div>
-          <div className="forgeOutcomeRow">Overall: {Math.round(liveOutcome.scoreOverall * 100)}%</div>
-          <div className="forgeOutcomeRow">Time bonus: +{Math.round(liveOutcome.timeReductionPctApplied)}%</div>
-          <div className="forgeOutcomeRow">Quality proc: +{Math.round(liveOutcome.qualityProcChanceBonusPct)}%</div>
-        </div>
       </div>
     </div>
   );
