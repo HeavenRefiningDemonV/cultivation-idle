@@ -129,8 +129,35 @@ export function BountyBoardPanel() {
     [itemsById, selectedBounty],
   );
 
+  const claimReady = useMemo(
+    () => bounties.filter((entry) => entry.progress >= entry.target && !entry.claimed),
+    [bounties],
+  );
+  const primaryBounty = trackedBounty ?? claimReady[0] ?? null;
+  const readyCount = claimReady.length;
+  const primaryDestination = useMemo(() => {
+    if (!primaryBounty) return null;
+    return resolveBountyDestination({
+      cityId: primaryBounty.cityId,
+      bountyKind: primaryBounty.kind,
+      cityModules,
+    });
+  }, [cityModules, primaryBounty]);
+  const primaryActionLabel = primaryDestination?.kind === 'moduleChoice' ? 'Choose Destination' : 'Go There';
+
   const handleGoToModule = (cityId: string, moduleKey: string) => {
     openWorldModule({ cityId, moduleKey, source: 'bounty-go-there' });
+  };
+
+  const handlePrimaryAction = () => {
+    if (!primaryBounty || !primaryDestination) return;
+    if (primaryDestination.kind === 'module') {
+      handleGoToModule(primaryDestination.cityId, primaryDestination.moduleKey);
+      return;
+    }
+    if (primaryDestination.kind === 'moduleChoice') {
+      handleOpenDetail(primaryBounty.instanceId);
+    }
   };
 
   const handleTrackToggle = (bountyId: string) => {
@@ -149,6 +176,16 @@ export function BountyBoardPanel() {
     setDetailOpen(false);
     setSelectedId(null);
     setClaimError(null);
+  };
+
+  const handleClaim = (bountyId: string) => {
+    if (!currentCityId) return;
+    const success = claim(currentCityId, bountyId);
+    if (!success) {
+      setClaimError('Unable to claim this bounty yet.');
+    } else {
+      setClaimError(null);
+    }
   };
 
   const renderProgressBar = (progress: number, target: number) => {
@@ -211,14 +248,7 @@ export function BountyBoardPanel() {
     return (
       <button
         className={'worldScreenModuleButton worldScreenModuleButton--primary'}
-        onClick={() => {
-          const success = claim(currentCityId, selectedBounty.instanceId);
-          if (!success) {
-            setClaimError('Unable to claim this bounty yet.');
-          } else {
-            setClaimError(null);
-          }
-        }}
+        onClick={() => handleClaim(selectedBounty.instanceId)}
         disabled={selectedBounty.claimed}
       >
         {selectedBounty.claimed ? 'Claimed' : 'Claim Reward'}
@@ -333,17 +363,109 @@ export function BountyBoardPanel() {
         })}
       </div>
 
-      {trackedBounty && (
-        <button
-          type="button"
-          className={'bountyStageFooter'}
-          onClick={() => handleOpenDetail(trackedBounty.instanceId)}
-        >
-          <PaperCard variant="label" interactive className="bountyStageFooterCard">
-            Tracked: {trackedBounty.title}
-          </PaperCard>
-        </button>
-      )}
+      <div className={'bountyQueueStrip'}>
+        <div className={'bqsPrimary'}>
+          {primaryBounty ? (
+            <>
+              <div className={'bqsTitleRow'}>
+                <span className={'bqsLabel'}>
+                  {trackedBounty ? 'Tracked' : readyCount > 0 ? `Ready (${readyCount})` : 'In Progress'}
+                </span>
+                {trackedBounty ? (
+                  <PaperStamp text="Tracked" size="sm" tone="ink" />
+                ) : primaryBounty.progress >= primaryBounty.target && !primaryBounty.claimed ? (
+                  <PaperStamp text="Ready" size="sm" tone="seal" />
+                ) : (
+                  <PaperStamp text="Active" size="sm" tone="ink" />
+                )}
+              </div>
+              <div className={'bqsHeadline'}>
+                <span className={'bqsTitle'}>{primaryBounty.title}</span>
+                <PaperStamp
+                  text={difficultyBadge[primaryBounty.difficulty] ?? primaryBounty.difficulty}
+                  size="sm"
+                  tone="ink"
+                />
+              </div>
+              <div className={'bqsProgress'}>
+                Progress {primaryBounty.progress} / {primaryBounty.target}
+              </div>
+              <div className={'bqsRewards'}>
+                {formatRewards(primaryBounty.rewards, itemsById)
+                  .slice(0, 3)
+                  .map((entry) => (
+                    <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                  ))}
+              </div>
+            </>
+          ) : (
+            <div className={'bqsEmpty'}>Select a bounty and Track it to pin progress here.</div>
+          )}
+        </div>
+
+        <div className={'bqsActions'}>
+          <button
+            className={'worldScreenModuleButton'}
+            type="button"
+            onClick={() => primaryBounty && handleOpenDetail(primaryBounty.instanceId)}
+            disabled={!primaryBounty}
+          >
+            View
+          </button>
+          <button
+            className={'worldScreenModuleButton'}
+            type="button"
+            onClick={handlePrimaryAction}
+            disabled={
+              !primaryBounty ||
+              !primaryDestination ||
+              primaryDestination.kind === 'unavailable'
+            }
+            aria-label={
+              primaryDestination && primaryDestination.kind === 'unavailable'
+                ? primaryDestination.reason
+                : undefined
+            }
+            title={
+              primaryDestination && primaryDestination.kind === 'unavailable' ? primaryDestination.reason : undefined
+            }
+          >
+            {primaryActionLabel}
+          </button>
+          <button
+            className={`worldScreenModuleButton ${
+              primaryBounty && trackedId === primaryBounty.instanceId ? 'worldScreenModuleButton--primary' : ''
+            }`}
+            type="button"
+            onClick={() =>
+              primaryBounty && handleTrackToggle(primaryBounty.instanceId)
+            }
+            disabled={!primaryBounty}
+          >
+            {primaryBounty && trackedId === primaryBounty.instanceId ? 'Untrack' : 'Track'}
+          </button>
+          <button
+            className={'worldScreenModuleButton worldScreenModuleButton--primary'}
+            type="button"
+            onClick={() => primaryBounty && handleClaim(primaryBounty.instanceId)}
+            disabled={!primaryBounty || primaryBounty.progress < primaryBounty.target || primaryBounty.claimed}
+          >
+            {primaryBounty?.claimed ? 'Claimed' : 'Claim'}
+          </button>
+        </div>
+
+        <div className={'bqsMeta'}>
+          <span>Ready: {readyCount}</span>
+          <span>Active: {bounties.length}</span>
+          <span>Merit: {merit}</span>
+          <span>
+            {canRefresh(currentCityId, now)
+              ? 'Refresh ready'
+              : `Refresh in ${formatDurationHMS(Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now))}`}
+          </span>
+        </div>
+        {claimError && <div className={'bqsError'}>{claimError}</div>}
+      </div>
 
       {selectedBounty && (
         <DetailScrollModal
