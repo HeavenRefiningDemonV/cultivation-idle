@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import classNames from 'classnames';
 import { useBountyStore } from '../../stores/bountyStore';
 import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
@@ -58,6 +59,10 @@ export function BountyBoardPanel() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [pinPulseId, setPinPulseId] = useState<string | null>(null);
+  const [claimAnimId, setClaimAnimId] = useState<string | null>(null);
+  const [progressPulseIds, setProgressPulseIds] = useState<Record<string, boolean>>({});
+  const previousProgressRef = useRef<Record<string, number>>({});
   const cityMap = useContentStore((state) => state.maps.citiesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
 
@@ -105,6 +110,28 @@ export function BountyBoardPanel() {
     }
   }, [bounties, detailOpen, selectedId]);
 
+  useEffect(() => {
+    if (bounties.length === 0) return;
+    setProgressPulseIds((current) => {
+      const next = { ...current };
+      bounties.forEach((entry) => {
+        const previous = previousProgressRef.current[entry.instanceId] ?? entry.progress;
+        if (entry.progress > previous) {
+          next[entry.instanceId] = true;
+          window.setTimeout(() => {
+            setProgressPulseIds((inner) => {
+              const updated = { ...inner };
+              delete updated[entry.instanceId];
+              return updated;
+            });
+          }, 450);
+        }
+        previousProgressRef.current[entry.instanceId] = entry.progress;
+      });
+      return next;
+    });
+  }, [bounties]);
+
   const selectedBounty = useMemo(
     () => bounties.find((entry) => entry.instanceId === selectedId) ?? bounties[0] ?? null,
     [bounties, selectedId],
@@ -128,6 +155,9 @@ export function BountyBoardPanel() {
     () => (selectedBounty ? formatRewards(selectedBounty.rewards, itemsById) : []),
     [itemsById, selectedBounty],
   );
+  const refreshRemaining = Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now);
+  const refreshReady = canRefresh(currentCityId, now);
+  const refreshSoon = !refreshReady && refreshRemaining > 0 && refreshRemaining <= 60000;
 
   const claimReady = useMemo(
     () => bounties.filter((entry) => entry.progress >= entry.target && !entry.claimed),
@@ -164,6 +194,10 @@ export function BountyBoardPanel() {
     if (!currentCityId) return;
     const isTracked = trackedId === bountyId;
     setTrackedBounty(currentCityId, isTracked ? null : bountyId);
+    if (!isTracked) {
+      setPinPulseId(bountyId);
+      window.setTimeout(() => setPinPulseId(null), 450);
+    }
   };
 
   const handleOpenDetail = (bountyId: string) => {
@@ -185,6 +219,8 @@ export function BountyBoardPanel() {
       setClaimError('Unable to claim this bounty yet.');
     } else {
       setClaimError(null);
+      setClaimAnimId(bountyId);
+      window.setTimeout(() => setClaimAnimId(null), 900);
     }
   };
 
@@ -283,17 +319,23 @@ export function BountyBoardPanel() {
           <div className={'bountyStageLabel'}>Merit</div>
           <div className={'bountyStageValue'}>{merit}</div>
         </PaperCard>
-        <PaperCard variant="label" className="bountyStageHudGroup bountyStageHudGroup--refresh">
+        <PaperCard
+          variant="label"
+          className={classNames('bountyStageHudGroup bountyStageHudGroup--refresh', {
+            'bountyStageHudGroup--ready': refreshReady,
+            'bountyStageHudGroup--soon': refreshSoon,
+          })}
+        >
           <div className={'bountyStageLabel'}>Next refresh</div>
           <div className={'bountyStageValue'}>
-            {canRefresh(currentCityId, now)
-              ? 'Ready'
-              : formatDurationHMS(Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now))}
+            {refreshReady ? 'Ready' : formatDurationHMS(refreshRemaining)}
           </div>
           <button
-            className={'worldScreenModuleButton bountyStageRefreshButton'}
+            className={classNames('worldScreenModuleButton bountyStageRefreshButton', {
+              'bountyStageRefreshButton--ready': refreshReady,
+            })}
             onClick={() => refresh(currentCityId, cityIndex)}
-            disabled={!canRefresh(currentCityId, now)}
+            disabled={!refreshReady}
           >
             Refresh
           </button>
@@ -323,7 +365,18 @@ export function BountyBoardPanel() {
           const bountyRewards = formatRewards(bounty.rewards, itemsById).slice(0, 3);
           const isTracked = trackedId === bounty.instanceId;
           const isSelected = selectedId === bounty.instanceId;
-          const isComplete = bounty.progress >= bounty.target;
+          const isClaimed = bounty.claimed;
+          const isComplete = bounty.progress >= bounty.target && !isClaimed;
+          const canClaim = isComplete && !isClaimed;
+          const bountyDestination = resolveBountyDestination({
+            cityId: bounty.cityId,
+            bountyKind: bounty.kind,
+            cityModules,
+          });
+          const canGoThere = bountyDestination.kind !== 'unavailable';
+          const isPinPulse = pinPulseId === bounty.instanceId;
+          const isClaimAnimating = claimAnimId === bounty.instanceId;
+          const isProgressPulse = Boolean(progressPulseIds[bounty.instanceId]);
 
           return (
             <button
@@ -339,15 +392,43 @@ export function BountyBoardPanel() {
                 interactive
                 selected={isSelected}
                 complete={isComplete}
-                claimed={bounty.claimed}
-                className="bountyPaperCard"
+                claimed={isClaimed}
+                className={classNames('bountyPaperCard', {
+                  isTracked,
+                  isComplete,
+                  isClaimed,
+                  isSelected,
+                  isClaimAnimating,
+                  isProgressPulse,
+                  isPinPulse,
+                  canClaim,
+                  canGoThere,
+                })}
               >
+                <span
+                  className={classNames('bountyPaperPin', {
+                    'bountyPaperPin--visible': isTracked,
+                    'bountyPaperPin--pulse': isPinPulse,
+                  })}
+                  aria-hidden="true"
+                />
                 <div className={'bountyPaperHeader'}>
                   <div className={'bountyPaperTitle'}>{bounty.title}</div>
                   <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
                 </div>
+                {isComplete && (
+                  <PaperStamp text="Ready" size="sm" tone="seal" className="bountyPaperReadyStamp paperStamp--ready" />
+                )}
+                {isClaimed && (
+                  <PaperStamp text="Claimed" size="sm" tone="seal" className="bountyPaperClaimedStamp paperStamp--claimed" />
+                )}
+                {isClaimAnimating && (
+                  <span className="bountyPaperClaimBurst" aria-hidden="true">
+                    Claimed
+                  </span>
+                )}
                 <div className={'bountyPaperObjective'}>{bounty.description}</div>
-                <div className={'bountyPaperProgress'}>
+                <div className={classNames('bountyPaperProgress', { 'bountyPaperProgress--pulse': isProgressPulse })}>
                   Progress: {bounty.progress} / {bounty.target}
                 </div>
                 <div className={'bountyPaperRewards'}>

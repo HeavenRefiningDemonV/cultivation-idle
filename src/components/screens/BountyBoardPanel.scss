@@ -33,6 +33,15 @@
   gap: 6px;
 }
 
+.bountyStageHudGroup--ready {
+  box-shadow: 0 0 12px rgba(47, 143, 102, 0.18);
+  border-color: rgba(47, 143, 102, 0.35);
+}
+
+.bountyStageHudGroup--soon {
+  animation: bountyRefreshPulse 2.4s ease-in-out infinite;
+}
+
 .bountyStageTitle {
   font-size: 18px;
   font-weight: 700;
@@ -96,6 +105,12 @@
   background: rgba(87, 59, 31, 0.08);
   border: 1px solid rgba(87, 59, 31, 0.25);
   color: #2b2116;
+}
+
+.bountyStageRefreshButton--ready {
+  background: rgba(225, 247, 236, 0.8);
+  border-color: rgba(47, 143, 102, 0.4);
+  box-shadow: 0 0 10px rgba(47, 143, 102, 0.2);
 }
 
 .bountyStageRefreshButton:disabled {
@@ -167,11 +182,83 @@
   padding: 18px 20px 16px;
 }
 
+.bountyPaperCard.isComplete {
+  animation: bountyReadyGlow 3s ease-in-out infinite;
+}
+
+.bountyPaperCard.isClaimed {
+  filter: saturate(0.85);
+}
+
+.bountyPaperCard.isClaimAnimating {
+  animation: bountyClaimShake 0.4s ease-in-out;
+}
+
+.bountyPaperCard.isTracked .bountyPaperTracked {
+  color: rgba(47, 143, 102, 0.9);
+}
+
 .bountyPaperHeader {
   display: flex;
   justify-content: space-between;
   gap: 8px;
   align-items: flex-start;
+}
+
+.bountyPaperPin {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(87, 59, 31, 0.35);
+  transform: translateX(-50%) scale(0.6);
+  opacity: 0;
+  box-shadow: 0 4px 8px rgba(15, 23, 42, 0.2);
+}
+
+.bountyPaperPin--visible {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.bountyPaperPin--pulse {
+  animation: bountyPinPulse 0.45s ease-out;
+}
+
+.bountyPaperReadyStamp {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 2;
+}
+
+.bountyPaperClaimedStamp {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+.bountyPaperClaimBurst {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(159, 59, 46, 0.85);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: rotate(-8deg) scale(0.85);
+  opacity: 0;
+  animation: bountyClaimStamp 0.9s ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .bountyPaperTitle {
@@ -197,12 +284,39 @@
 .bountyPaperProgress {
   font-size: 13px;
   font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+
+.bountyPaperProgress--pulse::after {
+  content: '';
+  position: absolute;
+  inset: -2px 0;
+  background: rgba(47, 143, 102, 0.18);
+  animation: bountyProgressPulse 0.45s ease-out;
+  pointer-events: none;
 }
 
 .bountyPaperRewards {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bountyPaperCard.isComplete .bountyPaperRewards::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.5) 40%, transparent 75%);
+  opacity: 0.4;
+  animation: bountyRewardShimmer 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.bountyPaperCard.isClaimAnimating .bountyPaperRewards {
+  animation: bountyRewardFlash 0.9s ease-in-out;
 }
 
 .bountyPaperTracked {
@@ -344,6 +458,102 @@
   grid-column: 1 / -1;
   font-size: 11px;
   color: rgba(159, 59, 46, 0.9);
+}
+
+@keyframes bountyReadyGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.18), 0 12px 20px rgba(15, 23, 42, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(47, 143, 102, 0.35), 0 0 18px rgba(47, 143, 102, 0.25),
+      0 12px 22px rgba(15, 23, 42, 0.18);
+  }
+}
+
+@keyframes bountyRewardShimmer {
+  0%,
+  70% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes bountyPinPulse {
+  0% {
+    transform: translateX(-50%) scale(0.6);
+    opacity: 0.2;
+  }
+  60% {
+    transform: translateX(-50%) scale(1.25);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bountyClaimStamp {
+  0% {
+    opacity: 0;
+    transform: rotate(-8deg) scale(0.85);
+  }
+  55% {
+    opacity: 0.95;
+    transform: rotate(-6deg) scale(1.05);
+  }
+  100% {
+    opacity: 0.85;
+    transform: rotate(-5deg) scale(1);
+  }
+}
+
+@keyframes bountyClaimShake {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-1px);
+  }
+  60% {
+    transform: translateY(1px);
+  }
+}
+
+@keyframes bountyRewardFlash {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  40% {
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes bountyProgressPulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bountyRefreshPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(120, 72, 33, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(120, 72, 33, 0.2);
+  }
 }
 
 .bountyDetailMeta {
@@ -506,5 +716,23 @@
 
   .bountyStageRoot .worldScreenModuleButton:hover:not(:disabled) {
     transform: none;
+  }
+
+  .bountyStageHudGroup--soon,
+  .bountyPaperCard.isComplete,
+  .bountyPaperCard.isClaimAnimating,
+  .bountyPaperCard.isClaimAnimating .bountyPaperRewards,
+  .bountyPaperCard.isComplete .bountyPaperRewards::after {
+    animation: none;
+  }
+
+  .bountyPaperClaimBurst {
+    animation: none;
+    opacity: 0.85;
+    transform: rotate(-5deg) scale(1);
+  }
+
+  .bountyPaperPin--pulse {
+    animation: none;
   }
 }
