@@ -12,6 +12,7 @@ import type { ForgeServiceResult } from '../../services/forgeService';
 import { RewardService } from '../../services/rewards';
 import { listTemperAffixes } from '../../content/temperAffixes';
 import { GameEvents } from '../../services/events/GameEvents';
+import { ForgeBlueprintDetailModal } from '../../features/professions/forge/ForgeBlueprintDetailModal';
 
 interface ForgePanelProps {
   cityId: string | null;
@@ -84,6 +85,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
   const [lastForgeOutcome, setLastForgeOutcome] = useState<ForgeSessionOutcome | null>(null);
   const [lastServiceResult, setLastServiceResult] = useState<ForgeServiceResult | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const lastServiceRef = useRef<ForgeServiceResult | null>(null);
   const [selectedServiceSlot, setSelectedServiceSlot] = useState<'weapon' | 'accessory'>('weapon');
   const affixLabels = useMemo(() => {
@@ -516,6 +518,7 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
                     setLastForgeOutcome(outcome);
                     setSessionStatus({ type: 'success', message: 'Hands-on forge complete' });
                   }}
+                  onOpenDetails={() => setDetailsOpen(true)}
                 />
                 {lastForgeOutcome && (
                   <div className={'forgeOutcomeCard'}>
@@ -894,6 +897,11 @@ export function ForgePanel({ cityId }: ForgePanelProps) {
           </div>
         </div>
       </div>
+      <ForgeBlueprintDetailModal
+        open={detailsOpen}
+        blueprintId={selectedBlueprint?.id ?? null}
+        onClose={() => setDetailsOpen(false)}
+      />
     </div>
   );
 

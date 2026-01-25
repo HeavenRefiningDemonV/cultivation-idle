@@ -7,9 +7,10 @@ export type ForgeMinigameProps = {
   blueprintName?: string;
   bonus?: ForgeHandsOnBonus;
   onOutcome?: (outcome: ForgeSessionOutcome) => void;
+  onOpenDetails?: () => void;
 };
 
-export function ForgeMinigame({ session, now, blueprintName, bonus, onOutcome }: ForgeMinigameProps) {
+export function ForgeMinigame({ session, now, blueprintName, bonus, onOutcome, onOpenDetails }: ForgeMinigameProps) {
   return (
     <ForgeHandsOnSession
       session={session}
@@ -17,6 +18,7 @@ export function ForgeMinigame({ session, now, blueprintName, bonus, onOutcome }:
       blueprintName={blueprintName}
       bonus={bonus}
       onOutcome={onOutcome}
+      onOpenDetails={onOpenDetails}
     />
   );
 }
