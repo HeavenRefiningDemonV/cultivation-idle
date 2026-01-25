@@ -3,7 +3,6 @@ import { useBountyStore } from '../../stores/bountyStore';
 import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
-import { useTrialStore } from '../../stores/trialStore';
 import { bountyKindToLabel, bountyKindToProgressRule, resolveBountyDestination } from '../../utils/bountyRouting';
 import { formatDurationHMS } from '../../utils/timeFormat';
 import type { RewardBundle } from '../../services/rewards';
@@ -27,6 +26,10 @@ const moduleLabelMap: Record<string, string> = {
   manualPavilion: 'Manual Pavilion',
 };
 
+const paperPositions = ['bountyPaper--left', 'bountyPaper--center', 'bountyPaper--right'] as const;
+
+type PaperPositionClass = (typeof paperPositions)[number];
+
 function formatRewards(bundle: RewardBundle): string[] {
   const entries: string[] = [];
   const currencies = bundle.currencies ?? {};
@@ -36,28 +39,11 @@ function formatRewards(bundle: RewardBundle): string[] {
   return entries;
 }
 
-function resolveModuleRef(city: any, moduleKey: string | null) {
-  if (!city || !moduleKey || !city.refs) return null;
-  const mapping: Record<string, string> = {
-    outskirts: 'outskirtsId',
-    ruins: 'ruinsId',
-    expeditions: 'expeditionsId',
-    gateTrial: 'gateTrialId',
-    manualPavilion: 'pavilionId',
-  };
-  if (mapping[moduleKey] && city.refs[mapping[moduleKey]]) return city.refs[mapping[moduleKey]];
-  if (city.refs[`${moduleKey}Id`]) return city.refs[`${moduleKey}Id`];
-  if (city.refs[moduleKey]) return city.refs[moduleKey];
-  return null;
-}
-
 export function BountyBoardPanel() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const cityMap = useContentStore((state) => state.maps.citiesById);
-  const cityRefs = useContentStore((state) => state.maps.trialsById);
-  const economy = useContentStore((state) => state.raw?.economy);
-  const gateTrialEconomy = (economy as any)?.manualSystem?.gateTrials;
 
   const currentCityId = useCityStore((state) => state.currentCityId);
 
@@ -68,12 +54,10 @@ export function BountyBoardPanel() {
   const nextRefreshAt = useBountyStore((state) => state.nextRefreshAt);
   const claim = useBountyStore((state) => state.claim);
   const trackedId = useBountyStore((state) => (currentCityId ? state.trackedByCityId[currentCityId] : null));
+  const trackedBounty = useBountyStore((state) => (currentCityId ? state.getTrackedBounty(currentCityId) : null));
   const setTrackedBounty = useBountyStore((state) => state.setTrackedBounty);
 
   const merit = useInventoryStore((state) => state.merit);
-  const getItemCount = useInventoryStore((state) => state.getItemCount);
-
-  const trialProgressById = useTrialStore((state) => state.progressByTrialId);
 
   const city = currentCityId ? cityMap[currentCityId] : null;
   const cityIndex = city?.index ?? null;
@@ -99,15 +83,24 @@ export function BountyBoardPanel() {
     }
   }, [bounties, selectedId]);
 
+  useEffect(() => {
+    if (!detailOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setDetailOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [detailOpen]);
+
   const selectedBounty = useMemo(
     () => bounties.find((entry) => entry.instanceId === selectedId) ?? bounties[0] ?? null,
     [bounties, selectedId],
   );
 
   const cityName = city?.name ?? 'Unknown City';
-  const lastRefreshAt = useBountyStore((state) =>
-    currentCityId ? state.lastRefreshAtByCityId[currentCityId] : undefined,
-  );
 
   const destination = useMemo(
     () =>
@@ -131,6 +124,21 @@ export function BountyBoardPanel() {
     if (!currentCityId) return;
     const isTracked = trackedId === bountyId;
     setTrackedBounty(currentCityId, isTracked ? null : bountyId);
+  };
+
+  const handleOpenDetail = (bountyId: string) => {
+    setSelectedId(bountyId);
+    setDetailOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+  };
+
+  const handleBackdropMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      handleCloseDetail();
+    }
   };
 
   const renderProgressBar = (progress: number, target: number) => {
@@ -201,36 +209,6 @@ export function BountyBoardPanel() {
     );
   };
 
-  const manualModuleDestination = useMemo(() => {
-    if (!currentCityId || !cityModules.includes('manualPavilion')) {
-      return { available: false, reason: 'Manual Pavilion not available in this city' };
-    }
-    return { available: true, cityId: currentCityId, moduleKey: 'manualPavilion' as const };
-  }, [cityModules, currentCityId]);
-
-  const gateTrialSuggestion = useMemo(() => {
-    if (!currentCityId || !cityModules.includes('gateTrial')) {
-      return { available: false, reason: 'Gate Trial not available in this city' };
-    }
-    const trialId = resolveModuleRef(city, 'gateTrial');
-    const trialDef = trialId ? cityRefs[trialId] : null;
-    const attempts = trialId ? trialProgressById[trialId]?.attempts ?? 0 : 0;
-    const threshold =
-      trialDef?.failSafe?.thresholdAttempts ??
-      gateTrialEconomy?.failSafe?.failThresholdEligibleAttempts ??
-      3;
-    const gateItemOwned = trialDef ? getItemCount(trialDef.gateItemId) > 0 : false;
-    const eligible = Boolean(trialDef && attempts >= threshold && !gateItemOwned);
-    return {
-      available: true,
-      cityId: currentCityId,
-      moduleKey: 'gateTrial' as const,
-      eligible,
-      attempts,
-      threshold,
-    };
-  }, [city, cityModules, cityRefs, currentCityId, gateTrialEconomy, getItemCount, trialProgressById]);
-
   if (!currentCityId || cityIndex == null) {
     return (
       <div className={'worldScreenPlaceholder'}>
@@ -242,139 +220,116 @@ export function BountyBoardPanel() {
     );
   }
 
+  const paperSlots = Array.from({ length: 3 }, (_, index) => ({
+    bounty: bounties[index] ?? null,
+    positionClass: paperPositions[index] as PaperPositionClass,
+  }));
+
   return (
-    <div className={'bountyBoardPanel'}>
-      <div className={'bountyBoardHeader'}>
-        <div>
-          <div className={'bountyBoardTitle'}>Bounty Board</div>
-          <div className={'bountyBoardSubtitle'}>
-            {cityName} • Last refresh: {lastRefreshAt ? new Date(lastRefreshAt).toLocaleTimeString() : 'Never'}
-          </div>
-          <div className={'bountyBoardSubtitle'}>
-            Next refresh: {canRefresh(currentCityId, now)
+    <div className={'bountyStageRoot'}>
+      <div className={'bountyStageHud'}>
+        <div className={'bountyStageHudGroup'}>
+          <div className={'bountyStageTitle'}>Bounty Board</div>
+          <div className={'bountyStageSub'}>{cityName}</div>
+        </div>
+        <div className={'bountyStageHudGroup bountyStageHudGroup--merit'}>
+          <div className={'bountyStageLabel'}>Merit</div>
+          <div className={'bountyStageValue'}>{merit}</div>
+        </div>
+        <div className={'bountyStageHudGroup bountyStageHudGroup--refresh'}>
+          <div className={'bountyStageLabel'}>Next refresh</div>
+          <div className={'bountyStageValue'}>
+            {canRefresh(currentCityId, now)
               ? 'Ready'
               : formatDurationHMS(Math.max(0, (nextRefreshAt(currentCityId) ?? 0) - now))}
           </div>
+          <button
+            className={'worldScreenModuleButton bountyStageRefreshButton'}
+            onClick={() => refresh(currentCityId, cityIndex)}
+            disabled={!canRefresh(currentCityId, now)}
+          >
+            Refresh
+          </button>
         </div>
-        <button
-          className={'worldScreenModuleButton'}
-          onClick={() => refresh(currentCityId, cityIndex)}
-          disabled={!canRefresh(currentCityId, now)}
-        >
-          Refresh Bounties
-        </button>
       </div>
 
-      <div className={'bountyMeritRow'}>
-        <div className={'bountyWallet'}>
-          <div className={'bountyWalletLabel'}>Merit</div>
-          <div className={'bountyWalletValue'}>{merit}</div>
-        </div>
-        <div className={'bountySuggestions'}>
-          <div className={'bountySuggestionCard'}>
-            <div className={'bountySuggestionHeader'}>Manual Pavilion</div>
-            <div className={'bountySuggestionBody'}>Spend Merit to acquire techniques.</div>
-            <div className={'bountySuggestionActions'}>
-              {manualModuleDestination.available ? (
-                <button
-                  className={'worldScreenModuleButton'}
-                  onClick={() => handleGoToModule(manualModuleDestination.cityId!, manualModuleDestination.moduleKey)}
-                >
-                  Go There
-                </button>
-              ) : (
-                <button className={'worldScreenModuleButton'} disabled>
-                  {manualModuleDestination.reason}
-                </button>
-              )}
-            </div>
-          </div>
-          <div className={'bountySuggestionCard'}>
-            <div className={'bountySuggestionHeader'}>Gate Trial Fail-safe</div>
-            <div className={'bountySuggestionBody'}>
-              Fail-safe purchase costs Merit (after enough attempts).
-              {gateTrialSuggestion.available && (
-                <span className={'bountySuggestionBadge'}>
-                  {gateTrialSuggestion.eligible ? 'Available now' : 'Not yet'}
-                </span>
-              )}
-            </div>
-            <div className={'bountySuggestionActions'}>
-              {gateTrialSuggestion.available ? (
-                <button
-                  className={'worldScreenModuleButton'}
-                  onClick={() => handleGoToModule(gateTrialSuggestion.cityId!, gateTrialSuggestion.moduleKey)}
-                >
-                  Go There
-                </button>
-              ) : (
-                <button className={'worldScreenModuleButton'} disabled>
-                  {gateTrialSuggestion.reason}
-                </button>
-              )}
-            </div>
-            {gateTrialSuggestion.available && (
-              <div className={'bountySuggestionMeta'}>
-                Attempts: {gateTrialSuggestion.attempts ?? 0} / {gateTrialSuggestion.threshold}
+      <div className={'bountyStageArea'}>
+        {paperSlots.map(({ bounty, positionClass }, index) => {
+          if (!bounty) {
+            return (
+              <button
+                key={`empty-${positionClass}`}
+                className={`bountyPaper ${positionClass} bountyPaper--empty`}
+                type="button"
+                disabled
+                aria-label="No bounty posted"
+              >
+                <div className={'bountyPaperEmptyTitle'}>No bounty posted</div>
+                <div className={'bountyPaperEmptyBody'}>Check back after the next refresh.</div>
+              </button>
+            );
+          }
+
+          const difficultyLabel = difficultyBadge[bounty.difficulty] ?? bounty.difficulty;
+          const bountyRewards = formatRewards(bounty.rewards).slice(0, 3);
+          const isTracked = trackedId === bounty.instanceId;
+
+          return (
+            <button
+              key={bounty.instanceId}
+              className={`bountyPaper ${positionClass} ${selectedId === bounty.instanceId ? 'bountyPaper--selected' : ''}`}
+              type="button"
+              onClick={() => handleOpenDetail(bounty.instanceId)}
+              aria-pressed={selectedId === bounty.instanceId}
+              aria-label={`Open bounty details: ${bounty.title}`}
+            >
+              <div className={'bountyPaperHeader'}>
+                <div className={'bountyPaperTitle'}>{bounty.title}</div>
+                <div className={'bountyPaperBadge'}>{difficultyLabel}</div>
               </div>
-            )}
-          </div>
-        </div>
+              <div className={'bountyPaperObjective'}>{bounty.description}</div>
+              <div className={'bountyPaperProgress'}>
+                Progress: {bounty.progress} / {bounty.target}
+              </div>
+              <div className={'bountyPaperRewards'}>
+                {bountyRewards.length > 0 ? (
+                  bountyRewards.map((entry) => (
+                    <span key={entry} className={'bountyPaperRewardChip'}>
+                      {entry}
+                    </span>
+                  ))
+                ) : (
+                  <span className={'bountyPaperRewardChip bountyPaperRewardChip--empty'}>No rewards</span>
+                )}
+              </div>
+              {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
+            </button>
+          );
+        })}
       </div>
 
-      <div className={'bountyBoardLayout'}>
-        <div className={'bountyListColumn'}>
-          <div className={'bountyListHeader'}>Active Bounties</div>
-          <div className={'bountyCardList'}>
-            {bounties.map((bounty) => {
-              const isSelected = selectedBounty?.instanceId === bounty.instanceId;
-              const isComplete = bounty.progress >= bounty.target;
-              const difficultyLabel = difficultyBadge[bounty.difficulty] ?? bounty.difficulty;
-              const isTracked = trackedId === bounty.instanceId;
-              return (
-                <div
-                  key={bounty.instanceId}
-                  className={`bountyCard ${isSelected ? 'bountyCard--selected' : ''} ${isComplete ? 'bountyCard--complete' : ''}`}
-                  onClick={() => setSelectedId(bounty.instanceId)}
-                >
-                  <div className={'bountyCardHeader'}>
-                    <div>
-                      <div className={'bountyCardTitle'}>{bounty.title}</div>
-                      <div className={'bountyCardSubtitle'}>
-                        Difficulty: {difficultyLabel} • {bountyKindToLabel(bounty.kind)}
-                      </div>
-                    </div>
-                    <div className={'bountyBadge'}>{difficultyLabel}</div>
-                  </div>
-                  <div className={'bountyCardBody'}>
-                    <div className={'bountyCardDescription'}>{bounty.description}</div>
-                    {renderProgressBar(bounty.progress, bounty.target)}
-                    <div className={'bountyCardFooter'}>
-                      <span className={'bountyStatus'}>
-                        {bounty.claimed ? 'Claimed' : isComplete ? 'Completed' : 'In progress'}
-                      </span>
-                      <button
-                        className={`bountyTrackButton ${isTracked ? 'bountyTrackButton--active' : ''}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTrackToggle(bounty.instanceId);
-                        }}
-                      >
-                        {isTracked ? 'Tracked' : 'Track'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            {bounties.length === 0 && (
-              <div className={'worldScreenPlaceholderBody'}>No bounties are available for this city.</div>
-            )}
-          </div>
-        </div>
+      {trackedBounty && (
+        <button
+          type="button"
+          className={'bountyStageFooter'}
+          onClick={() => handleOpenDetail(trackedBounty.instanceId)}
+        >
+          Tracked: {trackedBounty.title}
+        </button>
+      )}
 
-        <div className={'bountyDetailColumn'}>
-          {selectedBounty ? (
+      {detailOpen && selectedBounty && (
+        <div className={'bountyDetailOverlayBackdrop'} onMouseDown={handleBackdropMouseDown}>
+          <div
+            className={'bountyDetailOverlayPaper'}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Bounty details: ${selectedBounty.title}`}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button type="button" className={'bountyDetailClose'} onClick={handleCloseDetail} aria-label="Close">
+              ×
+            </button>
             <div className={'bountyDetailCard'}>
               <div className={'bountyDetailHeader'}>
                 <div>
@@ -391,7 +346,8 @@ export function BountyBoardPanel() {
                 <div className={'bountyDetailValue'}>{selectedBounty.description}</div>
                 {destination && destination.kind !== 'unavailable' && (
                   <div className={'bountyDetailHint'}>
-                    Target: {destination.kind === 'moduleChoice'
+                    Target:{' '}
+                    {destination.kind === 'moduleChoice'
                       ? destination.options.map((opt) => opt.label).join(' / ')
                       : moduleLabelMap[destination.moduleKey] ?? destination.moduleKey}
                   </div>
@@ -415,9 +371,7 @@ export function BountyBoardPanel() {
                       {entry}
                     </div>
                   ))}
-                  {rewardEntries.length === 0 && (
-                    <div className={'bountyDetailValue'}>No rewards</div>
-                  )}
+                  {rewardEntries.length === 0 && <div className={'bountyDetailValue'}>No rewards</div>}
                 </div>
               </div>
 
@@ -425,7 +379,9 @@ export function BountyBoardPanel() {
                 {renderDestinationActions()}
                 <div className={'bountyActionRow'}>
                   <button
-                    className={`worldScreenModuleButton ${trackedId === selectedBounty.instanceId ? 'worldScreenModuleButton--primary' : ''}`}
+                    className={`worldScreenModuleButton ${
+                      trackedId === selectedBounty.instanceId ? 'worldScreenModuleButton--primary' : ''
+                    }`}
                     onClick={() => handleTrackToggle(selectedBounty.instanceId)}
                   >
                     {trackedId === selectedBounty.instanceId ? 'Tracked' : 'Track'}
@@ -434,11 +390,9 @@ export function BountyBoardPanel() {
                 </div>
               </div>
             </div>
-          ) : (
-            <div className={'worldScreenPlaceholderBody'}>Select a bounty to view details.</div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,247 +1,281 @@
-.bountyBoardPanel {
+.bountyStageRoot {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  height: 100%;
-  color: #e2e8f0;
+  gap: 10px;
+  padding: 16px 18px 20px;
+  color: #2b2116;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
-.bountyBoardHeader {
+.bountyStageHud {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.bountyBoardTitle {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.bountyBoardSubtitle {
-  font-size: 13px;
-  color: #cbd5e1;
-  margin-top: 4px;
-}
-
-.bountyMeritRow {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 12px;
-  align-items: stretch;
-}
-
-.bountyWallet {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
+.bountyStageHudGroup {
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.bountyWalletLabel {
-  font-size: 12px;
-  color: #cbd5e1;
-}
-
-.bountyWalletValue {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.bountySuggestions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 10px;
-}
-
-.bountySuggestionCard {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.bountySuggestionHeader {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.bountySuggestionBody {
-  color: #cbd5e1;
-  font-size: 13px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.bountySuggestionBadge {
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(168, 85, 247, 0.16);
-  color: #e9d5ff;
-  border: 1px solid rgba(168, 85, 247, 0.4);
-  font-size: 12px;
-}
-
-.bountySuggestionActions {
-  display: flex;
-  gap: 8px;
-}
-
-.bountySuggestionMeta {
-  font-size: 12px;
-  color: #cbd5e1;
-}
-
-.bountyBoardLayout {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 12px;
-  height: 100%;
-}
-
-.bountyListColumn {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.bountyListHeader {
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.bountyCardList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.bountyCard {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
   border-radius: 10px;
-  padding: 10px;
-  cursor: pointer;
-  transition: border 0.15s ease, background 0.15s ease;
+  background: rgba(255, 248, 235, 0.7);
+  border: 1px solid rgba(65, 45, 25, 0.15);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
 }
 
-.bountyCard--selected {
-  border-color: #a855f7;
-  background: rgba(168, 85, 247, 0.08);
+.bountyStageHudGroup--merit {
+  min-width: 120px;
 }
 
-.bountyCard--complete {
-  border-color: rgba(34, 197, 94, 0.5);
+.bountyStageHudGroup--refresh {
+  align-items: flex-start;
+  gap: 6px;
 }
 
-.bountyCardHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.bountyCardTitle {
+.bountyStageTitle {
+  font-size: 18px;
   font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-.bountyCardSubtitle {
-  color: #cbd5e1;
-  font-size: 13px;
-  margin-top: 2px;
-}
-
-.bountyBadge {
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  font-weight: 700;
+.bountyStageSub {
   font-size: 12px;
-  align-self: flex-start;
+  color: rgba(43, 33, 22, 0.75);
 }
 
-.bountyCardBody {
-  margin-top: 8px;
+.bountyStageLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(43, 33, 22, 0.6);
+}
+
+.bountyStageValue {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bountyStageRefreshButton {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: rgba(87, 59, 31, 0.08);
+  border: 1px solid rgba(87, 59, 31, 0.25);
+  color: #2b2116;
+}
+
+.bountyStageRefreshButton:disabled {
+  opacity: 0.6;
+}
+
+.bountyStageArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.bountyPaper {
+  position: absolute;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding: 18px 20px 16px;
+  border-radius: 12px;
+  background: rgba(255, 248, 235, 0.28);
+  border: 1px solid rgba(65, 45, 25, 0.18);
+  color: #2b2116;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
 }
 
-.bountyCardDescription {
-  font-size: 13px;
-  color: #cbd5e1;
+.bountyPaper:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.6);
+  outline-offset: 2px;
 }
 
-.bountyProgress {
-  position: relative;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.bountyPaper:hover {
+  border-color: rgba(120, 72, 33, 0.45);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2);
 }
 
-.bountyProgressBar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, #a855f7, #f59e0b);
+.bountyPaper--selected {
+  border-color: rgba(120, 72, 33, 0.6);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.2), 0 14px 28px rgba(15, 23, 42, 0.2);
 }
 
-.bountyProgressText {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  font-size: 12px;
+.bountyPaper--empty {
+  cursor: default;
+  opacity: 0.6;
 }
 
-.bountyCardFooter {
+.bountyPaper--left {
+  left: 6%;
+  top: 14%;
+  width: 28.5%;
+  height: 72%;
+  transform: rotate(-1.4deg);
+}
+
+.bountyPaper--center {
+  left: 36%;
+  top: 16%;
+  width: 28.5%;
+  height: 72%;
+  transform: rotate(0.6deg);
+}
+
+.bountyPaper--right {
+  left: 66%;
+  top: 14%;
+  width: 28.5%;
+  height: 72%;
+  transform: rotate(1.3deg);
+}
+
+.bountyPaperHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  gap: 8px;
+  align-items: flex-start;
 }
 
-.bountyStatus {
+.bountyPaperTitle {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.bountyPaperBadge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(65, 45, 25, 0.35);
+  background: rgba(255, 248, 235, 0.7);
+}
+
+.bountyPaperObjective {
   font-size: 13px;
-  color: #cbd5e1;
+  color: rgba(43, 33, 22, 0.85);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.bountyTrackButton {
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #e2e8f0;
+.bountyPaperProgress {
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.bountyTrackButton--active {
-  background: rgba(34, 197, 94, 0.16);
-  border-color: rgba(34, 197, 94, 0.4);
-  color: #bbf7d0;
+.bountyPaperRewards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.bountyDetailColumn {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 12px;
-  overflow: auto;
+.bountyPaperRewardChip {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(87, 59, 31, 0.08);
+  border: 1px solid rgba(87, 59, 31, 0.2);
+}
+
+.bountyPaperRewardChip--empty {
+  opacity: 0.7;
+}
+
+.bountyPaperTracked {
+  margin-top: auto;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(87, 59, 31, 0.8);
+}
+
+.bountyPaperEmptyTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.bountyPaperEmptyBody {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.bountyStageFooter {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 248, 235, 0.7);
+  border: 1px solid rgba(65, 45, 25, 0.18);
+  font-size: 12px;
+  color: #2b2116;
+  cursor: pointer;
+}
+
+.bountyDetailOverlayBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 20;
+}
+
+.bountyDetailOverlayPaper {
+  width: min(640px, 100%);
+  max-height: 90%;
+  overflow-y: auto;
+  background: rgba(255, 248, 235, 0.96);
+  border-radius: 16px;
+  border: 1px solid rgba(87, 59, 31, 0.35);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.3);
+  padding: 18px 20px 20px;
+  position: relative;
+  color: #2b2116;
+}
+
+.bountyDetailOverlayPaper .worldScreenModuleButton {
+  background: rgba(87, 59, 31, 0.08);
+  border: 1px solid rgba(87, 59, 31, 0.2);
+  color: #2b2116;
+}
+
+.bountyDetailOverlayPaper .worldScreenModuleButton--primary {
+  background: rgba(120, 72, 33, 0.16);
+  border-color: rgba(120, 72, 33, 0.4);
+  color: #2b2116;
+}
+
+.bountyDetailOverlayPaper .worldScreenModuleButton--ghost {
+  background: transparent;
+  border-color: rgba(87, 59, 31, 0.2);
+  color: #2b2116;
+}
+
+.bountyDetailClose {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border: none;
+  background: rgba(87, 59, 31, 0.1);
+  color: #2b2116;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .bountyDetailCard {
@@ -259,19 +293,28 @@
 
 .bountyDetailTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .bountyDetailSubtitle {
-  color: #cbd5e1;
+  color: rgba(43, 33, 22, 0.7);
   font-size: 13px;
 }
 
+.bountyBadge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(87, 59, 31, 0.12);
+  font-weight: 700;
+  font-size: 12px;
+}
+
 .bountyDetailSection {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(87, 59, 31, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -282,21 +325,21 @@
 }
 
 .bountyDetailValue {
-  color: #cbd5e1;
+  color: rgba(43, 33, 22, 0.8);
   font-size: 14px;
 }
 
 .bountyDetailHint {
-  color: #a5b4fc;
+  color: rgba(87, 59, 31, 0.85);
   font-size: 12px;
 }
 
 .bountyDetailHint--warning {
-  color: #fca5a5;
+  color: #b45309;
 }
 
 .bountyDetailRule {
-  color: #cbd5e1;
+  color: rgba(43, 33, 22, 0.75);
   font-size: 13px;
 }
 
@@ -308,9 +351,9 @@
 
 .bountyRewardChip {
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(87, 59, 31, 0.08);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(87, 59, 31, 0.2);
   font-size: 13px;
 }
 
@@ -328,12 +371,47 @@
   gap: 10px;
 }
 
+.bountyProgress {
+  position: relative;
+  height: 14px;
+  background: rgba(87, 59, 31, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(87, 59, 31, 0.25);
+}
+
+.bountyProgressBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
+}
+
+.bountyProgressText {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-size: 11px;
+  color: #2b2116;
+}
+
 @media (max-width: 1100px) {
-  .bountyBoardLayout {
-    grid-template-columns: 1fr;
+  .bountyStageRoot {
+    padding: 12px;
   }
 
-  .bountyMeritRow {
+  .bountyPaper {
+    position: static;
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .bountyStageArea {
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 12px;
+    overflow-y: auto;
   }
 }
