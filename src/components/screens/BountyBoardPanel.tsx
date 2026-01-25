@@ -10,6 +10,7 @@ import './BountyBoardPanel.scss';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
+import { normalizeItemList } from '../../utils/itemList';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -32,20 +33,33 @@ const paperPositions = ['bountyPaperButton--left', 'bountyPaperButton--center', 
 
 type PaperPositionClass = (typeof paperPositions)[number];
 
-function formatRewards(bundle: RewardBundle): string[] {
-  const entries: string[] = [];
+type RewardChip = {
+  id: string;
+  text: string;
+  tone?: 'neutral' | 'ink' | 'success' | 'danger';
+};
+
+function formatRewards(bundle: RewardBundle, itemsById: Record<string, { name?: string }>): RewardChip[] {
+  const entries: RewardChip[] = [];
   const currencies = bundle.currencies ?? {};
-  if (currencies.gold) entries.push(`${currencies.gold} Gold`);
-  if (currencies.merit) entries.push(`${currencies.merit} Merit`);
-  if (currencies.spiritStones) entries.push(`${currencies.spiritStones} Spirit Stones`);
+  if (currencies.gold) entries.push({ id: 'gold', text: `${currencies.gold} Gold` });
+  if (currencies.merit) entries.push({ id: 'merit', text: `${currencies.merit} Merit`, tone: 'success' });
+  if (currencies.spiritStones) entries.push({ id: 'spiritStones', text: `${currencies.spiritStones} Spirit Stones` });
+  const items = normalizeItemList(bundle.items);
+  items.forEach((item) => {
+    const name = itemsById[item.itemId]?.name ?? item.itemId;
+    entries.push({ id: item.itemId, text: `${name} ×${item.qty}` });
+  });
   return entries;
 }
 
 export function BountyBoardPanel() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [claimError, setClaimError] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const cityMap = useContentStore((state) => state.maps.citiesById);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
 
@@ -81,9 +95,15 @@ export function BountyBoardPanel() {
       return;
     }
     if (selectedId && !bounties.find((entry) => entry.instanceId === selectedId)) {
-      setSelectedId(bounties[0]?.instanceId ?? null);
+      if (detailOpen) {
+        setDetailOpen(false);
+        setSelectedId(null);
+        setClaimError(null);
+      } else {
+        setSelectedId(bounties[0]?.instanceId ?? null);
+      }
     }
-  }, [bounties, selectedId]);
+  }, [bounties, detailOpen, selectedId]);
 
   const selectedBounty = useMemo(
     () => bounties.find((entry) => entry.instanceId === selectedId) ?? bounties[0] ?? null,
@@ -104,7 +124,10 @@ export function BountyBoardPanel() {
     [cityModules, selectedBounty],
   );
 
-  const rewardEntries = useMemo(() => (selectedBounty ? formatRewards(selectedBounty.rewards) : []), [selectedBounty]);
+  const rewardEntries = useMemo(
+    () => (selectedBounty ? formatRewards(selectedBounty.rewards, itemsById) : []),
+    [itemsById, selectedBounty],
+  );
 
   const handleGoToModule = (cityId: string, moduleKey: string) => {
     openWorldModule({ cityId, moduleKey, source: 'bounty-go-there' });
@@ -119,10 +142,13 @@ export function BountyBoardPanel() {
   const handleOpenDetail = (bountyId: string) => {
     setSelectedId(bountyId);
     setDetailOpen(true);
+    setClaimError(null);
   };
 
   const handleCloseDetail = () => {
     setDetailOpen(false);
+    setSelectedId(null);
+    setClaimError(null);
   };
 
   const renderProgressBar = (progress: number, target: number) => {
@@ -185,7 +211,14 @@ export function BountyBoardPanel() {
     return (
       <button
         className={'worldScreenModuleButton worldScreenModuleButton--primary'}
-        onClick={() => claim(currentCityId, selectedBounty.instanceId)}
+        onClick={() => {
+          const success = claim(currentCityId, selectedBounty.instanceId);
+          if (!success) {
+            setClaimError('Unable to claim this bounty yet.');
+          } else {
+            setClaimError(null);
+          }
+        }}
         disabled={selectedBounty.claimed}
       >
         {selectedBounty.claimed ? 'Claimed' : 'Claim Reward'}
@@ -257,7 +290,7 @@ export function BountyBoardPanel() {
           }
 
           const difficultyLabel = difficultyBadge[bounty.difficulty] ?? bounty.difficulty;
-          const bountyRewards = formatRewards(bounty.rewards).slice(0, 3);
+          const bountyRewards = formatRewards(bounty.rewards, itemsById).slice(0, 3);
           const isTracked = trackedId === bounty.instanceId;
           const isSelected = selectedId === bounty.instanceId;
 
@@ -287,7 +320,7 @@ export function BountyBoardPanel() {
                 <div className={'bountyPaperRewards'}>
                   {bountyRewards.length > 0 ? (
                     bountyRewards.map((entry) => (
-                      <PaperChip key={entry} variant="pill" text={entry} />
+                      <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                     ))
                   ) : (
                     <PaperChip variant="pill" text="No rewards" tone="neutral" />
@@ -317,13 +350,27 @@ export function BountyBoardPanel() {
           open={detailOpen}
           title={selectedBounty.title}
           subtitle={`${cityName} • ${bountyKindToLabel(selectedBounty.kind)}`}
-          meta={<PaperStamp text={difficultyBadge[selectedBounty.difficulty]} size="sm" tone="ink" />}
+          meta={
+            <div className="bountyDetailMeta">
+              <PaperStamp text={difficultyBadge[selectedBounty.difficulty]} size="sm" tone="ink" />
+              {selectedBounty.claimed ? (
+                <PaperStamp text="Claimed" size="sm" tone="seal" />
+              ) : selectedBounty.progress >= selectedBounty.target ? (
+                <PaperStamp text="Complete" size="sm" tone="seal" />
+              ) : trackedId === selectedBounty.instanceId ? (
+                <PaperStamp text="Tracked" size="sm" tone="ink" />
+              ) : null}
+            </div>
+          }
           onClose={handleCloseDetail}
         >
           <div className={'bountyDetailCard'}>
             <div className={'bountyDetailSection'}>
               <div className={'bountyDetailLabel'}>Objective</div>
               <div className={'bountyDetailValue'}>{selectedBounty.description}</div>
+              <div className={'bountyDetailValue'}>
+                Progress: {selectedBounty.progress} / {selectedBounty.target}
+              </div>
               {destination && destination.kind !== 'unavailable' && (
                 <div className={'bountyDetailHint'}>
                   Target:{' '}
@@ -340,14 +387,23 @@ export function BountyBoardPanel() {
             <div className={'bountyDetailSection'}>
               <div className={'bountyDetailLabel'}>Progress</div>
               {renderProgressBar(selectedBounty.progress, selectedBounty.target)}
-              <div className={'bountyDetailRule'}>{bountyKindToProgressRule(selectedBounty.kind)}</div>
+              <ul className={'bountyDetailRules'}>
+                {bountyKindToProgressRule(selectedBounty.kind)
+                  .split('\n')
+                  .filter(Boolean)
+                  .map((rule) => (
+                    <li key={rule} className={'bountyDetailRule'}>
+                      {rule}
+                    </li>
+                  ))}
+              </ul>
             </div>
 
             <div className={'bountyDetailSection'}>
               <div className={'bountyDetailLabel'}>Rewards</div>
               <div className={'bountyRewards'}>
                 {rewardEntries.map((entry) => (
-                  <PaperChip key={entry} variant="pill" text={entry} />
+                  <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                 ))}
                 {rewardEntries.length === 0 && (
                   <div className={'bountyDetailValue'}>No rewards</div>
@@ -368,6 +424,10 @@ export function BountyBoardPanel() {
                 </button>
                 {renderClaimButton()}
               </div>
+              {!selectedBounty.claimed && selectedBounty.progress < selectedBounty.target && (
+                <div className={'bountyDetailHint'}>Complete the objective to claim.</div>
+              )}
+              {claimError && <div className={'bountyDetailHint bountyDetailHint--warning'}>{claimError}</div>}
             </div>
           </div>
         </DetailScrollModal>

@@ -198,6 +198,12 @@
   gap: 6px;
 }
 
+.bountyDetailMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .bountyDetailCard {
   display: flex;
   flex-direction: column;
@@ -253,6 +259,14 @@
 .bountyDetailRule {
   color: rgba(43, 33, 22, 0.75);
   font-size: 13px;
+}
+
+.bountyDetailRules {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .bountyRewards {
