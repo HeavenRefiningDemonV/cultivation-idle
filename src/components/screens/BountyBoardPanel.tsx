@@ -8,6 +8,7 @@ import { formatDurationHMS } from '../../utils/timeFormat';
 import type { RewardBundle } from '../../services/rewards';
 import './BountyBoardPanel.scss';
 import { openWorldModule } from '../../systems/world/openWorldModule';
+import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -26,7 +27,7 @@ const moduleLabelMap: Record<string, string> = {
   manualPavilion: 'Manual Pavilion',
 };
 
-const paperPositions = ['bountyPaper--left', 'bountyPaper--center', 'bountyPaper--right'] as const;
+const paperPositions = ['bountyPaperButton--left', 'bountyPaperButton--center', 'bountyPaperButton--right'] as const;
 
 type PaperPositionClass = (typeof paperPositions)[number];
 
@@ -228,15 +229,15 @@ export function BountyBoardPanel() {
   return (
     <div className={'bountyStageRoot'}>
       <div className={'bountyStageHud'}>
-        <div className={'bountyStageHudGroup'}>
+        <PaperCard variant="label" className="bountyStageHudGroup">
           <div className={'bountyStageTitle'}>Bounty Board</div>
           <div className={'bountyStageSub'}>{cityName}</div>
-        </div>
-        <div className={'bountyStageHudGroup bountyStageHudGroup--merit'}>
+        </PaperCard>
+        <PaperCard variant="label" className="bountyStageHudGroup bountyStageHudGroup--merit">
           <div className={'bountyStageLabel'}>Merit</div>
           <div className={'bountyStageValue'}>{merit}</div>
-        </div>
-        <div className={'bountyStageHudGroup bountyStageHudGroup--refresh'}>
+        </PaperCard>
+        <PaperCard variant="label" className="bountyStageHudGroup bountyStageHudGroup--refresh">
           <div className={'bountyStageLabel'}>Next refresh</div>
           <div className={'bountyStageValue'}>
             {canRefresh(currentCityId, now)
@@ -250,22 +251,24 @@ export function BountyBoardPanel() {
           >
             Refresh
           </button>
-        </div>
+        </PaperCard>
       </div>
 
       <div className={'bountyStageArea'}>
-        {paperSlots.map(({ bounty, positionClass }, index) => {
+        {paperSlots.map(({ bounty, positionClass }) => {
           if (!bounty) {
             return (
               <button
                 key={`empty-${positionClass}`}
-                className={`bountyPaper ${positionClass} bountyPaper--empty`}
+                className={`bountyPaperButton ${positionClass} bountyPaperButton--empty`}
                 type="button"
                 disabled
                 aria-label="No bounty posted"
               >
-                <div className={'bountyPaperEmptyTitle'}>No bounty posted</div>
-                <div className={'bountyPaperEmptyBody'}>Check back after the next refresh.</div>
+                <PaperCard variant="card" className="bountyPaperCard" disabled>
+                  <div className={'bountyPaperEmptyTitle'}>No bounty posted</div>
+                  <div className={'bountyPaperEmptyBody'}>Check back after the next refresh.</div>
+                </PaperCard>
               </button>
             );
           }
@@ -273,36 +276,42 @@ export function BountyBoardPanel() {
           const difficultyLabel = difficultyBadge[bounty.difficulty] ?? bounty.difficulty;
           const bountyRewards = formatRewards(bounty.rewards).slice(0, 3);
           const isTracked = trackedId === bounty.instanceId;
+          const isSelected = selectedId === bounty.instanceId;
 
           return (
             <button
               key={bounty.instanceId}
-              className={`bountyPaper ${positionClass} ${selectedId === bounty.instanceId ? 'bountyPaper--selected' : ''}`}
+              className={`bountyPaperButton ${positionClass}`}
               type="button"
               onClick={() => handleOpenDetail(bounty.instanceId)}
-              aria-pressed={selectedId === bounty.instanceId}
+              aria-pressed={isSelected}
               aria-label={`Open bounty details: ${bounty.title}`}
             >
-              <div className={'bountyPaperHeader'}>
-                <div className={'bountyPaperTitle'}>{bounty.title}</div>
-                <div className={'bountyPaperBadge'}>{difficultyLabel}</div>
-              </div>
-              <div className={'bountyPaperObjective'}>{bounty.description}</div>
-              <div className={'bountyPaperProgress'}>
-                Progress: {bounty.progress} / {bounty.target}
-              </div>
-              <div className={'bountyPaperRewards'}>
-                {bountyRewards.length > 0 ? (
-                  bountyRewards.map((entry) => (
-                    <span key={entry} className={'bountyPaperRewardChip'}>
-                      {entry}
-                    </span>
-                  ))
-                ) : (
-                  <span className={'bountyPaperRewardChip bountyPaperRewardChip--empty'}>No rewards</span>
-                )}
-              </div>
-              {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
+              <PaperCard
+                variant="card"
+                interactive
+                selected={isSelected}
+                className="bountyPaperCard"
+              >
+                <div className={'bountyPaperHeader'}>
+                  <div className={'bountyPaperTitle'}>{bounty.title}</div>
+                  <PaperStamp text={difficultyLabel} size="sm" tone="ink" />
+                </div>
+                <div className={'bountyPaperObjective'}>{bounty.description}</div>
+                <div className={'bountyPaperProgress'}>
+                  Progress: {bounty.progress} / {bounty.target}
+                </div>
+                <div className={'bountyPaperRewards'}>
+                  {bountyRewards.length > 0 ? (
+                    bountyRewards.map((entry) => (
+                      <PaperChip key={entry} variant="pill" text={entry} />
+                    ))
+                  ) : (
+                    <PaperChip variant="pill" text="No rewards" tone="neutral" />
+                  )}
+                </div>
+                {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
+              </PaperCard>
             </button>
           );
         })}
@@ -314,18 +323,18 @@ export function BountyBoardPanel() {
           className={'bountyStageFooter'}
           onClick={() => handleOpenDetail(trackedBounty.instanceId)}
         >
-          Tracked: {trackedBounty.title}
+          <PaperCard variant="label" interactive className="bountyStageFooterCard">
+            Tracked: {trackedBounty.title}
+          </PaperCard>
         </button>
       )}
 
       {detailOpen && selectedBounty && (
         <div className={'bountyDetailOverlayBackdrop'} onMouseDown={handleBackdropMouseDown}>
-          <div
-            className={'bountyDetailOverlayPaper'}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Bounty details: ${selectedBounty.title}`}
-            onMouseDown={(event) => event.stopPropagation()}
+          <PaperCard
+            variant="tray"
+            className="bountyDetailOverlayPaper"
+            style={{ maxHeight: '90%' }}
           >
             <button type="button" className={'bountyDetailClose'} onClick={handleCloseDetail} aria-label="Close">
               ×
@@ -338,7 +347,7 @@ export function BountyBoardPanel() {
                     {cityName} • {bountyKindToLabel(selectedBounty.kind)}
                   </div>
                 </div>
-                <div className={'bountyBadge'}>{difficultyBadge[selectedBounty.difficulty]}</div>
+                <PaperStamp text={difficultyBadge[selectedBounty.difficulty]} size="sm" tone="ink" />
               </div>
 
               <div className={'bountyDetailSection'}>
@@ -367,11 +376,11 @@ export function BountyBoardPanel() {
                 <div className={'bountyDetailLabel'}>Rewards</div>
                 <div className={'bountyRewards'}>
                   {rewardEntries.map((entry) => (
-                    <div key={entry} className={'bountyRewardChip'}>
-                      {entry}
-                    </div>
+                    <PaperChip key={entry} variant="pill" text={entry} />
                   ))}
-                  {rewardEntries.length === 0 && <div className={'bountyDetailValue'}>No rewards</div>}
+                  {rewardEntries.length === 0 && (
+                    <div className={'bountyDetailValue'}>No rewards</div>
+                  )}
                 </div>
               </div>
 
@@ -390,7 +399,7 @@ export function BountyBoardPanel() {
                 </div>
               </div>
             </div>
-          </div>
+          </PaperCard>
         </div>
       )}
     </div>
