@@ -7,6 +7,7 @@ import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
 import { useUIStore } from '../../stores/uiStore';
+import './ExpeditionBoardPanel.scss';
 
 function formatDuration(seconds: number): string {
   if (seconds >= 3600) {
@@ -198,6 +199,10 @@ type CeremonyState = {
   spotlightItemId: string | null | undefined;
 };
 
+const routePositions = ['expRoutePaper--left', 'expRoutePaper--center', 'expRoutePaper--right'] as const;
+
+type RoutePositionClass = (typeof routePositions)[number];
+
 export function ExpeditionBoardPanel() {
   const currentCityId = useCityStore((state) => state.currentCityId);
   const setSelectedModule = useCityStore((state) => state.setSelectedModule);
@@ -314,20 +319,21 @@ export function ExpeditionBoardPanel() {
     return (
       <button
         key={duration.id}
-        className={`expeditionDurationChip${selectedDurationId === duration.id ? ' expeditionDurationChip--selected' : ''}`}
+        className={`expDurationChip${selectedDurationId === duration.id ? ' expDurationChip--selected' : ''}`}
         onClick={() => setSelectedDurationId(duration.id)}
+        type="button"
       >
-        <div className={'expeditionDurationChipHeader'}>
+        <div className={'expDurationChipHeader'}>
           <span>{duration.label}</span>
-          <span className={'expeditionDurationTime'}>{formatDuration(duration.seconds)}</span>
+          <span className={'expDurationTime'}>{formatDuration(duration.seconds)}</span>
         </div>
-        <div className={'expeditionDurationMeta'}>Rare: {chancePct}%</div>
-        {valueEstimate && <div className={'expeditionDurationMeta'}>Yield: {valueEstimate.label}</div>}
+        <div className={'expDurationMeta'}>Rare: {chancePct}%</div>
+        {valueEstimate && <div className={'expDurationMeta'}>Yield: {valueEstimate.label}</div>}
         {showPity ? (
-          <div className={'expeditionPityMeta'}>
+          <div className={'expDurationPity'}>
             Intel shards: {failures} / {shardsCap}
-            <div className={'expeditionPityBar expeditionPityBar--inline'}>
-              <div className={'expeditionPityFill'} style={{ width: `${progressPct}%` }} />
+            <div className={'expDurationPityBar'}>
+              <div className={'expDurationPityFill'} style={{ width: `${progressPct}%` }} />
             </div>
           </div>
         ) : null}
@@ -403,210 +409,213 @@ export function ExpeditionBoardPanel() {
     ?.slice(0, 2)
     .map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
 
+  const routePapers = content.types.slice(0, 3).map((type, index) => ({
+    type,
+    positionClass: routePositions[index] as RoutePositionClass,
+  }));
+
+  const availableSlots = Math.max(0, slots - activeRuns.length);
+
   return (
-    <div className={'expeditionBoardPanel'}>
-      <div className={'expeditionPlanner'}>
-        <div className={'expeditionPlannerHeader'}>
-          <div>
-            <div className={'expeditionBoardTitle'}>Expeditions</div>
-            <div className={'expeditionBoardSubtitle'}>Slots available: {slots}</div>
+    <div className={'expStageRoot'}>
+      <div className={'expStageHud'}>
+        <div className={'expStageHudGroup'}>
+          <div className={'expStageTitle'}>Expeditions</div>
+          <div className={'expStageSub'}>{citiesById[currentCityId]?.name ?? 'Unknown City'}</div>
+        </div>
+        <div className={'expStageHudGroup'}>
+          <div className={'expStageLabel'}>Slots</div>
+          <div className={'expStageValue'}>
+            {availableSlots} / {slots} available
           </div>
-          <div className={'expeditionRareInfo'}>
-            Rare chance: {rareChancePct}%
+        </div>
+        <div className={'expStageHudGroup expStageHudGroup--rare'}>
+          <div className={'expStageLabel'}>Rare chance</div>
+          <div className={'expStageValue'}>
+            {rareChancePct}%
             {selectedTypeRareNames && selectedTypeRareNames.length > 0 ? (
-              <span className={'expeditionRareItems'}> — {selectedTypeRareNames.join(', ')}</span>
+              <span className={'expStageRareItems'}> — {selectedTypeRareNames.join(', ')}</span>
             ) : null}
           </div>
         </div>
-
-        <div className={'expeditionRouteGrid'}>
-          {content.types.map((type) => {
-            const previewDuration = selectedDuration ?? content.durations[0];
-            const preview = computeExpectedBundle(cityIndex, type.id, previewDuration.id, content);
-            const items = normalizeItemList(preview?.items).slice(0, 3);
-            const variance = previewDuration.variancePct ?? 0.15;
-            const rarePreviewNames = type.rareDrops?.slice(0, 2).map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
-            return (
-              <button
-                key={type.id}
-                className={`expeditionRouteCard${selectedTypeId === type.id ? ' expeditionRouteCard--selected' : ''}`}
-                onClick={() => setSelectedTypeId(type.id)}
-              >
-                <div className={'expeditionRouteCardHeader'}>
-                  <div className={'expeditionRouteTitle'}>{type.name}</div>
-                  <div className={'expeditionRouteRare'}>Rare: {Math.round((previewDuration.rareChance ?? 0) * 100)}%</div>
-                </div>
-                <div className={'expeditionRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
-                <div className={'expeditionRouteItems'}>
-                  {items.length === 0 && <div className={'expeditionRouteItem'}>No yields defined</div>}
-                  {items.map((item) => {
-                    const range = clampVarianceRange(item.qty, variance);
-                    const name = itemsById[item.itemId]?.name ?? item.itemId;
-                    return (
-                      <div key={item.itemId} className={'expeditionRouteItem'}>
-                        {name}: {range.min}–{range.max}
-                      </div>
-                    );
-                  })}
-                </div>
-                {rarePreviewNames && rarePreviewNames.length > 0 ? (
-                  <div className={'expeditionRouteRareItems'}>Rares: {rarePreviewNames.join(', ')}</div>
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className={'expeditionDurationRow'}>{durationChips}</div>
-
-        {selectedPreviewItems.length > 0 && (
-          <div className={'expeditionYieldList'}>
-            <div className={'expeditionYieldHeader'}>You can expect:</div>
-            {selectedPreviewItems.map((item) => {
-              const name = itemsById[item.itemId]?.name ?? item.itemId;
-              return (
-                <div key={item.itemId} className={'expeditionYieldItem'}>
-                  <span>{name}</span>
-                  <span>
-                    {item.min} - {item.max}
-                  </span>
-                </div>
-              );
-            })}
-            <div className={'expeditionYieldRare'}>
-              Rare drop chance: {rareChancePct}%
-              {selectedTypeRareNames && selectedTypeRareNames.length > 0 ? (
-                <span> — Possible rares: {selectedTypeRareNames.join(', ')}</span>
-              ) : null}
-            </div>
-            {selectedPity && selectedPity.pityCap > 1 ? (
-              <div className={'expeditionPityBlock'}>
-                <div className={'expeditionPityMeta'}>
-                  Rare chance now: {Math.round(selectedPity.chance * 100)}% · Intel shards: {selectedPity.failures} /{' '}
-                  {Math.max(1, selectedPity.pityCap - 1)}
-                </div>
-                <div className={'expeditionPityBar'}>
-                  <div
-                    className={'expeditionPityFill'}
-                    style={{ width: `${pityProgressPercent(selectedPity.failures, selectedPity.pityCap) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ) : null}
-          </div>
-        )}
       </div>
 
-      <div className={'expeditionSlots'}>
-        {Array.from({ length: slots }).map((_, slotIndex) => {
-          const run = activeRuns.find((entry) => entry.slotIndex === slotIndex) ?? null;
-          if (run) {
-            const durationDef = content.durations.find((entry) => entry.id === run.durationId);
-            const typeDef = content.types.find((entry) => entry.id === run.expeditionTypeId);
-            const remainingMs = Math.max(0, run.endsAt - now);
-            const isComplete = run.status === 'complete' || remainingMs <= 0;
-            const totalMs = Math.max(1, run.endsAt - run.startedAt);
-            const elapsed = Math.min(totalMs, totalMs - remainingMs);
-            const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
-
-            return (
-              <div key={slotIndex} className={'expeditionSlotCard'}>
-                <div className={'expeditionSlotHeader'}>
-                  <div>
-                    <div className={'expeditionSlotTitle'}>
-                      Slot {slotIndex + 1}: {typeDef?.name ?? run.expeditionTypeId}
+      <div className={'expStageArea'}>
+        {routePapers.map(({ type, positionClass }) => {
+          const previewDuration = selectedDuration ?? content.durations[0];
+          const preview = computeExpectedBundle(cityIndex, type.id, previewDuration.id, content);
+          const items = normalizeItemList(preview?.items).slice(0, 4);
+          const variance = previewDuration.variancePct ?? 0.15;
+          const rarePreviewNames = type.rareDrops?.slice(0, 2).map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
+          const isSelected = selectedTypeId === type.id;
+          return (
+            <button
+              key={type.id}
+              className={`expRoutePaper ${positionClass}${isSelected ? ' expRoutePaper--selected' : ''}`}
+              onClick={() => setSelectedTypeId(type.id)}
+              type="button"
+              aria-pressed={isSelected}
+              aria-label={`Select expedition route: ${type.name}`}
+            >
+              <div className={'expRouteHeader'}>
+                <div className={'expRouteTitle'}>{type.name}</div>
+                <div className={'expRouteBadge'}>Route</div>
+              </div>
+              <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
+              <div className={'expRouteItems'}>
+                {items.length === 0 && <div className={'expRouteItem'}>No yields defined</div>}
+                {items.map((item) => {
+                  const range = clampVarianceRange(item.qty, variance);
+                  const name = itemsById[item.itemId]?.name ?? item.itemId;
+                  return (
+                    <div key={item.itemId} className={'expRouteItem'}>
+                      {name}: {range.min}–{range.max}
                     </div>
-                    <div className={'expeditionSlotMeta'}>{durationDef?.label ?? run.durationId}</div>
+                  );
+                })}
+              </div>
+              {rarePreviewNames && rarePreviewNames.length > 0 ? (
+                <div className={'expRouteRare'}>Rare: {rarePreviewNames.join(', ')}</div>
+              ) : (
+                <div className={'expRouteRare'}>Rare: —</div>
+              )}
+            </button>
+          );
+        })}
+
+        <div className={'expControlsDock'}>
+          <div className={'expDurationRow'}>{durationChips}</div>
+          <div className={'expPreviewRow'}>
+            {selectedPreviewItems.length > 0 ? (
+              <>
+                {selectedPreviewItems.slice(0, 4).map((item) => {
+                  const name = itemsById[item.itemId]?.name ?? item.itemId;
+                  return (
+                    <div key={item.itemId} className={'expPreviewItem'}>
+                      {name}: {item.min}–{item.max}
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              <div className={'expPreviewItem expPreviewItem--empty'}>Select a route to preview yields.</div>
+            )}
+            <div className={'expPreviewRareLine'}>
+              Rare drop chance: {rareChancePct}%
+              {selectedTypeRareNames && selectedTypeRareNames.length > 0 ? (
+                <span> — {selectedTypeRareNames.join(', ')}</span>
+              ) : null}
+            </div>
+          </div>
+          <div className={'expSendRow'}>
+            <span>Pick a slot below to send the selected route.</span>
+          </div>
+        </div>
+
+        <div className={'expSlotStrip'}>
+          {Array.from({ length: slots }).map((_, slotIndex) => {
+            const run = activeRuns.find((entry) => entry.slotIndex === slotIndex) ?? null;
+            if (run) {
+              const durationDef = content.durations.find((entry) => entry.id === run.durationId);
+              const typeDef = content.types.find((entry) => entry.id === run.expeditionTypeId);
+              const remainingMs = Math.max(0, run.endsAt - now);
+              const isComplete = run.status === 'complete' || remainingMs <= 0;
+              const totalMs = Math.max(1, run.endsAt - run.startedAt);
+              const elapsed = Math.min(totalMs, totalMs - remainingMs);
+              const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
+
+              return (
+                <div key={slotIndex} className={`expSlotCard${isComplete ? ' expSlotCard--ready' : ''}`}>
+                  <div className={'expSlotHeader'}>
+                    <div className={'expSlotTitle'}>Slot {slotIndex + 1}</div>
+                    <div className={'expSlotStatus'}>{isComplete ? 'Complete' : 'Running'}</div>
                   </div>
-                  <div className={`expeditionSlotStatus${isComplete ? ' expeditionSlotStatus--ready' : ''}`}>
-                    {isComplete ? 'Ready to claim' : 'Running'}
+                  <div className={'expSlotMeta'}>
+                    {typeDef?.name ?? run.expeditionTypeId} · {durationDef?.label ?? run.durationId}
                   </div>
-                </div>
-                <div className={'expeditionProgressBar'}>
-                  <div className={'expeditionProgressFill'} style={{ width: `${progress}%` }} />
-                </div>
-                <div className={'expeditionSlotMeta'}>
-                  {isComplete ? 'Complete' : `${formatTimer(remainingMs)} remaining`}
-                </div>
-                <div className={'expeditionSlotActions'}>
+                  <div className={'expSlotTimer'}>
+                    {isComplete ? 'Ready to claim' : `${formatTimer(remainingMs)} remaining`}
+                  </div>
+                  <div className={'expSlotProgress'}>
+                    <div className={'expSlotProgressFill'} style={{ width: `${progress}%` }} />
+                  </div>
                   <button
-                    className={'worldScreenModuleButton'}
+                    className={'worldScreenModuleButton expSlotAction'}
                     onClick={() => handleClaim(slotIndex)}
                     disabled={!isComplete}
                   >
-                    {isComplete ? 'Claim Rewards' : 'In Progress'}
+                    {isComplete ? 'Claim' : 'In progress'}
                   </button>
                 </div>
-              </div>
-            );
-          }
+              );
+            }
 
-          const canStart = Boolean(selectedType && selectedDuration && expectedBundle);
+            const canStart = Boolean(selectedType && selectedDuration && expectedBundle);
 
-          return (
-            <div key={slotIndex} className={'expeditionSlotCard expeditionSlotCard--idle'}>
-              <div className={'expeditionSlotHeader'}>
-                <div className={'expeditionSlotTitle'}>Slot {slotIndex + 1}</div>
-                <div className={'expeditionSlotStatus'}>Idle</div>
-              </div>
-              <div className={'expeditionSlotMeta'}>
-                {selectedType ? selectedType.name : 'Pick a route'} · {selectedDuration ? selectedDuration.label : 'Pick a duration'}
-              </div>
-              <div className={'expeditionSlotActions'}>
+            return (
+              <div key={slotIndex} className={'expSlotCard expSlotCard--idle'}>
+                <div className={'expSlotHeader'}>
+                  <div className={'expSlotTitle'}>Slot {slotIndex + 1}</div>
+                  <div className={'expSlotStatus'}>Idle</div>
+                </div>
+                <div className={'expSlotMeta'}>
+                  {selectedType ? selectedType.name : 'Pick a route'} ·{' '}
+                  {selectedDuration ? selectedDuration.label : 'Pick a duration'}
+                </div>
                 <button
-                  className={'worldScreenModuleButton'}
+                  className={'worldScreenModuleButton expSlotAction'}
                   onClick={() => startWithSelection(slotIndex)}
                   disabled={!canStart}
                 >
-                  Send Expedition
+                  Send
                 </button>
+                {!canStart && <div className={'expSlotError'}>Select a route and duration first.</div>}
               </div>
-              {!canStart && <div className={'expeditionSlotError'}>Select a route and duration to begin.</div>}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {ceremony.open && ceremony.run && ceremony.rolled && (
-        <div className={'expeditionCeremonyOverlay'} onClick={closeCeremony}>
-          <div className={'expeditionCeremonyModal'} onClick={(event) => event.stopPropagation()}>
-            <div className={'expeditionCeremonyHeader'}>
+        <div className={'expCeremonyOverlay'} onClick={closeCeremony}>
+          <div className={'expCeremonyModal'} onClick={(event) => event.stopPropagation()}>
+            <div className={'expCeremonyHeader'}>
               <div>
-                <div className={'expeditionCeremonyTitle'}>Expedition Complete</div>
-                <div className={'expeditionCeremonySubtitle'}>
+                <div className={'expCeremonyTitle'}>Expedition Complete</div>
+                <div className={'expCeremonySubtitle'}>
                   {content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId)?.name ?? 'Expedition'} ·
                   {content.durations.find((entry) => entry.id === ceremony.run?.durationId)?.label ?? 'Duration'}
                 </div>
               </div>
-              <button className={'expeditionCeremonyClose'} onClick={closeCeremony} aria-label="Close">
+              <button className={'expCeremonyClose'} onClick={closeCeremony} aria-label="Close">
                 ×
               </button>
             </div>
 
-            <div className={'expeditionCeremonySpotlight'}>
-              <div className={'expeditionSpotlightLabel'}>Best Drop</div>
-              <div className={'expeditionSpotlightItem'}>
+            <div className={'expCeremonySpotlight'}>
+              <div className={'expCeremonySpotlightLabel'}>Best Drop</div>
+              <div className={'expCeremonySpotlightItem'}>
                 {ceremony.spotlightItemId
                   ? itemsById[ceremony.spotlightItemId]?.name ?? ceremony.spotlightItemId
                   : 'No items'}
               </div>
               {ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId ? (
-                <div className={'expeditionSpotlightBadge'}>Rare Find</div>
+                <div className={'expCeremonySpotlightBadge'}>Rare Find</div>
               ) : null}
             </div>
 
-            <div className={'expeditionRewardList'}>
-              <div className={'expeditionRewardHeader'}>Rewards Gained</div>
+            <div className={'expCeremonyRewardList'}>
+              <div className={'expCeremonyRewardHeader'}>Rewards Gained</div>
               {normalizeItemList(ceremony.rolled.items).map((item) => (
-                <div key={item.itemId} className={'expeditionRewardRow'}>
+                <div key={item.itemId} className={'expCeremonyRewardRow'}>
                   <span>{itemsById[item.itemId]?.name ?? item.itemId}</span>
                   <span>×{item.qty}</span>
                 </div>
               ))}
               {ceremony.rolled.currencies ? (
-                <div className={'expeditionRewardCurrencies'}>
+                <div className={'expCeremonyRewardCurrencies'}>
                   {Object.entries(ceremony.rolled.currencies).map(([key, value]) => (
-                    <div key={key} className={'expeditionRewardRow'}>
+                    <div key={key} className={'expCeremonyRewardRow'}>
                       <span>{key}</span>
                       <span>{value}</span>
                     </div>
@@ -615,15 +624,15 @@ export function ExpeditionBoardPanel() {
               ) : null}
             </div>
 
-            {ceremonyError && <div className={'expeditionCeremonyError'}>{ceremonyError}</div>}
+            {ceremonyError && <div className={'expCeremonyError'}>{ceremonyError}</div>}
 
-            <div className={'expeditionCeremonyActions'}>
+            <div className={'expCeremonyActions'}>
               <button className={'worldScreenModuleButton'} onClick={sendAgain}>
                 Send Again
               </button>
-              <div className={'expeditionCeremonyUse'}>
-                <div className={'expeditionCeremonyUseLabel'}>Go use materials</div>
-                <div className={'expeditionCeremonyUseButtons'}>
+              <div className={'expCeremonyUse'}>
+                <div className={'expCeremonyUseLabel'}>Go use materials</div>
+                <div className={'expCeremonyUseButtons'}>
                   {(() => {
                     const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
                     const recommended = type?.recommendedModuleKey;

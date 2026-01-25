@@ -1,0 +1,524 @@
+.expStageRoot {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 20px;
+  color: #2b2116;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.expStageHud {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.expStageHudGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 248, 235, 0.7);
+  border: 1px solid rgba(65, 45, 25, 0.15);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+}
+
+.expStageHudGroup--rare {
+  max-width: 320px;
+}
+
+.expStageTitle {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.expStageSub {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.75);
+}
+
+.expStageLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(43, 33, 22, 0.6);
+}
+
+.expStageValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b2116;
+}
+
+.expStageRareItems {
+  color: rgba(43, 33, 22, 0.8);
+  font-weight: 500;
+}
+
+.expStageArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.expRoutePaper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px 16px;
+  border-radius: 12px;
+  background: rgba(255, 248, 235, 0.28);
+  border: 1px solid rgba(65, 45, 25, 0.18);
+  color: #2b2116;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+}
+
+.expRoutePaper:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.6);
+  outline-offset: 2px;
+}
+
+.expRoutePaper:hover {
+  border-color: rgba(120, 72, 33, 0.45);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2);
+}
+
+.expRoutePaper--selected {
+  border-color: rgba(120, 72, 33, 0.6);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.2), 0 14px 28px rgba(15, 23, 42, 0.2);
+}
+
+.expRoutePaper--left {
+  left: 6%;
+  top: 14%;
+  width: 28.5%;
+  height: 72%;
+  transform: rotate(-1.4deg);
+}
+
+.expRoutePaper--center {
+  left: 36%;
+  top: 16%;
+  width: 28.5%;
+  height: 72%;
+  transform: rotate(0.6deg);
+}
+
+.expRoutePaper--right {
+  left: 66%;
+  top: 14%;
+  width: 28.5%;
+  height: 72%;
+  transform: rotate(1.3deg);
+}
+
+.expRouteHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.expRouteTitle {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.expRouteBadge {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(65, 45, 25, 0.35);
+  background: rgba(255, 248, 235, 0.7);
+}
+
+.expRouteDescription {
+  font-size: 13px;
+  color: rgba(43, 33, 22, 0.85);
+}
+
+.expRouteItems {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.expRouteItem {
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(87, 59, 31, 0.08);
+}
+
+.expRouteRare {
+  font-size: 12px;
+  color: rgba(87, 59, 31, 0.8);
+  margin-top: auto;
+}
+
+.expControlsDock {
+  position: absolute;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 248, 235, 0.82);
+  border: 1px solid rgba(65, 45, 25, 0.18);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+  max-width: 720px;
+  width: min(720px, 92%);
+}
+
+.expDurationRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.expDurationChip {
+  border-radius: 10px;
+  border: 1px solid rgba(65, 45, 25, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+  padding: 8px 10px;
+  min-width: 160px;
+  text-align: left;
+  cursor: pointer;
+  color: #2b2116;
+}
+
+.expDurationChip--selected {
+  border-color: rgba(120, 72, 33, 0.6);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.15);
+}
+
+.expDurationChipHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.expDurationTime {
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.expDurationMeta {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.75);
+  margin-top: 4px;
+}
+
+.expDurationPity {
+  font-size: 11px;
+  color: rgba(43, 33, 22, 0.75);
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.expDurationPityBar {
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(87, 59, 31, 0.12);
+  overflow: hidden;
+}
+
+.expDurationPityFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
+}
+
+.expPreviewRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.8);
+}
+
+.expPreviewItem {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(87, 59, 31, 0.08);
+  border: 1px solid rgba(87, 59, 31, 0.18);
+}
+
+.expPreviewItem--empty {
+  background: transparent;
+  border: none;
+}
+
+.expPreviewRareLine {
+  width: 100%;
+  font-size: 12px;
+  color: rgba(87, 59, 31, 0.8);
+}
+
+.expSendRow {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.expSlotStrip {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  width: min(900px, 96%);
+}
+
+.expSlotCard {
+  background: rgba(255, 248, 235, 0.9);
+  border: 1px solid rgba(65, 45, 25, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #2b2116;
+}
+
+.expSlotCard--ready {
+  border-color: rgba(120, 72, 33, 0.45);
+}
+
+.expSlotCard--idle {
+  opacity: 0.92;
+}
+
+.expSlotHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.expSlotTitle {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.expSlotStatus {
+  font-size: 11px;
+  color: rgba(87, 59, 31, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.expSlotMeta {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.expSlotTimer {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.8);
+}
+
+.expSlotProgress {
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(87, 59, 31, 0.12);
+  overflow: hidden;
+}
+
+.expSlotProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
+}
+
+.expSlotAction {
+  align-self: flex-start;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+
+.expSlotError {
+  font-size: 11px;
+  color: rgba(180, 83, 9, 0.9);
+}
+
+.expCeremonyOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 30;
+}
+
+.expCeremonyModal {
+  width: min(680px, 100%);
+  max-height: 90%;
+  overflow-y: auto;
+  background: rgba(255, 248, 235, 0.96);
+  border-radius: 16px;
+  border: 1px solid rgba(87, 59, 31, 0.35);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.3);
+  padding: 18px 20px 20px;
+  position: relative;
+  color: #2b2116;
+}
+
+.expCeremonyHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.expCeremonyTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.expCeremonySubtitle {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.expCeremonyClose {
+  border: none;
+  background: rgba(87, 59, 31, 0.1);
+  color: #2b2116;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.expCeremonySpotlight {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(87, 59, 31, 0.2);
+  background: rgba(87, 59, 31, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expCeremonySpotlightLabel {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.expCeremonySpotlightItem {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.expCeremonySpotlightBadge {
+  background: rgba(120, 72, 33, 0.16);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.expCeremonyRewardList {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expCeremonyRewardHeader {
+  font-weight: 700;
+}
+
+.expCeremonyRewardRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.expCeremonyRewardCurrencies {
+  margin-top: 4px;
+}
+
+.expCeremonyError {
+  margin-top: 8px;
+  color: rgba(180, 83, 9, 0.9);
+  font-size: 12px;
+}
+
+.expCeremonyActions {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expCeremonyUse {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expCeremonyUseLabel {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.expCeremonyUseButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .expStageRoot {
+    padding: 12px;
+  }
+
+  .expRoutePaper {
+    position: static;
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .expStageArea {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    overflow-y: auto;
+    padding-bottom: 120px;
+  }
+
+  .expControlsDock,
+  .expSlotStrip {
+    position: static;
+    transform: none;
+    width: 100%;
+  }
+}
