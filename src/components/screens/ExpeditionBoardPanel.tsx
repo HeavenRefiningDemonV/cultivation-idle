@@ -8,6 +8,7 @@ import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
+import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
 import './ExpeditionBoardPanel.scss';
 
 function formatDuration(seconds: number): string {
@@ -597,105 +598,99 @@ export function ExpeditionBoardPanel() {
       </div>
 
       {ceremony.open && ceremony.run && ceremony.rolled && (
-        <div className={'expCeremonyOverlay'} onClick={closeCeremony}>
-          <div className="expCeremonyModal" onClick={(event) => event.stopPropagation()}>
-            <PaperCard variant="tray" className="expCeremonyModalCard">
-              <div className={'expCeremonyHeader'}>
-                <div>
-                  <div className={'expCeremonyTitle'}>Expedition Complete</div>
-                  <div className={'expCeremonySubtitle'}>
-                    {content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId)?.name ?? 'Expedition'} ·
-                    {content.durations.find((entry) => entry.id === ceremony.run?.durationId)?.label ?? 'Duration'}
-                  </div>
-                </div>
-                <button className={'expCeremonyClose'} onClick={closeCeremony} aria-label="Close">
-                  ×
-                </button>
-              </div>
+        <DetailScrollModal
+          open={ceremony.open}
+          title="Expedition Complete"
+          subtitle={`${content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId)?.name ?? 'Expedition'} · ${
+            content.durations.find((entry) => entry.id === ceremony.run?.durationId)?.label ?? 'Duration'
+          }`}
+          meta={
+            ceremony.slotIndex != null ? (
+              <PaperChip variant="tag" text={`Slot ${ceremony.slotIndex + 1}`} className="expCeremonyMetaChip" />
+            ) : null
+          }
+          onClose={closeCeremony}
+        >
+          <div className={'expCeremonySpotlight'}>
+            <div className={'expCeremonySpotlightLabel'}>Best Drop</div>
+            <div className={'expCeremonySpotlightItem'}>
+              {ceremony.spotlightItemId
+                ? itemsById[ceremony.spotlightItemId]?.name ?? ceremony.spotlightItemId
+                : 'No items'}
+            </div>
+            {ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId ? (
+              <PaperStamp text="Rare" size="sm" tone="seal" className="expCeremonySpotlightBadge" />
+            ) : null}
+          </div>
 
-              <div className={'expCeremonySpotlight'}>
-                <div className={'expCeremonySpotlightLabel'}>Best Drop</div>
-                <div className={'expCeremonySpotlightItem'}>
-                  {ceremony.spotlightItemId
-                    ? itemsById[ceremony.spotlightItemId]?.name ?? ceremony.spotlightItemId
-                    : 'No items'}
-                </div>
-                {ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId ? (
-                  <PaperStamp text="Rare" size="sm" tone="seal" className="expCeremonySpotlightBadge" />
-                ) : null}
-              </div>
-
-              <div className={'expCeremonyRewardList'}>
-                <div className={'expCeremonyRewardHeader'}>Rewards Gained</div>
-                {normalizeItemList(ceremony.rolled.items).map((item) => (
+          <div className={'expCeremonyRewardList'}>
+            <div className={'expCeremonyRewardHeader'}>Rewards Gained</div>
+            {normalizeItemList(ceremony.rolled.items).map((item) => (
+              <PaperChip
+                key={item.itemId}
+                variant="pill"
+                text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
+                className="expCeremonyRewardChip"
+              />
+            ))}
+            {ceremony.rolled.currencies ? (
+              <div className={'expCeremonyRewardCurrencies'}>
+                {Object.entries(ceremony.rolled.currencies).map(([key, value]) => (
                   <PaperChip
-                    key={item.itemId}
+                    key={key}
                     variant="pill"
-                    text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
+                    text={`${key}: ${value}`}
                     className="expCeremonyRewardChip"
                   />
                 ))}
-                {ceremony.rolled.currencies ? (
-                  <div className={'expCeremonyRewardCurrencies'}>
-                    {Object.entries(ceremony.rolled.currencies).map(([key, value]) => (
-                      <PaperChip
-                        key={key}
-                        variant="pill"
-                        text={`${key}: ${value}`}
-                        className="expCeremonyRewardChip"
-                      />
-                    ))}
-                  </div>
-                ) : null}
               </div>
-
-              {ceremonyError && <div className={'expCeremonyError'}>{ceremonyError}</div>}
-
-              <div className={'expCeremonyActions'}>
-                <button className={'worldScreenModuleButton'} onClick={sendAgain}>
-                  Send Again
-                </button>
-                <div className={'expCeremonyUse'}>
-                  <div className={'expCeremonyUseLabel'}>Go use materials</div>
-                  <div className={'expCeremonyUseButtons'}>
-                    {(() => {
-                      const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
-                      const recommended = type?.recommendedModuleKey;
-                      const fallback: Record<string, string> = {
-                        forage: 'alchemy',
-                        mine: 'forge',
-                        scout: 'manualPavilion',
-                      };
-                      const moduleKey = recommended ?? (ceremony.run ? fallback[ceremony.run.expeditionTypeId] : undefined);
-                      const buttons: { key: string; label: string }[] = [];
-                      if (moduleKey === 'alchemy') buttons.push({ key: 'alchemy', label: 'Alchemy' });
-                      if (moduleKey === 'forge') buttons.push({ key: 'forge', label: 'Forge' });
-                      if (moduleKey === 'manualPavilion')
-                        buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
-                      if (!moduleKey) {
-                        buttons.push({ key: 'alchemy', label: 'Alchemy' });
-                        buttons.push({ key: 'forge', label: 'Forge' });
-                        buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
-                      }
-                      return buttons.map((entry) => (
-                        <button
-                          key={entry.key}
-                          className={'worldScreenModuleButton worldScreenModuleButton--subtle'}
-                          onClick={() => goUseMaterials(entry.key)}
-                        >
-                          {entry.label}
-                        </button>
-                      ));
-                    })()}
-                  </div>
-                </div>
-                <button className={'worldScreenModuleButton worldScreenModuleButton--ghost'} onClick={closeCeremony}>
-                  Close
-                </button>
-              </div>
-            </PaperCard>
+            ) : null}
           </div>
-        </div>
+
+          {ceremonyError && <div className={'expCeremonyError'}>{ceremonyError}</div>}
+
+          <div className={'expCeremonyActions'}>
+            <button className={'worldScreenModuleButton'} onClick={sendAgain}>
+              Send Again
+            </button>
+            <div className={'expCeremonyUse'}>
+              <div className={'expCeremonyUseLabel'}>Go use materials</div>
+              <div className={'expCeremonyUseButtons'}>
+                {(() => {
+                  const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
+                  const recommended = type?.recommendedModuleKey;
+                  const fallback: Record<string, string> = {
+                    forage: 'alchemy',
+                    mine: 'forge',
+                    scout: 'manualPavilion',
+                  };
+                  const moduleKey = recommended ?? (ceremony.run ? fallback[ceremony.run.expeditionTypeId] : undefined);
+                  const buttons: { key: string; label: string }[] = [];
+                  if (moduleKey === 'alchemy') buttons.push({ key: 'alchemy', label: 'Alchemy' });
+                  if (moduleKey === 'forge') buttons.push({ key: 'forge', label: 'Forge' });
+                  if (moduleKey === 'manualPavilion') buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
+                  if (!moduleKey) {
+                    buttons.push({ key: 'alchemy', label: 'Alchemy' });
+                    buttons.push({ key: 'forge', label: 'Forge' });
+                    buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
+                  }
+                  return buttons.map((entry) => (
+                    <button
+                      key={entry.key}
+                      className={'worldScreenModuleButton worldScreenModuleButton--subtle'}
+                      onClick={() => goUseMaterials(entry.key)}
+                    >
+                      {entry.label}
+                    </button>
+                  ));
+                })()}
+              </div>
+            </div>
+            <button className={'worldScreenModuleButton worldScreenModuleButton--ghost'} onClick={closeCeremony}>
+              Close
+            </button>
+          </div>
+        </DetailScrollModal>
       )}
     </div>
   );

@@ -9,6 +9,7 @@ import type { RewardBundle } from '../../services/rewards';
 import './BountyBoardPanel.scss';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
+import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -84,18 +85,6 @@ export function BountyBoardPanel() {
     }
   }, [bounties, selectedId]);
 
-  useEffect(() => {
-    if (!detailOpen) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setDetailOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [detailOpen]);
-
   const selectedBounty = useMemo(
     () => bounties.find((entry) => entry.instanceId === selectedId) ?? bounties[0] ?? null,
     [bounties, selectedId],
@@ -134,12 +123,6 @@ export function BountyBoardPanel() {
 
   const handleCloseDetail = () => {
     setDetailOpen(false);
-  };
-
-  const handleBackdropMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
-      handleCloseDetail();
-    }
   };
 
   const renderProgressBar = (progress: number, target: number) => {
@@ -329,78 +312,65 @@ export function BountyBoardPanel() {
         </button>
       )}
 
-      {detailOpen && selectedBounty && (
-        <div className={'bountyDetailOverlayBackdrop'} onMouseDown={handleBackdropMouseDown}>
-          <PaperCard
-            variant="tray"
-            className="bountyDetailOverlayPaper"
-            style={{ maxHeight: '90%' }}
-          >
-            <button type="button" className={'bountyDetailClose'} onClick={handleCloseDetail} aria-label="Close">
-              ×
-            </button>
-            <div className={'bountyDetailCard'}>
-              <div className={'bountyDetailHeader'}>
-                <div>
-                  <div className={'bountyDetailTitle'}>{selectedBounty.title}</div>
-                  <div className={'bountyDetailSubtitle'}>
-                    {cityName} • {bountyKindToLabel(selectedBounty.kind)}
-                  </div>
+      {selectedBounty && (
+        <DetailScrollModal
+          open={detailOpen}
+          title={selectedBounty.title}
+          subtitle={`${cityName} • ${bountyKindToLabel(selectedBounty.kind)}`}
+          meta={<PaperStamp text={difficultyBadge[selectedBounty.difficulty]} size="sm" tone="ink" />}
+          onClose={handleCloseDetail}
+        >
+          <div className={'bountyDetailCard'}>
+            <div className={'bountyDetailSection'}>
+              <div className={'bountyDetailLabel'}>Objective</div>
+              <div className={'bountyDetailValue'}>{selectedBounty.description}</div>
+              {destination && destination.kind !== 'unavailable' && (
+                <div className={'bountyDetailHint'}>
+                  Target:{' '}
+                  {destination.kind === 'moduleChoice'
+                    ? destination.options.map((opt) => opt.label).join(' / ')
+                    : moduleLabelMap[destination.moduleKey] ?? destination.moduleKey}
                 </div>
-                <PaperStamp text={difficultyBadge[selectedBounty.difficulty]} size="sm" tone="ink" />
-              </div>
+              )}
+              {destination && destination.kind === 'unavailable' && (
+                <div className={'bountyDetailHint bountyDetailHint--warning'}>{destination.reason}</div>
+              )}
+            </div>
 
-              <div className={'bountyDetailSection'}>
-                <div className={'bountyDetailLabel'}>Objective</div>
-                <div className={'bountyDetailValue'}>{selectedBounty.description}</div>
-                {destination && destination.kind !== 'unavailable' && (
-                  <div className={'bountyDetailHint'}>
-                    Target:{' '}
-                    {destination.kind === 'moduleChoice'
-                      ? destination.options.map((opt) => opt.label).join(' / ')
-                      : moduleLabelMap[destination.moduleKey] ?? destination.moduleKey}
-                  </div>
+            <div className={'bountyDetailSection'}>
+              <div className={'bountyDetailLabel'}>Progress</div>
+              {renderProgressBar(selectedBounty.progress, selectedBounty.target)}
+              <div className={'bountyDetailRule'}>{bountyKindToProgressRule(selectedBounty.kind)}</div>
+            </div>
+
+            <div className={'bountyDetailSection'}>
+              <div className={'bountyDetailLabel'}>Rewards</div>
+              <div className={'bountyRewards'}>
+                {rewardEntries.map((entry) => (
+                  <PaperChip key={entry} variant="pill" text={entry} />
+                ))}
+                {rewardEntries.length === 0 && (
+                  <div className={'bountyDetailValue'}>No rewards</div>
                 )}
-                {destination && destination.kind === 'unavailable' && (
-                  <div className={'bountyDetailHint bountyDetailHint--warning'}>{destination.reason}</div>
-                )}
-              </div>
-
-              <div className={'bountyDetailSection'}>
-                <div className={'bountyDetailLabel'}>Progress</div>
-                {renderProgressBar(selectedBounty.progress, selectedBounty.target)}
-                <div className={'bountyDetailRule'}>{bountyKindToProgressRule(selectedBounty.kind)}</div>
-              </div>
-
-              <div className={'bountyDetailSection'}>
-                <div className={'bountyDetailLabel'}>Rewards</div>
-                <div className={'bountyRewards'}>
-                  {rewardEntries.map((entry) => (
-                    <PaperChip key={entry} variant="pill" text={entry} />
-                  ))}
-                  {rewardEntries.length === 0 && (
-                    <div className={'bountyDetailValue'}>No rewards</div>
-                  )}
-                </div>
-              </div>
-
-              <div className={'bountyDetailSection bountyDetailActions'}>
-                {renderDestinationActions()}
-                <div className={'bountyActionRow'}>
-                  <button
-                    className={`worldScreenModuleButton ${
-                      trackedId === selectedBounty.instanceId ? 'worldScreenModuleButton--primary' : ''
-                    }`}
-                    onClick={() => handleTrackToggle(selectedBounty.instanceId)}
-                  >
-                    {trackedId === selectedBounty.instanceId ? 'Tracked' : 'Track'}
-                  </button>
-                  {renderClaimButton()}
-                </div>
               </div>
             </div>
-          </PaperCard>
-        </div>
+
+            <div className={'bountyDetailSection bountyDetailActions'}>
+              {renderDestinationActions()}
+              <div className={'bountyActionRow'}>
+                <button
+                  className={`worldScreenModuleButton ${
+                    trackedId === selectedBounty.instanceId ? 'worldScreenModuleButton--primary' : ''
+                  }`}
+                  onClick={() => handleTrackToggle(selectedBounty.instanceId)}
+                >
+                  {trackedId === selectedBounty.instanceId ? 'Tracked' : 'Track'}
+                </button>
+                {renderClaimButton()}
+              </div>
+            </div>
+          </div>
+        </DetailScrollModal>
       )}
     </div>
   );
