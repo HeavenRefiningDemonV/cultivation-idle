@@ -1,4 +1,5 @@
 @import '../../styles/paperInkTokens';
+@import '../../styles/paperAnimations';
 
 .expStageRoot {
   height: 100%;
@@ -78,6 +79,10 @@
   outline-offset: 4px;
 }
 
+.expRouteButton:focus-visible .expRouteCard {
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.2), 0 14px 24px rgba(15, 23, 42, 0.2);
+}
+
 .expRouteButton--selected .expRouteCard {
   box-shadow: 0 0 0 2px rgba(47, 143, 102, 0.18), 0 0 18px rgba(47, 143, 102, 0.2);
 }
@@ -121,12 +126,14 @@
   inset: 6px;
   border-radius: 14px;
   border: 2px solid rgba(47, 143, 102, 0.35);
-  animation: expRouteInkStroke 0.6s ease-out;
+  animation: paperLift 0.6s ease-out;
   pointer-events: none;
 }
 
 .expRouteCard--pulse {
-  animation: expRoutePulse 0.7s ease-out;
+  --ink-pulse-shadow-base: 0 0 0 0 rgba(159, 59, 46, 0.25);
+  --ink-pulse-shadow-peak: 0 0 0 6px rgba(159, 59, 46, 0.2);
+  animation: inkPulse 0.7s ease-out;
 }
 
 .expRouteHeader {
@@ -212,29 +219,6 @@
   opacity: 0.8;
 }
 
-@keyframes expRouteInkStroke {
-  0% {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes expRoutePulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0.25);
-  }
-  40% {
-    box-shadow: 0 0 0 6px rgba(159, 59, 46, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .expRouteCard--selected::after,
   .expRouteCard--pulse {
@@ -274,6 +258,11 @@
   border-radius: 12px;
   padding: 10px 12px;
   position: relative;
+}
+
+.expCeremonySpotlight--rare {
+  border-color: rgba(181, 133, 43, 0.45);
+  box-shadow: 0 0 16px rgba(181, 133, 43, 0.2);
 }
 
 .expCeremonySpotlightLabel {
@@ -316,7 +305,7 @@
   gap: 8px;
   opacity: 0;
   transform: translateY(6px);
-  animation: expCeremonyReveal 0.4s ease-out forwards;
+  animation: paperLift 0.4s ease-out forwards;
 }
 
 .expCeremonyRewardRow--rare {
@@ -432,6 +421,11 @@
   cursor: pointer;
 }
 
+.expDetailSlot:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.55);
+  outline-offset: 2px;
+}
+
 .expDetailSlot--selected {
   border-color: rgba(120, 72, 33, 0.5);
   box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.15);
@@ -470,17 +464,6 @@
     grid-template-columns: 1fr;
     gap: 12px;
     overflow-y: auto;
-  }
-}
-
-@keyframes expCeremonyReveal {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

@@ -1,3 +1,5 @@
+@import '../../styles/paperAnimations';
+
 .worldScreen {
   display: flex;
   flex-direction: column;
@@ -265,6 +267,12 @@
 .worldScreenModuleButton:hover {
   border-color: rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.04);
+}
+
+.worldScreenModuleButton:focus-visible {
+  outline: 2px solid rgba(125, 211, 252, 0.8);
+  outline-offset: 2px;
+  border-color: rgba(125, 211, 252, 0.55);
 }
 
 .worldScreenModuleButton--active {
@@ -3303,7 +3311,9 @@
 }
 
 .eqsDurationChip--pulse {
-  animation: eqsInkBlot 0.25s ease-out;
+  --ink-pulse-shadow-base: 0 0 0 0 rgba(120, 72, 33, 0.2);
+  --ink-pulse-shadow-peak: 0 0 0 6px rgba(120, 72, 33, 0.2);
+  animation: inkPulse 0.25s ease-out;
 }
 
 .eqsYieldChips {
@@ -3331,6 +3341,15 @@
   text-align: left;
 }
 
+.eqsSlotTileButton:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.6);
+  outline-offset: 4px;
+}
+
+.eqsSlotTileButton:focus-visible .eqsSlotInner {
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.25), 0 14px 24px rgba(15, 23, 42, 0.2);
+}
+
 .eqsSlotTileButton:disabled {
   cursor: not-allowed;
 }
@@ -3352,6 +3371,7 @@
 
 .eqsSlotTile--ready {
   border-color: rgba(120, 72, 33, 0.4);
+  box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.25), 0 12px 22px rgba(15, 23, 42, 0.2);
 }
 
 .eqsSlotTile--idle,
@@ -3384,7 +3404,9 @@
 }
 
 .eqsSlotTile--sent {
-  animation: eqsSlotSent 0.7s ease-out;
+  --ink-pulse-shadow-base: 0 0 0 0 rgba(159, 59, 46, 0.25);
+  --ink-pulse-shadow-peak: 0 0 0 6px rgba(159, 59, 46, 0.2);
+  animation: inkPulse 0.7s ease-out;
 }
 
 .eqsSlotStamp {
@@ -3399,7 +3421,7 @@
   border-radius: 999px;
   transform: rotate(-10deg);
   background: rgba(255, 232, 224, 0.7);
-  animation: eqsSentStamp 0.7s ease-out forwards;
+  animation: stampSlam 0.7s ease-out forwards;
   pointer-events: none;
 }
 
@@ -3473,6 +3495,12 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 16px rgba(15, 23, 42, 0.16);
 }
 
+.expStageRoot .worldScreenModuleButton:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.55);
+  outline-offset: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 16px rgba(15, 23, 42, 0.18);
+}
+
 .expStageRoot .worldScreenModuleButton:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: inset 0 2px 6px rgba(43, 33, 22, 0.2);
@@ -3532,42 +3560,6 @@
   .eqsSlotTile--sent,
   .eqsSlotStamp {
     animation: none;
-  }
-}
-
-@keyframes eqsInkBlot {
-  0% {
-    box-shadow: 0 0 0 0 rgba(120, 72, 33, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 6px rgba(120, 72, 33, 0);
-  }
-}
-
-@keyframes eqsSentStamp {
-  0% {
-    opacity: 0;
-    transform: rotate(-12deg) scale(0.85);
-  }
-  50% {
-    opacity: 0.9;
-    transform: rotate(-10deg) scale(1.05);
-  }
-  100% {
-    opacity: 0.85;
-    transform: rotate(-9deg) scale(1);
-  }
-}
-
-@keyframes eqsSlotSent {
-  0% {
-    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0.25);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(159, 59, 46, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0);
   }
 }
 
@@ -3822,3 +3814,4 @@
   overflow: hidden;
 }
 @import '../../styles/paperInkTokens';
+.worldScreen {

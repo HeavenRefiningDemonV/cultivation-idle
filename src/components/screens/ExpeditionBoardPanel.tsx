@@ -839,7 +839,11 @@ export function ExpeditionBoardPanel() {
           }
           onClose={closeCeremony}
         >
-          <div className={'expCeremonySpotlight'}>
+          <div
+            className={classNames('expCeremonySpotlight', {
+              'expCeremonySpotlight--rare': ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId,
+            })}
+          >
             <div className={'expCeremonySpotlightLabel'}>Best Drop</div>
             <div className={'expCeremonySpotlightItem'}>
               {ceremony.spotlightItemId

@@ -1,4 +1,5 @@
 @import '../../styles/paperInkTokens';
+@import '../../styles/paperAnimations';
 
 .bountyStageRoot {
   height: 100%;
@@ -39,7 +40,9 @@
 }
 
 .bountyStageHudGroup--soon {
-  animation: bountyRefreshPulse 2.4s ease-in-out infinite;
+  --ink-pulse-shadow-base: 0 0 0 0 rgba(120, 72, 33, 0.2);
+  --ink-pulse-shadow-peak: 0 0 0 3px rgba(120, 72, 33, 0.2);
+  animation: inkPulse 2.4s ease-in-out infinite;
 }
 
 .bountyStageTitle {
@@ -86,6 +89,12 @@
   border-color: rgba(120, 72, 33, 0.45);
   transform: translateY(-1px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 16px rgba(15, 23, 42, 0.16);
+}
+
+.bountyStageRoot .worldScreenModuleButton:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.55);
+  outline-offset: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 16px rgba(15, 23, 42, 0.18);
 }
 
 .bountyStageRoot .worldScreenModuleButton:active:not(:disabled) {
@@ -138,6 +147,10 @@
   outline-offset: 4px;
 }
 
+.bountyPaperButton:focus-visible .bountyPaperCard {
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.25), 0 14px 24px rgba(15, 23, 42, 0.2);
+}
+
 .bountyPaperButton:disabled {
   cursor: default;
 }
@@ -183,7 +196,10 @@
 }
 
 .bountyPaperCard.isComplete {
-  animation: bountyReadyGlow 3s ease-in-out infinite;
+  --ink-pulse-shadow-base: 0 0 0 1px rgba(47, 143, 102, 0.18), 0 12px 20px rgba(15, 23, 42, 0.18);
+  --ink-pulse-shadow-peak: 0 0 0 2px rgba(47, 143, 102, 0.35), 0 0 18px rgba(47, 143, 102, 0.25),
+    0 12px 22px rgba(15, 23, 42, 0.18);
+  animation: inkPulse 3s ease-in-out infinite;
 }
 
 .bountyPaperCard.isClaimed {
@@ -191,7 +207,7 @@
 }
 
 .bountyPaperCard.isClaimAnimating {
-  animation: bountyClaimShake 0.4s ease-in-out;
+  animation: none;
 }
 
 .bountyPaperCard.isTracked .bountyPaperTracked {
@@ -224,7 +240,9 @@
 }
 
 .bountyPaperPin--pulse {
-  animation: bountyPinPulse 0.45s ease-out;
+  --ink-pulse-shadow-base: 0 0 0 0 rgba(87, 59, 31, 0.25);
+  --ink-pulse-shadow-peak: 0 0 0 6px rgba(87, 59, 31, 0.22);
+  animation: inkPulse 0.45s ease-out;
 }
 
 .bountyPaperReadyStamp {
@@ -256,7 +274,7 @@
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
   transform: rotate(-8deg) scale(0.85);
   opacity: 0;
-  animation: bountyClaimStamp 0.9s ease-out forwards;
+  animation: stampSlam 0.9s ease-out forwards;
   pointer-events: none;
   z-index: 1;
 }
@@ -293,7 +311,7 @@
   position: absolute;
   inset: -2px 0;
   background: rgba(47, 143, 102, 0.18);
-  animation: bountyProgressPulse 0.45s ease-out;
+  animation: progressFlash 0.45s ease-out;
   pointer-events: none;
 }
 
@@ -305,18 +323,27 @@
   overflow: hidden;
 }
 
+.bountyPaperRewards::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: rgba(255, 255, 255, 0.45);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .bountyPaperCard.isComplete .bountyPaperRewards::after {
   content: '';
   position: absolute;
   inset: -4px;
   background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.5) 40%, transparent 75%);
   opacity: 0.4;
-  animation: bountyRewardShimmer 4.8s ease-in-out infinite;
+  animation: shimmerSweep 4.8s ease-in-out infinite;
   pointer-events: none;
 }
 
-.bountyPaperCard.isClaimAnimating .bountyPaperRewards {
-  animation: bountyRewardFlash 0.9s ease-in-out;
+.bountyPaperCard.isClaimAnimating .bountyPaperRewards::before {
+  animation: progressFlash 0.9s ease-in-out;
 }
 
 .bountyPaperTracked {
@@ -458,102 +485,6 @@
   grid-column: 1 / -1;
   font-size: 11px;
   color: rgba(159, 59, 46, 0.9);
-}
-
-@keyframes bountyReadyGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.18), 0 12px 20px rgba(15, 23, 42, 0.18);
-  }
-  50% {
-    box-shadow: 0 0 0 2px rgba(47, 143, 102, 0.35), 0 0 18px rgba(47, 143, 102, 0.25),
-      0 12px 22px rgba(15, 23, 42, 0.18);
-  }
-}
-
-@keyframes bountyRewardShimmer {
-  0%,
-  70% {
-    transform: translateX(-120%);
-  }
-  100% {
-    transform: translateX(120%);
-  }
-}
-
-@keyframes bountyPinPulse {
-  0% {
-    transform: translateX(-50%) scale(0.6);
-    opacity: 0.2;
-  }
-  60% {
-    transform: translateX(-50%) scale(1.25);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bountyClaimStamp {
-  0% {
-    opacity: 0;
-    transform: rotate(-8deg) scale(0.85);
-  }
-  55% {
-    opacity: 0.95;
-    transform: rotate(-6deg) scale(1.05);
-  }
-  100% {
-    opacity: 0.85;
-    transform: rotate(-5deg) scale(1);
-  }
-}
-
-@keyframes bountyClaimShake {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-1px);
-  }
-  60% {
-    transform: translateY(1px);
-  }
-}
-
-@keyframes bountyRewardFlash {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  40% {
-    filter: brightness(1.08);
-  }
-}
-
-@keyframes bountyProgressPulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes bountyRefreshPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(120, 72, 33, 0.2);
-  }
-  50% {
-    box-shadow: 0 0 0 3px rgba(120, 72, 33, 0.2);
-  }
 }
 
 .bountyDetailMeta {
@@ -721,8 +652,10 @@
   .bountyStageHudGroup--soon,
   .bountyPaperCard.isComplete,
   .bountyPaperCard.isClaimAnimating,
-  .bountyPaperCard.isClaimAnimating .bountyPaperRewards,
-  .bountyPaperCard.isComplete .bountyPaperRewards::after {
+  .bountyPaperCard.isClaimAnimating .bountyPaperRewards::before,
+  .bountyPaperCard.isComplete .bountyPaperRewards::after,
+  .bountyPaperProgress--pulse::after,
+  .bountyPaperClaimBurst {
     animation: none;
   }
 
