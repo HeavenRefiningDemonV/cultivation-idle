@@ -7,6 +7,7 @@ import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
 import { useUIStore } from '../../stores/uiStore';
+import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
 import './ExpeditionBoardPanel.scss';
 
 function formatDuration(seconds: number): string {
@@ -199,7 +200,7 @@ type CeremonyState = {
   spotlightItemId: string | null | undefined;
 };
 
-const routePositions = ['expRoutePaper--left', 'expRoutePaper--center', 'expRoutePaper--right'] as const;
+const routePositions = ['expRouteButton--left', 'expRouteButton--center', 'expRouteButton--right'] as const;
 
 type RoutePositionClass = (typeof routePositions)[number];
 
@@ -316,19 +317,24 @@ export function ExpeditionBoardPanel() {
     const showPity = Boolean(selectedType && pityCap > 1);
     const shardsCap = Math.max(1, pityCap - 1);
     const progressPct = showPity ? pityProgressPercent(failures, pityCap) * 100 : 0;
+    const chipText = [
+      duration.label,
+      formatDuration(duration.seconds),
+      `Rare ${chancePct}%`,
+      valueEstimate ? `Yield ${valueEstimate.label}` : null,
+    ]
+      .filter(Boolean)
+      .join(' • ');
+    const isSelected = selectedDurationId === duration.id;
     return (
-      <button
-        key={duration.id}
-        className={`expDurationChip${selectedDurationId === duration.id ? ' expDurationChip--selected' : ''}`}
-        onClick={() => setSelectedDurationId(duration.id)}
-        type="button"
-      >
-        <div className={'expDurationChipHeader'}>
-          <span>{duration.label}</span>
-          <span className={'expDurationTime'}>{formatDuration(duration.seconds)}</span>
-        </div>
-        <div className={'expDurationMeta'}>Rare: {chancePct}%</div>
-        {valueEstimate && <div className={'expDurationMeta'}>Yield: {valueEstimate.label}</div>}
+      <div key={duration.id} className="expDurationChipGroup">
+        <PaperChip
+          variant="pill"
+          text={chipText}
+          tone={isSelected ? 'ink' : 'neutral'}
+          onClick={() => setSelectedDurationId(duration.id)}
+          className={`expDurationChip${isSelected ? ' expDurationChip--selected' : ''}`}
+        />
         {showPity ? (
           <div className={'expDurationPity'}>
             Intel shards: {failures} / {shardsCap}
@@ -337,7 +343,7 @@ export function ExpeditionBoardPanel() {
             </div>
           </div>
         ) : null}
-      </button>
+      </div>
     );
   });
 
@@ -419,17 +425,17 @@ export function ExpeditionBoardPanel() {
   return (
     <div className={'expStageRoot'}>
       <div className={'expStageHud'}>
-        <div className={'expStageHudGroup'}>
+        <PaperCard variant="label" className="expStageHudGroup">
           <div className={'expStageTitle'}>Expeditions</div>
           <div className={'expStageSub'}>{citiesById[currentCityId]?.name ?? 'Unknown City'}</div>
-        </div>
-        <div className={'expStageHudGroup'}>
+        </PaperCard>
+        <PaperCard variant="label" className="expStageHudGroup">
           <div className={'expStageLabel'}>Slots</div>
           <div className={'expStageValue'}>
             {availableSlots} / {slots} available
           </div>
-        </div>
-        <div className={'expStageHudGroup expStageHudGroup--rare'}>
+        </PaperCard>
+        <PaperCard variant="label" className="expStageHudGroup expStageHudGroup--rare">
           <div className={'expStageLabel'}>Rare chance</div>
           <div className={'expStageValue'}>
             {rareChancePct}%
@@ -437,53 +443,55 @@ export function ExpeditionBoardPanel() {
               <span className={'expStageRareItems'}> — {selectedTypeRareNames.join(', ')}</span>
             ) : null}
           </div>
-        </div>
+        </PaperCard>
       </div>
 
       <div className={'expStageArea'}>
         {routePapers.map(({ type, positionClass }) => {
           const previewDuration = selectedDuration ?? content.durations[0];
           const preview = computeExpectedBundle(cityIndex, type.id, previewDuration.id, content);
-          const items = normalizeItemList(preview?.items).slice(0, 4);
+          const items = normalizeItemList(preview?.items).slice(0, 3);
           const variance = previewDuration.variancePct ?? 0.15;
           const rarePreviewNames = type.rareDrops?.slice(0, 2).map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
           const isSelected = selectedTypeId === type.id;
           return (
             <button
               key={type.id}
-              className={`expRoutePaper ${positionClass}${isSelected ? ' expRoutePaper--selected' : ''}`}
+              className={`expRouteButton ${positionClass}`}
               onClick={() => setSelectedTypeId(type.id)}
               type="button"
               aria-pressed={isSelected}
               aria-label={`Select expedition route: ${type.name}`}
             >
-              <div className={'expRouteHeader'}>
-                <div className={'expRouteTitle'}>{type.name}</div>
-                <div className={'expRouteBadge'}>Route</div>
-              </div>
-              <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
-              <div className={'expRouteItems'}>
-                {items.length === 0 && <div className={'expRouteItem'}>No yields defined</div>}
-                {items.map((item) => {
-                  const range = clampVarianceRange(item.qty, variance);
-                  const name = itemsById[item.itemId]?.name ?? item.itemId;
-                  return (
-                    <div key={item.itemId} className={'expRouteItem'}>
-                      {name}: {range.min}–{range.max}
-                    </div>
-                  );
-                })}
-              </div>
-              {rarePreviewNames && rarePreviewNames.length > 0 ? (
-                <div className={'expRouteRare'}>Rare: {rarePreviewNames.join(', ')}</div>
-              ) : (
-                <div className={'expRouteRare'}>Rare: —</div>
-              )}
+              <PaperCard variant="card" interactive selected={isSelected} className="expRouteCard">
+                <div className={'expRouteHeader'}>
+                  <div className={'expRouteTitle'}>{type.name}</div>
+                  <PaperChip variant="tag" text="ROUTE" />
+                </div>
+                <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
+                <div className={'expRouteItems'}>
+                  {items.length === 0 && <div className={'expRouteItem'}>No yields defined</div>}
+                  {items.map((item) => {
+                    const range = clampVarianceRange(item.qty, variance);
+                    const name = itemsById[item.itemId]?.name ?? item.itemId;
+                    return (
+                      <div key={item.itemId} className={'expRouteItem'}>
+                        {name}: {range.min}–{range.max}
+                      </div>
+                    );
+                  })}
+                </div>
+                {rarePreviewNames && rarePreviewNames.length > 0 ? (
+                  <div className={'expRouteRare'}>Rare: {rarePreviewNames.join(', ')}</div>
+                ) : (
+                  <div className={'expRouteRare'}>Rare: —</div>
+                )}
+              </PaperCard>
             </button>
           );
         })}
 
-        <div className={'expControlsDock'}>
+        <PaperCard variant="tray" className="expControlsDock">
           <div className={'expDurationRow'}>{durationChips}</div>
           <div className={'expPreviewRow'}>
             {selectedPreviewItems.length > 0 ? (
@@ -491,14 +499,22 @@ export function ExpeditionBoardPanel() {
                 {selectedPreviewItems.slice(0, 4).map((item) => {
                   const name = itemsById[item.itemId]?.name ?? item.itemId;
                   return (
-                    <div key={item.itemId} className={'expPreviewItem'}>
-                      {name}: {item.min}–{item.max}
-                    </div>
+                    <PaperChip
+                      key={item.itemId}
+                      variant="pill"
+                      text={`${name}: ${item.min}–${item.max}`}
+                      className="expPreviewItem"
+                    />
                   );
                 })}
               </>
             ) : (
-              <div className={'expPreviewItem expPreviewItem--empty'}>Select a route to preview yields.</div>
+              <PaperChip
+                variant="pill"
+                text="Select a route to preview yields."
+                tone="neutral"
+                className="expPreviewItem expPreviewItem--empty"
+              />
             )}
             <div className={'expPreviewRareLine'}>
               Rare drop chance: {rareChancePct}%
@@ -510,7 +526,7 @@ export function ExpeditionBoardPanel() {
           <div className={'expSendRow'}>
             <span>Pick a slot below to send the selected route.</span>
           </div>
-        </div>
+        </PaperCard>
 
         <div className={'expSlotStrip'}>
           {Array.from({ length: slots }).map((_, slotIndex) => {
@@ -525,7 +541,11 @@ export function ExpeditionBoardPanel() {
               const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
 
               return (
-                <div key={slotIndex} className={`expSlotCard${isComplete ? ' expSlotCard--ready' : ''}`}>
+                <PaperCard
+                  key={slotIndex}
+                  variant="card"
+                  className={`expSlotCard${isComplete ? ' expSlotCard--ready' : ''}`}
+                >
                   <div className={'expSlotHeader'}>
                     <div className={'expSlotTitle'}>Slot {slotIndex + 1}</div>
                     <div className={'expSlotStatus'}>{isComplete ? 'Complete' : 'Running'}</div>
@@ -546,14 +566,14 @@ export function ExpeditionBoardPanel() {
                   >
                     {isComplete ? 'Claim' : 'In progress'}
                   </button>
-                </div>
+                </PaperCard>
               );
             }
 
             const canStart = Boolean(selectedType && selectedDuration && expectedBundle);
 
             return (
-              <div key={slotIndex} className={'expSlotCard expSlotCard--idle'}>
+              <PaperCard key={slotIndex} variant="card" className={'expSlotCard expSlotCard--idle'}>
                 <div className={'expSlotHeader'}>
                   <div className={'expSlotTitle'}>Slot {slotIndex + 1}</div>
                   <div className={'expSlotStatus'}>Idle</div>
@@ -570,7 +590,7 @@ export function ExpeditionBoardPanel() {
                   Send
                 </button>
                 {!canStart && <div className={'expSlotError'}>Select a route and duration first.</div>}
-              </div>
+              </PaperCard>
             );
           })}
         </div>
@@ -578,95 +598,102 @@ export function ExpeditionBoardPanel() {
 
       {ceremony.open && ceremony.run && ceremony.rolled && (
         <div className={'expCeremonyOverlay'} onClick={closeCeremony}>
-          <div className={'expCeremonyModal'} onClick={(event) => event.stopPropagation()}>
-            <div className={'expCeremonyHeader'}>
-              <div>
-                <div className={'expCeremonyTitle'}>Expedition Complete</div>
-                <div className={'expCeremonySubtitle'}>
-                  {content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId)?.name ?? 'Expedition'} ·
-                  {content.durations.find((entry) => entry.id === ceremony.run?.durationId)?.label ?? 'Duration'}
+          <div className="expCeremonyModal" onClick={(event) => event.stopPropagation()}>
+            <PaperCard variant="tray" className="expCeremonyModalCard">
+              <div className={'expCeremonyHeader'}>
+                <div>
+                  <div className={'expCeremonyTitle'}>Expedition Complete</div>
+                  <div className={'expCeremonySubtitle'}>
+                    {content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId)?.name ?? 'Expedition'} ·
+                    {content.durations.find((entry) => entry.id === ceremony.run?.durationId)?.label ?? 'Duration'}
+                  </div>
                 </div>
+                <button className={'expCeremonyClose'} onClick={closeCeremony} aria-label="Close">
+                  ×
+                </button>
               </div>
-              <button className={'expCeremonyClose'} onClick={closeCeremony} aria-label="Close">
-                ×
-              </button>
-            </div>
 
-            <div className={'expCeremonySpotlight'}>
-              <div className={'expCeremonySpotlightLabel'}>Best Drop</div>
-              <div className={'expCeremonySpotlightItem'}>
-                {ceremony.spotlightItemId
-                  ? itemsById[ceremony.spotlightItemId]?.name ?? ceremony.spotlightItemId
-                  : 'No items'}
+              <div className={'expCeremonySpotlight'}>
+                <div className={'expCeremonySpotlightLabel'}>Best Drop</div>
+                <div className={'expCeremonySpotlightItem'}>
+                  {ceremony.spotlightItemId
+                    ? itemsById[ceremony.spotlightItemId]?.name ?? ceremony.spotlightItemId
+                    : 'No items'}
+                </div>
+                {ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId ? (
+                  <PaperStamp text="Rare" size="sm" tone="seal" className="expCeremonySpotlightBadge" />
+                ) : null}
               </div>
-              {ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId ? (
-                <div className={'expCeremonySpotlightBadge'}>Rare Find</div>
-              ) : null}
-            </div>
 
-            <div className={'expCeremonyRewardList'}>
-              <div className={'expCeremonyRewardHeader'}>Rewards Gained</div>
-              {normalizeItemList(ceremony.rolled.items).map((item) => (
-                <div key={item.itemId} className={'expCeremonyRewardRow'}>
-                  <span>{itemsById[item.itemId]?.name ?? item.itemId}</span>
-                  <span>×{item.qty}</span>
-                </div>
-              ))}
-              {ceremony.rolled.currencies ? (
-                <div className={'expCeremonyRewardCurrencies'}>
-                  {Object.entries(ceremony.rolled.currencies).map(([key, value]) => (
-                    <div key={key} className={'expCeremonyRewardRow'}>
-                      <span>{key}</span>
-                      <span>{value}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-            {ceremonyError && <div className={'expCeremonyError'}>{ceremonyError}</div>}
-
-            <div className={'expCeremonyActions'}>
-              <button className={'worldScreenModuleButton'} onClick={sendAgain}>
-                Send Again
-              </button>
-              <div className={'expCeremonyUse'}>
-                <div className={'expCeremonyUseLabel'}>Go use materials</div>
-                <div className={'expCeremonyUseButtons'}>
-                  {(() => {
-                    const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
-                    const recommended = type?.recommendedModuleKey;
-                    const fallback: Record<string, string> = {
-                      forage: 'alchemy',
-                      mine: 'forge',
-                      scout: 'manualPavilion',
-                    };
-                    const moduleKey = recommended ?? (ceremony.run ? fallback[ceremony.run.expeditionTypeId] : undefined);
-                    const buttons: { key: string; label: string }[] = [];
-                    if (moduleKey === 'alchemy') buttons.push({ key: 'alchemy', label: 'Alchemy' });
-                    if (moduleKey === 'forge') buttons.push({ key: 'forge', label: 'Forge' });
-                    if (moduleKey === 'manualPavilion') buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
-                    if (!moduleKey) {
-                      buttons.push({ key: 'alchemy', label: 'Alchemy' });
-                      buttons.push({ key: 'forge', label: 'Forge' });
-                      buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
-                    }
-                    return buttons.map((entry) => (
-                      <button
-                        key={entry.key}
-                        className={'worldScreenModuleButton worldScreenModuleButton--subtle'}
-                        onClick={() => goUseMaterials(entry.key)}
-                      >
-                        {entry.label}
-                      </button>
-                    ));
-                  })()}
-                </div>
+              <div className={'expCeremonyRewardList'}>
+                <div className={'expCeremonyRewardHeader'}>Rewards Gained</div>
+                {normalizeItemList(ceremony.rolled.items).map((item) => (
+                  <PaperChip
+                    key={item.itemId}
+                    variant="pill"
+                    text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
+                    className="expCeremonyRewardChip"
+                  />
+                ))}
+                {ceremony.rolled.currencies ? (
+                  <div className={'expCeremonyRewardCurrencies'}>
+                    {Object.entries(ceremony.rolled.currencies).map(([key, value]) => (
+                      <PaperChip
+                        key={key}
+                        variant="pill"
+                        text={`${key}: ${value}`}
+                        className="expCeremonyRewardChip"
+                      />
+                    ))}
+                  </div>
+                ) : null}
               </div>
-              <button className={'worldScreenModuleButton worldScreenModuleButton--ghost'} onClick={closeCeremony}>
-                Close
-              </button>
-            </div>
+
+              {ceremonyError && <div className={'expCeremonyError'}>{ceremonyError}</div>}
+
+              <div className={'expCeremonyActions'}>
+                <button className={'worldScreenModuleButton'} onClick={sendAgain}>
+                  Send Again
+                </button>
+                <div className={'expCeremonyUse'}>
+                  <div className={'expCeremonyUseLabel'}>Go use materials</div>
+                  <div className={'expCeremonyUseButtons'}>
+                    {(() => {
+                      const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
+                      const recommended = type?.recommendedModuleKey;
+                      const fallback: Record<string, string> = {
+                        forage: 'alchemy',
+                        mine: 'forge',
+                        scout: 'manualPavilion',
+                      };
+                      const moduleKey = recommended ?? (ceremony.run ? fallback[ceremony.run.expeditionTypeId] : undefined);
+                      const buttons: { key: string; label: string }[] = [];
+                      if (moduleKey === 'alchemy') buttons.push({ key: 'alchemy', label: 'Alchemy' });
+                      if (moduleKey === 'forge') buttons.push({ key: 'forge', label: 'Forge' });
+                      if (moduleKey === 'manualPavilion')
+                        buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
+                      if (!moduleKey) {
+                        buttons.push({ key: 'alchemy', label: 'Alchemy' });
+                        buttons.push({ key: 'forge', label: 'Forge' });
+                        buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
+                      }
+                      return buttons.map((entry) => (
+                        <button
+                          key={entry.key}
+                          className={'worldScreenModuleButton worldScreenModuleButton--subtle'}
+                          onClick={() => goUseMaterials(entry.key)}
+                        >
+                          {entry.label}
+                        </button>
+                      ));
+                    })()}
+                  </div>
+                </div>
+                <button className={'worldScreenModuleButton worldScreenModuleButton--ghost'} onClick={closeCeremony}>
+                  Close
+                </button>
+              </div>
+            </PaperCard>
           </div>
         </div>
       )}

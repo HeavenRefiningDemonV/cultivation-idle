@@ -20,11 +20,6 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background: rgba(255, 248, 235, 0.7);
-  border: 1px solid rgba(65, 45, 25, 0.15);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
 }
 
 .expStageHudGroup--rare {
@@ -66,38 +61,21 @@
   min-height: 0;
 }
 
-.expRoutePaper {
+.expRouteButton {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 18px 20px 16px;
-  border-radius: 12px;
-  background: rgba(255, 248, 235, 0.28);
-  border: 1px solid rgba(65, 45, 25, 0.18);
-  color: #2b2116;
+  background: transparent;
+  border: none;
+  padding: 0;
   text-align: left;
   cursor: pointer;
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
 }
 
-.expRoutePaper:focus-visible {
+.expRouteButton:focus-visible {
   outline: 2px solid rgba(120, 72, 33, 0.6);
-  outline-offset: 2px;
+  outline-offset: 4px;
 }
 
-.expRoutePaper:hover {
-  border-color: rgba(120, 72, 33, 0.45);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2);
-}
-
-.expRoutePaper--selected {
-  border-color: rgba(120, 72, 33, 0.6);
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.2), 0 14px 28px rgba(15, 23, 42, 0.2);
-}
-
-.expRoutePaper--left {
+.expRouteButton--left {
   left: 6%;
   top: 14%;
   width: 28.5%;
@@ -105,7 +83,7 @@
   transform: rotate(-1.4deg);
 }
 
-.expRoutePaper--center {
+.expRouteButton--center {
   left: 36%;
   top: 16%;
   width: 28.5%;
@@ -113,12 +91,20 @@
   transform: rotate(0.6deg);
 }
 
-.expRoutePaper--right {
+.expRouteButton--right {
   left: 66%;
   top: 14%;
   width: 28.5%;
   height: 72%;
   transform: rotate(1.3deg);
+}
+
+.expRouteCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 18px 20px 16px;
 }
 
 .expRouteHeader {
@@ -134,19 +120,13 @@
   line-height: 1.2;
 }
 
-.expRouteBadge {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(65, 45, 25, 0.35);
-  background: rgba(255, 248, 235, 0.7);
-}
-
 .expRouteDescription {
   font-size: 13px;
   color: rgba(43, 33, 22, 0.85);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .expRouteItems {
@@ -157,9 +137,8 @@
 }
 
 .expRouteItem {
-  padding: 4px 6px;
-  border-radius: 8px;
-  background: rgba(87, 59, 31, 0.08);
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.8);
 }
 
 .expRouteRare {
@@ -176,13 +155,14 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255, 248, 235, 0.82);
-  border: 1px solid rgba(65, 45, 25, 0.18);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
   max-width: 720px;
   width: min(720px, 92%);
+}
+
+.expDurationChipGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .expDurationRow {
@@ -192,36 +172,11 @@
 }
 
 .expDurationChip {
-  border-radius: 10px;
-  border: 1px solid rgba(65, 45, 25, 0.2);
-  background: rgba(255, 255, 255, 0.5);
-  padding: 8px 10px;
-  min-width: 160px;
-  text-align: left;
-  cursor: pointer;
-  color: #2b2116;
+  font-size: 12px;
 }
 
 .expDurationChip--selected {
-  border-color: rgba(120, 72, 33, 0.6);
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.15);
-}
-
-.expDurationChipHeader {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-  font-size: 13px;
-}
-
-.expDurationTime {
-  color: rgba(43, 33, 22, 0.7);
-}
-
-.expDurationMeta {
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.75);
-  margin-top: 4px;
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18);
 }
 
 .expDurationPity {
@@ -250,20 +205,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.8);
+  align-items: center;
 }
 
 .expPreviewItem {
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(87, 59, 31, 0.08);
-  border: 1px solid rgba(87, 59, 31, 0.18);
+  font-size: 12px;
 }
 
 .expPreviewItem--empty {
-  background: transparent;
-  border: none;
+  opacity: 0.7;
 }
 
 .expPreviewRareLine {
@@ -290,10 +240,6 @@
 }
 
 .expSlotCard {
-  background: rgba(255, 248, 235, 0.9);
-  border: 1px solid rgba(65, 45, 25, 0.2);
-  border-radius: 12px;
-  padding: 10px 12px;
   min-width: 180px;
   display: flex;
   flex-direction: column;
@@ -378,13 +324,11 @@
   width: min(680px, 100%);
   max-height: 90%;
   overflow-y: auto;
-  background: rgba(255, 248, 235, 0.96);
-  border-radius: 16px;
-  border: 1px solid rgba(87, 59, 31, 0.35);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.3);
-  padding: 18px 20px 20px;
+}
+
+.expCeremonyModalCard {
   position: relative;
-  color: #2b2116;
+  padding: 18px 20px 20px;
 }
 
 .expCeremonyHeader {
@@ -417,10 +361,6 @@
 
 .expCeremonySpotlight {
   margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(87, 59, 31, 0.2);
-  background: rgba(87, 59, 31, 0.08);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -437,10 +377,7 @@
 }
 
 .expCeremonySpotlightBadge {
-  background: rgba(120, 72, 33, 0.16);
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 11px;
+  margin-left: auto;
 }
 
 .expCeremonyRewardList {
@@ -454,15 +391,15 @@
   font-weight: 700;
 }
 
-.expCeremonyRewardRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 13px;
-}
-
 .expCeremonyRewardCurrencies {
   margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.expCeremonyRewardChip {
+  font-size: 12px;
 }
 
 .expCeremonyError {
@@ -500,7 +437,7 @@
     padding: 12px;
   }
 
-  .expRoutePaper {
+  .expRouteButton {
     position: static;
     width: 100%;
     height: auto;
