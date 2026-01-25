@@ -220,8 +220,10 @@ export function ExpeditionBoardPanel() {
   const start = useExpeditionStore((state) => state.start);
   const claim = useExpeditionStore((state) => state.claim);
 
-  const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [selectedDurationId, setSelectedDurationId] = useState<string | null>(null);
+  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
+  const [routeModalOpen, setRouteModalOpen] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const [ceremony, setCeremony] = useState<CeremonyState>({
     open: false,
@@ -245,18 +247,15 @@ export function ExpeditionBoardPanel() {
 
   useEffect(() => {
     if (!content) return;
-    if (!selectedTypeId && content.types.length > 0) {
-      setSelectedTypeId(content.types[0].id);
-    }
     if (!selectedDurationId && content.durations.length > 0) {
       setSelectedDurationId(content.durations[0].id);
     }
-  }, [content, selectedDurationId, selectedTypeId]);
+  }, [content, selectedDurationId]);
 
-  const selectedType = useMemo(() => {
-    if (!content || !selectedTypeId) return null;
-    return content.types.find((entry) => entry.id === selectedTypeId) ?? null;
-  }, [content, selectedTypeId]);
+  const selectedRoute = useMemo(() => {
+    if (!content || !selectedRouteId) return null;
+    return content.types.find((entry) => entry.id === selectedRouteId) ?? null;
+  }, [content, selectedRouteId]);
 
   const selectedDuration = useMemo(() => {
     if (!content || !selectedDurationId) return null;
@@ -266,19 +265,19 @@ export function ExpeditionBoardPanel() {
   const pityDefaults = economy?.tuning?.pityDefaults?.expeditionsRare;
 
   const selectedPity = useMemo(() => {
-    if (!selectedType || !selectedDuration) return null;
-    const key = `${selectedType.id}::${selectedDuration.id}`;
+    if (!selectedRoute || !selectedDuration) return null;
+    const key = `${selectedRoute.id}::${selectedDuration.id}`;
     const failures = rareProgressByKey[key] ?? 0;
     const pityCap = pityDefaults?.pityCap ?? 0;
     const pityIncrement = pityDefaults?.pityIncrement ?? 0;
     const chance = Math.min(1, (selectedDuration.rareChance ?? 0) + failures * pityIncrement);
     return { chance, pityCap, pityIncrement, failures };
-  }, [pityDefaults, rareProgressByKey, selectedDuration, selectedType]);
+  }, [pityDefaults, rareProgressByKey, selectedDuration, selectedRoute]);
 
   const expectedBundle = useMemo(() => {
-    if (!content || cityIndex == null || !selectedType || !selectedDuration) return null;
-    return computeExpectedBundle(cityIndex, selectedType.id, selectedDuration.id, content);
-  }, [cityIndex, content, selectedDuration, selectedType]);
+    if (!content || cityIndex == null || !selectedRoute || !selectedDuration) return null;
+    return computeExpectedBundle(cityIndex, selectedRoute.id, selectedDuration.id, content);
+  }, [cityIndex, content, selectedDuration, selectedRoute]);
 
   const variancePct = selectedDuration?.variancePct ?? 0.15;
 
@@ -305,17 +304,17 @@ export function ExpeditionBoardPanel() {
   }
 
   const durationChips = content.durations.map((duration) => {
-    const previewBundle = selectedType
-      ? computeExpectedBundle(cityIndex, selectedType.id, duration.id, content)
+    const previewBundle = selectedRoute
+      ? computeExpectedBundle(cityIndex, selectedRoute.id, duration.id, content)
       : null;
     const variance = duration.variancePct ?? 0.15;
     const valueEstimate = previewBundle ? computeValueEstimate(previewBundle, variance, itemsById) : null;
-    const failures = selectedType ? rareProgressByKey[`${selectedType.id}::${duration.id}`] ?? 0 : 0;
+    const failures = selectedRoute ? rareProgressByKey[`${selectedRoute.id}::${duration.id}`] ?? 0 : 0;
     const pityCap = pityDefaults?.pityCap ?? 0;
     const pityIncrement = pityDefaults?.pityIncrement ?? 0;
     const chance = Math.min(1, (duration.rareChance ?? 0) + failures * pityIncrement);
     const chancePct = Math.round(chance * 100);
-    const showPity = Boolean(selectedType && pityCap > 1);
+    const showPity = Boolean(selectedRoute && pityCap > 1);
     const shardsCap = Math.max(1, pityCap - 1);
     const progressPct = showPity ? pityProgressPercent(failures, pityCap) * 100 : 0;
     const chipText = [
@@ -377,8 +376,8 @@ export function ExpeditionBoardPanel() {
   };
 
   const startWithSelection = (slotIndex: number) => {
-    if (!selectedType || !selectedDuration) return false;
-    const success = start(slotIndex, selectedType.id, selectedDuration.id, currentCityId, cityIndex);
+    if (!selectedRoute || !selectedDuration) return false;
+    const success = start(slotIndex, selectedRoute.id, selectedDuration.id, currentCityId, cityIndex);
     return success;
   };
 
@@ -412,7 +411,7 @@ export function ExpeditionBoardPanel() {
     closeCeremony();
   };
 
-  const selectedTypeRareNames = selectedType?.rareDrops
+  const selectedRouteRareNames = selectedRoute?.rareDrops
     ?.slice(0, 2)
     .map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
 
@@ -422,6 +421,27 @@ export function ExpeditionBoardPanel() {
   }));
 
   const availableSlots = Math.max(0, slots - activeRuns.length);
+  const availableSlotIndices = Array.from({ length: slots })
+    .map((_, index) => index)
+    .filter((index) => !activeRuns.some((entry) => entry.slotIndex === index));
+
+  useEffect(() => {
+    if (!routeModalOpen) return;
+    if (availableSlotIndices.length === 0) {
+      setSelectedSlotIndex(null);
+      return;
+    }
+    setSelectedSlotIndex((current) =>
+      current != null && availableSlotIndices.includes(current) ? current : availableSlotIndices[0],
+    );
+  }, [availableSlotIndices, routeModalOpen]);
+
+  useEffect(() => {
+    if (!ceremony.open) return;
+    if (routeModalOpen) {
+      setRouteModalOpen(false);
+    }
+  }, [ceremony.open, routeModalOpen]);
 
   return (
     <div className={'expStageRoot'}>
@@ -440,8 +460,8 @@ export function ExpeditionBoardPanel() {
           <div className={'expStageLabel'}>Rare chance</div>
           <div className={'expStageValue'}>
             {rareChancePct}%
-            {selectedTypeRareNames && selectedTypeRareNames.length > 0 ? (
-              <span className={'expStageRareItems'}> — {selectedTypeRareNames.join(', ')}</span>
+            {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
+              <span className={'expStageRareItems'}> — {selectedRouteRareNames.join(', ')}</span>
             ) : null}
           </div>
         </PaperCard>
@@ -454,12 +474,15 @@ export function ExpeditionBoardPanel() {
           const items = normalizeItemList(preview?.items).slice(0, 3);
           const variance = previewDuration.variancePct ?? 0.15;
           const rarePreviewNames = type.rareDrops?.slice(0, 2).map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
-          const isSelected = selectedTypeId === type.id;
+          const isSelected = selectedRouteId === type.id;
           return (
             <button
               key={type.id}
               className={`expRouteButton ${positionClass}`}
-              onClick={() => setSelectedTypeId(type.id)}
+              onClick={() => {
+                setSelectedRouteId(type.id);
+                setRouteModalOpen(true);
+              }}
               type="button"
               aria-pressed={isSelected}
               aria-label={`Select expedition route: ${type.name}`}
@@ -492,42 +515,9 @@ export function ExpeditionBoardPanel() {
           );
         })}
 
-        <PaperCard variant="tray" className="expControlsDock">
-          <div className={'expDurationRow'}>{durationChips}</div>
-          <div className={'expPreviewRow'}>
-            {selectedPreviewItems.length > 0 ? (
-              <>
-                {selectedPreviewItems.slice(0, 4).map((item) => {
-                  const name = itemsById[item.itemId]?.name ?? item.itemId;
-                  return (
-                    <PaperChip
-                      key={item.itemId}
-                      variant="pill"
-                      text={`${name}: ${item.min}–${item.max}`}
-                      className="expPreviewItem"
-                    />
-                  );
-                })}
-              </>
-            ) : (
-              <PaperChip
-                variant="pill"
-                text="Select a route to preview yields."
-                tone="neutral"
-                className="expPreviewItem expPreviewItem--empty"
-              />
-            )}
-            <div className={'expPreviewRareLine'}>
-              Rare drop chance: {rareChancePct}%
-              {selectedTypeRareNames && selectedTypeRareNames.length > 0 ? (
-                <span> — {selectedTypeRareNames.join(', ')}</span>
-              ) : null}
-            </div>
-          </div>
-          <div className={'expSendRow'}>
-            <span>Pick a slot below to send the selected route.</span>
-          </div>
-        </PaperCard>
+        <div className={'expStageHint'}>
+          <PaperChip variant="pill" text="Select a route to plan an expedition." tone="neutral" />
+        </div>
 
         <div className={'expSlotStrip'}>
           {Array.from({ length: slots }).map((_, slotIndex) => {
@@ -571,7 +561,7 @@ export function ExpeditionBoardPanel() {
               );
             }
 
-            const canStart = Boolean(selectedType && selectedDuration && expectedBundle);
+            const canStart = Boolean(selectedRoute && selectedDuration && expectedBundle);
 
             return (
               <PaperCard key={slotIndex} variant="card" className={'expSlotCard expSlotCard--idle'}>
@@ -580,7 +570,7 @@ export function ExpeditionBoardPanel() {
                   <div className={'expSlotStatus'}>Idle</div>
                 </div>
                 <div className={'expSlotMeta'}>
-                  {selectedType ? selectedType.name : 'Pick a route'} ·{' '}
+                  {selectedRoute ? selectedRoute.name : 'Pick a route'} ·{' '}
                   {selectedDuration ? selectedDuration.label : 'Pick a duration'}
                 </div>
                 <button
@@ -596,6 +586,106 @@ export function ExpeditionBoardPanel() {
           })}
         </div>
       </div>
+
+      {selectedRoute && (
+        <DetailScrollModal
+          open={routeModalOpen}
+          title={selectedRoute.name}
+          subtitle={`${citiesById[currentCityId]?.name ?? 'Unknown City'} • ${selectedRoute.description ?? 'Plan a route.'}`}
+          meta={<PaperChip variant="tag" text={`Rare ${rareChancePct}%`} />}
+          onClose={() => setRouteModalOpen(false)}
+        >
+          <div className={'expDetailSection'}>
+            <div className={'expDetailLabel'}>What You Might Find</div>
+            <div className={'expDetailYieldList'}>
+              {selectedPreviewItems.length > 0 ? (
+                selectedPreviewItems.slice(0, 6).map((item) => {
+                  const name = itemsById[item.itemId]?.name ?? item.itemId;
+                  return (
+                    <div key={item.itemId} className={'expDetailYieldRow'}>
+                      <span>{name}</span>
+                      <span>
+                        {item.min}–{item.max}
+                      </span>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className={'expDetailHint'}>No yield data available.</div>
+              )}
+            </div>
+          </div>
+
+          <div className={'expDetailSection'}>
+            <div className={'expDetailLabel'}>Rare Finds</div>
+            <div className={'expDetailHint'}>Chance: {rareChancePct}%</div>
+            <div className={'expDetailRareList'}>
+              {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
+                selectedRouteRareNames.map((name) => <PaperChip key={name} variant="pill" text={name} />)
+              ) : (
+                <PaperChip variant="pill" text="No rare drops listed" tone="neutral" />
+              )}
+            </div>
+            {selectedPity && selectedPity.pityCap > 1 ? (
+              <div className={'expDetailHint'}>
+                Intel shards: {selectedPity.failures} / {Math.max(1, selectedPity.pityCap - 1)}
+              </div>
+            ) : null}
+          </div>
+
+          <div className={'expDetailSection'}>
+            <div className={'expDetailLabel'}>Choose Duration</div>
+            <div className={'expDurationRow'}>{durationChips}</div>
+          </div>
+
+          <div className={'expDetailSection'}>
+            <div className={'expDetailLabel'}>Send Expedition</div>
+            <div className={'expDetailSlotPicker'}>
+              {Array.from({ length: slots }).map((_, slotIndex) => {
+                const run = activeRuns.find((entry) => entry.slotIndex === slotIndex) ?? null;
+                const isSelected = selectedSlotIndex === slotIndex;
+                return (
+                  <button
+                    key={slotIndex}
+                    type="button"
+                    className={`expDetailSlot${isSelected ? ' expDetailSlot--selected' : ''}${
+                      run ? ' expDetailSlot--busy' : ''
+                    }`}
+                    onClick={() => {
+                      if (run) return;
+                      setSelectedSlotIndex(slotIndex);
+                    }}
+                    disabled={Boolean(run)}
+                  >
+                    <div>Slot {slotIndex + 1}</div>
+                    <div>{run ? (run.status === 'complete' ? 'Complete' : 'In progress') : 'Idle'}</div>
+                  </button>
+                );
+              })}
+            </div>
+            <div className={'expDetailActions'}>
+              <button
+                className={'worldScreenModuleButton worldScreenModuleButton--primary'}
+                onClick={() => {
+                  if (!selectedDuration || selectedSlotIndex == null) return;
+                  const success = start(selectedSlotIndex, selectedRoute.id, selectedDuration.id, currentCityId, cityIndex);
+                  if (success) {
+                    setRouteModalOpen(false);
+                  }
+                }}
+                disabled={!selectedDuration || selectedSlotIndex == null || availableSlotIndices.length === 0}
+              >
+                Send Expedition
+              </button>
+              {!selectedDuration && <div className={'expDetailHint'}>Choose a duration first.</div>}
+              {selectedDuration && selectedSlotIndex == null && (
+                <div className={'expDetailHint'}>Select an available slot.</div>
+              )}
+              {availableSlotIndices.length === 0 && <div className={'expDetailHint'}>No slots available.</div>}
+            </div>
+          </div>
+        </DetailScrollModal>
+      )}
 
       {ceremony.open && ceremony.run && ceremony.rolled && (
         <DetailScrollModal

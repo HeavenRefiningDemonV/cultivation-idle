@@ -147,18 +147,6 @@
   margin-top: auto;
 }
 
-.expControlsDock {
-  position: absolute;
-  left: 50%;
-  bottom: 90px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 720px;
-  width: min(720px, 92%);
-}
-
 .expDurationChipGroup {
   display: flex;
   flex-direction: column;
@@ -201,30 +189,14 @@
   background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
 }
 
-.expPreviewRow {
+.expStageHint {
+  position: absolute;
+  left: 50%;
+  bottom: 92px;
+  transform: translateX(-50%);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.expPreviewItem {
-  font-size: 12px;
-}
-
-.expPreviewItem--empty {
-  opacity: 0.7;
-}
-
-.expPreviewRareLine {
-  width: 100%;
-  font-size: 12px;
-  color: rgba(87, 59, 31, 0.8);
-}
-
-.expSendRow {
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.7);
+  justify-content: center;
+  width: min(640px, 92%);
 }
 
 .expSlotStrip {
@@ -387,6 +359,82 @@
   gap: 8px;
 }
 
+.expDetailSection {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(87, 59, 31, 0.18);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expDetailLabel {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.expDetailYieldList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.expDetailYieldRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: rgba(43, 33, 22, 0.85);
+}
+
+.expDetailRareList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.expDetailSlotPicker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.expDetailSlot {
+  border: 1px solid rgba(87, 59, 31, 0.2);
+  background: rgba(255, 248, 235, 0.65);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #2b2116;
+  text-align: left;
+  cursor: pointer;
+}
+
+.expDetailSlot--selected {
+  border-color: rgba(120, 72, 33, 0.5);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.15);
+}
+
+.expDetailSlot--busy {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.expDetailActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expDetailHint {
+  font-size: 12px;
+  color: rgba(87, 59, 31, 0.8);
+}
+
 @media (max-width: 1100px) {
   .expStageRoot {
     padding: 12px;
@@ -407,7 +455,7 @@
     padding-bottom: 120px;
   }
 
-  .expControlsDock,
+  .expStageHint,
   .expSlotStrip {
     position: static;
     transform: none;
