@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import classNames from 'classnames';
 import type { RewardBundle } from '../../services/rewards';
 import { pityProgressPercent } from '../../services/economy/pity';
 import { normalizeItemList } from '../../utils/itemList';
@@ -224,6 +225,9 @@ export function ExpeditionBoardPanel() {
   const [selectedDurationId, setSelectedDurationId] = useState<string | null>(null);
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   const [routeModalOpen, setRouteModalOpen] = useState(false);
+  const [sentPulseSlotIndex, setSentPulseSlotIndex] = useState<number | null>(null);
+  const [sentRoutePulseId, setSentRoutePulseId] = useState<string | null>(null);
+  const [durationPulseId, setDurationPulseId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [ceremony, setCeremony] = useState<CeremonyState>({
     open: false,
@@ -320,7 +324,7 @@ export function ExpeditionBoardPanel() {
     const chipText = [
       duration.label,
       formatDuration(duration.seconds),
-      `Rare ${chancePct}%`,
+      selectedRoute ? `Rare ${chancePct}%` : null,
       valueEstimate ? `Yield ${valueEstimate.label}` : null,
     ]
       .filter(Boolean)
@@ -332,7 +336,11 @@ export function ExpeditionBoardPanel() {
           variant="pill"
           text={chipText}
           tone={isSelected ? 'ink' : 'neutral'}
-          onClick={() => setSelectedDurationId(duration.id)}
+          onClick={() => {
+            setSelectedDurationId(duration.id);
+            setDurationPulseId(duration.id);
+            window.setTimeout(() => setDurationPulseId(null), 250);
+          }}
           className={`expDurationChip${isSelected ? ' expDurationChip--selected' : ''}`}
         />
         {showPity ? (
@@ -349,15 +357,28 @@ export function ExpeditionBoardPanel() {
 
   const queueDurationChips = content.durations.map((duration) => {
     const isSelected = selectedDurationId === duration.id;
-    const chipText = `${duration.label} · ${formatDuration(duration.seconds)}`;
+    const chancePct = Math.round((duration.rareChance ?? 0) * 100);
+    const chipText = [
+      duration.label,
+      formatDuration(duration.seconds),
+      duration.rareChance ? `Rare ${chancePct}%` : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
     return (
       <PaperChip
         key={duration.id}
         variant="pill"
         text={chipText}
         tone={isSelected ? 'ink' : 'neutral'}
-        onClick={() => setSelectedDurationId(duration.id)}
-        className={`eqsDurationChip${isSelected ? ' eqsDurationChip--selected' : ''}`}
+        onClick={() => {
+          setSelectedDurationId(duration.id);
+          setDurationPulseId(duration.id);
+          window.setTimeout(() => setDurationPulseId(null), 250);
+        }}
+        className={`eqsDurationChip${isSelected ? ' eqsDurationChip--selected' : ''}${
+          durationPulseId === duration.id ? ' eqsDurationChip--pulse' : ''
+        }`}
       />
     );
   });
@@ -393,6 +414,12 @@ export function ExpeditionBoardPanel() {
   const startWithSelection = (slotIndex: number) => {
     if (!selectedRoute || !selectedDuration) return false;
     const success = start(slotIndex, selectedRoute.id, selectedDuration.id, currentCityId, cityIndex);
+    if (success) {
+      setSentPulseSlotIndex(slotIndex);
+      setSentRoutePulseId(selectedRoute.id);
+      window.setTimeout(() => setSentPulseSlotIndex(null), 700);
+      window.setTimeout(() => setSentRoutePulseId(null), 700);
+    }
     return success;
   };
 
@@ -429,6 +456,7 @@ export function ExpeditionBoardPanel() {
   const selectedRouteRareNames = selectedRoute?.rareDrops
     ?.slice(0, 2)
     .map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
+  const selectedRouteRareItems = selectedRoute?.rareDrops ?? [];
 
   const queueYieldChips = selectedPreviewItems.slice(0, 3).map((item) => {
     const name = itemsById[item.itemId]?.name ?? item.itemId;
@@ -494,19 +522,32 @@ export function ExpeditionBoardPanel() {
           const variance = previewDuration.variancePct ?? 0.15;
           const rarePreviewNames = type.rareDrops?.slice(0, 2).map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
           const isSelected = selectedRouteId === type.id;
+          const isRoutePulse = sentRoutePulseId === type.id;
           return (
             <button
               key={type.id}
-              className={`expRouteButton ${positionClass}`}
+              className={classNames('expRouteButton', positionClass, {
+                'expRouteButton--selected': isSelected,
+              })}
               onClick={() => {
                 setSelectedRouteId(type.id);
                 setRouteModalOpen(true);
+                setSentRoutePulseId(type.id);
+                window.setTimeout(() => setSentRoutePulseId(null), 600);
               }}
               type="button"
               aria-pressed={isSelected}
               aria-label={`Select expedition route: ${type.name}`}
             >
-              <PaperCard variant="card" interactive selected={isSelected} className="expRouteCard">
+              <PaperCard
+                variant="card"
+                interactive
+                selected={isSelected}
+                className={classNames('expRouteCard', {
+                  'expRouteCard--selected': isSelected,
+                  'expRouteCard--pulse': isRoutePulse,
+                })}
+              >
                 <div className={'expRouteHeader'}>
                   <div className={'expRouteTitle'}>{type.name}</div>
                   <PaperChip variant="tag" text="ROUTE" />
@@ -537,7 +578,7 @@ export function ExpeditionBoardPanel() {
       </div>
 
       <div className={'expeditionQueueStrip'}>
-        <div className={'eqsPlanner'}>
+        <div className={classNames('eqsPlanner', { 'eqsPlanner--active': Boolean(selectedRoute) })}>
           <div className={'eqsPlannerHeader'}>
             <div className={'eqsSelectedRoute'}>
               {selectedRoute ? (
@@ -551,10 +592,27 @@ export function ExpeditionBoardPanel() {
             </div>
             <div className={'eqsPlannerMeta'}>
               <span className={'eqsMetaItem'}>Slots: {availableSlots} / {slots}</span>
-              <span className={'eqsMetaItem'}>
-                Rare {rareChancePct}%
-                {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? ` — ${selectedRouteRareNames.join(', ')}` : ''}
-              </span>
+              <div className={'eqsRareTag'}>
+                {selectedRoute ? (
+                  <>
+                    <PaperChip variant="tag" text={`Rare ${rareChancePct}%`} tone="rare" />
+                    {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
+                      <div className="eqsRareChips">
+                        {selectedRouteRareItems.slice(0, 2).map((drop) => (
+                          <PaperChip
+                            key={drop.itemId}
+                            variant="pill"
+                            text={itemsById[drop.itemId]?.name ?? drop.itemId}
+                            tone="rare"
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <PaperChip variant="tag" text="Select a route to view rare chances" tone="neutral" />
+                )}
+              </div>
             </div>
           </div>
 
@@ -588,12 +646,17 @@ export function ExpeditionBoardPanel() {
               const elapsed = Math.min(totalMs, totalMs - remainingMs);
               const progress = Math.min(100, Math.max(0, (elapsed / totalMs) * 100));
 
+              const isSentPulse = sentPulseSlotIndex === slotIndex;
               return (
                 <PaperCard
                   key={slotIndex}
                   variant="card"
                   complete={isComplete}
-                  className={`eqsSlotTile${isComplete ? ' eqsSlotTile--ready' : ' eqsSlotTile--active'}`}
+                  className={classNames('eqsSlotTile', {
+                    'eqsSlotTile--ready': isComplete,
+                    'eqsSlotTile--active': !isComplete,
+                    'eqsSlotTile--sent': isSentPulse,
+                  })}
                 >
                   <div className={'eqsSlotHeader'}>
                     <div className={'eqsSlotTitle'}>Slot {slotIndex + 1}</div>
@@ -614,6 +677,7 @@ export function ExpeditionBoardPanel() {
                       <div className={'eqsSlotProgressFill'} style={{ width: `${progress}%` }} />
                     </div>
                   )}
+                  {isSentPulse && <span className="eqsSlotStamp">Sent</span>}
                   {isComplete && (
                     <button
                       className={'worldScreenModuleButton eqsSlotAction'}
@@ -627,7 +691,12 @@ export function ExpeditionBoardPanel() {
               );
             }
 
-            const tileClass = `eqsSlotTile eqsSlotTileButton eqsSlotTile--idle${canDispatch ? ' eqsSlotTile--dispatchable' : ''}`;
+            const tileClass = classNames(
+              'eqsSlotTile',
+              'eqsSlotTileButton',
+              'eqsSlotTile--idle',
+              { 'eqsSlotTile--dispatchable': canDispatch, 'eqsSlotTile--sent': sentPulseSlotIndex === slotIndex },
+            );
             return (
               <button
                 key={slotIndex}
@@ -648,6 +717,7 @@ export function ExpeditionBoardPanel() {
                   <div className={'eqsSlotHint'}>
                     {canDispatch ? 'Click to send' : 'Select route + duration'}
                   </div>
+                  {sentPulseSlotIndex === slotIndex && <span className="eqsSlotStamp">Sent</span>}
                 </PaperCard>
               </button>
             );
@@ -783,23 +853,41 @@ export function ExpeditionBoardPanel() {
 
           <div className={'expCeremonyRewardList'}>
             <div className={'expCeremonyRewardHeader'}>Rewards Gained</div>
-            {normalizeItemList(ceremony.rolled.items).map((item) => (
-              <PaperChip
-                key={item.itemId}
-                variant="pill"
-                text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
-                className="expCeremonyRewardChip"
-              />
-            ))}
+            {normalizeItemList(ceremony.rolled.items).map((item, index) => {
+              const isRareDrop = ceremony.rareDrop?.itemId === item.itemId;
+              return (
+                <div
+                  key={item.itemId}
+                  className={classNames('expCeremonyRewardRow', { 'expCeremonyRewardRow--rare': isRareDrop })}
+                  style={{ animationDelay: `${index * 80}ms` }}
+                >
+                  <PaperChip
+                    variant="pill"
+                    text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
+                    className={classNames('expCeremonyRewardChip', {
+                      'expCeremonyRewardChip--rare': isRareDrop,
+                    })}
+                    tone={isRareDrop ? 'rare' : 'neutral'}
+                  />
+                  {isRareDrop && <PaperStamp text="Rare" size="sm" tone="seal" className="paperStamp--ready" />}
+                </div>
+              );
+            })}
             {ceremony.rolled.currencies ? (
               <div className={'expCeremonyRewardCurrencies'}>
-                {Object.entries(ceremony.rolled.currencies).map(([key, value]) => (
-                  <PaperChip
+                {Object.entries(ceremony.rolled.currencies).map(([key, value], index) => (
+                  <div
                     key={key}
-                    variant="pill"
-                    text={`${key}: ${value}`}
-                    className="expCeremonyRewardChip"
-                  />
+                    className="expCeremonyRewardRow"
+                    style={{ animationDelay: `${(index + 1) * 80}ms` }}
+                  >
+                    <PaperChip
+                      variant="pill"
+                      text={`${key}: ${value}`}
+                      className="expCeremonyRewardChip"
+                      tone={key === 'merit' ? 'merit' : 'neutral'}
+                    />
+                  </div>
                 ))}
               </div>
             ) : null}

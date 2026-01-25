@@ -3210,6 +3210,15 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  transform: translateY(10px);
+  opacity: 0.9;
+}
+
+.eqsPlanner--active {
+  transform: translateY(0);
+  opacity: 1;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
 }
 
 .eqsPlannerHeader {
@@ -3261,6 +3270,19 @@
   white-space: nowrap;
 }
 
+.eqsRareTag {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.eqsRareChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .eqsPlannerHint {
   font-size: 12px;
   color: var(--paper-ink-faint, rgba(87, 59, 31, 0.8));
@@ -3280,6 +3302,10 @@
   box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18);
 }
 
+.eqsDurationChip--pulse {
+  animation: eqsInkBlot 0.25s ease-out;
+}
+
 .eqsYieldChips {
   display: flex;
   flex-wrap: wrap;
@@ -3295,6 +3321,7 @@
 
 .eqsSlotTile {
   min-width: 160px;
+  position: relative;
 }
 
 .eqsSlotTileButton {
@@ -3338,6 +3365,42 @@
   flex-direction: column;
   gap: 6px;
   padding: 12px;
+  position: relative;
+}
+
+.eqsSlotTile--idle .eqsSlotInner::after {
+  content: 'IDLE';
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(159, 59, 46, 0.35);
+  border: 1px solid rgba(159, 59, 46, 0.25);
+  padding: 2px 6px;
+  border-radius: 999px;
+  transform: rotate(-6deg);
+  text-transform: uppercase;
+}
+
+.eqsSlotTile--sent {
+  animation: eqsSlotSent 0.7s ease-out;
+}
+
+.eqsSlotStamp {
+  position: absolute;
+  inset: auto 10px 10px auto;
+  padding: 4px 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(159, 59, 46, 0.85);
+  border: 2px double rgba(159, 59, 46, 0.5);
+  border-radius: 999px;
+  transform: rotate(-10deg);
+  background: rgba(255, 232, 224, 0.7);
+  animation: eqsSentStamp 0.7s ease-out forwards;
+  pointer-events: none;
 }
 
 .eqsSlotHeader {
@@ -3455,8 +3518,56 @@
     transition: none;
   }
 
+  .eqsPlanner {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+
   .eqsSlotTile--dispatchable:hover .eqsSlotInner {
     transform: none;
+  }
+
+  .eqsDurationChip--pulse,
+  .eqsSlotTile--sent,
+  .eqsSlotStamp {
+    animation: none;
+  }
+}
+
+@keyframes eqsInkBlot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(120, 72, 33, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 6px rgba(120, 72, 33, 0);
+  }
+}
+
+@keyframes eqsSentStamp {
+  0% {
+    opacity: 0;
+    transform: rotate(-12deg) scale(0.85);
+  }
+  50% {
+    opacity: 0.9;
+    transform: rotate(-10deg) scale(1.05);
+  }
+  100% {
+    opacity: 0.85;
+    transform: rotate(-9deg) scale(1);
+  }
+}
+
+@keyframes eqsSlotSent {
+  0% {
+    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(159, 59, 46, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0);
   }
 }
 

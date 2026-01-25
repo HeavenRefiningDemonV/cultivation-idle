@@ -78,6 +78,10 @@
   outline-offset: 4px;
 }
 
+.expRouteButton--selected .expRouteCard {
+  box-shadow: 0 0 0 2px rgba(47, 143, 102, 0.18), 0 0 18px rgba(47, 143, 102, 0.2);
+}
+
 .expRouteButton--left {
   left: 6%;
   top: 14%;
@@ -108,6 +112,21 @@
   gap: 8px;
   height: 100%;
   padding: 18px 20px 16px;
+  position: relative;
+}
+
+.expRouteCard--selected::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 14px;
+  border: 2px solid rgba(47, 143, 102, 0.35);
+  animation: expRouteInkStroke 0.6s ease-out;
+  pointer-events: none;
+}
+
+.expRouteCard--pulse {
+  animation: expRoutePulse 0.7s ease-out;
 }
 
 .expRouteHeader {
@@ -126,6 +145,10 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.expRouteCard--selected .expRouteTitle {
+  color: rgba(43, 33, 22, 0.95);
 }
 
 .expRouteDescription {
@@ -169,10 +192,54 @@
 
 .expDurationChip {
   font-size: 12px;
+  position: relative;
 }
 
 .expDurationChip--selected {
   box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18);
+}
+
+.expDurationChip--selected::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: rgba(159, 59, 46, 0.55);
+  transform: rotate(-12deg);
+  opacity: 0.8;
+}
+
+@keyframes expRouteInkStroke {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes expRoutePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0.25);
+  }
+  40% {
+    box-shadow: 0 0 0 6px rgba(159, 59, 46, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(159, 59, 46, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expRouteCard--selected::after,
+  .expRouteCard--pulse {
+    animation: none;
+  }
 }
 
 .expDurationPity {
@@ -202,6 +269,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  background: rgba(255, 248, 235, 0.7);
+  border: 1px solid rgba(87, 59, 31, 0.2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  position: relative;
 }
 
 .expCeremonySpotlightLabel {
@@ -228,10 +300,36 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(87, 59, 31, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
 }
 
 .expCeremonyRewardHeader {
   font-weight: 700;
+}
+
+.expCeremonyRewardRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(6px);
+  animation: expCeremonyReveal 0.4s ease-out forwards;
+}
+
+.expCeremonyRewardRow--rare {
+  position: relative;
+}
+
+.expCeremonyRewardRow--rare::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: radial-gradient(circle, rgba(181, 133, 43, 0.2), transparent 60%);
+  opacity: 0.7;
+  pointer-events: none;
 }
 
 .expCeremonyRewardCurrencies {
@@ -243,6 +341,10 @@
 
 .expCeremonyRewardChip {
   font-size: 12px;
+}
+
+.expCeremonyRewardChip--rare {
+  box-shadow: 0 0 12px rgba(181, 133, 43, 0.2);
 }
 
 .expCeremonyError {
@@ -368,5 +470,24 @@
     grid-template-columns: 1fr;
     gap: 12px;
     overflow-y: auto;
+  }
+}
+
+@keyframes expCeremonyReveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expCeremonyRewardRow {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
