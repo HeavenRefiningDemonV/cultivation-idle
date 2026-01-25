@@ -1,0 +1,177 @@
+.paperCard {
+  --paper-ink: #2b2116;
+  --paper-ink-muted: rgba(43, 33, 22, 0.7);
+  --paper-border: rgba(65, 45, 25, 0.2);
+  --paper-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
+  --paper-bg: rgba(255, 248, 235, 0.6);
+  --paper-bg-strong: rgba(255, 248, 235, 0.8);
+  --paper-bg-soft: rgba(255, 248, 235, 0.5);
+  --paper-outline: rgba(120, 72, 33, 0.4);
+  position: relative;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--paper-bg);
+  color: var(--paper-ink);
+  border: 1px solid var(--paper-border);
+  box-shadow: var(--paper-shadow);
+  overflow: hidden;
+}
+
+.paperCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../../assets/texture_overlay.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.paperCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.paperCard--tray {
+  background: var(--paper-bg-strong);
+  padding: 10px 12px;
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
+}
+
+.paperCard--label {
+  background: var(--paper-bg-soft);
+  padding: 8px 10px;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+}
+
+.paperCard--interactive {
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.paperCard--interactive:hover {
+  transform: translateY(-1px);
+  border-color: rgba(120, 72, 33, 0.45);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2);
+}
+
+.paperCard--selected {
+  border-color: var(--paper-outline);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18), 0 14px 28px rgba(15, 23, 42, 0.2);
+}
+
+.paperCard--disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.paperChip {
+  --chip-ink: #2b2116;
+  --chip-border: rgba(87, 59, 31, 0.2);
+  --chip-bg: rgba(255, 248, 235, 0.7);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.2;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--chip-ink);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+  max-width: 100%;
+}
+
+.paperChip--tag {
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+.paperChip__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paperChip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  font-size: 12px;
+}
+
+.paperChip--tone-ink {
+  --chip-ink: rgba(43, 33, 22, 0.85);
+}
+
+.paperChip--tone-success {
+  --chip-ink: rgba(34, 116, 74, 0.9);
+  --chip-border: rgba(34, 116, 74, 0.35);
+}
+
+.paperChip--tone-danger {
+  --chip-ink: rgba(145, 58, 37, 0.9);
+  --chip-border: rgba(145, 58, 37, 0.35);
+}
+
+.paperChip--tone-neutral {
+  --chip-ink: rgba(43, 33, 22, 0.8);
+}
+
+.paperChip--clickable {
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.paperChip--clickable:hover {
+  transform: translateY(-1px);
+  border-color: rgba(120, 72, 33, 0.45);
+}
+
+.paperChip--clickable:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.5);
+  outline-offset: 2px;
+}
+
+.paperStamp {
+  --stamp-ink: rgba(43, 33, 22, 0.75);
+  --stamp-border: rgba(43, 33, 22, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px double var(--stamp-border);
+  color: var(--stamp-ink);
+  padding: 6px 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(255, 248, 235, 0.6);
+  mix-blend-mode: multiply;
+}
+
+.paperStamp--sm {
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.paperStamp--md {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+.paperStamp--tone-seal {
+  --stamp-ink: rgba(128, 53, 36, 0.7);
+  --stamp-border: rgba(128, 53, 36, 0.5);
+}
+
+.paperStamp--tone-ink {
+  --stamp-ink: rgba(43, 33, 22, 0.7);
+  --stamp-border: rgba(43, 33, 22, 0.5);
+}
