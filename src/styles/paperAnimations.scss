@@ -8,6 +8,16 @@
   }
 }
 
+@keyframes gentleGlow {
+  0%,
+  100% {
+    opacity: 0.16;
+  }
+  50% {
+    opacity: 0.26;
+  }
+}
+
 @keyframes shimmerSweep {
   0%,
   70% {
@@ -15,6 +25,21 @@
   }
   100% {
     transform: translateX(120%);
+  }
+}
+
+@keyframes stampPop {
+  0% {
+    transform: scale(0.92) rotate(-6deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02) rotate(-6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-6deg);
+    opacity: 1;
   }
 }
 
