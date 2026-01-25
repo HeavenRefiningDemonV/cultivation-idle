@@ -3192,6 +3192,226 @@
   gap: 12px;
 }
 
+.expeditionQueueStrip {
+  position: sticky;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(255, 248, 235, 0.92);
+  border: 1px solid rgba(87, 59, 31, 0.22);
+  box-shadow: 0 12px 22px rgba(15, 23, 42, 0.14);
+  z-index: 1;
+}
+
+.eqsPlanner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eqsPlannerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.eqsSelectedRoute {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.eqsRouteName {
+  font-weight: 700;
+  font-size: 14px;
+  color: #2b2116;
+}
+
+.eqsRouteDesc {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.75);
+}
+
+.eqsRoutePlaceholder {
+  font-size: 13px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.eqsPlannerMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(43, 33, 22, 0.7);
+  text-align: right;
+}
+
+.eqsMetaItem {
+  white-space: nowrap;
+}
+
+.eqsPlannerHint {
+  font-size: 12px;
+  color: rgba(87, 59, 31, 0.8);
+}
+
+.eqsDurations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.eqsDurationChip {
+  font-size: 12px;
+}
+
+.eqsDurationChip--selected {
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18);
+}
+
+.eqsYieldChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.eqsSlots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.eqsSlotTile {
+  min-width: 160px;
+}
+
+.eqsSlotTileButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+
+.eqsSlotTileButton:disabled {
+  cursor: not-allowed;
+}
+
+.eqsSlotTile--dispatchable .eqsSlotInner,
+.eqsSlotTile--dispatchable {
+  cursor: pointer;
+}
+
+.eqsSlotTile--dispatchable .eqsSlotInner {
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.eqsSlotTile--dispatchable:hover .eqsSlotInner {
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.3);
+  transform: translateY(-1px);
+}
+
+.eqsSlotTile--ready {
+  border-color: rgba(120, 72, 33, 0.4);
+}
+
+.eqsSlotTile--idle,
+.eqsSlotTile--active,
+.eqsSlotInner {
+  color: #2b2116;
+}
+
+.eqsSlotInner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+}
+
+.eqsSlotHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.eqsSlotTitle {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.eqsSlotStatus {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(87, 59, 31, 0.7);
+}
+
+.eqsSlotMeta {
+  font-size: 11px;
+  color: rgba(43, 33, 22, 0.7);
+}
+
+.eqsSlotTimer {
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.85);
+}
+
+.eqsSlotProgress {
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(87, 59, 31, 0.12);
+  overflow: hidden;
+}
+
+.eqsSlotProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
+}
+
+.eqsSlotHint {
+  font-size: 11px;
+  color: rgba(87, 59, 31, 0.75);
+}
+
+.eqsSlotAction {
+  align-self: flex-start;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+
+.expStageRoot--muted .expStageHud,
+.expStageRoot--muted .expStageArea,
+.expStageRoot--muted .expeditionQueueStrip {
+  opacity: 0.6;
+  pointer-events: none;
+  filter: grayscale(0.1);
+}
+
+@media (max-width: 1100px) {
+  .expeditionQueueStrip {
+    grid-template-columns: 1fr;
+    position: static;
+  }
+
+  .eqsSlots {
+    justify-content: flex-start;
+  }
+
+  .eqsPlannerMeta {
+    text-align: left;
+  }
+}
+
 .expeditionSlotCard {
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);

@@ -189,98 +189,6 @@
   background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
 }
 
-.expStageHint {
-  position: absolute;
-  left: 50%;
-  bottom: 92px;
-  transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
-  width: min(640px, 92%);
-}
-
-.expSlotStrip {
-  position: absolute;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  width: min(900px, 96%);
-}
-
-.expSlotCard {
-  min-width: 180px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  color: #2b2116;
-}
-
-.expSlotCard--ready {
-  border-color: rgba(120, 72, 33, 0.45);
-}
-
-.expSlotCard--idle {
-  opacity: 0.92;
-}
-
-.expSlotHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-.expSlotTitle {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.expSlotStatus {
-  font-size: 11px;
-  color: rgba(87, 59, 31, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.expSlotMeta {
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.7);
-}
-
-.expSlotTimer {
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.8);
-}
-
-.expSlotProgress {
-  width: 100%;
-  height: 6px;
-  border-radius: 6px;
-  background: rgba(87, 59, 31, 0.12);
-  overflow: hidden;
-}
-
-.expSlotProgressFill {
-  height: 100%;
-  background: linear-gradient(90deg, rgba(120, 72, 33, 0.7), rgba(185, 110, 45, 0.7));
-}
-
-.expSlotAction {
-  align-self: flex-start;
-  padding: 4px 10px;
-  font-size: 12px;
-  border-radius: 999px;
-}
-
-.expSlotError {
-  font-size: 11px;
-  color: rgba(180, 83, 9, 0.9);
-}
-
 .expCeremonySpotlight {
   margin-top: 12px;
   display: flex;
@@ -452,13 +360,5 @@
     grid-template-columns: 1fr;
     gap: 12px;
     overflow-y: auto;
-    padding-bottom: 120px;
-  }
-
-  .expStageHint,
-  .expSlotStrip {
-    position: static;
-    transform: none;
-    width: 100%;
   }
 }

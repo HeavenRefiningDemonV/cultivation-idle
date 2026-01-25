@@ -347,6 +347,21 @@ export function ExpeditionBoardPanel() {
     );
   });
 
+  const queueDurationChips = content.durations.map((duration) => {
+    const isSelected = selectedDurationId === duration.id;
+    const chipText = `${duration.label} · ${formatDuration(duration.seconds)}`;
+    return (
+      <PaperChip
+        key={duration.id}
+        variant="pill"
+        text={chipText}
+        tone={isSelected ? 'ink' : 'neutral'}
+        onClick={() => setSelectedDurationId(duration.id)}
+        className={`eqsDurationChip${isSelected ? ' eqsDurationChip--selected' : ''}`}
+      />
+    );
+  });
+
   const selectedPreviewItems = useMemo(() => {
     if (!expectedBundle) return [] as { itemId: string; qty: number; min: number; max: number }[];
     const items = normalizeItemList(expectedBundle.items);
@@ -415,6 +430,18 @@ export function ExpeditionBoardPanel() {
     ?.slice(0, 2)
     .map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
 
+  const queueYieldChips = selectedPreviewItems.slice(0, 3).map((item) => {
+    const name = itemsById[item.itemId]?.name ?? item.itemId;
+    return {
+      id: item.itemId,
+      text: `${name} ${item.min}–${item.max}`,
+    };
+  });
+
+  const queueRareChip = selectedRouteRareNames && selectedRouteRareNames.length > 0
+    ? `Rare: ${selectedRouteRareNames.join(', ')}`
+    : null;
+
   const routePapers = content.types.slice(0, 3).map((type, index) => ({
     type,
     positionClass: routePositions[index] as RoutePositionClass,
@@ -424,6 +451,13 @@ export function ExpeditionBoardPanel() {
   const availableSlotIndices = Array.from({ length: slots })
     .map((_, index) => index)
     .filter((index) => !activeRuns.some((entry) => entry.slotIndex === index));
+  const activeRunBySlot = useMemo(() => {
+    const map = new Map<number, ExpeditionRun>();
+    activeRuns.forEach((run) => map.set(run.slotIndex, run));
+    return map;
+  }, [activeRuns]);
+
+  const canDispatch = Boolean(selectedRoute && selectedDuration);
 
   useEffect(() => {
     if (!routeModalOpen) return;
@@ -444,26 +478,11 @@ export function ExpeditionBoardPanel() {
   }, [ceremony.open, routeModalOpen]);
 
   return (
-    <div className={'expStageRoot'}>
+    <div className={`expStageRoot${ceremony.open ? ' expStageRoot--muted' : ''}`}>
       <div className={'expStageHud'}>
         <PaperCard variant="label" className="expStageHudGroup">
           <div className={'expStageTitle'}>Expeditions</div>
           <div className={'expStageSub'}>{citiesById[currentCityId]?.name ?? 'Unknown City'}</div>
-        </PaperCard>
-        <PaperCard variant="label" className="expStageHudGroup">
-          <div className={'expStageLabel'}>Slots</div>
-          <div className={'expStageValue'}>
-            {availableSlots} / {slots} available
-          </div>
-        </PaperCard>
-        <PaperCard variant="label" className="expStageHudGroup expStageHudGroup--rare">
-          <div className={'expStageLabel'}>Rare chance</div>
-          <div className={'expStageValue'}>
-            {rareChancePct}%
-            {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
-              <span className={'expStageRareItems'}> — {selectedRouteRareNames.join(', ')}</span>
-            ) : null}
-          </div>
         </PaperCard>
       </div>
 
@@ -515,13 +534,51 @@ export function ExpeditionBoardPanel() {
           );
         })}
 
-        <div className={'expStageHint'}>
-          <PaperChip variant="pill" text="Select a route to plan an expedition." tone="neutral" />
+      </div>
+
+      <div className={'expeditionQueueStrip'}>
+        <div className={'eqsPlanner'}>
+          <div className={'eqsPlannerHeader'}>
+            <div className={'eqsSelectedRoute'}>
+              {selectedRoute ? (
+                <>
+                  <span className={'eqsRouteName'}>{selectedRoute.name}</span>
+                  <span className={'eqsRouteDesc'}>{selectedRoute.description ?? 'Plan your expedition.'}</span>
+                </>
+              ) : (
+                <span className={'eqsRoutePlaceholder'}>Select a route above</span>
+              )}
+            </div>
+            <div className={'eqsPlannerMeta'}>
+              <span className={'eqsMetaItem'}>Slots: {availableSlots} / {slots}</span>
+              <span className={'eqsMetaItem'}>
+                Rare {rareChancePct}%
+                {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? ` — ${selectedRouteRareNames.join(', ')}` : ''}
+              </span>
+            </div>
+          </div>
+
+          <div className={'eqsPlannerHint'}>Select route + duration, then click a slot to send.</div>
+
+          <div className={'eqsDurations'}>
+            {queueDurationChips}
+          </div>
+
+          <div className={'eqsYieldChips'}>
+            {queueYieldChips.length > 0 ? (
+              queueYieldChips.map((entry) => (
+                <PaperChip key={entry.id} variant="pill" text={entry.text} tone="neutral" />
+              ))
+            ) : (
+              <PaperChip variant="pill" text="Yield preview unavailable" tone="neutral" />
+            )}
+            {queueRareChip && <PaperChip variant="pill" text={queueRareChip} tone="success" />}
+          </div>
         </div>
 
-        <div className={'expSlotStrip'}>
+        <div className={'eqsSlots'}>
           {Array.from({ length: slots }).map((_, slotIndex) => {
-            const run = activeRuns.find((entry) => entry.slotIndex === slotIndex) ?? null;
+            const run = activeRunBySlot.get(slotIndex) ?? null;
             if (run) {
               const durationDef = content.durations.find((entry) => entry.id === run.durationId);
               const typeDef = content.types.find((entry) => entry.id === run.expeditionTypeId);
@@ -535,53 +592,63 @@ export function ExpeditionBoardPanel() {
                 <PaperCard
                   key={slotIndex}
                   variant="card"
-                  className={`expSlotCard${isComplete ? ' expSlotCard--ready' : ''}`}
+                  className={`eqsSlotTile${isComplete ? ' eqsSlotTile--ready' : ' eqsSlotTile--active'}`}
                 >
-                  <div className={'expSlotHeader'}>
-                    <div className={'expSlotTitle'}>Slot {slotIndex + 1}</div>
-                    <div className={'expSlotStatus'}>{isComplete ? 'Complete' : 'Running'}</div>
+                  <div className={'eqsSlotHeader'}>
+                    <div className={'eqsSlotTitle'}>Slot {slotIndex + 1}</div>
+                    {isComplete ? (
+                      <PaperStamp text="Ready" size="sm" tone="seal" />
+                    ) : (
+                      <span className={'eqsSlotStatus'}>In Progress</span>
+                    )}
                   </div>
-                  <div className={'expSlotMeta'}>
+                  <div className={'eqsSlotMeta'}>
                     {typeDef?.name ?? run.expeditionTypeId} · {durationDef?.label ?? run.durationId}
                   </div>
-                  <div className={'expSlotTimer'}>
-                    {isComplete ? 'Ready to claim' : `${formatTimer(remainingMs)} remaining`}
+                  <div className={'eqsSlotTimer'}>
+                    {isComplete ? 'Ready to claim' : formatTimer(remainingMs)}
                   </div>
-                  <div className={'expSlotProgress'}>
-                    <div className={'expSlotProgressFill'} style={{ width: `${progress}%` }} />
-                  </div>
-                  <button
-                    className={'worldScreenModuleButton expSlotAction'}
-                    onClick={() => handleClaim(slotIndex)}
-                    disabled={!isComplete}
-                  >
-                    {isComplete ? 'Claim' : 'In progress'}
-                  </button>
+                  {!isComplete && (
+                    <div className={'eqsSlotProgress'}>
+                      <div className={'eqsSlotProgressFill'} style={{ width: `${progress}%` }} />
+                    </div>
+                  )}
+                  {isComplete && (
+                    <button
+                      className={'worldScreenModuleButton eqsSlotAction'}
+                      type="button"
+                      onClick={() => handleClaim(slotIndex)}
+                    >
+                      Claim
+                    </button>
+                  )}
                 </PaperCard>
               );
             }
 
-            const canStart = Boolean(selectedRoute && selectedDuration && expectedBundle);
-
+            const tileClass = `eqsSlotTile eqsSlotTileButton eqsSlotTile--idle${canDispatch ? ' eqsSlotTile--dispatchable' : ''}`;
             return (
-              <PaperCard key={slotIndex} variant="card" className={'expSlotCard expSlotCard--idle'}>
-                <div className={'expSlotHeader'}>
-                  <div className={'expSlotTitle'}>Slot {slotIndex + 1}</div>
-                  <div className={'expSlotStatus'}>Idle</div>
-                </div>
-                <div className={'expSlotMeta'}>
-                  {selectedRoute ? selectedRoute.name : 'Pick a route'} ·{' '}
-                  {selectedDuration ? selectedDuration.label : 'Pick a duration'}
-                </div>
-                <button
-                  className={'worldScreenModuleButton expSlotAction'}
-                  onClick={() => startWithSelection(slotIndex)}
-                  disabled={!canStart}
-                >
-                  Send
-                </button>
-                {!canStart && <div className={'expSlotError'}>Select a route and duration first.</div>}
-              </PaperCard>
+              <button
+                key={slotIndex}
+                type="button"
+                className={tileClass}
+                onClick={() => startWithSelection(slotIndex)}
+                disabled={!canDispatch}
+              >
+                <PaperCard variant="card" className="eqsSlotInner">
+                  <div className={'eqsSlotHeader'}>
+                    <div className={'eqsSlotTitle'}>Slot {slotIndex + 1}</div>
+                    <span className={'eqsSlotStatus'}>Idle</span>
+                  </div>
+                  <div className={'eqsSlotMeta'}>
+                    {selectedRoute ? selectedRoute.name : 'Pick a route'} ·{' '}
+                    {selectedDuration ? selectedDuration.label : 'Pick a duration'}
+                  </div>
+                  <div className={'eqsSlotHint'}>
+                    {canDispatch ? 'Click to send' : 'Select route + duration'}
+                  </div>
+                </PaperCard>
+              </button>
             );
           })}
         </div>
