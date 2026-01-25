@@ -572,7 +572,7 @@ export function ExpeditionBoardPanel() {
             ) : (
               <PaperChip variant="pill" text="Yield preview unavailable" tone="neutral" />
             )}
-            {queueRareChip && <PaperChip variant="pill" text={queueRareChip} tone="success" />}
+            {queueRareChip && <PaperChip variant="pill" text={queueRareChip} tone="rare" />}
           </div>
         </div>
 
@@ -592,12 +592,13 @@ export function ExpeditionBoardPanel() {
                 <PaperCard
                   key={slotIndex}
                   variant="card"
+                  complete={isComplete}
                   className={`eqsSlotTile${isComplete ? ' eqsSlotTile--ready' : ' eqsSlotTile--active'}`}
                 >
                   <div className={'eqsSlotHeader'}>
                     <div className={'eqsSlotTitle'}>Slot {slotIndex + 1}</div>
                     {isComplete ? (
-                      <PaperStamp text="Ready" size="sm" tone="seal" />
+                      <PaperStamp text="Ready" size="sm" tone="seal" className="paperStamp--ready" />
                     ) : (
                       <span className={'eqsSlotStatus'}>In Progress</span>
                     )}

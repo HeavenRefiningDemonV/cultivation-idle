@@ -36,14 +36,14 @@ type PaperPositionClass = (typeof paperPositions)[number];
 type RewardChip = {
   id: string;
   text: string;
-  tone?: 'neutral' | 'ink' | 'success' | 'danger';
+  tone?: 'neutral' | 'ink' | 'success' | 'danger' | 'merit' | 'rare';
 };
 
 function formatRewards(bundle: RewardBundle, itemsById: Record<string, { name?: string }>): RewardChip[] {
   const entries: RewardChip[] = [];
   const currencies = bundle.currencies ?? {};
   if (currencies.gold) entries.push({ id: 'gold', text: `${currencies.gold} Gold` });
-  if (currencies.merit) entries.push({ id: 'merit', text: `${currencies.merit} Merit`, tone: 'success' });
+  if (currencies.merit) entries.push({ id: 'merit', text: `${currencies.merit} Merit`, tone: 'merit' });
   if (currencies.spiritStones) entries.push({ id: 'spiritStones', text: `${currencies.spiritStones} Spirit Stones` });
   const items = normalizeItemList(bundle.items);
   items.forEach((item) => {
@@ -323,6 +323,7 @@ export function BountyBoardPanel() {
           const bountyRewards = formatRewards(bounty.rewards, itemsById).slice(0, 3);
           const isTracked = trackedId === bounty.instanceId;
           const isSelected = selectedId === bounty.instanceId;
+          const isComplete = bounty.progress >= bounty.target;
 
           return (
             <button
@@ -337,11 +338,13 @@ export function BountyBoardPanel() {
                 variant="card"
                 interactive
                 selected={isSelected}
+                complete={isComplete}
+                claimed={bounty.claimed}
                 className="bountyPaperCard"
               >
                 <div className={'bountyPaperHeader'}>
                   <div className={'bountyPaperTitle'}>{bounty.title}</div>
-                  <PaperStamp text={difficultyLabel} size="sm" tone="ink" />
+                  <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
                 </div>
                 <div className={'bountyPaperObjective'}>{bounty.description}</div>
                 <div className={'bountyPaperProgress'}>
@@ -374,7 +377,7 @@ export function BountyBoardPanel() {
                 {trackedBounty ? (
                   <PaperStamp text="Tracked" size="sm" tone="ink" />
                 ) : primaryBounty.progress >= primaryBounty.target && !primaryBounty.claimed ? (
-                  <PaperStamp text="Ready" size="sm" tone="seal" />
+                  <PaperStamp text="Ready" size="sm" tone="seal" className="paperStamp--ready" />
                 ) : (
                   <PaperStamp text="Active" size="sm" tone="ink" />
                 )}
@@ -385,6 +388,7 @@ export function BountyBoardPanel() {
                   text={difficultyBadge[primaryBounty.difficulty] ?? primaryBounty.difficulty}
                   size="sm"
                   tone="ink"
+                  className="paperStamp--difficulty"
                 />
               </div>
               <div className={'bqsProgress'}>
@@ -474,11 +478,16 @@ export function BountyBoardPanel() {
           subtitle={`${cityName} • ${bountyKindToLabel(selectedBounty.kind)}`}
           meta={
             <div className="bountyDetailMeta">
-              <PaperStamp text={difficultyBadge[selectedBounty.difficulty]} size="sm" tone="ink" />
+              <PaperStamp
+                text={difficultyBadge[selectedBounty.difficulty]}
+                size="sm"
+                tone="ink"
+                className="paperStamp--difficulty"
+              />
               {selectedBounty.claimed ? (
-                <PaperStamp text="Claimed" size="sm" tone="seal" />
+                <PaperStamp text="Claimed" size="sm" tone="seal" className="paperStamp--claimed" />
               ) : selectedBounty.progress >= selectedBounty.target ? (
-                <PaperStamp text="Complete" size="sm" tone="seal" />
+                <PaperStamp text="Complete" size="sm" tone="seal" className="paperStamp--complete" />
               ) : trackedId === selectedBounty.instanceId ? (
                 <PaperStamp text="Tracked" size="sm" tone="ink" />
               ) : null}

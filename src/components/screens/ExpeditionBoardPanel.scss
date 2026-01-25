@@ -1,10 +1,12 @@
+@import '../../styles/paperInkTokens';
+
 .expStageRoot {
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 16px 18px 20px;
-  color: #2b2116;
+  color: var(--paper-ink, #2b2116);
   font-family: 'Georgia', 'Times New Roman', serif;
 }
 
@@ -30,28 +32,29 @@
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.02em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .expStageSub {
   font-size: 12px;
-  color: rgba(43, 33, 22, 0.75);
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.75));
 }
 
 .expStageLabel {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(43, 33, 22, 0.6);
+  color: var(--paper-ink-faint, rgba(43, 33, 22, 0.6));
 }
 
 .expStageValue {
   font-size: 14px;
   font-weight: 600;
-  color: #2b2116;
+  color: var(--paper-ink, #2b2116);
 }
 
 .expStageRareItems {
-  color: rgba(43, 33, 22, 0.8);
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.8));
   font-weight: 500;
 }
 
@@ -118,11 +121,16 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 1.2;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .expRouteDescription {
   font-size: 13px;
-  color: rgba(43, 33, 22, 0.85);
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.85));
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -138,12 +146,12 @@
 
 .expRouteItem {
   font-size: 12px;
-  color: rgba(43, 33, 22, 0.8);
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.8));
 }
 
 .expRouteRare {
   font-size: 12px;
-  color: rgba(87, 59, 31, 0.8);
+  color: var(--paper-ink-faint, rgba(87, 59, 31, 0.8));
   margin-top: auto;
 }
 

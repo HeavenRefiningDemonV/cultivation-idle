@@ -1,12 +1,14 @@
+@import '../../styles/paperInkTokens';
+
 .paperCard {
-  --paper-ink: #2b2116;
-  --paper-ink-muted: rgba(43, 33, 22, 0.7);
-  --paper-border: rgba(65, 45, 25, 0.2);
-  --paper-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
-  --paper-bg: rgba(255, 248, 235, 0.6);
-  --paper-bg-strong: rgba(255, 248, 235, 0.8);
-  --paper-bg-soft: rgba(255, 248, 235, 0.5);
-  --paper-outline: rgba(120, 72, 33, 0.4);
+  --paper-ink: var(--paper-ink, #2b2116);
+  --paper-ink-muted: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
+  --paper-border: var(--paper-border, rgba(65, 45, 25, 0.2));
+  --paper-shadow: var(--paper-shadow, 0 12px 24px rgba(15, 23, 42, 0.16));
+  --paper-bg: rgba(247, 237, 215, 0.72);
+  --paper-bg-strong: rgba(244, 230, 200, 0.85);
+  --paper-bg-soft: rgba(251, 244, 228, 0.55);
+  --paper-outline: var(--paper-outline, rgba(120, 72, 33, 0.4));
   position: relative;
   border-radius: 12px;
   padding: 12px 14px;
@@ -15,6 +17,7 @@
   border: 1px solid var(--paper-border);
   box-shadow: var(--paper-shadow);
   overflow: hidden;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .paperCard::before {
@@ -24,8 +27,18 @@
   background-image: url('../../assets/texture_overlay.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.18;
+  opacity: 0.22;
   mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.paperCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.65), transparent 55%),
+    radial-gradient(circle at bottom, rgba(43, 33, 22, 0.12), transparent 60%);
+  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -54,29 +67,46 @@
 }
 
 .paperCard--interactive:hover {
-  transform: translateY(-1px);
-  border-color: rgba(120, 72, 33, 0.45);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.2);
+  transform: translateY(-2px);
+  border-color: rgba(120, 72, 33, 0.5);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
 }
 
-.paperCard--selected {
+.paperCard--interactive:not(.paperCard--selected) {
+  filter: saturate(0.98);
+}
+
+.paperCard--selected,
+.paperCard.isSelected {
   border-color: var(--paper-outline);
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18), 0 14px 28px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18), 0 0 18px var(--paper-glow),
+    0 14px 28px rgba(15, 23, 42, 0.2);
 }
 
-.paperCard--disabled {
+.paperCard.isComplete {
+  border-color: rgba(47, 143, 102, 0.4);
+  box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.2), 0 10px 22px rgba(15, 23, 42, 0.18);
+}
+
+.paperCard.isClaimed {
+  border-color: rgba(159, 59, 46, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(159, 59, 46, 0.08);
+}
+
+.paperCard--disabled,
+.paperCard.isDisabled {
   opacity: 0.6;
   cursor: default;
 }
 
 .paperChip {
-  --chip-ink: #2b2116;
-  --chip-border: rgba(87, 59, 31, 0.2);
-  --chip-bg: rgba(255, 248, 235, 0.7);
+  --chip-ink: var(--paper-ink, #2b2116);
+  --chip-border: rgba(87, 59, 31, 0.24);
+  --chip-bg: rgba(251, 244, 228, 0.7);
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 5px 10px;
   border-radius: 999px;
   font-size: 12px;
   line-height: 1.2;
@@ -85,6 +115,8 @@
   color: var(--chip-ink);
   box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
   max-width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .paperChip--tag {
@@ -115,6 +147,12 @@
   --chip-border: rgba(34, 116, 74, 0.35);
 }
 
+.paperChip--tone-rare {
+  --chip-ink: var(--paper-rare, #b5852b);
+  --chip-border: rgba(181, 133, 43, 0.45);
+  --chip-bg: rgba(255, 246, 220, 0.85);
+}
+
 .paperChip--tone-danger {
   --chip-ink: rgba(145, 58, 37, 0.9);
   --chip-border: rgba(145, 58, 37, 0.35);
@@ -122,6 +160,37 @@
 
 .paperChip--tone-neutral {
   --chip-ink: rgba(43, 33, 22, 0.8);
+}
+
+.paperChip--tone-merit {
+  --chip-ink: var(--paper-stamp, #9f3b2e);
+  --chip-border: rgba(159, 59, 46, 0.45);
+  --chip-bg: rgba(255, 232, 224, 0.75);
+  padding-left: 18px;
+}
+
+.paperChip--tone-merit::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(159, 59, 46, 0.65);
+  border-radius: 2px;
+  transform: translateY(-50%) rotate(-8deg);
+  opacity: 0.7;
+}
+
+.paperChip--tone-rare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, transparent 70%);
+  opacity: 0.5;
+  transform: translateX(-100%);
+  animation: paperChipShimmer 4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .paperChip--clickable {
@@ -154,6 +223,27 @@
   letter-spacing: 0.08em;
   background: rgba(255, 248, 235, 0.6);
   mix-blend-mode: multiply;
+  position: relative;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.paperStamp::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.paperStamp::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.3), transparent 60%);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .paperStamp--sm {
@@ -167,11 +257,59 @@
 }
 
 .paperStamp--tone-seal {
-  --stamp-ink: rgba(128, 53, 36, 0.7);
-  --stamp-border: rgba(128, 53, 36, 0.5);
+  --stamp-ink: var(--paper-stamp, rgba(128, 53, 36, 0.7));
+  --stamp-border: var(--paper-stamp-muted, rgba(128, 53, 36, 0.5));
+  background: rgba(255, 230, 220, 0.7);
 }
 
 .paperStamp--tone-ink {
   --stamp-ink: rgba(43, 33, 22, 0.7);
   --stamp-border: rgba(43, 33, 22, 0.5);
+}
+
+.paperStamp--difficulty {
+  border-style: double;
+}
+
+.paperStamp--ready,
+.paperStamp--complete {
+  --stamp-ink: var(--paper-complete, #2f8f66);
+  --stamp-border: rgba(47, 143, 102, 0.55);
+  background: rgba(225, 247, 236, 0.7);
+}
+
+.paperStamp--claimed {
+  --stamp-ink: var(--paper-stamp, #9f3b2e);
+  --stamp-border: rgba(159, 59, 46, 0.6);
+}
+
+.paperStamp--sent {
+  --stamp-ink: rgba(43, 33, 22, 0.6);
+  --stamp-border: rgba(43, 33, 22, 0.4);
+  background: rgba(243, 239, 230, 0.8);
+}
+
+@keyframes paperChipShimmer {
+  0%,
+  65% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paperCard--interactive,
+  .paperChip--clickable {
+    transition: none;
+  }
+
+  .paperCard--interactive:hover {
+    transform: none;
+  }
+
+  .paperChip--tone-rare::after {
+    animation: none;
+  }
 }

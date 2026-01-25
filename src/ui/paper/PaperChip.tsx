@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import './paper.scss';
 
 type PaperChipVariant = 'pill' | 'tag';
-type PaperChipTone = 'neutral' | 'ink' | 'danger' | 'success';
+type PaperChipTone = 'neutral' | 'ink' | 'danger' | 'success' | 'rare' | 'merit';
 
 export interface PaperChipProps {
   variant?: PaperChipVariant;

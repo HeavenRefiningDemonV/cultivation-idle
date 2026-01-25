@@ -8,6 +8,8 @@ export interface PaperCardProps {
   variant?: PaperCardVariant;
   interactive?: boolean;
   selected?: boolean;
+  complete?: boolean;
+  claimed?: boolean;
   disabled?: boolean;
   className?: string;
   style?: CSSProperties;
@@ -18,6 +20,8 @@ export function PaperCard({
   variant = 'card',
   interactive = false,
   selected = false,
+  complete = false,
+  claimed = false,
   disabled = false,
   className,
   style,
@@ -32,6 +36,11 @@ export function PaperCard({
           'paperCard--interactive': interactive,
           'paperCard--selected': selected,
           'paperCard--disabled': disabled,
+          isInteractive: interactive,
+          isSelected: selected,
+          isComplete: complete,
+          isClaimed: claimed,
+          isDisabled: disabled,
         },
         className,
       )}
