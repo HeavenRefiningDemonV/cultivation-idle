@@ -1,19 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import './LifeStartWizardModal.scss';
+import pathEarth from '../../assets/menus/path_earth 1.png';
+import pathHeaven from '../../assets/menus/path_heaven 1.png';
+import pathMartial from '../../assets/menus/path_martial 1.png';
+import { SaveService } from '../../services/save/SaveService';
 import { useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useHeartLawStore } from '../../stores/heartLawStore';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useUIStore } from '../../stores/uiStore';
-import { SaveService } from '../../services/save/SaveService';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo';
 import type { HeartLawDef, LifePath } from '../../types';
 
-const LIFE_PATHS: { id: LifePath; name: string; desc: string }[] = [
-  { id: 'heaven', name: 'Heaven', desc: 'Focus on techniques of the heavens and spiritual insight.' },
-  { id: 'earth', name: 'Earth', desc: 'Steady and defensive methods rooted in the earth.' },
-  { id: 'martial', name: 'Martial', desc: 'Physical mastery and weapon-oriented techniques.' },
+const LIFE_PATHS: { id: LifePath; title: string; art: string; alt: string }[] = [
+  { id: 'heaven', title: 'HEAVEN', art: pathHeaven, alt: 'Heaven Path' },
+  { id: 'earth', title: 'EARTH', art: pathEarth, alt: 'Earth Path' },
+  { id: 'martial', title: 'MARTIAL', art: pathMartial, alt: 'Martial Path' },
 ];
 
 const BREATH_MODES = [
@@ -145,12 +148,12 @@ export function LifeStartWizardModal() {
         </div>
 
         {wizardStep === 1 && (
-          <div className="wizardSection">
+          <div className="wizardSection lifePathStep">
             <div className="wizardSectionHeader">
               <h3>Choose Your Life Path</h3>
               <p>This determines which manuals you can buy and which techniques you can equip later.</p>
             </div>
-            <div className="wizardCardGrid">
+            <div className="lifePathTriptych" data-ui="life-path-triptych">
               {LIFE_PATHS.map((path) => {
                 const selected = lifePath === path.id;
                 const disabled = !canChangeLifePath() && !selected;
@@ -158,13 +161,18 @@ export function LifeStartWizardModal() {
                   <button
                     key={path.id}
                     type="button"
-                    className={`wizardCard ${selected ? 'selected' : ''}`}
+                    className={`lifePathPanel ${path.id} ${selected ? 'isSelected' : ''} ${disabled ? 'isLocked' : ''}`}
                     onClick={() => setLifePath(path.id)}
                     disabled={disabled}
+                    aria-pressed={selected}
                   >
-                    <div className="wizardCardTitle">{path.name}</div>
-                    <div className="wizardCardDesc">{path.desc}</div>
-                    <div className="wizardCardMeta">{selected ? 'Selected' : disabled ? 'Locked this life' : 'Select'}</div>
+                    <div className="lifePathTitle">{path.title}</div>
+                    <img className="lifePathArt" src={path.art} alt={path.alt} draggable={false} />
+                    <div className="lifePathSelectBar">
+                      <span className="lifePathSelectText">
+                        {selected ? 'Selected' : disabled ? 'Locked this life' : 'Select'}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
