@@ -26,6 +26,11 @@
     0 0 5px white;
   -webkit-text-stroke: 0.1em white;
   paint-order: stroke;
+  max-width: 90%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ink-health-bar__hp {
@@ -46,6 +51,12 @@
     0 0 5px white;
   -webkit-text-stroke: 0.1em white;
   paint-order: stroke;
+  font-variant-numeric: tabular-nums;
+  max-width: 95%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ink-health-bar__meter {
