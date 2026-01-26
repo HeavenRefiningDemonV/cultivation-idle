@@ -17,7 +17,6 @@ import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import barLong from "../../assets/menus/bar_long.png";
 import fancyBlock from "../../assets/menus/block_fancy.png";
-import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb';
 import './CultivateScreen.scss';
@@ -37,29 +36,52 @@ export function QiProgressBar({
   pulse,
   isReady,
   rateLabel,
+  verseChapter,
+  verseComprehension,
+  verseRequirement,
+  verseTitle,
 }: {
   current: string;
   required: string;
   pulse?: boolean;
   isReady?: boolean;
   rateLabel?: string;
+  verseChapter: number;
+  verseComprehension: number;
+  verseRequirement: number;
+  verseTitle?: string;
 }) {
   const currentVal = D(current);
   const requiredVal = D(required);
   const pct = requiredVal.greaterThan(0)
     ? Math.min(100, currentVal.div(requiredVal).times(100).toNumber())
     : 0;
+  const versePct = verseRequirement > 0 ? Math.min(100, (verseComprehension / verseRequirement) * 100) : 0;
+  const verseLabel = ROMAN_NUMERALS[verseChapter - 1] ?? String(verseChapter);
   return (
     <div className={`progress-bar ${isReady ? 'progress-bar--ready' : ''}`}>
-      <img className="progress-bar-shape" src={barLong} alt="" aria-hidden="true" />
-      <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
-        <div className="qiProgressFill" style={{ width: `${pct}%` }} />
-        <div className="qiProgressLabel">
-          Qi: {formatNumber(current)} / {formatNumber(required)}
+      <div className="qiProgressFrame">
+        <img className="progress-bar-shape" src={barLong} alt="" aria-hidden="true" />
+        <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
+          <div className="qiProgressFill" style={{ width: `${pct}%` }} />
+          <div className="qiProgressLabel">
+            Qi: {formatNumber(current)} / {formatNumber(required)}
+          </div>
+          {rateLabel ? <div className="qiProgressRate">+{rateLabel}/s</div> : null}
         </div>
-        {rateLabel ? <div className="qiProgressRate">+{rateLabel}/s</div> : null}
+        {isReady ? <div className="qiProgressReady">Ready</div> : null}
       </div>
-      {isReady ? <div className="qiProgressReady">Ready</div> : null}
+      <div className="qiProgressVerse" title={verseTitle}>
+        <div className="qiProgressVerseHeader">
+          <span className="qiProgressVerseTitle">Verse {verseLabel}</span>
+          <span className="qiProgressVerseValue">
+            {formatNumber(verseComprehension)} / {formatNumber(verseRequirement)}
+          </span>
+        </div>
+        <div className="qiProgressVerseTrack" aria-hidden="true">
+          <div className="qiProgressVerseFill" style={{ width: `${versePct}%` }} />
+        </div>
+      </div>
     </div>
 
   );
@@ -166,6 +188,7 @@ export function CultivateScreen() {
 
   const activityLabel = activeActivity ? ACTIVITY_LABELS[activeActivity.type] ?? 'Busy' : 'Idle';
   const isCultivating = activeActivity?.type === 'meditate';
+  const activityTone = isCultivating ? 'active' : activeActivity ? 'busy' : 'idle';
   const headerRate = effectiveRate.toString();
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
@@ -315,21 +338,29 @@ export function CultivateScreen() {
             pulse={isCultivating}
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+            verseChapter={chapter}
+            verseComprehension={comprehension}
+            verseRequirement={nextRequirement}
+            verseTitle={verseTitle}
           />
-          <VerseMiniBar
-            chapter={chapter}
-            comprehension={comprehension}
-            requirement={nextRequirement}
-            title={verseTitle}
-          />
+          <div className="cultivationStatusBadges">
+            <span className={`cultivationStatusBadge cultivationStatusBadge--${activityTone}`}>
+              Activity: {activityLabel}
+            </span>
+            <span className="cultivationStatusBadge">Breath: {breathMode}</span>
+            <span className={`cultivationStatusBadge cultivationStatusBadge--${insight ? 'active' : 'idle'}`}>
+              Insight: {insight ? 'Active' : 'Dormant'}
+            </span>
+          </div>
           <div className="cultivationBreakthroughRow">
             <img className="cultivationBreakthroughPlate" src={fancyBlock} alt="" aria-hidden="true" />
             <button
               type="button"
-              className="button-standard cultivationBreakthroughButton"
+              className={`button-standard cultivationBreakthroughButton cultivationBreakthroughButton--${breakthroughLabel}`}
               onClick={handleBreakthroughClick}
               disabled={!canBreakthrough || isBreakingThrough}
               title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+              aria-busy={isBreakingThrough}
             >
               {breakthroughButtonLabel}
             </button>
