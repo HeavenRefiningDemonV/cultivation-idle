@@ -1,0 +1,86 @@
+.verseMiniBar {
+  position: relative;
+  width: 100%;
+  height: var(--verse-frame-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  --verse-frame-h: 28px;
+  --verse-track-h: 10px;
+  --verse-frame-scale-x: 1.9632;
+  --verse-track-inset-x: 64px;
+  --verse-track-bg: rgba(255, 255, 255, 0.07);
+  --verse-fill-a: rgba(34, 211, 238, 0.55);
+  --verse-fill-b: rgba(139, 92, 246, 0.55);
+}
+
+.verseMiniBar__frame {
+  position: absolute;
+  inset: 0;
+  background-image: url("../../assets/menus/bar_short.png");
+  background-size: calc(40% * var(--verse-frame-scale-x)) 200%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.95;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.verseMiniBar__track {
+  position: relative;
+  width: calc(50% - (var(--verse-track-inset-x) * 2));
+  height: var(--verse-track-h);
+  background: var(--verse-track-bg);
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.verseMiniBar__fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--verse-fill-a), var(--verse-fill-b));
+  transition: width 220ms ease-out;
+  border-radius: 999px;
+}
+
+.verseMiniBar__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(11, 16, 32, 0.7);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.verseMiniBar__labelText {
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.verseMiniBar__labelPct {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 520px) {
+  .verseMiniBar {
+    --verse-frame-h: 26px;
+    --verse-track-h: 9px;
+    --verse-track-inset-x: 48px;
+  }
+
+  .verseMiniBar__labelText,
+  .verseMiniBar__labelPct {
+    font-size: 10px;
+  }
+}
