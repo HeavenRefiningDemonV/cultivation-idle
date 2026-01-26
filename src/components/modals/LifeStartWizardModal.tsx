@@ -70,6 +70,18 @@ export function LifeStartWizardModal() {
   }, [lifePath, selectedHeartLawId]);
 
   useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    if (wizardStep === 1) {
+      document.body.classList.add('lifePathMode');
+      return () => {
+        document.body.classList.remove('lifePathMode');
+      };
+    }
+    document.body.classList.remove('lifePathMode');
+    return undefined;
+  }, [wizardStep]);
+
+  useEffect(() => {
     if (!autoPickChecked) {
       setAutoPickError(null);
       return;
@@ -134,27 +146,29 @@ export function LifeStartWizardModal() {
       <div className={`lifeStartWizardModal ${wizardStep === 1 ? 'lifeStartWizardModal--path' : ''}`}>
         {wizardStep === 1 ? (
           <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
-            <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
-              {LIFE_PATHS.map((path) => {
-                const selected = lifePath === path.id;
-                const disabled = !canChangeLifePath() && !selected;
-                return (
-                  <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}`}>
-                    <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
-                    <div className="lifePathPanel__title">{path.title}</div>
-                    <button
-                      type="button"
-                      className="lifePathPanel__select"
-                      onClick={() => handlePickPath(path.id)}
-                      disabled={disabled}
-                      aria-label={`Select ${path.title.toLowerCase()} path`}
-                      aria-pressed={selected}
-                    >
-                      Select
-                    </button>
-                  </div>
-                );
-              })}
+            <div className="lifePathTriptychFrame">
+              <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
+                {LIFE_PATHS.map((path) => {
+                  const selected = lifePath === path.id;
+                  const disabled = !canChangeLifePath() && !selected;
+                  return (
+                    <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}`}>
+                      <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
+                      <div className="lifePathPanel__title">{path.title}</div>
+                      <button
+                        type="button"
+                        className="lifePathPanel__select"
+                        onClick={() => handlePickPath(path.id)}
+                        disabled={disabled}
+                        aria-label={`Select ${path.title.toLowerCase()} path`}
+                        aria-pressed={selected}
+                      >
+                        Select
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         ) : (
