@@ -120,27 +120,40 @@
 }
 
 .verseTimeline {
-  display: flex;
+  --verse-node-size: 58px;
+  --verse-line-thickness: 2px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   margin-top: 8px;
+  padding: 8px 6px;
+}
+
+.verseTimeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 50%;
+  height: var(--verse-line-thickness);
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(160, 255, 224, 0.45), rgba(90, 160, 255, 0.2));
+  z-index: 0;
 }
 
 .verseNodeWrap {
   display: flex;
+  justify-content: center;
   align-items: center;
-  flex: 1;
-}
-
-.verseConnector {
-  height: 2px;
-  flex: 1;
-  background: linear-gradient(90deg, rgba(160, 255, 224, 0.6), rgba(90, 160, 255, 0.2));
+  position: relative;
+  z-index: 1;
 }
 
 .verseNode {
-  width: 58px;
-  height: 58px;
+  width: var(--verse-node-size);
+  height: var(--verse-node-size);
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.2);
   display: flex;
@@ -176,6 +189,29 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@media (max-width: 720px) {
+  .verseTimeline {
+    --verse-node-size: 50px;
+    gap: 10px;
+  }
+
+  .verseNode {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 520px) {
+  .verseTimeline {
+    --verse-node-size: 44px;
+    gap: 8px;
+    padding: 6px 4px;
+  }
+
+  .verseNode {
+    font-size: 10px;
   }
 }
 

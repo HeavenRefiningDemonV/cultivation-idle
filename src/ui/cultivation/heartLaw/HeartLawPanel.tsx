@@ -120,7 +120,6 @@ function VerseTimeline({
         const current = currentVerse === node.chapter;
         return (
           <div key={node.chapter} className="verseNodeWrap">
-            {index > 0 ? <div className="verseConnector" /> : null}
             <div
               className={`verseNode ${unlocked ? 'verseNode--unlocked' : ''} ${current ? 'verseNode--current' : ''}`}
               title={node.summary}
