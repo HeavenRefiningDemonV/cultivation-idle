@@ -273,32 +273,30 @@
   color: rgba(226, 232, 240, 0.7);
 }
 
-.cultBarsStack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-  width: 100%;
+.qiVerseAnchor {
+  position: relative;
+  display: inline-block;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-bottom: 34px;
   pointer-events: none;
 }
 
-.cultBarsStack .progress-bar {
+.qiVerseAnchor .progress-bar {
   pointer-events: auto;
 }
 
-.cultBarsStack .verseMiniBarWrap,
-.cultBarsStack [data-ui="verse-mini-bar"] {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
+.qiVerseAnchor .verseMiniBarWrap,
+.qiVerseAnchor [data-ui="verse-mini-bar"] {
+  position: absolute !important;
+  left: 50% !important;
+  top: calc(100% + 8px) !important;
+  transform: translateX(-50%) !important;
   right: auto !important;
   bottom: auto !important;
-  transform: none !important;
-  margin: -2px 0 0 !important;
-  align-self: center;
+  margin: 0 !important;
   pointer-events: auto;
-  z-index: 5;
+  z-index: 10;
 }
 
 .cultivationActionStack {

@@ -319,7 +319,7 @@ export function CultivateScreen() {
               <span className="cultivationRealmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
             </div>
           </div>
-          <div className="cultBarsStack">
+          <div className="qiVerseAnchor" data-ui="qi-verse-anchor">
             <QiProgressBar
               current={qi}
               required={breakthroughCost || '0'}
