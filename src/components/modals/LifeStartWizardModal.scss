@@ -75,6 +75,10 @@
   padding: 16px;
 }
 
+.wizardSection--lifePath {
+  padding: 16px 14px 12px;
+}
+
 .wizardSectionHeader h3 {
   margin: 0 0 4px;
   font-size: 18px;
@@ -83,6 +87,10 @@
 .wizardSectionHeader p {
   margin: 0;
   color: #b6c1d4;
+}
+
+.wizardSectionHeader--lifePath {
+  margin-bottom: 12px;
 }
 
 .wizardCardGrid {
@@ -144,6 +152,155 @@
   color: #8fa3c7;
 }
 
+.lifePathArtGrid {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
+  min-height: 460px;
+  margin: 12px 0 6px;
+}
+
+.lifePathArtPanel {
+  --path-accent: rgba(126, 174, 255, 0.55);
+  flex: 1 1 0;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(10, 12, 16, 0.75);
+  background: rgba(242, 236, 226, 0.95);
+  box-shadow: 0 10px 26px rgba(7, 9, 12, 0.35);
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(15, 12, 8, 0.92);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+.lifePathArtPanel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.2));
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.lifePathArtPanel:hover:not(:disabled) {
+  border-color: color-mix(in oklab, var(--path-accent) 65%, rgba(12, 12, 14, 0.9));
+  box-shadow: 0 0 0 2px rgba(16, 20, 28, 0.35), 0 0 26px color-mix(in oklab, var(--path-accent) 65%, transparent 35%);
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+}
+
+.lifePathArtPanel:focus-visible {
+  outline: 3px solid rgba(255, 242, 220, 0.95);
+  outline-offset: 3px;
+}
+
+.lifePathArtPanel.selected {
+  border-color: color-mix(in oklab, var(--path-accent) 75%, rgba(12, 12, 14, 0.9));
+  box-shadow: 0 0 0 2px rgba(10, 12, 16, 0.7), 0 0 32px color-mix(in oklab, var(--path-accent) 70%, transparent 30%);
+}
+
+.lifePathArtPanel.selected .lifePathArtCta {
+  background: rgba(250, 244, 232, 0.98);
+  box-shadow: 0 6px 14px rgba(13, 10, 6, 0.22);
+}
+
+.lifePathArtPanel:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  filter: grayscale(0.15);
+}
+
+.lifePathArtPanel[data-path='heaven'] {
+  --path-accent: rgba(131, 172, 255, 0.7);
+}
+
+.lifePathArtPanel[data-path='earth'] {
+  --path-accent: rgba(220, 184, 96, 0.75);
+}
+
+.lifePathArtPanel[data-path='martial'] {
+  --path-accent: rgba(216, 110, 110, 0.75);
+}
+
+.lifePathArtPanel[data-path='heaven'] .lifePathArtBg {
+  background: linear-gradient(160deg, rgba(188, 212, 255, 0.85), rgba(220, 231, 255, 0.6));
+}
+
+.lifePathArtPanel[data-path='earth'] .lifePathArtBg {
+  background: linear-gradient(160deg, rgba(246, 223, 168, 0.9), rgba(255, 243, 210, 0.6));
+}
+
+.lifePathArtPanel[data-path='martial'] .lifePathArtBg {
+  background: linear-gradient(160deg, rgba(247, 182, 182, 0.85), rgba(255, 216, 216, 0.6));
+}
+
+.lifePathArtBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.lifePathArtImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.lifePathArtTopTitle {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  font-family: 'Julee', cursive;
+  font-size: clamp(36px, 4vw, 52px);
+  letter-spacing: 0.08em;
+  color: rgba(24, 16, 12, 0.92);
+  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.65);
+}
+
+.lifePathArtFooter {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.lifePathArtCta {
+  width: min(72%, 240px);
+  padding: 12px 0;
+  text-align: center;
+  font-family: 'Julee', cursive;
+  font-size: 20px;
+  color: rgba(24, 16, 10, 0.95);
+  background: rgba(245, 240, 230, 0.96);
+  border: 2px solid rgba(17, 14, 10, 0.9);
+  box-shadow: 0 4px 12px rgba(13, 10, 6, 0.2);
+}
+
+.lifePathArtDescription {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 .wizardFooter {
   display: flex;
   justify-content: space-between;
@@ -187,6 +344,15 @@
 @media (max-width: 768px) {
   .lifeStartWizardModal {
     max-height: 100vh;
+  }
+
+  .lifePathArtGrid {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .lifePathArtPanel {
+    min-height: 320px;
   }
 
   .wizardCardGrid {
