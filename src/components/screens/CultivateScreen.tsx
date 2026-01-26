@@ -319,23 +319,31 @@ export function CultivateScreen() {
               <span className="cultivationRealmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
             </div>
           </div>
-          <div className="qiVerseAnchor" data-ui="qi-verse-anchor">
-            <QiProgressBar
-              current={qi}
-              required={breakthroughCost || '0'}
-              pulse={isCultivating}
-              isReady={canBreakthrough}
-              rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
-            />
-            <div className="verseMiniBarWrap" data-ui="verse-mini-bar">
-              <VerseMiniBar
-                chapter={chapter}
-                comprehension={comprehension}
-                requirement={nextRequirement}
-                title={verseTitle}
-              />
-            </div>
-          </div>
+          {(() => {
+            const debug = false;
+            return (
+              <div
+                className={`cultBarsCluster${debug ? ' debugOutline' : ''}`}
+                data-ui="bars-cluster"
+              >
+                <div data-ui="qi-bar">
+                  <QiProgressBar
+                    current={qi}
+                    required={breakthroughCost || '0'}
+                    pulse={isCultivating}
+                    isReady={canBreakthrough}
+                    rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+                  />
+                </div>
+                <VerseMiniBar
+                  chapter={chapter}
+                  comprehension={comprehension}
+                  requirement={nextRequirement}
+                  title={verseTitle}
+                />
+              </div>
+            );
+          })()}
           <div className="cultivationActionStack">
             <button
               type="button"

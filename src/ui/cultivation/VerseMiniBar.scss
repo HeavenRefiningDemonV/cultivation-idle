@@ -15,6 +15,16 @@
   --verse-fill-b: rgba(139, 92, 246, 0.55);
 }
 
+[data-ui="verse-bar"] {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+
 .verseMiniBar__frame {
   grid-area: stack;
   width: 100%;

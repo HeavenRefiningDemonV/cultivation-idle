@@ -20,7 +20,7 @@ export function VerseMiniBar({ chapter, comprehension, requirement, className, t
   const progressText = `${comprehension.toFixed(1)} / ${requirement.toFixed(1)}`;
 
   return (
-    <div className={containerClassName} role="img" aria-label={ariaLabel} title={title}>
+    <div className={containerClassName} role="img" aria-label={ariaLabel} title={title} data-ui="verse-bar">
       <img className="verseMiniBar__frame" src={barShort} alt="" aria-hidden="true" />
       <div className="verseMiniBar__track" aria-hidden="true">
         <div className="verseMiniBar__trackInner">
