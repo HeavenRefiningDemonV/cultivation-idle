@@ -9,6 +9,9 @@ import { SaveService } from '../../services/save/SaveService';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo';
 import type { HeartLawDef, LifePath } from '../../types';
+import pathHeaven from '../../assets/menus/path_heaven 1.png';
+import pathEarth from '../../assets/menus/path_earth 1.png';
+import pathMartial from '../../assets/menus/path_martial 1.png';
 
 const LIFE_PATHS: { id: LifePath; name: string; desc: string }[] = [
   { id: 'heaven', name: 'Heaven', desc: 'Focus on techniques of the heavens and spiritual insight.' },
@@ -145,26 +148,33 @@ export function LifeStartWizardModal() {
         </div>
 
         {wizardStep === 1 && (
-          <div className="wizardSection">
+          <div className="wizardSection wizardSection--lifePath">
             <div className="wizardSectionHeader">
               <h3>Choose Your Life Path</h3>
               <p>This determines which manuals you can buy and which techniques you can equip later.</p>
             </div>
-            <div className="wizardCardGrid">
+            <div className="lifePathTriptych" data-ui="life-path-triptych">
               {LIFE_PATHS.map((path) => {
                 const selected = lifePath === path.id;
                 const disabled = !canChangeLifePath() && !selected;
+                const art =
+                  path.id === 'heaven' ? pathHeaven : path.id === 'earth' ? pathEarth : pathMartial;
+                const label = path.id.toUpperCase();
                 return (
                   <button
                     key={path.id}
                     type="button"
-                    className={`wizardCard ${selected ? 'selected' : ''}`}
+                    className={`lifePathPanel lifePathPanel--${path.id} ${selected ? 'isSelected' : ''}`}
                     onClick={() => setLifePath(path.id)}
                     disabled={disabled}
                   >
-                    <div className="wizardCardTitle">{path.name}</div>
-                    <div className="wizardCardDesc">{path.desc}</div>
-                    <div className="wizardCardMeta">{selected ? 'Selected' : disabled ? 'Locked this life' : 'Select'}</div>
+                    <div className="lifePathTitle">{label}</div>
+                    <img className="lifePathArt" src={art} alt={`${path.name} Path`} draggable={false} />
+                    <div className="lifePathSelectBar">
+                      <span className="lifePathSelectText">
+                        {selected ? 'Selected' : disabled ? 'Locked this life' : 'Select'}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
