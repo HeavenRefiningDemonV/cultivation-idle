@@ -273,6 +273,10 @@
   color: rgba(226, 232, 240, 0.7);
 }
 
+.cultivationVerseMiniBar {
+  margin-top: -6px;
+}
+
 .cultivationActionStack {
   position: relative;
   width: clamp(320px, 44vw, 520px);

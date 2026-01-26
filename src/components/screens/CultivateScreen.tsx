@@ -331,6 +331,7 @@ export function CultivateScreen() {
             comprehension={comprehension}
             requirement={nextRequirement}
             title={verseTitle}
+            className="cultivationVerseMiniBar"
           />
           <div className="cultivationActionStack">
             <button
