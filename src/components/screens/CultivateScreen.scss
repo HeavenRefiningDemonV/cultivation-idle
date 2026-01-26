@@ -153,13 +153,16 @@
   position: absolute;
   right: 12px;
   top: -8px;
-  background: rgba(234, 179, 8, 0.9);
+  background: rgba(234, 179, 8, 0.92);
   color: #2d1b06;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border: 1px solid rgba(92, 63, 14, 0.45);
 }
 /**/
 
@@ -270,46 +273,56 @@
   color: rgba(226, 232, 240, 0.7);
 }
 
-.cultivationBreakthroughRow {
+.cultivationActionStack {
   position: relative;
   width: clamp(320px, 44vw, 520px);
-  aspect-ratio: 1280 / 720;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-top: var(--cultivation-stack-gap-2);
+  gap: 8px;
+  margin-top: 6px;
   z-index: 2;
 }
 
-.cultivationBreakthroughPlate {
-  position: absolute;
-  inset: 010;
-  width: 0%;
-  height: 0%;
-  object-fit: fill;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.cultivationBreakthroughButton {
-  z-index: 1;
-  width: min(72%, 420px);
+.cultivationActionButton {
+  width: min(78%, 440px);
   height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
-  padding: 0 14px;
-  background: transparent;
   color: #0b1020;
+  background: rgba(208, 208, 208, 0.92);
+  border: 2px solid rgba(15, 23, 42, 0.28);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.cultivationActionButton:hover,
+.cultivationActionButton:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+  background: rgba(219, 219, 219, 0.98);
+}
+
+.cultivationActionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.cultivationActionButton--secondary {
+  width: min(62%, 360px);
+  height: 36px;
+  font-size: 14px;
+  border-radius: 10px;
 }
 
 .cultivationBreakthroughHint {
-  position: absolute;
-  bottom: 10px;
   font-size: 12px;
   font-weight: 600;
   color: rgba(11, 16, 32, 0.7);
   text-align: center;
-  width: 100%;
 }
 
 .breakthrough-effects {
@@ -335,7 +348,7 @@
     --cultHudSidePad: 60px;
   }
 
-  .cultivationBreakthroughRow {
+  .cultivationActionStack {
     width: clamp(300px, 56vw, 460px);
   }
 }
@@ -349,13 +362,35 @@
     --qi-track-inset-x: 48px;
   }
 
-  .cultivationBreakthroughButton {
+  .cultivationActionButton {
     width: 86%;
     font-size: 15px;
   }
 
+  .cultivationActionButton--secondary {
+    width: 72%;
+    font-size: 13px;
+  }
+
   .cultivationRealmTag {
     max-width: 44%;
+  }
+}
+
+.progress-bar--ready .qiProgressReady {
+  animation: qiReadyPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes qiReadyPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  50% {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(234, 179, 8, 0.45);
   }
 }
 

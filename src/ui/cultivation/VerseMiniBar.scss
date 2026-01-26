@@ -1,45 +1,78 @@
 .verseMiniBar {
   position: relative;
-  width: 100%;
+  width: clamp(260px, 45vw, 520px);
   height: var(--verse-frame-h);
-  display: flex;
+  display: grid;
+  grid-template-areas: "stack";
   align-items: center;
-  justify-content: center;
-  opacity: 0.9;
-  --verse-frame-h: 28px;
-  --verse-track-h: 10px;
-  --verse-frame-scale-x: 1.9632;
-  --verse-track-inset-x: 64px;
-  --verse-track-bg: rgba(255, 255, 255, 0.07);
+  justify-items: center;
+  opacity: 0.92;
+  --verse-frame-h: 30px;
+  --verse-track-h: 12px;
+  --verse-track-inset-x: 58px;
+  --verse-track-bg: rgba(255, 255, 255, 0.08);
   --verse-fill-a: rgba(34, 211, 238, 0.55);
   --verse-fill-b: rgba(139, 92, 246, 0.55);
 }
 
 .verseMiniBar__frame {
-  position: absolute;
-  inset: 0;
-  background-image: url("../../assets/menus/bar_short.png");
-  background-size: calc(40% * var(--verse-frame-scale-x)) 200%;
-  background-repeat: no-repeat;
-  background-position: center;
+  grid-area: stack;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
   opacity: 0.95;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
 }
 
 .verseMiniBar__track {
+  grid-area: stack;
   position: relative;
-  width: calc(50% - (var(--verse-track-inset-x) * 2));
+  width: calc(100% - (var(--verse-track-inset-x) * 2));
   height: var(--verse-track-h);
-  background: var(--verse-track-bg);
-  border-radius: 999px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1;
 }
 
+.verseMiniBar__trackInner {
+  width: 100%;
+  height: 100%;
+  background: var(--verse-track-bg);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.verseMiniBar__label {
+  grid-area: stack;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(11, 16, 32, 0.72);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.verseMiniBar__labelText {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.verseMiniBar__labelValue {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(11, 16, 32, 0.6);
+}
+
 .verseMiniBar__fill {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 0;
   height: 100%;
   background: linear-gradient(90deg, var(--verse-fill-a), var(--verse-fill-b));
@@ -47,40 +80,16 @@
   border-radius: 999px;
 }
 
-.verseMiniBar__label {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(11, 16, 32, 0.7);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-  z-index: 3;
-  pointer-events: none;
-}
-
-.verseMiniBar__labelText {
-  text-transform: uppercase;
-  font-size: 11px;
-}
-
-.verseMiniBar__labelPct {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-}
-
 @media (max-width: 520px) {
   .verseMiniBar {
+    width: clamp(220px, 65vw, 420px);
     --verse-frame-h: 26px;
     --verse-track-h: 9px;
-    --verse-track-inset-x: 48px;
+    --verse-track-inset-x: 44px;
   }
 
   .verseMiniBar__labelText,
-  .verseMiniBar__labelPct {
+  .verseMiniBar__labelValue {
     font-size: 10px;
   }
 }

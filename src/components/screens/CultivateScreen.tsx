@@ -16,7 +16,6 @@ import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import barLong from "../../assets/menus/bar_long.png";
-import fancyBlock from "../../assets/menus/block_fancy.png";
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb';
@@ -85,6 +84,8 @@ export function CultivateScreen() {
   const pathPerks = useGameStore((state) => state.pathPerks);
 
   const activeActivity = useActivityStore((state) => state.active);
+  const startActivity = useActivityStore((state) => state.startActivity);
+  const stopActivity = useActivityStore((state) => state.stopActivity);
   const breathMode = useCultivationStore((state) => state.breathMode);
   const insight = useCultivationStore((state) => state.insight);
   const chapter = useCultivationStore((state) => state.chapter);
@@ -200,6 +201,15 @@ export function CultivateScreen() {
     breakthroughTimeoutsRef.current.push(startTimeout);
 
   }, [canBreakthrough, isBreakingThrough, breakthrough]);
+
+  const handleCultivationToggle = useCallback(() => {
+    if (isCultivating) {
+      stopActivity('cultivation-button-stop');
+      return;
+    }
+
+    startActivity('meditate', undefined, 'cultivation-button-start');
+  }, [isCultivating, startActivity, stopActivity]);
 
   useEffect(() => {
     return () => {
@@ -322,18 +332,26 @@ export function CultivateScreen() {
             requirement={nextRequirement}
             title={verseTitle}
           />
-          <div className="cultivationBreakthroughRow">
-            <img className="cultivationBreakthroughPlate" src={fancyBlock} alt="" aria-hidden="true" />
+          <div className="cultivationActionStack">
             <button
               type="button"
-              className="button-standard cultivationBreakthroughButton"
+              className="button-standard cultivationActionButton cultivationActionButton--primary"
               onClick={handleBreakthroughClick}
               disabled={!canBreakthrough || isBreakingThrough}
               title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
             >
               {breakthroughButtonLabel}
             </button>
-            <div className="cultivationBreakthroughHint">{breakthroughRequirementLabel}</div>
+            {!canBreakthrough ? (
+              <div className="cultivationBreakthroughHint">{breakthroughRequirementLabel}</div>
+            ) : null}
+            <button
+              type="button"
+              className="button-standard cultivationActionButton cultivationActionButton--secondary"
+              onClick={handleCultivationToggle}
+            >
+              {isCultivating ? 'Stop Cultivation' : 'Start Cultivation'}
+            </button>
           </div>
         </div>
       </div>
