@@ -278,7 +278,7 @@
   display: inline-block;
   left: 50%;
   transform: translateX(-50%);
-  padding-bottom: 26px;
+  padding-bottom: 18px;
   pointer-events: none;
 }
 
@@ -290,7 +290,7 @@
 .qiVerseAnchor [data-ui="verse-mini-bar"] {
   position: absolute !important;
   left: 50% !important;
-  top: calc(100% - 6px) !important;
+  top: calc(100% - 18px) !important;
   transform: translateX(-50%) !important;
   right: auto !important;
   bottom: auto !important;
