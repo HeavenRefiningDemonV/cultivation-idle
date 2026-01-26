@@ -44,17 +44,17 @@
 .ink-combat-shell__close {
   border: none;
   background: transparent;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   font-weight: 700;
-  color: #111;
+  color: black;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1;
   padding: 0;
   position: absolute;
-  right: 10px;
-  top: 10px;
+  right: 0;
+  top: 0;
 }
 
 .ink-combat-shell__section {

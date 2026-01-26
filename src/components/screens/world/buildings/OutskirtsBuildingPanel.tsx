@@ -90,6 +90,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   );
 
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
+  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const setSettings = useUIStore((state) => state.setSettings);
   const uiSettings = useUIStore(
     useShallow((state) => ({
@@ -308,7 +309,8 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       <InkCombatShell
         title="Outskirts Combat"
         subtitle={isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
-        sidebar={
+        onClose={closeWorldBuildingModal}
+        leftSidebar={
           <>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__actions">
@@ -434,7 +436,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
             </div>
           </>
         }
-        main={
+        stage={
           <div className="outskirts-combat__stage" ref={combatMainRef}>
             <div className="outskirts-combat__healthbars">
               <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />

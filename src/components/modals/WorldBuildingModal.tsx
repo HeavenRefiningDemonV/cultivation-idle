@@ -115,6 +115,8 @@ export function WorldBuildingModal({
     }
   }
 
+  const showShellClose = buildingKey === 'outskirts' || buildingKey === 'gateTrial';
+
   return (
     <Modal
       open={open}
@@ -124,9 +126,11 @@ export function WorldBuildingModal({
       ariaLabel={title}
     >
       {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
-      <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-        ✕
-      </button>
+      {!showShellClose ? (
+        <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
+          ✕
+        </button>
+      ) : null}
       <div className="worldBuildingBody">{content}</div>
     </Modal>
   );

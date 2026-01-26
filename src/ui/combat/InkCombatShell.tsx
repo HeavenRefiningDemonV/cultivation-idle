@@ -4,13 +4,13 @@ import './InkCombatShell.scss';
 interface InkCombatShellProps {
   title: string;
   subtitle?: string;
-  sidebar: ReactNode;
-  main: ReactNode;
+  leftSidebar: ReactNode;
+  stage: ReactNode;
   onClose?: () => void;
   className?: string;
 }
 
-export function InkCombatShell({ title, subtitle, sidebar, main, onClose, className }: InkCombatShellProps) {
+export function InkCombatShell({ title, subtitle, leftSidebar, stage, onClose, className }: InkCombatShellProps) {
   return (
     <div className={`ink-combat-shell${className ? ` ${className}` : ''}`}>
       <div className="ink-combat-shell__body">
@@ -26,9 +26,9 @@ export function InkCombatShell({ title, subtitle, sidebar, main, onClose, classN
               </button>
             ) : null}
           </div>
-          {sidebar}
+          {leftSidebar}
         </aside>
-        <main className="ink-combat-shell__main">{main}</main>
+        <main className="ink-combat-shell__main">{stage}</main>
       </div>
     </div>
   );

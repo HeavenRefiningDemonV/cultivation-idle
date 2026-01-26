@@ -21,6 +21,15 @@ interface GateTrialBuildingPanelProps {
   cityId: string;
 }
 
+const SEGMENT_COUNT = 14;
+
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  if (value < 0) return 0;
+  if (value > 1) return 1;
+  return value;
+}
+
 export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const trialsById = useContentStore((state) => state.maps.trialsById);
@@ -34,7 +43,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
 
   const activeActivity = useActivityStore((state) => state.active);
-  const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
 
   const { combatContext, exitCombat, currentEnemy, playerHP, playerMaxHP, enemyHP, enemyMaxHP, combatLog } =
@@ -52,6 +60,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     );
   const openCombatPreview = useUIStore((state) => state.openCombatPreview);
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
+  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
@@ -86,6 +95,9 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     : 'Awaiting trial challenge…';
   const displayEnemyName = activeEnemy?.name ?? trialBossName ?? 'Trial Guardian';
   const visibleLogEntries = combatLog.slice(-6);
+  const trialAttempts = trialProgress?.attempts ?? 0;
+  const trialProgressRatio = clamp01(trialAttempts / Math.max(1, trialFailSafeThreshold));
+  const filledSegments = Math.floor(trialProgressRatio * SEGMENT_COUNT);
 
   const trialFailSafeCost = useMemo(() => {
     const normalize = (value: unknown) => {
@@ -188,9 +200,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   return (
     <div className={'worldScreenPlaceholder'}>
       <InkCombatShell
-        title={trialDef.name ?? 'Gate Trial'}
+        title="Gate Trial"
         subtitle={trialSubtitle}
-        sidebar={
+        onClose={closeWorldBuildingModal}
+        leftSidebar={
           <>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__actions">
@@ -223,7 +236,27 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               </div>
             </div>
             <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Trial Status</div>
+              <div className="ink-combat-shell__section-title">Trial Progress</div>
+              <div className="ink-combat-shell__meter">
+                <div className="ink-combat-shell__segments">
+                  {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
+                    const filled = idx < filledSegments;
+                    return (
+                      <div
+                        key={idx}
+                        className={`ink-combat-shell__segment${filled ? ' ink-combat-shell__segment--filled' : ''}`}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="ink-combat-shell__meter-text">
+                  {trialAttempts} / {trialFailSafeThreshold}
+                </div>
+              </div>
+            </div>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Combat Options</div>
+              <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
               <div className="ink-combat-shell__stat-line">Eligibility: {trialEligibilityRule}</div>
               <div className="ink-combat-shell__stat-line">
                 Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
@@ -231,6 +264,9 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               <div className="ink-combat-shell__stat-line">
                 Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
               </div>
+            </div>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Run Options</div>
               <div className="ink-combat-shell__stat-line">Activity: {isTrialActive ? 'Active' : 'Inactive'}</div>
             </div>
             <div className="ink-combat-shell__section ink-combat-shell__section--fill">
@@ -249,7 +285,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             </div>
           </>
         }
-        main={
+        stage={
           <div className="outskirts-combat__stage">
             <div className="outskirts-combat__healthbars">
               <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
