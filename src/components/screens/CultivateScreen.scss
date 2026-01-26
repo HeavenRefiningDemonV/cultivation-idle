@@ -273,16 +273,32 @@
   color: rgba(226, 232, 240, 0.7);
 }
 
-.cultivateHudBars {
+.cultBarsStack {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  pointer-events: none;
 }
 
-.cultivateHudBars .verseMiniBar {
-  margin-top: -2px;
+.cultBarsStack .progress-bar {
+  pointer-events: auto;
+}
+
+.cultBarsStack .verseMiniBarWrap,
+.cultBarsStack [data-ui="verse-mini-bar"] {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
   align-self: center;
+  pointer-events: auto;
+  z-index: 5;
 }
 
 .cultivationActionStack {
