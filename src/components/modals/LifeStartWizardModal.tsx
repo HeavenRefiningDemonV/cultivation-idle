@@ -120,9 +120,46 @@ export function LifeStartWizardModal() {
     SaveService.save();
   };
 
+  const handlePickPath = (pathId: LifePath) => {
+    setLifePath(pathId);
+    setWizardStep(2);
+  };
+
   const hasPath = Boolean(lifePath);
   const hasHeartLaw = Boolean(selectedHeartLawId);
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
+
+  if (wizardStep === 1) {
+    return (
+      <div className="lifeStartWizardOverlay">
+        <div className="lifeStartWizardModal lifeStartWizardModal--pathOnly">
+          <div className="newLifePathOnly" data-ui="new-life-path-only">
+            <div className="pathTriptych" role="group" aria-label="Choose your Life Path">
+              {LIFE_PATHS.map((path) => {
+                const selected = lifePath === path.id;
+                const disabled = !canChangeLifePath() && !selected;
+                return (
+                  <button
+                    key={path.id}
+                    type="button"
+                    className={`pathPanel pathPanel--${path.id} ${selected ? 'isSelected' : ''}`}
+                    onClick={() => handlePickPath(path.id)}
+                    disabled={disabled}
+                    aria-label={`Select ${path.title.toLowerCase()} path`}
+                    aria-pressed={selected}
+                  >
+                    <img className="pathPanel__art" src={path.art} alt={path.alt} draggable={false} />
+                    <div className="pathPanel__title">{path.title}</div>
+                    <div className="pathPanel__cta">Select</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="lifeStartWizardOverlay">
@@ -146,50 +183,6 @@ export function LifeStartWizardModal() {
             <div className="wizardStepLabel">Breath Focus</div>
           </div>
         </div>
-
-        {wizardStep === 1 && (
-          <div className="wizardSection lifePathStep">
-            <div className="wizardSectionHeader">
-              <h3>Choose Your Life Path</h3>
-              <p>This determines which manuals you can buy and which techniques you can equip later.</p>
-            </div>
-            <div className="lifePathTriptych" data-ui="life-path-triptych">
-              {LIFE_PATHS.map((path) => {
-                const selected = lifePath === path.id;
-                const disabled = !canChangeLifePath() && !selected;
-                return (
-                  <button
-                    key={path.id}
-                    type="button"
-                    className={`lifePathPanel ${path.id} ${selected ? 'isSelected' : ''} ${disabled ? 'isLocked' : ''}`}
-                    onClick={() => setLifePath(path.id)}
-                    disabled={disabled}
-                    aria-pressed={selected}
-                  >
-                    <div className="lifePathTitle">{path.title}</div>
-                    <img className="lifePathArt" src={path.art} alt={path.alt} draggable={false} />
-                    <div className="lifePathSelectBar">
-                      <span className="lifePathSelectText">
-                        {selected ? 'Selected' : disabled ? 'Locked this life' : 'Select'}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="wizardFooter">
-              <div />
-              <button
-                type="button"
-                className="button-primary"
-                onClick={() => setWizardStep(2)}
-                disabled={!hasPath}
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        )}
 
         {wizardStep === 2 && (
           <div className="wizardSection">
