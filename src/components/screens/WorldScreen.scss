@@ -300,6 +300,11 @@
   */
 }
 
+.worldScreenPlaceholder--gate-trial {
+  height: 100%;
+  display: flex;
+}
+
 .worldScreenPlaceholderHeader {
   display: flex;
   justify-content: space-between;

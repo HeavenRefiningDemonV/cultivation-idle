@@ -223,7 +223,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
+    <div className="worldScreenPlaceholder worldScreenPlaceholder--gate-trial">
       <InkCombatShell
         title="Gate Trial"
         subtitle={trialSubtitle}
