@@ -7,15 +7,13 @@ import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
 import { useUIStore } from '../../../../stores/uiStore';
 import { pickEnemyFromPool, resolveModuleRef } from '../worldUtils';
 import cultivatorFight from "../../../../assets/onscreen/cultivator_backshots.png"
-import barShort from "../../../../assets/menus/bar_short.png";
 import { hpPercent } from '../../../../systems/combat/minibarModel';
 import { formatNumber } from '../../../../utils/numbers';
 import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles';
+import { InkCombatShell } from '../../../../ui/combat/InkCombatShell';
+import { InkHealthBar } from '../../../../ui/combat/InkHealthBar';
 
-import forestRabbit from "../../../../assets/enemies/forestrabbit.png";
-import spiritDeer from "../../../../assets/enemies/spiritdeer.png";
 import wildBoar from "../../../../assets/enemies/widboar.png";
-import wolfPup from "../../../../assets/enemies/wolfpup.png";
 
 import "./CombatStyles.scss";
 
@@ -120,6 +118,8 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const enemyHpLabel = currentEnemy
     ? `${formatNumber(enemyHP)} / ${formatNumber(enemyMaxHP)} (${enemyHpPct.toFixed(1)}%)`
     : 'Waiting for next fight…';
+  const playerBarPercent = currentEnemy ? playerHpPct : 100;
+  const enemyName = currentEnemy?.name ?? bossName ?? 'No active enemy';
   const visibleLogEntries = combatLog.slice(-6);
   const killsSinceBoss = outskirtsProgress?.killsSinceBoss ?? 0;
   const killsToBoss = outskirtsDef?.killsToBoss ?? 1;
@@ -305,185 +305,172 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
 
   return (
     <div className={'worldScreenPlaceholder'}>
-      <div className="combat-div">
-
-        <div className="combat-side-panel">
-          <div className="combat-side-panel__section">
-            <div className="combat-side-panel__title">Outskirts Combat</div>
-            <div className="combat-side-panel__subtitle">
-              {isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
-            </div>
-            <div className="combat-side-panel__actions">
-              <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>
-                Start
-              </button>
-              <button
-                className="button-standard button-standard--ghost"
-                onClick={handleStopOutskirts}
-                disabled={!isOutskirtsActive}
-              >
-                Stop
-              </button>
-            </div>
-          </div>
-          <div className="combat-side-panel__section combat-side-panel__section--menu">
-            <div className="combat-side-panel__title">Boss Cadence</div>
-            <div className="combat-side-panel__meter">
-              <div className="combat-side-panel__segments">
-                {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
-                  const filled = idx < filledSegments;
-                  return (
-                    <div
-                      key={idx}
-                      className={`combat-side-panel__segment${filled ? ' combat-side-panel__segment--filled' : ''}`}
-                    />
-                  );
-                })}
-              </div>
-              <div className="combat-side-panel__meter-text">
-                {killsSinceBoss} / {killsToBoss}
+      <InkCombatShell
+        title="Outskirts Combat"
+        subtitle={isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
+        sidebar={
+          <>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__actions">
+                <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>
+                  Start
+                </button>
+                <button
+                  className="button-standard button-standard--ghost"
+                  onClick={handleStopOutskirts}
+                  disabled={!isOutskirtsActive}
+                >
+                  Stop
+                </button>
               </div>
             </div>
-          </div>
-          <div className="combat-side-panel__section combat-side-panel__section--menu">
-            <div className="combat-side-panel__title">Combat Options</div>
-            <div className="combat-side-panel__controls">
-              <label className="combat-side-panel__control">
-                <span className="combat-side-panel__control-label">AI Profile</span>
-                <select
-                  value={uiSettings.profile}
-                  onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
-                >
-                  {AI_PROFILE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="combat-side-panel__control">
-                <span className="combat-side-panel__control-label">Preferred target</span>
-                <select
-                  value={uiSettings.preferredTarget}
-                  onChange={(e) =>
-                    setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })
-                  }
-                >
-                  <option value="trash">Trash</option>
-                  <option value="elite">Elite</option>
-                  <option value="boss">Boss</option>
-                </select>
-              </label>
-
-              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
-                <input
-                  type="checkbox"
-                  checked={uiSettings.useConsumablesInCombat}
-                  onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
-                />
-                <span className="combat-side-panel__control-label">Auto use items</span>
-              </label>
-
-              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
-                <input
-                  type="checkbox"
-                  checked={uiSettings.autoRetryOnDeath}
-                  onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
-                />
-                <span className="combat-side-panel__control-label">Auto retry</span>
-              </label>
-            </div>
-          </div>
-          <div className="combat-side-panel__section combat-side-panel__section--menu">
-            <div className="combat-side-panel__title">Run Options</div>
-            <div className="combat-side-panel__controls">
-              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
-                <input
-                  type="checkbox"
-                  checked={autoContinue}
-                  onChange={(e) => setAutoContinue(e.target.checked)}
-                />
-                <span className="combat-side-panel__control-label">Auto-continue</span>
-              </label>
-              <label className="combat-side-panel__control combat-side-panel__control--checkbox">
-                <input
-                  type="checkbox"
-                  checked={stopAtBoss}
-                  onChange={(e) => setStopAtBoss(e.target.checked)}
-                />
-                <span className="combat-side-panel__control-label">Stop at boss</span>
-              </label>
-            </div>
-          </div>
-          <div className="combat-side-panel__section combat-side-panel__section--menu fone">
-             <div className="combat-side-panel__title">Combat Log</div>
-             <div className="combat-log">
-               {visibleLogEntries.length === 0 ? (
-                 <div className="combat-log__empty">Combat log is empty</div>
-               ) : (
-                 visibleLogEntries.map((entry, index) => (
-                   <div
-                     key={`${entry.timestamp}-${index}`}
-                     className="combat-log__entry"
-                     style={{ color: darkenHexColor(entry.color, 0.7) }}
-                   >
-                     {entry.text}
-                   </div>
-                 ))
-               )}
-             </div>
-          </div>
-        </div>
-        <div className="combat-main" ref={combatMainRef}>
-
-          <div className="healthbars-ui">
-            <div className="healthbar-wrapper">
-              <div className="opponent-name">You</div>
-              <div className="opponent-hp">{playerHpLabel}</div>
-              <div className="combat-hp-bar">
-                <img className="combat-hp-bar__shape" src={barShort} alt="" aria-hidden="true" />
-                <div className="combat-hp-bar__track">
-                  <div className="combat-hp-bar__fill" style={{ width: `${currentEnemy ? playerHpPct : 100}%` }} />
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Boss Cadence</div>
+              <div className="ink-combat-shell__meter">
+                <div className="ink-combat-shell__segments">
+                  {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
+                    const filled = idx < filledSegments;
+                    return (
+                      <div
+                        key={idx}
+                        className={`ink-combat-shell__segment${filled ? ' ink-combat-shell__segment--filled' : ''}`}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="ink-combat-shell__meter-text">
+                  {killsSinceBoss} / {killsToBoss}
                 </div>
               </div>
             </div>
-
-            <div className={`healthbar-wrapper${currentEnemy ? '' : ' healthbar-wrapper--inactive'}`}>
-              <div className="opponent-name">{currentEnemy?.name ?? bossName ?? 'No active enemy'}</div>
-              <div className="opponent-hp">{enemyHpLabel}</div>
-              <div className="combat-hp-bar">
-                <img className="combat-hp-bar__shape" src={barShort} alt="" aria-hidden="true" />
-                <div className="combat-hp-bar__track">
-                  <div className="combat-hp-bar__fill" style={{ width: `${enemyHpPct}%` }} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="images-div"> {/* do not touch anything in this div */}
-            <div className="cultivator-image-wrapper">
-              <img className="cultivator-image" src={cultivatorFight}></img>
-            </div>
-            <div className="enemy-image-wrapper">
-              <img className="enemy-image" src={wildBoar}></img>
-              <div className="enemy-stats"></div>
-              <div className="enemy-hit-overlay" aria-hidden="true">
-                {floatingHits.map((hit) => (
-                  <span
-                    key={hit.id}
-                    className={`enemy-hit-text enemy-hit-text--${hit.kind}`}
-                    style={{ left: `${hit.x}%`, top: `${hit.y}%` }}
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Combat Options</div>
+              <div className="ink-combat-shell__controls">
+                <label className="ink-combat-shell__control">
+                  <span className="ink-combat-shell__control-label">AI Profile</span>
+                  <select
+                    value={uiSettings.profile}
+                    onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
                   >
-                    {hit.text}
-                  </span>
-                ))}
+                    {AI_PROFILE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="ink-combat-shell__control">
+                  <span className="ink-combat-shell__control-label">Preferred target</span>
+                  <select
+                    value={uiSettings.preferredTarget}
+                    onChange={(e) =>
+                      setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })
+                    }
+                  >
+                    <option value="trash">Trash</option>
+                    <option value="elite">Elite</option>
+                    <option value="boss">Boss</option>
+                  </select>
+                </label>
+
+                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                  <input
+                    type="checkbox"
+                    checked={uiSettings.useConsumablesInCombat}
+                    onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
+                  />
+                  <span className="ink-combat-shell__control-label">Auto use items</span>
+                </label>
+
+                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                  <input
+                    type="checkbox"
+                    checked={uiSettings.autoRetryOnDeath}
+                    onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
+                  />
+                  <span className="ink-combat-shell__control-label">Auto retry</span>
+                </label>
+              </div>
+            </div>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Run Options</div>
+              <div className="ink-combat-shell__controls">
+                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                  <input
+                    type="checkbox"
+                    checked={autoContinue}
+                    onChange={(e) => setAutoContinue(e.target.checked)}
+                  />
+                  <span className="ink-combat-shell__control-label">Auto-continue</span>
+                </label>
+                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                  <input
+                    type="checkbox"
+                    checked={stopAtBoss}
+                    onChange={(e) => setStopAtBoss(e.target.checked)}
+                  />
+                  <span className="ink-combat-shell__control-label">Stop at boss</span>
+                </label>
+              </div>
+            </div>
+            <div className="ink-combat-shell__section ink-combat-shell__section--fill">
+              <div className="ink-combat-shell__section-title">Combat Log</div>
+              <div className="ink-combat-shell__log">
+                {visibleLogEntries.length === 0 ? (
+                  <div className="ink-combat-shell__log-empty">Combat log is empty</div>
+                ) : (
+                  visibleLogEntries.map((entry, index) => (
+                    <div
+                      key={`${entry.timestamp}-${index}`}
+                      className="ink-combat-shell__log-entry"
+                      style={{ color: darkenHexColor(entry.color, 0.7) }}
+                    >
+                      {entry.text}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </>
+        }
+        main={
+          <div className="outskirts-combat__stage" ref={combatMainRef}>
+            <div className="outskirts-combat__healthbars">
+              <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
+              <InkHealthBar
+                name={enemyName}
+                current={enemyHP}
+                max={enemyMaxHP}
+                label={enemyHpLabel}
+                fillPercent={enemyHpPct}
+                inactive={!currentEnemy}
+              />
+            </div>
+
+            <div className="images-div"> {/* do not touch anything in this div */}
+              <div className="cultivator-image-wrapper">
+                <img className="cultivator-image" src={cultivatorFight}></img>
+              </div>
+              <div className="enemy-image-wrapper">
+                <img className="enemy-image" src={wildBoar}></img>
+                <div className="enemy-stats"></div>
+                <div className="enemy-hit-overlay" aria-hidden="true">
+                  {floatingHits.map((hit) => (
+                    <span
+                      key={hit.id}
+                      className={`enemy-hit-text enemy-hit-text--${hit.kind}`}
+                      style={{ left: `${hit.x}%`, top: `${hit.y}%` }}
+                    >
+                      {hit.text}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-      </div>
+        }
+      />
     </div>
   );
 }

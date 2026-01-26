@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../../stores/activityStore';
 import { useCityStore } from '../../../../stores/cityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
@@ -8,6 +9,13 @@ import { useTrialStore } from '../../../../stores/trialStore';
 import { RewardService } from '../../../../services/rewards';
 import { resolveModuleRef } from '../worldUtils';
 import { useUIStore } from '../../../../stores/uiStore';
+import { hpPercent } from '../../../../systems/combat/minibarModel';
+import { formatNumber } from '../../../../utils/numbers';
+import { InkCombatShell } from '../../../../ui/combat/InkCombatShell';
+import { InkHealthBar } from '../../../../ui/combat/InkHealthBar';
+import cultivatorFight from '../../../../assets/onscreen/cultivator_backshots.png';
+import wildBoar from '../../../../assets/enemies/widboar.png';
+import './CombatStyles.scss';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -29,8 +37,19 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
 
-  const combatContext = useCombatStore((state) => state.combatContext);
-  const exitCombat = useCombatStore((state) => state.exitCombat);
+  const { combatContext, exitCombat, currentEnemy, playerHP, playerMaxHP, enemyHP, enemyMaxHP, combatLog } =
+    useCombatStore(
+      useShallow((state) => ({
+        combatContext: state.combatContext,
+        exitCombat: state.exitCombat,
+        currentEnemy: state.currentEnemy,
+        playerHP: state.playerHP,
+        playerMaxHP: state.playerMaxHP,
+        enemyHP: state.enemyHP,
+        enemyMaxHP: state.enemyMaxHP,
+        combatLog: state.combatLog,
+      })),
+    );
   const openCombatPreview = useUIStore((state) => state.openCombatPreview);
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
 
@@ -56,6 +75,18 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     );
   }, [gateTrialEconomy, trialDef]);
 
+  const isTrialCombat = combatContext.type === 'trial';
+  const activeEnemy = isTrialCombat ? currentEnemy : null;
+  const playerHpPct = hpPercent(playerHP, playerMaxHP);
+  const enemyHpPct = hpPercent(enemyHP, enemyMaxHP);
+  const playerBarPercent = activeEnemy ? playerHpPct : 100;
+  const playerHpLabel = `${formatNumber(playerHP)} / ${formatNumber(playerMaxHP)} (${playerHpPct.toFixed(1)}%)`;
+  const enemyHpLabel = activeEnemy
+    ? `${formatNumber(enemyHP)} / ${formatNumber(enemyMaxHP)} (${enemyHpPct.toFixed(1)}%)`
+    : 'Awaiting trial challenge…';
+  const displayEnemyName = activeEnemy?.name ?? trialBossName ?? 'Trial Guardian';
+  const visibleLogEntries = combatLog.slice(-6);
+
   const trialFailSafeCost = useMemo(() => {
     const normalize = (value: unknown) => {
       if (typeof value === 'number') return value.toString();
@@ -76,6 +107,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   }, [gateTrialEconomy, trialCityIndex, trialDef?.failSafe?.cost]);
 
   const isTrialEligible = Boolean(trialDef && !(trialProgress?.cleared || cityFlags?.gateTrialCleared));
+  const trialSubtitle = isTrialEligible ? 'One-on-one gate challenge' : 'Cleared — repeat for practice';
   const failSafeUnlocked = Boolean(
     trialDef &&
       isTrialEligible &&
@@ -155,52 +187,93 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
 
   return (
     <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{trialDef.name ?? 'Gate Trial'}</div>
-        <div className={'worldScreenPlaceholderKey'}>gateTrial</div>
-      </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>
-          Eligibility: {trialEligibilityRule}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Activity: {isTrialActive ? 'Active' : 'Inactive'}
-        </div>
-      </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleChallengeTrial}
-          disabled={!isTrialEligible || !trialDef}
-          type="button"
-        >
-          Challenge Trial
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleStopTrial} type="button">
-          Stop
-        </button>
-        {failSafeUnlocked && trialFailSafeCost && (
-          <button className={'worldScreenModuleButton'} onClick={handleFailSafePurchase} type="button">
-            Emergency Gate Item Purchase (
-            {
-              [
-                trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
-                trialFailSafeCost.spiritStones ? `${trialFailSafeCost.spiritStones} Spirit Stones` : null,
-                trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
-              ]
-                .filter(Boolean)
-                .join(' / ')
-            }
-            )
-          </button>
-        )}
-      </div>
+      <InkCombatShell
+        title={trialDef.name ?? 'Gate Trial'}
+        subtitle={trialSubtitle}
+        sidebar={
+          <>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__actions">
+                <button
+                  className="button-standard"
+                  onClick={handleChallengeTrial}
+                  disabled={!isTrialEligible || !trialDef}
+                  type="button"
+                >
+                  Challenge Trial
+                </button>
+                <button className="button-standard button-standard--ghost" onClick={handleStopTrial} type="button">
+                  Stop
+                </button>
+                {failSafeUnlocked && trialFailSafeCost && (
+                  <button className="button-standard" onClick={handleFailSafePurchase} type="button">
+                    Emergency Gate Item Purchase (
+                    {
+                      [
+                        trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
+                        trialFailSafeCost.spiritStones ? `${trialFailSafeCost.spiritStones} Spirit Stones` : null,
+                        trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(' / ')
+                    }
+                    )
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Trial Status</div>
+              <div className="ink-combat-shell__stat-line">Eligibility: {trialEligibilityRule}</div>
+              <div className="ink-combat-shell__stat-line">
+                Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
+              </div>
+              <div className="ink-combat-shell__stat-line">
+                Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
+              </div>
+              <div className="ink-combat-shell__stat-line">Activity: {isTrialActive ? 'Active' : 'Inactive'}</div>
+            </div>
+            <div className="ink-combat-shell__section ink-combat-shell__section--fill">
+              <div className="ink-combat-shell__section-title">Combat Log</div>
+              <div className="ink-combat-shell__log">
+                {visibleLogEntries.length === 0 ? (
+                  <div className="ink-combat-shell__log-empty">Combat log is empty</div>
+                ) : (
+                  visibleLogEntries.map((entry, index) => (
+                    <div key={`${entry.timestamp}-${index}`} className="ink-combat-shell__log-entry">
+                      {entry.text}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </>
+        }
+        main={
+          <div className="outskirts-combat__stage">
+            <div className="outskirts-combat__healthbars">
+              <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
+              <InkHealthBar
+                name={displayEnemyName}
+                current={enemyHP}
+                max={enemyMaxHP}
+                label={enemyHpLabel}
+                fillPercent={enemyHpPct}
+                inactive={!activeEnemy}
+              />
+            </div>
+            <div className="images-div">
+              <div className="cultivator-image-wrapper">
+                <img className="cultivator-image" src={cultivatorFight} alt="" />
+              </div>
+              <div className={`enemy-image-wrapper${activeEnemy ? '' : ' enemy-image-wrapper--inactive'}`}>
+                <img className="enemy-image" src={wildBoar} alt="" />
+                <div className="enemy-stats"></div>
+              </div>
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 }

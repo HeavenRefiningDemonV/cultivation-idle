@@ -1,237 +1,19 @@
-.combat-div {
+.outskirts-combat__stage {
+    height: 100%;
+    width: 100%;
     display: flex;
-    height: 720px;
-    width: 1280px;
+    flex-direction: column;
 
-    .combat-side-panel {
+    .outskirts-combat__healthbars {
+        width: 100%;
+        height: 260px;
         display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 300px;
-        background-color: #ddd;
-        border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 0 10px 0 0 / 5px;
-        padding: 20px 16px;
-        gap: 12px;
-
-        .combat-side-panel__section {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            margin-bottom: 5px;
-        }
-
-        .combat-side-panel__title {
-            color: #141414;
-            font-family: "Protest Revolution";
-            font-size: 22px;
-        }
-
-        .combat-side-panel__subtitle {
-            color: #2d2d2d;
-            font-size: 14px;
-        }
-
-        .combat-side-panel__actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .combat-side-panel__controls {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .combat-side-panel__control {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            color: #1f1f1f;
-            font-size: 13px;
-
-            select {
-                height: 28px;
-                padding: 2px 6px;
-                background-color: #e4e4e4;
-                border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 3px;
-            }
-        }
-
-        .combat-side-panel__control--checkbox {
-            flex-direction: row;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .combat-side-panel__control-label {
-            font-size: 12px;
-        }
-
-        .combat-side-panel__meter {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .combat-side-panel__segments {
-            display: grid;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-            gap: 4px;
-        }
-
-        .combat-side-panel__segment {
-            height: 8px;
-            border-radius: 999px;
-            background: rgba(0, 0, 0, 0.15);
-        }
-
-        .combat-side-panel__segment--filled {
-            background: #4a8bbe;
-        }
-
-        .combat-side-panel__meter-text {
-            font-size: 12px;
-            color: #2b2b2b;
-        }
-
-        .fone {
-            flex: 1;
-
-            .combat-log {
-                background-color: #d5d5d5;
-                height: 100%;
-                width: 100%;
-                padding: .3125rem;
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-                overflow-y: auto;
-                font-size: 12px;
-                color: #111111;
-                border-image: url("../../../../assets/menus/buttoncorners.png") 60 / 3px;
-            }
-
-            .combat-log__entry {
-                line-height: 1.4;
-            }
-
-            .combat-log__empty {
-                color: rgba(0, 0, 0, 0.6);
-            }
-        }
     }
 
-    .combat-main {
-        height: 100%;
-        width: 980px;
+    .images-div {
+        width: 100%;
+        height: 460px;
         display: flex;
-        flex-direction: column;
-
-        .healthbars-ui {
-            width: 100%;
-            height: 260px;
-            display: flex;
-
-            .healthbar-wrapper {
-                height: 100%;
-                width: 50%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-end;
-
-                .opponent-name {
-                    color: black;
-                    font-family: "Protest Revolution";
-                    font-size: 30px;
-                    text-shadow:
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 40px white,
-                        0px 0px 30px white,
-                        0px 0px 30px white,
-                        0px 0px 30px white,
-                        0px 0px 10px white,
-                        0px 0px 10px white,
-                        0px 0px 5px white;
-                    -webkit-text-stroke: 0.1em white;
-                    paint-order: stroke;
-                }
-
-                .opponent-hp {
-                    font-size: 20px;
-                    padding: 0 10px;
-                    text-shadow:
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 50px white,
-                        0px 0px 40px white,
-                        0px 0px 30px white,
-                        0px 0px 30px white,
-                        0px 0px 30px white,
-                        0px 0px 10px white,
-                        0px 0px 10px white,
-                        0px 0px 5px white;
-                    -webkit-text-stroke: 0.1em white;
-                    paint-order: stroke;
-                }
-
-                .combat-hp-bar {
-                    position: relative;
-                    width: 100%;
-                    max-width: 420px;
-                    height: 80px;
-                    display: grid;
-                    grid-template-areas: "stack";
-                    align-items: center;
-                    justify-items: center;
-                }
-
-                .combat-hp-bar__shape {
-                    position: absolute;
-                    inset: 0;
-                    z-index: 2;
-                    width: 100%;
-                    height: 100%;
-                    object-fit: fill;
-                    grid-area: stack;
-                }
-
-                .combat-hp-bar__track {
-                    position: relative;
-                    z-index: 1;
-                    grid-area: stack;
-                    width: 95%;
-                    height: 18px;
-                    background: #ddd;
-                    overflow: hidden;
-                    border-radius: 999px;
-                }
-
-                .combat-hp-bar__fill {
-                    position: absolute;
-                    inset: 0;
-                    width: 0;
-                    background: #821e1e;
-                    transition: width 0.25s ease-out;
-                }
-            }
-
-            .healthbar-wrapper--inactive {
-                visibility: hidden;
-            }
-        }
-
-        .images-div {
-            width: 100%;
-            height: 460px;
-            display: flex;
 
             .combat-motion {
                 animation-duration: 220ms;
@@ -320,10 +102,7 @@
             .enemy-image-wrapper--inactive {
                 visibility: hidden;
             }
-        }
     }
-
-
 }
 
 @keyframes combat-player-attack {
