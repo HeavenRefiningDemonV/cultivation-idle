@@ -21,13 +21,40 @@ interface GateTrialBuildingPanelProps {
   cityId: string;
 }
 
-const SEGMENT_COUNT = 14;
+const DEFAULT_SEGMENT_COUNT = 3;
+const MAX_SEGMENT_COUNT = 6;
 
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;
   if (value < 0) return 0;
   if (value > 1) return 1;
   return value;
+}
+
+function clampSegmentCount(value: number): number {
+  if (!Number.isFinite(value)) return DEFAULT_SEGMENT_COUNT;
+  return Math.min(MAX_SEGMENT_COUNT, Math.max(1, Math.round(value)));
+}
+
+function formatEligibility(eligibility: unknown): { summary: string; raw?: string } {
+  if (!eligibility) {
+    return { summary: 'No eligibility rule provided' };
+  }
+
+  if (typeof eligibility === 'string') {
+    return { summary: eligibility };
+  }
+
+  if (typeof eligibility === 'number' || typeof eligibility === 'boolean') {
+    return { summary: String(eligibility) };
+  }
+
+  try {
+    const raw = JSON.stringify(eligibility, null, 2);
+    return { summary: 'See requirements', raw };
+  } catch (error) {
+    return { summary: 'See requirements', raw: String(eligibility) };
+  }
 }
 
 export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) {
@@ -96,8 +123,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const displayEnemyName = activeEnemy?.name ?? trialBossName ?? 'Trial Guardian';
   const visibleLogEntries = combatLog.slice(-6);
   const trialAttempts = trialProgress?.attempts ?? 0;
-  const trialProgressRatio = clamp01(trialAttempts / Math.max(1, trialFailSafeThreshold));
-  const filledSegments = Math.floor(trialProgressRatio * SEGMENT_COUNT);
+  const totalSegments = clampSegmentCount(trialFailSafeThreshold ?? DEFAULT_SEGMENT_COUNT);
+  const progressRatio = clamp01(trialAttempts / Math.max(1, totalSegments));
+  const filledSegments = Math.floor(progressRatio * totalSegments);
+  const nextSegment = Math.min(totalSegments, filledSegments + 1);
 
   const trialFailSafeCost = useMemo(() => {
     const normalize = (value: unknown) => {
@@ -128,11 +157,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
       trialFailSafeCost &&
       (trialProgress?.attempts ?? 0) >= trialFailSafeThreshold,
   );
-  const trialEligibilityRule = trialDef?.eligibilityRule
-    ? typeof trialDef.eligibilityRule === 'string'
-      ? trialDef.eligibilityRule
-      : String(trialDef.eligibilityRule)
-    : 'No eligibility rule provided';
+  const eligibilitySummary = formatEligibility(trialDef?.eligibilityRule);
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef || !isTrialEligible) return;
@@ -203,6 +228,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
         title="Gate Trial"
         subtitle={trialSubtitle}
         onClose={closeWorldBuildingModal}
+        className="ink-combat-shell--gate-trial"
         leftSidebar={
           <>
             <div className="ink-combat-shell__section">
@@ -237,33 +263,46 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Trial Progress</div>
-              <div className="ink-combat-shell__meter">
-                <div className="ink-combat-shell__segments">
-                  {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
-                    const filled = idx < filledSegments;
+              <div className="gate-trial__progress">
+                <div className="gate-trial__segments" style={{ gridTemplateColumns: `repeat(${Math.min(totalSegments, MAX_SEGMENT_COUNT)}, minmax(0, 1fr))` }}>
+                  {Array.from({ length: totalSegments }).map((_, idx) => {
+                    const segmentIndex = idx + 1;
+                    const completed = segmentIndex <= filledSegments;
+                    const current = segmentIndex === nextSegment && filledSegments < totalSegments;
                     return (
                       <div
-                        key={idx}
-                        className={`ink-combat-shell__segment${filled ? ' ink-combat-shell__segment--filled' : ''}`}
+                        key={segmentIndex}
+                        className={`gate-trial__segment${completed ? ' gate-trial__segment--filled' : ''}${
+                          current ? ' gate-trial__segment--current' : ''
+                        }`}
                       />
                     );
                   })}
+                  {trialFailSafeThreshold > MAX_SEGMENT_COUNT ? (
+                    <div className="gate-trial__segment gate-trial__segment--overflow">+</div>
+                  ) : null}
                 </div>
-                <div className="ink-combat-shell__meter-text">
-                  {trialAttempts} / {trialFailSafeThreshold}
+                <div className="gate-trial__progress-text">
+                  Progress: {trialAttempts} / {trialFailSafeThreshold}
                 </div>
               </div>
             </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Combat Options</div>
               <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
-              <div className="ink-combat-shell__stat-line">Eligibility: {trialEligibilityRule}</div>
+              <div className="ink-combat-shell__stat-line">Eligibility: {eligibilitySummary.summary}</div>
               <div className="ink-combat-shell__stat-line">
                 Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
               </div>
               <div className="ink-combat-shell__stat-line">
                 Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
               </div>
+              {eligibilitySummary.raw ? (
+                <details className="gate-trial__eligibility-details">
+                  <summary>Show requirements</summary>
+                  <pre>{eligibilitySummary.raw}</pre>
+                </details>
+              ) : null}
             </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Run Options</div>
@@ -271,7 +310,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             </div>
             <div className="ink-combat-shell__section ink-combat-shell__section--fill">
               <div className="ink-combat-shell__section-title">Combat Log</div>
-              <div className="ink-combat-shell__log">
+              <div className="ink-combat-shell__log gate-trial__log">
                 {visibleLogEntries.length === 0 ? (
                   <div className="ink-combat-shell__log-empty">Combat log is empty</div>
                 ) : (
