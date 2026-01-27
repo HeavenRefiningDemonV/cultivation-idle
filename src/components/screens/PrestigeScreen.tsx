@@ -15,7 +15,6 @@ import { PrestigeUpgradeModal } from '../modals/PrestigeUpgradeModal';
 import { ApBreakdownModal } from '../modals/ApBreakdownModal';
 import { PrestigeRitualModal } from '../modals/PrestigeRitualModal';
 import { D } from '../../utils/numbers';
-import { InkPanel, PaperCard } from '../../ui/ink';
 import './PrestigeScreen.scss';
 
 export function PrestigeScreen() {
@@ -364,184 +363,174 @@ export function PrestigeScreen() {
 
           <main className={'prestigeStage'}>
             <section className={'prestigeRitualStage'}>
-              <InkPanel variant="prestige" className="prestigeRitualDocument" watermark>
-                <div className="prestigeRitualGrid">
-                  <div className={'prestigeRitualLeft'}>
-                    <PaperCard className={'prestigeAltarCard'} variant="tray">
-                      <header className={'prestigeAltarHeader'}>
-                        <div className={'prestigeAltarTitle'}>Reincarnate &amp; Grow Stronger</div>
-                        <div className={'prestigeAltarSubtitle'}>
-                          Reincarnation grants Ascension Points to unlock permanent blessings.
-                        </div>
-                      </header>
+              <div className={'prestigeRitualLeft'}>
+                <div className={'prestigeAltarCard'}>
+                  <header className={'prestigeAltarHeader'}>
+                    <div className={'prestigeAltarTitle'}>Reincarnate &amp; Grow Stronger</div>
+                    <div className={'prestigeAltarSubtitle'}>
+                      Reincarnation grants Ascension Points to unlock permanent blessings.
+                    </div>
+                  </header>
 
-                      <div className={'prestigeAltarSealArea'} aria-hidden="true">
-                        <div className={'prestigeAltarSeal'} />
-                      </div>
-
-                      <div className={'prestigeAltarMetaRow'}>
-                        <div className={'prestigeAltarApBadge'}>
-                          <div className={`prestigeAltarApValue${apPulse ? ' is-pulse' : ''}`}>{totalAP}</div>
-                          <div className={'prestigeAltarApLabel'}>Ascension Points Available</div>
-                          <div className={'prestigeAltarApMeta'}>
-                            {lifetimeAP} Total Earned • {prestigeCount} Reincarnations
-                          </div>
-                        </div>
-                        <div className={'prestigeAltarMetaActions'}>
-                          <div className={'prestigeAltarMetaText'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
-                        </div>
-                      </div>
-
-                      <div className={'prestigeAltarActionRow'}>
-                        <div className={'prestigeAltarButtons'}>
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              ritualTriggerRef.current = event.currentTarget;
-                              handlePrestige(false);
-                            }}
-                            disabled={!canPrestigeNow}
-                            className={`prestigeAltarPrimaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
-                          >
-                            {prestigeActionLabel}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              ritualTriggerRef.current = event.currentTarget;
-                              handlePrestige(true);
-                            }}
-                            disabled={!canPrestigeNow}
-                            className={`prestigeAltarSecondaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
-                          >
-                            Sell All &amp; Reincarnate
-                          </button>
-                        </div>
-                        <div className={'prestigeAltarLockHint'}>{prestigeLockHint}</div>
-                      </div>
-
-                      <div className={'prestigeAltarMicrocopy'}>
-                        Keep blessings. Reset the mortal coil. Return stronger.
-                      </div>
-                    </PaperCard>
+                  <div className={'prestigeAltarSealArea'} aria-hidden="true">
+                    <div className={'prestigeAltarSeal'} />
+                    <div className={`prestigeAltarGlow${canPrestigeNow ? ' is-active' : ''}`} />
+                    <div className={'prestigeAltarParticles'} />
                   </div>
 
-                  <aside className={'prestigeRitualRight'}>
-                    <InkPanel variant="prestige" className="prestigeRitualSidebar">
-                      <div className={'prestigeRitualSidebarHeader'}>
-                        <div className={'prestigeRitualSidebarTitle'}>Ritual Details</div>
-                        <button
-                          type="button"
-                          className={'prestigeAltarBreakdownButton'}
-                          onClick={() => setIsApBreakdownOpen(true)}
-                        >
-                          AP breakdown
-                        </button>
+                  <div className={'prestigeAltarMetaRow'}>
+                    <div className={'prestigeAltarApBadge'}>
+                      <div className={`prestigeAltarApValue${apPulse ? ' is-pulse' : ''}`}>{totalAP}</div>
+                      <div className={'prestigeAltarApLabel'}>Ascension Points Available</div>
+                      <div className={'prestigeAltarApMeta'}>
+                        {lifetimeAP} Total Earned • {prestigeCount} Reincarnations
                       </div>
-                      <div className={'prestigeScreenInfoGrid'}>
-                        <PaperCard className={'prestigeScreenInfoCard'} variant="tray">
-                          <h3 className={'prestigeScreenInfoTitle'}>Current Run</h3>
-                          <div className={'prestigeScreenInfoRows'}>
-                            <div className={'prestigeScreenInfoRow'}>
-                              <span className={'prestigeScreenInfoLabel'}>Current Realm:</span>
-                              <span className={'prestigeScreenInfoValue'}>
-                                {realmNames[realm?.index || 0] || 'Unknown'}
-                              </span>
-                            </div>
-                            <div className={'prestigeScreenInfoRow'}>
-                              <span className={'prestigeScreenInfoLabel'}>Potential AP Gain:</span>
-                              <span className={'prestigeScreenInfoValueAccent'}>+{apGain} AP</span>
-                            </div>
-                          </div>
-                        </PaperCard>
+                    </div>
+                    <div className={'prestigeAltarMetaActions'}>
+                      <div className={'prestigeAltarMetaText'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
+                    </div>
+                  </div>
 
-                        <PaperCard className={'prestigeScreenInfoCard'} variant="tray">
-                          <h3 className={'prestigeScreenInfoTitle'}>Reincarnation Benefits</h3>
-                          <div className={'prestigeScreenBenefitsGroups'}>
-                            <div className={'prestigeScreenBenefitsGroup'}>
-                              <div className={'prestigeScreenBenefitsLabel'}>Keeps</div>
-                              <ul className={'prestigeScreenBenefitsList'}>
-                                {visibleKeepBenefits.map((benefit) => (
-                                  <li key={benefit}>✓ {benefit}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className={'prestigeScreenBenefitsGroup'}>
-                              <div className={'prestigeScreenBenefitsLabel'}>Resets</div>
-                              <ul className={'prestigeScreenBenefitsList is-warning'}>
-                                {visibleResetCosts.map((cost) => (
-                                  <li key={cost}>✗ {cost}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            className={'prestigeScreenBenefitsToggle'}
-                            onClick={() => setShowBenefitDetails((value) => !value)}
-                          >
-                            {showBenefitDetails ? 'Hide full benefits' : 'View full benefits'}
-                          </button>
-                        </PaperCard>
-                      </div>
-                    </InkPanel>
-                  </aside>
+                  <div className={'prestigeAltarActionRow'}>
+                    <div className={'prestigeAltarButtons'}>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          ritualTriggerRef.current = event.currentTarget;
+                          handlePrestige(false);
+                        }}
+                        disabled={!canPrestigeNow}
+                        className={`prestigeAltarPrimaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
+                      >
+                        {prestigeActionLabel}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          ritualTriggerRef.current = event.currentTarget;
+                          handlePrestige(true);
+                        }}
+                        disabled={!canPrestigeNow}
+                        className={`prestigeAltarSecondaryButton${canPrestigeNow ? ' is-ready' : ' is-locked'}`}
+                      >
+                        Sell All &amp; Reincarnate
+                      </button>
+                    </div>
+                    <div className={'prestigeAltarLockHint'}>{prestigeLockHint}</div>
+                  </div>
+
+                  <div className={'prestigeAltarMicrocopy'}>
+                    Keep blessings. Reset the mortal coil. Return stronger.
+                  </div>
                 </div>
-              </InkPanel>
+              </div>
+
+              <aside className={'prestigeRitualRight'}>
+                <div className={'prestigeRitualSidebarHeader'}>
+                  <div className={'prestigeRitualSidebarTitle'}>Ritual Details</div>
+                  <button
+                    type="button"
+                    className={'prestigeAltarBreakdownButton'}
+                    onClick={() => setIsApBreakdownOpen(true)}
+                  >
+                    AP breakdown
+                  </button>
+                </div>
+                <div className={'prestigeScreenInfoGrid'}>
+                  <div className={'prestigeScreenInfoCard'}>
+                    <h3 className={'prestigeScreenInfoTitle'}>Current Run</h3>
+                    <div className={'prestigeScreenInfoRows'}>
+                      <div className={'prestigeScreenInfoRow'}>
+                        <span className={'prestigeScreenInfoLabel'}>Current Realm:</span>
+                        <span className={'prestigeScreenInfoValue'}>{realmNames[realm?.index || 0] || 'Unknown'}</span>
+                      </div>
+                      <div className={'prestigeScreenInfoRow'}>
+                        <span className={'prestigeScreenInfoLabel'}>Potential AP Gain:</span>
+                        <span className={'prestigeScreenInfoValueAccent'}>+{apGain} AP</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={'prestigeScreenInfoCard'}>
+                    <h3 className={'prestigeScreenInfoTitle'}>Reincarnation Benefits</h3>
+                    <div className={'prestigeScreenBenefitsGroups'}>
+                      <div className={'prestigeScreenBenefitsGroup'}>
+                        <div className={'prestigeScreenBenefitsLabel'}>Keeps</div>
+                        <ul className={'prestigeScreenBenefitsList'}>
+                          {visibleKeepBenefits.map((benefit) => (
+                            <li key={benefit}>✓ {benefit}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className={'prestigeScreenBenefitsGroup'}>
+                        <div className={'prestigeScreenBenefitsLabel'}>Resets</div>
+                        <ul className={'prestigeScreenBenefitsList is-warning'}>
+                          {visibleResetCosts.map((cost) => (
+                            <li key={cost}>✗ {cost}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={'prestigeScreenBenefitsToggle'}
+                      onClick={() => setShowBenefitDetails((value) => !value)}
+                    >
+                      {showBenefitDetails ? 'Hide full benefits' : 'View full benefits'}
+                    </button>
+                  </div>
+                </div>
+              </aside>
             </section>
 
             <section className={'prestigeDecreesPanel worldScreenPanel'}>
-              <InkPanel variant="prestige" className="prestigeDecreesDocument" watermark>
-                <div className={'prestigeDecreesHeader'}>
-                  <div className={'prestigeDecreesTitle'}>Heavenly Decrees</div>
-                  <div className={'prestigeDecreesSub'}>
-                    Spend Ascension Points to permanently improve future lives.
-                  </div>
+              <div className={'prestigeDecreesHeader'}>
+                <div className={'prestigeDecreesTitle'}>Heavenly Decrees</div>
+                <div className={'prestigeDecreesSub'}>
+                  Spend Ascension Points to permanently improve future lives.
                 </div>
+              </div>
 
-                <PaperCard className="prestigeDecreesArea" variant="tray">
-                  <div className="prestigeDecreesScroll" ref={decreesAreaRef}>
-                    <nav className={'prestigeDecreesCategoryBar'} aria-label="Prestige categories">
-                      {categorizedUpgrades.map((section) => {
-                        const iconMeta = getPrestigeCategoryIcon(section.category.key);
-                        const isActive = activeCategory === section.category.key;
-                        return (
-                          <button
-                            key={section.category.key}
-                            type="button"
-                            className={isActive ? 'is-active' : undefined}
-                            onClick={() => scrollToCategory(section.category.key)}
-                          >
-                            <iconMeta.Icon aria-hidden="true" />
-                            <span>{section.category.title}</span>
-                          </button>
-                        );
-                      })}
-                    </nav>
-                    <div className={'prestigeDecreesList'}>
-                      {categorizedUpgrades.length === 0 && (
-                        <div className={'prestigeDecreesEmpty'}>No decrees available at this stage.</div>
-                      )}
-                      {categorizedUpgrades.map((section) => (
-                        <section
-                          key={section.category.key}
-                          id={`prestige-category-${section.category.key}`}
-                          data-category-key={section.category.key}
-                          className={'prestigeDecreeSection'}
-                        >
-                          <header className={'prestigeDecreeHeader'}>
-                            <div className={'prestigeDecreeTitle'}>{section.category.title}</div>
-                            <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
-                          </header>
-                          <div className={'prestigeDecreesGrid'}>
-                            {section.upgrades.map((upgrade) => renderUpgradePanel(upgrade))}
-                          </div>
-                        </section>
-                      ))}
-                    </div>
-                  </div>
-                </PaperCard>
-              </InkPanel>
+              <div className={'prestigeDecreesArea'} ref={decreesAreaRef}>
+                <nav className={'prestigeDecreesCategoryBar'} aria-label="Prestige categories">
+                  {categorizedUpgrades.map((section) => {
+                    const iconMeta = getPrestigeCategoryIcon(section.category.key);
+                    const isActive = activeCategory === section.category.key;
+                    return (
+                      <button
+                        key={section.category.key}
+                        type="button"
+                        className={isActive ? 'is-active' : undefined}
+                        onClick={() => scrollToCategory(section.category.key)}
+                      >
+                        <iconMeta.Icon aria-hidden="true" />
+                        <span>{section.category.title}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+                <div className={'prestigeDecreesList'}>
+                  {categorizedUpgrades.length === 0 && (
+                    <div className={'prestigeDecreesEmpty'}>No decrees available at this stage.</div>
+                  )}
+                  {categorizedUpgrades.map((section) => (
+                    <section
+                      key={section.category.key}
+                      id={`prestige-category-${section.category.key}`}
+                      data-category-key={section.category.key}
+                      className={'prestigeDecreeSection'}
+                    >
+                      <header className={'prestigeDecreeHeader'}>
+                        <div className={'prestigeDecreeTitle'}>{section.category.title}</div>
+                        <div className={'prestigeDecreeSubtitle'}>{section.category.subtitle}</div>
+                      </header>
+                      <div className={'prestigeDecreesGrid'}>
+                        {section.upgrades.map((upgrade) => renderUpgradePanel(upgrade))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </div>
             </section>
           </main>
 

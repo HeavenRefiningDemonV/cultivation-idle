@@ -1,16 +1,16 @@
 .manualPavilionPanel--v2 {
-  --pavilion-paper: rgba(250, 244, 228, 0.92);
-  --pavilion-ink: rgba(43, 33, 22, 0.9);
-  --pavilion-ink-strong: rgba(43, 33, 22, 0.96);
-  --pavilion-ink-strongest: rgba(30, 22, 14, 0.98);
-  --pavilion-water: rgba(120, 72, 33, 0.3);
-  --pavilion-earth: rgba(120, 72, 33, 0.35);
-  --pavilion-fire: rgba(159, 59, 46, 0.3);
+  --pavilion-paper: var(--color-ink-paper, rgba(226, 232, 240, 0.92));
+  --pavilion-ink: var(--color-ink, rgba(15, 23, 42, 0.92));
+  --pavilion-ink-strong: var(--color-ink-dark, rgba(15, 23, 42, 0.98));
+  --pavilion-ink-strongest: var(--color-ink-darkest, rgba(2, 6, 23, 0.98));
+  --pavilion-water: var(--color-element-water, rgba(56, 189, 248, 0.6));
+  --pavilion-earth: var(--color-element-earth, rgba(34, 197, 94, 0.55));
+  --pavilion-fire: var(--color-element-fire, rgba(248, 113, 113, 0.55));
   --pavilion-wood-a: color-mix(in oklab, var(--pavilion-earth) 70%, rgba(0, 0, 0, 0.5) 30%);
   --pavilion-wood-b: color-mix(in oklab, var(--pavilion-earth) 45%, rgba(0, 0, 0, 0.6) 55%);
   --pavilion-border: color-mix(in oklab, var(--pavilion-ink) 30%, transparent 70%);
-  --pavilion-shadow: var(--shadow-soft, 0 12px 24px rgba(0, 0, 0, 0.2));
-  --pavilion-shadow-strong: var(--shadow-strong, 0 20px 40px rgba(0, 0, 0, 0.28));
+  --pavilion-shadow: var(--shadow-soft, 0 12px 24px rgba(2, 6, 23, 0.3));
+  --pavilion-shadow-strong: var(--shadow-strong, 0 20px 40px rgba(2, 6, 23, 0.45));
   --pavilion-radius-s: var(--radius-s, 8px);
   --pavilion-radius-m: var(--radius-m, 12px);
   --pavilion-radius-l: var(--radius-l, 16px);
@@ -26,6 +26,12 @@
   gap: 12px;
   align-items: start;
   padding: 12px 14px;
+  border-radius: var(--pavilion-radius-l);
+  border: 1px solid var(--pavilion-border);
+  background:
+    linear-gradient(120deg, rgba(250, 250, 245, 0.15), rgba(148, 163, 184, 0.04)),
+    linear-gradient(180deg, rgba(120, 53, 15, 0.16), rgba(69, 26, 3, 0.22));
+  box-shadow: var(--pavilion-shadow);
 }
 
 .pavilionTopLeft {
@@ -114,15 +120,7 @@
 
 .pavilionTopRight .worldScreenModuleButton {
   box-shadow: var(--pavilion-shadow);
-  border-color: var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.9);
-  color: var(--pavilion-ink-strongest);
-}
-
-.pavilionRefreshButton {
-  background: rgba(251, 244, 228, 0.9);
-  border-color: var(--pavilion-border);
-  color: var(--pavilion-ink-strongest);
+  border-color: color-mix(in oklab, var(--pavilion-ink) 35%, transparent 65%);
 }
 
 .pavilionShelfWall {
@@ -168,6 +166,11 @@
   font-weight: 800;
   font-size: 14px;
   color: var(--pavilion-ink-strongest);
+  background: color-mix(in oklab, var(--pavilion-paper) 80%, rgba(255, 255, 255, 0.2) 20%);
+  border: 1px solid var(--pavilion-border);
+  border-radius: var(--pavilion-radius-s);
+  padding: 2px 8px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
 }
 
 .pavilionShelfRowHint {
@@ -179,6 +182,12 @@
   position: relative;
   padding: 12px 10px 14px;
   border-radius: var(--pavilion-radius-l);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--pavilion-wood-a) 28%, transparent 72%), transparent),
+    linear-gradient(120deg, rgba(120, 53, 15, 0.2), rgba(30, 41, 59, 0.2)),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 60%);
+  border: 1px solid color-mix(in oklab, var(--pavilion-wood-b) 35%, transparent 65%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), var(--pavilion-shadow);
 }
 
 .pavilionShelfRowRail::after {
@@ -189,8 +198,8 @@
   bottom: 8px;
   height: 6px;
   border-radius: 999px;
-  background: rgba(120, 72, 33, 0.25);
-  opacity: 0.35;
+  background: color-mix(in oklab, var(--pavilion-ink-strongest) 35%, transparent 65%);
+  opacity: 0.25;
   pointer-events: none;
 }
 
@@ -209,8 +218,8 @@
   width: 44px;
   height: 154px;
   border-radius: var(--pavilion-radius-m);
-  border: 1px solid var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.78);
+  border: 1px solid color-mix(in oklab, var(--pavilion-ink) 35%, transparent 65%);
+  background: rgba(148, 163, 184, 0.12);
   color: var(--pavilion-ink-strongest);
   display: flex;
   flex-direction: column;
@@ -229,7 +238,7 @@
   bottom: 6px;
   width: 4px;
   border-radius: 999px;
-  background: rgba(120, 72, 33, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 60%, rgba(0, 0, 0, 0.18));
   opacity: 0.6;
   pointer-events: none;
 }
@@ -242,8 +251,8 @@
   top: 6px;
   height: 2px;
   border-radius: 999px;
-  background: rgba(120, 72, 33, 0.25);
-  opacity: 0.35;
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -259,7 +268,7 @@
 
 .pavilionSpine--selected {
   transform: translateY(-6px);
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.45), 0 18px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.55), 0 18px 30px rgba(0, 0, 0, 0.3);
 }
 
 .pavilionSpine--selected:hover {
@@ -275,19 +284,31 @@
 }
 
 .pavilionSpine[data-state='available'][data-path='heaven'] {
-  border-color: rgba(120, 72, 33, 0.4);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--pavilion-water) 45%, transparent 55%),
+    rgba(30, 58, 138, 0.2)
+  );
 }
 
 .pavilionSpine[data-state='available'][data-path='earth'] {
-  border-color: rgba(120, 72, 33, 0.5);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--pavilion-earth) 45%, transparent 55%),
+    rgba(20, 83, 45, 0.2)
+  );
 }
 
 .pavilionSpine[data-state='available'][data-path='martial'] {
-  border-color: rgba(159, 59, 46, 0.45);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--pavilion-fire) 45%, transparent 55%),
+    rgba(127, 29, 29, 0.2)
+  );
 }
 
 .pavilionSpine[data-path='unknown'] {
-  background: rgba(245, 238, 220, 0.7);
+  background: rgba(148, 163, 184, 0.12);
 }
 
 .pavilionSpine[data-rarity='common'] {
@@ -295,19 +316,19 @@
 }
 
 .pavilionSpine[data-rarity='uncommon'] {
-  box-shadow: 0 0 12px rgba(120, 72, 33, 0.18);
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.22);
 }
 
 .pavilionSpine[data-rarity='rare'] {
-  box-shadow: 0 0 14px rgba(159, 59, 46, 0.2);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.22);
 }
 
 .pavilionSpine[data-rarity='epic'] {
-  box-shadow: 0 0 16px rgba(159, 59, 46, 0.22);
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.22);
 }
 
 .pavilionSpine[data-rarity='legendary'] {
-  box-shadow: 0 0 18px rgba(159, 59, 46, 0.24);
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.22);
 }
 
 .pavilionSpine--placeholder {
@@ -389,8 +410,8 @@
   width: 14px;
   height: 14px;
   border-radius: 4px;
-  background: rgba(251, 244, 228, 0.8);
-  border: 1px solid var(--pavilion-border);
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .pavilionSpineRoleIcon {
@@ -410,7 +431,9 @@
 }
 
 .pavilionSpineOverlay--sealed {
-  background: rgba(120, 72, 33, 0.12);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.18), transparent 55%),
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.18) 0 6px, transparent 6px 14px);
 }
 
 .pavilionSpineOverlay--sealed::after {
@@ -422,15 +445,16 @@
   font-size: 10px;
   letter-spacing: 0.2em;
   font-weight: 800;
-  color: rgba(43, 33, 22, 0.85);
-  background: rgba(251, 244, 228, 0.85);
+  color: rgba(226, 232, 240, 0.85);
+  background: rgba(15, 23, 42, 0.4);
   padding: 2px 6px;
   border-radius: 999px;
-  border: 1px solid var(--pavilion-border);
+  border: 1px solid rgba(148, 163, 184, 0.4);
 }
 
 .pavilionSpineOverlay--notSold {
-  background: rgba(145, 58, 37, 0.15);
+  background:
+    repeating-linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0 6px, transparent 6px 12px);
 }
 
 .pavilionSpineOverlay--notSold::after {
@@ -442,11 +466,11 @@
   font-size: 10px;
   letter-spacing: 0.16em;
   font-weight: 800;
-  color: rgba(145, 58, 37, 0.85);
-  background: rgba(251, 244, 228, 0.85);
+  color: rgba(248, 113, 113, 0.85);
+  background: rgba(15, 23, 42, 0.35);
   padding: 2px 6px;
   border-radius: 999px;
-  border: 1px solid rgba(145, 58, 37, 0.35);
+  border: 1px solid rgba(248, 113, 113, 0.35);
 }
 
 .pavilionSpineOverlay--sold::after {
@@ -458,10 +482,10 @@
   font-weight: 1000;
   font-size: 12px;
   letter-spacing: 0.12em;
-  color: rgba(159, 59, 46, 0.85);
-  text-shadow: none;
-  border: 1px solid rgba(159, 59, 46, 0.28);
-  background: rgba(251, 244, 228, 0.85);
+  color: rgba(251, 191, 36, 0.85);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  background: rgba(0, 0, 0, 0.18);
   padding: 4px 8px;
   border-radius: 999px;
 }
@@ -546,7 +570,7 @@
   max-width: 320px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: rgba(251, 244, 228, 0.94);
+  background: color-mix(in oklab, var(--pavilion-paper) 88%, rgba(255, 255, 255, 0.6) 12%);
   border: 1px solid var(--pavilion-border);
   box-shadow: var(--pavilion-shadow-strong);
   color: var(--pavilion-ink-strongest);
@@ -587,8 +611,8 @@
 }
 
 .pavilionBadge {
-  background: rgba(251, 244, 228, 0.9);
-  color: var(--pavilion-ink-strongest);
+  background: #1f2937;
+  color: #e2e8f0;
   border-radius: 4px;
   padding: 2px 6px;
   font-size: 11px;
@@ -628,16 +652,16 @@
 }
 
 .pavilionCardLine {
-  color: var(--pavilion-ink);
+  color: #cbd5e1;
 }
 
 .pavilionCardNotSold {
-  color: rgba(145, 58, 37, 0.9);
+  color: #fca5a5;
   font-weight: 600;
 }
 
 .pavilionCardSold {
-  color: rgba(159, 59, 46, 0.9);
+  color: #fbbf24;
   font-weight: 600;
 }
 
@@ -648,7 +672,7 @@
 .pavilionDetailOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 10, 0.45);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -661,9 +685,9 @@
   max-height: min(90vh, 860px);
   position: relative;
   border-radius: 16px;
-  background: rgba(251, 244, 228, 0.96);
-  border: 1px solid var(--pavilion-border);
-  box-shadow: var(--pavilion-shadow-strong);
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -676,14 +700,14 @@
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  border: 1px solid var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.9);
-  color: var(--pavilion-ink-strongest);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
   cursor: pointer;
 }
 
 .pavilionDetailClose:focus-visible {
-  outline: 2px solid rgba(120, 72, 33, 0.45);
+  outline: 2px solid rgba(226, 232, 240, 0.65);
   outline-offset: 2px;
 }
 
@@ -693,8 +717,8 @@
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.92);
 }
 
 .pavilionDetailTitleBlock {
@@ -711,7 +735,7 @@
 
 .pavilionDetailSubtitle {
   font-size: 12px;
-  color: var(--pavilion-ink);
+  color: #94a3b8;
 }
 
 .pavilionDetailMeta {
@@ -726,8 +750,8 @@
   gap: 6px;
   padding: 4px 8px;
   border-radius: 999px;
-  border: 1px solid var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.75);
   font-size: 14px;
 }
 
@@ -765,7 +789,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--pavilion-ink);
+  color: #94a3b8;
 }
 
 .pavilionDetailTocItem {
@@ -774,15 +798,15 @@
   border-radius: 8px;
   padding: 6px 8px;
   text-align: left;
-  color: var(--pavilion-ink);
+  color: #e2e8f0;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .pavilionDetailTocItem.is-active {
-  border-color: var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.85);
-  color: var(--pavilion-ink-strongest);
+  border-color: rgba(148, 163, 184, 0.6);
+  background: rgba(30, 41, 59, 0.6);
+  color: #f8fafc;
 }
 
 .pavilionDetailScroll {
@@ -810,12 +834,12 @@
 
 .pavilionDetailScrollShadow--top {
   top: 0;
-  box-shadow: inset 0 12px 12px rgba(43, 33, 22, 0.15);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
 }
 
 .pavilionDetailScrollShadow--bottom {
   bottom: 0;
-  box-shadow: inset 0 -12px 12px rgba(43, 33, 22, 0.15);
+  background: linear-gradient(0deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0));
 }
 
 .pavilionDetailContent {
@@ -836,13 +860,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--pavilion-ink-strongest);
+  color: #e2e8f0;
   margin: 0;
 }
 
 .pavilionDetailSummary {
-  background: rgba(251, 244, 228, 0.9);
-  border: 1px solid var(--pavilion-border);
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.25);
   border-radius: 12px;
   padding: 12px 14px;
   display: flex;
@@ -853,7 +877,7 @@
 .pavilionDetailSummaryText {
   margin: 0;
   font-size: 14px;
-  color: var(--pavilion-ink);
+  color: #e2e8f0;
 }
 
 .pavilionDetailFacts {
@@ -867,18 +891,18 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--pavilion-ink);
+  color: #94a3b8;
 }
 
 .pavilionDetailFacts dd {
   margin: 2px 0 0;
   font-size: 13px;
-  color: var(--pavilion-ink-strongest);
+  color: #f8fafc;
 }
 
 .pavilionDetailPanel {
-  background: rgba(251, 244, 228, 0.9);
-  border: 1px solid var(--pavilion-border);
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
   padding: 12px 14px;
   display: flex;
@@ -895,7 +919,7 @@
 .pavilionDetailSubsectionTitle {
   font-size: 12px;
   font-weight: 600;
-  color: var(--pavilion-ink-strongest);
+  color: #e2e8f0;
 }
 
 .pavilionDetailEffectList {
@@ -903,15 +927,15 @@
   flex-direction: column;
   gap: 4px;
   font-size: 13px;
-  color: var(--pavilion-ink);
+  color: #e2e8f0;
 }
 
 .pavilionDetailEffectLine {
-  color: var(--pavilion-ink);
+  color: #e2e8f0;
 }
 
 .pavilionDetailLine {
-  color: var(--pavilion-ink);
+  color: #e2e8f0;
 }
 
 .pavilionDetailActions {
@@ -921,7 +945,7 @@
 }
 
 .pavilionDetailEmpty {
-  color: var(--pavilion-ink);
+  color: #94a3b8;
   font-size: 13px;
 }
 
@@ -930,9 +954,9 @@
   right: 20px;
   bottom: 16px;
   border-radius: 999px;
-  border: 1px solid var(--pavilion-border);
-  background: rgba(251, 244, 228, 0.9);
-  color: var(--pavilion-ink-strongest);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(30, 41, 59, 0.85);
+  color: #f8fafc;
   padding: 6px 12px;
   font-size: 12px;
   cursor: pointer;
@@ -1022,8 +1046,8 @@
 }
 
 .pavilionHistory {
-  background: rgba(251, 244, 228, 0.9);
-  border: 1px solid var(--pavilion-border);
+  background: #0f172a;
+  border: 1px solid #1f2937;
   border-radius: 8px;
   padding: 10px;
 }
@@ -1041,9 +1065,9 @@
 
 .pavilionHistoryLine {
   font-size: 12px;
-  color: var(--pavilion-ink);
+  color: #cbd5e1;
   padding: 4px 0;
-  border-bottom: 1px solid var(--pavilion-border);
+  border-bottom: 1px solid #1e293b;
 }
 
 .pavilionHistoryLine:last-child {
@@ -1052,7 +1076,7 @@
 
 .pavilionHistoryTime {
   font-size: 11px;
-  color: var(--pavilion-ink);
+  color: #94a3b8;
 }
 
 .pavilionHistoryEntry {
@@ -1065,8 +1089,8 @@
 
 .pavilionHistoryToggle {
   background: transparent;
-  border: 1px solid var(--pavilion-border);
-  color: var(--pavilion-ink-strongest);
+  border: 1px solid #334155;
+  color: #e2e8f0;
   border-radius: 6px;
   font-size: 12px;
   padding: 4px 8px;
@@ -1074,7 +1098,7 @@
 }
 
 .pavilionHistoryToggle:hover {
-  border-color: rgba(120, 72, 33, 0.5);
+  border-color: #64748b;
 }
 
 .pavilionPityLine span {
@@ -1084,33 +1108,33 @@
 .pavilionPurchaseResult {
   margin-top: 12px;
   padding: 12px;
-  border: 1px solid var(--pavilion-border);
+  border: 1px solid #334155;
   border-radius: 6px;
-  background: rgba(251, 244, 228, 0.9);
-  color: var(--pavilion-ink);
+  background: #0f172a;
+  color: #e2e8f0;
   gap: 6px;
   display: flex;
   flex-direction: column;
 }
 
 .pavilionPurchaseResult--duplicate {
-  border-color: rgba(159, 59, 46, 0.45);
+  border-color: #7c3aed;
 }
 
 .pavilionPurchaseResult--error {
-  border-color: rgba(145, 58, 37, 0.5);
-  color: rgba(145, 58, 37, 0.95);
+  border-color: #ef4444;
+  color: #fecdd3;
 }
 
 .pavilionPurchaseError {
   margin-top: 8px;
-  color: rgba(145, 58, 37, 0.9);
+  color: #fca5a5;
   font-weight: 600;
 }
 
 .pavilionResultTitle {
   font-weight: 700;
-  color: rgba(159, 59, 46, 0.9);
+  color: #c084fc;
 }
 
 .techniqueCardHighlight {

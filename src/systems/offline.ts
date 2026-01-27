@@ -240,10 +240,10 @@ export function formatOfflineDuration(seconds: number): string {
   } else if (parts.length === 1) {
     return parts[0];
   } else if (parts.length === 2) {
-    return `${parts[0]} and ${parts[1]}`;
+    return parts.join(', ');
   } else {
     const lastPart = parts.pop();
-    return parts.join(', ') + ', and ' + lastPart;
+    return parts.join(', ') + ', ' + lastPart;
   }
 }
 

@@ -1,6 +1,10 @@
 .medicinePouchPanel {
   margin-bottom: 16px;
-  color: var(--ink-text-color);
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
 .medicinePouchPanel--modal {
@@ -28,12 +32,12 @@
 
 .medicinePouchSubtitle {
   font-size: 13px;
-  color: var(--ink-muted-color);
+  color: #cbd5e1;
 }
 
 .medicinePouchFootnote {
   font-size: 12px;
-  color: var(--ink-muted-color);
+  color: #94a3b8;
   text-align: right;
 }
 
@@ -61,7 +65,11 @@
 }
 
 .medicinePouchEmptyState {
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  border-radius: 12px;
+  padding: 12px;
   margin-bottom: 12px;
+  background: rgba(15, 23, 42, 0.35);
   text-align: center;
 }
 
@@ -72,10 +80,14 @@
 
 .medicinePouchEmptyBody {
   font-size: 12px;
-  color: var(--ink-muted-color);
+  color: #94a3b8;
 }
 
 .medicinePouchCard {
+  border: 1px solid #1e293b;
+  background: #111827;
+  border-radius: 10px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -100,11 +112,15 @@
 
 .medicinePouchCardSubtitle {
   font-size: 13px;
-  color: var(--ink-muted-color);
+  color: #cbd5e1;
 }
 
 .medicinePouchTag {
-  font-size: 11px;
+  padding: 4px 8px;
+  background: #0ea5e9;
+  color: #0b1220;
+  border-radius: 9999px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -133,17 +149,17 @@
 .medicinePouchSelect,
 .medicinePouchInput {
   flex: 1;
-  background: rgba(250, 242, 228, 0.85);
-  border: 1px solid rgba(120, 72, 33, 0.45);
-  color: var(--ink-text-color);
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  color: #e2e8f0;
   border-radius: 6px;
   padding: 6px;
 }
 
 .medicinePouchButton {
-  background: rgba(250, 242, 228, 0.9);
-  border: 1px solid rgba(120, 72, 33, 0.45);
-  color: var(--ink-text-color);
+  background: #0ea5e9;
+  border: none;
+  color: #0b1220;
   padding: 6px 10px;
   border-radius: 6px;
   font-weight: 700;
@@ -151,9 +167,9 @@
 }
 
 .medicinePouchButton--ghost {
-  background: rgba(250, 242, 228, 0.65);
-  color: var(--ink-muted-color);
-  border: 1px solid rgba(120, 72, 33, 0.35);
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #1f2937;
 }
 
 .medicinePouchCheckbox {
@@ -161,10 +177,10 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--ink-muted-color);
+  color: #cbd5e1;
 }
 
 .medicinePouchHint {
   font-size: 12px;
-  color: var(--ink-muted-color);
+  color: #94a3b8;
 }

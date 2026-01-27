@@ -23,7 +23,6 @@ import {
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
 import { TechniqueSpine } from '../techniques/TechniqueSpine';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar';
-import { InkPanel, PaperCard } from '../../ui/ink';
 import './TechniqueLibraryScreen.scss';
 
 type SlotSelection = { type: SlotType; index: number };
@@ -520,7 +519,7 @@ export function TechniqueLibraryScreen() {
           <div className="techShelfRowTitle">{title}</div>
           <div className="techShelfRowCount">{entries.length}</div>
         </div>
-        <PaperCard className="techShelfRowRail" variant="tray">
+        <div className="techShelfRowRail">
           <div className="techShelfRowSpines">
             {entries.map((tech) => {
               const displayName = tech.name || tech.id;
@@ -559,7 +558,7 @@ export function TechniqueLibraryScreen() {
               </div>
             ))}
           </div>
-        </PaperCard>
+        </div>
       </div>
     );
   };
@@ -590,9 +589,12 @@ export function TechniqueLibraryScreen() {
       </header>
 
       <div className="techStage">
+        <div className="techStageVfx" aria-hidden="true">
+          <div className="techStageVfxGlow" />
+        </div>
         <section className="techLoadoutBoard">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--left">
-            <InkPanel variant="techniques" className="techniqueLibraryPanel">
+            <div className="techniqueLibraryPanel">
               <div className="techniqueLibraryPanelHeader">Loadouts</div>
               <div className="techniqueLibraryLoadouts">
                 {loadouts.map((loadout) => (
@@ -632,13 +634,14 @@ export function TechniqueLibraryScreen() {
                   {castingPolicyHelp[selectedCastingPolicy]}
                 </div>
               </div>
-            </InkPanel>
+            </div>
+
           </div>
         </section>
 
         <section className="techLibraryStage">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--center">
-            <InkPanel variant="techniques" className="techniqueLibraryPanel techniqueLibraryPanel--owned" watermark>
+            <div className="techniqueLibraryPanel">
               <div className="techniqueLibraryPanelHeader techniqueLibraryPanelHeader--row">
                 <span>Owned Techniques</span>
                 <button
@@ -653,14 +656,14 @@ export function TechniqueLibraryScreen() {
               </div>
               <div className="techShelfWall">
                 {isContentLoading ? (
-                  <PaperCard className="techniqueLibraryEmptyState" variant="tray">
+                  <div className="techniqueLibraryEmptyState">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
                       ⏳
                     </div>
                     Loading techniques...
-                  </PaperCard>
+                  </div>
                 ) : ownedTechniques.length === 0 ? (
-                  <PaperCard className="techniqueLibraryEmptyState" variant="tray">
+                  <div className="techniqueLibraryEmptyState">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
                       📜
                     </div>
@@ -671,14 +674,14 @@ export function TechniqueLibraryScreen() {
                     <button className="techniqueLibraryLinkButton" onClick={handleManualPavilionNavigation}>
                       Go to Manual Pavilion
                     </button>
-                  </PaperCard>
+                  </div>
                 ) : filteredTechniques.length === 0 ? (
-                  <PaperCard className="techniqueLibraryEmptyState" variant="tray">
+                  <div className="techniqueLibraryEmptyState">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
                       🧭
                     </div>
                     No techniques match the current filters.
-                  </PaperCard>
+                  </div>
                 ) : (
                   <>
                     {renderTechShelfRow('Active Techniques', groupedShelves.active, 14)}
@@ -689,13 +692,13 @@ export function TechniqueLibraryScreen() {
                   </>
                 )}
               </div>
-            </InkPanel>
+            </div>
           </div>
         </section>
 
         <aside className="techInspectorDock">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--right">
-            <InkPanel variant="techniques" className="techniqueLibraryPanel techniqueLibraryPanel--altar">
+            <div className="techniqueLibraryPanel techniqueLibraryPanel--altar">
               <InnerPalaceEquipAltar
                 slots={slotConfigs}
                 selectedTechId={selectedTechniqueId}
@@ -715,8 +718,8 @@ export function TechniqueLibraryScreen() {
                 feedback={altarFeedback}
                 onFeedback={setAltarFeedback}
               />
-            </InkPanel>
-            <PaperCard className="techniqueLibraryPanel techniqueLibraryPanel--summary" variant="tray">
+            </div>
+            <div className="techniqueLibraryPanel techniqueLibraryPanel--summary">
               <div className="techniqueLibraryPanelHeader">Selected Technique</div>
               <div className="techniqueLibrarySummary">
                 {selectedTechniqueId ? (
@@ -782,7 +785,8 @@ export function TechniqueLibraryScreen() {
                   <div className="techniqueLibraryEmptyDetail">Select a technique to view details.</div>
                 )}
               </div>
-            </PaperCard>
+            </div>
+
           </div>
         </aside>
       </div>

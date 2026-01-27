@@ -14,7 +14,6 @@ import { useActivityStore } from '../../../stores/activityStore';
 import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
 import { resolveForgeStepScript } from './forgeScriptBuilder';
-import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -253,33 +252,25 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
 
   return (
     <div className="forgeWorkshop">
-      <InkPanel variant="forge" className="forgeWorkshop__banner">
+      <div className="forgeWorkshop__banner">
         <div>
           <div className="forgeWorkshop__bannerTitle">Forge Workshop</div>
           <div className="forgeWorkshop__bannerBody">Refine gear and craft runes that empower techniques.</div>
         </div>
         <div className="forgeWorkshop__bannerActions">
-          <button
-            type="button"
-            className="worldScreenModuleButton forgeWorkshop__navButton"
-            onClick={() => setActiveTab('techniques')}
-          >
+          <button type="button" className="worldScreenModuleButton" onClick={() => setActiveTab('techniques')}>
             Techniques
           </button>
-          <button
-            type="button"
-            className="worldScreenModuleButton forgeWorkshop__navButton"
-            onClick={() => setActiveTab('inventory')}
-          >
+          <button type="button" className="worldScreenModuleButton" onClick={() => setActiveTab('inventory')}>
             Equipment
           </button>
         </div>
         <UsedForLinks usageText="Techniques and equipment upgrades" className="forgeWorkshop__usedFor" />
-      </InkPanel>
+      </div>
 
       <div className="forgeWorkshop__body">
         <div className="forgeWorkshop__workbench">
-          <InkPanel variant="forge" className="forgeWorkshop__workbenchFrame">
+          <div className="forgeWorkshop__workbenchFrame">
             {activeForgeSession?.mode === 'handsOn' && (
               <ErrorBoundary>
                 <ForgeMinigame
@@ -318,12 +309,12 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 )}
               </div>
             )}
-          </InkPanel>
+          </div>
           {sessionStatus && <div className="forgeWorkshop__status">{sessionStatus}</div>}
         </div>
 
         <div className="forgeWorkshop__sidebar">
-          <PaperCard variant="tray" className="forgeWorkshop__filters">
+          <div className="forgeWorkshop__filters">
             <input
               className="forgeWorkshop__search"
               placeholder="Search blueprints"
@@ -332,17 +323,19 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
             />
             <div className="forgeWorkshop__chips">
               {FILTERS.map((filter) => (
-                <PaperChip
+                <button
                   key={filter.id}
-                  text={filter.label}
+                  type="button"
                   className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': filterId === filter.id })}
                   onClick={() => setFilterId(filter.id)}
-                />
+                >
+                  {filter.label}
+                </button>
               ))}
             </div>
-          </PaperCard>
+          </div>
 
-          <PaperCard variant="tray" className="forgeWorkshop__list">
+          <div className="forgeWorkshop__list">
             {filteredBlueprints.length === 0 && (
               <div className="forgeWorkshop__listEmpty">No blueprints match this filter.</div>
             )}
@@ -353,40 +346,28 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 <button
                   key={blueprint.id}
                   type="button"
-                  className={classNames('forgeWorkshop__rowButton', {
+                  className={classNames('forgeWorkshop__row', {
                     'forgeWorkshop__row--active': blueprint.id === selectedBlueprintId,
                     'forgeWorkshop__row--locked': locked,
                   })}
                   onClick={() => setSelectedBlueprintId(blueprint.id)}
                 >
-                  <PaperCard
-                    className={classNames('forgeWorkshop__row', {
-                      'forgeWorkshop__row--active': blueprint.id === selectedBlueprintId,
-                      'forgeWorkshop__row--locked': locked,
-                    })}
-                    interactive
-                    selected={blueprint.id === selectedBlueprintId}
-                    disabled={locked}
-                  >
-                    <div className="forgeWorkshop__rowIcon">{blueprint.name?.slice(0, 1) ?? '◆'}</div>
-                    <div className="forgeWorkshop__rowBody">
-                      <div className="forgeWorkshop__rowTitle">{blueprint.name ?? blueprint.id}</div>
-                      <div className="forgeWorkshop__rowMeta">
-                        {blueprint.cityIndex ? `Tier ${blueprint.cityIndex}` : 'Tier —'}
-                        {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
-                      </div>
-                      {locked && (
-                        <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>
-                      )}
+                  <div className="forgeWorkshop__rowIcon">{blueprint.name?.slice(0, 1) ?? '◆'}</div>
+                  <div className="forgeWorkshop__rowBody">
+                    <div className="forgeWorkshop__rowTitle">{blueprint.name ?? blueprint.id}</div>
+                    <div className="forgeWorkshop__rowMeta">
+                      {blueprint.cityIndex ? `Tier ${blueprint.cityIndex}` : 'Tier —'}
+                      {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
                     </div>
-                  </PaperCard>
+                    {locked && <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>}
+                  </div>
                 </button>
               );
             })}
-          </PaperCard>
+          </div>
 
           {selectedBlueprint && (
-            <InkPanel variant="forge" className="forgeWorkshop__detail">
+            <div className="forgeWorkshop__detail">
               <div className="forgeWorkshop__detailHeader">
                 <div>
                   <div className="forgeWorkshop__detailTitle">{selectedBlueprint.name ?? selectedBlueprint.id}</div>
@@ -481,12 +462,12 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                   </div>
                 ))}
               </div>
-            </InkPanel>
+            </div>
           )}
         </div>
       </div>
 
-      <InkPanel variant="forge" className="forgeWorkshop__queue">
+      <div className="forgeWorkshop__queue">
         <div className="forgeWorkshop__queueHeader">
           <div className="forgeWorkshop__queueTitle">Forge Queue</div>
           <div className="forgeWorkshop__queueSub">Jobs process in order.</div>
@@ -521,7 +502,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               const modeLabel = job.mode === 'HANDS_ON' ? 'Hands-on' : job.mode === 'ASSISTED' ? 'Assisted' : 'Idle';
 
               return (
-                <PaperCard key={job.id} className="forgeWorkshop__queueCard" variant="tray">
+                <div key={job.id} className="forgeWorkshop__queueCard">
                   <div className="forgeWorkshop__queueRow">
                     <div>
                       <div className="forgeWorkshop__queueName">{label}</div>
@@ -568,14 +549,14 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                       {queueMessage.message}
                     </div>
                   )}
-                </PaperCard>
+                </div>
               );
             })}
           </div>
         )}
-      </InkPanel>
+      </div>
 
-      <InkPanel variant="forge" className="forgeWorkshop__meter">
+      <div className="forgeWorkshop__meter">
         <div className="forgeWorkshop__meterHeader">Quality &amp; Process</div>
         {qualityBuckets ? (
           <div className="forgeWorkshop__meterGrid">
@@ -606,7 +587,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
         ) : (
           <div className="forgeWorkshop__meterEmpty">Play hands-on to improve these.</div>
         )}
-      </InkPanel>
+      </div>
 
       {lastClaimResult && (
         <div className="modalOverlay forgeResultModal">
