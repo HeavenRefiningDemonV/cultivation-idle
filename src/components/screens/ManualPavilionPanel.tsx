@@ -14,6 +14,7 @@ import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { useUIStore } from '../../stores/uiStore';
 import { getManualTierIcon, getManualPathIcon, getManualRoleIcon } from '../../features/manuals/manualIconMap';
 import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal';
+import { PaperCard } from '../../ui/ink';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -470,10 +471,12 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return (
       <div className={`pavilionShelfRow pavilionShelfRow--${shelfKey}`}>
         <div className={'pavilionShelfRowHeader'}>
-          <div className={'pavilionShelfRowTitle'}>{title}</div>
+          <PaperCard variant="label" className={'pavilionShelfRowTitle'}>
+            {title}
+          </PaperCard>
           {hint && <div className={'pavilionShelfRowHint'}>{hint}</div>}
         </div>
-        <div className={'pavilionShelfRowRail'}>
+        <PaperCard variant="tray" className={'pavilionShelfRowRail'}>
           <div className={'pavilionShelfRowSpines'} role="list">
             {spineEntries.map((entry) => (
               <BookSpineSlot
@@ -488,7 +491,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
               />
             ))}
           </div>
-        </div>
+        </PaperCard>
       </div>
     );
   };
@@ -687,7 +690,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
 
   return (
     <div className={'manualPavilionPanel manualPavilionPanel--v2'}>
-      <div className={'pavilionTopRibbon'}>
+      <PaperCard variant="tray" className={'pavilionTopRibbon'}>
         <div className={'pavilionTopLeft'}>
           <div className={'pavilionTitle'}>{pavilionTitle}</div>
           <div className={'pavilionSubtitle'}>
@@ -703,7 +706,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
             Satchel ({satchelCount})
           </button>
         </div>
-      </div>
+      </PaperCard>
       <div className={`pavilionShelfWall${flashOn ? ' pavilionShelfWall--flash' : ''}`}>
         {renderShelfRow('Common Shelf', 'common', shelves.common, 14, 'Heaven/Earth/Martial manuals')}
         {renderShelfRow('Advanced Shelf', 'advanced', shelves.advanced, 12, 'Refined techniques')}
