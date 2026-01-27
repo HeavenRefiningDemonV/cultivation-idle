@@ -37,6 +37,24 @@
   overflow: hidden;
 }
 
+.innerPalaceCenterAnchor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.innerPalaceSlots {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
 .innerPalaceStage::before {
   content: '';
   position: absolute;
@@ -92,7 +110,9 @@
 
 .innerPalaceSlot {
   position: absolute;
-  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px));
   width: clamp(96px, 22%, 120px);
   height: clamp(120px, 26%, 150px);
   border: none;

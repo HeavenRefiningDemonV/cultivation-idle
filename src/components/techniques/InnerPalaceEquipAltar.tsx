@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback, type CSSProperties } from 'react';
 import type { TechniqueDef } from '../../content';
 import type { EquipResult, SlotType } from '../../stores/techniqueStore';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
@@ -177,16 +177,15 @@ export function InnerPalaceEquipAltar({
   const slotPositions = useMemo(() => {
     const slotCount = orderedSlots.length || 1;
     const size = Math.min(stageSize.width, stageSize.height);
-    if (size <= 0) return new Map<string, { left: number; top: number }>();
+    if (size <= 0) return new Map<string, { dx: number; dy: number }>();
     const radius = size * 0.38;
-    const center = size / 2;
-    const positions = new Map<string, { left: number; top: number }>();
+    const positions = new Map<string, { dx: number; dy: number }>();
     orderedSlots.forEach((slot, index) => {
       const angleDeg = -90 + (360 / slotCount) * index;
       const angleRad = (angleDeg * Math.PI) / 180;
-      const left = center + radius * Math.cos(angleRad);
-      const top = center + radius * Math.sin(angleRad);
-      positions.set(slot.key, { left, top });
+      const dx = radius * Math.cos(angleRad);
+      const dy = radius * Math.sin(angleRad);
+      positions.set(slot.key, { dx, dy });
     });
     return positions;
   }, [orderedSlots, stageSize.height, stageSize.width]);
@@ -291,122 +290,127 @@ export function InnerPalaceEquipAltar({
       </div>
 
       <div className="innerPalaceStage" ref={stageRef} data-core-pulse={corePulseTone ?? undefined}>
-        <div className="innerPalaceCore" aria-hidden="true" />
-        <div className="innerPalaceRing" aria-hidden="true" />
+        <div className="innerPalaceCenterAnchor">
+          <div className="innerPalaceCore" aria-hidden="true" />
+          <div className="innerPalaceRing" aria-hidden="true" />
+          <div className="innerPalaceSlots">
+            {orderedSlots.map((slot) => {
+              const technique = slot.techId ? techniquesById[slot.techId] : undefined;
+              const displayName = technique?.name ?? slot.techId ?? slot.label;
+              const rarityKey = normalizeRarity(technique?.rarity);
+              const gradeKey = normalizeGrade(technique?.tier);
+              const pathIcon = getPathIcon(technique?.path ?? null);
+              const tierIcon = technique?.tier
+                ? getTierIcon(gradeKey)
+                : { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
+              const typeIcon = getTypeIcon(resolveTechniqueType(technique));
+              const isSelected = selectedSlotKey === slot.key;
+              const canEquipSelected = Boolean(
+                selectedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts),
+              );
+              const shouldHighlight = Boolean(
+                highlightedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(highlightedTechnique, slot.accepts),
+              );
+              const state = slot.isUnlocked ? (slot.techId ? 'occupied' : 'empty') : 'locked';
+              const position = slotPositions.get(slot.key);
 
-        {orderedSlots.map((slot) => {
-          const technique = slot.techId ? techniquesById[slot.techId] : undefined;
-          const displayName = technique?.name ?? slot.techId ?? slot.label;
-          const rarityKey = normalizeRarity(technique?.rarity);
-          const gradeKey = normalizeGrade(technique?.tier);
-          const pathIcon = getPathIcon(technique?.path ?? null);
-          const tierIcon = technique?.tier
-            ? getTierIcon(gradeKey)
-            : { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
-          const typeIcon = getTypeIcon(resolveTechniqueType(technique));
-          const isSelected = selectedSlotKey === slot.key;
-          const canEquipSelected = Boolean(
-            selectedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts),
-          );
-          const shouldHighlight = Boolean(
-            highlightedTechId && slot.isUnlocked && isTechniqueCompatibleWithSlot(highlightedTechnique, slot.accepts),
-          );
-          const state = slot.isUnlocked ? (slot.techId ? 'occupied' : 'empty') : 'locked';
-          const position = slotPositions.get(slot.key);
-
-          return (
-            <button
-              key={slot.key}
-              ref={(node) => slotButtonRefs.current.set(slot.key, node)}
-              type="button"
-              className={`innerPalaceSlot ${isSelected ? 'is-selected' : ''} ${
-                shakeSlotKey === slot.key ? 'is-shaking' : ''
-              } ${flashState?.key === slot.key ? 'is-flashing' : ''}`}
-              style={{
-                left: position?.left ?? '50%',
-                top: position?.top ?? '50%',
-              }}
-              data-slot-type={slot.slotType}
-              data-state={state}
-              data-path={technique?.path ?? 'unknown'}
-              data-rarity={rarityKey}
-              data-can-equip={canEquipSelected ? 'true' : 'false'}
-              data-highlighted={shouldHighlight ? 'true' : 'false'}
-              data-flash-tone={flashState?.key === slot.key ? flashState?.tone : undefined}
-              aria-label={`${slot.label}: ${
-                slot.techId ? displayName : 'Empty slot'
-              }${slot.isUnlocked ? '' : ' (Locked)'}`}
-              aria-haspopup={slot.techId ? 'dialog' : undefined}
-              aria-expanded={popoverSlotKey === slot.key}
-              onClick={() => handleSlotClick(slot)}
-            >
-              <div className="innerPalaceSlotFrame">
-                {slot.techId ? (
-                  <div className="innerPalaceSlotSpine">
-                    <div className="innerPalaceSlotIcons" aria-hidden="true">
-                      <span className="innerPalaceSlotIcon" title={tierIcon.label}>
-                        {tierIcon.iconText ?? '◎'}
-                      </span>
-                      {pathIcon.iconId ? (
-                        <span className="innerPalaceSlotIcon" title={pathIcon.label}>
-                          <GameIcon icon={pathIcon.iconId} size={16} decorative />
-                        </span>
-                      ) : null}
-                      {typeIcon.iconId ? (
-                        <span className="innerPalaceSlotIcon" title={typeIcon.label}>
-                          <GameIcon icon={typeIcon.iconId} size={16} decorative />
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="innerPalaceSlotTitle" title={displayName}>
-                      {displayName}
-                    </div>
-                    <div className="innerPalaceSlotLabel">{slot.label}</div>
-                  </div>
-                ) : (
-                  <div className="innerPalaceSlotEmpty">
-                    <div className="innerPalaceSlotGlyph" aria-hidden="true">
-                      <GameIcon icon={slotGlyphMap[slot.accepts]} size={22} decorative />
-                    </div>
-                    <div className="innerPalaceSlotLabel">{slot.label}</div>
-                    {!slot.isUnlocked && (
-                      <div className="innerPalaceSlotLocked">
-                        <GameIcon icon="inkLock" size={14} decorative /> Locked
+              return (
+                <button
+                  key={slot.key}
+                  ref={(node) => slotButtonRefs.current.set(slot.key, node)}
+                  type="button"
+                  className={`innerPalaceSlot ${isSelected ? 'is-selected' : ''} ${
+                    shakeSlotKey === slot.key ? 'is-shaking' : ''
+                  } ${flashState?.key === slot.key ? 'is-flashing' : ''}`}
+                  style={
+                    {
+                      '--dx': position ? `${position.dx}px` : '0px',
+                      '--dy': position ? `${position.dy}px` : '0px',
+                    } as CSSProperties
+                  }
+                  data-slot-type={slot.slotType}
+                  data-state={state}
+                  data-path={technique?.path ?? 'unknown'}
+                  data-rarity={rarityKey}
+                  data-can-equip={canEquipSelected ? 'true' : 'false'}
+                  data-highlighted={shouldHighlight ? 'true' : 'false'}
+                  data-flash-tone={flashState?.key === slot.key ? flashState?.tone : undefined}
+                  aria-label={`${slot.label}: ${
+                    slot.techId ? displayName : 'Empty slot'
+                  }${slot.isUnlocked ? '' : ' (Locked)'}`}
+                  aria-haspopup={slot.techId ? 'dialog' : undefined}
+                  aria-expanded={popoverSlotKey === slot.key}
+                  onClick={() => handleSlotClick(slot)}
+                >
+                  <div className="innerPalaceSlotFrame">
+                    {slot.techId ? (
+                      <div className="innerPalaceSlotSpine">
+                        <div className="innerPalaceSlotIcons" aria-hidden="true">
+                          <span className="innerPalaceSlotIcon" title={tierIcon.label}>
+                            {tierIcon.iconText ?? '◎'}
+                          </span>
+                          {pathIcon.iconId ? (
+                            <span className="innerPalaceSlotIcon" title={pathIcon.label}>
+                              <GameIcon icon={pathIcon.iconId} size={16} decorative />
+                            </span>
+                          ) : null}
+                          {typeIcon.iconId ? (
+                            <span className="innerPalaceSlotIcon" title={typeIcon.label}>
+                              <GameIcon icon={typeIcon.iconId} size={16} decorative />
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="innerPalaceSlotTitle" title={displayName}>
+                          {displayName}
+                        </div>
+                        <div className="innerPalaceSlotLabel">{slot.label}</div>
+                      </div>
+                    ) : (
+                      <div className="innerPalaceSlotEmpty">
+                        <div className="innerPalaceSlotGlyph" aria-hidden="true">
+                          <GameIcon icon={slotGlyphMap[slot.accepts]} size={22} decorative />
+                        </div>
+                        <div className="innerPalaceSlotLabel">{slot.label}</div>
+                        {!slot.isUnlocked && (
+                          <div className="innerPalaceSlotLocked">
+                            <GameIcon icon="inkLock" size={14} decorative /> Locked
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              {popoverSlotKey === slot.key && popoverSlot ? (
-                <div ref={popoverRef} className="innerPalaceSlotPopover" role="dialog" aria-label="Slot actions">
-                  <div className="innerPalaceSlotPopoverTitle">{popoverTechniqueName}</div>
-                  <div className="innerPalaceSlotPopoverActions">
-                    <button
-                      type="button"
-                      ref={popoverFirstActionRef}
-                      onClick={() => handlePopoverAction('view')}
-                    >
-                      View
-                    </button>
-                    <button type="button" onClick={() => handlePopoverAction('unequip')}>
-                      Unequip
-                    </button>
-                    {selectedTechId &&
-                      isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts) && (
-                        <button type="button" onClick={() => handlePopoverAction('replace')}>
-                          Replace
+                  {popoverSlotKey === slot.key && popoverSlot ? (
+                    <div ref={popoverRef} className="innerPalaceSlotPopover" role="dialog" aria-label="Slot actions">
+                      <div className="innerPalaceSlotPopoverTitle">{popoverTechniqueName}</div>
+                      <div className="innerPalaceSlotPopoverActions">
+                        <button
+                          type="button"
+                          ref={popoverFirstActionRef}
+                          onClick={() => handlePopoverAction('view')}
+                        >
+                          View
                         </button>
+                        <button type="button" onClick={() => handlePopoverAction('unequip')}>
+                          Unequip
+                        </button>
+                        {selectedTechId &&
+                          isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts) && (
+                            <button type="button" onClick={() => handlePopoverAction('replace')}>
+                              Replace
+                            </button>
+                          )}
+                      </div>
+                      {selectedTechId && !isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts) && (
+                        <div className="innerPalaceSlotPopoverHint">Selected technique is incompatible.</div>
                       )}
-                  </div>
-                  {selectedTechId && !isTechniqueCompatibleWithSlot(selectedTechnique, slot.accepts) && (
-                    <div className="innerPalaceSlotPopoverHint">Selected technique is incompatible.</div>
-                  )}
-                </div>
-              ) : null}
-            </button>
-          );
-        })}
+                    </div>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className={`innerPalaceFeedback tone-${feedback?.tone ?? 'idle'}`} aria-live="polite">
