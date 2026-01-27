@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
+import lotusClosed from '../../assets/onscreen/qi_lotus_closed.png';
+import lotusFull from '../../assets/onscreen/qi_lotus_full.png';
+import lotusOpen from '../../assets/onscreen/qi_lotus_open.png';
 import { formatNumber } from '../../utils/numbers';
 import './CultivationHeaderRibbon.scss';
+
+type QiLotusState = 'closed' | 'open' | 'full';
 
 type CultivationHeaderRibbonProps = {
   realmLabel: string;
@@ -14,6 +19,7 @@ type CultivationHeaderRibbonProps = {
   activityType: string | null;
   stability: number;
   stabilityCap: number;
+  breakthroughImminent?: boolean;
 };
 
 function getRealmIcon(realmLabel: string, realmIndex?: number) {
@@ -37,6 +43,7 @@ export function CultivationHeaderRibbon({
   activityType,
   stability,
   stabilityCap,
+  breakthroughImminent,
 }: CultivationHeaderRibbonProps) {
   const storageKey = 'ui.cultivation.headerCollapsed';
   const ribbonId = 'cultivationHeaderPanel';
@@ -53,6 +60,11 @@ export function CultivationHeaderRibbon({
       : activityTone === 'busy'
         ? 'Foreground activity running. Meditation unavailable.'
         : 'Qi flows passively. Meditate to gain Insight/Study.';
+  const lotusState: QiLotusState = breakthroughImminent
+    ? 'full'
+    : activityType === 'meditate'
+      ? 'open'
+      : 'closed';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -80,8 +92,22 @@ export function CultivationHeaderRibbon({
                 Qi
               </div>
               <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
-                <span className={`cultivationHeaderQiOrb cultivationHeaderQiOrb--${isCultivating(activityType)}`}>
-                  <span className="cultivationHeaderQiOrbCore" aria-hidden="true" />
+                <span className="cultivationHeaderQiLotus" data-state={lotusState} aria-hidden="true">
+                  <img
+                    className="cultivationHeaderQiLotusImg cultivationHeaderQiLotusImg--closed"
+                    src={lotusClosed}
+                    alt=""
+                  />
+                  <img
+                    className="cultivationHeaderQiLotusImg cultivationHeaderQiLotusImg--open"
+                    src={lotusOpen}
+                    alt=""
+                  />
+                  <img
+                    className="cultivationHeaderQiLotusImg cultivationHeaderQiLotusImg--full"
+                    src={lotusFull}
+                    alt=""
+                  />
                 </span>
                 {formatNumber(qi)}
               </div>
@@ -157,8 +183,4 @@ export function CultivationHeaderRibbon({
       </button>
     </div>
   );
-}
-
-function isCultivating(activityType: string | null) {
-  return activityType === 'meditate' ? 'active' : 'passive';
 }

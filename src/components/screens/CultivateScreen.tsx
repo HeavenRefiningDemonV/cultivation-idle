@@ -30,6 +30,7 @@ const ACTIVITY_LABELS: Record<string, string> = {
 };
 
 const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V'];
+const NEAR_BREAKTHROUGH_RATIO = 0.9;
 
 export function QiProgressBar({
   current,
@@ -225,7 +226,8 @@ export function CultivateScreen() {
   const qiRatio = requiredQi.greaterThan(0)
     ? currentQi.div(requiredQi).toNumber()
     : 0;
-  const isNearReady = qiRatio >= 0.9 && !canBreakthrough;
+  const isBreakthroughImminent = qiRatio >= NEAR_BREAKTHROUGH_RATIO;
+  const isNearReady = isBreakthroughImminent && !canBreakthrough;
 
   const breakthroughRequirementLabel = (() => {
     if (!hasEnoughQi) {
@@ -301,6 +303,7 @@ export function CultivateScreen() {
           activityType={activeActivity?.type ?? null}
           stability={stability}
           stabilityCap={stabilityCap}
+          breakthroughImminent={isBreakthroughImminent}
         />
       </div>
       <div className="cultivationHudRail">
