@@ -39,6 +39,8 @@
   width: min(1100px, 94vw);
   max-height: 90vh;
   color: var(--ink-text-color);
+  --paper-tint: rgba(251, 244, 228, 0.82);
+  --paper-opacity: 0.2;
 }
 
 .lifeStartWizardContent {
