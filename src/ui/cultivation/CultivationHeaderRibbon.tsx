@@ -15,7 +15,7 @@ type CultivationHeaderRibbonProps = {
   activityType: string | null;
   stability: number;
   stabilityCap: number;
-  breakthroughReady?: boolean;
+  breakthroughReady: boolean;
 };
 
 function getRealmIcon(realmLabel: string, realmIndex?: number) {
@@ -39,7 +39,7 @@ export function CultivationHeaderRibbon({
   activityType,
   stability,
   stabilityCap,
-  breakthroughReady = false,
+  breakthroughReady,
 }: CultivationHeaderRibbonProps) {
   const storageKey = 'ui.cultivation.headerCollapsed';
   const ribbonId = 'cultivationHeaderPanel';
@@ -57,10 +57,16 @@ export function CultivationHeaderRibbon({
         ? 'Foreground activity running. Meditation unavailable.'
         : 'Qi flows passively. Meditate to gain Insight/Study.';
   const lotusState: QiLotusState = breakthroughReady
-    ? 'full'
+    ? 'ready'
     : activityType === 'meditate'
-      ? 'open'
-      : 'closed';
+      ? 'active'
+      : 'idle';
+  const lotusTitle =
+    lotusState === 'ready'
+      ? 'Qi is brimming — breakthrough is ready.'
+      : lotusState === 'active'
+        ? 'Qi is flowing — you are cultivating in the foreground.'
+        : 'Qi is resting — idle cultivation.';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -88,9 +94,7 @@ export function CultivationHeaderRibbon({
                 Qi
               </div>
               <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
-                <span className="cultivationHeaderStatIcon cultivationHeaderStatIcon--qi">
-                  <QiLotusIcon state={lotusState} size={16} />
-                </span>
+                <QiLotusIcon state={lotusState} title={lotusTitle} />
                 {formatNumber(qi)}
               </div>
             </div>

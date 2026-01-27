@@ -1,26 +1,27 @@
-import classNames from 'classnames';
-import lotusClosed from '../../assets/icons/qi_lotus_closed.png';
-import lotusOpen from '../../assets/icons/qi_lotus_open.png';
-import lotusFull from '../../assets/icons/qi_lotus_full.png';
+import './QiLotusIcon.scss';
+import lotusClosed from '../../assets/onscreen/qi_lotus_closed.png';
+import lotusOpen from '../../assets/onscreen/qi_lotus_open.png';
+import lotusFull from '../../assets/onscreen/qi_lotus_full.png';
 
-export type QiLotusState = 'closed' | 'open' | 'full';
+export type QiLotusState = 'idle' | 'active' | 'ready';
 
 type QiLotusIconProps = {
   state: QiLotusState;
-  size?: number;
   className?: string;
+  title?: string;
 };
 
-export function QiLotusIcon({ state, size = 16, className }: QiLotusIconProps) {
+export function QiLotusIcon({ state, className = '', title }: QiLotusIconProps) {
   return (
-    <span
-      className={classNames('qiLotusIcon', `qiLotusIcon--${state}`, className)}
-      style={{ width: size, height: size }}
-      aria-hidden="true"
-    >
-      <img className="qiLotusIcon__img" src={lotusClosed} data-variant="closed" alt="" />
-      <img className="qiLotusIcon__img" src={lotusOpen} data-variant="open" alt="" />
-      <img className="qiLotusIcon__img" src={lotusFull} data-variant="full" alt="" />
+    <span className={`qiLotusIcon ${className}`.trim()} data-state={state} title={title} aria-hidden="true">
+      <img
+        className="qiLotusIcon__img qiLotusIcon__img--closed"
+        src={lotusClosed}
+        alt=""
+        draggable={false}
+      />
+      <img className="qiLotusIcon__img qiLotusIcon__img--open" src={lotusOpen} alt="" draggable={false} />
+      <img className="qiLotusIcon__img qiLotusIcon__img--full" src={lotusFull} alt="" draggable={false} />
     </span>
   );
 }

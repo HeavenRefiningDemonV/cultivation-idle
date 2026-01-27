@@ -1,0 +1,64 @@
+.qiLotusIcon {
+  width: var(--qi-lotus-size, 40px);
+  height: var(--qi-lotus-size, 40px);
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  margin-right: 2px;
+  overflow: visible;
+  transform: translateY(1px);
+}
+
+.qiLotusIcon__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(1);
+  transition: opacity 180ms ease, transform 220ms ease, filter 220ms ease;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 6px rgba(0, 0, 0, 0.15));
+}
+
+.qiLotusIcon[data-state="idle"] .qiLotusIcon__img--closed {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.qiLotusIcon[data-state="active"] .qiLotusIcon__img--open {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(120, 160, 220, 0.2));
+}
+
+.qiLotusIcon[data-state="ready"] .qiLotusIcon__img--full {
+  opacity: 1;
+  transform: scale(1.18);
+  filter:
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 10px rgba(200, 160, 220, 0.28))
+    drop-shadow(0 0 18px rgba(240, 220, 255, 0.2));
+  animation: qiLotusReadyPulse 1.25s ease-in-out infinite;
+}
+
+@keyframes qiLotusReadyPulse {
+  0%,
+  100% {
+    transform: scale(1.18);
+  }
+
+  50% {
+    transform: scale(1.24);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qiLotusIcon__img {
+    transition: none;
+  }
+
+  .qiLotusIcon[data-state="ready"] .qiLotusIcon__img--full {
+    animation: none;
+  }
+}

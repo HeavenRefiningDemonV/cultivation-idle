@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  --qi-lotus-size: 40px;
   color: #0b1020;
   transition: max-height 0.25s ease, padding 0.25s ease;
   overflow: visible;
@@ -68,51 +69,8 @@
 .cultivationHeaderRibbonValue--qi {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: rgba(14, 116, 144, 0.85);
-}
-
-.cultivationHeaderStatIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  line-height: 0;
-}
-
-.cultivationHeaderStatIcon--qi {
-  width: 16px;
-  height: 16px;
-}
-
-.qiLotusIcon {
-  position: relative;
-  display: inline-block;
-  line-height: 0;
-  flex: 0 0 auto;
-}
-
-.qiLotusIcon__img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  opacity: 0;
-  transition: opacity 180ms ease-in-out;
-  will-change: opacity;
-}
-
-.qiLotusIcon--closed .qiLotusIcon__img[data-variant="closed"] {
-  opacity: 1;
-}
-
-.qiLotusIcon--open .qiLotusIcon__img[data-variant="open"] {
-  opacity: 1;
-}
-
-.qiLotusIcon--full .qiLotusIcon__img[data-variant="full"] {
-  opacity: 1;
 }
 
 .cultivationHeaderRealmIcon {
@@ -250,6 +208,10 @@
   background: transparent;
 }
 
+.cultivationHeaderRibbon.is-collapsed {
+  --qi-lotus-size: 34px;
+}
+
 .cultivationHeaderRibbon.is-collapsed .cultivationHeaderRibbon__inner {
   padding-top: 0;
   padding-bottom: 0;
@@ -265,12 +227,6 @@
   50% {
     opacity: 0.9;
     transform: scale(1.1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .qiLotusIcon__img {
-    transition: none;
   }
 }
 
