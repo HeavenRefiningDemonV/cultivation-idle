@@ -514,17 +514,17 @@ export default function InventoryScreen() {
         </div>
         <div className="inventoryHeaderCurrencyStrip">
           <div className="inventoryCurrencyChip">
-            <Coins size={16} aria-hidden="true" />
+            <Coins size={18} aria-hidden="true" />
             <span className="inventoryCurrencyLabel">Gold</span>
             <span className="inventoryCurrencyValue">{currencies.gold}</span>
           </div>
           <div className="inventoryCurrencyChip">
-            <Gem size={16} aria-hidden="true" />
+            <Gem size={18} aria-hidden="true" />
             <span className="inventoryCurrencyLabel">Spirit Stones</span>
             <span className="inventoryCurrencyValue">{currencies.spiritStones}</span>
           </div>
           <div className="inventoryCurrencyChip">
-            <Medal size={16} aria-hidden="true" />
+            <Medal size={18} aria-hidden="true" />
             <span className="inventoryCurrencyLabel">Merit</span>
             <span className="inventoryCurrencyValue">{currencies.merit}</span>
           </div>
@@ -547,7 +547,7 @@ export default function InventoryScreen() {
             onClick={openManualSatchel}
             aria-label="Open manual satchel"
           >
-            <Backpack size={18} aria-hidden="true" />
+            <Backpack size={20} aria-hidden="true" />
             <span className="inventoryHeaderBadge">{satchelCount}</span>
           </button>
           <button
@@ -557,7 +557,7 @@ export default function InventoryScreen() {
             aria-label="Open equipment drawer"
             title="Equipment"
           >
-            <GameIcon icon="placeholderRingLarge" size={16} decorative />
+            <GameIcon icon="placeholderRingLarge" size={20} decorative />
             <span className="inventoryHeaderEquipmentLabel">Equipment</span>
           </button>
         </div>
@@ -591,7 +591,7 @@ export default function InventoryScreen() {
                 >
                   <span className="inventoryPocketHole" aria-hidden="true" />
                   <span className="inventoryPocketIcon" aria-hidden="true">
-                    <GameIcon icon={pocket.iconId} size={16} decorative />
+                    <GameIcon icon={pocket.iconId} size={24} decorative />
                   </span>
                   <span className="inventoryPocketLabel">{pocket.label}</span>
                   <span className="inventoryPocketCount" aria-hidden="true">
@@ -618,7 +618,7 @@ export default function InventoryScreen() {
             <div className="inventoryRingSubheaderRight">
               <div className="inventorySearch">
                 <span className="inventorySearchIcon" aria-hidden="true">
-                  <GameIcon icon="inkSwirl" size={14} decorative />
+                  <GameIcon icon="inkSwirl" size={18} decorative />
                 </span>
                 <input
                   className="inventorySearchInput"
@@ -635,7 +635,7 @@ export default function InventoryScreen() {
                     aria-label="Clear search"
                     title="Clear search"
                   >
-                    <GameIcon icon="inkX" size={12} decorative />
+                    <GameIcon icon="inkX" size={14} decorative />
                   </button>
                 ) : null}
               </div>

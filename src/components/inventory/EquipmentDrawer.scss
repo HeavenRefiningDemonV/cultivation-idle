@@ -76,6 +76,11 @@
   filter: brightness(1.1);
 }
 
+.inventoryEquipClose .gameIcon {
+  width: var(--invChipIconSize, 16px);
+  height: var(--invChipIconSize, 16px);
+}
+
 .inventoryEquipStage {
   position: relative;
   min-height: 320px;
@@ -162,6 +167,8 @@
 .inventoryEquipSlotIcon {
   display: flex;
   justify-content: center;
+  width: var(--invTileIconSize, 24px);
+  height: var(--invTileIconSize, 24px);
 }
 
 .inventoryEquipSlotLabel {

@@ -18,6 +18,9 @@
   --inv-metal-0: rgba(226, 232, 240, 0.18);
   --inv-metal-1: rgba(148, 163, 184, 0.18);
   --inv-metal-2: rgba(245, 158, 11, 0.16);
+  --invTabIconSize: clamp(20px, 2.2vw, 28px);
+  --invTileIconSize: clamp(20px, 2vw, 26px);
+  --invChipIconSize: clamp(16px, 1.6vw, 18px);
 }
 
 .inventoryPanelBase {
@@ -83,6 +86,13 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.inventoryHeaderIconButton svg,
+.inventoryCurrencyChip svg,
+.inventoryHeaderActions .gameIcon {
+  width: var(--invChipIconSize);
+  height: var(--invChipIconSize);
 }
 
 .inventoryHeaderCapacity {
@@ -245,6 +255,7 @@
   border-radius: 14px;
   cursor: pointer;
   font-size: 13px;
+  min-height: 44px;
   transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
@@ -279,16 +290,20 @@
 }
 
 .inventoryPocketIcon {
-  width: 22px;
+  width: var(--invTabIconSize);
+  height: var(--invTabIconSize);
   display: grid;
   place-items: center;
-  font-size: 18px;
+  font-size: var(--invTabIconSize);
 }
 
 .inventoryPocketLabel {
   flex: 1;
   font-weight: 800;
   color: rgba(12, 18, 34, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .inventoryPocketButton--active {
@@ -500,6 +515,12 @@
   opacity: 0.7;
   display: flex;
   align-items: center;
+}
+
+.inventorySearchIcon .gameIcon,
+.inventorySearchClear .gameIcon {
+  width: var(--invChipIconSize);
+  height: var(--invChipIconSize);
 }
 
 .inventorySearchInput {
@@ -731,6 +752,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--invTileIconSize);
+  height: var(--invTileIconSize);
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
   user-select: none;
 }

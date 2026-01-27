@@ -60,7 +60,7 @@ export default function InventorySlotTile({ stack, isSelected, isNew, onSelect }
       role="gridcell"
     >
       <div className="inventorySlotTileIcon" aria-hidden="true">
-        <GameIcon icon={getTypeGlyph(stack.type)} size={18} decorative />
+        <GameIcon icon={getTypeGlyph(stack.type)} size={24} decorative />
       </div>
 
       {stack.quantity > 1 ? (

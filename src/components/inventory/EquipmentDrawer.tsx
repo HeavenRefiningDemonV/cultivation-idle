@@ -208,7 +208,7 @@ export default function EquipmentDrawer({
         aria-label={`${SLOT_CONFIG[slot].label} slot`}
       >
         <div className="inventoryEquipSlotIcon" aria-hidden="true">
-          <GameIcon icon={SLOT_CONFIG[slot].iconId} size={20} decorative />
+          <GameIcon icon={SLOT_CONFIG[slot].iconId} size={24} decorative />
         </div>
         <div className="inventoryEquipSlotLabel">{SLOT_CONFIG[slot].label}</div>
         {equipped ? (
@@ -244,7 +244,7 @@ export default function EquipmentDrawer({
             <div className="inventoryEquipSubtitle">Select an item in your satchel, then click a slot to equip.</div>
           </div>
           <button type="button" className="inventoryEquipClose" onClick={onClose} aria-label="Close equipment drawer">
-            <GameIcon icon="inkX" size={12} decorative />
+            <GameIcon icon="inkX" size={14} decorative />
           </button>
         </div>
 
