@@ -4,6 +4,7 @@ import { usePrestigeStore } from '../stores/prestigeStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { formatNumber, D } from '../utils/numbers';
 import type { SpiritRootElement, SpiritRootGrade } from '../types';
+import { GameIcon } from '../ui/icons';
 import './SpiritRootDisplay.scss';
 
 /**
@@ -196,9 +197,12 @@ export function SpiritRootDisplay() {
           className="button-standard spiritAltarRerollButton"
           title={!canAfford ? `Need ${formatNumber(rerollCost.toString())} gold` : 'Reroll your spirit root'}
         >
-          {canAfford
-            ? `🔄 Reroll Spirit Root (${formatNumber(rerollCost.toString())}g)`
-            : `🔒 Not Enough Gold (${formatNumber(rerollCost.toString())}g)`}
+          <span className="spiritAltarRerollButtonContent">
+            <GameIcon icon={canAfford ? 'inkRefresh' : 'inkLock'} size={14} decorative />
+            <span>
+              {canAfford ? 'Reroll Spirit Root' : 'Not Enough Gold'} ({formatNumber(rerollCost.toString())}g)
+            </span>
+          </span>
         </button>
 
         {!canAfford && (

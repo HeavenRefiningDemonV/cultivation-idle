@@ -3,6 +3,8 @@ import type { TechniqueDef } from '../../content';
 import type { EquipResult, SlotType } from '../../stores/techniqueStore';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
 import { normalizeGrade, normalizeRarity } from '../../stores/techCollectionStore';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import './InnerPalaceEquipAltar.scss';
 
 export type InnerPalaceSlot = {
@@ -37,10 +39,10 @@ export interface InnerPalaceEquipAltarProps {
   onFeedback: (feedback: InnerPalaceFeedback | null) => void;
 }
 
-const slotGlyphMap: Record<SlotType, string> = {
-  active: '⚔',
-  passive: '⛩',
-  ultimate: '☄',
+const slotGlyphMap: Record<SlotType, IconId> = {
+  active: 'jadeSword',
+  passive: 'inkSwirl',
+  ultimate: 'inkBurst',
 };
 
 const isTechniqueCompatibleWithSlot = (technique: TechniqueDef | undefined, slotType: SlotType) => {
@@ -298,7 +300,9 @@ export function InnerPalaceEquipAltar({
           const rarityKey = normalizeRarity(technique?.rarity);
           const gradeKey = normalizeGrade(technique?.tier);
           const pathIcon = getPathIcon(technique?.path ?? null);
-          const tierIcon = technique?.tier ? getTierIcon(gradeKey) : { icon: '◎', label: 'Unknown Tier', key: 'unknown' };
+          const tierIcon = technique?.tier
+            ? getTierIcon(gradeKey)
+            : { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
           const typeIcon = getTypeIcon(resolveTechniqueType(technique));
           const isSelected = selectedSlotKey === slot.key;
           const canEquipSelected = Boolean(
@@ -341,14 +345,18 @@ export function InnerPalaceEquipAltar({
                   <div className="innerPalaceSlotSpine">
                     <div className="innerPalaceSlotIcons" aria-hidden="true">
                       <span className="innerPalaceSlotIcon" title={tierIcon.label}>
-                        {tierIcon.icon}
+                        {tierIcon.iconText ?? '◎'}
                       </span>
-                      <span className="innerPalaceSlotIcon" title={pathIcon.label}>
-                        {pathIcon.icon}
-                      </span>
-                      <span className="innerPalaceSlotIcon" title={typeIcon.label}>
-                        {typeIcon.icon}
-                      </span>
+                      {pathIcon.iconId ? (
+                        <span className="innerPalaceSlotIcon" title={pathIcon.label}>
+                          <GameIcon icon={pathIcon.iconId} size={16} decorative />
+                        </span>
+                      ) : null}
+                      {typeIcon.iconId ? (
+                        <span className="innerPalaceSlotIcon" title={typeIcon.label}>
+                          <GameIcon icon={typeIcon.iconId} size={16} decorative />
+                        </span>
+                      ) : null}
                     </div>
                     <div className="innerPalaceSlotTitle" title={displayName}>
                       {displayName}
@@ -358,12 +366,12 @@ export function InnerPalaceEquipAltar({
                 ) : (
                   <div className="innerPalaceSlotEmpty">
                     <div className="innerPalaceSlotGlyph" aria-hidden="true">
-                      {slotGlyphMap[slot.accepts]}
+                      <GameIcon icon={slotGlyphMap[slot.accepts]} size={22} decorative />
                     </div>
                     <div className="innerPalaceSlotLabel">{slot.label}</div>
                     {!slot.isUnlocked && (
                       <div className="innerPalaceSlotLocked">
-                        <span aria-hidden="true">🔒</span> Locked
+                        <GameIcon icon="inkLock" size={14} decorative /> Locked
                       </div>
                     )}
                   </div>

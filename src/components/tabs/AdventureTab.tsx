@@ -7,6 +7,7 @@ import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber, divide, D, formatPercentFromFraction } from '../../utils/numbers';
 import type { EnemyDefinition } from '../../types';
 import { CombatCanvas } from '../combat/CombatCanvas';
+import { GameIcon } from '../../ui/icons';
 import './AdventureTab.scss';
 
 /**
@@ -226,7 +227,9 @@ export function AdventureTab() {
     return (
       <div className={'adventureTabLoading'}>
         <div className={'adventureTabLoadingCard'}>
-          <div className={'adventureTabLoadingIcon'}>⚔️</div>
+          <div className={'adventureTabLoadingIcon'}>
+            <GameIcon icon="jadeSword" size={32} decorative />
+          </div>
           <div className={'adventureTabLoadingText'}>Loading adventure zones...</div>
         </div>
       </div>
@@ -238,7 +241,12 @@ export function AdventureTab() {
       {/* LEFT PANEL - Zone Selection */}
       <div className={'adventureTabLeftColumn'}>
         <div className={'adventureTabPanel'}>
-          <h2 className={'adventureTabPanelTitle'}>🗺️ Adventure Zones</h2>
+          <h2 className={'adventureTabPanelTitle'}>
+            <span className="adventureTabPanelTitleContent">
+              <GameIcon icon="inkSwirl" size={18} decorative />
+              <span>Adventure Zones</span>
+            </span>
+          </h2>
           <div className={'adventureTabZoneList'}>
             {zones.map((zone) => {
               const unlocked = isZoneUnlocked(zone.id);
@@ -262,7 +270,11 @@ export function AdventureTab() {
                   <div className={'adventureTabZoneHeader'}>
                     <div className={'adventureTabZoneTitleRow'}>
                       <div className={'adventureTabZoneName'}>{zone.name}</div>
-                      {completed && <div className={'adventureTabZoneCompleted'}>✓</div>}
+                      {completed && (
+                        <div className={'adventureTabZoneCompleted'}>
+                          <GameIcon icon="inkCheck" size={14} decorative />
+                        </div>
+                      )}
                     </div>
                     <div className={'adventureTabZoneLevel'}>Lv. {zone.levelRange.min}-{zone.levelRange.max}</div>
                   </div>
@@ -270,10 +282,20 @@ export function AdventureTab() {
                   {unlocked && enemiesDefeated > 0 && (
                     <div className={'adventureTabZoneMeta'}>
                       Enemies defeated: {enemiesDefeated}
-                      {bossAvailable && <span className={'adventureTabZoneBoss'}>⚡ Boss available!</span>}
+                      {bossAvailable && (
+                        <span className={'adventureTabZoneBoss'}>
+                          <GameIcon icon="inkBolt" size={12} decorative />
+                          <span>Boss available!</span>
+                        </span>
+                      )}
                     </div>
                   )}
-                  {!unlocked && <div className={'adventureTabZoneLockedNote'}>🔒 Defeat previous zone boss to unlock</div>}
+                  {!unlocked && (
+                    <div className={'adventureTabZoneLockedNote'}>
+                      <GameIcon icon="inkLock" size={12} decorative />
+                      <span>Defeat previous zone boss to unlock</span>
+                    </div>
+                  )}
                 </motion.button>
               );
             })}
@@ -287,7 +309,9 @@ export function AdventureTab() {
           // Not in combat - show selection message
           <div className={`${'adventureTabPanel'} ${'adventureTabEmptyPanel'}`}>
             <div className={'adventureTabEmptyContent'}>
-              <div className={'adventureTabEmptyIcon'}>⚔️</div>
+              <div className={'adventureTabEmptyIcon'}>
+                <GameIcon icon="jadeSword" size={32} decorative />
+              </div>
               <h2 className={'adventureTabEmptyTitle'}>{selectedZoneId ? 'Ready for Combat' : 'Select a Zone'}</h2>
               <p className={'adventureTabEmptyDescription'}>
                 {selectedZoneId
@@ -357,7 +381,10 @@ export function AdventureTab() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  ⚔️ Attack
+                  <span className="adventureTabActionButtonContent">
+                    <GameIcon icon="jadeSword" size={16} decorative />
+                    <span>Attack</span>
+                  </span>
                 </motion.button>
 
                 <motion.button
@@ -368,7 +395,10 @@ export function AdventureTab() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {autoAttack ? '⚡ Auto (ON)' : '⚡ Auto (OFF)'}
+                  <span className="adventureTabActionButtonContent">
+                    <GameIcon icon="inkBolt" size={16} decorative />
+                    <span>{autoAttack ? 'Auto (ON)' : 'Auto (OFF)'}</span>
+                  </span>
                 </motion.button>
 
                 <motion.button
@@ -377,7 +407,7 @@ export function AdventureTab() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  🏃 Flee
+                  Flee
                 </motion.button>
               </div>
             </div>

@@ -5,6 +5,8 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
 import { getItemDef } from '../../stores/contentStore';
 import type { ItemDefinition } from '../../types';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import './EquipmentDrawer.scss';
 
 type EquipmentDrawerProps = {
@@ -20,9 +22,9 @@ type EquipmentSlotType = 'weapon' | 'accessory';
 
 type StatEntry = { label: string; value: string };
 
-const SLOT_CONFIG: Record<EquipmentSlotType, { label: string; icon: string }> = {
-  weapon: { label: 'Weapon', icon: '⚔️' },
-  accessory: { label: 'Accessory', icon: '💎' },
+const SLOT_CONFIG: Record<EquipmentSlotType, { label: string; iconId: IconId }> = {
+  weapon: { label: 'Weapon', iconId: 'jadeSword' },
+  accessory: { label: 'Accessory', iconId: 'placeholderRingSmall' },
 };
 
 const getRarityClass = (rarity?: string): string => {
@@ -206,7 +208,7 @@ export default function EquipmentDrawer({
         aria-label={`${SLOT_CONFIG[slot].label} slot`}
       >
         <div className="inventoryEquipSlotIcon" aria-hidden="true">
-          {SLOT_CONFIG[slot].icon}
+          <GameIcon icon={SLOT_CONFIG[slot].iconId} size={20} decorative />
         </div>
         <div className="inventoryEquipSlotLabel">{SLOT_CONFIG[slot].label}</div>
         {equipped ? (

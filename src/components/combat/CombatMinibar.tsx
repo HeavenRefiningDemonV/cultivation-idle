@@ -10,6 +10,7 @@ import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionT
 import { formatNumber } from '../../utils/numbers';
 import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles';
 import { MedicinePouchStrip } from './MedicinePouchStrip';
+import { GameIcon } from '../../ui/icons';
 import './CombatMinibar.scss';
 
 type LogEntry =
@@ -57,7 +58,7 @@ function SafetyBadge({
     >
       <span className="combat-minibar__safety-label">{label}</span>
       <span className="combat-minibar__safety-indicator" aria-hidden="true">
-        ⚡
+        <GameIcon icon="inkBolt" size={14} decorative />
       </span>
       {open && (
         <div className="combat-minibar__safety-tooltip">

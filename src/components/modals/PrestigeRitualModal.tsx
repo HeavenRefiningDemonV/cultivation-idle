@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
 import type { ApBreakdown } from '../../stores/prestigeStore';
+import { GameIcon } from '../../ui/icons';
 
 interface PrestigeRitualModalProps {
   open: boolean;
@@ -221,18 +222,38 @@ export function PrestigeRitualModal({
             <section className="prestigeRitualSection">
               <div className="prestigeRitualSectionTitle">What You Keep</div>
               <ul className="prestigeRitualList">
-                <li>✓ Keep all Ascension Points</li>
-                <li>✓ Keep all AP upgrades</li>
-                <li>✓ Keep spirit root floor level</li>
+                <li>
+                  <GameIcon icon="inkCheck" size={12} decorative />
+                  <span>Keep all Ascension Points</span>
+                </li>
+                <li>
+                  <GameIcon icon="inkCheck" size={12} decorative />
+                  <span>Keep all AP upgrades</span>
+                </li>
+                <li>
+                  <GameIcon icon="inkCheck" size={12} decorative />
+                  <span>Keep spirit root floor level</span>
+                </li>
               </ul>
             </section>
 
             <section className="prestigeRitualSection">
               <div className="prestigeRitualSectionTitle">What Resets</div>
               <ul className="prestigeRitualList is-warning">
-                <li>✗ Reset cultivation progress</li>
-                <li>✗ Reset inventory &amp; gold</li>
-                {sellBeforePrestige && <li>• Inventory will be sold for gold before the reset</li>}
+                <li>
+                  <GameIcon icon="inkX" size={12} decorative />
+                  <span>Reset cultivation progress</span>
+                </li>
+                <li>
+                  <GameIcon icon="inkX" size={12} decorative />
+                  <span>Reset inventory &amp; gold</span>
+                </li>
+                {sellBeforePrestige && (
+                  <li>
+                    <GameIcon icon="inkSparkles" size={12} decorative />
+                    <span>Inventory will be sold for gold before the reset</span>
+                  </li>
+                )}
               </ul>
             </section>
 

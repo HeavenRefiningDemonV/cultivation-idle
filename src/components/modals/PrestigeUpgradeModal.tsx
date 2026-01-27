@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import type { PrestigeUpgradeDef } from '../../content';
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
 import { getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
+import { GameIcon } from '../../ui/icons';
 
 interface PrestigeUpgradeModalProps {
   open: boolean;
@@ -184,7 +185,12 @@ export function PrestigeUpgradeModal({
                   const met = prereq.currentLevel >= prereq.requiredLevel;
                   return (
                     <li key={prereq.id} className={met ? 'is-met' : 'is-missing'}>
-                      {met ? '✓' : '•'} {prereq.name} (Lv {prereq.currentLevel}/{prereq.requiredLevel})
+                      <span className="prestigeUpgradeModalListIcon" aria-hidden="true">
+                        <GameIcon icon={met ? 'inkCheck' : 'inkX'} size={12} decorative />
+                      </span>
+                      <span>
+                        {prereq.name} (Lv {prereq.currentLevel}/{prereq.requiredLevel})
+                      </span>
                     </li>
                   );
                 })}

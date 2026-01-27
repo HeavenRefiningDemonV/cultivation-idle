@@ -498,6 +498,8 @@
 
 .inventorySearchIcon {
   opacity: 0.7;
+  display: flex;
+  align-items: center;
 }
 
 .inventorySearchInput {
@@ -723,7 +725,9 @@
 }
 
 .inventorySlotTileIcon {
-  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
   user-select: none;
 }

@@ -455,6 +455,12 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
 }
 
+.spiritAltarRerollButtonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .spiritAltarRerollButton:hover:enabled {
   transform: translateY(-1px);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);

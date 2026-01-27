@@ -87,6 +87,9 @@
 .adventureScreenZoneBoss {
   color: #fbbf24;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .adventureScreenZoneHint {
@@ -114,6 +117,12 @@
   background: #7dd3fc;
   transition: filter 0.15s ease, transform 0.15s ease;
   cursor: pointer;
+}
+
+.adventureScreenActionButtonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .adventureScreenButton:hover {
@@ -158,6 +167,9 @@
   font-weight: 700;
   font-size: 14px;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .adventureScreenBarGroup {

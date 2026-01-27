@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import type { TechniqueTypeKey } from '../../features/manuals/manualIconMap';
 import { getPathIcon, getTierIcon, getTypeIcon } from '../../features/manuals/manualIconMap';
+import { GameIcon } from '../../ui/icons';
 import './TechniqueSpine.scss';
 
 export type TechniqueSpineState = 'available' | 'locked' | 'equipped' | 'unknown';
@@ -27,7 +28,7 @@ const formatRarity = (rarity?: string) => {
   return rarity.charAt(0).toUpperCase() + rarity.slice(1);
 };
 
-const unknownTierIcon = { icon: '◎', label: 'Unknown Tier', key: 'unknown' };
+const unknownTierIcon = { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
 
 export function TechniqueSpine({
   id,
@@ -102,7 +103,7 @@ export function TechniqueSpine({
       <span className="techSpinePress" aria-hidden="true" />
       <div className="techSpineTop">
         <span className="techSpineTierIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
-          {tierIcon.icon}
+          {tierIcon.iconText ?? '◎'}
         </span>
         <div className="techSpineStatus" aria-hidden={!equipped && !selected && !isLocked}>
           {selected && (
@@ -112,12 +113,12 @@ export function TechniqueSpine({
           )}
           {equipped && !isLocked && (
             <span className="techSpineStatusBadge techSpineStatusBadge--equipped" aria-label="Equipped">
-              ✓
+              <GameIcon icon="inkCheck" size={12} decorative />
             </span>
           )}
           {isLocked && (
             <span className="techSpineStatusBadge techSpineStatusBadge--locked" aria-label="Locked">
-              🔒
+              <GameIcon icon="inkLock" size={12} decorative />
             </span>
           )}
         </div>
@@ -128,12 +129,16 @@ export function TechniqueSpine({
       </div>
 
       <div className="techSpineBottom">
-        <span className="techSpineMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
-          {pathIcon.icon}
-        </span>
-        <span className="techSpineMetaIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
-          {typeIcon.icon}
-        </span>
+        {pathIcon.iconId ? (
+          <span className="techSpineMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
+            <GameIcon icon={pathIcon.iconId} size={14} decorative />
+          </span>
+        ) : null}
+        {typeIcon.iconId ? (
+          <span className="techSpineMetaIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
+            <GameIcon icon={typeIcon.iconId} size={14} decorative />
+          </span>
+        ) : null}
       </div>
     </button>
   );

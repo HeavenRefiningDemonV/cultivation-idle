@@ -175,8 +175,8 @@
 }
 
 .techSpineMetaIcon {
-  font-size: 11px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
 }
 
 @media (max-width: 900px) {

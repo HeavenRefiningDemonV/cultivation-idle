@@ -222,6 +222,9 @@
 .forgeWorkshop__rowLock {
   font-size: 11px;
   color: rgba(145, 58, 37, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .forgeWorkshop__detail {
@@ -316,7 +319,8 @@
 }
 
 .forgeWorkshop__stepIcon {
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .forgeWorkshop__stepLabel {

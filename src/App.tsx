@@ -4,6 +4,7 @@ import { ContentInitGate } from './components/system/ContentInitGate';
 import { initializeGame } from './systems/gameLoop';
 import { useShopStore } from './stores/shopStore';
 import paperTexture from "./assets/texture_overlay.png";
+import { GameIcon } from './ui/icons';
 import './App.scss';
 
 /**
@@ -50,7 +51,9 @@ function App() {
     return (
       <div className={'appShell'}>
         <div className={'appMessageCard'}>
-          <div className={'appHeroIcon'}>⚠️</div>
+          <div className={'appHeroIcon'}>
+            <GameIcon icon="inkWarning" size={64} decorative />
+          </div>
           <h1 className={'appTitle'}>Initialization Error</h1>
           <p className={'appSubtext'}>{initError}</p>
           <button
@@ -69,7 +72,9 @@ function App() {
     return (
       <div className={'appShell'}>
         <div className={'appMessageCard'}>
-          <div className={`${'appHeroIcon'} ${'appLoader'}`}>⚡</div>
+          <div className={'appHeroIcon'}>
+            <GameIcon icon="inkBolt" size={64} decorative className="appLoader" />
+          </div>
           <h1 className={'appTitle'}>Cultivation Idle</h1>
           <p className={'appSubtext'}>Loading...</p>
         </div>

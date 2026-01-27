@@ -4,6 +4,8 @@ import { useUIStore } from '../../stores/uiStore';
 import { getAvailablePerks } from '../../data/pathPerks';
 import type { CultivationPath } from '../../types';
 import { InkModalFrame } from '../../ui/ink';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import './PathSelectionModal.scss';
 
 interface PathSelectionModalProps {
@@ -14,7 +16,7 @@ const paths: Array<{
   id: CultivationPath;
   name: string;
   accent: string;
-  icon: string;
+  iconId: IconId;
   theme: string;
   description: string;
   bonuses: string[];
@@ -24,7 +26,7 @@ const paths: Array<{
     id: 'heaven',
     name: 'Heaven Path',
     accent: '#4f6f8f',
-    icon: '☁️',
+    iconId: 'bookHeaven',
     theme: 'Spiritual Cultivation',
     description:
       'Masters of Qi and spiritual energy. Heaven cultivators focus on pure energy accumulation and efficient breakthroughs.',
@@ -42,7 +44,7 @@ const paths: Array<{
     id: 'earth',
     name: 'Earth Path',
     accent: '#5f7a3a',
-    icon: '⛰️',
+    iconId: 'bookEarth',
     theme: 'Body Cultivation',
     description:
       'Masters of physical endurance and defense. Earth cultivators temper their bodies to withstand immense punishment.',
@@ -59,7 +61,7 @@ const paths: Array<{
     id: 'martial',
     name: 'Martial Path',
     accent: '#9f3b2e',
-    icon: '⚔️',
+    iconId: 'bookMartial',
     theme: 'Combat Cultivation',
     description:
       'Masters of battle and techniques. Martial cultivators hone their combat prowess to devastating levels.',
@@ -124,7 +126,9 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
               style={cardStyle}
               onClick={() => handleSelectPath(path.id)}
             >
-              <div className={'pathSelectionModalIcon'}>{path.icon}</div>
+              <div className={'pathSelectionModalIcon'} aria-hidden="true">
+                <GameIcon icon={path.iconId} size={36} decorative />
+              </div>
 
               <div className={'pathSelectionModalGradientHeader'}>
                 <h2 className={'pathSelectionModalPathName'}>{path.name}</h2>
@@ -136,11 +140,15 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
               <div className={'pathSelectionModalBonusBox'}>
                 <h3 className={'pathSelectionModalBonusTitle'}>Path Bonuses:</h3>
                 <ul className={'pathSelectionModalBonusList'}>
-                  {path.bonuses.map((bonus, idx) => (
-                    <li key={idx}>
-                      {bonus.includes('-') ? '⚠' : '✓'} {bonus}
-                    </li>
-                  ))}
+                  {path.bonuses.map((bonus, idx) => {
+                    const toneIcon = bonus.includes('-') ? 'inkWarning' : 'inkCheck';
+                    return (
+                      <li key={idx} className="pathSelectionModalBonusItem">
+                        <GameIcon icon={toneIcon} size={14} decorative />
+                        <span>{bonus}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
 
@@ -158,7 +166,10 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
       </div>
 
       <div className={'pathSelectionModalFooter'}>
-        <p className={'pathSelectionModalFooterTip'}>💡 Tip: All paths are viable! Choose based on your preferred playstyle.</p>
+        <p className={'pathSelectionModalFooterTip'}>
+          <GameIcon icon="inkSparkles" size={14} decorative />
+          <span>Tip: All paths are viable! Choose based on your preferred playstyle.</span>
+        </p>
         <p className={'pathSelectionModalFooterNote'}>You cannot change your path after selection</p>
       </div>
     </InkModalFrame>

@@ -6,6 +6,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useTechCollectionStore } from '../../stores/techCollectionStore';
 import { formatDurationHMS } from '../../utils/timeFormat';
+import { GameIcon } from '../../ui/icons';
 
 type FocusStage = 'idle' | 'arming' | 'focusing' | 'result';
 type ManualSortMode = 'newest' | 'rarity' | 'grade' | 'name';
@@ -392,7 +393,7 @@ export function ManualSatchelModal() {
           <div className={'manualSatchelHeaderLeft'}>
             <div className={'manualSatchelTitle'}>
               <span className={'manualSatchelTitleIcon'} aria-hidden="true">
-                🧺
+                <GameIcon icon="artifactBundle" size={18} decorative />
               </span>
               Manual Satchel
             </div>
@@ -419,17 +420,29 @@ export function ManualSatchelModal() {
               aria-label="Close manual satchel"
               type="button"
             >
-              ✕
+              <GameIcon icon="inkX" size={14} decorative />
             </button>
           </div>
         </div>
 
         {showHelp ? (
           <div className={'manualSatchelHelpCard'}>
-            <div className={'manualSatchelHelpRow'}>🛍️ Buy manuals at the Manual Pavilion.</div>
-            <div className={'manualSatchelHelpRow'}>📖 Study one manual at a time.</div>
-            <div className={'manualSatchelHelpRow'}>✨ Finish study to unlock a technique.</div>
-            <div className={'manualSatchelHelpRow'}>⚔️ Equip techniques in the Techniques tab.</div>
+            <div className={'manualSatchelHelpRow'}>
+              <GameIcon icon="artifactBundle" size={14} decorative />
+              <span>Buy manuals at the Manual Pavilion.</span>
+            </div>
+            <div className={'manualSatchelHelpRow'}>
+              <GameIcon icon="bookHeaven" size={14} decorative />
+              <span>Study one manual at a time.</span>
+            </div>
+            <div className={'manualSatchelHelpRow'}>
+              <GameIcon icon="inkSparkles" size={14} decorative />
+              <span>Finish study to unlock a technique.</span>
+            </div>
+            <div className={'manualSatchelHelpRow'}>
+              <GameIcon icon="jadeSword" size={14} decorative />
+              <span>Equip techniques in the Techniques tab.</span>
+            </div>
           </div>
         ) : null}
 

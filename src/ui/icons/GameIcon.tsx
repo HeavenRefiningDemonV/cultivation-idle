@@ -19,26 +19,40 @@ export function GameIcon({
   title,
   decorative = true,
 }: GameIconProps) {
-  const { src, scale, translateY } = getIconMeta(icon);
+  const meta = getIconMeta(icon);
+  const scale = meta.scale ?? 1;
+  const translateY = meta.translateY ?? 0;
   const resolvedSize = typeof size === 'number' ? `${size}px` : size;
   const style: CSSProperties = {
     width: resolvedSize,
     height: resolvedSize,
     '--icon-scale': scale,
-    '--icon-ty': `${translateY ?? 0}%`,
+    '--icon-ty': `${translateY}%`,
   } as CSSProperties;
   const rootClassName = ['gameIcon', className].filter(Boolean).join(' ');
   const altText = decorative ? '' : title ?? icon;
+  const ariaLabel = decorative ? undefined : title ?? icon;
 
   return (
     <span className={rootClassName} style={style}>
-      <img
-        className="gameIcon__image"
-        src={src}
-        alt={altText}
-        aria-hidden={decorative || undefined}
-        title={title}
-      />
+      {meta.kind === 'svg' ? (
+        <meta.Svg
+          className="gameIcon__svg"
+          aria-hidden={decorative || undefined}
+          aria-label={ariaLabel}
+          focusable="false"
+          role={decorative ? undefined : 'img'}
+          title={title}
+        />
+      ) : (
+        <img
+          className="gameIcon__image"
+          src={meta.src}
+          alt={altText}
+          aria-hidden={decorative || undefined}
+          title={title}
+        />
+      )}
     </span>
   );
 }

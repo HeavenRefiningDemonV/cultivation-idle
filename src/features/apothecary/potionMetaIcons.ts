@@ -1,8 +1,9 @@
 import type { ConsumableSpec } from '../../systems/consumables/consumableCatalog';
+import type { IconId } from '../../ui/icons';
 
 export type MetaChip = {
   key: string;
-  icon: string;
+  iconId: IconId;
   text?: string;
   tooltip: string;
 };
@@ -19,29 +20,29 @@ export type PotionMetaChipArgs = {
 type EffectKind = 'healing' | 'shield' | 'ki' | 'cleanse' | 'fallback';
 
 type EffectChipConfig = {
-  icon: string;
+  iconId: IconId;
   label?: string;
   tooltip: string;
 };
 
 const usageChipMap: Record<PotionMetaChipArgs['usage'], Omit<MetaChip, 'key'>> = {
-  combat: { icon: '⚔', tooltip: 'Combat usable' },
-  cultivation: { icon: '🧘', tooltip: 'Cultivation usable' },
-  both: { icon: '☯', tooltip: 'Usable in combat & cultivation' },
+  combat: { iconId: 'jadeSword', tooltip: 'Combat usable' },
+  cultivation: { iconId: 'inkSwirl', tooltip: 'Cultivation usable' },
+  both: { iconId: 'inkSparkles', tooltip: 'Usable in combat & cultivation' },
 };
 
-const effectIconMap: Record<EffectKind, string> = {
-  healing: '❤️',
-  shield: '🛡',
-  ki: '⚡',
-  cleanse: '💧',
-  fallback: '🧪',
+const effectIconMap: Record<EffectKind, IconId> = {
+  healing: 'inkHeart',
+  shield: 'inkShield',
+  ki: 'inkBolt',
+  cleanse: 'dustBlue',
+  fallback: 'herbBundle',
 };
 
 const recommendedSlotMap: Record<ConsumableSpec['recommendedSlot'], Omit<MetaChip, 'key'>> = {
-  healing: { icon: '❤', tooltip: 'Recommended slot: Healing' },
-  utility: { icon: '🧰', tooltip: 'Recommended slot: Utility' },
-  specialty: { icon: '✦', tooltip: 'Recommended slot: Specialty' },
+  healing: { iconId: 'inkHeart', tooltip: 'Recommended slot: Healing' },
+  utility: { iconId: 'inkSwirl', tooltip: 'Recommended slot: Utility' },
+  specialty: { iconId: 'inkSparkles', tooltip: 'Recommended slot: Specialty' },
 };
 
 function inferEffectKind(spec: ConsumableSpec): EffectKind {
@@ -66,7 +67,7 @@ function buildEffectChip(itemId: string, spec?: ConsumableSpec | null): EffectCh
       .replace(/_/g, ' ')
       .trim();
     return {
-      icon: effectIconMap.fallback,
+      iconId: effectIconMap.fallback,
       label: fallbackLabel || undefined,
       tooltip: 'Consumable (details in description)',
     };
@@ -76,7 +77,7 @@ function buildEffectChip(itemId: string, spec?: ConsumableSpec | null): EffectCh
   const tooltip = spec.longLabel ?? spec.shortLabel;
 
   return {
-    icon: effectIconMap[effectKind] ?? effectIconMap.fallback,
+    iconId: effectIconMap[effectKind] ?? effectIconMap.fallback,
     label: spec.shortLabel,
     tooltip,
   };
@@ -106,7 +107,7 @@ export function buildPotionMetaChips({
   const effectChip = buildEffectChip(itemId, spec);
   chips.push({
     key: 'effect',
-    icon: effectChip.icon,
+    iconId: effectChip.iconId,
     text: effectChip.label,
     tooltip: effectChip.tooltip,
   });
@@ -123,7 +124,7 @@ export function buildPotionMetaChips({
 
     chips.push({
       key: 'cooldown',
-      icon: '⏱',
+      iconId: 'hourglassProgress',
       text: cooldownText,
       tooltip: cooldownTooltip,
     });
@@ -132,14 +133,14 @@ export function buildPotionMetaChips({
   if (typeof charges === 'number') {
     chips.push({
       key: 'charges',
-      icon: '📦',
+      iconId: 'artifactBundle',
       text: `${charges}`,
       tooltip: 'Charges in inventory',
     });
   } else if (typeof stackSize === 'number' && stackSize > 1) {
     chips.push({
       key: 'stack',
-      icon: '📦',
+      iconId: 'artifactBundle',
       text: `x${stackSize}`,
       tooltip: `Max stack size: ${stackSize}`,
     });

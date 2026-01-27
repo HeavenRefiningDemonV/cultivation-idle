@@ -365,6 +365,12 @@
   font-size: 14px;
 }
 
+.prestigeScreenBenefitsList li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .prestigeScreenBenefitsList.is-warning {
   color: rgba(120, 68, 32, 0.8);
 }
@@ -1018,6 +1024,17 @@
   color: rgba(62, 30, 6, 0.9);
 }
 
+.prestigeUpgradeModalList li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prestigeUpgradeModalListIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
 .prestigeUpgradeModalList li.is-missing {
   color: rgba(120, 68, 32, 0.85);
 }
@@ -1531,6 +1548,12 @@
   display: grid;
   gap: 6px;
   color: rgba(62, 30, 6, 0.9);
+}
+
+.prestigeRitualList li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .prestigeRitualList.is-warning {

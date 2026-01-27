@@ -5,6 +5,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
 import { clamp, D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
+import { GameIcon } from '../../ui/icons';
 import './AdventureScreen.scss';
 
 /**
@@ -113,7 +114,10 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
       <p className={'adventureScreenZoneDescription'}>{zone.description}</p>
 
       {isLocked ? (
-        <div className={'adventureScreenZoneBoss'}>🔒 Requires Realm {zone.minRealm}</div>
+        <div className={'adventureScreenZoneBoss'}>
+          <GameIcon icon="inkLock" size={14} decorative />
+          <span>Requires Realm {zone.minRealm}</span>
+        </div>
       ) : (
         <div className={'adventureScreenZoneDetails'}>
           <div>Min Realm: {zone.minRealm}</div>
@@ -203,7 +207,13 @@ export function CombatView() {
         <div className={'adventureScreenCombatWrapper'}>
           <div>
             <h2 className={'adventureScreenEnemyTitle'}>{currentEnemy.name}</h2>
-            {currentEnemy.isBoss && <div className={'adventureScreenEnemyBadge'}>⚔️ BOSS ENEMY ⚔️</div>}
+            {currentEnemy.isBoss && (
+              <div className={'adventureScreenEnemyBadge'}>
+                <GameIcon icon="jadeSword" size={14} decorative />
+                <span>BOSS ENEMY</span>
+                <GameIcon icon="jadeSword" size={14} decorative />
+              </div>
+            )}
           </div>
 
           {/* Enemy HP Bar */}
@@ -299,7 +309,10 @@ export function CombatView() {
             autoAttack ? 'adventureScreenControlMuted' : ''
           }`}
         >
-          ⚔️ Attack
+          <span className="adventureScreenActionButtonContent">
+            <GameIcon icon="jadeSword" size={16} decorative />
+            <span>Attack</span>
+          </span>
         </button>
         <button
           onClick={() => setAutoAttack(!autoAttack)}
@@ -307,13 +320,19 @@ export function CombatView() {
             autoAttack ? '' : 'adventureScreenButtonDisabled'
           }`}
         >
-          {autoAttack ? '⏸️ Auto (ON)' : '▶️ Auto (OFF)'}
+          <span className="adventureScreenActionButtonContent">
+            <GameIcon icon="inkBolt" size={16} decorative />
+            <span>{autoAttack ? 'Auto (ON)' : 'Auto (OFF)'}</span>
+          </span>
         </button>
         <button
           onClick={exitCombat}
           className={`${'button-standard'} ${'adventureScreenControlButton'} ${'adventureScreenControlDanger'}`}
         >
-          🏃 Retreat
+          <span className="adventureScreenActionButtonContent">
+            <GameIcon icon="inkSwirl" size={16} decorative />
+            <span>Retreat</span>
+          </span>
         </button>
       </div>
 

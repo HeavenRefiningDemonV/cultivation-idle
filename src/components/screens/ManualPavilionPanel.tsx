@@ -15,6 +15,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { getManualTierIcon, getManualPathIcon, getManualRoleIcon } from '../../features/manuals/manualIconMap';
 import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal';
 import { PaperCard } from '../../ui/ink';
+import { GameIcon } from '../../ui/icons';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -64,16 +65,16 @@ function formatPurchaseError(reason?: string | null) {
 
 type SpineState = 'placeholder' | 'available' | 'sealed' | 'notSold' | 'sold';
 
-function getRoleBadge(role?: string): { icon: string; short: string; label: string; key: string } {
+function getRoleBadge(role?: string): { short: string; label: string; key: string } {
   switch (role) {
     case 'offense':
-      return { icon: '⚔', short: 'ATK', label: 'Offense', key: 'offense' };
+      return { short: 'ATK', label: 'Offense', key: 'offense' };
     case 'defense':
-      return { icon: '🛡', short: 'DEF', label: 'Defense', key: 'defense' };
+      return { short: 'DEF', label: 'Defense', key: 'defense' };
     case 'utility':
-      return { icon: '🧿', short: 'UTIL', label: 'Utility', key: 'utility' };
+      return { short: 'UTIL', label: 'Utility', key: 'utility' };
     default:
-      return { icon: '◎', short: 'GEN', label: 'General', key: 'general' };
+      return { short: 'GEN', label: 'General', key: 'general' };
   }
 }
 
@@ -170,15 +171,19 @@ function BookSpineSlot({
       <div className="pavilionSpineMeta" aria-label="Manual metadata">
         {tierIcon && (
           <span className="pavilionSpineMetaIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
-            {tierIcon.icon}
+            {tierIcon.iconText ?? '◎'}
           </span>
         )}
-        <span className="pavilionSpineMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
-          {pathIcon.icon}
-        </span>
-        <span className="pavilionSpineMetaIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
-          {typeIcon.icon}
-        </span>
+        {pathIcon.iconId ? (
+          <span className="pavilionSpineMetaIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
+            <GameIcon icon={pathIcon.iconId} size={14} decorative />
+          </span>
+        ) : null}
+        {typeIcon.iconId ? (
+          <span className="pavilionSpineMetaIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
+            <GameIcon icon={typeIcon.iconId} size={14} decorative />
+          </span>
+        ) : null}
       </div>
       {state !== 'available' && <div className={`pavilionSpineOverlay pavilionSpineOverlay--${state}`} />}
     </button>

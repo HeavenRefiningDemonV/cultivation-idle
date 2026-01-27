@@ -24,6 +24,7 @@ import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../
 import { TechniqueSpine } from '../techniques/TechniqueSpine';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar';
 import { InkPanel, PaperCard } from '../../ui/ink';
+import { GameIcon } from '../../ui/icons';
 import './TechniqueLibraryScreen.scss';
 
 type SlotSelection = { type: SlotType; index: number };
@@ -472,7 +473,7 @@ export function TechniqueLibraryScreen() {
   const summaryLine = selectedTechDef ? `Rank ${selectedRank} • ${summaryCooldown} • ${summaryRole}` : '';
   const selectedTierIcon = selectedTierValue
     ? getTierIcon(selectedTier)
-    : { icon: '◎', label: 'Unknown Tier', key: 'unknown' };
+    : { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
   const selectedPathIcon = getPathIcon(selectedTechDef?.path ?? 'unknown');
   const selectedTypeIcon = getTypeIcon(resolveTechniqueType(selectedTechDef));
 
@@ -730,24 +731,28 @@ export function TechniqueLibraryScreen() {
                           aria-label={selectedTierIcon.label}
                           title={selectedTierIcon.label}
                         >
-                          {selectedTierIcon.icon}
+                          {selectedTierIcon.iconText ?? '◎'}
                         </span>
-                        <span
-                          className="techniqueLibrarySummaryIcon"
-                          role="img"
-                          aria-label={selectedPathIcon.label}
-                          title={selectedPathIcon.label}
-                        >
-                          {selectedPathIcon.icon}
-                        </span>
-                        <span
-                          className="techniqueLibrarySummaryIcon"
-                          role="img"
-                          aria-label={selectedTypeIcon.label}
-                          title={selectedTypeIcon.label}
-                        >
-                          {selectedTypeIcon.icon}
-                        </span>
+                        {selectedPathIcon.iconId ? (
+                          <span
+                            className="techniqueLibrarySummaryIcon"
+                            role="img"
+                            aria-label={selectedPathIcon.label}
+                            title={selectedPathIcon.label}
+                          >
+                            <GameIcon icon={selectedPathIcon.iconId} size={14} decorative />
+                          </span>
+                        ) : null}
+                        {selectedTypeIcon.iconId ? (
+                          <span
+                            className="techniqueLibrarySummaryIcon"
+                            role="img"
+                            aria-label={selectedTypeIcon.label}
+                            title={selectedTypeIcon.label}
+                          >
+                            <GameIcon icon={selectedTypeIcon.iconId} size={14} decorative />
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                     <div className="techniqueLibrarySummaryChips">

@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import type { MetaChip } from '../../features/apothecary/potionMetaIcons';
+import { GameIcon } from '../../ui/icons';
 import './ConsumableMetaChips.scss';
 
 type ConsumableMetaChipsProps = {
@@ -35,7 +36,7 @@ export function ConsumableMetaChips({
           tabIndex={0}
         >
           <span className="consumableMetaChipIcon" aria-hidden="true">
-            {chip.icon}
+            <GameIcon icon={chip.iconId} size={14} decorative />
           </span>
           {chip.text ? <span className="consumableMetaChipText">{chip.text}</span> : null}
         </span>

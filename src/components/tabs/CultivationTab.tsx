@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { D, formatNumber, greaterThanOrEqualTo, divide } from '../../utils/numbers';
 import type { FocusMode } from '../../types';
 import { REALMS, FOCUS_MODE_MODIFIERS } from '../../constants';
+import { GameIcon } from '../../ui/icons';
 import './CultivationTab.scss';
 
 /**
@@ -286,7 +287,15 @@ export function CultivationTab() {
             whileHover={canBreakthrough ? { scale: 1.05 } : {}}
             whileTap={canBreakthrough ? { scale: 0.95 } : {}}
           >
-            {canBreakthrough ? '✨ Breakthrough! ✨' : 'Insufficient Qi'}
+            {canBreakthrough ? (
+              <span className="cultivationTabBreakthroughButtonContent">
+                <GameIcon icon="inkSparkles" size={16} decorative />
+                <span>Breakthrough!</span>
+                <GameIcon icon="inkSparkles" size={16} decorative />
+              </span>
+            ) : (
+              'Insufficient Qi'
+            )}
           </motion.button>
         </div>
       </motion.div>
@@ -297,7 +306,12 @@ export function CultivationTab() {
         <div className={'cultivationTabUpgradeGrid'}>
           {/* Idle Efficiency */}
           <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabIdleCard'}`} whileHover={{ scale: 1.02 }}>
-            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabIdleTitle'}`}>⚡ Idle Efficiency</div>
+            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabIdleTitle'}`}>
+              <span className="cultivationTabUpgradeTitleContent">
+                <GameIcon icon="inkBolt" size={16} decorative />
+                <span>Idle Efficiency</span>
+              </span>
+            </div>
             <div className={'cultivationTabUpgradeDescription'}>Increases Qi generation by 10%</div>
             <div className={'cultivationTabUpgradeTier'}>
               Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.idle}</span>
@@ -315,7 +329,12 @@ export function CultivationTab() {
 
           {/* Damage Boost */}
           <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabDamageCard'}`} whileHover={{ scale: 1.02 }}>
-            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabDamageTitle'}`}>⚔️ Damage Boost</div>
+            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabDamageTitle'}`}>
+              <span className="cultivationTabUpgradeTitleContent">
+                <GameIcon icon="jadeSword" size={16} decorative />
+                <span>Damage Boost</span>
+              </span>
+            </div>
             <div className={'cultivationTabUpgradeDescription'}>Increases attack power by 5%</div>
             <div className={'cultivationTabUpgradeTier'}>
               Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.damage}</span>
@@ -333,7 +352,12 @@ export function CultivationTab() {
 
           {/* HP Boost */}
           <motion.div className={`${'cultivationTabUpgradeCard'} ${'cultivationTabHpCard'}`} whileHover={{ scale: 1.02 }}>
-            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabHpTitle'}`}>❤️ HP Boost</div>
+            <div className={`${'cultivationTabUpgradeTitle'} ${'cultivationTabHpTitle'}`}>
+              <span className="cultivationTabUpgradeTitleContent">
+                <GameIcon icon="inkHeart" size={16} decorative />
+                <span>HP Boost</span>
+              </span>
+            </div>
             <div className={'cultivationTabUpgradeDescription'}>Increases max HP by 5%</div>
             <div className={'cultivationTabUpgradeTier'}>
               Current Tier: <span className={'cultivationTabUpgradeTierValue'}>{upgradeTiers.hp}</span>

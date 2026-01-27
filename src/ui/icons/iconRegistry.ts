@@ -1,3 +1,5 @@
+import type { IconComponent } from './InkIcon';
+
 import ancientSeedPng from '../../assets/icons/ancientseed.png';
 import artifactBundlePng from '../../assets/icons/artifactbundle.png';
 import artifactShardPng from '../../assets/icons/artifactshard.png';
@@ -22,38 +24,74 @@ import prayerBeadsPng from '../../assets/icons/prayerbeads.png';
 import rustySwordPng from '../../assets/icons/rustysword.png';
 import spiritGrassPng from '../../assets/icons/spiritgrass.png';
 import taskCompletePng from '../../assets/icons/task_complete.png';
+import {
+  InkBoltIcon,
+  InkBurstIcon,
+  InkCheckIcon,
+  InkHeartIcon,
+  InkLockIcon,
+  InkRefreshIcon,
+  InkShieldIcon,
+  InkSparklesIcon,
+  InkSwirlIcon,
+  InkWarningIcon,
+  InkWipIcon,
+  InkXIcon,
+} from './InkIcon';
 
-export type IconMeta = {
+export type PngIconMeta = {
+  kind: 'png';
   src: string;
-  scale: number;
+  scale?: number;
   translateY?: number;
 };
 
+export type SvgIconMeta = {
+  kind: 'svg';
+  Svg: IconComponent;
+  scale?: number;
+  translateY?: number;
+};
+
+export type IconMeta = PngIconMeta | SvgIconMeta;
+
 export const ICONS = {
-  ancientSeed: { src: ancientSeedPng, scale: 1.2 },
-  artifactBundle: { src: artifactBundlePng, scale: 1.25 },
-  artifactShard: { src: artifactShardPng, scale: 1 },
-  beastBlood: { src: beastBloodPng, scale: 1 },
-  bookEarth: { src: bookEarthPng, scale: 1 },
-  bookHeaven: { src: bookHeavenPng, scale: 1 },
-  bookMartial: { src: bookMartialPng, scale: 1 },
-  dustBlue: { src: dustBluePng, scale: 1.55, translateY: -8 },
-  dustBrown: { src: dustBrownPng, scale: 1.55, translateY: -8 },
-  dustGray: { src: dustGrayPng, scale: 1.55, translateY: -8 },
-  dustGreen: { src: dustGreenPng, scale: 1.55, translateY: -8 },
-  dustPurple: { src: dustPurplePng, scale: 1.55, translateY: -8 },
-  foundationPill: { src: foundationPillPng, scale: 1 },
-  herbBundle: { src: herbBundlePng, scale: 1.25 },
-  hourglassEmpty: { src: hourglassEmptyPng, scale: 1.15 },
-  hourglassProgress: { src: hourglassProgressPng, scale: 1.15 },
-  jadeSword: { src: jadeSwordPng, scale: 1 },
-  metalChunk: { src: metalChunkPng, scale: 1.05 },
-  placeholderRingLarge: { src: placeholderRingLargePng, scale: 1 },
-  placeholderRingSmall: { src: placeholderRingSmallPng, scale: 1 },
-  prayerBeads: { src: prayerBeadsPng, scale: 1 },
-  rustySword: { src: rustySwordPng, scale: 1.1 },
-  spiritGrass: { src: spiritGrassPng, scale: 1 },
-  taskComplete: { src: taskCompletePng, scale: 1 },
+  ancientSeed: { kind: 'png', src: ancientSeedPng, scale: 1.2 },
+  artifactBundle: { kind: 'png', src: artifactBundlePng, scale: 1.25 },
+  artifactShard: { kind: 'png', src: artifactShardPng, scale: 1 },
+  beastBlood: { kind: 'png', src: beastBloodPng, scale: 1 },
+  bookEarth: { kind: 'png', src: bookEarthPng, scale: 1 },
+  bookHeaven: { kind: 'png', src: bookHeavenPng, scale: 1 },
+  bookMartial: { kind: 'png', src: bookMartialPng, scale: 1 },
+  dustBlue: { kind: 'png', src: dustBluePng, scale: 1.55, translateY: -8 },
+  dustBrown: { kind: 'png', src: dustBrownPng, scale: 1.55, translateY: -8 },
+  dustGray: { kind: 'png', src: dustGrayPng, scale: 1.55, translateY: -8 },
+  dustGreen: { kind: 'png', src: dustGreenPng, scale: 1.55, translateY: -8 },
+  dustPurple: { kind: 'png', src: dustPurplePng, scale: 1.55, translateY: -8 },
+  foundationPill: { kind: 'png', src: foundationPillPng, scale: 1 },
+  herbBundle: { kind: 'png', src: herbBundlePng, scale: 1.25 },
+  hourglassEmpty: { kind: 'png', src: hourglassEmptyPng, scale: 1.15 },
+  hourglassProgress: { kind: 'png', src: hourglassProgressPng, scale: 1.15 },
+  jadeSword: { kind: 'png', src: jadeSwordPng, scale: 1 },
+  metalChunk: { kind: 'png', src: metalChunkPng, scale: 1.05 },
+  placeholderRingLarge: { kind: 'png', src: placeholderRingLargePng, scale: 1 },
+  placeholderRingSmall: { kind: 'png', src: placeholderRingSmallPng, scale: 1 },
+  prayerBeads: { kind: 'png', src: prayerBeadsPng, scale: 1 },
+  rustySword: { kind: 'png', src: rustySwordPng, scale: 1.1 },
+  spiritGrass: { kind: 'png', src: spiritGrassPng, scale: 1 },
+  taskComplete: { kind: 'png', src: taskCompletePng, scale: 1 },
+  inkBolt: { kind: 'svg', Svg: InkBoltIcon, scale: 1 },
+  inkBurst: { kind: 'svg', Svg: InkBurstIcon, scale: 1 },
+  inkCheck: { kind: 'svg', Svg: InkCheckIcon, scale: 1 },
+  inkHeart: { kind: 'svg', Svg: InkHeartIcon, scale: 1 },
+  inkLock: { kind: 'svg', Svg: InkLockIcon, scale: 1 },
+  inkRefresh: { kind: 'svg', Svg: InkRefreshIcon, scale: 1 },
+  inkShield: { kind: 'svg', Svg: InkShieldIcon, scale: 1 },
+  inkSparkles: { kind: 'svg', Svg: InkSparklesIcon, scale: 1 },
+  inkSwirl: { kind: 'svg', Svg: InkSwirlIcon, scale: 1 },
+  inkWarning: { kind: 'svg', Svg: InkWarningIcon, scale: 1 },
+  inkWip: { kind: 'svg', Svg: InkWipIcon, scale: 1 },
+  inkX: { kind: 'svg', Svg: InkXIcon, scale: 1 },
 } satisfies Record<string, IconMeta>;
 
 export type IconId = keyof typeof ICONS;

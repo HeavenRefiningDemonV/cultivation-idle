@@ -16,6 +16,7 @@ import { ApBreakdownModal } from '../modals/ApBreakdownModal';
 import { PrestigeRitualModal } from '../modals/PrestigeRitualModal';
 import { D } from '../../utils/numbers';
 import { InkPanel, PaperCard } from '../../ui/ink';
+import { GameIcon } from '../../ui/icons';
 import './PrestigeScreen.scss';
 
 export function PrestigeScreen() {
@@ -462,7 +463,10 @@ export function PrestigeScreen() {
                               <div className={'prestigeScreenBenefitsLabel'}>Keeps</div>
                               <ul className={'prestigeScreenBenefitsList'}>
                                 {visibleKeepBenefits.map((benefit) => (
-                                  <li key={benefit}>✓ {benefit}</li>
+                                  <li key={benefit}>
+                                    <GameIcon icon="inkCheck" size={12} decorative />
+                                    <span>{benefit}</span>
+                                  </li>
                                 ))}
                               </ul>
                             </div>
@@ -470,7 +474,10 @@ export function PrestigeScreen() {
                               <div className={'prestigeScreenBenefitsLabel'}>Resets</div>
                               <ul className={'prestigeScreenBenefitsList is-warning'}>
                                 {visibleResetCosts.map((cost) => (
-                                  <li key={cost}>✗ {cost}</li>
+                                  <li key={cost}>
+                                    <GameIcon icon="inkX" size={12} decorative />
+                                    <span>{cost}</span>
+                                  </li>
                                 ))}
                               </ul>
                             </div>

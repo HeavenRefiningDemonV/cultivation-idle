@@ -62,6 +62,9 @@
 .trial-progress__status {
   font-size: 13px;
   color: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .trial-progress__status--ok {

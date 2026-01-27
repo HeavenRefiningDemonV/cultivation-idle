@@ -13,6 +13,7 @@ import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
+import { GameIcon } from '../../ui/icons';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
@@ -505,7 +506,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             ref={pouchButtonRef}
           >
             <span className="apothecaryPouchIcon" aria-hidden="true">
-              🧪
+              <GameIcon icon="herbBundle" size={18} decorative />
             </span>
             {badgeCount > 0 && (
               <span className="apothecaryPouchBadge" aria-label={`${badgeCount} items`}>

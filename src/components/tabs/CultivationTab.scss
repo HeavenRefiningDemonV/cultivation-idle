@@ -253,6 +253,12 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
+.cultivationTabBreakthroughButtonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .cultivationTabBreakthroughReady {
   background: linear-gradient(90deg, #0284c7, #3b82f6);
   color: #000000;
@@ -300,6 +306,12 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 8px;
+}
+
+.cultivationTabUpgradeTitleContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cultivationTabIdleTitle {

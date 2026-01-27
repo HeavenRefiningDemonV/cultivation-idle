@@ -6,6 +6,7 @@ import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../feature
 import type { ManualPurchaseResult as StoreManualPurchaseResult } from '../../stores/manualPavilionStore';
 import { getManualPathIcon, getManualRoleIcon, getManualTierIcon } from '../../features/manuals/manualIconMap';
 import { formatPrice } from '../../stores/contentStore';
+import { GameIcon } from '../../ui/icons';
 
 export interface ManualDetailData {
   slot: PavilionStockSlot;
@@ -436,18 +437,22 @@ export function ManualDetailModal({
             <div className="pavilionDetailIconCluster" aria-label="Manual metadata">
               {tierIcon && (
                 <span className="pavilionDetailIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
-                  {tierIcon.icon}
+                  {tierIcon.iconText ?? '◎'}
                 </span>
               )}
-              <span className="pavilionDetailIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
-                {pathIcon.icon}
-              </span>
-              <span className="pavilionDetailIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
-                {typeIcon.icon}
-              </span>
+              {pathIcon.iconId ? (
+                <span className="pavilionDetailIcon" role="img" aria-label={pathIcon.label} title={pathIcon.label}>
+                  <GameIcon icon={pathIcon.iconId} size={14} decorative />
+                </span>
+              ) : null}
+              {typeIcon.iconId ? (
+                <span className="pavilionDetailIcon" role="img" aria-label={typeIcon.label} title={typeIcon.label}>
+                  <GameIcon icon={typeIcon.iconId} size={14} decorative />
+                </span>
+              ) : null}
             </div>
             <button className={'pavilionDetailClose'} type="button" onClick={handleClose} aria-label="Close manual detail">
-              ✕
+              <GameIcon icon="inkX" size={14} decorative />
             </button>
           </div>
         </div>

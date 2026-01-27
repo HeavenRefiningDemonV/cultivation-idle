@@ -10,6 +10,7 @@ import { useCityStore } from '../../../stores/cityStore';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel';
 import { hpPercent } from '../../../systems/combat/minibarModel';
 import { formatNumber, D } from '../../../utils/numbers';
+import { GameIcon } from '../../../ui/icons';
 import './TrialProgress.scss';
 
 const TRIAL_RECOMMENDATIONS: Record<string, { minRealm?: number; suggestedDps?: number; suggestedHp?: number }> = {
@@ -170,20 +171,25 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
         <div className="trial-progress__requirement-row">
           <span className="trial-progress__badge">Realm</span>
           <span className={realmMet ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
-            {realmMet ? '✅ Met' : '❌ Unmet'} — {realmRequirement != null ? `Req: Realm ${realmRequirement + 1}` : 'No listed realm gate'}
+            <GameIcon icon={realmMet ? 'inkCheck' : 'inkX'} size={14} decorative />
+            <span>
+              {realmMet ? 'Met' : 'Unmet'} — {realmRequirement != null ? `Req: Realm ${realmRequirement + 1}` : 'No listed realm gate'}
+            </span>
           </span>
         </div>
         <div className="trial-progress__requirement-row">
           <span className="trial-progress__badge">Gate Item</span>
           <span className={gateItemOwned ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
-            {gateItemOwned ? '✅ Owned' : '❌ Missing'} — {gateItemName}
+            <GameIcon icon={gateItemOwned ? 'inkCheck' : 'inkX'} size={14} decorative />
+            <span>{gateItemOwned ? 'Owned' : 'Missing'} — {gateItemName}</span>
           </span>
         </div>
         {requiredItemId ? (
           <div className="trial-progress__requirement-row">
             <span className="trial-progress__badge">Required Item</span>
             <span className={requiredItemOwned ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
-              {requiredItemOwned ? '✅ Owned' : '❌ Missing'} — {requiredItemName}
+              <GameIcon icon={requiredItemOwned ? 'inkCheck' : 'inkX'} size={14} decorative />
+              <span>{requiredItemOwned ? 'Owned' : 'Missing'} — {requiredItemName}</span>
             </span>
           </div>
         ) : null}

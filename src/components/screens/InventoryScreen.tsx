@@ -9,6 +9,8 @@ import EquipmentDrawer from '../inventory/EquipmentDrawer';
 import InventorySlotTile from '../inventory/InventorySlotTile';
 import type { DisplayStack } from '../inventory/inventoryTypes';
 import type { ItemDefinition } from '../../types';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import './InventoryScreen.scss';
 
 type InventorySlot =
@@ -47,7 +49,7 @@ const DEFAULT_FILTERS = {
 type PocketDef = {
   id: string;
   label: string;
-  icon: string;
+  iconId: IconId;
   predicate: (def: ItemDefinition) => boolean;
 };
 
@@ -160,25 +162,25 @@ export default function InventoryScreen() {
     const knownTypes = new Set([...BASE_KNOWN_TYPES, ...orderedExtras]);
 
     const basePockets: PocketDef[] = [
-      { id: 'all', label: 'All', icon: '🧺', predicate: () => true },
-      { id: 'weapon', label: 'Weapons', icon: '🗡️', predicate: (def) => getDefType(def) === 'weapon' },
-      { id: 'accessory', label: 'Accessories', icon: '🧿', predicate: (def) => getDefType(def) === 'accessory' },
-      { id: 'consumable', label: 'Consumables', icon: '🧪', predicate: (def) => getDefType(def) === 'consumable' },
-      { id: 'material', label: 'Materials', icon: '🪨', predicate: (def) => getDefType(def) === 'material' },
-      { id: 'treasure', label: 'Treasures', icon: '💎', predicate: (def) => getDefType(def) === 'treasure' },
+      { id: 'all', label: 'All', iconId: 'artifactBundle', predicate: () => true },
+      { id: 'weapon', label: 'Weapons', iconId: 'rustySword', predicate: (def) => getDefType(def) === 'weapon' },
+      { id: 'accessory', label: 'Accessories', iconId: 'placeholderRingSmall', predicate: (def) => getDefType(def) === 'accessory' },
+      { id: 'consumable', label: 'Consumables', iconId: 'herbBundle', predicate: (def) => getDefType(def) === 'consumable' },
+      { id: 'material', label: 'Materials', iconId: 'metalChunk', predicate: (def) => getDefType(def) === 'material' },
+      { id: 'treasure', label: 'Treasures', iconId: 'artifactShard', predicate: (def) => getDefType(def) === 'treasure' },
     ];
 
     const extraPockets = orderedExtras.map((type) => ({
       id: type,
       label: formatPocketLabel(type),
-      icon: '📦',
+      iconId: 'artifactBundle',
       predicate: (def: ItemDefinition) => getDefType(def) === type,
     }));
 
     const miscPocket: PocketDef = {
       id: 'misc',
       label: 'Misc',
-      icon: '📦',
+      iconId: 'artifactBundle',
       predicate: (def) => !knownTypes.has(getDefType(def)),
     };
 
@@ -555,7 +557,7 @@ export default function InventoryScreen() {
             aria-label="Open equipment drawer"
             title="Equipment"
           >
-            <span aria-hidden="true">☯</span>
+            <GameIcon icon="placeholderRingLarge" size={16} decorative />
             <span className="inventoryHeaderEquipmentLabel">Equipment</span>
           </button>
         </div>
@@ -589,7 +591,7 @@ export default function InventoryScreen() {
                 >
                   <span className="inventoryPocketHole" aria-hidden="true" />
                   <span className="inventoryPocketIcon" aria-hidden="true">
-                    {pocket.icon}
+                    <GameIcon icon={pocket.iconId} size={16} decorative />
                   </span>
                   <span className="inventoryPocketLabel">{pocket.label}</span>
                   <span className="inventoryPocketCount" aria-hidden="true">
@@ -616,7 +618,7 @@ export default function InventoryScreen() {
             <div className="inventoryRingSubheaderRight">
               <div className="inventorySearch">
                 <span className="inventorySearchIcon" aria-hidden="true">
-                  🔍
+                  <GameIcon icon="inkSwirl" size={14} decorative />
                 </span>
                 <input
                   className="inventorySearchInput"

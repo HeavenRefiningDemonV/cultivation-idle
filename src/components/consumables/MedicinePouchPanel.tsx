@@ -8,6 +8,8 @@ import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types';
 import { GameEvents } from '../../services/events/GameEvents';
 import { ConsumableMetaChips } from './ConsumableMetaChips';
 import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import './MedicinePouchPanel.scss';
 
 type SlotConfigField = 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly';
@@ -18,10 +20,10 @@ const slotLabels: Record<MedicinePouchSlotKey, string> = {
   specialty: 'Specialty',
 };
 
-const slotIcons: Record<MedicinePouchSlotKey, string> = {
-  healing: '❤',
-  utility: '🧰',
-  specialty: '✦',
+const slotIcons: Record<MedicinePouchSlotKey, IconId> = {
+  healing: 'inkHeart',
+  utility: 'inkSwirl',
+  specialty: 'inkSparkles',
 };
 
 const triggerOptions: { value: MedicinePouchTrigger; label: string }[] = [
@@ -139,7 +141,7 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
           <div>
             <div className={'medicinePouchCardTitle'}>
               <span className={'medicinePouchSlotIcon'} aria-hidden="true">
-                {slotIcons[slotKey]}
+                <GameIcon icon={slotIcons[slotKey]} size={16} decorative />
               </span>
               {slotLabels[slotKey]} Slot
             </div>

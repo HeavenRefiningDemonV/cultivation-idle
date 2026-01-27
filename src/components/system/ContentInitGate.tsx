@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 import { useContentStore } from '../../stores/contentStore';
 import { useCityStore } from '../../stores/cityStore';
+import { GameIcon } from '../../ui/icons';
 
 export function ContentInitGate({ children }: PropsWithChildren) {
   const isLoading = useContentStore((state) => state.isLoading);
@@ -27,7 +28,9 @@ export function ContentInitGate({ children }: PropsWithChildren) {
     return (
       <div className={'appShell'}>
         <div className={'appMessageCard'}>
-          <div className={'appHeroIcon'}>🗺️</div>
+          <div className={'appHeroIcon'}>
+            <GameIcon icon="inkWarning" size={64} decorative />
+          </div>
           <h1 className={'appTitle'}>Content Load Failed</h1>
           <p className={'appSubtext'}>{error}</p>
           <button
@@ -48,7 +51,9 @@ export function ContentInitGate({ children }: PropsWithChildren) {
     return (
       <div className={'appShell'}>
         <div className={'appMessageCard'}>
-          <div className={`${'appHeroIcon'} ${'appLoader'}`}>📜</div>
+          <div className={'appHeroIcon'}>
+            <GameIcon icon="inkSparkles" size={64} decorative className="appLoader" />
+          </div>
           <h1 className={'appTitle'}>Loading Content</h1>
           <p className={'appSubtext'}>{isLoading ? 'Fetching configuration...' : 'Preparing content...'}</p>
         </div>

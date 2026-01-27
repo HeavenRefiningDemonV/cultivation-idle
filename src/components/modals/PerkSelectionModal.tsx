@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
 import { getAvailablePerks } from '../../data/pathPerks';
 import type { PathPerk } from '../../data/pathPerks';
+import { GameIcon } from '../../ui/icons';
 import './PerkSelectionModal.scss';
 
 interface PerkSelectionModalProps {
@@ -144,9 +145,9 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
             >
               <div className={'perkSelectionModalIconRow'}>
                 <div className={hoveredPerk === perk.id ? 'perkSelectionModalPathTextNeutral' : ''}>
-                  {selectedPath === 'heaven' && '☁️'}
-                  {selectedPath === 'earth' && '⛰️'}
-                  {selectedPath === 'martial' && '⚔️'}
+                  {selectedPath === 'heaven' && <GameIcon icon="bookHeaven" size={24} decorative />}
+                  {selectedPath === 'earth' && <GameIcon icon="bookEarth" size={24} decorative />}
+                  {selectedPath === 'martial' && <GameIcon icon="bookMartial" size={24} decorative />}
                 </div>
               </div>
 
@@ -174,7 +175,10 @@ export function PerkSelectionModal({ onClose, realmIndex }: PerkSelectionModalPr
         </div>
 
         <div className={'perkSelectionModalFooter'}>
-          <p>💡 Tip: Choose perks that complement your playstyle!</p>
+          <p className="perkSelectionModalFooterTip">
+            <GameIcon icon="inkSparkles" size={14} decorative />
+            <span>Tip: Choose perks that complement your playstyle!</span>
+          </p>
           <p className={'perkSelectionModalFooterSmall'}>
             Perks are permanent for this run and stack with your path bonuses
           </p>

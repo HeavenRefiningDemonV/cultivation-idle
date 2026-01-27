@@ -18,6 +18,8 @@ import { RankUpgradeRitualModal } from './RankUpgradeRitualModal';
 import { TraitRerollModal } from './TraitRerollModal';
 import { GameEvents } from '../../services/events/GameEvents';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import './TechniqueDetailModal.scss';
 
 export interface TechniqueDetailModalProps {
@@ -78,10 +80,10 @@ const gradeLabel = (value?: string) => {
   return safe.charAt(0).toUpperCase() + safe.slice(1);
 };
 
-const slotGlyphMap: Record<SlotType, string> = {
-  active: '⚔',
-  passive: '⛩',
-  ultimate: '☄',
+const slotGlyphMap: Record<SlotType, IconId> = {
+  active: 'jadeSword',
+  passive: 'inkSwirl',
+  ultimate: 'inkBurst',
 };
 
 export function TechniqueDetailModal({
@@ -446,13 +448,13 @@ export function TechniqueDetailModal({
 
   const equipSlotOptions = useMemo(() => {
     if (!selectedLoadout || !compatibleSlotType) return [];
-    const slots: Array<{
+      const slots: Array<{
       type: SlotType;
       index: number;
       slotKey: string;
       label: string;
       shortLabel: string;
-      glyph: string;
+      glyph: IconId;
       techId: string | null;
       techName: string | null;
       isUnlocked: boolean;
@@ -619,24 +621,28 @@ export function TechniqueDetailModal({
                     aria-label={tierIcon.label}
                     title={tierIcon.label}
                   >
-                    {tierIcon.icon}
+                    {tierIcon.iconText ?? '◎'}
                   </span>
-                  <span
-                    className="techniqueDetailModalMetaIcon"
-                    role="img"
-                    aria-label={pathIcon.label}
-                    title={pathIcon.label}
-                  >
-                    {pathIcon.icon}
-                  </span>
-                  <span
-                    className="techniqueDetailModalMetaIcon"
-                    role="img"
-                    aria-label={typeIcon.label}
-                    title={typeIcon.label}
-                  >
-                    {typeIcon.icon}
-                  </span>
+                  {pathIcon.iconId ? (
+                    <span
+                      className="techniqueDetailModalMetaIcon"
+                      role="img"
+                      aria-label={pathIcon.label}
+                      title={pathIcon.label}
+                    >
+                      <GameIcon icon={pathIcon.iconId} size={14} decorative />
+                    </span>
+                  ) : null}
+                  {typeIcon.iconId ? (
+                    <span
+                      className="techniqueDetailModalMetaIcon"
+                      role="img"
+                      aria-label={typeIcon.label}
+                      title={typeIcon.label}
+                    >
+                      <GameIcon icon={typeIcon.iconId} size={14} decorative />
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <button
@@ -690,7 +696,7 @@ export function TechniqueDetailModal({
                         title={slot.isUnlocked ? slot.label : slot.unlockLabel ?? slot.label}
                       >
                         <span className="techniqueDetailModalEquipChipIcon" aria-hidden="true">
-                          {slot.glyph}
+                          <GameIcon icon={slot.glyph} size={14} decorative />
                         </span>
                         <span className="techniqueDetailModalEquipChipLabel">{slot.shortLabel}</span>
                       </button>

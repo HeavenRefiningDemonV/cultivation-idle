@@ -17,6 +17,7 @@ import { NotificationToasts } from './NotificationToasts';
 import { BottomTabBar } from './BottomTabBar';
 import { WorldBuildingModal } from './modals/WorldBuildingModal';
 import { AudioBindings } from '../app/AudioBindings';
+import { GameIcon } from '../ui/icons';
 import './GameLayout.scss';
 
 /**
@@ -24,9 +25,11 @@ import './GameLayout.scss';
  */
 function PlaceholderContent({ tabName }: { tabName: string }) {
   return (
-    <div className={'gameLayoutPlaceholder'}>
-      <div className={'gameLayoutPlaceholderCard'}>
-        <div className={'gameLayoutPlaceholderIcon'}>🚧</div>
+      <div className={'gameLayoutPlaceholder'}>
+        <div className={'gameLayoutPlaceholderCard'}>
+        <div className={'gameLayoutPlaceholderIcon'}>
+          <GameIcon icon="inkWip" size={56} decorative />
+        </div>
         <h2 className={'gameLayoutPlaceholderTitle'}>{tabName} - Coming Soon</h2>
         <p className={'gameLayoutPlaceholderText'}>This feature is under development</p>
       </div>

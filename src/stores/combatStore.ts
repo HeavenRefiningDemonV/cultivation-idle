@@ -903,7 +903,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       // Add entry to log
       if (isBoss) {
-        get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+        get().addLogEntry('system', `BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
         emitEvent({ type: 'BOSS_SPAWN', enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
@@ -1036,7 +1036,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
 
       if (enemy.isBoss) {
-        get().addLogEntry('system', `⚠️ BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
+        get().addLogEntry('system', `BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
         emitEvent({ type: 'BOSS_SPAWN', enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
@@ -1129,7 +1129,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             emitEvent({ type: 'HEAL', amount: appliedHeal.toFixed(0) });
             get().addLogEntry(
               'heal',
-              `🧪 Used ${spec.shortLabel}: +${appliedHeal.toFixed(0)} HP`,
+              `Used ${spec.shortLabel}: +${appliedHeal.toFixed(0)} HP`,
               '#34d399',
             );
           }
@@ -1160,7 +1160,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           });
           get().addLogEntry(
             'system',
-            `🧪 Used ${spec.shortLabel}: Shield ${Math.round(shieldGain)} for ${effect.durationSec}s`,
+            `Used ${spec.shortLabel}: Shield ${Math.round(shieldGain)} for ${effect.durationSec}s`,
             '#38bdf8',
           );
           break;
@@ -1193,7 +1193,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           });
           get().addLogEntry(
             'system',
-            `🧪 Used ${spec.shortLabel}: ${effect.stat} +${valueLabel} for ${effect.durationSec}s`,
+            `Used ${spec.shortLabel}: ${effect.stat} +${valueLabel} for ${effect.durationSec}s`,
             '#38bdf8',
           );
           break;
@@ -1209,7 +1209,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           });
 
           if (applied > 0) {
-            get().addLogEntry('system', `🧪 Used ${spec.shortLabel}: +${applied.toFixed(0)} Qi`, '#22d3ee');
+            get().addLogEntry('system', `Used ${spec.shortLabel}: +${applied.toFixed(0)} Qi`, '#22d3ee');
           }
           break;
         }
@@ -1224,7 +1224,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           });
 
           if (applied > 0) {
-            get().addLogEntry('system', `🧪 Used ${spec.shortLabel}: +${applied.toFixed(0)} intent`, '#22d3ee');
+            get().addLogEntry('system', `Used ${spec.shortLabel}: +${applied.toFixed(0)} intent`, '#22d3ee');
           }
           break;
         }
@@ -1610,7 +1610,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       for (const lootItem of lootResult.items) {
         const success = inventoryStore.addItem(lootItem.itemId, lootItem.quantity);
         if (!success) {
-          get().addLogEntry('system', '⚠️ Inventory full! Some items were lost.', '#ef4444');
+          get().addLogEntry('system', 'Inventory full! Some items were lost.', '#ef4444');
           break;
         }
       }
@@ -1829,7 +1829,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (mechanics.enrageTriggered) {
           get().addLogEntry(
             'system',
-            `🔥 ${state.currentEnemy.name} has ENRAGED! Attack power increased by 50%!`,
+            `${state.currentEnemy.name} has ENRAGED! Attack power increased by 50%!`,
             '#ef4444'
           );
         }
@@ -1896,7 +1896,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
           get().addLogEntry(
             'damage',
-            `⚡ ${enemy.name} unleashes ULTIMATE ATTACK! Takes ${appliedDamage.toFixed(0)} damage!${absorptionNote}`,
+            `${enemy.name} unleashes ULTIMATE ATTACK! Takes ${appliedDamage.toFixed(0)} damage!${absorptionNote}`,
             '#a855f7'
           );
 
@@ -1932,7 +1932,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             // Just started warning
             get().addLogEntry(
               'system',
-              `⚠️ ${state.currentEnemy.name} is charging a powerful attack! (3s)`,
+              `Warning: ${state.currentEnemy.name} is charging a powerful attack! (3s)`,
               '#f59e0b'
             );
             emitEvent({
@@ -1960,7 +1960,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         get().addLogEntry(
           'system',
-          `☠️ ${state.currentEnemy.name}'s ${auraMechanic.description || 'aura'} activates!`,
+          `${state.currentEnemy.name}'s ${auraMechanic.description || 'aura'} activates!`,
           '#ef4444'
         );
       }

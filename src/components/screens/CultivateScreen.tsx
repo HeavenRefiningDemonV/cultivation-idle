@@ -19,6 +19,7 @@ import barLong from "../../assets/menus/bar_long.png";
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb';
+import { GameIcon } from '../../ui/icons';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -307,7 +308,7 @@ export function CultivateScreen() {
           <div className="cultivationRealmTags">
             <div className="cultivationRealmTag cultivationRealmTag--current">
               <span className="cultivationRealmTagIcon" aria-hidden="true">
-                ⛰
+                <GameIcon icon="bookEarth" size={16} decorative />
               </span>
               <span className="cultivationRealmTagText">{realmLabel}</span>
               <span className="cultivationRealmTagSub">Stage {realm.substage}</span>

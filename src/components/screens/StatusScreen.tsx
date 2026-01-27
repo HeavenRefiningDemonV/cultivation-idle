@@ -9,6 +9,8 @@ import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader';
 import { CombatStatTile } from '../../ui/status/CombatStatTile';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 import {
   Crosshair,
   Droplets,
@@ -64,10 +66,12 @@ function StatRow({ label, value, tone = 'muted' }: { label: string; value: strin
 /**
  * Section Header Component
  */
-function SectionHeader({ icon, title }: { icon: string; title: string }) {
+function SectionHeader({ icon, title }: { icon: IconId; title: string }) {
   return (
     <div className={'statusScreenSectionHeader'}>
-      <span className={'statusScreenSectionIcon'}>{icon}</span>
+      <span className={'statusScreenSectionIcon'}>
+        <GameIcon icon={icon} size={16} decorative />
+      </span>
       <h2 className={'statusScreenSectionTitle'}>{title}</h2>
     </div>
   );
@@ -149,7 +153,7 @@ export function StatusScreen() {
           <div className={'statusScreenColumn'}>
             {/* Cultivation Progress Section */}
             <div className={'statusScreenPanel statusScreenCardBase'}>
-              <SectionHeader icon="⚡" title="Cultivation Progress" />
+              <SectionHeader icon="inkBolt" title="Cultivation Progress" />
 
               <StatRow label="Current Realm" value={currentRealm.name} tone="gold" />
               <StatRow

@@ -1,6 +1,7 @@
 import type { ManualGrade } from './pavilionStockTypes';
 import type { TechniqueDef } from '../../content';
 import type { PathId } from '../../content/types';
+import type { IconId } from '../../ui/icons';
 import { normalizeGrade } from '../../stores/techCollectionStore';
 
 export type ManualType = 'active' | 'passive' | 'ultimate';
@@ -25,30 +26,36 @@ export const resolveTechniqueType = (
   return 'unknown';
 };
 
-const MANUAL_TIER_ICONS: Record<ManualGrade, { icon: string; label: string }> = {
-  mortal: { icon: 'M', label: 'Mortal Tier' },
-  earth: { icon: 'E', label: 'Earth Tier' },
-  heaven: { icon: 'H', label: 'Heaven Tier' },
-  mystic: { icon: 'Y', label: 'Mystic Tier' },
+type ManualIcon = {
+  label: string;
+  iconId?: IconId;
+  iconText?: string;
 };
 
-const MANUAL_PATH_ICONS: Record<PathId, { icon: string; label: string }> = {
-  heaven: { icon: '☁️', label: 'Heaven Path' },
-  earth: { icon: '⛰️', label: 'Earth Path' },
-  martial: { icon: '⚔️', label: 'Martial Path' },
+const MANUAL_TIER_ICONS: Record<ManualGrade, ManualIcon> = {
+  mortal: { iconText: 'M', label: 'Mortal Tier' },
+  earth: { iconText: 'E', label: 'Earth Tier' },
+  heaven: { iconText: 'H', label: 'Heaven Tier' },
+  mystic: { iconText: 'Y', label: 'Mystic Tier' },
 };
 
-const MANUAL_TYPE_ICONS: Record<ManualType, { icon: string; label: string }> = {
-  active: { icon: '⚔', label: 'Active Technique' },
-  passive: { icon: '⛩', label: 'Passive Technique' },
-  ultimate: { icon: '☄', label: 'Ultimate Technique' },
+const MANUAL_PATH_ICONS: Record<PathId, ManualIcon> = {
+  heaven: { iconId: 'bookHeaven', label: 'Heaven Path' },
+  earth: { iconId: 'bookEarth', label: 'Earth Path' },
+  martial: { iconId: 'bookMartial', label: 'Martial Path' },
 };
 
-const MANUAL_ROLE_ICONS: Record<ManualRole, { icon: string; label: string }> = {
-  offense: { icon: '⚔', label: 'Offense' },
-  defense: { icon: '🛡', label: 'Defense' },
-  utility: { icon: '🧿', label: 'Utility' },
-  general: { icon: '◎', label: 'General' },
+const MANUAL_TYPE_ICONS: Record<ManualType, ManualIcon> = {
+  active: { iconId: 'jadeSword', label: 'Active Technique' },
+  passive: { iconId: 'inkSwirl', label: 'Passive Technique' },
+  ultimate: { iconId: 'inkBurst', label: 'Ultimate Technique' },
+};
+
+const MANUAL_ROLE_ICONS: Record<ManualRole, ManualIcon> = {
+  offense: { iconId: 'jadeSword', label: 'Offense' },
+  defense: { iconId: 'inkShield', label: 'Defense' },
+  utility: { iconId: 'inkSwirl', label: 'Utility' },
+  general: { iconId: 'inkSparkles', label: 'General' },
 };
 
 export const getManualTierIcon = (grade: ManualGrade) => MANUAL_TIER_ICONS[grade] ?? MANUAL_TIER_ICONS.mortal;
@@ -57,7 +64,7 @@ export const getManualPathIcon = (path?: string | null) => {
   if (path === 'heaven' || path === 'earth' || path === 'martial') {
     return MANUAL_PATH_ICONS[path];
   }
-  return { icon: '◎', label: 'Unknown Path' };
+  return { iconId: 'inkWip', label: 'Unknown Path' };
 };
 
 export const getManualTypeIcon = (type: ManualType) => MANUAL_TYPE_ICONS[type] ?? MANUAL_TYPE_ICONS.active;
@@ -69,8 +76,8 @@ export const getManualRoleIcon = (role?: string | null) => {
   return MANUAL_ROLE_ICONS.general;
 };
 
-const unknownPathIcon = { icon: '◎', label: 'Unknown Path', key: 'unknown' };
-const unknownTypeIcon = { icon: '◎', label: 'Unknown Type', key: 'unknown' };
+const unknownPathIcon = { iconId: 'inkWip', label: 'Unknown Path', key: 'unknown' };
+const unknownTypeIcon = { iconId: 'inkWip', label: 'Unknown Type', key: 'unknown' };
 
 export const getTierIcon = (gradeOrTierValue?: string | null) => {
   const grade = normalizeGrade(gradeOrTierValue ?? undefined);

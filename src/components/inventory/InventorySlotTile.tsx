@@ -1,5 +1,7 @@
 import type { ItemType } from '../../types';
 import type { DisplayStack } from './inventoryTypes';
+import type { IconId } from '../../ui/icons';
+import { GameIcon } from '../../ui/icons';
 
 type InventorySlotTileProps = {
   stack: DisplayStack;
@@ -8,20 +10,20 @@ type InventorySlotTileProps = {
   onSelect: () => void;
 };
 
-const getTypeGlyph = (type: ItemType | string): string => {
+const getTypeGlyph = (type: ItemType | string): IconId => {
   switch (type) {
     case 'weapon':
-      return '🗡️';
+      return 'rustySword';
     case 'accessory':
-      return '🧿';
+      return 'placeholderRingSmall';
     case 'consumable':
-      return '💊';
+      return 'herbBundle';
     case 'material':
-      return '🪨';
+      return 'metalChunk';
     case 'treasure':
-      return '💎';
+      return 'artifactShard';
     default:
-      return '📦';
+      return 'artifactBundle';
   }
 };
 
@@ -58,7 +60,7 @@ export default function InventorySlotTile({ stack, isSelected, isNew, onSelect }
       role="gridcell"
     >
       <div className="inventorySlotTileIcon" aria-hidden="true">
-        {getTypeGlyph(stack.type)}
+        <GameIcon icon={getTypeGlyph(stack.type)} size={18} decorative />
       </div>
 
       {stack.quantity > 1 ? (

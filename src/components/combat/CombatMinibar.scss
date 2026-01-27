@@ -232,7 +232,8 @@
 }
 
 .combat-minibar__safety-indicator {
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .combat-minibar__safety-tooltip {

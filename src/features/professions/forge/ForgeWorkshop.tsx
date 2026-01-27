@@ -15,6 +15,8 @@ import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
 import { resolveForgeStepScript } from './forgeScriptBuilder';
 import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink';
+import type { IconId } from '../../../ui/icons';
+import { GameIcon } from '../../../ui/icons';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -165,23 +167,24 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const stepPreview = useMemo(
     () =>
       resolvedStepScript.map((step) => {
+        const base = { id: step.id };
         switch (step.type) {
           case 'HEAT_TO':
           case 'HEAT_MATERIAL':
-            return { id: step.id, icon: '🔥', label: 'Heat' };
+            return { ...base, iconId: 'inkBolt' as IconId, label: 'Heat' };
           case 'HAMMER_PATTERN':
-            return { id: step.id, icon: '🔨', label: 'Strike' };
+            return { ...base, iconId: 'metalChunk' as IconId, label: 'Strike' };
           case 'ENGRAVE_RUNE':
-            return { id: step.id, icon: '🔮', label: 'Engrave' };
+            return { ...base, iconId: 'artifactShard' as IconId, label: 'Engrave' };
           case 'LAY_FORMATION':
-            return { id: step.id, icon: '🧿', label: 'Formation' };
+            return { ...base, iconId: 'inkSwirl' as IconId, label: 'Formation' };
           case 'TEMPER':
           case 'QUENCH':
-            return { id: step.id, icon: '✨', label: 'Special' };
+            return { ...base, iconId: 'inkSparkles' as IconId, label: 'Special' };
           case 'FINISH':
-            return { id: step.id, icon: '✅', label: 'Finish' };
+            return { ...base, iconId: 'taskComplete' as IconId, label: 'Finish' };
           default:
-            return { id: step.id, icon: '•', label: step.type };
+            return { ...base, iconId: 'inkWip' as IconId, label: step.type };
         }
       }),
     [resolvedStepScript],
@@ -376,7 +379,10 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                         {output ? ` · ${output}` : blueprint.service ? ` · ${blueprint.service}` : ''}
                       </div>
                       {locked && (
-                        <div className="forgeWorkshop__rowLock">🔒 Unlock at {blueprint.cityId ?? 'another city'}</div>
+                        <div className="forgeWorkshop__rowLock">
+                          <GameIcon icon="inkLock" size={12} decorative />
+                          <span>Unlock at {blueprint.cityId ?? 'another city'}</span>
+                        </div>
                       )}
                     </div>
                   </PaperCard>
@@ -439,7 +445,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 {stepPreview.map((step, index) => (
                   <div key={step.id} className="forgeWorkshop__stepPreviewItem">
                     <span className="forgeWorkshop__stepIcon" aria-hidden="true">
-                      {step.icon}
+                      <GameIcon icon={step.iconId} size={14} decorative />
                     </span>
                     <span className="forgeWorkshop__stepLabel">{step.label}</span>
                     {index < stepPreview.length - 1 && <span className="forgeWorkshop__stepArrow">→</span>}
