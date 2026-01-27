@@ -12,6 +12,7 @@ export interface InkModalFrameProps {
   className?: string;
   panelClassName?: string;
   ariaLabel?: string;
+  showCloseButton?: boolean;
   children: ReactNode;
 }
 
@@ -24,6 +25,7 @@ export function InkModalFrame({
   className,
   panelClassName,
   ariaLabel,
+  showCloseButton = true,
   children,
 }: InkModalFrameProps) {
   if (!isOpen) return null;
@@ -38,6 +40,11 @@ export function InkModalFrame({
           header={header}
           className={classNames('inkModalFrame__panel', panelClassName)}
         >
+          {onClose && showCloseButton ? (
+            <button type="button" className="inkModalFrame__close" onClick={onClose} aria-label="Close">
+              ×
+            </button>
+          ) : null}
           {children}
         </InkPanel>
       </div>

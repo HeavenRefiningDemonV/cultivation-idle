@@ -40,10 +40,17 @@
 }
 
 .inkPanel__header {
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 12px;
+  padding: 6px 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--ink-text-color);
+  background-color: rgba(252, 246, 235, 0.85);
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  border-radius: 10px 8px 12px 9px;
+  box-shadow: 0 6px 12px rgba(15, 10, 6, 0.12);
 }
 
 .inkPanel__body {
