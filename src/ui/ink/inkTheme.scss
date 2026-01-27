@@ -1,0 +1,16 @@
+/* Do not add gradients or dark-blue panels here. */
+@import '../../styles/paperInkTokens.scss';
+
+:root {
+  --paper-bg-image: url('../../assets/texture_overlay.png');
+  --paper-tint: rgba(247, 237, 215, 0.94);
+  --paper-opacity: 0.22;
+  --ink-border-color: rgba(43, 33, 22, 0.55);
+  --ink-border-width: 2px;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --watermark-image: none;
+  --watermark-opacity: 0.08;
+  --accent-ink: var(--paper-stamp, #9f3b2e);
+  --ink-text-color: var(--paper-ink, #2b2116);
+  --ink-muted-color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
+}

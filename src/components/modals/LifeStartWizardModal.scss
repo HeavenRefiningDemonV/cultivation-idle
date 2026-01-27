@@ -27,6 +27,28 @@
   color: #e8ecf4;
 }
 
+.lifeStartWizardFrame {
+  z-index: 80;
+}
+
+.lifeStartWizardFrame .inkModalFrame__backdrop {
+  background: rgba(10, 10, 10, 0.45);
+}
+
+.lifeStartWizardModal--ink {
+  width: min(1100px, 94vw);
+  max-height: 90vh;
+  color: var(--ink-text-color);
+  --paper-tint: rgba(251, 244, 228, 0.82);
+  --paper-opacity: 0.2;
+}
+
+.lifeStartWizardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .lifeStartWizardModal--path {
   width: 100vw;
   height: 100vh;
@@ -52,48 +74,50 @@
 
 .lifeStartWizardHeader p {
   margin: 0;
-  color: #b8c2d6;
+  color: var(--ink-muted-color);
 }
 
 .lifeStartWizardSteps {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 14px;
 }
 
-.wizardStep {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid transparent;
-  color: #c8d2e5;
-}
-
-.wizardStep.active {
-  border-color: rgba(126, 174, 255, 0.6);
-  background: rgba(126, 174, 255, 0.08);
-  color: #ffffff;
-}
-
-.wizardStepNumber {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  display: grid;
-  place-items: center;
+.wizardStepChip {
+  justify-content: center;
   font-weight: 700;
+  position: relative;
+  width: 100%;
+  text-transform: none;
+}
+
+.wizardStepChip:not(.wizardStepChip--active) {
+  opacity: 0.75;
+}
+
+.wizardStepChip--active {
+  border-width: 2px;
+  background: rgba(248, 238, 214, 0.95);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+}
+
+.wizardStepChip--active::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent-ink);
 }
 
 .wizardSection {
-  background: rgba(12, 14, 18, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }
 
 .wizardSectionHeader h3 {
@@ -103,7 +127,7 @@
 
 .wizardSectionHeader p {
   margin: 0;
-  color: #b6c1d4;
+  color: var(--ink-muted-color);
 }
 
 .wizardCardGrid {
@@ -250,30 +274,45 @@ body.lifePathMode .bottomTabBar {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-.wizardCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 12px;
+.wizardCardButton {
+  border: none;
+  background: transparent;
+  padding: 0;
+  width: 100%;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease;
-  color: #e7ecf6;
 }
 
-.wizardCard:hover {
-  border-color: rgba(126, 174, 255, 0.5);
-  transform: translateY(-2px);
+.wizardCardButton:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.45);
+  outline-offset: 3px;
 }
 
-.wizardCard.selected {
-  border-color: rgba(126, 174, 255, 0.85);
-  box-shadow: 0 0 0 1px rgba(126, 174, 255, 0.35);
-}
-
-.wizardCard.locked {
-  opacity: 0.6;
+.wizardCardButton:disabled {
   cursor: not-allowed;
+}
+
+.wizardCard {
+  position: relative;
+  width: 100%;
+  text-align: left;
+}
+
+.wizardCard--selected::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  background-image: url('../../assets/menus/bar_short.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.wizardCard--locked {
+  opacity: 0.65;
+  filter: saturate(0.75);
 }
 
 .wizardCardTitle {
@@ -283,19 +322,19 @@ body.lifePathMode .bottomTabBar {
 }
 
 .wizardCardDesc {
-  color: #c0cadb;
+  color: var(--ink-muted-color);
   margin-bottom: 4px;
 }
 
 .wizardCardTags {
   font-size: 12px;
-  color: #9bb0cc;
+  color: var(--ink-muted-color);
   margin-bottom: 6px;
 }
 
 .wizardCardMeta {
   font-size: 12px;
-  color: #8fa3c7;
+  color: var(--ink-muted-color);
 }
 
 .wizardFooter {
@@ -309,7 +348,7 @@ body.lifePathMode .bottomTabBar {
 .wizardHelperRow {
   display: flex;
   justify-content: space-between;
-  color: #9fb4d3;
+  color: var(--ink-muted-color);
   font-size: 13px;
   margin-top: 6px;
 }
@@ -318,7 +357,7 @@ body.lifePathMode .bottomTabBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #c0cde2;
+  color: var(--ink-text-color);
   font-size: 13px;
 }
 
@@ -329,13 +368,34 @@ body.lifePathMode .bottomTabBar {
 }
 
 .wizardError {
-  color: #ff8a8a;
+  color: var(--accent-ink);
   margin-left: 6px;
   font-size: 12px;
 }
 
 .wizardEmpty {
-  color: #9fb4d3;
+  color: var(--ink-muted-color);
+}
+
+.lifeStartWizardModal--ink .button-primary,
+.lifeStartWizardModal--ink .button-secondary {
+  background: rgba(250, 242, 228, 0.92);
+  border: 1px solid rgba(120, 72, 33, 0.45);
+  color: var(--ink-text-color);
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+}
+
+.lifeStartWizardModal--ink .button-primary:disabled,
+.lifeStartWizardModal--ink .button-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.lifeStartWizardModal--ink .button-primary:hover:not(:disabled),
+.lifeStartWizardModal--ink .button-secondary:hover:not(:disabled) {
+  background: rgba(255, 250, 240, 0.96);
 }
 
 @media (max-width: 768px) {
