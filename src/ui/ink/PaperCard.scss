@@ -49,6 +49,11 @@
   --paper-card-bg: rgba(252, 246, 235, 0.95);
 }
 
+.inkPaperCard--heartlaw {
+  border-radius: 14px 12px 16px 11px;
+  --paper-card-bg: rgba(248, 238, 220, 0.96);
+}
+
 .inkPaperCard--interactive {
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;

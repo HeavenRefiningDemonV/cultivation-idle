@@ -2,7 +2,7 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 import './PaperCard.scss';
 
-type PaperCardVariant = 'card' | 'tray' | 'label' | 'pouch';
+type PaperCardVariant = 'card' | 'tray' | 'label' | 'pouch' | 'heartlaw';
 
 export interface PaperCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: PaperCardVariant;

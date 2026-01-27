@@ -141,39 +141,65 @@ export function LifeStartWizardModal() {
   const hasPath = Boolean(lifePath);
   const hasHeartLaw = Boolean(selectedHeartLawId);
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
+  const steps = [
+    {
+      id: 1,
+      label: 'Life Path',
+      isActive: wizardStep === 1,
+      isComplete: hasPath,
+      onClick: canChangeLifePath() ? () => setWizardStep(1) : undefined,
+    },
+    {
+      id: 2,
+      label: 'Heart Law',
+      isActive: wizardStep === 2,
+      isComplete: hasHeartLaw,
+    },
+    {
+      id: 3,
+      label: 'Breath Focus',
+      isActive: wizardStep === 3,
+      isComplete: hasPath && hasHeartLaw,
+    },
+  ];
 
   if (wizardStep === 1) {
     return (
-      <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
-        <div className="lifeStartWizardModal lifeStartWizardModal--path">
-          <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
-            <div className="lifePathTriptychFrame">
-              <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
-                {LIFE_PATHS.map((path) => {
-                  const selected = lifePath === path.id;
-                  const disabled = !canChangeLifePath() && !selected;
-                  return (
-                    <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}`}>
-                      <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
-                      <div className="lifePathPanel__title">{path.title}</div>
-                      <button
-                        type="button"
-                        className="lifePathPanel__select"
-                        onClick={() => handlePickPath(path.id)}
-                        disabled={disabled}
-                        aria-label={`Select ${path.title.toLowerCase()} path`}
-                        aria-pressed={selected}
-                      >
-                        Select
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+      <InkModalFrame
+        ariaLabel="Choose your life path"
+        className="lifeStartWizardFrame lifeStartWizardFrame--path"
+        panelClassName="lifeStartWizardModal--path"
+        variant="heartlaw"
+        watermark
+        showCloseButton={false}
+      >
+        <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
+          <div className="lifePathTriptychFrame">
+            <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
+              {LIFE_PATHS.map((path) => {
+                const selected = lifePath === path.id;
+                const disabled = !canChangeLifePath() && !selected;
+                return (
+                  <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}`}>
+                    <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
+                    <div className="lifePathPanel__title">{path.title}</div>
+                    <button
+                      type="button"
+                      className="lifePathPanel__select"
+                      onClick={() => handlePickPath(path.id)}
+                      disabled={disabled}
+                      aria-label={`Select ${path.title.toLowerCase()} path`}
+                      aria-pressed={selected}
+                    >
+                      Select
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
-      </div>
+      </InkModalFrame>
     );
   }
 
@@ -184,6 +210,7 @@ export function LifeStartWizardModal() {
       panelClassName="lifeStartWizardModal--ink"
       variant="heartlaw"
       watermark
+      showCloseButton={false}
     >
       <div className="lifeStartWizardContent">
         <div className="lifeStartWizardHeader">
@@ -192,19 +219,16 @@ export function LifeStartWizardModal() {
         </div>
 
         <div className="lifeStartWizardSteps">
-          <PaperChip
-            text="1 · Life Path"
-            className={`wizardStepChip${wizardStep === 1 ? ' wizardStepChip--active' : ''}`}
-            onClick={canChangeLifePath() ? () => setWizardStep(1) : undefined}
-          />
-          <PaperChip
-            text="2 · Heart Law"
-            className={`wizardStepChip${wizardStep === 2 ? ' wizardStepChip--active' : ''}`}
-          />
-          <PaperChip
-            text="3 · Breath Focus"
-            className={`wizardStepChip${wizardStep === 3 ? ' wizardStepChip--active' : ''}`}
-          />
+          {steps.map((step) => (
+            <PaperChip
+              key={step.id}
+              text={step.label}
+              icon={<span className="wizardStepNumber">{step.id}</span>}
+              variant="tag"
+              className={`wizardStepChip${step.isActive ? ' wizardStepChip--active' : ''}${step.isComplete ? ' wizardStepChip--complete' : ''}`}
+              onClick={step.onClick}
+            />
+          ))}
         </div>
 
         {wizardStep === 2 && (
@@ -247,12 +271,18 @@ export function LifeStartWizardModal() {
                   >
                     <PaperCard
                       className={`wizardCard${selected ? ' wizardCard--selected' : ''}${!unlocked ? ' wizardCard--locked' : ''}`}
+                      variant="heartlaw"
                       interactive={unlocked}
                       selected={selected}
                       disabled={!unlocked}
                     >
                       <div className="wizardCardTitle">{law.name}</div>
-                      <div className="wizardCardTags">{(law.daoTags ?? []).slice(0, 3).join(' • ') || 'No tags'}</div>
+                      <div className="wizardCardTags">
+                        {(law.daoTags ?? []).slice(0, 3).map((tag) => (
+                          <PaperChip key={tag} text={tag} variant="tag" tone="ink" />
+                        ))}
+                        {(law.daoTags ?? []).length === 0 && <PaperChip text="No tags" variant="tag" tone="neutral" />}
+                      </div>
                       <div className="wizardCardDesc">{tierLabel === 'starter' ? 'Starter' : tierLabel}</div>
                       <div className="wizardCardMeta">{unlocked ? 'Select' : lockedText}</div>
                     </PaperCard>
