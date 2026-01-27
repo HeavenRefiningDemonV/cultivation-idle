@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
 import { getAvailablePerks } from '../../data/pathPerks';
 import type { CultivationPath } from '../../types';
+import { InkModalFrame } from '../../ui/ink';
 import './PathSelectionModal.scss';
 
 interface PathSelectionModalProps {
@@ -12,7 +13,6 @@ interface PathSelectionModalProps {
 const paths: Array<{
   id: CultivationPath;
   name: string;
-  gradient: string;
   accent: string;
   icon: string;
   theme: string;
@@ -23,8 +23,7 @@ const paths: Array<{
   {
     id: 'heaven',
     name: 'Heaven Path',
-    gradient: 'linear-gradient(90deg, #60a5fa, #a855f7)',
-    accent: '#60a5fa',
+    accent: '#4f6f8f',
     icon: '☁️',
     theme: 'Spiritual Cultivation',
     description:
@@ -42,8 +41,7 @@ const paths: Array<{
   {
     id: 'earth',
     name: 'Earth Path',
-    gradient: 'linear-gradient(90deg, #22c55e, #f59e0b)',
-    accent: '#22c55e',
+    accent: '#5f7a3a',
     icon: '⛰️',
     theme: 'Body Cultivation',
     description:
@@ -60,8 +58,7 @@ const paths: Array<{
   {
     id: 'martial',
     name: 'Martial Path',
-    gradient: 'linear-gradient(90deg, #ef4444, #f97316)',
-    accent: '#ef4444',
+    accent: '#9f3b2e',
     icon: '⚔️',
     theme: 'Combat Cultivation',
     description:
@@ -97,72 +94,73 @@ export function PathSelectionModal({ onClose }: PathSelectionModalProps) {
   };
 
   return (
-    <div className={'pathSelectionModalOverlay'}>
-      <div className={'pathSelectionModalModal'}>
-        <div className={'pathSelectionModalHeader'}>
-          <h1 className={'pathSelectionModalTitle'}>Choose Your Cultivation Path</h1>
-          <p className={'pathSelectionModalSubtitle'}>This choice is permanent and defines your cultivation journey</p>
-          <p className={'pathSelectionModalHelperText'}>Each path grants unique bonuses and playstyle characteristics</p>
-        </div>
-
-        <div className={'pathSelectionModalGrid'}>
-          {paths.map((path) => {
-            const isActive = hoveredPath === path.id;
-            const cardStyle: CSSProperties = {
-              borderColor: isActive ? path.accent : undefined,
-              boxShadow: isActive ? `0 12px 30px ${path.accent}55` : undefined,
-            };
-
-            return (
-              <div
-                key={path.id}
-                onMouseEnter={() => setHoveredPath(path.id)}
-                onMouseLeave={() => setHoveredPath(null)}
-                className={`${'pathSelectionModalCard'} ${isActive ? 'pathSelectionModalCardActive' : ''}`}
-                style={cardStyle}
-                onClick={() => handleSelectPath(path.id)}
-              >
-                <div className={'pathSelectionModalIcon'}>{path.icon}</div>
-
-                <div className={'pathSelectionModalGradientHeader'} style={{ background: path.gradient }}>
-                  <h2 className={'pathSelectionModalPathName'}>{path.name}</h2>
-                  <p className={'pathSelectionModalPathTheme'}>{path.theme}</p>
-                </div>
-
-                <p className={'pathSelectionModalDescription'}>{path.description}</p>
-
-                <div className={'pathSelectionModalBonusBox'}>
-                  <h3 className={'pathSelectionModalBonusTitle'}>Path Bonuses:</h3>
-                  <ul className={'pathSelectionModalBonusList'}>
-                    {path.bonuses.map((bonus, idx) => (
-                      <li key={idx}>
-                        {bonus.includes('-') ? '⚠' : '✓'} {bonus}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className={'pathSelectionModalPlaystyleBox'}>
-                  <h3 className={'pathSelectionModalBonusTitle'}>Playstyle:</h3>
-                  <p className={'pathSelectionModalPathTheme'}>{path.playstyle}</p>
-                </div>
-
-                <button
-                  className={'button-standard pathSelectionModalSelectButton'}
-                  style={{ background: path.gradient }}
-                >
-                  Choose {path.name}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className={'pathSelectionModalFooter'}>
-          <p className={'pathSelectionModalFooterTip'}>💡 Tip: All paths are viable! Choose based on your preferred playstyle.</p>
-          <p className={'pathSelectionModalFooterNote'}>You cannot change your path after selection</p>
-        </div>
+    <InkModalFrame
+      onClose={onClose}
+      className="pathSelectionModal"
+      panelClassName="pathSelectionModalPanel"
+      variant="prestige"
+      watermark
+      ariaLabel="Choose your cultivation path"
+    >
+      <div className={'pathSelectionModalHeader'}>
+        <h1 className={'pathSelectionModalTitle'}>Choose Your Cultivation Path</h1>
+        <p className={'pathSelectionModalSubtitle'}>This choice is permanent and defines your cultivation journey</p>
+        <p className={'pathSelectionModalHelperText'}>Each path grants unique bonuses and playstyle characteristics</p>
       </div>
-    </div>
+
+      <div className={'pathSelectionModalGrid'}>
+        {paths.map((path) => {
+          const isActive = hoveredPath === path.id;
+          const cardStyle: CSSProperties = {
+            ['--path-accent' as string]: path.accent,
+          };
+
+          return (
+            <div
+              key={path.id}
+              onMouseEnter={() => setHoveredPath(path.id)}
+              onMouseLeave={() => setHoveredPath(null)}
+              className={`${'pathSelectionModalCard'} ${isActive ? 'pathSelectionModalCardActive' : ''}`}
+              style={cardStyle}
+              onClick={() => handleSelectPath(path.id)}
+            >
+              <div className={'pathSelectionModalIcon'}>{path.icon}</div>
+
+              <div className={'pathSelectionModalGradientHeader'}>
+                <h2 className={'pathSelectionModalPathName'}>{path.name}</h2>
+                <p className={'pathSelectionModalPathTheme'}>{path.theme}</p>
+              </div>
+
+              <p className={'pathSelectionModalDescription'}>{path.description}</p>
+
+              <div className={'pathSelectionModalBonusBox'}>
+                <h3 className={'pathSelectionModalBonusTitle'}>Path Bonuses:</h3>
+                <ul className={'pathSelectionModalBonusList'}>
+                  {path.bonuses.map((bonus, idx) => (
+                    <li key={idx}>
+                      {bonus.includes('-') ? '⚠' : '✓'} {bonus}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className={'pathSelectionModalPlaystyleBox'}>
+                <h3 className={'pathSelectionModalBonusTitle'}>Playstyle:</h3>
+                <p className={'pathSelectionModalPathTheme'}>{path.playstyle}</p>
+              </div>
+
+              <button className={'button-standard pathSelectionModalSelectButton'}>
+                Choose {path.name}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className={'pathSelectionModalFooter'}>
+        <p className={'pathSelectionModalFooterTip'}>💡 Tip: All paths are viable! Choose based on your preferred playstyle.</p>
+        <p className={'pathSelectionModalFooterNote'}>You cannot change your path after selection</p>
+      </div>
+    </InkModalFrame>
   );
 }
