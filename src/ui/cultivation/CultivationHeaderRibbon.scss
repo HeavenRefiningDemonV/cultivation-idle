@@ -72,6 +72,32 @@
   color: rgba(14, 116, 144, 0.85);
 }
 
+.cultivationHeaderQiLotus {
+  width: 19px;
+  height: 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cultivationHeaderQiLotusImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cultivationHeaderQiLotus[data-state='closed'] .cultivationHeaderQiLotusImg--closed,
+.cultivationHeaderQiLotus[data-state='open'] .cultivationHeaderQiLotusImg--open,
+.cultivationHeaderQiLotus[data-state='full'] .cultivationHeaderQiLotusImg--full {
+  opacity: 1;
+}
+
 .cultivationHeaderQiOrb {
   width: 19px;
   height: 19px;
