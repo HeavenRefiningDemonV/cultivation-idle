@@ -22,6 +22,18 @@
   color: var(--apoth-ink);
 }
 
+.apothecaryPanel.inkPanel {
+  padding: 12px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.apothecaryPanel.inkPanel::before,
+.apothecaryPanel.inkPanel::after {
+  display: none;
+}
+
 .apothecaryTopRibbon {
   display: flex;
   align-items: flex-start;
