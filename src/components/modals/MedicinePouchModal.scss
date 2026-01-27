@@ -3,7 +3,7 @@
 }
 
 .medicinePouchFrame .inkModalFrame__backdrop {
-  background: rgba(32, 26, 18, 0.5);
+  background: rgba(10, 10, 10, 0.45);
 }
 
 .medicinePouchModal {
@@ -32,7 +32,7 @@
   gap: 12px;
   padding: calc(12px + env(safe-area-inset-top)) 18px 12px;
   border-bottom: 1px solid rgba(120, 72, 33, 0.25);
-  background: rgba(251, 244, 228, 0.85);
+  background: rgba(248, 239, 221, 0.6);
 }
 
 .medicinePouchTitle {
@@ -53,21 +53,7 @@
   overflow: auto;
   padding: 12px 18px calc(16px + env(safe-area-inset-bottom));
   scrollbar-gutter: stable;
-  background: rgba(251, 244, 228, 0.55);
-  scrollbar-color: rgba(87, 59, 31, 0.5) rgba(251, 244, 228, 0.2);
-}
-
-.medicinePouchScroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.medicinePouchScroll::-webkit-scrollbar-thumb {
-  background: rgba(87, 59, 31, 0.45);
-  border-radius: 999px;
-}
-
-.medicinePouchScroll::-webkit-scrollbar-track {
-  background: rgba(251, 244, 228, 0.25);
+  background: transparent;
 }
 
 .medicinePouchScrollShadow {
@@ -95,7 +81,13 @@
 }
 
 .medicinePouchClose {
-  position: static;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 72, 33, 0.45);
+  background: rgba(248, 239, 221, 0.8);
+  color: var(--ink-text-color);
+  cursor: pointer;
 }
 
 @media (prefers-reduced-motion: reduce) {

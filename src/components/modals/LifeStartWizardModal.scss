@@ -1,16 +1,45 @@
+.lifeStartWizardOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 70;
+}
+
+.lifeStartWizardOverlay--path {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.lifeStartWizardModal {
+  width: min(1100px, 95vw);
+  max-height: 90vh;
+  background: linear-gradient(135deg, rgba(22, 26, 36, 0.92), rgba(16, 20, 28, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  padding: 20px 24px;
+  overflow: auto;
+  color: #e8ecf4;
+}
+
 .lifeStartWizardFrame {
   z-index: 80;
 }
 
 .lifeStartWizardFrame .inkModalFrame__backdrop {
-  background: rgba(32, 26, 18, 0.45);
+  background: rgba(10, 10, 10, 0.45);
 }
 
 .lifeStartWizardModal--ink {
   width: min(1100px, 94vw);
   max-height: 90vh;
   color: var(--ink-text-color);
-  --paper-tint: rgba(251, 244, 228, 0.9);
+  --paper-tint: rgba(251, 244, 228, 0.82);
   --paper-opacity: 0.2;
 }
 
@@ -20,15 +49,18 @@
   gap: 12px;
 }
 
-.lifeStartWizardFrame--path .inkModalFrame__dialog {
-  padding: 12px;
-}
-
 .lifeStartWizardModal--path {
-  width: min(1400px, 96vw);
-  max-height: 92vh;
-  padding: 16px;
+  width: 100vw;
+  height: 100vh;
+  max-height: none;
+  max-width: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
   overflow: hidden;
+  color: inherit;
 }
 
 .lifeStartWizardHeader {
@@ -58,59 +90,27 @@
   position: relative;
   width: 100%;
   text-transform: none;
-  padding: 8px 12px;
 }
 
 .wizardStepChip:not(.wizardStepChip--active) {
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 .wizardStepChip--active {
   border-width: 2px;
-  background: rgba(248, 238, 214, 0.92);
-  box-shadow: 0 10px 18px rgba(15, 10, 6, 0.18);
+  background: rgba(248, 238, 214, 0.95);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
 }
 
-.wizardStepChip--active::before {
+.wizardStepChip--active::after {
   content: '';
-  position: absolute;
-  inset: 5px 10px auto 10px;
-  height: 18px;
-  border-radius: 12px;
-  background: rgba(255, 251, 240, 0.7);
-  border: 1px solid rgba(120, 72, 33, 0.25);
-  pointer-events: none;
-}
-
-.wizardStepChip--complete::after {
-  content: '✓';
   position: absolute;
   top: 6px;
   right: 10px;
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.8);
-}
-
-.wizardStepNumber {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(120, 72, 33, 0.5);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: rgba(43, 33, 22, 0.85);
-  background: rgba(255, 250, 240, 0.9);
-}
-
-.wizardStepChip--active .wizardStepNumber {
-  border-width: 2px;
-}
-
-.wizardStepChip--complete .wizardStepNumber {
-  border-color: rgba(87, 59, 31, 0.6);
-  background: rgba(248, 240, 228, 0.95);
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent-ink);
 }
 
 .wizardSection {
@@ -143,7 +143,7 @@
   display: flex;
   align-items: stretch;
   justify-content: center;
-  background: rgba(246, 238, 222, 0.35);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .lifePathTriptych {
@@ -158,8 +158,8 @@
   height: 100%;
   width: min(1360px, 96vw);
   padding: 12px;
-  border: 2px solid rgba(43, 33, 22, 0.55);
-  background: rgba(250, 242, 228, 0.55);
+  border: 3px solid #111;
+  background: rgba(246, 243, 236, 0.15);
   display: flex;
 }
 
@@ -169,21 +169,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(43, 33, 22, 0.6);
-  border-radius: 6px;
-  background-color: rgba(248, 238, 220, 0.9);
+  border: 3px solid #111;
+  border-radius: 0;
 }
 
 .lifePathPanel--heaven {
-  background-color: rgba(244, 236, 222, 0.9);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, #c9dbf5 0%, #a9c2e8 55%, #c9a0a0 100%);
 }
 
 .lifePathPanel--earth {
-  background-color: rgba(242, 232, 214, 0.9);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, #e7d6a3 0%, #d8c27f 58%, #c9a0a0 100%);
 }
 
 .lifePathPanel--martial {
-  background-color: rgba(244, 228, 214, 0.9);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, #e0b2b8 0%, #d0909c 55%, #c9a0a0 100%);
 }
 
 .lifePathPanel__art {
@@ -230,11 +235,11 @@
   right: 18px;
   bottom: 54px;
   height: 64px;
-  background: rgba(251, 244, 228, 0.9);
-  border: 2px solid rgba(43, 33, 22, 0.7);
-  border-radius: 10px;
+  background: rgba(245, 241, 231, 0.85);
+  border: 3px solid #111;
+  border-radius: 0;
   font-size: 28px;
-  color: rgba(43, 33, 22, 0.95);
+  color: #111;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -293,6 +298,18 @@ body.lifePathMode .bottomTabBar {
   text-align: left;
 }
 
+.wizardCard--selected::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  background-image: url('../../assets/menus/bar_short.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
 .wizardCard--locked {
   opacity: 0.65;
   filter: saturate(0.75);
@@ -310,9 +327,8 @@ body.lifePathMode .bottomTabBar {
 }
 
 .wizardCardTags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-muted-color);
   margin-bottom: 6px;
 }
 
@@ -351,10 +367,6 @@ body.lifePathMode .bottomTabBar {
   gap: 8px;
 }
 
-.wizardCheckbox input[type='checkbox'] {
-  accent-color: rgba(43, 33, 22, 0.75);
-}
-
 .wizardError {
   color: var(--accent-ink);
   margin-left: 6px;
@@ -387,6 +399,10 @@ body.lifePathMode .bottomTabBar {
 }
 
 @media (max-width: 768px) {
+  .lifeStartWizardModal {
+    max-height: 100vh;
+  }
+
   .wizardCardGrid {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }

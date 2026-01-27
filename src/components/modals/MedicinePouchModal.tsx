@@ -28,6 +28,7 @@ const getFocusableElements = (container: HTMLElement | null): HTMLElement[] => {
 
 export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const [shadowState, setShadowState] = useState({ top: false, bottom: false });
@@ -85,8 +86,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
     const scrollNode = scrollRef.current;
     scrollNode?.addEventListener('scroll', updateScrollShadows);
     updateScrollShadows();
-    const closeButton = modalRef.current?.querySelector<HTMLButtonElement>('.medicinePouchClose');
-    closeButton?.focus();
+    closeButtonRef.current?.focus();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown, { capture: true });
@@ -113,7 +113,6 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
         ariaLabel="Medicine Pouch"
         className="medicinePouchFrame"
         panelClassName="medicinePouchModal"
-        showCloseButton={false}
       >
         <div className="medicinePouchBody" ref={modalRef}>
           <div className="medicinePouchHeader">
@@ -123,11 +122,12 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
             </div>
             <button
               type="button"
-              className="inkModalFrame__close medicinePouchClose"
+              className="medicinePouchClose"
               onClick={onClose}
               aria-label="Close Medicine Pouch"
+              ref={closeButtonRef}
             >
-              ×
+              ✕
             </button>
           </div>
           <div className="medicinePouchScroll" ref={scrollRef}>
