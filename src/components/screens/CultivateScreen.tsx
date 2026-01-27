@@ -301,6 +301,7 @@ export function CultivateScreen() {
           activityType={activeActivity?.type ?? null}
           stability={stability}
           stabilityCap={stabilityCap}
+          breakthroughReady={canBreakthrough}
         />
       </div>
       <div className="cultivationHudRail">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
 import { formatNumber } from '../../utils/numbers';
+import { QiLotusIcon, type QiLotusState } from './QiLotusIcon';
 import './CultivationHeaderRibbon.scss';
 
 type CultivationHeaderRibbonProps = {
@@ -14,6 +15,7 @@ type CultivationHeaderRibbonProps = {
   activityType: string | null;
   stability: number;
   stabilityCap: number;
+  breakthroughReady?: boolean;
 };
 
 function getRealmIcon(realmLabel: string, realmIndex?: number) {
@@ -37,6 +39,7 @@ export function CultivationHeaderRibbon({
   activityType,
   stability,
   stabilityCap,
+  breakthroughReady = false,
 }: CultivationHeaderRibbonProps) {
   const storageKey = 'ui.cultivation.headerCollapsed';
   const ribbonId = 'cultivationHeaderPanel';
@@ -53,6 +56,11 @@ export function CultivationHeaderRibbon({
       : activityTone === 'busy'
         ? 'Foreground activity running. Meditation unavailable.'
         : 'Qi flows passively. Meditate to gain Insight/Study.';
+  const lotusState: QiLotusState = breakthroughReady
+    ? 'full'
+    : activityType === 'meditate'
+      ? 'open'
+      : 'closed';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -80,8 +88,8 @@ export function CultivationHeaderRibbon({
                 Qi
               </div>
               <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
-                <span className={`cultivationHeaderQiOrb cultivationHeaderQiOrb--${isCultivating(activityType)}`}>
-                  <span className="cultivationHeaderQiOrbCore" aria-hidden="true" />
+                <span className="cultivationHeaderStatIcon cultivationHeaderStatIcon--qi">
+                  <QiLotusIcon state={lotusState} size={16} />
                 </span>
                 {formatNumber(qi)}
               </div>
@@ -157,8 +165,4 @@ export function CultivationHeaderRibbon({
       </button>
     </div>
   );
-}
-
-function isCultivating(activityType: string | null) {
-  return activityType === 'meditate' ? 'active' : 'passive';
 }
