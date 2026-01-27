@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
+import { InkModalFrame } from '../../ui/ink';
 import './MedicinePouchModal.scss';
 
 type MedicinePouchModalProps = {
@@ -105,15 +106,15 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
 
   const modalContent = useMemo(
     () => (
-      <div className="medicinePouchOverlay" role="presentation" onMouseDown={onClose}>
-        <div
-          className="medicinePouchModal uiPanelChrome uiPanelChrome--raised"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Medicine Pouch"
-          onMouseDown={(event) => event.stopPropagation()}
-          ref={modalRef}
-        >
+      <InkModalFrame
+        isOpen={open}
+        onClose={onClose}
+        variant="pouch"
+        ariaLabel="Medicine Pouch"
+        className="medicinePouchFrame"
+        panelClassName="medicinePouchModal"
+      >
+        <div className="medicinePouchBody" ref={modalRef}>
           <div className="medicinePouchHeader">
             <div>
               <div className="medicinePouchTitle">Medicine Pouch</div>
@@ -135,9 +136,9 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
             <MedicinePouchPanel variant="modal" />
           </div>
         </div>
-      </div>
+      </InkModalFrame>
     ),
-    [onClose, scrollShadowBottomClass, scrollShadowTopClass],
+    [onClose, open, scrollShadowBottomClass, scrollShadowTopClass],
   );
 
   if (!open) return null;

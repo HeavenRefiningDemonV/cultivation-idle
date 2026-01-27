@@ -12,6 +12,7 @@ import { GameEvents } from '../../services/events/GameEvents';
 import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
+import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
@@ -241,7 +242,12 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     };
 
     return (
-      <div key={stockEntry.id} className={'apothecaryCard'} data-state={blockedReason ? 'blocked' : 'available'}>
+      <PaperCard
+        key={stockEntry.id}
+        className={'apothecaryCard'}
+        data-state={blockedReason ? 'blocked' : 'available'}
+        variant="tray"
+      >
         <div className={'apothecaryCardHeader'}>
           <div>
             <div className={'apothecaryCardTitle'}>{itemName}</div>
@@ -281,7 +287,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
         <div className={'apothecaryActions'}>
           <button
-            className={`worldScreenModuleButton apothecaryActionButton${canBuyOne ? ' worldScreenModuleButton--active' : ''}`}
+            className={`apothecaryActionButton${canBuyOne ? ' apothecaryActionButton--active' : ''}`}
             onClick={() => handlePurchase(1)}
             disabled={!canBuyOne}
             title={!canBuyOne ? canBuyOneResult.error : undefined}
@@ -289,7 +295,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             Buy 1
           </button>
           <button
-            className={`worldScreenModuleButton apothecaryActionButton${canBuyMax ? ' worldScreenModuleButton--active' : ''}`}
+            className={`apothecaryActionButton${canBuyMax ? ' apothecaryActionButton--active' : ''}`}
             onClick={() => handlePurchase(maxBuyQty)}
             disabled={!canBuyMax}
             title={!canBuyMax ? canBuyMaxResult.error : undefined}
@@ -299,7 +305,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         </div>
 
         {renderStatus(status)}
-      </div>
+      </PaperCard>
     );
   };
 
@@ -331,7 +337,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     };
 
     return (
-      <div key={bundle.id} className={'apothecaryCard apothecaryCard--bundle'}>
+      <PaperCard key={bundle.id} className={'apothecaryCard apothecaryCard--bundle'} variant="tray">
         <div className={'apothecaryCardHeader'}>
           <div>
             <div className={'apothecaryCardTitle'}>{bundle.name}</div>
@@ -359,7 +365,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
         <div className={'apothecaryActions'}>
           <button
-            className={'worldScreenModuleButton apothecaryActionButton worldScreenModuleButton--active'}
+            className={'apothecaryActionButton apothecaryActionButton--active'}
             onClick={handlePurchase}
           >
             Buy Bundle
@@ -367,7 +373,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         </div>
 
         {renderStatus(status)}
-      </div>
+      </PaperCard>
     );
   };
 
@@ -385,7 +391,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     };
 
     return (
-      <div key={service.id} className={'apothecaryCard apothecaryCard--service'}>
+      <PaperCard key={service.id} className={'apothecaryCard apothecaryCard--service'} variant="tray">
         <div className={'apothecaryCardHeader'}>
           <div>
             <div className={'apothecaryCardTitle'}>{service.name}</div>
@@ -396,7 +402,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
 
         <div className={'apothecaryActions'}>
           <button
-            className={'worldScreenModuleButton apothecaryActionButton worldScreenModuleButton--active'}
+            className={'apothecaryActionButton apothecaryActionButton--active'}
             onClick={handleClick}
           >
             {service.actionLabel}
@@ -404,7 +410,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         </div>
 
         {renderStatus(status)}
-      </div>
+      </PaperCard>
     );
   };
 
@@ -462,7 +468,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   };
 
   return (
-    <div className={'apothecaryPanel apothecaryPanel--v2'}>
+    <InkPanel variant="apothecary" watermark className={'apothecaryPanel apothecaryPanel--v2'}>
       <header className={'apothecaryTopRibbon'}>
         <div className={'apothecaryTopLeft'}>
           <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>
@@ -472,7 +478,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           <div className={'apothecaryDayKey'}>Day: {dayKey}</div>
         </div>
         <div className={'apothecaryTopRight'}>
-          <div className={'apothecaryWallet uiPanelChrome uiPanelChrome--raised'}>
+          <PaperCard className={'apothecaryWallet'} variant="label">
             <div className={'apothecaryWalletLabel'}>Wallet</div>
             <div className={'apothecaryWalletGrid'}>
               <span>Gold</span>
@@ -482,7 +488,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
               <span>Merit</span>
               <strong>{currencies.merit ?? '0'}</strong>
             </div>
-          </div>
+          </PaperCard>
         </div>
       </header>
 
@@ -490,7 +496,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
         <div className={'apothecaryPouchTrigger'}>
           <button
             type="button"
-            className={`apothecaryPouchIconButton uiPanelChrome uiPanelChrome--flat${
+            className={`apothecaryPouchIconButton${
               hasReadyPouchItem ? ' apothecaryPouchIconButton--ready' : ''
             }`}
             onClick={() => setPouchOpen(true)}
@@ -510,28 +516,25 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           </button>
         </div>
         <div className={'apothecarySafeZone'}>
-          <div className={'apothecaryStoreFrame uiPanelChrome uiPanelChrome--raised'}>
+          <PaperCard className={'apothecaryStoreFrame'} variant="tray">
             <div className={'apothecaryShelfTabs'}>
               {shelfOptions.map((option) => (
-                <button
+                <PaperChip
                   key={option.key}
-                  className={`worldScreenModuleButton apothecaryShelfTab${
-                    activeShelf === option.key ? ' apothecaryShelfTab--active worldScreenModuleButton--active' : ''
-                  }`}
+                  className={`apothecaryShelfTab${activeShelf === option.key ? ' apothecaryShelfTab--active' : ''}`}
+                  text={option.label}
                   onClick={() => setActiveShelf(option.key)}
-                >
-                  {option.label}
-                </button>
+                />
               ))}
             </div>
 
             {renderShelf(activeShelf)}
-          </div>
+          </PaperCard>
         </div>
         <div className={'apothecaryAmbientZone'} aria-hidden="true" />
       </div>
 
       <MedicinePouchModal open={pouchOpen} onClose={() => setPouchOpen(false)} anchorRef={pouchButtonRef} />
-    </div>
+    </InkPanel>
   );
 }

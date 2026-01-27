@@ -7,6 +7,7 @@ import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consu
 import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types';
 import { GameEvents } from '../../services/events/GameEvents';
 import { ConsumableMetaChips } from './ConsumableMetaChips';
+import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
 import './MedicinePouchPanel.scss';
 
 type SlotConfigField = 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly';
@@ -133,7 +134,7 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
     };
 
     return (
-      <div key={slotKey} className={'medicinePouchCard'}>
+      <PaperCard key={slotKey} className={'medicinePouchCard'} variant="pouch">
         <div className={'medicinePouchCardHeader'}>
           <div>
             <div className={'medicinePouchCardTitle'}>
@@ -146,7 +147,7 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
               {equippedId ? itemDef?.name ?? equippedId : 'Empty'}
             </div>
           </div>
-          <div className={'medicinePouchTag'}>{usageLabel(usage)}</div>
+          <PaperChip className={'medicinePouchTag'} text={usageLabel(usage)} variant="tag" tone="ink" />
         </div>
 
         {chips.length > 0 && (
@@ -248,14 +249,14 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
             Baseline: {spec ? `${spec.cooldownSec}s` : '—'} (uses max of slot and item)
           </div>
         </div>
-      </div>
+      </PaperCard>
     );
   };
 
   const equippedCount = Object.values(slots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
 
-  return (
-    <div className={`medicinePouchPanel${variant === 'modal' ? ' medicinePouchPanel--modal' : ''}`}>
+  const panelContent = (
+    <>
       {variant === 'default' && (
         <div className={'medicinePouchPanelHeader'}>
           <div>
@@ -271,15 +272,25 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
       )}
 
       {variant === 'modal' && equippedCount === 0 && (
-        <div className={'medicinePouchEmptyState'}>
+        <PaperCard className={'medicinePouchEmptyState'} variant="label">
           <div className={'medicinePouchEmptyTitle'}>Your pouch is empty.</div>
           <div className={'medicinePouchEmptyBody'}>Stock up at the apothecary to prepare for combat.</div>
-        </div>
+        </PaperCard>
       )}
 
       <div className={'medicinePouchGrid'}>
         {(['healing', 'utility', 'specialty'] as MedicinePouchSlotKey[]).map((slotKey) => renderSlotControls(slotKey))}
       </div>
-    </div>
+    </>
+  );
+
+  if (variant === 'modal') {
+    return <div className="medicinePouchPanel medicinePouchPanel--modal">{panelContent}</div>;
+  }
+
+  return (
+    <InkPanel variant="pouch" watermark className="medicinePouchPanel">
+      {panelContent}
+    </InkPanel>
   );
 }

@@ -1,15 +1,14 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 import './PaperCard.scss';
 
-type PaperCardVariant = 'card' | 'tray' | 'label';
+type PaperCardVariant = 'card' | 'tray' | 'label' | 'pouch';
 
-export interface PaperCardProps {
+export interface PaperCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: PaperCardVariant;
   interactive?: boolean;
   selected?: boolean;
   disabled?: boolean;
-  className?: string;
   style?: CSSProperties;
   children: ReactNode;
 }
@@ -22,6 +21,7 @@ export function PaperCard({
   className,
   style,
   children,
+  ...rest
 }: PaperCardProps) {
   return (
     <div
@@ -36,6 +36,7 @@ export function PaperCard({
         className,
       )}
       style={style}
+      {...rest}
     >
       {children}
     </div>
