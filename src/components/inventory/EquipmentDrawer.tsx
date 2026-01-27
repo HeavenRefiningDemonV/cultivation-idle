@@ -244,7 +244,7 @@ export default function EquipmentDrawer({
             <div className="inventoryEquipSubtitle">Select an item in your satchel, then click a slot to equip.</div>
           </div>
           <button type="button" className="inventoryEquipClose" onClick={onClose} aria-label="Close equipment drawer">
-            ✕
+            <GameIcon icon="inkX" size={12} decorative />
           </button>
         </div>
 

@@ -10,6 +10,7 @@ import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
 import { isCombatModule } from '../../systems/world/openWorldModule';
+import { GameIcon } from '../../ui/icons';
 import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
@@ -128,7 +129,7 @@ export function WorldBuildingModal({
       {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
       {!showShellClose ? (
         <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
-          ✕
+          <GameIcon icon="inkX" size={14} decorative />
         </button>
       ) : null}
       <div className="worldBuildingBody">{content}</div>

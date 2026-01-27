@@ -101,13 +101,15 @@
   height: 32px;
   font-weight: 700;
   color: black;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   position: absolute;
   right: 0;
   top: 0;
 
   cursor: pointer;
-  font-size: 16px;
   line-height: 1;
   transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
 }

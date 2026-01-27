@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { GameIcon } from '../icons';
 import './InkCombatShell.scss';
 
 interface InkCombatShellProps {
@@ -22,7 +23,7 @@ export function InkCombatShell({ title, subtitle, leftSidebar, stage, onClose, c
             </div>
             {onClose ? (
               <button type="button" className="ink-combat-shell__close" onClick={onClose} aria-label="Close">
-                ✕
+                <GameIcon icon="inkX" size={14} decorative />
               </button>
             ) : null}
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import './TraitRerollModal.scss';
+import { GameIcon } from '../../ui/icons';
 import { useContentStore } from '../../stores/contentStore';
 import { useTechCollectionStore } from '../../stores/techCollectionStore';
 
@@ -91,7 +92,7 @@ export function TraitRerollModal({ techId, onClose }: TraitRerollModalProps) {
             <div className="traitRerollSubtitle">Lock one trait for extra cost; others will be rediscovered.</div>
           </div>
           <button className="traitRerollClose" onClick={onClose} aria-label="Close Trait Reroll">
-            ✕
+            <GameIcon icon="inkX" size={14} decorative />
           </button>
         </div>
 

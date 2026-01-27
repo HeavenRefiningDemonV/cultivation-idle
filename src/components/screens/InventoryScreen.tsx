@@ -635,7 +635,7 @@ export default function InventoryScreen() {
                     aria-label="Clear search"
                     title="Clear search"
                   >
-                    ✕
+                    <GameIcon icon="inkX" size={12} decorative />
                   </button>
                 ) : null}
               </div>

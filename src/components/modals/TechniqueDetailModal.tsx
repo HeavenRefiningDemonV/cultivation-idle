@@ -666,7 +666,10 @@ export function TechniqueDetailModal({
                     disabled={isMissing || !techniqueId}
                     type="button"
                   >
-                    {selectedEntry?.favorite ? '★ Fav' : '☆ Fav'}
+                    <span className="techniqueDetailModalFavoriteButtonContent">
+                      <GameIcon icon="inkSparkles" size={12} decorative />
+                      <span>{selectedEntry?.favorite ? 'Unfavorite' : 'Favorite'}</span>
+                    </span>
                   </button>
                   {equippedSlot && (
                     <button

@@ -101,7 +101,7 @@ export function AlchemyResultModal({ result, recipeName, onClose, onCraftAgain, 
                 <div className="masteryFill" style={{ width: `${masteryPercent}%` }} />
               </div>
               <div className="masteryText">
-                {result.masteryBefore} ➜ {result.masteryAfter} (+{result.masteryGain})
+                {result.masteryBefore} → {result.masteryAfter} (+{result.masteryGain})
               </div>
             </div>
             <div className="masterySub">

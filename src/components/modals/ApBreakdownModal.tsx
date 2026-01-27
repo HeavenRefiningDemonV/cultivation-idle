@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
+import { GameIcon } from '../../ui/icons';
 import type { ApBreakdown } from '../../stores/prestigeStore';
 
 interface ApBreakdownModalProps {
@@ -60,7 +61,7 @@ export function ApBreakdownModal({ open, breakdown, isSealed, onClose }: ApBreak
             <p className="prestigeBreakdownSubtitle">Track what you have now and what the ritual will grant.</p>
           </div>
           <button type="button" className="prestigeBreakdownClose" onClick={onClose} aria-label="Close breakdown">
-            ✕
+            <GameIcon icon="inkX" size={14} decorative />
           </button>
         </header>
 

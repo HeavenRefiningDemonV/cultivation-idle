@@ -656,14 +656,14 @@ export function TechniqueLibraryScreen() {
                 {isContentLoading ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
-                      ⏳
+                      <GameIcon icon="hourglassProgress" size={24} decorative />
                     </div>
                     Loading techniques...
                   </PaperCard>
                 ) : ownedTechniques.length === 0 ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
-                      📜
+                      <GameIcon icon="bookHeaven" size={24} decorative />
                     </div>
                     <p>
                       No techniques learned yet. Buy a Manual in the Manual Pavilion, then Study it to learn the
@@ -676,7 +676,7 @@ export function TechniqueLibraryScreen() {
                 ) : filteredTechniques.length === 0 ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
-                      🧭
+                      <GameIcon icon="inkWip" size={24} decorative />
                     </div>
                     No techniques match the current filters.
                   </PaperCard>

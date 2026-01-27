@@ -371,7 +371,7 @@ export function PrestigeUpgradeModal({
               onClick={onClose}
               aria-label="Close decree"
             >
-              ✕
+              <GameIcon icon="inkX" size={14} decorative />
             </button>
           </div>
         </div>

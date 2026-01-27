@@ -805,7 +805,8 @@
 }
 
 .techniqueLibraryEmptyStateIcon {
-  font-size: 20px;
+  display: flex;
+  justify-content: center;
   margin-bottom: 6px;
   color: rgba(120, 72, 33, 0.7);
 }

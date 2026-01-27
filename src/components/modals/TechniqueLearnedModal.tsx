@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import './TechniqueLearnedModal.scss';
+import { GameIcon } from '../../ui/icons';
 import { useUIStore } from '../../stores/uiStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore';
@@ -157,7 +158,7 @@ export function TechniqueLearnedModal() {
             <div className={'techniqueLearnedSubtitle'}>Auto-Used in Combat when equipped.</div>
           </div>
           <button className={'techniqueLearnedClose'} onClick={closeModal} aria-label="Close Technique Learned modal">
-            ✕
+            <GameIcon icon="inkX" size={14} decorative />
           </button>
         </div>
 

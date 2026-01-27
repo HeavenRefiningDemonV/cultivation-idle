@@ -36,7 +36,8 @@
   color: inherit;
   cursor: pointer;
   margin-left: 10px;
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .notificationToast--success {

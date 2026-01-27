@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import './RankUpgradeRitualModal.scss';
 import { useContentStore } from '../../stores/contentStore';
 import { rankMultiplier, useTechCollectionStore } from '../../stores/techCollectionStore';
+import { GameIcon } from '../../ui/icons';
 
 interface RankUpgradeRitualModalProps {
   techId: string;
@@ -81,7 +82,7 @@ export function RankUpgradeRitualModal({ techId, onClose }: RankUpgradeRitualMod
             <div className="rankRitualSubtitle">Forge a stronger art by advancing its rank.</div>
           </div>
           <button className="rankRitualClose" onClick={onClose} aria-label="Close Rank Upgrade">
-            ✕
+            <GameIcon icon="inkX" size={14} decorative />
           </button>
         </div>
 

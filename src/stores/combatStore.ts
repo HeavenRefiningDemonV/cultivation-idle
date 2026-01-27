@@ -1451,7 +1451,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       // Add victory message
       if (isBoss) {
-        get().addLogEntry('victory', `🏆 You defeated the boss ${enemy.name}!`, '#fbbf24');
+        get().addLogEntry('victory', `Victory! You defeated the boss ${enemy.name}.`, '#fbbf24');
         emitEvent({ type: 'BOSS_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('victory', `You defeated ${enemy.name}!`, '#22c55e');
@@ -1845,7 +1845,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
           get().addLogEntry(
             'system',
-            `💚 ${state.currentEnemy.name} heals for ${mechanics.healAmount.toFixed(0)} HP!`,
+            `${state.currentEnemy.name} heals for ${mechanics.healAmount.toFixed(0)} HP.`,
             '#22c55e'
           );
         }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
 import { InkModalFrame } from '../../ui/ink';
+import { GameIcon } from '../../ui/icons';
 import './MedicinePouchModal.scss';
 
 type MedicinePouchModalProps = {
@@ -127,7 +128,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
               aria-label="Close Medicine Pouch"
               ref={closeButtonRef}
             >
-              ✕
+              <GameIcon icon="inkX" size={14} decorative />
             </button>
           </div>
           <div className="medicinePouchScroll" ref={scrollRef}>

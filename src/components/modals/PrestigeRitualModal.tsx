@@ -193,7 +193,7 @@ export function PrestigeRitualModal({
             <p className="prestigeRitualSubtitle">This ritual resets your cultivation journey, but grants Ascension Points.</p>
           </div>
           <button type="button" className="prestigeRitualClose" onClick={handleClose} aria-label="Close ritual">
-            ✕
+            <GameIcon icon="inkX" size={14} decorative />
           </button>
         </header>
 

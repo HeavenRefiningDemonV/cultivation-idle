@@ -87,6 +87,9 @@
   border: 1px solid rgba(120, 72, 33, 0.45);
   background: rgba(248, 239, 221, 0.8);
   color: var(--ink-text-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 

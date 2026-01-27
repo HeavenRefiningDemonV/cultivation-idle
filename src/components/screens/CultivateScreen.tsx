@@ -315,7 +315,7 @@ export function CultivateScreen() {
             </div>
             <div className="cultivationRealmTag cultivationRealmTag--next">
               <span className="cultivationRealmTagIcon" aria-hidden="true">
-                ➜
+                →
               </span>
               <span className="cultivationRealmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
             </div>

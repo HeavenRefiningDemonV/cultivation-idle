@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useUIStore } from '../stores/uiStore';
 import './NotificationToasts.scss';
+import { GameIcon } from '../ui/icons';
 
 export function NotificationToasts() {
   const notifications = useUIStore((state) => state.notifications);
@@ -23,7 +24,7 @@ export function NotificationToasts() {
             onClick={() => removeNotification(toast.id)}
             aria-label="Dismiss notification"
           >
-            ✕
+            <GameIcon icon="inkX" size={12} decorative />
           </button>
         </div>
       ))}
