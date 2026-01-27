@@ -54,3 +54,8 @@ declare module 'react-spring';
 declare module '@floating-ui/react';
 declare module '@floating-ui/react-dom';
 declare module 'lucide-react';
+
+declare module '*.png' {
+  const src: string;
+  export default src;
+}
