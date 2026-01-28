@@ -9,6 +9,26 @@
   box-sizing: border-box;
 }
 
+.uiNoShift {
+  position: relative;
+  box-sizing: border-box;
+  border: var(--ui-no-shift-border, 2px) solid transparent;
+  transform: none;
+  outline: var(--ui-no-shift-outline, 0 solid transparent);
+  outline-offset: var(--ui-no-shift-outline-offset, 0);
+  transition: box-shadow 0.16s ease, outline-color 0.16s ease, filter 0.16s ease, background 0.16s ease;
+}
+
+.uiNoShift:hover,
+.uiNoShift.is-selected,
+.uiNoShift.is-active,
+.uiNoShift.is-highlighted,
+.uiNoShift:focus-visible {
+  outline: var(--ui-no-shift-outline-active, 2px solid rgba(0, 0, 0, 0.45));
+  outline-offset: var(--ui-no-shift-outline-offset, 2px);
+  box-shadow: var(--ui-no-shift-shadow-active, none);
+}
+
 body {
   margin: 0;
   min-height: 100vh;

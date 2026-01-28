@@ -123,7 +123,7 @@ function BookSpineSlot({
   if (!slot) {
     return (
       <div
-        className={'pavilionSpine pavilionSpine--placeholder'}
+        className={'pavilionSpine pavilionSpine--placeholder uiNoShift'}
         data-state="placeholder"
         data-path="unknown"
         data-rarity="common"
@@ -147,7 +147,7 @@ function BookSpineSlot({
   return (
     <button
       type="button"
-      className={`pavilionSpine ${isSelected ? 'pavilionSpine--selected' : ''} ${
+      className={`pavilionSpine uiNoShift ${isSelected ? 'pavilionSpine--selected is-selected' : ''} ${
         isJustPurchased ? 'pavilionSpine--justPurchased' : ''
       }`}
       data-state={state}

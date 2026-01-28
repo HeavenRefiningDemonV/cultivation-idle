@@ -209,7 +209,7 @@
   width: 58px;
   height: 240px;
   border-radius: 10px;
-  border: 0;
+  border: 2px solid transparent;
   background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
@@ -222,8 +222,12 @@
   cursor: pointer;
   overflow: hidden;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
-  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease, opacity 160ms ease;
+  transition: box-shadow 160ms ease, filter 160ms ease, opacity 160ms ease;
   user-select: none;
+  --ui-no-shift-border: 2px;
+  --ui-no-shift-outline-active: 2px solid rgba(0, 0, 0, 0.45);
+  --ui-no-shift-outline-offset: 2px;
+  --ui-no-shift-shadow-active: 0 10px 18px rgba(0, 0, 0, 0.28);
 }
 
 .pavilionSpine::before {
@@ -253,8 +257,7 @@
 }
 
 .pavilionSpine:hover:not(.pavilionSpine--disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+  filter: brightness(1.03);
   z-index: 3;
 }
 
@@ -264,14 +267,15 @@
 }
 
 .pavilionSpine--selected {
-  transform: translateY(-3px);
-  box-shadow:
+  --ui-no-shift-shadow-active:
     0 12px 22px rgba(0, 0, 0, 0.32),
     0 0 0 2px rgba(0, 0, 0, 0.55);
 }
 
 .pavilionSpine--selected:hover {
-  transform: translateY(-4px);
+  --ui-no-shift-shadow-active:
+    0 14px 24px rgba(0, 0, 0, 0.34),
+    0 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
 .pavilionSpine--justPurchased {
@@ -279,7 +283,7 @@
 }
 
 .pavilionSpine--justPurchased:hover {
-  transform: translateY(-6px);
+  filter: brightness(1.08);
 }
 
 .pavilionSpine[data-path='heaven'] {
@@ -504,15 +508,12 @@
 
 @keyframes spinePurchasedPulse {
   0% {
-    transform: translateY(0);
     filter: brightness(1);
   }
   35% {
-    transform: translateY(-4px);
     filter: brightness(1.1);
   }
   100% {
-    transform: translateY(0);
     filter: brightness(1);
   }
 }

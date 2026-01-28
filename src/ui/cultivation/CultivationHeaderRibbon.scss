@@ -186,6 +186,9 @@
   z-index: 5;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
   pointer-events: auto;
+  --ui-no-shift-outline-active: 2px solid rgba(0, 0, 0, 0.35);
+  --ui-no-shift-outline-offset: 2px;
+  --ui-no-shift-shadow-active: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
 .cultivationHeaderRibbon__handle:hover,
@@ -197,6 +200,20 @@
 .cultivationHeaderRibbon__handleIcon {
   font-size: 15px;
   line-height: 1;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.cultivationHeaderRibbon__handle.is-expanded .cultivationHeaderRibbon__handleIcon {
+  transform: rotate(180deg);
+}
+
+.cultivationHeaderRibbon__handle.is-collapsed .cultivationHeaderRibbon__handleIcon {
+  transform: rotate(0deg);
 }
 
 .cultivationHeaderRibbon.is-collapsed .cultivationHeaderRibbon__panel {

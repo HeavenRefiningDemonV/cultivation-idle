@@ -157,14 +157,14 @@ export function CultivationHeaderRibbon({
       </div>
       <button
         type="button"
-        className="cultivationHeaderRibbon__handle"
+        className={`cultivationHeaderRibbon__handle uiNoShift ${collapsed ? 'is-collapsed' : 'is-expanded'}`}
         onClick={() => setCollapsed((value) => !value)}
         aria-label={collapsed ? 'Expand cultivation header' : 'Collapse cultivation header'}
         aria-expanded={!collapsed}
         aria-controls={ribbonId}
       >
         <span aria-hidden="true" className="cultivationHeaderRibbon__handleIcon">
-          {collapsed ? '▾' : '▴'}
+          ▾
         </span>
       </button>
     </div>

@@ -59,6 +59,12 @@
   scrollbar-gutter: stable both-edges;
 }
 
+@supports not (scrollbar-gutter: stable) {
+  .gameLayoutContent--scrollable {
+    overflow-y: scroll;
+  }
+}
+
 .gameLayoutPlaceholder {
   display: flex;
   align-items: center;

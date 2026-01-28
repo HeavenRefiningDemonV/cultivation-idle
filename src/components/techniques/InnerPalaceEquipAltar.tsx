@@ -342,7 +342,11 @@ export function InnerPalaceEquipAltar({
                   aria-expanded={popoverSlotKey === slot.key}
                   onClick={() => handleSlotClick(slot)}
                 >
-                  <div className="innerPalaceSlotFrame">
+                  <div
+                    className={`innerPalaceSlotFrame uiNoShift ${isSelected ? 'is-selected' : ''} ${
+                      canEquipSelected || shouldHighlight ? 'is-highlighted' : ''
+                    }`}
+                  >
                     {slot.techId ? (
                       <div className="innerPalaceSlotSpine">
                         <div className="innerPalaceSlotIcons" aria-hidden="true">
