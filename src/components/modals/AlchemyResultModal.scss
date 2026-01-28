@@ -5,26 +5,26 @@
 }
 
 .alchemyResultModal .modalCard {
-  max-width: 720px;
+  max-width: calc(720 / 1920 * 100vw);
   width: 100%;
 }
 
 .alchemyResultGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(200 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemyResultSection {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.03);
 }
 
 .alchemyResultGrade {
-  padding: 6px 10px;
-  border-radius: 12px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
   font-weight: 700;
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.08);
@@ -58,7 +58,7 @@
 .resultRow {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: calc(4 / 1920 * 100vw) 0;
 }
 
 .resultTotal {
@@ -70,7 +70,7 @@
 }
 
 .alchemyResultSub {
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
   font-size: 0.9rem;
   opacity: 0.9;
 }
@@ -78,15 +78,15 @@
 .masteryRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 4px;
+  gap: calc(12 / 1920 * 100vw);
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .masteryBar {
   flex: 1;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  border-radius: calc(10 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -96,13 +96,13 @@
 }
 
 .masteryText {
-  min-width: 160px;
+  min-width: calc(160 / 1920 * 100vw);
   text-align: right;
   font-weight: 600;
 }
 
 .masterySub {
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
   font-size: 0.9rem;
   opacity: 0.9;
 }

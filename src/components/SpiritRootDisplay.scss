@@ -2,22 +2,22 @@
   position: relative;
   overflow: hidden;
   background: rgba(208, 208, 208, 0.92);
-  border: 5px solid transparent;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border: calc(5 / 1920 * 100vw) solid transparent;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
-  padding: 22px 22px 18px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.42);
-  margin-bottom: 16px;
+  padding: calc(22 / 1920 * 100vw) calc(22 / 1920 * 100vw) calc(18 / 1920 * 100vw);
+  backdrop-filter: blur(calc(6 / 1920 * 100vw));
+  -webkit-backdrop-filter: blur(calc(6 / 1920 * 100vw));
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(26 / 1920 * 100vw) rgba(0, 0, 0, 0.42);
+  margin-bottom: calc(16 / 1920 * 100vw);
 }
 
 .spiritAltarRoot::before {
   content: "";
   position: absolute;
-  inset: -20px;
+  inset: calc(-20 / 1920 * 100vw);
   opacity: 0.14;
-  filter: blur(12px);
+  filter: blur(calc(12 / 1920 * 100vw));
   pointer-events: none;
   background: radial-gradient(circle at 30% 30%, rgba(12, 18, 34, 0.08), transparent 60%);
 }
@@ -65,42 +65,42 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(14 / 1920 * 100vw);
 }
 
 .spiritAltarTitle {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   font-family: 'Julee', cursive;
   color: #0c1222;
 }
 
 .spiritAltarTitle h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
   color: rgba(12, 18, 34, 0.92);
 }
 
 .spiritAltarTitleIcon {
-  width: 18px;
-  height: 18px;
+  width: calc(18 / 1920 * 100vw);
+  height: calc(18 / 1920 * 100vw);
 }
 
 .spiritAltarGradeSeal {
   font-family: 'Julee', cursive;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 900;
-  padding: 6px 10px;
-  border-radius: 999px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  border: 1px solid rgba(12, 18, 34, 0.18);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.18);
   background: rgba(255, 255, 255, 0.3);
   color: rgba(12, 18, 34, 0.85);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw) rgba(0, 0, 0, 0.18);
 }
 
 .spiritAltarGradeSeal--0 {
@@ -115,7 +115,7 @@
 
 .spiritAltarPlaceholder {
   text-align: center;
-  padding: 18px 0;
+  padding: calc(18 / 1920 * 100vw) 0;
   color: rgba(12, 18, 34, 0.7);
 }
 
@@ -123,19 +123,19 @@
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 10px;
-  padding: 10px 0 6px;
-  margin-bottom: 18px;
+  gap: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) 0 calc(6 / 1920 * 100vw);
+  margin-bottom: calc(18 / 1920 * 100vw);
 }
 
 .spiritAltarCrest::before {
   content: "";
-  width: 160px;
-  height: 160px;
+  width: calc(160 / 1920 * 100vw);
+  height: calc(160 / 1920 * 100vw);
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), rgba(0, 0, 0, 0.04) 70%);
-  border: 1px solid rgba(12, 18, 34, 0.16);
-  box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.18);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.16);
+  box-shadow: inset 0 0 0 calc(8 / 1920 * 100vw) rgba(255, 255, 255, 0.18);
   position: absolute;
   top: 0;
   left: 50%;
@@ -145,18 +145,18 @@
 
 .spiritAltarCrestRing {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: calc(160 / 1920 * 100vw);
+  height: calc(160 / 1920 * 100vw);
   z-index: 1;
 }
 
 .spiritAltarCrestRing::before {
   content: "";
   position: absolute;
-  top: 10px;
+  top: calc(10 / 1920 * 100vw);
   left: 50%;
-  width: 150px;
-  height: 150px;
+  width: calc(150 / 1920 * 100vw);
+  height: calc(150 / 1920 * 100vw);
   transform: translateX(-50%);
   border-radius: 50%;
   opacity: 0.1;
@@ -175,10 +175,10 @@
 }
 
 .spiritAltarPurityRing {
-  width: 140px;
-  height: 140px;
+  width: calc(140 / 1920 * 100vw);
+  height: calc(140 / 1920 * 100vw);
   position: absolute;
-  top: 6px;
+  top: calc(6 / 1920 * 100vw);
   left: 50%;
   transform: translateX(-50%) rotate(-90deg);
   z-index: 1;
@@ -195,7 +195,7 @@
   stroke: rgba(12, 18, 34, 0.18);
   stroke-width: 8;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 0 calc(6 / 1920 * 100vw) rgba(0, 0, 0, 0.1));
   transition: stroke-dashoffset 220ms ease-out;
 }
 
@@ -204,15 +204,15 @@
 }
 
 .spiritAltarGlyph {
-  width: 56px;
-  height: 56px;
+  width: calc(56 / 1920 * 100vw);
+  height: calc(56 / 1920 * 100vw);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(12, 18, 34, 0.18);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.18);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.2);
   z-index: 2;
   color: rgba(12, 18, 34, 0.8);
 }
@@ -225,8 +225,8 @@
 }
 
 .spiritAltarGlyph svg {
-  width: 26px;
-  height: 26px;
+  width: calc(26 / 1920 * 100vw);
+  height: calc(26 / 1920 * 100vw);
 }
 
 .spiritAltarRoot[data-element="fire"] .spiritAltarPurityRingProg {
@@ -250,28 +250,28 @@
 }
 
 .spiritAltarRoot[data-element="fire"] .spiritAltarGlyph {
-  box-shadow: 0 8px 18px rgba(249, 115, 22, 0.25);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(249, 115, 22, 0.25);
 }
 
 .spiritAltarRoot[data-element="water"] .spiritAltarGlyph {
-  box-shadow: 0 8px 18px rgba(14, 165, 233, 0.22);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(14, 165, 233, 0.22);
 }
 
 .spiritAltarRoot[data-element="wood"] .spiritAltarGlyph {
-  box-shadow: 0 8px 18px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(34, 197, 94, 0.2);
 }
 
 .spiritAltarRoot[data-element="metal"] .spiritAltarGlyph {
-  box-shadow: 0 8px 18px rgba(148, 163, 184, 0.22);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(148, 163, 184, 0.22);
 }
 
 .spiritAltarRoot[data-element="earth"] .spiritAltarGlyph {
-  box-shadow: 0 8px 18px rgba(245, 158, 11, 0.22);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(245, 158, 11, 0.22);
 }
 
 .spiritAltarMotes {
   position: absolute;
-  top: 22px;
+  top: calc(22 / 1920 * 100vw);
   left: 50%;
   width: 0;
   height: 0;
@@ -283,24 +283,24 @@
 
 .spiritAltarMote {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
   border-radius: 50%;
   opacity: 0.22;
   background: radial-gradient(circle, rgba(12, 18, 34, 0.55), transparent 70%);
-  filter: blur(0.3px);
+  filter: blur(calc(0.3 / 1920 * 100vw));
 }
 
 .spiritAltarMote--1 {
-  transform: rotate(20deg) translateX(78px);
+  transform: rotate(20deg) translateX(calc(78 / 1920 * 100vw));
 }
 
 .spiritAltarMote--2 {
-  transform: rotate(140deg) translateX(84px);
+  transform: rotate(140deg) translateX(calc(84 / 1920 * 100vw));
 }
 
 .spiritAltarMote--3 {
-  transform: rotate(240deg) translateX(74px);
+  transform: rotate(240deg) translateX(calc(74 / 1920 * 100vw));
 }
 
 .spiritAltarRoot[data-element="fire"] .spiritAltarMote {
@@ -336,7 +336,7 @@
 }
 
 .spiritAltarPurityValue {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   font-weight: 700;
   color: rgba(12, 18, 34, 0.6);
 }
@@ -344,21 +344,21 @@
 .spiritAltarChips {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-  margin-bottom: 12px;
+  gap: calc(10 / 1920 * 100vw);
+  margin-top: calc(14 / 1920 * 100vw);
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .spiritAltarChip {
   background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 12px;
-  padding: 10px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   text-align: center;
 }
 
 .spiritAltarChipLabel {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
@@ -366,7 +366,7 @@
 }
 
 .spiritAltarChipValue {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 900;
   color: rgba(12, 18, 34, 0.92);
 }
@@ -374,20 +374,20 @@
 .spiritAltarChip--total {
   border-color: rgba(2, 132, 199, 0.28);
   background: rgba(2, 132, 199, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(2, 132, 199, 0.15);
+  box-shadow: inset 0 0 0 calc(1 / 1920 * 100vw) rgba(2, 132, 199, 0.15);
 }
 
 .spiritAltarElementBonus {
-  margin-top: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .spiritAltarElementBonusLabel {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
@@ -395,25 +395,25 @@
 }
 
 .spiritAltarElementBonusValue {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   font-weight: 700;
   color: rgba(12, 18, 34, 0.78);
 }
 
 .spiritAltarAbout {
-  margin-top: 12px;
-  border: 1px solid rgba(12, 18, 34, 0.12);
-  border-radius: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.12);
+  border-radius: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.28);
-  padding: 10px 12px;
-  margin-bottom: 12px;
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .spiritAltarAboutSummary {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   cursor: pointer;
   font-weight: 900;
   color: rgba(12, 18, 34, 0.7);
@@ -429,41 +429,41 @@
 }
 
 .spiritAltarAboutIcon {
-  width: 16px;
-  height: 16px;
+  width: calc(16 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
 }
 
 .spiritAltarAboutBody {
-  margin-top: 8px;
-  font-size: 12px;
+  margin-top: calc(8 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   line-height: 1.6;
   color: rgba(12, 18, 34, 0.7);
 }
 
 .spiritAltarFooter {
   display: grid;
-  gap: 8px;
-  margin-top: 14px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(14 / 1920 * 100vw);
 }
 
 .spiritAltarRerollButton {
   width: 100%;
   font-weight: 900;
-  padding: 12px 16px;
+  padding: calc(12 / 1920 * 100vw) calc(16 / 1920 * 100vw);
   font-family: 'Julee', cursive;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
 }
 
 .spiritAltarRerollButtonContent {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .spiritAltarRerollButton:hover:enabled {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(22 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
 }
 
 .spiritAltarRerollButton:disabled {
@@ -474,7 +474,7 @@
 .spiritAltarWarning {
   text-align: center;
   color: #ef4444;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   font-weight: 700;
 }
 
@@ -530,25 +530,25 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: calc(520 / 1920 * 100vw)) {
   .spiritAltarCrest::before {
-    width: 140px;
-    height: 140px;
+    width: calc(140 / 1920 * 100vw);
+    height: calc(140 / 1920 * 100vw);
   }
 
   .spiritAltarCrestRing {
-    width: 140px;
-    height: 140px;
+    width: calc(140 / 1920 * 100vw);
+    height: calc(140 / 1920 * 100vw);
   }
 
   .spiritAltarCrestRing::before {
-    width: 130px;
-    height: 130px;
+    width: calc(130 / 1920 * 100vw);
+    height: calc(130 / 1920 * 100vw);
   }
 
   .spiritAltarPurityRing {
-    width: 120px;
-    height: 120px;
+    width: calc(120 / 1920 * 100vw);
+    height: calc(120 / 1920 * 100vw);
   }
 
   .spiritAltarChips {
@@ -572,7 +572,7 @@
     filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
   }
   40% {
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.18));
+    filter: drop-shadow(0 0 calc(10 / 1920 * 100vw) rgba(0, 0, 0, 0.18));
   }
   100% {
     filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));

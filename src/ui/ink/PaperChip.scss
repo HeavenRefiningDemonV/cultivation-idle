@@ -4,15 +4,15 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  border: 1.5px solid var(--ink-border-color);
+  gap: calc(6 / 1920 * 100vw);
+  padding: calc(5 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1.5 / 1920 * 100vw) solid var(--ink-border-color);
   background-color: rgba(250, 242, 228, 0.9);
   color: var(--ink-text-color);
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   line-height: 1.2;
-  box-shadow: 0 6px 12px var(--shadow-color);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw) var(--shadow-color);
   overflow: hidden;
 }
 
@@ -33,8 +33,8 @@
 }
 
 .inkPaperChip--tag {
-  border-radius: 8px;
-  padding: 4px 8px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
 }
 
 .inkPaperChip__text {
@@ -47,7 +47,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .inkPaperChip--tone-ink {
@@ -84,12 +84,12 @@
 }
 
 .inkPaperChip--clickable:hover {
-  transform: translateY(-1px);
+  transform: translateY(calc(-1 / 1920 * 100vw));
   border-color: rgba(120, 72, 33, 0.55);
-  box-shadow: 0 10px 16px var(--shadow-color);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(16 / 1920 * 100vw) var(--shadow-color);
 }
 
 .inkPaperChip--clickable:focus-visible {
-  outline: 2px solid rgba(120, 72, 33, 0.45);
-  outline-offset: 2px;
+  outline: calc(2 / 1920 * 100vw) solid rgba(120, 72, 33, 0.45);
+  outline-offset: calc(2 / 1920 * 100vw);
 }

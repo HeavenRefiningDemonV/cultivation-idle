@@ -54,7 +54,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     style.overflow = 'hidden';
     if (scrollbarWidth > 0) {
-      style.paddingRight = `${scrollbarWidth}px`;
+      style.paddingRight = `${(scrollbarWidth / 1920) * 100}vw`;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {

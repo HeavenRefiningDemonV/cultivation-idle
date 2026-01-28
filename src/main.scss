@@ -19,7 +19,7 @@
   width: min(100vw, calc(100vh * 16 / 9));
   height: min(100vh, calc(100vw * 9 / 16));
   
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5); 
+  box-shadow: 0 0 calc(50 / 1920 * 100vw) rgba(0, 0, 0, 0.5); 
   background-color: #ddd;
   overflow: hidden;
   transform: translateZ(0);

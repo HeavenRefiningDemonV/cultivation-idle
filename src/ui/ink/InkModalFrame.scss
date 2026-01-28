@@ -22,40 +22,40 @@
 .inkModalFrame__dialog {
   position: relative;
   z-index: 1;
-  padding: 20px;
+  padding: calc(20 / 1920 * 100vw);
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
 .inkModalFrame__panel {
-  width: min(920px, 94vw);
+  width: min(calc(920 / 1920 * 100vw), 94vw);
 }
 
 .inkModalFrame__close {
   position: absolute;
-  top: 14px;
-  right: 16px;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px 10px 14px 9px;
-  border: 1.5px solid rgba(120, 72, 33, 0.55);
+  top: calc(14 / 1920 * 100vw);
+  right: calc(16 / 1920 * 100vw);
+  width: calc(34 / 1920 * 100vw);
+  height: calc(34 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw) calc(10 / 1920 * 100vw) calc(14 / 1920 * 100vw) calc(9 / 1920 * 100vw);
+  border: calc(1.5 / 1920 * 100vw) solid rgba(120, 72, 33, 0.55);
   background-color: rgba(252, 246, 235, 0.9);
   color: rgba(43, 33, 22, 0.9);
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 6px 12px rgba(15, 10, 6, 0.2);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw) rgba(15, 10, 6, 0.2);
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .inkModalFrame__close:hover {
-  transform: translateY(-1px);
+  transform: translateY(calc(-1 / 1920 * 100vw));
   border-color: rgba(120, 72, 33, 0.7);
-  box-shadow: 0 10px 16px rgba(15, 10, 6, 0.24);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(16 / 1920 * 100vw) rgba(15, 10, 6, 0.24);
 }
 
 .inkModalFrame__close:active {
-  transform: translateY(1px);
-  box-shadow: 0 4px 10px rgba(15, 10, 6, 0.18);
+  transform: translateY(calc(1 / 1920 * 100vw));
+  box-shadow: 0 calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw) rgba(15, 10, 6, 0.18);
 }

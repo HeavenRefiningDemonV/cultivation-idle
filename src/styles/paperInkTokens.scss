@@ -5,8 +5,8 @@ $ink-1: rgba(12, 18, 34, 0.65);
 $seal-red: rgba(185, 28, 28, 0.75);
 $jade: rgba(34, 197, 94, 0.75);
 $gold: rgba(245, 158, 11, 0.75);
-$shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.18);
-$shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
+$shadow-soft: 0 calc(10 / 1920 * 100vw) calc(22 / 1920 * 100vw) rgba(0, 0, 0, 0.18);
+$shadow-strong: 0 calc(18 / 1920 * 100vw) calc(34 / 1920 * 100vw) rgba(0, 0, 0, 0.28);
 
 :root {
   --paper-0: #ece6dc;
@@ -21,7 +21,7 @@ $shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
   --paper-parchment: #f7edd7;
   --paper-parchment-strong: #f4e6c8;
   --paper-parchment-soft: #fbf4e4;
-  --paper-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
+  --paper-shadow: 0 calc(12 / 1920 * 100vw) calc(24 / 1920 * 100vw) rgba(15, 23, 42, 0.18);
   --paper-ink: #2b2116;
   --paper-ink-muted: rgba(43, 33, 22, 0.7);
   --paper-ink-faint: rgba(43, 33, 22, 0.55);

@@ -53,7 +53,7 @@ export function TimingCircleQTE({
   const inlineStyle = useMemo(
     () =>
       ({
-        '--qte-size': `${sizePx}px`,
+        '--qte-size': `${(sizePx / 1920) * 100}vw`,
         '--qte-duration': `${durationMs}ms`,
       }) as CSSProperties,
     [durationMs, sizePx],

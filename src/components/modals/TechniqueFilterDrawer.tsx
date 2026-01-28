@@ -74,7 +74,7 @@ export function TechniqueFilterDrawer({
     const previousPadding = document.body.style.paddingRight;
     document.body.style.overflow = 'hidden';
     if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.body.style.paddingRight = `${(scrollbarWidth / 1920) * 100}vw`;
     }
     return () => {
       document.body.style.overflow = previousOverflow;

@@ -4,29 +4,29 @@
   right: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   z-index: 120;
   pointer-events: none;
 }
 
 .notificationToast {
-  min-width: 240px;
-  max-width: 360px;
+  min-width: calc(240 / 1920 * 100vw);
+  max-width: calc(360 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.78);
   color: #f1f5f9;
-  border-radius: 10px;
-  padding: 10px 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
   pointer-events: auto;
 }
 
 .notificationToast__message {
   flex: 1;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   line-height: 1.2;
 }
 
@@ -35,7 +35,7 @@
   border: none;
   color: inherit;
   cursor: pointer;
-  margin-left: 10px;
+  margin-left: calc(10 / 1920 * 100vw);
   display: inline-flex;
   align-items: center;
 }

@@ -261,9 +261,9 @@ export function CultivationTab() {
           canBreakthrough
             ? {
                 boxShadow: [
-                  '0 0 20px rgba(6, 182, 212, 0.3)',
-                  '0 0 40px rgba(6, 182, 212, 0.5)',
-                  '0 0 20px rgba(6, 182, 212, 0.3)',
+                  '0 0 calc(20 / 1920 * 100vw) rgba(6, 182, 212, 0.3)',
+                  '0 0 calc(40 / 1920 * 100vw) rgba(6, 182, 212, 0.5)',
+                  '0 0 calc(20 / 1920 * 100vw) rgba(6, 182, 212, 0.3)',
                 ],
               }
             : {}

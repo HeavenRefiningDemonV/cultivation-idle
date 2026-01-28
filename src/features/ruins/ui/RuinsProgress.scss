@@ -1,63 +1,63 @@
 .ruins-progress {
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(20, 24, 30, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(8 / 1920 * 100vw);
   color: #e5e7eb;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .ruins-progress__header {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
 .ruins-progress__title {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
   color: #f9fafb;
 }
 
 .ruins-progress__subtitle {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #9ca3af;
 }
 
 .ruins-progress__controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .ruins-progress__toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   color: #c7d2fe;
 }
 
 .ruins-progress__track {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(120 / 1920 * 100vw), 1fr));
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .ruins-progress__room {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .ruins-progress__room--current {
   border-color: #60a5fa;
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.4);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(96, 165, 250, 0.4);
 }
 
 .ruins-progress__room--done {
@@ -66,10 +66,10 @@
 
 .ruins-progress__room-chip {
   display: inline-block;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-bottom: 4px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(4 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(4 / 1920 * 100vw);
   color: #0f172a;
 }
 
@@ -91,38 +91,38 @@
 }
 
 .ruins-progress__room-mod {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #9ca3af;
 }
 
 .ruins-progress__summary {
-  padding: 10px;
-  border-radius: 6px;
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(34, 197, 94, 0.4);
 }
 
 .ruins-progress__summary-title {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .ruins-progress__summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .ruins-progress__metric {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e5e7eb;
 }
 
 .ruins-progress__drops {
-  margin-top: 8px;
-  padding-left: 16px;
+  margin-top: calc(8 / 1920 * 100vw);
+  padding-left: calc(16 / 1920 * 100vw);
   display: grid;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .ruins-progress__drop {
@@ -143,33 +143,33 @@
 
 .ruins-progress__drop-reason {
   color: #9ca3af;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .ruins-progress__empty {
   color: #9ca3af;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .ruins-progress__history {
-  padding: 8px;
-  border-radius: 6px;
+  padding: calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.06);
 }
 
 .ruins-progress__history-title {
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: calc(4 / 1920 * 100vw);
 }
 
 .ruins-progress__history-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 6px;
-  font-size: 13px;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  grid-template-columns: repeat(auto-fit, minmax(calc(90 / 1920 * 100vw), 1fr));
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) 0;
+  border-bottom: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.05);
 }
 
 .ruins-progress__history-row:last-child {
@@ -177,24 +177,24 @@
 }
 
 .ruins-progress__status {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e5e7eb;
 }
 
 .ruins-progress__pity {
-  padding: 8px;
-  border-radius: 6px;
+  padding: calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(96, 165, 250, 0.08);
-  border: 1px solid rgba(96, 165, 250, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(96, 165, 250, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .ruins-progress__pity-row {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -204,15 +204,15 @@
 }
 
 .ruins-progress__pity-subtitle {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #bfdbfe;
 }
 
 .ruins-progress__pity-bar {
   position: relative;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 4px;
+  border-radius: calc(4 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -222,16 +222,16 @@
 }
 
 .ruins-progress__pity-meta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #dbeafe;
 }
 
 .ruins-progress__pity-summary {
-  margin-top: 8px;
-  padding: 6px 8px;
+  margin-top: calc(8 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
   background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  border-radius: 4px;
+  border: calc(1 / 1920 * 100vw) solid rgba(34, 197, 94, 0.3);
+  border-radius: calc(4 / 1920 * 100vw);
   color: #bbf7d0;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }

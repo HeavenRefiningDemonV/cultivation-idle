@@ -1,5 +1,5 @@
 .timing-circle-qte {
-  --qte-size: 96px;
+  --qte-size: calc(96 / 1920 * 100vw);
   --qte-duration: 1200ms;
   --qte-ring-size: calc(var(--qte-size) * 1.6);
   --qte-ring-size-final: calc(var(--qte-size) * 0.35);
@@ -7,7 +7,7 @@
   position: relative;
   width: var(--qte-size);
   height: var(--qte-size);
-  border-radius: 999px;
+  border-radius: calc(999 / 1920 * 100vw);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -15,17 +15,17 @@
   user-select: none;
   touch-action: manipulation;
   background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.2), rgba(14, 20, 28, 0.85));
-  border: 1px solid rgba(110, 140, 170, 0.45);
+  border: calc(1 / 1920 * 100vw) solid rgba(110, 140, 170, 0.45);
   box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.35),
-    inset 0 0 12px rgba(60, 180, 255, 0.2);
+    0 calc(6 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.35),
+    inset 0 0 calc(12 / 1920 * 100vw) rgba(60, 180, 255, 0.2);
 }
 
 .timing-circle-qte:focus-visible {
   box-shadow:
-    0 0 0 3px rgba(120, 200, 255, 0.5),
-    0 6px 18px rgba(0, 0, 0, 0.35),
-    inset 0 0 12px rgba(60, 180, 255, 0.2);
+    0 0 0 calc(3 / 1920 * 100vw) rgba(120, 200, 255, 0.5),
+    0 calc(6 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.35),
+    inset 0 0 calc(12 / 1920 * 100vw) rgba(60, 180, 255, 0.2);
 }
 
 .timing-circle-qte--disabled {
@@ -36,9 +36,9 @@
 .timing-circle-qte__target {
   width: calc(var(--qte-size) * 0.55);
   height: calc(var(--qte-size) * 0.55);
-  border-radius: 999px;
-  border: 2px solid rgba(230, 250, 255, 0.85);
-  box-shadow: 0 0 10px rgba(120, 210, 255, 0.6);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(2 / 1920 * 100vw) solid rgba(230, 250, 255, 0.85);
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) rgba(120, 210, 255, 0.6);
   background: rgba(16, 30, 40, 0.65);
 }
 
@@ -46,9 +46,9 @@
   position: absolute;
   width: var(--qte-ring-size);
   height: var(--qte-ring-size);
-  border-radius: 999px;
-  border: 2px solid rgba(255, 230, 140, 0.9);
-  box-shadow: 0 0 16px rgba(255, 200, 120, 0.7);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(2 / 1920 * 100vw) solid rgba(255, 230, 140, 0.9);
+  box-shadow: 0 0 calc(16 / 1920 * 100vw) rgba(255, 200, 120, 0.7);
   animation: timing-circle-approach var(--qte-duration) linear forwards;
   pointer-events: none;
 }
@@ -60,7 +60,7 @@
 
 .timing-circle-qte__label {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + calc(6 / 1920 * 100vw));
   font-size: 0.7rem;
   color: rgba(210, 225, 240, 0.9);
   letter-spacing: 0.02em;
@@ -69,31 +69,31 @@
 
 .timing-circle-qte__grade {
   position: absolute;
-  top: -18px;
+  top: calc(-18 / 1920 * 100vw);
   font-size: 0.65rem;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.08em;
-  padding: 2px 6px;
-  border-radius: 999px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(12, 16, 24, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.2);
   animation: timing-circle-grade 300ms ease-out forwards;
 }
 
 .timing-circle-qte--perfect .timing-circle-qte__target {
   border-color: rgba(255, 240, 180, 0.95);
-  box-shadow: 0 0 14px rgba(255, 230, 170, 0.85);
+  box-shadow: 0 0 calc(14 / 1920 * 100vw) rgba(255, 230, 170, 0.85);
 }
 
 .timing-circle-qte--good .timing-circle-qte__target {
   border-color: rgba(130, 240, 190, 0.95);
-  box-shadow: 0 0 12px rgba(130, 240, 190, 0.7);
+  box-shadow: 0 0 calc(12 / 1920 * 100vw) rgba(130, 240, 190, 0.7);
 }
 
 .timing-circle-qte--miss .timing-circle-qte__target {
   border-color: rgba(255, 120, 120, 0.9);
-  box-shadow: 0 0 12px rgba(255, 120, 120, 0.6);
+  box-shadow: 0 0 calc(12 / 1920 * 100vw) rgba(255, 120, 120, 0.6);
 }
 
 .timing-circle-qte--perfect .timing-circle-qte__grade {
@@ -125,7 +125,7 @@
 
 @keyframes timing-circle-grade {
   0% {
-    transform: translateY(6px);
+    transform: translateY(calc(6 / 1920 * 100vw));
     opacity: 0;
   }
   100% {

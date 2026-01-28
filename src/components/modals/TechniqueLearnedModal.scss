@@ -6,35 +6,35 @@
   justify-content: center;
   background: rgba(0, 0, 0, 0.65);
   z-index: 1200;
-  padding: 16px;
+  padding: calc(16 / 1920 * 100vw);
 }
 
 .techniqueLearnedModal {
   background: #0f1116;
-  border: 1px solid #2d3345;
-  border-radius: 12px;
-  width: min(720px, 100%);
+  border: calc(1 / 1920 * 100vw) solid #2d3345;
+  border-radius: calc(12 / 1920 * 100vw);
+  width: min(calc(720 / 1920 * 100vw), 100%);
   color: #e8ecf2;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  padding: 20px;
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(40 / 1920 * 100vw) rgba(0, 0, 0, 0.4);
+  padding: calc(20 / 1920 * 100vw);
 }
 
 .techniqueLearnedHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: calc(16 / 1920 * 100vw);
 }
 
 .techniqueLearnedTitle {
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .techniqueLearnedSubtitle {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #b9c2d3;
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .techniqueLearnedClose {
@@ -49,36 +49,36 @@
 .techniqueLearnedBody {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .techniqueLearnedCard {
-  padding: 14px;
-  border: 1px solid #2d3345;
-  border-radius: 10px;
+  padding: calc(14 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid #2d3345;
+  border-radius: calc(10 / 1920 * 100vw);
   background: linear-gradient(180deg, #141924 0%, #0d1018 100%);
 }
 
 .techniqueLearnedName {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLearnedMeta {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .techBadge {
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: #1f2533;
   text-transform: capitalize;
-  border: 1px solid #323a4c;
-  font-size: 12px;
+  border: calc(1 / 1920 * 100vw) solid #323a4c;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techBadge.rarity-common {
@@ -103,18 +103,18 @@
 
 .techniqueLearnedNote {
   color: #c4ccdc;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .techniqueLearnedActions {
   display: flex;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniqueLearnedButton {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #3f4a63;
+  padding: calc(10 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid #3f4a63;
   background: #1c2230;
   color: #e8ecf2;
   cursor: pointer;
@@ -133,52 +133,52 @@
 }
 
 .techniqueEquipPanel {
-  border: 1px solid #2d3345;
-  border-radius: 10px;
-  padding: 14px;
+  border: calc(1 / 1920 * 100vw) solid #2d3345;
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(14 / 1920 * 100vw);
   background: #0f131c;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniqueEquipHeader {
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: calc(4 / 1920 * 100vw);
 }
 
 .techniqueEquipRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .techniqueEquipLabel {
-  width: 80px;
+  width: calc(80 / 1920 * 100vw);
   color: #c4ccdc;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .techniqueEquipSelect {
   background: #141821;
   color: #e8ecf2;
-  border: 1px solid #2d3345;
-  border-radius: 8px;
-  padding: 8px;
-  min-width: 220px;
+  border: calc(1 / 1920 * 100vw) solid #2d3345;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw);
+  min-width: calc(220 / 1920 * 100vw);
 }
 
 .techniqueLearnedSlots {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .techniqueSlotButton {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #2d3345;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid #2d3345;
   background: #141821;
   color: #e8ecf2;
   cursor: pointer;
@@ -191,7 +191,7 @@
 
 .techniqueEquipFootnote {
   color: #98a4b9;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueEquipConfirm {

@@ -13,7 +13,7 @@
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(calc(3 / 1920 * 100vw));
   pointer-events: auto;
 }
 
@@ -26,19 +26,19 @@
 }
 
 .combat-preview {
-  width: min(620px, 90%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  width: min(calc(620 / 1920 * 100vw), 90%);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(40 / 1920 * 100vw) rgba(0, 0, 0, 0.45);
 }
 
 .combat-preview__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(10 / 1920 * 100vw);
 }
 
 .combat-preview__title {
@@ -53,48 +53,48 @@
 
 .combat-preview__facts {
   margin: 0;
-  padding-left: 18px;
+  padding-left: calc(18 / 1920 * 100vw);
   display: grid;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   color: #e7ebf3;
 }
 
 .combat-preview__rewards {
-  margin-top: 12px;
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 8px;
-  padding: 10px;
+  margin-top: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.25);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
 }
 
 .combat-preview__rewards-title {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .combat-preview__actions {
-  margin-top: 14px;
+  margin-top: calc(14 / 1920 * 100vw);
   display: flex;
   justify-content: flex-end;
 }
 
 .combat-dock {
   position: fixed;
-  right: 16px;
-  bottom: 88px;
-  width: min(360px, 92vw);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  padding: 12px;
+  right: calc(16 / 1920 * 100vw);
+  bottom: calc(88 / 1920 * 100vw);
+  width: min(calc(360 / 1920 * 100vw), 92vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(30 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
+  padding: calc(12 / 1920 * 100vw);
   z-index: 30;
   display: grid;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .combat-dock__header {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .combat-dock__title {
@@ -108,17 +108,17 @@
 
 .combat-dock__actions {
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .combat-dock__bars {
   display: grid;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .combat-dock__bar {
   display: grid;
-  gap: 2px;
+  gap: calc(2 / 1920 * 100vw);
 }
 
 .combat-dock__bar-label {
@@ -128,9 +128,9 @@
 
 .combat-dock__bar-track {
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  border-radius: calc(999 / 1920 * 100vw);
   overflow: hidden;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   position: relative;
 }
 

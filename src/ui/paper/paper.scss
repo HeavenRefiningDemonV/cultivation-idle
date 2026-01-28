@@ -5,20 +5,20 @@
   --paper-ink: var(--paper-ink, #2b2116);
   --paper-ink-muted: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   --paper-border: var(--paper-border, rgba(65, 45, 25, 0.2));
-  --paper-shadow: var(--paper-shadow, 0 12px 24px rgba(15, 23, 42, 0.16));
+  --paper-shadow: var(--paper-shadow, 0 calc(12 / 1920 * 100vw) calc(24 / 1920 * 100vw) rgba(15, 23, 42, 0.16));
   --paper-bg: rgba(247, 237, 215, 0.72);
   --paper-bg-strong: rgba(244, 230, 200, 0.85);
   --paper-bg-soft: rgba(251, 244, 228, 0.55);
   --paper-outline: var(--paper-outline, rgba(120, 72, 33, 0.4));
   position: relative;
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw) calc(14 / 1920 * 100vw);
   background: var(--paper-bg);
   color: var(--paper-ink);
-  border: 1px solid var(--paper-border);
+  border: calc(1 / 1920 * 100vw) solid var(--paper-border);
   box-shadow: var(--paper-shadow);
   overflow: hidden;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  text-shadow: 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.35);
 }
 
 .paperCard::before {
@@ -50,16 +50,16 @@
 
 .paperCard--tray {
   background: var(--paper-bg-strong);
-  padding: 10px 12px;
-  border-radius: 14px;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(14 / 1920 * 100vw);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(15, 23, 42, 0.14);
 }
 
 .paperCard--label {
   background: var(--paper-bg-soft);
-  padding: 8px 10px;
-  border-radius: 10px;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(14 / 1920 * 100vw) rgba(15, 23, 42, 0.1);
 }
 
 .paperCard--interactive {
@@ -68,9 +68,9 @@
 }
 
 .paperCard--interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(calc(-2 / 1920 * 100vw));
   border-color: rgba(120, 72, 33, 0.5);
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 calc(16 / 1920 * 100vw) calc(30 / 1920 * 100vw) rgba(15, 23, 42, 0.22);
 }
 
 .paperCard--interactive:not(.paperCard--selected) {
@@ -80,18 +80,18 @@
 .paperCard--selected,
 .paperCard.isSelected {
   border-color: var(--paper-outline);
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18), 0 0 18px var(--paper-glow),
-    0 14px 28px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(120, 72, 33, 0.18), 0 0 calc(18 / 1920 * 100vw) var(--paper-glow),
+    0 calc(14 / 1920 * 100vw) calc(28 / 1920 * 100vw) rgba(15, 23, 42, 0.2);
 }
 
 .paperCard.isComplete {
   border-color: rgba(47, 143, 102, 0.4);
-  box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.2), 0 10px 22px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(47, 143, 102, 0.2), 0 calc(10 / 1920 * 100vw) calc(22 / 1920 * 100vw) rgba(15, 23, 42, 0.18);
 }
 
 .paperCard.isClaimed {
   border-color: rgba(159, 59, 46, 0.35);
-  box-shadow: inset 0 0 0 1px rgba(159, 59, 46, 0.08);
+  box-shadow: inset 0 0 0 calc(1 / 1920 * 100vw) rgba(159, 59, 46, 0.08);
 }
 
 .paperCard--disabled,
@@ -106,23 +106,23 @@
   --chip-bg: rgba(251, 244, 228, 0.7);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  font-size: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  padding: calc(5 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   line-height: 1.2;
-  border: 1px solid var(--chip-border);
+  border: calc(1 / 1920 * 100vw) solid var(--chip-border);
   background: var(--chip-bg);
   color: var(--chip-ink);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw) rgba(15, 23, 42, 0.1);
   max-width: 100%;
   position: relative;
   overflow: hidden;
 }
 
 .paperChip--tag {
-  border-radius: 8px;
-  padding: 4px 8px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
 }
 
 .paperChip__text {
@@ -136,7 +136,7 @@
   align-items: center;
   justify-content: center;
   color: inherit;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .paperChip--tone-ink {
@@ -167,18 +167,18 @@
   --chip-ink: var(--paper-stamp, #9f3b2e);
   --chip-border: rgba(159, 59, 46, 0.45);
   --chip-bg: rgba(255, 232, 224, 0.75);
-  padding-left: 18px;
+  padding-left: calc(18 / 1920 * 100vw);
 }
 
 .paperChip--tone-merit::before {
   content: '';
   position: absolute;
-  left: 6px;
+  left: calc(6 / 1920 * 100vw);
   top: 50%;
-  width: 8px;
-  height: 8px;
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
   background: rgba(159, 59, 46, 0.65);
-  border-radius: 2px;
+  border-radius: calc(2 / 1920 * 100vw);
   transform: translateY(-50%) rotate(-8deg);
   opacity: 0.7;
 }
@@ -200,13 +200,13 @@
 }
 
 .paperChip--clickable:hover {
-  transform: translateY(-1px);
+  transform: translateY(calc(-1 / 1920 * 100vw));
   border-color: rgba(120, 72, 33, 0.45);
 }
 
 .paperChip--clickable:focus-visible {
-  outline: 2px solid rgba(120, 72, 33, 0.5);
-  outline-offset: 2px;
+  outline: calc(2 / 1920 * 100vw) solid rgba(120, 72, 33, 0.5);
+  outline-offset: calc(2 / 1920 * 100vw);
 }
 
 .paperStamp {
@@ -215,25 +215,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  border: 2px double var(--stamp-border);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(2 / 1920 * 100vw) double var(--stamp-border);
   color: var(--stamp-ink);
-  padding: 6px 10px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   background: rgba(255, 248, 235, 0.6);
   mix-blend-mode: multiply;
   position: relative;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  text-shadow: 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.35);
 }
 
 .paperStamp::before {
   content: '';
   position: absolute;
-  inset: 3px;
+  inset: calc(3 / 1920 * 100vw);
   border-radius: inherit;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border: calc(1 / 1920 * 100vw) dashed rgba(255, 255, 255, 0.35);
   opacity: 0.35;
   pointer-events: none;
 }
@@ -248,13 +248,13 @@
 }
 
 .paperStamp--sm {
-  font-size: 11px;
-  padding: 4px 8px;
+  font-size: calc(11 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
 }
 
 .paperStamp--md {
-  font-size: 13px;
-  padding: 6px 10px;
+  font-size: calc(13 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .paperStamp--tone-seal {

@@ -1,7 +1,7 @@
 :root {
   --button-hover-neutral: #d9d9d9;
-  --ui-bottom-nav-height: 72px;
-  --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ui-bottom-nav-height: calc(72 / 1920 * 100vw);
+  --ui-safe-bottom: env(safe-area-inset-bottom, calc(0 / 1920 * 100vw));
   --ui-bottom-nav-total: calc(var(--ui-bottom-nav-height) + var(--ui-safe-bottom));
 }
 
@@ -25,7 +25,7 @@ body {
   height: min(100vh, calc(100vw * 9 / 16));
   position: relative;
   transform: translateZ(0);
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 calc(50 / 1920 * 100vw) rgba(0, 0, 0, 0.5);
   font-family: 'Julee', cursive;
   background-color: #0f172a;
   color: #000000;
@@ -38,7 +38,7 @@ body {
 .uiNoShift {
   position: relative;
   box-sizing: border-box;
-  border: var(--ui-no-shift-border, 2px) solid transparent;
+  border: var(--ui-no-shift-border, calc(2 / 1920 * 100vw)) solid transparent;
   transform: none;
   outline: var(--ui-no-shift-outline, 0 solid transparent);
   outline-offset: var(--ui-no-shift-outline-offset, 0);
@@ -50,8 +50,8 @@ body {
 .uiNoShift.is-active,
 .uiNoShift.is-highlighted,
 .uiNoShift:focus-visible {
-  outline: var(--ui-no-shift-outline-active, 2px solid rgba(0, 0, 0, 0.45));
-  outline-offset: var(--ui-no-shift-outline-offset, 2px);
+  outline: var(--ui-no-shift-outline-active, calc(2 / 1920 * 100vw) solid rgba(0, 0, 0, 0.45));
+  outline-offset: var(--ui-no-shift-outline-offset, calc(2 / 1920 * 100vw));
   box-shadow: var(--ui-no-shift-shadow-active, none);
 }
 
@@ -96,7 +96,7 @@ h6 {
 button {
   font-family: 'Julee', cursive;
   background: #d0d0d0;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
   color: #000000;
 }
@@ -105,7 +105,7 @@ button:hover,
 button:active,
 button:focus-visible {
   background: var(--button-hover-neutral);
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
   color: #000000;
   box-shadow: none;
@@ -118,7 +118,7 @@ button:focus:not(:focus-visible) {
 
 .button-standard {
   background: #d0d0d0;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
   color: #000000;
 }
@@ -127,7 +127,7 @@ button:focus:not(:focus-visible) {
 .button-standard:active,
 .button-standard:focus-visible {
   background: var(--button-hover-neutral);
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
   color: #000000;
 }
@@ -145,22 +145,22 @@ button:focus:not(:focus-visible) {
 }
 
 *::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: calc(12 / 1920 * 100vw);
+  height: calc(12 / 1920 * 100vw);
 }
 
 *::-webkit-scrollbar-track {
   background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.06), transparent 45%),
     linear-gradient(180deg, rgba(12, 18, 34, 0.95), rgba(19, 28, 45, 0.9));
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+  border-left: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 calc(10 / 1920 * 100vw) rgba(0, 0, 0, 0.4);
 }
 
 *::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, rgba(52, 211, 153, 0.75), rgba(56, 189, 248, 0.7) 45%, rgba(59, 130, 246, 0.85));
-  border: 2px solid rgba(10, 16, 30, 0.85);
-  border-radius: 12px;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+  border: calc(2 / 1920 * 100vw) solid rgba(10, 16, 30, 0.85);
+  border-radius: calc(12 / 1920 * 100vw);
+  box-shadow: inset 0 0 calc(6 / 1920 * 100vw) rgba(0, 0, 0, 0.45), 0 calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
 }
 
 *::-webkit-scrollbar-thumb:hover {

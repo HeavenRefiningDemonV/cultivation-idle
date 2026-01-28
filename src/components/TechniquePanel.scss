@@ -1,21 +1,21 @@
 .techniquePanelRoot {
   background: rgba(30, 41, 59, 0.5);
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 14px;
-  padding: 16px;
-  backdrop-filter: blur(8px);
+  border: calc(2 / 1920 * 100vw) solid rgba(251, 191, 36, 0.3);
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
+  backdrop-filter: blur(calc(8 / 1920 * 100vw));
 }
 
 .techniquePanelHeaderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniquePanelTitle {
   font-family: 'Julee', cursive;
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
   color: #fbbf24;
   margin: 0;
@@ -25,28 +25,28 @@
   background: linear-gradient(90deg, #f59e0b, #fbbf24);
   color: #0f172a;
   border: none;
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 .techniquePanelOpenLibrary:hover {
-  transform: translateY(-1px);
+  transform: translateY(calc(-1 / 1920 * 100vw));
   filter: brightness(1.05);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
 }
 
 .techniquePanelIntentSection {
-  margin-bottom: 16px;
+  margin-bottom: calc(16 / 1920 * 100vw);
 }
 
 .techniquePanelIntentHeader {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-  margin-bottom: 8px;
+  font-size: calc(14 / 1920 * 100vw);
+  margin-bottom: calc(8 / 1920 * 100vw);
   color: #000000;
 }
 
@@ -61,10 +61,10 @@
 }
 
 .techniquePanelIntentBar {
-  height: 12px;
-  border-radius: 999px;
+  height: calc(12 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: #0f172a;
-  border: 2px solid rgba(168, 85, 247, 0.5);
+  border: calc(2 / 1920 * 100vw) solid rgba(168, 85, 247, 0.5);
   overflow: hidden;
 }
 
@@ -76,13 +76,13 @@
 
 .techniquePanelTechniqueList {
   display: grid;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniquePanelTechniqueCard {
-  border: 2px solid #374151;
-  border-radius: 14px;
-  padding: 12px;
+  border: calc(2 / 1920 * 100vw) solid #374151;
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   background: rgba(15, 23, 42, 0.45);
   cursor: pointer;
@@ -95,14 +95,14 @@
 
 .techniquePanelTechniqueCard:hover:not(.techniquePanelDisabled) {
   transform: scale(1.03);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
 }
 
 .techniquePanelTechniqueHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: calc(4 / 1920 * 100vw);
 }
 
 .techniquePanelTechniqueName {
@@ -112,25 +112,25 @@
 }
 
 .techniquePanelLevelBadge {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .techniquePanelTechniqueDescription {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #000000;
-  margin: 0 0 8px;
+  margin: 0 0 calc(8 / 1920 * 100vw);
   line-height: 1.5;
 }
 
 .techniquePanelTechniqueStats {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  margin-bottom: 8px;
+  font-size: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .techniquePanelIntentCost { color: #a855f7; }
@@ -139,12 +139,12 @@
 
 .techniquePanelCooldownBar,
 .techniquePanelProficiencyBar {
-  height: 8px;
-  border-radius: 999px;
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: #0f172a;
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  margin-bottom: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 163, 184, 0.5);
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .techniquePanelCooldownFill {
@@ -156,8 +156,8 @@
 .techniquePanelProficiencyHeader {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  margin-bottom: 4px;
+  font-size: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(4 / 1920 * 100vw);
   color: #000000;
 }
 
@@ -173,8 +173,8 @@
 }
 
 .techniquePanelFooterNote {
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   text-align: center;
   color: #000000;
   font-style: italic;

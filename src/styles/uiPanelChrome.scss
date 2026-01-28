@@ -1,9 +1,9 @@
 .uiPanelChrome {
-  border: 5px solid transparent;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border: calc(5 / 1920 * 100vw) solid transparent;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
   background: var(--panel-chrome-bg, rgba(208, 208, 208, 0.08));
-  box-shadow: var(--panel-chrome-shadow, 0 8px 18px rgba(0, 0, 0, 0.25));
+  box-shadow: var(--panel-chrome-shadow, 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.25));
 }
 
 .uiPanelChrome--raised {
@@ -12,14 +12,14 @@
     rgba(208, 208, 208, 0.18),
     rgba(208, 208, 208, 0.06)
   );
-  --panel-chrome-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
+  --panel-chrome-shadow: 0 calc(10 / 1920 * 100vw) calc(22 / 1920 * 100vw) rgba(0, 0, 0, 0.28);
 }
 
 .uiPanelChrome--flat {
   --panel-chrome-bg: rgba(208, 208, 208, 0.06);
-  --panel-chrome-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  --panel-chrome-shadow: 0 calc(6 / 1920 * 100vw) calc(16 / 1920 * 100vw) rgba(0, 0, 0, 0.2);
 }
 
 .uiPanelChrome:focus-within {
-  box-shadow: 0 0 0 2px rgba(125, 211, 252, 0.45), var(--panel-chrome-shadow, 0 0 0 rgba(0, 0, 0, 0));
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(125, 211, 252, 0.45), var(--panel-chrome-shadow, 0 0 0 rgba(0, 0, 0, 0));
 }

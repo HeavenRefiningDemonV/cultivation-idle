@@ -5,15 +5,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(calc(6 / 1920 * 100vw));
 }
 
 .daoHeartModalModal {
   position: relative;
-  width: min(1020px, calc(100vw - 48px));
-  max-height: min(92vh, 960px);
+  width: min(calc(1020 / 1920 * 100vw), calc(100vw - calc(48 / 1920 * 100vw)));
+  max-height: min(92vh, calc(960 / 1920 * 100vw));
   overflow: hidden;
   border-style: solid;
   border-width: 5vh;
@@ -21,7 +21,7 @@
   border-image-slice: 18% fill;
   border-image-repeat: stretch;
   border-radius: 0;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 calc(18 / 1920 * 100vw) calc(50 / 1920 * 100vw) rgba(0, 0, 0, 0.5);
   color: rgba(12, 18, 34, 0.9);
 }
 
@@ -46,9 +46,9 @@
   background: repeating-linear-gradient(
     0deg,
     rgba(0, 0, 0, 0.02),
-    rgba(0, 0, 0, 0.02) 1px,
-    transparent 1px,
-    transparent 6px
+    rgba(0, 0, 0, 0.02) calc(1 / 1920 * 100vw),
+    transparent calc(1 / 1920 * 100vw),
+    transparent calc(6 / 1920 * 100vw)
   );
   opacity: 0.4;
   z-index: 0;
@@ -68,7 +68,7 @@
   background:
     radial-gradient(circle at 20% 30%, var(--dao-wash-a), transparent 60%),
     radial-gradient(circle at 70% 55%, var(--dao-wash-b), transparent 65%);
-  filter: blur(10px);
+  filter: blur(calc(10 / 1920 * 100vw));
   opacity: 0.55;
   animation: daoWashDrift 14s ease-in-out infinite alternate;
 }
@@ -77,8 +77,8 @@
   position: absolute;
   left: 50%;
   top: 46%;
-  width: clamp(260px, 40vw, 420px);
-  height: clamp(260px, 40vw, 420px);
+  width: clamp(calc(260 / 1920 * 100vw), 40vw, calc(420 / 1920 * 100vw));
+  height: clamp(calc(260 / 1920 * 100vw), 40vw, calc(420 / 1920 * 100vw));
   transform: translate(-50%, -50%);
   border-radius: 50%;
   opacity: 0.14;
@@ -121,46 +121,46 @@
 
 .daoHeartMote {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
   border-radius: 50%;
   background: radial-gradient(circle, var(--dao-accent), transparent 70%);
   opacity: 0.75;
-  filter: blur(0.2px);
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.12);
+  filter: blur(calc(0.2 / 1920 * 100vw));
+  box-shadow: 0 0 calc(8 / 1920 * 100vw) rgba(0, 0, 0, 0.12);
   transform: rotate(var(--ang)) translateX(var(--r));
 }
 
 .daoHeartMote--1 {
   --ang: 15deg;
-  --r: 150px;
+  --r: calc(150 / 1920 * 100vw);
 }
 
 .daoHeartMote--2 {
   --ang: 140deg;
-  --r: 175px;
+  --r: calc(175 / 1920 * 100vw);
 }
 
 .daoHeartMote--3 {
   --ang: 260deg;
-  --r: 165px;
+  --r: calc(165 / 1920 * 100vw);
 }
 
 .daoHeartMote--4 {
   --ang: 70deg;
-  --r: 130px;
+  --r: calc(130 / 1920 * 100vw);
 }
 
 .daoHeartMote--5 {
   --ang: 210deg;
-  --r: 145px;
+  --r: calc(145 / 1920 * 100vw);
 }
 
 .daoHeartModalScroll {
   position: relative;
   height: 100%;
   overflow: auto;
-  padding: 12px 14px 18px;
+  padding: calc(12 / 1920 * 100vw) calc(14 / 1920 * 100vw) calc(18 / 1920 * 100vw);
   z-index: 2;
 }
 
@@ -168,30 +168,30 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 14px;
+  gap: calc(16 / 1920 * 100vw);
+  margin-bottom: calc(14 / 1920 * 100vw);
 }
 
 .daoHeartModalHeaderText {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .daoHeartModalTitle {
   margin: 0;
-  font-size: 28px;
+  font-size: calc(28 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.92);
   font-family: 'Julee', cursive;
 }
 
 .daoHeartModalClose {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  width: calc(26 / 1920 * 100vw);
+  height: calc(26 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  font-size: 18px;
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.2);
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
   line-height: 1;
@@ -206,47 +206,47 @@
 
 .daoHeartModalClose:hover,
 .daoHeartModalClose:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: 0 calc(3 / 1920 * 100vw) calc(8 / 1920 * 100vw) rgba(0, 0, 0, 0.2);
   outline: none;
 }
 
 .daoHeartModalTabs {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .daoHeartModalTab {
   background: rgba(255, 255, 255, 0.45);
-  border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border-image: url("../../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
-  padding: 6px 12px;
+  padding: calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   font-weight: 700;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   cursor: pointer;
   color: rgba(12, 18, 34, 0.8);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 0 calc(1 / 1920 * 100vw) rgba(0, 0, 0, 0.12);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .daoHeartModalTab--active {
   background: rgba(255, 255, 255, 0.7);
-  box-shadow: inset 0 -2px 0 var(--dao-accent);
+  box-shadow: inset 0 calc(-2 / 1920 * 100vw) 0 var(--dao-accent);
   color: rgba(12, 18, 34, 0.95);
 }
 
 .daoHeartModalBody {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .daoHeartModalSection {
   background: rgba(250, 245, 235, 0.94);
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: inset 0 0 18px rgba(120, 94, 54, 0.08);
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.14);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(18 / 1920 * 100vw);
+  box-shadow: inset 0 0 calc(18 / 1920 * 100vw) rgba(120, 94, 54, 0.08);
 }
 
 .daoHeartModalModal .cultivationPanel,
@@ -255,8 +255,8 @@
 .daoHeartModalModal .studySelect,
 .daoHeartModalModal .studyToggle {
   background: rgba(250, 245, 235, 0.94);
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  box-shadow: inset 0 0 12px rgba(120, 94, 54, 0.08);
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.14);
+  box-shadow: inset 0 0 calc(12 / 1920 * 100vw) rgba(120, 94, 54, 0.08);
   color: rgba(12, 18, 34, 0.85);
 }
 
@@ -301,12 +301,12 @@
 
 .daoHeartModalModal .verseNode--unlocked {
   border-color: rgba(34, 197, 94, 0.5);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 calc(8 / 1920 * 100vw) rgba(34, 197, 94, 0.25);
 }
 
 .daoHeartModalModal .verseNode--current {
   border-color: rgba(245, 158, 11, 0.6);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) rgba(245, 158, 11, 0.35);
 }
 
 [data-dao-element='fire'] .daoHeartMote {
@@ -315,7 +315,7 @@
 }
 
 [data-dao-element='water'] .daoHeartMote {
-  filter: blur(0.6px);
+  filter: blur(calc(0.6 / 1920 * 100vw));
   opacity: 0.7;
 }
 
@@ -338,7 +338,7 @@
   }
 
   100% {
-    transform: translate(-10px, 12px) scale(1.03);
+    transform: translate(calc(-10 / 1920 * 100vw), calc(12 / 1920 * 100vw)) scale(1.03);
   }
 }
 

@@ -1,20 +1,20 @@
 .medicinePouchStrip {
   display: flex;
-  gap: 8px;
-  margin: 8px 0;
+  gap: calc(8 / 1920 * 100vw);
+  margin: calc(8 / 1920 * 100vw) 0;
   flex-wrap: wrap;
 }
 
 .medicinePouchChip {
   background: #0b1220;
-  border: 1px solid #1f2937;
+  border: calc(1 / 1920 * 100vw) solid #1f2937;
   color: #e2e8f0;
-  border-radius: 10px;
-  padding: 8px 10px;
-  min-width: 180px;
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  min-width: calc(180 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   cursor: pointer;
   transition: border-color 0.15s ease;
 }
@@ -31,27 +31,27 @@
 .medicinePouchChipTop {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .medicinePouchChipLabel {
   background: #0ea5e9;
   color: #0b1220;
-  border-radius: 9999px;
-  padding: 2px 7px;
+  border-radius: calc(9999 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(7 / 1920 * 100vw);
   font-weight: 800;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .medicinePouchChipName {
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .medicinePouchChipMeta {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -60,16 +60,16 @@
 }
 
 .medicinePouchChipStatus {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }
 
 .medicinePouchChipMessage {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #fca5a5;
 }
 
 .medicinePouchChipFooter {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }

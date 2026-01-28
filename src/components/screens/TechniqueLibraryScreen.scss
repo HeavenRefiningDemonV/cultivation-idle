@@ -5,8 +5,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   overflow: hidden;
   color: var(--paper-ink, #2b2116);
   background: transparent;
@@ -15,25 +15,25 @@
 .techniquesPanel--v2 .techTopRibbon {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   align-items: start;
 }
 
 .techniquesPanel--v2 .techTopLeft {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 800;
-  letter-spacing: 0.3px;
+  letter-spacing: calc(0.3 / 1920 * 100vw);
   color: var(--paper-ink, #2b2116);
 }
 
 .techniquesPanel--v2 .techSubtitle {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
@@ -45,24 +45,24 @@
 .techniquesPanel--v2 .techTopLoadout {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
+  gap: calc(4 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techTopLoadout select {
   background: rgba(248, 238, 220, 0.9);
-  border: 1px solid rgba(120, 72, 33, 0.3);
-  border-radius: 6px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.3);
+  border-radius: calc(6 / 1920 * 100vw);
   color: var(--paper-ink, #2b2116);
-  padding: 6px;
+  padding: calc(6 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techStage {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: clamp(280px, 28vw, 360px) minmax(0, 1fr) clamp(320px, 28vw, 420px);
-  gap: 12px;
+  grid-template-columns: clamp(calc(280 / 1920 * 100vw), 28vw, calc(360 / 1920 * 100vw)) minmax(0, 1fr) clamp(calc(320 / 1920 * 100vw), 28vw, calc(420 / 1920 * 100vw));
+  gap: calc(12 / 1920 * 100vw);
   position: relative;
 }
 
@@ -134,33 +134,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techniqueLibraryFilterButton {
-  border-radius: 999px;
-  padding: 4px 10px;
-  border: 1px solid rgba(120, 72, 33, 0.35);
+  border-radius: calc(999 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.35);
   background: rgba(248, 238, 220, 0.9);
   color: var(--paper-ink, #2b2116);
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
 }
 
 .techniquesPanel--v2 .techniqueLibraryFilterButton[data-active='true'] {
   border-color: rgba(120, 72, 33, 0.65);
-  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(120, 72, 33, 0.2);
 }
 
 .techniquesPanel--v2 .techLibraryItem {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 56px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(120, 72, 33, 0.2);
+  gap: calc(6 / 1920 * 100vw);
+  min-height: calc(56 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
   background: rgba(248, 238, 220, 0.75);
   text-align: left;
   color: inherit;
@@ -170,26 +170,26 @@
 
 .techniquesPanel--v2 .techLibraryItem:hover {
   border-color: rgba(120, 72, 33, 0.45);
-  box-shadow: 0 2px 8px rgba(66, 45, 24, 0.2);
+  box-shadow: 0 calc(2 / 1920 * 100vw) calc(8 / 1920 * 100vw) rgba(66, 45, 24, 0.2);
 }
 
 .techniquesPanel--v2 .techLibraryItem.is-selected {
   border-color: rgba(120, 72, 33, 0.7);
-  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.3);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(120, 72, 33, 0.3);
 }
 
 .techniquesPanel--v2 .techLibraryItemTop {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techLibraryItemName {
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -197,12 +197,12 @@
 
 .techniquesPanel--v2 .techLibraryItemFavorite {
   color: #b7791f;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techLibraryItemBadges {
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: center;
   flex-wrap: nowrap;
   overflow: hidden;
@@ -210,9 +210,9 @@
 }
 
 .techniquesPanel--v2 .techBadge {
-  padding: 2px 6px;
-  border-radius: 999px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   text-transform: capitalize;
   background: rgba(120, 72, 33, 0.12);
@@ -231,7 +231,7 @@
 }
 
 .techniquesPanel--v2 .techLibraryItemMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   white-space: nowrap;
   overflow: hidden;
@@ -241,20 +241,20 @@
 .techniquesPanel--v2 .techShelfWall {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techShelfRow {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techShelfRowHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.65));
@@ -271,18 +271,18 @@
 
 .techniquesPanel--v2 .techShelfRowRail {
   background: rgba(250, 242, 230, 0.82);
-  border: 1px solid rgba(120, 72, 33, 0.2);
-  border-radius: 14px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   overflow-x: auto;
-  box-shadow: inset 0 0 0 1px rgba(120, 72, 33, 0.08);
+  box-shadow: inset 0 0 0 calc(1 / 1920 * 100vw) rgba(120, 72, 33, 0.08);
 }
 
 .techniquesPanel--v2 .techShelfRowSpines {
   display: flex;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   align-items: flex-end;
-  min-height: 180px;
+  min-height: calc(180 / 1920 * 100vw);
 }
 
 .techniquesPanel--v2 .techShelfRowSpine {
@@ -291,7 +291,7 @@
 
 .techniquesPanel--v2 .techShelfRowSpine--placeholder .techSpine--placeholder {
   background: rgba(247, 236, 214, 0.65);
-  border: 1px dashed rgba(120, 72, 33, 0.2);
+  border: calc(1 / 1920 * 100vw) dashed rgba(120, 72, 33, 0.2);
   box-shadow: none;
   cursor: default;
 }
@@ -306,7 +306,7 @@
   transform: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: calc(900 / 1920 * 100vw)) {
   .techniquesPanel--v2 .techTopRibbon {
     grid-template-columns: 1fr;
   }
@@ -328,14 +328,14 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: calc(520 / 1920 * 100vw)) {
   .techniquesPanel--v2 {
-    padding: 8px;
-    gap: 8px;
+    padding: calc(8 / 1920 * 100vw);
+    gap: calc(8 / 1920 * 100vw);
   }
 
   .techniquesPanel--v2 .techStage {
-    gap: 8px;
+    gap: calc(8 / 1920 * 100vw);
   }
 
   .techniquesPanel--v2 .techLoadoutBoard {
@@ -344,22 +344,22 @@
   }
 
   .techniquesPanel--v2 .techLibraryItem {
-    min-height: 64px;
-    padding: 10px;
+    min-height: calc(64 / 1920 * 100vw);
+    padding: calc(10 / 1920 * 100vw);
   }
 }
 
 .techniqueLibraryRoot {
   display: flex;
-  gap: 16px;
-  padding: 16px;
+  gap: calc(16 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
   color: var(--paper-ink, #2b2116);
 }
 
 .techniqueLibraryColumn {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .techniqueLibraryColumn--left {
@@ -377,19 +377,19 @@
 .techniqueLibraryPanel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
 }
 
 .techniqueLibraryPanel--altar {
-  padding: 16px;
+  padding: calc(16 / 1920 * 100vw);
 }
 
 .techniqueLibraryPanelHeader {
   font-weight: 700;
-  font-size: 15px;
-  margin-bottom: 4px;
-  letter-spacing: 0.4px;
+  font-size: calc(15 / 1920 * 100vw);
+  margin-bottom: calc(4 / 1920 * 100vw);
+  letter-spacing: calc(0.4 / 1920 * 100vw);
   text-transform: uppercase;
   color: var(--paper-ink, #2b2116);
 }
@@ -397,30 +397,30 @@
 .techniqueLibraryLoadouts {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryLoadout {
   width: 100%;
   text-align: left;
   background: rgba(249, 240, 224, 0.9);
-  border: 1px solid rgba(120, 72, 33, 0.25);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.25);
   color: inherit;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
 
 .techniqueLibraryLoadout:hover {
   border-color: rgba(120, 72, 33, 0.45);
-  transform: translateY(-1px);
+  transform: translateY(calc(-1 / 1920 * 100vw));
 }
 
 .techniqueLibraryLoadout.is-active {
   border-color: rgba(120, 72, 33, 0.65);
   background: rgba(247, 232, 208, 0.9);
-  box-shadow: inset 0 0 0 1px rgba(120, 72, 33, 0.2);
+  box-shadow: inset 0 0 0 calc(1 / 1920 * 100vw) rgba(120, 72, 33, 0.2);
 }
 
 .techniqueLibraryLoadoutName {
@@ -428,37 +428,37 @@
 }
 
 .techniqueLibraryLoadoutMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .techniqueLibraryCastingPolicy {
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(120, 72, 33, 0.2);
+  margin-top: calc(12 / 1920 * 100vw);
+  padding-top: calc(8 / 1920 * 100vw);
+  border-top: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryCastingPolicyLabel {
   font-weight: 700;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink, #2b2116);
 }
 
 .techniqueLibraryCastingPolicyButtons {
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryCastingPolicyButton {
   flex: 1;
-  padding: 6px 8px;
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
   background: rgba(250, 242, 230, 0.9);
-  border: 1px solid rgba(120, 72, 33, 0.25);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.25);
   color: var(--paper-ink, #2b2116);
-  border-radius: 6px;
+  border-radius: calc(6 / 1920 * 100vw);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
@@ -474,7 +474,7 @@
 }
 
 .techniqueLibraryCastingPolicyHelp {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   line-height: 1.4;
 }
@@ -482,12 +482,12 @@
 .techniqueLibrarySlots {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .techniqueLibrarySlotGroupLabel {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
@@ -496,9 +496,9 @@
   justify-content: space-between;
   align-items: center;
   background: rgba(249, 240, 224, 0.85);
-  border: 1px solid rgba(120, 72, 33, 0.2);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
@@ -523,7 +523,7 @@
 }
 
 .techniqueLibrarySlotContent {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   text-align: right;
 }
 
@@ -533,7 +533,7 @@
 
 .techniqueLibrarySlotLocked {
   text-align: right;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(120, 72, 33, 0.7);
 }
 
@@ -549,34 +549,34 @@
 .techniqueLibraryProofList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryProofRow {
   display: flex;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
   background: rgba(249, 240, 224, 0.7);
-  border: 1px solid rgba(120, 72, 33, 0.2);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .techniqueLibraryProofIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: calc(32 / 1920 * 100vw);
+  height: calc(32 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
 }
 
 .techniqueLibraryProofBody {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   flex: 1;
 }
 
@@ -584,7 +584,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryProofName {
@@ -592,25 +592,25 @@
 }
 
 .techniqueLibraryProofSlot {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .techniqueLibraryProofStats {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 12px;
+  gap: calc(2 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .techniqueLibraryOwnedList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 520px;
+  gap: calc(6 / 1920 * 100vw);
+  max-height: calc(520 / 1920 * 100vw);
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: calc(4 / 1920 * 100vw);
 }
 
 .techniqueLibraryOwnedRow {
@@ -619,10 +619,10 @@
   align-items: stretch;
   width: 100%;
   background: rgba(249, 240, 224, 0.7);
-  border: 1px solid transparent;
+  border: calc(1 / 1920 * 100vw) solid transparent;
   color: inherit;
-  border-radius: 8px;
-  padding: 8px 10px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
@@ -638,7 +638,7 @@
 
 .techniqueLibraryOwnedRowLeft {
   display: flex;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
 }
 
@@ -646,8 +646,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
-  min-width: 160px;
+  gap: calc(4 / 1920 * 100vw);
+  min-width: calc(160 / 1920 * 100vw);
 }
 
 .techniqueLibraryOwnedName {
@@ -657,37 +657,37 @@
 
 .techniqueLibraryOwnedBadges {
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: center;
   flex-wrap: wrap;
 }
 
 .techniqueLibraryTypeBadge {
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: calc(0.4 / 1920 * 100vw);
 }
 
 .techniqueLibraryBadge {
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   text-transform: capitalize;
 }
 
 .techniqueLibraryIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: calc(32 / 1920 * 100vw);
+  height: calc(32 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(120, 72, 33, 0.12);
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
 }
 
 .rarity-common {
@@ -721,36 +721,36 @@
 }
 
 .grade-mortal {
-  border: 1px solid rgba(120, 72, 33, 0.25);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.25);
 }
 
 .grade-unknown {
-  border: 1px solid rgba(120, 72, 33, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.4);
 }
 
 .grade-earth {
-  border: 1px solid rgba(120, 72, 33, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.4);
 }
 
 .grade-heaven {
-  border: 1px solid rgba(120, 72, 33, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.4);
 }
 
 .grade-mystic {
-  border: 1px solid rgba(120, 72, 33, 0.5);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.5);
 }
 
 .techniqueLibraryFavorite {
   color: #b7791f;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .techniqueLibraryMasteryBar {
   position: relative;
-  width: 160px;
-  height: 8px;
+  width: calc(160 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.12);
-  border-radius: 6px;
+  border-radius: calc(6 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -763,7 +763,7 @@
 }
 
 .techniqueLibraryMasteryLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   opacity: 0.85;
 }
 
@@ -783,189 +783,189 @@
 }
 
 .techniqueLibraryEquippedBadge {
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.2);
   color: var(--paper-ink, #2b2116);
 }
 
 .techniqueLibraryEmptyState {
-  padding: 18px;
+  padding: calc(18 / 1920 * 100vw);
   text-align: center;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
-  border: 1px dashed rgba(120, 72, 33, 0.35);
-  border-radius: 12px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(120, 72, 33, 0.35);
+  border-radius: calc(12 / 1920 * 100vw);
   background: rgba(252, 244, 230, 0.9);
 }
 
 .techniqueLibraryEmptyState p {
-  margin: 0 0 8px;
+  margin: 0 0 calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryEmptyStateIcon {
   display: flex;
   justify-content: center;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
   color: rgba(120, 72, 33, 0.7);
 }
 
 .techniqueLibraryLinkButton {
   background: rgba(248, 238, 220, 0.95);
   color: var(--paper-ink, #2b2116);
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  border-radius: 8px;
-  padding: 8px 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.35);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .techniqueLibraryLinkButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(66, 45, 24, 0.2);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(66, 45, 24, 0.2);
 }
 
 .techniqueLibraryDetail {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 560px;
+  gap: calc(12 / 1920 * 100vw);
+  max-height: calc(560 / 1920 * 100vw);
   overflow-y: auto;
 }
 
 .techniqueLibraryDetailTitle {
   margin: 0;
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 800;
 }
 
 .techniqueLibraryDetailTitleRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryDetailBadges {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
   flex-wrap: wrap;
 }
 
 .techniqueLibraryDetailSection {
   background: rgba(252, 244, 230, 0.85);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   line-height: 1.4;
 }
 
 .techniqueLibrarySummary {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniqueLibrarySummaryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibrarySummaryTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 800;
 }
 
 .techniqueLibrarySummaryIcons {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
 .techniqueLibrarySummaryIcon {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+  width: calc(26 / 1920 * 100vw);
+  height: calc(26 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: rgba(120, 72, 33, 0.12);
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .techniqueLibrarySummaryChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibrarySummaryRank {
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   background: rgba(120, 72, 33, 0.12);
 }
 
 .techniqueLibrarySummaryLine {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .techniqueLibrarySummaryActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryDetailLine {
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryDetailStats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(120 / 1920 * 100vw), 1fr));
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniqueLibraryStatLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   opacity: 0.8;
 }
 
 .techniqueLibraryStatValue {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .techniqueLibraryTags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
+  gap: calc(6 / 1920 * 100vw);
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryTag {
   background: rgba(120, 72, 33, 0.12);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueLibraryButtons {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryPrimaryButton {
   background: rgba(248, 238, 220, 0.95);
   color: var(--paper-ink, #2b2116);
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  padding: 10px 14px;
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.35);
+  padding: calc(10 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.1s ease, opacity 0.15s ease;
@@ -979,26 +979,26 @@
 .techniqueLibrarySecondaryButton {
   background: rgba(249, 240, 224, 0.9);
   color: var(--paper-ink, #2b2116);
-  border: 1px solid rgba(120, 72, 33, 0.3);
-  padding: 10px 12px;
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.3);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   cursor: pointer;
 }
 
 .techniqueLibraryDisabledButton {
   background: rgba(243, 232, 214, 0.6);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.6));
-  border: 1px dashed rgba(120, 72, 33, 0.25);
-  padding: 10px 12px;
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(120, 72, 33, 0.25);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   cursor: not-allowed;
 }
 
 .techniqueLibraryProgressSection {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   background: rgba(250, 242, 230, 0.7);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
 }
 
 .techniqueLibraryProgressHeader {
@@ -1009,10 +1009,10 @@
 
 .techniqueLibraryProgressBar {
   position: relative;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.12);
-  border-radius: 6px;
-  margin: 8px 0 6px;
+  border-radius: calc(6 / 1920 * 100vw);
+  margin: calc(8 / 1920 * 100vw) 0 calc(6 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -1028,121 +1028,121 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: calc(2 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.3);
 }
 
 .techniqueLibraryProgressLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   opacity: 0.8;
 }
 
 .techniqueLibraryEmptyDetail {
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   text-align: center;
   opacity: 0.8;
 }
 
 .techniqueLibraryInlineMessage {
-  margin-top: 8px;
-  padding: 10px;
-  border-radius: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   font-weight: 600;
 }
 
 .inline-success {
   background: rgba(120, 72, 33, 0.14);
-  border: 1px solid rgba(120, 72, 33, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.35);
 }
 
 .inline-error {
   background: rgba(148, 52, 32, 0.12);
-  border: 1px solid rgba(148, 52, 32, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 52, 32, 0.3);
 }
 
 .inline-info {
   background: rgba(120, 72, 33, 0.12);
-  border: 1px solid rgba(120, 72, 33, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.3);
 }
 
 .techniqueLibraryOwnedCard {
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(120, 72, 33, 0.2);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(248, 238, 220, 0.85);
-  box-shadow: 0 2px 8px rgba(66, 45, 24, 0.2);
+  box-shadow: 0 calc(2 / 1920 * 100vw) calc(8 / 1920 * 100vw) rgba(66, 45, 24, 0.2);
   cursor: pointer;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     border-color: rgba(120, 72, 33, 0.45);
-    box-shadow: 0 4px 12px rgba(66, 45, 24, 0.25);
+    box-shadow: 0 calc(4 / 1920 * 100vw) calc(12 / 1920 * 100vw) rgba(66, 45, 24, 0.25);
   }
 
   &.is-selected {
     border-color: rgba(120, 72, 33, 0.7);
-    box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.3);
+    box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(120, 72, 33, 0.3);
   }
 
   & + & {
-    margin-top: 10px;
+    margin-top: calc(10 / 1920 * 100vw);
   }
 }
 
 .techniqueLibraryOwnedHeader {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .techniqueLibraryOwnedTitleRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryOwnedBadges {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryTrack {
-  margin-top: 10px;
+  margin-top: calc(10 / 1920 * 100vw);
 }
 
 .techniqueLibraryTrackHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .techniqueLibraryTrackHint {
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.6));
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueLibraryRankRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 6px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryRankPips {
   display: flex;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .techniqueLibraryRankPip {
-  width: 12px;
-  height: 8px;
-  border-radius: 4px;
+  width: calc(12 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(4 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.18);
 
   &.is-filled {
@@ -1154,30 +1154,30 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
+  gap: calc(12 / 1920 * 100vw);
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryRankActions .techniqueLibrarySecondaryButton {
-  min-width: 160px;
+  min-width: calc(160 / 1920 * 100vw);
 }
 
 .techniqueLibraryUpgradeHint {
   color: rgba(120, 72, 33, 0.7);
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueLibraryTraitPips {
   display: flex;
-  gap: 4px;
-  margin-top: 6px;
+  gap: calc(4 / 1920 * 100vw);
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .techniqueLibraryTraitPip {
-  width: 12px;
-  height: 12px;
-  border-radius: 4px;
-  border: 1px solid rgba(120, 72, 33, 0.25);
+  width: calc(12 / 1920 * 100vw);
+  height: calc(12 / 1920 * 100vw);
+  border-radius: calc(4 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.25);
   background: rgba(120, 72, 33, 0.12);
 
   &.is-filled {
@@ -1194,20 +1194,20 @@
 
 .techniqueLibraryProgressGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
-  margin-top: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
+  margin-top: calc(12 / 1920 * 100vw);
 }
 
 .techniqueLibraryProgressCard {
-  border: 1px solid rgba(120, 72, 33, 0.2);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(248, 238, 220, 0.8);
 }
 
 .techniqueLibraryEffectList {
-  padding-left: 18px;
+  padding-left: calc(18 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   line-height: 1.4;
 }
@@ -1216,18 +1216,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px;
-  border: 1px solid rgba(120, 72, 33, 0.2);
-  border-radius: 8px;
+  gap: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.2);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(248, 238, 220, 0.8);
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .techniqueLibraryTraitMain {
   display: grid;
   grid-template-columns: repeat(3, auto);
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
 }
 
@@ -1241,20 +1241,20 @@
 
 .techniqueLibraryTraitRange {
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.6));
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueLibraryTraitQuality {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: flex-end;
 }
 
 .techniqueLibraryTraitQualityBar {
-  width: 140px;
-  height: 8px;
-  border-radius: 6px;
+  width: calc(140 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(120, 72, 33, 0.12);
   overflow: hidden;
 }
@@ -1265,47 +1265,47 @@
 }
 
 .techniqueLibraryTraitLock {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.65));
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: center;
 }
 
 .techniqueLibraryTraitActions {
-  margin-top: 10px;
+  margin-top: calc(10 / 1920 * 100vw);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .techniqueLibraryToggle {
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: center;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .techniqueLibraryRuneSockets {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniqueLibraryRuneRow {
   display: grid;
-  grid-template-columns: 90px 1fr 1fr auto auto;
-  gap: 8px;
+  grid-template-columns: calc(90 / 1920 * 100vw) 1fr 1fr auto auto;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
 .techniqueLibraryRunePill {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px dashed rgba(120, 72, 33, 0.25);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) dashed rgba(120, 72, 33, 0.25);
   text-align: center;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 
   &.is-filled {

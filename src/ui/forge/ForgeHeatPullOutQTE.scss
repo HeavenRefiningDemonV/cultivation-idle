@@ -7,8 +7,8 @@
 .forgeHeatPullOutQte {
   --heatPct: 0;
   position: relative;
-  width: 160px;
-  height: 130px;
+  width: calc(160 / 1920 * 100vw);
+  height: calc(130 / 1920 * 100vw);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -23,24 +23,24 @@
 
 .forgeHeatPullOutQte__furnace {
   position: absolute;
-  width: 150px;
-  height: 90px;
-  border-radius: 0 0 80px 80px;
+  width: calc(150 / 1920 * 100vw);
+  height: calc(90 / 1920 * 100vw);
+  border-radius: 0 0 calc(80 / 1920 * 100vw) calc(80 / 1920 * 100vw);
   background: radial-gradient(circle at 50% 0%, rgba(255, 186, 120, 0.45), rgba(24, 26, 30, 0.85) 70%);
-  border: 2px solid rgba(100, 116, 139, 0.4);
+  border: calc(2 / 1920 * 100vw) solid rgba(100, 116, 139, 0.4);
   box-shadow:
-    0 0 calc(14px * var(--heatPct)) rgba(251, 146, 60, calc(0.2 + var(--heatPct) * 0.5)),
-    inset 0 0 18px rgba(15, 23, 42, 0.7);
+    0 0 calc(calc(14 / 1920 * 100vw) * var(--heatPct)) rgba(251, 146, 60, calc(0.2 + var(--heatPct) * 0.5)),
+    inset 0 0 calc(18 / 1920 * 100vw) rgba(15, 23, 42, 0.7);
 }
 
 .forgeHeatPullOutQte__billet {
   position: relative;
-  width: 74px;
-  height: 18px;
-  border-radius: 4px;
+  width: calc(74 / 1920 * 100vw);
+  height: calc(18 / 1920 * 100vw);
+  border-radius: calc(4 / 1920 * 100vw);
   background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
-  filter: drop-shadow(0 0 calc(12px * var(--heatPct)) rgba(255, 140, 64, calc(0.2 + var(--heatPct) * 0.6)));
+  box-shadow: 0 calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw) rgba(0, 0, 0, 0.45);
+  filter: drop-shadow(0 0 calc(calc(12 / 1920 * 100vw) * var(--heatPct)) rgba(255, 140, 64, calc(0.2 + var(--heatPct) * 0.6)));
   transition: transform 120ms ease;
 }
 
@@ -56,7 +56,7 @@
 
 .forgeHeatPullOutQte__prompt {
   position: absolute;
-  bottom: -8px;
+  bottom: calc(-8 / 1920 * 100vw);
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -65,14 +65,14 @@
 
 .forgeHeatPullOutQte__grade {
   position: absolute;
-  top: -14px;
-  padding: 2px 6px;
-  border-radius: 999px;
+  top: calc(-14 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   font-size: 0.55rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   background: rgba(10, 12, 20, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
   animation: forgeHeatGradePop 260ms ease-out forwards;
 }
 
@@ -89,7 +89,7 @@
 }
 
 .forgeHeatPullOutQte--miss .forgeHeatPullOutQte__billet {
-  transform: translateY(2px);
+  transform: translateY(calc(2 / 1920 * 100vw));
 }
 
 @keyframes forgeHeatPctRise {
@@ -109,7 +109,7 @@
 
 @keyframes forgeHeatGradePop {
   0% {
-    transform: translateY(6px);
+    transform: translateY(calc(6 / 1920 * 100vw));
     opacity: 0;
   }
   100% {

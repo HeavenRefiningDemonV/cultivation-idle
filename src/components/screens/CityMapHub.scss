@@ -2,14 +2,14 @@
   position: relative;
   height: 100%;
   width: 100%;
-  min-height: 480px;
+  min-height: calc(480 / 1920 * 100vw);
   overflow: hidden;
 }
 
 .cityMapHubMap {
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: calc(16 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -25,21 +25,21 @@
   transform: translate(-50%, -50%);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   background-color: #b8e4a3;
   cursor: pointer;
-  box-shadow: 0 0 10px 3px #fff;
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) calc(3 / 1920 * 100vw) #fff;
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   z-index: 1;
 }
 
 .cityMapHubHotspot:hover {
   background-color: #90d86f;
   transform: translate(-50%, -50%) scale(1.03);
-  box-shadow: 0 0 10px 3px #fff, 0 12px 15px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) calc(3 / 1920 * 100vw) #fff, 0 calc(12 / 1920 * 100vw) calc(15 / 1920 * 100vw) rgba(0, 0, 0, 0.45);
 }
 
 .cityMapHubHotspot--active {

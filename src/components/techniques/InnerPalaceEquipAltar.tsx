@@ -324,8 +324,12 @@ export function InnerPalaceEquipAltar({
                   } ${flashState?.key === slot.key ? 'is-flashing' : ''}`}
                   style={
                     {
-                      '--dx': position ? `${position.dx}px` : '0px',
-                      '--dy': position ? `${position.dy}px` : '0px',
+                      '--dx': position
+                        ? `${(position.dx / 1920) * 100}vw`
+                        : 'calc(0 / 1920 * 100vw)',
+                      '--dy': position
+                        ? `${(position.dy / 1920) * 100}vw`
+                        : 'calc(0 / 1920 * 100vw)',
                     } as CSSProperties
                   }
                   data-slot-type={slot.slotType}

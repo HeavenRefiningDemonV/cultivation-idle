@@ -1,18 +1,18 @@
 .settingsScreenRoot {
   position: relative;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: calc(14 / 1920 * 100vw);
 }
 
 .settingsScreenContent {
   position: relative;
   z-index: 1;
-  max-width: 960px;
+  max-width: calc(960 / 1920 * 100vw);
   margin: 0 auto;
-  padding: 32px;
+  padding: calc(32 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: calc(24 / 1920 * 100vw);
 }
 
 .settingsScreenHeader {
@@ -20,8 +20,8 @@
 }
 
 .settingsScreenTitle {
-  margin: 0 0 8px 0;
-  font-size: 36px;
+  margin: 0 0 calc(8 / 1920 * 100vw) 0;
+  font-size: calc(36 / 1920 * 100vw);
   font-weight: 700;
   color: #fbbf24;
 }
@@ -34,61 +34,61 @@
 .settingsScreenGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: calc(1024 / 1920 * 100vw)) {
   .settingsScreenGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .settingsScreenPanel {
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(24 / 1920 * 100vw);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(calc(4 / 1920 * 100vw));
 }
 
 .settingsScreenPanelDefault {
   background: #ddd9;
-  border: 1px solid rgba(100, 116, 139, 0.5);
+  border: calc(1 / 1920 * 100vw) solid rgba(100, 116, 139, 0.5);
 }
 
 .settingsScreenPanelDanger {
   background: #ddd9;
-  border: 1px solid rgba(239, 68, 68, 0.5);
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.5);
 }
 
 .settingsScreenPanelTitle {
-  margin: 0 0 8px 0;
-  font-size: 20px;
+  margin: 0 0 calc(8 / 1920 * 100vw) 0;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
   color: #000000;
 }
 
 .settingsScreenPanelSubtitle {
-  margin: 0 0 16px 0;
+  margin: 0 0 calc(16 / 1920 * 100vw) 0;
   color: #000000;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .settingsScreenOptionList {
   display: grid;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .settingsScreenOptionRow {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   cursor: pointer;
 }
 
 .settingsScreenCheckbox {
-  margin-top: 4px;
-  width: 16px;
-  height: 16px;
+  margin-top: calc(4 / 1920 * 100vw);
+  width: calc(16 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
 }
 
 .settingsScreenOptionLabel {
@@ -99,25 +99,25 @@
 .settingsScreenOptionDescription {
   margin: 0;
   color: #000000;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .settingsScreenDangerButton {
   width: 100%;
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   border: none;
-  border-radius: 10px;
+  border-radius: calc(10 / 1920 * 100vw);
   background: linear-gradient(90deg, #b91c1c, #ef4444);
   color: #000000;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(30 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
 }
 
 .settingsScreenDangerNote {
-  margin: 12px 0 0;
+  margin: calc(12 / 1920 * 100vw) 0 0;
   color: #fca5a5;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .settingsScreenModalOverlay {
@@ -127,25 +127,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: calc(16 / 1920 * 100vw);
   z-index: 50;
 }
 
 .settingsScreenModalCard {
   background: #111827;
-  border: 1px solid rgba(239, 68, 68, 0.6);
-  border-radius: 14px;
-  padding: 24px;
-  max-width: 520px;
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.6);
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(24 / 1920 * 100vw);
+  max-width: calc(520 / 1920 * 100vw);
   width: 100%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(30 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
   display: grid;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .settingsScreenModalTitle {
   margin: 0;
-  font-size: 24px;
+  font-size: calc(24 / 1920 * 100vw);
   font-weight: 700;
   color: #000000;
 }
@@ -153,19 +153,19 @@
 .settingsScreenModalText {
   margin: 0;
   color: #000000;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .settingsScreenModalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding-top: 8px;
+  gap: calc(12 / 1920 * 100vw);
+  padding-top: calc(8 / 1920 * 100vw);
 }
 
 .settingsScreenModalButton {
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(16 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   border: none;
   font-weight: 700;
   cursor: pointer;
@@ -180,9 +180,9 @@
   background: linear-gradient(90deg, #b91c1c, #ef4444);
 }
 
-@media (max-width: 640px) {
+@media (max-width: calc(640 / 1920 * 100vw)) {
   .settingsScreenContent {
-    padding: 16px;
+    padding: calc(16 / 1920 * 100vw);
   }
 
   .settingsScreenModalActions {
@@ -194,27 +194,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: calc(8 / 1920 * 100vw) 0;
+  border-bottom: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.1);
 }
 
 .settingsDebugGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 8px;
-  margin: 12px 0;
+  grid-template-columns: repeat(auto-fit, minmax(calc(140 / 1920 * 100vw), 1fr));
+  gap: calc(8 / 1920 * 100vw);
+  margin: calc(12 / 1920 * 100vw) 0;
 }
 
 .settingsDebugItem {
   background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
-  padding: 8px 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.08);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  box-shadow: 0 calc(1 / 1920 * 100vw) calc(2 / 1920 * 100vw) rgba(0, 0, 0, 0.08);
 }
 
 .settingsDebugLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #1f2937;
   opacity: 0.7;
 }
@@ -225,26 +225,26 @@
 }
 
 .settingsDebugError {
-  margin: 8px 0;
-  padding: 8px 12px;
-  border-radius: 8px;
+  margin: calc(8 / 1920 * 100vw) 0;
+  padding: calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.4);
   color: #7f1d1d;
 }
 
 .settingsDebugPools {
   display: grid;
-  gap: 8px;
-  margin-top: 12px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(12 / 1920 * 100vw);
 }
 
 .settingsDebugPoolRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.04);
 }
 
@@ -255,7 +255,7 @@
 
 .settingsDebugPoolCounts {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   font-family: 'Courier New', monospace;
   color: #111827;
 }
@@ -265,8 +265,8 @@
 .settingsRewardsActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(12 / 1920 * 100vw);
 }
 
 .settingsScreenDebugButton {
@@ -278,57 +278,57 @@
 }
 
 .settingsRewardsLog {
-  margin-top: 14px;
+  margin-top: calc(14 / 1920 * 100vw);
 }
 
 .settingsRewardsEmpty {
-  margin-top: 8px;
-  padding: 10px 12px;
+  margin-top: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.04);
-  border: 1px dashed rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(0, 0, 0, 0.15);
+  border-radius: calc(10 / 1920 * 100vw);
   color: #1f2937;
 }
 
 .settingsRewardsList {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 220px;
+  gap: calc(8 / 1920 * 100vw);
+  max-height: calc(220 / 1920 * 100vw);
   overflow: auto;
 }
 
 .settingsRewardsEntry {
-  padding: 10px 12px;
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.12);
+  border-radius: calc(10 / 1920 * 100vw);
 }
 
 .settingsRewardsEntryHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
+  gap: calc(10 / 1920 * 100vw);
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .settingsRewardsEntryReason {
   font-weight: 700;
   color: #111827;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .settingsRewardsEntryTime {
   color: rgba(0, 0, 0, 0.6);
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   white-space: nowrap;
 }
 
 .settingsRewardsEntrySummary {
   color: #1f2937;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   line-height: 1.4;
 }
 
@@ -337,36 +337,36 @@
 .settingsDiagnosticsList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(12 / 1920 * 100vw);
 }
 
 .settingsDiagnosticsRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-  padding: 6px 0;
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) 0;
 }
 
 .settingsDiagnosticsActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .settingsDiagnosticsEntries {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 320px;
+  gap: calc(8 / 1920 * 100vw);
+  max-height: calc(320 / 1920 * 100vw);
   overflow: auto;
 }
 
 .settingsDiagnosticsEntry {
-  padding: 8px 10px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.1);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.04);
 }
 
@@ -375,7 +375,7 @@
 }
 
 .settingsDiagnosticsMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(0, 0, 0, 0.65);
 }
 
@@ -387,10 +387,10 @@
 .settingsDiagnosticsSeverity {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -406,19 +406,19 @@
 }
 
 .settingsDiagnosticsCode {
-  margin-top: 6px;
-  padding: 6px 8px;
-  border-radius: 8px;
+  margin-top: calc(6 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.06);
   font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   white-space: pre-wrap;
 }
 
 .settingsDiagnosticsEmpty {
-  padding: 8px 10px;
-  border: 1px dashed rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) dashed rgba(0, 0, 0, 0.2);
+  border-radius: calc(10 / 1920 * 100vw);
   color: #1f2937;
   background: rgba(0, 0, 0, 0.03);
 }

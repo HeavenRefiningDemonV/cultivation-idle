@@ -1,40 +1,40 @@
 .audioDebugPanel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .audioDebugControls {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   align-items: flex-end;
 }
 
 .audioDebugLabel {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   font-size: 0.95rem;
 }
 
 .audioDebugInput {
-  min-width: 220px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  min-width: calc(220 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(0, 0, 0, 0.2);
 }
 
 .audioDebugControlActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .audioDebugList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 280px;
+  gap: calc(8 / 1920 * 100vw);
+  max-height: calc(280 / 1920 * 100vw);
   overflow-y: auto;
 }
 
@@ -43,9 +43,9 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 6px 8px;
-  border-radius: 6px;
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.7);
 }
 
@@ -55,11 +55,11 @@
 
 .audioDebugButtons {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .audioDebugButton {
-  padding: 4px 10px;
+  padding: calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .audioDebugEmpty {

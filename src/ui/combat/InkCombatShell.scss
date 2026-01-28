@@ -15,11 +15,11 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: 300px;
+  width: calc(300 / 1920 * 100vw);
   background-color: #ddd;
-  border-image: url('../../assets/menus/buttoncorners.png') 60 / 0 10px 0 0 / 5px;
-  padding: 20px 16px;
-  gap: 12px;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 0 calc(10 / 1920 * 100vw) 0 0 / calc(5 / 1920 * 100vw);
+  padding: calc(20 / 1920 * 100vw) calc(16 / 1920 * 100vw);
+  gap: calc(12 / 1920 * 100vw);
   overflow-y: auto;
 }
 
@@ -27,26 +27,26 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
-  margin-bottom: -5px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-bottom: calc(-5 / 1920 * 100vw);
 }
 
 .ink-combat-shell__title {
   color: #141414;
   font-family: 'Protest Revolution';
-  font-size: 22px;
+  font-size: calc(22 / 1920 * 100vw);
 }
 
 .ink-combat-shell__subtitle {
   color: #2d2d2d;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .ink-combat-shell__close {
   border: none;
   background: transparent;
-  width: 32px;
-  height: 32px;
+  width: calc(32 / 1920 * 100vw);
+  height: calc(32 / 1920 * 100vw);
   font-weight: 700;
   color: black;
   display: inline-flex;
@@ -63,73 +63,73 @@
 .ink-combat-shell__section {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  margin-bottom: 5px;
+  gap: calc(7 / 1920 * 100vw);
+  margin-bottom: calc(5 / 1920 * 100vw);
 }
 
 .ink-combat-shell__section--fill {
   flex: 1;
-  min-height: 160px;
+  min-height: calc(160 / 1920 * 100vw);
 }
 
 .ink-combat-shell__section-title {
   color: #141414;
   font-family: 'Protest Revolution';
-  font-size: 22px;
+  font-size: calc(22 / 1920 * 100vw);
 }
 
 .ink-combat-shell__actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .ink-combat-shell__controls {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .ink-combat-shell__control {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   color: #1f1f1f;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .ink-combat-shell__control select {
-  height: 28px;
-  padding: 2px 6px;
+  height: calc(28 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
   background-color: #e4e4e4;
-  border-image: url('../../assets/menus/buttoncorners.png') 60 / 3px;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / calc(3 / 1920 * 100vw);
 }
 
 .ink-combat-shell__control--checkbox {
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .ink-combat-shell__control-label {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .ink-combat-shell__meter {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .ink-combat-shell__segments {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .ink-combat-shell__segment {
-  height: 8px;
-  border-radius: 999px;
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.15);
 }
 
@@ -138,7 +138,7 @@
 }
 
 .ink-combat-shell__meter-text {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #2b2b2b;
 }
 
@@ -149,12 +149,12 @@
   padding: 0.3125rem;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   overflow-y: auto;
-  min-height: 140px;
-  font-size: 12px;
+  min-height: calc(140 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #111111;
-  border-image: url('../../assets/menus/buttoncorners.png') 60 / 3px;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / calc(3 / 1920 * 100vw);
 }
 
 .ink-combat-shell__log-entry {
@@ -166,13 +166,13 @@
 }
 
 .ink-combat-shell__stat-line {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #1f1f1f;
 }
 
 .ink-combat-shell__main {
   height: 100%;
-  width: 980px;
+  width: calc(980 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
 }
@@ -183,11 +183,11 @@
 
 .ink-combat-shell--gate-trial .ink-combat-shell__section--fill {
   flex: 1;
-  min-height: 160px;
+  min-height: calc(160 / 1920 * 100vw);
 }
 
 .ink-combat-shell--gate-trial .ink-combat-shell__log {
-  flex: 0 0 180px;
+  flex: 0 0 calc(180 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -199,18 +199,18 @@
 .ink-combat-shell--gate-trial .gate-trial__progress {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .ink-combat-shell--gate-trial .gate-trial__segments {
   display: grid;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .ink-combat-shell--gate-trial .gate-trial__segment {
-  height: 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(20, 20, 20, 0.5);
+  height: calc(14 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(20, 20, 20, 0.5);
   background: rgba(20, 20, 20, 0.12);
 }
 
@@ -219,26 +219,26 @@
 }
 
 .ink-combat-shell--gate-trial .gate-trial__segment--current {
-  box-shadow: 0 0 0 2px rgba(20, 20, 20, 0.25);
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(20, 20, 20, 0.25);
 }
 
 .ink-combat-shell--gate-trial .gate-trial__segment--overflow {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 700;
   background: rgba(20, 20, 20, 0.08);
 }
 
 .ink-combat-shell--gate-trial .gate-trial__progress-text {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #2b2b2b;
 }
 
 .ink-combat-shell--gate-trial .gate-trial__eligibility-details {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #1f1f1f;
 }
 
@@ -248,9 +248,9 @@
 }
 
 .ink-combat-shell--gate-trial .gate-trial__eligibility-details pre {
-  margin: 6px 0 0;
-  padding: 6px;
+  margin: calc(6 / 1920 * 100vw) 0 0;
+  padding: calc(6 / 1920 * 100vw);
   background: rgba(0, 0, 0, 0.08);
-  border-image: url('../../assets/menus/buttoncorners.png') 60 / 3px;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / calc(3 / 1920 * 100vw);
   white-space: pre-wrap;
 }

@@ -6,7 +6,7 @@
   --paper-tint: rgba(247, 237, 215, 0.94);
   --paper-opacity: 0.22;
   --ink-border-color: rgba(43, 33, 22, 0.55);
-  --ink-border-width: 2px;
+  --ink-border-width: calc(2 / 1920 * 100vw);
   --shadow-color: rgba(0, 0, 0, 0.2);
   --watermark-image: none;
   --watermark-opacity: 0.08;

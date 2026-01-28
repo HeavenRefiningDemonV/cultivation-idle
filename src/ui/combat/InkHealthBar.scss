@@ -10,20 +10,20 @@
 .ink-health-bar__name {
   color: black;
   font-family: 'Protest Revolution';
-  font-size: 30px;
+  font-size: calc(30 / 1920 * 100vw);
   text-shadow:
-    0 0 50px white,
-    0 0 50px white,
-    0 0 50px white,
-    0 0 50px white,
-    0 0 50px white,
-    0 0 40px white,
-    0 0 30px white,
-    0 0 30px white,
-    0 0 30px white,
-    0 0 10px white,
-    0 0 10px white,
-    0 0 5px white;
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(40 / 1920 * 100vw) white,
+    0 0 calc(30 / 1920 * 100vw) white,
+    0 0 calc(30 / 1920 * 100vw) white,
+    0 0 calc(30 / 1920 * 100vw) white,
+    0 0 calc(10 / 1920 * 100vw) white,
+    0 0 calc(10 / 1920 * 100vw) white,
+    0 0 calc(5 / 1920 * 100vw) white;
   -webkit-text-stroke: 0.1em white;
   paint-order: stroke;
   max-width: 90%;
@@ -34,21 +34,21 @@
 }
 
 .ink-health-bar__hp {
-  font-size: 20px;
-  padding: 0 10px;
+  font-size: calc(20 / 1920 * 100vw);
+  padding: 0 calc(10 / 1920 * 100vw);
   text-shadow:
-    0 0 50px white,
-    0 0 50px white,
-    0 0 50px white,
-    0 0 50px white,
-    0 0 50px white,
-    0 0 40px white,
-    0 0 30px white,
-    0 0 30px white,
-    0 0 30px white,
-    0 0 10px white,
-    0 0 10px white,
-    0 0 5px white;
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(50 / 1920 * 100vw) white,
+    0 0 calc(40 / 1920 * 100vw) white,
+    0 0 calc(30 / 1920 * 100vw) white,
+    0 0 calc(30 / 1920 * 100vw) white,
+    0 0 calc(30 / 1920 * 100vw) white,
+    0 0 calc(10 / 1920 * 100vw) white,
+    0 0 calc(10 / 1920 * 100vw) white,
+    0 0 calc(5 / 1920 * 100vw) white;
   -webkit-text-stroke: 0.1em white;
   paint-order: stroke;
   font-variant-numeric: tabular-nums;
@@ -62,8 +62,8 @@
 .ink-health-bar__meter {
   position: relative;
   width: 100%;
-  max-width: 420px;
-  height: 80px;
+  max-width: calc(420 / 1920 * 100vw);
+  height: calc(80 / 1920 * 100vw);
   display: grid;
   grid-template-areas: 'stack';
   align-items: center;
@@ -85,10 +85,10 @@
   z-index: 1;
   grid-area: stack;
   width: 95%;
-  height: 18px;
+  height: calc(18 / 1920 * 100vw);
   background: #ddd;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: calc(999 / 1920 * 100vw);
 }
 
 .ink-health-bar__fill {

@@ -1,7 +1,7 @@
 .forgeRingQte {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: calc(120 / 1920 * 100vw);
+  height: calc(120 / 1920 * 100vw);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -11,21 +11,21 @@
 }
 
 .forgeRingQte__target {
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 240, 220, 0.85);
+  width: calc(56 / 1920 * 100vw);
+  height: calc(56 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(2 / 1920 * 100vw) solid rgba(255, 240, 220, 0.85);
   background: rgba(16, 24, 32, 0.7);
-  box-shadow: 0 0 10px rgba(248, 216, 144, 0.5);
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) rgba(248, 216, 144, 0.5);
 }
 
 .forgeRingQte__ring {
   position: absolute;
-  width: 110px;
-  height: 110px;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 212, 120, 0.85);
-  box-shadow: 0 0 18px rgba(251, 191, 36, 0.6);
+  width: calc(110 / 1920 * 100vw);
+  height: calc(110 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(2 / 1920 * 100vw) solid rgba(255, 212, 120, 0.85);
+  box-shadow: 0 0 calc(18 / 1920 * 100vw) rgba(251, 191, 36, 0.6);
   transform: scale(1.6);
   transition: opacity 120ms ease;
   pointer-events: none;
@@ -33,17 +33,17 @@
 
 .forgeRingQte__ring--perfect {
   border-color: rgba(255, 232, 164, 0.95);
-  box-shadow: 0 0 24px rgba(255, 232, 164, 0.8);
+  box-shadow: 0 0 calc(24 / 1920 * 100vw) rgba(255, 232, 164, 0.8);
 }
 
 .forgeRingQte__ring--good {
   border-color: rgba(144, 240, 192, 0.95);
-  box-shadow: 0 0 20px rgba(144, 240, 192, 0.7);
+  box-shadow: 0 0 calc(20 / 1920 * 100vw) rgba(144, 240, 192, 0.7);
 }
 
 .forgeRingQte__ring--miss {
   border-color: rgba(255, 150, 150, 0.8);
-  box-shadow: 0 0 16px rgba(255, 120, 120, 0.6);
+  box-shadow: 0 0 calc(16 / 1920 * 100vw) rgba(255, 120, 120, 0.6);
   opacity: 0.55;
 }
 
@@ -53,71 +53,71 @@
 
 .forgeRingQte__sparks {
   position: absolute;
-  width: 120px;
-  height: 120px;
+  width: calc(120 / 1920 * 100vw);
+  height: calc(120 / 1920 * 100vw);
   pointer-events: none;
 }
 
 .forgeRingQte__spark {
   position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
+  width: calc(6 / 1920 * 100vw);
+  height: calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(255, 232, 164, 0.95);
-  box-shadow: 0 0 10px rgba(255, 232, 164, 0.9);
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) rgba(255, 232, 164, 0.9);
   animation: forgeRingQteSpark 360ms ease-out forwards;
 }
 
 .forgeRingQte__spark--0 {
-  top: -6px;
+  top: calc(-6 / 1920 * 100vw);
   left: 50%;
 }
 
 .forgeRingQte__spark--1 {
-  top: 6px;
-  right: 8px;
+  top: calc(6 / 1920 * 100vw);
+  right: calc(8 / 1920 * 100vw);
 }
 
 .forgeRingQte__spark--2 {
-  right: -6px;
+  right: calc(-6 / 1920 * 100vw);
   top: 50%;
 }
 
 .forgeRingQte__spark--3 {
-  right: 8px;
-  bottom: 6px;
+  right: calc(8 / 1920 * 100vw);
+  bottom: calc(6 / 1920 * 100vw);
 }
 
 .forgeRingQte__spark--4 {
-  bottom: -6px;
+  bottom: calc(-6 / 1920 * 100vw);
   left: 50%;
 }
 
 .forgeRingQte__spark--5 {
-  bottom: 6px;
-  left: 8px;
+  bottom: calc(6 / 1920 * 100vw);
+  left: calc(8 / 1920 * 100vw);
 }
 
 .forgeRingQte__spark--6 {
-  left: -6px;
+  left: calc(-6 / 1920 * 100vw);
   top: 50%;
 }
 
 .forgeRingQte__spark--7 {
-  top: 6px;
-  left: 8px;
+  top: calc(6 / 1920 * 100vw);
+  left: calc(8 / 1920 * 100vw);
 }
 
 .forgeRingQte__rating {
   position: absolute;
-  top: -16px;
-  padding: 2px 6px;
-  border-radius: 999px;
+  top: calc(-16 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   background: rgba(10, 12, 20, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
   animation: forgeRingQteRating 300ms ease-out forwards;
 }
 
@@ -135,7 +135,7 @@
 
 @keyframes forgeRingQteRating {
   0% {
-    transform: translateY(6px);
+    transform: translateY(calc(6 / 1920 * 100vw));
     opacity: 0;
   }
   100% {
@@ -163,10 +163,10 @@
     transform: translateX(0);
   }
   30% {
-    transform: translateX(-4px);
+    transform: translateX(calc(-4 / 1920 * 100vw));
   }
   60% {
-    transform: translateX(3px);
+    transform: translateX(calc(3 / 1920 * 100vw));
   }
   100% {
     transform: translateX(0);

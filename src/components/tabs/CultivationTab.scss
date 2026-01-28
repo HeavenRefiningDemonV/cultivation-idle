@@ -1,31 +1,31 @@
 .cultivationTabRoot {
-  max-width: 1152px;
+  max-width: calc(1152 / 1920 * 100vw);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: calc(32 / 1920 * 100vw);
 }
 
 .cultivationTabPanel {
   background-color: rgba(26, 26, 26, 0.85);
-  border: 1px solid #374151;
-  border-radius: 14px;
-  padding: 32px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border: calc(1 / 1920 * 100vw) solid #374151;
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(32 / 1920 * 100vw);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
 }
 
 .cultivationTabTopPanel {
-  padding: 40px;
+  padding: calc(40 / 1920 * 100vw);
 }
 
 .cultivationTabTopContent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: calc(32 / 1920 * 100vw);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: calc(1024 / 1920 * 100vw)) {
   .cultivationTabTopContent {
     flex-direction: row;
     align-items: flex-start;
@@ -57,14 +57,14 @@
 }
 
 .cultivationTabProgressValue {
-  font-size: 36px;
+  font-size: calc(36 / 1920 * 100vw);
   font-weight: 700;
   color: #7dd3fc;
 }
 
 .cultivationTabProgressLabel {
-  margin-top: 4px;
-  font-size: 14px;
+  margin-top: calc(4 / 1920 * 100vw);
+  font-size: calc(14 / 1920 * 100vw);
   color: #000000;
 }
 
@@ -73,109 +73,109 @@
   text-align: center;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: calc(1024 / 1920 * 100vw)) {
   .cultivationTabRealmInfo {
     text-align: left;
   }
 }
 
 .cultivationTabRealmTitle {
-  font-size: 30px;
+  font-size: calc(30 / 1920 * 100vw);
   font-weight: 700;
   color: #000000;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .cultivationTabRealmSubtitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   color: #000000;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .cultivationTabRealmMajor {
   color: #000000;
-  margin-bottom: 16px;
+  margin-bottom: calc(16 / 1920 * 100vw);
 }
 
 .cultivationTabRealmStats {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   justify-content: center;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: calc(1024 / 1920 * 100vw)) {
   .cultivationTabRealmStats {
     justify-content: flex-start;
   }
 }
 
 .cultivationTabStatLabel {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: #000000;
 }
 
 .cultivationTabStatHighlight {
-  font-size: 24px;
+  font-size: calc(24 / 1920 * 100vw);
   font-weight: 700;
   color: #fbbf24;
 }
 
 .cultivationTabStatGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(220 / 1920 * 100vw), 1fr));
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .cultivationTabStatCard {
   background-color: #111827;
-  border: 1px solid #374151;
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border: calc(1 / 1920 * 100vw) solid #374151;
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(24 / 1920 * 100vw);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
 }
 
 .cultivationTabStatCardLabel {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #000000;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .cultivationTabStatCardValue {
-  font-size: 30px;
+  font-size: calc(30 / 1920 * 100vw);
   font-weight: 700;
   color: #7dd3fc;
 }
 
 .cultivationTabStatCardValueAlt {
-  font-size: 30px;
+  font-size: calc(30 / 1920 * 100vw);
   font-weight: 700;
   color: #fbbf24;
 }
 
 .cultivationTabSectionTitle {
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
   color: #000000;
-  margin-bottom: 16px;
+  margin-bottom: calc(16 / 1920 * 100vw);
 }
 
 .cultivationTabFocusPanel {
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
 }
 
 .cultivationTabFocusGrid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: calc(16 / 1920 * 100vw);
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
 }
 
 .cultivationTabFocusCard {
-  padding: 16px;
-  border: 2px solid #374151;
-  border-radius: 14px;
+  padding: calc(16 / 1920 * 100vw);
+  border: calc(2 / 1920 * 100vw) solid #374151;
+  border-radius: calc(14 / 1920 * 100vw);
   background: rgba(45, 55, 72, 0.35);
   text-align: left;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -184,22 +184,22 @@
 .cultivationTabFocusCardActive {
   border-color: #7dd3fc;
   background: rgba(125, 211, 252, 0.08);
-  box-shadow: 0 0 20px rgba(125, 211, 252, 0.25);
+  box-shadow: 0 0 calc(20 / 1920 * 100vw) rgba(125, 211, 252, 0.25);
 }
 
 .cultivationTabFocusTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
   color: #000000;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
   text-transform: capitalize;
 }
 
 .cultivationTabFocusStats {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 14px;
+  gap: calc(8 / 1920 * 100vw);
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .cultivationTabFocusQi {
@@ -212,21 +212,21 @@
 }
 
 .cultivationTabFocusModifiers {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #000000;
   display: grid;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .cultivationTabBreakthroughPanel {
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
 }
 
 .cultivationTabBreakthroughContent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .cultivationTabBreakthroughInfo {
@@ -234,21 +234,21 @@
 }
 
 .cultivationTabBreakthroughLabel {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: #000000;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .cultivationTabBreakthroughValue {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   color: #000000;
 }
 
 .cultivationTabBreakthroughButton {
-  padding: 16px 32px;
+  padding: calc(16 / 1920 * 100vw) calc(32 / 1920 * 100vw);
   border: none;
-  border-radius: 14px;
-  font-size: 20px;
+  border-radius: calc(14 / 1920 * 100vw);
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
@@ -256,13 +256,13 @@
 .cultivationTabBreakthroughButtonContent {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .cultivationTabBreakthroughReady {
   background: linear-gradient(90deg, #0284c7, #3b82f6);
   color: #000000;
-  box-shadow: 0 0 20px rgba(125, 211, 252, 0.5);
+  box-shadow: 0 0 calc(20 / 1920 * 100vw) rgba(125, 211, 252, 0.5);
   cursor: pointer;
 }
 
@@ -273,21 +273,21 @@
 }
 
 .cultivationTabUpgradePanel {
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
 }
 
 .cultivationTabUpgradeGrid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: calc(16 / 1920 * 100vw);
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
 }
 
 .cultivationTabUpgradeCard {
   background: rgba(55, 65, 81, 0.35);
-  border: 1px solid #374151;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border: calc(1 / 1920 * 100vw) solid #374151;
+  border-radius: calc(14 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(0, 0, 0, 0.25);
 }
 
 .cultivationTabIdleCard {
@@ -303,15 +303,15 @@
 }
 
 .cultivationTabUpgradeTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .cultivationTabUpgradeTitleContent {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .cultivationTabIdleTitle {
@@ -327,15 +327,15 @@
 }
 
 .cultivationTabUpgradeDescription {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: #000000;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .cultivationTabUpgradeTier {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #000000;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .cultivationTabUpgradeTierValue {
@@ -345,8 +345,8 @@
 
 .cultivationTabUpgradeButton {
   width: 100%;
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(16 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   font-weight: 600;
   border: none;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
@@ -364,12 +364,12 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
+@media (max-width: calc(640 / 1920 * 100vw)) {
   .cultivationTabPanel,
   .cultivationTabTopPanel,
   .cultivationTabFocusPanel,
   .cultivationTabUpgradePanel,
   .cultivationTabBreakthroughPanel {
-    padding: 16px;
+    padding: calc(16 / 1920 * 100vw);
   }
 }

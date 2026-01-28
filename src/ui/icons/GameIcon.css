@@ -13,7 +13,7 @@
   object-fit: contain;
   transform: translateY(var(--icon-ty, 0%)) scale(var(--icon-scale, 1));
   transform-origin: center;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 calc(1 / 1920 * 100vw) calc(1 / 1920 * 100vw) rgba(0, 0, 0, 0.35));
 }
 
 .gameIcon__svg {
@@ -23,5 +23,5 @@
   color: currentColor;
   transform: translateY(var(--icon-ty, 0%)) scale(var(--icon-scale, 1));
   transform-origin: center;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 calc(1 / 1920 * 100vw) calc(1 / 1920 * 100vw) rgba(0, 0, 0, 0.35));
 }

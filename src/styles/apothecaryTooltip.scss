@@ -16,30 +16,30 @@
 
 .apothecaryTooltip[data-tooltip]::after {
   content: attr(data-tooltip);
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + calc(10 / 1920 * 100vw));
   transform: translateX(-50%);
   background: linear-gradient(135deg, rgba(250, 242, 224, 0.96), rgba(234, 216, 184, 0.96));
-  border: 1px solid rgba(123, 92, 46, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(123, 92, 46, 0.35);
   color: #1f160d;
-  padding: 8px 10px;
-  border-radius: 10px;
-  font-size: 12px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   line-height: 1.35;
-  max-width: 320px;
-  min-width: 160px;
+  max-width: calc(320 / 1920 * 100vw);
+  min-width: calc(160 / 1920 * 100vw);
   text-align: left;
-  box-shadow: 0 12px 20px rgba(15, 23, 42, 0.28);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(15, 23, 42, 0.28);
   white-space: normal;
 }
 
 .apothecaryTooltip[data-tooltip]::before {
   content: '';
-  bottom: calc(100% + 4px);
-  width: 8px;
-  height: 8px;
+  bottom: calc(100% + calc(4 / 1920 * 100vw));
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
   transform: translateX(-50%) rotate(45deg);
   background: rgba(234, 216, 184, 0.96);
-  border: 1px solid rgba(123, 92, 46, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(123, 92, 46, 0.35);
   border-left: none;
   border-top: none;
 }

@@ -7,7 +7,7 @@
   position: fixed;
   inset: 0;
   background: rgba(7, 10, 16, 0.72);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(calc(2 / 1920 * 100vw));
   animation: techniqueModalFade 0.25s ease-out;
 }
 
@@ -17,19 +17,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
 }
 
 .techniqueDetailModalPanel {
   position: relative;
-  width: min(860px, 92vw);
-  max-height: min(86vh, 900px);
+  width: min(calc(860 / 1920 * 100vw), 92vw);
+  max-height: min(86vh, calc(900 / 1920 * 100vw));
   display: flex;
   flex-direction: column;
   background: rgba(18, 24, 34, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(16 / 1920 * 100vw);
+  box-shadow: 0 calc(18 / 1920 * 100vw) calc(40 / 1920 * 100vw) rgba(0, 0, 0, 0.5);
   overflow: hidden;
   color: #f5f5f5;
   animation: techniqueModalIn 0.28s ease-out;
@@ -42,28 +42,28 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw) calc(20 / 1920 * 100vw);
   background: rgba(18, 24, 34, 0.98);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
 }
 
 .techniqueDetailModalHeaderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .techniqueDetailModalHeaderMain {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   min-width: 0;
 }
 
 .techniqueDetailModalTitle {
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 800;
   margin: 0;
   white-space: nowrap;
@@ -73,29 +73,29 @@
 
 .techniqueDetailModalMeta {
   display: flex;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(245, 245, 245, 0.8);
 }
 
 .techniqueDetailModalMetaIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: calc(28 / 1920 * 100vw);
+  height: calc(28 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.08);
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .techniqueDetailModalClose {
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
   color: #f5f5f5;
-  border-radius: 10px;
-  padding: 8px 14px;
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(14 / 1920 * 100vw);
   font-weight: 600;
   cursor: pointer;
 }
@@ -107,23 +107,23 @@
 .techniqueDetailModalEquipStrip {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
   background: rgba(16, 22, 32, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
 }
 
 .techniqueDetailModalEquipStatusRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .techniqueDetailModalEquipStatus {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cfe4ff;
   max-width: 60%;
   white-space: nowrap;
@@ -133,17 +133,17 @@
 
 .techniqueDetailModalEquipActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .techniqueDetailModalEquipButton {
   background: rgba(255, 255, 255, 0.08);
   color: #f5f5f5;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 11px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.2);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
 }
@@ -151,7 +151,7 @@
 .techniqueDetailModalFavoriteButtonContent {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueDetailModalEquipButton:disabled {
@@ -168,19 +168,19 @@
 .techniqueDetailModalEquipChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueDetailModalEquipChip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  gap: calc(6 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
   color: #f5f5f5;
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease;
@@ -193,7 +193,7 @@
 
 .techniqueDetailModalEquipChip.is-selected {
   border-color: rgba(164, 255, 190, 0.7);
-  box-shadow: 0 0 0 1px rgba(164, 255, 190, 0.35);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(164, 255, 190, 0.35);
 }
 
 .techniqueDetailModalEquipChip.is-shaking {
@@ -210,19 +210,19 @@
 }
 
 .techniqueDetailModalEquipEmpty {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(245, 245, 245, 0.6);
 }
 
 .techniqueDetailModalEquipConfirm {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
   background: rgba(18, 24, 34, 0.8);
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueDetailModalEquipConfirmText {
@@ -231,14 +231,14 @@
 
 .techniqueDetailModalEquipConfirmActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .techniqueDetailModalEquipFeedback {
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 11px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   align-self: flex-start;
   animation: techniqueModalPulse 1.4s ease-out;
@@ -246,35 +246,35 @@
 
 .techniqueDetailModalEquipFeedback.is-success {
   background: rgba(139, 226, 139, 0.18);
-  border: 1px solid rgba(139, 226, 139, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(139, 226, 139, 0.35);
   color: rgba(180, 255, 210, 0.95);
 }
 
 .techniqueDetailModalEquipFeedback.is-error {
   background: rgba(255, 107, 107, 0.14);
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 107, 107, 0.3);
   color: rgba(255, 210, 210, 0.95);
 }
 
 .techniqueDetailModalEquipFeedback.is-info {
   background: rgba(108, 199, 255, 0.14);
-  border: 1px solid rgba(108, 199, 255, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(108, 199, 255, 0.3);
   color: rgba(200, 230, 255, 0.95);
 }
 
 .techniqueDetailModalBody {
-  padding: 16px 20px 24px;
+  padding: calc(16 / 1920 * 100vw) calc(20 / 1920 * 100vw) calc(24 / 1920 * 100vw);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .techniqueDetailModalScrollShadow {
   position: absolute;
   left: 0;
   right: 0;
-  height: 24px;
+  height: calc(24 / 1920 * 100vw);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -282,7 +282,7 @@
 }
 
 .techniqueDetailModalScrollShadow--top {
-  top: 120px;
+  top: calc(120 / 1920 * 100vw);
   background: linear-gradient(180deg, rgba(10, 14, 22, 0.9), rgba(10, 14, 22, 0));
 }
 
@@ -296,26 +296,26 @@
 }
 
 .techniqueDetailModalMissing {
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(255, 107, 107, 0.16);
-  border: 1px solid rgba(255, 107, 107, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 107, 107, 0.35);
   font-weight: 600;
 }
 
 .techniqueDetailModalSection {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 14px 16px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(14 / 1920 * 100vw) calc(16 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueDetailModalSection h4 {
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -328,51 +328,51 @@
 .techniqueDetailModalChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueDetailModalChip {
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   background: rgba(255, 255, 255, 0.08);
 }
 
 .techniqueDetailModalMetaLine {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a0b7d8;
 }
 
 .techniqueDetailModalDivider {
-  height: 1px;
+  height: calc(1 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
-  margin: 4px 0;
+  margin: calc(4 / 1920 * 100vw) 0;
 }
 
 .techniqueDetailModalEffectList {
-  padding-left: 18px;
+  padding-left: calc(18 / 1920 * 100vw);
   color: #dfe8ff;
   line-height: 1.4;
 }
 
 .techniqueDetailModalEffectMeta {
   display: grid;
-  gap: 4px;
-  font-size: 12px;
+  gap: calc(4 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #c5d6ff;
 }
 
 .techniqueDetailModalSubsection {
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .techniqueDetailModalSubheading {
   font-weight: 700;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #cde7ff;
@@ -380,19 +380,19 @@
 
 .techniqueDetailModalHint {
   color: #a0b7d8;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueDetailModalProgressGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .techniqueDetailModalProgressCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(16, 22, 32, 0.85);
 }
 
@@ -404,10 +404,10 @@
 
 .techniqueDetailModalProgressBar {
   position: relative;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  margin: 8px 0 6px;
+  border-radius: calc(6 / 1920 * 100vw);
+  margin: calc(8 / 1920 * 100vw) 0 calc(6 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -423,12 +423,12 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: calc(2 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.2);
 }
 
 .techniqueDetailModalProgressLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   opacity: 0.8;
 }
 
@@ -436,19 +436,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 6px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .techniqueDetailModalRankPips {
   display: flex;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .techniqueDetailModalRankPip {
-  width: 12px;
-  height: 8px;
-  border-radius: 4px;
+  width: calc(12 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(4 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.12);
 }
 
@@ -460,30 +460,30 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
+  gap: calc(12 / 1920 * 100vw);
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .techniqueDetailModalSlotList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .techniqueDetailModalSlotRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(8 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(18, 23, 33, 0.8);
 }
 
 .techniqueDetailModalSlotRow.is-selected {
   border-color: rgba(164, 255, 190, 0.6);
-  box-shadow: 0 0 0 1px rgba(164, 255, 190, 0.4);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(164, 255, 190, 0.4);
 }
 
 .techniqueDetailModalSlotRow.is-locked {
@@ -497,7 +497,7 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   cursor: pointer;
 }
 
@@ -510,18 +510,18 @@
 }
 
 .techniqueDetailModalSlotValue {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #dfe8ff;
 }
 
 .techniqueDetailModalSlotHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #d299ff;
 }
 
 .techniqueDetailModalActionRow {
   display: flex;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -530,8 +530,8 @@
   background: linear-gradient(135deg, #6cc7ff, #7be39d);
   color: #0b1724;
   border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: calc(10 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.1s ease, opacity 0.15s ease;
@@ -545,9 +545,9 @@
 .techniqueDetailModalSecondaryButton {
   background: rgba(255, 255, 255, 0.1);
   color: #f5f5f5;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 12px;
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.2);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   cursor: pointer;
 }
 
@@ -560,26 +560,26 @@
 }
 
 .techniqueDetailModalActionMessage {
-  margin-top: 8px;
-  padding: 10px;
-  border-radius: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   font-weight: 600;
   animation: techniqueModalPulse 1.4s ease-out;
 }
 
 .techniqueDetailModalActionMessage.is-success {
   background: rgba(139, 226, 139, 0.2);
-  border: 1px solid rgba(139, 226, 139, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(139, 226, 139, 0.4);
 }
 
 .techniqueDetailModalActionMessage.is-error {
   background: rgba(255, 107, 107, 0.16);
-  border: 1px solid rgba(255, 107, 107, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 107, 107, 0.35);
 }
 
 .techniqueDetailModalActionMessage.is-info {
   background: rgba(108, 199, 255, 0.16);
-  border: 1px solid rgba(108, 199, 255, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(108, 199, 255, 0.35);
 }
 
 @keyframes techniqueEquipShake {
@@ -588,7 +588,7 @@
   }
 
   50% {
-    transform: translateX(3px);
+    transform: translateX(calc(3 / 1920 * 100vw));
   }
 
   100% {
@@ -609,7 +609,7 @@
 @keyframes techniqueModalIn {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(calc(10 / 1920 * 100vw)) scale(0.98);
   }
 
   to {
@@ -624,7 +624,7 @@
   }
 
   40% {
-    box-shadow: 0 0 14px rgba(140, 220, 200, 0.35);
+    box-shadow: 0 0 calc(14 / 1920 * 100vw) rgba(140, 220, 200, 0.35);
   }
 
   100% {
@@ -636,18 +636,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  gap: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(18, 23, 33, 0.8);
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .techniqueDetailModalTraitMain {
   display: grid;
   grid-template-columns: repeat(2, auto);
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
 }
 
@@ -661,20 +661,20 @@
 
 .techniqueDetailModalTraitRange {
   color: #a0b7d8;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .techniqueDetailModalTraitQuality {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: flex-end;
 }
 
 .techniqueDetailModalTraitQualityBar {
-  width: 140px;
-  height: 8px;
-  border-radius: 6px;
+  width: calc(140 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
@@ -687,22 +687,22 @@
 .techniqueDetailModalRuneSockets {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .techniqueDetailModalRuneRow {
   display: grid;
-  grid-template-columns: 90px 1fr 1fr auto auto;
-  gap: 8px;
+  grid-template-columns: calc(90 / 1920 * 100vw) 1fr 1fr auto auto;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
 .techniqueDetailModalRunePill {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) dashed rgba(255, 255, 255, 0.2);
   text-align: center;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cde7ff;
 }
 
@@ -745,24 +745,24 @@
   opacity: 0.6;
 }
 
-@media (max-width: 720px) {
+@media (max-width: calc(720 / 1920 * 100vw)) {
   .techniqueDetailModalPosition {
-    padding: 16px;
+    padding: calc(16 / 1920 * 100vw);
   }
 
   .techniqueDetailModalPanel {
     width: 100%;
     height: 100%;
     max-height: none;
-    border-radius: 16px;
+    border-radius: calc(16 / 1920 * 100vw);
   }
 
   .techniqueDetailModalHeader {
-    padding: 14px 16px;
+    padding: calc(14 / 1920 * 100vw) calc(16 / 1920 * 100vw);
   }
 
   .techniqueDetailModalBody {
-    padding: 14px 16px 20px;
+    padding: calc(14 / 1920 * 100vw) calc(16 / 1920 * 100vw) calc(20 / 1920 * 100vw);
   }
 
   .techniqueDetailModalEquipStatus {
@@ -770,12 +770,12 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: calc(520 / 1920 * 100vw)) {
   .techniqueDetailModalPosition {
-    padding: 8px;
+    padding: calc(8 / 1920 * 100vw);
   }
 
   .techniqueDetailModalPanel {
-    border-radius: 12px;
+    border-radius: calc(12 / 1920 * 100vw);
   }
 }

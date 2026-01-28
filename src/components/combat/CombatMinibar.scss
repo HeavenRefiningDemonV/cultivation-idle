@@ -1,67 +1,67 @@
 .combat-minibar {
   background: rgba(14, 17, 28, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(12 / 1920 * 100vw);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(24 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
   color: #f5f7ff;
-  padding: 12px 14px;
-  min-width: 320px;
-  max-width: 420px;
-  font-size: 14px;
+  padding: calc(12 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  min-width: calc(320 / 1920 * 100vw);
+  max-width: calc(420 / 1920 * 100vw);
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .combat-minibar__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-bottom: calc(10 / 1920 * 100vw);
 }
 
 .combat-minibar__activity {
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .combat-minibar__header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .combat-minibar__ai-label {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #e5e7eb;
 }
 
 .combat-minibar__ai-select {
   background: rgba(17, 24, 39, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.15);
   color: #f5f7ff;
-  border-radius: 6px;
-  padding: 4px 6px;
-  font-size: 12px;
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .combat-minibar__bars {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .combat-minibar__bar-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .combat-minibar__bar-label {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #c8d1ff;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -70,10 +70,10 @@
 .combat-minibar__bar-track {
   position: relative;
   background: #111827;
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
   overflow: hidden;
-  min-height: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: calc(24 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.06);
 }
 
 .combat-minibar__bar-fill {
@@ -93,28 +93,28 @@
   z-index: 1;
   text-align: center;
   font-weight: 600;
-  padding: 3px 8px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  padding: calc(3 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  text-shadow: 0 calc(1 / 1920 * 100vw) calc(2 / 1920 * 100vw) rgba(0, 0, 0, 0.55);
 }
 
 .combat-minibar__enemy-name {
-  margin-right: 6px;
+  margin-right: calc(6 / 1920 * 100vw);
 }
 
 .combat-minibar__enemy-level {
   color: #fcd34d;
-  margin-right: 8px;
+  margin-right: calc(8 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .combat-minibar__enemy-boss {
   background: rgba(244, 63, 94, 0.2);
   color: #f43f5e;
-  border: 1px solid rgba(244, 63, 94, 0.4);
-  border-radius: 6px;
-  padding: 2px 6px;
-  font-size: 11px;
-  margin-right: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(244, 63, 94, 0.4);
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
+  margin-right: calc(8 / 1920 * 100vw);
   text-transform: uppercase;
 }
 
@@ -125,28 +125,28 @@
 .combat-minibar__timers {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 12px;
+  gap: calc(10 / 1920 * 100vw);
+  margin-top: calc(12 / 1920 * 100vw);
 }
 
 .combat-minibar__timer {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.06);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw);
 }
 
 .combat-minibar__timer-label {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .combat-minibar__timer-progress {
   position: relative;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: #0f172a;
-  border-radius: 6px;
+  border-radius: calc(6 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -162,35 +162,35 @@
 }
 
 .combat-minibar__timer-text {
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
   font-weight: 600;
 }
 
 .combat-minibar__footer {
-  margin-top: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .combat-minibar__last-event {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .combat-minibar__last-event-label {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .combat-minibar__chip {
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  padding: 6px 10px;
-  max-width: 280px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(999 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  max-width: calc(280 / 1920 * 100vw);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -198,14 +198,14 @@
 
 .combat-minibar__safety {
   position: relative;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   cursor: pointer;
   user-select: none;
-  border: 1px solid transparent;
+  border: calc(1 / 1920 * 100vw) solid transparent;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .combat-minibar__safety--safe {
@@ -238,26 +238,26 @@
 
 .combat-minibar__safety-tooltip {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + calc(8 / 1920 * 100vw));
   right: 0;
   background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 10px;
-  min-width: 240px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
+  min-width: calc(240 / 1920 * 100vw);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(24 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
   z-index: 5;
 }
 
 .combat-minibar__safety-tooltip-title {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .combat-minibar__safety-tooltip ul {
   margin: 0;
-  padding-left: 18px;
+  padding-left: calc(18 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -268,18 +268,18 @@
 }
 
 .combat-minibar__collapsed-hint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .combat-minibar--collapsed {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   background: rgba(17, 24, 39, 0.92);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
 }
 
@@ -289,7 +289,7 @@
   color: #fff;
 }
 
-@media (max-width: 540px) {
+@media (max-width: calc(540 / 1920 * 100vw)) {
   .combat-minibar {
     width: 100%;
     min-width: 0;

@@ -1,29 +1,29 @@
 .tabNavNav {
   background: #1f2937;
-  border-bottom: 1px solid #374151;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  border-bottom: calc(1 / 1920 * 100vw) solid #374151;
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(24 / 1920 * 100vw) rgba(0, 0, 0, 0.35);
 }
 
 .tabNavInner {
-  max-width: 1120px;
+  max-width: calc(1120 / 1920 * 100vw);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 calc(24 / 1920 * 100vw);
 }
 
 .tabNavList {
   display: flex;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .tabNavTab {
   position: relative;
-  padding: 12px 24px;
+  padding: calc(12 / 1920 * 100vw) calc(24 / 1920 * 100vw);
   font-weight: 600;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: #9ca3af;
   border: none;
   background: transparent;
-  border-bottom: 2px solid transparent;
+  border-bottom: calc(2 / 1920 * 100vw) solid transparent;
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
 }
@@ -42,6 +42,6 @@
 .tabNavActiveUnderline {
   position: absolute;
   inset: auto 0 0 0;
-  height: 4px;
+  height: calc(4 / 1920 * 100vw);
   background: linear-gradient(90deg, #22d3ee, #3b82f6);
 }

@@ -405,7 +405,7 @@ export function CombatCanvas({
       } else {
         // Not in combat - show idle message
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.font = 'bold 24px sans-serif';
+        ctx.font = 'bold calc(24 / 1920 * 100vw) sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('Select a zone to begin combat', width / 2, height / 2);

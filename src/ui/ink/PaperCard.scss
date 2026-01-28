@@ -2,12 +2,12 @@
 
 .inkPaperCard {
   position: relative;
-  padding: 12px 14px;
-  border: 1.5px solid var(--ink-border-color);
-  border-radius: 10px 8px 12px 9px;
+  padding: calc(12 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  border: calc(1.5 / 1920 * 100vw) solid var(--ink-border-color);
+  border-radius: calc(10 / 1920 * 100vw) calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw) calc(9 / 1920 * 100vw);
   background-color: var(--paper-card-bg, var(--paper-tint));
   color: var(--ink-text-color);
-  box-shadow: 0 10px 20px var(--shadow-color);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(20 / 1920 * 100vw) var(--shadow-color);
   overflow: hidden;
 }
 
@@ -28,24 +28,24 @@
 }
 
 .inkPaperCard--tray {
-  padding: 10px 12px;
-  border-radius: 12px 9px 13px 10px;
-  box-shadow: 0 12px 22px var(--shadow-color);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw) calc(9 / 1920 * 100vw) calc(13 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(22 / 1920 * 100vw) var(--shadow-color);
   --paper-card-bg: rgba(247, 238, 220, 0.96);
 }
 
 .inkPaperCard--pouch {
-  padding: 12px 14px;
-  border-radius: 12px 9px 13px 10px;
-  border-width: 2px;
-  box-shadow: 0 12px 22px var(--shadow-color);
+  padding: calc(12 / 1920 * 100vw) calc(14 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw) calc(9 / 1920 * 100vw) calc(13 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-width: calc(2 / 1920 * 100vw);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(22 / 1920 * 100vw) var(--shadow-color);
   --paper-card-bg: rgba(242, 231, 210, 0.96);
 }
 
 .inkPaperCard--label {
-  padding: 8px 10px;
-  border-radius: 9px 7px 10px 8px;
-  font-size: 12px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(9 / 1920 * 100vw) calc(7 / 1920 * 100vw) calc(10 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   --paper-card-bg: rgba(252, 246, 235, 0.95);
 }
 
@@ -55,31 +55,31 @@
 }
 
 .inkPaperCard--interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(calc(-2 / 1920 * 100vw));
   border-color: rgba(120, 72, 33, 0.55);
-  box-shadow: 0 16px 28px var(--shadow-color);
+  box-shadow: 0 calc(16 / 1920 * 100vw) calc(28 / 1920 * 100vw) var(--shadow-color);
 }
 
 .inkPaperCard--interactive:active {
-  transform: translateY(1px);
-  box-shadow: 0 8px 16px var(--shadow-color);
+  transform: translateY(calc(1 / 1920 * 100vw));
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(16 / 1920 * 100vw) var(--shadow-color);
 }
 
 .inkPaperCard--selected {
   border-color: rgba(120, 72, 33, 0.8);
-  border-width: 2px;
-  box-shadow: 0 12px 24px var(--shadow-color);
+  border-width: calc(2 / 1920 * 100vw);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(24 / 1920 * 100vw) var(--shadow-color);
 }
 
 .inkPaperCard--selected::after {
   content: '';
   position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 16px;
-  height: 16px;
+  top: calc(10 / 1920 * 100vw);
+  right: calc(12 / 1920 * 100vw);
+  width: calc(16 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
   border-radius: 50%;
-  border: 2px solid rgba(159, 59, 46, 0.55);
+  border: calc(2 / 1920 * 100vw) solid rgba(159, 59, 46, 0.55);
   background-color: rgba(159, 59, 46, 0.15);
   transform: rotate(-6deg);
   opacity: 0.7;

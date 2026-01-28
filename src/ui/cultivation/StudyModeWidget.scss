@@ -1,11 +1,11 @@
 .studyWidget {
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .studyToggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   font-weight: 700;
   color: #e5e7eb;
   cursor: pointer;
@@ -13,28 +13,28 @@
 
 .studyToggle input {
   accent-color: #22d3ee;
-  width: 16px;
-  height: 16px;
+  width: calc(16 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
 }
 
 .studyControlRow {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .studyControlLabel {
   font-weight: 700;
   color: #e5e7eb;
-  min-width: 72px;
+  min-width: calc(72 / 1920 * 100vw);
 }
 
 .studySelect {
   flex: 1;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   color: #e5e7eb;
 }
 

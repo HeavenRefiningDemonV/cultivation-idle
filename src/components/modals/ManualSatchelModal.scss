@@ -2,54 +2,54 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(calc(6 / 1920 * 100vw));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
   z-index: 3000;
 }
 
 .manualSatchelModal {
   background: rgba(208, 208, 208, 0.92);
   color: rgba(12, 18, 34, 0.9);
-  border: 5px solid transparent;
-  border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  border: calc(5 / 1920 * 100vw) solid transparent;
+  border-image: url("../../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw) / calc(1 / 1920 * 100vw);
   border-radius: 0;
-  width: min(1040px, 94vw);
+  width: min(calc(1040 / 1920 * 100vw), 94vw);
   max-height: 92vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(30 / 1920 * 100vw) rgba(0, 0, 0, 0.45);
 }
 
 .manualSatchelHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.14);
+  padding: calc(16 / 1920 * 100vw) calc(20 / 1920 * 100vw);
+  border-bottom: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
 }
 
 .manualSatchelHeaderLeft {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .manualSatchelHeaderRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .manualSatchelTitle {
-  font-size: 22px;
+  font-size: calc(22 / 1920 * 100vw);
   font-weight: 800;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .manualSatchelTitleIcon {
@@ -59,16 +59,16 @@
 }
 
 .manualSatchelSubtitle {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.6);
 }
 
 .manualSatchelHelpToggle {
   background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
+  border-radius: calc(999 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 600;
   cursor: pointer;
   align-self: flex-start;
@@ -76,10 +76,10 @@
 
 .manualSatchelLibraryButton {
   background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 10px;
-  padding: 6px 10px;
-  font-size: 11px;
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.35);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   cursor: pointer;
   color: rgba(12, 18, 34, 0.9);
@@ -89,9 +89,9 @@
   background: rgba(12, 18, 34, 0.08);
   border: none;
   color: rgba(12, 18, 34, 0.8);
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
+  width: calc(30 / 1920 * 100vw);
+  height: calc(30 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -99,28 +99,28 @@
 }
 
 .manualSatchelHelpCard {
-  margin: 0 20px 12px;
-  padding: 12px;
+  margin: 0 calc(20 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(12, 18, 34, 0.12);
-  border-radius: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.12);
+  border-radius: calc(12 / 1920 * 100vw);
   display: grid;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .manualSatchelHelpRow {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.75);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .manualSatchelBody {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 12px;
-  padding: 12px 14px;
+  grid-template-columns: calc(360 / 1920 * 100vw) 1fr;
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw) calc(14 / 1920 * 100vw);
   min-height: 0;
   flex: 1;
 }
@@ -128,7 +128,7 @@
 .manualSatchelColumn {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   min-height: 0;
 }
 
@@ -140,12 +140,12 @@
 
 .manualSatchelCard {
   background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   min-height: 0;
 }
 
@@ -160,7 +160,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 6px;
+  height: calc(6 / 1920 * 100vw);
   background: linear-gradient(90deg, rgba(125, 211, 252, 0.55), rgba(34, 197, 94, 0.35), transparent);
 }
 
@@ -176,37 +176,37 @@
 
 .manualSatchelTitleLine {
   font-weight: 700;
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
 }
 
 .manualSatchelTechName {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 600;
 }
 
 .manualSatchelMeta {
   display: flex;
-  gap: 6px;
-  margin-top: 6px;
+  gap: calc(6 / 1920 * 100vw);
+  margin-top: calc(6 / 1920 * 100vw);
   align-items: center;
 }
 
 .manualSatchelTimer {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.75);
   font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
 }
 
 .manualSatchelProgress {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .manualSatchelProgressBar {
   position: relative;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(12, 18, 34, 0.12);
-  border-radius: 6px;
+  border-radius: calc(6 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -221,23 +221,23 @@
 }
 
 .manualSatchelProgressText {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.65);
 }
 
 .manualSatchelFocusResult {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   color: rgba(34, 197, 94, 0.9);
   font-weight: 600;
 }
 
 .manualSatchelFocusCard {
-  margin-top: 12px;
-  padding: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: radial-gradient(circle at center, rgba(125, 211, 252, 0.25), rgba(255, 255, 255, 0.75) 60%);
-  border: 1px solid rgba(12, 18, 34, 0.12);
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.12);
+  border-radius: calc(8 / 1920 * 100vw);
 }
 
 .manualSatchelFocusCardActive {
@@ -246,31 +246,31 @@
 
 .manualSatchelFocusTitle {
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: calc(4 / 1920 * 100vw);
 }
 
 .manualSatchelFocusText {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.7);
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .manualSatchelFocusCountdown {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .manualSatchelFocusActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .manualSatchelList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: calc(4 / 1920 * 100vw);
   flex: 1;
   min-height: 0;
 }
@@ -278,24 +278,24 @@
 .manualSatchelTools {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .manualSatchelSearch,
 .manualSatchelSort {
-  border: 1px solid rgba(12, 18, 34, 0.2);
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.2);
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.85);
   color: rgba(12, 18, 34, 0.85);
 }
 
 .manualSatchelSearch {
-  flex: 1 1 160px;
-  min-width: 140px;
+  flex: 1 1 calc(160 / 1920 * 100vw);
+  min-width: calc(140 / 1920 * 100vw);
 }
 
 .manualSatchelSort {
@@ -305,32 +305,32 @@
 .manualSatchelToggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.75);
 }
 
 .manualSatchelRow {
-  padding: 12px;
-  border: 1px solid rgba(12, 18, 34, 0.12);
-  border-radius: 12px;
+  padding: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.12);
+  border-radius: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.55);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .manualSatchelRow:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(12, 18, 34, 0.12);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(14 / 1920 * 100vw) rgba(12, 18, 34, 0.12);
 }
 
 .manualSatchelRowHeader {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   background: transparent;
   border: none;
   padding: 0;
@@ -341,8 +341,8 @@
 }
 
 .manualSatchelRowSpine {
-  width: 6px;
-  border-radius: 999px;
+  width: calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(12, 18, 34, 0.2);
   flex: 0 0 auto;
 }
@@ -350,7 +350,7 @@
 .manualSatchelRowMain {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   flex: 1;
 }
 
@@ -361,7 +361,7 @@
 .manualSatchelRowMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .manualSatchelRowChevron {
@@ -374,48 +374,48 @@
 .manualSatchelRowDetails {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.35);
-  border: 1px dashed rgba(12, 18, 34, 0.18);
-  padding: 10px;
-  border-radius: 10px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(12, 18, 34, 0.18);
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
 }
 
 .manualSatchelRowDescription {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.75);
 }
 
 .manualSatchelRowActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .manualSatchelRowConfirm {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.4);
   background: rgba(254, 242, 242, 0.7);
 }
 
 .manualSatchelRowWarning {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 600;
   color: rgba(153, 27, 27, 0.85);
 }
 
 .manualSatchelRowConfirmActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .manualSatchelRowDisabledReason {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.6);
 }
 
@@ -423,8 +423,8 @@
   background: rgba(59, 130, 246, 0.85);
   color: #0b0f1a;
   border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   cursor: pointer;
   font-weight: 600;
 }
@@ -437,28 +437,28 @@
 .manualSatchelButtonSecondary {
   background: rgba(12, 18, 34, 0.1);
   color: rgba(12, 18, 34, 0.8);
-  border: 1px solid rgba(12, 18, 34, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.2);
 }
 
 .manualSatchelCount {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.65);
 }
 
 .manualSatchelEmpty {
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.6);
 }
 
 .manualBadge {
   display: inline-flex;
   align-items: center;
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 11px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  border: 1px solid rgba(12, 18, 34, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.2);
   background: rgba(255, 255, 255, 0.65);
   color: rgba(12, 18, 34, 0.75);
 }
@@ -532,11 +532,11 @@
   }
   50% {
     opacity: 1;
-    box-shadow: 0 0 16px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 calc(16 / 1920 * 100vw) rgba(59, 130, 246, 0.15);
   }
 }
 
-@media (max-width: 860px) {
+@media (max-width: calc(860 / 1920 * 100vw)) {
   .manualSatchelModal {
     width: 96vw;
   }

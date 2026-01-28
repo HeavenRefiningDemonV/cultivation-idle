@@ -7,7 +7,7 @@
 }
 
 .medicinePouchModal {
-  width: min(860px, 96vw);
+  width: min(calc(860 / 1920 * 100vw), 96vw);
   max-height: 90vh;
   padding: 0;
   overflow: hidden;
@@ -29,20 +29,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: calc(12px + env(safe-area-inset-top)) 18px 12px;
-  border-bottom: 1px solid rgba(120, 72, 33, 0.25);
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(calc(12 / 1920 * 100vw) + env(safe-area-inset-top)) calc(18 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-bottom: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.25);
   background: rgba(248, 239, 221, 0.6);
 }
 
 .medicinePouchTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
   color: var(--ink-text-color);
 }
 
 .medicinePouchHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--ink-muted-color);
 }
 
@@ -51,7 +51,7 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 12px 18px calc(16px + env(safe-area-inset-bottom));
+  padding: calc(12 / 1920 * 100vw) calc(18 / 1920 * 100vw) calc(calc(16 / 1920 * 100vw) + env(safe-area-inset-bottom));
   scrollbar-gutter: stable;
   background: transparent;
 }
@@ -60,7 +60,7 @@
   position: sticky;
   left: 0;
   right: 0;
-  height: 18px;
+  height: calc(18 / 1920 * 100vw);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -68,12 +68,12 @@
 
 .medicinePouchScrollShadow--top {
   top: 0;
-  box-shadow: inset 0 12px 12px rgba(43, 33, 22, 0.18);
+  box-shadow: inset 0 calc(12 / 1920 * 100vw) calc(12 / 1920 * 100vw) rgba(43, 33, 22, 0.18);
 }
 
 .medicinePouchScrollShadow--bottom {
   bottom: 0;
-  box-shadow: inset 0 -12px 12px rgba(43, 33, 22, 0.18);
+  box-shadow: inset 0 calc(-12 / 1920 * 100vw) calc(12 / 1920 * 100vw) rgba(43, 33, 22, 0.18);
 }
 
 .medicinePouchScrollShadow--visible {
@@ -81,10 +81,10 @@
 }
 
 .medicinePouchClose {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  border: 1px solid rgba(120, 72, 33, 0.45);
+  width: calc(32 / 1920 * 100vw);
+  height: calc(32 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(120, 72, 33, 0.45);
   background: rgba(248, 239, 221, 0.8);
   color: var(--ink-text-color);
   display: inline-flex;

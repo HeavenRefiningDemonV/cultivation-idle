@@ -256,7 +256,7 @@ export class DamageNumberPool {
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.fillStyle = num.color;
-      ctx.font = `bold ${16 * scale}px monospace`;
+      ctx.font = `bold ${((16 * scale) / 1920) * 100}vw monospace`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 

@@ -1,17 +1,17 @@
 .tech-strip {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .tech-strip__section {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .tech-strip__section-title {
@@ -21,29 +21,29 @@
 
 .tech-strip__tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .tech-strip__tiles--passive {
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(140 / 1920 * 100vw), 1fr));
 }
 
 .tech-strip__tile {
   position: relative;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   overflow: hidden;
 }
 
 .tech-strip__tile--flash {
   animation: tech-strip-flash 0.45s ease;
-  box-shadow: 0 0 12px rgba(255, 224, 138, 0.45);
+  box-shadow: 0 0 calc(12 / 1920 * 100vw) rgba(255, 224, 138, 0.45);
 }
 
 .tech-strip__tile--unknown {
@@ -53,7 +53,7 @@
 .tech-strip__tile-header {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
@@ -65,15 +65,15 @@
 
 .tech-strip__tile-tags {
   display: flex;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .tech-strip__tag {
   background: rgba(255, 255, 255, 0.08);
   color: #e5e7eb;
-  border-radius: 6px;
-  padding: 2px 6px;
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
   font-size: 0.75rem;
 }
 
@@ -127,7 +127,7 @@
     border-color: rgba(255, 255, 255, 0.12);
   }
   50% {
-    box-shadow: 0 0 14px rgba(255, 224, 138, 0.55);
+    box-shadow: 0 0 calc(14 / 1920 * 100vw) rgba(255, 224, 138, 0.55);
     border-color: rgba(255, 224, 138, 0.6);
   }
   100% {

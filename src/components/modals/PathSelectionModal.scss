@@ -4,20 +4,20 @@
 
 .pathSelectionModalPanel {
   width: 100%;
-  max-width: 1200px;
+  max-width: calc(1200 / 1920 * 100vw);
   max-height: 90vh;
-  padding: 30px 34px;
+  padding: calc(30 / 1920 * 100vw) calc(34 / 1920 * 100vw);
 }
 
 .pathSelectionModalHeader {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: calc(24 / 1920 * 100vw);
 }
 
 .pathSelectionModalTitle {
-  margin: 0 0 8px 0;
+  margin: 0 0 calc(8 / 1920 * 100vw) 0;
   font-family: 'Julee', cursive;
-  font-size: 36px;
+  font-size: calc(36 / 1920 * 100vw);
   font-weight: 700;
   color: var(--ink-text-color);
 }
@@ -25,81 +25,81 @@
 .pathSelectionModalSubtitle {
   margin: 0;
   color: var(--ink-text-color);
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
 }
 
 .pathSelectionModalHelperText {
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
   color: var(--ink-muted-color);
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .pathSelectionModalGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(320 / 1920 * 100vw), 1fr));
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .pathSelectionModalCard {
   --path-accent: #6b6255;
   background-color: rgba(250, 243, 229, 0.9);
-  border: 2px solid rgba(58, 44, 30, 0.45);
-  border-radius: 16px 14px 18px 12px;
-  padding: 24px;
+  border: calc(2 / 1920 * 100vw) solid rgba(58, 44, 30, 0.45);
+  border-radius: calc(16 / 1920 * 100vw) calc(14 / 1920 * 100vw) calc(18 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  padding: calc(24 / 1920 * 100vw);
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 8px 18px rgba(24, 18, 10, 0.15);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(24, 18, 10, 0.15);
 }
 
 .pathSelectionModalCardActive {
-  transform: translateY(-2px);
+  transform: translateY(calc(-2 / 1920 * 100vw));
   border-color: var(--path-accent);
-  box-shadow: 0 10px 20px rgba(24, 18, 10, 0.22);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(20 / 1920 * 100vw) rgba(24, 18, 10, 0.22);
 }
 
 .pathSelectionModalIcon {
   display: flex;
   justify-content: center;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .pathSelectionModalGradientHeader {
-  padding: 12px;
-  border-radius: 12px;
+  padding: calc(12 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
   color: var(--ink-text-color);
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
   background-color: rgba(255, 255, 255, 0.75);
-  border: 1px solid var(--path-accent);
+  border: calc(1 / 1920 * 100vw) solid var(--path-accent);
 }
 
 .pathSelectionModalPathName {
   margin: 0;
   font-family: 'Julee', cursive;
-  font-size: 24px;
+  font-size: calc(24 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .pathSelectionModalPathTheme {
   margin: 0;
   color: var(--ink-muted-color);
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .pathSelectionModalDescription {
-  margin: 0 0 12px 0;
+  margin: 0 0 calc(12 / 1920 * 100vw) 0;
   color: var(--ink-text-color);
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   line-height: 1.5;
 }
 
 .pathSelectionModalBonusBox {
   background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(58, 44, 30, 0.25);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(58, 44, 30, 0.25);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(12 / 1920 * 100vw);
 
   li {
     color: var(--ink-text-color);
@@ -107,10 +107,10 @@
 }
 
 .pathSelectionModalBonusTitle {
-  margin: 0 0 8px 0;
+  margin: 0 0 calc(8 / 1920 * 100vw) 0;
   color: var(--ink-text-color);
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .pathSelectionModalBonusList {
@@ -118,64 +118,64 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   color: var(--ink-muted-color);
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .pathSelectionModalBonusItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .pathSelectionModalPlaystyleBox {
   background: rgba(247, 240, 224, 0.8);
-  border: 1px solid rgba(58, 44, 30, 0.25);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(58, 44, 30, 0.25);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
+  margin-bottom: calc(12 / 1920 * 100vw);
   color: var(--ink-text-color);
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .pathSelectionModalSelectButton {
   width: 100%;
-  padding: 12px 16px;
-  border: 1px solid rgba(58, 44, 30, 0.35);
-  border-radius: 12px;
+  padding: calc(12 / 1920 * 100vw) calc(16 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(58, 44, 30, 0.35);
+  border-radius: calc(12 / 1920 * 100vw);
   font-weight: 700;
   color: #fdf4e6;
   background-color: var(--path-accent);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 6px 14px rgba(24, 18, 10, 0.2);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(14 / 1920 * 100vw) rgba(24, 18, 10, 0.2);
 }
 
 .pathSelectionModalSelectButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 16px rgba(24, 18, 10, 0.25);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(16 / 1920 * 100vw) rgba(24, 18, 10, 0.25);
 }
 
 .pathSelectionModalFooter {
-  margin-top: 24px;
+  margin-top: calc(24 / 1920 * 100vw);
   text-align: center;
   color: var(--ink-text-color);
 }
 
 .pathSelectionModalFooterTip {
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   font-style: italic;
   color: var(--ink-text-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .pathSelectionModalFooterNote {
-  margin: 4px 0 0;
-  font-size: 12px;
+  margin: calc(4 / 1920 * 100vw) 0 0;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--ink-muted-color);
 }

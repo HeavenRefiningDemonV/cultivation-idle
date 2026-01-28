@@ -17,7 +17,7 @@
   inset: -12%;
   border-radius: 50%;
   background: radial-gradient(circle at center, rgba(255, 255, 255, 0.35), transparent 65%);
-  box-shadow: 0 0 18px var(--accent);
+  box-shadow: 0 0 calc(18 / 1920 * 100vw) var(--accent);
   opacity: 0.45;
   transition: opacity 0.2s ease;
 }
@@ -26,7 +26,7 @@
   width: 100%;
   height: 100%;
   animation: dantianSpin 12s linear infinite;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw) rgba(0, 0, 0, 0.3));
 }
 
 .dantianOrb--cultivating .dantianOrbHalo {
@@ -39,18 +39,18 @@
   width: 120%;
   height: 120%;
   border-radius: 50%;
-  border: 1px solid var(--accent);
+  border: calc(1 / 1920 * 100vw) solid var(--accent);
   animation: dantianOrbit 6s linear infinite;
   opacity: 0.45;
 }
 
 .dantianOrbSpark {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  box-shadow: 0 0 calc(8 / 1920 * 100vw) var(--accent);
   animation: dantianSpark 1.2s ease-in-out infinite;
   top: 8%;
   right: 18%;
@@ -58,7 +58,7 @@
 
 .dantianOrb--ready .dantianOrbHalo {
   opacity: 0.8;
-  box-shadow: 0 0 22px var(--accent);
+  box-shadow: 0 0 calc(22 / 1920 * 100vw) var(--accent);
 }
 
 .dantianOrb--fire {

@@ -10,5 +10,5 @@
 
 .systemStatusOverlay > * {
   pointer-events: auto;
-  max-width: 420px;
+  max-width: calc(420 / 1920 * 100vw);
 }

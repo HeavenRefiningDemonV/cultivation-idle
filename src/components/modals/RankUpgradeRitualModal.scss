@@ -10,12 +10,12 @@
 
 .rankRitualModal {
   background: #101820;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  width: 540px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(12 / 1920 * 100vw);
+  width: calc(540 / 1920 * 100vw);
   max-width: 90vw;
-  padding: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  padding: calc(20 / 1920 * 100vw);
+  box-shadow: 0 calc(10 / 1920 * 100vw) calc(40 / 1920 * 100vw) rgba(0, 0, 0, 0.4);
   color: #e6f1ff;
 }
 
@@ -23,17 +23,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .rankRitualTitle {
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .rankRitualSubtitle {
   color: #9fb3c8;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .rankRitualClose {
@@ -47,30 +47,30 @@
 
 .rankRitualBody {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 16px;
-  margin-bottom: 16px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
+  margin-bottom: calc(16 / 1920 * 100vw);
 }
 
 .rankRitualName {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .rankRitualRanks {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: calc(10 / 1920 * 100vw);
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .rankRitualBadge {
-  padding: 6px 10px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
   font-weight: 600;
 }
 
@@ -84,7 +84,7 @@
 }
 
 .rankRitualPower {
-  margin: 8px 0 12px;
+  margin: calc(8 / 1920 * 100vw) 0 calc(12 / 1920 * 100vw);
   color: #8ae8a2;
   font-weight: 600;
 }
@@ -92,21 +92,21 @@
 .rankRitualCosts {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4px;
-  font-size: 14px;
+  gap: calc(4 / 1920 * 100vw);
+  font-size: calc(14 / 1920 * 100vw);
   color: #d6e4ff;
-  margin-bottom: 12px;
+  margin-bottom: calc(12 / 1920 * 100vw);
 }
 
 .rankRitualProgress {
-  margin-top: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
 }
 
 .rankRitualProgressBar {
   position: relative;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  border-radius: calc(999 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -118,39 +118,39 @@
 }
 
 .rankRitualProgressText {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   color: #9fb3c8;
 }
 
 .rankRitualStatus {
-  margin-top: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 14px;
+  margin-top: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .rankRitualStatus.is-success {
   background: rgba(16, 185, 129, 0.12);
   color: #22c55e;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(16, 185, 129, 0.35);
 }
 
 .rankRitualStatus.is-error {
   background: rgba(239, 68, 68, 0.12);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.35);
 }
 
 .rankRitualActions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .rankRitualButton {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: calc(10 / 1920 * 100vw) calc(16 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   border: none;
   background: linear-gradient(90deg, #2dd4bf, #22d3ee);
   color: #0b1220;
@@ -166,5 +166,5 @@
 .rankRitualButtonSecondary {
   background: rgba(255, 255, 255, 0.08);
   color: #e6f1ff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
 }

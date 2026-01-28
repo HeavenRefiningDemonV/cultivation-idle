@@ -5,24 +5,24 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
+  padding: calc(16 / 1920 * 100vw);
   color: #f8fafc;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   position: relative;
 }
 
 .worldScreenLayout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 16px;
+  grid-template-columns: calc(320 / 1920 * 100vw) 1fr;
+  gap: calc(16 / 1920 * 100vw);
   height: 100%;
 }
 
 .worldScreenColumn {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.05);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -36,18 +36,18 @@
 }
 
 .worldScreenSectionHeader {
-  padding: 8px 8px 12px 8px;
+  padding: calc(8 / 1920 * 100vw) calc(8 / 1920 * 100vw) calc(12 / 1920 * 100vw) calc(8 / 1920 * 100vw);
 }
 
 .worldScreenSectionHeader h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
 }
 
 .worldScreenSectionSub {
-  margin: 4px 0 0 0;
+  margin: calc(4 / 1920 * 100vw) 0 0 0;
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .worldScreenCityList {
@@ -55,18 +55,18 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 4px;
+  gap: calc(8 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw);
 }
 
 .worldScreenCityButton {
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.07);
   background: rgba(255, 255, 255, 0.02);
   color: inherit;
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   transition: border 0.15s ease, background 0.15s ease;
 }
 
@@ -96,50 +96,50 @@
 }
 
 .worldScreenCityName {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
 }
 
 .worldScreenCityIndex {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .worldScreenCityMeta {
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .worldScreenCityLockedBadge {
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 6px;
+  padding: calc(2 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(248, 113, 113, 0.16);
   color: #fecdd3;
-  font-size: 12px;
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  font-size: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(248, 113, 113, 0.3);
 }
 
 .worldScreenCityTags {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .worldScreenCityTag {
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
   color: #e2e8f0;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .worldScreenDetailWrapper {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   height: 100%;
   min-height: 0;
   flex: 1;
@@ -151,76 +151,76 @@
 
 .worldScreenPanelTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
 }
 
 .worldScreenPanelSubtitle {
-  margin: 2px 0 0 0;
+  margin: calc(2 / 1920 * 100vw) 0 0 0;
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .worldScreenRefs {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .worldScreenRefsHeader {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .worldScreenRefsList {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 6px 10px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(180 / 1920 * 100vw), 1fr));
+  gap: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .worldScreenRefRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  padding: 6px 8px;
+  gap: calc(4 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.04);
 }
 
 .worldScreenRefRow dt {
   margin: 0;
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .recentTechniqueActivations {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .recentTechniqueActivationsHeader {
   font-weight: 700;
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
 }
 
 .recentTechniqueActivationsList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 180px;
+  gap: calc(6 / 1920 * 100vw);
+  max-height: calc(180 / 1920 * 100vw);
   overflow-y: auto;
 }
 
 .recentTechniqueActivationsItem {
-  padding: 6px 8px;
-  border-radius: 8px;
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.06);
 }
 
 .recentTechniqueActivationsText {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
@@ -230,36 +230,36 @@
 }
 
 .recentTechniqueActivationsEmpty {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .worldScreenRefRow dd {
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   text-align: right;
 }
 
 .worldScreenRefsEmpty {
-  padding: 8px 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
   color: #cbd5e1;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border: calc(1 / 1920 * 100vw) dashed rgba(255, 255, 255, 0.08);
 }
 
 .worldScreenModules {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 8px;
-  margin-top: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(180 / 1920 * 100vw), 1fr));
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(8 / 1920 * 100vw);
 }
 
 .worldScreenModuleButton {
   text-align: left;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 10px 12px;
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.06);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
   color: inherit;
   transition: border 0.15s ease, background 0.15s ease;
@@ -271,8 +271,8 @@
 }
 
 .worldScreenModuleButton:focus-visible {
-  outline: 2px solid rgba(125, 211, 252, 0.8);
-  outline-offset: 2px;
+  outline: calc(2 / 1920 * 100vw) solid rgba(125, 211, 252, 0.8);
+  outline-offset: calc(2 / 1920 * 100vw);
   border-color: rgba(125, 211, 252, 0.55);
 }
 
@@ -283,20 +283,20 @@
 
 .worldScreenModuleLabel {
   font-weight: 700;
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
 }
 
 .worldScreenModuleKey {
   color: #cbd5e1;
-  font-size: 12px;
-  margin-top: 2px;
+  font-size: calc(12 / 1920 * 100vw);
+  margin-top: calc(2 / 1920 * 100vw);
 }
 
 .worldScreenPlaceholder {
   /*
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 12px;
+  margin-top: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
   */
 }
 
@@ -309,32 +309,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .worldScreenPlaceholderTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .worldScreenPlaceholderKey {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .worldScreenPlaceholderLine {
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .worldScreenPlaceholderBody {
   color: #cbd5e1;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .worldScreenInlineError {
   color: #ff7a7a;
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .worldScreenHighlight {
@@ -342,100 +342,100 @@
 }
 
 .worldScreenMessage {
-  padding: 24px;
+  padding: calc(24 / 1920 * 100vw);
   text-align: center;
   color: #e2e8f0;
 }
 
 .worldScreenMessageError {
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.4);
   background: rgba(239, 68, 68, 0.08);
-  border-radius: 12px;
+  border-radius: calc(12 / 1920 * 100vw);
 }
 
 .worldScreenErrorText {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   color: #fecdd3;
 }
 
-@media (max-width: 980px) {
+@media (max-width: calc(980 / 1920 * 100vw)) {
   .worldScreenLayout {
     grid-template-columns: 1fr;
   }
 
   .worldScreenColumnList {
-    max-height: 240px;
+    max-height: calc(240 / 1920 * 100vw);
   }
 }
 
 .bountyBoardPanel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .bountyBoardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .bountyBoardTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .bountyBoardSubtitle {
   color: #cbd5e1;
-  font-size: 13px;
-  margin-top: 4px;
+  font-size: calc(13 / 1920 * 100vw);
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .bountyBoardList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .bountyBoardCard {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 23, 42, 0.4);
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .bountyBoardCard--ready {
   border-color: rgba(34, 197, 94, 0.6);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(34, 197, 94, 0.3);
 }
 
 .bountyBoardCardHeader {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .bountyBoardCardTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .bountyBoardCardSubtitle {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
-  margin-top: 2px;
+  margin-top: calc(2 / 1920 * 100vw);
 }
 
 .bountyBoardCardMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-align: right;
 }
@@ -443,13 +443,13 @@
 .bountyBoardCardBody {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   color: #e2e8f0;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .bountyBoardCardLine {
-  margin-top: 2px;
+  margin-top: calc(2 / 1920 * 100vw);
 }
 
 .bountyBoardCardActions {
@@ -458,7 +458,7 @@
 }
 
 .bountyBoardCardReady {
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
   font-weight: 600;
   color: #4ade80;
 }
@@ -466,44 +466,44 @@
 .expeditionBoardPanel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .expeditionBoardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .expeditionBoardTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionBoardSubtitle {
   color: #cbd5e1;
-  font-size: 13px;
-  margin-top: 4px;
+  font-size: calc(13 / 1920 * 100vw);
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .expeditionBoardSlots {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .expeditionBoardCard {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 23, 42, 0.4);
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .expeditionBoardCardHeader {
@@ -513,37 +513,37 @@
 }
 
 .expeditionBoardCardTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionBoardCardStatus {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
 }
 
 .expeditionBoardCardBody {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   color: #e2e8f0;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .expeditionBoardField {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .expeditionBoardField select {
   background: rgba(15, 23, 42, 0.8);
   color: #e2e8f0;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  border-radius: 8px;
-  padding: 6px 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 163, 184, 0.3);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
 }
 
 .expeditionBoardCardActions {
@@ -552,88 +552,88 @@
 }
 
 .heartLawCurrent {
-  margin-top: 8px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: calc(8 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 23, 42, 0.35);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .heartLawCurrentHeader {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   align-items: center;
 }
 
 .heartLawCurrentName {
   font-weight: 700;
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   align-items: center;
 }
 
 .heartLawInfo {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   cursor: help;
 }
 
 .heartLawCurrentMeta {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .heartLawProgress {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .heartLawProgressText {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
 }
 
 .heartLawList {
-  margin-top: 10px;
+  margin-top: calc(10 / 1920 * 100vw);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(240 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .heartLawCard {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 23, 42, 0.4);
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .heartLawCardHeader {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
 .heartLawCardTitle {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .heartLawCardTier {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
 }
 
 .heartLawCardMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -642,55 +642,55 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  gap: calc(12 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .stationBannerTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .stationBannerSubtitle {
   color: #cbd5e1;
-  font-size: 13px;
-  margin-top: 4px;
+  font-size: calc(13 / 1920 * 100vw);
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .stationBannerMeta {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .craftingLayout,
 .craftWorkspace {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 12px;
+  grid-template-columns: calc(260 / 1920 * 100vw) 1fr;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .craftingSidebar,
 .craftSidebar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  gap: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .craftingSidebarHeader,
 .craftSidebarHeader {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .craftingSidebarGroupLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -700,7 +700,7 @@
 .craftSidebarList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .craftingListItem,
@@ -710,11 +710,11 @@
   align-items: flex-start;
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.07);
   background: rgba(255, 255, 255, 0.02);
   color: inherit;
-  border-radius: 10px;
-  padding: 8px 10px;
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   transition: border 0.15s ease, background 0.15s ease;
 }
 
@@ -733,30 +733,30 @@
 .handsOnSessionCard {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  gap: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.03);
 }
 
 .alchemyHandsOnLayout {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemyHandsOnMain,
 .alchemyHandsOnSidebar {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemyDial {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: linear-gradient(135deg, rgba(34, 197, 94, 0.04), rgba(59, 130, 246, 0.04));
 }
 
@@ -764,7 +764,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .alchemyDialLabel {
@@ -772,9 +772,9 @@
 }
 
 .alchemyDialZoneLabel {
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -801,17 +801,17 @@
 .alchemyDialMeta {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .alchemyTargetBand {
   position: relative;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  margin-top: 10px;
+  border-radius: calc(8 / 1920 * 100vw);
+  margin-top: calc(10 / 1920 * 100vw);
 }
 
 .alchemyTargetBandFill {
@@ -819,21 +819,21 @@
   top: 0;
   bottom: 0;
   background: rgba(34, 197, 94, 0.35);
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
 }
 
 .alchemyTargetBandPointer {
   position: absolute;
-  top: -4px;
-  width: 2px;
-  height: 16px;
+  top: calc(-4 / 1920 * 100vw);
+  width: calc(2 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
   background: #fbbf24;
 }
 
 .alchemyStepPanel {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -841,7 +841,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .alchemyStepTitle {
@@ -850,31 +850,31 @@
 
 .alchemyStepTimer {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .alchemyStepBody {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 14px;
+  gap: calc(10 / 1920 * 100vw);
+  font-size: calc(14 / 1920 * 100vw);
 }
 
 .alchemyHoldHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .alchemyIngredientTray {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemyIngredientChip {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 6px 10px;
-  border-radius: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   cursor: grab;
   background: rgba(255, 255, 255, 0.04);
 }
@@ -885,17 +885,17 @@
 }
 
 .alchemyIngredientDrop {
-  border: 1px dashed rgba(255, 255, 255, 0.25);
-  padding: 10px;
-  border-radius: 10px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(255, 255, 255, 0.25);
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   text-align: center;
   color: #cbd5e1;
 }
 
 .alchemyQteBar {
   position: relative;
-  height: 10px;
-  border-radius: 10px;
+  height: calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
@@ -909,22 +909,22 @@
 }
 
 .alchemyStabilityMeter {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .alchemyStabilityLabel {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .alchemyStabilityBar {
   position: relative;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  border-radius: calc(10 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -937,79 +937,79 @@
 }
 
 .alchemyStabilityMeta {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .alchemyLeaveRow {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemyBackgroundNotice,
 .alchemyStatusHint {
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.2);
 }
 
 .alchemyHandsOnSidebar {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemyIngredientList,
 .alchemyTimeline {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemySidebarTitle {
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: calc(4 / 1920 * 100vw);
 }
 
 .alchemyIngredientRow {
   display: flex;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 6px 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
 }
 
 .forgeHandsOnLayout {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .forgeHandsOnMain,
 .forgeHandsOnSidebar {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .forgeHandsOnStepBlock {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .forgeSessionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -1018,19 +1018,19 @@
 }
 
 .forgeSessionSub {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .forgeSessionMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .forgeDial {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(226, 232, 240, 0.03));
 }
 
@@ -1038,7 +1038,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .forgeDialTitle {
@@ -1046,26 +1046,26 @@
 }
 
 .forgeDialZone {
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
 }
 
 .forgeDialMeta {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
-  margin-top: 6px;
+  margin-top: calc(6 / 1920 * 100vw);
 }
 
 .forgeTargetBar {
   position: relative;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  margin-top: 10px;
+  border-radius: calc(8 / 1920 * 100vw);
+  margin-top: calc(10 / 1920 * 100vw);
 }
 
 .forgeTargetFill {
@@ -1073,43 +1073,43 @@
   top: 0;
   bottom: 0;
   background: rgba(34, 197, 94, 0.35);
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
 }
 
 .forgeTargetPointer {
   position: absolute;
-  top: -4px;
-  width: 2px;
-  height: 16px;
+  top: calc(-4 / 1920 * 100vw);
+  width: calc(2 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
   background: #fbbf24;
 }
 
 .forgeStepCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .forgeStepTitle {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .forgeStepBody {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .forgeStepMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .forgeHammerMeter {
-  height: 10px;
-  border-radius: 8px;
+  height: calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
@@ -1121,19 +1121,19 @@
 
 .forgeHammerActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .forgeMediumRow {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .forgeMediumChip {
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -1144,9 +1144,9 @@
 
 .forgeQuenchBar {
   position: relative;
-  height: 10px;
+  height: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  border-radius: calc(10 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -1173,35 +1173,35 @@
 }
 
 .forgeQualityMeter {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .forgeQualityTitle {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .forgeQualityRows {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .forgeQualityRow {
   display: grid;
-  grid-template-columns: 80px 1fr 60px;
+  grid-template-columns: calc(80 / 1920 * 100vw) 1fr calc(60 / 1920 * 100vw);
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .forgeQualityBar {
   position: relative;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
 }
 
 .forgeQualityFill {
@@ -1210,42 +1210,42 @@
   bottom: 0;
   left: 0;
   background: linear-gradient(90deg, rgba(34, 197, 94, 0.7), rgba(59, 130, 246, 0.7));
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
 }
 
 .forgeQualityValue {
   text-align: right;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .forgeHandsOnActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .forgeTimeline {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .forgeTimelineTitle {
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .forgeTimelineList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .forgeTimelineItem {
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
 }
 
 .forgeTimelineItem--active {
@@ -1259,27 +1259,27 @@
 
 .forgeOutcomePreview,
 .forgeOutcomeCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .forgeOutcomeTitle {
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .forgeOutcomeRow {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .forgeOutcomeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 6px;
-  font-size: 13px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(140 / 1920 * 100vw), 1fr));
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .alchemyIngredientRow--done {
@@ -1295,9 +1295,9 @@
 }
 
 .alchemyTimelineItem {
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
 }
 
 .alchemyTimelineItem--done {
@@ -1316,12 +1316,12 @@
 
 .craftingListName {
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   word-break: break-word;
 }
 
 .craftingListSub {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -1329,7 +1329,7 @@
 .craftMain {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .craftPurposeBanner {
@@ -1338,13 +1338,13 @@
 
 .craftUsedFor .usedForLinks {
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  padding: 8px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.06);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .craftModeTab {
-  min-width: 90px;
+  min-width: calc(90 / 1920 * 100vw);
   text-align: center;
 }
 
@@ -1352,7 +1352,7 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
 }
 
-@media (max-width: 900px) {
+@media (max-width: calc(900 / 1920 * 100vw)) {
 
   .craftWorkspace,
   .craftingLayout {
@@ -1367,7 +1367,7 @@
   .craftingSidebar {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: calc(8 / 1920 * 100vw);
   }
 
   .craftSidebarHeader,
@@ -1383,7 +1383,7 @@
 
   .craftSidebarItem,
   .craftingListItem {
-    flex: 1 1 180px;
+    flex: 1 1 calc(180 / 1920 * 100vw);
     min-width: 0;
   }
 
@@ -1397,46 +1397,46 @@
 }
 
 .craftingDetailCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
 }
 
 .craftingDetailHeader {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .craftingDetailTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .craftingDetailSub {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .craftingDetailMeta {
   text-align: right;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .craftingModeSelector {
-  margin-top: 10px;
+  margin-top: calc(10 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .craftingModeLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -1444,25 +1444,25 @@
 
 .craftingModeButtons {
   display: flex;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .craftingModeButtons.craftModeTabs {
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 4px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.05);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw);
 }
 
 .craftingModeButton,
 .craftModeTab {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
   color: inherit;
-  padding: 6px 10px;
-  font-size: 13px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .craftingModeButton--active,
@@ -1479,25 +1479,25 @@
 
 .craftingSessionBlock,
 .craftSessionCard {
-  margin-top: 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 10px;
+  margin-top: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) dashed rgba(255, 255, 255, 0.12);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .craftingSessionNote {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .craftingSessionDetails {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .craftingSessionRow {
@@ -1508,17 +1508,17 @@
 
 .craftingSessionMeta {
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .craftingPromptCard {
-  border: 1px solid rgba(34, 197, 94, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(34, 197, 94, 0.35);
   background: rgba(34, 197, 94, 0.08);
-  padding: 10px;
-  border-radius: 10px;
+  padding: calc(10 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .craftingPromptTitle {
@@ -1526,35 +1526,35 @@
 }
 
 .craftingPromptBody {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .craftingPromptCountdown {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #fbbf24;
 }
 
 .craftingPromptActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .catalystInteraction {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .catalystDragChip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
-  border-radius: 999px;
+  padding: calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.6);
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.6);
   cursor: grab;
   user-select: none;
   font-weight: 600;
@@ -1566,9 +1566,9 @@
 }
 
 .catalystDropZone {
-  border: 1px dashed rgba(148, 163, 184, 0.6);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(148, 163, 184, 0.6);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   text-align: center;
   color: #cbd5e1;
   transition: border-color 0.2s ease, background 0.2s ease;
@@ -1580,24 +1580,24 @@
 }
 
 .catalystDropZone--active {
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 calc(12 / 1920 * 100vw) rgba(34, 197, 94, 0.35);
 }
 
 .craftingStepList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .craftingStepItem {
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .craftingStepType {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
@@ -1608,30 +1608,30 @@
 
 .craftingUsedFor,
 .craftUsedFor {
-  margin: 8px 0;
+  margin: calc(8 / 1920 * 100vw) 0;
 }
 
 .craftModeNote {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .usedForLinks {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .usedForHeader {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .usedForLabel {
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   color: #94a3b8;
 }
 
@@ -1641,20 +1641,20 @@
 
 .usedForActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .usedForButton {
-  padding: 6px 10px;
-  font-size: 13px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 
 .alchemyPanel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemyPanel--workbench {
@@ -1665,32 +1665,32 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .alchemyStage {
   display: grid;
-  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: minmax(calc(240 / 1920 * 100vw), calc(320 / 1920 * 100vw)) minmax(0, 1fr);
+  gap: calc(12 / 1920 * 100vw);
   min-height: 0;
 }
 
 .alchemyRecipeRack {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   min-height: 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .alchemyRecipeRackHeader {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #cbd5e1;
@@ -1699,21 +1699,21 @@
 .alchemyRecipeRackList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   overflow: auto;
-  padding-right: 4px;
+  padding-right: calc(4 / 1920 * 100vw);
 }
 
 .alchemyRecipeRackItem {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 8px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   background: rgba(15, 23, 42, 0.6);
   color: #e2e8f0;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
   cursor: pointer;
 }
 
@@ -1723,54 +1723,54 @@
 }
 
 .alchemyRecipeRackItem:focus-visible {
-  outline: 2px solid rgba(148, 197, 255, 0.7);
-  outline-offset: 2px;
+  outline: calc(2 / 1920 * 100vw) solid rgba(148, 197, 255, 0.7);
+  outline-offset: calc(2 / 1920 * 100vw);
 }
 
 .alchemyRecipeRackRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemyRecipeRackName {
   font-weight: 700;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .alchemyRecipeRackMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }
 
 .alchemyRecipeRackStatus {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(148, 163, 184, 0.5);
 }
 
 .alchemyRecipeRackStatus--ready {
   background: #38bdf8;
-  box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 calc(6 / 1920 * 100vw) rgba(56, 189, 248, 0.6);
 }
 
 .alchemyWorkbench {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   min-height: 0;
 }
 
 .alchemyWorkbenchCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   background: rgba(15, 23, 42, 0.55);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .alchemyWorkbenchCard--cauldron {
@@ -1782,22 +1782,22 @@
 .alchemyWorkbenchCard--cauldron::after {
   content: '';
   position: absolute;
-  width: 180px;
-  height: 120px;
-  top: 18px;
-  left: 30px;
+  width: calc(180 / 1920 * 100vw);
+  height: calc(120 / 1920 * 100vw);
+  top: calc(18 / 1920 * 100vw);
+  left: calc(30 / 1920 * 100vw);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(226, 232, 240, 0.12), transparent 65%);
   opacity: 0;
-  filter: blur(8px);
+  filter: blur(calc(8 / 1920 * 100vw));
   pointer-events: none;
 }
 
 .alchemyWorkbenchCard--cauldron::after {
-  width: 220px;
-  height: 160px;
-  top: 6px;
-  left: 70px;
+  width: calc(220 / 1920 * 100vw);
+  height: calc(160 / 1920 * 100vw);
+  top: calc(6 / 1920 * 100vw);
+  left: calc(70 / 1920 * 100vw);
   background: radial-gradient(circle, rgba(226, 232, 240, 0.08), transparent 70%);
 }
 
@@ -1813,36 +1813,36 @@
 
 .alchemyWorkbenchCard--cauldron.is-ready {
   border-color: rgba(56, 189, 248, 0.5);
-  box-shadow: 0 0 18px rgba(56, 189, 248, 0.18);
+  box-shadow: 0 0 calc(18 / 1920 * 100vw) rgba(56, 189, 248, 0.18);
 }
 
 .alchemyCauldronHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemyBrewPill {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #e2e8f0;
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 163, 184, 0.4);
   background: rgba(15, 23, 42, 0.6);
 }
 
 .alchemyCauldronBody {
   display: grid;
-  grid-template-columns: 140px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: calc(140 / 1920 * 100vw) minmax(0, 1fr);
+  gap: calc(12 / 1920 * 100vw);
   align-items: center;
 }
 
 .alchemyCauldronViz {
   position: relative;
-  height: 140px;
-  width: 140px;
+  height: calc(140 / 1920 * 100vw);
+  width: calc(140 / 1920 * 100vw);
   display: grid;
   place-items: center;
 }
@@ -1855,8 +1855,8 @@
 }
 
 .alchemyCauldronRingSvg {
-  width: 120px;
-  height: 120px;
+  width: calc(120 / 1920 * 100vw);
+  height: calc(120 / 1920 * 100vw);
   transform: rotate(-90deg);
 }
 
@@ -1872,43 +1872,43 @@
   stroke-width: 8;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease;
-  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+  filter: drop-shadow(0 0 calc(6 / 1920 * 100vw) rgba(56, 189, 248, 0.4));
 }
 
 .alchemyWorkbenchCard--cauldron.is-ready .alchemyCauldronRingProgress {
   stroke: rgba(74, 222, 128, 0.95);
-  filter: drop-shadow(0 0 10px rgba(74, 222, 128, 0.5));
+  filter: drop-shadow(0 0 calc(10 / 1920 * 100vw) rgba(74, 222, 128, 0.5));
 }
 
 .alchemyCauldronPot {
   position: relative;
-  width: 90px;
-  height: 70px;
-  border-radius: 0 0 40px 40px;
+  width: calc(90 / 1920 * 100vw);
+  height: calc(70 / 1920 * 100vw);
+  border-radius: 0 0 calc(40 / 1920 * 100vw) calc(40 / 1920 * 100vw);
   background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
-  border: 2px solid rgba(148, 163, 184, 0.4);
-  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.45);
+  border: calc(2 / 1920 * 100vw) solid rgba(148, 163, 184, 0.4);
+  box-shadow: inset 0 0 calc(12 / 1920 * 100vw) rgba(0, 0, 0, 0.45);
 }
 
 .alchemyCauldronPot::before {
   content: '';
   position: absolute;
-  top: -10px;
-  left: 6px;
-  right: 6px;
-  height: 14px;
-  border-radius: 999px;
+  top: calc(-10 / 1920 * 100vw);
+  left: calc(6 / 1920 * 100vw);
+  right: calc(6 / 1920 * 100vw);
+  height: calc(14 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: linear-gradient(180deg, rgba(148, 163, 184, 0.5), rgba(15, 23, 42, 0.9));
-  border: 2px solid rgba(148, 163, 184, 0.4);
+  border: calc(2 / 1920 * 100vw) solid rgba(148, 163, 184, 0.4);
 }
 
 .alchemyCauldronLiquid {
   position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 12px;
-  height: 24px;
-  border-radius: 999px 999px 16px 16px;
+  left: calc(8 / 1920 * 100vw);
+  right: calc(8 / 1920 * 100vw);
+  bottom: calc(12 / 1920 * 100vw);
+  height: calc(24 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw) calc(999 / 1920 * 100vw) calc(16 / 1920 * 100vw) calc(16 / 1920 * 100vw);
   background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(129, 140, 248, 0.7));
   opacity: 0.85;
 }
@@ -1917,20 +1917,20 @@
 .alchemyCauldronBubbles::after {
   content: '';
   position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
+  width: calc(6 / 1920 * 100vw);
+  height: calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(224, 242, 254, 0.75);
-  left: 24px;
-  bottom: 18px;
+  left: calc(24 / 1920 * 100vw);
+  bottom: calc(18 / 1920 * 100vw);
   animation: alchemyBubble 2.8s ease-in-out infinite;
 }
 
 .alchemyCauldronBubbles::after {
-  width: 4px;
-  height: 4px;
-  left: 50px;
-  bottom: 16px;
+  width: calc(4 / 1920 * 100vw);
+  height: calc(4 / 1920 * 100vw);
+  left: calc(50 / 1920 * 100vw);
+  bottom: calc(16 / 1920 * 100vw);
   animation-delay: 1.2s;
 }
 
@@ -1938,20 +1938,20 @@
 .alchemyCauldronSteam::after {
   content: '';
   position: absolute;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
+  width: calc(16 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(226, 232, 240, 0.4);
-  top: -8px;
-  left: 20px;
-  filter: blur(1px);
+  top: calc(-8 / 1920 * 100vw);
+  left: calc(20 / 1920 * 100vw);
+  filter: blur(calc(1 / 1920 * 100vw));
   opacity: 0;
 }
 
 .alchemyCauldronSteam::after {
-  width: 12px;
-  height: 12px;
-  left: 50px;
+  width: calc(12 / 1920 * 100vw);
+  height: calc(12 / 1920 * 100vw);
+  left: calc(50 / 1920 * 100vw);
 }
 
 .alchemyWorkbenchCard--cauldron[data-steam='true'] .alchemyCauldronSteam::before,
@@ -1965,24 +1965,24 @@
 }
 
 .alchemyWorkbenchCard--cauldron.is-ready .alchemyCauldronLiquid {
-  box-shadow: 0 0 10px rgba(74, 222, 128, 0.45);
+  box-shadow: 0 0 calc(10 / 1920 * 100vw) rgba(74, 222, 128, 0.45);
 }
 
 .alchemyCauldronCopy {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .alchemyCauldronSubtext {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }
 
 .alchemyCauldronActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemyClaimButton {
@@ -1993,10 +1993,10 @@
 .alchemyClaimButton--ready::before {
   content: '';
   position: absolute;
-  inset: -6px;
-  border-radius: 999px;
-  border: 1px solid rgba(34, 197, 94, 0.35);
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
+  inset: calc(-6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(34, 197, 94, 0.35);
+  box-shadow: 0 0 calc(16 / 1920 * 100vw) rgba(34, 197, 94, 0.25);
   opacity: 0.6;
   animation: alchemyReadyPulse 3.2s ease-in-out infinite;
   pointer-events: none;
@@ -2006,56 +2006,56 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .alchemyLedgerSummary {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }
 
 .alchemyLedgerClaimAll {
-  padding: 6px 12px;
+  padding: calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw);
 }
 
 .alchemyLedgerToast {
-  margin-top: 6px;
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 12px;
+  margin-top: calc(6 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .alchemyLedgerToast--success {
   background: rgba(74, 222, 128, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(74, 222, 128, 0.2);
   color: #bbf7d0;
 }
 
 .alchemyLedgerToast--error {
   background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(248, 113, 113, 0.3);
   color: #fecdd3;
 }
 
 .alchemyLedger {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 260px;
+  gap: calc(8 / 1920 * 100vw);
+  max-height: calc(260 / 1920 * 100vw);
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: calc(4 / 1920 * 100vw);
 }
 
 .alchemyLedgerRow {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 8px 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
   background: rgba(15, 23, 42, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .alchemyLedgerRow--brewing {
@@ -2065,30 +2065,30 @@
 
 .alchemyLedgerRow--ready {
   border-color: rgba(74, 222, 128, 0.35);
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.15);
+  box-shadow: 0 0 calc(12 / 1920 * 100vw) rgba(34, 197, 94, 0.15);
 }
 
 .alchemyLedgerRowMain {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
 }
 
 .alchemyLedgerStatus {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #e2e8f0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .alchemyLedgerDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
+  width: calc(8 / 1920 * 100vw);
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(148, 163, 184, 0.6);
 }
 
@@ -2101,25 +2101,25 @@
 }
 
 .alchemyLedgerName {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   font-weight: 600;
   color: #e2e8f0;
 }
 
 .alchemyLedgerTime {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-align: right;
 }
 
 .alchemyLedgerClaim {
-  padding: 4px 10px;
+  padding: calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .alchemyLedgerProgress {
   width: 100%;
-  height: 6px;
-  border-radius: 999px;
+  height: calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   background: rgba(148, 163, 184, 0.2);
   overflow: hidden;
 }
@@ -2131,53 +2131,53 @@
 }
 
 .alchemyWorkbenchTitle {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .alchemyWorkbenchSummary {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .alchemySessionStarter {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemySessionNote {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .alchemySessionHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }
 
 .alchemyTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .alchemySubtitle {
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .alchemySections {
   display: grid;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemySection {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  gap: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.01);
 }
 
@@ -2185,30 +2185,30 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .alchemySectionTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .alchemySectionSub {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .alchemyRecipeList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .alchemyRecipeCard,
 .alchemyQueueCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
 }
 
@@ -2216,70 +2216,70 @@
 .alchemyQueueHeader {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .alchemyRecipeName,
 .alchemyQueueName {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .alchemyRecipeId,
 .alchemyQueueMeta {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .alchemyRecipeMeta,
 .alchemyQueueTiming {
   text-align: right;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .alchemyRecipeBody {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .alchemyRecipeDetails {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  font-size: 13px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(10 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .alchemyMastery {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  margin-top: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .alchemyMasteryHeader {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  font-size: 13px;
+  gap: calc(8 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
   flex-wrap: wrap;
 }
 
 .alchemyMasteryBar {
   width: 100%;
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  border-radius: calc(999 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -2291,17 +2291,17 @@
 
 .alchemyMasteryNext {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .alchemyRecipeDetails ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+  margin: calc(6 / 1920 * 100vw) 0 0;
+  padding-left: calc(18 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .alchemyRecipeLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2311,81 +2311,81 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .alchemyQtyButtons {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
   align-items: center;
 }
 
 .alchemyRecipeControls input {
-  width: 80px;
-  margin-left: 8px;
+  width: calc(80 / 1920 * 100vw);
+  margin-left: calc(8 / 1920 * 100vw);
 }
 
 .alchemyRecipeActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .alchemySealBadge {
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 11px;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   background: rgba(239, 68, 68, 0.18);
-  border: 1px solid rgba(239, 68, 68, 0.45);
+  border: calc(1 / 1920 * 100vw) solid rgba(239, 68, 68, 0.45);
   color: #fee2e2;
 }
 
 .alchemyRecipeHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #fca5a5;
 }
 
 .alchemyQueueList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .alchemyQueueActions {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   justify-content: flex-end;
 }
 
 .alchemyQueueEmpty {
   color: #cbd5e1;
-  font-size: 13px;
-  padding: 6px 0;
+  font-size: calc(13 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) 0;
 }
 
 .alchemyStatus {
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .alchemyStatus--success {
   background: rgba(74, 222, 128, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(74, 222, 128, 0.2);
   color: #bbf7d0;
 }
 
 .alchemyStatus--error {
   background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(248, 113, 113, 0.3);
   color: #fecdd3;
 }
 
-@media (max-width: 900px) {
+@media (max-width: calc(900 / 1920 * 100vw)) {
   .alchemyStage {
     grid-template-columns: 1fr;
   }
@@ -2394,11 +2394,11 @@
     flex-direction: row;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 4px;
+    padding-bottom: calc(4 / 1920 * 100vw);
   }
 
   .alchemyRecipeRackItem {
-    min-width: 220px;
+    min-width: calc(220 / 1920 * 100vw);
   }
 
   .alchemyCauldronBody {
@@ -2449,7 +2449,7 @@
     opacity: 0.6;
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(calc(-6 / 1920 * 100vw));
     opacity: 0.9;
   }
 }
@@ -2461,7 +2461,7 @@
     opacity: 0.4;
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(calc(-8 / 1920 * 100vw));
     opacity: 0.8;
   }
 }
@@ -2473,7 +2473,7 @@
     opacity: 0.05;
   }
   50% {
-    transform: translateY(-10px) scale(1.05);
+    transform: translateY(calc(-10 / 1920 * 100vw)) scale(1.05);
     opacity: 0.1;
   }
 }
@@ -2493,41 +2493,41 @@
 .forgePanel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .forgePanelHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .forgeTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .forgeSubtitle {
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .forgeSections {
   display: grid;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .forgeSection {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  gap: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.01);
 }
 
@@ -2535,31 +2535,31 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .forgeSectionTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .forgeSectionSub {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .forgeBlueprintList,
 .forgeQueueList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .forgeBlueprintCard,
 .forgeQueueCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
 }
 
@@ -2567,52 +2567,52 @@
 .forgeQueueHeader {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .forgeBlueprintName,
 .forgeQueueName {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .forgeBlueprintMeta {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .forgeBlueprintMetaRight,
 .forgeQueueTiming {
   text-align: right;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .forgeBlueprintBody {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .forgeBlueprintDetails {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  font-size: 13px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(10 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .forgeBlueprintDetails ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+  margin: calc(6 / 1920 * 100vw) 0 0;
+  padding-left: calc(18 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .forgeBlueprintLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2622,72 +2622,72 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .forgeBlueprintControls input {
-  width: 80px;
-  margin-left: 8px;
+  width: calc(80 / 1920 * 100vw);
+  margin-left: calc(8 / 1920 * 100vw);
 }
 
 .forgeBlueprintActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .forgeRefinePanel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .forgeRefineRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(10 / 1920 * 100vw);
   align-items: center;
 }
 
 .forgeRefineName {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .forgeRefineMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .forgeQueueActions {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   justify-content: flex-end;
 }
 
 .forgeHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #fca5a5;
 }
 
 .forgeEmpty {
   color: #cbd5e1;
-  font-size: 13px;
-  padding: 6px 0;
+  font-size: calc(13 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) 0;
 }
 
 .forgeToolStrip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(140 / 1920 * 100vw), 1fr));
   gap: 0.75rem;
   margin: 0.75rem 0 1rem;
 }
 
 .forgeTool {
   padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
+  border-radius: calc(8 / 1920 * 100vw);
 }
 
 .forgeToolLabel {
@@ -2714,8 +2714,8 @@
 .forgeResultCard {
   margin: 1rem 0;
   padding: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.14);
+  border-radius: calc(8 / 1920 * 100vw);
   background: linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
 }
 
@@ -2737,7 +2737,7 @@
 
 .forgeResultGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
   gap: 0.35rem 0.75rem;
 }
 
@@ -2752,61 +2752,61 @@
 }
 
 .forgeStatus {
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .forgeStatus--success {
   background: rgba(74, 222, 128, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(74, 222, 128, 0.2);
   color: #bbf7d0;
 }
 
 .forgeStatus--error {
   background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(248, 113, 113, 0.3);
   color: #fecdd3;
 }
 
 .talismanPanel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .talismanPanelHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
 }
 
 .talismanTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .talismanSubtitle {
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .talismanSections {
   display: grid;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .talismanSection {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  gap: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.01);
 }
 
@@ -2814,31 +2814,31 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .talismanSectionTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .talismanSectionSub {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .talismanRecipeList,
 .talismanQueueList {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .talismanRecipeCard,
 .talismanQueueCard {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px;
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  padding: calc(10 / 1920 * 100vw);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
 }
 
@@ -2846,53 +2846,53 @@
 .talismanQueueHeader {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .talismanRecipeName,
 .talismanQueueName {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .talismanRecipeId,
 .talismanQueueMeta {
   color: #cbd5e1;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .talismanRecipeMeta,
 .talismanQueueTiming {
   text-align: right;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .talismanRecipeBody {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .talismanRecipeDetails {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  font-size: 13px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(10 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .talismanRecipeDetails ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+  margin: calc(6 / 1920 * 100vw) 0 0;
+  padding-left: calc(18 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .talismanRecipeLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2902,69 +2902,69 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .talismanRecipeControls input {
-  width: 80px;
-  margin-left: 8px;
+  width: calc(80 / 1920 * 100vw);
+  margin-left: calc(8 / 1920 * 100vw);
 }
 
 .talismanRecipeActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .talismanRecipeHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #fca5a5;
 }
 
 .talismanQueueActions {
-  margin-top: 8px;
+  margin-top: calc(8 / 1920 * 100vw);
   display: flex;
   justify-content: flex-end;
 }
 
 .talismanQueueEmpty {
   color: #cbd5e1;
-  font-size: 13px;
-  padding: 6px 0;
+  font-size: calc(13 / 1920 * 100vw);
+  padding: calc(6 / 1920 * 100vw) 0;
 }
 
 .talismanStatus {
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: calc(6 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .talismanStatus--success {
   background: rgba(74, 222, 128, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  border: calc(1 / 1920 * 100vw) solid rgba(74, 222, 128, 0.2);
   color: #bbf7d0;
 }
 
 .talismanStatus--error {
   background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  border: calc(1 / 1920 * 100vw) solid rgba(248, 113, 113, 0.3);
   color: #fecdd3;
 }
 
 .worldScreenTrackedBanner {
-  margin: 10px 0;
-  padding: 10px 12px;
-  border-radius: 10px;
+  margin: calc(10 / 1920 * 100vw) 0;
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  border-radius: calc(10 / 1920 * 100vw);
   background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), rgba(59, 130, 246, 0.08));
-  border: 1px solid rgba(59, 130, 246, 0.35);
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.35);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .worldScreenTrackedBannerText {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: black;
 }
 
@@ -2973,11 +2973,11 @@
 }
 
 .worldScreenTrackedLink {
-  border: 1px solid rgba(59, 130, 246, 0.6);
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.6);
   background: rgba(255, 255, 255, 0.85);
   color: #0f172a;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   cursor: pointer;
   font-weight: 600;
 }
@@ -2990,40 +2990,40 @@
 .expeditionBoardPanel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(16 / 1920 * 100vw);
 }
 
 .expeditionPlanner {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 23, 42, 0.4);
-  padding: 14px;
+  padding: calc(14 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .expeditionPlannerHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .expeditionBoardTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionBoardSubtitle {
   color: #cbd5e1;
-  font-size: 13px;
-  margin-top: 4px;
+  font-size: calc(13 / 1920 * 100vw);
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .expeditionRareInfo {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -3034,15 +3034,15 @@
 
 .expeditionRouteGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(220 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .expeditionRouteCard {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   text-align: left;
   color: #e2e8f0;
   cursor: pointer;
@@ -3051,68 +3051,68 @@
 
 .expeditionRouteCard:hover {
   border-color: rgba(99, 102, 241, 0.45);
-  transform: translateY(-1px);
+  transform: translateY(calc(-1 / 1920 * 100vw));
 }
 
 .expeditionRouteCard--selected {
   border-color: rgba(99, 102, 241, 0.9);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(99, 102, 241, 0.5);
 }
 
 .expeditionRouteCardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .expeditionRouteTitle {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionRouteRare {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
 }
 
 .expeditionRouteDescription {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
-  margin-bottom: 8px;
+  margin-bottom: calc(8 / 1920 * 100vw);
 }
 
 .expeditionRouteItems {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
+  gap: calc(4 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .expeditionRouteItem {
-  padding: 4px 6px;
-  border-radius: 8px;
+  padding: calc(4 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.04);
 }
 
 .expeditionRouteRareItems {
-  margin-top: 6px;
-  font-size: 12px;
+  margin-top: calc(6 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #f9a8d4;
 }
 
 .expeditionDurationRow {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .expeditionDurationChip {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.02);
-  padding: 10px;
-  min-width: 160px;
+  padding: calc(10 / 1920 * 100vw);
+  min-width: calc(160 / 1920 * 100vw);
   text-align: left;
   cursor: pointer;
   color: #e2e8f0;
@@ -3120,7 +3120,7 @@
 
 .expeditionDurationChip--selected {
   border-color: rgba(99, 102, 241, 0.9);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(99, 102, 241, 0.5);
 }
 
 .expeditionDurationChipHeader {
@@ -3134,37 +3134,37 @@
 }
 
 .expeditionDurationMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .expeditionPityMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .expeditionPityBlock {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 4px;
+  gap: calc(6 / 1920 * 100vw);
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .expeditionPityBar {
   width: 100%;
-  height: 6px;
-  border-radius: 6px;
+  height: calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
 .expeditionPityBar--inline {
-  margin-top: 4px;
+  margin-top: calc(4 / 1920 * 100vw);
 }
 
 .expeditionPityFill {
@@ -3174,14 +3174,14 @@
 }
 
 .expeditionYieldList {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 10px;
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
+  gap: calc(6 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
@@ -3192,69 +3192,69 @@
 .expeditionYieldItem {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .expeditionYieldRare {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
 }
 
 .expeditionSlots {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(260 / 1920 * 100vw), 1fr));
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .expeditionQueueStrip {
   position: sticky;
-  bottom: 12px;
+  bottom: calc(12 / 1920 * 100vw);
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 16px;
-  padding: 12px 16px;
-  border-radius: 16px;
+  gap: calc(16 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw) calc(16 / 1920 * 100vw);
+  border-radius: calc(16 / 1920 * 100vw);
   background: rgba(251, 244, 228, 0.92);
-  border: 1px solid rgba(87, 59, 31, 0.24);
-  box-shadow: 0 12px 22px rgba(15, 23, 42, 0.16);
+  border: calc(1 / 1920 * 100vw) solid rgba(87, 59, 31, 0.24);
+  box-shadow: 0 calc(12 / 1920 * 100vw) calc(22 / 1920 * 100vw) rgba(15, 23, 42, 0.16);
   z-index: 1;
 }
 
 .eqsPlanner {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
-  transform: translateY(10px);
+  transform: translateY(calc(10 / 1920 * 100vw));
   opacity: 0.9;
 }
 
 .eqsPlanner--active {
   transform: translateY(0);
   opacity: 1;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 calc(8 / 1920 * 100vw) calc(16 / 1920 * 100vw) rgba(15, 23, 42, 0.12);
 }
 
 .eqsPlannerHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .eqsSelectedRoute {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 220px;
+  gap: calc(4 / 1920 * 100vw);
+  min-width: calc(220 / 1920 * 100vw);
 }
 
 .eqsRouteName {
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: var(--paper-ink, #2b2116);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  text-shadow: 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.35);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -3262,20 +3262,20 @@
 }
 
 .eqsRouteDesc {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.75));
 }
 
 .eqsRoutePlaceholder {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .eqsPlannerMeta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 11px;
+  gap: calc(4 / 1920 * 100vw);
+  font-size: calc(11 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   text-align: right;
 }
@@ -3287,56 +3287,56 @@
 .eqsRareTag {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   justify-content: flex-end;
 }
 
 .eqsRareChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .eqsPlannerHint {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-faint, rgba(87, 59, 31, 0.8));
 }
 
 .eqsDurations {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .eqsDurationChip {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .eqsDurationChip--selected {
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18);
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(120, 72, 33, 0.18);
 }
 
 .eqsDurationChip--pulse {
   --ink-pulse-shadow-base: 0 0 0 0 rgba(120, 72, 33, 0.2);
-  --ink-pulse-shadow-peak: 0 0 0 6px rgba(120, 72, 33, 0.2);
+  --ink-pulse-shadow-peak: 0 0 0 calc(6 / 1920 * 100vw) rgba(120, 72, 33, 0.2);
   animation: inkPulse 0.25s ease-out;
 }
 
 .eqsYieldChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .eqsSlots {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   justify-content: flex-end;
 }
 
 .eqsSlotTile {
-  min-width: 160px;
+  min-width: calc(160 / 1920 * 100vw);
   position: relative;
 }
 
@@ -3348,12 +3348,12 @@
 }
 
 .eqsSlotTileButton:focus-visible {
-  outline: 2px solid rgba(120, 72, 33, 0.6);
-  outline-offset: 4px;
+  outline: calc(2 / 1920 * 100vw) solid rgba(120, 72, 33, 0.6);
+  outline-offset: calc(4 / 1920 * 100vw);
 }
 
 .eqsSlotTileButton:focus-visible .eqsSlotInner {
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.25), 0 14px 24px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(120, 72, 33, 0.25), 0 calc(14 / 1920 * 100vw) calc(24 / 1920 * 100vw) rgba(15, 23, 42, 0.2);
 }
 
 .eqsSlotTileButton:disabled {
@@ -3366,18 +3366,18 @@
 }
 
 .eqsSlotTile--dispatchable .eqsSlotInner {
-  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(120, 72, 33, 0.2);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .eqsSlotTile--dispatchable:hover .eqsSlotInner {
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.3);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(120, 72, 33, 0.3);
+  transform: translateY(calc(-1 / 1920 * 100vw));
 }
 
 .eqsSlotTile--ready {
   border-color: rgba(120, 72, 33, 0.4);
-  box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.25), 0 12px 22px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 0 0 calc(1 / 1920 * 100vw) rgba(47, 143, 102, 0.25), 0 calc(12 / 1920 * 100vw) calc(22 / 1920 * 100vw) rgba(15, 23, 42, 0.2);
 }
 
 .eqsSlotTile--idle,
@@ -3389,42 +3389,42 @@
 .eqsSlotInner {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px;
+  gap: calc(6 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   position: relative;
 }
 
 .eqsSlotTile--idle .eqsSlotInner::after {
   content: 'IDLE';
   position: absolute;
-  bottom: 10px;
-  right: 12px;
-  font-size: 10px;
+  bottom: calc(10 / 1920 * 100vw);
+  right: calc(12 / 1920 * 100vw);
+  font-size: calc(10 / 1920 * 100vw);
   letter-spacing: 0.2em;
   color: rgba(159, 59, 46, 0.35);
-  border: 1px solid rgba(159, 59, 46, 0.25);
-  padding: 2px 6px;
-  border-radius: 999px;
+  border: calc(1 / 1920 * 100vw) solid rgba(159, 59, 46, 0.25);
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
   transform: rotate(-6deg);
   text-transform: uppercase;
 }
 
 .eqsSlotTile--sent {
   --ink-pulse-shadow-base: 0 0 0 0 rgba(159, 59, 46, 0.25);
-  --ink-pulse-shadow-peak: 0 0 0 6px rgba(159, 59, 46, 0.2);
+  --ink-pulse-shadow-peak: 0 0 0 calc(6 / 1920 * 100vw) rgba(159, 59, 46, 0.2);
   animation: inkPulse 0.7s ease-out;
 }
 
 .eqsSlotStamp {
   position: absolute;
-  inset: auto 10px 10px auto;
-  padding: 4px 8px;
-  font-size: 10px;
+  inset: auto calc(10 / 1920 * 100vw) calc(10 / 1920 * 100vw) auto;
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  font-size: calc(10 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: rgba(159, 59, 46, 0.85);
-  border: 2px double rgba(159, 59, 46, 0.5);
-  border-radius: 999px;
+  border: calc(2 / 1920 * 100vw) double rgba(159, 59, 46, 0.5);
+  border-radius: calc(999 / 1920 * 100vw);
   transform: rotate(-10deg);
   background: rgba(255, 232, 224, 0.7);
   animation: stampSlam 0.7s ease-out forwards;
@@ -3434,37 +3434,37 @@
 .eqsSlotHeader {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
 }
 
 .eqsSlotTitle {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   font-weight: 700;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  text-shadow: 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.35);
 }
 
 .eqsSlotStatus {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--paper-ink-faint, rgba(87, 59, 31, 0.7));
 }
 
 .eqsSlotMeta {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .eqsSlotTimer {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.85));
 }
 
 .eqsSlotProgress {
   width: 100%;
-  height: 6px;
-  border-radius: 6px;
+  height: calc(6 / 1920 * 100vw);
+  border-radius: calc(6 / 1920 * 100vw);
   background: rgba(87, 59, 31, 0.12);
   overflow: hidden;
 }
@@ -3475,18 +3475,18 @@
 }
 
 .eqsSlotHint {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   color: var(--paper-ink-faint, rgba(87, 59, 31, 0.75));
 }
 
 .expStageRoot .worldScreenModuleButton {
-  border-radius: 999px;
-  border: 1px solid rgba(87, 59, 31, 0.25);
+  border-radius: calc(999 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(87, 59, 31, 0.25);
   background: rgba(251, 244, 228, 0.75);
   color: var(--paper-ink, #2b2116);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 6px 12px rgba(15, 23, 42, 0.12);
-  padding: 6px 12px;
-  font-size: 12px;
+  box-shadow: inset 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.6), 0 calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw) rgba(15, 23, 42, 0.12);
+  padding: calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
@@ -3497,19 +3497,19 @@
 
 .expStageRoot .worldScreenModuleButton:hover:not(:disabled) {
   border-color: rgba(120, 72, 33, 0.45);
-  transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 16px rgba(15, 23, 42, 0.16);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: inset 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.6), 0 calc(10 / 1920 * 100vw) calc(16 / 1920 * 100vw) rgba(15, 23, 42, 0.16);
 }
 
 .expStageRoot .worldScreenModuleButton:focus-visible {
-  outline: 2px solid rgba(120, 72, 33, 0.55);
-  outline-offset: 3px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 16px rgba(15, 23, 42, 0.18);
+  outline: calc(2 / 1920 * 100vw) solid rgba(120, 72, 33, 0.55);
+  outline-offset: calc(3 / 1920 * 100vw);
+  box-shadow: inset 0 calc(1 / 1920 * 100vw) 0 rgba(255, 255, 255, 0.6), 0 calc(10 / 1920 * 100vw) calc(16 / 1920 * 100vw) rgba(15, 23, 42, 0.18);
 }
 
 .expStageRoot .worldScreenModuleButton:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: inset 0 2px 6px rgba(43, 33, 22, 0.2);
+  box-shadow: inset 0 calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw) rgba(43, 33, 22, 0.2);
 }
 
 .expStageRoot .worldScreenModuleButton:disabled {
@@ -3519,9 +3519,9 @@
 
 .eqsSlotAction {
   align-self: flex-start;
-  padding: 4px 10px;
-  font-size: 12px;
-  border-radius: 999px;
+  padding: calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
 }
 
 .expStageRoot--muted .expStageHud,
@@ -3532,7 +3532,7 @@
   filter: grayscale(0.1);
 }
 
-@media (max-width: 1100px) {
+@media (max-width: calc(1100 / 1920 * 100vw)) {
   .expeditionQueueStrip {
     grid-template-columns: 1fr;
     position: static;
@@ -3570,13 +3570,13 @@
 }
 
 .expeditionSlotCard {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: calc(12 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 23, 42, 0.4);
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .expeditionSlotCard--idle {
@@ -3586,21 +3586,21 @@
 .expeditionSlotHeader {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .expeditionSlotTitle {
-  font-size: 15px;
+  font-size: calc(15 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionSlotMeta {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .expeditionSlotStatus {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #a5b4fc;
   align-self: center;
 }
@@ -3612,8 +3612,8 @@
 
 .expeditionProgressBar {
   width: 100%;
-  height: 8px;
-  border-radius: 8px;
+  height: calc(8 / 1920 * 100vw);
+  border-radius: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
@@ -3626,13 +3626,13 @@
 
 .expeditionSlotActions {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .expeditionSlotError {
   color: #f87171;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
 }
 
 .expeditionCeremonyOverlay {
@@ -3643,35 +3643,35 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
-  padding: 16px;
+  padding: calc(16 / 1920 * 100vw);
 }
 
 .expeditionCeremonyModal {
   background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  padding: 16px;
-  width: min(720px, 100%);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(16 / 1920 * 100vw);
+  width: min(calc(720 / 1920 * 100vw), 100%);
   max-height: 90vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .expeditionCeremonyHeader {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: calc(12 / 1920 * 100vw);
 }
 
 .expeditionCeremonyTitle {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionCeremonySubtitle {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -3679,47 +3679,47 @@
   background: transparent;
   border: none;
   color: #e2e8f0;
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   cursor: pointer;
 }
 
 .expeditionCeremonySpotlight {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.1);
   background: rgba(99, 102, 241, 0.12);
-  padding: 12px;
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .expeditionSpotlightLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .expeditionSpotlightItem {
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionSpotlightBadge {
   background: rgba(74, 222, 128, 0.2);
   color: #4ade80;
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-size: 12px;
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(4 / 1920 * 100vw) calc(8 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .expeditionRewardList {
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 10px;
+  border-radius: calc(10 / 1920 * 100vw);
+  border: calc(1 / 1920 * 100vw) solid rgba(255, 255, 255, 0.08);
+  padding: calc(10 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .expeditionRewardHeader {
@@ -3729,19 +3729,19 @@
 .expeditionRewardRow {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .expeditionRewardCurrencies {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .expeditionCeremonyActions {
   display: flex;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -3749,25 +3749,25 @@
 .expeditionCeremonyUse {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
   flex: 1;
-  min-width: 220px;
+  min-width: calc(220 / 1920 * 100vw);
 }
 
 .expeditionCeremonyUseLabel {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .expeditionCeremonyUseButtons {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   flex-wrap: wrap;
 }
 
 .expeditionCeremonyError {
   color: #f87171;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .worldScreenModuleButton--subtle {
@@ -3782,40 +3782,40 @@
 
 .worldHubTopBar {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: calc(12 / 1920 * 100vw);
+  left: calc(12 / 1920 * 100vw);
   z-index: 5;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: calc(10 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
 }
 
 .worldHubCitySelectWrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .worldHubCitySelect {
   font-family: 'Julee', cursive;
   background: #ddd;
   color: black;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px;
-  padding: 8px 10px;
-  min-width: 180px;
+  border-image: url("../assets/menus/buttoncorners.png") 60 / calc(5 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  min-width: calc(180 / 1920 * 100vw);
   transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
 }
 
 .worldScreenCitySummary {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .worldScreenHubPanel {
   flex: 1;
-  min-height: 480px;
+  min-height: calc(480 / 1920 * 100vw);
   position: relative;
   overflow: hidden;
 }

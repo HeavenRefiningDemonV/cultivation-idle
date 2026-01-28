@@ -1,7 +1,7 @@
 .radialVerseRing {
   position: relative;
-  width: 240px;
-  height: 240px;
+  width: calc(240 / 1920 * 100vw);
+  height: calc(240 / 1920 * 100vw);
   display: grid;
   place-items: center;
 }
@@ -46,7 +46,7 @@
 
 .radialVerseRing__marker {
   fill: var(--dao-accent, #d5a24c);
-  filter: drop-shadow(0 0 6px rgba(213, 162, 76, 0.35));
+  filter: drop-shadow(0 0 calc(6 / 1920 * 100vw) rgba(213, 162, 76, 0.35));
 }
 
 .radialVerseRing__nodes {
@@ -57,7 +57,7 @@
 .radialVerseRing__nodeBtn {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid rgba(148, 131, 99, 0.4);
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 131, 99, 0.4);
   background: rgba(248, 250, 252, 0.8);
   color: rgba(31, 41, 55, 0.7);
   font-weight: 700;
@@ -76,20 +76,20 @@
 
 .radialVerseRing__nodeBtn.is-current {
   background: rgba(240, 202, 131, 0.9);
-  box-shadow: 0 0 0 2px rgba(240, 202, 131, 0.5);
+  box-shadow: 0 0 0 calc(2 / 1920 * 100vw) rgba(240, 202, 131, 0.5);
   color: rgba(31, 41, 55, 0.95);
 }
 
 .radialVerseRing__nodeBtn.is-selected {
   transform: scale(1.06);
   box-shadow:
-    0 0 0 2px rgba(213, 162, 76, 0.35),
-    0 0 10px rgba(213, 162, 76, 0.25);
+    0 0 0 calc(2 / 1920 * 100vw) rgba(213, 162, 76, 0.35),
+    0 0 calc(10 / 1920 * 100vw) rgba(213, 162, 76, 0.25);
 }
 
 .radialVerseRing__nodeBtn:hover,
 .radialVerseRing__nodeBtn:focus-visible {
-  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(12 / 1920 * 100vw) rgba(15, 23, 42, 0.2);
   outline: none;
 }
 
@@ -102,12 +102,12 @@
 }
 
 .radialVerseRing__nodeLabel {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
-@media (max-width: 640px) {
+@media (max-width: calc(640 / 1920 * 100vw)) {
   .radialVerseRing {
-    width: 200px;
-    height: 200px;
+    width: calc(200 / 1920 * 100vw);
+    height: calc(200 / 1920 * 100vw);
   }
 }

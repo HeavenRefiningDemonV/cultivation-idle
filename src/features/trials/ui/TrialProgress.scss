@@ -1,11 +1,11 @@
 .trial-progress {
   background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: 8px;
-  padding: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 163, 184, 0.35);
+  border-radius: calc(8 / 1920 * 100vw);
+  padding: calc(12 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .trial-progress__header {
@@ -16,17 +16,17 @@
 
 .trial-progress__title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: calc(16 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .trial-progress__subtitle {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .trial-progress__attempts {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
@@ -35,36 +35,36 @@
 .trial-progress__intel,
 .trial-progress__summary-card {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  border-radius: 6px;
-  padding: 8px;
+  border: calc(1 / 1920 * 100vw) solid rgba(148, 163, 184, 0.25);
+  border-radius: calc(6 / 1920 * 100vw);
+  padding: calc(8 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .trial-progress__requirement-row {
   display: flex;
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
   align-items: center;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .trial-progress__badge {
-  padding: 2px 6px;
+  padding: calc(2 / 1920 * 100vw) calc(6 / 1920 * 100vw);
   background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 4px;
-  font-size: 12px;
+  border: calc(1 / 1920 * 100vw) solid rgba(59, 130, 246, 0.35);
+  border-radius: calc(4 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   color: #bfdbfe;
 }
 
 .trial-progress__status {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .trial-progress__status--ok {
@@ -76,24 +76,24 @@
 }
 
 .trial-progress__metrics {
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .trial-progress__metric {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .trial-progress__metric-label {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .trial-progress__bar {
-  height: 8px;
+  height: calc(8 / 1920 * 100vw);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 4px;
+  border-radius: calc(4 / 1920 * 100vw);
   overflow: hidden;
 }
 
@@ -108,40 +108,40 @@
 }
 
 .trial-progress__metric-text {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #94a3b8;
 }
 
 .trial-progress__intel {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(calc(160 / 1920 * 100vw), 1fr));
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .trial-progress__intel-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: calc(2 / 1920 * 100vw);
 }
 
 .trial-progress__intel-label {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .trial-progress__intel-value {
-  font-size: 14px;
+  font-size: calc(14 / 1920 * 100vw);
   color: #e2e8f0;
 }
 
 .trial-progress__dps {
   display: block;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: #cbd5e1;
 }
 
 .trial-progress__summary-card {
-  gap: 8px;
+  gap: calc(8 / 1920 * 100vw);
 }
 
 .trial-progress__summary-title {
@@ -151,18 +151,18 @@
 
 .trial-progress__suggestions {
   margin: 0;
-  padding-left: 18px;
+  padding-left: calc(18 / 1920 * 100vw);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4 / 1920 * 100vw);
 }
 
 .trial-progress__suggestions li {
   color: #cbd5e1;
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .trial-progress__ehp {
-  font-size: 13px;
+  font-size: calc(13 / 1920 * 100vw);
   color: #e2e8f0;
 }

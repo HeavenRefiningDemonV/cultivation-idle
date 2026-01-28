@@ -1,7 +1,7 @@
 .verseProgressMiniBar {
   display: grid;
   grid-template-areas: "stack";
-  width: min(560px, 100%);
+  width: min(calc(560 / 1920 * 100vw), 100%);
   align-self: center;
   opacity: 0.85;
   transition: filter 0.2s ease;
@@ -23,7 +23,7 @@
   width: 92%;
   height: 16%;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  border-radius: calc(999 / 1920 * 100vw);
   overflow: hidden;
   z-index: 2;
 }
@@ -42,14 +42,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: rgba(5, 10, 20, 0.8);
   mix-blend-mode: multiply;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.35);
+  text-shadow: 0 calc(1 / 1920 * 100vw) calc(2 / 1920 * 100vw) rgba(255, 255, 255, 0.35);
 }
 
 .verseProgressMiniBar--flash {
-  filter: drop-shadow(0 0 6px rgba(226, 232, 240, 0.6));
+  filter: drop-shadow(0 0 calc(6 / 1920 * 100vw) rgba(226, 232, 240, 0.6));
 }

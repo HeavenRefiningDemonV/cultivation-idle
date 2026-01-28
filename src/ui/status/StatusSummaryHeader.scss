@@ -1,13 +1,13 @@
 .statusSummaryPanel {
-  margin-bottom: 24px;
-  padding: 18px 18px 16px;
+  margin-bottom: calc(24 / 1920 * 100vw);
+  padding: calc(18 / 1920 * 100vw) calc(18 / 1920 * 100vw) calc(16 / 1920 * 100vw);
   position: relative;
   overflow: hidden;
 }
 
 .statusSummaryGrid {
   display: grid;
-  gap: 14px;
+  gap: calc(14 / 1920 * 100vw);
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
 }
@@ -16,39 +16,39 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .statusSummaryBlock:not(:first-child)::before {
   content: "";
   position: absolute;
-  left: -7px;
-  top: 10px;
-  bottom: 10px;
-  width: 1px;
+  left: calc(-7 / 1920 * 100vw);
+  top: calc(10 / 1920 * 100vw);
+  bottom: calc(10 / 1920 * 100vw);
+  width: calc(1 / 1920 * 100vw);
   background: rgba(12, 18, 34, 0.14);
 }
 
 .statusSummaryLabelRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-bottom: calc(6 / 1920 * 100vw);
 }
 
 .statusSummaryIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: calc(18 / 1920 * 100vw);
+  height: calc(18 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.7);
   opacity: 0.95;
 }
 
 .statusSummaryQiOrb {
-  width: 16px;
-  height: 16px;
+  width: calc(16 / 1920 * 100vw);
+  height: calc(16 / 1920 * 100vw);
   border-radius: 50%;
   background: radial-gradient(
     circle at 35% 35%,
@@ -56,7 +56,7 @@
     rgba(139, 92, 246, 0.7) 70%,
     rgba(12, 18, 34, 0.1) 100%
   );
-  box-shadow: 0 0 6px rgba(34, 211, 238, 0.28);
+  box-shadow: 0 0 calc(6 / 1920 * 100vw) rgba(34, 211, 238, 0.28);
   position: relative;
   flex: 0 0 auto;
 }
@@ -78,7 +78,7 @@
 }
 
 .statusSummaryLabel {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(12, 18, 34, 0.62);
@@ -88,11 +88,11 @@
 .statusSummaryValueRow {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10 / 1920 * 100vw);
 }
 
 .statusSummaryValue {
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 900;
   color: rgba(12, 18, 34, 0.92);
   line-height: 1.05;
@@ -105,13 +105,13 @@
 .statusSummaryFocusChip {
   display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
+  padding: calc(6 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(999 / 1920 * 100vw);
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 900;
   color: rgba(12, 18, 34, 0.88);
   background: rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
 }
 
 .statusSummarySubRow {
@@ -120,7 +120,7 @@
 }
 
 .statusSummarySub {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   color: rgba(12, 18, 34, 0.58);
   font-weight: 700;
 }
@@ -128,15 +128,15 @@
 @keyframes statusQiPulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 6px rgba(34, 211, 238, 0.22);
+    box-shadow: 0 0 calc(6 / 1920 * 100vw) rgba(34, 211, 238, 0.22);
   }
   50% {
     transform: scale(1.12);
-    box-shadow: 0 0 10px rgba(34, 211, 238, 0.34);
+    box-shadow: 0 0 calc(10 / 1920 * 100vw) rgba(34, 211, 238, 0.34);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 6px rgba(34, 211, 238, 0.22);
+    box-shadow: 0 0 calc(6 / 1920 * 100vw) rgba(34, 211, 238, 0.22);
   }
 }
 
@@ -146,7 +146,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: calc(900 / 1920 * 100vw)) {
   .statusSummaryGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -156,7 +156,7 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: calc(520 / 1920 * 100vw)) {
   .statusSummaryGrid {
     grid-template-columns: 1fr;
   }
@@ -166,6 +166,6 @@
   }
 
   .statusSummaryValue {
-    font-size: 18px;
+    font-size: calc(18 / 1920 * 100vw);
   }
 }

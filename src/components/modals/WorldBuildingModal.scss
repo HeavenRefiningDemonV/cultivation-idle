@@ -6,8 +6,8 @@
   align-items: center;
   justify-content: center;
   z-index: 2100;
-  padding: 16px;
-  backdrop-filter: blur(5px);
+  padding: calc(16 / 1920 * 100vw);
+  backdrop-filter: blur(calc(5 / 1920 * 100vw));
 }
 
 .worldBuildingModal {
@@ -83,13 +83,13 @@
 
 
 .worldBuildingTitle {
-  font-size: 20px;
+  font-size: calc(20 / 1920 * 100vw);
   font-weight: 700;
 }
 
 .worldBuildingSubtitle {
-  margin-top: 4px;
-  font-size: 13px;
+  margin-top: calc(4 / 1920 * 100vw);
+  font-size: calc(13 / 1920 * 100vw);
 }
 
 .worldBuildingClose {
@@ -97,8 +97,8 @@
   background: transparent;
   z-index: 600;
 
-  width: 32px;
-  height: 32px;
+  width: calc(32 / 1920 * 100vw);
+  height: calc(32 / 1920 * 100vw);
   font-weight: 700;
   color: black;
   display: inline-flex;
@@ -127,9 +127,9 @@
 }
 
 .worldBuildingPlaceholder {
-  border: 1px dashed rgba(255, 255, 255, 0.25);
-  border-radius: 12px;
-  padding: 24px;
+  border: calc(1 / 1920 * 100vw) dashed rgba(255, 255, 255, 0.25);
+  border-radius: calc(12 / 1920 * 100vw);
+  padding: calc(24 / 1920 * 100vw);
   text-align: center;
   color: #cbd5e1;
 }
@@ -138,9 +138,9 @@
 
 .hammer {
   position: absolute;
-  height: 180px;
-  right: 220px;
-  bottom: 280px;
+  height: calc(180 / 1920 * 100vw);
+  right: calc(220 / 1920 * 100vw);
+  bottom: calc(280 / 1920 * 100vw);
 
   transform-origin: right;
   animation: hammerStrike 1.2s infinite;
@@ -149,21 +149,21 @@
 @keyframes hammerStrike {
 
   0% {
-    transform: rotate(0deg) translateY(0px);
+    transform: rotate(0deg) translateY(calc(0 / 1920 * 100vw));
   }
 
   80% {
-    transform: rotate(25deg) translateY(-50px);
+    transform: rotate(25deg) translateY(calc(-50 / 1920 * 100vw));
     animation-timing-function: ease-in;
   }
 
   90% {
-    transform: rotate(25deg) translateY(-50px);
+    transform: rotate(25deg) translateY(calc(-50 / 1920 * 100vw));
     animation-timing-function: ease-in;
   }
 
   100% {
-    transform: rotate(0deg) translateY(0px);
+    transform: rotate(0deg) translateY(calc(0 / 1920 * 100vw));
     animation-timing-function: ease-out;
   }
 }

@@ -22,7 +22,10 @@ export function GameIcon({
   const meta = getIconMeta(icon);
   const scale = meta.scale ?? 1;
   const translateY = meta.translateY ?? 0;
-  const resolvedSize = typeof size === 'number' ? `${size}px` : size;
+  const resolvedSize =
+    typeof size === 'number'
+      ? `${(size / 1920) * 100}vw`
+      : size;
   const style: CSSProperties = {
     width: resolvedSize,
     height: resolvedSize,

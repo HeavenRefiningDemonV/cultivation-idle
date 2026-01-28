@@ -1,38 +1,38 @@
 .combatStatTilesGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 12px;
+  gap: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw);
 }
 
 .combatStatTile {
   position: relative;
-  padding: 10px 12px 10px;
-  border-radius: 12px;
+  padding: calc(10 / 1920 * 100vw) calc(12 / 1920 * 100vw) calc(10 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
   --tile-accent: rgba(12, 18, 34, 0.22);
   background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  border: calc(1 / 1920 * 100vw) solid rgba(12, 18, 34, 0.14);
+  box-shadow: 0 calc(4 / 1920 * 100vw) calc(10 / 1920 * 100vw) rgba(0, 0, 0, 0.18);
   transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6 / 1920 * 100vw);
 }
 
 .combatStatTile::before {
   content: "";
   position: absolute;
-  left: 8px;
-  top: 10px;
-  bottom: 10px;
-  width: 3px;
-  border-radius: 12px;
+  left: calc(8 / 1920 * 100vw);
+  top: calc(10 / 1920 * 100vw);
+  bottom: calc(10 / 1920 * 100vw);
+  width: calc(3 / 1920 * 100vw);
+  border-radius: calc(12 / 1920 * 100vw);
   background: var(--tile-accent);
   opacity: 0.95;
 }
 
 .combatStatTile:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.26);
+  transform: translateY(calc(-1 / 1920 * 100vw));
+  box-shadow: 0 calc(6 / 1920 * 100vw) calc(14 / 1920 * 100vw) rgba(0, 0, 0, 0.26);
   border-color: rgba(12, 18, 34, 0.2);
 }
 
@@ -43,8 +43,8 @@
 .combatStatTile__top {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-left: 8px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-left: calc(8 / 1920 * 100vw);
 }
 
 .combatStatTile__icon {
@@ -56,7 +56,7 @@
 }
 
 .combatStatTile__label {
-  font-size: 11px;
+  font-size: calc(11 / 1920 * 100vw);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 800;
@@ -66,24 +66,24 @@
 .combatStatTile__valueRow {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-top: 6px;
-  margin-left: 8px;
+  gap: calc(8 / 1920 * 100vw);
+  margin-top: calc(6 / 1920 * 100vw);
+  margin-left: calc(8 / 1920 * 100vw);
 }
 
 .combatStatTile__value {
-  font-size: 18px;
+  font-size: calc(18 / 1920 * 100vw);
   font-weight: 900;
   color: rgba(12, 18, 34, 0.92);
   line-height: 1.05;
 }
 
 .combatStatTile__sub {
-  font-size: 12px;
+  font-size: calc(12 / 1920 * 100vw);
   font-weight: 700;
   color: rgba(12, 18, 34, 0.58);
-  margin-top: 4px;
-  margin-left: 8px;
+  margin-top: calc(4 / 1920 * 100vw);
+  margin-left: calc(8 / 1920 * 100vw);
 }
 
 .combatStatTile--hp {
@@ -134,13 +134,13 @@
   color: rgba(8, 145, 178, 0.8);
 }
 
-@media (min-width: 1200px) {
+@media (min-width: calc(1200 / 1920 * 100vw)) {
   .combatStatTilesGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: calc(520 / 1920 * 100vw)) {
   .combatStatTilesGrid {
     grid-template-columns: 1fr;
   }
@@ -157,8 +157,8 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    transform: translateY(calc(-1 / 1920 * 100vw));
+    box-shadow: 0 calc(8 / 1920 * 100vw) calc(18 / 1920 * 100vw) rgba(0, 0, 0, 0.3);
   }
   100% {
     transform: translateY(0);

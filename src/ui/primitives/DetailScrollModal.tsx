@@ -49,7 +49,7 @@ export function DetailScrollModal({ open, title, subtitle, meta, onClose, childr
     const computedPadding = parseFloat(window.getComputedStyle(document.body).paddingRight || '0');
     const scrollbarWidth = getScrollbarWidth();
     if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${computedPadding + scrollbarWidth}px`;
+      document.body.style.paddingRight = `${((computedPadding + scrollbarWidth) / 1920) * 100}vw`;
     }
     return () => {
       document.body.style.paddingRight = bodyPaddingRef.current;

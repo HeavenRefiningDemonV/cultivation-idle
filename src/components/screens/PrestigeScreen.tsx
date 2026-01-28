@@ -194,7 +194,7 @@ export function PrestigeScreen() {
       },
       {
         root: scrollContainer,
-        rootMargin: '0px 0px -60% 0px',
+        rootMargin: 'calc(0 / 1920 * 100vw) calc(0 / 1920 * 100vw) -60% calc(0 / 1920 * 100vw)',
         threshold: [0.2, 0.4, 0.6],
       },
     );

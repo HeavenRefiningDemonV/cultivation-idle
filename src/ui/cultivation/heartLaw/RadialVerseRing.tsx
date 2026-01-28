@@ -149,10 +149,10 @@ export function RadialVerseRing({
               type="button"
               className={`radialVerseRing__nodeBtn ${stateClass}`}
               style={{
-                left: `${position.x - NODE_SIZE / 2}px`,
-                top: `${position.y - NODE_SIZE / 2}px`,
-                width: `${NODE_SIZE}px`,
-                height: `${NODE_SIZE}px`,
+                left: `${((position.x - NODE_SIZE / 2) / 1920) * 100}vw`,
+                top: `${((position.y - NODE_SIZE / 2) / 1920) * 100}vw`,
+                width: `${(NODE_SIZE / 1920) * 100}vw`,
+                height: `${(NODE_SIZE / 1920) * 100}vw`,
               }}
               onClick={() => onSelectVerse(verse)}
               aria-label={`Select Verse ${label}`}
