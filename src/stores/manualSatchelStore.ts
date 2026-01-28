@@ -65,10 +65,10 @@ export type UnlockRandomTechniqueOptions = {
 };
 
 const STUDY_DURATION_MS: Record<ManualGrade, number> = {
-  mortal: 30_000,
-  earth: 60_000,
-  heaven: 120_000,
-  mystic: 300_000,
+  mortal: 1_000,
+  earth: 1_000,
+  heaven: 1_000,
+  mystic: 1_000,
 };
 
 const DEFAULT_RARITY_FRAGMENT_VALUES: Record<TechRarity, number> = {
