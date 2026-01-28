@@ -129,8 +129,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
 }
 
 .pavilionShelfWall--flash {
@@ -201,10 +199,9 @@
   align-items: flex-end;
   gap: 8px;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   padding-bottom: 4px;
   scrollbar-width: thin;
-  scrollbar-gutter: stable;
 }
 
 .pavilionSpine {
@@ -269,9 +266,8 @@
 .pavilionSpine--selected {
   transform: translateY(-3px);
   box-shadow:
-    0 12px 22px rgba(0, 0, 0, 0.32);
-  outline: 2px solid rgba(0, 0, 0, 0.55);
-  outline-offset: 2px;
+    0 12px 22px rgba(0, 0, 0, 0.32),
+    0 0 0 2px rgba(0, 0, 0, 0.55);
 }
 
 .pavilionSpine--selected:hover {
