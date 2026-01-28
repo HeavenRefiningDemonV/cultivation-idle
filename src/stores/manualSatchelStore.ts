@@ -5,11 +5,14 @@ import { useContentStore } from './contentStore';
 import {
   type ManualGrade,
   type TechRarity,
+  getManualGradeFromTechnique,
   normalizeGrade,
   normalizeRarity,
   useTechCollectionStore,
 } from './techCollectionStore';
 import { useUIStore } from './uiStore';
+import { useGameStore } from './gameStore';
+import type { CultivationPath } from '../types';
 
 export type FocusRewardType = 'time' | 'mastery' | 'traitQuality';
 
@@ -48,11 +51,18 @@ interface ManualSatchelStoreState extends ManualSatchelState {
   startStudy: (instanceId: string, now?: number) => { ok: boolean; reason?: string };
   applyFocusReward: (now?: number) => { ok: boolean; reward?: FocusRewardType; reason?: string };
   tick: (now?: number) => void;
+  unlockRandomTechnique: (options?: UnlockRandomTechniqueOptions) => string | null;
   hydrate: (slice?: Partial<ManualSatchelState>) => void;
   toSaveState: () => ManualSatchelState;
   hardReset: () => void;
   getManualCount: (techId: string, grade: ManualGrade, rarity: TechRarity) => number;
 }
+
+export type UnlockRandomTechniqueOptions = {
+  maxTier?: number;
+  allowCrossPath?: boolean;
+  includePrestigeLocked?: boolean;
+};
 
 const STUDY_DURATION_MS: Record<ManualGrade, number> = {
   mortal: 30_000,
@@ -75,6 +85,8 @@ const DEFAULT_GRADE_FRAGMENT_MULTIPLIER: Record<ManualGrade, number> = {
   heaven: 4,
   mystic: 8,
 };
+
+const GRADE_TIER_ORDER: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
 
 function generateManualId(): string {
   return `man_${Date.now()}_${Math.random().toString(36).slice(2)}`;
@@ -121,6 +133,21 @@ function getFragmentConfig() {
   const rarityFragmentValue: Partial<Record<TechRarity, number>> = manualSystem?.rarityFragmentValue ?? {};
   const gradeFragmentMultiplier: Partial<Record<ManualGrade, number>> = manualSystem?.gradeFragmentMultiplier ?? {};
   return { rarityFragmentValue, gradeFragmentMultiplier };
+}
+
+function isTechniquePathAllowed(
+  techniquePath: CultivationPath,
+  selectedPath: CultivationPath | null,
+  allowCrossPath: boolean,
+) {
+  if (allowCrossPath || !selectedPath) return true;
+  return techniquePath === selectedPath;
+}
+
+function isTechniqueTierAllowed(grade: ManualGrade, maxTier: number) {
+  const tierIndex = GRADE_TIER_ORDER.indexOf(grade);
+  if (tierIndex < 0) return false;
+  return tierIndex + 1 <= maxTier;
 }
 
 function computeFragments(grade: ManualGrade, rarity: TechRarity): number {
@@ -283,6 +310,64 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       });
       ui.openTechniqueLearned(learnedPayload);
       GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manual.techId, progress: 1 } });
+    },
+
+    unlockRandomTechnique: (options) => {
+      const {
+        maxTier = 2,
+        allowCrossPath = false,
+        includePrestigeLocked = false,
+      } = options ?? {};
+      const content = useContentStore.getState();
+      if (!content.isLoaded) return null;
+      if (get().activeStudy) return null;
+
+      const selectedPath = useGameStore.getState().selectedPath;
+      const techCollection = useTechCollectionStore.getState();
+      const techniques = Object.values(content.maps.techniquesById ?? {}).filter(Boolean);
+      const unlockable = techniques.filter((technique) => {
+        const tech = technique!;
+        if (techCollection.hasTech(tech.id)) return false;
+        if (!isTechniquePathAllowed(tech.path, selectedPath, allowCrossPath)) return false;
+        const grade = getManualGradeFromTechnique(tech);
+        if (!isTechniqueTierAllowed(grade, maxTier)) return false;
+        if (!includePrestigeLocked && Array.isArray(tech.tags)) {
+          if (tech.tags.includes('prestige_locked') || tech.tags.includes('hidden')) return false;
+        }
+        return true;
+      });
+
+      if (unlockable.length === 0) return null;
+      const chosen = unlockable[Math.floor(Math.random() * unlockable.length)];
+      if (!chosen) return null;
+      const manualGrade = getManualGradeFromTechnique(chosen);
+      const manualRarity = normalizeRarity(chosen.rarity);
+      const manualInstance = sanitizeManual({
+        techId: chosen.id,
+        grade: manualGrade,
+        rarity: manualRarity,
+      });
+      if (!manualInstance) return null;
+
+      set((state) => {
+        state.manuals.push(manualInstance);
+      });
+
+      const startResult = get().startStudy(manualInstance.id);
+      if (!startResult.ok) {
+        set((state) => {
+          state.manuals = state.manuals.filter((manual) => manual.id !== manualInstance.id);
+        });
+        return null;
+      }
+
+      const activeStudy = get().activeStudy;
+      if (!activeStudy) return null;
+      const completionTime = activeStudy.endsAt ?? Date.now();
+      get().tick(completionTime);
+
+      if (!techCollection.hasTech(chosen.id)) return null;
+      return chosen.id;
     },
 
     hydrate: (slice) => {

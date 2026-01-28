@@ -6,6 +6,7 @@ import { RewardService } from '../../services/rewards';
 import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle';
 import { useUIStore } from '../../stores/uiStore';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore';
 import { SystemStatusPanel } from '../SystemStatusPanel';
 import { useTelemetryStore } from '../../stores/telemetryStore';
 import { useErrorLogStore } from '../../stores/errorLogStore';
@@ -105,6 +106,7 @@ export function SettingsScreen() {
 
   const rewardLogEntries = useRewardsLogStore((state) => state.entries);
   const clearRewardLog = useRewardsLogStore((state) => state.clear);
+  const unlockRandomTechnique = useManualSatchelStore((state) => state.unlockRandomTechnique);
 
   const toggleOfflineModal = () => setSettings({ showOfflineModal: !showOfflineModal });
   const toggleCombatLog = () => setSettings({ showCombatLog: !showCombatLog });
@@ -130,23 +132,17 @@ export function SettingsScreen() {
   };
 
   const handleUnlockRandomManual = () => {
-    const techniqueIds = Object.keys(techniquesById);
-    if (!contentIsLoaded || techniqueIds.length === 0) {
+    if (!contentIsLoaded) {
       addNotification('warning', 'Manuals are not available yet.', 3000);
       return;
     }
-    const techId = techniqueIds[Math.floor(Math.random() * techniqueIds.length)];
-    const grade = 'mortal';
-    const rarity = 'common';
-    const manualId = `${techId}:${grade}:${rarity}:manual`;
-    RewardService.grantRewards(
-      {
-        manuals: [{ manualId, techId, grade, rarity, qty: 1 }],
-      },
-      'debug:unlock_random_manual',
-    );
-    const techName = techniquesById[techId]?.name ?? techId;
-    addNotification('success', `Unlocked manual for ${techName}.`, 3000);
+    const unlockedTechId = unlockRandomTechnique();
+    if (!unlockedTechId) {
+      addNotification('info', 'No eligible techniques to unlock right now.', 3000);
+      return;
+    }
+    const techName = techniquesById[unlockedTechId]?.name ?? unlockedTechId;
+    addNotification('success', `Insight gained — ${techName} mastered.`, 3000);
   };
 
   const handleCopyTelemetry = () => {
@@ -344,7 +340,7 @@ export function SettingsScreen() {
                 className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
                 disabled={!contentIsLoaded}
               >
-                Unlock Random Manual
+                Unlock Random Technique (Studied)
               </button>
               <button
                 onClick={clearRewardLog}
