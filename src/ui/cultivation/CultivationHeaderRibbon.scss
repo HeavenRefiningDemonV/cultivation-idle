@@ -1,4 +1,7 @@
 .cultivationHeaderRibbon {
+  --cultivation-header-panel-height: 180px;
+  --cultivation-header-handle-height: 30px;
+  --cultivation-header-handle-overlap: 12px;
   position: fixed;
   top: 10px;
   left: 24px;
@@ -8,7 +11,10 @@
   align-items: stretch;
   --qi-lotus-size: 40px;
   color: #0b1020;
-  transition: max-height 0.25s ease, padding 0.25s ease;
+  height: calc(
+    var(--cultivation-header-panel-height) + var(--cultivation-header-handle-height) -
+      var(--cultivation-header-handle-overlap)
+  );
   overflow: visible;
   z-index: 40;
   pointer-events: none;
@@ -17,7 +23,7 @@
 .cultivationHeaderRibbon__panel {
   pointer-events: auto;
   overflow: hidden;
-  max-height: 180px;
+  max-height: var(--cultivation-header-panel-height);
   opacity: 1;
   transition: max-height 0.2s ease, opacity 0.18s ease;
   background: #d0d0d0;
@@ -170,10 +176,10 @@
   align-self: center;
   position: absolute;
   left: 50%;
-  bottom: -12px;
+  bottom: calc(var(--cultivation-header-handle-overlap) * -1);
   transform: translateX(-50%);
   width: 46px;
-  height: 30px;
+  height: var(--cultivation-header-handle-height);
   display: inline-flex;
   align-items: center;
   justify-content: center;
