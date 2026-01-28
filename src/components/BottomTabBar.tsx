@@ -23,25 +23,24 @@ export function BottomTabBar() {
 
   return (
     <nav className="bottomTabBar" aria-label="Primary navigation">
-      <div className="bottomTabBarInner">
-        <div className="bottomTabBarList">
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
+      <div className="bottomTabBarList">
+        {TABS.map((tab) => {
+          const isActive = activeTab === tab.id;
 
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                className={`button-standard bottomTabBarButton ${isActive ? 'bottomTabBarButton--active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              className={`button-standard bottomTabBarButton ${isActive ? 'bottomTabBarButton--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
+
     </nav>
   );
 }
