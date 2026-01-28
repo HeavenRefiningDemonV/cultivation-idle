@@ -57,6 +57,8 @@ export function LifeStartWizardModal() {
     return 3;
   });
 
+  const [hoveredPath, setHoveredPath] = useState<LifePath | null>(null);
+
   const [autoPickChecked, setAutoPickChecked] = useState(false);
   const [autoPickError, setAutoPickError] = useState<string | null>(null);
 
@@ -152,14 +154,20 @@ export function LifeStartWizardModal() {
                 {LIFE_PATHS.map((path) => {
                   const selected = lifePath === path.id;
                   const disabled = !canChangeLifePath() && !selected;
+                  const isHoverFx = hoveredPath === path.id;
                   return (
-                    <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}`}>
+                    <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
+                      <span className="lifePathPanel__stamp" aria-hidden="true" />
                       <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
                       <div className="lifePathPanel__title">{path.title}</div>
                       <button
                         type="button"
                         className="lifePathPanel__select"
                         onClick={() => handlePickPath(path.id)}
+                        onMouseEnter={() => setHoveredPath(path.id)}
+                        onMouseLeave={() => setHoveredPath(null)}
+                        onFocus={() => setHoveredPath(path.id)}
+                        onBlur={() => setHoveredPath(null)}
                         disabled={disabled}
                         aria-label={`Select ${path.title.toLowerCase()} path`}
                         aria-pressed={selected}

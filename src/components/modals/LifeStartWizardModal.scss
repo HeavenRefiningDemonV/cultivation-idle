@@ -173,6 +173,58 @@
   border-radius: 0;
 }
 
+.lifePathPanel.isHoverFx {
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.72);
+}
+
+.lifePathPanel.isHoverFx::before,
+.lifePathPanel.isHoverFx::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lifePathPanel.isHoverFx::before {
+  inset: -20%;
+  background-image: url('../../assets/texture_overlay.png');
+  background-size: 420px 420px;
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+  animation: lifePathMistDrift 2.8s ease-in-out infinite;
+}
+
+.lifePathPanel.isHoverFx::after {
+  top: -20%;
+  bottom: -20%;
+  left: -50%;
+  width: 45%;
+  background-image: url('../../assets/texture_overlay.png');
+  background-size: 160px 160px;
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+  transform: skewX(-18deg);
+  animation: lifePathStrokeSweep 2.2s ease-in-out infinite;
+}
+
+.lifePathPanel__stamp {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  background-image: url('../../assets/texture_overlay.png');
+  background-size: 120px 120px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.lifePathPanel.isHoverFx .lifePathPanel__stamp {
+  opacity: 0.35;
+}
+
 .lifePathPanel--heaven {
   background:
     radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 55%),
@@ -191,6 +243,18 @@
     linear-gradient(180deg, #e0b2b8 0%, #d0909c 55%, #c9a0a0 100%);
 }
 
+.lifePathPanel--heaven.isHoverFx::before {
+  filter: hue-rotate(200deg) saturate(0.7);
+}
+
+.lifePathPanel--earth.isHoverFx::before {
+  filter: hue-rotate(35deg) saturate(0.6);
+}
+
+.lifePathPanel--martial.isHoverFx::before {
+  filter: hue-rotate(-10deg) saturate(0.7);
+}
+
 .lifePathPanel__art {
   position: absolute;
   inset: 0;
@@ -200,6 +264,7 @@
   object-position: center 20%;
   pointer-events: none;
   user-select: none;
+  z-index: 0;
 }
 
 .lifePathPanel--heaven .lifePathPanel__art {
@@ -227,6 +292,7 @@
   font-weight: 800;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.25);
   pointer-events: none;
+  z-index: 3;
 }
 
 .lifePathPanel__select {
@@ -245,6 +311,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--ink-ui-font, inherit);
+  z-index: 3;
 }
 
 .lifePathPanel__select:disabled {
@@ -253,11 +320,49 @@
 }
 
 .lifePathPanel__select:hover {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(0, 0, 0, 0.95);
 }
 
 .lifePathPanel__select:active {
-  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+@keyframes lifePathMistDrift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(8px, -10px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lifePathStrokeSweep {
+  0% {
+    transform: translate3d(0, 0, 0) skewX(-18deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate3d(220%, -6%, 0) skewX(-18deg);
+    opacity: 0.24;
+  }
+  100% {
+    transform: translate3d(260%, -10%, 0) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lifePathPanel.isHoverFx::before,
+  .lifePathPanel.isHoverFx::after {
+    animation: none;
+  }
 }
 
 .lifeStartWizardModal--path .lifeStartWizardHeader,
