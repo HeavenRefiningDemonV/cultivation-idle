@@ -75,6 +75,7 @@ export function SettingsScreen() {
   const showSystemStatusPanel = useUIStore((state) => state.settings.showSystemStatusPanel);
   const setSettings = useUIStore((state) => state.setSettings);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const addNotification = useUIStore((state) => state.addNotification);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const contentIsLoaded = useContentStore((state) => state.isLoaded);
   const contentIsLoading = useContentStore((state) => state.isLoading);
@@ -82,6 +83,7 @@ export function SettingsScreen() {
   const cities = useContentStore((state) => state.citiesSorted);
   const techniquesByPath = useContentStore((state) => state.techniquesByPath);
   const itemsCount = useContentStore((state) => Object.keys(state.maps.itemsById).length);
+  const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const techniquesCount = useContentStore((state) => Object.keys(state.maps.techniquesById).length);
   const pavilionsById = useContentStore((state) => state.maps.pavilionsById);
   const outskirtsCount = useContentStore((state) => Object.keys(state.maps.outskirtsById).length);
@@ -125,6 +127,26 @@ export function SettingsScreen() {
     const bundle = buildMegaRewardBundle();
     const result = RewardService.grantRewards(bundle, 'debug:mega_grant');
     console.log('[Rewards] Test Grant Rewards result', result);
+  };
+
+  const handleUnlockRandomManual = () => {
+    const techniqueIds = Object.keys(techniquesById);
+    if (!contentIsLoaded || techniqueIds.length === 0) {
+      addNotification('warning', 'Manuals are not available yet.', 3000);
+      return;
+    }
+    const techId = techniqueIds[Math.floor(Math.random() * techniqueIds.length)];
+    const grade = 'mortal';
+    const rarity = 'common';
+    const manualId = `${techId}:${grade}:${rarity}:manual`;
+    RewardService.grantRewards(
+      {
+        manuals: [{ manualId, techId, grade, rarity, qty: 1 }],
+      },
+      'debug:unlock_random_manual',
+    );
+    const techName = techniquesById[techId]?.name ?? techId;
+    addNotification('success', `Unlocked manual for ${techName}.`, 3000);
   };
 
   const handleCopyTelemetry = () => {
@@ -316,6 +338,13 @@ export function SettingsScreen() {
                 disabled={!contentIsLoaded || !import.meta.env.DEV}
               >
                 Test Grant Rewards (Mega Bundle)
+              </button>
+              <button
+                onClick={handleUnlockRandomManual}
+                className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                disabled={!contentIsLoaded}
+              >
+                Unlock Random Manual
               </button>
               <button
                 onClick={clearRewardLog}
