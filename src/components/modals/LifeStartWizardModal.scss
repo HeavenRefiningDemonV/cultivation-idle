@@ -157,6 +157,8 @@
 .lifePathTriptychFrame {
   height: 100%;
   width: min(calc(1360 / 1920 * 100vw), 96vw);
+  max-width: calc(100vh * 16 / 9);
+  max-height: calc(100vw * 9 / 16);
   padding: calc(12 / 1920 * 100vw);
   border: calc(3 / 1920 * 100vw) solid #111;
   background: rgba(246, 243, 236, 0.15);
