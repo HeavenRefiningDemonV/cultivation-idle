@@ -1,0 +1,26 @@
+
+.letterbox-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.game-aspect-wrapper {
+  position: relative;
+  
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(100vh, calc(100vw * 9 / 16));
+  
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5); 
+  background-color: #ddd;
+  overflow: hidden;
+  transform: translateZ(0);
+}
