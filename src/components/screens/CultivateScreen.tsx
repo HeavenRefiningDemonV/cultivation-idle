@@ -50,7 +50,7 @@ export function QiProgressBar({
     ? Math.min(100, currentVal.div(requiredVal).times(100).toNumber())
     : 0;
   return (
-    <div className={`progress-bar ${isReady ? 'progress-bar--ready' : ''}`}>
+    <div className={`progress-bar ${isReady ? 'progress-bar--ready' : ''}`} data-ui="qi-bar">
       <img className="progress-bar-shape" src={barLong} alt="" aria-hidden="true" />
       <div className={`qiProgressBar ${pulse ? 'qiProgressBar--pulse' : ''}`}>
         <div className="qiProgressFill" style={{ width: `${pct}%` }} />
@@ -321,31 +321,19 @@ export function CultivateScreen() {
               <span className="cultivationRealmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
             </div>
           </div>
-          {(() => {
-            const debug = false;
-            return (
-              <div
-                className={`cultBarsCluster${debug ? ' debugOutline' : ''}`}
-                data-ui="bars-cluster"
-              >
-                <div data-ui="qi-bar">
-                  <QiProgressBar
-                    current={qi}
-                    required={breakthroughCost || '0'}
-                    pulse={isCultivating}
-                    isReady={canBreakthrough}
-                    rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
-                  />
-                </div>
-                <VerseMiniBar
-                  chapter={chapter}
-                  comprehension={comprehension}
-                  requirement={nextRequirement}
-                  title={verseTitle}
-                />
-              </div>
-            );
-          })()}
+          <QiProgressBar
+            current={qi}
+            required={breakthroughCost || '0'}
+            pulse={isCultivating}
+            isReady={canBreakthrough}
+            rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+          />
+          <VerseMiniBar
+            chapter={chapter}
+            comprehension={comprehension}
+            requirement={nextRequirement}
+            title={verseTitle}
+          />
           <div className="cultivationActionStack">
             <button
               type="button"

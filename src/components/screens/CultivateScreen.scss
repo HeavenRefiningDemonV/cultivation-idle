@@ -46,6 +46,15 @@
   inset: 0;
   z-index: 18;
   pointer-events: none;
+  /* Qi bar geometry note:
+     .progress-bar is 100px tall
+     visible frame sits at margin-top: 38px and has height: 38px
+     => dead space below visible frame: 100 - 38 - 38 = 24px
+  */
+  --qiBarDeadSpace: 24px;
+
+  /* How tight Verse bar should sit under the Qi frame. */
+  --qiVerseTargetGap: 6px;
 }
 
 .cultivationHudStack {
@@ -227,8 +236,11 @@
   transform: translateY(0);
 }
 
-.cultivationHudStack .progress-bar {
+.cultivationHudStack > .progress-bar {
   width: 100%;
+  margin-bottom: calc(
+    -1 * (var(--qiBarDeadSpace) + var(--cultivation-stack-gap-1) - var(--qiVerseTargetGap))
+  );
 }
 
 .cultivationRealmTags {
@@ -271,32 +283,6 @@
 .cultivationRealmTagSub {
   font-weight: 500;
   color: rgba(226, 232, 240, 0.7);
-}
-
-.cultBarsCluster {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  pointer-events: none;
-}
-
-.cultBarsCluster [data-ui="qi-bar"],
-.cultBarsCluster [data-ui="verse-bar"] {
-  pointer-events: auto;
-}
-
-.cultBarsCluster.debugOutline {
-  outline: 2px solid red;
-}
-
-.cultBarsCluster.debugOutline [data-ui="qi-bar"] {
-  outline: 2px solid blue;
-}
-
-.cultBarsCluster.debugOutline [data-ui="verse-bar"] {
-  outline: 2px solid green;
 }
 
 .cultivationActionStack {
