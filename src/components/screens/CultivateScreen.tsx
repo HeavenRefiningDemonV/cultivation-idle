@@ -16,7 +16,6 @@ import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import barLong from "../../assets/menus/bar_long.png";
-import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb';
 import { GameIcon } from '../../ui/icons';
@@ -28,8 +27,6 @@ const ACTIVITY_LABELS: Record<string, string> = {
   trial: 'Trial',
   ruins: 'Ruins',
 };
-
-const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V'];
 
 export function QiProgressBar({
   current,
@@ -89,12 +86,9 @@ export function CultivateScreen() {
   const stopActivity = useActivityStore((state) => state.stopActivity);
   const breathMode = useCultivationStore((state) => state.breathMode);
   const insight = useCultivationStore((state) => state.insight);
-  const chapter = useCultivationStore((state) => state.chapter);
-  const comprehension = useCultivationStore((state) => state.comprehension);
   const stability = useCultivationStore((state) => state.stability);
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
-  const nextRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter());
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
 
@@ -172,9 +166,6 @@ export function CultivateScreen() {
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
   const heartLawTags = (heartLawDef?.daoTags ?? []).map((tag) => tag.toLowerCase());
-  const heartLawName = heartLawDef?.name ?? 'Heart Law';
-  const verseRoman = ROMAN_NUMERALS[chapter - 1] ?? String(chapter);
-  const verseTitle = `Verse ${verseRoman} — ${heartLawName}\n${comprehension.toFixed(1)} / ${nextRequirement}`;
 
   const hasPerkForRealm = useCallback(
     (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
@@ -328,12 +319,7 @@ export function CultivateScreen() {
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
-          <VerseMiniBar
-            chapter={chapter}
-            comprehension={comprehension}
-            requirement={nextRequirement}
-            title={verseTitle}
-          />
+          {/* VerseMiniBar hidden per request. */}
           <div className="cultivationActionStack">
             <button
               type="button"
