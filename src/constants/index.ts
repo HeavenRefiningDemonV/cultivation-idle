@@ -11,7 +11,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Mortal',
     substages: 9,
     qiRequirement: '100',
-    qiPerSecond: '1000',        // TESTING: 1000x faster (was 1)
+    qiPerSecond: '1',
     baseStats: {
       hp: '100',
       atk: '10',
