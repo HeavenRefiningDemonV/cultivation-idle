@@ -12,7 +12,10 @@
     "test": "tsc --project tsconfig.tests.json && node --test tmp-tests/tests/**/*.js",
     "audio:audit": "node --experimental-strip-types scripts/audio/auditAudioAssets.ts",
     "validate:content": "node --experimental-strip-types scripts/validateContent.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:contracts": "tsc --project tsconfig.tests.json && node --test tmp-tests/tests/contracts/**/*.js",
+    "progression:report": "tsc --project tsconfig.tests.json && node tmp-tests/scripts/progressionContractReport.js",
+    "validate:progression-contract": "npm run test:contracts && npm run progression:report"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

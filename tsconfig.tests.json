@@ -13,6 +13,8 @@
   },
   "include": [
     "tests/**/*.ts",
+    "scripts/progressionContractReport.ts",
+    "src/systems/progression/**/*.ts",
     "src/systems/crafting/assistedPrompts.ts",
     "src/systems/crafting/craftingTypes.ts"
   ]
