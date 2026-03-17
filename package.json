@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "test:contracts": "tsc --project tsconfig.tests.json && node --test tmp-tests/tests/contracts/**/*.js",
     "progression:report": "tsc --project tsconfig.tests.json && node tmp-tests/scripts/progressionContractReport.js",
-    "validate:progression-contract": "npm run test:contracts && npm run progression:report"
+    "validate:progression-contract": "npm run test:contracts && npm run progression:report",
+    "docs:progression-contract": "tsc --project tsconfig.tests.json && node tmp-tests/scripts/generateProgressionContractDoc.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

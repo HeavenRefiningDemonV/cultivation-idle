@@ -72,6 +72,13 @@ export interface OfflineProgressionContract {
   pipelineId: 'offline_progression_v1';
   appliesTo: Array<'cultivation' | 'queued_actions' | 'expeditions'>;
   excludes: Array<'combat'>;
+  maxCatchupSeconds: number;
+  efficiencyModel: 'full_for_supported_systems';
+}
+
+export interface PathTruthContract {
+  canonicalField: 'lifePath';
+  legacyAliases: ['selectedPath'];
 }
 
 export interface PrestigeClassificationHookSet {
@@ -89,6 +96,7 @@ export interface ProgressionContract {
   cityUnlocks: CityUnlockContract[];
   contentCap: ContentCapContract;
   deferredSystems: DeferredSystemId[];
+  pathTruth: PathTruthContract;
   offline: OfflineProgressionContract;
   prestigeHooks: PrestigeClassificationHookSet;
   resetHooks: ResetClassificationHookSet;

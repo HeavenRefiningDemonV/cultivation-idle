@@ -8,12 +8,15 @@
     "noEmit": false,
     "allowImportingTsExtensions": false,
     "strict": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "esModuleInterop": true
   },
   "include": [
     "tests/**/*.ts",
     "scripts/progressionContractReport.ts",
+    "scripts/generateProgressionContractDoc.ts",
     "src/systems/progression/**/*.ts",
     "src/systems/crafting/assistedPrompts.ts",
     "src/systems/crafting/craftingTypes.ts"

@@ -7,7 +7,8 @@ export const createResetClassificationHooks = (): ResetClassificationHookSet => 
   classifyKey: (key: string) => {
     if (PERMANENT_KEYS.includes(key)) return 'permanent';
     if (PER_LIFE_KEYS.includes(key)) return 'per_life';
-    if (key.includes('retention') || key.includes('carryOver')) return 'hybrid';
+    const normalized = key.toLowerCase();
+    if (normalized.includes('retention') || normalized.includes('carryover')) return 'hybrid';
     return 'unknown';
   },
 });

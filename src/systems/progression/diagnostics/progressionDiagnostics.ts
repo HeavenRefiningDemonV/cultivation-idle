@@ -2,28 +2,22 @@ import type { MajorRealmId, ProgressionContract } from '../contract/index.js';
 import { normalizeGateItemAlias } from '../contract/index.js';
 import type { DiagnosticsInputs, DriftIssue } from './driftTypes.js';
 
-const ownerFor = (category: DriftIssue['category']): string => {
-  switch (category) {
-    case 'PATH_TRUTH_SPLIT':
-      return '1.2';
-    case 'GATE_NAMESPACE_SPLIT':
-    case 'TRIAL_ENTRY_CONTRADICTION':
-    case 'ORPHAN_GATE_ITEM':
-      return '1.3';
-    case 'CITY_UNLOCK_UNBOUND':
-    case 'UNKNOWN_REALM_REFERENCE':
-    case 'CONTENT_CAP_BREACH':
-      return '1.5';
-    case 'OFFLINE_PIPELINE_SPLIT':
-      return '1.6';
-    case 'PARTIAL_PRESTIGE_RESET':
-    case 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER':
-      return '1.7';
-    case 'LIVE_DEFERRED_LEAK':
-    case 'MIGRATION_ALIAS_PRESENT':
-      return '1.8';
-  }
+export const DRIFT_OWNER_PACKET: Record<DriftIssue['category'], string> = {
+  PATH_TRUTH_SPLIT: '1.2',
+  GATE_NAMESPACE_SPLIT: '1.3',
+  TRIAL_ENTRY_CONTRADICTION: '1.3',
+  CITY_UNLOCK_UNBOUND: '1.5',
+  PARTIAL_PRESTIGE_RESET: '1.7',
+  OFFLINE_PIPELINE_SPLIT: '1.6',
+  LIVE_DEFERRED_LEAK: '1.8',
+  UNKNOWN_REALM_REFERENCE: '1.5',
+  ORPHAN_GATE_ITEM: '1.3',
+  HIDDEN_PRESTIGE_RUNTIME_CONSUMER: '1.7',
+  MIGRATION_ALIAS_PRESENT: '1.8',
+  CONTENT_CAP_BREACH: '1.5',
 };
+
+const ownerFor = (category: DriftIssue['category']): string => DRIFT_OWNER_PACKET[category];
 
 const issue = (input: Omit<DriftIssue, 'suggestedOwnerPacket'>): DriftIssue => ({
   ...input,
