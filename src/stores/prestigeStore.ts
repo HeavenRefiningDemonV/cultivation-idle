@@ -525,7 +525,7 @@ export const usePrestigeStore = create<PrestigeState>()(
   }))
 );
 
-if (import.meta.env.DEV && typeof window !== 'undefined') {
+if (import.meta?.env?.DEV && typeof window !== 'undefined') {
   (window as any).devPrestigeBuyFirst = () => {
     const upgrades = getUpgradesFromContent();
     const first = upgrades[0];

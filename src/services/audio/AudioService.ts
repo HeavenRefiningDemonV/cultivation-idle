@@ -145,7 +145,7 @@ export class AudioService {
     try {
       await audio.play();
     } catch (error) {
-      if (import.meta.env.DEV) {
+      if (import.meta?.env?.DEV) {
         console.warn('[audio] Unable to play sound', id, error);
       }
     }
@@ -175,7 +175,7 @@ export class AudioService {
     try {
       await nextAudio.play();
     } catch (error) {
-      if (import.meta.env.DEV) {
+      if (import.meta?.env?.DEV) {
         console.warn('[audio] Unable to start ambience', id, error);
       }
       return;
@@ -247,7 +247,7 @@ export class AudioService {
     this.urlCache.set(key, null);
     if (!allowFallback && !this.missingIds.has(idForLogging)) {
       this.missingIds.add(idForLogging);
-      if (import.meta.env.DEV) {
+      if (import.meta?.env?.DEV) {
         console.warn(
           `[audio] missing asset for ${idForLogging} (expected /audio/${idForLogging}.ogg|mp3|wav)`,
         );
