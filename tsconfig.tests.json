@@ -15,5 +15,9 @@
     "tests/**/*.ts",
     "src/systems/crafting/assistedPrompts.ts",
     "src/systems/crafting/craftingTypes.ts"
+  ],
+  "exclude": [
+    "tests/helpers/**/*.ts",
+    "tests/integration/**/*.ts"
   ]
 }

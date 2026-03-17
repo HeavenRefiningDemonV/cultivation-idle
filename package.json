@@ -9,10 +9,11 @@
     "check:icons": "node --experimental-strip-types scripts/checkNoEmojiIcons.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsc --project tsconfig.tests.json && node --test tmp-tests/tests/**/*.js",
+    "test": "rm -rf tmp-tests && tsc --project tsconfig.tests.json && node --test tmp-tests/tests/**/*.test.js",
     "audio:audit": "node --experimental-strip-types scripts/audio/auditAudioAssets.ts",
     "validate:content": "node --experimental-strip-types scripts/validateContent.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:phase0": "node --experimental-strip-types --loader ./tests/helpers/tsResolveLoader.mjs --test tests/integration/phase0/*.test.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

@@ -43,7 +43,7 @@ export interface LoadedContentRaw {
 
 export async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url, {
-    cache: import.meta.env.DEV ? 'no-store' : undefined,
+    cache: import.meta?.env?.DEV ? 'no-store' : undefined,
   });
 
   if (!res.ok) {
