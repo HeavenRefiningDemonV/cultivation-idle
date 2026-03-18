@@ -57,10 +57,10 @@ const PITY_DROP_POOLS: Record<string, { itemId: string; rarity: ItemRarity }[]> 
  * players to complete the associated challenge before advancing.
  */
 export const GATE_ITEMS: Record<number, string> = {
-  0: 'foundation_pill', // Qi Condensation → Foundation Establishment
-  1: 'core_catalyst', // Foundation Establishment → Golden Core
-  2: 'core_stabilizer', // Golden Core → Nascent Soul
-  3: 'soul_condensate', // Nascent Soul → Soul Formation
+  0: 'gate_foundation_pill', // Qi Condensation → Foundation Establishment
+  1: 'gate_core_catalyst', // Foundation Establishment → Core Formation
+  2: 'gate_core_stabilizer', // Core Formation → Nascent Soul
+  3: 'gate_soul_condensate', // Nascent Soul → Soul Formation
 };
 
 function getItemRarity(itemId: string): ItemRarity {

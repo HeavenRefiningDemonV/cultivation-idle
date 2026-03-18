@@ -6,7 +6,7 @@ This document describes the Section 0 save migration framework and the first pop
 
 - Current save version: `2.0.0`
 
-## Active transform steps in 0.2
+## Active transform steps
 
 - `v2_0_0_seed_version_and_meta`
   - stamps `version: 2.0.0`
@@ -16,11 +16,11 @@ This document describes the Section 0 save migration framework and the first pop
   - resolves conflicts deterministically to canonical `selectedPath`
   - removes legacy `lifePath` from migrated current-save output after it has been consumed
 
-## Planned transforms / report-only coverage
+## Active/reporting coverage
 
 | Step ID | Kind | Owner packet | Purpose |
 |---|---|---|---|
-| `v2_0_0_plan_gate_item_alias_migration` | plannedTransform | `1.3` | detect legacy gate item IDs and prepare canonical remaps |
+| `v2_0_0_plan_gate_item_alias_migration` | transform | `1.3` | detect legacy gate item IDs, report the normalization plan, and remap quantities into canonical `gate_*` IDs on apply |
 | `v2_0_0_plan_semester_slice_clamp` | plannedTransform | `1.1` | detect out-of-slice progress and report the clamp plan |
 | `v2_0_0_clamp_semester_slice` | transform | `1.1` | clamp legacy over-cap realm truth to Spirit Severing and normalize cap-facing fields |
 | `v2_0_0_plan_deferred_prestige_refund` | plannedTransform | `1.6` | detect deferred prestige purchases and compute refund totals |
@@ -42,10 +42,10 @@ Key fixtures:
 - `legacy-partial-reset-residue`
 - `legacy-offline-split`
 
-## How later packets should activate remaining planned transforms
+## How later packets should handle the remaining planned transforms
 
 - Add/adjust step logic in `src/save/migrations/steps/v2_0_0/`
-- Upgrade `plannedTransform` to `transform` only when its owner packet lands and runtime truth is ready
+- Keep packet-owned transform/reporting behavior aligned with shipped runtime truth so dry-run and apply reports remain trustworthy
 - Keep owner-packet strings accurate so dry-run reports remain trustworthy
 
 ## Dry-run command examples

@@ -7,15 +7,18 @@ import { loadMigrationFixture } from './loadFixture.js';
 const passthrough = (save: Record<string, unknown>) => save;
 const readRecord = (value: unknown): Record<string, unknown> => (value && typeof value === 'object' ? value as Record<string, unknown> : {});
 
-test('gate item alias planning detects legacy IDs without mutating save in 0.2', async () => {
+test('gate item alias migration dry-run detects legacy IDs without mutating save', async () => {
   const fixture = await loadMigrationFixture('legacy-gate-item-ids');
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
   const inventoryState = readRecord(dry.migrated.inventoryState);
   const items = readRecord(inventoryState.items);
 
-  assert.equal(dry.report.plannedTransformSteps.includes('v2_0_0_plan_gate_item_alias_migration'), true);
+  assert.equal(dry.report.appliedTransformSteps.includes('v2_0_0_plan_gate_item_alias_migration'), true);
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'LEGACY_GATE_ITEM_ALIAS_PRESENT'), true);
   assert.equal(items.foundation_pill, 2);
+  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_gate_item_alias_migration');
+  assert.equal(step?.ownerPacket, '1.3');
+  assert.equal(step?.didMutate, false);
 });
 
 test('future-slice detection reports owner packet 1.1 without mutating save', async () => {

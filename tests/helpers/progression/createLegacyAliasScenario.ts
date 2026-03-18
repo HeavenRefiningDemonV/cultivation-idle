@@ -19,7 +19,7 @@ export const createLegacyAliasScenario = ({ contract }: ScenarioBuildContext, ov
         },
         pendingBreakthroughTo: 'foundation_establishment',
       },
-      notes: ['Intended for packet 1.2 path-truth drift and packet 1.8 alias migration tests.'],
+      notes: ['Intended for packet 1.2 path-truth drift and packet 1.3 gate-alias migration tests.'],
     },
     overrides,
   );

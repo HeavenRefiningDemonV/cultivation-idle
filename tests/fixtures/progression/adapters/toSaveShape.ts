@@ -1,6 +1,33 @@
-import type { ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
+import { normalizeGateItemAlias, type ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
+
+
+const canonicalizeInventoryItems = (items: Record<string, unknown>): Record<string, unknown> => {
+  const next = { ...items };
+  Object.entries(items).forEach(([itemId, qty]) => {
+    const canonicalId = normalizeGateItemAlias(itemId);
+    if (!canonicalId || canonicalId === itemId || typeof qty !== 'number' || qty <= 0) return;
+    const existing = typeof next[canonicalId] === 'number' ? (next[canonicalId] as number) : 0;
+    next[canonicalId] = existing + qty;
+    delete next[itemId];
+  });
+  return next;
+};
+
+const canonicalizeSaveShape = (saveShape: Record<string, unknown>): Record<string, unknown> => {
+  const inventoryState = saveShape.inventoryState;
+  if (!inventoryState || typeof inventoryState !== 'object') return saveShape;
+  const record = inventoryState as Record<string, unknown>;
+  if (!record.items || typeof record.items !== 'object') return saveShape;
+  return {
+    ...saveShape,
+    inventoryState: {
+      ...record,
+      items: canonicalizeInventoryItems(record.items as Record<string, unknown>),
+    },
+  };
+};
 
 const scenarioToSaveShape = (scenario: ProgressionScenario, contract: ProgressionContract): Record<string, unknown> => {
   const currentRealm = contract.majorRealms[scenario.realmState.currentRealm];
@@ -69,8 +96,8 @@ export const toSaveShape = (
   buildResult: FixtureBuildResult,
   contract: ProgressionContract,
 ): Record<string, unknown> | null => {
-  if (buildResult.saveShape) return buildResult.saveShape;
-  if (buildResult.migrationFixture) return buildResult.migrationFixture.data as Record<string, unknown>;
-  if (buildResult.scenario) return scenarioToSaveShape(buildResult.scenario, contract);
+  if (buildResult.saveShape) return canonicalizeSaveShape(buildResult.saveShape);
+  if (buildResult.migrationFixture) return canonicalizeSaveShape(buildResult.migrationFixture.data as Record<string, unknown>);
+  if (buildResult.scenario) return canonicalizeSaveShape(scenarioToSaveShape(buildResult.scenario, contract));
   return null;
 };

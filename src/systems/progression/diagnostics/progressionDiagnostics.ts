@@ -13,7 +13,7 @@ export const DRIFT_OWNER_PACKET: Record<DriftIssue['category'], string> = {
   UNKNOWN_REALM_REFERENCE: '1.5',
   ORPHAN_GATE_ITEM: '1.3',
   HIDDEN_PRESTIGE_RUNTIME_CONSUMER: '1.7',
-  MIGRATION_ALIAS_PRESENT: '1.8',
+  MIGRATION_ALIAS_PRESENT: '1.3',
   CONTENT_CAP_BREACH: '1.1',
 };
 
@@ -165,7 +165,7 @@ export const collectProgressionDiagnostics = (contract: ProgressionContract, inp
           severity: 'info',
           summary: `Trial ${trial.id} still uses legacy gate item alias ${trial.gateItemId}.`,
           evidence: [{ path: 'content/trials', detail: `normalized -> ${normalized}` }],
-          fixStrategySummary: 'Keep alias support temporarily; later packet should rewrite authoring to canonical IDs.',
+          fixStrategySummary: 'Packet 1.3 should normalize gate aliases to canonical gate_* ids while keeping legacy inputs limited to migration compatibility coverage.',
           autoFixable: true,
         }),
       );

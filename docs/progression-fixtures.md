@@ -50,7 +50,7 @@ Current expected categories are:
 - `legacy-partial-reset-residue` → `PARTIAL_PRESTIGE_RESET`
 - `legacy-offline-split` → `OFFLINE_PIPELINE_SPLIT`
 
-These warnings are intentional and should not be “fixed” by mutating the fixtures unless the owning future packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures.
+These warnings are intentional and should not be “fixed” by mutating the migration-input fixtures unless the owning packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures. For packet 1.3, legacy gate aliases remain valid migration inputs, but canonical save-shape/current-shape outputs should use `gate_*` item ids.
 
 ## Adapter model
 

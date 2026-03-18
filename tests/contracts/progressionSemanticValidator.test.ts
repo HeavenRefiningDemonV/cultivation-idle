@@ -85,3 +85,17 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
   assert.equal(contentCapIssues.length > 0, true);
   assert.equal(contentCapIssues.every((entry) => entry.suggestedOwnerPacket === '1.1'), true);
 });
+
+
+test('fixture/save-shape truth keeps packet 1.3 alias cleanup in migration inputs only', async () => {
+  const contract = await loadProgressionContract();
+  const issues = validateProgressionSemantics({
+    rawContent: await loadRawContent(),
+    scenarios: [createLegacyAliasScenario({ contract })],
+    migrationFixtures: [{ name: 'legacy-gate-item-ids', data: await readJson(path.join(FIXTURE_DIR, 'legacy-gate-item-ids.json')) }],
+  });
+
+  const aliasIssues = issues.filter((entry) => entry.category === 'MIGRATION_ALIAS_PRESENT');
+  assert.equal(aliasIssues.length > 0, true);
+  assert.equal(aliasIssues.every((entry) => entry.suggestedOwnerPacket === '1.3'), true);
+});

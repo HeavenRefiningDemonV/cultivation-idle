@@ -19,7 +19,7 @@ export const legacyGateAliasFixture: ProgressionFixtureDefinition = {
     cityIds: ['city_pinewind_hamlet', 'city_stonecrag_town'],
     tags: ['legacy', 'migration', 'gate'],
     adapterAvailability: { contractScenario: true, saveShape: true, migrationFixture: true },
-    notes: ['Alias cleanup belongs to packet 1.3 / 1.8 follow-up work.'],
+    notes: ['Legacy gate ids remain valid migration-input coverage, but canonical save-shape outputs should normalize them during packet 1.3.'],
   },
   build: async () => ({ migrationFixture: { name: 'legacy-gate-item-ids', data: await loadMigrationFixture('legacy-gate-item-ids') } }),
 };

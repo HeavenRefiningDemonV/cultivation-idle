@@ -100,3 +100,20 @@ test('content-cap breach ownership stays on packet 1.1', () => {
   const breach = diagnostics.find((entry) => entry.category === 'CONTENT_CAP_BREACH');
   assert.equal(breach?.suggestedOwnerPacket, '1.1');
 });
+
+
+test('migration alias ownership stays on packet 1.3', () => {
+  const contract = buildProgressionContract(baseContent);
+  const diagnostics = collectProgressionDiagnostics(contract, {
+    authoredContent: {
+      economyRealms: ['qi_condensation', 'foundation_establishment'],
+      cities: [{ id: 'city_pinewind_hamlet', unlockMajorRealm: 'qi_condensation' }],
+      trials: [{ id: 'trial_bad', gateItemId: 'foundation_pill', fromMajorRealm: 'qi_condensation', toMajorRealm: 'foundation_establishment' }],
+      items: ['gate_foundation_pill'],
+    },
+    runtimeFileTextByPath: {},
+  });
+
+  const aliasIssue = diagnostics.find((entry) => entry.category === 'MIGRATION_ALIAS_PRESENT');
+  assert.equal(aliasIssue?.suggestedOwnerPacket, '1.3');
+});

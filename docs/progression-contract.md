@@ -93,7 +93,7 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 | UNKNOWN_REALM_REFERENCE | 1.5 |
 | ORPHAN_GATE_ITEM | 1.3 |
 | HIDDEN_PRESTIGE_RUNTIME_CONSUMER | 1.7 |
-| MIGRATION_ALIAS_PRESENT | 1.8 |
+| MIGRATION_ALIAS_PRESENT | 1.3 |
 | CONTENT_CAP_BREACH | 1.1 |
 
 ## 11) Test harness overview
@@ -105,11 +105,10 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 
 ## 12) Future packet ownership map
 
-- **0.2**: save/alias migration activation using legacy scenario fixtures.
+- **1.3**: gate entry/reward/consumption truth unification plus legacy gate alias migration activation.
 - **0.3**: validator expansion to enforce contract truth across all content surfaces.
 - **1.1**: contract ingestion foundations in runtime adapters.
 - **1.2**: path truth unification (life-start path as mechanical truth).
-- **1.3**: gate entry/reward/consumption truth unification.
 - **1.4**: gate flow hardening around trial-to-breakthrough lifecycle.
 - **1.5**: city unlock timing unified to realm entry.
 - **1.6**: offline pipeline consolidation to one contract pipeline.

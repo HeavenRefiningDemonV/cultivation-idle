@@ -128,8 +128,8 @@ const validateScenarioSemantics = (
         severity: 'info',
         summary: `Scenario ${scenario.kind} still carries legacy gate item alias ${legacyItemId}.`,
         evidence: [{ path: `scenario:${scenario.kind}`, detail: `normalized -> ${normalizeGateItemAlias(legacyItemId)}` }],
-        suggestedOwnerPacket: '1.8',
-        fixStrategySummary: 'Preserve only explicitly legacy fixtures with alias inventory keys.',
+        suggestedOwnerPacket: '1.3',
+        fixStrategySummary: 'Retain alias inventory keys only in explicitly legacy migration inputs and canonicalize current-shape outputs to gate_* ids.',
         autoFixable: true,
       });
     });
@@ -189,8 +189,8 @@ const readMigrationFixtureIssues = (
           severity: 'info',
           summary: `Migration fixture ${name} still stores legacy gate item alias ${itemId}.`,
           evidence: [{ path: `fixture:${name}`, detail: `normalized -> ${normalizeGateItemAlias(itemId)}` }],
-          suggestedOwnerPacket: '1.8',
-          fixStrategySummary: 'Use these fixtures to prove alias migration behavior without reintroducing runtime truth splits.',
+          suggestedOwnerPacket: '1.3',
+          fixStrategySummary: 'Use these fixtures to prove packet 1.3 alias migration behavior without reintroducing legacy ids into canonical current-shape outputs.',
           autoFixable: true,
         });
       });

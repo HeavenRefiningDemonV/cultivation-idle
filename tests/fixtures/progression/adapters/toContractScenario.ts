@@ -1,7 +1,21 @@
 import type { GateTransitionId, MajorRealmId, ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
-import { getOfflineProgressionContract, getTransitionByFromRealm } from '../../../../src/systems/progression/contract/index.js';
+import { getOfflineProgressionContract, getTransitionByFromRealm, normalizeGateItemAlias } from '../../../../src/systems/progression/contract/index.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
+
+
+const canonicalizeItems = (items: Record<string, unknown>): Record<string, unknown> => {
+  const next: Record<string, unknown> = {};
+  Object.entries(items).forEach(([itemId, qty]) => {
+    const canonicalId = normalizeGateItemAlias(itemId) ?? itemId;
+    if (typeof qty === 'number' && typeof next[canonicalId] === 'number') {
+      next[canonicalId] = (next[canonicalId] as number) + qty;
+      return;
+    }
+    next[canonicalId] = qty;
+  });
+  return next;
+};
 
 const realmByIndex = (contract: ProgressionContract, index: number): MajorRealmId => {
   const match = Object.values(contract.majorRealms).find((realm) => realm.index === index);
@@ -78,7 +92,18 @@ export const toContractScenario = (
   if (buildResult.saveShape) return projectSaveShapeToScenario(buildResult.saveShape, contract);
   if (buildResult.migrationFixture) {
     const fixtureData = buildResult.migrationFixture.data as Record<string, unknown>;
-    return projectSaveShapeToScenario({ ...fixtureData, __fixtureId: buildResult.migrationFixture.name }, contract);
+    const inventoryState = (fixtureData.inventoryState && typeof fixtureData.inventoryState === 'object')
+      ? fixtureData.inventoryState as Record<string, unknown>
+      : null;
+    const items = inventoryState?.items && typeof inventoryState.items === 'object'
+      ? inventoryState.items as Record<string, unknown>
+      : null;
+    const canonicalItems = items ? canonicalizeItems(items) : undefined;
+    return projectSaveShapeToScenario({
+      ...fixtureData,
+      __fixtureId: buildResult.migrationFixture.name,
+      inventoryState: inventoryState && canonicalItems ? { ...inventoryState, items: canonicalItems } : fixtureData.inventoryState,
+    }, contract);
   }
   return null;
 };

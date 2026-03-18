@@ -176,8 +176,8 @@ export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
   },
 
   // ===== BREAKTHROUGH ITEMS =====
-  foundation_pill: {
-    id: 'foundation_pill',
+  gate_foundation_pill: {
+    id: 'gate_foundation_pill',
     name: 'Foundation Pill',
     description: 'Required to breakthrough from Qi Condensation to Foundation Establishment.',
     type: 'material',
@@ -187,8 +187,8 @@ export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
     stackable: true,
     maxStack: 99,
   },
-  core_catalyst: {
-    id: 'core_catalyst',
+  gate_core_catalyst: {
+    id: 'gate_core_catalyst',
     name: 'Core Catalyst',
     description: 'Required to breakthrough from Foundation Establishment to Core Formation.',
     type: 'material',
@@ -198,8 +198,8 @@ export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
     stackable: true,
     maxStack: 99,
   },
-  core_stabilizer: {
-    id: 'core_stabilizer',
+  gate_core_stabilizer: {
+    id: 'gate_core_stabilizer',
     name: 'Core Stabilizer',
     description: 'Required to breakthrough from Core Formation to Nascent Soul.',
     type: 'material',
@@ -209,8 +209,8 @@ export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
     stackable: true,
     maxStack: 99,
   },
-  soul_condensate: {
-    id: 'soul_condensate',
+  gate_soul_condensate: {
+    id: 'gate_soul_condensate',
     name: 'Soul Condensate',
     description: 'Required to breakthrough from Nascent Soul to Soul Formation.',
     type: 'material',
