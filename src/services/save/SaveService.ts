@@ -10,6 +10,7 @@ import {
   stopAutosave as legacyStopAutosave,
   getSaveInfo as legacyGetSaveInfo,
   getLastLoadedSaveSnapshot,
+  getLastLoadMigrationReport,
 } from '../../utils/saveload';
 import { GameEvents } from '../events/GameEvents';
 import { apply as applyOfflineCatchup } from '../time/OfflineCatchup';
@@ -78,6 +79,9 @@ export const SaveService = {
   },
   getSaveInfo() {
     return legacyGetSaveInfo();
+  },
+  getLastMigrationReport() {
+    return getLastLoadMigrationReport();
   },
   startAutosave(): number {
     return legacyStartAutosave();

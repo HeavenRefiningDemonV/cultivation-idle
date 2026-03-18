@@ -18,6 +18,8 @@
     "scripts/progressionContractReport.ts",
     "scripts/generateProgressionContractDoc.ts",
     "src/systems/progression/**/*.ts",
+    "src/save/migrations/**/*.ts",
+    "scripts/saveMigrationDryRun.ts",
     "src/systems/crafting/assistedPrompts.ts",
     "src/systems/crafting/craftingTypes.ts"
   ]

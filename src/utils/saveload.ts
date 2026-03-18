@@ -29,6 +29,7 @@ import { useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
+import { getLastMigrationReport } from '../save/migrations';
 import { buildOfflineContext, type OfflineContext } from '../systems/offline';
 
 /**
@@ -40,6 +41,7 @@ const BACKUP_B_KEY = 'cultivation-idle-save-v3-backup-B';
 const BACKUP_C_KEY = 'cultivation-idle-save-v3-backup-C';
 
 let lastLoadedSaveData: SaveData | null = null;
+let lastLoadMigrationReport: import('../save/migrations').MigrationRunReport | null = null;
 
 /**
  * Encryption key - in production, this could be more sophisticated
@@ -773,6 +775,12 @@ function decryptSaveData(encrypted: string): SaveData | null {
 
     const data = JSON.parse(jsonString);
     const migrated = migrateSave(data);
+    lastLoadMigrationReport = getLastMigrationReport();
+    const migrationSummary = lastLoadMigrationReport?.summaryLines.join(' | ');
+    if (migrationSummary) {
+      console.info(`[SaveLoad] Migration report: ${migrationSummary}`);
+    }
+
     if (!validateSaveData(migrated)) {
       console.warn('[SaveLoad] Migrated save data failed validation, using defaults');
       return buildDefaultSaveState();
@@ -803,6 +811,10 @@ export function consumeOfflineContext(): OfflineContext | null {
 
 export function getLastLoadedSaveSnapshot(): SaveData | null {
   return lastLoadedSaveData;
+}
+
+export function getLastLoadMigrationReport(): import('../save/migrations').MigrationRunReport | null {
+  return lastLoadMigrationReport;
 }
 
 /**

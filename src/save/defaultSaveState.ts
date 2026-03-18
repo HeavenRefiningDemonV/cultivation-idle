@@ -33,7 +33,9 @@ import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../store
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 
-export const SAVE_VERSION = '1.0.13';
+import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations';
+
+export const SAVE_VERSION = CURRENT_SAVE_VERSION;
 
 const REQUIRED_SAVE_KEYS = [
   'cityState',
@@ -1122,40 +1124,34 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   return merged;
 }
 
-function parseVersion(value: string): number[] {
-  return value
-    .split('.')
-    .map((segment) => Number(segment))
-    .map((num) => (Number.isFinite(num) ? num : 0));
-}
 
-function isVersionLessThan(current: string, target: string): boolean {
-  const currentParts = parseVersion(current);
-  const targetParts = parseVersion(target);
-  const maxLength = Math.max(currentParts.length, targetParts.length);
-  for (let i = 0; i < maxLength; i += 1) {
-    const currentValue = currentParts[i] ?? 0;
-    const targetValue = targetParts[i] ?? 0;
-    if (currentValue < targetValue) return true;
-    if (currentValue > targetValue) return false;
+const preserveUnknownFields = (raw: unknown, normalized: unknown): unknown => {
+  if (Array.isArray(raw) || Array.isArray(normalized)) {
+    return normalized;
   }
-  return false;
-}
+  if (!isRecord(raw) || !isRecord(normalized)) {
+    return normalized;
+  }
+
+  const result: Record<string, unknown> = { ...normalized };
+  for (const [key, rawValue] of Object.entries(raw)) {
+    if (!(key in result)) {
+      result[key] = rawValue;
+      continue;
+    }
+    result[key] = preserveUnknownFields(rawValue, result[key]);
+  }
+
+  return result;
+};
 
 export function migrateSave(raw: unknown): SaveData {
-  const record = isRecord(raw) ? raw : {};
-  const existingVersion = typeof record.version === 'string' ? record.version : '0.0.0';
+  const { migrated } = migrateIncomingSaveForHydration(raw, (candidate) => {
+    const normalized = mergeWithDefaults(candidate);
+    return preserveUnknownFields(candidate, normalized) as Record<string, unknown>;
+  });
 
-  let working: Record<string, unknown> = { ...record };
-
-  if (isVersionLessThan(existingVersion, SAVE_VERSION)) {
-    console.info(`[SaveLoad] Migrating save from ${existingVersion} to ${SAVE_VERSION}`);
-  }
-
-  const merged = mergeWithDefaults(working);
-  merged.version = SAVE_VERSION;
-
-  return merged;
+  return migrated as SaveData;
 }
 
 export function assertRequiredSaveKeys(saveData: SaveData): void {
