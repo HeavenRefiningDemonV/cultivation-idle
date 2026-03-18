@@ -232,7 +232,7 @@ export function PrestigeRitualModal({
                 </li>
                 <li>
                   <GameIcon icon="inkCheck" size={12} decorative />
-                  <span>Keep spirit root floor level</span>
+                  <span>Receive a fresh spirit root for the next life</span>
                 </li>
               </ul>
             </section>

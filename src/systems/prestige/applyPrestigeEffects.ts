@@ -5,6 +5,7 @@ import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore } from '../../stores/expeditionStore';
 import { useHeartLawStore } from '../../stores/heartLawStore';
 import { BASE_ACTIVE_SLOTS, useTechniqueStore } from '../../stores/techniqueStore';
+import { getVisiblePrestigeUpgrades } from './runtime/prestigeRuntimeCatalog.js';
 
 type PrestigeDerivedUnlocks = {
   extraTechniqueSlots: number;
@@ -24,16 +25,11 @@ function getNumericEffect(effect: unknown, key: string): number | null {
 function applyEffectAccumulator(
   effect: unknown,
   level: number,
-  totals: { extraTechniqueSlots: number; expeditionSlots: number },
+  totals: { extraTechniqueSlots: number },
 ) {
   const extraTechniqueSlots = getNumericEffect(effect, 'extraTechniqueSlots');
   if (extraTechniqueSlots) {
     totals.extraTechniqueSlots += extraTechniqueSlots * level;
-  }
-
-  const expeditionSlotsAdd = getNumericEffect(effect, 'expeditionSlotsAdd');
-  if (expeditionSlotsAdd) {
-    totals.expeditionSlots += expeditionSlotsAdd * level;
   }
 }
 
@@ -53,9 +49,9 @@ export function computePrestigeDerivedUnlocks(
     };
   }
 
-  const upgrades = content.raw.prestige_store.upgrades ?? [];
+  const upgrades = getVisiblePrestigeUpgrades(content.raw);
   const unlockedTiers = new Set<string>();
-  const totals = { extraTechniqueSlots: 0, expeditionSlots: 0 };
+  const totals = { extraTechniqueSlots: 0 };
 
   upgrades.forEach((def: PrestigeUpgradeDef) => {
     const level = getUpgradeLevel(purchases, def.id);
@@ -76,7 +72,7 @@ export function computePrestigeDerivedUnlocks(
 
   return {
     extraTechniqueSlots: totals.extraTechniqueSlots,
-    expeditionSlots: totals.expeditionSlots,
+    expeditionSlots: 0,
     unlockedHeartLawIds,
   };
 }

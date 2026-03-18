@@ -7,6 +7,11 @@ import { SaveService } from '../services/save/SaveService';
 import { useContentStore } from './contentStore';
 import type { PrestigeUpgradeDef } from '../content';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
+import {
+  canPurchasePrestigeNode,
+  getPrestigeNodeRuntimeStatus,
+  isPrestigeNodeVisible,
+} from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -148,7 +153,7 @@ interface PrestigeState {
   updateHighestRealm: (realmIndex: number) => void;
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
-  getCultivationMultiplier: () => number;
+  getOfflineEfficiencyMultiplier: () => number;
   initializeUpgrades: () => void;
   getUpgradeEffectByStat: (stat: string) => number;
 
@@ -311,8 +316,14 @@ export const usePrestigeStore = create<PrestigeState>()(
     checkPrereqs: (upgradeId) => {
       const def = getUpgradeById(upgradeId);
       if (!def) return { ok: false, reason: 'Upgrade not found' };
+      const runtimeCheck = canPurchasePrestigeNode(upgradeId, useContentStore.getState().raw);
+      if (!runtimeCheck.ok) return runtimeCheck;
       const prereqs = def.prereq ?? [];
       for (const prereq of prereqs) {
+        const prereqRuntimeStatus = getPrestigeNodeRuntimeStatus(prereq.upgradeId, useContentStore.getState().raw);
+        if (prereqRuntimeStatus !== 'visible_live') {
+          return { ok: false, reason: 'Upgrade is not available in the current live prestige tree' };
+        }
         const current = get().purchasesById[prereq.upgradeId] ?? 0;
         if (current < prereq.minLevel) {
           const prereqDef = getUpgradeById(prereq.upgradeId);
@@ -326,6 +337,8 @@ export const usePrestigeStore = create<PrestigeState>()(
     purchaseUpgrade: (upgradeId) => {
       const def = getUpgradeById(upgradeId);
       if (!def) return { ok: false, reason: 'Upgrade not found' };
+      const runtimeCheck = canPurchasePrestigeNode(upgradeId, useContentStore.getState().raw);
+      if (!runtimeCheck.ok) return runtimeCheck;
 
       const current = get().purchasesById[upgradeId] ?? 0;
       if (current >= def.maxLevel) return { ok: false, reason: 'Already maxed' };
@@ -367,6 +380,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     getUpgradeEffectByStat: (stat: string) => {
       let total = 0;
       getUpgradesFromContent().forEach((def) => {
+        if (!isPrestigeNodeVisible(def.id, useContentStore.getState().raw)) return;
         if (def.stat !== stat) return;
         const current = get().purchasesById[def.id] ?? 0;
         if (current <= 0) return;
@@ -387,9 +401,9 @@ export const usePrestigeStore = create<PrestigeState>()(
       return 1 + damageBonus;
     },
 
-    getCultivationMultiplier: () => {
-      const cultivationBonus = get().getUpgradeEffectByStat('offlineEfficiencyAdd');
-      return 1 + cultivationBonus;
+    getOfflineEfficiencyMultiplier: () => {
+      const offlineEfficiencyBonus = get().getUpgradeEffectByStat('offlineEfficiencyAdd');
+      return 1 + offlineEfficiencyBonus;
     },
 
     initializeUpgrades: () => {
@@ -404,9 +418,6 @@ export const usePrestigeStore = create<PrestigeState>()(
      * Generate a new spirit root based on prestige upgrades
      */
     generateSpiritRoot: (resetRerollCount = true) => {
-      const state = get();
-      const floor = state.getUpgradeEffectByStat('spiritRootFloor');
-
       // Quality roll (1-5: Mortal, Common, Uncommon, Rare, Legendary)
       // Base: 60% Mortal, 25% Common, 10% Uncommon, 4% Rare, 1% Legendary
       const qualityRoll = Math.random();
@@ -417,9 +428,6 @@ export const usePrestigeStore = create<PrestigeState>()(
       else if (qualityRoll < 0.15) grade = 3; // Uncommon - 10%
       else if (qualityRoll < 0.40) grade = 2; // Common - 25%
       else grade = 1; // Mortal - 60%
-
-      // Apply floor (minimum quality from prestige)
-      grade = Math.max(grade, Math.min(floor, 5)) as SpiritRootGrade;
 
       // Element roll (equal chances)
       const element = ELEMENTS[Math.floor(Math.random() * ELEMENTS.length)];
@@ -527,7 +535,10 @@ export const usePrestigeStore = create<PrestigeState>()(
 );
 
 if (import.meta.env.DEV && typeof window !== 'undefined') {
-  (window as any).devPrestigeBuyFirst = () => {
+  const devWindow = window as typeof window & {
+    devPrestigeBuyFirst?: () => { ok: boolean; reason?: string };
+  };
+  devWindow.devPrestigeBuyFirst = () => {
     const upgrades = getUpgradesFromContent();
     const first = upgrades[0];
     if (!first) {

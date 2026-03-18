@@ -8,7 +8,7 @@ import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index
 import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
 import type { PrestigeUpgradeDef } from '../../content';
-import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
+import { PRESTIGE_CATEGORIES, buildPrestigeCategorySections } from '../../features/prestige/prestigeCategories';
 import type { PrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
 import { PrestigeUpgradePanelCard } from '../prestige/PrestigeUpgradePanelCard';
@@ -35,7 +35,7 @@ export function PrestigeScreen() {
   const checkPrereqs = usePrestigeStore((state) => state.checkPrereqs);
   const getApBreakdown = usePrestigeStore((state) => state.getApBreakdown);
   const isContentLoaded = useContentStore((state) => state.isLoaded);
-  const getPrestigeUpgrades = useContentStore((state) => state.getPrestigeUpgrades);
+  const getVisiblePrestigeUpgrades = useContentStore((state) => state.getVisiblePrestigeUpgrades);
 
   const realm = useGameStore((state) => state.realm);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -65,7 +65,7 @@ export function PrestigeScreen() {
     ? 'You are ready to reincarnate.'
     : 'Reach Foundation Establishment to unlock Reincarnation.';
   const prestigeActionLabel = canPrestigeNow ? 'Begin Reincarnation Ritual' : 'Reincarnation Sealed';
-  const keepBenefits = ['Keep all Ascension Points', 'Keep all AP upgrades', 'Keep spirit root floor level'];
+  const keepBenefits = ['Keep all Ascension Points', 'Keep all AP upgrades', 'Receive a fresh spirit root'];
   const resetCosts = ['Reset cultivation progress', 'Reset inventory & gold'];
   const visibleKeepBenefits = showBenefitDetails ? keepBenefits : keepBenefits.slice(0, 2);
   const visibleResetCosts = showBenefitDetails ? resetCosts : resetCosts.slice(0, 1);
@@ -143,26 +143,11 @@ export function PrestigeScreen() {
 
   const upgradeList = useMemo(() => {
     if (!isContentLoaded) return [];
-    return getPrestigeUpgrades();
-  }, [getPrestigeUpgrades, isContentLoaded]);
+    return getVisiblePrestigeUpgrades();
+  }, [getVisiblePrestigeUpgrades, isContentLoaded]);
 
   const categorizedUpgrades = useMemo(() => {
-    const buckets = new Map<ReturnType<typeof getPrestigeCategoryKey>, PrestigeUpgradeDef[]>();
-    upgradeList.forEach((upgrade) => {
-      const key = getPrestigeCategoryKey(upgrade.id);
-      const list = buckets.get(key) ?? [];
-      list.push(upgrade);
-      buckets.set(key, list);
-    });
-
-    return PRESTIGE_CATEGORIES
-      .slice()
-      .sort((a, b) => a.order - b.order)
-      .map((category) => ({
-        category,
-        upgrades: buckets.get(category.key) ?? [],
-      }))
-      .filter((section) => section.upgrades.length > 0);
+    return buildPrestigeCategorySections(upgradeList);
   }, [upgradeList]);
 
   const categoryLabelMap = useMemo(() => {
@@ -177,7 +162,11 @@ export function PrestigeScreen() {
     const scrollContainer = decreesAreaRef.current;
     if (!scrollContainer || categorizedUpgrades.length === 0) return;
 
-    if (!activeCategory) {
+    const hasActiveCategory = activeCategory
+      ? categorizedUpgrades.some((section) => section.category.key === activeCategory)
+      : false;
+
+    if (!hasActiveCategory) {
       setActiveCategory(categorizedUpgrades[0]?.category.key ?? null);
     }
 

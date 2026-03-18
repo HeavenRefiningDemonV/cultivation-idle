@@ -1,3 +1,5 @@
+import type { PrestigeUpgradeDef } from '../../content/index.js';
+
 export type PrestigeCategoryKey =
   | 'laws'
   | 'combat'
@@ -19,21 +21,21 @@ export const PRESTIGE_CATEGORIES: PrestigeCategoryDef[] = [
   {
     key: 'laws',
     title: 'Heavenly Laws',
-    subtitle: 'Cultivation foundations, heart laws, and core efficiency.',
+    subtitle: 'Idle Qi, offline insight, and heart law access.',
     iconLabel: 'Heavenly Laws',
     order: 1,
   },
   {
     key: 'combat',
     title: 'Martial Ascension',
-    subtitle: 'Battle-focused power and boss progression upgrades.',
+    subtitle: 'Battle-focused power with live combat impact.',
     iconLabel: 'Combat',
     order: 2,
   },
   {
     key: 'techniques',
     title: 'Secret Techniques',
-    subtitle: 'Technique mastery, slots, and fragment growth.',
+    subtitle: 'Expand live technique capacity for future runs.',
     iconLabel: 'Techniques',
     order: 3,
   },
@@ -131,3 +133,22 @@ export function getPrestigeCategoryKey(upgradeId: string): PrestigeCategoryKey {
 
   return 'misc';
 }
+
+export const buildPrestigeCategorySections = (upgrades: PrestigeUpgradeDef[]) => {
+  const buckets = new Map<PrestigeCategoryKey, PrestigeUpgradeDef[]>();
+  upgrades.forEach((upgrade) => {
+    const key = getPrestigeCategoryKey(upgrade.id);
+    const list = buckets.get(key) ?? [];
+    list.push(upgrade);
+    buckets.set(key, list);
+  });
+
+  return PRESTIGE_CATEGORIES
+    .slice()
+    .sort((a, b) => a.order - b.order)
+    .map((category) => ({
+      category,
+      upgrades: buckets.get(category.key) ?? [],
+    }))
+    .filter((section) => section.upgrades.length > 0);
+};

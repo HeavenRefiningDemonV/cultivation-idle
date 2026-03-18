@@ -25,7 +25,7 @@ export function getHeartLawUnlockInfo(tier: string | undefined | null): HeartLaw
   }
 
   try {
-    const upgrades = useContentStore.getState().getPrestigeUpgrades();
+    const upgrades = useContentStore.getState().getVisiblePrestigeUpgrades();
     const match = upgrades.find((upgrade) => {
       const unlocks = (upgrade as { unlocks?: string[] }).unlocks;
       return Array.isArray(unlocks) && unlocks.includes(tier);

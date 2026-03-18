@@ -21,6 +21,10 @@ import {
   isRefineBlueprint,
   isRuneBlueprint,
 } from '../content';
+import {
+  getPrestigeRuntimeCatalog,
+  getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime,
+} from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
 
 interface ContentMaps {
   citiesById: Record<string, CityDef>;
@@ -32,7 +36,7 @@ interface ContentMaps {
   trialsById: Record<string, TrialDef>;
   trialsByCityId: Record<string, TrialDef>;
   ruinsById: Record<string, RuinDef>;
-  runesById: Record<string, { id: string; [k: string]: any }>;
+  runesById: Record<string, { id: string; [k: string]: unknown }>;
   heartLawsById: Record<string, HeartLawDef>;
   prestigeUpgradesById: Record<string, PrestigeUpgradeDef>;
   apothecariesById: Record<string, ApothecaryShopDef>;
@@ -61,7 +65,9 @@ interface ContentStoreState {
   getHeartLaw: (id: string) => HeartLawDef;
   listHeartLaws: () => HeartLawDef[];
   getPrestigeStoreConfig: () => ValidatedContent['prestige_store'];
-  getPrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
+  getAllPrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
+  getVisiblePrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
+  getPrestigeRuntimeCatalog: () => ReturnType<typeof getPrestigeRuntimeCatalog>;
 }
 
 const emptyMaps: ContentMaps = {
@@ -138,10 +144,10 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
           ruinsById: Object.fromEntries(ruins.map((ruin) => [ruin.id, ruin])),
           apothecariesById: Object.fromEntries(apothecaries.map((shop) => [shop.id, shop])),
           apothecariesByCityId: Object.fromEntries(apothecaries.map((shop) => [shop.cityId, shop])),
-          runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune as any])),
+          runesById: Object.fromEntries(runes.map((rune) => [rune.id, rune as { id: string; [k: string]: unknown }])),
           heartLawsById: Object.fromEntries(heartLaws.map((law) => [law.id, law])),
           prestigeUpgradesById: Object.fromEntries(
-            prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade as any]),
+            prestigeUpgrades.map((upgrade) => [upgrade.id, upgrade]),
           ),
         };
 
@@ -300,8 +306,18 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     return raw.prestige_store;
   },
 
-  getPrestigeUpgrades: () => {
+  getAllPrestigeUpgrades: () => {
     return get().getPrestigeStoreConfig().upgrades ?? [];
+  },
+
+  getVisiblePrestigeUpgrades: () => {
+    const { raw } = get();
+    return getVisiblePrestigeUpgradesFromRuntime(raw);
+  },
+
+  getPrestigeRuntimeCatalog: () => {
+    const { raw } = get();
+    return getPrestigeRuntimeCatalog(raw);
   },
 }));
 

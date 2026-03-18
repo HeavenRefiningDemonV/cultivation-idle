@@ -89,7 +89,6 @@ const installRuntimeDeps = (items: Record<string, number>) => {
     updateHighestRealm: () => {},
     getQiMultiplier: () => 1,
     getCombatMultiplier: () => 1,
-    getCultivationMultiplier: () => 1,
     getSpiritRootTotalMultiplier: () => 1,
     spiritRoot: null,
   }));
