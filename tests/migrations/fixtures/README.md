@@ -1,9 +1,9 @@
 # Migration Fixtures
 
-- `current-save.json`: save fixture already on the current save version.
+- `current-save.json`: save fixture already on the current save version and using canonical `selectedPath` save truth only.
 - `legacy-unversioned-save.json`: save fixture with no version field to exercise legacy-unversioned migration handling.
-- `legacy-path-only.json`: selectedPath missing, lifePath present.
-- `legacy-path-conflict.json`: selectedPath and lifePath disagree.
+- `legacy-path-only.json`: canonical `selectedPath` missing, legacy `lifePath` present.
+- `legacy-path-conflict.json`: canonical `selectedPath` and legacy `lifePath` disagree.
 - `legacy-gate-item-ids.json`: legacy gate item IDs present in inventory containers.
 - `legacy-future-slice.json`: progress beyond the semester content cap.
 - `legacy-hidden-prestige.json`: deferred prestige purchases present.

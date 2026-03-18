@@ -14,7 +14,7 @@ This document describes the Section 0 save migration framework and the first pop
 - `v2_0_0_normalize_path_truth`
   - backfills canonical `selectedPath` from legacy `lifePath` when needed
   - resolves conflicts deterministically to canonical `selectedPath`
-  - may mirror the resolved value back to `lifePath` only for legacy compatibility during migration
+  - removes legacy `lifePath` from migrated current-save output after it has been consumed
 
 ## Planned transforms / report-only coverage
 

@@ -7,8 +7,8 @@ export const createLegacyAliasScenario = ({ contract }: ScenarioBuildContext, ov
     {
       ...createFreshLifeScenario({ contract }),
       kind: 'legacy_alias',
-      description: 'Fixture intentionally carries legacy alias fields for migration and drift tests.',
-      pathState: { lifePath: 'earth', selectedPathAlias: 'martial' },
+      description: 'Fixture intentionally carries canonical selectedPath plus a contradictory legacy lifePath alias for migration/drift tests.',
+      pathState: { selectedPath: 'martial', lifePathAlias: 'earth' },
       gateState: {
         resolvedTransitionIds: [],
         inventoryGateItems: {
@@ -19,7 +19,7 @@ export const createLegacyAliasScenario = ({ contract }: ScenarioBuildContext, ov
         },
         pendingBreakthroughTo: 'foundation_establishment',
       },
-      notes: ['Intended for packet 0.2 and packet 1.8 alias migration activation tests.'],
+      notes: ['Intended for packet 1.2 path-truth drift and packet 1.8 alias migration tests.'],
     },
     overrides,
   );

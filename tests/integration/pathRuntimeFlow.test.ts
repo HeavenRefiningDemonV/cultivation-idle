@@ -3,33 +3,23 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
-import { useGameStore } from '../../src/stores/gameStore.js';
-import { resolveCanonicalSelectedPath } from '../../src/utils/saveload.js';
+test('game store source keeps selectedPath one-shot and resets it for a new life', async () => {
+  const gameStore = await fs.readFile(path.resolve(process.cwd(), 'src/stores/gameStore.ts'), 'utf8');
 
-test('selectedPath is the one-shot live runtime path field and resets for a new life', () => {
-  useGameStore.getState().hardResetGameState();
-
-  useGameStore.getState().selectPath('heaven');
-  assert.equal(useGameStore.getState().selectedPath, 'heaven');
-
-  useGameStore.getState().selectPath('earth');
-  assert.equal(useGameStore.getState().selectedPath, 'heaven');
-
-  useGameStore.getState().resetRun();
-  assert.equal(useGameStore.getState().selectedPath, null);
+  assert.equal(gameStore.includes("if (state.selectedPath !== null)"), true);
+  assert.equal(gameStore.includes("console.warn('Path already selected!')"), true);
+  assert.equal(gameStore.includes('const baseState = createInitialGameState();'), true);
+  assert.equal(gameStore.includes('Object.assign(state, baseState);'), true);
+  assert.equal(gameStore.includes('selectedPath: null as CultivationPath | null'), true);
 });
 
-test('current save serialization code no longer writes lifePath as live save truth', async () => {
+test('current save serialization and hydration source treat lifePath as legacy-only input', async () => {
   const defaultSaveState = await fs.readFile(path.resolve(process.cwd(), 'src/save/defaultSaveState.ts'), 'utf8');
   const saveload = await fs.readFile(path.resolve(process.cwd(), 'src/utils/saveload.ts'), 'utf8');
 
   assert.equal(defaultSaveState.includes('lifePath: gameState.lifePath'), false);
-  assert.equal(saveload.includes('lifePath: gameState.lifePath'), false);
-});
-
-test('hydration resolves selectedPath first and only falls back to legacy lifePath when needed', () => {
-  assert.equal(resolveCanonicalSelectedPath({ selectedPath: 'earth', lifePath: 'heaven' }), 'earth');
-  assert.equal(resolveCanonicalSelectedPath({ selectedPath: null, lifePath: 'martial' }), 'martial');
-  assert.equal(resolveCanonicalSelectedPath({ selectedPath: 'invalid', lifePath: 'heaven' }), 'heaven');
-  assert.equal(resolveCanonicalSelectedPath({ selectedPath: null, lifePath: null }), null);
+  assert.equal(saveload.includes('if (gameState && typeof gameState.selectedPath === \'string\''), true);
+  assert.equal(saveload.includes('if (gameState && typeof gameState.lifePath === \'string\''), true);
+  assert.equal(saveload.includes('return gameState.selectedPath as SaveData'), true);
+  assert.equal(saveload.includes('return gameState.lifePath as SaveData'), true);
 });

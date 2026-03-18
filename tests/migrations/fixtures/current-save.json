@@ -6,7 +6,6 @@
     "realm": { "index": 0, "substage": 0, "name": "Qi Condensation" },
     "qi": "0",
     "selectedPath": null,
-    "lifePath": null,
     "focusMode": "balanced",
     "pathPerks": [],
     "totalAuras": 0,

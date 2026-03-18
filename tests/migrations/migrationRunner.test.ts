@@ -34,6 +34,7 @@ test('runner dry-run never mutates input and apply mutates only through transfor
   assert.equal((apply.migrated as any).version, CURRENT_SAVE_VERSION);
   assert.equal((apply.migrated as any).version, CURRENT_SAVE_VERSION);
   assert.equal((apply.migrated.gameState as any).selectedPath, 'heaven');
+  assert.equal('lifePath' in ((apply.migrated.gameState as any) ?? {}), false);
 });
 
 test('reportOnly and plannedTransform steps never mutate; ordering and idempotence stay stable', () => {
@@ -81,6 +82,8 @@ test('report contains applied, report-only, planned sections and warnings when a
 test('load-path integration wrapper migrates legacy save and no-ops current save', () => {
   const legacy = migrateIncomingSaveForHydration(structuredClone(baseLegacy), passthroughNormalizer);
   assert.equal((legacy.migrated as any).version, CURRENT_SAVE_VERSION);
+  assert.equal((legacy.migrated.gameState as any).selectedPath, 'heaven');
+  assert.equal('lifePath' in ((legacy.migrated.gameState as any) ?? {}), false);
 
   const current = runSaveMigrations({ version: CURRENT_SAVE_VERSION, marker: true }, {
     mode: 'apply',

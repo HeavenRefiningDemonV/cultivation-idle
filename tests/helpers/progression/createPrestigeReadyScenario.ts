@@ -8,7 +8,7 @@ export const createPrestigeReadyScenario = ({ contract }: ScenarioBuildContext, 
       ...createGateEdgeScenario({ contract }),
       kind: 'prestige_ready',
       description: 'Near first meaningful prestige threshold for reset-contract tests.',
-      pathState: { lifePath: 'heaven', selectedPathAlias: 'heaven' },
+      pathState: { selectedPath: 'heaven', lifePathAlias: null },
       realmState: {
         currentRealm: 'foundation_establishment',
         enteredRealms: ['qi_condensation', 'foundation_establishment'],

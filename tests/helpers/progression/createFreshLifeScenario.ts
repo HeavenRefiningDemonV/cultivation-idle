@@ -8,7 +8,7 @@ export const createFreshLifeScenario = ({ contract }: ScenarioBuildContext, over
     {
       kind: 'fresh_life',
       description: 'New-life baseline with no gate resolved.',
-      pathState: { lifePath: null, selectedPathAlias: null },
+      pathState: { selectedPath: null, lifePathAlias: null },
       realmState: { currentRealm: 'qi_condensation', enteredRealms: ['qi_condensation'] },
       gateState: { resolvedTransitionIds: [], inventoryGateItems: {}, pendingBreakthroughTo: null },
       cityState: { unlockedCityIds: ['city_pinewind_hamlet'] },

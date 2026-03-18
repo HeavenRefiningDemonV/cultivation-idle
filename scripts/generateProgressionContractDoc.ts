@@ -43,7 +43,6 @@ const loadContract = async () => {
   return buildProgressionContract(adaptProgressionAuthoredContent(loaded));
 };
 
-const toTitle = (value: string): string => value.replaceAll('_', ' ');
 
 async function run(): Promise<void> {
   const contract = await loadContract();

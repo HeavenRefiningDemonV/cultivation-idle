@@ -50,7 +50,7 @@ Current expected categories are:
 - `legacy-partial-reset-residue` → `PARTIAL_PRESTIGE_RESET`
 - `legacy-offline-split` → `OFFLINE_PIPELINE_SPLIT`
 
-These warnings are intentional and should not be “fixed” by mutating the fixtures unless the owning future packet lands.
+These warnings are intentional and should not be “fixed” by mutating the fixtures unless the owning future packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures.
 
 ## Adapter model
 

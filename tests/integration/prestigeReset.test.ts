@@ -27,7 +27,8 @@ test('prestige-ready scenario is callable and structured for future reset assert
   const contract = await loadProgressionContract();
   const scenario = createPrestigeReadyScenario({ contract });
   assert.equal(scenario.prestigeState.ready, true);
-  assert.equal(scenario.pathState.lifePath, 'heaven');
+  assert.equal(scenario.pathState.selectedPath, 'heaven');
+  assert.equal(scenario.pathState.lifePathAlias, null);
 });
 
 // Future runtime assertions (packet 1.7/1.8): enable after reset orchestration and prestige consumers are centralized.

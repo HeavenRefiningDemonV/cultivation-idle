@@ -10,8 +10,8 @@ import { collectProgressionDiagnostics, type DriftIssue } from '../diagnostics/i
 export interface ProgressionScenarioLike {
   kind: string;
   pathState: {
-    lifePath: string | null;
-    selectedPathAlias: string | null;
+    selectedPath: string | null;
+    lifePathAlias: string | null;
   };
   realmState: {
     currentRealm: string;
@@ -79,18 +79,18 @@ const validateScenarioSemantics = (
   const issues: DriftIssue[] = [];
   scenarios.forEach((scenario) => {
     if (
-      scenario.pathState.lifePath !== null &&
-      scenario.pathState.selectedPathAlias !== null &&
-      scenario.pathState.lifePath !== scenario.pathState.selectedPathAlias
+      scenario.pathState.selectedPath !== null &&
+      scenario.pathState.lifePathAlias !== null &&
+      scenario.pathState.selectedPath !== scenario.pathState.lifePathAlias
     ) {
       pushIssue(issues, {
         id: `scenario-path-truth-split-${scenario.kind}`,
         category: 'PATH_TRUTH_SPLIT',
         severity: 'warning',
-        summary: `Scenario ${scenario.kind} carries contradictory canonical and legacy path values.`,
-        evidence: [{ path: `scenario:${scenario.kind}`, detail: `${scenario.pathState.lifePath} !== ${scenario.pathState.selectedPathAlias}` }],
+        summary: `Scenario ${scenario.kind} carries canonical selectedPath and legacy lifePath alias values that disagree.`,
+        evidence: [{ path: `scenario:${scenario.kind}`, detail: `${scenario.pathState.selectedPath} !== ${scenario.pathState.lifePathAlias}` }],
         suggestedOwnerPacket: '1.2',
-        fixStrategySummary: 'Keep scenario fixtures aligned with the contract path truth unless intentionally modeling migration drift.',
+        fixStrategySummary: 'Keep scenario fixtures aligned with canonical selectedPath unless intentionally modeling legacy alias drift.',
         autoFixable: true,
       });
     }
@@ -172,8 +172,8 @@ const readMigrationFixtureIssues = (
         id: `migration-path-truth-split-${name}`,
         category: 'PATH_TRUTH_SPLIT',
         severity: 'warning',
-        summary: `Migration fixture ${name} carries conflicting lifePath and selectedPath values.`,
-        evidence: [{ path: `fixture:${name}`, detail: `${gameState.lifePath} !== ${gameState.selectedPath}` }],
+        summary: `Migration fixture ${name} carries canonical selectedPath and legacy lifePath alias values that disagree.`,
+        evidence: [{ path: `fixture:${name}`, detail: `${gameState.selectedPath} !== ${gameState.lifePath}` }],
         suggestedOwnerPacket: '1.2',
         fixStrategySummary: 'Leave only intentional contradiction fixtures in the migration suite.',
         autoFixable: true,
@@ -261,21 +261,16 @@ const readMigrationFixtureIssues = (
   return issues;
 };
 
-export const validateProgressionSemantics = ({
-  rawContent,
-  runtimeFileTextByPath = {},
-  scenarios = [],
-  migrationFixtures = [],
-}: ValidateProgressionSemanticsOptions): DriftIssue[] => {
-  const authoredContent = adaptProgressionAuthoredContent(rawContent);
-  const contract = buildProgressionContract(authoredContent);
+export const validateProgressionSemantics = (options: ValidateProgressionSemanticsOptions): DriftIssue[] => {
+  const content = adaptProgressionAuthoredContent(options.rawContent);
+  const contract = buildProgressionContract(content);
   const issues = collectProgressionDiagnostics(contract, {
-    authoredContent: buildAuthoredDiagnosticsInput(authoredContent),
-    runtimeFileTextByPath,
+    authoredContent: buildAuthoredDiagnosticsInput(content),
+    runtimeFileTextByPath: options.runtimeFileTextByPath,
   });
 
-  validateScenarioSemantics(contract, scenarios).forEach((entry) => pushIssue(issues, entry));
-  readMigrationFixtureIssues(contract, migrationFixtures).forEach((entry) => pushIssue(issues, entry));
+  validateScenarioSemantics(contract, options.scenarios ?? []).forEach((entry) => pushIssue(issues, entry));
+  readMigrationFixtureIssues(contract, options.migrationFixtures ?? []).forEach((entry) => pushIssue(issues, entry));
 
   return issues;
 };

@@ -4,13 +4,13 @@ import type { ProgressionContract } from '../../../src/systems/progression/contr
 import type { ProgressionScenario } from './scenarioTypes.js';
 
 export const assertNoContradictoryPathState = (scenario: ProgressionScenario): void => {
-  if (scenario.pathState.lifePath === null) {
-    assert.equal(scenario.pathState.selectedPathAlias, null);
+  if (scenario.pathState.selectedPath === null) {
+    assert.equal(scenario.pathState.lifePathAlias, null);
     return;
   }
 
-  if (scenario.pathState.selectedPathAlias !== null) {
-    assert.equal(scenario.pathState.lifePath, scenario.pathState.selectedPathAlias);
+  if (scenario.pathState.lifePathAlias !== null) {
+    assert.equal(scenario.pathState.selectedPath, scenario.pathState.lifePathAlias);
   }
 };
 

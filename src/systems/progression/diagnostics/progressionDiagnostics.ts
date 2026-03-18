@@ -37,9 +37,9 @@ export const collectProgressionDiagnostics = (contract: ProgressionContract, inp
         id: 'path-truth-split',
         category: 'PATH_TRUTH_SPLIT',
         severity: 'warning',
-        summary: 'Runtime references both selectedPath and lifePath, indicating split path truth surfaces.',
+        summary: 'Runtime references canonical selectedPath and legacy lifePath together, indicating split path truth surfaces.',
         evidence: pathMentions.map(([path]) => ({ path, detail: 'Contains selectedPath and lifePath tokens.' })),
-        fixStrategySummary: 'Move path-truth reads behind one contract-aware resolver used by all modules.',
+        fixStrategySummary: 'Move path-truth reads behind one contract-aware resolver centered on canonical selectedPath.',
         autoFixable: false,
       }),
     );

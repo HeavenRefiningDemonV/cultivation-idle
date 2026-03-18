@@ -5,7 +5,7 @@ export const legacyPathConflictFixture: ProgressionFixtureDefinition = {
   metadata: {
     id: 'legacy-path-conflict',
     name: 'Legacy Path Conflict',
-    description: 'Legacy save where selectedPath and lifePath disagree, preserving path-truth drift for packet 1.2.',
+    description: 'Legacy save where canonical selectedPath and legacy lifePath disagree, preserving path-truth drift for packet 1.2.',
     kind: 'legacy_save',
     sourceType: 'migrated_legacy',
     ownerPacket: '0.3B',

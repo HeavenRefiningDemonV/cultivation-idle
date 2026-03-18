@@ -15,22 +15,27 @@ const scenarioToSaveShape = (scenario: ProgressionScenario, contract: Progressio
     return acc;
   }, {});
 
+  const gameState: Record<string, unknown> = {
+    realm: { index: currentRealm.index, substage: 0, name: scenario.realmState.currentRealm },
+    qi: '0',
+    selectedPath: scenario.pathState.selectedPath,
+    focusMode: 'balanced',
+    pathPerks: [],
+    totalAuras: scenario.realmState.enteredRealms.length - 1,
+    upgradeTiers: { idle: 0, damage: 0, hp: 0 },
+    pityState: { killsSinceUncommon: 0, killsSinceRare: 0, killsSinceEpic: 0, killsSinceLegendary: 0 },
+    playerLuck: 0,
+  };
+
+  if (scenario.pathState.lifePathAlias !== null) {
+    gameState.lifePath = scenario.pathState.lifePathAlias;
+  }
+
   return {
     version: '2.0.0',
     timestamp: 1736035200000,
     meta: { lastActiveAtMs: 1736035100000 },
-    gameState: {
-      realm: { index: currentRealm.index, substage: 0, name: scenario.realmState.currentRealm },
-      qi: '0',
-      selectedPath: scenario.pathState.selectedPathAlias,
-      lifePath: scenario.pathState.lifePath,
-      focusMode: 'balanced',
-      pathPerks: [],
-      totalAuras: scenario.realmState.enteredRealms.length - 1,
-      upgradeTiers: { idle: 0, damage: 0, hp: 0 },
-      pityState: { killsSinceUncommon: 0, killsSinceRare: 0, killsSinceEpic: 0, killsSinceLegendary: 0 },
-      playerLuck: 0,
-    },
+    gameState,
     cityState: {
       currentCityId: scenario.cityState.unlockedCityIds.at(-1) ?? 'city_pinewind_hamlet',
       unlockedCityIds: scenario.cityState.unlockedCityIds,

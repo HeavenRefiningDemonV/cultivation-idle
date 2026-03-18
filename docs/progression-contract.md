@@ -102,13 +102,12 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 - Integration skeleton suites: `tests/integration/`
 - Harness smoke test: `tests/contracts/progressionHarnessSmoke.test.ts`
 - 0.1A diagnostics/report: `npm run progression:report`
-- Fixture catalog/docs: `docs/progression-fixtures.md` and `npm run progression:fixtures`
 
 ## 12) Future packet ownership map
 
 - **0.2**: save/alias migration activation using legacy scenario fixtures.
 - **0.3**: validator expansion to enforce contract truth across all content surfaces.
-- **1.1**: semester-slice freeze, runtime realm-map quarantine, and over-cap normalization ownership.
+- **1.1**: contract ingestion foundations in runtime adapters.
 - **1.2**: path truth unification (life-start path as mechanical truth).
 - **1.3**: gate entry/reward/consumption truth unification.
 - **1.4**: gate flow hardening around trial-to-breakthrough lifecycle.

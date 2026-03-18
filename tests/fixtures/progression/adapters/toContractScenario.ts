@@ -35,12 +35,15 @@ export const projectSaveShapeToScenario = (
   const offline = getOfflineProgressionContract(contract);
   const nextTransition = getTransitionByFromRealm(contract, currentRealm);
 
+  const selectedPath = (save.gameState?.selectedPath ?? save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['selectedPath'];
+  const lifePathAlias = (save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['lifePathAlias'];
+
   return {
     kind: 'legacy_alias',
     description: `Projected scenario view of save-shaped fixture ${String(save.__fixtureId ?? 'unknown')}.`,
     pathState: {
-      lifePath: (save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['lifePath'],
-      selectedPathAlias: (save.gameState?.selectedPath ?? null) as ProgressionScenario['pathState']['selectedPathAlias'],
+      selectedPath,
+      lifePathAlias,
     },
     realmState: {
       currentRealm,

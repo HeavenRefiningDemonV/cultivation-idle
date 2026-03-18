@@ -16,8 +16,8 @@ export interface ProgressionScenario {
   kind: ScenarioKind;
   description: string;
   pathState: {
-    lifePath: 'heaven' | 'earth' | 'martial' | null;
-    selectedPathAlias: 'heaven' | 'earth' | 'martial' | null;
+    selectedPath: 'heaven' | 'earth' | 'martial' | null;
+    lifePathAlias: 'heaven' | 'earth' | 'martial' | null;
   };
   realmState: {
     currentRealm: MajorRealmId;
