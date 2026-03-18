@@ -21,7 +21,8 @@ This document describes the Section 0 save migration framework and the first pop
 | Step ID | Kind | Owner packet | Purpose |
 |---|---|---|---|
 | `v2_0_0_plan_gate_item_alias_migration` | plannedTransform | `1.3` | detect legacy gate item IDs and prepare canonical remaps |
-| `v2_0_0_plan_semester_slice_clamp` | plannedTransform | `1.1` | detect out-of-slice progress and prepare clamp actions |
+| `v2_0_0_plan_semester_slice_clamp` | plannedTransform | `1.1` | detect out-of-slice progress and report the clamp plan |
+| `v2_0_0_clamp_semester_slice` | transform | `1.1` | clamp legacy over-cap realm truth to Spirit Severing and normalize cap-facing fields |
 | `v2_0_0_plan_deferred_prestige_refund` | plannedTransform | `1.6` | detect deferred prestige purchases and compute refund totals |
 | `v2_0_0_plan_trial_resolution_normalization` | plannedTransform | `1.4/1.5` | detect contradictory gate/trial/progression state |
 | `v2_0_0_plan_partial_reset_residue_cleanup` | plannedTransform | `1.7` | detect clean-life residue across per-life stores |
@@ -41,7 +42,7 @@ Key fixtures:
 - `legacy-partial-reset-residue`
 - `legacy-offline-split`
 
-## How later packets should activate planned transforms
+## How later packets should activate remaining planned transforms
 
 - Add/adjust step logic in `src/save/migrations/steps/v2_0_0/`
 - Upgrade `plannedTransform` to `transform` only when its owner packet lands and runtime truth is ready

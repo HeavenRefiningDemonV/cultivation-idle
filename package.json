@@ -9,7 +9,7 @@
     "check:icons": "node --experimental-strip-types scripts/checkNoEmojiIcons.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsc --project tsconfig.tests.json && node --test tmp-tests/tests/**/*.js",
+    "test": "tsc --project tsconfig.tests.json && tsc --project tsconfig.progression-fixtures.json && node --test tmp-tests/tests/**/*.js",
     "audio:audit": "node --experimental-strip-types scripts/audio/auditAudioAssets.ts",
     "validate:content": "node --experimental-strip-types scripts/validateContent.ts",
     "preview": "vite preview",

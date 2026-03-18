@@ -1,9 +1,11 @@
 import type { MigrationStep } from '../../migrationTypes.js';
 import { CURRENT_SAVE_VERSION } from '../../saveVersion.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../../../systems/progression/contract/semesterSlice.js';
+import { getCanonicalMajorRealmIndex, getCanonicalMajorRealmName } from '../../../../systems/progression/contract/realmMap.js';
 import { cloneSave, createStepResult, isRecord, plan, touch, warning } from './shared.js';
 
-const CONTENT_CAP_INDEX = SEMESTER_SLICE_CONTRACT.liveMajorRealms.indexOf(SEMESTER_SLICE_CONTRACT.contentCapRealm);
+const CONTENT_CAP_INDEX = getCanonicalMajorRealmIndex(SEMESTER_SLICE_CONTRACT.contentCapRealm);
+const CONTENT_CAP_NAME = getCanonicalMajorRealmName(SEMESTER_SLICE_CONTRACT.contentCapRealm);
 
 export const v2_0_0_plan_semester_slice_clamp: MigrationStep = {
   id: 'v2_0_0_plan_semester_slice_clamp',
@@ -27,6 +29,9 @@ export const v2_0_0_plan_semester_slice_clamp: MigrationStep = {
     const plannedMutations = [];
 
     if (currentRealmIndex != null) touched.push(touch('gameState.realm.index', 'inspect', `Detected realm index ${currentRealmIndex}.`));
+    if (isRecord(gameState.realm) && typeof gameState.realm.name === 'string') {
+      touched.push(touch('gameState.realm.name', 'inspect', `Detected realm display ${gameState.realm.name}.`));
+    }
     if (highestRealmReached != null) touched.push(touch('prestigeState.highestRealmReached', 'inspect', `Detected highest realm ${highestRealmReached}.`));
 
     if ((currentRealmIndex ?? -1) > CONTENT_CAP_INDEX || (highestRealmReached ?? -1) > CONTENT_CAP_INDEX) {
@@ -41,6 +46,7 @@ export const v2_0_0_plan_semester_slice_clamp: MigrationStep = {
       );
       plannedMutations.push(
         plan('gameState.realm.index', '1.1', `Clamp current realm index to ${CONTENT_CAP_INDEX} / ${SEMESTER_SLICE_CONTRACT.contentCapRealm}.`),
+        plan('gameState.realm.name', '1.1', `Normalize realm display to canonical cap realm ${CONTENT_CAP_NAME}.`),
         plan('prestigeState.highestRealmReached', '1.1', `Clamp highest detected realm to ${CONTENT_CAP_INDEX}.`),
       );
     }

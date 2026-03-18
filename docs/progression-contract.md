@@ -94,7 +94,7 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 | ORPHAN_GATE_ITEM | 1.3 |
 | HIDDEN_PRESTIGE_RUNTIME_CONSUMER | 1.7 |
 | MIGRATION_ALIAS_PRESENT | 1.8 |
-| CONTENT_CAP_BREACH | 1.5 |
+| CONTENT_CAP_BREACH | 1.1 |
 
 ## 11) Test harness overview
 
@@ -108,7 +108,7 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 
 - **0.2**: save/alias migration activation using legacy scenario fixtures.
 - **0.3**: validator expansion to enforce contract truth across all content surfaces.
-- **1.1**: contract ingestion foundations in runtime adapters.
+- **1.1**: semester-slice freeze, runtime realm-map quarantine, and over-cap normalization ownership.
 - **1.2**: path truth unification (life-start path as mechanical truth).
 - **1.3**: gate entry/reward/consumption truth unification.
 - **1.4**: gate flow hardening around trial-to-breakthrough lifecycle.

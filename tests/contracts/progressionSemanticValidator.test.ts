@@ -80,4 +80,8 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
   assert.equal(categories.has('MIGRATION_ALIAS_PRESENT'), true);
   assert.equal(categories.has('CONTENT_CAP_BREACH'), true);
   assert.equal(categories.has('HIDDEN_PRESTIGE_RUNTIME_CONSUMER'), true);
+
+  const contentCapIssues = issues.filter((entry) => entry.category === 'CONTENT_CAP_BREACH');
+  assert.equal(contentCapIssues.length > 0, true);
+  assert.equal(contentCapIssues.every((entry) => entry.suggestedOwnerPacket === '1.1'), true);
 });

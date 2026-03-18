@@ -14,7 +14,7 @@ export const DRIFT_OWNER_PACKET: Record<DriftIssue['category'], string> = {
   ORPHAN_GATE_ITEM: '1.3',
   HIDDEN_PRESTIGE_RUNTIME_CONSUMER: '1.7',
   MIGRATION_ALIAS_PRESENT: '1.8',
-  CONTENT_CAP_BREACH: '1.5',
+  CONTENT_CAP_BREACH: '1.1',
 };
 
 const ownerFor = (category: DriftIssue['category']): string => DRIFT_OWNER_PACKET[category];

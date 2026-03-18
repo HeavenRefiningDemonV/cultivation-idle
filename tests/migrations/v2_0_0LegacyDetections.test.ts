@@ -5,24 +5,33 @@ import { runSaveMigrations } from '../../src/save/migrations/index.js';
 import { loadMigrationFixture } from './loadFixture.js';
 
 const passthrough = (save: Record<string, unknown>) => save;
+const readRecord = (value: unknown): Record<string, unknown> => (value && typeof value === 'object' ? value as Record<string, unknown> : {});
 
 test('gate item alias planning detects legacy IDs without mutating save in 0.2', async () => {
   const fixture = await loadMigrationFixture('legacy-gate-item-ids');
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+  const inventoryState = readRecord(dry.migrated.inventoryState);
+  const items = readRecord(inventoryState.items);
 
   assert.equal(dry.report.plannedTransformSteps.includes('v2_0_0_plan_gate_item_alias_migration'), true);
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'LEGACY_GATE_ITEM_ALIAS_PRESENT'), true);
-  assert.equal(((dry.migrated.inventoryState as any).items.foundation_pill), 2);
+  assert.equal(items.foundation_pill, 2);
 });
 
 test('future-slice detection reports owner packet 1.1 without mutating save', async () => {
   const fixture = await loadMigrationFixture('legacy-future-slice');
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
-  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_semester_slice_clamp');
+  const planStep = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_semester_slice_clamp');
+  const clampStep = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_clamp_semester_slice');
+  const gameState = readRecord(dry.migrated.gameState);
+  const realm = readRecord(gameState.realm);
 
-  assert.equal(step?.ownerPacket, '1.1');
+  assert.equal(planStep?.ownerPacket, '1.1');
+  assert.equal(clampStep?.ownerPacket, '1.1');
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'OUT_OF_SLICE_PROGRESS_DETECTED'), true);
-  assert.equal(((dry.migrated.gameState as any).realm.index), 7);
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'OUT_OF_SLICE_PROGRESS_NORMALIZED'), true);
+  assert.equal(dry.report.appliedTransformSteps.includes('v2_0_0_clamp_semester_slice'), true);
+  assert.equal(realm.index, 7);
 });
 
 test('deferred prestige refund planning detects purchases and computes totals', async () => {

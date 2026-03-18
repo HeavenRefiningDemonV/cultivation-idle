@@ -44,6 +44,9 @@ const pushIssue = (issues: DriftIssue[], issue: DriftIssue) => {
   }
 };
 
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+
 const readTrialFromMajorRealm = (eligibilityRule: unknown): string | undefined => {
   if (!eligibilityRule) return undefined;
   if (typeof eligibilityRule === 'object') {
@@ -112,8 +115,8 @@ const validateScenarioSemantics = (
         severity: 'error',
         summary: `Scenario ${scenario.kind} references a realm outside the semester contract.`,
         evidence: [{ path: `scenario:${scenario.kind}`, detail: scenario.realmState.currentRealm }],
-        suggestedOwnerPacket: '1.5',
-        fixStrategySummary: 'Keep scenario realm state within the contract-authored semester slice.',
+        suggestedOwnerPacket: '1.1',
+        fixStrategySummary: 'Keep scenario realm state within the live semester slice and clamp legacy post-cap references to Spirit Severing.',
         autoFixable: true,
       });
     }
@@ -143,13 +146,20 @@ const readMigrationFixtureIssues = (
   const contentCapIndex = contract.majorRealms[getContentCapRealm(contract)].index;
 
   migrationFixtures.forEach(({ name, data }) => {
-    const record = (data ?? {}) as Record<string, any>;
-    const gameState = (record.gameState ?? {}) as Record<string, any>;
-    const inventoryState = (record.inventoryState ?? {}) as Record<string, any>;
-    const realmIndex = Number(gameState.realm?.index ?? -1);
-    const itemIds = Object.keys((inventoryState.items ?? {}) as Record<string, number>);
-    const prestigePurchases = ((record.prestigeState?.purchasesById ?? {}) as Record<string, number>);
-    const offlineTimes = [record.meta?.lastActiveAtMs, gameState.lastActiveTime, gameState.lastTickTime].filter(
+    const record = asRecord(data);
+    const gameState = asRecord(record.gameState);
+    const inventoryState = asRecord(record.inventoryState);
+    const realmState = asRecord(gameState.realm);
+    const prestigeState = asRecord(record.prestigeState);
+    const metaState = asRecord(record.meta);
+    const cityState = asRecord(record.cityState);
+    const trialState = asRecord(record.trialState);
+    const ruinsState = asRecord(record.ruinsState);
+    const equipmentState = asRecord(record.equipmentState);
+    const realmIndex = Number(realmState.index ?? -1);
+    const itemIds = Object.keys(asRecord(inventoryState.items) as Record<string, number>);
+    const prestigePurchases = asRecord(prestigeState.purchasesById) as Record<string, number>;
+    const offlineTimes = [metaState.lastActiveAtMs, gameState.lastActiveTime, gameState.lastTickTime].filter(
       (value): value is number => typeof value === 'number',
     );
 
@@ -192,8 +202,8 @@ const readMigrationFixtureIssues = (
         severity: 'warning',
         summary: `Migration fixture ${name} exceeds the semester content cap index.`,
         evidence: [{ path: `fixture:${name}`, detail: `realm.index=${realmIndex} > ${contentCapIndex}` }],
-        suggestedOwnerPacket: '1.5',
-        fixStrategySummary: 'Preserve only fixtures intentionally exercising cap normalization or blocking behavior.',
+        suggestedOwnerPacket: '1.1',
+        fixStrategySummary: 'Preserve only fixtures intentionally exercising semester-slice cap normalization to Spirit Severing.',
         autoFixable: true,
       });
     }
@@ -217,10 +227,10 @@ const readMigrationFixtureIssues = (
 
     const hasPartialResetResidue =
       realmIndex === 0 &&
-      (Array.isArray(record.cityState?.unlockedCityIds) && record.cityState.unlockedCityIds.length > 1 ||
-        Object.keys((record.trialState?.progressByTrialId ?? {}) as Record<string, unknown>).length > 0 ||
-        Object.keys((record.ruinsState?.progressByRuinId ?? {}) as Record<string, unknown>).length > 0 ||
-        Object.values((record.equipmentState?.refineLevelBySlot ?? {}) as Record<string, number>).some((value) => Number(value) > 0));
+      (Array.isArray(cityState.unlockedCityIds) && cityState.unlockedCityIds.length > 1 ||
+        Object.keys(asRecord(trialState.progressByTrialId)).length > 0 ||
+        Object.keys(asRecord(ruinsState.progressByRuinId)).length > 0 ||
+        Object.values(asRecord(equipmentState.refineLevelBySlot) as Record<string, number>).some((value) => Number(value) > 0));
     if (hasPartialResetResidue) {
       pushIssue(issues, {
         id: `migration-partial-reset-${name}`,

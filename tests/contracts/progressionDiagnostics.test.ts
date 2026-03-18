@@ -73,3 +73,30 @@ test('diagnostics emit no issues on clean fixture', () => {
 
   assert.deepEqual(diagnostics, []);
 });
+
+test('content-cap breach ownership stays on packet 1.1', () => {
+  const contract = buildProgressionContract(baseContent);
+  const breachedContract = {
+    ...contract,
+    contentCap: { ...contract.contentCap, realmId: 'nascent_soul' as const },
+  };
+  const diagnostics = collectProgressionDiagnostics(breachedContract, {
+    authoredContent: {
+      economyRealms: ['qi_condensation', 'foundation_establishment', 'core_formation', 'nascent_soul', 'soul_formation', 'spirit_severing'],
+      cities: [{ id: 'city_pinewind_hamlet', unlockMajorRealm: 'qi_condensation' }],
+      trials: [
+        {
+          id: 'trial_novices_clearing',
+          gateItemId: 'gate_foundation_pill',
+          fromMajorRealm: 'qi_condensation',
+          toMajorRealm: 'foundation_establishment',
+        },
+      ],
+      items: ['gate_foundation_pill'],
+    },
+    runtimeFileTextByPath: {},
+  });
+
+  const breach = diagnostics.find((entry) => entry.category === 'CONTENT_CAP_BREACH');
+  assert.equal(breach?.suggestedOwnerPacket, '1.1');
+});
