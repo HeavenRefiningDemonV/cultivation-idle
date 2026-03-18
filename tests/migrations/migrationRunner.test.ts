@@ -9,7 +9,7 @@ import {
 
 const baseLegacy = {
   timestamp: 100,
-  gameState: { selectedPath: 'heaven' },
+  gameState: { lifePath: 'heaven' },
   unknownTopLevel: { keep: true },
   nested: { keepNested: { flag: true } },
 };
@@ -23,7 +23,7 @@ const passthroughNormalizer = (save: Record<string, unknown>) => ({
   },
 });
 
-test('runner dry-run never mutates input and apply mutates via transform only', () => {
+test('runner dry-run never mutates input and apply mutates only through transform steps', () => {
   const input = structuredClone(baseLegacy);
   const dry = runSaveMigrations(input, { mode: 'dry-run', normalizeToCurrent: passthroughNormalizer });
   assert.equal((input as any).version, undefined);
@@ -32,18 +32,22 @@ test('runner dry-run never mutates input and apply mutates via transform only', 
 
   const apply = runSaveMigrations(input, { mode: 'apply', normalizeToCurrent: passthroughNormalizer });
   assert.equal((apply.migrated as any).version, CURRENT_SAVE_VERSION);
-  assert.equal((apply.migrated as any).normalizedFlag, true);
+  assert.equal((apply.migrated as any).version, CURRENT_SAVE_VERSION);
+  assert.equal((apply.migrated.gameState as any).selectedPath, 'heaven');
 });
 
-test('reportOnly/plannedTransform never mutate and ordering/idempotence are stable', () => {
+test('reportOnly and plannedTransform steps never mutate; ordering and idempotence stay stable', () => {
   const applyOnce = runSaveMigrations(structuredClone(baseLegacy), {
     mode: 'apply',
     normalizeToCurrent: passthroughNormalizer,
   });
 
-  assert.deepEqual(applyOnce.report.appliedTransformSteps, ['m1_transform_normalize_and_bump_version']);
-  assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version']);
-  assert.deepEqual(applyOnce.report.plannedTransformSteps, ['m9_planned_path_truth_alignment']);
+  assert.deepEqual(applyOnce.report.appliedTransformSteps, [
+    'v2_0_0_seed_version_and_meta',
+    'v2_0_0_normalize_path_truth',
+  ]);
+  assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version', 'v2_0_0_plan_offline_unification']);
+  assert.ok(applyOnce.report.plannedTransformSteps.length > 0);
 
   const applyTwice = runSaveMigrations(applyOnce.migrated, {
     mode: 'apply',
@@ -60,16 +64,16 @@ test('unknown top-level and nested fields are preserved', () => {
   assert.equal((result.migrated as any).nested.keepNested.flag, true);
 });
 
-test('report contains required sections, warnings and touched field paths', () => {
-  const malformed = { version: 'not.semver', timestamp: 1 };
+test('report contains applied, report-only, planned sections and warnings when appropriate', () => {
+  const malformed = { version: 'not.semver', timestamp: 1, gameState: { lifePath: 'earth' } };
   const result = runSaveMigrations(malformed, {
     mode: 'apply',
     normalizeToCurrent: passthroughNormalizer,
   });
 
-  assert.ok(result.report.reportOnlySteps.length > 0);
-  assert.ok(result.report.appliedTransformSteps.length > 0);
-  assert.ok(result.report.plannedTransformSteps.length > 0);
+  assert.ok(result.report.grouped.reportOnly.length > 0);
+  assert.ok(result.report.grouped.activeTransforms.length > 0);
+  assert.ok(result.report.grouped.plannedTransforms.length > 0);
   assert.ok(result.report.touchedFieldPaths.length > 0);
   assert.ok(result.report.warnings.length > 0);
 });

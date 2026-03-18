@@ -1,13 +1,19 @@
-import type { MigrationContext, MigrationRunReport, MigrationStepResult } from './migrationTypes.js';
+import type { MigrationContext, MigrationReportGroupEntry, MigrationRunReport, MigrationStepResult } from './migrationTypes.js';
+
+const toGroupEntry = (result: MigrationStepResult): MigrationReportGroupEntry => ({
+  stepId: result.stepId,
+  ownerPacket: result.ownerPacket,
+  summary: result.summary,
+});
 
 const buildSummaryLines = (report: MigrationRunReport): string[] => [
   `Mode: ${report.mode}`,
   `Source version: ${report.sourceVersion} (${report.sourceVersionKind})`,
   `Target version: ${report.targetVersion}`,
   `Final version: ${report.finalVersion}`,
-  `Applied transforms: ${report.appliedTransformSteps.length}`,
-  `Report-only steps: ${report.reportOnlySteps.length}`,
-  `Planned transforms: ${report.plannedTransformSteps.length}`,
+  `Active transforms: ${report.grouped.activeTransforms.length}`,
+  `Report-only detections: ${report.grouped.reportOnly.length}`,
+  `Planned transforms: ${report.grouped.plannedTransforms.length}`,
   `Warnings: ${report.counts.warningCount} | Errors: ${report.counts.errorCount}`,
 ];
 
@@ -28,9 +34,7 @@ export const createMigrationRunReport = (
     mode: ctx.mode,
     appliedTransformSteps: stepResults.filter((result) => result.kind === 'transform' && result.didRun).map((result) => result.stepId),
     reportOnlySteps: stepResults.filter((result) => result.kind === 'reportOnly' && result.didRun).map((result) => result.stepId),
-    plannedTransformSteps: stepResults
-      .filter((result) => result.kind === 'plannedTransform' && result.didRun)
-      .map((result) => result.stepId),
+    plannedTransformSteps: stepResults.filter((result) => result.kind === 'plannedTransform' && result.didRun).map((result) => result.stepId),
     warnings,
     errors,
     touchedFieldPaths,
@@ -45,6 +49,11 @@ export const createMigrationRunReport = (
     },
     summaryLines: [],
     stepResults,
+    grouped: {
+      activeTransforms: stepResults.filter((result) => result.kind === 'transform' && result.didRun).map(toGroupEntry),
+      plannedTransforms: stepResults.filter((result) => result.kind === 'plannedTransform' && result.didRun).map(toGroupEntry),
+      reportOnly: stepResults.filter((result) => result.kind === 'reportOnly' && result.didRun).map(toGroupEntry),
+    },
   };
 
   report.summaryLines = buildSummaryLines(report);

@@ -47,6 +47,14 @@ export interface MigrationSummaryCounts {
   plannedMutationCount: number;
 }
 
+
+export interface MigrationReportGroupEntry {
+  stepId: string;
+  ownerPacket: string;
+  title?: string;
+  summary: string;
+}
+
 export interface MigrationRunReport {
   sourceVersion: string;
   sourceVersionKind: LegacySaveVersionKind;
@@ -62,6 +70,11 @@ export interface MigrationRunReport {
   counts: MigrationSummaryCounts;
   summaryLines: string[];
   stepResults: MigrationStepResult[];
+  grouped: {
+    activeTransforms: MigrationReportGroupEntry[];
+    plannedTransforms: MigrationReportGroupEntry[];
+    reportOnly: MigrationReportGroupEntry[];
+  };
 }
 
 export interface MigrationContext {

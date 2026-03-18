@@ -33,23 +33,51 @@ const loadInputSave = async (options: { fixture: string | null; file: string | n
   throw new Error('No input specified. Use --fixture=<name> or --file=<path>.');
 };
 
+const printStepGroup = (
+  heading: string,
+  entries: Array<{ stepId: string; ownerPacket: string; summary: string }>,
+  report: ReturnType<typeof runSaveMigrations>['report'],
+) => {
+  console.log(heading);
+  if (entries.length === 0) {
+    console.log('- none');
+    return;
+  }
+
+  entries.forEach((entry) => {
+    const stepResult = report.stepResults.find((result) => result.stepId === entry.stepId);
+    console.log(`- ${entry.stepId}`);
+    console.log(`  owner packet: ${entry.ownerPacket}`);
+    console.log(`  summary: ${entry.summary}`);
+    if (stepResult?.touchedFieldPaths.length) {
+      console.log(`  touched paths: ${stepResult.touchedFieldPaths.map((touch) => touch.path).join(', ')}`);
+    }
+    if (stepResult?.plannedMutations.length) {
+      stepResult.plannedMutations.forEach((mutation) => {
+        console.log(`  planned: (${mutation.ownerPacket}) ${mutation.action} ${mutation.path} — ${mutation.reason}`);
+      });
+    }
+  });
+};
+
 const printHumanReport = (report: ReturnType<typeof runSaveMigrations>['report']) => {
   console.log('=== Save Migration Dry Run ===');
   console.log(`Source version: ${report.sourceVersion} (${report.sourceVersionKind})`);
   console.log(`Target version: ${report.targetVersion}`);
   console.log(`Would final version be: ${report.finalVersion}`);
-  console.log(`Transform steps: ${report.appliedTransformSteps.join(', ') || 'none'}`);
-  console.log(`Report-only steps: ${report.reportOnlySteps.join(', ') || 'none'}`);
-  console.log(`Planned transforms: ${report.plannedTransformSteps.join(', ') || 'none'}`);
-  console.log(`Warnings: ${report.warnings.length} | Errors: ${report.errors.length}`);
-  report.warnings.forEach((warning) => {
-    console.log(`- [${warning.severity}] ${warning.code} (${warning.ownerPacket}) ${warning.message}`);
-  });
-  const planned = report.stepResults.flatMap((step) => step.plannedMutations);
-  if (planned.length > 0) {
-    console.log('Planned mutations:');
-    planned.forEach((entry) => {
-      console.log(`- (${entry.ownerPacket}) ${entry.action} ${entry.path}: ${entry.reason}`);
+  console.log('');
+  printStepGroup('A) Active transforms applied now', report.grouped.activeTransforms, report);
+  console.log('');
+  printStepGroup('B) Planned transforms for later packets', report.grouped.plannedTransforms, report);
+  console.log('');
+  printStepGroup('C) Report-only detections', report.grouped.reportOnly, report);
+  console.log('');
+  console.log('D) Warnings requiring attention');
+  if (report.warnings.length === 0 && report.errors.length === 0) {
+    console.log('- none');
+  } else {
+    [...report.warnings, ...report.errors].forEach((entry) => {
+      console.log(`- [${entry.severity}] ${entry.code} | owner ${entry.ownerPacket} | ${entry.message}`);
     });
   }
 };

@@ -1,0 +1,57 @@
+# Save Migration Framework (Semester v2.0.0)
+
+This document describes the Section 0 save migration framework and the first populated semester migration pack.
+
+## Current save version
+
+- Current save version: `2.0.0`
+
+## Active transform steps in 0.2
+
+- `v2_0_0_seed_version_and_meta`
+  - stamps `version: 2.0.0`
+  - normalizes `meta.lastActiveAtMs`
+- `v2_0_0_normalize_path_truth`
+  - backfills `selectedPath` from `lifePath` when needed
+  - resolves conflicts deterministically to `selectedPath`
+  - mirrors resolved value back to `lifePath` for compatibility
+
+## Planned transforms / report-only coverage
+
+| Step ID | Kind | Owner packet | Purpose |
+|---|---|---|---|
+| `v2_0_0_plan_gate_item_alias_migration` | plannedTransform | `1.3` | detect legacy gate item IDs and prepare canonical remaps |
+| `v2_0_0_plan_semester_slice_clamp` | plannedTransform | `1.1` | detect out-of-slice progress and prepare clamp actions |
+| `v2_0_0_plan_deferred_prestige_refund` | plannedTransform | `1.6` | detect deferred prestige purchases and compute refund totals |
+| `v2_0_0_plan_trial_resolution_normalization` | plannedTransform | `1.4/1.5` | detect contradictory gate/trial/progression state |
+| `v2_0_0_plan_partial_reset_residue_cleanup` | plannedTransform | `1.7` | detect clean-life residue across per-life stores |
+| `v2_0_0_plan_offline_unification` | reportOnly | `1.8` | detect split offline metadata surfaces |
+
+## Fixture catalog
+
+See `tests/migrations/fixtures/README.md` for the complete list.
+
+Key fixtures:
+- `legacy-path-only`
+- `legacy-path-conflict`
+- `legacy-gate-item-ids`
+- `legacy-future-slice`
+- `legacy-hidden-prestige`
+- `legacy-trial-mismatch`
+- `legacy-partial-reset-residue`
+- `legacy-offline-split`
+
+## How later packets should activate planned transforms
+
+- Add/adjust step logic in `src/save/migrations/steps/v2_0_0/`
+- Upgrade `plannedTransform` to `transform` only when its owner packet lands and runtime truth is ready
+- Keep owner-packet strings accurate so dry-run reports remain trustworthy
+
+## Dry-run command examples
+
+- Human-readable fixture run:
+  - `npm run migration:dry-run -- --fixture=legacy-hidden-prestige`
+- JSON report output:
+  - `npm run migration:report -- --fixture=legacy-gate-item-ids`
+- Arbitrary file input:
+  - `npm run migration:dry-run -- --file=./my-save.json`

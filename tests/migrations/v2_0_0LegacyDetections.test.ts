@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import { runSaveMigrations } from '../../src/save/migrations/index.js';
+import { loadMigrationFixture } from './loadFixture.js';
+
+const passthrough = (save: Record<string, unknown>) => save;
+
+test('gate item alias planning detects legacy IDs without mutating save in 0.2', async () => {
+  const fixture = await loadMigrationFixture('legacy-gate-item-ids');
+  const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+
+  assert.equal(dry.report.plannedTransformSteps.includes('v2_0_0_plan_gate_item_alias_migration'), true);
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'LEGACY_GATE_ITEM_ALIAS_PRESENT'), true);
+  assert.equal(((dry.migrated.inventoryState as any).items.foundation_pill), 2);
+});
+
+test('future-slice detection reports owner packet 1.1 without mutating save', async () => {
+  const fixture = await loadMigrationFixture('legacy-future-slice');
+  const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_semester_slice_clamp');
+
+  assert.equal(step?.ownerPacket, '1.1');
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'OUT_OF_SLICE_PROGRESS_DETECTED'), true);
+  assert.equal(((dry.migrated.gameState as any).realm.index), 7);
+});
+
+test('deferred prestige refund planning detects purchases and computes totals', async () => {
+  const fixture = await loadMigrationFixture('legacy-hidden-prestige');
+  const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_deferred_prestige_refund');
+
+  assert.equal(step?.ownerPacket, '1.6');
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'DEFERRED_PRESTIGE_PURCHASE_PRESENT'), true);
+  assert.equal(step?.summary.includes('totalRefundAP=240'), true);
+});
+
+test('trial mismatch planning detects contradictory realm and gate/trial proof state', async () => {
+  const fixture = await loadMigrationFixture('legacy-trial-mismatch');
+  const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_trial_resolution_normalization');
+
+  assert.equal(step?.ownerPacket, '1.4/1.5');
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'TRIAL_RESOLUTION_MISMATCH'), true);
+});
+
+test('partial reset residue planning detects clean-life inconsistencies', async () => {
+  const fixture = await loadMigrationFixture('legacy-partial-reset-residue');
+  const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_partial_reset_residue_cleanup');
+
+  assert.equal(step?.ownerPacket, '1.7');
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'PARTIAL_RESET_RESIDUE_DETECTED'), true);
+});
+
+test('offline split detection reports owner packet 1.8 when split metadata is present', async () => {
+  const fixture = await loadMigrationFixture('legacy-offline-split');
+  const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
+  const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_offline_unification');
+
+  assert.equal(step?.ownerPacket, '1.8');
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'OFFLINE_STATE_SPLIT_DETECTED'), true);
+});
