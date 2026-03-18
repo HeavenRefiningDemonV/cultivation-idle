@@ -15,6 +15,7 @@ const expectedIds = [
   'cap-reached',
   'legacy-path-conflict',
   'legacy-gate-alias',
+  'legacy-trial-mismatch',
   'legacy-over-cap',
   'legacy-hidden-prestige',
   'legacy-partial-reset-residue',

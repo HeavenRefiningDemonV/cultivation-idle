@@ -13,6 +13,7 @@ export const createGateEdgeScenario = ({ contract }: ScenarioBuildContext, overr
       kind: 'pre_first_gate',
       description: 'Right before first gate attempt with no pre-granted gate reward.',
       gateState: {
+        resolutionByTransitionId: {},
         resolvedTransitionIds: [],
         inventoryGateItems: { [firstTransition.gateItemId]: 0 },
         pendingBreakthroughTo: firstTransition.toRealmId,

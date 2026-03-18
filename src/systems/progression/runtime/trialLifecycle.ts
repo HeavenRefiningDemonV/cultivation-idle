@@ -21,23 +21,6 @@ export type TrialLifecycleReasonCode =
   | 'available';
 export type TrialFailSafeStatus = 'locked' | 'available' | 'resolved';
 
-interface RawFailSafePurchase {
-  enabled?: boolean;
-  afterEligibleFails?: number;
-  costRef?: string;
-}
-
-interface RawEconomyGateTrials {
-  manualSystem?: {
-    gateTrials?: {
-      failSafe?: {
-        failThresholdEligibleAttempts?: number;
-        purchaseCostByCityIndex?: Array<TrialFailSafeCost | undefined>;
-      };
-    };
-  };
-}
-
 interface TrialLifecycleInput {
   content: ValidatedContent | null | undefined;
   trial: TrialDef | null | undefined;
@@ -72,8 +55,6 @@ export interface TrialLifecycleSnapshot {
   failSafe: TrialFailSafeSnapshot;
 }
 
-const DEFAULT_FAIL_SAFE_THRESHOLD = 3;
-
 const getContract = (content: ValidatedContent | null | undefined) => {
   if (!content) return null;
   try {
@@ -84,50 +65,12 @@ const getContract = (content: ValidatedContent | null | undefined) => {
   }
 };
 
-const getRawFailSafePurchase = (
-  content: ValidatedContent | null | undefined,
-  trialId: string | undefined,
-): RawFailSafePurchase | null => {
-  if (!content || !trialId) return null;
-  const rawTrial = content.trials.find(
-    (entry: TrialDef) => entry.id === trialId,
-  ) as (TrialDef & { failSafePurchase?: RawFailSafePurchase }) | undefined;
-  return rawTrial?.failSafePurchase ?? null;
-};
-
-const resolveFailSafeCost = (
-  content: ValidatedContent | null | undefined,
-  trial: TrialDef | null | undefined,
-): TrialFailSafeCost | null => {
-  if (!trial) return null;
-  if (trial.failSafe?.cost) return trial.failSafe.cost;
-
-  const economy = content?.economy as RawEconomyGateTrials | undefined;
-  const cityIndex = trial.cityIndex ?? 0;
-  const fallback = economy?.manualSystem?.gateTrials?.failSafe?.purchaseCostByCityIndex?.[cityIndex] ?? null;
-  if (!fallback) return null;
-  return {
-    gold: fallback.gold != null ? String(fallback.gold) : undefined,
-    spiritStones: fallback.spiritStones != null ? String(fallback.spiritStones) : undefined,
-    merit: fallback.merit != null ? String(fallback.merit) : undefined,
-  };
-};
-
 export const resolveTrialFailSafeConfig = (
-  content: ValidatedContent | null | undefined,
   trial: TrialDef | null | undefined,
 ): { threshold: number; cost: TrialFailSafeCost | null } => {
-  const rawPurchase = getRawFailSafePurchase(content, trial?.id);
-  const economy = content?.economy as RawEconomyGateTrials | undefined;
-  const threshold =
-    rawPurchase?.afterEligibleFails ??
-    trial?.failSafe?.thresholdAttempts ??
-    economy?.manualSystem?.gateTrials?.failSafe?.failThresholdEligibleAttempts ??
-    DEFAULT_FAIL_SAFE_THRESHOLD;
-
   return {
-    threshold: Math.max(1, Math.floor(threshold)),
-    cost: resolveFailSafeCost(content, trial),
+    threshold: Math.max(1, Math.floor(trial?.failSafe?.thresholdAttempts ?? 3)),
+    cost: trial?.failSafe?.cost ?? null,
   };
 };
 
@@ -172,7 +115,7 @@ export const getTrialLifecycleSnapshot = ({
   const atFinalSubstage = realm.substage >= currentRealm.substages;
   const qiReady = greaterThanOrEqualTo(qi, breakthroughRequirement);
   const isResolved = resolution === 'cleared' || resolution === 'bypassed';
-  const { threshold, cost } = resolveTrialFailSafeConfig(content, trial);
+  const { threshold, cost } = resolveTrialFailSafeConfig(trial);
   const eligibleFailures = progress?.eligibleFailures ?? 0;
 
   let state: TrialLifecycleState = 'locked';

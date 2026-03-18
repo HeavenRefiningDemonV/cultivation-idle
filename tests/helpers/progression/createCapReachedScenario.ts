@@ -15,6 +15,9 @@ export const createCapReachedScenario = ({ contract }: ScenarioBuildContext, ove
         enteredRealms: ['qi_condensation', 'foundation_establishment', 'core_formation', 'nascent_soul', 'soul_formation', capRealm],
       },
       gateState: {
+        resolutionByTransitionId: Object.fromEntries(
+          contract.gateTransitions.map((transition) => [transition.id, 'cleared'] as const),
+        ),
         resolvedTransitionIds: contract.gateTransitions.map((transition) => transition.id),
         inventoryGateItems: {},
         pendingBreakthroughTo: null,

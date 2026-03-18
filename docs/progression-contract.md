@@ -109,7 +109,7 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 - **0.3**: validator expansion to enforce contract truth across all content surfaces.
 - **1.1**: contract ingestion foundations in runtime adapters.
 - **1.2**: path truth unification (life-start path as mechanical truth).
-- **1.4**: gate flow hardening around trial-to-breakthrough lifecycle.
+- **1.4**: gate flow hardening around trial-to-breakthrough lifecycle, including clear-vs-bypass resolution truth and legacy mismatch normalization.
 - **1.5**: city unlock timing unified to realm entry.
 - **1.6**: offline pipeline consolidation to one contract pipeline.
 - **1.7**: prestige/reset orchestration and per-life/permanent/hybrid enforcement.

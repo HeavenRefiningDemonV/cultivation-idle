@@ -1,4 +1,5 @@
 import { normalizeGateItemAlias, type ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
+import { normalizeTrialProgress } from '../../../../src/stores/trialStore.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
 
@@ -17,27 +18,69 @@ const canonicalizeInventoryItems = (items: Record<string, unknown>): Record<stri
 
 const canonicalizeSaveShape = (saveShape: Record<string, unknown>): Record<string, unknown> => {
   const inventoryState = saveShape.inventoryState;
-  if (!inventoryState || typeof inventoryState !== 'object') return saveShape;
-  const record = inventoryState as Record<string, unknown>;
-  if (!record.items || typeof record.items !== 'object') return saveShape;
+  const trialState = saveShape.trialState;
+  const record = inventoryState && typeof inventoryState === 'object' ? (inventoryState as Record<string, unknown>) : null;
+  const trialRecord = trialState && typeof trialState === 'object' ? (trialState as Record<string, unknown>) : null;
+
   return {
     ...saveShape,
-    inventoryState: {
-      ...record,
-      items: canonicalizeInventoryItems(record.items as Record<string, unknown>),
-    },
+    ...(record && record.items && typeof record.items === 'object'
+      ? {
+          inventoryState: {
+            ...record,
+            items: canonicalizeInventoryItems(record.items as Record<string, unknown>),
+          },
+        }
+      : {}),
+    ...(trialRecord && trialRecord.progressByTrialId && typeof trialRecord.progressByTrialId === 'object'
+      ? {
+          trialState: {
+            ...trialRecord,
+            progressByTrialId: Object.fromEntries(
+              Object.entries(trialRecord.progressByTrialId as Record<string, unknown>).map(([trialId, progress]) => [
+                trialId,
+                normalizeTrialProgress(
+                  progress && typeof progress === 'object'
+                    ? (progress as Parameters<typeof normalizeTrialProgress>[0])
+                    : null,
+                ),
+              ]),
+            ),
+          },
+        }
+      : {}),
   };
 };
 
 const scenarioToSaveShape = (scenario: ProgressionScenario, contract: ProgressionContract): Record<string, unknown> => {
   const currentRealm = contract.majorRealms[scenario.realmState.currentRealm];
-  const progressByTrialId = contract.gateTransitions.reduce<Record<string, { attempts: number; cleared: boolean; lastAttemptAt: number | null; lastClearAt: number | null }>>((acc, transition) => {
-    const cleared = scenario.gateState.resolvedTransitionIds.includes(transition.id);
+  const progressByTrialId = contract.gateTransitions.reduce<
+    Record<
+      string,
+      {
+        attempts: number;
+        sessionAttempts: number;
+        eligibleFailures: number;
+        resolution: 'none' | 'cleared' | 'bypassed';
+        cleared: boolean;
+        lastAttemptAt: number | null;
+        lastClearAt: number | null;
+        bypassedAt: number | null;
+      }
+    >
+  >((acc, transition) => {
+    const resolution = scenario.gateState.resolutionByTransitionId[transition.id] ?? 'none';
+    const cleared = resolution === 'cleared';
+    const bypassed = resolution === 'bypassed';
     acc[transition.trialId] = {
-      attempts: cleared ? 1 : 0,
+      attempts: cleared || bypassed ? 1 : 0,
+      sessionAttempts: 0,
+      eligibleFailures: 0,
+      resolution,
       cleared,
-      lastAttemptAt: cleared ? 1 : null,
+      lastAttemptAt: cleared || bypassed ? 1 : null,
       lastClearAt: cleared ? 1 : null,
+      bypassedAt: bypassed ? 1 : null,
     };
     return acc;
   }, {});

@@ -42,10 +42,24 @@ export const projectSaveShapeToScenario = (
   const enteredRealms = Object.values(contract.majorRealms)
     .filter((realm) => realm.index <= Math.max(0, realmIndex) && realm.index <= Object.keys(contract.majorRealms).length - 1)
     .map((realm) => realm.id);
-  const trialProgress = (save.trialState?.progressByTrialId ?? {}) as Record<string, { cleared?: boolean }>;
-  const resolvedTransitionIds = contract.gateTransitions
-    .filter((transition) => trialProgress[transition.trialId]?.cleared === true)
-    .map((transition) => transition.id) as GateTransitionId[];
+  const trialProgress = (save.trialState?.progressByTrialId ?? {}) as Record<
+    string,
+    { cleared?: boolean; resolution?: string }
+  >;
+  const resolutionByTransitionId = contract.gateTransitions.reduce<
+    Partial<Record<GateTransitionId, 'cleared' | 'bypassed'>>
+  >((acc, transition) => {
+    const resolution = trialProgress[transition.trialId]?.resolution;
+    if (resolution === 'cleared' || resolution === 'bypassed') {
+      acc[transition.id] = resolution;
+      return acc;
+    }
+    if (trialProgress[transition.trialId]?.cleared === true) {
+      acc[transition.id] = 'cleared';
+    }
+    return acc;
+  }, {});
+  const resolvedTransitionIds = Object.keys(resolutionByTransitionId) as GateTransitionId[];
   const offline = getOfflineProgressionContract(contract);
   const nextTransition = getTransitionByFromRealm(contract, currentRealm);
 
@@ -64,6 +78,7 @@ export const projectSaveShapeToScenario = (
       enteredRealms: enteredRealms.length > 0 ? enteredRealms : ['qi_condensation'],
     },
     gateState: {
+      resolutionByTransitionId,
       resolvedTransitionIds,
       inventoryGateItems: { ...((save.inventoryState?.items ?? {}) as Record<string, number>) },
       pendingBreakthroughTo: resolvedTransitionIds.length === 0 ? nextTransition?.toRealmId ?? null : null,

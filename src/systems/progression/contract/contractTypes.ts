@@ -112,11 +112,14 @@ export interface ProgressionAuthoredContent {
   trials: Array<{
     id: string;
     cityId: string;
+    cityIndex?: number;
     gatesToMajorRealm?: string;
     gateItemId: string;
     eligibilityRule?: { fromMajorRealm?: string } | string;
-    failSafe?: unknown;
-    failSafePurchase?: unknown;
+    failSafe?: {
+      thresholdAttempts?: number;
+      cost?: { gold?: string; spiritStones?: string; merit?: string };
+    };
   }>;
   items: { items: Array<{ id: string }> };
   prestigeStore?: { upgrades?: Array<{ id: string }> };

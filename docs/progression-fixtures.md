@@ -33,6 +33,7 @@ The fixture catalog solves that by providing:
 | `cap-reached` | cap_reached | contract_derived | 0.3B | 1.1, 1.5 | clean |
 | `legacy-path-conflict` | legacy_save | migrated_legacy | 0.3B | 1.2 | warning |
 | `legacy-gate-alias` | legacy_save | migrated_legacy | 0.3B | 1.3 | warning |
+| `legacy-trial-mismatch` | legacy_save | migrated_legacy | 0.3B | 1.4 | clean |
 | `legacy-over-cap` | legacy_save | migrated_legacy | 0.3B | 1.1 | warning |
 | `legacy-hidden-prestige` | legacy_save | migrated_legacy | 0.3B | 1.6 | warning |
 | `legacy-partial-reset-residue` | legacy_save | migrated_legacy | 0.3B | 1.7 | warning |
@@ -50,7 +51,7 @@ Current expected categories are:
 - `legacy-partial-reset-residue` → `PARTIAL_PRESTIGE_RESET`
 - `legacy-offline-split` → `OFFLINE_PIPELINE_SPLIT`
 
-These warnings are intentional and should not be “fixed” by mutating the migration-input fixtures unless the owning packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures. For packet 1.3, legacy gate aliases remain valid migration inputs, but canonical save-shape/current-shape outputs should use `gate_*` item ids.
+These warnings are intentional and should not be “fixed” by mutating the migration-input fixtures unless the owning packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures. For packet 1.3, legacy gate aliases remain valid migration inputs, but canonical save-shape/current-shape outputs should use `gate_*` item ids. For packet 1.4, canonical save-shape/current-shape outputs should preserve explicit trial lifecycle state (`none`, `cleared`, `bypassed`) instead of flattening every resolved gate into one ambiguous bucket. `legacy-trial-mismatch` stays in the catalog as a migration-owned contradiction fixture even though the semantic validator does not classify it as a standalone warning category.
 
 ## Adapter model
 
@@ -58,8 +59,10 @@ The catalog supports three layers:
 
 1. **Contract scenario adapter**
    - exposes a `ProgressionScenario` view for contract-level tests.
+   - packet 1.4 scenarios preserve `resolutionByTransitionId` so true clears stay distinct from legacy bypasses.
 2. **Save-shape adapter**
    - exposes a save-like object for tests that want serialized progression state without booting full runtime stores.
+   - packet 1.4 save shapes emit canonical trial lifecycle state (`eligibleFailures`, `resolution`, `bypassedAt`) rather than the older `attempts + cleared` shape alone.
 3. **Migration fixture adapter**
    - exposes migration-shaped inputs for validator and migration-path coverage.
 
@@ -70,7 +73,7 @@ Not every consumer needs every layer, but the catalog standardizes how to ask fo
 - **1.1** → `fresh-save`, `cap-reached`, `legacy-over-cap`
 - **1.2** → `fresh-save`, `legacy-path-conflict`
 - **1.3** → `gate-edge-pre-first`, `legacy-gate-alias`
-- **1.4** → `gate-edge-pre-first`, `gate-edge-post-first`
+- **1.4** → `gate-edge-pre-first`, `gate-edge-post-first`, `legacy-trial-mismatch`
 - **1.5** → `gate-edge-post-first`, `cap-reached`
 - **1.6** → `prestige-ready`, `legacy-hidden-prestige`
 - **1.7** → `prestige-ready`, `legacy-partial-reset-residue`

@@ -17,6 +17,7 @@ export const createPostFirstGateScenario = ({ contract }: ScenarioBuildContext, 
         enteredRealms: ['qi_condensation', 'foundation_establishment'],
       },
       gateState: {
+        resolutionByTransitionId: { [firstTransition.id]: 'cleared' },
         resolvedTransitionIds: [firstTransition.id],
         inventoryGateItems: { [firstTransition.gateItemId]: 0 },
         pendingBreakthroughTo: null,

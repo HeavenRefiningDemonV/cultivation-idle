@@ -1,22 +1,53 @@
+import type { EconomyConfig } from '../../../content/types.js';
 import type { ProgressionAuthoredContent } from './contractTypes.js';
+import { resolveCanonicalTrialFailSafe } from '../../../content/trialFailSafe.js';
 
 export interface RawProgressionContentLike {
-  economy: { majorRealms: Array<{ id: string; index: number }> };
+  economy: EconomyConfig;
   cities: Array<{ id: string; unlockMajorRealm: string }> | { cities: Array<{ id: string; unlockMajorRealm: string }> };
-  trials: {
-    trials: Array<{
-      id: string;
-      cityId: string;
-      gatesToMajorRealm?: string;
-      gateItemId: string;
-      eligibilityRule?: unknown;
-      failSafe?: unknown;
-      failSafePurchase?: unknown;
-    }>;
-  };
-  items: { items: Array<{ id: string }> };
-  prestige_store?: { upgrades?: Array<{ id: string }> };
+  trials:
+    | Array<{
+        id: string;
+        cityId: string;
+        cityIndex?: number;
+        gatesToMajorRealm?: string;
+        gateItemId: string;
+        eligibilityRule?: unknown;
+        failSafe?: {
+          thresholdAttempts?: number;
+          cost?: { gold?: string | number; spiritStones?: string | number; merit?: string | number };
+        };
+        failSafePurchase?: {
+          enabled?: boolean;
+          afterEligibleFails?: number;
+          costRef?: string;
+        };
+      }>
+    | {
+        trials: Array<{
+          id: string;
+          cityId: string;
+          cityIndex?: number;
+          gatesToMajorRealm?: string;
+          gateItemId: string;
+          eligibilityRule?: unknown;
+          failSafe?: {
+            thresholdAttempts?: number;
+            cost?: { gold?: string | number; spiritStones?: string | number; merit?: string | number };
+          };
+          failSafePurchase?: {
+            enabled?: boolean;
+            afterEligibleFails?: number;
+            costRef?: string;
+          };
+        }>;
+      };
+  items: Array<{ id: string }> | { items: Array<{ id: string }> };
+  prestige_store?: { upgrades?: Array<{ id: string }> } | { upgrades: Array<{ id: string }> };
 }
+
+const readTrials = (raw: RawProgressionContentLike) => (Array.isArray(raw.trials) ? raw.trials : raw.trials.trials);
+const readItems = (raw: RawProgressionContentLike) => (Array.isArray(raw.items) ? raw.items : raw.items.items);
 
 export const adaptProgressionAuthoredContent = (raw: RawProgressionContentLike): ProgressionAuthoredContent => ({
   economy: {
@@ -26,7 +57,7 @@ export const adaptProgressionAuthoredContent = (raw: RawProgressionContentLike):
     id: city.id,
     unlockMajorRealm: city.unlockMajorRealm,
   })),
-  trials: raw.trials.trials.map((trial) => {
+  trials: readTrials(raw).map((trial) => {
     const rule =
       trial.eligibilityRule && typeof trial.eligibilityRule === 'object'
         ? { fromMajorRealm: (trial.eligibilityRule as { fromMajorRealm?: string }).fromMajorRealm }
@@ -37,15 +68,15 @@ export const adaptProgressionAuthoredContent = (raw: RawProgressionContentLike):
     return {
       id: trial.id,
       cityId: trial.cityId,
+      cityIndex: trial.cityIndex,
       gatesToMajorRealm: trial.gatesToMajorRealm,
       gateItemId: trial.gateItemId,
       eligibilityRule: rule,
-      failSafe: trial.failSafe,
-      failSafePurchase: trial.failSafePurchase,
+      failSafe: resolveCanonicalTrialFailSafe(trial, raw.economy),
     };
   }),
   items: {
-    items: raw.items.items.map((item) => ({ id: item.id })),
+    items: readItems(raw).map((item) => ({ id: item.id })),
   },
   prestigeStore: {
     upgrades: raw.prestige_store?.upgrades?.map((upgrade) => ({ id: upgrade.id })) ?? [],

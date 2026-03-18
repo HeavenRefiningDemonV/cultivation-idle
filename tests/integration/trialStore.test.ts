@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createDefaultTrialProgress, useTrialStore } from '../../src/stores/trialStore.js';
+import { buildDefaultSaveState } from '../../src/save/defaultSaveState.js';
+import { createDefaultTrialProgress, normalizeTrialProgress, useTrialStore } from '../../src/stores/trialStore.js';
 
 const resetTrialStore = () => {
   useTrialStore.getState().hardResetTrials();
@@ -48,4 +49,51 @@ test('trial store preserves attempt history on clear and records bypass resoluti
   assert.equal(bypassed.cleared, false);
   assert.equal(bypassed.bypassedAt, bypassedAt);
   assert.equal(useTrialStore.getState().isResolved('trial_novices_clearing'), true);
+});
+
+test('trial progress normalization keeps legacy save data backwards compatible', () => {
+  const unresolved = normalizeTrialProgress({
+    attempts: 3,
+    cleared: false,
+    lastAttemptAt: null,
+    lastClearAt: null,
+  });
+  assert.equal(unresolved.resolution, 'none');
+  assert.equal(unresolved.eligibleFailures, 3);
+  assert.equal(unresolved.cleared, false);
+
+  const cleared = normalizeTrialProgress({
+    attempts: 1,
+    cleared: true,
+    lastAttemptAt: 10,
+    lastClearAt: 10,
+  });
+  assert.equal(cleared.resolution, 'cleared');
+  assert.equal(cleared.eligibleFailures, 0);
+  assert.equal(cleared.cleared, true);
+});
+
+test('default save serialization writes canonical packet-1.4 trial lifecycle fields', () => {
+  resetTrialStore();
+  useTrialStore.setState({
+    activeTrialSessionId: null,
+    progressByTrialId: {
+      trial_novices_clearing: normalizeTrialProgress({
+        attempts: 2,
+        cleared: false,
+        resolution: 'bypassed',
+        bypassedAt: 123,
+        lastAttemptAt: 123,
+        lastClearAt: null,
+      }),
+    },
+  });
+
+  const save = buildDefaultSaveState();
+  const progress = save.trialState?.progressByTrialId?.trial_novices_clearing;
+
+  assert.ok(progress);
+  assert.equal(progress.resolution, 'bypassed');
+  assert.equal(progress.eligibleFailures, 0);
+  assert.equal(progress.bypassedAt, 123);
 });

@@ -26,5 +26,14 @@ const mergeDeep = <T extends object>(base: T, overrides?: Partial<T>): T => {
   return result as T;
 };
 
-export const createScenario = (base: ProgressionScenario, overrides?: ScenarioOverrides): ProgressionScenario =>
-  mergeDeep(base, overrides as Partial<ProgressionScenario> | undefined);
+export const createScenario = (base: ProgressionScenario, overrides?: ScenarioOverrides): ProgressionScenario => {
+  const scenario = mergeDeep(base, overrides as Partial<ProgressionScenario> | undefined);
+  const resolvedTransitionIds = Object.keys(scenario.gateState.resolutionByTransitionId) as ProgressionScenario['gateState']['resolvedTransitionIds'];
+  return {
+    ...scenario,
+    gateState: {
+      ...scenario.gateState,
+      resolvedTransitionIds,
+    },
+  };
+};

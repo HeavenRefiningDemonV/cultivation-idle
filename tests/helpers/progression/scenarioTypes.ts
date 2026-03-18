@@ -1,5 +1,7 @@
 import type { GateTransitionId, MajorRealmId, ProgressionContract } from '../../../src/systems/progression/contract/index.js';
 
+export type GateResolutionState = 'cleared' | 'bypassed';
+
 export type ScenarioKind =
   | 'fresh_life'
   | 'pre_first_gate'
@@ -24,6 +26,7 @@ export interface ProgressionScenario {
     enteredRealms: MajorRealmId[];
   };
   gateState: {
+    resolutionByTransitionId: Partial<Record<GateTransitionId, GateResolutionState>>;
     resolvedTransitionIds: GateTransitionId[];
     inventoryGateItems: Record<string, number>;
     pendingBreakthroughTo: MajorRealmId | null;

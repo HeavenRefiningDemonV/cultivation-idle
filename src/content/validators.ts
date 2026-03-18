@@ -31,6 +31,7 @@ import type {
   TrialsConfig,
 } from './types';
 import type { LoadedContentRaw } from './loaders';
+import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
 import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.ts';
 
 export interface ValidatedContent {
@@ -327,11 +328,27 @@ function validateTrials(config: TrialsConfig) {
       }
     }
 
-    const normalizedThreshold = trial.failSafe?.thresholdAttempts ?? 3;
-    (trial as any).failSafe = {
-      thresholdAttempts: normalizedThreshold,
-      ...trial.failSafe,
-    };
+    if (trial.failSafePurchase) {
+      assertObject(trial.failSafePurchase, `trials[${idx}].failSafePurchase`);
+      if (trial.failSafePurchase.afterEligibleFails !== undefined) {
+        assert(
+          typeof trial.failSafePurchase.afterEligibleFails === 'number',
+          `trials[${idx}].failSafePurchase.afterEligibleFails must be a number if provided`,
+        );
+      }
+      if (trial.failSafePurchase.costRef !== undefined) {
+        assert(
+          typeof trial.failSafePurchase.costRef === 'string',
+          `trials[${idx}].failSafePurchase.costRef must be a string if provided`,
+        );
+      }
+      if (trial.failSafePurchase.enabled !== undefined) {
+        assert(
+          typeof trial.failSafePurchase.enabled === 'boolean',
+          `trials[${idx}].failSafePurchase.enabled must be a boolean if provided`,
+        );
+      }
+    }
   });
 
   assertUniqueIds(trials, 'trials.json.trials');
@@ -906,6 +923,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const apothecaryShops = validateApothecary(raw.apothecary_shops, addErr);
   const expeditions = validateExpeditions(raw.expeditions);
   const bountyConfig = validateBounties(raw.bounties);
+  const normalizedTrials = trials.map((trial) => normalizeTrialFailSafeDefinition(trial, raw.economy));
 
   // Build maps for cross references
   const cityMap = buildIdMap(cities);
@@ -913,7 +931,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const pavilionMap = buildIdMap(pavilions);
   const outskirtsMap = buildIdMap(outskirts);
   const enemyMap = buildIdMap(enemies);
-  const trialMap = buildIdMap(trials);
+  const trialMap = buildIdMap(normalizedTrials);
   const ruinMap = buildIdMap(ruins);
   const runeMap = buildIdMap(runes);
   const techniqueMap = buildIdMap(techniques);
@@ -991,7 +1009,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     });
   });
 
-  trials.forEach((trial, idx) => {
+  normalizedTrials.forEach((trial, idx) => {
     if (!(trial.cityId in cityMap)) {
       addErr(`trials[${idx}].cityId missing in cities`);
     }
@@ -1160,7 +1178,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     pavilions,
     outskirts,
     enemies,
-    trials,
+    trials: normalizedTrials,
     ruins,
     alchemy_recipes: alchemyRecipes,
     forge_blueprints: forgeBlueprints,

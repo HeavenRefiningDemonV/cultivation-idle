@@ -5,6 +5,7 @@ import {
   getTransitionByFromRealm,
   normalizeGateItemAlias,
 } from '../../src/systems/progression/contract/index.js';
+import { buildProgressionFixture } from '../fixtures/progression/index.js';
 import { createGateEdgeScenario, loadProgressionContract } from '../helpers/progression/index.js';
 
 test('first transition resolves one trial and one gate item', async () => {
@@ -25,6 +26,19 @@ test('gate edge scenario is contract-aware and does not pre-grant first gate rew
   const scenario = createGateEdgeScenario({ contract });
   assert.equal(scenario.kind, 'pre_first_gate');
   assert.equal(scenario.gateState.inventoryGateItems.gate_foundation_pill, 0);
+});
+
+test('post-first-gate fixture records an explicit clear state instead of an ambiguous resolved bucket', async () => {
+  const fixture = await buildProgressionFixture('gate-edge-post-first');
+  assert.equal(fixture.scenario?.gateState.resolutionByTransitionId.qi_condensation_to_foundation_establishment, 'cleared');
+  const progress = (fixture.saveShape?.trialState as { progressByTrialId?: Record<string, { resolution?: string }> })?.progressByTrialId
+    ?.trial_novices_clearing;
+  assert.equal(progress?.resolution, 'cleared');
+});
+
+test('legacy trial mismatch fixture can project unresolved legacy input without losing later bypass semantics', async () => {
+  const fixture = await buildProgressionFixture('legacy-trial-mismatch');
+  assert.equal(fixture.scenario?.gateState.resolutionByTransitionId.qi_condensation_to_foundation_establishment, undefined);
 });
 
 // Future runtime assertions (packet 1.3/1.4): enable after gate runtime is contract-driven.

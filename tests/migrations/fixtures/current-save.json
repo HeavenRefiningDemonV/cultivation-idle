@@ -22,6 +22,23 @@
     "currencies": { "gold": "0", "spiritStones": "0", "merit": "0" },
     "items": {}
   },
+  "trialState": {
+    "activeTrialSessionId": null,
+    "progressByTrialId": {
+      "trial_novices_clearing": {
+        "attempts": 0,
+        "sessionAttempts": 0,
+        "eligibleFailures": 0,
+        "resolution": "none",
+        "cleared": false,
+        "lastAttemptAt": null,
+        "lastClearAt": null,
+        "bypassedAt": null,
+        "attemptStartAt": null,
+        "lastAttemptSummary": null
+      }
+    }
+  },
   "combatSettings": { "autoAttack": false, "autoCombatAI": false },
   "zoneState": { "unlockedZones": [], "zoneProgress": {} },
   "techniqueState": { "loadouts": [], "selectedLoadoutId": "default" },

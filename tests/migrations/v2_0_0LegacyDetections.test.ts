@@ -52,8 +52,9 @@ test('trial mismatch planning detects contradictory realm and gate/trial proof s
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
   const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_trial_resolution_normalization');
 
-  assert.equal(step?.ownerPacket, '1.4/1.5');
+  assert.equal(step?.ownerPacket, '1.4');
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'TRIAL_RESOLUTION_MISMATCH'), true);
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'GATE_STATE_NORMALIZED_TO_BYPASS'), true);
 });
 
 test('partial reset residue planning detects clean-life inconsistencies', async () => {

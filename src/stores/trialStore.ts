@@ -17,6 +17,9 @@ export type TrialProgress = {
   lastAttemptSummary: TrialAttemptSummary | null;
 };
 
+type TrialProgressLike = Partial<TrialProgress> &
+  Pick<TrialProgress, 'attempts' | 'cleared' | 'lastAttemptAt' | 'lastClearAt'>;
+
 interface TrialState {
   activeTrialSessionId: string | null;
   progressByTrialId: Record<string, TrialProgress>;
@@ -45,6 +48,40 @@ export const createDefaultTrialProgress = (): TrialProgress => ({
   attemptStartAt: null,
   lastAttemptSummary: null,
 });
+
+export const normalizeTrialProgress = (progress: TrialProgressLike | null | undefined): TrialProgress => {
+  if (!progress) {
+    return createDefaultTrialProgress();
+  }
+
+  const resolution = progress.resolution ?? (progress.cleared ? 'cleared' : 'none');
+  const attempts = typeof progress.attempts === 'number' ? progress.attempts : 0;
+
+  return {
+    attempts,
+    sessionAttempts: typeof progress.sessionAttempts === 'number' ? progress.sessionAttempts : 0,
+    eligibleFailures:
+      typeof progress.eligibleFailures === 'number'
+        ? progress.eligibleFailures
+        : resolution === 'none'
+          ? attempts
+          : 0,
+    resolution,
+    cleared: resolution === 'cleared',
+    lastAttemptAt: progress.lastAttemptAt ?? null,
+    lastClearAt: progress.lastClearAt ?? null,
+    bypassedAt:
+      typeof progress.bypassedAt === 'number'
+        ? progress.bypassedAt
+        : resolution === 'bypassed'
+          ? progress.lastAttemptAt ?? progress.lastClearAt ?? null
+          : null,
+    attemptStartAt: progress.attemptStartAt ?? null,
+    lastAttemptSummary: progress.lastAttemptSummary
+      ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
+      : null,
+  };
+};
 
 export const useTrialStore = create<TrialState>()(
   immer((set, get) => ({

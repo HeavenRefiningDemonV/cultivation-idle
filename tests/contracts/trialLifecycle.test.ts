@@ -4,7 +4,10 @@ import path from 'node:path';
 import test from 'node:test';
 
 import type { TrialDef } from '../../src/content/types.js';
+import type { LoadedContentRaw } from '../../src/content/index.js';
 import type { ValidatedContent } from '../../src/content/index.js';
+import { validateLoadedContent } from '../../src/content/index.js';
+import { adaptProgressionAuthoredContent } from '../../src/systems/progression/contract/index.js';
 import { getTrialLifecycleSnapshot } from '../../src/systems/progression/runtime/index.js';
 import type { Realm } from '../../src/types/index.js';
 
@@ -38,7 +41,7 @@ const loadContent = async (): Promise<ValidatedContent> => {
   const entries = await Promise.all(
     Object.entries(FILES).map(async ([key, fileName]) => [key, await readJson(fileName)] as const),
   );
-  return Object.fromEntries(entries) as unknown as ValidatedContent;
+  return validateLoadedContent(Object.fromEntries(entries) as unknown as LoadedContentRaw);
 };
 
 const readyRealm: Realm = {
@@ -83,6 +86,25 @@ test('trial lifecycle reports an available first gate and exposes fail-safe prog
   assert.equal(snapshot.failSafe.remainingEligibleFailures, 1);
   assert.equal(snapshot.failSafe.canPurchase, false);
   assert.equal(snapshot.failSafe.blockedReason, 'Fail-safe unlocks after 3 eligible defeats.');
+});
+
+test('trial fail-safe authoring aliases normalize into canonical threshold and cost shape', async () => {
+  const entries = await Promise.all(
+    Object.entries(FILES).map(async ([key, fileName]) => [key, await readJson(fileName)] as const),
+  );
+  const raw = Object.fromEntries(entries) as unknown as LoadedContentRaw;
+  const validated = validateLoadedContent(raw);
+  const validatedTrial = validated.trials.find((entry: TrialDef) => entry.id === 'trial_novices_clearing');
+  const adaptedTrial = adaptProgressionAuthoredContent(raw).trials.find((entry) => entry.id === 'trial_novices_clearing');
+
+  assert.ok(validatedTrial?.failSafe);
+  assert.equal(validatedTrial?.failSafe?.thresholdAttempts, 3);
+  assert.deepEqual(validatedTrial?.failSafe?.cost, { gold: '25000', merit: '10', spiritStones: '0' });
+
+  assert.ok(adaptedTrial?.failSafe);
+  assert.equal(adaptedTrial?.failSafe?.thresholdAttempts, 3);
+  assert.deepEqual(adaptedTrial?.failSafe?.cost, { gold: '25000', merit: '10', spiritStones: '0' });
+  assert.equal('failSafePurchase' in (adaptedTrial ?? {}), false);
 });
 
 test('trial lifecycle distinguishes bypassed trials from cleared trials', async () => {

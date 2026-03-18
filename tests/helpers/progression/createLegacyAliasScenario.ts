@@ -10,6 +10,7 @@ export const createLegacyAliasScenario = ({ contract }: ScenarioBuildContext, ov
       description: 'Fixture intentionally carries canonical selectedPath plus a contradictory legacy lifePath alias for migration/drift tests.',
       pathState: { selectedPath: 'martial', lifePathAlias: 'earth' },
       gateState: {
+        resolutionByTransitionId: {},
         resolvedTransitionIds: [],
         inventoryGateItems: {
           foundation_pill: 1,

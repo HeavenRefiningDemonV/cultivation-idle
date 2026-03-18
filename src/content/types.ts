@@ -188,6 +188,12 @@ export interface TrialFailSafe {
   cost?: TrialFailSafeCost;
 }
 
+export interface TrialFailSafePurchase {
+  enabled?: boolean;
+  afterEligibleFails?: number;
+  costRef?: string;
+}
+
 export interface TrialDef {
   id: string;
   cityId: string;
@@ -204,6 +210,7 @@ export interface TrialDef {
   suggestedHp?: number;
   eligibilityRule?: string | unknown;
   failSafe?: TrialFailSafe;
+  failSafePurchase?: TrialFailSafePurchase;
   firstEligibleClearReward?: unknown;
   gatesToMajorRealm?: MajorRealmId;
   stretch?: boolean;

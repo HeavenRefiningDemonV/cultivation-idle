@@ -27,6 +27,7 @@ test('all progression scenario builders are callable and return structured fixtu
   scenarios.forEach((scenario) => {
     assert.ok(scenario.kind.length > 0);
     assert.ok(scenario.realmState.enteredRealms.length > 0);
+    assert.ok(typeof scenario.gateState.resolutionByTransitionId === 'object');
     assert.ok(typeof scenario.offlineState.pipelineId === 'string');
   });
 });

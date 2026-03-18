@@ -16,7 +16,7 @@ import { usePrestigeStore } from '../stores/prestigeStore';
 import { useCityStore } from '../stores/cityStore';
 import { useActivityStore } from '../stores/activityStore';
 import { useOutskirtsStore } from '../stores/outskirtsStore';
-import { useTrialStore } from '../stores/trialStore';
+import { normalizeTrialProgress, useTrialStore } from '../stores/trialStore';
 import { useRuinsStore } from '../stores/ruinsStore';
 import { useShopStore } from '../stores/shopStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
@@ -210,17 +210,7 @@ export function buildDefaultSaveState(): SaveData {
       progressByTrialId: Object.fromEntries(
         Object.entries(trialState.progressByTrialId ?? {}).map(([trialId, progress]) => [
           trialId,
-          {
-            ...progress,
-            sessionAttempts: progress.sessionAttempts ?? 0,
-            eligibleFailures: progress.eligibleFailures ?? 0,
-            resolution: progress.resolution ?? (progress.cleared ? 'cleared' : 'none'),
-            bypassedAt: progress.bypassedAt ?? null,
-            attemptStartAt: progress.attemptStartAt ?? null,
-            lastAttemptSummary: progress.lastAttemptSummary
-              ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
-              : null,
-          },
+          normalizeTrialProgress(progress),
         ]),
       ),
     },

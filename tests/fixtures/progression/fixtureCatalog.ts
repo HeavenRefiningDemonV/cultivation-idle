@@ -8,6 +8,7 @@ import { legacyOfflineSplitFixture } from './cases/legacyOfflineSplit.js';
 import { legacyOverCapFixture } from './cases/legacyOverCap.js';
 import { legacyPartialResetResidueFixture } from './cases/legacyPartialResetResidue.js';
 import { legacyPathConflictFixture } from './cases/legacyPathConflict.js';
+import { legacyTrialMismatchFixture } from './cases/legacyTrialMismatch.js';
 import { prestigeReadyFixture } from './cases/prestigeReady.js';
 import type { ProgressionFixtureDefinition } from './fixtureTypes.js';
 
@@ -19,6 +20,7 @@ export const PROGRESSION_FIXTURE_CATALOG: ProgressionFixtureDefinition[] = [
   capReachedFixture,
   legacyPathConflictFixture,
   legacyGateAliasFixture,
+  legacyTrialMismatchFixture,
   legacyOverCapFixture,
   legacyHiddenPrestigeFixture,
   legacyPartialResetResidueFixture,
