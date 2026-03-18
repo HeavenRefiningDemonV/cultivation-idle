@@ -102,6 +102,7 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 - Integration skeleton suites: `tests/integration/`
 - Harness smoke test: `tests/contracts/progressionHarnessSmoke.test.ts`
 - 0.1A diagnostics/report: `npm run progression:report`
+- Fixture catalog/docs: `docs/progression-fixtures.md` and `npm run progression:fixtures`
 
 ## 12) Future packet ownership map
 

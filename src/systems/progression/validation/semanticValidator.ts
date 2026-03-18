@@ -1,4 +1,3 @@
-import { validateLoadedContent, type ValidatedContent } from '../../../content/validators.js';
 import {
   adaptProgressionAuthoredContent,
   buildProgressionContract,
@@ -46,26 +45,25 @@ const pushIssue = (issues: DriftIssue[], issue: DriftIssue) => {
 };
 
 const readTrialFromMajorRealm = (eligibilityRule: unknown): string | undefined => {
-  if (typeof eligibilityRule !== 'string' || !eligibilityRule) return undefined;
-  try {
-    const parsed = JSON.parse(eligibilityRule) as { fromMajorRealm?: string };
-    return typeof parsed.fromMajorRealm === 'string' ? parsed.fromMajorRealm : undefined;
-  } catch {
-    return undefined;
+  if (!eligibilityRule) return undefined;
+  if (typeof eligibilityRule === 'object') {
+    const record = eligibilityRule as { fromMajorRealm?: string };
+    return typeof record.fromMajorRealm === 'string' ? record.fromMajorRealm : undefined;
   }
+  if (typeof eligibilityRule !== 'string') return undefined;
+  return undefined;
 };
 
-const buildAuthoredDiagnosticsInput = (content: ValidatedContent) => ({
+const buildAuthoredDiagnosticsInput = (content: ReturnType<typeof adaptProgressionAuthoredContent>) => ({
   economyRealms: content.economy.majorRealms.map((realm) => realm.id),
   cities: content.cities.map((city) => ({ id: city.id, unlockMajorRealm: city.unlockMajorRealm })),
   trials: content.trials.map((trial) => ({
     id: trial.id,
     gateItemId: trial.gateItemId,
-    fromMajorRealm:
-      readTrialFromMajorRealm(trial.eligibilityRule),
+    fromMajorRealm: readTrialFromMajorRealm(trial.eligibilityRule),
     toMajorRealm: trial.gatesToMajorRealm,
   })),
-  items: content.items.map((item) => item.id),
+  items: content.items.items.map((item) => item.id),
 });
 
 const legacyGateItemEntries = (items: Record<string, number>) =>
@@ -150,6 +148,7 @@ const readMigrationFixtureIssues = (
     const inventoryState = (record.inventoryState ?? {}) as Record<string, any>;
     const realmIndex = Number(gameState.realm?.index ?? -1);
     const itemIds = Object.keys((inventoryState.items ?? {}) as Record<string, number>);
+    const prestigePurchases = ((record.prestigeState?.purchasesById ?? {}) as Record<string, number>);
     const offlineTimes = [record.meta?.lastActiveAtMs, gameState.lastActiveTime, gameState.lastTickTime].filter(
       (value): value is number => typeof value === 'number',
     );
@@ -199,6 +198,42 @@ const readMigrationFixtureIssues = (
       });
     }
 
+
+    const deferredPrestigePurchases = Object.keys(prestigePurchases).filter(
+      (nodeId) => contract.prestigeHooks.classifyNode(nodeId) === 'deferred',
+    );
+    if (deferredPrestigePurchases.length > 0) {
+      pushIssue(issues, {
+        id: `migration-hidden-prestige-${name}`,
+        category: 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER',
+        severity: 'warning',
+        summary: `Migration fixture ${name} contains deferred prestige purchases that should remain hidden from live runtime flows.`,
+        evidence: deferredPrestigePurchases.map((nodeId) => ({ path: `fixture:${name}`, detail: nodeId })),
+        suggestedOwnerPacket: '1.7',
+        fixStrategySummary: 'Retain this fixture for regression coverage until prestige cleanup routes all deferred nodes through contract-backed projections.',
+        autoFixable: false,
+      });
+    }
+
+    const hasPartialResetResidue =
+      realmIndex === 0 &&
+      (Array.isArray(record.cityState?.unlockedCityIds) && record.cityState.unlockedCityIds.length > 1 ||
+        Object.keys((record.trialState?.progressByTrialId ?? {}) as Record<string, unknown>).length > 0 ||
+        Object.keys((record.ruinsState?.progressByRuinId ?? {}) as Record<string, unknown>).length > 0 ||
+        Object.values((record.equipmentState?.refineLevelBySlot ?? {}) as Record<string, number>).some((value) => Number(value) > 0));
+    if (hasPartialResetResidue) {
+      pushIssue(issues, {
+        id: `migration-partial-reset-${name}`,
+        category: 'PARTIAL_PRESTIGE_RESET',
+        severity: 'warning',
+        summary: `Migration fixture ${name} leaves behind obvious per-life residue after a reset-shaped baseline.`,
+        evidence: [{ path: `fixture:${name}`, detail: 'city/trial/ruins/equipment state remains populated at fresh-life realm index 0.' }],
+        suggestedOwnerPacket: '1.7',
+        fixStrategySummary: 'Keep this fixture as a regression target until reset cleanup is centralized and enforced.',
+        autoFixable: false,
+      });
+    }
+
     if (new Set(offlineTimes).size > 1) {
       pushIssue(issues, {
         id: `migration-offline-split-${name}`,
@@ -222,11 +257,10 @@ export const validateProgressionSemantics = ({
   scenarios = [],
   migrationFixtures = [],
 }: ValidateProgressionSemanticsOptions): DriftIssue[] => {
-  const validatedContent = validateLoadedContent(rawContent as never);
   const authoredContent = adaptProgressionAuthoredContent(rawContent);
   const contract = buildProgressionContract(authoredContent);
   const issues = collectProgressionDiagnostics(contract, {
-    authoredContent: buildAuthoredDiagnosticsInput(validatedContent),
+    authoredContent: buildAuthoredDiagnosticsInput(authoredContent),
     runtimeFileTextByPath,
   });
 

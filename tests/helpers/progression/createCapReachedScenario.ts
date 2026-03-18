@@ -19,6 +19,9 @@ export const createCapReachedScenario = ({ contract }: ScenarioBuildContext, ove
         inventoryGateItems: {},
         pendingBreakthroughTo: null,
       },
+      cityState: {
+        unlockedCityIds: contract.cityUnlocks.map((unlock) => unlock.cityId),
+      },
       notes: ['Deferred systems remain deferred after cap reached.'],
     },
     overrides,
