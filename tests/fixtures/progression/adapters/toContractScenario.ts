@@ -1,6 +1,7 @@
 import type { GateTransitionId, MajorRealmId, ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
 import { getOfflineProgressionContract, getTransitionByFromRealm, normalizeGateItemAlias } from '../../../../src/systems/progression/contract/index.js';
 import { normalizeCitySaveState } from '../../../../src/save/cityStateNormalization.js';
+import { applyPartialResetResidueCleanup } from '../../../../src/save/partialResetResidueCleanup.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
 
@@ -27,13 +28,16 @@ export const projectSaveShapeToScenario = (
   saveShape: Record<string, unknown>,
   contract: ProgressionContract,
 ): ProgressionScenario => {
-  const save = saveShape as Record<string, any>;
-  const realmIndex = Number(save.gameState?.realm?.index ?? 0);
+  const save = saveShape as Record<string, unknown>;
+  const saveGameState = (save.gameState && typeof save.gameState === 'object') ? save.gameState as Record<string, unknown> : {};
+  const saveTrialState = (save.trialState && typeof save.trialState === 'object') ? save.trialState as Record<string, unknown> : {};
+  const realm = (saveGameState.realm && typeof saveGameState.realm === 'object') ? saveGameState.realm as Record<string, unknown> : {};
+  const realmIndex = Number(realm.index ?? 0);
   const currentRealm = realmByIndex(contract, realmIndex);
   const enteredRealms = Object.values(contract.majorRealms)
     .filter((realm) => realm.index <= Math.max(0, realmIndex) && realm.index <= Object.keys(contract.majorRealms).length - 1)
     .map((realm) => realm.id);
-  const trialProgress = (save.trialState?.progressByTrialId ?? {}) as Record<
+  const trialProgress = ((saveTrialState.progressByTrialId && typeof saveTrialState.progressByTrialId === 'object') ? saveTrialState.progressByTrialId : {}) as Record<
     string,
     { cleared?: boolean; resolution?: string }
   >;
@@ -59,8 +63,12 @@ export const projectSaveShapeToScenario = (
     cityState: save.cityState,
   });
 
-  const selectedPath = (save.gameState?.selectedPath ?? save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['selectedPath'];
-  const lifePathAlias = (save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['lifePathAlias'];
+  const gameState = (save.gameState && typeof save.gameState === 'object') ? save.gameState as Record<string, unknown> : {};
+  const prestigeState = (save.prestigeState && typeof save.prestigeState === 'object') ? save.prestigeState as Record<string, unknown> : {};
+  const inventoryState = (save.inventoryState && typeof save.inventoryState === 'object') ? save.inventoryState as Record<string, unknown> : {};
+
+  const selectedPath = (gameState.selectedPath ?? gameState.lifePath ?? null) as ProgressionScenario['pathState']['selectedPath'];
+  const lifePathAlias = (gameState.lifePath ?? null) as ProgressionScenario['pathState']['lifePathAlias'];
 
   return {
     kind: 'legacy_alias',
@@ -76,7 +84,7 @@ export const projectSaveShapeToScenario = (
     gateState: {
       resolutionByTransitionId,
       resolvedTransitionIds,
-      inventoryGateItems: { ...((save.inventoryState?.items ?? {}) as Record<string, number>) },
+      inventoryGateItems: { ...(((inventoryState.items && typeof inventoryState.items === 'object') ? inventoryState.items : {}) as Record<string, number>) },
       pendingBreakthroughTo: resolvedTransitionIds.length === 0 ? nextTransition?.toRealmId ?? null : null,
     },
     cityState: {
@@ -85,8 +93,8 @@ export const projectSaveShapeToScenario = (
       selectedModuleByCity: normalizedCityState.selectedModuleByCity,
     },
     prestigeState: {
-      ready: Number(save.prestigeState?.currentRunAP ?? 0) > 0 || Number(save.prestigeState?.highestRealmReached ?? 0) >= 2,
-      projectedAP: Number(save.prestigeState?.currentRunAP ?? 0),
+      ready: Number(prestigeState.currentRunAP ?? 0) > 0 || Number(prestigeState.highestRealmReached ?? 0) >= 2,
+      projectedAP: Number(prestigeState.currentRunAP ?? 0),
     },
     offlineState: {
       pipelineId: offline.pipelineId,
@@ -112,11 +120,11 @@ export const toContractScenario = (
       ? inventoryState.items as Record<string, unknown>
       : null;
     const canonicalItems = items ? canonicalizeItems(items) : undefined;
-    return projectSaveShapeToScenario({
+    return projectSaveShapeToScenario(applyPartialResetResidueCleanup({
       ...fixtureData,
       __fixtureId: buildResult.migrationFixture.name,
       inventoryState: inventoryState && canonicalItems ? { ...inventoryState, items: canonicalItems } : fixtureData.inventoryState,
-    }, contract);
+    }).save, contract);
   }
   return null;
 };

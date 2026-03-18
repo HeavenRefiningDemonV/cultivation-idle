@@ -68,3 +68,26 @@ test('toContractScenario still backfills city truth for intentionally incomplete
   assert.equal(scenario.cityState.currentCityId, 'city_ironpeak_bastion');
   assert.equal(scenario.cityState.unlockedCityIds.includes('city_six'), false);
 });
+
+
+test('legacy partial-reset migration fixtures project to clean current city truth in canonical adapters', async () => {
+  const contract = await loadProgressionContract();
+  const scenario = projectSaveShapeToScenario(
+    {
+      version: '2.0.0',
+      gameState: { realm: { index: 0, substage: 0, name: 'Qi Condensation' }, selectedPath: null },
+      cityState: {
+        currentCityId: 'city_stonecrag_town',
+        unlockedCityIds: ['city_pinewind_hamlet', 'city_stonecrag_town'],
+        selectedModuleByCity: { city_stonecrag_town: 'ruins' },
+      },
+      trialState: { progressByTrialId: {} },
+      inventoryState: { items: {} },
+      prestigeState: { currentRunAP: 0, highestRealmReached: 0 },
+    },
+    contract,
+  );
+
+  assert.deepEqual(scenario.cityState.unlockedCityIds, ['city_pinewind_hamlet']);
+  assert.equal(scenario.cityState.currentCityId, 'city_pinewind_hamlet');
+});

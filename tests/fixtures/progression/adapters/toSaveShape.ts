@@ -1,5 +1,6 @@
 import { normalizeGateItemAlias, type ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
 import { normalizeCitySaveState } from '../../../../src/save/cityStateNormalization.js';
+import { applyPartialResetResidueCleanup } from '../../../../src/save/partialResetResidueCleanup.js';
 import { normalizeTrialProgress } from '../../../../src/stores/trialStore.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
@@ -157,7 +158,7 @@ export const toSaveShape = (
   contract: ProgressionContract,
 ): Record<string, unknown> | null => {
   if (buildResult.saveShape) return canonicalizeSaveShape(buildResult.saveShape);
-  if (buildResult.migrationFixture) return canonicalizeSaveShape(buildResult.migrationFixture.data as Record<string, unknown>);
+  if (buildResult.migrationFixture) return canonicalizeSaveShape(applyPartialResetResidueCleanup(buildResult.migrationFixture.data as Record<string, unknown>).save);
   if (buildResult.scenario) return canonicalizeSaveShape(scenarioToSaveShape(buildResult.scenario, contract));
   return null;
 };

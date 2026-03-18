@@ -26,7 +26,7 @@ This document describes the Section 0 save migration framework and the first pop
 | `v2_0_0_normalize_city_progression_state` | transform | `1.5` | backfill and normalize `cityState` from canonical realm-entry city unlock truth, including current city and default selected modules |
 | `v2_0_0_plan_deferred_prestige_refund` | transform | `1.6` | detect hidden/deferred prestige purchases, compute refund totals, clear refunded purchases on apply, and restore spendable AP in `prestigeState.totalAP` |
 | `v2_0_0_plan_trial_resolution_normalization` | transform | `1.4` | detect contradictory first-gate progression state and normalize it to an honest bypassed resolution on apply |
-| `v2_0_0_plan_partial_reset_residue_cleanup` | plannedTransform | `1.7` | detect clean-life residue across per-life stores |
+| `v2_0_0_plan_partial_reset_residue_cleanup` | transform | `1.7` | detect clean-life residue across per-life and hybrid stores, report the cleanup, and normalize it to a clean new-life baseline on apply |
 | `v2_0_0_plan_offline_unification` | reportOnly | `1.8` | detect split offline metadata surfaces |
 
 ## Fixture catalog
@@ -53,6 +53,7 @@ Key fixtures:
 - Packet 1.4 now owns legacy first-gate mismatch normalization; apply mode should mark the gate as `bypassed` instead of fabricating a combat clear or retroactive gate proof.
 - Packet 1.5 now owns city progression support-layer normalization; apply mode should backfill missing or contradictory `cityState` from the entered realm, keep `currentCityId` valid, seed `selectedModuleByCity` to `outskirts`, and never imply a city beyond Ironpeak Bastion.
 - Packet 1.6 now owns prestige tree honesty in the support layer; apply mode should refund hidden/deferred prestige purchases from content-defined upgrade costs, clear refunded `prestigeState.purchasesById` entries, restore spendable AP to `prestigeState.totalAP`, and leave dry-run/report output transparent about the node ids and refund totals.
+- Packet 1.7 now owns clean-new-life residue cleanup in the support layer; apply mode should restore Pinewind baseline city truth, clear trial/ruins/equipment/inventory/activity residue, preserve permanent prestige meta, and re-derive hybrid preference slices honestly (for example loadout shells, pouch config, craft modes, and expedition slots). Dry-run must continue to report the exact residue categories without mutating the input save.
 - Packet 1.8 now owns offline pipeline unification; keep split offline metadata surfaces report-only until that packet lands.
 
 ## Dry-run command examples

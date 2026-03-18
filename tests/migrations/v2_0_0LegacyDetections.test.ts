@@ -61,13 +61,18 @@ test('trial mismatch planning detects contradictory realm and gate/trial proof s
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'GATE_STATE_NORMALIZED_TO_BYPASS'), true);
 });
 
-test('partial reset residue planning detects clean-life inconsistencies', async () => {
+test('partial reset residue dry-run detects clean-life inconsistencies without mutating the input save', async () => {
   const fixture = await loadMigrationFixture('legacy-partial-reset-residue');
+  const original = structuredClone(fixture);
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
   const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_partial_reset_residue_cleanup');
 
   assert.equal(step?.ownerPacket, '1.7');
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'PARTIAL_RESET_RESIDUE_DETECTED'), true);
+  assert.equal(step?.summary.includes('city'), true);
+  assert.equal(step?.summary.includes('technique'), true);
+  assert.equal(step?.didMutate, true);
+  assert.deepEqual(dry.migrated, original);
 });
 
 test('offline split detection reports owner packet 1.8 when split metadata is present', async () => {

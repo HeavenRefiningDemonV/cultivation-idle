@@ -130,7 +130,6 @@ test('prestige reset service creates a clean new life while preserving permanent
   useRuinsStore.setState({
     progressByRuinId: {
       ruins_alpha: {
-        unlockCount: 1,
         totalRuns: 2,
         totalClears: 1,
         totalRoomsCleared: 5,
