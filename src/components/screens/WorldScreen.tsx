@@ -11,10 +11,10 @@ import { resolveBountyDestination } from '../../utils/bountyRouting';
 import { CityMapHub } from './CityMapHub';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 import {
-  getCityUnlockRequirementText,
   getProgressionContract,
   adaptProgressionAuthoredContent,
 } from '../../systems/progression/contract';
+import { getCityUnlockRequirementText } from '../../systems/progression/runtime/cityProgression';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
 
