@@ -9,14 +9,13 @@ import {
   startAutosave as legacyStartAutosave,
   stopAutosave as legacyStopAutosave,
   getSaveInfo as legacyGetSaveInfo,
-  getLastLoadedSaveSnapshot,
+  consumeOfflineContext,
   getLastLoadMigrationReport,
 } from '../../utils/saveload';
 import { GameEvents } from '../events/GameEvents';
 import { apply as applyOfflineCatchup } from '../time/OfflineCatchup';
 import { GameClock } from '../time/GameClock';
 import { useUIStore } from '../../stores/uiStore';
-import type { SaveData } from '../../types';
 
 function recordLastSave(timestamp: number) {
   try {
@@ -26,9 +25,10 @@ function recordLastSave(timestamp: number) {
   }
 }
 
-function recordOfflineSummary(save: SaveData | null) {
-  if (!save) return;
-  const result = applyOfflineCatchup(save, GameClock.nowWall());
+function recordOfflineSummary() {
+  const context = consumeOfflineContext();
+  if (!context) return;
+  const result = applyOfflineCatchup({ ...context, now: GameClock.nowWall() });
   if (result.summary) {
     try {
       useUIStore.getState().setLastOfflineSummary(result.summary);
@@ -58,7 +58,7 @@ export const SaveService = {
     const ok = legacyLoadGame();
     if (ok) {
       recordLastSave(GameClock.nowWall());
-      recordOfflineSummary(getLastLoadedSaveSnapshot());
+      recordOfflineSummary();
     }
     return ok;
   },

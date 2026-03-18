@@ -1,10 +1,10 @@
-import type { SaveData } from '../../types';
 import { useGameStore } from '../../stores/gameStore';
 import { useProfessionStore } from '../../stores/professionStore';
 import { useExpeditionStore } from '../../stores/expeditionStore';
-import { buildDefaultSaveState } from '../../save/defaultSaveState';
 import { formatNumber, D } from '../../utils/numbers';
-import { MAX_OFFLINE_MS } from '../../systems/offline';
+import type { OfflineContext } from '../../systems/offline';
+import { MAX_OFFLINE_MS } from './offlineShared';
+import { formatOfflineDuration, getOfflineEfficiency } from '../../systems/offline';
 import { cultivationService } from '../cultivationService';
 
 export interface OfflineCatchupSummaryPart {
@@ -12,45 +12,42 @@ export interface OfflineCatchupSummaryPart {
   value: string;
 }
 
-export interface OfflineCatchupResult {
-  updatedState: SaveData;
-  summary: {
-    offlineSeconds: number;
-    parts: OfflineCatchupSummaryPart[];
-  } | null;
+export interface OfflineCatchupSummary {
+  offlineSeconds: number;
+  offlineDuration: string;
+  efficiency: number;
+  wasCapped: boolean;
+  parts: OfflineCatchupSummaryPart[];
 }
 
-export function apply(stateSnapshot: SaveData, nowWall: number): OfflineCatchupResult {
-  const lastActiveMs =
-    stateSnapshot.meta?.lastActiveAtMs ??
-    stateSnapshot.gameState.lastActiveTime ??
-    stateSnapshot.gameState.lastTickTime ??
-    nowWall;
+export interface OfflineCatchupResult {
+  summary: OfflineCatchupSummary | null;
+}
 
-  const deltaMsRaw = Math.max(0, nowWall - lastActiveMs);
-  const deltaMs = Math.min(deltaMsRaw, MAX_OFFLINE_MS);
-  if (deltaMs <= 0) {
-    return { updatedState: stateSnapshot, summary: null };
+export function apply(context: OfflineContext): OfflineCatchupResult {
+  if (context.dtMs <= 0) {
+    return { summary: null };
   }
 
-  const seconds = Math.floor(deltaMs / 1000);
+  const seconds = Math.floor(Math.min(context.dtMs, MAX_OFFLINE_MS) / 1000);
   const summaryParts: OfflineCatchupSummaryPart[] = [];
 
   // Cultivation gain
   const gameStore = useGameStore.getState();
+  const offlineEfficiency = context.wasMeditating ? getOfflineEfficiency() : 0;
   const qiPerSecond = D(gameStore.qiPerSecond ?? '0');
-  const qiGain = qiPerSecond.times(seconds);
+  const qiGain = qiPerSecond.times(seconds).times(offlineEfficiency);
   if (qiGain.greaterThan(0)) {
     const nextQi = D(gameStore.qi ?? '0').plus(qiGain);
     useGameStore.setState({
       qi: nextQi.toString(),
-      lastActiveTime: nowWall,
-      lastTickTime: nowWall,
+      lastActiveTime: context.now,
+      lastTickTime: context.now,
     });
     summaryParts.push({ label: 'Qi gained', value: formatNumber(qiGain) });
   }
 
-  cultivationService.applyOfflineProgress(seconds * 1000, nowWall - seconds * 1000, nowWall);
+  cultivationService.applyOfflineProgress(seconds * 1000, context.now - seconds * 1000, context.now);
 
   // Profession queues (tick timers only)
   const professionStore = useProfessionStore.getState();
@@ -58,7 +55,7 @@ export function apply(stateSnapshot: SaveData, nowWall: number): OfflineCatchupR
     professionStore.alchemyQueue.length +
     professionStore.talismanQueue.length +
     professionStore.forgeQueue.length;
-  professionStore.applyOffline(nowWall);
+  professionStore.applyOffline(context.now);
   const afterJobs =
     professionStore.alchemyQueue.length +
     professionStore.talismanQueue.length +
@@ -70,18 +67,19 @@ export function apply(stateSnapshot: SaveData, nowWall: number): OfflineCatchupR
   // Expeditions (mark complete if timer elapsed)
   const expeditionStore = useExpeditionStore.getState();
   const beforeComplete = expeditionStore.active.filter((run) => run.status === 'complete').length;
-  expeditionStore.tick(nowWall);
+  expeditionStore.tick(context.now);
   const afterComplete = expeditionStore.active.filter((run) => run.status === 'complete').length;
   const newlyCompleted = afterComplete - beforeComplete;
   if (newlyCompleted > 0) {
     summaryParts.push({ label: 'Expeditions ready', value: `${newlyCompleted}` });
   }
 
-  const updatedState = buildDefaultSaveState();
   return {
-    updatedState,
     summary: {
       offlineSeconds: seconds,
+      offlineDuration: formatOfflineDuration(seconds),
+      efficiency: offlineEfficiency,
+      wasCapped: context.wasCapped,
       parts: summaryParts,
     },
   };

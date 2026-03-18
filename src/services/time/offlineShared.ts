@@ -1,0 +1,5 @@
+export const MAX_OFFLINE_HOURS = 12;
+export const DEFAULT_OFFLINE_EFFICIENCY = 0.5;
+export const MAX_OFFLINE_SECONDS = MAX_OFFLINE_HOURS * 60 * 60;
+export const MAX_OFFLINE_MS = MAX_OFFLINE_SECONDS * 1000;
+export const ONE_WEEK_SECONDS = 7 * 24 * 60 * 60;
