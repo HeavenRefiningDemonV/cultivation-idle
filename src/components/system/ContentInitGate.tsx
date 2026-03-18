@@ -2,6 +2,8 @@ import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 import { useContentStore } from '../../stores/contentStore';
 import { useCityStore } from '../../stores/cityStore';
+import { useGameStore } from '../../stores/gameStore';
+import { getLiveRealmByIndex } from '../../systems/progression/runtime';
 import { GameIcon } from '../../ui/icons';
 
 export function ContentInitGate({ children }: PropsWithChildren) {
@@ -11,6 +13,8 @@ export function ContentInitGate({ children }: PropsWithChildren) {
   const load = useContentStore((state) => state.load);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
   const initializeFromContent = useCityStore((state) => state.initializeFromContent);
+  const syncRealmEntry = useCityStore((state) => state.syncRealmEntry);
+  const realmIndex = useGameStore((state) => state.realm.index);
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -22,7 +26,8 @@ export function ContentInitGate({ children }: PropsWithChildren) {
   useEffect(() => {
     if (!isLoaded) return;
     initializeFromContent(citiesSorted);
-  }, [isLoaded, citiesSorted, initializeFromContent]);
+    syncRealmEntry(getLiveRealmByIndex(realmIndex).id);
+  }, [isLoaded, citiesSorted, initializeFromContent, realmIndex, syncRealmEntry]);
 
   if (error) {
     return (

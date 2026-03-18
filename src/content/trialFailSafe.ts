@@ -10,7 +10,7 @@ export interface TrialFailSafeSource {
   cityIndex?: number;
   failSafe?: {
     thresholdAttempts?: number;
-    cost?: { gold?: string | number; spiritStones?: string | number; merit?: string | number };
+    cost?: TrialFailSafeCost | { gold?: string | number; spiritStones?: string | number; merit?: string | number };
   };
   failSafePurchase?: TrialFailSafePurchase;
 }
@@ -98,8 +98,15 @@ export const resolveCanonicalTrialFailSafe = (
     DEFAULT_FAIL_SAFE_THRESHOLD;
   const aliasCityIndex = readCityIndexFromCostRef(alias?.costRef);
   const fallbackCityIndex = aliasCityIndex ?? trial.cityIndex ?? null;
+  const authoredCost = trial.failSafe?.cost
+    ? {
+        gold: normalizeCostValue(trial.failSafe.cost.gold),
+        spiritStones: normalizeCostValue(trial.failSafe.cost.spiritStones),
+        merit: normalizeCostValue(trial.failSafe.cost.merit),
+      }
+    : undefined;
   const cost =
-    normalizeCost(trial.failSafe?.cost) ??
+    normalizeCost(authoredCost) ??
     readEconomyCostByCityIndex(economy, fallbackCityIndex);
 
   return {

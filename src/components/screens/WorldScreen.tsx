@@ -10,6 +10,11 @@ import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations
 import { resolveBountyDestination } from '../../utils/bountyRouting';
 import { CityMapHub } from './CityMapHub';
 import { openWorldModule } from '../../systems/world/openWorldModule';
+import {
+  getCityUnlockRequirementText,
+  getProgressionContract,
+  adaptProgressionAuthoredContent,
+} from '../../systems/progression/contract';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
 
@@ -46,6 +51,7 @@ export function WorldScreen() {
   const isLoading = useContentStore((state) => state.isLoading);
   const error = useContentStore((state) => state.error);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
+  const rawContent = useContentStore((state) => state.raw);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
@@ -63,6 +69,19 @@ export function WorldScreen() {
     if (!currentCityId) return null;
     return citiesSorted.find((city) => city.id === currentCityId) ?? null;
   }, [citiesSorted, currentCityId]);
+
+  const cityRequirementById = useMemo(() => {
+    if (!rawContent) return {};
+    try {
+      const contract = getProgressionContract(adaptProgressionAuthoredContent(rawContent));
+      return Object.fromEntries(
+        citiesSorted.map((city) => [city.id, getCityUnlockRequirementText(contract, city.id)]),
+      ) as Record<string, string | null>;
+    } catch (contractError) {
+      console.warn('[WorldScreen] Failed to read city unlock requirements', contractError);
+      return {};
+    }
+  }, [citiesSorted, rawContent]);
 
   const visibleCityModules = useMemo(() => {
     if (!selectedCity) return [];
@@ -187,9 +206,11 @@ export function WorldScreen() {
             </option>
             {citiesSorted.map((city) => {
               const isUnlocked = unlockedCityIds.includes(city.id);
+              const requirementText = cityRequirementById[city.id];
               return (
                 <option key={city.id} value={city.id} disabled={!isUnlocked}>
-                  {city.name} {isUnlocked ? '' : '(Locked)'}
+                  {city.name}
+                  {isUnlocked ? '' : requirementText ? ` — Locked (${requirementText})` : ' — Locked'}
                 </option>
               );
             })}

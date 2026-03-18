@@ -30,6 +30,8 @@ import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
 import { useHeartLawStore } from './heartLawStore';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { useContentStore } from './contentStore';
+import { useCityStore } from './cityStore';
+import { getLiveRealmByIndex } from '../systems/progression/runtime';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -399,6 +401,7 @@ export const useGameStore = create<GameState>()(
       const newRealmIndex = get().realm.index;
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
+        useCityStore.getState().syncRealmEntry(getLiveRealmByIndex(newRealmIndex).id);
       }
 
       // Recalculate stats and Qi generation

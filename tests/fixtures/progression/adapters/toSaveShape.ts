@@ -109,7 +109,9 @@ const scenarioToSaveShape = (scenario: ProgressionScenario, contract: Progressio
     cityState: {
       currentCityId: scenario.cityState.unlockedCityIds.at(-1) ?? 'city_pinewind_hamlet',
       unlockedCityIds: scenario.cityState.unlockedCityIds,
-      selectedModuleByCity: {},
+      selectedModuleByCity: Object.fromEntries(
+        scenario.cityState.unlockedCityIds.map((cityId) => [cityId, 'outskirts']),
+      ),
       cityFlagsById: {},
     },
     trialState: {
