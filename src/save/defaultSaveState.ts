@@ -32,8 +32,10 @@ import { useManualSatchelStore } from '../stores/manualSatchelStore';
 import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore';
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
+import { useContentStore } from '../stores/contentStore';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations';
+import { normalizeCitySaveState } from './cityStateNormalization';
 
 export const SAVE_VERSION = CURRENT_SAVE_VERSION;
 
@@ -121,6 +123,7 @@ export function buildDefaultSaveState(): SaveData {
   const zoneState = useZoneStore.getState();
   const prestigeState = usePrestigeStore.getState();
   const cityState = useCityStore.getState();
+  const content = useContentStore.getState().raw;
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
   const trialState = useTrialStore.getState();
@@ -188,13 +191,17 @@ export function buildDefaultSaveState(): SaveData {
       unlockedZones: zoneState.unlockedZones,
       zoneProgress: zoneState.zoneProgress,
     },
-    cityState: {
-      currentCityId: cityState.currentCityId,
-      unlockedCityIds: [...cityState.unlockedCityIds],
-      selectedModuleByCity: { ...cityState.selectedModuleByCity },
-      cityFlagsById: { ...cityState.cityFlagsById },
-      initializedFromContent: cityState.initializedFromContent,
-    },
+    cityState: normalizeCitySaveState({
+      content,
+      realmIndex: gameState.realm.index,
+      cityState: {
+        currentCityId: cityState.currentCityId,
+        unlockedCityIds: [...cityState.unlockedCityIds],
+        selectedModuleByCity: { ...cityState.selectedModuleByCity },
+        cityFlagsById: { ...cityState.cityFlagsById },
+        initializedFromContent: cityState.initializedFromContent,
+      },
+    }),
     activityState: {
       active: activityState.active ? { ...activityState.active } : null,
       lastChangedAt: activityState.lastChangedAt ?? null,
@@ -1028,7 +1035,14 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       ? { ...defaults.combatSettings, ...record.combatSettings }
       : defaults.combatSettings,
     zoneState: isRecord(record.zoneState) ? { ...defaults.zoneState, ...record.zoneState } : defaults.zoneState,
-    cityState: mergeSlice(record.cityState, defaults.cityState, isValidCityState, 'cityState'),
+    cityState: normalizeCitySaveState({
+      content: useContentStore.getState().raw,
+      realmIndex:
+        isRecord(record.gameState) && isRecord(record.gameState.realm) && typeof record.gameState.realm.index === 'number'
+          ? record.gameState.realm.index
+          : defaults.gameState.realm.index,
+      cityState: mergeSlice(record.cityState, defaults.cityState, isValidCityState, 'cityState'),
+    }),
     activityState: mergeSlice(record.activityState, defaults.activityState, isValidActivityState, 'activityState'),
     outskirtsState: mergeSlice(record.outskirtsState, defaults.outskirtsState, isValidOutskirtsState, 'outskirtsState'),
     trialState: mergeSlice(record.trialState, defaults.trialState, isValidTrialState, 'trialState'),

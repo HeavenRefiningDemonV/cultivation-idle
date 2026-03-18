@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "timestamp": 1736035200000,
+  "gameState": {
+    "realm": { "index": 3, "substage": 0, "name": "Nascent Soul" },
+    "qi": "999",
+    "selectedPath": "martial",
+    "focusMode": "balanced",
+    "pathPerks": [],
+    "totalAuras": 3,
+    "upgradeTiers": { "idle": 2, "damage": 2, "hp": 2 },
+    "pityState": { "killsSinceUncommon": 0, "killsSinceRare": 0, "killsSinceEpic": 0, "killsSinceLegendary": 0 },
+    "playerLuck": 0
+  },
+  "cityState": {
+    "currentCityId": "city_ironpeak_bastion",
+    "unlockedCityIds": ["city_pinewind_hamlet"],
+    "selectedModuleByCity": {},
+    "cityFlagsById": {}
+  },
+  "inventoryState": { "currencies": { "gold": "0", "spiritStones": "0", "merit": "0" }, "items": {} }
+}

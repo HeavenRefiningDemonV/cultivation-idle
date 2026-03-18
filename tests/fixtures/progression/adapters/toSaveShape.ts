@@ -1,4 +1,5 @@
 import { normalizeGateItemAlias, type ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
+import { normalizeCitySaveState } from '../../../../src/save/cityStateNormalization.js';
 import { normalizeTrialProgress } from '../../../../src/stores/trialStore.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
@@ -19,8 +20,12 @@ const canonicalizeInventoryItems = (items: Record<string, unknown>): Record<stri
 const canonicalizeSaveShape = (saveShape: Record<string, unknown>): Record<string, unknown> => {
   const inventoryState = saveShape.inventoryState;
   const trialState = saveShape.trialState;
+  const gameState = saveShape.gameState;
+  const cityState = saveShape.cityState;
   const record = inventoryState && typeof inventoryState === 'object' ? (inventoryState as Record<string, unknown>) : null;
   const trialRecord = trialState && typeof trialState === 'object' ? (trialState as Record<string, unknown>) : null;
+  const gameRecord = gameState && typeof gameState === 'object' ? (gameState as Record<string, unknown>) : null;
+  const cityRecord = cityState && typeof cityState === 'object' ? (cityState as Record<string, unknown>) : null;
 
   return {
     ...saveShape,
@@ -47,6 +52,18 @@ const canonicalizeSaveShape = (saveShape: Record<string, unknown>): Record<strin
               ]),
             ),
           },
+        }
+      : {}),
+    ...(gameRecord
+      ? {
+          cityState: normalizeCitySaveState({
+            content: null,
+            realmIndex:
+              gameRecord.realm && typeof gameRecord.realm === 'object' && typeof (gameRecord.realm as { index?: unknown }).index === 'number'
+                ? (gameRecord.realm as { index: number }).index
+                : 0,
+            cityState: cityRecord,
+          }),
         }
       : {}),
   };
@@ -107,11 +124,9 @@ const scenarioToSaveShape = (scenario: ProgressionScenario, contract: Progressio
     meta: { lastActiveAtMs: 1736035100000 },
     gameState,
     cityState: {
-      currentCityId: scenario.cityState.unlockedCityIds.at(-1) ?? 'city_pinewind_hamlet',
+      currentCityId: scenario.cityState.currentCityId ?? scenario.cityState.unlockedCityIds.at(-1) ?? 'city_pinewind_hamlet',
       unlockedCityIds: scenario.cityState.unlockedCityIds,
-      selectedModuleByCity: Object.fromEntries(
-        scenario.cityState.unlockedCityIds.map((cityId) => [cityId, 'outskirts']),
-      ),
+      selectedModuleByCity: { ...scenario.cityState.selectedModuleByCity },
       cityFlagsById: {},
     },
     trialState: {

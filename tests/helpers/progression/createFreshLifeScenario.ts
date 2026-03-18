@@ -11,7 +11,11 @@ export const createFreshLifeScenario = ({ contract }: ScenarioBuildContext, over
       pathState: { selectedPath: null, lifePathAlias: null },
       realmState: { currentRealm: 'qi_condensation', enteredRealms: ['qi_condensation'] },
       gateState: { resolutionByTransitionId: {}, resolvedTransitionIds: [], inventoryGateItems: {}, pendingBreakthroughTo: null },
-      cityState: { unlockedCityIds: ['city_pinewind_hamlet'] },
+      cityState: {
+        currentCityId: 'city_pinewind_hamlet',
+        unlockedCityIds: ['city_pinewind_hamlet'],
+        selectedModuleByCity: { city_pinewind_hamlet: 'outskirts' },
+      },
       prestigeState: { ready: false, projectedAP: 0 },
       offlineState: {
         pipelineId: offline.pipelineId,

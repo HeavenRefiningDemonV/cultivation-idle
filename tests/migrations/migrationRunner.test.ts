@@ -46,6 +46,8 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
   assert.deepEqual(applyOnce.report.appliedTransformSteps, [
     'v2_0_0_seed_version_and_meta',
     'v2_0_0_normalize_path_truth',
+    'v2_0_0_plan_trial_resolution_normalization',
+    'v2_0_0_normalize_city_progression_state',
   ]);
   assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version', 'v2_0_0_plan_offline_unification']);
   assert.ok(applyOnce.report.plannedTransformSteps.length > 0);
@@ -55,7 +57,11 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     normalizeToCurrent: passthroughNormalizer,
   });
 
-  assert.deepEqual(applyTwice.report.appliedTransformSteps, []);
+  assert.deepEqual(applyTwice.report.appliedTransformSteps, [
+    'v2_0_0_plan_trial_resolution_normalization',
+    'v2_0_0_normalize_city_progression_state',
+  ]);
+  assert.deepEqual(applyTwice.migrated, applyOnce.migrated);
   assert.equal((applyTwice.migrated as any).version, CURRENT_SAVE_VERSION);
 });
 

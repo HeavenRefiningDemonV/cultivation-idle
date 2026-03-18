@@ -63,10 +63,12 @@ The catalog supports three layers:
 2. **Save-shape adapter**
    - exposes a save-like object for tests that want serialized progression state without booting full runtime stores.
    - packet 1.4 save shapes emit canonical trial lifecycle state (`eligibleFailures`, `resolution`, `bypassedAt`) rather than the older `attempts + cleared` shape alone.
+   - packet 1.5 save shapes now preserve canonical city progression state (`currentCityId`, `unlockedCityIds`, `selectedModuleByCity`, `cityFlagsById`) instead of treating city truth as an omitted or guessed current-save detail.
 3. **Migration fixture adapter**
    - exposes migration-shaped inputs for validator and migration-path coverage.
 
 Not every consumer needs every layer, but the catalog standardizes how to ask for them.
+When projecting intentionally incomplete legacy save inputs back into a contract scenario, city unlock inference from entered realms remains a backward-compat fallback only; canonical current-shape outputs should carry explicit city truth now that packet 1.5 owns it.
 
 ## Future packet consumer map
 

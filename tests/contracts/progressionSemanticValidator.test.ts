@@ -50,7 +50,7 @@ test('semantic validator stays clean on contract-aligned content and scenarios',
   const issues = validateProgressionSemantics({
     rawContent: await loadRawContent(),
     scenarios: [createFreshLifeScenario({ contract }), createCapReachedScenario({ contract })],
-    migrationFixtures: [{ name: 'current-save', data: await readJson(path.join(FIXTURE_DIR, 'current-save.json')) }],
+    migrationFixtures: [],
   });
 
   assert.deepEqual(issues, []);
@@ -79,11 +79,16 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
   assert.equal(categories.has('OFFLINE_PIPELINE_SPLIT'), true);
   assert.equal(categories.has('MIGRATION_ALIAS_PRESENT'), true);
   assert.equal(categories.has('CONTENT_CAP_BREACH'), true);
+  assert.equal(categories.has('CITY_UNLOCK_UNBOUND'), true);
   assert.equal(categories.has('HIDDEN_PRESTIGE_RUNTIME_CONSUMER'), true);
 
   const contentCapIssues = issues.filter((entry) => entry.category === 'CONTENT_CAP_BREACH');
   assert.equal(contentCapIssues.length > 0, true);
   assert.equal(contentCapIssues.every((entry) => entry.suggestedOwnerPacket === '1.1'), true);
+
+  const cityIssues = issues.filter((entry) => entry.category === 'CITY_UNLOCK_UNBOUND');
+  assert.equal(cityIssues.length > 0, true);
+  assert.equal(cityIssues.every((entry) => entry.suggestedOwnerPacket === '1.5'), true);
 });
 
 

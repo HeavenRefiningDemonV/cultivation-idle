@@ -157,11 +157,18 @@ const readMigrationFixtureIssues = (
     const ruinsState = asRecord(record.ruinsState);
     const equipmentState = asRecord(record.equipmentState);
     const realmIndex = Number(realmState.index ?? -1);
+    const canonicalUnlockedCities = contract.cityUnlocks
+      .filter((unlock) => contract.majorRealms[unlock.unlockOnRealmEntry]?.index <= Math.min(realmIndex, contentCapIndex))
+      .map((unlock) => unlock.cityId) as string[];
     const itemIds = Object.keys(asRecord(inventoryState.items) as Record<string, number>);
     const prestigePurchases = asRecord(prestigeState.purchasesById) as Record<string, number>;
     const offlineTimes = [metaState.lastActiveAtMs, gameState.lastActiveTime, gameState.lastTickTime].filter(
       (value): value is number => typeof value === 'number',
     );
+    const unlockedCityIds = Array.isArray(cityState.unlockedCityIds)
+      ? cityState.unlockedCityIds.filter((cityId): cityId is string => typeof cityId === 'string')
+      : [];
+    const currentCityId = typeof cityState.currentCityId === 'string' ? cityState.currentCityId : null;
 
     if (
       typeof gameState.lifePath === 'string' &&
@@ -204,6 +211,32 @@ const readMigrationFixtureIssues = (
         evidence: [{ path: `fixture:${name}`, detail: `realm.index=${realmIndex} > ${contentCapIndex}` }],
         suggestedOwnerPacket: '1.1',
         fixStrategySummary: 'Preserve only fixtures intentionally exercising semester-slice cap normalization to Spirit Severing.',
+        autoFixable: true,
+      });
+    }
+
+    const cityProgressionMismatch =
+      canonicalUnlockedCities.length > 0 &&
+      (!record.cityState ||
+        unlockedCityIds.length !== canonicalUnlockedCities.length ||
+        canonicalUnlockedCities.some((cityId) => !unlockedCityIds.includes(cityId)) ||
+        unlockedCityIds.some((cityId) => !canonicalUnlockedCities.includes(cityId)) ||
+        (currentCityId !== null && !unlockedCityIds.includes(currentCityId)));
+
+    if (cityProgressionMismatch) {
+      pushIssue(issues, {
+        id: `migration-city-progression-${name}`,
+        category: 'CITY_UNLOCK_UNBOUND',
+        severity: 'warning',
+        summary: `Migration fixture ${name} does not preserve canonical city progression truth for its entered realm.`,
+        evidence: [
+          {
+            path: `fixture:${name}`,
+            detail: `expected cities=${canonicalUnlockedCities.join(', ') || 'none'}; actual=${unlockedCityIds.join(', ') || 'none'}; current=${currentCityId ?? 'null'}`,
+          },
+        ],
+        suggestedOwnerPacket: '1.5',
+        fixStrategySummary: 'Packet 1.5 should normalize save-shaped cityState to match canonical realm-entry unlock truth and keep currentCityId valid.',
         autoFixable: true,
       });
     }

@@ -31,6 +31,7 @@ import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrest
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
 import { getLastMigrationReport } from '../save/migrations';
 import { buildOfflineContext, type OfflineContext } from '../systems/offline';
+import { normalizeCitySaveState } from '../save/cityStateNormalization';
 
 /**
  * Save system constants
@@ -143,6 +144,7 @@ function gatherGameState(): SaveData {
   const recipeMasteryState = useRecipeMasteryStore.getState();
   const activityState = useActivityStore.getState();
   const outskirtsState = useOutskirtsStore.getState();
+  const content = useContentStore.getState().raw;
 
   const saveData: SaveData = {
     version: SAVE_VERSION,
@@ -199,13 +201,17 @@ function gatherGameState(): SaveData {
       zoneProgress: zoneState.zoneProgress,
     },
 
-    cityState: {
-      currentCityId: cityState.currentCityId,
-      unlockedCityIds: [...cityState.unlockedCityIds],
-      selectedModuleByCity: { ...cityState.selectedModuleByCity },
-      cityFlagsById: { ...cityState.cityFlagsById },
-      initializedFromContent: cityState.initializedFromContent,
-    },
+    cityState: normalizeCitySaveState({
+      content,
+      realmIndex: gameState.realm.index,
+      cityState: {
+        currentCityId: cityState.currentCityId,
+        unlockedCityIds: [...cityState.unlockedCityIds],
+        selectedModuleByCity: { ...cityState.selectedModuleByCity },
+        cityFlagsById: { ...cityState.cityFlagsById },
+        initializedFromContent: cityState.initializedFromContent,
+      },
+    }),
 
     activityState: {
       active: activityState.active ? { ...activityState.active } : null,
@@ -1069,13 +1075,13 @@ function applySaveData(saveData: SaveData): void {
       zoneProgress: saveData.zoneState.zoneProgress,
     });
 
-    useCityStore.setState({
-      currentCityId: cityState.currentCityId ?? null,
-      unlockedCityIds: Array.isArray(cityState.unlockedCityIds) ? [...cityState.unlockedCityIds] : [],
-      selectedModuleByCity: { ...(cityState.selectedModuleByCity ?? {}) },
-      cityFlagsById: { ...(cityState.cityFlagsById ?? {}) },
-      initializedFromContent: cityState.initializedFromContent ?? false,
+    const normalizedCityState = normalizeCitySaveState({
+      content: useContentStore.getState().raw,
+      realmIndex: saveData.gameState.realm.index,
+      cityState,
     });
+
+    useCityStore.setState(normalizedCityState);
 
     useTechniqueStore.getState().hydrateFromSave(saveData.techniqueState);
 

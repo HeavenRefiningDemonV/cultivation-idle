@@ -23,7 +23,12 @@ export const createPostFirstGateScenario = ({ contract }: ScenarioBuildContext, 
         pendingBreakthroughTo: null,
       },
       cityState: {
+        currentCityId: 'city_stonecrag_town',
         unlockedCityIds: ['city_pinewind_hamlet', 'city_stonecrag_town'],
+        selectedModuleByCity: {
+          city_pinewind_hamlet: 'outskirts',
+          city_stonecrag_town: 'outskirts',
+        },
       },
       notes: ['Packet 1.5 will assert runtime city unlock timing against this fixture.'],
     },

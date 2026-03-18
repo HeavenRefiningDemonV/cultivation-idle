@@ -23,7 +23,11 @@ export const createCapReachedScenario = ({ contract }: ScenarioBuildContext, ove
         pendingBreakthroughTo: null,
       },
       cityState: {
+        currentCityId: contract.cityUnlocks.at(-1)?.cityId ?? 'city_ironpeak_bastion',
         unlockedCityIds: contract.cityUnlocks.map((unlock) => unlock.cityId),
+        selectedModuleByCity: Object.fromEntries(
+          contract.cityUnlocks.map((unlock) => [unlock.cityId, 'outskirts']),
+        ),
       },
       notes: ['Deferred systems remain deferred after cap reached.'],
     },

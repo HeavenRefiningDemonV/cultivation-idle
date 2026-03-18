@@ -23,6 +23,7 @@ This document describes the Section 0 save migration framework and the first pop
 | `v2_0_0_plan_gate_item_alias_migration` | transform | `1.3` | detect legacy gate item IDs, report the normalization plan, and remap quantities into canonical `gate_*` IDs on apply |
 | `v2_0_0_plan_semester_slice_clamp` | plannedTransform | `1.1` | detect out-of-slice progress and report the clamp plan |
 | `v2_0_0_clamp_semester_slice` | transform | `1.1` | clamp legacy over-cap realm truth to Spirit Severing and normalize cap-facing fields |
+| `v2_0_0_normalize_city_progression_state` | transform | `1.5` | backfill and normalize `cityState` from canonical realm-entry city unlock truth, including current city and default selected modules |
 | `v2_0_0_plan_deferred_prestige_refund` | plannedTransform | `1.6` | detect deferred prestige purchases and compute refund totals |
 | `v2_0_0_plan_trial_resolution_normalization` | transform | `1.4` | detect contradictory first-gate progression state and normalize it to an honest bypassed resolution on apply |
 | `v2_0_0_plan_partial_reset_residue_cleanup` | plannedTransform | `1.7` | detect clean-life residue across per-life stores |
@@ -36,6 +37,7 @@ Key fixtures:
 - `legacy-path-only`
 - `legacy-path-conflict`
 - `legacy-gate-item-ids`
+- `legacy-city-current-invalid`
 - `legacy-future-slice`
 - `legacy-hidden-prestige`
 - `legacy-trial-mismatch`
@@ -48,6 +50,7 @@ Key fixtures:
 - Keep packet-owned transform/reporting behavior aligned with shipped runtime truth so dry-run and apply reports remain trustworthy
 - Keep owner-packet strings accurate so dry-run reports remain trustworthy
 - Packet 1.4 now owns legacy first-gate mismatch normalization; apply mode should mark the gate as `bypassed` instead of fabricating a combat clear or retroactive gate proof.
+- Packet 1.5 now owns city progression support-layer normalization; apply mode should backfill missing or contradictory `cityState` from the entered realm, keep `currentCityId` valid, seed `selectedModuleByCity` to `outskirts`, and never imply a city beyond Ironpeak Bastion.
 
 ## Dry-run command examples
 

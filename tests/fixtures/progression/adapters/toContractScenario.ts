@@ -1,5 +1,6 @@
 import type { GateTransitionId, MajorRealmId, ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
 import { getOfflineProgressionContract, getTransitionByFromRealm, normalizeGateItemAlias } from '../../../../src/systems/progression/contract/index.js';
+import { normalizeCitySaveState } from '../../../../src/save/cityStateNormalization.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
 
@@ -20,16 +21,6 @@ const canonicalizeItems = (items: Record<string, unknown>): Record<string, unkno
 const realmByIndex = (contract: ProgressionContract, index: number): MajorRealmId => {
   const match = Object.values(contract.majorRealms).find((realm) => realm.index === index);
   return (match?.id ?? 'qi_condensation') as MajorRealmId;
-};
-
-const inferUnlockedCities = (contract: ProgressionContract, enteredRealms: MajorRealmId[], save: Record<string, any>): string[] => {
-  if (Array.isArray(save.cityState?.unlockedCityIds)) {
-    return save.cityState.unlockedCityIds.filter((cityId: unknown): cityId is string => typeof cityId === 'string');
-  }
-  const unlocked = contract.cityUnlocks
-    .filter((unlock) => enteredRealms.includes(unlock.unlockOnRealmEntry))
-    .map((unlock) => unlock.cityId);
-  return unlocked.length > 0 ? unlocked : ['city_pinewind_hamlet'];
 };
 
 export const projectSaveShapeToScenario = (
@@ -62,6 +53,11 @@ export const projectSaveShapeToScenario = (
   const resolvedTransitionIds = Object.keys(resolutionByTransitionId) as GateTransitionId[];
   const offline = getOfflineProgressionContract(contract);
   const nextTransition = getTransitionByFromRealm(contract, currentRealm);
+  const normalizedCityState = normalizeCitySaveState({
+    content: null,
+    realmIndex,
+    cityState: save.cityState,
+  });
 
   const selectedPath = (save.gameState?.selectedPath ?? save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['selectedPath'];
   const lifePathAlias = (save.gameState?.lifePath ?? null) as ProgressionScenario['pathState']['lifePathAlias'];
@@ -84,7 +80,9 @@ export const projectSaveShapeToScenario = (
       pendingBreakthroughTo: resolvedTransitionIds.length === 0 ? nextTransition?.toRealmId ?? null : null,
     },
     cityState: {
-      unlockedCityIds: inferUnlockedCities(contract, enteredRealms, save),
+      currentCityId: normalizedCityState.currentCityId,
+      unlockedCityIds: normalizedCityState.unlockedCityIds,
+      selectedModuleByCity: normalizedCityState.selectedModuleByCity,
     },
     prestigeState: {
       ready: Number(save.prestigeState?.currentRunAP ?? 0) > 0 || Number(save.prestigeState?.highestRealmReached ?? 0) >= 2,

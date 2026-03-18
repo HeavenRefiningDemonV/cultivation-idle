@@ -32,7 +32,9 @@ export interface ProgressionScenario {
     pendingBreakthroughTo: MajorRealmId | null;
   };
   cityState: {
+    currentCityId: string | null;
     unlockedCityIds: string[];
+    selectedModuleByCity: Record<string, string>;
   };
   prestigeState: {
     ready: boolean;

@@ -39,6 +39,21 @@
       }
     }
   },
+  "cityState": {
+    "currentCityId": "city_pinewind_hamlet",
+    "unlockedCityIds": ["city_pinewind_hamlet"],
+    "selectedModuleByCity": {
+      "city_pinewind_hamlet": "outskirts"
+    },
+    "cityFlagsById": {
+      "city_pinewind_hamlet": {
+        "outskirtsBossDefeated": false,
+        "gateTrialCleared": false,
+        "ruinsCleared": false
+      }
+    },
+    "initializedFromContent": true
+  },
   "combatSettings": { "autoAttack": false, "autoCombatAI": false },
   "zoneState": { "unlockedZones": [], "zoneProgress": {} },
   "techniqueState": { "loadouts": [], "selectedLoadoutId": "default" },
