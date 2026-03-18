@@ -70,6 +70,7 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
       { name: 'legacy-path-conflict', data: await readJson(path.join(FIXTURE_DIR, 'legacy-path-conflict.json')) },
       { name: 'legacy-gate-item-ids', data: await readJson(path.join(FIXTURE_DIR, 'legacy-gate-item-ids.json')) },
       { name: 'legacy-future-slice', data: await readJson(path.join(FIXTURE_DIR, 'legacy-future-slice.json')) },
+      { name: 'legacy-hidden-unsupported-prestige', data: await readJson(path.join(FIXTURE_DIR, 'legacy-hidden-unsupported-prestige.json')) },
       { name: 'legacy-offline-split', data: await readJson(path.join(FIXTURE_DIR, 'legacy-offline-split.json')) },
     ],
   });
@@ -89,6 +90,14 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
   const cityIssues = issues.filter((entry) => entry.category === 'CITY_UNLOCK_UNBOUND');
   assert.equal(cityIssues.length > 0, true);
   assert.equal(cityIssues.every((entry) => entry.suggestedOwnerPacket === '1.5'), true);
+
+  const hiddenPrestigeIssues = issues.filter((entry) => entry.category === 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER');
+  assert.equal(hiddenPrestigeIssues.length > 0, true);
+  assert.equal(hiddenPrestigeIssues.every((entry) => entry.suggestedOwnerPacket === '1.6'), true);
+
+  const offlineIssues = issues.filter((entry) => entry.category === 'OFFLINE_PIPELINE_SPLIT');
+  assert.equal(offlineIssues.length > 0, true);
+  assert.equal(offlineIssues.every((entry) => entry.suggestedOwnerPacket === '1.8'), true);
 });
 
 

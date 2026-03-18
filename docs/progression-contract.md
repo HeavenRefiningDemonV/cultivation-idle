@@ -77,7 +77,8 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 - Path truth canonical field: selectedPath
 - Path legacy aliases: lifePath
 - Reset classifier buckets: per_life / permanent / hybrid / unknown
-- Prestige classifier buckets: live / deferred / unknown
+- Prestige classifier buckets: live / deferred / unknown (contract seam)
+- Packet 1.6 runtime honesty overlay: visible_live / hidden_unsupported / deferred / unknown
 
 ## 10) Diagnostics categories and packet ownership
 
@@ -88,11 +89,11 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 | TRIAL_ENTRY_CONTRADICTION | 1.3 |
 | CITY_UNLOCK_UNBOUND | 1.5 |
 | PARTIAL_PRESTIGE_RESET | 1.7 |
-| OFFLINE_PIPELINE_SPLIT | 1.6 |
+| OFFLINE_PIPELINE_SPLIT | 1.8 |
 | LIVE_DEFERRED_LEAK | 1.8 |
 | UNKNOWN_REALM_REFERENCE | 1.5 |
 | ORPHAN_GATE_ITEM | 1.3 |
-| HIDDEN_PRESTIGE_RUNTIME_CONSUMER | 1.7 |
+| HIDDEN_PRESTIGE_RUNTIME_CONSUMER | 1.6 |
 | MIGRATION_ALIAS_PRESENT | 1.3 |
 | CONTENT_CAP_BREACH | 1.1 |
 
@@ -105,12 +106,13 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 
 ## 12) Future packet ownership map
 
-- **1.3**: gate entry/reward/consumption truth unification plus legacy gate alias migration activation.
+- **0.2**: save/alias migration activation using legacy scenario fixtures.
 - **0.3**: validator expansion to enforce contract truth across all content surfaces.
 - **1.1**: contract ingestion foundations in runtime adapters.
 - **1.2**: path truth unification (life-start path as mechanical truth).
-- **1.4**: gate flow hardening around trial-to-breakthrough lifecycle, including clear-vs-bypass resolution truth and legacy mismatch normalization.
+- **1.3**: gate entry/reward/consumption truth unification.
+- **1.4**: gate flow hardening around trial-to-breakthrough lifecycle.
 - **1.5**: city unlock timing unified to realm entry.
-- **1.6**: offline pipeline consolidation to one contract pipeline.
+- **1.6**: prestige tree honesty pass, hidden/deferred prestige cleanup, and runtime-consumed effect alignment.
 - **1.7**: prestige/reset orchestration and per-life/permanent/hybrid enforcement.
-- **1.8**: deferred/live leak cleanup and hidden consumer removal.
+- **1.8**: offline pipeline unification to one contract pipeline.

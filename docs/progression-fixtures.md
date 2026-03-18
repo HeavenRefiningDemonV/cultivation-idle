@@ -36,6 +36,7 @@ The fixture catalog solves that by providing:
 | `legacy-trial-mismatch` | legacy_save | migrated_legacy | 0.3B | 1.4 | clean |
 | `legacy-over-cap` | legacy_save | migrated_legacy | 0.3B | 1.1 | warning |
 | `legacy-hidden-prestige` | legacy_save | migrated_legacy | 0.3B | 1.6 | warning |
+| `legacy-hidden-unsupported-prestige` | legacy_save | migrated_legacy | 0.3B | 1.6 | warning |
 | `legacy-partial-reset-residue` | legacy_save | migrated_legacy | 0.3B | 1.7 | warning |
 | `legacy-offline-split` | legacy_save | migrated_legacy | 0.3B | 1.8 | warning |
 
@@ -48,10 +49,11 @@ Current expected categories are:
 - `legacy-gate-alias` → `MIGRATION_ALIAS_PRESENT`
 - `legacy-over-cap` → `CONTENT_CAP_BREACH`
 - `legacy-hidden-prestige` → `HIDDEN_PRESTIGE_RUNTIME_CONSUMER`
+- `legacy-hidden-unsupported-prestige` → `HIDDEN_PRESTIGE_RUNTIME_CONSUMER`
 - `legacy-partial-reset-residue` → `PARTIAL_PRESTIGE_RESET`
 - `legacy-offline-split` → `OFFLINE_PIPELINE_SPLIT`
 
-These warnings are intentional and should not be “fixed” by mutating the migration-input fixtures unless the owning packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures. For packet 1.3, legacy gate aliases remain valid migration inputs, but canonical save-shape/current-shape outputs should use `gate_*` item ids. For packet 1.4, canonical save-shape/current-shape outputs should preserve explicit trial lifecycle state (`none`, `cleared`, `bypassed`) instead of flattening every resolved gate into one ambiguous bucket. `legacy-trial-mismatch` stays in the catalog as a migration-owned contradiction fixture even though the semantic validator does not classify it as a standalone warning category.
+These warnings are intentional and should not be “fixed” by mutating the migration-input fixtures unless the owning packet lands. For packet 1.2 specifically, canonical scenario/save truth is `selectedPath`, while `lifePath` is retained only in intentionally legacy alias fixtures. For packet 1.3, legacy gate aliases remain valid migration inputs, but canonical save-shape/current-shape outputs should use `gate_*` item ids. For packet 1.4, canonical save-shape/current-shape outputs should preserve explicit trial lifecycle state (`none`, `cleared`, `bypassed`) instead of flattening every resolved gate into one ambiguous bucket. Packet 1.6 now actively normalizes hidden prestige contradiction fixtures on migration apply by refunding the hidden purchases and clearing them from current save truth; the legacy fixtures remain in the catalog as regression inputs, not as canonical post-migration outputs. `legacy-trial-mismatch` stays in the catalog as a migration-owned contradiction fixture even though the semantic validator does not classify it as a standalone warning category.
 
 ## Adapter model
 
@@ -77,7 +79,7 @@ When projecting intentionally incomplete legacy save inputs back into a contract
 - **1.3** → `gate-edge-pre-first`, `legacy-gate-alias`
 - **1.4** → `gate-edge-pre-first`, `gate-edge-post-first`, `legacy-trial-mismatch`
 - **1.5** → `gate-edge-post-first`, `cap-reached`
-- **1.6** → `prestige-ready`, `legacy-hidden-prestige`
+- **1.6** → `prestige-ready`, `legacy-hidden-prestige`, `legacy-hidden-unsupported-prestige`
 - **1.7** → `prestige-ready`, `legacy-partial-reset-residue`
 - **1.8** → `prestige-ready`, `legacy-offline-split`
 

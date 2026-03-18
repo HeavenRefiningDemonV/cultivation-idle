@@ -117,3 +117,26 @@ test('migration alias ownership stays on packet 1.3', () => {
   const aliasIssue = diagnostics.find((entry) => entry.category === 'MIGRATION_ALIAS_PRESENT');
   assert.equal(aliasIssue?.suggestedOwnerPacket, '1.3');
 });
+
+test('diagnostics owner packet map reflects packet 1.6 prestige honesty and packet 1.8 offline unification', () => {
+  const contract = buildProgressionContract(baseContent);
+  const diagnostics = collectProgressionDiagnostics(contract, {
+    authoredContent: {
+      economyRealms: ['qi_condensation', 'foundation_establishment'],
+      cities: [{ id: 'city_pinewind_hamlet', unlockMajorRealm: 'qi_condensation' }],
+      trials: [{ id: 'trial_bad', gateItemId: 'gate_foundation_pill', fromMajorRealm: 'qi_condensation', toMajorRealm: 'foundation_establishment' }],
+      items: ['gate_foundation_pill'],
+    },
+    runtimeFileTextByPath: {
+      'src/stores/gameStore.ts': 'getQiMultiplier spiritRoot prestige',
+      'src/systems/offline.ts': 'offline pipeline',
+      'src/services/time/OfflineCatchup.ts': 'offline catchup',
+    },
+  });
+
+  const hiddenPrestigeIssue = diagnostics.find((entry) => entry.category === 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER');
+  const offlineIssue = diagnostics.find((entry) => entry.category === 'OFFLINE_PIPELINE_SPLIT');
+
+  assert.equal(hiddenPrestigeIssue?.suggestedOwnerPacket, '1.6');
+  assert.equal(offlineIssue?.suggestedOwnerPacket, '1.8');
+});

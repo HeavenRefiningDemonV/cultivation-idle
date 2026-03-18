@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 
 import type { RawProgressionContentLike } from '../../src/systems/progression/contract/index.js';
+import { isRefundableHiddenPrestigeNode } from '../../src/systems/progression/contract/index.js';
 import { buildPrestigeCategorySections } from '../../src/features/prestige/prestigeCategories.js';
 import {
   canPurchasePrestigeNode,
@@ -87,6 +88,16 @@ test('runtime catalog purchase checks allow visible nodes and reject hidden or d
     ok: false,
     reason: 'Upgrade is not available in the current live prestige tree',
   });
+});
+
+test('packet 1.6 refund classification matches the runtime hidden prestige set', async () => {
+  const content = await loadRuntimeContent();
+  const catalog = getPrestigeRuntimeCatalog(content as never);
+  const hiddenByMigrationTruth = catalog.nodes
+    .filter((node) => isRefundableHiddenPrestigeNode(node.upgrade.id, node.upgrade))
+    .map((node) => node.upgrade.id);
+
+  assert.deepEqual(hiddenByMigrationTruth, catalog.hiddenNodeIds);
 });
 
 test('live prestige source paths route purchase gating and runtime projection through the honesty layer', async () => {

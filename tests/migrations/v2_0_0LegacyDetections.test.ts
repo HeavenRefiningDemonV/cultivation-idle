@@ -37,14 +37,18 @@ test('future-slice detection reports owner packet 1.1 without mutating save', as
   assert.equal(realm.index, 7);
 });
 
-test('deferred prestige refund planning detects purchases and computes totals', async () => {
+test('hidden prestige refund dry-run detects purchases, reports owner packet 1.6, and does not mutate save', async () => {
   const fixture = await loadMigrationFixture('legacy-hidden-prestige');
+  const original = structuredClone(fixture);
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
   const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_deferred_prestige_refund');
 
   assert.equal(step?.ownerPacket, '1.6');
-  assert.equal(dry.report.warnings.some((entry) => entry.code === 'DEFERRED_PRESTIGE_PURCHASE_PRESENT'), true);
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'HIDDEN_PRESTIGE_PURCHASE_PRESENT'), true);
   assert.equal(step?.summary.includes('totalRefundAP=240'), true);
+  assert.equal(step?.summary.includes('ap_unlock_pagoda'), true);
+  assert.equal(step?.summary.includes('ap_unlock_jade_core'), true);
+  assert.deepEqual(dry.migrated, original);
 });
 
 test('trial mismatch planning detects contradictory realm and gate/trial proof state', async () => {

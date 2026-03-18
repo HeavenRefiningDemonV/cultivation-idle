@@ -2,6 +2,7 @@ import {
   adaptProgressionAuthoredContent,
   buildProgressionContract,
   getContentCapRealm,
+  isRefundableHiddenPrestigeNode,
   normalizeGateItemAlias,
   type RawProgressionContentLike,
 } from '../contract/index.js';
@@ -102,7 +103,7 @@ const validateScenarioSemantics = (
         severity: 'error',
         summary: `Scenario ${scenario.kind} does not use the contract offline pipeline.`,
         evidence: [{ path: `scenario:${scenario.kind}`, detail: scenario.offlineState.pipelineId }],
-        suggestedOwnerPacket: '1.6',
+        suggestedOwnerPacket: '1.8',
         fixStrategySummary: 'Always source offline pipeline expectations from the progression contract.',
         autoFixable: true,
       });
@@ -242,18 +243,16 @@ const readMigrationFixtureIssues = (
     }
 
 
-    const deferredPrestigePurchases = Object.keys(prestigePurchases).filter(
-      (nodeId) => contract.prestigeHooks.classifyNode(nodeId) === 'deferred',
-    );
-    if (deferredPrestigePurchases.length > 0) {
+    const hiddenPrestigePurchases = Object.keys(prestigePurchases).filter((nodeId) => isRefundableHiddenPrestigeNode(nodeId));
+    if (hiddenPrestigePurchases.length > 0) {
       pushIssue(issues, {
         id: `migration-hidden-prestige-${name}`,
         category: 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER',
         severity: 'warning',
-        summary: `Migration fixture ${name} contains deferred prestige purchases that should remain hidden from live runtime flows.`,
-        evidence: deferredPrestigePurchases.map((nodeId) => ({ path: `fixture:${name}`, detail: nodeId })),
-        suggestedOwnerPacket: '1.7',
-        fixStrategySummary: 'Retain this fixture for regression coverage until prestige cleanup routes all deferred nodes through contract-backed projections.',
+        summary: `Migration fixture ${name} contains hidden prestige purchases that packet 1.6 must refund and clear from live save truth.`,
+        evidence: hiddenPrestigePurchases.map((nodeId) => ({ path: `fixture:${name}`, detail: nodeId })),
+        suggestedOwnerPacket: '1.6',
+        fixStrategySummary: 'Retain this fixture as a regression input until packet 1.6 refund migration clears hidden prestige purchases and restores spendable AP.',
         autoFixable: false,
       });
     }
@@ -284,7 +283,7 @@ const readMigrationFixtureIssues = (
         severity: 'warning',
         summary: `Migration fixture ${name} contains conflicting offline timestamps.`,
         evidence: [{ path: `fixture:${name}`, detail: offlineTimes.join(', ') }],
-        suggestedOwnerPacket: '1.6',
+        suggestedOwnerPacket: '1.8',
         fixStrategySummary: 'Retain only fixtures that explicitly exercise offline timestamp reconciliation.',
         autoFixable: true,
       });

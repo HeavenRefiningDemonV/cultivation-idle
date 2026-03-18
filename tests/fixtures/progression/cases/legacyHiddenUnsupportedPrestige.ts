@@ -1,11 +1,11 @@
 import { loadMigrationFixture } from '../../../migrations/loadFixture.js';
 import type { ProgressionFixtureDefinition } from '../fixtureTypes.js';
 
-export const legacyHiddenPrestigeFixture: ProgressionFixtureDefinition = {
+export const legacyHiddenUnsupportedPrestigeFixture: ProgressionFixtureDefinition = {
   metadata: {
-    id: 'legacy-hidden-prestige',
-    name: 'Legacy Hidden Prestige',
-    description: 'Legacy save containing hidden/deferred prestige purchases that packet 1.6 now refunds and clears on migration apply.',
+    id: 'legacy-hidden-unsupported-prestige',
+    name: 'Legacy Hidden Unsupported Prestige',
+    description: 'Legacy save containing hidden unsupported prestige purchases that packet 1.6 refunds and clears on migration apply.',
     kind: 'legacy_save',
     sourceType: 'migrated_legacy',
     ownerPacket: '0.3B',
@@ -19,7 +19,9 @@ export const legacyHiddenPrestigeFixture: ProgressionFixtureDefinition = {
     cityIds: ['city_stonecrag_town'],
     tags: ['legacy', 'migration', 'prestige'],
     adapterAvailability: { contractScenario: true, saveShape: true, migrationFixture: true },
-    notes: ['Packet 1.6 keeps this as a legacy regression input while migration apply refunds and clears the hidden purchases.'],
+    notes: ['Packet 1.6 keeps this as a legacy regression input while migration apply refunds hidden unsupported prestige purchases.'],
   },
-  build: async () => ({ migrationFixture: { name: 'legacy-hidden-prestige', data: await loadMigrationFixture('legacy-hidden-prestige') } }),
+  build: async () => ({
+    migrationFixture: { name: 'legacy-hidden-unsupported-prestige', data: await loadMigrationFixture('legacy-hidden-unsupported-prestige') },
+  }),
 };

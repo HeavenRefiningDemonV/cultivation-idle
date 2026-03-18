@@ -4,6 +4,7 @@ import { gateEdgePostFirstFixture } from './cases/gateEdgePostFirst.js';
 import { gateEdgePreFirstFixture } from './cases/gateEdgePreFirst.js';
 import { legacyGateAliasFixture } from './cases/legacyGateAlias.js';
 import { legacyHiddenPrestigeFixture } from './cases/legacyHiddenPrestige.js';
+import { legacyHiddenUnsupportedPrestigeFixture } from './cases/legacyHiddenUnsupportedPrestige.js';
 import { legacyOfflineSplitFixture } from './cases/legacyOfflineSplit.js';
 import { legacyOverCapFixture } from './cases/legacyOverCap.js';
 import { legacyPartialResetResidueFixture } from './cases/legacyPartialResetResidue.js';
@@ -23,6 +24,7 @@ export const PROGRESSION_FIXTURE_CATALOG: ProgressionFixtureDefinition[] = [
   legacyTrialMismatchFixture,
   legacyOverCapFixture,
   legacyHiddenPrestigeFixture,
+  legacyHiddenUnsupportedPrestigeFixture,
   legacyPartialResetResidueFixture,
   legacyOfflineSplitFixture,
 ];

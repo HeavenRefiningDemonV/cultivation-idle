@@ -123,7 +123,8 @@ ${deferredRows}
 - Path truth canonical field: ${contract.pathTruth.canonicalField}
 - Path legacy aliases: ${contract.pathTruth.legacyAliases.join(', ')}
 - Reset classifier buckets: per_life / permanent / hybrid / unknown
-- Prestige classifier buckets: live / deferred / unknown
+- Prestige classifier buckets: live / deferred / unknown (contract seam)
+- Packet 1.6 runtime honesty overlay: visible_live / hidden_unsupported / deferred / unknown
 
 ## 10) Diagnostics categories and packet ownership
 
@@ -147,9 +148,9 @@ ${diagnosticsRows}
 - **1.3**: gate entry/reward/consumption truth unification.
 - **1.4**: gate flow hardening around trial-to-breakthrough lifecycle.
 - **1.5**: city unlock timing unified to realm entry.
-- **1.6**: offline pipeline consolidation to one contract pipeline.
+- **1.6**: prestige tree honesty pass, hidden/deferred prestige cleanup, and runtime-consumed effect alignment.
 - **1.7**: prestige/reset orchestration and per-life/permanent/hybrid enforcement.
-- **1.8**: deferred/live leak cleanup and hidden consumer removal.
+- **1.8**: offline pipeline unification to one contract pipeline.
 `;
 
   await fs.writeFile(OUTPUT, markdown, 'utf8');

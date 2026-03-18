@@ -18,6 +18,7 @@ const expectedIds = [
   'legacy-trial-mismatch',
   'legacy-over-cap',
   'legacy-hidden-prestige',
+  'legacy-hidden-unsupported-prestige',
   'legacy-partial-reset-residue',
   'legacy-offline-split',
 ];

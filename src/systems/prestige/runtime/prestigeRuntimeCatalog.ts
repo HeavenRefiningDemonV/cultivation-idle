@@ -1,18 +1,10 @@
 import type { PrestigeUpgradeDef, ValidatedContent } from '../../../content/index.js';
-import { adaptProgressionAuthoredContent, buildProgressionContract } from '../../progression/contract/index.js';
-
-export type PrestigeNodeRuntimeStatus =
-  | 'visible_live'
-  | 'hidden_unsupported'
-  | 'deferred'
-  | 'unknown';
-
-export type PrestigeRuntimeConsumer =
-  | 'qi_multiplier'
-  | 'combat_multiplier'
-  | 'offline_efficiency'
-  | 'heart_law_unlock'
-  | 'extra_technique_slot';
+import {
+  getPrestigeNodeRuntimeStatus as classifyPrestigeNodeRuntimeStatus,
+  getPrestigeRuntimeConsumers,
+  type PrestigeNodeRuntimeStatus,
+  type PrestigeRuntimeConsumer,
+} from '../../progression/contract/index.js';
 
 export interface PrestigeRuntimeNode {
   upgrade: PrestigeUpgradeDef;
@@ -33,67 +25,15 @@ export interface PrestigeRuntimeCatalog {
   legacyResidueNodeIds: string[];
 }
 
-const SUPPORTED_STAT_CONSUMERS: Record<string, PrestigeRuntimeConsumer> = {
-  idleQiMult: 'qi_multiplier',
-  combatMult: 'combat_multiplier',
-  offlineEfficiencyAdd: 'offline_efficiency',
-};
-
-const SUPPORTED_UNLOCKS = new Set(['tier1', 'tier2', 'tier3']);
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  !!value && typeof value === 'object' && !Array.isArray(value);
-
-const getNumericEffect = (effect: unknown, key: string): number | null => {
-  if (!isRecord(effect)) return null;
-  return typeof effect[key] === 'number' ? (effect[key] as number) : null;
-};
-
-const getRuntimeConsumers = (upgrade: PrestigeUpgradeDef): PrestigeRuntimeConsumer[] => {
-  const consumers = new Set<PrestigeRuntimeConsumer>();
-
-  if (upgrade.stat && SUPPORTED_STAT_CONSUMERS[upgrade.stat]) {
-    consumers.add(SUPPORTED_STAT_CONSUMERS[upgrade.stat]);
-  }
-
-  if (Array.isArray(upgrade.unlocks) && upgrade.unlocks.some((unlockId) => SUPPORTED_UNLOCKS.has(unlockId))) {
-    consumers.add('heart_law_unlock');
-  }
-
-  if (getNumericEffect(upgrade.effect, 'extraTechniqueSlots') || getNumericEffect(upgrade.effectPerLevel, 'extraTechniqueSlots')) {
-    consumers.add('extra_technique_slot');
-  }
-
-  return Array.from(consumers);
-};
-
 const classifyRuntimeStatus = (
   upgrade: PrestigeUpgradeDef,
-  contractStatus: 'live' | 'deferred' | 'unknown',
 ): PrestigeRuntimeNode => {
-  const consumers = getRuntimeConsumers(upgrade);
-  if (consumers.length > 0) {
-    return {
-      upgrade,
-      status: 'visible_live',
-      contractStatus,
-      consumers,
-    };
-  }
-
-  if (contractStatus === 'deferred') {
-    return {
-      upgrade,
-      status: 'deferred',
-      contractStatus,
-      consumers,
-    };
-  }
-
+  const consumers = getPrestigeRuntimeConsumers(upgrade);
+  const status = classifyPrestigeNodeRuntimeStatus(upgrade.id, upgrade);
   return {
     upgrade,
-    status: contractStatus === 'unknown' ? 'unknown' : 'hidden_unsupported',
-    contractStatus,
+    status,
+    contractStatus: status === 'deferred' ? 'deferred' : status === 'unknown' ? 'unknown' : 'live',
     consumers,
   };
 };
@@ -116,10 +56,7 @@ export const getPrestigeRuntimeCatalog = (
     };
   }
 
-  const contract = buildProgressionContract(adaptProgressionAuthoredContent(content));
-  const nodes = upgrades.map((upgrade) =>
-    classifyRuntimeStatus(upgrade, contract.prestigeHooks.classifyNode(upgrade.id)),
-  );
+  const nodes = upgrades.map((upgrade) => classifyRuntimeStatus(upgrade));
 
   const visibleLiveNodes = nodes.filter((node) => node.status === 'visible_live');
   const hiddenUnsupportedNodes = nodes.filter((node) => node.status === 'hidden_unsupported');

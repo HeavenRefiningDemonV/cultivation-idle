@@ -1,16 +1,17 @@
 import type { MigrationFieldTouch, MigrationStep, PlannedMutation } from '../../migrationTypes.js';
 import { CURRENT_SAVE_VERSION } from '../../saveVersion.js';
 import {
-  createPrestigeClassificationHooks,
-  DEFERRED_PRESTIGE_REFUND_COSTS,
+  getPrestigeNodeRuntimeStatus,
+  getPrestigeRefundAmount,
+  isRefundableHiddenPrestigeNode,
 } from '../../../../systems/progression/contract/prestigeContract.js';
 import { cloneSave, createStepResult, isRecord, plan, touch, warning } from './shared.js';
 
 export const v2_0_0_plan_deferred_prestige_refund: MigrationStep = {
   id: 'v2_0_0_plan_deferred_prestige_refund',
-  title: 'Plan deferred prestige refund',
-  description: 'Detect deferred prestige purchases and compute refund totals for packet 1.6.',
-  kind: 'plannedTransform',
+  title: 'Refund hidden prestige purchases',
+  description: 'Refund hidden prestige purchases, clear them from save truth, and keep dry-run reporting transparent for packet 1.6.',
+  kind: 'transform',
   ownerPacket: '1.6',
   fromVersionRange: { min: CURRENT_SAVE_VERSION },
   toVersion: CURRENT_SAVE_VERSION,
@@ -18,7 +19,6 @@ export const v2_0_0_plan_deferred_prestige_refund: MigrationStep = {
   appliesTo: (save) => isRecord(save.prestigeState),
   run: (save) => {
     const next = cloneSave(save);
-    const hooks = createPrestigeClassificationHooks();
     const prestigeState = isRecord(next.prestigeState) ? next.prestigeState : {};
     const purchases = isRecord(prestigeState.purchasesById) ? (prestigeState.purchasesById as Record<string, unknown>) : {};
 
@@ -26,37 +26,59 @@ export const v2_0_0_plan_deferred_prestige_refund: MigrationStep = {
     const touched: MigrationFieldTouch[] = [];
     const plannedMutations: PlannedMutation[] = [];
     const purchasedNodeIds: string[] = [];
+    const hiddenStatusesByNode: Record<string, string> = {};
     const refundByNode: Record<string, number> = {};
     let totalRefundAP = 0;
+    let didMutate = false;
 
     Object.entries(purchases).forEach(([nodeId, rawCount]) => {
       const count = typeof rawCount === 'number' ? rawCount : 0;
-      if (count <= 0 || hooks.classifyNode(nodeId) !== 'deferred') return;
-      const refund = (DEFERRED_PRESTIGE_REFUND_COSTS as Record<string, number | undefined>)[nodeId] ?? count;
+      if (count <= 0 || !isRefundableHiddenPrestigeNode(nodeId)) return;
+      const refund = getPrestigeRefundAmount(nodeId, count);
+      const status = getPrestigeNodeRuntimeStatus(nodeId);
       purchasedNodeIds.push(nodeId);
+      hiddenStatusesByNode[nodeId] = status;
       refundByNode[nodeId] = refund;
       totalRefundAP += refund;
-      touched.push(touch(`prestigeState.purchasesById.${nodeId}`, 'inspect', `Deferred node purchased at count ${count}. refund=${refund}`));
+      touched.push(touch(`prestigeState.purchasesById.${nodeId}`, 'inspect', `Hidden prestige node purchased at count ${count}. status=${status}. refund=${refund}`));
       plannedMutations.push(
-        plan(`prestigeState.purchasesById.${nodeId}`, '1.6', `Refund ${refund} AP and clear deferred prestige purchase ${nodeId}.`, 'delete'),
+        plan(`prestigeState.purchasesById.${nodeId}`, '1.6', `Refund ${refund} AP and clear hidden prestige purchase ${nodeId} (${status}).`, 'delete'),
       );
+
+      delete purchases[nodeId];
+      didMutate = true;
     });
 
     if (purchasedNodeIds.length > 0) {
+      const currentTotalAP = typeof prestigeState.totalAP === 'number' ? prestigeState.totalAP : 0;
+      prestigeState.totalAP = currentTotalAP + totalRefundAP;
+      touched.push(touch('prestigeState.totalAP', 'set', `Refund hidden prestige spendable AP by ${totalRefundAP}.`));
+      plannedMutations.push(plan('prestigeState.totalAP', '1.6', `Restore ${totalRefundAP} refunded AP to spendable totalAP.`));
       warnings.push(
-        warning('DEFERRED_PRESTIGE_PURCHASE_PRESENT', `Deferred prestige purchases found: ${purchasedNodeIds.join(', ')}.`, '1.6', 'warning', 'prestigeState.purchasesById'),
-        warning('PRESTIGE_REFUND_PLAN_READY', `Refund plan ready: totalRefundAP=${totalRefundAP}; refundByNode=${JSON.stringify(refundByNode)}.`, '1.6', 'info', 'prestigeState.purchasesById'),
+        warning(
+          'HIDDEN_PRESTIGE_PURCHASE_PRESENT',
+          `Hidden prestige purchases found: ${purchasedNodeIds.join(', ')}; statuses=${JSON.stringify(hiddenStatusesByNode)}.`,
+          '1.6',
+          'warning',
+          'prestigeState.purchasesById',
+        ),
+        warning(
+          'PRESTIGE_REFUND_PLAN_READY',
+          `Refund plan ready: totalRefundAP=${totalRefundAP}; refundByNode=${JSON.stringify(refundByNode)}.`,
+          '1.6',
+          'info',
+          'prestigeState.purchasesById',
+        ),
       );
-      plannedMutations.push(plan('prestigeState.currentRunAP', '1.6', `Add deferred prestige refund total ${totalRefundAP} AP.`));
     }
 
     return createStepResult(
       v2_0_0_plan_deferred_prestige_refund,
       next,
       purchasedNodeIds.length > 0
-        ? `Deferred prestige refund planned for ${purchasedNodeIds.length} node(s); totalRefundAP=${totalRefundAP}.`
-        : 'No deferred prestige purchases detected.',
-      { warnings, touchedFieldPaths: touched, plannedMutations },
+        ? `Hidden prestige refund applied for ${purchasedNodeIds.length} node(s); totalRefundAP=${totalRefundAP}; refundedNodeIds=${purchasedNodeIds.join(', ')}.`
+        : 'No hidden prestige purchases detected.',
+      { warnings, touchedFieldPaths: touched, plannedMutations, didMutate },
     );
   },
 };

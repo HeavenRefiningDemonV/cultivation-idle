@@ -8,11 +8,11 @@ export const DRIFT_OWNER_PACKET: Record<DriftIssue['category'], string> = {
   TRIAL_ENTRY_CONTRADICTION: '1.3',
   CITY_UNLOCK_UNBOUND: '1.5',
   PARTIAL_PRESTIGE_RESET: '1.7',
-  OFFLINE_PIPELINE_SPLIT: '1.6',
+  OFFLINE_PIPELINE_SPLIT: '1.8',
   LIVE_DEFERRED_LEAK: '1.8',
   UNKNOWN_REALM_REFERENCE: '1.5',
   ORPHAN_GATE_ITEM: '1.3',
-  HIDDEN_PRESTIGE_RUNTIME_CONSUMER: '1.7',
+  HIDDEN_PRESTIGE_RUNTIME_CONSUMER: '1.6',
   MIGRATION_ALIAS_PRESENT: '1.3',
   CONTENT_CAP_BREACH: '1.1',
 };
@@ -195,7 +195,7 @@ export const collectProgressionDiagnostics = (contract: ProgressionContract, inp
         severity: 'warning',
         summary: 'Runtime modules consume prestige effects directly outside contract hooks.',
         evidence: prestigeRuntimeMentions.map(([path]) => ({ path, detail: 'Direct prestige multiplier/spiritRoot usage found.' })),
-        fixStrategySummary: 'Later packet should route prestige state lookups through hook-backed projection APIs.',
+        fixStrategySummary: 'Packet 1.6 should keep prestige runtime reads limited to the visible live tree and refund hidden purchases that no longer belong to shipped runtime flows.',
         autoFixable: false,
       }),
     );
