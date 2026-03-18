@@ -1461,7 +1461,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const inventoryStore = useInventoryStore.getState();
 
       if (combatContext.type === 'trial') {
-        const { cityId, trialId, eligible, rewardBundle } = combatContext;
+        const { cityId, trialId, countsTowardFailSafe, rewardBundle } = combatContext;
 
         useActivityStore.getState().stopActivity();
         useBountyStore.getState().recordEvent({ type: 'TRIAL_CLEAR', cityId, amount: 1 });
@@ -1471,13 +1471,13 @@ export const useCombatStore = create<ExtendedCombatState>()(
             .addComprehension(COMPREHENSION_EVENT_BONUSES.trialClear, 'trialClear');
         }
 
-        if (eligible) {
+        if (countsTowardFailSafe) {
           useTrialStore.getState().markCleared(trialId);
           useCityStore.getState().markGateTrialCleared(cityId);
           emitLootDrops(rewardBundle?.items, 'Gate Trial clear');
           RewardService.grantRewards(rewardBundle ?? {}, 'Gate Trial clear');
         } else {
-          RewardService.grantRewards({ currencies: { gold: '500' } }, 'Gate Trial (not eligible)');
+          console.warn('[CombatStore] Ignoring resolved or non-qualifying trial victory for gate progression', combatContext);
         }
 
         setTimeout(() => {
@@ -1697,7 +1697,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         const trialStore = useTrialStore.getState();
         trialStore.recordAttemptSummary(context.trialId, summary);
-        trialStore.recordFailure(context.trialId);
+        trialStore.recordFailure(context.trialId, context.countsTowardFailSafe);
       }
 
       if (context?.type === 'ruins') {

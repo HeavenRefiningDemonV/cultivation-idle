@@ -7,9 +7,10 @@ import { useContentStore } from '../../../stores/contentStore';
 import { useOutskirtsStore } from '../../../stores/outskirtsStore';
 import { useTrialStore } from '../../../stores/trialStore';
 import { useRuinsStore } from '../../../stores/ruinsStore';
-import { useCityStore } from '../../../stores/cityStore';
-import { getTrialGateItemId } from '../../../systems/progression/runtime/index.js';
+import { getTrialLifecycleSnapshot } from '../../../systems/progression/runtime/index.js';
 import { useCombatStore } from '../../../stores/combatStore';
+import { useGameStore } from '../../../stores/gameStore';
+import { useInventoryStore } from '../../../stores/inventoryStore';
 import './CombatPresentation.scss';
 
 interface PreviewDetails {
@@ -17,6 +18,8 @@ interface PreviewDetails {
   subtitle?: string;
   lines: string[];
   rewards?: string[];
+  canStart?: boolean;
+  startDisabledReason?: string;
 }
 
 function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
@@ -38,7 +41,6 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
   );
 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
-  const cityFlagsById = useCityStore((state) => state.cityFlagsById);
 
   const { progressByRuinId, activeRun } = useRuinsStore(
     useShallow((state) => ({
@@ -70,23 +72,33 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
     if (context.type === 'trial') {
       const trialDef = context.sourceId ? contentMaps.trialsById[context.sourceId] : undefined;
       const trialProgress = trialDef ? trialProgressById[trialDef.id] : undefined;
-      const trialCityId = context.cityId ?? trialDef?.cityId ?? null;
-      const cityFlags = trialCityId ? cityFlagsById[trialCityId] : undefined;
-      const cleared = Boolean(trialProgress?.cleared || cityFlags?.gateTrialCleared);
-      const gateItemId = getTrialGateItemId(useContentStore.getState().raw, trialDef);
-      const gateItemName = gateItemId ? contentMaps.itemsById[gateItemId]?.name ?? gateItemId : 'None';
+      const requiredItemSatisfied = trialDef?.requiredItemId ? useInventoryStore.getState().getItemCount(trialDef.requiredItemId) > 0 : true;
+      const gameState = useGameStore.getState();
+      const lifecycle = getTrialLifecycleSnapshot({
+        content: useContentStore.getState().raw,
+        trial: trialDef,
+        progress: trialProgress ?? null,
+        realm: gameState.realm,
+        qi: gameState.qi,
+        breakthroughRequirement: gameState.getBreakthroughRequirement(),
+        requiredItemSatisfied,
+      });
+      const gateItemName = lifecycle.gateItemId ? contentMaps.itemsById[lifecycle.gateItemId]?.name ?? lifecycle.gateItemId : 'None';
 
       return {
         title: trialDef?.name ?? 'Gate Trial',
-        subtitle: cleared ? 'Cleared — repeat for practice' : 'One-on-one gate challenge',
+        subtitle: `Gate state: ${lifecycle.state}`,
         lines: [
           `Attempts: ${trialProgress?.attempts ?? 0}`,
-          `Eligibility: ${cleared ? 'Cleared/locked' : 'Ready to challenge'}`,
-          `Reward proof: ${gateItemName}`,
+          `Gate state: ${lifecycle.state}`,
+          `Gate reward: ${gateItemName}`,
+          `Fail-safe: ${lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold})`}`,
         ],
         rewards: (trialDef as { rewards?: string } | undefined)?.rewards
           ? [`Rewards preview: ${(trialDef as { rewards?: string }).rewards}`]
           : undefined,
+        canStart: lifecycle.canStart,
+        startDisabledReason: lifecycle.canStart ? undefined : lifecycle.reason,
       };
     }
 
@@ -106,13 +118,11 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
     };
   }, [
     activeRun,
-    cityFlagsById,
     contentMaps.enemiesById,
     contentMaps.itemsById,
     contentMaps.outskirtsById,
     contentMaps.ruinsById,
     contentMaps.trialsById,
-    context.cityId,
     context.sourceId,
     context.type,
     progressByOutskirtsId,
@@ -161,9 +171,10 @@ function CombatPreviewOverlay({
       ) : null}
 
       <div className="combat-preview__actions">
-        <button className="button-standard" onClick={onStart}>
+        <button className="button-standard" onClick={onStart} disabled={details.canStart === false}>
           Start
         </button>
+        {details.canStart === false && details.startDisabledReason ? <div>{details.startDisabledReason}</div> : null}
       </div>
     </div>
   );

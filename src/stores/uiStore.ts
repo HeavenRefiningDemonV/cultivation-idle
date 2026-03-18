@@ -8,8 +8,9 @@ import { useOutskirtsStore } from './outskirtsStore';
 import { useRuinsStore } from './ruinsStore';
 import { useContentStore } from './contentStore';
 import { useTrialStore } from './trialStore';
-import { useCityStore } from './cityStore';
-import { getTrialGateRewardBundle } from '../systems/progression/runtime/index.js';
+import { useGameStore } from './gameStore';
+import { useInventoryStore } from './inventoryStore';
+import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../systems/progression/runtime/index.js';
 import { pickEnemyFromPool } from '../components/screens/world/worldUtils';
 import { GameEvents } from '../services/events/GameEvents';
 
@@ -547,13 +548,23 @@ export const useUIStore = create<UIState>()(
           return;
         }
 
-        const trialProgress = useTrialStore.getState().progressByTrialId[trialDef.id];
-        const trialCityId = context.cityId ?? trialDef.cityId ?? null;
-        const cityFlags = trialCityId ? useCityStore.getState().cityFlagsById[trialCityId] : undefined;
-        const isEligible = !(trialProgress?.cleared || cityFlags?.gateTrialCleared);
+        const trialProgress = useTrialStore.getState().getProgress(trialDef.id);
+        const gameState = useGameStore.getState();
+        const requiredItemSatisfied = trialDef.requiredItemId
+          ? useInventoryStore.getState().getItemCount(trialDef.requiredItemId) > 0
+          : true;
+        const lifecycle = getTrialLifecycleSnapshot({
+          content: contentStore.raw,
+          trial: trialDef,
+          progress: trialProgress,
+          realm: gameState.realm,
+          qi: gameState.qi,
+          breakthroughRequirement: gameState.getBreakthroughRequirement(),
+          requiredItemSatisfied,
+        });
 
-        if (!isEligible) {
-          get().addNotification('warning', 'Trial already cleared or locked.');
+        if (!lifecycle.canStart) {
+          get().addNotification('warning', lifecycle.reason);
           return;
         }
 
@@ -564,7 +575,7 @@ export const useUIStore = create<UIState>()(
           type: 'trial',
           cityId: context.cityId ?? trialDef.cityId,
           trialId: trialDef.id,
-          eligible: isEligible,
+          countsTowardFailSafe: lifecycle.countsTowardFailSafeOnStart,
           rewardBundle: getTrialGateRewardBundle(contentStore.raw, trialDef),
         });
       } else if (context.type === 'ruins') {

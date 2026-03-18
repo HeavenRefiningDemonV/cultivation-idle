@@ -213,6 +213,9 @@ export function buildDefaultSaveState(): SaveData {
           {
             ...progress,
             sessionAttempts: progress.sessionAttempts ?? 0,
+            eligibleFailures: progress.eligibleFailures ?? 0,
+            resolution: progress.resolution ?? (progress.cleared ? 'cleared' : 'none'),
+            bypassedAt: progress.bypassedAt ?? null,
             attemptStartAt: progress.attemptStartAt ?? null,
             lastAttemptSummary: progress.lastAttemptSummary
               ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
@@ -385,6 +388,9 @@ function isValidTrialState(value: unknown): value is SaveData['trialState'] {
     if (typeof progress.attempts !== 'number') return false;
     if (typeof progress.cleared !== 'boolean') return false;
     if ('sessionAttempts' in progress && typeof progress.sessionAttempts !== 'number') return false;
+    if ('eligibleFailures' in progress && typeof progress.eligibleFailures !== 'number') return false;
+    if ('resolution' in progress && !['none', 'cleared', 'bypassed'].includes(String(progress.resolution))) return false;
+    if ('bypassedAt' in progress && progress.bypassedAt !== null && typeof progress.bypassedAt !== 'number') return false;
     if ('attemptStartAt' in progress && progress.attemptStartAt !== null && typeof progress.attemptStartAt !== 'number')
       return false;
     if ('lastAttemptSummary' in progress && progress.lastAttemptSummary != null) {

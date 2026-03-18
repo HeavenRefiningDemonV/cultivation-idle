@@ -5,9 +5,8 @@ import { useCombatStore } from '../../../stores/combatStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useGameStore } from '../../../stores/gameStore';
 import { useInventoryStore } from '../../../stores/inventoryStore';
-import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../systems/progression/runtime/index.js';
+import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../systems/progression/runtime/index.js';
 import { useTrialStore } from '../../../stores/trialStore';
-import { useCityStore } from '../../../stores/cityStore';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel';
 import { hpPercent } from '../../../systems/combat/minibarModel';
 import { formatNumber, D } from '../../../utils/numbers';
@@ -70,19 +69,24 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const playerStats = useGameStore((state) => state.stats);
   const absorptionShield = useGameStore((state) => state.absorptionShield);
   const getItemCount = useInventoryStore((state) => state.getItemCount);
-  const cityFlagsById = useCityStore((state) => state.cityFlagsById);
-
   const trialDef = trialsById[trialId];
   const bossTemplate = trialDef ? enemiesById[trialDef.bossId] : undefined;
   const lastSummary = progress?.lastAttemptSummary ?? null;
-  const cityFlags = trialDef?.cityId ? cityFlagsById[trialDef.cityId] : undefined;
 
   const recommendation = TRIAL_RECOMMENDATIONS[trialId] ?? {};
-  const gateItemId = getTrialGateItemId(useContentStore.getState().raw, trialDef);
-  const gateItemName = gateItemId ? itemsById[gateItemId]?.name ?? gateItemId : 'No gate item';
   const requiredItemId = trialDef?.requiredItemId;
   const requiredItemName = requiredItemId ? itemsById[requiredItemId]?.name ?? requiredItemId : 'No required item';
   const requiredItemOwned = requiredItemId ? getItemCount(requiredItemId) > 0 : true;
+  const lifecycle = getTrialLifecycleSnapshot({
+    content: useContentStore.getState().raw,
+    trial: trialDef,
+    progress: progress ?? null,
+    realm: useGameStore.getState().realm,
+    qi: useGameStore.getState().qi,
+    breakthroughRequirement: useGameStore.getState().getBreakthroughRequirement(),
+    requiredItemSatisfied: requiredItemOwned,
+  });
+  const gateItemName = lifecycle.gateItemId ? itemsById[lifecycle.gateItemId]?.name ?? lifecycle.gateItemId : 'No gate reward';
 
   const realmRequirement =
     trialDef?.minRealm ?? trialDef?.realmRequirement ?? (typeof recommendation.minRealm === 'number' ? recommendation.minRealm : null);
@@ -107,21 +111,12 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const bossHpPct = hpPercent(enemyHP, enemyMaxHP);
   const attemptDurationMs = progress?.attemptStartAt ? now - progress.attemptStartAt : null;
   const attemptsThisSession = progress?.sessionAttempts ?? 0;
-  const attemptCap = trialDef?.failSafe?.thresholdAttempts ?? 3;
+  const attemptCap = lifecycle.failSafe.threshold;
 
-  const cleared = Boolean(progress?.cleared || cityFlags?.gateTrialCleared);
-  const eligible = Boolean(realmMet && requiredItemOwned && !cleared);
-
-  const ineligibleReason = cleared
-    ? 'Already cleared'
-    : !realmMet
-      ? 'Realm too low'
-      : !requiredItemOwned
-        ? 'Missing required item'
-        : null;
+  const gateStateLabel = lifecycle.state === 'bypassed' ? 'Bypassed' : lifecycle.state.charAt(0).toUpperCase() + lifecycle.state.slice(1);
 
   const handleStart = () => {
-    if (!trialDef || !eligible) return;
+    if (!trialDef || !lifecycle.canStart) return;
     startActivity('trial', { cityId: trialDef.cityId, sourceId: trialDef.id });
     setAutoAttack(true);
     setAutoCombatAI(true);
@@ -129,7 +124,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       type: 'trial',
       cityId: trialDef.cityId,
       trialId: trialDef.id,
-      eligible,
+      countsTowardFailSafe: lifecycle.countsTowardFailSafeOnStart,
       rewardBundle: getTrialGateRewardBundle(useContentStore.getState().raw, trialDef),
     });
   };
@@ -176,10 +171,17 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
           </span>
         </div>
         <div className="trial-progress__requirement-row">
-          <span className="trial-progress__badge">Gate Item</span>
+          <span className="trial-progress__badge">Gate Reward</span>
           <span className={'trial-progress__status trial-progress__status--ok'}>
             <GameIcon icon={'inkCheck'} size={14} decorative />
-            <span>Granted on clear — {gateItemName}</span>
+            <span>Breakthrough proof — {gateItemName}</span>
+          </span>
+        </div>
+        <div className="trial-progress__requirement-row">
+          <span className="trial-progress__badge">Gate State</span>
+          <span className={'trial-progress__status trial-progress__status--ok'}>
+            <GameIcon icon={'inkCheck'} size={14} decorative />
+            <span>{gateStateLabel}</span>
           </span>
         </div>
         {requiredItemId ? (
@@ -194,15 +196,19 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__controls">
-        <button className="button-standard" onClick={handleStart} disabled={!eligible}>
+        <button className="button-standard" onClick={handleStart} disabled={!lifecycle.canStart}>
           Start
         </button>
         <button className="button-standard" onClick={handleStop}>
           Stop
         </button>
-        {!eligible && ineligibleReason ? (
-          <div className="trial-progress__controls-note">{ineligibleReason}</div>
+        {!lifecycle.canStart ? (
+          <div className="trial-progress__controls-note">{lifecycle.reason}</div>
         ) : null}
+      </div>
+
+      <div className="trial-progress__controls-note">
+        Fail-safe: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
       </div>
 
       <div className="trial-progress__metrics">

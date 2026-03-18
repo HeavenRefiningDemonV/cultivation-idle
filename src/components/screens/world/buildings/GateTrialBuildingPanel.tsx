@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../../stores/activityStore';
-import { useCityStore } from '../../../../stores/cityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useInventoryStore } from '../../../../stores/inventoryStore';
-import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../../systems/progression/runtime/index.js';
+import { useGameStore } from '../../../../stores/gameStore';
+import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../../systems/progression/runtime/index.js';
 import { useTrialStore } from '../../../../stores/trialStore';
 import { RewardService } from '../../../../services/rewards';
 import { resolveModuleRef } from '../worldUtils';
@@ -25,19 +25,6 @@ interface GateTrialBuildingPanelProps {
 const DEFAULT_SEGMENT_COUNT = 3;
 const MAX_SEGMENT_COUNT = 6;
 
-interface GateTrialEconomyConfig {
-  failSafe?: {
-    failThresholdEligibleAttempts?: number;
-    purchaseCostByCityIndex?: Record<number, { gold?: string | number; spiritStones?: string | number; merit?: string | number }>;
-  };
-}
-
-interface GateTrialCurrencyCostLike {
-  gold?: string | number;
-  spiritStones?: string | number;
-  merit?: string | number;
-}
-
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;
   if (value < 0) return 0;
@@ -51,17 +38,9 @@ function clampSegmentCount(value: number): number {
 }
 
 function formatEligibility(eligibility: unknown): { summary: string; raw?: string } {
-  if (!eligibility) {
-    return { summary: 'No eligibility rule provided' };
-  }
-
-  if (typeof eligibility === 'string') {
-    return { summary: eligibility };
-  }
-
-  if (typeof eligibility === 'number' || typeof eligibility === 'boolean') {
-    return { summary: String(eligibility) };
-  }
+  if (!eligibility) return { summary: 'No eligibility rule provided' };
+  if (typeof eligibility === 'string') return { summary: eligibility };
+  if (typeof eligibility === 'number' || typeof eligibility === 'boolean') return { summary: String(eligibility) };
 
   try {
     const raw = JSON.stringify(eligibility, null, 2);
@@ -71,17 +50,27 @@ function formatEligibility(eligibility: unknown): { summary: string; raw?: strin
   }
 }
 
+const labelForState = (state: 'locked' | 'available' | 'cleared' | 'bypassed'): string => {
+  switch (state) {
+    case 'locked':
+      return 'Locked';
+    case 'available':
+      return 'Available';
+    case 'cleared':
+      return 'Cleared';
+    case 'bypassed':
+      return 'Bypassed';
+  }
+};
+
 export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const trialsById = useContentStore((state) => state.maps.trialsById);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
-  const economy = useContentStore((state) => state.raw?.economy);
-  const gateTrialEconomy = (economy?.manualSystem?.gateTrials as GateTrialEconomyConfig | undefined) ?? undefined;
-
-  const cityFlags = useCityStore((state) => state.cityFlagsById[cityId]);
 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
+  const markBypassed = useTrialStore((state) => state.markBypassed);
 
   const activeActivity = useActivityStore((state) => state.active);
   const stopActivity = useActivityStore((state) => state.stopActivity);
@@ -99,29 +88,35 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
         combatLog: state.combatLog,
       })),
     );
+
   const openCombatPreview = useUIStore((state) => state.openCombatPreview);
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
+  const addNotification = useUIStore((state) => state.addNotification);
+
+  const getItemCount = useInventoryStore((state) => state.getItemCount);
+  const gameRealm = useGameStore((state) => state.realm);
+  const qi = useGameStore((state) => state.qi);
+  const breakthroughRequirement = useGameStore((state) => state.getBreakthroughRequirement());
 
   const trialRefId = useMemo(() => resolveModuleRef(city ?? null, 'gateTrial'), [city]);
   const trialDef = trialRefId ? trialsById[trialRefId] : undefined;
-  const trialProgress = trialRefId
-    ? trialProgressById[trialRefId] ?? { attempts: 0, cleared: false, lastAttemptAt: null, lastClearAt: null }
-    : null;
+  const trialProgress = trialRefId ? trialProgressById[trialRefId] ?? null : null;
+  const requiredItemSatisfied = trialDef?.requiredItemId ? getItemCount(trialDef.requiredItemId) > 0 : true;
+  const lifecycle = getTrialLifecycleSnapshot({
+    content: useContentStore.getState().raw,
+    trial: trialDef,
+    progress: trialProgress,
+    realm: gameRealm,
+    qi,
+    breakthroughRequirement,
+    requiredItemSatisfied,
+  });
 
   const isTrialActive = activeActivity?.type === 'trial' && activeActivity.sourceId === trialRefId;
-  const trialCityIndex = trialDef?.cityIndex ?? city?.index ?? 0;
   const trialBossName = trialDef ? enemiesById[trialDef.bossId]?.name ?? trialDef.bossId : null;
-  const gateItemId = trialDef ? getTrialGateItemId(useContentStore.getState().raw, trialDef) : null;
-  const gateItemName = gateItemId ? itemsById[gateItemId]?.name ?? gateItemId : null;
-
-  const trialFailSafeThreshold = useMemo(() => {
-    return (
-      trialDef?.failSafe?.thresholdAttempts ??
-      gateTrialEconomy?.failSafe?.failThresholdEligibleAttempts ??
-      3
-    );
-  }, [gateTrialEconomy, trialDef]);
+  const gateItemName = lifecycle.gateItemId ? itemsById[lifecycle.gateItemId]?.name ?? lifecycle.gateItemId : null;
+  const requiredItemName = trialDef?.requiredItemId ? itemsById[trialDef.requiredItemId]?.name ?? trialDef.requiredItemId : null;
 
   const isTrialCombat = combatContext.type === 'trial';
   const activeEnemy = isTrialCombat ? currentEnemy : null;
@@ -134,44 +129,19 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     : 'Awaiting trial challenge…';
   const displayEnemyName = activeEnemy?.name ?? trialBossName ?? 'Trial Guardian';
   const visibleLogEntries = combatLog.slice(-6);
-  const trialAttempts = trialProgress?.attempts ?? 0;
-  const totalSegments = clampSegmentCount(trialFailSafeThreshold ?? DEFAULT_SEGMENT_COUNT);
-  const progressRatio = clamp01(trialAttempts / Math.max(1, totalSegments));
+  const eligibleFailures = trialProgress?.eligibleFailures ?? 0;
+  const totalSegments = clampSegmentCount(lifecycle.failSafe.threshold ?? DEFAULT_SEGMENT_COUNT);
+  const progressRatio = clamp01(eligibleFailures / Math.max(1, totalSegments));
   const filledSegments = Math.floor(progressRatio * totalSegments);
   const nextSegment = Math.min(totalSegments, filledSegments + 1);
-
-  const trialFailSafeCost = useMemo(() => {
-    const normalize = (value: unknown) => {
-      if (typeof value === 'number') return value.toString();
-      if (typeof value === 'string') return value;
-      return undefined;
-    };
-
-    const fallback = gateTrialEconomy?.failSafe?.purchaseCostByCityIndex?.[trialCityIndex];
-    const merged: GateTrialCurrencyCostLike | undefined = trialDef?.failSafe?.cost ?? fallback;
-    if (!merged) return null;
-    const cost = {
-      gold: normalize(merged.gold),
-      spiritStones: normalize(merged.spiritStones),
-      merit: normalize(merged.merit),
-    };
-    if (!cost.gold && !cost.spiritStones && !cost.merit) return null;
-    return cost;
-  }, [gateTrialEconomy, trialCityIndex, trialDef?.failSafe?.cost]);
-
-  const isTrialEligible = Boolean(trialDef && !(trialProgress?.cleared || cityFlags?.gateTrialCleared));
-  const trialSubtitle = isTrialEligible ? 'One-on-one gate challenge' : 'Cleared — repeat for practice';
-  const failSafeUnlocked = Boolean(
-    trialDef &&
-      isTrialEligible &&
-      !isTrialActive &&
-      trialFailSafeCost &&
-      (trialProgress?.attempts ?? 0) >= trialFailSafeThreshold,
-  );
   const eligibilitySummary = formatEligibility(trialDef?.eligibilityRule);
 
   const handleChallengeTrial = () => {
-    if (!city || !trialDef || !isTrialEligible) return;
+    if (!city || !trialDef) return;
+    if (!lifecycle.canStart) {
+      addNotification('warning', lifecycle.reason);
+      return;
+    }
     openCombatPreview({ type: 'trial', cityId, sourceId: trialDef.id });
   };
 
@@ -184,12 +154,15 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   };
 
   const handleFailSafePurchase = () => {
-    if (!trialDef || !trialFailSafeCost || !isTrialEligible || isTrialActive) return;
+    if (!trialDef || !lifecycle.failSafe.canPurchase || !lifecycle.failSafe.cost || isTrialActive) {
+      addNotification('warning', lifecycle.failSafe.blockedReason ?? 'Fail-safe is not available.');
+      return;
+    }
 
     const inventory = useInventoryStore.getState();
-    const goldCost = trialFailSafeCost.gold;
-    const spiritStoneCost = trialFailSafeCost.spiritStones;
-    const meritCost = trialFailSafeCost.merit;
+    const goldCost = lifecycle.failSafe.cost.gold;
+    const spiritStoneCost = lifecycle.failSafe.cost.spiritStones;
+    const meritCost = lifecycle.failSafe.cost.merit;
 
     const canAfford = inventory.canAffordCurrency({
       gold: goldCost,
@@ -198,7 +171,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     });
 
     if (!canAfford) {
-      console.warn('[WorldScreen] Cannot afford fail-safe purchase');
+      addNotification('warning', 'Cannot afford fail-safe purchase.');
       return;
     }
 
@@ -209,11 +182,12 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     });
 
     if (!spent) {
-      console.warn('[WorldScreen] Failed to deduct currencies for fail-safe purchase');
+      addNotification('warning', 'Failed to deduct currencies for fail-safe purchase.');
       return;
     }
 
     RewardService.grantRewards(getTrialGateRewardBundle(useContentStore.getState().raw, trialDef), 'Gate Trial fail-safe purchase');
+    markBypassed(trialDef.id);
   };
 
   if (!trialDef) {
@@ -234,43 +208,39 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     <div className="worldScreenPlaceholder worldScreenPlaceholder--gate-trial">
       <InkCombatShell
         title="Gate Trial"
-        subtitle={trialSubtitle}
+        subtitle={`Gate state: ${labelForState(lifecycle.state)}`}
         onClose={closeWorldBuildingModal}
         className="ink-combat-shell--gate-trial"
         leftSidebar={
           <>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__actions">
-                <button
-                  className="button-standard"
-                  onClick={handleChallengeTrial}
-                  disabled={!isTrialEligible || !trialDef}
-                  type="button"
-                >
+                <button className="button-standard" onClick={handleChallengeTrial} disabled={!lifecycle.canStart} type="button">
                   Challenge Trial
                 </button>
                 <button className="button-standard button-standard--ghost" onClick={handleStopTrial} type="button">
                   Stop
                 </button>
-                {failSafeUnlocked && trialFailSafeCost && (
+                {lifecycle.failSafe.canPurchase ? (
                   <button className="button-standard" onClick={handleFailSafePurchase} type="button">
-                    Emergency Gate Item Purchase (
+                    Purchase Fail-safe (
                     {
                       [
-                        trialFailSafeCost.gold ? `${trialFailSafeCost.gold} Gold` : null,
-                        trialFailSafeCost.spiritStones ? `${trialFailSafeCost.spiritStones} Spirit Stones` : null,
-                        trialFailSafeCost.merit ? `${trialFailSafeCost.merit} Merit` : null,
+                        lifecycle.failSafe.cost?.gold ? `${lifecycle.failSafe.cost.gold} Gold` : null,
+                        lifecycle.failSafe.cost?.spiritStones ? `${lifecycle.failSafe.cost.spiritStones} Spirit Stones` : null,
+                        lifecycle.failSafe.cost?.merit ? `${lifecycle.failSafe.cost.merit} Merit` : null,
                       ]
                         .filter(Boolean)
                         .join(' / ')
                     }
                     )
                   </button>
-                )}
+                ) : null}
               </div>
+              {!lifecycle.canStart ? <div className="ink-combat-shell__stat-line">Start blocked: {lifecycle.reason}</div> : null}
             </div>
             <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Trial Progress</div>
+              <div className="ink-combat-shell__section-title">Eligible Failures</div>
               <div className="gate-trial__progress">
                 <div className="gate-trial__segments" style={{ gridTemplateColumns: `repeat(${Math.min(totalSegments, MAX_SEGMENT_COUNT)}, minmax(0, 1fr))` }}>
                   {Array.from({ length: totalSegments }).map((_, idx) => {
@@ -280,31 +250,34 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                     return (
                       <div
                         key={segmentIndex}
-                        className={`gate-trial__segment${completed ? ' gate-trial__segment--filled' : ''}${
-                          current ? ' gate-trial__segment--current' : ''
-                        }`}
+                        className={`gate-trial__segment${completed ? ' gate-trial__segment--filled' : ''}${current ? ' gate-trial__segment--current' : ''}`}
                       />
                     );
                   })}
-                  {trialFailSafeThreshold > MAX_SEGMENT_COUNT ? (
+                  {lifecycle.failSafe.threshold > MAX_SEGMENT_COUNT ? (
                     <div className="gate-trial__segment gate-trial__segment--overflow">+</div>
                   ) : null}
                 </div>
                 <div className="gate-trial__progress-text">
-                  Progress: {trialAttempts} / {trialFailSafeThreshold}
+                  Eligible defeats: {eligibleFailures} / {lifecycle.failSafe.threshold}
                 </div>
               </div>
             </div>
             <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Combat Options</div>
+              <div className="ink-combat-shell__section-title">Gate Status</div>
               <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
-              <div className="ink-combat-shell__stat-line">Eligibility: {eligibilitySummary.summary}</div>
+              <div className="ink-combat-shell__stat-line">Gate state: {labelForState(lifecycle.state)}</div>
+              <div className="ink-combat-shell__stat-line">Gate reward: {gateItemName ?? 'Unknown'}</div>
+              <div className="ink-combat-shell__stat-line">Eligibility rule: {eligibilitySummary.summary}</div>
+              {requiredItemName ? (
+                <div className="ink-combat-shell__stat-line">Required item: {requiredItemName}</div>
+              ) : null}
               <div className="ink-combat-shell__stat-line">
-                Required item: {gateItemName ?? 'Unknown'} ({gateItemOwned ? 'Owned' : 'Missing'})
+                Fail-safe: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
               </div>
-              <div className="ink-combat-shell__stat-line">
-                Cleared: {trialProgress?.cleared || cityFlags?.gateTrialCleared ? 'Yes' : 'No'}
-              </div>
+              {trialProgress?.resolution === 'bypassed' ? (
+                <div className="ink-combat-shell__stat-line">Resolved via bypass.</div>
+              ) : null}
               {eligibilitySummary.raw ? (
                 <details className="gate-trial__eligibility-details">
                   <summary>Show requirements</summary>

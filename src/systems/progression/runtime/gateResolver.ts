@@ -7,8 +7,8 @@ import {
 } from '../contract/progressionContract.js';
 import { type MajorRealmId } from '../contract/contractTypes.js';
 import { getLiveRealmByIndex } from './liveRealmProjection.js';
-import type { ValidatedContent } from '../../../content/types.js';
 import type { TrialDef } from '../../../content/types.js';
+import type { ValidatedContent } from '../../../content/index.js';
 
 const DEFAULT_GATE_ITEM_QTY = 1;
 

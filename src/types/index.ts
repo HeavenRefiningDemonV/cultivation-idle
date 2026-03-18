@@ -506,9 +506,12 @@ export interface SaveData {
       {
         attempts: number;
         sessionAttempts?: number;
+        eligibleFailures?: number;
+        resolution?: 'none' | 'cleared' | 'bypassed';
         cleared: boolean;
         lastAttemptAt: number | null;
         lastClearAt: number | null;
+        bypassedAt?: number | null;
         attemptStartAt?: number | null;
         lastAttemptSummary?: TrialAttemptSummary | null;
       }
@@ -876,7 +879,7 @@ export type CombatContext =
       type: 'trial';
       cityId: string;
       trialId: string;
-      eligible: boolean;
+      countsTowardFailSafe: boolean;
       rewardBundle?: RewardBundle;
     }
   | {

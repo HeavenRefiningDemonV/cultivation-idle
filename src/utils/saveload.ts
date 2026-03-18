@@ -265,6 +265,9 @@ function gatherGameState(): SaveData {
           {
             ...progress,
             sessionAttempts: progress.sessionAttempts ?? 0,
+            eligibleFailures: progress.eligibleFailures ?? 0,
+            resolution: progress.resolution ?? (progress.cleared ? 'cleared' : 'none'),
+            bypassedAt: progress.bypassedAt ?? null,
             attemptStartAt: progress.attemptStartAt ?? null,
             lastAttemptSummary: progress.lastAttemptSummary
               ? { ...progress.lastAttemptSummary, suggestions: [...progress.lastAttemptSummary.suggestions] }
@@ -566,6 +569,9 @@ function validateSaveData(data: unknown): data is SaveData {
         if (
           typeof progress.attempts !== 'number' ||
           typeof progress.cleared !== 'boolean' ||
+          ('eligibleFailures' in progress && typeof progress.eligibleFailures !== 'number') ||
+          ('resolution' in progress && !['none', 'cleared', 'bypassed'].includes(String(progress.resolution))) ||
+          ('bypassedAt' in progress && progress.bypassedAt !== null && typeof progress.bypassedAt !== 'number') ||
           ('lastAttemptAt' in progress && progress.lastAttemptAt !== null && typeof progress.lastAttemptAt !== 'number') ||
           ('lastClearAt' in progress && progress.lastClearAt !== null && typeof progress.lastClearAt !== 'number')
         ) {
