@@ -32,6 +32,7 @@ import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { useContentStore } from './contentStore';
 import { useCityStore } from './cityStore';
 import { getLiveRealmByIndex } from '../systems/progression/runtime';
+import { performPrestigeReset as performCentralPrestigeReset } from '../services/prestige/PrestigeResetService.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -75,6 +76,8 @@ export function getSpiritRootSnapshot(): SpiritRoot | null {
   return root as SpiritRoot;
 }
 
+// Kept for runtime wiring parity with the game loop even though prestige reset orchestration no longer reads it here.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let _getCombatStore: (() => CombatStoreDeps) | null = null;
 export function setCombatStoreGetter(getter: () => CombatStoreDeps) {
   _getCombatStore = getter;
@@ -829,50 +832,10 @@ export const useGameStore = create<GameState>()(
      * Perform a prestige reset with AP upgrades support
      */
     performPrestigeReset: () => {
-      // Reset game progression
-      get().resetRun();
+      performCentralPrestigeReset({
+        resetGameRun: () => get().resetRun(),
+      });
 
-      // Reset heart law state for the new life but preserve unlocks
-      try {
-        useHeartLawStore.getState().resetForNewLife();
-      } catch {
-        // Heart law store not available
-      }
-
-      // Clear inventory and equipment
-      if (_getInventoryStore) {
-        try {
-          const inventoryStore = _getInventoryStore();
-          inventoryStore.resetInventory();
-        } catch {
-          // Inventory store not available
-        }
-      }
-
-      // Exit and reset combat state
-      if (_getCombatStore) {
-        try {
-          const combatStore = _getCombatStore();
-          if (combatStore.resetCombat) {
-            combatStore.resetCombat();
-          } else {
-            combatStore.exitCombat();
-          }
-        } catch {
-          // Combat store not available
-        }
-      }
-
-      // Reset world progression
-      try {
-        useZoneStore.getState().resetAllZones();
-      } catch {
-        // Zone store not available
-      }
-
-      // Prestige-specific logic handled in prestige store
-      // Apply prestige bonuses (they're automatically applied through getters in prestigeStore)
-      // Recalculate everything to apply prestige multipliers
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
     },
