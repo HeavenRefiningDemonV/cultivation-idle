@@ -100,7 +100,6 @@ interface UIStateBase {
 
   // Modals
   showPrestigeModal: boolean;
-  showPathSelectionModal: boolean;
   showPerkSelectionModal: boolean;
   perkSelectionRealm: number | null;
   showBreakthroughAnimation: boolean;
@@ -157,8 +156,6 @@ export interface UIState extends UIStateBase {
   clearNotifications: () => void;
   showPrestige: () => void;
   hidePrestige: () => void;
-  showPathSelection: () => void;
-  hidePathSelection: () => void;
   showPerkSelection: (realmIndex: number) => void;
   hidePerkSelection: () => void;
   triggerBreakthroughAnimation: () => void;
@@ -208,7 +205,6 @@ const INITIAL_UI_STATE: UIStateBase = {
   showSidePanel: false,
   notifications: [],
   showPrestigeModal: false,
-  showPathSelectionModal: false,
   showPerkSelectionModal: false,
   perkSelectionRealm: null,
   showBreakthroughAnimation: false,
@@ -379,25 +375,6 @@ export const useUIStore = create<UIState>()(
     hidePrestige: () => {
       set((state) => {
         state.showPrestigeModal = false;
-      });
-    },
-
-    /**
-     * Show path selection modal
-     */
-    showPathSelection: () => {
-      set((state) => {
-        state.showPathSelectionModal = true;
-      });
-    },
-
-    /**
-     * Hide path selection modal
-     */
-    hidePathSelection: () => {
-      set((state) => {
-        state.showPathSelectionModal = false;
-        state.perkSelectionRealm = null;
       });
     },
 

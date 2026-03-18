@@ -12,9 +12,9 @@ This document describes the Section 0 save migration framework and the first pop
   - stamps `version: 2.0.0`
   - normalizes `meta.lastActiveAtMs`
 - `v2_0_0_normalize_path_truth`
-  - backfills `selectedPath` from `lifePath` when needed
-  - resolves conflicts deterministically to `selectedPath`
-  - mirrors resolved value back to `lifePath` for compatibility
+  - backfills canonical `selectedPath` from legacy `lifePath` when needed
+  - resolves conflicts deterministically to canonical `selectedPath`
+  - may mirror the resolved value back to `lifePath` only for legacy compatibility during migration
 
 ## Planned transforms / report-only coverage
 

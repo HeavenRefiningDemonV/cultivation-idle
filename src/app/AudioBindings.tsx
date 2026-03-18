@@ -10,7 +10,6 @@ const selectActiveTab = (state: UIState) => state.activeTab;
 const selectNotifications = (state: UIState) => state.notifications;
 const selectAnyModalOpen = (state: UIState) =>
   state.showPrestigeModal ||
-  state.showPathSelectionModal ||
   state.showPerkSelectionModal ||
   state.showOfflineProgressModal ||
   state.showManualSatchelModal ||
@@ -22,10 +21,6 @@ const toastSoundByType: Record<UINotification['type'], string> = {
   success: 'ui_toast_success',
   warning: 'ui_toast_warning',
   error: 'ui_toast_critical',
-};
-
-const isInteractiveElement = (element: Element | null): element is HTMLElement => {
-  return Boolean(element && element instanceof HTMLElement);
 };
 
 const isDisabledButton = (element: HTMLElement | null): boolean => {

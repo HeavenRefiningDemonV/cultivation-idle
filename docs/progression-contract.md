@@ -74,8 +74,8 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 
 ## 9) Reset / prestige hook summary
 
-- Path truth canonical field: lifePath
-- Path legacy aliases: selectedPath
+- Path truth canonical field: selectedPath
+- Path legacy aliases: lifePath
 - Reset classifier buckets: per_life / permanent / hybrid / unknown
 - Prestige classifier buckets: live / deferred / unknown
 

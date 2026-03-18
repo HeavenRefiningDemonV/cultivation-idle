@@ -189,7 +189,6 @@ export interface GameState {
 
   // Cultivation choices
   selectedPath: CultivationPath | null;
-  lifePath: LifePath | null;
   focusMode: FocusMode;
   pathPerks: string[];                  // Selected path perk IDs
 
@@ -210,8 +209,6 @@ export interface GameState {
   tick: (deltaTime: number) => void;
   setFocusMode: (mode: FocusMode) => void;
   selectPath: (path: CultivationPath) => void;
-  setLifePath: (path: LifePath) => void;
-  canChangeLifePath: () => boolean;
   selectPerk: (perkId: string) => boolean;
   breakthrough: () => boolean;
   calculateQiPerSecond: () => void;

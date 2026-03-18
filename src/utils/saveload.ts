@@ -48,6 +48,19 @@ let lastLoadMigrationReport: import('../save/migrations').MigrationRunReport | n
  * For an idle game, basic obfuscation is usually sufficient
  */
 const ENCRYPTION_KEY = 'cultivation-idle-secret-2025';
+const VALID_CULTIVATION_PATHS = new Set(['heaven', 'earth', 'martial']);
+
+export const resolveCanonicalSelectedPath = (
+  gameState: { selectedPath?: unknown; lifePath?: unknown } | null | undefined,
+): SaveData['gameState']['selectedPath'] => {
+  if (gameState && typeof gameState.selectedPath === 'string' && VALID_CULTIVATION_PATHS.has(gameState.selectedPath)) {
+    return gameState.selectedPath as SaveData['gameState']['selectedPath'];
+  }
+  if (gameState && typeof gameState.lifePath === 'string' && VALID_CULTIVATION_PATHS.has(gameState.lifePath)) {
+    return gameState.lifePath as SaveData['gameState']['selectedPath'];
+  }
+  return null;
+};
 
 function cloneManualPavilionState(
   source: ManualPavilionSaveState['stockByPavilionId'],
@@ -143,7 +156,6 @@ function gatherGameState(): SaveData {
       qi: gameState.qi,
       spiritRoot: prestigeState.spiritRoot,
       selectedPath: gameState.selectedPath,
-      lifePath: gameState.lifePath,
       focusMode: gameState.focusMode,
       pathPerks: gameState.pathPerks,
       totalAuras: gameState.totalAuras,
@@ -341,6 +353,14 @@ function validateSaveData(data: unknown): data is SaveData {
       ) {
         return false;
       }
+    }
+    if (
+      'selectedPath' in gs &&
+      (gs as { selectedPath?: unknown }).selectedPath !== null &&
+      (gs as { selectedPath?: unknown }).selectedPath !== undefined &&
+      typeof (gs as { selectedPath?: unknown }).selectedPath !== 'string'
+    ) {
+      return false;
     }
     if (
       'lifePath' in gs &&
@@ -968,8 +988,7 @@ function applySaveData(saveData: SaveData): void {
     useGameStore.setState({
       realm: saveData.gameState.realm,
       qi: saveData.gameState.qi,
-      selectedPath: saveData.gameState.selectedPath,
-      lifePath: saveData.gameState.lifePath ?? null,
+      selectedPath: resolveCanonicalSelectedPath(saveData.gameState),
       focusMode: saveData.gameState.focusMode,
       pathPerks: saveData.gameState.pathPerks || [],
       totalAuras: saveData.gameState.totalAuras,

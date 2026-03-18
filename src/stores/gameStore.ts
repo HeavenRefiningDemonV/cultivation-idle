@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { GameState, FocusMode, CultivationPath, LifePath, ActiveBuff, BuffStat, SpiritRoot } from '../types';
+import type { GameState, FocusMode, CultivationPath, ActiveBuff, BuffStat, SpiritRoot } from '../types';
 import {
   REALMS,
   PATH_MODIFIERS,
@@ -93,7 +93,6 @@ const createInitialGameState = () => ({
   absorptionShield: '0',
   absorptionExpiresAt: null as number | null,
   selectedPath: null as CultivationPath | null,
-  lifePath: null as LifePath | null,
   focusMode: 'balanced' as FocusMode,
   pathPerks: [] as string[],
   totalAuras: 0,
@@ -198,22 +197,6 @@ export const useGameStore = create<GameState>()(
       // Recalculate derived values
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
-    },
-
-    setLifePath: (path: LifePath) => {
-      if (!get().canChangeLifePath()) {
-        console.warn('Life path already chosen for this run.');
-        return;
-      }
-
-      set((state) => {
-        state.lifePath = path;
-      });
-    },
-
-    canChangeLifePath: () => {
-      const state = get();
-      return state.lifePath === null;
     },
 
     /**
@@ -416,15 +399,6 @@ export const useGameStore = create<GameState>()(
       // Recalculate stats and Qi generation
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
-
-      // Trigger path selection at Foundation if no path chosen
-      if (newRealmIndex >= 1 && !get().selectedPath) {
-        try {
-          useUIStore.getState().showPathSelection();
-        } catch {
-          // UI store unavailable
-        }
-      }
 
       // Trigger perk selection for newly reached realms when a path is selected
       const selectedPath = get().selectedPath;

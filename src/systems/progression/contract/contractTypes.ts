@@ -77,8 +77,8 @@ export interface OfflineProgressionContract {
 }
 
 export interface PathTruthContract {
-  canonicalField: 'lifePath';
-  legacyAliases: ['selectedPath'];
+  canonicalField: 'selectedPath';
+  legacyAliases: ['lifePath'];
 }
 
 export interface PrestigeClassificationHookSet {

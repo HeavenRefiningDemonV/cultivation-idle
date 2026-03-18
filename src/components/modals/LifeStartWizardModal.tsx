@@ -12,9 +12,9 @@ import { useUIStore } from '../../stores/uiStore';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo';
 import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink';
-import type { HeartLawDef, LifePath } from '../../types';
+import type { CultivationPath, HeartLawDef } from '../../types';
 
-const LIFE_PATHS: { id: LifePath; title: string; art: string; alt: string }[] = [
+const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [
   { id: 'heaven', title: 'HEAVEN', art: heavenArt, alt: 'Heaven path' },
   { id: 'earth', title: 'EARTH', art: earthArt, alt: 'Earth path' },
   { id: 'martial', title: 'MARTIAL', art: martialArt, alt: 'Martial path' },
@@ -29,9 +29,8 @@ const BREATH_MODES = [
 type WizardStep = 1 | 2 | 3 | 4;
 
 export function LifeStartWizardModal() {
-  const lifePath = useGameStore((state) => state.lifePath);
-  const setLifePath = useGameStore((state) => state.setLifePath);
-  const canChangeLifePath = useGameStore((state) => state.canChangeLifePath);
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const selectPath = useGameStore((state) => state.selectPath);
 
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
   const selectHeartLaw = useHeartLawStore((state) => state.selectHeartLaw);
@@ -52,25 +51,25 @@ export function LifeStartWizardModal() {
   const listHeartLaws = useContentStore((state) => state.listHeartLaws);
 
   const [wizardStep, setWizardStep] = useState<WizardStep>(() => {
-    if (!lifePath) return 1;
+    if (!selectedPath) return 1;
     if (!selectedHeartLawId) return 2;
     return 3;
   });
 
-  const [hoveredPath, setHoveredPath] = useState<LifePath | null>(null);
+  const [hoveredPath, setHoveredPath] = useState<CultivationPath | null>(null);
 
   const [autoPickChecked, setAutoPickChecked] = useState(false);
   const [autoPickError, setAutoPickError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!lifePath) {
+    if (!selectedPath) {
       setWizardStep(1);
     } else if (!selectedHeartLawId) {
       setWizardStep(2);
     } else {
       setWizardStep(3);
     }
-  }, [lifePath, selectedHeartLawId]);
+  }, [selectedPath, selectedHeartLawId]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
@@ -105,7 +104,7 @@ export function LifeStartWizardModal() {
     }
   }, [selectedHeartLawId, setLifeStartWizardContext]);
 
-  const shouldShow = lifePath === null || selectedHeartLawId === null;
+  const shouldShow = selectedPath === null || selectedHeartLawId === null;
   const heartLaws: HeartLawDef[] = useMemo(() => {
     if (!contentLoaded) return [];
     try {
@@ -127,7 +126,7 @@ export function LifeStartWizardModal() {
 
   const handleFinish = () => {
     setActiveTab('cultivation');
-    const pathLabel = lifePath ? lifePath.charAt(0).toUpperCase() + lifePath.slice(1) : 'Path';
+    const pathLabel = selectedPath ? selectedPath.charAt(0).toUpperCase() + selectedPath.slice(1) : 'Path';
     const heartLawLabel = selectedHeartLaw?.name ?? 'Heart Law';
     const breathLabel = breathMode.charAt(0).toUpperCase() + breathMode.slice(1);
     addNotification('success', `Life begins: ${pathLabel} • ${heartLawLabel} • ${breathLabel}`, 5000);
@@ -135,12 +134,13 @@ export function LifeStartWizardModal() {
     SaveService.save();
   };
 
-  const handlePickPath = (pathId: LifePath) => {
-    setLifePath(pathId);
+  const handlePickPath = (pathId: CultivationPath) => {
+    if (selectedPath !== null) return;
+    selectPath(pathId);
     setWizardStep(2);
   };
 
-  const hasPath = Boolean(lifePath);
+  const hasPath = Boolean(selectedPath);
   const hasHeartLaw = Boolean(selectedHeartLawId);
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
 
@@ -152,8 +152,8 @@ export function LifeStartWizardModal() {
             <div className="lifePathTriptychFrame">
               <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
                 {LIFE_PATHS.map((path) => {
-                  const selected = lifePath === path.id;
-                  const disabled = !canChangeLifePath() && !selected;
+                  const selected = selectedPath === path.id;
+                  const disabled = selectedPath !== null && !selected;
                   const isHoverFx = hoveredPath === path.id;
                   return (
                     <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
@@ -203,7 +203,6 @@ export function LifeStartWizardModal() {
           <PaperChip
             text="1 · Life Path"
             className={`wizardStepChip${wizardStep === 1 ? ' wizardStepChip--active' : ''}`}
-            onClick={canChangeLifePath() ? () => setWizardStep(1) : undefined}
           />
           <PaperChip
             text="2 · Heart Law"
@@ -292,11 +291,6 @@ export function LifeStartWizardModal() {
               )}
             </div>
             <div className="wizardFooter">
-              {canChangeLifePath() && (
-                <button type="button" className="button-secondary" onClick={() => setWizardStep(1)}>
-                  Back
-                </button>
-              )}
               <button
                 type="button"
                 className="button-primary"

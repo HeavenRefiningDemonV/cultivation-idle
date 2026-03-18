@@ -72,7 +72,7 @@ export const buildProgressionContract = (content: ProgressionAuthoredContent): P
     cityUnlocks,
     contentCap: { realmId: 'spirit_severing', state: 'end_of_slice' },
     deferredSystems: DEFERRED_SYSTEMS,
-    pathTruth: { canonicalField: 'lifePath', legacyAliases: ['selectedPath'] },
+    pathTruth: { canonicalField: 'selectedPath', legacyAliases: ['lifePath'] },
     offline: OFFLINE_PROGRESSION_CONTRACT,
     prestigeHooks: createPrestigeClassificationHooks(),
     resetHooks: createResetClassificationHooks(),

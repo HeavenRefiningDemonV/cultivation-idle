@@ -11,7 +11,6 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
 import type { InsightMomentState } from '../../types';
 import { formatNumber, D } from '../../utils/numbers';
-import { PathSelectionModal } from '../modals/PathSelectionModal';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
@@ -65,11 +64,8 @@ export function QiProgressBar({
 
 export function CultivateScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
-  const showPathSelectionModal = useUIStore((state) => state.showPathSelectionModal);
   const showPerkSelectionModal = useUIStore((state) => state.showPerkSelectionModal);
   const perkSelectionRealm = useUIStore((state) => state.perkSelectionRealm);
-  const showPathSelection = useUIStore((state) => state.showPathSelection);
-  const hidePathSelection = useUIStore((state) => state.hidePathSelection);
   const showPerkSelection = useUIStore((state) => state.showPerkSelection);
   const hidePerkSelection = useUIStore((state) => state.hidePerkSelection);
   const addNotification = useUIStore((state) => state.addNotification);
@@ -128,7 +124,7 @@ export function CultivateScreen() {
       return GATE_ITEMS[realm.index] || null;
     }
     return null;
-  }, [currentRealm.substages, liveRealmIndex, realm.substage]);
+  }, [currentRealm.substages, liveRealmIndex, realm.index, realm.substage]);
 
   const gateItemCount = useMemo(() => {
     if (!requiredGateItem) return 0;
@@ -238,12 +234,6 @@ export function CultivateScreen() {
         : 'Attempt Breakthrough';
 
   useEffect(() => {
-    if (realm.index >= 1 && !selectedPath) {
-      showPathSelection();
-    }
-  }, [realm.index, selectedPath, showPathSelection]);
-
-  useEffect(() => {
     if (!selectedPath || realm.index < 1) return;
     const hasRealmPerk = hasPerkForRealm(realm.index);
     const availablePerks = getAvailablePerks(selectedPath, realm.index);
@@ -347,7 +337,6 @@ export function CultivateScreen() {
       </div>
 
       {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
-      {showPathSelectionModal && <PathSelectionModal onClose={hidePathSelection} />}
       {showPerkSelectionModal && perkSelectionRealm !== null && (
         <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
       )}

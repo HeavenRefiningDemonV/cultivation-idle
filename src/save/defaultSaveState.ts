@@ -151,7 +151,6 @@ export function buildDefaultSaveState(): SaveData {
       qi: gameState.qi,
       spiritRoot: prestigeState.spiritRoot ?? null,
       selectedPath: gameState.selectedPath,
-      lifePath: gameState.lifePath,
       focusMode: gameState.focusMode,
       pathPerks: gameState.pathPerks,
       totalAuras: gameState.totalAuras,
