@@ -5,6 +5,7 @@ import { useCombatStore } from '../../../stores/combatStore';
 import { useContentStore } from '../../../stores/contentStore';
 import { useGameStore } from '../../../stores/gameStore';
 import { useInventoryStore } from '../../../stores/inventoryStore';
+import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../systems/progression/runtime/index.js';
 import { useTrialStore } from '../../../stores/trialStore';
 import { useCityStore } from '../../../stores/cityStore';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel';
@@ -77,9 +78,8 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const cityFlags = trialDef?.cityId ? cityFlagsById[trialDef.cityId] : undefined;
 
   const recommendation = TRIAL_RECOMMENDATIONS[trialId] ?? {};
-  const gateItemId = trialDef?.gateItemId;
+  const gateItemId = getTrialGateItemId(useContentStore.getState().raw, trialDef);
   const gateItemName = gateItemId ? itemsById[gateItemId]?.name ?? gateItemId : 'No gate item';
-  const gateItemOwned = gateItemId ? getItemCount(gateItemId) > 0 : true;
   const requiredItemId = trialDef?.requiredItemId;
   const requiredItemName = requiredItemId ? itemsById[requiredItemId]?.name ?? requiredItemId : 'No required item';
   const requiredItemOwned = requiredItemId ? getItemCount(requiredItemId) > 0 : true;
@@ -110,17 +110,15 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const attemptCap = trialDef?.failSafe?.thresholdAttempts ?? 3;
 
   const cleared = Boolean(progress?.cleared || cityFlags?.gateTrialCleared);
-  const eligible = Boolean(realmMet && gateItemOwned && requiredItemOwned && !cleared);
+  const eligible = Boolean(realmMet && requiredItemOwned && !cleared);
 
   const ineligibleReason = cleared
     ? 'Already cleared'
     : !realmMet
       ? 'Realm too low'
-      : !gateItemOwned
-        ? 'Missing gate item'
-        : !requiredItemOwned
-          ? 'Missing required item'
-          : null;
+      : !requiredItemOwned
+        ? 'Missing required item'
+        : null;
 
   const handleStart = () => {
     if (!trialDef || !eligible) return;
@@ -131,8 +129,8 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       type: 'trial',
       cityId: trialDef.cityId,
       trialId: trialDef.id,
-      gateItemId: trialDef.gateItemId,
       eligible,
+      rewardBundle: getTrialGateRewardBundle(useContentStore.getState().raw, trialDef),
     });
   };
 
@@ -179,9 +177,9 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
         </div>
         <div className="trial-progress__requirement-row">
           <span className="trial-progress__badge">Gate Item</span>
-          <span className={gateItemOwned ? 'trial-progress__status trial-progress__status--ok' : 'trial-progress__status trial-progress__status--warn'}>
-            <GameIcon icon={gateItemOwned ? 'inkCheck' : 'inkX'} size={14} decorative />
-            <span>{gateItemOwned ? 'Owned' : 'Missing'} — {gateItemName}</span>
+          <span className={'trial-progress__status trial-progress__status--ok'}>
+            <GameIcon icon={'inkCheck'} size={14} decorative />
+            <span>Granted on clear — {gateItemName}</span>
           </span>
         </div>
         {requiredItemId ? (

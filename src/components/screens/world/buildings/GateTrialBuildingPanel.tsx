@@ -5,6 +5,7 @@ import { useCityStore } from '../../../../stores/cityStore';
 import { useCombatStore } from '../../../../stores/combatStore';
 import { useContentStore } from '../../../../stores/contentStore';
 import { useInventoryStore } from '../../../../stores/inventoryStore';
+import { getTrialGateItemId, getTrialGateRewardBundle } from '../../../../systems/progression/runtime/index.js';
 import { useTrialStore } from '../../../../stores/trialStore';
 import { RewardService } from '../../../../services/rewards';
 import { resolveModuleRef } from '../worldUtils';
@@ -23,6 +24,19 @@ interface GateTrialBuildingPanelProps {
 
 const DEFAULT_SEGMENT_COUNT = 3;
 const MAX_SEGMENT_COUNT = 6;
+
+interface GateTrialEconomyConfig {
+  failSafe?: {
+    failThresholdEligibleAttempts?: number;
+    purchaseCostByCityIndex?: Record<number, { gold?: string | number; spiritStones?: string | number; merit?: string | number }>;
+  };
+}
+
+interface GateTrialCurrencyCostLike {
+  gold?: string | number;
+  spiritStones?: string | number;
+  merit?: string | number;
+}
 
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;
@@ -52,7 +66,7 @@ function formatEligibility(eligibility: unknown): { summary: string; raw?: strin
   try {
     const raw = JSON.stringify(eligibility, null, 2);
     return { summary: 'See requirements', raw };
-  } catch (error) {
+  } catch {
     return { summary: 'See requirements', raw: String(eligibility) };
   }
 }
@@ -63,7 +77,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const economy = useContentStore((state) => state.raw?.economy);
-  const gateTrialEconomy = (economy as any)?.manualSystem?.gateTrials;
+  const gateTrialEconomy = (economy?.manualSystem?.gateTrials as GateTrialEconomyConfig | undefined) ?? undefined;
 
   const cityFlags = useCityStore((state) => state.cityFlagsById[cityId]);
 
@@ -89,8 +103,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
 
-  const getItemCount = useInventoryStore((state) => state.getItemCount);
-
   const trialRefId = useMemo(() => resolveModuleRef(city ?? null, 'gateTrial'), [city]);
   const trialDef = trialRefId ? trialsById[trialRefId] : undefined;
   const trialProgress = trialRefId
@@ -100,8 +112,8 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const isTrialActive = activeActivity?.type === 'trial' && activeActivity.sourceId === trialRefId;
   const trialCityIndex = trialDef?.cityIndex ?? city?.index ?? 0;
   const trialBossName = trialDef ? enemiesById[trialDef.bossId]?.name ?? trialDef.bossId : null;
-  const gateItemName = trialDef ? itemsById[trialDef.gateItemId]?.name ?? trialDef.gateItemId : null;
-  const gateItemOwned = trialDef ? getItemCount(trialDef.gateItemId) > 0 : false;
+  const gateItemId = trialDef ? getTrialGateItemId(useContentStore.getState().raw, trialDef) : null;
+  const gateItemName = gateItemId ? itemsById[gateItemId]?.name ?? gateItemId : null;
 
   const trialFailSafeThreshold = useMemo(() => {
     return (
@@ -136,12 +148,12 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     };
 
     const fallback = gateTrialEconomy?.failSafe?.purchaseCostByCityIndex?.[trialCityIndex];
-    const merged = trialDef?.failSafe?.cost ?? fallback;
+    const merged: GateTrialCurrencyCostLike | undefined = trialDef?.failSafe?.cost ?? fallback;
     if (!merged) return null;
     const cost = {
-      gold: normalize((merged as any).gold),
-      spiritStones: normalize((merged as any).spiritStones),
-      merit: normalize((merged as any).merit),
+      gold: normalize(merged.gold),
+      spiritStones: normalize(merged.spiritStones),
+      merit: normalize(merged.merit),
     };
     if (!cost.gold && !cost.spiritStones && !cost.merit) return null;
     return cost;
@@ -153,7 +165,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     trialDef &&
       isTrialEligible &&
       !isTrialActive &&
-      !gateItemOwned &&
       trialFailSafeCost &&
       (trialProgress?.attempts ?? 0) >= trialFailSafeThreshold,
   );
@@ -202,10 +213,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
       return;
     }
 
-    RewardService.grantRewards(
-      { items: [{ itemId: trialDef.gateItemId, qty: 1 }] },
-      'Gate Trial fail-safe purchase',
-    );
+    RewardService.grantRewards(getTrialGateRewardBundle(useContentStore.getState().raw, trialDef), 'Gate Trial fail-safe purchase');
   };
 
   if (!trialDef) {

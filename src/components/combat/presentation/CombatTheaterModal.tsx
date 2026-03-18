@@ -8,7 +8,7 @@ import { useOutskirtsStore } from '../../../stores/outskirtsStore';
 import { useTrialStore } from '../../../stores/trialStore';
 import { useRuinsStore } from '../../../stores/ruinsStore';
 import { useCityStore } from '../../../stores/cityStore';
-import { useInventoryStore } from '../../../stores/inventoryStore';
+import { getTrialGateItemId } from '../../../systems/progression/runtime/index.js';
 import { useCombatStore } from '../../../stores/combatStore';
 import './CombatPresentation.scss';
 
@@ -39,7 +39,6 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
   const cityFlagsById = useCityStore((state) => state.cityFlagsById);
-  const getItemCount = useInventoryStore((state) => state.getItemCount);
 
   const { progressByRuinId, activeRun } = useRuinsStore(
     useShallow((state) => ({
@@ -74,10 +73,8 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
       const trialCityId = context.cityId ?? trialDef?.cityId ?? null;
       const cityFlags = trialCityId ? cityFlagsById[trialCityId] : undefined;
       const cleared = Boolean(trialProgress?.cleared || cityFlags?.gateTrialCleared);
-      const gateItemName = trialDef?.gateItemId
-        ? contentMaps.itemsById[trialDef.gateItemId]?.name ?? trialDef.gateItemId
-        : 'None';
-      const gateItemOwned = trialDef?.gateItemId ? getItemCount(trialDef.gateItemId) > 0 : true;
+      const gateItemId = getTrialGateItemId(useContentStore.getState().raw, trialDef);
+      const gateItemName = gateItemId ? contentMaps.itemsById[gateItemId]?.name ?? gateItemId : 'None';
 
       return {
         title: trialDef?.name ?? 'Gate Trial',
@@ -85,9 +82,11 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
         lines: [
           `Attempts: ${trialProgress?.attempts ?? 0}`,
           `Eligibility: ${cleared ? 'Cleared/locked' : 'Ready to challenge'}`,
-          `Required item: ${gateItemName} (${gateItemOwned ? 'Owned' : 'Missing'})`,
+          `Reward proof: ${gateItemName}`,
         ],
-        rewards: trialDef?.rewards ? [`Rewards preview: ${trialDef.rewards}`] : undefined,
+        rewards: (trialDef as { rewards?: string } | undefined)?.rewards
+          ? [`Rewards preview: ${(trialDef as { rewards?: string }).rewards}`]
+          : undefined,
       };
     }
 
@@ -116,7 +115,6 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
     context.cityId,
     context.sourceId,
     context.type,
-    getItemCount,
     progressByOutskirtsId,
     progressByRuinId,
     shouldSpawnBoss,

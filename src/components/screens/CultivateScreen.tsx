@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { REALMS } from '../../constants';
-import { clampRealmIndexToSemesterSlice, getNextLiveRealm, isAtSemesterCap } from '../../systems/progression/runtime/index.js';
+import {
+  clampRealmIndexToSemesterSlice,
+  getGateTransitionItemIdForRealmIndex,
+  getNextLiveRealm,
+  isAtSemesterCap,
+} from '../../systems/progression/runtime/index.js';
 import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
-import { GATE_ITEMS } from '../../systems/loot';
 import { useActivityStore } from '../../stores/activityStore';
 import { useContentStore, getItemDef } from '../../stores/contentStore';
 import { useCultivationStore } from '../../stores/cultivationStore';
@@ -120,10 +124,8 @@ export function CultivateScreen() {
 
   const requiredGateItem = useMemo(() => {
     const willAdvanceRealm = realm.substage >= currentRealm.substages && !isAtSemesterCap(liveRealmIndex);
-    if (willAdvanceRealm) {
-      return GATE_ITEMS[realm.index] || null;
-    }
-    return null;
+    if (!willAdvanceRealm) return null;
+    return getGateTransitionItemIdForRealmIndex(useContentStore.getState().raw, realm.index);
   }, [currentRealm.substages, liveRealmIndex, realm.index, realm.substage]);
 
   const gateItemCount = useMemo(() => {

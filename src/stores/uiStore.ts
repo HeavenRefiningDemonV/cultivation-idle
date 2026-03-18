@@ -9,7 +9,7 @@ import { useRuinsStore } from './ruinsStore';
 import { useContentStore } from './contentStore';
 import { useTrialStore } from './trialStore';
 import { useCityStore } from './cityStore';
-import { useInventoryStore } from './inventoryStore';
+import { getTrialGateRewardBundle } from '../systems/progression/runtime/index.js';
 import { pickEnemyFromPool } from '../components/screens/world/worldUtils';
 import { GameEvents } from '../services/events/GameEvents';
 
@@ -551,17 +551,9 @@ export const useUIStore = create<UIState>()(
         const trialCityId = context.cityId ?? trialDef.cityId ?? null;
         const cityFlags = trialCityId ? useCityStore.getState().cityFlagsById[trialCityId] : undefined;
         const isEligible = !(trialProgress?.cleared || cityFlags?.gateTrialCleared);
-        const hasGateItem = trialDef.gateItemId
-          ? useInventoryStore.getState().getItemCount(trialDef.gateItemId) > 0
-          : true;
 
         if (!isEligible) {
           get().addNotification('warning', 'Trial already cleared or locked.');
-          return;
-        }
-
-        if (!hasGateItem) {
-          get().addNotification('warning', 'Missing required gate item.');
           return;
         }
 
@@ -572,8 +564,8 @@ export const useUIStore = create<UIState>()(
           type: 'trial',
           cityId: context.cityId ?? trialDef.cityId,
           trialId: trialDef.id,
-          gateItemId: trialDef.gateItemId,
           eligible: isEligible,
+          rewardBundle: getTrialGateRewardBundle(contentStore.raw, trialDef),
         });
       } else if (context.type === 'ruins') {
         const ruinDef = context.sourceId ? contentStore.maps.ruinsById[context.sourceId] : undefined;

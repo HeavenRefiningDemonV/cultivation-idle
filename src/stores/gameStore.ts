@@ -13,9 +13,12 @@ import {
   ELEMENT_BONUSES,
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
-import { clampRealmIndexToSemesterSlice, hasNextLiveRealm } from '../systems/progression/runtime/index.js';
+import {
+  clampRealmIndexToSemesterSlice,
+  getGateTransitionItemIdForRealmIndex,
+  hasNextLiveRealm,
+} from '../systems/progression/runtime/index.js';
 import { getAvailablePerks, getPerkById } from '../data/pathPerks';
-import { GATE_ITEMS } from '../systems/loot';
 import {
   useZoneStore,
   ZONE_REALM_REQUIREMENTS,
@@ -333,15 +336,17 @@ export const useGameStore = create<GameState>()(
         return false;
       }
 
-      // Check breakthrough gate item when advancing realms
-      const gateItemId = canAdvanceToNextRealm ? GATE_ITEMS[currentRealmIndex] : undefined;
-        let inventoryStore: InventoryStoreDeps | null = null;
+      // Check breakthrough gate proof when advancing realms
+      const gateItemId = canAdvanceToNextRealm
+        ? getGateTransitionItemIdForRealmIndex(useContentStore.getState().raw, currentRealmIndex)
+        : null;
 
       if (gateItemId) {
-        if (_getInventoryStore) {
-          try {
-            inventoryStore = _getInventoryStore();
-          } catch (error) {
+        let inventoryStore: InventoryStoreDeps | null = null;
+        try {
+          inventoryStore = _getInventoryStore ? _getInventoryStore() : null;
+        } catch (error) {
+          if (process.env.NODE_ENV !== 'production') {
             console.warn('[GameStore] Inventory store unavailable for breakthrough', error);
           }
         }

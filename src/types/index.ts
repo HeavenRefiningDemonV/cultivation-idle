@@ -1,4 +1,5 @@
 import type { CraftSessionSaveState } from '../systems/crafting/craftingTypes';
+import type { RewardBundle } from '../services/rewards';
 
 /**
  * Cultivation path types
@@ -875,8 +876,8 @@ export type CombatContext =
       type: 'trial';
       cityId: string;
       trialId: string;
-      gateItemId: string;
       eligible: boolean;
+      rewardBundle?: RewardBundle;
     }
   | {
       type: 'ruins';

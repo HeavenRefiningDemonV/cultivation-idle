@@ -1461,7 +1461,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const inventoryStore = useInventoryStore.getState();
 
       if (combatContext.type === 'trial') {
-        const { cityId, trialId, gateItemId, eligible } = combatContext;
+        const { cityId, trialId, eligible, rewardBundle } = combatContext;
 
         useActivityStore.getState().stopActivity();
         useBountyStore.getState().recordEvent({ type: 'TRIAL_CLEAR', cityId, amount: 1 });
@@ -1474,9 +1474,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
         if (eligible) {
           useTrialStore.getState().markCleared(trialId);
           useCityStore.getState().markGateTrialCleared(cityId);
-          const rewards = { items: [{ itemId: gateItemId, qty: 1 }] };
-          emitLootDrops(rewards.items, 'Gate Trial clear');
-          RewardService.grantRewards(rewards, 'Gate Trial clear');
+          emitLootDrops(rewardBundle?.items, 'Gate Trial clear');
+          RewardService.grantRewards(rewardBundle ?? {}, 'Gate Trial clear');
         } else {
           RewardService.grantRewards({ currencies: { gold: '500' } }, 'Gate Trial (not eligible)');
         }
