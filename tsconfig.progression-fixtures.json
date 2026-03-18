@@ -31,6 +31,8 @@
     "tests/integration/gateContract.test.ts",
     "tests/integration/offlineContract.test.ts",
     "tests/integration/pathContract.test.ts",
-    "tests/integration/prestigeReset.test.ts"
+    "tests/integration/prestigeReset.test.ts",
+    "tests/contracts/liveRealmProjection.test.ts",
+    "tests/integration/semesterSliceFreeze.test.ts"
   ]
 }

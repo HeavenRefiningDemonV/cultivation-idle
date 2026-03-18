@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content';
 import type { SaveTechniqueLoadout } from '../types';
-import { REALMS } from '../constants';
+import { clampRealmIndexToSemesterSlice, getLiveRealmNameByIndex } from '../systems/progression/runtime/index.js';
 import { useContentStore } from './contentStore';
 import { useGameStore } from './gameStore';
 import { GameEvents } from '../services/events/GameEvents';
@@ -145,7 +145,7 @@ const getRealmIndex = (realmIndex?: number) => {
   return useGameStore.getState().realm.index ?? 0;
 };
 
-const getRealmName = (realmIndex: number) => REALMS.find((r) => r.index === realmIndex)?.name ?? 'Unknown Realm';
+const getRealmName = (realmIndex: number) => getLiveRealmNameByIndex(clampRealmIndexToSemesterSlice(realmIndex));
 
 // Slot progression: Active 1-2 + Passive 1 always, Active 3 at realm 1, Passive 2 at realm 2, Ultimate at realm 3.
 const computeSlotProgression = (

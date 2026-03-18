@@ -13,6 +13,7 @@ import {
   ELEMENT_BONUSES,
 } from '../constants';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
+import { clampRealmIndexToSemesterSlice, hasNextLiveRealm } from '../systems/progression/runtime/index.js';
 import { getAvailablePerks, getPerkById } from '../data/pathPerks';
 import { GATE_ITEMS } from '../systems/loot';
 import {
@@ -336,9 +337,10 @@ export const useGameStore = create<GameState>()(
      */
     breakthrough: () => {
       const state = get();
-      const currentRealm = REALMS[state.realm.index];
+      const currentRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
+      const currentRealm = REALMS[currentRealmIndex] ?? REALMS[0];
       const isFinalSubstage = state.realm.substage >= currentRealm.substages;
-      const canAdvanceToNextRealm = isFinalSubstage && state.realm.index < REALMS.length - 1;
+      const canAdvanceToNextRealm = isFinalSubstage && hasNextLiveRealm(currentRealmIndex);
 
       // Get Qi requirement (includes prestige multipliers)
       const requiredQi = get().getBreakthroughRequirement();
@@ -349,7 +351,7 @@ export const useGameStore = create<GameState>()(
       }
 
       // Check breakthrough gate item when advancing realms
-      const gateItemId = canAdvanceToNextRealm ? GATE_ITEMS[state.realm.index] : undefined;
+      const gateItemId = canAdvanceToNextRealm ? GATE_ITEMS[currentRealmIndex] : undefined;
         let inventoryStore: InventoryStoreDeps | null = null;
 
       if (gateItemId) {
@@ -373,7 +375,7 @@ export const useGameStore = create<GameState>()(
         }
       }
 
-      const previousRealmIndex = state.realm.index;
+      const previousRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
 
       set((state) => {
         // Deduct Qi
@@ -384,9 +386,9 @@ export const useGameStore = create<GameState>()(
 
         // Check if advancing to next realm or just next substage
         if (canAdvanceToNextRealm) {
-          state.realm.index += 1;
+          state.realm.index = currentRealmIndex + 1;
           state.realm.substage = 1;
-          state.realm.name = REALMS[state.realm.index].name;
+          state.realm.name = REALMS[state.realm.index]?.name ?? REALMS[0].name;
         } else if (isFinalSubstage) {
           // Max realm reached, just increment substage
           state.realm.substage += 1;
@@ -452,7 +454,7 @@ export const useGameStore = create<GameState>()(
      */
     calculateQiPerSecond: () => {
       const state = get();
-      const currentRealm = REALMS[state.realm.index];
+      const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
 
       // Base Qi/s from realm
       let qiPerSec = D(currentRealm.qiPerSecond);
@@ -533,7 +535,7 @@ export const useGameStore = create<GameState>()(
      */
     calculatePlayerStats: () => {
       const state = get();
-      const currentRealm = REALMS[state.realm.index];
+      const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
       const baseStats = currentRealm.baseStats;
 
       const now = Date.now();
@@ -806,7 +808,7 @@ export const useGameStore = create<GameState>()(
      */
     getBreakthroughRequirement: () => {
       const state = get();
-      const currentRealm = REALMS[state.realm.index];
+      const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
 
       // Calculate Qi requirement for current substage
       const baseRequirement = D(currentRealm.qiRequirement);

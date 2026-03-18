@@ -35,8 +35,7 @@
     {
       "id": "spirit_severing",
       "name": "Spirit Severing",
-      "index": 5,
-      "stretch": true
+      "index": 5
     }
   ],
   "manualSystem": {

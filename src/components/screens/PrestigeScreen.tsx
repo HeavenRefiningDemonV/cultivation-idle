@@ -4,6 +4,7 @@ import { getItemDef, useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useHeartLawStore } from '../../stores/heartLawStore';
 import { usePrestigeStore } from '../../stores/prestigeStore';
+import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
 import type { PrestigeUpgradeDef } from '../../content';
@@ -334,17 +335,6 @@ export function PrestigeScreen() {
     );
   };
 
-  const realmNames = [
-    'Qi Refining',
-    'Foundation Establishment',
-    'Core Formation',
-    'Nascent Soul',
-    'Soul Formation',
-    'Void Tribulation',
-    'Mahayana',
-    'True Immortal',
-  ];
-
   return (
     <div className={'prestigeScreenRoot'}>
       <div className={'prestigeScreenBackground'} />
@@ -446,7 +436,7 @@ export function PrestigeScreen() {
                             <div className={'prestigeScreenInfoRow'}>
                               <span className={'prestigeScreenInfoLabel'}>Current Realm:</span>
                               <span className={'prestigeScreenInfoValue'}>
-                                {realmNames[realm?.index || 0] || 'Unknown'}
+                                {getLiveRealmNameByIndex(realm?.index || 0)}
                               </span>
                             </div>
                             <div className={'prestigeScreenInfoRow'}>
@@ -565,7 +555,7 @@ export function PrestigeScreen() {
             breakdown={apBreakdown}
             canPrestigeNow={canPrestigeNow}
             lockReason={prestigeLockHint}
-            currentRealm={realmNames[realm?.index || 0] || 'Unknown'}
+            currentRealm={getLiveRealmNameByIndex(realm?.index || 0)}
             sellBeforePrestige={sellBeforePrestige}
             errorMessage={ritualError}
             onClose={closeRitualModal}
@@ -611,7 +601,7 @@ export function PrestigeScreen() {
                     <div key={run.runNumber} className={'prestigeScreenHistoryRow'}>
                       <div>
                         <span className={'prestigeScreenInfoValue'}>Run #{run.runNumber}</span>
-                        <span className={'prestigeScreenInfoLabelMuted'}>{realmNames[run.realmReached]}</span>
+                        <span className={'prestigeScreenInfoLabelMuted'}>{getLiveRealmNameByIndex(run.realmReached)}</span>
                       </div>
                       <div className={'prestigeScreenHistoryGain'}>
                         <span className={'prestigeScreenInfoValueAccent'}>+{run.apGained} AP</span>

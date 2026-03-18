@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { REALMS } from '../../constants';
+import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore';
 import { useGameStore } from '../../stores/gameStore';
 import {
@@ -316,16 +316,16 @@ export function TechniqueLibraryScreen() {
     const unlockedCounts = progression.unlocked;
 
     if (preferred === 'ultimate' && !unlockedCounts.ultimate) {
-      const realmName = progression.unlockRequirements.ultimate?.realmName || REALMS[3]?.name || 'later realms';
+      const realmName = progression.unlockRequirements.ultimate?.realmName || getLiveRealmNameByIndex(3);
       setAltarFeedback({
         tone: 'error',
         message: `You learned an Ultimate technique, but the Ultimate slot is locked until ${realmName}.`,
       });
     } else if (preferred === 'active' && unlockedCounts.active <= 0) {
-      const realmName = progression.unlockRequirements.active[0]?.realmName || REALMS[1]?.name || 'later realms';
+      const realmName = progression.unlockRequirements.active[0]?.realmName || getLiveRealmNameByIndex(1);
       setAltarFeedback({ tone: 'error', message: `No active slots are available yet. Unlocks at: ${realmName}.` });
     } else if (preferred === 'passive' && unlockedCounts.passive <= 0) {
-      const realmName = progression.unlockRequirements.passive[0]?.realmName || REALMS[2]?.name || 'later realms';
+      const realmName = progression.unlockRequirements.passive[0]?.realmName || getLiveRealmNameByIndex(2);
       setAltarFeedback({ tone: 'error', message: `No passive slots are available yet. Unlocks at: ${realmName}.` });
     } else {
       setSelectedSlot(defaultSelection);

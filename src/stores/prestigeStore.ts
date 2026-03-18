@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
+import { clampRealmIndexToSemesterSlice } from '../systems/progression/runtime/index.js';
 import { SaveService } from '../services/save/SaveService';
 import { useContentStore } from './contentStore';
 import type { PrestigeUpgradeDef } from '../content';
@@ -51,7 +52,7 @@ const buildApBreakdown = (state: ApBreakdownState, gameStore: GameState | null):
 
   const currentRealm = gameStore.realm;
   const realmIndex = Math.max(state.highestRealmReached, currentRealm?.index ?? 0);
-  const realmDefinition = REALMS[realmIndex] || REALMS[0];
+  const realmDefinition = REALMS[clampRealmIndexToSemesterSlice(realmIndex)] || REALMS[0];
   const substageProgress = Math.max(
     0,
     ((currentRealm?.substage ?? 1) - 1) / Math.max(1, realmDefinition.substages),

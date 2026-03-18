@@ -179,7 +179,7 @@ export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
   foundation_pill: {
     id: 'foundation_pill',
     name: 'Foundation Pill',
-    description: 'Required to breakthrough from Qi Refining to Foundation Establishment.',
+    description: 'Required to breakthrough from Qi Condensation to Foundation Establishment.',
     type: 'material',
     rarity: 'rare',
     level: 5,
@@ -190,7 +190,7 @@ export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
   core_catalyst: {
     id: 'core_catalyst',
     name: 'Core Catalyst',
-    description: 'Required to breakthrough from Foundation to Core Formation.',
+    description: 'Required to breakthrough from Foundation Establishment to Core Formation.',
     type: 'material',
     rarity: 'epic',
     level: 10,

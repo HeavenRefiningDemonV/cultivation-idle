@@ -6,6 +6,7 @@ import { useZoneStore } from '../../stores/zoneStore';
 import { useUIStore } from '../../stores/uiStore';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
 import { REALMS } from '../../constants';
+import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtime/index.js';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader';
 import { CombatStatTile } from '../../ui/status/CombatStatTile';
@@ -119,7 +120,7 @@ export function StatusScreen() {
   const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
 
   // Calculate some derived stats
-  const currentRealm = REALMS[realm.index];
+  const currentRealm = REALMS[clampRealmIndexToSemesterSlice(realm.index)] ?? REALMS[0];
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
   const realmName = currentRealm.name;
   const stageText = `Stage ${realm.substage}/${currentRealm.substages}`;

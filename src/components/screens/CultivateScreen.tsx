@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { REALMS } from '../../constants';
+import { clampRealmIndexToSemesterSlice, getNextLiveRealm, isAtSemesterCap } from '../../systems/progression/runtime/index.js';
 import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
 import { GATE_ITEMS } from '../../systems/loot';
 import { useActivityStore } from '../../stores/activityStore';
@@ -100,7 +101,8 @@ export function CultivateScreen() {
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
 
-  const currentRealm = REALMS[realm.index] ?? REALMS[0];
+  const liveRealmIndex = clampRealmIndexToSemesterSlice(realm.index);
+  const currentRealm = REALMS[liveRealmIndex] ?? REALMS[0];
   const realmLabel = currentRealm?.name ?? 'Realm';
   useEffect(() => {
     setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
@@ -121,12 +123,12 @@ export function CultivateScreen() {
   }, [insight, addNotification]);
 
   const requiredGateItem = useMemo(() => {
-    const willAdvanceRealm = realm.substage >= currentRealm.substages && realm.index < REALMS.length - 1;
+    const willAdvanceRealm = realm.substage >= currentRealm.substages && !isAtSemesterCap(liveRealmIndex);
     if (willAdvanceRealm) {
       return GATE_ITEMS[realm.index] || null;
     }
     return null;
-  }, [currentRealm.substages, realm.index, realm.substage]);
+  }, [currentRealm.substages, liveRealmIndex, realm.substage]);
 
   const gateItemCount = useMemo(() => {
     if (!requiredGateItem) return 0;
@@ -309,7 +311,7 @@ export function CultivateScreen() {
               <span className="cultivationRealmTagIcon" aria-hidden="true">
                 →
               </span>
-              <span className="cultivationRealmTagText">Next Realm: {REALMS[realm.index + 1]?.name ?? '—'}</span>
+              <span className="cultivationRealmTagText">Next Realm: {getNextLiveRealm(liveRealmIndex)?.name ?? 'Current content cap reached'}</span>
             </div>
           </div>
           <QiProgressBar

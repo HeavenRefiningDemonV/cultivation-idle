@@ -1,4 +1,39 @@
-import type { RealmDefinition, PathModifiers, FocusModeModifiers } from '../types';
+import { LIVE_REALM_PROJECTION } from '../systems/progression/runtime/index.js';
+
+type RealmDefinition = {
+  index: number;
+  name: string;
+  majorRealm: string;
+  substages: number;
+  qiRequirement: string;
+  qiPerSecond: string;
+  baseStats: {
+    hp: string;
+    atk: string;
+    def: string;
+    crit: number;
+    critDmg: number;
+    dodge: number;
+    regen: string;
+    speed: number;
+  };
+};
+
+type PathModifiers = {
+  qiMultiplier: number;
+  hpMultiplier: number;
+  atkMultiplier: number;
+  defMultiplier: number;
+  critBonus: number;
+  dodgeBonus: number;
+};
+
+type FocusModeModifiers = {
+  qiMultiplier: number;
+  hpMultiplier: number;
+  atkMultiplier: number;
+  defMultiplier: number;
+};
 
 /**
  * Realm definitions for cultivation progression
@@ -6,168 +41,61 @@ import type { RealmDefinition, PathModifiers, FocusModeModifiers } from '../type
  */
 export const REALMS: RealmDefinition[] = [
   {
-    index: 0,
-    name: 'Qi Condensation',
-    majorRealm: 'Mortal',
+    index: LIVE_REALM_PROJECTION[0].index,
+    name: LIVE_REALM_PROJECTION[0].name,
+    majorRealm: LIVE_REALM_PROJECTION[0].majorRealm,
     substages: 9,
     qiRequirement: '100',
     qiPerSecond: '1',
-    baseStats: {
-      hp: '100',
-      atk: '10',
-      def: '5',
-      crit: 5,
-      critDmg: 150,
-      dodge: 5,
-      regen: '1',
-      speed: 1.0,
-    },
+    baseStats: { hp: '100', atk: '10', def: '5', crit: 5, critDmg: 150, dodge: 5, regen: '1', speed: 1.0 },
   },
   {
-    index: 1,
-    name: 'Foundation Establishment',
-    majorRealm: 'Mortal',
+    index: LIVE_REALM_PROJECTION[1].index,
+    name: LIVE_REALM_PROJECTION[1].name,
+    majorRealm: LIVE_REALM_PROJECTION[1].majorRealm,
     substages: 9,
     qiRequirement: '1000',
-    qiPerSecond: '10000',       // TESTING: 1000x faster (was 10)
-    baseStats: {
-      hp: '500',
-      atk: '50',
-      def: '25',
-      crit: 8,
-      critDmg: 160,
-      dodge: 8,
-      regen: '5',
-      speed: 1.1,
-    },
+    qiPerSecond: '10000',
+    baseStats: { hp: '500', atk: '50', def: '25', crit: 8, critDmg: 160, dodge: 8, regen: '5', speed: 1.1 },
   },
   {
-    index: 2,
-    name: 'Golden Core',
-    majorRealm: 'Spiritual',
+    index: LIVE_REALM_PROJECTION[2].index,
+    name: LIVE_REALM_PROJECTION[2].name,
+    majorRealm: LIVE_REALM_PROJECTION[2].majorRealm,
     substages: 9,
     qiRequirement: '10000',
-    qiPerSecond: '100000',      // TESTING: 1000x faster (was 100)
-    baseStats: {
-      hp: '2500',
-      atk: '250',
-      def: '125',
-      crit: 12,
-      critDmg: 175,
-      dodge: 12,
-      regen: '25',
-      speed: 1.2,
-    },
+    qiPerSecond: '100000',
+    baseStats: { hp: '2500', atk: '250', def: '125', crit: 12, critDmg: 175, dodge: 12, regen: '25', speed: 1.2 },
   },
   {
-    index: 3,
-    name: 'Nascent Soul',
-    majorRealm: 'Spiritual',
+    index: LIVE_REALM_PROJECTION[3].index,
+    name: LIVE_REALM_PROJECTION[3].name,
+    majorRealm: LIVE_REALM_PROJECTION[3].majorRealm,
     substages: 6,
     qiRequirement: '100000',
-    qiPerSecond: '1000000',     // TESTING: 1000x faster (was 1000)
-    baseStats: {
-      hp: '12500',
-      atk: '1250',
-      def: '625',
-      crit: 15,
-      critDmg: 190,
-      dodge: 15,
-      regen: '125',
-      speed: 1.3,
-    },
+    qiPerSecond: '1000000',
+    baseStats: { hp: '12500', atk: '1250', def: '625', crit: 15, critDmg: 190, dodge: 15, regen: '125', speed: 1.3 },
   },
   {
-    index: 4,
-    name: 'Soul Transformation',
-    majorRealm: 'Spiritual',
+    index: LIVE_REALM_PROJECTION[4].index,
+    name: LIVE_REALM_PROJECTION[4].name,
+    majorRealm: LIVE_REALM_PROJECTION[4].majorRealm,
     substages: 6,
     qiRequirement: '1000000',
-    qiPerSecond: '10000000',    // TESTING: 1000x faster (was 10000)
-    baseStats: {
-      hp: '62500',
-      atk: '6250',
-      def: '3125',
-      crit: 18,
-      critDmg: 200,
-      dodge: 18,
-      regen: '625',
-      speed: 1.4,
-    },
+    qiPerSecond: '10000000',
+    baseStats: { hp: '62500', atk: '6250', def: '3125', crit: 18, critDmg: 200, dodge: 18, regen: '625', speed: 1.4 },
   },
   {
-    index: 5,
-    name: 'Void Refinement',
-    majorRealm: 'Immortal',
+    index: LIVE_REALM_PROJECTION[5].index,
+    name: LIVE_REALM_PROJECTION[5].name,
+    majorRealm: LIVE_REALM_PROJECTION[5].majorRealm,
     substages: 6,
     qiRequirement: '10000000',
-    qiPerSecond: '100000000',   // TESTING: 1000x faster (was 100000)
-    baseStats: {
-      hp: '312500',
-      atk: '31250',
-      def: '15625',
-      crit: 22,
-      critDmg: 215,
-      dodge: 22,
-      regen: '3125',
-      speed: 1.5,
-    },
-  },
-  {
-    index: 6,
-    name: 'Dao Integration',
-    majorRealm: 'Immortal',
-    substages: 3,
-    qiRequirement: '100000000',
-    qiPerSecond: '1000000000',  // TESTING: 1000x faster (was 1000000)
-    baseStats: {
-      hp: '1562500',
-      atk: '156250',
-      def: '78125',
-      crit: 25,
-      critDmg: 225,
-      dodge: 25,
-      regen: '15625',
-      speed: 1.6,
-    },
-  },
-  {
-    index: 7,
-    name: 'Mahayana',
-    majorRealm: 'Immortal',
-    substages: 3,
-    qiRequirement: '1000000000',
-    qiPerSecond: '10000000000', // TESTING: 1000x faster (was 10000000)
-    baseStats: {
-      hp: '7812500',
-      atk: '781250',
-      def: '390625',
-      crit: 30,
-      critDmg: 240,
-      dodge: 30,
-      regen: '78125',
-      speed: 1.7,
-    },
-  },
-  {
-    index: 8,
-    name: 'Tribulation',
-    majorRealm: 'Transcendent',
-    substages: 9,
-    qiRequirement: '10000000000',
-    qiPerSecond: '100000000000', // TESTING: 1000x faster (was 100000000)
-    baseStats: {
-      hp: '39062500',
-      atk: '3906250',
-      def: '1953125',
-      crit: 35,
-      critDmg: 260,
-      dodge: 35,
-      regen: '390625',
-      speed: 1.8,
-    },
+    qiPerSecond: '100000000',
+    baseStats: { hp: '312500', atk: '31250', def: '15625', crit: 22, critDmg: 215, dodge: 22, regen: '3125', speed: 1.5 },
   },
 ];
+
 
 /**
  * Path modifiers for different cultivation paths

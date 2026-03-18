@@ -3,6 +3,7 @@ import { useGameStore } from '../../stores/gameStore';
 import { D, formatNumber, greaterThanOrEqualTo, divide } from '../../utils/numbers';
 import type { FocusMode } from '../../types';
 import { REALMS, FOCUS_MODE_MODIFIERS } from '../../constants';
+import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtime/index.js';
 import { GameIcon } from '../../ui/icons';
 import './CultivationTab.scss';
 
@@ -120,7 +121,7 @@ export function CultivationTab() {
   const purchaseUpgrade = useGameStore((state) => state.purchaseUpgrade);
 
   // Get current realm definition
-  const currentRealmDef = REALMS.find((r) => r.index === realm.index);
+  const currentRealmDef = REALMS[clampRealmIndexToSemesterSlice(realm.index)] ?? REALMS[0];
   const qiRequired = currentRealmDef?.qiRequirement || '1000';
 
   // Calculate progress
@@ -180,7 +181,7 @@ export function CultivationTab() {
 
           {/* Realm Info */}
           <div className={'cultivationTabRealmInfo'}>
-            <h2 className={'cultivationTabRealmTitle'}>{realm.name}</h2>
+            <h2 className={'cultivationTabRealmTitle'}>{currentRealmDef.name}</h2>
             <p className={'cultivationTabRealmSubtitle'}>
               Substage {realm.substage + 1} / {currentRealmDef?.substages || 10}
             </p>
