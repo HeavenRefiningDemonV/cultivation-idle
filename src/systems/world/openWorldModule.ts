@@ -1,6 +1,13 @@
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
 import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
+import { useActivityStore } from '../../stores/activityStore';
+import { useCombatStore } from '../../stores/combatStore';
+import { SEMESTER_SLICE_CONTRACT } from '../progression/contract/semesterSlice.js';
+import {
+  getWorldTravelBlockMessage,
+  getWorldTravelGuard,
+} from './travelContract.js';
 
 export type WorldModuleKey = WorldBuildingKey | string;
 
@@ -21,27 +28,42 @@ export function openWorldModule({ cityId, moduleKey, open = true, source: _sourc
   const uiStore = useUIStore.getState();
   const cityStore = useCityStore.getState();
   const contentStore = useContentStore.getState();
-
-  uiStore.setActiveTab('adventure');
+  const activityStore = useActivityStore.getState();
+  const combatStore = useCombatStore.getState();
 
   const city = contentStore.maps.citiesById[cityId];
   if (!city || !city.modules.includes(moduleKey)) return;
 
-  if (cityStore.currentCityId !== cityId) {
-    cityStore.setCurrentCity(cityId);
-  }
+  const travelGuard = getWorldTravelGuard({
+    targetCityId: cityId,
+    currentCityId: cityStore.currentCityId,
+    unlockedCityIds: cityStore.unlockedCityIds,
+    liveCityIds: SEMESTER_SLICE_CONTRACT.liveCityIds,
+    inCombat: combatStore.inCombat,
+    activeActivityType: activityStore.active?.type,
+    combatPresentationMode: uiStore.combatPresentation.mode,
+  });
 
-  cityStore.setSelectedModule(cityId, moduleKey);
-
-  // Close any world building modal before opening a new module UI
-  uiStore.closeWorldBuildingModal();
-
-  if (open === false) {
+  if (!travelGuard.allowed) {
+    const message = getWorldTravelBlockMessage(travelGuard.reason);
+    if (message) {
+      uiStore.addNotification('warning', message);
+    }
     return;
   }
 
-  if (isCombatModule(moduleKey)) {
-    uiStore.openWorldBuildingModal({ cityId, buildingKey: moduleKey as WorldBuildingKey });
+  if (cityStore.currentCityId !== cityId) {
+    cityStore.setCurrentCity(cityId);
+    if (useCityStore.getState().currentCityId !== cityId) {
+      return;
+    }
+  }
+
+  uiStore.setActiveTab('adventure');
+  cityStore.setSelectedModule(cityId, moduleKey);
+  uiStore.closeWorldBuildingModal();
+
+  if (open === false) {
     return;
   }
 

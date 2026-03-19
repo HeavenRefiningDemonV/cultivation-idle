@@ -5,6 +5,10 @@ import { useContentStore } from './contentStore';
 import { useBountyStore } from './bountyStore';
 import type { MajorRealmId } from '../systems/progression/contract';
 import { syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime/index.js';
+import {
+  getDefaultModuleForWorldCity,
+  resolveFallbackCurrentCityId,
+} from '../systems/world/travelContract.js';
 
 export type CityFlags = {
   outskirtsBossDefeated: boolean;
@@ -35,11 +39,6 @@ const createDefaultFlags = (): CityFlags => ({
   gateTrialCleared: false,
   ruinsCleared: false,
 });
-
-const getDefaultModuleForCity = (city: Pick<CityDef, 'modules'>): string | null => {
-  if (city.modules.includes('outskirts')) return 'outskirts';
-  return city.modules[0] ?? null;
-};
 
 const createInitialCityState = (): Omit<
   CityState,
@@ -87,10 +86,11 @@ export const useCityStore = create<CityState>()(
           state.unlockedCityIds.push(firstCityId);
         }
 
-        // Ensure current city is valid and unlocked
-        if (!state.currentCityId || !state.unlockedCityIds.includes(state.currentCityId)) {
-          state.currentCityId = firstCityId;
-        }
+        state.currentCityId = resolveFallbackCurrentCityId({
+          cities: sorted,
+          currentCityId: state.currentCityId,
+          unlockedCityIds: state.unlockedCityIds,
+        });
 
         // Ensure flags and modules for unlocked cities
         for (const city of sorted) {
@@ -104,7 +104,7 @@ export const useCityStore = create<CityState>()(
 
           const existingModule = state.selectedModuleByCity[city.id];
           if (!existingModule || !city.modules.includes(existingModule)) {
-            const defaultModule = getDefaultModuleForCity(city);
+            const defaultModule = getDefaultModuleForWorldCity(city);
             if (defaultModule) {
               state.selectedModuleByCity[city.id] = defaultModule;
             } else {
@@ -129,7 +129,7 @@ export const useCityStore = create<CityState>()(
 
         const currentSelection = draft.selectedModuleByCity[cityId];
         if (!currentSelection || !city.modules.includes(currentSelection)) {
-          const defaultModule = getDefaultModuleForCity(city);
+          const defaultModule = getDefaultModuleForWorldCity(city);
           if (defaultModule) {
             draft.selectedModuleByCity[cityId] = defaultModule;
           } else {
@@ -162,7 +162,7 @@ export const useCityStore = create<CityState>()(
           draft.cityFlagsById[cityId] = createDefaultFlags();
         }
 
-        const defaultModule = getDefaultModuleForCity(city);
+        const defaultModule = getDefaultModuleForWorldCity(city);
         if (defaultModule) {
           draft.selectedModuleByCity[cityId] = defaultModule;
         }
@@ -188,7 +188,7 @@ export const useCityStore = create<CityState>()(
 
         const currentSelection = draft.selectedModuleByCity[cityId];
         if (!currentSelection || !city.modules.includes(currentSelection)) {
-          const defaultModule = getDefaultModuleForCity(city);
+          const defaultModule = getDefaultModuleForWorldCity(city);
           if (defaultModule) {
             draft.selectedModuleByCity[cityId] = defaultModule;
           } else {
