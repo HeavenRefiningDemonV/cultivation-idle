@@ -13,6 +13,7 @@ import { useBountyStore } from './bountyStore';
 import { GameEvents } from '../services/events/GameEvents';
 import { useActivityStore } from './activityStore';
 import { useCraftSessionStore } from './craftSessionStore';
+import type { ForgeStepResult } from '../systems/crafting/craftingTypes';
 
 export type AlchemyJob = {
   id: string;
@@ -153,6 +154,19 @@ const computePerformanceQuality = (performance?: ForgeJobPerformance): ForgeJobP
     specialScore: performance.specialScore ?? clamped,
     qualityScore: performance.qualityScore ?? Math.round(clamped * 100),
   };
+};
+
+const getForgeStepScore = (entry: ForgeStepResult): number | undefined => {
+  switch (entry.type) {
+    case 'HEAT_MATERIAL':
+    case 'HEAT_TO':
+    case 'HAMMER_PATTERN':
+    case 'ENGRAVE_RUNE':
+    case 'LAY_FORMATION':
+      return entry.timingScore;
+    default:
+      return undefined;
+  }
 };
 
 const resolveForgeTimingStatus = (job: ForgeJob, now: number): ForgeJobStatus => {
@@ -624,18 +638,18 @@ export const useProfessionStore = create<ProfessionState>()(
         }
         const outcome = result.result;
         outcomeResult = outcome;
-        outcomePerformance = {
-          heatScore: outcome.heatScore,
-          hammerScore: outcome.hammerScore,
-          specialScore: outcome.temperScore,
-          qualityScore: Math.round(outcome.scoreOverall * 100),
-          stepBreakdown: activeSession.cursor.forgeStepResults?.map((entry) => ({
-            stepId: entry.stepId,
-            type: entry.type,
-            score: entry.timingScore,
-          })),
-        };
-      }
+          outcomePerformance = {
+            heatScore: outcome.heatScore,
+            hammerScore: outcome.hammerScore,
+            specialScore: outcome.temperScore,
+            qualityScore: Math.round(outcome.scoreOverall * 100),
+            stepBreakdown: activeSession.cursor.forgeStepResults?.map((entry) => ({
+              stepId: entry.stepId,
+              type: entry.type,
+              score: getForgeStepScore(entry),
+            })),
+          };
+        }
       if (performance && activeSession && activeSession.sessionId === sessionId) {
         useCraftSessionStore.setState({ activeSession: null });
       }
@@ -726,8 +740,8 @@ export const useProfessionStore = create<ProfessionState>()(
         }
 
         if (serviceResult) {
-          resultSnapshot.beforeItem = serviceResult.beforeStats;
-          resultSnapshot.afterItem = serviceResult.afterStats;
+          resultSnapshot.beforeItem = { ...serviceResult.beforeStats };
+          resultSnapshot.afterItem = { ...serviceResult.afterStats };
         }
 
         RewardService.grantRewards({}, reason);

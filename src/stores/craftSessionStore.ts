@@ -1033,12 +1033,9 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           RewardService.grantRewards({ items: bonusResult.items }, `Alchemy Session: ${active.sourceId}`);
         }
 
-        const masteryGainPerBatch = active.mode === 'handsOn' ? 5 : 2;
-        if (masteryGainPerBatch > 0) {
-          useRecipeMasteryStore
-            .getState()
-            .gainAlchemyMastery(active.sourceId, masteryGainPerBatch * active.qty, active.mode);
-        }
+        useRecipeMasteryStore
+          .getState()
+          .gainAlchemyMastery(active.sourceId, 2 * active.qty, active.mode);
 
         set((state) => {
           if (state.activeSession) {
@@ -1105,35 +1102,36 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         });
       }
       let activeSession = sanitizeActiveSession(slice?.activeSession);
-      if (activeSession && activeSession.mode === 'assisted') {
-        if (activeSession.station === 'alchemy') {
-          const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === activeSession?.sourceId);
+      if (activeSession?.mode === 'assisted') {
+        const hydratedSession = activeSession;
+        if (hydratedSession.station === 'alchemy') {
+          const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === hydratedSession.sourceId);
           const promptDefs = Array.isArray((recipe as any)?.assistedPrompts)
             ? ((recipe as any).assistedPrompts as PromptDef[])
             : [];
           const durationMs = calculateAlchemyDurationMs(
             recipe?.timeSec ?? (recipe as { craftTimeSec?: number })?.craftTimeSec,
-            activeSession.qty,
+            hydratedSession.qty,
           );
-          const endsAt = activeSession.endsAt || activeSession.startedAt + durationMs;
+          const endsAt = hydratedSession.endsAt || hydratedSession.startedAt + durationMs;
           const prompts =
-            activeSession.prompts && activeSession.prompts.length > 0
-              ? activeSession.prompts
-              : instantiatePrompts(promptDefs, activeSession.startedAt, endsAt, activeSession.seed);
-          activeSession = { ...activeSession, endsAt, prompts };
-        } else if (activeSession.station === 'forge') {
-          const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === activeSession.sourceId);
+            hydratedSession.prompts && hydratedSession.prompts.length > 0
+              ? hydratedSession.prompts
+              : instantiatePrompts(promptDefs, hydratedSession.startedAt, endsAt, hydratedSession.seed);
+          activeSession = { ...hydratedSession, endsAt, prompts };
+        } else if (hydratedSession.station === 'forge') {
+          const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === hydratedSession.sourceId);
           const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : null;
           const promptDefs = Array.isArray((rawBlueprint as any)?.assistedPrompts)
             ? ((rawBlueprint as any).assistedPrompts as PromptDef[])
             : [];
-          const durationMs = calculateForgeDurationMs(blueprint?.timeSec, activeSession.qty);
-          const endsAt = activeSession.endsAt || activeSession.startedAt + durationMs;
+          const durationMs = calculateForgeDurationMs(blueprint?.timeSec, hydratedSession.qty);
+          const endsAt = hydratedSession.endsAt || hydratedSession.startedAt + durationMs;
           const prompts =
-            activeSession.prompts && activeSession.prompts.length > 0
-              ? activeSession.prompts
-              : instantiatePrompts(promptDefs, activeSession.startedAt, endsAt, activeSession.seed);
-          activeSession = { ...activeSession, endsAt, prompts };
+            hydratedSession.prompts && hydratedSession.prompts.length > 0
+              ? hydratedSession.prompts
+              : instantiatePrompts(promptDefs, hydratedSession.startedAt, endsAt, hydratedSession.seed);
+          activeSession = { ...hydratedSession, endsAt, prompts };
         }
       }
       set(() => ({ modeByStation: nextModes, activeSession }));

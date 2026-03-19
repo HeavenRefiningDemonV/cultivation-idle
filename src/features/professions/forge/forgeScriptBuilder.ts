@@ -129,6 +129,8 @@ export function buildDefaultForgeScript(args: BuildDefaultForgeScriptArgs): Forg
       steps.push({
         id: 'temper',
         type: 'TEMPER',
+        targetHeat: 495,
+        durationMs: 3000,
         targetMin: 430,
         targetMax: 560,
         holdMs: 3000,

@@ -696,6 +696,7 @@ export const useUIStore = create<UIState>()(
     },
 
     openTechniqueLearned: (payload) => {
+      if (!payload) return;
       set((state) => {
         state.showTechniqueLearnedModal = true;
         state.techniqueLearnedPayload = payload;

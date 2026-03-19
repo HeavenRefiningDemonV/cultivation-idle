@@ -45,7 +45,7 @@ interface PrestigeStoreDeps {
   getQiMultiplier: () => Decimal.Value;
   getCombatMultiplier: () => Decimal.Value;
   getSpiritRootTotalMultiplier: () => number;
-  spiritRoot: { element?: string | null; purity: number } | null;
+  spiritRoot: SpiritRoot | null;
 }
 
 interface CombatStoreDeps {
@@ -72,8 +72,7 @@ export function setPrestigeStoreGetter(getter: () => PrestigeStoreDeps) {
 export function getSpiritRootSnapshot(): SpiritRoot | null {
   const prestigeStore = _getPrestigeStore ? _getPrestigeStore() : null;
   const root = prestigeStore?.spiritRoot ?? null;
-  if (!root || typeof root.grade !== 'number') return null;
-  return root as SpiritRoot;
+  return root;
 }
 
 // Kept for runtime wiring parity with the game loop even though prestige reset orchestration no longer reads it here.

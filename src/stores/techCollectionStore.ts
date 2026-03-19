@@ -153,6 +153,7 @@ const DEFAULT_RANK_COSTS: Array<{
   toRank: number;
   fragments: number;
   runeDust: number;
+  soulInk?: number;
   soulInkTier: number;
   requiresGradeAtLeast?: ManualGrade;
 }> = [
@@ -284,8 +285,8 @@ function getRankCostTable(): Record<
   }
 > {
   const economy = getManualSystemEconomy();
-  const entries = economy?.rank?.rankUpCosts ?? DEFAULT_RANK_COSTS;
-  return entries.reduce((acc, entry) => {
+  const entries: typeof DEFAULT_RANK_COSTS = economy?.rank?.rankUpCosts ?? DEFAULT_RANK_COSTS;
+  return entries.reduce<Record<number, { fragmentsRequired: number; runeDustRequired: number; soulInkRequired: number; soulInkItemId: string; requiredGrade?: ManualGrade }>>((acc, entry) => {
     const soulInkTier = typeof entry.soulInkTier === 'number' ? entry.soulInkTier : 0;
     const soulInkItemId = `reagent_soul_ink_t${soulInkTier}`;
     const cost = {
@@ -297,7 +298,7 @@ function getRankCostTable(): Record<
     };
     acc[entry.toRank] = cost;
     return acc;
-  }, {} as Record<number, { fragmentsRequired: number; runeDustRequired: number; soulInkRequired: number; soulInkItemId: string; requiredGrade?: ManualGrade }>);
+  }, {});
 }
 
 function getMasteryMilestonesConfig(): Array<{ level: number; effects: MasteryEffect[] }> {

@@ -38,6 +38,21 @@ import type { NormalizedEffect } from '../systems/techniques/effects';
 import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { getSpiritRootSnapshot } from './gameStore';
+
+type CombatEventVariantInput<TType extends CombatEvent['type']> =
+  Omit<Extract<CombatEvent, { type: TType }>, 'id' | 'at' | 'type'>
+  & Partial<Pick<Extract<CombatEvent, { type: TType }>, 'id' | 'at'>>;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
+
+function stampCombatEvent<TType extends CombatEvent['type']>(
+  type: TType,
+  event: CombatEventVariantInput<TType>,
+): Extract<CombatEvent, { type: TType }> {
+  const at = event.at ?? Date.now();
+  return { ...event, type, at, id: event.id ?? makeCombatEventId(at) } as Extract<CombatEvent, { type: TType }>;
+}
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
@@ -532,9 +547,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
     };
 
-    const emitEvent = (event: Omit<CombatEvent, 'id' | 'at'> & Partial<Pick<CombatEvent, 'id' | 'at'>>) => {
-      const at = event.at ?? Date.now();
-      get().pushEvent({ ...event, at } as CombatEvent);
+    const emitEvent = <TType extends CombatEvent['type']>(type: TType, event: CombatEventVariantInput<TType>) => {
+      get().pushEvent(stampCombatEvent(type, event));
     };
 
     const applyPassiveTechniques = (now: number) => {
@@ -816,8 +830,14 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
       const masteryEffectMult = techCollection.getMasteryEffectMultiplier(techId);
 
-      const economy = useContentStore.getState().raw?.economy?.manualSystem;
-      const heavenBonus = economy?.grades?.heaven?.mastery75PotencyBonus;
+      const manualSystem = useContentStore.getState().raw?.economy?.manualSystem;
+      const heavenBonus =
+        isRecord(manualSystem)
+        && isRecord(manualSystem.grades)
+        && isRecord(manualSystem.grades.heaven)
+        && typeof manualSystem.grades.heaven.mastery75PotencyBonus === 'number'
+          ? manualSystem.grades.heaven.mastery75PotencyBonus
+          : undefined;
       const secondaryUnlocked = milestoneEffects.secondaryUnlocked;
       const secondaryPotencyMult =
         entry?.manualGrade === 'heaven' && masteryLevel >= 75 && secondaryUnlocked
@@ -904,7 +924,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       // Add entry to log
       if (isBoss) {
         get().addLogEntry('system', `BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
-        emitEvent({ type: 'BOSS_SPAWN', enemyId: enemy.id, enemyName: enemy.name });
+        emitEvent('BOSS_SPAWN', { enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
@@ -1037,7 +1057,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (enemy.isBoss) {
         get().addLogEntry('system', `BOSS FIGHT: ${enemy.name}!`, '#f59e0b');
-        emitEvent({ type: 'BOSS_SPAWN', enemyId: enemy.id, enemyName: enemy.name });
+        emitEvent('BOSS_SPAWN', { enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('system', `Combat started with ${enemy.name}!`, '#fbbf24');
       }
@@ -1126,7 +1146,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           });
 
           if (appliedHeal.greaterThan(0)) {
-            emitEvent({ type: 'HEAL', amount: appliedHeal.toFixed(0) });
+            emitEvent('HEAL', { amount: appliedHeal.toFixed(0) });
             get().addLogEntry(
               'heal',
               `Used ${spec.shortLabel}: +${appliedHeal.toFixed(0)} HP`,
@@ -1152,8 +1172,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             totalShield = state.combatShield?.amount ?? shieldGain;
           });
 
-          emitEvent({
-            type: 'SHIELD_GAINED',
+          emitEvent('SHIELD_GAINED', {
             amount: shieldGain.toFixed(0),
             total: totalShield.toFixed(0),
             durationSec: effect.durationSec,
@@ -1183,8 +1202,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
           });
 
           const valueLabel = `${(effect.value * 100).toFixed(0)}${effect.mode === 'pct' ? '%' : ''}`;
-          emitEvent({
-            type: 'STATUS_APPLIED',
+          emitEvent('STATUS_APPLIED', {
             statusId: buffId,
             stacks: 1,
             durationSec: effect.durationSec,
@@ -1310,8 +1328,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.lastAttackTime = now;
       });
 
-      emitEvent({
-        type: 'HIT',
+      emitEvent('HIT', {
         source: 'player',
         target: 'enemy',
         amount: appliedDamage.toFixed(0),
@@ -1406,8 +1423,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       });
 
       if (damageAfterAbsorption.greaterThan(0) || absorbedAmount.greaterThan(0)) {
-        emitEvent({
-          type: 'HIT',
+        emitEvent('HIT', {
           source: 'enemy',
           target: 'player',
           amount: appliedDamage.toFixed(0),
@@ -1444,15 +1460,15 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const maps = useContentStore.getState().maps;
         items.forEach((item) => {
           if (!item?.itemId || !item.qty) return;
-          const rarity = maps.itemsById[item.itemId]?.rarity ?? 'common';
-          emitEvent({ type: 'LOOT_DROP', itemId: item.itemId, qty: item.qty, rarity, reason });
+          const rarity = 'common';
+          emitEvent('LOOT_DROP', { itemId: item.itemId, qty: item.qty, rarity, reason });
         });
       };
 
       // Add victory message
       if (isBoss) {
         get().addLogEntry('victory', `Victory! You defeated the boss ${enemy.name}.`, '#fbbf24');
-        emitEvent({ type: 'BOSS_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
+        emitEvent('BOSS_DEFEATED', { enemyId: enemy.id, enemyName: enemy.name });
       } else {
         get().addLogEntry('victory', `You defeated ${enemy.name}!`, '#22c55e');
       }
@@ -1671,7 +1687,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         '#ef4444'
       );
 
-      emitEvent({ type: 'PLAYER_DEFEATED', enemyId: enemy.id, enemyName: enemy.name });
+      emitEvent('PLAYER_DEFEATED', { enemyId: enemy.id, enemyName: enemy.name });
 
       if (context?.type === 'outskirts') {
         if (!autoRetryOnDeath) {
@@ -1899,8 +1915,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             '#a855f7'
           );
 
-          emitEvent({
-            type: 'HIT',
+          emitEvent('HIT', {
             source: 'enemy',
             target: 'player',
             amount: appliedDamage.toFixed(0),
@@ -1934,8 +1949,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
               `Warning: ${state.currentEnemy.name} is charging a powerful attack! (3s)`,
               '#f59e0b'
             );
-            emitEvent({
-              type: 'ENEMY_SPECIAL_TELEGRAPH',
+            emitEvent('ENEMY_SPECIAL_TELEGRAPH', {
               specialId: 'boss_ultimate',
               resolvesInMs: 3000,
             });
@@ -1991,8 +2005,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
             '#ef4444'
           );
 
-          emitEvent({
-            type: 'HIT',
+          emitEvent('HIT', {
             source: 'enemy',
             target: 'player',
             amount: appliedDamage.toFixed(0),
@@ -2119,7 +2132,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
       );
       addTechniqueLogEntry('cast', `${techDef.name} (${source})`, techId, now);
 
-      emitEvent({ type: 'SKILL_CAST', techniqueId: techId, source, at: now });
+      emitEvent('SKILL_CAST', { techniqueId: techId, source, at: now });
 
       set((state) => {
         const resourceModel = resolveCombatResourceModel(techDef.resourceModel);
@@ -2185,8 +2198,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
               appliedDamage = startingHp.minus(D(clampedHP));
               state.enemyHP = clampedHP.toString();
             });
-            emitEvent({
-              type: 'HIT',
+            emitEvent('HIT', {
               source: 'player',
               target: 'enemy',
               amount: appliedDamage.toFixed(0),
@@ -2210,7 +2222,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
               actualHeal = cappedHP.minus(startingHp);
               state.playerHP = cappedHP.toString();
             });
-            emitEvent({ type: 'HEAL', amount: actualHeal.toFixed(0), techniqueId: techId });
+            emitEvent('HEAL', { amount: actualHeal.toFixed(0), techniqueId: techId });
             break;
           }
           case 'shield': {
@@ -2235,8 +2247,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
                 state.combatShield.expiresAt = expiresAt;
               }
             });
-            emitEvent({
-              type: 'SHIELD_GAINED',
+            emitEvent('SHIELD_GAINED', {
               amount: shieldAmount.toFixed(0),
               total: totalShield.toFixed(0),
               durationSec: durationSec,
@@ -2265,8 +2276,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
                 endsAt: now + durationSec * 1000,
               });
             });
-            emitEvent({
-              type: 'STATUS_APPLIED',
+            emitEvent('STATUS_APPLIED', {
               statusId: `buff:${effect.stat}`,
               stacks: 1,
               durationSec,

@@ -17,7 +17,7 @@ const BURST_HINTS = ['burst', 'ultimate', 'obliterate', 'annihilate'];
 
 export const AI_PROFILE_OPTIONS: { value: AiProfile; label: string; description: string }[] = [
   { value: 'balanced', label: 'Balanced', description: 'Even mix of offense/defense.' },
-  { value: 'survivor', label: 'Survivor', description: 'Prioritize shields/heals/cleanse when threatened.' },
+  { value: 'survivor', label: 'Survivor', description: 'Prioritize shields and heals when threatened.' },
   { value: 'burst', label: 'Burst', description: 'Prioritize big cooldown damage, especially on bosses.' },
   { value: 'farmer', label: 'Farmer', description: 'Prioritize fast clears and AoE; accepts more risk.' },
 ];
@@ -36,13 +36,10 @@ export function getTechniqueAiTags(def: TechniqueDef, effects?: NormalizedEffect
 
   const isHeal = tags.includes('heal') || effectList.some((effect) => effect.type === 'heal');
   const isShield = tags.includes('shield') || effectList.some((effect) => effect.type === 'shield');
-  const isCleanse =
-    tags.some((tag) => CLEANSE_HINTS.includes(tag)) ||
-    effectList.some((effect) => effect.type === 'cleanse' || effect.type === 'purify');
+  const isCleanse = tags.some((tag) => CLEANSE_HINTS.includes(tag));
 
   const isAoe =
     tags.includes('aoe') ||
-    effectList.some((effect) => 'aoe' in effect || effect.type === 'area') ||
     AOE_HINTS.some((hint) => name.includes(hint));
 
   const classification = classifyTechnique(def);

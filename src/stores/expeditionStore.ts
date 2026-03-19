@@ -315,8 +315,8 @@ function selectBestDropSpotlight(bundle: RewardBundle, rareDrop?: { itemId: stri
 
   items.forEach((item) => {
     const def = itemsById[item.itemId];
-    const sellValue = def?.sellValue;
-    const score = Number.isFinite(sellValue) ? sellValue * item.qty : item.qty;
+    const sellValue = typeof def?.sellValue === 'number' && Number.isFinite(def.sellValue) ? def.sellValue : null;
+    const score = sellValue !== null ? sellValue * item.qty : item.qty;
     if (score > bestScore) {
       bestScore = score;
       bestId = item.itemId;
