@@ -41,6 +41,9 @@ const BACKUP_A_KEY = 'cultivation-idle-save-v3-backup-A';
 const BACKUP_B_KEY = 'cultivation-idle-save-v3-backup-B';
 const BACKUP_C_KEY = 'cultivation-idle-save-v3-backup-C';
 
+type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
+type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
+
 let lastLoadedSaveData: SaveData | null = null;
 let lastLoadMigrationReport: import('../save/migrations').MigrationRunReport | null = null;
 
@@ -79,7 +82,7 @@ function cloneManualPavilionState(
   return copy;
 }
 
-const isValidRuinsRunSummary = (value: unknown): value is SaveData['ruinsState']['runHistory'][number] => {
+const isValidRuinsRunSummary = (value: unknown): value is SaveRuinsRunSummary => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const record = value as Record<string, unknown>;
   if (typeof record.runId !== 'string') return false;
@@ -1176,7 +1179,7 @@ function applySaveData(saveData: SaveData): void {
       autoRepeatDefault: ruinsState.autoRepeatDefault,
       autoRestart: ruinsState.autoRestart ?? ruinsState.autoRepeatDefault ?? false,
       runHistory: Array.isArray(ruinsState.runHistory)
-        ? (ruinsState.runHistory as SaveData['ruinsState']['runHistory']).slice(0, 5)
+        ? ruinsState.runHistory.slice(0, 5)
         : [],
       lastRunSummary: ruinsState.lastRunSummary ?? null,
       activeRun: null,

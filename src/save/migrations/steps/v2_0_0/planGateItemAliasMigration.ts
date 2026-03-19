@@ -26,7 +26,7 @@ export const v2_0_0_plan_gate_item_alias_migration: MigrationStep = {
       ? (inventoryState.items as Record<string, unknown>)
       : null;
 
-    const warnings = [];
+    const warnings: ReturnType<typeof warning>[] = [];
     const touched: MigrationFieldTouch[] = [];
     const plannedMutations: PlannedMutation[] = [];
     const found: string[] = [];

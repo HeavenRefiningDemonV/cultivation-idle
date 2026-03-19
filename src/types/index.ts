@@ -265,7 +265,14 @@ export interface SaveBountyInstance {
   cityIndex: number;
   templateId: string;
   difficulty: 'easy' | 'medium' | 'hard';
-  kind: 'OUTSKIRTS_KILL' | 'OUTSKIRTS_BOSS_KILL' | 'RUINS_ROOM_CLEAR' | 'RUINS_RUN_CLEAR' | 'TRIAL_CLEAR';
+  kind:
+    | 'OUTSKIRTS_KILL'
+    | 'OUTSKIRTS_BOSS_KILL'
+    | 'RUINS_ROOM_CLEAR'
+    | 'RUINS_RUN_CLEAR'
+    | 'TRIAL_CLEAR'
+    | 'CRAFT_COMPLETE'
+    | 'EXPEDITION_COMPLETE';
   title: string;
   description: string;
   progress: number;

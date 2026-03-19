@@ -33,6 +33,7 @@ import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../store
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 import { useContentStore } from '../stores/contentStore';
+import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations';
 import { normalizeCitySaveState } from './cityStateNormalization';
@@ -66,7 +67,17 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((entry) => typeof entry === 'string');
 
-const isValidRuinsRunSummary = (value: unknown): value is import('../types').RuinsRunSummary => {
+type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
+type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
+type SaveRecipeMasteryState = NonNullable<SaveData['recipeMasteryState']>;
+type EquipmentStateSlice = NonNullable<SaveData['equipmentState']>;
+
+const CURRENCY_KEYS = ['gold', 'spiritStones', 'merit'] as const;
+const MEDICINE_POUCH_SLOT_KEYS = ['healing', 'utility', 'specialty'] as const;
+
+const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
+
+const isValidRuinsRunSummary = (value: unknown): value is SaveRuinsRunSummary => {
   if (!isRecord(value)) return false;
   if (typeof value.runId !== 'string') return false;
   if (typeof value.ruinId !== 'string') return false;
@@ -489,6 +500,27 @@ const sanitizePromptStatus = (value: unknown): CraftPromptState['status'] | null
   return null;
 };
 
+const sanitizeCraftScript = (raw: unknown): CraftScript | null => {
+  if (!isRecord(raw)) return null;
+  if (!isFiniteNumber(raw.version)) return null;
+  if (!isCraftStationValue(raw.station)) return null;
+  if (typeof raw.sourceId !== 'string') return null;
+  if (!Array.isArray(raw.steps)) return null;
+  if (!raw.steps.every((step) => isRecord(step) && typeof step.id === 'string' && typeof step.type === 'string')) {
+    return null;
+  }
+
+  return {
+    ...raw,
+    version: raw.version,
+    station: raw.station,
+    sourceId: raw.sourceId,
+    steps: raw.steps.map((step) => ({ ...step })),
+    baselineTimeSec: isFiniteNumber(raw.baselineTimeSec) ? raw.baselineTimeSec : undefined,
+    handsOnBonus: isRecord(raw.handsOnBonus) ? { ...raw.handsOnBonus } : undefined,
+  } as CraftScript;
+};
+
 const sanitizePromptState = (raw: unknown): CraftPromptState | null => {
   if (!isRecord(raw)) return null;
   if (typeof raw.id !== 'string' || typeof (raw as any).type !== 'string') return null;
@@ -533,10 +565,8 @@ function isValidCraftSessionState(value: unknown): value is SaveData['craftSessi
     if (typeof session.startedAt !== 'number' || typeof session.endsAt !== 'number') return false;
     if (!isRecord(session.cursor) || typeof (session.cursor as any).stepIndex !== 'number') return false;
     if (!isRecord(session.script)) return false;
-    const script = session.script as CraftScript;
-    if (!Array.isArray(script.steps)) return false;
-    if (!script.steps.every((step) => isRecord(step) && typeof step.id === 'string' && typeof (step as any).type === 'string'))
-      return false;
+    const script = sanitizeCraftScript(session.script);
+    if (!script) return false;
 
     if ('prompts' in session && session.prompts !== undefined && session.prompts !== null) {
       if (!Array.isArray(session.prompts)) return false;
@@ -670,7 +700,8 @@ function isValidMedicinePouchSlot(value: unknown): value is import('../types').M
 function isValidMedicinePouchState(value: unknown): value is SaveData['medicinePouchState'] {
   if (!isRecord(value)) return false;
   if (!isRecord(value.slots)) return false;
-  return (['healing', 'utility', 'specialty'] as const).every((slotKey) => isValidMedicinePouchSlot(value.slots[slotKey]));
+  const slots = value.slots;
+  return MEDICINE_POUCH_SLOT_KEYS.every((slotKey) => isValidMedicinePouchSlot(slots[slotKey]));
 }
 
 function isValidManualPavilionState(value: unknown): value is SaveData['manualPavilionState'] {
@@ -825,10 +856,11 @@ function mergeMedicinePouchState(
     return defaults;
   }
 
-  const nextSlots: SaveData['medicinePouchState']['slots'] = { ...defaults.slots } as any;
-  (['healing', 'utility', 'specialty'] as const).forEach((slotKey) => {
-    nextSlots[slotKey] = sanitizeMedicinePouchSlot(slotKey, raw.slots?.[slotKey], defaults.slots[slotKey]);
-  });
+  const nextSlots: SaveData['medicinePouchState']['slots'] = {
+    healing: sanitizeMedicinePouchSlot('healing', raw.slots.healing, defaults.slots.healing),
+    utility: sanitizeMedicinePouchSlot('utility', raw.slots.utility, defaults.slots.utility),
+    specialty: sanitizeMedicinePouchSlot('specialty', raw.slots.specialty, defaults.slots.specialty),
+  };
 
   return { slots: nextSlots };
 }
@@ -841,22 +873,48 @@ const cloneCraftScript = (script: CraftScript): CraftScript => ({
 function sanitizeCraftPayment(raw: unknown): CraftSessionPayment {
   const payment: CraftSessionPayment = {};
   if (!isRecord(raw)) return payment;
-  if (isRecord((raw as any).currencies)) {
-    payment.currencies = {};
-    (Object.keys((raw as any).currencies) as Array<keyof CraftSessionPayment['currencies']>).forEach((key) => {
-      const value = (raw as any).currencies?.[key];
+  const rawCurrencies = isRecord(raw.currencies) ? raw.currencies : null;
+  if (rawCurrencies) {
+    const currencies: NonNullable<CraftSessionPayment['currencies']> = {};
+    CURRENCY_KEYS.forEach((key) => {
+      const value = rawCurrencies[key];
       if (typeof value === 'string') {
-        payment.currencies![key] = value;
+        currencies[key] = value;
       }
     });
+    payment.currencies = currencies;
   }
-  if (Array.isArray((raw as any).items)) {
-    payment.items = (raw as any).items
-      .filter((entry) => isRecord(entry) && typeof (entry as any).itemId === 'string' && typeof (entry as any).qty === 'number')
-      .map((entry) => ({ itemId: (entry as any).itemId as string, qty: Math.max(0, Math.floor((entry as any).qty as number)) }))
+  if (Array.isArray(raw.items)) {
+    payment.items = raw.items
+      .filter((entry): entry is { itemId: string; qty: number } => isRecord(entry) && typeof entry.itemId === 'string' && typeof entry.qty === 'number')
+      .map((entry) => ({ itemId: entry.itemId, qty: Math.max(0, Math.floor(entry.qty)) }))
       .filter((entry) => entry.qty > 0);
   }
   return payment;
+}
+
+function sanitizeTemperAffixArray(raw: unknown): TemperAffix[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter(
+      (entry): entry is TemperAffix =>
+        isRecord(entry)
+        && typeof entry.id === 'string'
+        && typeof entry.label === 'string'
+        && ['atkPct', 'defPct', 'hpPct', 'critPct', 'dodgePct'].includes(String(entry.stat))
+        && isFiniteNumber(entry.valuePct),
+    )
+    .map((entry) => ({ ...entry }));
+}
+
+function sanitizeForgeToolTiers(raw: unknown, fallback: ForgeToolTiers): ForgeToolTiers {
+  if (!isRecord(raw)) return fallback;
+  return {
+    anvil: Math.max(1, Math.min(10, Number(raw.anvil) || fallback.anvil)),
+    hammer: Math.max(1, Math.min(10, Number(raw.hammer) || fallback.hammer)),
+    bellows: Math.max(1, Math.min(10, Number(raw.bellows) || fallback.bellows)),
+    quenchTub: Math.max(1, Math.min(10, Number(raw.quenchTub) || fallback.quenchTub)),
+  };
 }
 
 function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): CraftSession | null {
@@ -872,12 +930,8 @@ function sanitizeCraftSession(raw: unknown, fallback: CraftSession | null): Craf
   if (typeof session.createdAt !== 'number' || typeof session.seed !== 'number') return fallback;
   const startedAt = typeof session.startedAt === 'number' ? session.startedAt : session.createdAt;
   const endsAt = typeof session.endsAt === 'number' ? session.endsAt : startedAt;
-  if (!isRecord(session.script)) return fallback;
-  const script = session.script as CraftScript;
-  if (!Array.isArray(script.steps)) return fallback;
-  if (!script.steps.every((step) => isRecord(step) && typeof step.id === 'string' && typeof (step as any).type === 'string')) {
-    return fallback;
-  }
+  const script = sanitizeCraftScript(session.script);
+  if (!script) return fallback;
   const cursor =
     isRecord(session.cursor) && typeof (session.cursor as any).stepIndex === 'number'
       ? {
@@ -970,7 +1024,7 @@ function mergeCraftSessionState(raw: unknown, defaults: CraftSessionSaveState): 
 
 function mergeRecipeMasteryState(
   raw: unknown,
-  defaults: NonNullable<SaveData['recipeMasteryState']>,
+  defaults: SaveRecipeMasteryState,
 ): SaveData['recipeMasteryState'] {
   if (!isValidRecipeMasteryState(raw)) {
     if (raw !== undefined) {
@@ -979,10 +1033,11 @@ function mergeRecipeMasteryState(
     return defaults;
   }
 
-  const record = raw as SaveData['recipeMasteryState'];
+  const record: SaveRecipeMasteryState = raw ?? { alchemy: {} };
   const nextAlchemy: Record<string, number> = { ...defaults.alchemy };
-  if (record.alchemy && isRecord(record.alchemy)) {
-    Object.entries(record.alchemy).forEach(([recipeId, value]) => {
+  const alchemy = isRecord(record.alchemy) ? record.alchemy : null;
+  if (alchemy) {
+    Object.entries(alchemy).forEach(([recipeId, value]) => {
       if (typeof value !== 'number') return;
       const clamped = Math.min(100, Math.max(0, Math.floor(value)));
       nextAlchemy[recipeId] = clamped;
@@ -996,16 +1051,14 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
   const defaults = buildDefaultSaveState();
   const record = isRecord(partialSave) ? partialSave : {};
   const defaultsMeta = defaults.meta ?? { lastActiveAtMs: Date.now() };
-  const baseEquipment =
-    defaults.equipmentState ??
-    ({
-      equippedWeaponId: null,
-      equippedAccessoryId: null,
-      refineLevelBySlot: { weapon: 0, accessory: 0 },
-      temperBonusesBySlot: { weapon: [], accessory: [] },
-      forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
-    } as SaveData['equipmentState']);
-  const baseBuffState = defaults.buffState ?? ({ activeTalismans: [] } as SaveData['buffState']);
+  const baseEquipment: EquipmentStateSlice = defaults.equipmentState ?? {
+    equippedWeaponId: null,
+    equippedAccessoryId: null,
+    refineLevelBySlot: { weapon: 0, accessory: 0 },
+    temperBonusesBySlot: { weapon: [], accessory: [] },
+    forgeToolTiers: { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
+  };
+  const baseBuffState: NonNullable<SaveData['buffState']> = defaults.buffState ?? { activeTalismans: [] };
   const baseMedicinePouchState = defaults.medicinePouchState ?? createDefaultMedicinePouchState();
   const baseCraftSessionState = defaults.craftSessionState ?? createDefaultCraftSessionState();
   const baseRecipeMasteryState = defaults.recipeMasteryState ?? createDefaultRecipeMasteryState();
@@ -1063,39 +1116,33 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
     ),
     equipmentState: (() => {
       if (!isRecord(record.equipmentState)) return baseEquipment;
-      const incoming = record.equipmentState as SaveData['equipmentState'];
-      const temperBonuses = isRecord(incoming.temperBonusesBySlot)
-        ? {
-            weapon: Array.isArray((incoming.temperBonusesBySlot as any).weapon)
-              ? ((incoming.temperBonusesBySlot as any).weapon as any[])
-              : [],
-            accessory: Array.isArray((incoming.temperBonusesBySlot as any).accessory)
-              ? ((incoming.temperBonusesBySlot as any).accessory as any[])
-              : [],
-          }
-        : baseEquipment.temperBonusesBySlot ?? { weapon: [], accessory: [] };
-      const toolTiers = isRecord(incoming.forgeToolTiers)
-        ? {
-            anvil: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).anvil) || 1)),
-            hammer: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).hammer) || 1)),
-            bellows: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).bellows) || 1)),
-            quenchTub: Math.max(1, Math.min(10, Number((incoming.forgeToolTiers as any).quenchTub) || 1)),
-          }
-        : baseEquipment.forgeToolTiers ?? { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 };
+      const incoming = record.equipmentState;
+      const refineLevelBySlot = isRecord(incoming.refineLevelBySlot) ? incoming.refineLevelBySlot : {};
+      const temperBonusesBySlot = isRecord(incoming.temperBonusesBySlot) ? incoming.temperBonusesBySlot : {};
+      const temperBonuses: Record<EquipmentSlot, TemperAffix[]> = {
+        weapon: sanitizeTemperAffixArray(temperBonusesBySlot.weapon),
+        accessory: sanitizeTemperAffixArray(temperBonusesBySlot.accessory),
+      };
+      const toolTiers = sanitizeForgeToolTiers(
+        incoming.forgeToolTiers,
+        baseEquipment.forgeToolTiers ?? { anvil: 1, hammer: 1, bellows: 1, quenchTub: 1 },
+      );
 
-      return {
+      const mergedEquipment: EquipmentStateSlice = {
         ...baseEquipment,
         ...incoming,
         refineLevelBySlot: {
-          weapon: Math.max(0, Math.floor(incoming.refineLevelBySlot?.weapon ?? baseEquipment.refineLevelBySlot.weapon)),
-          accessory: Math.max(0, Math.floor(incoming.refineLevelBySlot?.accessory ?? baseEquipment.refineLevelBySlot.accessory)),
+          weapon: Math.max(0, Math.floor(Number(refineLevelBySlot.weapon) || baseEquipment.refineLevelBySlot.weapon)),
+          accessory: Math.max(0, Math.floor(Number(refineLevelBySlot.accessory) || baseEquipment.refineLevelBySlot.accessory)),
         },
         temperBonusesBySlot: temperBonuses,
         forgeToolTiers: toolTiers,
-      } as SaveData['equipmentState'];
+      };
+
+      return mergedEquipment;
     })(),
     buffState: isRecord(record.buffState)
-      ? ({ ...baseBuffState, ...record.buffState } as SaveData['buffState'])
+      ? { ...baseBuffState, ...record.buffState }
       : baseBuffState,
     bountyState: mergeSlice(record.bountyState, defaults.bountyState, isValidBountyState, 'bountyState'),
     expeditionState: mergeSlice(
@@ -1160,13 +1207,12 @@ export function migrateSave(raw: unknown): SaveData {
     return preserveUnknownFields(candidate, normalized) as Record<string, unknown>;
   });
 
-  return migrated as SaveData;
+  return mergeWithDefaults(migrated);
 }
 
 export function assertRequiredSaveKeys(saveData: SaveData): void {
   if (typeof import.meta === 'undefined' || !import.meta.env?.DEV) return;
-  const record = saveData as unknown as Record<string, unknown>;
-  const missing = REQUIRED_SAVE_KEYS.filter((key) => !(key in record));
+  const missing = REQUIRED_SAVE_KEYS.filter((key) => !(key in saveData));
   if (missing.length > 0) {
     console.warn('[SaveLoad] Missing required save keys after hydration:', missing.join(', '));
   }

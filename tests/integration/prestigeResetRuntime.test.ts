@@ -58,6 +58,7 @@ const primeContentStore = async () => {
 
   useContentStore.setState({
     raw: content as never,
+    economy: content.economy as never,
     isLoaded: true,
     isLoading: false,
     error: null,
@@ -131,12 +132,11 @@ test('prestige reset service creates a clean new life while preserving permanent
     progressByRuinId: {
       ruins_alpha: {
         totalRuns: 2,
-        totalClears: 1,
         totalRoomsCleared: 5,
-        bestRoomsCleared: 5,
-        highestFloorReached: 2,
+        bossKills: 1,
+        bestRunSeconds: 180,
         bossChestRareFailures: 0,
-              },
+      },
     },
   });
   useEquipmentStore.setState({
