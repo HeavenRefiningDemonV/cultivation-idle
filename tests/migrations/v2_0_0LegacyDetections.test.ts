@@ -69,7 +69,8 @@ test('partial reset residue dry-run detects clean-life inconsistencies without m
 
   assert.equal(step?.ownerPacket, '1.7');
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'PARTIAL_RESET_RESIDUE_DETECTED'), true);
-  assert.equal(step?.summary.includes('city'), true);
+  assert.equal(step?.summary.includes('trial'), true);
+  assert.equal(step?.summary.includes('equipment'), true);
   assert.equal(step?.summary.includes('technique'), true);
   assert.equal(step?.didMutate, true);
   assert.deepEqual(dry.migrated, original);

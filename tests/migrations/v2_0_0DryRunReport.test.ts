@@ -13,8 +13,9 @@ test('dry-run report groups active vs planned vs report-only sections', async ()
   const fixture = await loadMigrationFixture('legacy-gate-item-ids');
   const report = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough }).report;
 
-  assert.ok(report.grouped.activeTransforms.length >= 0);
-  assert.ok(report.grouped.plannedTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_gate_item_alias_migration'));
+  assert.ok(report.grouped.activeTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_gate_item_alias_migration'));
+  assert.ok(report.grouped.activeTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_trial_resolution_normalization'));
+  assert.ok(report.grouped.plannedTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_semester_slice_clamp'));
   assert.ok(report.grouped.reportOnly.some((entry) => entry.stepId === 'm0_report_source_version'));
   assert.ok(report.touchedFieldPaths.length > 0);
 });

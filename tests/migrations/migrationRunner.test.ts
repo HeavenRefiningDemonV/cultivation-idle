@@ -52,7 +52,11 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     'v2_0_0_plan_offline_unification',
   ]);
   assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version']);
-  assert.ok(applyOnce.report.plannedTransformSteps.length > 0);
+  assert.deepEqual(applyOnce.report.plannedTransformSteps, ['v2_0_0_plan_semester_slice_clamp']);
+  assert.ok(applyOnce.report.grouped.activeTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_trial_resolution_normalization'));
+  assert.ok(applyOnce.report.grouped.activeTransforms.some((entry) => entry.stepId === 'v2_0_0_normalize_city_progression_state'));
+  assert.ok(applyOnce.report.grouped.activeTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_partial_reset_residue_cleanup'));
+  assert.ok(applyOnce.report.grouped.activeTransforms.some((entry) => entry.stepId === 'v2_0_0_plan_offline_unification'));
 
   const applyTwice = runSaveMigrations(applyOnce.migrated, {
     mode: 'apply',
@@ -60,11 +64,13 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
   });
 
   assert.deepEqual(applyTwice.report.appliedTransformSteps, [
+    'v2_0_0_plan_gate_item_alias_migration',
     'v2_0_0_plan_trial_resolution_normalization',
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
     'v2_0_0_plan_offline_unification',
   ]);
+  assert.deepEqual(applyTwice.report.plannedTransformSteps, ['v2_0_0_plan_semester_slice_clamp']);
   assert.deepEqual(applyTwice.migrated, applyOnce.migrated);
   assert.equal((applyTwice.migrated as Record<string, unknown>).version, CURRENT_SAVE_VERSION);
 });
