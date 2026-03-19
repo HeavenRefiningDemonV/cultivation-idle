@@ -91,3 +91,30 @@ test('legacy partial-reset migration fixtures project to clean current city trut
   assert.deepEqual(scenario.cityState.unlockedCityIds, ['city_pinewind_hamlet']);
   assert.equal(scenario.cityState.currentCityId, 'city_pinewind_hamlet');
 });
+
+
+test('canonical fixture adapters normalize legacy offline timestamp splits out of current-save truth', async () => {
+  const contract = await loadProgressionContract();
+  const saveShape = toSaveShape({
+    migrationFixture: {
+      name: 'legacy-offline-split',
+      data: {
+        version: '2.0.0',
+        timestamp: 1736035200000,
+        meta: { lastActiveAtMs: 1736031000000 },
+        gameState: {
+          realm: { index: 0, substage: 0, name: 'Qi Condensation' },
+          selectedPath: null,
+          lastActiveTime: 1736032000000,
+          lastTickTime: 1736033000000,
+        },
+        inventoryState: { items: {} },
+        prestigeState: { currentRunAP: 0, highestRealmReached: 0 },
+      },
+    },
+  }, contract) as { meta?: { lastActiveAtMs?: number }; gameState?: { lastActiveTime?: number; lastTickTime?: number } };
+
+  assert.equal(saveShape.meta?.lastActiveAtMs, 1736033000000);
+  assert.equal(saveShape.gameState?.lastActiveTime, 1736033000000);
+  assert.equal(saveShape.gameState?.lastTickTime, 1736033000000);
+});

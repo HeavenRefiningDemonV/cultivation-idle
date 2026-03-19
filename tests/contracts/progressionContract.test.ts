@@ -86,4 +86,7 @@ test('deferred and offline contract classification are queryable', async () => {
   const offline = getOfflineProgressionContract(contract);
   assert.equal(offline.pipelineId, 'offline_progression_v1');
   assert.deepEqual(offline.excludes, ['combat']);
+  assert.equal(offline.cultivationPolicy.mode, 'passive_scaled_efficiency');
+  assert.equal(offline.cultivationPolicy.meditatingOnly, false);
+  assert.deepEqual(offline.timerAdvancedSystems, ['queued_actions', 'expeditions']);
 });

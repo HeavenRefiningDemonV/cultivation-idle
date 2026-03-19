@@ -20,7 +20,9 @@ export const createFreshLifeScenario = ({ contract }: ScenarioBuildContext, over
       offlineState: {
         pipelineId: offline.pipelineId,
         maxCatchupSeconds: offline.maxCatchupSeconds,
-        efficiencyModel: offline.efficiencyModel,
+        cultivationPolicy: { ...offline.cultivationPolicy },
+        timerAdvancedSystems: [...offline.timerAdvancedSystems],
+        summaryParts: [...offline.summaryParts],
       },
       notes: ['Packet 0.1 harness fixture; does not imply runtime fixes.'],
     },

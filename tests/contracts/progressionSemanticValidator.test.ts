@@ -98,6 +98,7 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
   const offlineIssues = issues.filter((entry) => entry.category === 'OFFLINE_PIPELINE_SPLIT');
   assert.equal(offlineIssues.length > 0, true);
   assert.equal(offlineIssues.every((entry) => entry.suggestedOwnerPacket === '1.8'), true);
+  assert.equal(offlineIssues.some((entry) => entry.fixStrategySummary.includes('packet-1.8')), true);
 });
 
 

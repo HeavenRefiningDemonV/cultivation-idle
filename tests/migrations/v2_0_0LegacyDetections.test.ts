@@ -77,9 +77,13 @@ test('partial reset residue dry-run detects clean-life inconsistencies without m
 
 test('offline split detection reports owner packet 1.8 when split metadata is present', async () => {
   const fixture = await loadMigrationFixture('legacy-offline-split');
+  const original = structuredClone(fixture);
   const dry = runSaveMigrations(fixture, { mode: 'dry-run', normalizeToCurrent: passthrough });
   const step = dry.report.stepResults.find((entry) => entry.stepId === 'v2_0_0_plan_offline_unification');
 
   assert.equal(step?.ownerPacket, '1.8');
+  assert.equal(step?.didMutate, true);
   assert.equal(dry.report.warnings.some((entry) => entry.code === 'OFFLINE_STATE_SPLIT_DETECTED'), true);
+  assert.equal(dry.report.warnings.some((entry) => entry.code === 'OFFLINE_NORMALIZED_TO_CANONICAL_TIMESTAMP'), true);
+  assert.deepEqual(dry.migrated, original);
 });

@@ -104,7 +104,7 @@ const validateScenarioSemantics = (
         summary: `Scenario ${scenario.kind} does not use the contract offline pipeline.`,
         evidence: [{ path: `scenario:${scenario.kind}`, detail: scenario.offlineState.pipelineId }],
         suggestedOwnerPacket: '1.8',
-        fixStrategySummary: 'Always source offline pipeline expectations from the progression contract.',
+        fixStrategySummary: 'Always source offline pipeline expectations from the packet-1.8 progression contract pipeline.',
         autoFixable: true,
       });
     }
@@ -284,7 +284,7 @@ const readMigrationFixtureIssues = (
         summary: `Migration fixture ${name} contains conflicting offline timestamps.`,
         evidence: [{ path: `fixture:${name}`, detail: offlineTimes.join(', ') }],
         suggestedOwnerPacket: '1.8',
-        fixStrategySummary: 'Retain only fixtures that explicitly exercise offline timestamp reconciliation.',
+        fixStrategySummary: 'Retain only fixtures that explicitly exercise packet-1.8 offline timestamp reconciliation and canonical latest-timestamp normalization.',
         autoFixable: true,
       });
     }

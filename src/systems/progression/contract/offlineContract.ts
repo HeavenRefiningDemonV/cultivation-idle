@@ -5,5 +5,13 @@ export const OFFLINE_PROGRESSION_CONTRACT: OfflineProgressionContract = {
   appliesTo: ['cultivation', 'queued_actions', 'expeditions'],
   excludes: ['combat'],
   maxCatchupSeconds: 43200,
-  efficiencyModel: 'full_for_supported_systems',
+  cultivationPolicy: {
+    mode: 'passive_scaled_efficiency',
+    baseEfficiency: 0.5,
+    prestigeEfficiencyPerLevel: 0.08,
+    maxEfficiency: 0.9,
+    meditatingOnly: false,
+  },
+  timerAdvancedSystems: ['queued_actions', 'expeditions'],
+  summaryParts: ['qi_gained', 'queued_actions', 'expeditions'],
 };

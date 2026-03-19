@@ -49,8 +49,9 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     'v2_0_0_plan_trial_resolution_normalization',
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
+    'v2_0_0_plan_offline_unification',
   ]);
-  assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version', 'v2_0_0_plan_offline_unification']);
+  assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version']);
   assert.ok(applyOnce.report.plannedTransformSteps.length > 0);
 
   const applyTwice = runSaveMigrations(applyOnce.migrated, {
@@ -62,6 +63,7 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     'v2_0_0_plan_trial_resolution_normalization',
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
+    'v2_0_0_plan_offline_unification',
   ]);
   assert.deepEqual(applyTwice.migrated, applyOnce.migrated);
   assert.equal((applyTwice.migrated as Record<string, unknown>).version, CURRENT_SAVE_VERSION);

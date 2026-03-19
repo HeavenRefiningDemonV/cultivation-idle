@@ -5,7 +5,7 @@ export const legacyOfflineSplitFixture: ProgressionFixtureDefinition = {
   metadata: {
     id: 'legacy-offline-split',
     name: 'Legacy Offline Split',
-    description: 'Legacy save with conflicting offline timestamps retained for packet 1.8 offline-pipeline regression work.',
+    description: 'Legacy save with conflicting offline timestamps retained as a packet-1.8 regression input; apply-mode migration now normalizes it to canonical offline timestamp truth.',
     kind: 'legacy_save',
     sourceType: 'migrated_legacy',
     ownerPacket: '0.3B',
@@ -19,7 +19,7 @@ export const legacyOfflineSplitFixture: ProgressionFixtureDefinition = {
     cityIds: ['city_pinewind_hamlet'],
     tags: ['legacy', 'migration', 'offline'],
     adapterAvailability: { contractScenario: true, saveShape: true, migrationFixture: true },
-    notes: ['Offline unification belongs to packet 1.8 in this fixture map.'],
+    notes: ['Offline unification belongs to packet 1.8 and apply-mode migration now reconciles this fixture to one canonical timestamp.'],
   },
   build: async () => ({ migrationFixture: { name: 'legacy-offline-split', data: await loadMigrationFixture('legacy-offline-split') } }),
 };

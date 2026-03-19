@@ -1,10 +1,10 @@
 import { normalizeGateItemAlias, type ProgressionContract } from '../../../../src/systems/progression/contract/index.js';
 import { normalizeCitySaveState } from '../../../../src/save/cityStateNormalization.js';
+import { normalizeOfflineTimestamps } from '../../../../src/save/offlineTimestampNormalization.js';
 import { applyPartialResetResidueCleanup } from '../../../../src/save/partialResetResidueCleanup.js';
 import { normalizeTrialProgress } from '../../../../src/stores/trialStore.js';
 import type { ProgressionScenario } from '../../../helpers/progression/index.js';
 import type { FixtureBuildResult } from '../fixtureTypes.js';
-
 
 const canonicalizeInventoryItems = (items: Record<string, unknown>): Record<string, unknown> => {
   const next = { ...items };
@@ -23,18 +23,18 @@ const canonicalizeSaveShape = (saveShape: Record<string, unknown>): Record<strin
   const trialState = saveShape.trialState;
   const gameState = saveShape.gameState;
   const cityState = saveShape.cityState;
-  const record = inventoryState && typeof inventoryState === 'object' ? (inventoryState as Record<string, unknown>) : null;
+  const inventoryRecord = inventoryState && typeof inventoryState === 'object' ? (inventoryState as Record<string, unknown>) : null;
   const trialRecord = trialState && typeof trialState === 'object' ? (trialState as Record<string, unknown>) : null;
   const gameRecord = gameState && typeof gameState === 'object' ? (gameState as Record<string, unknown>) : null;
   const cityRecord = cityState && typeof cityState === 'object' ? (cityState as Record<string, unknown>) : null;
 
-  return {
+  return normalizeOfflineTimestamps({
     ...saveShape,
-    ...(record && record.items && typeof record.items === 'object'
+    ...(inventoryRecord && inventoryRecord.items && typeof inventoryRecord.items === 'object'
       ? {
           inventoryState: {
-            ...record,
-            items: canonicalizeInventoryItems(record.items as Record<string, unknown>),
+            ...inventoryRecord,
+            items: canonicalizeInventoryItems(inventoryRecord.items as Record<string, unknown>),
           },
         }
       : {}),
@@ -67,7 +67,7 @@ const canonicalizeSaveShape = (saveShape: Record<string, unknown>): Record<strin
           }),
         }
       : {}),
-  };
+  }).save;
 };
 
 const scenarioToSaveShape = (scenario: ProgressionScenario, contract: ProgressionContract): Record<string, unknown> => {
@@ -158,7 +158,9 @@ export const toSaveShape = (
   contract: ProgressionContract,
 ): Record<string, unknown> | null => {
   if (buildResult.saveShape) return canonicalizeSaveShape(buildResult.saveShape);
-  if (buildResult.migrationFixture) return canonicalizeSaveShape(applyPartialResetResidueCleanup(buildResult.migrationFixture.data as Record<string, unknown>).save);
+  if (buildResult.migrationFixture) {
+    return canonicalizeSaveShape(applyPartialResetResidueCleanup(buildResult.migrationFixture.data as Record<string, unknown>).save);
+  }
   if (buildResult.scenario) return canonicalizeSaveShape(scenarioToSaveShape(buildResult.scenario, contract));
   return null;
 };

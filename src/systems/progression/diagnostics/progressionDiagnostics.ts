@@ -71,7 +71,7 @@ export const collectProgressionDiagnostics = (contract: ProgressionContract, inp
         severity: 'warning',
         summary: 'Multiple offline pipeline surfaces detected in runtime files.',
         evidence: offlineMentions.map(([path]) => ({ path, detail: 'Contains offline processing logic references.' })),
-        fixStrategySummary: 'Route offline operations through a single contract-defined offline pipeline entry point.',
+        fixStrategySummary: 'Route offline operations through the single packet-1.8 offline pipeline entry point.',
         autoFixable: false,
       }),
     );

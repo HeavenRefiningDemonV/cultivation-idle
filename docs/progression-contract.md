@@ -70,7 +70,13 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 - Applies to: cultivation, queued_actions, expeditions
 - Excludes: combat
 - Max catch-up seconds: 43200
-- Efficiency model: full_for_supported_systems
+- Cultivation policy: passive_scaled_efficiency
+- Cultivation base efficiency: 0.5
+- Cultivation prestige efficiency per level: 0.08
+- Cultivation max efficiency: 0.9
+- Meditating only: false
+- Full timer advancement: queued_actions, expeditions
+- Summary parts: qi_gained, queued_actions, expeditions
 
 ## 9) Reset / prestige hook summary
 

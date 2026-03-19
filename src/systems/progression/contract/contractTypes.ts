@@ -68,12 +68,22 @@ export interface ContentCapContract {
   state: 'end_of_slice';
 }
 
+export interface OfflineCultivationPolicyContract {
+  mode: 'passive_scaled_efficiency';
+  baseEfficiency: number;
+  prestigeEfficiencyPerLevel: number;
+  maxEfficiency: number;
+  meditatingOnly: false;
+}
+
 export interface OfflineProgressionContract {
   pipelineId: 'offline_progression_v1';
   appliesTo: Array<'cultivation' | 'queued_actions' | 'expeditions'>;
   excludes: Array<'combat'>;
   maxCatchupSeconds: number;
-  efficiencyModel: 'full_for_supported_systems';
+  cultivationPolicy: OfflineCultivationPolicyContract;
+  timerAdvancedSystems: Array<'queued_actions' | 'expeditions'>;
+  summaryParts: Array<'qi_gained' | 'queued_actions' | 'expeditions'>;
 }
 
 export interface PathTruthContract {

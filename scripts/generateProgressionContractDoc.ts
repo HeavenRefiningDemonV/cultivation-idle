@@ -116,7 +116,13 @@ ${deferredRows}
 - Applies to: ${contract.offline.appliesTo.join(', ')}
 - Excludes: ${contract.offline.excludes.join(', ')}
 - Max catch-up seconds: ${contract.offline.maxCatchupSeconds}
-- Efficiency model: ${contract.offline.efficiencyModel}
+- Cultivation policy: ${contract.offline.cultivationPolicy.mode}
+- Cultivation base efficiency: ${contract.offline.cultivationPolicy.baseEfficiency}
+- Cultivation prestige efficiency per level: ${contract.offline.cultivationPolicy.prestigeEfficiencyPerLevel}
+- Cultivation max efficiency: ${contract.offline.cultivationPolicy.maxEfficiency}
+- Meditating only: ${contract.offline.cultivationPolicy.meditatingOnly}
+- Full timer advancement: ${contract.offline.timerAdvancedSystems.join(', ')}
+- Summary parts: ${contract.offline.summaryParts.join(', ')}
 
 ## 9) Reset / prestige hook summary
 

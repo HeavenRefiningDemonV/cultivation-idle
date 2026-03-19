@@ -43,7 +43,15 @@ export interface ProgressionScenario {
   offlineState: {
     pipelineId: string;
     maxCatchupSeconds: number;
-    efficiencyModel: string;
+    cultivationPolicy: {
+      mode: string;
+      baseEfficiency: number;
+      prestigeEfficiencyPerLevel: number;
+      maxEfficiency: number;
+      meditatingOnly: boolean;
+    };
+    timerAdvancedSystems: string[];
+    summaryParts: string[];
   };
   notes: string[];
 }

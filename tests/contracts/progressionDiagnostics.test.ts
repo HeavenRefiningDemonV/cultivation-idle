@@ -139,4 +139,5 @@ test('diagnostics owner packet map reflects packet 1.6 prestige honesty and pack
 
   assert.equal(hiddenPrestigeIssue?.suggestedOwnerPacket, '1.6');
   assert.equal(offlineIssue?.suggestedOwnerPacket, '1.8');
+  assert.equal(offlineIssue?.fixStrategySummary.includes('packet-1.8'), true);
 });

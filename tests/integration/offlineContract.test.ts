@@ -13,14 +13,21 @@ test('offline contract exposes one canonical pipeline shape', async () => {
   const contract = await loadProgressionContract();
   const offline = getOfflineProgressionContract(contract);
   assert.equal(offline.pipelineId, 'offline_progression_v1');
+  assert.deepEqual(offline.appliesTo, ['cultivation', 'queued_actions', 'expeditions']);
   assert.deepEqual(offline.excludes, ['combat']);
+  assert.deepEqual(offline.timerAdvancedSystems, ['queued_actions', 'expeditions']);
 });
 
-test('offline cap and efficiency fields are queryable', async () => {
+test('offline contract exposes packet-1.8 semester efficiency policy truthfully', async () => {
   const contract = await loadProgressionContract();
   const offline = getOfflineProgressionContract(contract);
-  assert.equal(offline.maxCatchupSeconds > 0, true);
-  assert.equal(offline.efficiencyModel, 'full_for_supported_systems');
+  assert.equal(offline.maxCatchupSeconds, 43200);
+  assert.equal(offline.cultivationPolicy.mode, 'passive_scaled_efficiency');
+  assert.equal(offline.cultivationPolicy.baseEfficiency, 0.5);
+  assert.equal(offline.cultivationPolicy.prestigeEfficiencyPerLevel, 0.08);
+  assert.equal(offline.cultivationPolicy.maxEfficiency, 0.9);
+  assert.equal(offline.cultivationPolicy.meditatingOnly, false);
+  assert.deepEqual(offline.summaryParts, ['qi_gained', 'queued_actions', 'expeditions']);
 });
 
 test('cap-reached and legacy-alias scenarios are usable in offline-related harness checks', async () => {
@@ -29,9 +36,6 @@ test('cap-reached and legacy-alias scenarios are usable in offline-related harne
   const legacyScenario = createLegacyAliasScenario({ contract });
   assertScenarioUsesContractOfflinePipeline(capScenario, contract);
   assert.equal(legacyScenario.kind, 'legacy_alias');
+  assert.equal(capScenario.offlineState.cultivationPolicy.meditatingOnly, false);
+  assert.deepEqual(capScenario.offlineState.timerAdvancedSystems, ['queued_actions', 'expeditions']);
 });
-
-// Future runtime assertions (packet 1.6): activate when old offline paths are consolidated.
-test('TODO(packet 1.6): only one offline pipeline remains live at runtime', { todo: true }, () => {});
-test('TODO(packet 1.6): offline summary matches single contract pipeline', { todo: true }, () => {});
-test('TODO(packet 1.6): contradictory offline legacy logic is no longer live truth', { todo: true }, () => {});
