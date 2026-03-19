@@ -5,12 +5,14 @@ import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { useUIStore } from './uiStore';
 import {
   buildLiveBountyDescription,
-  getAvailableLiveBountyTemplates,
+  getCanonicalLiveBountyDifficultyOrder,
   getBountyKindKey,
+  getSupportTemplateCityIndexById,
+  getTemplatesForLiveBountySlot,
   isLiveBountyBoard,
-  LIVE_BOUNTY_DIFFICULTIES,
   selectLiveBountyTemplate,
 } from '../systems/bounties/liveBountyBoard.js';
+import { LIVE_BOUNTY_BOARD_SIZE } from '../systems/world/bountyBoardContract.js';
 
 export type BountyKind =
   | 'OUTSKIRTS_KILL'
@@ -161,16 +163,19 @@ function buildBounties(cityId: string, cityIndex: number, cityModules: string[],
     : null;
   if (!rewardByCity) return [];
 
-  const used = new Set<string>();
   const createdAt = Date.now();
+  const difficultyOrder = getCanonicalLiveBountyDifficultyOrder();
 
-  const validTemplates = getAvailableLiveBountyTemplates({ templates, cityId, cityIndex, cityModules });
-
-  if (validTemplates.length === 0) return [];
-
-  return LIVE_BOUNTY_DIFFICULTIES.map((difficulty) => {
-    const template =
-      selectLiveBountyTemplate({ templates: validTemplates, difficulty, usedTemplateIds: used, cityIndex, refreshSeed }) ?? validTemplates[0];
+  return difficultyOrder.map((difficulty, slotIndex) => {
+    const slotTemplates = getTemplatesForLiveBountySlot({
+      templates,
+      slotIndex,
+      cityId,
+      cityIndex,
+      cityModules,
+    });
+    const template = selectLiveBountyTemplate({ templates: slotTemplates, slotIndex, cityIndex, refreshSeed });
+    if (!template) return null;
     const fallbackTargets = EVENT_TARGET_LOOKUP[template.kind as BountyKind]?.[difficulty] ?? [1, 1];
     const target = template.targets?.[difficulty] ?? rollRange(fallbackTargets);
     const description = buildLiveBountyDescription(template, target);
@@ -191,7 +196,7 @@ function buildBounties(cityId: string, cityIndex: number, cityModules: string[],
       rewards,
       createdAt,
     };
-  });
+  }).filter((entry): entry is BountyInstance => Boolean(entry));
 }
 
 export const useBountyStore = create<BountyStoreState>()(
@@ -204,14 +209,18 @@ export const useBountyStore = create<BountyStoreState>()(
       const city = useContentStore.getState().maps.citiesById[cityId];
       const cityModules = city?.modules ?? [];
       const existing = get().activeByCityId[cityId];
-      if (isLiveBountyBoard({ board: existing, cityId, cityIndex, cityModules })) return;
+      const supportTemplateCityIndexById = getSupportTemplateCityIndexById(useContentStore.getState().raw?.bounties?.templates ?? []);
+      if (isLiveBountyBoard({ board: existing, cityId, cityIndex, cityModules, supportTemplateCityIndexById })) return;
       const refreshSeed = Math.floor((get().lastRefreshAtByCityId[cityId] ?? 0) / 1000);
       const next = buildBounties(cityId, cityIndex, cityModules, refreshSeed);
-      if (next.length !== LIVE_BOUNTY_DIFFICULTIES.length) return;
+      if (next.length !== LIVE_BOUNTY_BOARD_SIZE) return;
       set((state) => {
         state.activeByCityId[cityId] = next;
-        state.lastRefreshAtByCityId[cityId] = Date.now();
-        if (!(cityId in state.trackedByCityId)) {
+        if (!(cityId in state.lastRefreshAtByCityId)) {
+          state.lastRefreshAtByCityId[cityId] = Date.now();
+        }
+        const tracked = state.trackedByCityId[cityId];
+        if (!(cityId in state.trackedByCityId) || (tracked && !next.find((entry) => entry.instanceId === tracked))) {
           state.trackedByCityId[cityId] = null;
         }
       });
@@ -223,7 +232,7 @@ export const useBountyStore = create<BountyStoreState>()(
       const cityModules = city?.modules ?? [];
       const refreshSeed = Math.floor(Date.now() / 1000);
       const next = buildBounties(cityId, cityIndex, cityModules, refreshSeed);
-      if (next.length !== LIVE_BOUNTY_DIFFICULTIES.length) return;
+      if (next.length !== LIVE_BOUNTY_BOARD_SIZE) return;
       set((state) => {
         state.activeByCityId[cityId] = next;
         state.lastRefreshAtByCityId[cityId] = Date.now();

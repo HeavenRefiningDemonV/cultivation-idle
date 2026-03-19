@@ -50,7 +50,7 @@ export function resolveBountyDestination(args: {
     const craftModules = ['forge'].filter((key) => hasModule(modules, key));
 
     if (craftModules.length === 0) {
-      return { kind: 'unavailable', cityId, reason: 'Crafting unavailable' };
+      return { kind: 'unavailable', cityId, reason: 'Forge unavailable' };
     }
 
     if (craftModules.length === 1) {
