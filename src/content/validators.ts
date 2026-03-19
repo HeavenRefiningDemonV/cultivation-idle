@@ -29,10 +29,10 @@ import type {
   TechniqueDef,
   TechniquesConfig,
   TrialsConfig,
-} from './types';
-import type { LoadedContentRaw } from './loaders';
+} from './types.js';
+import type { LoadedContentRaw } from './loaders.js';
 import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
-import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints';
+import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;

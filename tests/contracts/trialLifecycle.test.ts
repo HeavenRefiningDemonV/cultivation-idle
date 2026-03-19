@@ -46,7 +46,7 @@ const loadContent = async (): Promise<ValidatedContent> => {
 
 const readyRealm: Realm = {
   index: 0,
-  substage: 4,
+  substage: 9,
   name: 'Qi Condensation',
 };
 

@@ -1,8 +1,8 @@
-export { CONTENT_DIR, contentUrl, getContentBaseUrl } from './contentPaths';
-export { loadAllContent, fetchJson } from './loaders';
-export { validateLoadedContent, extractCities } from './validators';
-export { normalizeForgeBlueprint, isRefineBlueprint, isRuneBlueprint, isTemperBlueprint } from './forge';
-export type { ForgeBlueprintRaw, NormalizedForgeBlueprint } from './forge';
-export * from './types';
-export type { LoadedContentRaw } from './loaders';
-export type { ValidatedContent } from './validators';
+export { CONTENT_DIR, contentUrl, getContentBaseUrl } from './contentPaths.js';
+export { loadAllContent, fetchJson } from './loaders.js';
+export { validateLoadedContent, extractCities } from './validators.js';
+export { normalizeForgeBlueprint, isRefineBlueprint, isRuneBlueprint, isTemperBlueprint } from './forge.js';
+export type { ForgeBlueprintRaw, NormalizedForgeBlueprint } from './forge.js';
+export * from './types.js';
+export type { LoadedContentRaw } from './loaders.js';
+export type { ValidatedContent } from './validators.js';

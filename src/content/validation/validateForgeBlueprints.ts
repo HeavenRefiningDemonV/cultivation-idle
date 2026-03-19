@@ -1,5 +1,5 @@
-import type { ForgeBlueprintsConfig } from '../types';
-import { validateForgeStepScript } from './forgeStepScript';
+import type { ForgeBlueprintsConfig } from '../types.js';
+import { validateForgeStepScript } from './forgeStepScript.js';
 
 const isRuneBlueprint = (blueprint: ForgeBlueprintsConfig['blueprints'][number]): boolean => {
   if (blueprint.id.startsWith('rune_')) return true;

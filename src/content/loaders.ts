@@ -17,8 +17,8 @@ import type {
   TalismanRecipesConfig,
   TechniquesConfig,
   TrialsConfig,
-} from './types';
-import { contentUrl } from './contentPaths';
+} from './types.js';
+import { contentUrl } from './contentPaths.js';
 
 export interface LoadedContentRaw {
   economy: EconomyConfig;

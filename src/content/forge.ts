@@ -1,5 +1,5 @@
-import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/crafting/craftingTypes';
-import type { ForgeBlueprintsConfig } from './types';
+import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/crafting/craftingTypes.js';
+import type { ForgeBlueprintsConfig } from './types.js';
 
 export type ForgeBlueprintRaw = ForgeBlueprintsConfig['blueprints'][number];
 
