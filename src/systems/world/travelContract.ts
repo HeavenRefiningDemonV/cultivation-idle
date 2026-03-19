@@ -32,7 +32,7 @@ type WorldTravelGuardInput = {
 };
 
 const COMBAT_ACTIVITY_TYPES = new Set<ForegroundActivityType>(['outskirts', 'trial', 'ruins']);
-const LIVE_CITY_ID_SET = new Set(SEMESTER_SLICE_CONTRACT.liveCityIds);
+const LIVE_CITY_ID_SET = new Set<string>(SEMESTER_SLICE_CONTRACT.liveCityIds);
 
 const byAscendingCityIndex = (left: CityDef, right: CityDef) => (left.index ?? 0) - (right.index ?? 0);
 
@@ -109,7 +109,7 @@ export function getWorldTravelGuard({
     return { allowed: false, reason: 'invalid-city' };
   }
 
-  const liveCityIdSet = new Set(liveCityIds);
+  const liveCityIdSet = new Set<string>(liveCityIds);
   if (!liveCityIdSet.has(targetCityId)) {
     return { allowed: false, reason: 'not-in-live-slice' };
   }

@@ -5,6 +5,7 @@ import { useCityStore } from '../../stores/cityStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useBountyStore } from '../../stores/bountyStore';
+import { useActivityStore } from '../../stores/activityStore';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations';
 import { resolveBountyDestination } from '../../utils/bountyRouting';
@@ -15,6 +16,12 @@ import {
   adaptProgressionAuthoredContent,
 } from '../../systems/progression/contract';
 import { getCityUnlockRequirementText } from '../../systems/progression/runtime/cityProgression';
+import {
+  buildWorldCitySelectorEntries,
+  getWorldTravelBlockMessage,
+  getWorldTravelGuard,
+} from '../../systems/world/travelContract.js';
+import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
 
@@ -47,6 +54,7 @@ function getModuleMeta(key: string) {
 
 export function WorldScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
+  const addNotification = useUIStore((state) => state.addNotification);
   const isLoaded = useContentStore((state) => state.isLoaded);
   const isLoading = useContentStore((state) => state.isLoading);
   const error = useContentStore((state) => state.error);
@@ -57,9 +65,9 @@ export function WorldScreen() {
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
-  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const trackedBounty = useBountyStore((state) => (currentCityId ? state.getTrackedBounty(currentCityId) : null));
   const inCombat = useCombatStore((state) => state.inCombat);
+  const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
 
   useEffect(() => {
     setHeaderTitles('World', 'Cities & activities');
@@ -83,16 +91,27 @@ export function WorldScreen() {
     }
   }, [citiesSorted, rawContent]);
 
+  const worldSelectorEntries = useMemo(
+    () =>
+      buildWorldCitySelectorEntries({
+        cities: citiesSorted,
+        currentCityId,
+        unlockedCityIds,
+        requirementTextByCityId: cityRequirementById,
+      }),
+    [citiesSorted, cityRequirementById, currentCityId, unlockedCityIds],
+  );
+
   const visibleCityModules = useMemo(() => {
     if (!selectedCity) return [];
     return selectedCity.modules.filter((moduleKey) => !WORLD_SCREEN_HIDDEN_MODULES.has(moduleKey));
   }, [selectedCity]);
 
-  const selectedModuleKey = useMemo(() => {
+  const displayedModuleKey = useMemo(() => {
     if (!selectedCity) return null;
     const stored = selectedModuleByCity[selectedCity.id];
     if (stored && visibleCityModules.includes(stored)) return stored;
-    return visibleCityModules?.[0] ?? null;
+    return visibleCityModules[0] ?? null;
   }, [selectedCity, selectedModuleByCity, visibleCityModules]);
 
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
@@ -116,8 +135,8 @@ export function WorldScreen() {
     if (showWorldBuildingModal && worldModalCityId && worldModalCityId === selectedCity?.id && worldModalKey) {
       return worldModalKey;
     }
-    return selectedModuleKey;
-  }, [combatModuleKey, selectedCity?.id, selectedModuleKey, showWorldBuildingModal, worldModalCityId, worldModalKey]);
+    return displayedModuleKey;
+  }, [combatModuleKey, displayedModuleKey, selectedCity?.id, showWorldBuildingModal, worldModalCityId, worldModalKey]);
 
   const trackedDestination = useMemo(() => {
     if (!selectedCity || !trackedBounty) return null;
@@ -138,23 +157,68 @@ export function WorldScreen() {
   }, [activeModuleKey, trackedDestination]);
 
   useEffect(() => {
-    if (!selectedCity || !selectedModuleKey) return;
-    const stored = selectedModuleByCity[selectedCity.id];
-    if (stored !== selectedModuleKey) {
-      setSelectedModule(selectedCity.id, selectedModuleKey);
-    }
-  }, [selectedCity, selectedModuleKey, selectedModuleByCity, setSelectedModule]);
-
-  useEffect(() => {
     if (!showWorldBuildingModal || !selectedCity) return;
     if (worldModalCityId && worldModalCityId !== selectedCity.id) {
       closeWorldBuildingModal();
     }
   }, [closeWorldBuildingModal, selectedCity, showWorldBuildingModal, worldModalCityId]);
 
+  const alternateUnlockedCityId = useMemo(
+    () => worldSelectorEntries.find((entry) => entry.isUnlocked && !entry.isCurrent)?.city.id ?? null,
+    [worldSelectorEntries],
+  );
+
+  const travelGuardForOtherCity = useMemo(
+    () =>
+      getWorldTravelGuard({
+        targetCityId: alternateUnlockedCityId,
+        currentCityId,
+        unlockedCityIds,
+        liveCityIds: SEMESTER_SLICE_CONTRACT.liveCityIds,
+        inCombat,
+        activeActivityType,
+        combatPresentationMode: combatPresentation.mode,
+      }),
+    [activeActivityType, alternateUnlockedCityId, combatPresentation.mode, currentCityId, inCombat, unlockedCityIds],
+  );
+
+  const currentCityTravelBlocked = alternateUnlockedCityId !== null && !travelGuardForOtherCity.allowed;
+
+  const currentCityStatusLine = useMemo(() => {
+    const unlockedCount = worldSelectorEntries.filter((entry) => entry.isUnlocked).length;
+    if (!selectedCity) return 'Select a city to view its modules.';
+    if (!alternateUnlockedCityId) {
+      return unlockedCount <= 1 ? 'Only one city is unlocked right now.' : 'Current city ready.';
+    }
+    if (currentCityTravelBlocked) {
+      return getWorldTravelBlockMessage(travelGuardForOtherCity.reason);
+    }
+    return unlockedCount > 1
+      ? `Travel available to ${unlockedCount - 1} other ${unlockedCount - 1 === 1 ? 'city' : 'cities'}.`
+      : 'Current city ready.';
+  }, [alternateUnlockedCityId, currentCityTravelBlocked, selectedCity, travelGuardForOtherCity.reason, worldSelectorEntries]);
+
   const handleSelectCity = (city: CityDef) => {
-    if (!city) return;
-    if (!unlockedCityIds.includes(city.id)) return;
+    if (!city || city.id === currentCityId) return;
+
+    const travelGuard = getWorldTravelGuard({
+      targetCityId: city.id,
+      currentCityId,
+      unlockedCityIds,
+      liveCityIds: SEMESTER_SLICE_CONTRACT.liveCityIds,
+      inCombat,
+      activeActivityType,
+      combatPresentationMode: combatPresentation.mode,
+    });
+
+    if (!travelGuard.allowed) {
+      const message = getWorldTravelBlockMessage(travelGuard.reason);
+      if (message) {
+        addNotification('warning', message);
+      }
+      return;
+    }
+
     setCurrentCity(city.id);
   };
 
@@ -166,7 +230,6 @@ export function WorldScreen() {
     },
     [selectedCity, visibleCityModules],
   );
-
 
   if (isLoading) {
     return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
@@ -197,23 +260,19 @@ export function WorldScreen() {
             className={'worldHubCitySelect'}
             value={currentCityId ?? ''}
             onChange={(e) => {
-              const next = citiesSorted.find((city) => city.id === e.target.value);
+              const next = worldSelectorEntries.find((entry) => entry.city.id === e.target.value)?.city;
               if (next) handleSelectCity(next);
             }}
           >
             <option value="" disabled>
               Select a city
             </option>
-            {citiesSorted.map((city) => {
-              const isUnlocked = unlockedCityIds.includes(city.id);
-              const requirementText = cityRequirementById[city.id];
-              return (
-                <option key={city.id} value={city.id} disabled={!isUnlocked}>
-                  {city.name}
-                  {isUnlocked ? '' : requirementText ? ` — Locked (${requirementText})` : ' — Locked'}
-                </option>
-              );
-            })}
+            {worldSelectorEntries.map(({ city, isUnlocked, requirementText }) => (
+              <option key={city.id} value={city.id} disabled={!isUnlocked}>
+                {city.name}
+                {isUnlocked ? '' : requirementText ? ` — Locked (${requirementText})` : ' — Locked'}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -224,6 +283,14 @@ export function WorldScreen() {
         <div className={'worldScreenDetailWrapper'}>
           <div className={'worldScreenPanel worldScreenCitySummary'}>
             <div className={'worldScreenPanelHeader'}>
+              <div className={'worldScreenCitySummaryBody'}>
+                <div className={'worldScreenCitySummaryName'}>{selectedCity.name}</div>
+                <div
+                  className={`worldScreenCitySummaryStatus ${currentCityTravelBlocked ? 'worldScreenCitySummaryStatus--blocked' : ''}`}
+                >
+                  {currentCityStatusLine}
+                </div>
+              </div>
               {trackedBounty && isTrackedModuleActive && (
                 <div className={'worldScreenTrackedBanner'}>
                   <div className={'worldScreenTrackedBannerText'}>
@@ -258,7 +325,6 @@ export function WorldScreen() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

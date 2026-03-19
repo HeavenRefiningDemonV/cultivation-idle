@@ -149,6 +149,29 @@
   overflow: hidden;
 }
 
+
+.worldScreenCitySummaryBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.worldScreenCitySummaryName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.worldScreenCitySummaryStatus {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.worldScreenCitySummaryStatus--blocked {
+  color: #fda4af;
+}
+
 .worldScreenPanelTitle {
   margin: 0;
   font-size: 18px;
