@@ -11,7 +11,7 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 
-const HIDDEN_HUB_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
+const HIDDEN_HUB_MODULES = new Set<string>(['alchemy', 'talismanStudio']);
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },

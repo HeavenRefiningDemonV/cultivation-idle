@@ -23,7 +23,7 @@ import {
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 
-const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio', 'ruins']);
+const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio']);
 
 const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
   outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },

@@ -15,6 +15,7 @@ import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
 import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel';
+import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel';
 import { Modal } from '../../ui/primitives/Modal';
 
 export interface WorldBuildingModalProps {
@@ -104,6 +105,9 @@ export function WorldBuildingModal({
         break;
       case 'gateTrial':
         content = <GateTrialBuildingPanel cityId={storeCityId} />;
+        break;
+      case 'ruins':
+        content = <RuinsBuildingPanel cityId={storeCityId} />;
         break;
 
       default:

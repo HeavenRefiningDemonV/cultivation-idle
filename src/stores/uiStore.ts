@@ -487,8 +487,12 @@ export const useUIStore = create<UIState>()(
       if (!context.cityId) return;
 
       set((state) => {
-        state.combatPresentation.mode = 'hidden';
-        state.combatPresentation.context = null;
+        state.combatPresentation.mode = 'preview';
+        state.combatPresentation.context = {
+          ...context,
+          cityId: context.cityId,
+          moduleKey: context.moduleKey ?? buildingKey,
+        };
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = context.cityId ?? null;
         state.worldBuildingModalKey = buildingKey;
