@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type {
   ApothecaryShopDef,
   CityDef,
+  EconomyConfig,
   EnemyTemplate,
   HeartLawDef,
   ItemDef,
@@ -48,6 +49,7 @@ interface ContentStoreState {
   isLoaded: boolean;
   error: string | null;
   raw: ValidatedContent | null;
+  economy: EconomyConfig | null;
   maps: ContentMaps;
   citiesSorted: CityDef[];
   techniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]>;
@@ -57,6 +59,7 @@ interface ContentStoreState {
   getTechnique: (id: string) => TechniqueDef;
   getPavilion: (id: string) => PavilionDef | undefined;
   getApothecaryShop: (id: string) => ApothecaryShopDef | undefined;
+  getEconomyConfig: () => EconomyConfig;
   getBountyConfig: () => ValidatedContent['bounties'];
   getExpeditionsContent: () => ValidatedContent['expeditions'];
   getExpeditionDurations: () => ValidatedContent['expeditions']['durations'];
@@ -100,6 +103,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
   isLoaded: false,
   error: null,
   raw: null,
+  economy: null,
   maps: emptyMaps,
   citiesSorted: [],
   techniquesByPath: emptyTechniquesByPath,
@@ -171,6 +175,7 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
 
         set({
           raw: validated,
+          economy: validated.economy,
           maps,
           citiesSorted,
           techniquesByPath,
@@ -242,6 +247,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       throw new Error('[ContentStore] Content not loaded');
     }
     return maps.apothecariesById[id];
+  },
+
+  getEconomyConfig: () => {
+    const { isLoaded, economy } = get();
+    if (!isLoaded || !economy) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return economy;
   },
 
   getBountyConfig: () => {

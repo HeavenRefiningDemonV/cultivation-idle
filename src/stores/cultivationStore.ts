@@ -10,7 +10,7 @@ import {
   VERSE_COMPREHENSION_THRESHOLD,
   getBreathModeMultipliers,
 } from '../content/tuning/cultivationTuning';
-import type { BreathMode } from '../content/tuning/cultivationTuning';
+import type { BreathMode } from '../types';
 import { useUIStore } from './uiStore';
 import { D } from '../utils/numbers';
 

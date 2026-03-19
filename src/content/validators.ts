@@ -32,7 +32,7 @@ import type {
 } from './types';
 import type { LoadedContentRaw } from './loaders';
 import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
-import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.ts';
+import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;

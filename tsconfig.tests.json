@@ -9,7 +9,8 @@
     "allowImportingTsExtensions": false,
     "strict": true,
     "types": [
-      "node"
+      "node",
+      "vite/client"
     ],
     "esModuleInterop": true
   },
