@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import Decimal from 'decimal.js';
-import type { GameState, FocusMode, CultivationPath, ActiveBuff, BuffStat, SpiritRoot } from '../types';
+import type { GameState, FocusMode, CultivationPath, ActiveBuff, BuffStat, SpiritRoot } from '../types/index.js';
 import {
   REALMS,
   PATH_MODIFIERS,
@@ -11,7 +11,7 @@ import {
   BREAKTHROUGH_QI_MULTIPLIER,
   UPGRADE_COSTS,
   ELEMENT_BONUSES,
-} from '../constants';
+} from '../constants/index.js';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 import {
   clampRealmIndexToSemesterSlice,
@@ -31,7 +31,7 @@ import { useHeartLawStore } from './heartLawStore';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { useContentStore } from './contentStore';
 import { useCityStore } from './cityStore';
-import { getLiveRealmByIndex } from '../systems/progression/runtime';
+import { getLiveRealmByIndex } from '../systems/progression/runtime/index.js';
 import { performPrestigeReset as performCentralPrestigeReset } from '../services/prestige/PrestigeResetService.js';
 
 interface InventoryStoreDeps {

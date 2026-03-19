@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
-import { REALMS } from '../constants';
+import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types/index.js';
+import { REALMS } from '../constants/index.js';
 import { clampRealmIndexToSemesterSlice } from '../systems/progression/runtime/index.js';
 import { SaveService } from '../services/save/SaveService';
 import { useContentStore } from './contentStore';
-import type { PrestigeUpgradeDef } from '../content';
+import type { PrestigeUpgradeDef } from '../content/index.js';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import {
   canPurchasePrestigeNode,
@@ -534,7 +534,7 @@ export const usePrestigeStore = create<PrestigeState>()(
   }))
 );
 
-if (import.meta.env.DEV && typeof window !== 'undefined') {
+if (import.meta.env?.DEV && typeof window !== 'undefined') {
   const devWindow = window as typeof window & {
     devPrestigeBuyFirst?: () => { ok: boolean; reason?: string };
   };

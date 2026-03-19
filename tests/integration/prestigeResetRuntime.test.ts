@@ -35,14 +35,27 @@ let runtimeContentPromise: Promise<RuntimeContent> | null = null;
 const readJson = async <T>(fileName: string): Promise<T> =>
   JSON.parse(await fs.readFile(path.join(CONTENT_DIR, fileName), 'utf8')) as T;
 
+const readArrayPayload = async <T>(
+  fileName: string,
+  key: string,
+): Promise<T[]> => {
+  const payload = await readJson<Record<string, unknown> | T[]>(fileName);
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  const value = payload[key];
+  return Array.isArray(value) ? (value as T[]) : [];
+};
+
 const loadRuntimeContent = async (): Promise<RuntimeContent> => {
   if (!runtimeContentPromise) {
     runtimeContentPromise = (async () => ({
       economy: await readJson('economy.json'),
-      cities: await readJson('cities.json'),
-      heart_laws: await readJson('heart_laws.json'),
-      items: await readJson('items.json'),
-      trials: await readJson('trials.json'),
+      cities: await readArrayPayload('cities.json', 'cities'),
+      heart_laws: await readArrayPayload('heart_laws.json', 'heartLaws'),
+      items: await readArrayPayload('items.json', 'items'),
+      trials: await readArrayPayload('trials.json', 'trials'),
       bounties: await readJson('bounties.json'),
       prestige_store: await readJson('prestige_store.json'),
     }))();
@@ -159,7 +172,7 @@ test('prestige reset service creates a clean new life while preserving permanent
   assert.equal(useEquipmentStore.getState().equippedWeaponId, null);
   assert.deepEqual(useTrialStore.getState().progressByTrialId, {});
   assert.deepEqual(useRuinsStore.getState().progressByRuinId, {});
-  assert.deepEqual(useZoneStore.getState().unlockedZones, ['starting_plains']);
+  assert.deepEqual(useZoneStore.getState().unlockedZones, ['training_forest']);
   assert.equal(useActivityStore.getState().active, null);
   assert.deepEqual(useCityStore.getState().unlockedCityIds, ['city_pinewind_hamlet']);
   assert.equal(useCityStore.getState().currentCityId, 'city_pinewind_hamlet');

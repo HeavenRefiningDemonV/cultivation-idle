@@ -5,7 +5,7 @@ import type {
   MedicinePouchSlotState,
   MedicinePouchState,
   MedicinePouchTrigger,
-} from '../types';
+} from '../types/index.js';
 
 type SlotConfigUpdate = Partial<
   Pick<MedicinePouchSlotState, 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly'>

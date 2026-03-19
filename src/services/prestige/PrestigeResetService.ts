@@ -7,6 +7,7 @@ import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useEquipmentStore } from '../../stores/equipmentStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useOutskirtsStore } from '../../stores/outskirtsStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useRuinsStore } from '../../stores/ruinsStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
@@ -42,15 +43,9 @@ export const deriveMasteryRetentionCarryOver = (purchasesById: Record<string, nu
   }, 0);
 
 export function performPrestigeReset({ resetGameRun }: PrestigeResetOptions): PrestigeResetSummary {
-  const { totalAP, purchasesById } = ((): { totalAP: number; purchasesById: Record<string, number> } => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { usePrestigeStore } = require('../../stores/prestigeStore.js') as typeof import('../../stores/prestigeStore.js');
-    const state = usePrestigeStore.getState();
-    return {
-      totalAP: state.totalAP,
-      purchasesById: { ...state.purchasesById },
-    };
-  })();
+  const prestigeState = usePrestigeStore.getState();
+  const totalAP = prestigeState.totalAP;
+  const purchasesById = { ...prestigeState.purchasesById };
 
   const hybrid = {
     masteryRetentionCarryOver: deriveMasteryRetentionCarryOver(purchasesById),

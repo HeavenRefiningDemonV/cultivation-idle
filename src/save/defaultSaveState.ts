@@ -1,4 +1,4 @@
-import type { SaveData } from '../types';
+import type { SaveData } from '../types/index.js';
 import type {
   CraftMode,
   CraftPromptState,
@@ -7,7 +7,7 @@ import type {
   CraftSessionSaveState,
   CraftStation,
   CraftScript,
-} from '../systems/crafting/craftingTypes';
+} from '../systems/crafting/craftingTypes.js';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
@@ -35,7 +35,7 @@ import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../store
 import { useContentStore } from '../stores/contentStore';
 import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore';
 
-import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations';
+import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization';
 
 export const SAVE_VERSION = CURRENT_SAVE_VERSION;

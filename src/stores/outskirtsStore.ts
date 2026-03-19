@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { OutskirtsDef } from '../content';
+import type { OutskirtsDef } from '../content/index.js';
 
 export type OutskirtsProgress = {
   killsSinceBoss: number;

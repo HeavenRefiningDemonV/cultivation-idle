@@ -296,15 +296,6 @@ function validateTrials(config: TrialsConfig) {
       assert(typeof trial.cityIndex === 'number', `trials[${idx}].cityIndex must be a number if provided`);
     }
 
-    if (trial.eligibilityRule && typeof trial.eligibilityRule !== 'string') {
-      try {
-        // Coerce to string for UI display only
-        (trial as any).eligibilityRule = JSON.stringify(trial.eligibilityRule);
-      } catch (error) {
-        console.warn('[ContentValidation] Unable to stringify eligibilityRule', error);
-      }
-    }
-
     if (trial.failSafe) {
       assertObject(trial.failSafe, `trials[${idx}].failSafe`);
       if (trial.failSafe.cost) {

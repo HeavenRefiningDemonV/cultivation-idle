@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { TechniqueDef } from '../content';
+import type { TechniqueDef } from '../content/index.js';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { randFloat } from '../utils/rng';

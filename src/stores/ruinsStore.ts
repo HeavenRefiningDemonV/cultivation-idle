@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { RuinDef, RuinDropTable } from '../content';
-import type { CombatEvent, RuinsRunSummary } from '../types';
+import type { RuinDef, RuinDropTable } from '../content/index.js';
+import type { CombatEvent, RuinsRunSummary } from '../types/index.js';
 import { useContentStore } from './contentStore';
 import { useActivityStore } from './activityStore';
 import { useCombatStore } from './combatStore';
 import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
-import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards';
+import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { D } from '../utils/numbers';
 import { useUIStore } from './uiStore';
 

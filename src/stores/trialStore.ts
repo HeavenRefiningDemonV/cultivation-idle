@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { TrialAttemptSummary } from '../types';
+import type { TrialAttemptSummary } from '../types/index.js';
 
 export type TrialResolution = 'none' | 'cleared' | 'bypassed';
 

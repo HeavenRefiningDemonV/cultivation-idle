@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
-import type { SaveData, SaveManualSatchelState } from '../types';
-import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes';
+import type { SaveData, SaveManualSatchelState } from '../types/index.js';
+import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes.js';
 import { useGameStore } from '../stores/gameStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCombatStore } from '../stores/combatStore';
@@ -28,9 +28,9 @@ import { useCraftSessionStore } from '../stores/craftSessionStore';
 import { useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 import { useContentStore } from '../stores/contentStore';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
-import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState';
-import { getLastMigrationReport } from '../save/migrations';
-import { buildOfflineContext, type OfflineContext } from '../systems/offline';
+import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState.js';
+import { getLastMigrationReport } from '../save/migrations/index.js';
+import { buildOfflineContext, type OfflineContext } from '../systems/offline.js';
 import { normalizeCitySaveState } from '../save/cityStateNormalization';
 
 /**
@@ -45,7 +45,7 @@ type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
 type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
 
 let lastLoadedSaveData: SaveData | null = null;
-let lastLoadMigrationReport: import('../save/migrations').MigrationRunReport | null = null;
+let lastLoadMigrationReport: import('../save/migrations/index.js').MigrationRunReport | null = null;
 
 /**
  * Encryption key - in production, this could be more sophisticated

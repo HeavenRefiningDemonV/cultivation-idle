@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { RewardService } from '../services/rewards';
+import { RewardService } from '../services/rewards/index.js';
 import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
 import { getForgeBlueprint } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
@@ -13,7 +13,7 @@ import { useBountyStore } from './bountyStore';
 import { GameEvents } from '../services/events/GameEvents';
 import { useActivityStore } from './activityStore';
 import { useCraftSessionStore } from './craftSessionStore';
-import type { ForgeStepResult } from '../systems/crafting/craftingTypes';
+import type { ForgeStepResult } from '../systems/crafting/craftingTypes.js';
 
 export type AlchemyJob = {
   id: string;

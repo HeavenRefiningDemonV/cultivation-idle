@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { normalizeForgeBlueprint } from '../content/forge';
-import { RewardService } from '../services/rewards';
+import { RewardService } from '../services/rewards/index.js';
 import type {
   CraftMode,
   CraftPromptState,

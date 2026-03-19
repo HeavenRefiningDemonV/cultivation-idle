@@ -13,7 +13,7 @@ import type {
   TechniqueDef,
   TrialDef,
   ValidatedContent,
-} from '../content';
+} from '../content/index.js';
 import {
   loadAllContent,
   normalizeForgeBlueprint,
@@ -21,7 +21,7 @@ import {
   type NormalizedForgeBlueprint,
   isRefineBlueprint,
   isRuneBlueprint,
-} from '../content';
+} from '../content/index.js';
 import {
   getPrestigeRuntimeCatalog,
   getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime,

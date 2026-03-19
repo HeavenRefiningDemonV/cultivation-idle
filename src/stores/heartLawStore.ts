@@ -6,4 +6,4 @@ export {
   getDefaultUnlockedHeartLawIds,
   getSelectedHeartLawDef,
 } from './cultivationStore';
-export type { ComprehensionSource } from '../types';
+export type { ComprehensionSource } from '../types/index.js';

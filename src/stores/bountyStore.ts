@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { BountyTemplate } from '../content';
+import type { BountyTemplate } from '../content/index.js';
 import { useContentStore } from './contentStore';
-import { RewardService, type RewardBundle } from '../services/rewards';
+import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { useUIStore } from './uiStore';
 import { resolveBountyDestination } from '../utils/bountyRouting';
 

@@ -1,5 +1,5 @@
-import type { CraftSessionSaveState } from '../systems/crafting/craftingTypes';
-import type { RewardBundle } from '../services/rewards';
+import type { CraftSessionSaveState } from '../systems/crafting/craftingTypes.js';
+import type { RewardBundle } from '../services/rewards/index.js';
 
 /**
  * Cultivation path types
@@ -1117,4 +1117,4 @@ export interface PrestigeState {
   updateHighestRealm: (realmIndex: number) => void;
   incrementBossesDefeated: () => void;
 }
-import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes';
+import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes.js';

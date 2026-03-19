@@ -4,23 +4,23 @@ import {
   setPrestigeStoreGetter,
   setCombatStoreGetter,
   setInventoryStoreGetter as setGameInventoryStoreGetter,
-} from '../stores/gameStore';
-import { useCombatStore } from '../stores/combatStore';
+} from '../stores/gameStore.js';
+import { useCombatStore } from '../stores/combatStore.js';
 import {
   usePrestigeStore,
   setInventoryStoreGetter as setPrestigeInventoryStoreGetter,
   setGameStoreGetter,
-} from '../stores/prestigeStore';
-import { useInventoryStore } from '../stores/inventoryStore';
-import { useExpeditionStore } from '../stores/expeditionStore';
-import { useManualSatchelStore } from '../stores/manualSatchelStore';
-import { useCraftSessionStore } from '../stores/craftSessionStore';
-import { SaveService } from '../services/save/SaveService';
-import { cultivationService } from '../services/cultivationService';
-import { useUIStore } from '../stores/uiStore';
-import { useActivityStore } from '../stores/activityStore';
-import { RewardService } from '../services/rewards';
-import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
+} from '../stores/prestigeStore.js';
+import { useInventoryStore } from '../stores/inventoryStore.js';
+import { useExpeditionStore } from '../stores/expeditionStore.js';
+import { useManualSatchelStore } from '../stores/manualSatchelStore.js';
+import { useCraftSessionStore } from '../stores/craftSessionStore.js';
+import { SaveService } from '../services/save/SaveService.js';
+import { cultivationService } from '../services/cultivationService.js';
+import { useUIStore } from '../stores/uiStore.js';
+import { useActivityStore } from '../stores/activityStore.js';
+import { RewardService } from '../services/rewards/index.js';
+import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
 
 /**
  * Game loop constants

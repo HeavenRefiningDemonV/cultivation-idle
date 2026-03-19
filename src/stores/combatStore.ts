@@ -12,9 +12,9 @@ import type {
   CombatTechniqueLogEntry,
   CombatEvent,
   MedicinePouchSlotKey,
-} from '../types';
-import type { TechniqueDef } from '../content';
-import type { OutskirtsDef, OutskirtsDropsConfig } from '../content';
+} from '../types/index.js';
+import type { TechniqueDef } from '../content/index.js';
+import type { OutskirtsDef, OutskirtsDropsConfig } from '../content/index.js';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
@@ -31,7 +31,7 @@ import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './te
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
-import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards';
+import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { getTalismanBonusesNow } from './buffStore';
 import { createEnemy } from '../systems/enemyFactory';
 import type { NormalizedEffect } from '../systems/techniques/effects';
@@ -53,7 +53,7 @@ function stampCombatEvent<TType extends CombatEvent['type']>(
   const at = event.at ?? Date.now();
   return { ...event, type, at, id: event.id ?? makeCombatEventId(at) } as Extract<CombatEvent, { type: TType }>;
 }
-import { COMBAT_ACTIVITY_TYPES } from '../types/activity';
+import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
 import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles';
@@ -487,7 +487,12 @@ const createInitialCombatState = () => ({
   nextAiDecisionAt: 0,
   combatShield: null as CombatShield | null,
   combatBuffs: [] as CombatBuff[],
-  combatResources: buildCombatResources(),
+  combatResources: {
+    qi: 0,
+    maxQi: 100,
+    intent: 100,
+    maxIntent: 100,
+  } as CombatResources,
   techniqueLog: [] as CombatTechniqueLogEntry[],
   events: [] as CombatEvent[],
   isBoss: false,

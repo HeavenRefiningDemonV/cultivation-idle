@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { CityDef } from '../content';
+import type { CityDef } from '../content/index.js';
 import { useContentStore } from './contentStore';
 import { useBountyStore } from './bountyStore';
 import type { MajorRealmId } from '../systems/progression/contract';
-import { syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime';
+import { syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime/index.js';
 
 export type CityFlags = {
   outskirtsBossDefeated: boolean;

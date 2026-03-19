@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { RewardService, type RewardBundle } from '../services/rewards';
+import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { useContentStore } from './contentStore';
 import { multiply } from '../utils/numbers';
 import { normalizeItemList } from '../utils/itemList';

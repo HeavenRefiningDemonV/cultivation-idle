@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { OfflineProgressSummary } from '../systems/offline';
+import type { OfflineProgressSummary } from '../systems/offline.js';
 import type { OfflineCatchupResult } from '../services/time/OfflineCatchup';
 import { useActivityStore } from './activityStore';
 import { useCombatStore } from './combatStore';

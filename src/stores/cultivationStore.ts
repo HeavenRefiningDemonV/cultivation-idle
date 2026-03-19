@@ -1,16 +1,16 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { HeartLawDef } from '../content';
+import type { HeartLawDef } from '../content/index.js';
 import { useContentStore } from './contentStore';
 import { GameEvents } from '../services/events/GameEvents';
-import type { ComprehensionSource, InsightChoiceId, InsightMomentState } from '../types';
+import type { ComprehensionSource, InsightChoiceId, InsightMomentState } from '../types/index.js';
 import {
   INSIGHT_BURSTS,
   INSIGHT_INTERVAL_RANGE_MS,
   VERSE_COMPREHENSION_THRESHOLD,
   getBreathModeMultipliers,
 } from '../content/tuning/cultivationTuning';
-import type { BreathMode } from '../types';
+import type { BreathMode } from '../types/index.js';
 import { useUIStore } from './uiStore';
 import { D } from '../utils/numbers';
 

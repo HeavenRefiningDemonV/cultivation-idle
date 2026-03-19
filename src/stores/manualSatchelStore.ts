@@ -12,7 +12,7 @@ import {
 } from './techCollectionStore';
 import { useUIStore } from './uiStore';
 import { useGameStore } from './gameStore';
-import type { CultivationPath } from '../types';
+import type { CultivationPath } from '../types/index.js';
 
 export type FocusRewardType = 'time' | 'mastery' | 'traitQuality';
 

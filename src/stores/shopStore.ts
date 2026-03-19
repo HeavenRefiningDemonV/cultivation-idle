@@ -4,7 +4,7 @@ import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
 import { getDayKey } from '../utils/dayKey';
 import { useContentStore } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
-import { RewardService } from '../services/rewards';
+import { RewardService } from '../services/rewards/index.js';
 
 export type PurchasedToday = Record<string, Record<string, number>>;
 

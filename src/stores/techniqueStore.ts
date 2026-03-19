@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { TechniqueDef } from '../content';
-import type { SaveTechniqueLoadout } from '../types';
+import type { TechniqueDef } from '../content/index.js';
+import type { SaveTechniqueLoadout } from '../types/index.js';
 import { clampRealmIndexToSemesterSlice, getLiveRealmNameByIndex } from '../systems/progression/runtime/index.js';
 import { useContentStore } from './contentStore';
 import { useGameStore } from './gameStore';
