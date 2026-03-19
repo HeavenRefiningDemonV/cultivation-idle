@@ -67,7 +67,11 @@ export type LiveCitySchemaDriftReport = {
   canonicalOverall: boolean;
 };
 
-export function inspectLiveCitySchema(city: Pick<CityDef, 'modules' | 'refs'>): LiveCitySchemaDriftReport {
+type LiveCitySchemaInput = Pick<CityDef, 'modules'> & {
+  refs?: Partial<CityRefs> | Record<string, string> | null | undefined;
+};
+
+export function inspectLiveCitySchema(city: LiveCitySchemaInput): LiveCitySchemaDriftReport {
   const duplicateModules: string[] = [];
   const seenModules = new Set<string>();
   const actualModules = Array.isArray(city.modules) ? [...city.modules] : [];
@@ -90,15 +94,11 @@ export function inspectLiveCitySchema(city: Pick<CityDef, 'modules' | 'refs'>): 
     actualModules.length === LIVE_CITY_MODULE_ORDER.length &&
     actualModules.every((moduleKey, index) => moduleKey === LIVE_CITY_MODULE_ORDER[index]);
 
-  const refs = city.refs as Partial<CityRefs> | null | undefined;
-  const missingRequiredRefs = canonicalModules
-    .map((moduleKey) => MODULE_REF_REQUIREMENTS[moduleKey])
-    .filter((refKey): refKey is RequiredLiveCityRefKey => Boolean(refKey))
-    .filter((refKey, index, values) => values.indexOf(refKey) === index)
-    .filter((refKey) => {
-      const value = refs?.[refKey];
-      return typeof value !== 'string' || value.trim().length === 0;
-    });
+  const refs = city.refs;
+  const missingRequiredRefs = REQUIRED_CITY_REFS_FOR_LIVE_SLICE.filter((refKey) => {
+    const value = refs?.[refKey];
+    return typeof value !== 'string' || value.trim().length === 0;
+  });
 
   return {
     duplicateModules,

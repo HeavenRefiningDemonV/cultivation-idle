@@ -10,7 +10,8 @@ export type DriftCategory =
   | 'ORPHAN_GATE_ITEM'
   | 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER'
   | 'MIGRATION_ALIAS_PRESENT'
-  | 'CONTENT_CAP_BREACH';
+  | 'CONTENT_CAP_BREACH'
+  | 'WORLD_CITY_SCHEMA_DRIFT';
 
 export type DriftSeverity = 'info' | 'warning' | 'error';
 

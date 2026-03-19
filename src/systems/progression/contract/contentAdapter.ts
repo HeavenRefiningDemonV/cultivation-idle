@@ -4,7 +4,27 @@ import { resolveCanonicalTrialFailSafe } from '../../../content/trialFailSafe.js
 
 export interface RawProgressionContentLike {
   economy: EconomyConfig;
-  cities: Array<{ id: string; unlockMajorRealm: string }> | { cities: Array<{ id: string; unlockMajorRealm: string }> };
+  cities:
+    | Array<{
+        id: string;
+        unlockMajorRealm: string;
+        index?: number;
+        name?: string;
+        modules?: string[];
+        refs?: Record<string, string>;
+        themeTags?: string[];
+      }>
+    | {
+        cities: Array<{
+          id: string;
+          unlockMajorRealm: string;
+          index?: number;
+          name?: string;
+          modules?: string[];
+          refs?: Record<string, string>;
+          themeTags?: string[];
+        }>;
+      };
   trials:
     | Array<{
         id: string;

@@ -7,6 +7,7 @@ import {
   type RawProgressionContentLike,
 } from '../contract/index.js';
 import { collectProgressionDiagnostics, type DriftIssue } from '../diagnostics/index.js';
+import { inspectLiveCitySchema, LIVE_CITY_MODULE_ORDER } from '../../world/liveWorldSchema.js';
 
 export interface ProgressionScenarioLike {
   kind: string;
@@ -69,6 +70,57 @@ const buildAuthoredDiagnosticsInput = (content: ReturnType<typeof adaptProgressi
   })),
   items: content.items.items.map((item) => item.id),
 });
+
+const readRawCities = (rawContent: RawProgressionContentLike) =>
+  Array.isArray(rawContent.cities) ? rawContent.cities : rawContent.cities.cities;
+
+const validateRawWorldCitySchema = (rawContent: RawProgressionContentLike): DriftIssue[] => {
+  const issues: DriftIssue[] = [];
+
+  readRawCities(rawContent).forEach((city) => {
+    if (typeof city?.id !== 'string') return;
+
+    const drift = inspectLiveCitySchema({
+      modules: Array.isArray(city.modules) ? city.modules : [],
+      refs: city.refs ?? {},
+    });
+
+    if (drift.canonicalOverall) return;
+
+    const evidence = [];
+    if (drift.missingLiveModules.length > 0) {
+      evidence.push({ path: `content/cities/${city.id}/modules`, detail: `missing live modules: ${drift.missingLiveModules.join(', ')}` });
+    }
+    if (drift.duplicateModules.length > 0) {
+      evidence.push({ path: `content/cities/${city.id}/modules`, detail: `duplicate modules: ${drift.duplicateModules.join(', ')}` });
+    }
+    if (drift.deferredModulesPresent.length > 0) {
+      evidence.push({ path: `content/cities/${city.id}/modules`, detail: `deferred modules present: ${drift.deferredModulesPresent.join(', ')}` });
+    }
+    if (drift.unknownModulesPresent.length > 0) {
+      evidence.push({ path: `content/cities/${city.id}/modules`, detail: `unknown modules present: ${drift.unknownModulesPresent.join(', ')}` });
+    }
+    if (!drift.actualOrderMatchesCanonical) {
+      evidence.push({ path: `content/cities/${city.id}/modules`, detail: `module order does not match canonical order: ${LIVE_CITY_MODULE_ORDER.join(', ')}` });
+    }
+    if (drift.missingRequiredRefs.length > 0) {
+      evidence.push({ path: `content/cities/${city.id}/refs`, detail: `missing required live refs: ${drift.missingRequiredRefs.join(', ')}` });
+    }
+
+    pushIssue(issues, {
+      id: `world-city-schema-${city.id}`,
+      category: 'WORLD_CITY_SCHEMA_DRIFT',
+      severity: 'error',
+      summary: `City ${city.id} does not match the canonical live semester city schema.`,
+      evidence,
+      suggestedOwnerPacket: '2.1',
+      fixStrategySummary: `Normalize city.modules to LIVE_CITY_MODULE_ORDER (${LIVE_CITY_MODULE_ORDER.join(', ')}), remove deferred modules, and ensure required live refs exist.`,
+      autoFixable: true,
+    });
+  });
+
+  return issues;
+};
 
 const legacyGateItemEntries = (items: Record<string, number>) =>
   Object.keys(items).filter((itemId) => !itemId.startsWith('gate_') && normalizeGateItemAlias(itemId) !== null);
@@ -301,6 +353,7 @@ export const validateProgressionSemantics = (options: ValidateProgressionSemanti
     runtimeFileTextByPath: options.runtimeFileTextByPath,
   });
 
+  validateRawWorldCitySchema(options.rawContent).forEach((entry) => pushIssue(issues, entry));
   validateScenarioSemantics(contract, options.scenarios ?? []).forEach((entry) => pushIssue(issues, entry));
   readMigrationFixtureIssues(contract, options.migrationFixtures ?? []).forEach((entry) => pushIssue(issues, entry));
 

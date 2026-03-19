@@ -20,8 +20,16 @@ const ensureLink = ([packageName, vendorDirName]) => {
   }
 
   fs.mkdirSync(path.dirname(targetDir), { recursive: true });
-  fs.symlinkSync(sourceDir, targetDir, 'dir');
-  console.log(`[vendor-links] Linked ${packageName} -> ${path.relative(rootDir, sourceDir)}`);
+
+  try {
+    fs.symlinkSync(sourceDir, targetDir, 'dir');
+    console.log(`[vendor-links] Linked ${packageName} -> ${path.relative(rootDir, sourceDir)}`);
+  } catch (error) {
+    if ((error && typeof error === 'object' && 'code' in error && error.code === 'EEXIST') || fs.existsSync(targetDir)) {
+      return;
+    }
+    throw error;
+  }
 };
 
 vendorPackages.forEach(ensureLink);
