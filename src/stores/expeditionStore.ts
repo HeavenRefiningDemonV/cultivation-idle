@@ -24,11 +24,18 @@ export interface ExpeditionRun {
   status: ExpeditionRunStatus;
 }
 
+interface ExpeditionHydrateState {
+  slots?: number;
+  active?: ExpeditionRun[];
+  rareProgressByKey?: Record<string, number>;
+}
+
 interface ExpeditionState {
   slots: number;
   active: ExpeditionRun[];
   rareProgressByKey: Record<string, number>;
   setSlots: (slots: number) => void;
+  hydrate: (slice?: ExpeditionHydrateState, now?: number) => void;
   start: (slotIndex: number, typeId: string, durationId: string, cityId: string, cityIndex: number) => boolean;
   claim: (slotIndex: number) => ClaimExpeditionResult;
   tick: (now: number) => void;
@@ -326,6 +333,42 @@ function selectBestDropSpotlight(bundle: RewardBundle, rareDrop?: { itemId: stri
   return bestId;
 }
 
+
+function normalizeHydratedRun(run: ExpeditionRun, slots: number, now: number): ExpeditionRun | null {
+  if (!run || !Number.isFinite(run.slotIndex) || run.slotIndex < 0 || run.slotIndex >= slots) return null;
+  if (typeof run.expeditionTypeId !== 'string' || !findTypeDef(run.expeditionTypeId)) return null;
+  const duration = findDurationDef(run.durationId);
+  if (!duration || duration.seconds <= 0) return null;
+
+  const city = useContentStore.getState().maps.citiesById[run.cityId];
+  if (!city) return null;
+  const cityIndex = typeof city.index === 'number' ? city.index : run.cityIndex;
+  const startedAt = Number.isFinite(run.startedAt) ? run.startedAt : Math.max(0, now - duration.seconds * 1000);
+  const canonicalEndsAt = startedAt + duration.seconds * 1000;
+  const savedEndsAt = Number.isFinite(run.endsAt) ? run.endsAt : canonicalEndsAt;
+  const endsAt = Math.max(startedAt, savedEndsAt, canonicalEndsAt);
+  const status: ExpeditionRunStatus = now >= endsAt ? 'complete' : 'running';
+
+  return {
+    ...run,
+    cityId: city.id,
+    cityIndex,
+    startedAt,
+    endsAt,
+    seed: typeof run.seed === 'number' && Number.isFinite(run.seed) ? run.seed >>> 0 : (startedAt >>> 0),
+    status,
+  };
+}
+
+function sanitizeRareProgressByKey(progress: Record<string, number> | undefined): Record<string, number> {
+  if (!progress) return {};
+  return Object.fromEntries(
+    Object.entries(progress).filter(([key, value]) => {
+      const [typeId, durationId] = key.split('::');
+      return Boolean(typeId && durationId && findTypeDef(typeId) && findDurationDef(durationId) && Number.isFinite(value));
+    }).map(([key, value]) => [key, Math.max(0, Math.floor(value))]),
+  );
+}
 export const useExpeditionStore = create<ExpeditionState>()(
   immer((set, get) => ({
     slots: 1,
@@ -341,13 +384,30 @@ export const useExpeditionStore = create<ExpeditionState>()(
       });
     },
 
+    hydrate: (slice, now = Date.now()) => {
+      const nextSlots = Number.isFinite(slice?.slots) ? Math.max(1, Math.floor(slice!.slots!)) : 1;
+      const nextActive = Array.isArray(slice?.active)
+        ? slice.active
+            .map((run) => normalizeHydratedRun(run, nextSlots, now))
+            .filter((run): run is ExpeditionRun => Boolean(run))
+            .filter((run, index, runs) => runs.findIndex((entry) => entry.slotIndex === run.slotIndex) === index)
+        : [];
+
+      set((state) => {
+        state.slots = nextSlots;
+        state.active = nextActive;
+        state.rareProgressByKey = sanitizeRareProgressByKey(slice?.rareProgressByKey);
+      });
+    },
+
     start: (slotIndex, typeId, durationId, cityId, cityIndex) => {
       const { slots, active } = get();
       if (slotIndex < 0 || slotIndex >= slots) return false;
       if (active.some((run) => run.slotIndex === slotIndex)) return false;
 
       const duration = findDurationDef(durationId);
-      if (!duration || duration.seconds <= 0) return false;
+      const city = useContentStore.getState().maps.citiesById[cityId];
+      if (!duration || duration.seconds <= 0 || !city || city.index !== cityIndex) return false;
 
       const now = Date.now();
       const endsAt = now + duration.seconds * 1000;
@@ -387,6 +447,9 @@ export const useExpeditionStore = create<ExpeditionState>()(
       if (!run) return { ok: false, error: 'not_found' };
       const now = Date.now();
       if (run.status !== 'complete' && now < run.endsAt) return { ok: false, error: 'not_complete', run };
+
+      const city = useContentStore.getState().maps.citiesById[run.cityId];
+      if (!city || city.index !== run.cityIndex) return { ok: false, error: 'invalid_city', run };
 
       const expected = computeExpectedBundle(run);
       if (!expected) return { ok: false, error: 'invalid_yield', run };

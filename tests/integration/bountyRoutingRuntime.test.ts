@@ -4,7 +4,7 @@ import test from 'node:test';
 import { useBountyStore } from '../../src/stores/bountyStore.js';
 import { useCityStore } from '../../src/stores/cityStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
-import { resolveBountyDestination } from '../../src/utils/bountyRouting.js';
+import { resolveBountyDestination, resolveExpeditionUseMaterialsDestinations } from '../../src/utils/bountyRouting.js';
 import { inspectLiveBountyBoard } from '../../src/systems/world/bountyBoardContract.js';
 import {
   getSupportTemplateCityIndexById,
@@ -272,3 +272,15 @@ function useCityStoreSetup() {
   assert.equal(citiesSorted.length > 0, true);
   return citiesSorted;
 }
+
+
+test('expedition material routing stays in the origin city and only returns available modules', () => {
+  const buttons = resolveExpeditionUseMaterialsDestinations({
+    cityId: 'city_pinewind_hamlet',
+    expeditionTypeId: 'forage',
+    cityModules: ['outskirts', 'bounties', 'expeditions', 'manualPavilion'],
+    recommendedModuleKey: 'alchemy',
+  });
+
+  assert.deepEqual(buttons, [{ cityId: 'city_pinewind_hamlet', moduleKey: 'manualPavilion' }]);
+});

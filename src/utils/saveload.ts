@@ -1108,20 +1108,22 @@ function applySaveData(saveData: SaveData): void {
       trackedByCityId: { ...(bountyState.trackedByCityId ?? {}) },
     });
 
-    useExpeditionStore.setState({
-      slots: expeditionState.slots,
-      active: Array.isArray(expeditionState.active)
-        ? expeditionState.active.map((run) => ({
-            ...run,
-            seed:
-              typeof run.seed === 'number' && Number.isFinite(run.seed)
-                ? run.seed >>> 0
-                : ((run as { startedAt?: number }).startedAt ?? Date.now()) >>> 0,
-          }))
-        : [],
-      rareProgressByKey: { ...(expeditionState.rareProgressByKey ?? {}) },
-    });
-    useExpeditionStore.getState().tick(Date.now());
+    useExpeditionStore.getState().hydrate(
+      {
+        slots: expeditionState.slots,
+        active: Array.isArray(expeditionState.active)
+          ? expeditionState.active.map((run) => ({
+              ...run,
+              seed:
+                typeof run.seed === 'number' && Number.isFinite(run.seed)
+                  ? run.seed >>> 0
+                  : ((run as { startedAt?: number }).startedAt ?? Date.now()) >>> 0,
+            }))
+          : [],
+        rareProgressByKey: { ...(expeditionState.rareProgressByKey ?? {}) },
+      },
+      Date.now(),
+    );
 
     useHeartLawStore.setState({
       selectedHeartLawId: heartLawState.selectedHeartLawId ?? null,

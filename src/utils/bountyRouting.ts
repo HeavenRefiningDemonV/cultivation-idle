@@ -112,3 +112,33 @@ export function bountyKindToProgressRule(kind: string): string {
       return 'Progress the associated activity.';
   }
 }
+
+
+export type ExpeditionUseMaterialsDestination = {
+  cityId: string;
+  moduleKey: 'alchemy' | 'forge' | 'manualPavilion';
+};
+
+const EXPEDITION_FALLBACK_MODULE_BY_TYPE: Record<string, ExpeditionUseMaterialsDestination['moduleKey']> = {
+  forage: 'alchemy',
+  mine: 'forge',
+  scout: 'manualPavilion',
+};
+
+export function resolveExpeditionUseMaterialsDestinations(args: {
+  cityId: string;
+  expeditionTypeId: string;
+  cityModules: readonly string[];
+  recommendedModuleKey?: 'alchemy' | 'forge' | 'manualPavilion';
+}): ExpeditionUseMaterialsDestination[] {
+  const { cityId, expeditionTypeId, cityModules, recommendedModuleKey } = args;
+  const modules = normalizeCityModulesForLiveSlice([...cityModules]);
+  const orderedCandidates = [recommendedModuleKey, EXPEDITION_FALLBACK_MODULE_BY_TYPE[expeditionTypeId], 'alchemy', 'forge', 'manualPavilion']
+    .filter((moduleKey, index, values): moduleKey is ExpeditionUseMaterialsDestination['moduleKey'] =>
+      Boolean(moduleKey) && values.indexOf(moduleKey) === index,
+    );
+
+  return orderedCandidates
+    .filter((moduleKey) => hasModule(modules, moduleKey))
+    .map((moduleKey) => ({ cityId, moduleKey }));
+}

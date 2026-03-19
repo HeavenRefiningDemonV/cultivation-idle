@@ -8,6 +8,8 @@ import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
 import { useUIStore } from '../../stores/uiStore';
+import { openWorldModule } from '../../systems/world/openWorldModule';
+import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
 import './ExpeditionBoardPanel.scss';
@@ -208,7 +210,6 @@ type RoutePositionClass = (typeof routePositions)[number];
 
 export function ExpeditionBoardPanel() {
   const currentCityId = useCityStore((state) => state.currentCityId);
-  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const content = useContentStore((state) => state.raw?.expeditions);
   const economy = useContentStore((state) => state.economy);
@@ -448,8 +449,8 @@ export function ExpeditionBoardPanel() {
 
   const goUseMaterials = (moduleKey: string) => {
     if (!ceremony.run) return;
+    openWorldModule({ cityId: ceremony.run.cityId, moduleKey, source: 'expedition-ceremony' });
     setActiveTab('adventure');
-    setSelectedModule(ceremony.run.cityId, moduleKey);
     closeCeremony();
   };
 
@@ -908,22 +909,22 @@ export function ExpeditionBoardPanel() {
               <div className={'expCeremonyUseButtons'}>
                 {(() => {
                   const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
-                  const recommended = type?.recommendedModuleKey;
-                  const fallback: Record<string, string> = {
-                    forage: 'alchemy',
-                    mine: 'forge',
-                    scout: 'manualPavilion',
-                  };
-                  const moduleKey = recommended ?? (ceremony.run ? fallback[ceremony.run.expeditionTypeId] : undefined);
-                  const buttons: { key: string; label: string }[] = [];
-                  if (moduleKey === 'alchemy') buttons.push({ key: 'alchemy', label: 'Alchemy' });
-                  if (moduleKey === 'forge') buttons.push({ key: 'forge', label: 'Forge' });
-                  if (moduleKey === 'manualPavilion') buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
-                  if (!moduleKey) {
-                    buttons.push({ key: 'alchemy', label: 'Alchemy' });
-                    buttons.push({ key: 'forge', label: 'Forge' });
-                    buttons.push({ key: 'manualPavilion', label: 'Manual Pavilion' });
-                  }
+                  const buttons = ceremony.run
+                    ? resolveExpeditionUseMaterialsDestinations({
+                        cityId: ceremony.run.cityId,
+                        expeditionTypeId: ceremony.run.expeditionTypeId,
+                        cityModules: citiesById[ceremony.run.cityId]?.modules ?? [],
+                        recommendedModuleKey: type?.recommendedModuleKey,
+                      }).map((entry) => ({
+                        key: entry.moduleKey,
+                        label:
+                          entry.moduleKey === 'manualPavilion'
+                            ? 'Manual Pavilion'
+                            : entry.moduleKey === 'alchemy'
+                              ? 'Alchemy'
+                              : 'Forge',
+                      }))
+                    : [];
                   return buttons.map((entry) => (
                     <button
                       key={entry.key}
