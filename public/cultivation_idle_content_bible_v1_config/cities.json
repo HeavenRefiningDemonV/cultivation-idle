@@ -6,6 +6,7 @@
     "unlockMajorRealm": "qi_condensation",
     "modules": [
       "outskirts",
+      "ruins",
       "gateTrial",
       "manualPavilion",
       "apothecary",
@@ -33,6 +34,7 @@
     "unlockMajorRealm": "foundation_establishment",
     "modules": [
       "outskirts",
+      "ruins",
       "gateTrial",
       "manualPavilion",
       "apothecary",
@@ -60,6 +62,7 @@
     "unlockMajorRealm": "core_formation",
     "modules": [
       "outskirts",
+      "ruins",
       "gateTrial",
       "manualPavilion",
       "apothecary",
@@ -87,6 +90,7 @@
     "unlockMajorRealm": "nascent_soul",
     "modules": [
       "outskirts",
+      "ruins",
       "gateTrial",
       "manualPavilion",
       "apothecary",
@@ -114,6 +118,7 @@
     "unlockMajorRealm": "soul_formation",
     "modules": [
       "outskirts",
+      "ruins",
       "gateTrial",
       "manualPavilion",
       "apothecary",

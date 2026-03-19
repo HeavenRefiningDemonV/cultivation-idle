@@ -3,6 +3,7 @@ import type { ValidatedContent } from '../content/index.js';
 import { SEMESTER_0_CITY_UNLOCKS } from '../systems/progression/contract/cityUnlocks.js';
 import type { MajorRealmId } from '../systems/progression/contract/index.js';
 import { getLiveRealmByIndex, syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime/index.js';
+import { LIVE_CITY_MODULE_ORDER } from '../systems/world/liveWorldSchema.js';
 
 type SaveCityState = NonNullable<SaveData['cityState']>;
 
@@ -19,7 +20,7 @@ const DEFAULT_CITY_FLAGS: SaveCityState['cityFlagsById'][string] = {
 };
 
 const FALLBACK_CITY_MODULES: Record<string, string[]> = Object.fromEntries(
-  SEMESTER_0_CITY_UNLOCKS.map((unlock) => [unlock.cityId, ['outskirts']]),
+  SEMESTER_0_CITY_UNLOCKS.map((unlock) => [unlock.cityId, [...LIVE_CITY_MODULE_ORDER]]),
 );
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -37,7 +38,7 @@ const getCitySources = (content: ValidatedContent | null | undefined): CityModul
   return SEMESTER_0_CITY_UNLOCKS.map((unlock, index) => ({
     id: unlock.cityId,
     index,
-    modules: FALLBACK_CITY_MODULES[unlock.cityId] ?? ['outskirts'],
+    modules: [...(FALLBACK_CITY_MODULES[unlock.cityId] ?? LIVE_CITY_MODULE_ORDER)],
   }));
 };
 
@@ -99,7 +100,7 @@ export const normalizeCitySaveState = ({
   const selectedModuleByCity = Object.fromEntries(
     unlockedCityIds.flatMap((cityId) => {
       const city = citySources.find((entry) => entry.id === cityId);
-      const modules = Array.isArray(city?.modules) ? city.modules : FALLBACK_CITY_MODULES[cityId] ?? ['outskirts'];
+      const modules = Array.isArray(city?.modules) ? city.modules : [...(FALLBACK_CITY_MODULES[cityId] ?? LIVE_CITY_MODULE_ORDER)];
       const existing = selectedModuleByCityInput[cityId];
       if (typeof existing === 'string' && modules.includes(existing)) {
         return [[cityId, existing]];

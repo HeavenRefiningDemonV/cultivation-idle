@@ -65,13 +65,37 @@ export interface EconomyConfig {
   };
 }
 
+export type LiveWorldModuleKey =
+  | 'outskirts'
+  | 'ruins'
+  | 'gateTrial'
+  | 'manualPavilion'
+  | 'apothecary'
+  | 'forge'
+  | 'bounties'
+  | 'expeditions';
+
+export type DeferredWorldModuleKey = 'alchemy' | 'talismanStudio';
+export type CityModuleKey = LiveWorldModuleKey | DeferredWorldModuleKey;
+
+export type RequiredLiveCityRefKey =
+  | 'outskirtsId'
+  | 'gateTrialId'
+  | 'ruinId'
+  | 'pavilionId'
+  | 'apothecaryId';
+
+export type OptionalCityRefKey = string;
+export type CityRefKey = RequiredLiveCityRefKey | OptionalCityRefKey;
+export type CityRefs = Record<string, string> & Record<RequiredLiveCityRefKey, string>;
+
 export interface CityDef {
   id: string;
   index: number;
   name: string;
   unlockMajorRealm: MajorRealmId;
   modules: string[];
-  refs: Record<string, string>;
+  refs: CityRefs;
   themeTags?: string[];
 }
 

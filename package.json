@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tmp-tests/tests/**/*.js",
     "audio:audit": "node --experimental-strip-types scripts/audio/auditAudioAssets.ts",
-    "validate:content": "node --experimental-strip-types scripts/validateContent.ts",
+    "validate:content": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/validateContent.ts",
     "preview": "vite preview",
     "test:contracts": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tmp-tests/tests/contracts/**/*.js",
     "progression:report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/progressionContractReport.js",

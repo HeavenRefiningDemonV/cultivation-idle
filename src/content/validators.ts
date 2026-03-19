@@ -33,6 +33,11 @@ import type {
 import type { LoadedContentRaw } from './loaders.js';
 import { normalizeTrialFailSafeDefinition } from './trialFailSafe.js';
 import { validateForgeBlueprintStepScript } from './validation/validateForgeBlueprints.js';
+import {
+  inspectLiveCitySchema,
+  LIVE_CITY_MODULE_ORDER,
+  REQUIRED_CITY_REFS_FOR_LIVE_SLICE,
+} from '../systems/world/liveWorldSchema.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -171,9 +176,38 @@ function validateCities(config: CitiesPayload): CityDef[] {
       `cities[${idx}].unlockMajorRealm must be a string`,
     );
     assert(Array.isArray(city.modules), `cities[${idx}].modules must be an array`);
+    city.modules.forEach((moduleKey, moduleIdx) => {
+      assert(typeof moduleKey === 'string', `cities[${idx}].modules[${moduleIdx}] must be a string`);
+    });
     assertObject(city.refs, `cities[${idx}].refs`);
-    ['outskirtsId', 'gateTrialId', 'ruinId', 'pavilionId', 'apothecaryId'].forEach((key) =>
+    REQUIRED_CITY_REFS_FOR_LIVE_SLICE.forEach((key) =>
       assertHasKey(city.refs, key, `cities[${idx}].refs`),
+    );
+
+    const drift = inspectLiveCitySchema(city);
+    assert(
+      drift.duplicateModules.length === 0,
+      `cities[${idx}] (${city.id}) has duplicate modules: ${drift.duplicateModules.join(', ')}`,
+    );
+    assert(
+      drift.missingLiveModules.length === 0,
+      `cities[${idx}] (${city.id}) is missing live modules: ${drift.missingLiveModules.join(', ')}`,
+    );
+    assert(
+      drift.deferredModulesPresent.length === 0,
+      `cities[${idx}] (${city.id}) includes deferred modules for this slice: ${drift.deferredModulesPresent.join(', ')}`,
+    );
+    assert(
+      drift.unknownModulesPresent.length === 0,
+      `cities[${idx}] (${city.id}) includes unknown modules: ${drift.unknownModulesPresent.join(', ')}`,
+    );
+    assert(
+      drift.actualOrderMatchesCanonical,
+      `cities[${idx}] (${city.id}) modules must exactly match live order: ${LIVE_CITY_MODULE_ORDER.join(', ')}`,
+    );
+    assert(
+      drift.missingRequiredRefs.length === 0,
+      `cities[${idx}] (${city.id}) is missing required live refs: ${drift.missingRequiredRefs.join(', ')}`,
     );
   });
   return cities;
