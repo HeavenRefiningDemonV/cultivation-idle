@@ -209,3 +209,72 @@ test('entering Spirit Severing does not create a fake city six or change the cur
   ]);
   assert.equal(cityState.currentCityId, 'city_ironpeak_bastion');
 });
+
+test('generateForCity replaces stale three-entry boards that no longer satisfy the live bounty contract', () => {
+  const citiesSorted = useContentStore.getState().citiesSorted;
+  useCityStore.getState().initializeFromContent(citiesSorted);
+
+  useBountyStore.setState((state) => ({
+    ...state,
+    activeByCityId: {
+      ...state.activeByCityId,
+      city_pinewind_hamlet: [
+        {
+          instanceId: 'legacy-easy',
+          cityId: 'city_pinewind_hamlet',
+          cityIndex: 0,
+          templateId: 'bounty_pinewind_craft',
+          difficulty: 'easy',
+          kind: 'CRAFT_COMPLETE',
+          title: 'Legacy Craft Order',
+          description: '',
+          progress: 0,
+          target: 1,
+          claimed: false,
+          rewards: { currencies: {} },
+          createdAt: 1,
+        },
+        {
+          instanceId: 'legacy-medium',
+          cityId: 'city_pinewind_hamlet',
+          cityIndex: 0,
+          templateId: 'bounty_pinewind_expedition',
+          difficulty: 'medium',
+          kind: 'EXPEDITION_COMPLETE',
+          title: 'Legacy Expedition',
+          description: '',
+          progress: 0,
+          target: 1,
+          claimed: false,
+          rewards: { currencies: {} },
+          createdAt: 1,
+        },
+        {
+          instanceId: 'legacy-hard',
+          cityId: 'city_pinewind_hamlet',
+          cityIndex: 0,
+          templateId: 'tmpl_trial_clear',
+          difficulty: 'hard',
+          kind: 'TRIAL_CLEAR',
+          title: 'Legacy Trial',
+          description: '',
+          progress: 0,
+          target: 1,
+          claimed: false,
+          rewards: { currencies: {} },
+          createdAt: 1,
+        },
+      ],
+    },
+  }));
+
+  useBountyStore.getState().generateForCity('city_pinewind_hamlet', 0);
+  const board = useBountyStore.getState().activeByCityId.city_pinewind_hamlet ?? [];
+
+  assert.equal(board.length, 3);
+  assert.deepEqual(board.map((entry) => entry.difficulty), ['easy', 'medium', 'hard']);
+  board.forEach((entry) => {
+    assert.equal(entry.description.trim().length > 0, true);
+    assert.notEqual(entry.instanceId.startsWith('legacy-'), true);
+  });
+});

@@ -1,32 +1,231 @@
 {
   "version": 1,
   "refreshCooldownSeconds": 21600,
-  "difficulties": ["easy", "medium", "hard"],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
   "rewardTiersByCityIndex": {
     "0": {
-      "easy": { "gold": [150, 250], "merit": [1, 1], "spiritStones": [0, 0] },
-      "medium": { "gold": [400, 700], "merit": [2, 2], "spiritStones": [1, 1] },
-      "hard": { "gold": [900, 1400], "merit": [3, 3], "spiritStones": [1, 2] }
+      "easy": {
+        "gold": [
+          150,
+          250
+        ],
+        "merit": [
+          1,
+          1
+        ],
+        "spiritStones": [
+          0,
+          0
+        ]
+      },
+      "medium": {
+        "gold": [
+          400,
+          700
+        ],
+        "merit": [
+          2,
+          2
+        ],
+        "spiritStones": [
+          1,
+          1
+        ]
+      },
+      "hard": {
+        "gold": [
+          900,
+          1400
+        ],
+        "merit": [
+          3,
+          3
+        ],
+        "spiritStones": [
+          1,
+          2
+        ]
+      }
     },
     "1": {
-      "easy": { "gold": [700, 1200], "merit": [1, 1], "spiritStones": [0, 0] },
-      "medium": { "gold": [2000, 3500], "merit": [2, 2], "spiritStones": [1, 2] },
-      "hard": { "gold": [6000, 10000], "merit": [4, 4], "spiritStones": [2, 4] }
+      "easy": {
+        "gold": [
+          700,
+          1200
+        ],
+        "merit": [
+          1,
+          1
+        ],
+        "spiritStones": [
+          0,
+          0
+        ]
+      },
+      "medium": {
+        "gold": [
+          2000,
+          3500
+        ],
+        "merit": [
+          2,
+          2
+        ],
+        "spiritStones": [
+          1,
+          2
+        ]
+      },
+      "hard": {
+        "gold": [
+          6000,
+          10000
+        ],
+        "merit": [
+          4,
+          4
+        ],
+        "spiritStones": [
+          2,
+          4
+        ]
+      }
     },
     "2": {
-      "easy": { "gold": [4000, 7000], "merit": [1, 1], "spiritStones": [1, 2] },
-      "medium": { "gold": [10000, 18000], "merit": [3, 3], "spiritStones": [3, 6] },
-      "hard": { "gold": [25000, 40000], "merit": [5, 5], "spiritStones": [6, 10] }
+      "easy": {
+        "gold": [
+          4000,
+          7000
+        ],
+        "merit": [
+          1,
+          1
+        ],
+        "spiritStones": [
+          1,
+          2
+        ]
+      },
+      "medium": {
+        "gold": [
+          10000,
+          18000
+        ],
+        "merit": [
+          3,
+          3
+        ],
+        "spiritStones": [
+          3,
+          6
+        ]
+      },
+      "hard": {
+        "gold": [
+          25000,
+          40000
+        ],
+        "merit": [
+          5,
+          5
+        ],
+        "spiritStones": [
+          6,
+          10
+        ]
+      }
     },
     "3": {
-      "easy": { "gold": [18000, 30000], "merit": [2, 2], "spiritStones": [4, 7] },
-      "medium": { "gold": [40000, 70000], "merit": [4, 4], "spiritStones": [10, 18] },
-      "hard": { "gold": [90000, 150000], "merit": [6, 6], "spiritStones": [20, 35] }
+      "easy": {
+        "gold": [
+          18000,
+          30000
+        ],
+        "merit": [
+          2,
+          2
+        ],
+        "spiritStones": [
+          4,
+          7
+        ]
+      },
+      "medium": {
+        "gold": [
+          40000,
+          70000
+        ],
+        "merit": [
+          4,
+          4
+        ],
+        "spiritStones": [
+          10,
+          18
+        ]
+      },
+      "hard": {
+        "gold": [
+          90000,
+          150000
+        ],
+        "merit": [
+          6,
+          6
+        ],
+        "spiritStones": [
+          20,
+          35
+        ]
+      }
     },
     "4": {
-      "easy": { "gold": [90000, 140000], "merit": [2, 2], "spiritStones": [8, 14] },
-      "medium": { "gold": [200000, 320000], "merit": [4, 4], "spiritStones": [18, 32] },
-      "hard": { "gold": [450000, 700000], "merit": [7, 7], "spiritStones": [40, 70] }
+      "easy": {
+        "gold": [
+          90000,
+          140000
+        ],
+        "merit": [
+          2,
+          2
+        ],
+        "spiritStones": [
+          8,
+          14
+        ]
+      },
+      "medium": {
+        "gold": [
+          200000,
+          320000
+        ],
+        "merit": [
+          4,
+          4
+        ],
+        "spiritStones": [
+          18,
+          32
+        ]
+      },
+      "hard": {
+        "gold": [
+          450000,
+          700000
+        ],
+        "merit": [
+          7,
+          7
+        ],
+        "spiritStones": [
+          40,
+          70
+        ]
+      }
     }
   },
   "templates": [
@@ -35,8 +234,16 @@
       "name": "Cull the Outskirts",
       "desc": "Defeat {target} enemies in the Outskirts.",
       "kind": "OUTSKIRTS_KILL",
-      "targets": { "easy": 25, "medium": 60, "hard": 140 },
-      "difficulties": ["easy", "medium", "hard"],
+      "targets": {
+        "easy": 25,
+        "medium": 60,
+        "hard": 140
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
       "minCityIndex": 0
     },
     {
@@ -44,8 +251,16 @@
       "name": "Hunt the Outskirts Boss",
       "desc": "Defeat the Outskirts boss {target} times.",
       "kind": "OUTSKIRTS_BOSS_KILL",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
       "minCityIndex": 0
     },
     {
@@ -53,8 +268,16 @@
       "name": "Purge the Ruins",
       "desc": "Clear {target} Ruins rooms.",
       "kind": "RUINS_ROOM_CLEAR",
-      "targets": { "easy": 5, "medium": 12, "hard": 25 },
-      "difficulties": ["easy", "medium", "hard"],
+      "targets": {
+        "easy": 5,
+        "medium": 12,
+        "hard": 25
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
       "minCityIndex": 0
     },
     {
@@ -62,8 +285,16 @@
       "name": "Conquer the Ruins",
       "desc": "Complete {target} Ruins runs.",
       "kind": "RUINS_RUN_CLEAR",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
       "minCityIndex": 0
     },
     {
@@ -71,99 +302,237 @@
       "name": "Prove Your Worth",
       "desc": "Clear the Gate Trial {target} times.",
       "kind": "TRIAL_CLEAR",
-      "targets": { "easy": 1, "medium": 1, "hard": 2 },
-      "difficulties": ["easy", "medium", "hard"],
+      "targets": {
+        "easy": 1,
+        "medium": 1,
+        "hard": 2
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
       "minCityIndex": 0
     },
     {
       "id": "bounty_pinewind_craft",
       "name": "Pinewind Craft Orders",
       "kind": "CRAFT_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 0
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 0,
+      "desc": "Finish {target} crafting jobs for Pinewind Hamlet."
     },
     {
       "id": "bounty_pinewind_expedition",
       "name": "Pinewind Expeditions",
       "kind": "EXPEDITION_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 3 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 3 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 0
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 0,
+      "desc": "Complete {target} expeditions commissioned by Pinewind Hamlet."
     },
     {
       "id": "bounty_stonecrag_craft",
       "name": "Stonecrag Craft Orders",
       "kind": "CRAFT_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 1
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 1,
+      "desc": "Finish {target} crafting jobs for Stonecrag Town."
     },
     {
       "id": "bounty_stonecrag_expedition",
       "name": "Stonecrag Expeditions",
       "kind": "EXPEDITION_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 3 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 3 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 1
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 1,
+      "desc": "Complete {target} expeditions commissioned by Stonecrag Town."
     },
     {
       "id": "bounty_embermist_craft",
-      "name": "Embermist Craft Orders",
+      "name": "Spirit Cavern Craft Orders",
       "kind": "CRAFT_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 2
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 2,
+      "desc": "Finish {target} crafting jobs for Spirit Cavern City."
     },
     {
       "id": "bounty_embermist_expedition",
-      "name": "Embermist Expeditions",
+      "name": "Spirit Cavern Expeditions",
       "kind": "EXPEDITION_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 3 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 3 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 2
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 2,
+      "desc": "Complete {target} expeditions commissioned by Spirit Cavern City."
     },
     {
       "id": "bounty_silverkeep_craft",
-      "name": "Silverkeep Craft Orders",
+      "name": "Lotusford Craft Orders",
       "kind": "CRAFT_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 3
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 3,
+      "desc": "Finish {target} crafting jobs for Lotusford."
     },
     {
       "id": "bounty_silverkeep_expedition",
-      "name": "Silverkeep Expeditions",
+      "name": "Lotusford Expeditions",
       "kind": "EXPEDITION_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 3 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 3 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 3
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 3,
+      "desc": "Complete {target} expeditions commissioned by Lotusford."
     },
     {
       "id": "bounty_starsea_craft",
-      "name": "Starsea Craft Orders",
+      "name": "Ironpeak Craft Orders",
       "kind": "CRAFT_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 4 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 4 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 4
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 4
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 4,
+      "desc": "Finish {target} crafting jobs for Ironpeak Bastion."
     },
     {
       "id": "bounty_starsea_expedition",
-      "name": "Starsea Expeditions",
+      "name": "Ironpeak Expeditions",
       "kind": "EXPEDITION_COMPLETE",
-      "targets": { "easy": 1, "medium": 2, "hard": 3 },
-      "targetsByDifficulty": { "easy": 1, "medium": 2, "hard": 3 },
-      "difficulties": ["easy", "medium", "hard"],
-      "minCityIndex": 4
+      "targets": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "targetsByDifficulty": {
+        "easy": 1,
+        "medium": 2,
+        "hard": 3
+      },
+      "difficulties": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "minCityIndex": 4,
+      "desc": "Complete {target} expeditions commissioned by Ironpeak Bastion."
     }
   ]
 }

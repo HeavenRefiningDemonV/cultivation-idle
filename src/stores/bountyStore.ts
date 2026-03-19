@@ -1,10 +1,16 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { BountyTemplate } from '../content/index.js';
 import { useContentStore } from './contentStore';
 import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { useUIStore } from './uiStore';
-import { resolveBountyDestination } from '../utils/bountyRouting';
+import {
+  buildLiveBountyDescription,
+  getAvailableLiveBountyTemplates,
+  getBountyKindKey,
+  isLiveBountyBoard,
+  LIVE_BOUNTY_DIFFICULTIES,
+  selectLiveBountyTemplate,
+} from '../systems/bounties/liveBountyBoard.js';
 
 export type BountyKind =
   | 'OUTSKIRTS_KILL'
@@ -56,8 +62,6 @@ interface BountyStoreState {
   setTrackedBounty: (cityId: string, bountyId: string | null) => void;
   hardResetBounties: () => void;
 }
-
-const DIFFICULTIES: BountyDifficulty[] = ['easy', 'medium', 'hard'];
 
 function createUuid(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -146,30 +150,7 @@ function findRewardTierForCity(
   return entries[0].value;
 }
 
-function selectTemplate(
-  templates: BountyTemplate[],
-  difficulty: BountyDifficulty,
-  cityIndex: number,
-  used: Set<string>,
-): BountyTemplate | null {
-  const eligible = templates.filter(
-    (template) =>
-      template.difficulties?.includes(difficulty) &&
-      (template.minCityIndex ?? 0) <= cityIndex &&
-      !used.has(template.id),
-  );
-
-  const pool = eligible.length > 0 ? eligible : templates.filter(
-    (template) => template.difficulties?.includes(difficulty) && (template.minCityIndex ?? 0) <= cityIndex,
-  );
-
-  if (pool.length === 0) return null;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
-  used.add(pick.id);
-  return pick;
-}
-
-function buildBounties(cityId: string, cityIndex: number, cityModules: string[]): BountyInstance[] {
+function buildBounties(cityId: string, cityIndex: number, cityModules: string[], refreshSeed = 0): BountyInstance[] {
   const bountyConfig = useContentStore.getState().raw?.bounties;
   if (!bountyConfig) return [];
   const templates = bountyConfig.templates ?? [];
@@ -183,18 +164,16 @@ function buildBounties(cityId: string, cityIndex: number, cityModules: string[])
   const used = new Set<string>();
   const createdAt = Date.now();
 
-  const validTemplates = templates.filter((template) => {
-    const destination = resolveBountyDestination({ cityId, bountyKind: template.kind, cityModules });
-    return destination.kind !== 'unavailable';
-  });
+  const validTemplates = getAvailableLiveBountyTemplates({ templates, cityId, cityIndex, cityModules });
 
   if (validTemplates.length === 0) return [];
 
-  return DIFFICULTIES.map((difficulty) => {
-    const template = selectTemplate(validTemplates, difficulty, cityIndex, used) ?? validTemplates[0];
+  return LIVE_BOUNTY_DIFFICULTIES.map((difficulty) => {
+    const template =
+      selectLiveBountyTemplate({ templates: validTemplates, difficulty, usedTemplateIds: used, cityIndex, refreshSeed }) ?? validTemplates[0];
     const fallbackTargets = EVENT_TARGET_LOOKUP[template.kind as BountyKind]?.[difficulty] ?? [1, 1];
     const target = template.targets?.[difficulty] ?? rollRange(fallbackTargets);
-    const description = template.desc?.replace(/\{target\}/g, target.toString()) ?? '';
+    const description = buildLiveBountyDescription(template, target);
     const rewards = buildRewardBundle(rewardByCity[difficulty]);
 
     return {
@@ -203,7 +182,7 @@ function buildBounties(cityId: string, cityIndex: number, cityModules: string[])
       cityIndex,
       templateId: template.id,
       difficulty,
-      kind: template.kind as BountyKind,
+      kind: getBountyKindKey(template.kind),
       title: template.name,
       description,
       progress: 0,
@@ -225,16 +204,10 @@ export const useBountyStore = create<BountyStoreState>()(
       const city = useContentStore.getState().maps.citiesById[cityId];
       const cityModules = city?.modules ?? [];
       const existing = get().activeByCityId[cityId];
-      if (existing && existing.length === 3) return;
-      const next = buildBounties(cityId, cityIndex, cityModules);
-      if (next.length !== 3) {
-        if (existing && existing.length > 3) {
-          set((state) => {
-            state.activeByCityId[cityId] = existing.slice(0, 3);
-          });
-        }
-        return;
-      }
+      if (isLiveBountyBoard({ board: existing, cityId, cityIndex, cityModules })) return;
+      const refreshSeed = Math.floor((get().lastRefreshAtByCityId[cityId] ?? 0) / 1000);
+      const next = buildBounties(cityId, cityIndex, cityModules, refreshSeed);
+      if (next.length !== LIVE_BOUNTY_DIFFICULTIES.length) return;
       set((state) => {
         state.activeByCityId[cityId] = next;
         state.lastRefreshAtByCityId[cityId] = Date.now();
@@ -248,8 +221,9 @@ export const useBountyStore = create<BountyStoreState>()(
       if (!get().canRefresh(cityId)) return;
       const city = useContentStore.getState().maps.citiesById[cityId];
       const cityModules = city?.modules ?? [];
-      const next = buildBounties(cityId, cityIndex, cityModules);
-      if (next.length !== 3) return;
+      const refreshSeed = Math.floor(Date.now() / 1000);
+      const next = buildBounties(cityId, cityIndex, cityModules, refreshSeed);
+      if (next.length !== LIVE_BOUNTY_DIFFICULTIES.length) return;
       set((state) => {
         state.activeByCityId[cityId] = next;
         state.lastRefreshAtByCityId[cityId] = Date.now();

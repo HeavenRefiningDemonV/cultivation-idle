@@ -15,6 +15,7 @@ import { bootstrapLiveWorldStores } from '../../src/systems/world/bootstrapLiveW
 import { openWorldModule } from '../../src/systems/world/openWorldModule.js';
 import { resolveModuleRef } from '../../src/components/screens/world/worldUtils.js';
 import { resolveBountyDestination } from '../../src/utils/bountyRouting.js';
+import { getAvailableLiveBountyTemplates } from '../../src/systems/bounties/liveBountyBoard.js';
 import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
 
 const repoPath = (relativePath: string) => path.resolve(process.cwd(), relativePath);
@@ -146,5 +147,37 @@ test('ruins bounty destinations now resolve to the live ruins module for every l
 
     assert.deepEqual(roomClear, { kind: 'module', moduleKey: 'ruins', cityId: city.id });
     assert.deepEqual(runClear, { kind: 'module', moduleKey: 'ruins', cityId: city.id });
+  });
+});
+
+test('craft bounty routing only exposes the live forge destination even when deferred craft modules remain in source data', () => {
+  const destination = resolveBountyDestination({
+    cityId: 'city_pinewind_hamlet',
+    bountyKind: 'CRAFT_COMPLETE',
+    cityModules: ['outskirts', 'forge', 'alchemy', 'talismanStudio', 'bounties'],
+  });
+
+  assert.deepEqual(destination, { kind: 'module', moduleKey: 'forge', cityId: 'city_pinewind_hamlet' });
+});
+
+test('live bounty template filtering keeps support templates authored for the current city names and non-empty descriptions', () => {
+  const content = useContentStore.getState().raw;
+  assert.ok(content);
+
+  const city = content.cities.find((entry) => entry.id === 'city_spirit_cavern_city');
+  assert.ok(city);
+
+  const templates = getAvailableLiveBountyTemplates({
+    templates: content.bounties.templates,
+    cityId: city.id,
+    cityIndex: city.index,
+    cityModules: city.modules,
+  });
+  const supportTemplates = templates.filter((template) => template.kind === 'CRAFT_COMPLETE' || template.kind === 'EXPEDITION_COMPLETE');
+
+  assert.equal(supportTemplates.length >= 2, true);
+  supportTemplates.forEach((template) => {
+    assert.equal(template.desc.trim().length > 0, true);
+    assert.match(template.name, /Spirit Cavern|Craft Orders|Expeditions/);
   });
 });

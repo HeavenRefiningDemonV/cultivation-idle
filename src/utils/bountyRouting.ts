@@ -1,3 +1,5 @@
+import { normalizeCityModulesForLiveSlice } from '../systems/world/liveWorldSchema.js';
+
 export type BountyDestination =
   | { kind: 'module'; moduleKey: string; cityId: string; reason?: string }
   | {
@@ -18,7 +20,7 @@ export function resolveBountyDestination(args: {
   cityModules: string[];
 }): BountyDestination {
   const { cityId, bountyKind, cityModules } = args;
-  const modules = cityModules ?? [];
+  const modules = normalizeCityModulesForLiveSlice(cityModules);
 
   if (bountyKind.startsWith('OUTSKIRTS_')) {
     return hasModule(modules, 'outskirts')
@@ -45,7 +47,7 @@ export function resolveBountyDestination(args: {
   }
 
   if (bountyKind === 'CRAFT_COMPLETE') {
-    const craftModules = ['alchemy', 'forge', 'talismanStudio'].filter((key) => hasModule(modules, key));
+    const craftModules = ['forge'].filter((key) => hasModule(modules, key));
 
     if (craftModules.length === 0) {
       return { kind: 'unavailable', cityId, reason: 'Crafting unavailable' };
@@ -56,9 +58,7 @@ export function resolveBountyDestination(args: {
     }
 
     const labelMap: Record<string, string> = {
-      alchemy: 'Alchemy',
       forge: 'Forge',
-      talismanStudio: 'Talisman Studio',
     };
 
     return {
