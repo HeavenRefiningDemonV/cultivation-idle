@@ -4,6 +4,8 @@ import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
 import { useBountyStore } from '../stores/bountyStore';
 import { useContentStore } from '../stores/contentStore';
+import { openWorldModule } from '../systems/world/openWorldModule';
+import { isAllowedLiveWorldSurfaceModule } from '../systems/world/liveWorldLeakAudit';
 import { resolveBountyDestination } from '../utils/bountyRouting';
 import { formatNumber } from '../utils/numbers';
 import { SaveService } from '../services/save/SaveService';
@@ -19,11 +21,8 @@ export function Header() {
   const headerTitle = useUIStore((state) => state.headerTitle);
   const headerSubtitle = useUIStore((state) => state.headerSubtitle);
   const headerTone = useUIStore((state) => state.headerTone);
-  const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
-  const setCurrentCity = useCityStore((state) => state.setCurrentCity);
-  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const trackedBounty = useBountyStore((state) =>
     currentCityId ? state.getTrackedBounty(currentCityId) : null,
   );
@@ -41,23 +40,17 @@ export function Header() {
       cityModules: city?.modules ?? [],
     });
 
-    const moduleKey =
-      destination.kind === 'module'
+    const targetModule =
+      destination.kind === 'module' && isAllowedLiveWorldSurfaceModule(destination.moduleKey)
         ? destination.moduleKey
-        : destination.kind === 'moduleChoice'
-          ? destination.options[0]?.moduleKey
-          : null;
+        : 'bounties';
 
-    const targetModule = moduleKey ?? 'bounties';
-    setActiveTab('adventure');
-    setCurrentCity(currentCityId);
-    setSelectedModule(currentCityId, targetModule);
+    openWorldModule({ cityId: currentCityId, moduleKey: targetModule, source: 'header-tracked-bounty' });
   };
 
-  // Update "Last saved" indicator every second
   useEffect(() => {
     const updateLastSaved = () => {
-  const saveInfo = SaveService.getSaveInfo();
+      const saveInfo = SaveService.getSaveInfo();
 
       if (!saveInfo) {
         setLastSavedText('Never');
@@ -83,10 +76,7 @@ export function Header() {
       }
     };
 
-    // Update immediately
     updateLastSaved();
-
-    // Update every second
     const interval = setInterval(updateLastSaved, 1000);
 
     return () => clearInterval(interval);
@@ -95,7 +85,6 @@ export function Header() {
   return (
     <header className={`header ${headerTone === 'light' ? 'header--lightTitles' : ''}`}>
       <div className='headerBar'>
-
         <div className='headerStatBlock'>
           <div className='headerQiLine'>
             Qi: <span className='headerQiValue'>{formatNumber(qi)}</span>

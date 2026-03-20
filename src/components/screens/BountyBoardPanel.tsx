@@ -24,9 +24,7 @@ const moduleLabelMap: Record<string, string> = {
   ruins: 'Ruins',
   gateTrial: 'Gate Trial',
   expeditions: 'Expeditions',
-  alchemy: 'Alchemy',
   forge: 'Forge',
-  talismanStudio: 'Talisman Studio',
   manualPavilion: 'Manual Pavilion',
 };
 
@@ -173,7 +171,7 @@ export function BountyBoardPanel() {
       cityModules,
     });
   }, [cityModules, primaryBounty]);
-  const primaryActionLabel = primaryDestination?.kind === 'moduleChoice' ? 'Choose Destination' : 'Go There';
+  const primaryActionLabel = 'Go There';
 
   const handleGoToModule = (cityId: string, moduleKey: string) => {
     openWorldModule({ cityId, moduleKey, source: 'bounty-go-there' });
@@ -181,13 +179,8 @@ export function BountyBoardPanel() {
 
   const handlePrimaryAction = () => {
     if (!primaryBounty || !primaryDestination) return;
-    if (primaryDestination.kind === 'module') {
-      handleGoToModule(primaryDestination.cityId, primaryDestination.moduleKey);
-      return;
-    }
-    if (primaryDestination.kind === 'moduleChoice') {
-      handleOpenDetail(primaryBounty.instanceId);
-    }
+    if (primaryDestination.kind !== 'module') return;
+    handleGoToModule(primaryDestination.cityId, primaryDestination.moduleKey);
   };
 
   const handleTrackToggle = (bountyId: string) => {
@@ -244,22 +237,6 @@ export function BountyBoardPanel() {
           <button className={'worldScreenModuleButton'} disabled>
             {destination.reason}
           </button>
-        </div>
-      );
-    }
-
-    if (destination.kind === 'moduleChoice') {
-      return (
-        <div className={'bountyActionRow bountyActionRow--choices'}>
-          {destination.options.map((option) => (
-            <button
-              key={option.moduleKey}
-              className={'worldScreenModuleButton'}
-              onClick={() => handleGoToModule(destination.cityId, option.moduleKey)}
-            >
-              Go to {option.label}
-            </button>
-          ))}
         </div>
       );
     }
@@ -583,12 +560,9 @@ export function BountyBoardPanel() {
               <div className={'bountyDetailValue'}>
                 Progress: {selectedBounty.progress} / {selectedBounty.target}
               </div>
-              {destination && destination.kind !== 'unavailable' && (
+              {destination && destination.kind === 'module' && (
                 <div className={'bountyDetailHint'}>
-                  Target:{' '}
-                  {destination.kind === 'moduleChoice'
-                    ? destination.options.map((opt) => opt.label).join(' / ')
-                    : moduleLabelMap[destination.moduleKey] ?? destination.moduleKey}
+                  Target: {moduleLabelMap[destination.moduleKey] ?? destination.moduleKey}
                 </div>
               )}
               {destination && destination.kind === 'unavailable' && (
@@ -650,7 +624,7 @@ export function BountyBoardPanel() {
 
 /*
 Manual test checklist (P19.3):
-- Queue an Alchemy job in City A, switch to City B, claim the job, and verify bounty progress increments in City A only.
+- Queue a Forge job in City A, switch to City B, claim the job, and verify bounty progress increments in City A only.
 - Complete an expedition in City A, claim rewards, and verify EXPEDITION_COMPLETE bounty progress in City A.
 - Reload the page to ensure tracked bounty selection and crafting job cityId persist.
 */

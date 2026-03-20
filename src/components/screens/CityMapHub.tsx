@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useUIStore } from '../../stores/uiStore';
+import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -11,7 +12,7 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 
-const HIDDEN_HUB_MODULES = new Set<string>(['alchemy', 'talismanStudio']);
+const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },

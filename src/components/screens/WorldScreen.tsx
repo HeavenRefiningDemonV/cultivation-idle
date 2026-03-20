@@ -12,6 +12,7 @@ import { resolveBountyDestination } from '../../utils/bountyRouting';
 import { CityMapHub } from './CityMapHub';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 import { getCityArrivalLesson } from '../../systems/world/cityArrivalContract.js';
+import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import {
   getProgressionContract,
   adaptProgressionAuthoredContent,
@@ -24,19 +25,17 @@ import {
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 
-const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(['alchemy', 'talismanStudio']);
+const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 
-const MODULE_METADATA: Record<string, { label: string; prompt: string }> = {
-  outskirts: { label: 'Outskirts', prompt: 'Coming in Prompt 5' },
-  gateTrial: { label: 'Gate Trial', prompt: 'Coming in Prompt 6' },
-  ruins: { label: 'Ruins', prompt: 'Repeatable ruins runs' },
-  apothecary: { label: 'Apothecary', prompt: 'Coming in Prompt 9' },
-  manualPavilion: { label: 'Manual Pavilion', prompt: 'Coming in Prompt 10' },
-  alchemy: { label: 'Alchemy', prompt: 'Coming in Prompt 13' },
-  forge: { label: 'Forge', prompt: 'Coming in Prompt 14' },
-  talismanStudio: { label: 'Talisman Studio', prompt: 'Coming in Prompt 15' },
-  bounties: { label: 'Bounties', prompt: 'Coming in Prompt 16' },
-  expeditions: { label: 'Expeditions', prompt: 'Coming in Prompt 17' },
+const MODULE_METADATA: Record<string, { label: string }> = {
+  outskirts: { label: 'Outskirts' },
+  gateTrial: { label: 'Gate Trial' },
+  ruins: { label: 'Ruins' },
+  apothecary: { label: 'Apothecary' },
+  manualPavilion: { label: 'Manual Pavilion' },
+  forge: { label: 'Forge' },
+  bounties: { label: 'Bounties' },
+  expeditions: { label: 'Expeditions' },
 };
 
 function toTitleCase(key: string): string {
@@ -50,7 +49,7 @@ function toTitleCase(key: string): string {
 
 function getModuleMeta(key: string) {
   if (MODULE_METADATA[key]) return MODULE_METADATA[key];
-  return { label: toTitleCase(key), prompt: 'Coming soon' };
+  return { label: toTitleCase(key) };
 }
 
 export function WorldScreen() {
@@ -150,11 +149,7 @@ export function WorldScreen() {
 
   const isTrackedModuleActive = useMemo(() => {
     if (!trackedDestination || !activeModuleKey) return false;
-    if (trackedDestination.kind === 'module') return trackedDestination.moduleKey === activeModuleKey;
-    if (trackedDestination.kind === 'moduleChoice') {
-      return trackedDestination.options.some((option) => option.moduleKey === activeModuleKey);
-    }
-    return false;
+    return trackedDestination.kind === 'module' && trackedDestination.moduleKey === activeModuleKey;
   }, [activeModuleKey, trackedDestination]);
 
   useEffect(() => {

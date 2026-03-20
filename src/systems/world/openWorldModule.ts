@@ -4,6 +4,7 @@ import { useContentStore } from '../../stores/contentStore';
 import { useActivityStore } from '../../stores/activityStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { SEMESTER_SLICE_CONTRACT } from '../progression/contract/semesterSlice.js';
+import { inspectWorldFacingModuleTarget } from './liveWorldLeakAudit.js';
 import {
   getWorldTravelBlockMessage,
   getWorldTravelGuard,
@@ -30,6 +31,12 @@ export function openWorldModule({ cityId, moduleKey, open = true, source: _sourc
   const contentStore = useContentStore.getState();
   const activityStore = useActivityStore.getState();
   const combatStore = useCombatStore.getState();
+
+  const targetAudit = inspectWorldFacingModuleTarget(moduleKey);
+  if (!targetAudit.ok) {
+    uiStore.addNotification('warning', 'That module is not available here.');
+    return;
+  }
 
   const city = contentStore.maps.citiesById[cityId];
   if (!city || !city.modules.includes(moduleKey)) return;

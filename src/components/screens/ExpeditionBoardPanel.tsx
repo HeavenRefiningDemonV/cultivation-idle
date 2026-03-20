@@ -7,7 +7,6 @@ import { multiply } from '../../utils/numbers';
 import { useCityStore } from '../../stores/cityStore';
 import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
-import { useUIStore } from '../../stores/uiStore';
 import { openWorldModule } from '../../systems/world/openWorldModule';
 import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRouteContract.js';
 import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting';
@@ -211,7 +210,6 @@ type RoutePositionClass = (typeof routePositions)[number];
 
 export function ExpeditionBoardPanel() {
   const currentCityId = useCityStore((state) => state.currentCityId);
-  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const content = useContentStore((state) => state.raw?.expeditions);
   const economy = useContentStore((state) => state.economy);
   const itemsById = useContentStore((state) => state.maps.itemsById);
@@ -450,8 +448,7 @@ export function ExpeditionBoardPanel() {
 
   const goUseMaterials = (moduleKey: string) => {
     if (!ceremony.run) return;
-    openWorldModule({ cityId: ceremony.run.cityId, moduleKey, source: 'expedition-ceremony' });
-    setActiveTab('adventure');
+    openWorldModule({ cityId: ceremony.run.cityId, moduleKey, source: 'expedition-use-materials' });
     closeCeremony();
   };
 
@@ -910,30 +907,33 @@ export function ExpeditionBoardPanel() {
               <div className={'expCeremonyUseLabel'}>Go use materials</div>
               <div className={'expCeremonyUseButtons'}>
                 {(() => {
-                  const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
                   const routePurpose = ceremony.run
                     ? getLiveExpeditionRoutePurpose(ceremony.run.expeditionTypeId)
                     : null;
-                  const buttons = ceremony.run
+                  const destinations = ceremony.run
                     ? resolveExpeditionUseMaterialsDestinations({
                         cityId: ceremony.run.cityId,
                         expeditionTypeId: ceremony.run.expeditionTypeId,
                         cityModules: citiesById[ceremony.run.cityId]?.modules ?? [],
-                        recommendedModuleKey: type?.recommendedModuleKey ?? routePurpose?.moduleKey,
-                      }).map((entry) => ({
-                        key: entry.moduleKey,
-                        label: routePurpose?.moduleKey === entry.moduleKey ? routePurpose.ctaLabel : `Open ${routePurpose?.moduleLabel ?? entry.moduleKey}`,
-                      }))
+                        recommendedModuleKey: routePurpose?.moduleKey,
+                      })
                     : [];
-                  return buttons.map((entry) => (
+                  if (!routePurpose) {
+                    return <div className={'expDetailHint'}>No follow-up destination available.</div>;
+                  }
+                  const destination = destinations[0] ?? null;
+                  if (!destination) {
+                    return <div className={'expDetailHint'}>{routePurpose.moduleLabel} unavailable in the origin city.</div>;
+                  }
+                  return (
                     <button
-                      key={entry.key}
+                      key={destination.moduleKey}
                       className={'worldScreenModuleButton worldScreenModuleButton--subtle'}
-                      onClick={() => goUseMaterials(entry.key)}
+                      onClick={() => goUseMaterials(destination.moduleKey)}
                     >
-                      {entry.label}
+                      {routePurpose.ctaLabel}
                     </button>
-                  ));
+                  );
                 })()}
               </div>
             </div>

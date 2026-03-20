@@ -3,15 +3,9 @@ import { normalizeCityModulesForLiveSlice } from '../systems/world/liveWorldSche
 
 export type BountyDestination =
   | { kind: 'module'; moduleKey: string; cityId: string; reason?: string }
-  | {
-      kind: 'moduleChoice';
-      cityId: string;
-      options: Array<{ moduleKey: string; label: string }>;
-      reason?: string;
-    }
   | { kind: 'unavailable'; cityId: string; reason: string };
 
-function hasModule(cityModules: string[], moduleKey: string): boolean {
+function hasModule(cityModules: readonly string[], moduleKey: string): boolean {
   return Array.isArray(cityModules) && cityModules.includes(moduleKey);
 }
 
@@ -48,25 +42,9 @@ export function resolveBountyDestination(args: {
   }
 
   if (bountyKind === 'CRAFT_COMPLETE') {
-    const craftModules = ['forge'].filter((key) => hasModule(modules, key));
-
-    if (craftModules.length === 0) {
-      return { kind: 'unavailable', cityId, reason: 'Forge unavailable' };
-    }
-
-    if (craftModules.length === 1) {
-      return { kind: 'module', moduleKey: craftModules[0], cityId };
-    }
-
-    const labelMap: Record<string, string> = {
-      forge: 'Forge',
-    };
-
-    return {
-      kind: 'moduleChoice',
-      cityId,
-      options: craftModules.map((moduleKey) => ({ moduleKey, label: labelMap[moduleKey] ?? moduleKey })),
-    };
+    return hasModule(modules, 'forge')
+      ? { kind: 'module', moduleKey: 'forge', cityId }
+      : { kind: 'unavailable', cityId, reason: 'Forge unavailable' };
   }
 
   return { kind: 'unavailable', cityId, reason: 'Unknown bounty kind' };
@@ -113,7 +91,6 @@ export function bountyKindToProgressRule(kind: string): string {
       return 'Progress the associated activity.';
   }
 }
-
 
 export type ExpeditionUseMaterialsDestination = {
   cityId: string;

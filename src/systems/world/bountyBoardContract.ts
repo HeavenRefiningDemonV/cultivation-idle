@@ -114,9 +114,6 @@ export function inspectLiveBountyBoard(args: {
 }
 
 function describeDestinationDrift(role: LiveBountyBoardRole, destination: BountyDestination): string {
-  if (destination.kind === 'moduleChoice') {
-    return `Slot ${role} leaked moduleChoice routing.`;
-  }
   if (destination.kind === 'unavailable') {
     return `Slot ${role} became unavailable: ${destination.reason}`;
   }
