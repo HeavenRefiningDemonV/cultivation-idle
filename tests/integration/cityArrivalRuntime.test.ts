@@ -15,7 +15,12 @@ import {
 const CONTENT_DIR = path.resolve(process.cwd(), 'public', 'cultivation_idle_content_bible_v1_config');
 
 type RuntimeContent = {
+  economy: Record<string, unknown>;
   cities: Array<{ id: string; index: number; name: string; modules: string[]; unlockMajorRealm: string }>;
+  items: Array<{ id: string }>;
+  trials: Array<{ id: string; cityId: string; gateItemId: string; gatesToMajorRealm?: string; eligibilityRule?: unknown }>;
+  bounties: Record<string, unknown>;
+  prestige_store: { upgrades?: Array<{ id: string }> };
 };
 
 let runtimeContentPromise: Promise<RuntimeContent> | null = null;
@@ -26,7 +31,12 @@ const readJson = async <T>(fileName: string): Promise<T> =>
 const loadRuntimeContent = async (): Promise<RuntimeContent> => {
   if (!runtimeContentPromise) {
     runtimeContentPromise = (async () => ({
+      economy: await readJson('economy.json'),
       cities: await readJson('cities.json'),
+      items: await readJson('items.json'),
+      trials: await readJson('trials.json'),
+      bounties: await readJson('bounties.json'),
+      prestige_store: await readJson('prestige_store.json'),
     }))();
   }
   return runtimeContentPromise;
@@ -39,7 +49,8 @@ test.beforeEach(async () => {
   const content = await loadRuntimeContent();
   const citiesSorted = [...content.cities].sort((a, b) => a.index - b.index);
   useContentStore.setState({
-    raw: { cities: citiesSorted } as never,
+    raw: { ...content, cities: citiesSorted } as never,
+    economy: content.economy as never,
     isLoaded: true,
     isLoading: false,
     error: null,
@@ -66,16 +77,26 @@ test('missing acknowledgement field backfills unlocked truth while present empty
   );
 });
 
-test('fresh bootstrap suppresses Pinewind arrival while later unlock queues the newest city', () => {
+test('fresh bootstrap suppresses Pinewind arrival while an unresolved later city can still be queued', () => {
   const citiesSorted = useContentStore.getState().citiesSorted;
   useCityStore.getState().initializeFromContent(citiesSorted);
 
   assert.deepEqual(useCityStore.getState().acknowledgedArrivalCityIds, ['city_pinewind_hamlet']);
   assert.equal(useUIStore.getState().pendingCityArrivalId, null);
 
-  const unlocked = useCityStore.getState().syncRealmEntry('foundation_establishment');
+  useCityStore.setState((state) => ({
+    ...state,
+    currentCityId: 'city_stonecrag_town',
+    unlockedCityIds: ['city_pinewind_hamlet', 'city_stonecrag_town'],
+    selectedModuleByCity: {
+      ...state.selectedModuleByCity,
+      city_stonecrag_town: 'outskirts',
+    },
+    initializedFromContent: true,
+  }));
+  const queued = useCityStore.getState().ensurePendingCityArrival('city_stonecrag_town');
 
-  assert.deepEqual(unlocked, ['city_stonecrag_town']);
+  assert.equal(queued, 'city_stonecrag_town');
   assert.deepEqual(useCityStore.getState().acknowledgedArrivalCityIds, ['city_pinewind_hamlet']);
   assert.equal(useUIStore.getState().pendingCityArrivalId, 'city_stonecrag_town');
   assert.equal(useCityStore.getState().selectedModuleByCity.city_stonecrag_town, 'outskirts');
