@@ -80,17 +80,12 @@ test('world shell source wiring keeps deferred modules hidden while leaving ruin
   const cityMapHubSource = await readFile(repoPath('src/components/screens/CityMapHub.tsx'), 'utf8');
   const modalSource = await readFile(repoPath('src/components/modals/WorldBuildingModal.tsx'), 'utf8');
 
-  const worldHiddenMatch = worldScreenSource.match(/WORLD_SCREEN_HIDDEN_MODULES\s*=\s*new Set<string>\(\[(.*?)\]\)/s);
-  assert.ok(worldHiddenMatch);
-  assert.match(worldHiddenMatch[1], /alchemy/);
-  assert.match(worldHiddenMatch[1], /talismanStudio/);
-  assert.doesNotMatch(worldHiddenMatch[1], /ruins/);
-
-  const hubHiddenMatch = cityMapHubSource.match(/HIDDEN_HUB_MODULES\s*=\s*new Set<string>\(\[(.*?)\]\)/s);
-  assert.ok(hubHiddenMatch);
-  assert.match(hubHiddenMatch[1], /alchemy/);
-  assert.match(hubHiddenMatch[1], /talismanStudio/);
-  assert.doesNotMatch(hubHiddenMatch[1], /ruins/);
+  assert.match(worldScreenSource, /WORLD_SCREEN_HIDDEN_MODULES\s*=\s*new Set<string>\(DEFERRED_WORLD_MODULES\)/);
+  assert.match(cityMapHubSource, /HIDDEN_HUB_MODULES\s*=\s*new Set<string>\(DEFERRED_WORLD_MODULES\)/);
+  assert.match(worldScreenSource, /DEFERRED_WORLD_MODULES/);
+  assert.match(cityMapHubSource, /DEFERRED_WORLD_MODULES/);
+  assert.doesNotMatch(worldScreenSource, /WORLD_SCREEN_HIDDEN_MODULES[^\n]*ruins/i);
+  assert.doesNotMatch(cityMapHubSource, /HIDDEN_HUB_MODULES[^\n]*ruins/i);
 
   assert.match(modalSource, /RuinsBuildingPanel/);
   assert.match(modalSource, /case\s+['"]ruins['"]\s*:/);
