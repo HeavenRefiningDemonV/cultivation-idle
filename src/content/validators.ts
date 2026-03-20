@@ -41,7 +41,9 @@ import {
 } from '../systems/world/liveWorldSchema.js';
 import {
   buildLiveCityPackageRegistry,
+  formatCityPackageCoverageReport,
   formatLiveCityPackageCoverageIssue,
+  inspectSemesterCityPackageCoverage,
 } from '../systems/world/cityPackageRegistry.js';
 
 export interface ValidatedContent {
@@ -983,6 +985,19 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     pavilionsById: pavilionMap,
     apothecaryById: apothecaryMap,
   }).coverageIssues.forEach((issue) => addErr(formatLiveCityPackageCoverageIssue(issue)));
+
+  inspectSemesterCityPackageCoverage({
+    cities,
+    outskirtsById: outskirtsMap,
+    trialsById: trialMap,
+    ruinsById: ruinMap,
+    pavilionsById: pavilionMap,
+    apothecaryById: apothecaryMap,
+    bounties: bountyConfig,
+    expeditions,
+  }).forEach((report) => {
+    formatCityPackageCoverageReport(report).forEach(addErr);
+  });
 
   apothecaryShops.forEach((shop, idx) => {
     if (!(shop.cityId in cityMap)) {

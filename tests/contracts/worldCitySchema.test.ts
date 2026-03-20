@@ -163,7 +163,7 @@ test('semantic validator reports packet 2.1 world city schema drift for broken a
   assert.equal(cities.some((city) => city.id === 'city_pinewind_hamlet'), true);
 });
 
-test('semantic validator reports packet 2.7 city package coverage drift when a live city ref target is missing', async () => {
+test('semantic validator reports packet 2.7 city package completeness drift when a live city ref target is missing', async () => {
   const { rawContent } = await readCities();
   const brokenRawContent = structuredClone(rawContent);
   const brokenCities = Array.isArray(brokenRawContent.cities)
@@ -179,15 +179,15 @@ test('semantic validator reports packet 2.7 city package coverage drift when a l
     scenarios: [],
     migrationFixtures: [],
   });
-  const coverageIssue = issues.find((issue) => issue.category === 'WORLD_CITY_PACKAGE_COVERAGE');
+  const coverageIssue = issues.find((issue) => issue.category === 'WORLD_CITY_PACKAGE_COMPLETENESS_DRIFT');
 
   assert.ok(coverageIssue);
   assert.equal(coverageIssue.suggestedOwnerPacket, '2.7');
-  assert.equal(coverageIssue.id, 'world-city-package-city_pinewind_hamlet-ruinId');
+  assert.equal(coverageIssue.id, 'world-city-package-completeness-city_pinewind_hamlet');
   assert.equal(coverageIssue.autoFixable, true);
-  assert.match(coverageIssue.summary, /complete live city package/i);
-  assert.match(coverageIssue.fixStrategySummary, /packet 2\.7 city-package coverage/i);
-  assert.match(coverageIssue.evidence[0]?.detail ?? '', /refs\.ruinId missing in ruins/i);
+  assert.match(coverageIssue.summary, /city package completeness contract/i);
+  assert.match(coverageIssue.fixStrategySummary, /packet 2\.7 city-package completeness/i);
+  assert.match(coverageIssue.evidence[0]?.detail ?? '', /refs\.ruinId.*ruins/i);
 
   assert.equal(
     formatLiveCityPackageCoverageIssue({

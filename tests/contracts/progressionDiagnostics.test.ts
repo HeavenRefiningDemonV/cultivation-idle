@@ -144,5 +144,5 @@ test('diagnostics owner packet map reflects packet 1.6 prestige honesty and pack
 });
 
 test('diagnostics owner packet map reserves city package coverage for packet 2.7', () => {
-  assert.equal(DRIFT_OWNER_PACKET.WORLD_CITY_PACKAGE_COVERAGE, '2.7');
+  assert.equal(DRIFT_OWNER_PACKET.WORLD_CITY_PACKAGE_COMPLETENESS_DRIFT, '2.7');
 });

@@ -70,6 +70,14 @@ export interface RawProgressionContentLike {
   apothecary_shops?:
     | { shops: Array<{ id: string }> }
     | Array<{ id: string }>;
+  bounties?: {
+    rewardTiersByCityIndex?: Record<string, unknown>;
+    templates?: Array<{ kind?: string; minCityIndex?: number }>;
+  };
+  expeditions?: {
+    types?: Array<{ id: string; yieldTags: string[] }>;
+    cityYields?: Array<{ cityIndex: number; yieldsByTag: Record<string, unknown> }>;
+  };
 }
 
 const readTrials = (raw: RawProgressionContentLike) => (Array.isArray(raw.trials) ? raw.trials : raw.trials.trials);

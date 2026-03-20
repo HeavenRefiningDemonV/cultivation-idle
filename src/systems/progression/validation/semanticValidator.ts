@@ -10,8 +10,8 @@ import type { CityDef } from '../../../content/types.js';
 import { collectProgressionDiagnostics, type DriftIssue } from '../diagnostics/index.js';
 import { inspectLiveCitySchema, LIVE_CITY_MODULE_ORDER } from '../../world/liveWorldSchema.js';
 import {
-  buildLiveCityPackageRegistry,
-  formatLiveCityPackageCoverageIssue,
+  formatCityPackageCoverageReport,
+  inspectSemesterCityPackageCoverage,
 } from '../../world/cityPackageRegistry.js';
 
 export interface ProgressionScenarioLike {
@@ -152,31 +152,29 @@ const validateRawWorldCityPackageCoverage = (rawContent: RawProgressionContentLi
   const outskirts = readRawOutskirts(rawContent);
   const ruins = readRawRuins(rawContent);
   const apothecaryShops = readRawApothecaryShops(rawContent);
-
-  const packageRegistry = buildLiveCityPackageRegistry({
+  const issues: DriftIssue[] = [];
+  inspectSemesterCityPackageCoverage({
     cities,
     outskirtsById: Object.fromEntries(outskirts.map((entry) => [entry.id, entry])),
     trialsById: Object.fromEntries(trials.map((entry) => [entry.id, entry])),
     ruinsById: Object.fromEntries(ruins.map((entry) => [entry.id, entry])),
     pavilionsById: Object.fromEntries(pavilions.map((entry) => [entry.id, entry])),
     apothecaryById: Object.fromEntries(apothecaryShops.map((entry) => [entry.id, entry])),
-  });
-
-  const issues: DriftIssue[] = [];
-  packageRegistry.coverageIssues.forEach((coverageIssue) => {
+    bounties: rawContent.bounties,
+    expeditions: rawContent.expeditions,
+  }).forEach((report) => {
+    if (report.isComplete) return;
     pushIssue(issues, {
-      id: `world-city-package-${coverageIssue.cityId}-${coverageIssue.refKey}`,
-      category: 'WORLD_CITY_PACKAGE_COVERAGE',
+      id: `world-city-package-completeness-${report.cityId}`,
+      category: 'WORLD_CITY_PACKAGE_COMPLETENESS_DRIFT',
       severity: 'error',
-      summary: `City ${coverageIssue.cityId} does not resolve a complete live city package.`,
-      evidence: [
-        {
-          path: `content/cities/${coverageIssue.cityId}/refs`,
-          detail: formatLiveCityPackageCoverageIssue(coverageIssue),
-        },
-      ],
+      summary: `City ${report.cityId} does not satisfy the packet 2.7 live city package completeness contract.`,
+      evidence: formatCityPackageCoverageReport(report).map((detail) => ({
+        path: `content/cities/${report.cityId}`,
+        detail,
+      })),
       suggestedOwnerPacket: '2.7',
-      fixStrategySummary: 'Keep packet 2.7 city-package coverage centralized so each live city resolves outskirts, gate trial, ruins, pavilion, and apothecary content through one registry helper.',
+      fixStrategySummary: 'Keep packet 2.7 city-package completeness centralized so each semester city resolves its lead refs, quick-open surfaces, local bounty support, and expedition yield tags through one coverage inspector.',
       autoFixable: true,
     });
   });
