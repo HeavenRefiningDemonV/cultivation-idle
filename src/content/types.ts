@@ -385,7 +385,7 @@ export interface ExpeditionTypeDef {
   name: string;
   yieldTags: string[];
   description?: string;
-  recommendedModuleKey?: 'alchemy' | 'forge' | 'manualPavilion';
+  recommendedModuleKey?: 'apothecary' | 'forge' | 'manualPavilion';
   rareDrops?: Array<{ itemId: string; qty: number; weight?: number }>;
 }
 

@@ -279,8 +279,8 @@ test('expedition material routing stays in the origin city and only returns avai
     cityId: 'city_pinewind_hamlet',
     expeditionTypeId: 'forage',
     cityModules: ['outskirts', 'bounties', 'expeditions', 'manualPavilion'],
-    recommendedModuleKey: 'alchemy',
+    recommendedModuleKey: 'apothecary',
   });
 
-  assert.deepEqual(buttons, [{ cityId: 'city_pinewind_hamlet', moduleKey: 'manualPavilion' }]);
+  assert.deepEqual(buttons, []);
 });

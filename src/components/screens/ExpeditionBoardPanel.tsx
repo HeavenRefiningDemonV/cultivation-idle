@@ -9,6 +9,7 @@ import { useContentStore } from '../../stores/contentStore';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
 import { useUIStore } from '../../stores/uiStore';
 import { openWorldModule } from '../../systems/world/openWorldModule';
+import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRouteContract.js';
 import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
@@ -668,7 +669,8 @@ export function ExpeditionBoardPanel() {
                     )}
                   </div>
                   <div className={'eqsSlotMeta'}>
-                    {typeDef?.name ?? run.expeditionTypeId} · {durationDef?.label ?? run.durationId}
+                    {typeDef?.name ?? run.expeditionTypeId} · {durationDef?.label ?? run.durationId} · {' '}
+                    {citiesById[run.cityId]?.name ?? run.cityId}
                   </div>
                   <div className={'eqsSlotTimer'}>
                     {isComplete ? 'Ready to claim' : formatTimer(remainingMs)}
@@ -832,7 +834,7 @@ export function ExpeditionBoardPanel() {
           title="Expedition Complete"
           subtitle={`${content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId)?.name ?? 'Expedition'} · ${
             content.durations.find((entry) => entry.id === ceremony.run?.durationId)?.label ?? 'Duration'
-          }`}
+          } · ${citiesById[ceremony.run.cityId]?.name ?? ceremony.run.cityId}`}
           meta={
             ceremony.slotIndex != null ? (
               <PaperChip variant="tag" text={`Slot ${ceremony.slotIndex + 1}`} className="expCeremonyMetaChip" />
@@ -909,20 +911,18 @@ export function ExpeditionBoardPanel() {
               <div className={'expCeremonyUseButtons'}>
                 {(() => {
                   const type = content.types.find((entry) => entry.id === ceremony.run?.expeditionTypeId);
+                  const routePurpose = ceremony.run
+                    ? getLiveExpeditionRoutePurpose(ceremony.run.expeditionTypeId)
+                    : null;
                   const buttons = ceremony.run
                     ? resolveExpeditionUseMaterialsDestinations({
                         cityId: ceremony.run.cityId,
                         expeditionTypeId: ceremony.run.expeditionTypeId,
                         cityModules: citiesById[ceremony.run.cityId]?.modules ?? [],
-                        recommendedModuleKey: type?.recommendedModuleKey,
+                        recommendedModuleKey: type?.recommendedModuleKey ?? routePurpose?.moduleKey,
                       }).map((entry) => ({
                         key: entry.moduleKey,
-                        label:
-                          entry.moduleKey === 'manualPavilion'
-                            ? 'Manual Pavilion'
-                            : entry.moduleKey === 'alchemy'
-                              ? 'Alchemy'
-                              : 'Forge',
+                        label: routePurpose?.moduleKey === entry.moduleKey ? routePurpose.ctaLabel : `Open ${routePurpose?.moduleLabel ?? entry.moduleKey}`,
                       }))
                     : [];
                   return buttons.map((entry) => (

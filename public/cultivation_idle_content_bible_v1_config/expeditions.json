@@ -32,7 +32,7 @@
       "name": "Forage",
       "yieldTags": ["herbs"],
       "description": "Gather herbs and natural reagents.",
-      "recommendedModuleKey": "alchemy",
+      "recommendedModuleKey": "apothecary",
       "rareDrops": [
         { "itemId": "mat_spirit_dew", "qty": 1, "weight": 3 },
         { "itemId": "mat_earth_essence", "qty": 1, "weight": 2 },

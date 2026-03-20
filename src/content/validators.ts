@@ -1,3 +1,4 @@
+import { getLiveExpeditionRoutePurpose } from '../systems/world/expeditionRouteContract.js';
 import type {
   AlchemyRecipesConfig,
   ApothecaryShopsConfig,
@@ -821,10 +822,16 @@ function validateExpeditions(config: LoadedContentRaw['expeditions']): Expeditio
         errors.push(`types[${idx}].yieldTags must be a non-empty array`);
       }
       if (entry.recommendedModuleKey !== undefined) {
-        const allowed = ['alchemy', 'forge', 'manualPavilion'];
+        const allowed = ['apothecary', 'forge', 'manualPavilion'];
         if (!allowed.includes(entry.recommendedModuleKey)) {
           errors.push(`types[${idx}].recommendedModuleKey must be one of ${allowed.join(', ')}`);
         }
+      }
+      const liveRoutePurpose = typeof entry.id === 'string' ? getLiveExpeditionRoutePurpose(entry.id) : null;
+      if (liveRoutePurpose && entry.recommendedModuleKey !== liveRoutePurpose.moduleKey) {
+        errors.push(
+          `types[${idx}].recommendedModuleKey semester route-purpose drift for ${entry.id}: expected ${liveRoutePurpose.moduleKey}`,
+        );
       }
       if (entry.rareDrops !== undefined) {
         if (!Array.isArray(entry.rareDrops)) {
@@ -885,8 +892,7 @@ function validateExpeditions(config: LoadedContentRaw['expeditions']): Expeditio
   }
 
   if (errors.length > 0) {
-    console.warn('[ContentValidation] Expeditions content invalid:', errors.join('; '));
-    return EMPTY_EXPEDITIONS;
+    throw new Error(`[ContentValidation] Expeditions content invalid: ${errors.join('; ')}`);
   }
 
   return {

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { useContentStore } from './contentStore';
+import { useCityStore } from './cityStore';
 import { multiply } from '../utils/numbers';
 import { normalizeItemList } from '../utils/itemList';
 import { randFloat } from '../utils/rng';
@@ -340,9 +341,13 @@ function normalizeHydratedRun(run: ExpeditionRun, slots: number, now: number): E
   const duration = findDurationDef(run.durationId);
   if (!duration || duration.seconds <= 0) return null;
 
-  const city = useContentStore.getState().maps.citiesById[run.cityId];
-  if (!city) return null;
-  const cityIndex = typeof city.index === 'number' ? city.index : run.cityIndex;
+  const origin = normalizeExpeditionRunOrigin({
+    run,
+    citiesById: useContentStore.getState().maps.citiesById,
+    currentCityId: useCityStore.getState().currentCityId,
+  });
+  if (!origin) return null;
+  const cityIndex = origin.cityIndex;
   const startedAt = Number.isFinite(run.startedAt) ? run.startedAt : Math.max(0, now - duration.seconds * 1000);
   const canonicalEndsAt = startedAt + duration.seconds * 1000;
   const savedEndsAt = Number.isFinite(run.endsAt) ? run.endsAt : canonicalEndsAt;
@@ -351,13 +356,41 @@ function normalizeHydratedRun(run: ExpeditionRun, slots: number, now: number): E
 
   return {
     ...run,
-    cityId: city.id,
+    cityId: origin.cityId,
     cityIndex,
     startedAt,
     endsAt,
     seed: typeof run.seed === 'number' && Number.isFinite(run.seed) ? run.seed >>> 0 : (startedAt >>> 0),
     status,
   };
+}
+
+
+
+export function normalizeExpeditionRunOrigin(args: {
+  run: Pick<ExpeditionRun, 'cityId' | 'cityIndex'> & Partial<ExpeditionRun>;
+  citiesById: Record<string, { id: string; index?: number | null }>;
+  currentCityId?: string | null;
+}): { cityId: string; cityIndex: number } | null {
+  const { run, citiesById, currentCityId } = args;
+  const validCity = typeof run.cityId === 'string' ? citiesById[run.cityId] : null;
+  if (validCity && typeof validCity.index === 'number') {
+    return { cityId: validCity.id, cityIndex: validCity.index };
+  }
+
+  if (typeof run.cityIndex === 'number' && Number.isFinite(run.cityIndex)) {
+    const indexedCity = Object.values(citiesById).find((city) => city.index === run.cityIndex);
+    if (indexedCity && typeof indexedCity.index === 'number') {
+      return { cityId: indexedCity.id, cityIndex: indexedCity.index };
+    }
+  }
+
+  const fallbackCity = currentCityId ? citiesById[currentCityId] : null;
+  if (fallbackCity && typeof fallbackCity.index === 'number') {
+    return { cityId: fallbackCity.id, cityIndex: fallbackCity.index };
+  }
+
+  return null;
 }
 
 function sanitizeRareProgressByKey(progress: Record<string, number> | undefined): Record<string, number> {
@@ -407,7 +440,7 @@ export const useExpeditionStore = create<ExpeditionState>()(
 
       const duration = findDurationDef(durationId);
       const city = useContentStore.getState().maps.citiesById[cityId];
-      if (!duration || duration.seconds <= 0 || !city || city.index !== cityIndex) return false;
+      if (!duration || duration.seconds <= 0 || !city || typeof city.index !== 'number') return false;
 
       const now = Date.now();
       const endsAt = now + duration.seconds * 1000;
@@ -418,7 +451,7 @@ export const useExpeditionStore = create<ExpeditionState>()(
         expeditionTypeId: typeId,
         durationId,
         cityId,
-        cityIndex,
+        cityIndex: city.index,
         startedAt: now,
         endsAt,
         seed,

@@ -1,3 +1,4 @@
+import { getLiveExpeditionRoutePurpose, type ExpeditionRouteModuleKey } from '../systems/world/expeditionRouteContract.js';
 import { normalizeCityModulesForLiveSlice } from '../systems/world/liveWorldSchema.js';
 
 export type BountyDestination =
@@ -116,24 +117,19 @@ export function bountyKindToProgressRule(kind: string): string {
 
 export type ExpeditionUseMaterialsDestination = {
   cityId: string;
-  moduleKey: 'alchemy' | 'forge' | 'manualPavilion';
-};
-
-const EXPEDITION_FALLBACK_MODULE_BY_TYPE: Record<string, ExpeditionUseMaterialsDestination['moduleKey']> = {
-  forage: 'alchemy',
-  mine: 'forge',
-  scout: 'manualPavilion',
+  moduleKey: ExpeditionRouteModuleKey;
 };
 
 export function resolveExpeditionUseMaterialsDestinations(args: {
   cityId: string;
   expeditionTypeId: string;
   cityModules: readonly string[];
-  recommendedModuleKey?: 'alchemy' | 'forge' | 'manualPavilion';
+  recommendedModuleKey?: ExpeditionRouteModuleKey;
 }): ExpeditionUseMaterialsDestination[] {
   const { cityId, expeditionTypeId, cityModules, recommendedModuleKey } = args;
   const modules = normalizeCityModulesForLiveSlice([...cityModules]);
-  const orderedCandidates = [recommendedModuleKey, EXPEDITION_FALLBACK_MODULE_BY_TYPE[expeditionTypeId], 'alchemy', 'forge', 'manualPavilion']
+  const canonicalModuleKey = getLiveExpeditionRoutePurpose(expeditionTypeId)?.moduleKey ?? null;
+  const orderedCandidates = [recommendedModuleKey, canonicalModuleKey]
     .filter((moduleKey, index, values): moduleKey is ExpeditionUseMaterialsDestination['moduleKey'] =>
       Boolean(moduleKey) && values.indexOf(moduleKey) === index,
     );
