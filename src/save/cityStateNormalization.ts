@@ -4,6 +4,7 @@ import { SEMESTER_0_CITY_UNLOCKS } from '../systems/progression/contract/cityUnl
 import type { MajorRealmId } from '../systems/progression/contract/index.js';
 import { getLiveRealmByIndex, syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime/index.js';
 import { LIVE_CITY_MODULE_ORDER } from '../systems/world/liveWorldSchema.js';
+import { normalizeAcknowledgedArrivalCityIds } from '../systems/world/cityArrivalContract.js';
 
 type SaveCityState = NonNullable<SaveData['cityState']>;
 
@@ -91,6 +92,12 @@ export const normalizeCitySaveState = ({
       : citySources[0]
         ? [citySources[0].id]
         : [];
+  const acknowledgedArrivalCityIds = normalizeAcknowledgedArrivalCityIds({
+    incoming: incoming.acknowledgedArrivalCityIds,
+    unlockedCityIds,
+    validCityIds: citySources.map((city) => city.id),
+    fieldWasPresent: Object.prototype.hasOwnProperty.call(incoming, 'acknowledgedArrivalCityIds'),
+  });
 
   const selectedModuleByCityInput = isRecord(incoming.selectedModuleByCity)
     ? incoming.selectedModuleByCity
@@ -141,5 +148,6 @@ export const normalizeCitySaveState = ({
           ? { [highestUnlockedCityId]: { ...DEFAULT_CITY_FLAGS } }
           : {},
     initializedFromContent: typeof incoming.initializedFromContent === 'boolean' ? incoming.initializedFromContent : true,
+    acknowledgedArrivalCityIds,
   };
 };

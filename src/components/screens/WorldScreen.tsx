@@ -11,6 +11,7 @@ import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations
 import { resolveBountyDestination } from '../../utils/bountyRouting';
 import { CityMapHub } from './CityMapHub';
 import { openWorldModule } from '../../systems/world/openWorldModule';
+import { getCityArrivalLesson } from '../../systems/world/cityArrivalContract.js';
 import {
   getProgressionContract,
   adaptProgressionAuthoredContent,
@@ -198,6 +199,11 @@ export function WorldScreen() {
       : 'Current city ready.';
   }, [alternateUnlockedCityId, currentCityTravelBlocked, selectedCity, travelGuardForOtherCity.reason, worldSelectorEntries]);
 
+  const cityLesson = useMemo(() => {
+    if (!selectedCity) return null;
+    return getCityArrivalLesson(selectedCity.id);
+  }, [selectedCity]);
+
   const handleSelectCity = (city: CityDef) => {
     if (!city || city.id === currentCityId) return;
 
@@ -290,6 +296,7 @@ export function WorldScreen() {
                 >
                   {currentCityStatusLine}
                 </div>
+                {cityLesson ? <div className={'worldScreenCitySummaryLesson'}>Phase lesson: {cityLesson}</div> : null}
               </div>
               {trackedBounty && isTrackedModuleActive && (
                 <div className={'worldScreenTrackedBanner'}>

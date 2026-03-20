@@ -123,6 +123,7 @@ interface UIStateBase {
   showWorldBuildingModal: boolean;
   worldBuildingModalCityId: string | null;
   worldBuildingModalKey: WorldBuildingKey | null;
+  pendingCityArrivalId: string | null;
 
   // UI Settings
   settings: UISettingsState;
@@ -181,6 +182,8 @@ export interface UIState extends UIStateBase {
   closeTechniqueLearned: () => void;
   openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey }) => void;
   closeWorldBuildingModal: () => void;
+  queueCityArrival: (cityId: string) => void;
+  clearCityArrival: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
   openTechniqueLibraryForEquip: (
     techniqueId: string,
@@ -220,6 +223,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   showWorldBuildingModal: false,
   worldBuildingModalCityId: null,
   worldBuildingModalKey: null,
+  pendingCityArrivalId: null,
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -697,6 +701,20 @@ export const useUIStore = create<UIState>()(
           payload: { station: buildingKey === 'alchemy' ? 'alchemy' : buildingKey === 'forge' ? 'forge' : 'talisman' },
         });
       }
+    },
+
+
+    queueCityArrival: (cityId) => {
+      if (typeof cityId !== 'string' || !cityId.trim()) return;
+      set((state) => {
+        state.pendingCityArrivalId = cityId;
+      });
+    },
+
+    clearCityArrival: () => {
+      set((state) => {
+        state.pendingCityArrivalId = null;
+      });
     },
 
     openTechniqueLearned: (payload) => {

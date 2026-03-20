@@ -213,6 +213,7 @@ function gatherGameState(): SaveData {
         selectedModuleByCity: { ...cityState.selectedModuleByCity },
         cityFlagsById: { ...cityState.cityFlagsById },
         initializedFromContent: cityState.initializedFromContent,
+        acknowledgedArrivalCityIds: [...(cityState.acknowledgedArrivalCityIds ?? [])],
       },
     }),
 

@@ -14,6 +14,7 @@ import { CombatPresentationHost } from '../app/overlays/CombatPresentationHost';
 import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal';
 import { NotificationToasts } from './NotificationToasts';
+import { CityArrivalBanner } from './system/CityArrivalBanner';
 import { BottomTabBar } from './BottomTabBar';
 import { WorldBuildingModal } from './modals/WorldBuildingModal';
 import { AudioBindings } from '../app/AudioBindings';
@@ -121,6 +122,7 @@ export function GameLayout() {
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
       <CombatPresentationHost />
       <LifeStartWizardModal />
+      <CityArrivalBanner />
       <NotificationToasts />
     </div>
   );

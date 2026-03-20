@@ -3,8 +3,13 @@ import { immer } from 'zustand/middleware/immer';
 import type { CityDef } from '../content/index.js';
 import { useContentStore } from './contentStore';
 import { useBountyStore } from './bountyStore';
+import { useUIStore } from './uiStore';
 import type { MajorRealmId } from '../systems/progression/contract';
 import { syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime/index.js';
+import {
+  getQueuedCityArrivalCandidate,
+  normalizeAcknowledgedArrivalCityIds,
+} from '../systems/world/cityArrivalContract.js';
 import {
   getDefaultModuleForWorldCity,
   resolveFallbackCurrentCityId,
@@ -19,6 +24,7 @@ export type CityFlags = {
 export interface CityState {
   currentCityId: string | null;
   unlockedCityIds: string[];
+  acknowledgedArrivalCityIds: string[];
   selectedModuleByCity: Record<string, string>;
   cityFlagsById: Record<string, CityFlags>;
   initializedFromContent: boolean;
@@ -28,6 +34,8 @@ export interface CityState {
   unlockCity: (cityId: string) => boolean;
   unlockCityAndFocus: (cityId: string) => boolean;
   syncRealmEntry: (majorRealmId: MajorRealmId) => string[];
+  acknowledgeCityArrival: (cityId: string) => void;
+  ensurePendingCityArrival: (preferredCityId?: string | null) => string | null;
   markOutskirtsBossDefeated: (cityId: string) => void;
   markGateTrialCleared: (cityId: string) => void;
   markRuinsCleared: (cityId: string) => void;
@@ -48,6 +56,8 @@ const createInitialCityState = (): Omit<
   | 'unlockCity'
   | 'unlockCityAndFocus'
   | 'syncRealmEntry'
+  | 'acknowledgeCityArrival'
+  | 'ensurePendingCityArrival'
   | 'markOutskirtsBossDefeated'
   | 'markGateTrialCleared'
   | 'markRuinsCleared'
@@ -55,10 +65,26 @@ const createInitialCityState = (): Omit<
 > => ({
   currentCityId: null,
   unlockedCityIds: [],
+  acknowledgedArrivalCityIds: [],
   selectedModuleByCity: {},
   cityFlagsById: {},
   initializedFromContent: false,
 });
+
+function normalizeAcknowledgedForState(args: {
+  incoming: readonly string[];
+  unlockedCityIds: readonly string[];
+  cities: readonly CityDef[];
+  fieldWasPresent?: boolean;
+}): string[] {
+  const { incoming, unlockedCityIds, cities, fieldWasPresent = true } = args;
+  return normalizeAcknowledgedArrivalCityIds({
+    incoming,
+    unlockedCityIds,
+    validCityIds: cities.map((city) => city.id),
+    fieldWasPresent,
+  });
+}
 
 export const useCityStore = create<CityState>()(
   immer((set, get) => ({
@@ -68,20 +94,23 @@ export const useCityStore = create<CityState>()(
       if (!cities || cities.length === 0) {
         set((state) => {
           state.currentCityId = null;
+          state.acknowledgedArrivalCityIds = [];
           state.initializedFromContent = true;
         });
+        useUIStore.getState().clearCityArrival();
         return;
       }
 
       const sorted = [...cities].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
       const validCityIds = new Set(sorted.map((c) => c.id));
       const firstCityId = sorted[0]?.id ?? null;
+      const wasInitialized = get().initializedFromContent;
 
       set((state) => {
-        // Filter unlocked to valid ids
-        state.unlockedCityIds = Array.from(new Set(state.unlockedCityIds.filter((id) => validCityIds.has(id))));
+        state.unlockedCityIds = sorted
+          .map((city) => city.id)
+          .filter((cityId) => state.unlockedCityIds.includes(cityId));
 
-        // Ensure first city unlocked
         if (firstCityId && !state.unlockedCityIds.includes(firstCityId)) {
           state.unlockedCityIds.push(firstCityId);
         }
@@ -92,7 +121,16 @@ export const useCityStore = create<CityState>()(
           unlockedCityIds: state.unlockedCityIds,
         });
 
-        // Ensure flags and modules for unlocked cities
+        state.acknowledgedArrivalCityIds = normalizeAcknowledgedForState({
+          incoming: state.acknowledgedArrivalCityIds,
+          unlockedCityIds: state.unlockedCityIds,
+          cities: sorted,
+        });
+
+        if (!wasInitialized && state.acknowledgedArrivalCityIds.length === 0) {
+          state.acknowledgedArrivalCityIds = [...state.unlockedCityIds];
+        }
+
         for (const city of sorted) {
           if (!state.cityFlagsById[city.id]) {
             state.cityFlagsById[city.id] = createDefaultFlags();
@@ -113,8 +151,11 @@ export const useCityStore = create<CityState>()(
           }
         }
 
+        state.unlockedCityIds = state.unlockedCityIds.filter((cityId) => validCityIds.has(cityId));
         state.initializedFromContent = true;
       });
+
+      get().ensurePendingCityArrival(get().currentCityId);
     },
 
     setCurrentCity: (cityId: string) => {
@@ -212,8 +253,20 @@ export const useCityStore = create<CityState>()(
       }
 
       const focusCityId = newlyUnlocked.at(-1);
+      if (newlyUnlocked.length > 1) {
+        const olderUnlocks = newlyUnlocked.slice(0, -1);
+        set((state) => {
+          state.acknowledgedArrivalCityIds = normalizeAcknowledgedForState({
+            incoming: [...state.acknowledgedArrivalCityIds, ...olderUnlocks],
+            unlockedCityIds: state.unlockedCityIds,
+            cities: useContentStore.getState().citiesSorted,
+          });
+        });
+      }
+
       if (focusCityId) {
         get().unlockCityAndFocus(focusCityId);
+        get().ensurePendingCityArrival(focusCityId);
       } else {
         const currentCityId = get().currentCityId;
         if (!currentCityId || !get().unlockedCityIds.includes(currentCityId)) {
@@ -225,6 +278,42 @@ export const useCityStore = create<CityState>()(
       }
 
       return newlyUnlocked;
+    },
+
+    acknowledgeCityArrival: (cityId) => {
+      const city = useContentStore.getState().maps.citiesById[cityId];
+      const state = get();
+      if (!city || !state.unlockedCityIds.includes(cityId)) return;
+
+      set((draft) => {
+        draft.acknowledgedArrivalCityIds = normalizeAcknowledgedForState({
+          incoming: [...draft.acknowledgedArrivalCityIds, cityId],
+          unlockedCityIds: draft.unlockedCityIds,
+          cities: useContentStore.getState().citiesSorted,
+        });
+      });
+
+      if (useUIStore.getState().pendingCityArrivalId === cityId) {
+        useUIStore.getState().clearCityArrival();
+      }
+    },
+
+    ensurePendingCityArrival: (preferredCityId) => {
+      const state = get();
+      const cityId = getQueuedCityArrivalCandidate({
+        unlockedCityIds: state.unlockedCityIds,
+        acknowledgedArrivalCityIds: state.acknowledgedArrivalCityIds,
+        citiesById: useContentStore.getState().maps.citiesById,
+        preferredCityId,
+      });
+
+      if (cityId) {
+        useUIStore.getState().queueCityArrival(cityId);
+        return cityId;
+      }
+
+      useUIStore.getState().clearCityArrival();
+      return null;
     },
 
     markOutskirtsBossDefeated: (cityId: string) => {

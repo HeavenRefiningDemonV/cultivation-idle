@@ -1,0 +1,46 @@
+.cityArrivalBannerShell {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 110;
+  pointer-events: none;
+  width: min(640px, calc(100vw - 24px));
+}
+
+.cityArrivalBannerCard {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid rgba(67, 52, 35, 0.28);
+  border-radius: 16px;
+  background: rgba(247, 239, 224, 0.96);
+  box-shadow: 0 14px 28px rgba(39, 27, 16, 0.18);
+}
+
+.cityArrivalBannerEyebrow {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(94, 66, 34, 0.76);
+}
+
+.cityArrivalBannerTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2f2216;
+}
+
+.cityArrivalBannerLesson {
+  font-size: 14px;
+  color: rgba(58, 41, 24, 0.84);
+}
+
+.cityArrivalBannerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}

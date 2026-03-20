@@ -455,6 +455,7 @@ export interface SaveData {
       }
     >;
     initializedFromContent?: boolean;
+    acknowledgedArrivalCityIds?: string[];
   };
 
   manualPavilionState: ManualPavilionSaveState;
