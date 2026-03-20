@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useGameStore } from '../stores/gameStore';
 import { useUIStore } from '../stores/uiStore';
 import { useCityStore } from '../stores/cityStore';
@@ -10,6 +10,8 @@ import { resolveBountyDestination } from '../utils/bountyRouting';
 import { formatNumber } from '../utils/numbers';
 import { SaveService } from '../services/save/SaveService';
 import './Header.scss';
+
+const EMPTY_CITY_MODULES: readonly string[] = Object.freeze([]);
 
 /**
  * Header component - Top bar with game stats and save indicator
@@ -23,21 +25,31 @@ export function Header() {
   const headerTone = useUIStore((state) => state.headerTone);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
-  const trackedBounty = useBountyStore((state) =>
-    currentCityId ? state.getTrackedBounty(currentCityId) : null,
+  const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
+  const activeByCityId = useBountyStore((state) => state.activeByCityId);
+  const citiesById = useContentStore((state) => state.maps.citiesById);
+
+  const trackedId = currentCityId ? trackedByCityId[currentCityId] ?? null : null;
+  const trackedBounty = useMemo(() => {
+    if (!currentCityId || !trackedId) return null;
+    const activeBounties = activeByCityId[currentCityId];
+    if (!activeBounties) return null;
+    return activeBounties.find((entry) => entry.instanceId === trackedId) ?? null;
+  }, [activeByCityId, currentCityId, trackedId]);
+  const currentCityModules = useMemo(
+    () => (currentCityId ? citiesById[currentCityId]?.modules ?? EMPTY_CITY_MODULES : EMPTY_CITY_MODULES),
+    [citiesById, currentCityId],
   );
-  const citiesSorted = useContentStore((state) => state.citiesSorted);
 
   const [lastSavedText, setLastSavedText] = useState<string>('Never');
   const [lastSavedTone, setLastSavedTone] = useState<'neutral' | 'fresh' | 'warn' | 'old'>('neutral');
 
   const handleTrackedClick = () => {
     if (!trackedBounty || !currentCityId) return;
-    const city = citiesSorted.find((entry) => entry.id === currentCityId);
     const destination = resolveBountyDestination({
       cityId: currentCityId,
       bountyKind: trackedBounty.kind,
-      cityModules: city?.modules ?? [],
+      cityModules: currentCityModules,
     });
 
     const targetModule =

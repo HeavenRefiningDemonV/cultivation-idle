@@ -26,6 +26,8 @@ import {
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
+const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
+const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 
 const MODULE_METADATA: Record<string, { label: string }> = {
   outskirts: { label: 'Outskirts' },
@@ -65,7 +67,8 @@ export function WorldScreen() {
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
-  const trackedBounty = useBountyStore((state) => (currentCityId ? state.getTrackedBounty(currentCityId) : null));
+  const activeByCityId = useBountyStore((state) => state.activeByCityId);
+  const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
   const inCombat = useCombatStore((state) => state.inCombat);
   const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
 
@@ -79,7 +82,7 @@ export function WorldScreen() {
   }, [citiesSorted, currentCityId]);
 
   const cityRequirementById = useMemo(() => {
-    if (!rawContent) return {};
+    if (!rawContent) return EMPTY_CITY_REQUIREMENT_MAP;
     try {
       const contract = getProgressionContract(adaptProgressionAuthoredContent(rawContent));
       return Object.fromEntries(
@@ -87,7 +90,7 @@ export function WorldScreen() {
       ) as Record<string, string | null>;
     } catch (contractError) {
       console.warn('[WorldScreen] Failed to read city unlock requirements', contractError);
-      return {};
+      return EMPTY_CITY_REQUIREMENT_MAP;
     }
   }, [citiesSorted, rawContent]);
 
@@ -103,9 +106,18 @@ export function WorldScreen() {
   );
 
   const visibleCityModules = useMemo(() => {
-    if (!selectedCity) return [];
+    if (!selectedCity) return EMPTY_VISIBLE_CITY_MODULES;
     return selectedCity.modules.filter((moduleKey) => !WORLD_SCREEN_HIDDEN_MODULES.has(moduleKey));
   }, [selectedCity]);
+
+  const trackedBounty = useMemo(() => {
+    if (!currentCityId) return null;
+    const trackedId = trackedByCityId[currentCityId];
+    if (!trackedId) return null;
+    const activeBounties = activeByCityId[currentCityId];
+    if (!activeBounties) return null;
+    return activeBounties.find((entry) => entry.instanceId === trackedId) ?? null;
+  }, [activeByCityId, currentCityId, trackedByCityId]);
 
   const displayedModuleKey = useMemo(() => {
     if (!selectedCity) return null;

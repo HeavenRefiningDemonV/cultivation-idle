@@ -17,6 +17,9 @@ type CurrencyCosts = Partial<Record<'gold' | 'spiritStones' | 'merit', string>>;
 type RecipeCostMap = Partial<Record<'gold' | 'spiritStones' | 'merit', number>>;
 
 const MAX_QTY = 999;
+const EMPTY_TALISMAN_RECIPES = Object.freeze([]) as ReadonlyArray<
+  NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['talisman_recipes'][number]
+>;
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -50,7 +53,8 @@ function computeCosts(costs: RecipeCostMap | undefined, qty: number): CurrencyCo
 }
 
 export function TalismanPanel({ cityId }: TalismanPanelProps) {
-  const recipes = useContentStore((state) => state.raw?.talisman_recipes ?? []);
+  const raw = useContentStore((state) => state.raw);
+  const recipes = raw?.talisman_recipes ?? EMPTY_TALISMAN_RECIPES;
   const getQty = useInventoryStore((state) => state.getQty);
   const currencies = useInventoryStore((state) => state.currencies);
   const startTalisman = useProfessionStore((state) => state.startTalisman);

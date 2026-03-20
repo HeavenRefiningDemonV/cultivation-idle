@@ -12,6 +12,7 @@ import { openWorldModule } from '../../systems/world/openWorldModule';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
 import { normalizeItemList } from '../../utils/itemList';
+import type { BountyInstance } from '../../stores/bountyStore';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -29,6 +30,8 @@ const moduleLabelMap: Record<string, string> = {
 };
 
 const paperPositions = ['bountyPaperButton--left', 'bountyPaperButton--center', 'bountyPaperButton--right'] as const;
+const EMPTY_BOUNTIES: readonly BountyInstance[] = Object.freeze([]);
+const EMPTY_CITY_MODULES: readonly string[] = Object.freeze([]);
 
 type PaperPositionClass = (typeof paperPositions)[number];
 
@@ -66,21 +69,29 @@ export function BountyBoardPanel() {
 
   const currentCityId = useCityStore((state) => state.currentCityId);
 
-  const bounties = useBountyStore((state) => (currentCityId ? state.activeByCityId[currentCityId] ?? [] : []));
+  const activeByCityId = useBountyStore((state) => state.activeByCityId);
   const generateForCity = useBountyStore((state) => state.generateForCity);
   const refresh = useBountyStore((state) => state.refresh);
   const canRefresh = useBountyStore((state) => state.canRefresh);
   const nextRefreshAt = useBountyStore((state) => state.nextRefreshAt);
   const claim = useBountyStore((state) => state.claim);
-  const trackedId = useBountyStore((state) => (currentCityId ? state.trackedByCityId[currentCityId] : null));
-  const trackedBounty = useBountyStore((state) => (currentCityId ? state.getTrackedBounty(currentCityId) : null));
+  const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
   const setTrackedBounty = useBountyStore((state) => state.setTrackedBounty);
 
   const merit = useInventoryStore((state) => state.merit);
 
   const city = currentCityId ? cityMap[currentCityId] : null;
   const cityIndex = city?.index ?? null;
-  const cityModules = city?.modules ?? [];
+  const cityModules = city?.modules ?? EMPTY_CITY_MODULES;
+  const bounties = useMemo(
+    () => (currentCityId ? activeByCityId[currentCityId] ?? EMPTY_BOUNTIES : EMPTY_BOUNTIES),
+    [activeByCityId, currentCityId],
+  );
+  const trackedId = currentCityId ? trackedByCityId[currentCityId] ?? null : null;
+  const trackedBounty = useMemo(
+    () => (trackedId ? bounties.find((entry) => entry.instanceId === trackedId) ?? null : null),
+    [bounties, trackedId],
+  );
 
   useEffect(() => {
     const handle = window.setInterval(() => setNow(Date.now()), 1000);

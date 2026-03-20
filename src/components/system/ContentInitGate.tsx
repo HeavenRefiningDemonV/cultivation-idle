@@ -6,13 +6,18 @@ import { getLiveRealmByIndex } from '../../systems/progression/runtime';
 import { bootstrapLiveWorldStores } from '../../systems/world/bootstrapLiveWorld.js';
 import { GameIcon } from '../../ui/icons';
 
+const EMPTY_RUINS = Object.freeze([]) as ReadonlyArray<
+  NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['ruins'][number]
+>;
+
 export function ContentInitGate({ children }: PropsWithChildren) {
   const isLoading = useContentStore((state) => state.isLoading);
   const isLoaded = useContentStore((state) => state.isLoaded);
   const error = useContentStore((state) => state.error);
   const load = useContentStore((state) => state.load);
   const citiesSorted = useContentStore((state) => state.citiesSorted);
-  const ruins = useContentStore((state) => state.raw?.ruins ?? []);
+  const raw = useContentStore((state) => state.raw);
+  const ruins = raw?.ruins ?? EMPTY_RUINS;
   const realmIndex = useGameStore((state) => state.realm.index);
   const startedRef = useRef(false);
 

@@ -706,12 +706,14 @@ export const useUIStore = create<UIState>()(
 
     queueCityArrival: (cityId) => {
       if (typeof cityId !== 'string' || !cityId.trim()) return;
+      if (get().pendingCityArrivalId === cityId) return;
       set((state) => {
         state.pendingCityArrivalId = cityId;
       });
     },
 
     clearCityArrival: () => {
+      if (get().pendingCityArrivalId === null) return;
       set((state) => {
         state.pendingCityArrivalId = null;
       });

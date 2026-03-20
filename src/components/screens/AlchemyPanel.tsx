@@ -42,6 +42,12 @@ interface BrewLedgerRow {
 }
 
 const MAX_QTY = 999;
+const EMPTY_ALCHEMY_RECIPES = Object.freeze([]) as ReadonlyArray<
+  NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['alchemy_recipes'][number]
+>;
+const EMPTY_CITIES = Object.freeze([]) as ReadonlyArray<
+  NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['cities'][number]
+>;
 
 function formatDuration(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -100,8 +106,9 @@ function getThresholdLabel(value: number): string {
 }
 
 export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
-  const recipes = useContentStore((state) => state.raw?.alchemy_recipes ?? []);
-  const cities = useContentStore((state) => state.raw?.cities ?? []);
+  const raw = useContentStore((state) => state.raw);
+  const recipes = raw?.alchemy_recipes ?? EMPTY_ALCHEMY_RECIPES;
+  const cities = raw?.cities ?? EMPTY_CITIES;
   const startAlchemy = useProfessionStore((state) => state.startAlchemy);
   const claimAlchemy = useProfessionStore((state) => state.claimAlchemy);
   const queue = useProfessionStore((state) => state.alchemyQueue);

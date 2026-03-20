@@ -164,6 +164,12 @@ export const useCityStore = create<CityState>()(
       if (!city || !state.unlockedCityIds.includes(cityId)) {
         return;
       }
+      if (state.currentCityId === cityId) {
+        const currentSelection = state.selectedModuleByCity[cityId];
+        if (currentSelection && city.modules.includes(currentSelection)) {
+          return;
+        }
+      }
 
       set((draft) => {
         draft.currentCityId = cityId;
@@ -185,6 +191,7 @@ export const useCityStore = create<CityState>()(
       const city = useContentStore.getState().maps.citiesById[cityId];
       if (!city || !state.unlockedCityIds.includes(cityId)) return;
       if (!city.modules.includes(moduleKey)) return;
+      if (state.selectedModuleByCity[cityId] === moduleKey) return;
 
       set((draft) => {
         draft.selectedModuleByCity[cityId] = moduleKey;
@@ -300,6 +307,7 @@ export const useCityStore = create<CityState>()(
 
     ensurePendingCityArrival: (preferredCityId) => {
       const state = get();
+      const pendingCityArrivalId = useUIStore.getState().pendingCityArrivalId;
       const cityId = getQueuedCityArrivalCandidate({
         unlockedCityIds: state.unlockedCityIds,
         acknowledgedArrivalCityIds: state.acknowledgedArrivalCityIds,
@@ -308,11 +316,15 @@ export const useCityStore = create<CityState>()(
       });
 
       if (cityId) {
-        useUIStore.getState().queueCityArrival(cityId);
+        if (pendingCityArrivalId !== cityId) {
+          useUIStore.getState().queueCityArrival(cityId);
+        }
         return cityId;
       }
 
-      useUIStore.getState().clearCityArrival();
+      if (pendingCityArrivalId !== null) {
+        useUIStore.getState().clearCityArrival();
+      }
       return null;
     },
 
