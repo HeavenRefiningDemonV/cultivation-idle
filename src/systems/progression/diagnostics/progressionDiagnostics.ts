@@ -16,6 +16,7 @@ export const DRIFT_OWNER_PACKET: Record<DriftIssue['category'], string> = {
   MIGRATION_ALIAS_PRESENT: '1.3',
   CONTENT_CAP_BREACH: '1.1',
   WORLD_CITY_SCHEMA_DRIFT: '2.1',
+  WORLD_CITY_PACKAGE_COVERAGE: '2.7',
 };
 
 const ownerFor = (category: DriftIssue['category']): string => DRIFT_OWNER_PACKET[category];

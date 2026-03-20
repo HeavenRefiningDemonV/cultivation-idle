@@ -3,6 +3,11 @@ import test from 'node:test';
 
 import { validateProgressionSemantics } from '../../src/systems/progression/validation/index.js';
 import {
+  buildLiveCityPackageRegistry,
+  formatLiveCityPackageCoverageIssue,
+} from '../../src/systems/world/cityPackageRegistry.js';
+import type { CityDef } from '../../src/content/types.js';
+import {
   DEFERRED_WORLD_MODULES,
   inspectLiveCitySchema,
   LIVE_CITY_MODULE_ORDER,
@@ -15,7 +20,17 @@ const readCities = async () => {
   const rawContent = await loadRawProgressionContent();
   return {
     rawContent,
-    cities: Array.isArray(rawContent.cities) ? rawContent.cities : rawContent.cities.cities,
+    cities: (Array.isArray(rawContent.cities) ? rawContent.cities : rawContent.cities.cities).map(
+      (city): CityDef => ({
+        id: city.id,
+        index: city.index ?? 0,
+        name: city.name ?? city.id,
+        unlockMajorRealm: city.unlockMajorRealm,
+        modules: city.modules ?? [],
+        refs: (city.refs ?? {}) as CityDef['refs'],
+        themeTags: city.themeTags,
+      }),
+    ),
   };
 };
 
@@ -60,9 +75,19 @@ test('live world schema helper exposes the canonical packet 2.1 module truth', (
 });
 
 test('real authored live cities already match the canonical packet 2.1 schema', async () => {
-  const { cities } = await readCities();
+  const { rawContent, cities } = await readCities();
+  const packageRegistry = buildLiveCityPackageRegistry({
+    cities,
+    outskirtsById: Object.fromEntries((Array.isArray(rawContent.outskirts) ? rawContent.outskirts : rawContent.outskirts?.outskirts ?? []).map((entry) => [entry.id, entry])),
+    trialsById: Object.fromEntries((Array.isArray(rawContent.trials) ? rawContent.trials : rawContent.trials.trials).map((entry) => [entry.id, entry])),
+    ruinsById: Object.fromEntries((Array.isArray(rawContent.ruins) ? rawContent.ruins : rawContent.ruins?.ruins ?? []).map((entry) => [entry.id, entry])),
+    pavilionsById: Object.fromEntries((Array.isArray(rawContent.pavilions) ? rawContent.pavilions : rawContent.pavilions?.pavilions ?? []).map((entry) => [entry.id, entry])),
+    apothecaryById: Object.fromEntries((Array.isArray(rawContent.apothecary_shops) ? rawContent.apothecary_shops : rawContent.apothecary_shops?.shops ?? []).map((entry) => [entry.id, entry])),
+  });
 
   assert.equal(cities.length, 5);
+  assert.equal(packageRegistry.coverageIssues.length, 0);
+  assert.equal(Object.keys(packageRegistry.packagesByCityId).length, cities.length);
 
   cities.forEach((city) => {
     assert.deepEqual(city.modules ?? [], LIVE_CITY_MODULE_ORDER);
@@ -136,4 +161,41 @@ test('semantic validator reports packet 2.1 world city schema drift for broken a
   assert.equal(evidenceText.includes('offline'), false);
 
   assert.equal(cities.some((city) => city.id === 'city_pinewind_hamlet'), true);
+});
+
+test('semantic validator reports packet 2.7 city package coverage drift when a live city ref target is missing', async () => {
+  const { rawContent } = await readCities();
+  const brokenRawContent = structuredClone(rawContent);
+  const brokenCities = Array.isArray(brokenRawContent.cities)
+    ? brokenRawContent.cities
+    : brokenRawContent.cities.cities;
+  const brokenCity = brokenCities.find((city) => city.id === 'city_pinewind_hamlet') ?? brokenCities[0];
+  assert.ok(brokenCity);
+
+  brokenCity.refs = { ...(brokenCity.refs ?? {}), ruinId: 'ruin_missing_for_packet_2_7' };
+
+  const issues = validateProgressionSemantics({
+    rawContent: brokenRawContent,
+    scenarios: [],
+    migrationFixtures: [],
+  });
+  const coverageIssue = issues.find((issue) => issue.category === 'WORLD_CITY_PACKAGE_COVERAGE');
+
+  assert.ok(coverageIssue);
+  assert.equal(coverageIssue.suggestedOwnerPacket, '2.7');
+  assert.equal(coverageIssue.id, 'world-city-package-city_pinewind_hamlet-ruinId');
+  assert.equal(coverageIssue.autoFixable, true);
+  assert.match(coverageIssue.summary, /complete live city package/i);
+  assert.match(coverageIssue.fixStrategySummary, /packet 2\.7 city-package coverage/i);
+  assert.match(coverageIssue.evidence[0]?.detail ?? '', /refs\.ruinId missing in ruins/i);
+
+  assert.equal(
+    formatLiveCityPackageCoverageIssue({
+      cityId: 'city_pinewind_hamlet',
+      refKey: 'ruinId',
+      targetId: 'ruin_missing_for_packet_2_7',
+      targetCollectionLabel: 'ruins',
+    }),
+    'City city_pinewind_hamlet refs.ruinId missing in ruins',
+  );
 });

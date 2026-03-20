@@ -39,6 +39,10 @@ import {
   LIVE_CITY_MODULE_ORDER,
   REQUIRED_CITY_REFS_FOR_LIVE_SLICE,
 } from '../systems/world/liveWorldSchema.js';
+import {
+  buildLiveCityPackageRegistry,
+  formatLiveCityPackageCoverageIssue,
+} from '../systems/world/cityPackageRegistry.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -971,25 +975,14 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const prestigeMap = buildIdMap(prestige.upgrades);
   const bountyTemplateMap = buildIdMap(bountyConfig.templates);
 
-  // Cross references on cities
-  cities.forEach((city) => {
-    const { refs } = city;
-    if (!(refs.outskirtsId in outskirtsMap)) {
-      addErr(`City ${city.id} refs.outskirtsId missing in outskirts`);
-    }
-    if (!(refs.gateTrialId in trialMap)) {
-      addErr(`City ${city.id} refs.gateTrialId missing in trials`);
-    }
-    if (!(refs.ruinId in ruinMap)) {
-      addErr(`City ${city.id} refs.ruinId missing in ruins`);
-    }
-    if (!(refs.pavilionId in pavilionMap)) {
-      addErr(`City ${city.id} refs.pavilionId missing in pavilions`);
-    }
-    if (!(refs.apothecaryId in apothecaryMap)) {
-      addErr(`City ${city.id} refs.apothecaryId missing in apothecary shops`);
-    }
-  });
+  buildLiveCityPackageRegistry({
+    cities,
+    outskirtsById: outskirtsMap,
+    trialsById: trialMap,
+    ruinsById: ruinMap,
+    pavilionsById: pavilionMap,
+    apothecaryById: apothecaryMap,
+  }).coverageIssues.forEach((issue) => addErr(formatLiveCityPackageCoverageIssue(issue)));
 
   apothecaryShops.forEach((shop, idx) => {
     if (!(shop.cityId in cityMap)) {

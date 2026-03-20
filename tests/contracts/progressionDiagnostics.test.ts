@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { buildProgressionContract, type ProgressionAuthoredContent } from '../../src/systems/progression/contract/index.js';
 import { collectProgressionDiagnostics } from '../../src/systems/progression/diagnostics/index.js';
+import { DRIFT_OWNER_PACKET } from '../../src/systems/progression/diagnostics/progressionDiagnostics.js';
 
 const baseContent: ProgressionAuthoredContent = {
   economy: {
@@ -140,4 +141,8 @@ test('diagnostics owner packet map reflects packet 1.6 prestige honesty and pack
   assert.equal(hiddenPrestigeIssue?.suggestedOwnerPacket, '1.6');
   assert.equal(offlineIssue?.suggestedOwnerPacket, '1.8');
   assert.equal(offlineIssue?.fixStrategySummary.includes('packet-1.8'), true);
+});
+
+test('diagnostics owner packet map reserves city package coverage for packet 2.7', () => {
+  assert.equal(DRIFT_OWNER_PACKET.WORLD_CITY_PACKAGE_COVERAGE, '2.7');
 });

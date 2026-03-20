@@ -64,6 +64,12 @@ export interface RawProgressionContentLike {
       };
   items: Array<{ id: string }> | { items: Array<{ id: string }> };
   prestige_store?: { upgrades?: Array<{ id: string }> } | { upgrades: Array<{ id: string }> };
+  outskirts?: { outskirts: Array<{ id: string }> } | Array<{ id: string }>;
+  ruins?: { ruins: Array<{ id: string }> } | Array<{ id: string }>;
+  pavilions?: { pavilions: Array<{ id: string }> } | Array<{ id: string }>;
+  apothecary_shops?:
+    | { shops: Array<{ id: string }> }
+    | Array<{ id: string }>;
 }
 
 const readTrials = (raw: RawProgressionContentLike) => (Array.isArray(raw.trials) ? raw.trials : raw.trials.trials);

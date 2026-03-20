@@ -4,6 +4,7 @@ import test from 'node:test';
 import { validateLoadedContent } from '../../src/content/index.js';
 import { normalizeCitySaveState } from '../../src/save/cityStateNormalization.js';
 import { useCityStore } from '../../src/stores/cityStore.js';
+import { buildLiveCityPackageRegistry } from '../../src/systems/world/cityPackageRegistry.js';
 import { LIVE_CITY_MODULE_ORDER } from '../../src/systems/world/liveWorldSchema.js';
 import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
 
@@ -25,20 +26,21 @@ test.beforeEach(() => {
 
 test('validated content resolves a complete live city package for all five cities', async () => {
   const validated = await loadValidatedContent();
-  const outskirtsById = Object.fromEntries(validated.outskirts.map((entry) => [entry.id, entry]));
-  const trialsById = Object.fromEntries(validated.trials.map((entry) => [entry.id, entry]));
-  const ruinsById = Object.fromEntries(validated.ruins.map((entry) => [entry.id, entry]));
-  const pavilionsById = Object.fromEntries(validated.pavilions.map((entry) => [entry.id, entry]));
-  const apothecaryById = Object.fromEntries(validated.apothecary_shops.map((entry) => [entry.id, entry]));
+  const packageRegistry = buildLiveCityPackageRegistry({
+    cities: validated.cities,
+    outskirtsById: Object.fromEntries(validated.outskirts.map((entry) => [entry.id, entry])),
+    trialsById: Object.fromEntries(validated.trials.map((entry) => [entry.id, entry])),
+    ruinsById: Object.fromEntries(validated.ruins.map((entry) => [entry.id, entry])),
+    pavilionsById: Object.fromEntries(validated.pavilions.map((entry) => [entry.id, entry])),
+    apothecaryById: Object.fromEntries(validated.apothecary_shops.map((entry) => [entry.id, entry])),
+  });
 
   assert.equal(validated.cities.length, 5);
+  assert.equal(packageRegistry.coverageIssues.length, 0);
+  assert.equal(packageRegistry.packages.length, validated.cities.length);
   validated.cities.forEach((city) => {
     assert.deepEqual(city.modules, LIVE_CITY_MODULE_ORDER);
-    assert.ok(outskirtsById[city.refs.outskirtsId]);
-    assert.ok(trialsById[city.refs.gateTrialId]);
-    assert.ok(ruinsById[city.refs.ruinId]);
-    assert.ok(pavilionsById[city.refs.pavilionId]);
-    assert.ok(apothecaryById[city.refs.apothecaryId]);
+    assert.ok(packageRegistry.packagesByCityId[city.id]);
   });
 });
 

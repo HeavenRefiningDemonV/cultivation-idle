@@ -6,8 +6,13 @@ import {
   normalizeGateItemAlias,
   type RawProgressionContentLike,
 } from '../contract/index.js';
+import type { CityDef } from '../../../content/types.js';
 import { collectProgressionDiagnostics, type DriftIssue } from '../diagnostics/index.js';
 import { inspectLiveCitySchema, LIVE_CITY_MODULE_ORDER } from '../../world/liveWorldSchema.js';
+import {
+  buildLiveCityPackageRegistry,
+  formatLiveCityPackageCoverageIssue,
+} from '../../world/cityPackageRegistry.js';
 
 export interface ProgressionScenarioLike {
   kind: string;
@@ -73,6 +78,14 @@ const buildAuthoredDiagnosticsInput = (content: ReturnType<typeof adaptProgressi
 
 const readRawCities = (rawContent: RawProgressionContentLike) =>
   Array.isArray(rawContent.cities) ? rawContent.cities : rawContent.cities.cities;
+const readRawOutskirts = (rawContent: RawProgressionContentLike) =>
+  Array.isArray(rawContent.outskirts) ? rawContent.outskirts : rawContent.outskirts?.outskirts ?? [];
+const readRawRuins = (rawContent: RawProgressionContentLike) =>
+  Array.isArray(rawContent.ruins) ? rawContent.ruins : rawContent.ruins?.ruins ?? [];
+const readRawPavilions = (rawContent: RawProgressionContentLike) =>
+  Array.isArray(rawContent.pavilions) ? rawContent.pavilions : rawContent.pavilions?.pavilions ?? [];
+const readRawApothecaryShops = (rawContent: RawProgressionContentLike) =>
+  Array.isArray(rawContent.apothecary_shops) ? rawContent.apothecary_shops : rawContent.apothecary_shops?.shops ?? [];
 
 const validateRawWorldCitySchema = (rawContent: RawProgressionContentLike): DriftIssue[] => {
   const issues: DriftIssue[] = [];
@@ -115,6 +128,55 @@ const validateRawWorldCitySchema = (rawContent: RawProgressionContentLike): Drif
       evidence,
       suggestedOwnerPacket: '2.1',
       fixStrategySummary: `Normalize city.modules to LIVE_CITY_MODULE_ORDER (${LIVE_CITY_MODULE_ORDER.join(', ')}), remove deferred modules, and ensure required live refs exist.`,
+      autoFixable: true,
+    });
+  });
+
+  return issues;
+};
+
+const validateRawWorldCityPackageCoverage = (rawContent: RawProgressionContentLike): DriftIssue[] => {
+  const cities = readRawCities(rawContent).map(
+    (city): CityDef => ({
+      id: city.id,
+      index: city.index ?? 0,
+      name: city.name ?? city.id,
+      unlockMajorRealm: city.unlockMajorRealm,
+      modules: city.modules ?? [],
+      refs: (city.refs ?? {}) as CityDef['refs'],
+      themeTags: city.themeTags,
+    }),
+  );
+  const trials = Array.isArray(rawContent.trials) ? rawContent.trials : rawContent.trials.trials;
+  const pavilions = readRawPavilions(rawContent);
+  const outskirts = readRawOutskirts(rawContent);
+  const ruins = readRawRuins(rawContent);
+  const apothecaryShops = readRawApothecaryShops(rawContent);
+
+  const packageRegistry = buildLiveCityPackageRegistry({
+    cities,
+    outskirtsById: Object.fromEntries(outskirts.map((entry) => [entry.id, entry])),
+    trialsById: Object.fromEntries(trials.map((entry) => [entry.id, entry])),
+    ruinsById: Object.fromEntries(ruins.map((entry) => [entry.id, entry])),
+    pavilionsById: Object.fromEntries(pavilions.map((entry) => [entry.id, entry])),
+    apothecaryById: Object.fromEntries(apothecaryShops.map((entry) => [entry.id, entry])),
+  });
+
+  const issues: DriftIssue[] = [];
+  packageRegistry.coverageIssues.forEach((coverageIssue) => {
+    pushIssue(issues, {
+      id: `world-city-package-${coverageIssue.cityId}-${coverageIssue.refKey}`,
+      category: 'WORLD_CITY_PACKAGE_COVERAGE',
+      severity: 'error',
+      summary: `City ${coverageIssue.cityId} does not resolve a complete live city package.`,
+      evidence: [
+        {
+          path: `content/cities/${coverageIssue.cityId}/refs`,
+          detail: formatLiveCityPackageCoverageIssue(coverageIssue),
+        },
+      ],
+      suggestedOwnerPacket: '2.7',
+      fixStrategySummary: 'Keep packet 2.7 city-package coverage centralized so each live city resolves outskirts, gate trial, ruins, pavilion, and apothecary content through one registry helper.',
       autoFixable: true,
     });
   });
@@ -354,6 +416,7 @@ export const validateProgressionSemantics = (options: ValidateProgressionSemanti
   });
 
   validateRawWorldCitySchema(options.rawContent).forEach((entry) => pushIssue(issues, entry));
+  validateRawWorldCityPackageCoverage(options.rawContent).forEach((entry) => pushIssue(issues, entry));
   validateScenarioSemantics(contract, options.scenarios ?? []).forEach((entry) => pushIssue(issues, entry));
   readMigrationFixtureIssues(contract, options.migrationFixtures ?? []).forEach((entry) => pushIssue(issues, entry));
 

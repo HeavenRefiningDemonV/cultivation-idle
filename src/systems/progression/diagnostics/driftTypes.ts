@@ -11,7 +11,8 @@ export type DriftCategory =
   | 'HIDDEN_PRESTIGE_RUNTIME_CONSUMER'
   | 'MIGRATION_ALIAS_PRESENT'
   | 'CONTENT_CAP_BREACH'
-  | 'WORLD_CITY_SCHEMA_DRIFT';
+  | 'WORLD_CITY_SCHEMA_DRIFT'
+  | 'WORLD_CITY_PACKAGE_COVERAGE';
 
 export type DriftSeverity = 'info' | 'warning' | 'error';
 
