@@ -2519,6 +2519,491 @@
   gap: 12px;
 }
 
+.forgePanel--v2 {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.forgeTopRibbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(90deg, rgba(148, 74, 40, 0.2), rgba(30, 25, 20, 0.2));
+}
+
+.forgeTopLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.forgeTopCenter,
+.forgeTopRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.forgeStatusChip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.forgeStatusChip--working {
+  background: rgba(251, 146, 60, 0.2);
+  color: #fed7aa;
+}
+
+.forgeStatusChip--active {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fecaca;
+}
+
+.forgeTopResources {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.forgeTopResourceChip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.forgeStage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.forgeStageGrid {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 320px;
+  gap: 12px;
+}
+
+.forgeStageGrid--binderClosed {
+  grid-template-columns: 72px minmax(0, 1fr) 320px;
+}
+
+.forgeBlueprintBinder,
+.forgeCoolingRack,
+.forgeWorkbenchStage {
+  min-height: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.forgeBlueprintBinder {
+  padding: 10px;
+}
+
+.forgeBinderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.forgeBinderTitle {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.forgeBinderToggle {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.forgeBinderTabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.forgeBinderTab {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.forgeBinderTab--active {
+  background: rgba(248, 113, 113, 0.2);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.forgeBlueprintList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+.forgeBlueprintRow {
+  display: grid;
+  grid-template-columns: 20px 1fr auto 10px;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.3);
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.forgeBlueprintRow--active {
+  border-color: rgba(251, 146, 60, 0.45);
+  background: rgba(251, 146, 60, 0.15);
+}
+
+.forgeBlueprintIcon {
+  font-size: 14px;
+}
+
+.forgeBlueprintName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.forgeBlueprintDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.5);
+}
+
+.forgeBlueprintDot--ready {
+  background: rgba(34, 197, 94, 0.8);
+}
+
+.forgeBlueprintBinder.is-closed .forgeBinderTabs,
+.forgeBlueprintBinder.is-closed .forgeBlueprintName {
+  display: none;
+}
+
+.forgeBlueprintBinder.is-closed {
+  align-items: center;
+}
+
+.forgeWorkbenchStage {
+  padding: 16px;
+  background: rgba(12, 15, 22, 0.6);
+}
+
+.forgeWorkbenchCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.forgeWorkbenchHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.forgeWorkbenchTitle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.forgeWorkbenchMeta {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeWorkbenchBadges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.forgeBadge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgba(251, 146, 60, 0.2);
+  color: #fed7aa;
+}
+
+.forgeWorkbenchHero {
+  border-radius: 16px;
+  border: 1px dashed rgba(251, 146, 60, 0.4);
+  background: rgba(30, 41, 59, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.forgeWorkbenchSilhouette {
+  font-size: 36px;
+}
+
+.forgeRequirements {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.forgeRequirementChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.5);
+  font-size: 12px;
+}
+
+.forgeRequirementIcon {
+  font-size: 13px;
+}
+
+.forgeActionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeQtyInput {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.forgeQtyInput input {
+  width: 70px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+}
+
+.forgePrimaryButton {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  background: rgba(251, 146, 60, 0.2);
+  color: #fde68a;
+  cursor: pointer;
+}
+
+.forgePrimaryButton--active {
+  background: rgba(251, 146, 60, 0.4);
+}
+
+.forgeSecondaryActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.forgeSecondaryButton {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.5);
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.forgeServiceSlots {
+  display: flex;
+  gap: 8px;
+}
+
+.forgeServiceSlot {
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.4);
+  color: #e2e8f0;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.forgeServiceSlot--active {
+  background: rgba(248, 113, 113, 0.25);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+.forgeSpecSheet {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+}
+
+.forgeSpecToggle {
+  border: none;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgeSpecContent {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forgeSpecSummary {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeWorkbenchEmpty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.forgeWorkbenchEmptyTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.forgeWorkbenchEmptyHint {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.forgeCoolingRack {
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.forgeCoolingRackInner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.forgeRackSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeRackTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.forgeRackList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeRackItem {
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.forgeRackItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.forgeRackIcon {
+  font-size: 14px;
+}
+
+.forgeRackName {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.forgeRackTime {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.forgeRackBar {
+  margin-top: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.forgeRackBarFill {
+  height: 100%;
+  background: rgba(251, 146, 60, 0.5);
+}
+
+.forgeRackTip {
+  margin-top: auto;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+@media (max-width: 1100px) {
+  .forgeStageGrid {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .forgeStageGrid--binderClosed {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .forgeCoolingRack {
+    display: none;
+  }
+}
+
 .forgePanelHeader {
   display: flex;
   justify-content: space-between;
