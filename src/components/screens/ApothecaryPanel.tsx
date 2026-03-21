@@ -13,6 +13,7 @@ import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
+import { AlchemyPanel } from './AlchemyPanel';
 import { GameIcon } from '../../ui/icons';
 import './ApothecaryPanel.scss';
 
@@ -128,6 +129,8 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const cultivationPick = pickDeterministic(cultivationStock, 2, seed);
     return [...combatPick.picks, ...cultivationPick.picks];
   }, [apothecary, dayKey, combatStock, cultivationStock]);
+
+  const brewCityId = apothecary?.cityId ?? null;
 
   const renderPlaceholder = (title: string, body: string) => (
     <div className={'worldScreenPlaceholder'}>
@@ -530,6 +533,18 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             </div>
 
             {renderShelf(activeShelf)}
+          </PaperCard>
+
+          <PaperCard className={'apothecaryBrewFrame'} variant="tray">
+            <div className={'apothecaryBrewHeader'}>
+              <div>
+                <div className={'apothecaryBrewTitle'}>Brew Bench</div>
+                <div className={'apothecaryBrewSubtitle'}>
+                  The apothecary now hosts the city's live alchemy queue, sessions, and claims.
+                </div>
+              </div>
+            </div>
+            <AlchemyPanel cityId={brewCityId} embedded />
           </PaperCard>
         </div>
         <div className={'apothecaryAmbientZone'} aria-hidden="true" />

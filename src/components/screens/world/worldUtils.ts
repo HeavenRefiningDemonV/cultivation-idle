@@ -6,7 +6,7 @@ export const MODULE_REF_KEYS: Record<string, string> = {
   ruins: 'ruinId',
   apothecary: 'apothecaryId',
   manualPavilion: 'pavilionId',
-  alchemy: 'alchemyId',
+  alchemy: 'apothecaryId',
   forge: 'forgeId',
   talismanStudio: 'talismanId',
   bounties: 'bountyBoardId',

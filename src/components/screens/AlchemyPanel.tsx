@@ -20,6 +20,7 @@ import { GameEvents } from '../../services/events/GameEvents';
 
 interface AlchemyPanelProps {
   cityId: string | null;
+  embedded?: boolean;
 }
 
 type StatusMessage = { type: 'success' | 'error'; message: string };
@@ -43,9 +44,6 @@ interface BrewLedgerRow {
 }
 
 const MAX_QTY = 999;
-const EMPTY_ALCHEMY_RECIPES = Object.freeze([]) as ReadonlyArray<
-  NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['alchemy_recipes'][number]
->;
 const EMPTY_CITIES = Object.freeze([]) as ReadonlyArray<
   NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['cities'][number]
 >;
@@ -106,9 +104,8 @@ function getThresholdLabel(value: number): string {
   return match?.label ?? '';
 }
 
-export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
+export function AlchemyPanel({ cityId, embedded = false }: AlchemyPanelProps) {
   const raw = useContentStore((state) => state.raw);
-  const cities = raw?.cities ?? EMPTY_CITIES;
   const startAlchemy = useProfessionStore((state) => state.startAlchemy);
   const claimAlchemy = useProfessionStore((state) => state.claimAlchemy);
   const queue = useProfessionStore((state) => state.alchemyQueue);
@@ -183,7 +180,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     return masteryValue >= 50 ? 5 : 1;
   };
 
-  const canCraftRecipe = (recipe: (typeof EMPTY_ALCHEMY_RECIPES)[number], qty: number): { ok: boolean; reason?: string } => {
+  const canCraftRecipe = (recipe: ReturnType<typeof listAlchemyRecipesForCity>[number], qty: number): { ok: boolean; reason?: string } => {
     const inputs = recipe.inputs ?? {};
     for (const [itemId, baseQty] of Object.entries(inputs)) {
       const perJob = Math.floor(baseQty);
@@ -213,14 +210,14 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     return (
       <div className={'worldScreenPlaceholder'}>
         <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>No Alchemy in this city</div>
+          <div className={'worldScreenPlaceholderTitle'}>{embedded ? 'No brewing bench' : 'No Alchemy in this city'}</div>
         </div>
-        <div className={'worldScreenPlaceholderBody'}>This city does not host an alchemy station.</div>
+        <div className={'worldScreenPlaceholderBody'}>{embedded ? 'This apothecary has no connected brewing bench yet.' : 'This city does not host an alchemy station.'}</div>
       </div>
     );
   }
 
-  if (!recipes || recipes.length === 0) {
+  if (visibleRecipes.length === 0) {
     return (
       <div className={'worldScreenPlaceholder'}>
         <div className={'worldScreenPlaceholderHeader'}>
@@ -426,16 +423,20 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   }, [addNotification, readyLedgerRows]);
 
   return (
-    <div className={'alchemyPanel alchemyPanel--workbench'}>
-      <div className={'alchemyPanelHeader stationBanner craftPurposeBanner'}>
-        <div>
-          <div className={'stationBannerTitle'}>Alchemy</div>
-          <div className={'stationBannerSubtitle'}>
-            Brew pills, elixirs, and reagents for combat and cultivation.
+    <div className={classNames('alchemyPanel alchemyPanel--workbench', {
+      'alchemyPanel--embedded': embedded,
+    })}>
+      {!embedded && (
+        <div className={'alchemyPanelHeader stationBanner craftPurposeBanner'}>
+          <div>
+            <div className={'stationBannerTitle'}>Alchemy</div>
+            <div className={'stationBannerSubtitle'}>
+              Brew pills, elixirs, and reagents for combat and cultivation.
+            </div>
           </div>
+          <div className={'stationBannerMeta'}>Queue size: {queue.length}</div>
         </div>
-        <div className={'stationBannerMeta'}>Queue size: {queue.length}</div>
-      </div>
+      )}
 
       <div className={'alchemyStage'}>
         <aside className={'alchemyRecipeRack'}>

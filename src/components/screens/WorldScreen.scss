@@ -3842,3 +3842,12 @@
   position: relative;
   overflow: hidden;
 }
+
+
+.alchemyPanel--embedded {
+  gap: 12px;
+}
+
+.alchemyPanel--embedded .alchemyStage {
+  min-height: 720px;
+}

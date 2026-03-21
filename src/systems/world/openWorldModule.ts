@@ -25,21 +25,23 @@ export function isCombatModule(moduleKey: string): boolean {
   return COMBAT_MODULE_KEYS.has(moduleKey);
 }
 
-export function openWorldModule({ cityId, moduleKey, open = true, source: _source }: OpenWorldModuleArgs): void {
+export function openWorldModule({ cityId, moduleKey, open = true, source }: OpenWorldModuleArgs): void {
+  void source;
+  const normalizedModuleKey = moduleKey === 'alchemy' ? 'apothecary' : moduleKey;
   const uiStore = useUIStore.getState();
   const cityStore = useCityStore.getState();
   const contentStore = useContentStore.getState();
   const activityStore = useActivityStore.getState();
   const combatStore = useCombatStore.getState();
 
-  const targetAudit = inspectWorldFacingModuleTarget(moduleKey);
+  const targetAudit = inspectWorldFacingModuleTarget(normalizedModuleKey);
   if (!targetAudit.ok) {
     uiStore.addNotification('warning', 'That module is not available here.');
     return;
   }
 
   const city = contentStore.maps.citiesById[cityId];
-  if (!city || !city.modules.includes(moduleKey)) return;
+  if (!city || !city.modules.includes(normalizedModuleKey)) return;
 
   const travelGuard = getWorldTravelGuard({
     targetCityId: cityId,
@@ -67,12 +69,12 @@ export function openWorldModule({ cityId, moduleKey, open = true, source: _sourc
   }
 
   uiStore.setActiveTab('adventure');
-  cityStore.setSelectedModule(cityId, moduleKey);
+  cityStore.setSelectedModule(cityId, normalizedModuleKey);
   uiStore.closeWorldBuildingModal();
 
   if (open === false) {
     return;
   }
 
-  uiStore.openWorldBuildingModal({ cityId, buildingKey: moduleKey as WorldBuildingKey });
+  uiStore.openWorldBuildingModal({ cityId, buildingKey: normalizedModuleKey as WorldBuildingKey });
 }
