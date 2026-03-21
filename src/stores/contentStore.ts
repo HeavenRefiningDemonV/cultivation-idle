@@ -23,6 +23,12 @@ import {
   isRuneBlueprint,
 } from '../content/index.js';
 import {
+  buildLiveEconomyCatalog,
+  getLiveForgeBlueprintById,
+  getVisibleNormalizedForgeBlueprints,
+  type LiveEconomyCatalog,
+} from '../systems/economy/index.js';
+import {
   getPrestigeRuntimeCatalog,
   getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime,
 } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
@@ -71,6 +77,7 @@ interface ContentStoreState {
   getAllPrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
   getVisiblePrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
   getPrestigeRuntimeCatalog: () => ReturnType<typeof getPrestigeRuntimeCatalog>;
+  getLiveEconomyCatalog: () => LiveEconomyCatalog;
 }
 
 const emptyMaps: ContentMaps = {
@@ -332,6 +339,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     const { raw } = get();
     return getPrestigeRuntimeCatalog(raw);
   },
+
+  getLiveEconomyCatalog: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return buildLiveEconomyCatalog(raw);
+  },
 }));
 
 export function getItemDef(itemId: string): ItemDef | null {
@@ -351,13 +366,25 @@ export function listTalismanRecipes() {
   return useContentStore.getState().raw?.talisman_recipes ?? [];
 }
 
-export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
+export function listRawForgeBlueprints(): NormalizedForgeBlueprint[] {
   const blueprints = useContentStore.getState().raw?.forge_blueprints ?? [];
   return blueprints.map((blueprint) => normalizeForgeBlueprint(blueprint));
 }
 
+export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
+  const raw = useContentStore.getState().raw;
+  if (!raw) return [];
+  return getVisibleNormalizedForgeBlueprints(raw);
+}
+
 export function getForgeBlueprint(id: string): NormalizedForgeBlueprint | undefined {
-  return listForgeBlueprints().find((blueprint) => blueprint.id === id);
+  const raw = useContentStore.getState().raw;
+  const blueprint = getLiveForgeBlueprintById(raw, id);
+  return blueprint ? normalizeForgeBlueprint(blueprint) : undefined;
+}
+
+export function getRawForgeBlueprint(id: string): NormalizedForgeBlueprint | undefined {
+  return listRawForgeBlueprints().find((blueprint) => blueprint.id === id);
 }
 
 export function listForgeBlueprintsForCity(options: {

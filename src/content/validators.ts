@@ -45,6 +45,13 @@ import {
   formatLiveCityPackageCoverageIssue,
   inspectSemesterCityPackageCoverage,
 } from '../systems/world/cityPackageRegistry.js';
+import {
+  buildLiveEconomyCatalog,
+  buildLiveEconomyAuditReport,
+  getSinklessLiveMaterials,
+  getForgeBlueprintFamily,
+  listKnownLiveEconomyBlockers,
+} from '../systems/economy/index.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1199,6 +1206,93 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   Object.keys(lawMap);
   Object.keys(prestigeMap);
   Object.keys(bountyTemplateMap);
+
+  const liveEconomyCatalog = buildLiveEconomyCatalog({ items, alchemy_recipes: alchemyRecipes, forge_blueprints: forgeBlueprints });
+
+  alchemyRecipes.forEach((recipe, idx) => {
+    const status = liveEconomyCatalog.alchemyRecipeStatusById[recipe.id] ?? 'unknown';
+    if (status !== 'visible_live' && status !== 'visible_live_blocked') return;
+    Object.keys(recipe.outputs ?? {}).forEach((itemId) => {
+      const itemStatus = liveEconomyCatalog.itemStatusById[itemId] ?? 'unknown';
+      if (itemStatus !== 'visible_live' && itemStatus !== 'visible_live_blocked') {
+        addErr(`alchemy_recipes.recipes[${idx}] visible live recipe outputs non-live item '${itemId}' (${itemStatus})`);
+      }
+    });
+  });
+
+  const visibleRuneOutputToBlueprintIds = new Map<string, string[]>();
+  forgeBlueprints.forEach((blueprint, idx) => {
+    const status = liveEconomyCatalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown';
+    if (status !== 'visible_live' && status !== 'visible_live_blocked') return;
+    Object.keys(blueprint.outputs ?? {}).forEach((itemId) => {
+      const itemStatus = liveEconomyCatalog.itemStatusById[itemId] ?? 'unknown';
+      if (itemStatus !== 'visible_live' && itemStatus !== 'visible_live_blocked') {
+        addErr(`forge_blueprints.blueprints[${idx}] visible live blueprint outputs non-live item '${itemId}' (${itemStatus})`);
+      }
+      if (itemId.startsWith('rune_')) {
+        const list = visibleRuneOutputToBlueprintIds.get(itemId) ?? [];
+        list.push(blueprint.id);
+        visibleRuneOutputToBlueprintIds.set(itemId, list);
+      }
+    });
+  });
+
+  visibleRuneOutputToBlueprintIds.forEach((blueprintIds, itemId) => {
+    const canonical = blueprintIds.filter((id) => id.startsWith('forge_rune_'));
+    const legacy = blueprintIds.filter((id) => id.startsWith('rune_inscription_'));
+    if (canonical.length > 0 && legacy.length > 0) {
+      addErr(`visible rune family drift remains for '${itemId}': canonical=${canonical.join(', ')} legacy=${legacy.join(', ')}`);
+    }
+  });
+
+  const liveEconomyReport = buildLiveEconomyAuditReport({
+    raw,
+    economy: raw.economy,
+    cities,
+    items,
+    techniques,
+    pavilions,
+    outskirts,
+    enemies,
+    trials: normalizedTrials,
+    ruins,
+    alchemy_recipes: alchemyRecipes,
+    forge_blueprints: forgeBlueprints,
+    runes,
+    talisman_recipes: talismanRecipes,
+    apothecary_shops: apothecaryShops,
+    expeditions,
+    bounties: bountyConfig,
+    heart_laws: heartLaws,
+    prestige_store: prestige,
+  });
+
+  const expectedBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
+  const actualBlockerIds = liveEconomyReport.activeBlockerIds.slice().sort();
+  if (JSON.stringify(expectedBlockerIds) !== JSON.stringify(actualBlockerIds)) {
+    addErr(`live economy blocker registry drift: expected=${expectedBlockerIds.join(', ')} actual=${actualBlockerIds.join(', ')}`);
+  }
+
+  getSinklessLiveMaterials(liveEconomyReport).forEach((entry) => {
+    if (!entry.isBlocked) {
+      addErr(`live material '${entry.itemId}' has no visible live sink and is not in the Packet 3.1A blocker registry`);
+    }
+  });
+
+  liveEconomyReport.reagentPathAudits.forEach((entry) => {
+    if (entry.missingDependencyIds.length === 0) return;
+    if (!entry.isBlocked) {
+      addErr(`visible live reagent path missing for '${entry.blueprintId}': ${entry.missingDependencyIds.join(', ')}`);
+    }
+  });
+
+  forgeBlueprints.forEach((blueprint) => {
+    const family = getForgeBlueprintFamily(blueprint, { forge_blueprints: forgeBlueprints } as never);
+    const status = liveEconomyCatalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown';
+    if (family === 'forge_legacy_rune' && (status === 'visible_live' || status === 'visible_live_blocked')) {
+      addErr(`legacy rune blueprint '${blueprint.id}' is still visible live`);
+    }
+  });
 
   if (errors.length > 0) {
     const body = errors

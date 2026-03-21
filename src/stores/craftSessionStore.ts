@@ -26,6 +26,7 @@ import {
 import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts';
 import { buildAlchemyOutputs, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 import { computeForgeOutcome } from '../systems/crafting/forgeOutcome';
+import { getLiveAlchemyRecipeById, getLiveForgeBlueprintById } from '../systems/economy/index.js';
 import { useContentStore } from './contentStore';
 import { useInventoryStore } from './inventoryStore';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
@@ -562,7 +563,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
         let prompts: CraftPromptState[] = [];
 
         if (args.station === 'alchemy') {
-          const recipe = content.raw?.alchemy_recipes?.find((entry) => entry.id === args.sourceId);
+          const recipe = getLiveAlchemyRecipeById(content.raw, args.sourceId);
           if (!recipe) return { ok: false, reason: 'missing_recipe' };
           const inputs = Object.entries(recipe.inputs ?? {}).map(([itemId, baseQty]) => ({
             itemId,
@@ -584,7 +585,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
             prompts = instantiatePrompts(promptDefs, startedAt, endsAt, seed);
           }
         } else if (args.station === 'forge') {
-          const rawBlueprint = content.raw?.forge_blueprints?.find((entry) => entry.id === args.sourceId);
+          const rawBlueprint = getLiveForgeBlueprintById(content.raw, args.sourceId);
           const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
           if (!blueprint) return { ok: false, reason: 'missing_blueprint' };
           if (blueprint.type !== 'craft') return { ok: false, reason: 'invalid_blueprint' };

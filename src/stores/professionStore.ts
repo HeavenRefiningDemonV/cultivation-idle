@@ -5,6 +5,7 @@ import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
 import { getForgeBlueprint } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
 import { useContentStore } from './contentStore';
+import { getLiveAlchemyRecipeById } from '../systems/economy/index.js';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
 import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 import { applyRefineService, applyTemperService } from '../services/forgeService';
@@ -213,7 +214,7 @@ export const useProfessionStore = create<ProfessionState>()(
       const amount = Math.min(parsedQty, MAX_ALCHEMY_QTY);
 
       const contentStore = useContentStore.getState();
-      const recipe = contentStore.raw?.alchemy_recipes?.find((entry) => entry.id === recipeId);
+      const recipe = getLiveAlchemyRecipeById(contentStore.raw, recipeId);
       if (!recipe) {
         return { ok: false, error: 'Recipe not found' };
       }

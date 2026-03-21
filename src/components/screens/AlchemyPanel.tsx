@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
+import { listAlchemyRecipesForCity } from '../../content/alchemy.js';
 import { useCraftSessionStore } from '../../stores/craftSessionStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useProfessionStore } from '../../stores/professionStore';
@@ -107,7 +108,7 @@ function getThresholdLabel(value: number): string {
 
 export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
   const raw = useContentStore((state) => state.raw);
-  const recipes = raw?.alchemy_recipes ?? EMPTY_ALCHEMY_RECIPES;
+  const recipes = useMemo(() => (raw ? listAlchemyRecipesForCity(cityId) : EMPTY_ALCHEMY_RECIPES), [cityId, raw]);
   const cities = raw?.cities ?? EMPTY_CITIES;
   const startAlchemy = useProfessionStore((state) => state.startAlchemy);
   const claimAlchemy = useProfessionStore((state) => state.claimAlchemy);
@@ -158,19 +159,7 @@ export function AlchemyPanel({ cityId }: AlchemyPanelProps) {
     return () => window.clearTimeout(handle);
   }, [queueToast]);
 
-  const visibleRecipes = useMemo(() => {
-    if (!cityId) return recipes;
-    const targetIndex = cities.findIndex((city) => city.id === cityId);
-    if (targetIndex < 0) return recipes;
-
-    return recipes.filter((recipe) => {
-      const unlockId = (recipe as Record<string, unknown>).unlocksAtCityId as string | undefined;
-      if (!unlockId) return true;
-      const unlockIndex = cities.findIndex((city) => city.id === unlockId);
-      if (unlockIndex === -1) return true;
-      return unlockIndex <= targetIndex;
-    });
-  }, [cities, cityId, recipes]);
+  const visibleRecipes = recipes;
 
   useEffect(() => {
     if (visibleRecipes.length === 0) return;
