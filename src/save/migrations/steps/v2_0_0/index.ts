@@ -9,6 +9,7 @@ import { v2_0_0_plan_deferred_prestige_refund } from './planDeferredPrestigeRefu
 import { v2_0_0_plan_trial_resolution_normalization } from './planTrialResolutionNormalization.js';
 import { v2_0_0_plan_partial_reset_residue_cleanup } from './planPartialResetResidueCleanup.js';
 import { v2_0_0_plan_offline_unification } from './planOfflineUnification.js';
+import { v2_0_0_plan_deferred_crafting_output_cleanup } from './deferredCraftingOutputCleanup.js';
 
 export const v2_0_0MigrationPack: MigrationStep[] = [
   v2_0_0_seed_version_and_meta,
@@ -21,4 +22,5 @@ export const v2_0_0MigrationPack: MigrationStep[] = [
   v2_0_0_plan_trial_resolution_normalization,
   v2_0_0_plan_partial_reset_residue_cleanup,
   v2_0_0_plan_offline_unification,
+  v2_0_0_plan_deferred_crafting_output_cleanup,
 ];

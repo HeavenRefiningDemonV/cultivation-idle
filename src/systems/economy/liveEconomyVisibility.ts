@@ -1,6 +1,5 @@
 import { normalizeForgeBlueprint } from '../../content/forge.js';
 import type { LiveEconomyContentSnapshot, LiveEconomyVisibilityDecision } from './liveEconomyTypes.js';
-import { getKnownLiveEconomyBlocker } from './knownLiveEconomyBlockers.js';
 
 const DEFERRED_ITEM_PREFIXES = ['reagent_spirit_solvent_', 'cons_tribulation_buffer_', 'item_jade_core_'];
 const DEFERRED_EXACT_ITEM_IDS = new Set(['mat_artifact_shard_bundle']);
@@ -19,10 +18,6 @@ function hasCanonicalForgeRuneForOutput(outputItemId: string, content: LiveEcono
 export function getLiveEconomyItemVisibility(itemId: string): LiveEconomyVisibilityDecision {
   if (!itemId) return { status: 'unknown', reason: 'missing item id' };
 
-  const blocker = getKnownLiveEconomyBlocker(itemId);
-  if (blocker && blocker.entityKind === 'item') {
-    return { status: blocker.runtimeStatus, reason: blocker.reason };
-  }
 
   if (isDeferredItemId(itemId)) {
     return { status: 'migration_refund_only', reason: 'Deferred output remains authored for migration/refund cleanup.' };
@@ -55,10 +50,6 @@ export function getLiveForgeBlueprintVisibility(
   content: LiveEconomyContentSnapshot,
 ): LiveEconomyVisibilityDecision {
   const normalized = normalizeForgeBlueprint(blueprint);
-  const blocker = getKnownLiveEconomyBlocker(normalized.id);
-  if (blocker && blocker.entityKind === 'forge_blueprint') {
-    return { status: blocker.runtimeStatus, reason: blocker.reason };
-  }
 
   if (normalized.type === 'service') {
     if (normalized.service === 'refine' || normalized.service === 'temper') {

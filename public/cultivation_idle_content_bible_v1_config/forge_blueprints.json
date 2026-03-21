@@ -663,7 +663,8 @@
       "timeSec": 360,
       "inputs": {
         "mat_rune_dust": 45,
-        "mat_blade_core": 2
+        "mat_blade_core": 2,
+        "mat_artifact_shard": 2
       },
       "cost": {
         "gold": 1500000
@@ -679,7 +680,8 @@
       "timeSec": 360,
       "inputs": {
         "mat_rune_dust": 45,
-        "mat_thunder_sand": 2
+        "mat_thunder_sand": 2,
+        "mat_spirit_dew": 2
       },
       "cost": {
         "gold": 1500000

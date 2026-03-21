@@ -1,5 +1,4 @@
 import { normalizeForgeBlueprint } from '../../content/forge.js';
-import { getKnownLiveEconomyBlocker } from './knownLiveEconomyBlockers.js';
 import { createLiveEconomyCatalog, listVisibleAlchemyRecipes, listVisibleForgeBlueprints } from './liveEconomyCatalog.js';
 import type { LiveEconomyAuditReport, LiveEconomyContentSnapshot, LiveEconomyFlowRef, LiveEconomyItemAuditEntry, LiveEconomyReagentPathIssue } from './liveEconomyTypes.js';
 
@@ -109,12 +108,11 @@ export function buildLiveEconomySourceSinkAudit(content: LiveEconomyContentSnaps
   const items: LiveEconomyItemAuditEntry[] = content.items
     .filter((item) => visibleItemIds.has(item.id))
     .map((item) => {
-      const blocker = getKnownLiveEconomyBlocker(item.id);
       const liveSources = sourceMap.get(item.id) ?? [];
       const liveSinks = sinkMap.get(item.id) ?? [];
       const role = inferRole(item.id, item.category);
       const sinkRelevant = role === 'craft_material' || role === 'craft_reagent';
-      const blocked = Boolean(blocker) || (sinkRelevant && liveSources.length > 0 && liveSinks.length === 0);
+      const blocked = sinkRelevant && liveSources.length > 0 && liveSinks.length === 0;
       return {
         itemId: item.id,
         runtimeStatus: catalog.itemStatuses[item.id] ?? 'unknown',
@@ -123,7 +121,6 @@ export function buildLiveEconomySourceSinkAudit(content: LiveEconomyContentSnaps
         liveSources,
         liveSinks,
         blocked,
-        blockerReason: blocker?.reason,
       };
     })
     .sort((a, b) => a.itemId.localeCompare(b.itemId));
@@ -136,13 +133,11 @@ export function buildLiveEconomySourceSinkAudit(content: LiveEconomyContentSnaps
           return (status === 'visible_live' || status === 'visible_live_blocked') && (sourceMap.get(entry.itemId)?.length ?? 0) === 0;
         })
         .map((entry) => {
-          const blocker = getKnownLiveEconomyBlocker(entry.itemId) ?? getKnownLiveEconomyBlocker(blueprint.id);
           return {
             blueprintId: blueprint.id,
             missingInputItemId: entry.itemId,
             runtimeStatus: catalog.forgeBlueprintStatuses[blueprint.id] ?? 'unknown',
-            blocked: Boolean(blocker),
-            blockerReason: blocker?.reason,
+            blocked: false,
           };
         }),
     )

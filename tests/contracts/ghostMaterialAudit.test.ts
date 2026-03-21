@@ -76,7 +76,7 @@ test('runtime catalog marks the deferred ghost outputs and exact blocker set exp
   assert.equal(catalog.itemStatuses.cons_tribulation_buffer_t1, 'migration_refund_only');
   assert.equal(catalog.itemStatuses.item_jade_core_shell_t1, 'migration_refund_only');
   assert.equal(catalog.itemStatuses.mat_artifact_shard_bundle, 'migration_refund_only');
-  assert.equal(catalog.forgeBlueprintStatuses.forge_refine_legendary_t5, 'visible_live_blocked');
-  assert.deepEqual(catalog.blockedItemIds, ['mat_artifact_shard', 'mat_spirit_dew', 'reagent_quenching_oil_t2']);
-  assert.deepEqual(catalog.blockedForgeBlueprintIds, ['forge_refine_legendary_t5']);
+  assert.equal(catalog.forgeBlueprintStatuses.forge_refine_legendary_t5, 'visible_live');
+  assert.deepEqual(catalog.blockedItemIds, []);
+  assert.deepEqual(catalog.blockedForgeBlueprintIds, []);
 });

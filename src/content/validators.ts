@@ -47,7 +47,6 @@ import {
 } from '../systems/world/cityPackageRegistry.js';
 import { createLiveEconomyCatalog, listVisibleAlchemyRecipes, listVisibleForgeBlueprints } from '../systems/economy/liveEconomyCatalog.js';
 import { buildLiveEconomySourceSinkAudit } from '../systems/economy/sourceSinkAudit.js';
-import { KNOWN_LIVE_ECONOMY_BLOCKERS, isKnownLiveEconomyBlocker } from '../systems/economy/knownLiveEconomyBlockers.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1240,33 +1239,14 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   liveEconomyAudit.items
     .filter((entry) => entry.role === 'craft_material' || entry.role === 'craft_reagent')
     .forEach((entry) => {
-      if (entry.liveSinks.length === 0 && !isKnownLiveEconomyBlocker(entry.itemId)) {
-        addErr(`visible live material/reagent ${entry.itemId} has no live sink and is not in the blocker registry`);
+      if (entry.liveSources.length > 0 && entry.liveSinks.length === 0) {
+        addErr(`visible live material/reagent ${entry.itemId} has no live sink`);
       }
     });
 
   liveEconomyAudit.reagentPathIssues.forEach((issue) => {
-    if (!issue.blocked) {
-      addErr(`visible live reagent path unresolved: ${issue.blueprintId} requires ${issue.missingInputItemId}`);
-    }
+    addErr(`visible live reagent path unresolved: ${issue.blueprintId} requires ${issue.missingInputItemId}`);
   });
-
-  const unexpectedBlockers = liveEconomyAudit.items
-    .filter((entry) => entry.blocked && !isKnownLiveEconomyBlocker(entry.itemId))
-    .map((entry) => entry.itemId);
-  if (unexpectedBlockers.length > 0) {
-    addErr(`unexpected live economy blockers detected outside registry: ${unexpectedBlockers.join(', ')}`);
-  }
-
-  const missingKnownBlockers = KNOWN_LIVE_ECONOMY_BLOCKERS.filter((entry) => {
-    if (entry.entityKind === 'item') {
-      return !liveEconomyAudit.items.some((auditEntry) => auditEntry.itemId === entry.id && auditEntry.blocked);
-    }
-    return !liveEconomyAudit.reagentPathIssues.some((issue) => issue.blueprintId === entry.id && issue.blocked);
-  }).map((entry) => entry.id);
-  if (missingKnownBlockers.length > 0) {
-    addErr(`known live economy blocker registry drifted from audit truth: ${missingKnownBlockers.join(', ')}`);
-  }
 
   // Additional references for runes and heart laws to ensure maps used
   Object.keys(lawMap);

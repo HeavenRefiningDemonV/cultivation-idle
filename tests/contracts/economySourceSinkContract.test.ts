@@ -5,7 +5,6 @@ import path from 'node:path';
 import type { LoadedContentRaw } from '../../src/content/loaders.js';
 import { validateLoadedContent } from '../../src/content/validators.js';
 import { buildLiveEconomySourceSinkAudit } from '../../src/systems/economy/sourceSinkAudit.js';
-import { KNOWN_LIVE_ECONOMY_BLOCKERS } from '../../src/systems/economy/knownLiveEconomyBlockers.js';
 
 const CONTENT_DIR = path.resolve(process.cwd(), 'public/cultivation_idle_content_bible_v1_config');
 const CONTENT_FILES: Record<keyof LoadedContentRaw, string> = {
@@ -39,7 +38,7 @@ async function loadValidatedContent() {
   return validateLoadedContent(Object.fromEntries(entries) as LoadedContentRaw);
 }
 
-test('visible live materials and reagents either have live sinks or are the explicit Packet 3.1A blockers', async () => {
+test('visible live materials and reagents all have at least one live sink', async () => {
   const content = await loadValidatedContent();
   const audit = buildLiveEconomySourceSinkAudit(content);
 
@@ -48,26 +47,21 @@ test('visible live materials and reagents either have live sinks or are the expl
     .map((entry) => entry.itemId)
     .sort();
 
-  assert.deepEqual(sinkless, ['mat_artifact_shard', 'mat_spirit_dew']);
+  assert.deepEqual(sinkless, []);
 });
 
-test('blocker registry contents match the actual live economy audit after quarantine', async () => {
+test('live economy audit no longer reports blocker registry leftovers', async () => {
   const content = await loadValidatedContent();
   const audit = buildLiveEconomySourceSinkAudit(content);
 
-  const expectedItemBlockers = KNOWN_LIVE_ECONOMY_BLOCKERS.filter((entry) => entry.entityKind === 'item').map((entry) => entry.id).sort();
-  const expectedBlueprintBlockers = KNOWN_LIVE_ECONOMY_BLOCKERS.filter((entry) => entry.entityKind === 'forge_blueprint').map((entry) => entry.id).sort();
-  const actualItemBlockers = audit.items.filter((entry) => entry.blocked).map((entry) => entry.itemId).sort();
-  const actualBlueprintBlockers = [...new Set(audit.reagentPathIssues.filter((entry) => entry.blocked).map((entry) => entry.blueprintId))].sort();
-
-  assert.deepEqual(actualItemBlockers, expectedItemBlockers);
-  assert.deepEqual(actualBlueprintBlockers, expectedBlueprintBlockers);
+  assert.deepEqual(audit.items.filter((entry) => entry.blocked).map((entry) => entry.itemId).sort(), []);
+  assert.deepEqual([...new Set(audit.reagentPathIssues.filter((entry) => entry.blocked).map((entry) => entry.blueprintId))].sort(), []);
 });
 
-test('no other live reagent path is silently ignored beyond forge_refine_legendary_t5', async () => {
+test('no live reagent path remains unresolved', async () => {
   const content = await loadValidatedContent();
   const audit = buildLiveEconomySourceSinkAudit(content);
 
   const unresolved = audit.reagentPathIssues.map((entry) => `${entry.blueprintId}:${entry.missingInputItemId}`).sort();
-  assert.deepEqual(unresolved, ['forge_refine_legendary_t5:reagent_quenching_oil_t2']);
+  assert.deepEqual(unresolved, []);
 });
