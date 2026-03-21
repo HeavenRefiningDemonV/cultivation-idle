@@ -45,6 +45,9 @@ import {
   formatLiveCityPackageCoverageIssue,
   inspectSemesterCityPackageCoverage,
 } from '../systems/world/cityPackageRegistry.js';
+import { createLiveEconomyCatalog, listVisibleAlchemyRecipes, listVisibleForgeBlueprints } from '../systems/economy/liveEconomyCatalog.js';
+import { buildLiveEconomySourceSinkAudit } from '../systems/economy/sourceSinkAudit.js';
+import { KNOWN_LIVE_ECONOMY_BLOCKERS, isKnownLiveEconomyBlocker } from '../systems/economy/knownLiveEconomyBlockers.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1194,6 +1197,76 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
         );
       });
     });
+
+  const economySnapshot = {
+    cities,
+    items,
+    alchemy_recipes: alchemyRecipes,
+    forge_blueprints: forgeBlueprints,
+    apothecary_shops: apothecaryShops,
+    outskirts,
+    ruins,
+    expeditions,
+    runes,
+  };
+  const liveEconomyCatalog = createLiveEconomyCatalog(economySnapshot);
+  const liveAlchemyRecipes = listVisibleAlchemyRecipes(economySnapshot);
+  const liveForgeBlueprints = listVisibleForgeBlueprints(economySnapshot);
+  const liveEconomyAudit = buildLiveEconomySourceSinkAudit(economySnapshot);
+
+  liveAlchemyRecipes.forEach((recipe) => {
+    Object.keys(recipe.outputs ?? {}).forEach((itemId) => {
+      const status = liveEconomyCatalog.itemStatuses[itemId] ?? 'unknown';
+      if (status !== 'visible_live' && status !== 'visible_live_blocked') {
+        addErr(`live alchemy recipe ${recipe.id} outputs non-live item ${itemId} (${status})`);
+      }
+    });
+  });
+
+  liveForgeBlueprints.forEach((blueprint) => {
+    const outputItemId = blueprint.output?.itemId;
+    if (!outputItemId) return;
+    const status = liveEconomyCatalog.itemStatuses[outputItemId] ?? 'unknown';
+    if (status !== 'visible_live' && status !== 'visible_live_blocked') {
+      addErr(`live forge blueprint ${blueprint.id} outputs non-live item ${outputItemId} (${status})`);
+    }
+  });
+
+  const visibleLegacyRuneBlueprints = liveForgeBlueprints.filter((blueprint) => blueprint.id.startsWith('rune_inscription_'));
+  if (visibleLegacyRuneBlueprints.length > 0) {
+    addErr(`duplicate visible rune family remains: ${visibleLegacyRuneBlueprints.map((blueprint) => blueprint.id).join(', ')}`);
+  }
+
+  liveEconomyAudit.items
+    .filter((entry) => entry.role === 'craft_material' || entry.role === 'craft_reagent')
+    .forEach((entry) => {
+      if (entry.liveSinks.length === 0 && !isKnownLiveEconomyBlocker(entry.itemId)) {
+        addErr(`visible live material/reagent ${entry.itemId} has no live sink and is not in the blocker registry`);
+      }
+    });
+
+  liveEconomyAudit.reagentPathIssues.forEach((issue) => {
+    if (!issue.blocked) {
+      addErr(`visible live reagent path unresolved: ${issue.blueprintId} requires ${issue.missingInputItemId}`);
+    }
+  });
+
+  const unexpectedBlockers = liveEconomyAudit.items
+    .filter((entry) => entry.blocked && !isKnownLiveEconomyBlocker(entry.itemId))
+    .map((entry) => entry.itemId);
+  if (unexpectedBlockers.length > 0) {
+    addErr(`unexpected live economy blockers detected outside registry: ${unexpectedBlockers.join(', ')}`);
+  }
+
+  const missingKnownBlockers = KNOWN_LIVE_ECONOMY_BLOCKERS.filter((entry) => {
+    if (entry.entityKind === 'item') {
+      return !liveEconomyAudit.items.some((auditEntry) => auditEntry.itemId === entry.id && auditEntry.blocked);
+    }
+    return !liveEconomyAudit.reagentPathIssues.some((issue) => issue.blueprintId === entry.id && issue.blocked);
+  }).map((entry) => entry.id);
+  if (missingKnownBlockers.length > 0) {
+    addErr(`known live economy blocker registry drifted from audit truth: ${missingKnownBlockers.join(', ')}`);
+  }
 
   // Additional references for runes and heart laws to ensure maps used
   Object.keys(lawMap);
