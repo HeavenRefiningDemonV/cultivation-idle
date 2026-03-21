@@ -286,6 +286,20 @@
       }
     },
     {
+      "id": "alc_reagent_quenching_oil_t2",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 320,
+      "inputs": {
+        "mat_spirit_steel_ore": 2,
+        "reagent_quenching_oil_t1": 2,
+        "mat_soul_ember": 1
+      },
+      "outputs": {
+        "reagent_quenching_oil_t2": 1
+      }
+    },
+    {
       "id": "alc_tribulation_buffer_t1",
       "unlocksAtCityId": "city_ironpeak_bastion",
       "station": "alchemy",

@@ -21,11 +21,18 @@ import {
   type NormalizedForgeBlueprint,
   isRefineBlueprint,
   isRuneBlueprint,
+  listAlchemyRecipes as listVisibleAlchemyRecipesFromContent,
+  listAlchemyRecipesRaw as listAlchemyRecipesRawFromContent,
 } from '../content/index.js';
 import {
   getPrestigeRuntimeCatalog,
   getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime,
 } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
+import {
+  createLiveEconomyCatalog,
+  getVisibleForgeBlueprintById,
+  listVisibleForgeBlueprints,
+} from '../systems/economy/liveEconomyCatalog.js';
 
 interface ContentMaps {
   citiesById: Record<string, CityDef>;
@@ -71,6 +78,11 @@ interface ContentStoreState {
   getAllPrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
   getVisiblePrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
   getPrestigeRuntimeCatalog: () => ReturnType<typeof getPrestigeRuntimeCatalog>;
+  getLiveEconomyCatalog: () => ReturnType<typeof createLiveEconomyCatalog>;
+  getAlchemyRecipesRaw: () => ValidatedContent['alchemy_recipes'];
+  getVisibleAlchemyRecipes: () => ValidatedContent['alchemy_recipes'];
+  getForgeBlueprintsRaw: () => ValidatedContent['forge_blueprints'];
+  getVisibleForgeBlueprints: () => NormalizedForgeBlueprint[];
 }
 
 const emptyMaps: ContentMaps = {
@@ -332,6 +344,46 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     const { raw } = get();
     return getPrestigeRuntimeCatalog(raw);
   },
+
+  getLiveEconomyCatalog: () => {
+    const { raw } = get();
+    if (!raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return createLiveEconomyCatalog(raw);
+  },
+
+  getAlchemyRecipesRaw: () => {
+    const { raw } = get();
+    if (!raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return raw.alchemy_recipes ?? [];
+  },
+
+  getVisibleAlchemyRecipes: () => {
+    const { raw } = get();
+    if (!raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return listVisibleAlchemyRecipesFromContent();
+  },
+
+  getForgeBlueprintsRaw: () => {
+    const { raw } = get();
+    if (!raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return raw.forge_blueprints ?? [];
+  },
+
+  getVisibleForgeBlueprints: () => {
+    const { raw } = get();
+    if (!raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return listVisibleForgeBlueprints(raw).map((blueprint) => ({ ...blueprint }));
+  },
 }));
 
 export function getItemDef(itemId: string): ItemDef | null {
@@ -351,22 +403,44 @@ export function listTalismanRecipes() {
   return useContentStore.getState().raw?.talisman_recipes ?? [];
 }
 
-export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
+export function listAlchemyRecipesRaw() {
+  return listAlchemyRecipesRawFromContent();
+}
+
+export function listAlchemyRecipes() {
+  return listVisibleAlchemyRecipesFromContent();
+}
+
+export function listForgeBlueprintsRaw(): NormalizedForgeBlueprint[] {
   const blueprints = useContentStore.getState().raw?.forge_blueprints ?? [];
   return blueprints.map((blueprint) => normalizeForgeBlueprint(blueprint));
 }
 
+export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
+  const content = useContentStore.getState().raw;
+  if (!content) return [];
+  return listVisibleForgeBlueprints(content).map((blueprint) => ({ ...blueprint }));
+}
+
+export function getForgeBlueprintRaw(id: string): NormalizedForgeBlueprint | undefined {
+  return listForgeBlueprintsRaw().find((blueprint) => blueprint.id === id);
+}
+
 export function getForgeBlueprint(id: string): NormalizedForgeBlueprint | undefined {
-  return listForgeBlueprints().find((blueprint) => blueprint.id === id);
+  const content = useContentStore.getState().raw;
+  if (!content) return undefined;
+  const blueprint = getVisibleForgeBlueprintById(content, id);
+  return blueprint ? { ...blueprint } : undefined;
 }
 
 export function listForgeBlueprintsForCity(options: {
   cityId?: string | null;
   cityIndex?: number | null;
   tier?: number | null;
+  raw?: boolean;
 } = {}): NormalizedForgeBlueprint[] {
-  const { cityId, cityIndex, tier } = options;
-  const list = listForgeBlueprints();
+  const { cityId, cityIndex, tier, raw } = options;
+  const list = raw ? listForgeBlueprintsRaw() : listForgeBlueprints();
 
   if (cityId) {
     const filtered = list.filter((blueprint) => blueprint.cityId === cityId);

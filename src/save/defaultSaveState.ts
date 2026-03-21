@@ -34,6 +34,11 @@ import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 import { useContentStore } from '../stores/contentStore';
 import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore';
+import {
+  cloneActiveCultivationConsumable,
+  isCultivationConsumableFamily,
+  type ActiveCultivationConsumable,
+} from '../systems/consumables/cultivationConsumableTypes.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
 import { normalizeCitySaveState } from './cityStateNormalization';
@@ -309,6 +314,7 @@ export function buildDefaultSaveState(): SaveData {
       insight: heartLawState.insight ?? null,
       stability: heartLawState.stability,
       stabilityCap: heartLawState.stabilityCap,
+      activeConsumables: heartLawState.activeConsumables.map((entry) => cloneActiveCultivationConsumable(entry)),
     },
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
@@ -672,7 +678,84 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   if ('stabilityCap' in value && value.stabilityCap !== undefined && typeof value.stabilityCap !== 'number') {
     return false;
   }
+  if ('activeConsumables' in value && value.activeConsumables !== undefined && value.activeConsumables !== null) {
+    if (!Array.isArray(value.activeConsumables)) return false;
+    if (
+      !value.activeConsumables.every((entry) =>
+        isRecord(entry)
+        && typeof entry.itemId === 'string'
+        && isCultivationConsumableFamily(entry.family)
+        && typeof entry.activatedAt === 'number'
+        && typeof entry.expiresAt === 'number'
+        && isRecord(entry.modifiers)
+        && typeof entry.modifiers.qiRateMult === 'number'
+        && typeof entry.modifiers.stabilityGainMult === 'number'
+        && typeof entry.modifiers.comprehensionGainMult === 'number'
+        && typeof entry.modifiers.insightFrequencyMult === 'number'
+        && typeof entry.modifiers.breakthroughQiCostMult === 'number'
+        && typeof entry.modifiers.breakthroughStabilityBonus === 'number'
+        && (
+          entry.breakthroughChargesRemaining === undefined
+          || typeof entry.breakthroughChargesRemaining === 'number'
+        ),
+      )
+    ) {
+      return false;
+    }
+  }
   return true;
+}
+
+function sanitizeActiveCultivationConsumables(
+  raw: unknown,
+  fallback: ActiveCultivationConsumable[],
+): ActiveCultivationConsumable[] {
+  if (!Array.isArray(raw)) return fallback.map((entry) => cloneActiveCultivationConsumable(entry));
+  return raw
+    .filter(
+      (entry): entry is ActiveCultivationConsumable =>
+        isRecord(entry)
+        && typeof entry.itemId === 'string'
+        && isCultivationConsumableFamily(entry.family)
+        && typeof entry.activatedAt === 'number'
+        && typeof entry.expiresAt === 'number'
+        && isRecord(entry.modifiers),
+    )
+    .map((entry) => ({
+      itemId: entry.itemId,
+      family: entry.family,
+      activatedAt: entry.activatedAt,
+      expiresAt: entry.expiresAt,
+      modifiers: {
+        qiRateMult: Number(entry.modifiers.qiRateMult ?? 1) || 1,
+        stabilityGainMult: Number(entry.modifiers.stabilityGainMult ?? 1) || 1,
+        comprehensionGainMult: Number(entry.modifiers.comprehensionGainMult ?? 1) || 1,
+        insightFrequencyMult: Number(entry.modifiers.insightFrequencyMult ?? 1) || 1,
+        breakthroughQiCostMult: Number(entry.modifiers.breakthroughQiCostMult ?? 1) || 1,
+        breakthroughStabilityBonus: Number(entry.modifiers.breakthroughStabilityBonus ?? 0) || 0,
+      },
+      breakthroughChargesRemaining:
+        typeof entry.breakthroughChargesRemaining === 'number' ? entry.breakthroughChargesRemaining : undefined,
+    }));
+}
+
+function mergeHeartLawState(
+  raw: unknown,
+  defaults: NonNullable<SaveData['heartLawState']>,
+): NonNullable<SaveData['heartLawState']> {
+  if (!isValidHeartLawState(raw)) {
+    if (raw !== undefined) {
+      warnInvalidSlice('heartLawState');
+    }
+    return defaults;
+  }
+
+  const record = raw as NonNullable<SaveData['heartLawState']>;
+  return {
+    ...defaults,
+    ...record,
+    activeConsumables: sanitizeActiveCultivationConsumables(record.activeConsumables, defaults.activeConsumables ?? []),
+  };
 }
 
 function isValidMedicinePouchSlot(value: unknown): value is import('../types').MedicinePouchSlotState {
@@ -1152,12 +1235,21 @@ export function mergeWithDefaults(partialSave: unknown): SaveData {
       isValidExpeditionState,
       'expeditionState',
     ),
-    heartLawState: mergeSlice(
-      record.heartLawState,
-      defaults.heartLawState,
-      isValidHeartLawState,
-      'heartLawState',
-    ),
+    heartLawState: mergeHeartLawState(record.heartLawState, defaults.heartLawState ?? {
+      selectedHeartLawId: null,
+      chapter: 1,
+      comprehension: 0,
+      unlockedHeartLawIds: [],
+      breathMode: 'balanced',
+      studyEnabled: false,
+      studyTechniqueId: null,
+      lastInsightAt: null,
+      nextInsightAt: null,
+      insight: null,
+      stability: 0,
+      stabilityCap: 100,
+      activeConsumables: [],
+    }),
     manualPavilionState: mergeSlice(
       record.manualPavilionState,
       defaults.manualPavilionState,

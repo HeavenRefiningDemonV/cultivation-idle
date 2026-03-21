@@ -4,7 +4,6 @@ import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
 import { resolveModuleRef } from '../screens/world/worldUtils';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel';
 import { ApothecaryPanel } from '../screens/ApothecaryPanel';
-import { AlchemyPanel } from '../screens/AlchemyPanel';
 import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
 import { TalismanPanel } from '../screens/TalismanPanel';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel';
@@ -30,7 +29,6 @@ export interface WorldBuildingModalProps {
 export function WorldBuildingModal({
   open: controlledOpen,
   title: controlledTitle,
-  subtitle: controlledSubtitle,
   onClose: controlledOnClose,
   children,
   useStore = true,
@@ -49,12 +47,10 @@ export function WorldBuildingModal({
   const title = isStoreMode
     ? `${city?.name ?? 'City'} — ${buildingKey ?? ''}`
     : controlledTitle || 'World Building';
-  const subtitle = isStoreMode ? (storeCityId && buildingKey ? `${storeCityId} • ${buildingKey}` : undefined) : controlledSubtitle;
 
   const backgroundVariant = useMemo(() => {
     switch (buildingKey) {
       case 'alchemy':
-        return 'alchemy';
       case 'apothecary':
         return 'apothecary';
       case 'bounties':
@@ -83,10 +79,8 @@ export function WorldBuildingModal({
         content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
         break;
       case 'apothecary':
-        content = <ApothecaryPanel shopId={moduleRefId ?? null} />;
-        break;
       case 'alchemy':
-        content = <AlchemyPanel cityId={storeCityId} />;
+        content = <ApothecaryPanel shopId={resolveModuleRef(city ?? null, 'apothecary') ?? moduleRefId ?? null} />;
         break;
       case 'forge':
         content = <ForgeWorkshop cityId={storeCityId} />;

@@ -4,18 +4,39 @@ import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/craf
 export type PathId = 'heaven' | 'earth' | 'martial';
 export type MajorRealmId = string;
 
+type CityIndexedValue<T> = Record<number, T> | T[];
+
 export type OutskirtsDropsConfig = {
-  mobGoldByCityIndex?: Record<number, [number, number]>;
+  mobGoldByCityIndex?: CityIndexedValue<[number, number]>;
   mobCommonMatChance?: number;
   mobDoubleMatChance?: number;
   mobRareMatChance?: number;
+  mobManualScrapsChanceByCityIndex?: CityIndexedValue<number>;
+  mobManualScrapsRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  mobGearDropChanceByCityIndex?: CityIndexedValue<number>;
 
-  bossGoldByCityIndex?: Record<number, [number, number]>;
-  bossMatCountRangeByCityIndex?: Record<number, [number, number]>;
-  bossRareMatChanceByCityIndex?: Record<number, number>;
+  bossGoldByCityIndex?: CityIndexedValue<[number, number]>;
+  bossMatCountRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  bossRareMatChanceByCityIndex?: CityIndexedValue<number>;
 
-  bossSpiritStoneChanceByCityIndex?: Record<number, number>;
-  bossSpiritStoneRangeByCityIndex?: Record<number, [number, number]>;
+  bossSpiritStoneChanceByCityIndex?: CityIndexedValue<number>;
+  bossSpiritStoneRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  bossTechniqueFragmentsRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  bossManualDropChanceByCityIndex?: CityIndexedValue<number>;
+  bossManualRarityWeights?: Record<string, number>;
+  bossManualLegendaryChanceOverrideByCityIndex?: CityIndexedValue<number>;
+  bossManualPity?: {
+    killsNoManualGuarantee?: number;
+    killsNoRarePlusGuarantee?: number;
+  };
+};
+
+export type RuinsDropsConfig = {
+  finalChestTechniqueFragmentsRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  finalChestRuneDustRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  finalChestArtifactShardsRangeByCityIndex?: CityIndexedValue<[number, number]>;
+  manualDropChance?: number;
+  manualPityRunGuarantee?: number;
 };
 
 export interface TtmuBudgets {
@@ -61,7 +82,7 @@ export interface EconomyConfig {
 
   drops?: {
     outskirts?: OutskirtsDropsConfig;
-    // future modules: trials?: ..., ruins?: ...
+    ruins?: RuinsDropsConfig;
   };
 }
 

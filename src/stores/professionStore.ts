@@ -2,9 +2,10 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { RewardService } from '../services/rewards/index.js';
 import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
-import { getForgeBlueprint } from './contentStore';
+import { getForgeBlueprint, getForgeBlueprintRaw } from './contentStore';
 import { useInventoryStore, type CurrencyKey } from './inventoryStore';
 import { useContentStore } from './contentStore';
+import { getAlchemyRecipe, getAlchemyRecipeRaw } from '../content/alchemy';
 import { useRecipeMasteryStore } from './recipeMasteryStore';
 import { buildAlchemyOutputs, getAlchemyTimeMultiplier, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
 import { applyRefineService, applyTemperService } from '../services/forgeService';
@@ -213,7 +214,7 @@ export const useProfessionStore = create<ProfessionState>()(
       const amount = Math.min(parsedQty, MAX_ALCHEMY_QTY);
 
       const contentStore = useContentStore.getState();
-      const recipe = contentStore.raw?.alchemy_recipes?.find((entry) => entry.id === recipeId);
+      const recipe = getAlchemyRecipe(recipeId);
       if (!recipe) {
         return { ok: false, error: 'Recipe not found' };
       }
@@ -689,7 +690,7 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Job not ready' };
       }
 
-      const blueprint = getForgeBlueprint(job.blueprintId);
+      const blueprint = getForgeBlueprintRaw(job.blueprintId) ?? getForgeBlueprint(job.blueprintId);
       if (!blueprint) {
         return { ok: false, error: 'Blueprint not found' };
       }
@@ -862,7 +863,7 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Job not ready' };
       }
 
-      const recipe = useContentStore.getState().raw?.alchemy_recipes?.find((entry) => entry.id === job.recipeId);
+      const recipe = getAlchemyRecipeRaw(job.recipeId);
       if (!recipe) {
         return { ok: false, error: 'Recipe not found' };
       }

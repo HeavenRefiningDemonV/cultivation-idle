@@ -50,6 +50,7 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
     'v2_0_0_plan_offline_unification',
+    'v2_0_0_plan_deferred_crafting_output_cleanup',
   ]);
   assert.deepEqual(applyOnce.report.reportOnlySteps, ['m0_report_source_version']);
   assert.deepEqual(applyOnce.report.plannedTransformSteps, ['v2_0_0_plan_semester_slice_clamp']);
@@ -69,6 +70,7 @@ test('reportOnly and plannedTransform steps never mutate; ordering and idempoten
     'v2_0_0_normalize_city_progression_state',
     'v2_0_0_plan_partial_reset_residue_cleanup',
     'v2_0_0_plan_offline_unification',
+    'v2_0_0_plan_deferred_crafting_output_cleanup',
   ]);
   assert.deepEqual(applyTwice.report.plannedTransformSteps, ['v2_0_0_plan_semester_slice_clamp']);
   assert.deepEqual(applyTwice.migrated, applyOnce.migrated);

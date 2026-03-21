@@ -12,7 +12,8 @@ export type DriftCategory =
   | 'MIGRATION_ALIAS_PRESENT'
   | 'CONTENT_CAP_BREACH'
   | 'WORLD_CITY_SCHEMA_DRIFT'
-  | 'WORLD_CITY_PACKAGE_COMPLETENESS_DRIFT';
+  | 'WORLD_CITY_PACKAGE_COMPLETENESS_DRIFT'
+  | 'ACTIVITY_REWARD_PARITY_DRIFT';
 
 export type DriftSeverity = 'info' | 'warning' | 'error';
 

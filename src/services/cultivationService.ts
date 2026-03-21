@@ -1,12 +1,15 @@
 import { COMPREHENSION_PER_MINUTE_BASE, INSIGHT_DURATION_MS, INSIGHT_INTERVAL_RANGE_MS, STUDY_MASTERY_PER_MINUTE_BASE, getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
 import { useActivityStore } from '../stores/activityStore';
 import { useCultivationStore } from '../stores/cultivationStore';
+import { useGameStore } from '../stores/gameStore.js';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
-import type { InsightChoiceId } from '../types';
+import type { InsightChoiceId } from '../types/index.js';
+import { getCultivationConsumableWindowBreakpoints } from '../systems/consumables/cultivationConsumableEffects.js';
 
 function randomInsightTime(now: number) {
+  const modifiers = useCultivationStore.getState().getCultivationConsumableModifiers(now);
   const span = INSIGHT_INTERVAL_RANGE_MS.max - INSIGHT_INTERVAL_RANGE_MS.min;
-  return now + Math.random() * span + INSIGHT_INTERVAL_RANGE_MS.min;
+  return now + (Math.random() * span + INSIGHT_INTERVAL_RANGE_MS.min) / Math.max(0.0001, modifiers.insightFrequencyMult);
 }
 
 function ensureInsightScheduled(now: number) {
@@ -52,10 +55,20 @@ function applyContinuousGains(deltaMs: number, ignoreActivityGate = false) {
   if (!isCultivating && !ignoreActivityGate) return;
 
   const breath = getBreathModeMultipliers(heart.breathMode);
+  const modifiers = heart.getCultivationConsumableModifiers();
   const deltaMinutes = deltaMs / 60000;
-  const comprehensionGain = COMPREHENSION_PER_MINUTE_BASE * deltaMinutes * breath.comprehensionMult;
+  const comprehensionGain =
+    COMPREHENSION_PER_MINUTE_BASE
+    * deltaMinutes
+    * breath.comprehensionMult
+    * modifiers.comprehensionGainMult;
   if (comprehensionGain > 0) {
     useCultivationStore.getState().addComprehension(comprehensionGain, 'meditation');
+  }
+
+  const stabilityGain = deltaMinutes * modifiers.stabilityGainMult;
+  if (stabilityGain > 0) {
+    useCultivationStore.getState().addStability(stabilityGain);
   }
 
   if (heart.studyEnabled && heart.studyTechniqueId) {
@@ -71,7 +84,9 @@ function processInsights(now: number, endAt: number) {
   let cursor = now;
   while (cursor < endAt) {
     const store = useCultivationStore.getState();
-    const nextTrigger = store.insight?.expiresAt ?? store.nextInsightAt ?? endAt;
+    const expirations = getCultivationConsumableWindowBreakpoints(store.activeConsumables, cursor, endAt);
+    const nextBuffExpiry = expirations.find((entry) => entry > cursor && entry < endAt) ?? endAt;
+    const nextTrigger = Math.min(store.insight?.expiresAt ?? endAt, store.nextInsightAt ?? endAt, nextBuffExpiry);
     const stepEnd = Math.min(endAt, nextTrigger ?? endAt);
     const delta = stepEnd - cursor;
     if (delta > 0) {
@@ -96,6 +111,10 @@ function processInsights(now: number, endAt: number) {
 export const cultivationService = {
   tick(deltaMs: number) {
     const now = Date.now();
+    const cleared = useCultivationStore.getState().clearExpiredCultivationConsumables(now);
+    if (cleared) {
+      useGameStore.getState().calculateQiPerSecond();
+    }
     applyContinuousGains(deltaMs);
     autoResolveInsight(now);
     const store = useCultivationStore.getState();
@@ -106,6 +125,10 @@ export const cultivationService = {
     }
   },
   applyOfflineProgress(deltaMs: number, startAt: number, endAt: number) {
+    const cleared = useCultivationStore.getState().clearExpiredCultivationConsumables(endAt);
+    if (cleared) {
+      useGameStore.getState().calculateQiPerSecond();
+    }
     processInsights(startAt, endAt);
     // Ensure next insight is scheduled after offline catch-up
     const now = Date.now();

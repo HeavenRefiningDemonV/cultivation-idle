@@ -82,6 +82,7 @@ test('semantic validator reports drift surfaced by legacy scenarios and migratio
   assert.equal(categories.has('CONTENT_CAP_BREACH'), true);
   assert.equal(categories.has('CITY_UNLOCK_UNBOUND'), true);
   assert.equal(categories.has('HIDDEN_PRESTIGE_RUNTIME_CONSUMER'), true);
+  assert.equal(categories.has('ACTIVITY_REWARD_PARITY_DRIFT'), false);
 
   const contentCapIssues = issues.filter((entry) => entry.category === 'CONTENT_CAP_BREACH');
   assert.equal(contentCapIssues.length > 0, true);
@@ -113,4 +114,35 @@ test('fixture/save-shape truth keeps packet 1.3 alias cleanup in migration input
   const aliasIssues = issues.filter((entry) => entry.category === 'MIGRATION_ALIAS_PRESENT');
   assert.equal(aliasIssues.length > 0, true);
   assert.equal(aliasIssues.every((entry) => entry.suggestedOwnerPacket === '1.3'), true);
+});
+
+
+test('semantic validator reports activity reward parity drift when a city loses the Packet 3.2 role split', async () => {
+  const rawContent = await loadRawContent();
+  const issues = validateProgressionSemantics({
+    rawContent: {
+      ...rawContent,
+      economy: {
+        ...rawContent.economy,
+        drops: {
+          ...rawContent.economy.drops,
+          outskirts: {
+            ...rawContent.economy.drops?.outskirts,
+            bossGoldByCityIndex: [
+              [80, 120],
+              ...((Array.isArray(rawContent.economy.drops?.outskirts?.bossGoldByCityIndex)
+                ? rawContent.economy.drops?.outskirts?.bossGoldByCityIndex.slice(1)
+                : Object.values(rawContent.economy.drops?.outskirts?.bossGoldByCityIndex ?? {}).slice(1)) ?? []),
+            ],
+          },
+        },
+      },
+    },
+    scenarios: [],
+    migrationFixtures: [],
+  });
+
+  const parityIssue = issues.find((entry) => entry.category === 'ACTIVITY_REWARD_PARITY_DRIFT');
+  assert.ok(parityIssue);
+  assert.equal(parityIssue.suggestedOwnerPacket, '3.2');
 });

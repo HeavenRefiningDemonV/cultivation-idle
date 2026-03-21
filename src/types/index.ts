@@ -14,6 +14,25 @@ export type FocusMode = 'balanced' | 'body' | 'spirit';
 export type BreathMode = 'balanced' | 'safe' | 'fast';
 export type ComprehensionSource = 'meditation' | 'outskirtsBoss' | 'trialClear' | 'ruinsClear';
 export type InsightChoiceId = 'contemplate' | 'stabilize' | 'drawQi';
+export type CultivationConsumableFamily = 'circulation' | 'warmth' | 'doctrine' | 'breakthrough';
+
+export interface CultivationConsumableModifiers {
+  qiRateMult: number;
+  stabilityGainMult: number;
+  comprehensionGainMult: number;
+  insightFrequencyMult: number;
+  breakthroughQiCostMult: number;
+  breakthroughStabilityBonus: number;
+}
+
+export interface ActiveCultivationConsumable {
+  itemId: string;
+  family: CultivationConsumableFamily;
+  activatedAt: number;
+  expiresAt: number;
+  modifiers: CultivationConsumableModifiers;
+  breakthroughChargesRemaining?: number;
+}
 
 export type MedicinePouchSlotKey = 'healing' | 'utility' | 'specialty';
 export type MedicinePouchTrigger =
@@ -213,6 +232,7 @@ export interface GameState {
   selectPerk: (perkId: string) => boolean;
   breakthrough: () => boolean;
   calculateQiPerSecond: () => void;
+  getBaseQiPerSecond: () => string;
   calculatePlayerStats: () => void;
   addBuff: (buff: { id: string; stat: BuffStat; value: number; duration: number }) => void;
   removeExpiredBuffs: () => void;
@@ -307,6 +327,7 @@ export interface SaveHeartLawState {
   insight?: InsightMomentState | null;
   stability?: number;
   stabilityCap?: number;
+  activeConsumables?: ActiveCultivationConsumable[];
 }
 
 export interface SaveActivityState {

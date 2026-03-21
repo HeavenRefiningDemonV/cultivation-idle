@@ -45,6 +45,10 @@ import {
   formatLiveCityPackageCoverageIssue,
   inspectSemesterCityPackageCoverage,
 } from '../systems/world/cityPackageRegistry.js';
+import { createLiveEconomyCatalog, listVisibleAlchemyRecipes, listVisibleForgeBlueprints } from '../systems/economy/liveEconomyCatalog.js';
+import { buildLiveEconomySourceSinkAudit } from '../systems/economy/sourceSinkAudit.js';
+import { inspectActivityRewardRouting } from '../systems/economy/activityRewardAudit.js';
+import { inspectRewardParity } from '../systems/economy/rewardParityAudit.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1194,6 +1198,78 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
         );
       });
     });
+
+  const economySnapshot = {
+    cities,
+    items,
+    alchemy_recipes: alchemyRecipes,
+    forge_blueprints: forgeBlueprints,
+    apothecary_shops: apothecaryShops,
+    outskirts,
+    ruins,
+    expeditions,
+    runes,
+  };
+  const liveEconomyCatalog = createLiveEconomyCatalog(economySnapshot);
+  const liveAlchemyRecipes = listVisibleAlchemyRecipes(economySnapshot);
+  const liveForgeBlueprints = listVisibleForgeBlueprints(economySnapshot);
+  const liveEconomyAudit = buildLiveEconomySourceSinkAudit(economySnapshot);
+
+  liveAlchemyRecipes.forEach((recipe) => {
+    Object.keys(recipe.outputs ?? {}).forEach((itemId) => {
+      const status = liveEconomyCatalog.itemStatuses[itemId] ?? 'unknown';
+      if (status !== 'visible_live' && status !== 'visible_live_blocked') {
+        addErr(`live alchemy recipe ${recipe.id} outputs non-live item ${itemId} (${status})`);
+      }
+    });
+  });
+
+  liveForgeBlueprints.forEach((blueprint) => {
+    const outputItemId = blueprint.output?.itemId;
+    if (!outputItemId) return;
+    const status = liveEconomyCatalog.itemStatuses[outputItemId] ?? 'unknown';
+    if (status !== 'visible_live' && status !== 'visible_live_blocked') {
+      addErr(`live forge blueprint ${blueprint.id} outputs non-live item ${outputItemId} (${status})`);
+    }
+  });
+
+  const visibleLegacyRuneBlueprints = liveForgeBlueprints.filter((blueprint) => blueprint.id.startsWith('rune_inscription_'));
+  if (visibleLegacyRuneBlueprints.length > 0) {
+    addErr(`duplicate visible rune family remains: ${visibleLegacyRuneBlueprints.map((blueprint) => blueprint.id).join(', ')}`);
+  }
+
+  liveEconomyAudit.items
+    .filter((entry) => entry.role === 'craft_material' || entry.role === 'craft_reagent')
+    .forEach((entry) => {
+      if (entry.liveSources.length > 0 && entry.liveSinks.length === 0) {
+        addErr(`visible live material/reagent ${entry.itemId} has no live sink`);
+      }
+    });
+
+  liveEconomyAudit.reagentPathIssues.forEach((issue) => {
+    addErr(`visible live reagent path unresolved: ${issue.blueprintId} requires ${issue.missingInputItemId}`);
+  });
+
+  inspectActivityRewardRouting({ economy: raw.economy, outskirts, ruins }).forEach((report) => {
+    if (report.outskirtsCommonLeakage.length > 0) {
+      addErr(`outskirts role drift for ${report.cityId}: common pool leaked targeted/anchor items ${report.outskirtsCommonLeakage.join(', ')}`);
+    }
+    if (report.outskirtsRareAnchorLeakage.length > 0) {
+      addErr(`outskirts role drift for ${report.cityId}: rare pool duplicates ruin anchor ${report.outskirtsRareAnchorLeakage.join(', ')}`);
+    }
+    if (!report.ruinsAnchorItemId || !report.ruinsGuaranteedAnchors.includes(report.ruinsAnchorItemId)) {
+      addErr(`ruins role drift for ${report.cityId}: deterministic anchor missing or mismatched (expected ${report.ruinsAnchorItemId ?? 'none'})`);
+    }
+    if (report.ruinsLeadMaterialsPresent.length < 2) {
+      addErr(`ruins role drift for ${report.cityId}: weak targeted material identity (${report.ruinsLeadMaterialsPresent.join(', ') || 'none'})`);
+    }
+  });
+
+  inspectRewardParity({ economy: raw.economy, outskirts, ruins }).forEach((report) => {
+    report.roleBoundaryDrift.forEach((detail) => {
+      addErr(`activity reward parity drift for ${report.cityId}: ${detail}`);
+    });
+  });
 
   // Additional references for runes and heart laws to ensure maps used
   Object.keys(lawMap);

@@ -9,11 +9,15 @@ import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
 import { GameEvents } from '../../services/events/GameEvents';
-import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
+import { getConsumableSpec } from '../../systems/consumables/consumableCatalog.js';
+import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
+import { isLiveCultivationConsumable } from '../../systems/consumables/liveConsumableRoster.js';
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
+import { AlchemyPanel } from './AlchemyPanel';
 import { GameIcon } from '../../ui/icons';
+import { useUIStore } from '../../stores/uiStore';
 import './ApothecaryPanel.scss';
 
 type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
@@ -85,6 +89,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const getRemainingToday = useShopStore((state) => state.getRemainingToday);
   const canBuy = useShopStore((state) => state.canBuy);
   const buy = useShopStore((state) => state.buy);
+  const addNotification = useUIStore((state) => state.addNotification);
 
   const [activeShelf, setActiveShelf] = useState<ShelfKey>('combat');
   const [statusByStock, setStatusByStock] = useState<Record<string, StatusMessage>>({});
@@ -128,6 +133,8 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const cultivationPick = pickDeterministic(cultivationStock, 2, seed);
     return [...combatPick.picks, ...cultivationPick.picks];
   }, [apothecary, dayKey, combatStock, cultivationStock]);
+
+  const brewCityId = apothecary?.cityId ?? null;
 
   const renderPlaceholder = (title: string, body: string) => (
     <div className={'worldScreenPlaceholder'}>
@@ -182,6 +189,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     const remaining = getRemainingToday(apothecary.id, stockEntry.id, stockEntry.dailyLimit);
     const limit = stockEntry.dailyLimit;
     const owned = getQty(stockEntry.itemId);
+    const canDrinkNow = itemDef?.usage === 'cultivate_only' && owned > 0 && isLiveCultivationConsumable(stockEntry.itemId);
 
     const maxUnlimitedQty = Math.min(99, itemDef?.stackSize ?? 99);
     const maxBuyQty = limit == null ? maxUnlimitedQty : remaining ?? 0;
@@ -303,6 +311,29 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
           >
             Buy Max
           </button>
+          {canDrinkNow && (
+            <button
+              className={'apothecaryActionButton apothecaryActionButton--active'}
+              onClick={() => {
+                const result = consumeConsumable(stockEntry.itemId);
+                if (!result.ok) {
+                  addNotification('error', `Unable to drink ${itemName}.`);
+                  setStatusByStock((prev) => ({
+                    ...prev,
+                    [stockEntry.id]: { type: 'error', message: `Unable to drink ${itemName}.` },
+                  }));
+                  return;
+                }
+                addNotification('success', result.message, 3000);
+                setStatusByStock((prev) => ({
+                  ...prev,
+                  [stockEntry.id]: { type: 'success', message: result.message },
+                }));
+              }}
+            >
+              Drink
+            </button>
+          )}
         </div>
 
         {renderStatus(status)}
@@ -530,6 +561,18 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
             </div>
 
             {renderShelf(activeShelf)}
+          </PaperCard>
+
+          <PaperCard className={'apothecaryBrewFrame'} variant="tray">
+            <div className={'apothecaryBrewHeader'}>
+              <div>
+                <div className={'apothecaryBrewTitle'}>Brew Bench</div>
+                <div className={'apothecaryBrewSubtitle'}>
+                  The apothecary now hosts the city's live alchemy queue, sessions, and claims.
+                </div>
+              </div>
+            </div>
+            <AlchemyPanel cityId={brewCityId} embedded />
           </PaperCard>
         </div>
         <div className={'apothecaryAmbientZone'} aria-hidden="true" />

@@ -1,6 +1,9 @@
 import type { ForgeHandsOnBonus, ForgeStepDef, PromptDef } from '../systems/crafting/craftingTypes.js';
 import type { ForgeBlueprintsConfig } from './types.js';
 
+import { createLiveEconomyCatalog } from '../systems/economy/liveEconomyCatalog.js';
+import type { LiveEconomyContentSnapshot } from '../systems/economy/liveEconomyTypes.js';
+
 export type ForgeBlueprintRaw = ForgeBlueprintsConfig['blueprints'][number];
 
 export type NormalizedForgeBlueprint = {
@@ -190,4 +193,24 @@ export function isRefineBlueprint(blueprint: NormalizedForgeBlueprint): boolean 
 
 export function isTemperBlueprint(blueprint: NormalizedForgeBlueprint): boolean {
   return blueprint.type === 'service' && blueprint.service === 'temper';
+}
+
+
+export function listNormalizedForgeBlueprints(rawBlueprints: readonly ForgeBlueprintRaw[]): NormalizedForgeBlueprint[] {
+  return rawBlueprints.map((blueprint) => normalizeForgeBlueprint(blueprint));
+}
+
+export function listVisibleNormalizedForgeBlueprints(content: LiveEconomyContentSnapshot): NormalizedForgeBlueprint[] {
+  const catalog = createLiveEconomyCatalog(content);
+  return content.forge_blueprints
+    .filter((blueprint) => {
+      const status = catalog.forgeBlueprintStatuses[blueprint.id];
+      return status === 'visible_live' || status === 'visible_live_blocked';
+    })
+    .map((blueprint) => normalizeForgeBlueprint(blueprint));
+}
+
+export function getNormalizedForgeBlueprintById(rawBlueprints: readonly ForgeBlueprintRaw[], blueprintId: string): NormalizedForgeBlueprint | undefined {
+  const rawBlueprint = rawBlueprints.find((blueprint) => String(blueprint.id) === blueprintId);
+  return rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
 }

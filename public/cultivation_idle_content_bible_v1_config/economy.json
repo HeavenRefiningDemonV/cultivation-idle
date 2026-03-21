@@ -490,268 +490,6 @@
           }
         ]
       }
-    },
-  "drops": {
-    "outskirts": {
-        "mobGoldByCityIndex": [
-          [
-            6,
-            12
-          ],
-          [
-            25,
-            45
-          ],
-          [
-            80,
-            140
-          ],
-          [
-            220,
-            380
-          ],
-          [
-            600,
-            900
-          ]
-        ],
-        "mobCommonMatChance": 0.8,
-        "mobDoubleMatChance": 0.15,
-        "mobRareMatChance": 0.05,
-        "mobManualScrapsChanceByCityIndex": [
-          0.03,
-          0.04,
-          0.05,
-          0.06,
-          0.07
-        ],
-        "mobManualScrapsRangeByCityIndex": [
-          [
-            1,
-            2
-          ],
-          [
-            1,
-            3
-          ],
-          [
-            2,
-            4
-          ],
-          [
-            3,
-            6
-          ],
-          [
-            4,
-            8
-          ]
-        ],
-        "mobGearDropChanceByCityIndex": [
-          0.008,
-          0.012,
-          0.016,
-          0.02,
-          0.025
-        ],
-        "bossGoldByCityIndex": [
-          [
-            250,
-            400
-          ],
-          [
-            1200,
-            2000
-          ],
-          [
-            4000,
-            7000
-          ],
-          [
-            12000,
-            20000
-          ],
-          [
-            35000,
-            60000
-          ]
-        ],
-        "bossMatCountRangeByCityIndex": [
-          [
-            4,
-            7
-          ],
-          [
-            6,
-            10
-          ],
-          [
-            8,
-            14
-          ],
-          [
-            10,
-            18
-          ],
-          [
-            12,
-            22
-          ]
-        ],
-        "bossRareMatChanceByCityIndex": [
-          0.1,
-          0.15,
-          0.2,
-          0.25,
-          0.3
-        ],
-        "bossSpiritStoneChanceByCityIndex": [
-          0.1,
-          0.15,
-          0.2,
-          0.25,
-          0.3
-        ],
-        "bossSpiritStoneRangeByCityIndex": [
-          [
-            1,
-            1
-          ],
-          [
-            1,
-            2
-          ],
-          [
-            2,
-            4
-          ],
-          [
-            4,
-            7
-          ],
-          [
-            7,
-            12
-          ]
-        ],
-        "bossTechniqueFragmentsRangeByCityIndex": [
-          [
-            5,
-            12
-          ],
-          [
-            12,
-            25
-          ],
-          [
-            25,
-            45
-          ],
-          [
-            45,
-            75
-          ],
-          [
-            75,
-            120
-          ]
-        ],
-        "bossManualDropChanceByCityIndex": [
-          0.08,
-          0.1,
-          0.12,
-          0.14,
-          0.16
-        ],
-        "bossManualRarityWeights": {
-          "common": 70,
-          "uncommon": 25,
-          "rare": 4,
-          "epic": 1,
-          "legendary": 0
-        },
-        "bossManualLegendaryChanceOverrideByCityIndex": [
-          0.0,
-          0.0,
-          0.005,
-          0.01,
-          0.02
-        ],
-        "bossManualPity": {
-          "killsNoManualGuarantee": 20,
-          "killsNoRarePlusGuarantee": 80
-        }
-      },
-      "ruins": {
-        "finalChestTechniqueFragmentsRangeByCityIndex": [
-          [
-            20,
-            35
-          ],
-          [
-            35,
-            55
-          ],
-          [
-            55,
-            85
-          ],
-          [
-            85,
-            130
-          ],
-          [
-            130,
-            190
-          ]
-        ],
-        "finalChestRuneDustRangeByCityIndex": [
-          [
-            5,
-            10
-          ],
-          [
-            10,
-            20
-          ],
-          [
-            20,
-            35
-          ],
-          [
-            35,
-            60
-          ],
-          [
-            60,
-            90
-          ]
-        ],
-        "finalChestArtifactShardsRangeByCityIndex": [
-          [
-            0,
-            0
-          ],
-          [
-            0,
-            0
-          ],
-          [
-            2,
-            5
-          ],
-          [
-            5,
-            10
-          ],
-          [
-            10,
-            18
-          ]
-        ],
-        "manualDropChance": 0.02,
-        "manualPityRunGuarantee": 50
-      }
     }
   },
   "tuning": {
@@ -815,6 +553,268 @@
       },
       "faucets": [],
       "sinks": []
+    }
+  },
+  "drops": {
+    "outskirts": {
+      "mobGoldByCityIndex": [
+        [
+          6,
+          12
+        ],
+        [
+          25,
+          45
+        ],
+        [
+          80,
+          140
+        ],
+        [
+          220,
+          380
+        ],
+        [
+          600,
+          900
+        ]
+      ],
+      "mobCommonMatChance": 0.8,
+      "mobDoubleMatChance": 0.15,
+      "mobRareMatChance": 0.025,
+      "mobManualScrapsChanceByCityIndex": [
+        0.03,
+        0.04,
+        0.05,
+        0.06,
+        0.07
+      ],
+      "mobManualScrapsRangeByCityIndex": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          8
+        ]
+      ],
+      "mobGearDropChanceByCityIndex": [
+        0.008,
+        0.012,
+        0.016,
+        0.02,
+        0.025
+      ],
+      "bossGoldByCityIndex": [
+        [
+          250,
+          400
+        ],
+        [
+          1200,
+          2000
+        ],
+        [
+          4000,
+          7000
+        ],
+        [
+          12000,
+          20000
+        ],
+        [
+          35000,
+          60000
+        ]
+      ],
+      "bossMatCountRangeByCityIndex": [
+        [
+          4,
+          7
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          8,
+          14
+        ],
+        [
+          10,
+          18
+        ],
+        [
+          12,
+          22
+        ]
+      ],
+      "bossRareMatChanceByCityIndex": [
+        0.06,
+        0.08,
+        0.1,
+        0.12,
+        0.15
+      ],
+      "bossSpiritStoneChanceByCityIndex": [
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3
+      ],
+      "bossSpiritStoneRangeByCityIndex": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          7,
+          12
+        ]
+      ],
+      "bossTechniqueFragmentsRangeByCityIndex": [
+        [
+          5,
+          12
+        ],
+        [
+          12,
+          25
+        ],
+        [
+          25,
+          45
+        ],
+        [
+          45,
+          75
+        ],
+        [
+          75,
+          120
+        ]
+      ],
+      "bossManualDropChanceByCityIndex": [
+        0.08,
+        0.1,
+        0.12,
+        0.14,
+        0.16
+      ],
+      "bossManualRarityWeights": {
+        "common": 70,
+        "uncommon": 25,
+        "rare": 4,
+        "epic": 1,
+        "legendary": 0
+      },
+      "bossManualLegendaryChanceOverrideByCityIndex": [
+        0.0,
+        0.0,
+        0.005,
+        0.01,
+        0.02
+      ],
+      "bossManualPity": {
+        "killsNoManualGuarantee": 20,
+        "killsNoRarePlusGuarantee": 80
+      }
+    },
+    "ruins": {
+      "finalChestTechniqueFragmentsRangeByCityIndex": [
+        [
+          20,
+          35
+        ],
+        [
+          35,
+          55
+        ],
+        [
+          55,
+          85
+        ],
+        [
+          85,
+          130
+        ],
+        [
+          130,
+          190
+        ]
+      ],
+      "finalChestRuneDustRangeByCityIndex": [
+        [
+          5,
+          10
+        ],
+        [
+          10,
+          20
+        ],
+        [
+          20,
+          35
+        ],
+        [
+          35,
+          60
+        ],
+        [
+          60,
+          90
+        ]
+      ],
+      "finalChestArtifactShardsRangeByCityIndex": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          5,
+          10
+        ],
+        [
+          10,
+          18
+        ]
+      ],
+      "manualDropChance": 0.02,
+      "manualPityRunGuarantee": 50
     }
   }
 }
