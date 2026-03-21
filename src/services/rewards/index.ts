@@ -5,7 +5,7 @@ export type {
   RewardTechniqueFragmentBundle,
   GrantRewardsResult,
   LootContext,
-} from './types';
-export { RewardService } from './RewardService';
-export { applyLootBonuses } from './applyLootBonuses';
-export { buildRewardSummary } from './rewardSummary';
+} from './types.js';
+export { RewardService } from './RewardService.js';
+export { applyLootBonuses } from './applyLootBonuses.js';
+export { buildRewardSummary } from './rewardSummary.js';

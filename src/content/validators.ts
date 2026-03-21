@@ -47,6 +47,7 @@ import {
 } from '../systems/world/cityPackageRegistry.js';
 import { createLiveEconomyCatalog, listVisibleAlchemyRecipes, listVisibleForgeBlueprints } from '../systems/economy/liveEconomyCatalog.js';
 import { buildLiveEconomySourceSinkAudit } from '../systems/economy/sourceSinkAudit.js';
+import { inspectActivityRewardRouting } from '../systems/economy/activityRewardAudit.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1246,6 +1247,21 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
 
   liveEconomyAudit.reagentPathIssues.forEach((issue) => {
     addErr(`visible live reagent path unresolved: ${issue.blueprintId} requires ${issue.missingInputItemId}`);
+  });
+
+  inspectActivityRewardRouting({ economy: raw.economy, outskirts, ruins }).forEach((report) => {
+    if (report.outskirtsCommonLeakage.length > 0) {
+      addErr(`outskirts role drift for ${report.cityId}: common pool leaked targeted/anchor items ${report.outskirtsCommonLeakage.join(', ')}`);
+    }
+    if (report.outskirtsRareAnchorLeakage.length > 0) {
+      addErr(`outskirts role drift for ${report.cityId}: rare pool duplicates ruin anchor ${report.outskirtsRareAnchorLeakage.join(', ')}`);
+    }
+    if (!report.ruinsAnchorItemId || !report.ruinsGuaranteedAnchors.includes(report.ruinsAnchorItemId)) {
+      addErr(`ruins role drift for ${report.cityId}: deterministic anchor missing or mismatched (expected ${report.ruinsAnchorItemId ?? 'none'})`);
+    }
+    if (report.ruinsLeadMaterialsPresent.length < 2) {
+      addErr(`ruins role drift for ${report.cityId}: weak targeted material identity (${report.ruinsLeadMaterialsPresent.join(', ') || 'none'})`);
+    }
   });
 
   // Additional references for runes and heart laws to ensure maps used

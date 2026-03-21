@@ -1,10 +1,10 @@
-import { GameEvents } from '../events/GameEvents';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { normalizeItemList } from '../../utils/itemList';
-import { buildRewardSummary, normalizeRewardBundle } from './rewardSummary';
+import { GameEvents } from '../events/GameEvents.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { normalizeItemList } from '../../utils/itemList.js';
+import { buildRewardSummary, normalizeRewardBundle } from './rewardSummary.js';
 import type { RewardBundle, GrantRewardsResult, RewardCurrencyBundle } from './types';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
-import { useManualSatchelStore } from '../../stores/manualSatchelStore';
+import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
 
 function sanitizeAmount(amount: string | undefined): string | null {
   if (!amount) return null;
