@@ -6,13 +6,14 @@ import {
   normalizeGateItemAlias,
   type RawProgressionContentLike,
 } from '../contract/index.js';
-import type { CityDef } from '../../../content/types.js';
+import type { CityDef, OutskirtsDef, RuinDef } from '../../../content/types.js';
 import { collectProgressionDiagnostics, type DriftIssue } from '../diagnostics/index.js';
 import { inspectLiveCitySchema, LIVE_CITY_MODULE_ORDER } from '../../world/liveWorldSchema.js';
 import {
   formatCityPackageCoverageReport,
   inspectSemesterCityPackageCoverage,
 } from '../../world/cityPackageRegistry.js';
+import { inspectRewardParity } from '../../economy/rewardParityAudit.js';
 
 export interface ProgressionScenarioLike {
   kind: string;
@@ -132,6 +133,29 @@ const validateRawWorldCitySchema = (rawContent: RawProgressionContentLike): Drif
     });
   });
 
+  return issues;
+};
+
+
+const validateActivityRewardParity = (rawContent: RawProgressionContentLike): DriftIssue[] => {
+  const issues: DriftIssue[] = [];
+  inspectRewardParity({
+    economy: rawContent.economy,
+    outskirts: readRawOutskirts(rawContent) as unknown as OutskirtsDef[],
+    ruins: readRawRuins(rawContent) as unknown as RuinDef[],
+  }).forEach((report) => {
+    if (!report.hasDrift) return;
+    pushIssue(issues, {
+      id: `activity-reward-parity-${report.cityId}`,
+      category: 'ACTIVITY_REWARD_PARITY_DRIFT',
+      severity: 'error',
+      summary: `City ${report.cityId} no longer preserves the Packet 3.2 Outskirts/Ruins reward-role boundary.`,
+      evidence: report.roleBoundaryDrift.map((detail) => ({ path: `content/reward-parity/${report.cityId}`, detail })),
+      suggestedOwnerPacket: '3.2',
+      fixStrategySummary: 'Keep Outskirts as the gold/common loop and Ruins as the targeted-material plus deterministic-anchor loop via the shared reward parity audit/read-model.',
+      autoFixable: false,
+    });
+  });
   return issues;
 };
 
@@ -415,6 +439,7 @@ export const validateProgressionSemantics = (options: ValidateProgressionSemanti
 
   validateRawWorldCitySchema(options.rawContent).forEach((entry) => pushIssue(issues, entry));
   validateRawWorldCityPackageCoverage(options.rawContent).forEach((entry) => pushIssue(issues, entry));
+  validateActivityRewardParity(options.rawContent).forEach((entry) => pushIssue(issues, entry));
   validateScenarioSemantics(contract, options.scenarios ?? []).forEach((entry) => pushIssue(issues, entry));
   readMigrationFixtureIssues(contract, options.migrationFixtures ?? []).forEach((entry) => pushIssue(issues, entry));
 

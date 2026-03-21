@@ -48,6 +48,7 @@ import {
 import { createLiveEconomyCatalog, listVisibleAlchemyRecipes, listVisibleForgeBlueprints } from '../systems/economy/liveEconomyCatalog.js';
 import { buildLiveEconomySourceSinkAudit } from '../systems/economy/sourceSinkAudit.js';
 import { inspectActivityRewardRouting } from '../systems/economy/activityRewardAudit.js';
+import { inspectRewardParity } from '../systems/economy/rewardParityAudit.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1262,6 +1263,12 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     if (report.ruinsLeadMaterialsPresent.length < 2) {
       addErr(`ruins role drift for ${report.cityId}: weak targeted material identity (${report.ruinsLeadMaterialsPresent.join(', ') || 'none'})`);
     }
+  });
+
+  inspectRewardParity({ economy: raw.economy, outskirts, ruins }).forEach((report) => {
+    report.roleBoundaryDrift.forEach((detail) => {
+      addErr(`activity reward parity drift for ${report.cityId}: ${detail}`);
+    });
   });
 
   // Additional references for runes and heart laws to ensure maps used

@@ -1,5 +1,6 @@
 import type { EconomyConfig, OutskirtsDef, RuinDef } from '../../content/types.js';
 import { CITY_ACTIVITY_REWARD_ROLE_PROFILES, getCityActivityRewardRoleProfile, isOutskirtsCommonFieldMaterial, isProtectedRuinsIdentityItem, isRuinsAnchorItem, isRuinsLeadMaterial } from './activityRewardRoles.js';
+import { inspectRewardParity } from './rewardParityAudit.js';
 
 export interface ActivityRewardRoutingCityAudit {
   cityId: string;
@@ -35,6 +36,7 @@ export function inspectActivityRewardRouting(content: {
   outskirts: OutskirtsDef[];
   ruins: RuinDef[];
 }): ActivityRewardRoutingCityAudit[] {
+  const parityByCityId = Object.fromEntries(inspectRewardParity(content).map((entry) => [entry.cityId, entry]));
   return CITY_ACTIVITY_REWARD_ROLE_PROFILES.map((profile) => {
     const outskirts = content.outskirts.find((entry) => entry.cityId === profile.cityId) ?? null;
     const ruin = content.ruins.find((entry) => entry.cityId === profile.cityId) ?? null;
@@ -48,6 +50,7 @@ export function inspectActivityRewardRouting(content: {
     ]);
 
     const notes: string[] = [];
+    const parity = parityByCityId[profile.cityId] ?? null;
     const outskirtsGold = {
       mobAvg: averageRange(byCityIndex(content.economy.drops?.outskirts?.mobGoldByCityIndex, profile.cityIndex) as [number, number] | undefined),
       bossAvg: averageRange(byCityIndex(content.economy.drops?.outskirts?.bossGoldByCityIndex, profile.cityIndex) as [number, number] | undefined),
@@ -81,7 +84,7 @@ export function inspectActivityRewardRouting(content: {
       ruinsLeadMaterialsPresent: [...ruinItems].filter((itemId) => isRuinsLeadMaterial(profile.cityId, itemId)),
       ruinsGoldPosture: ruinsGold,
       outskirtsGoldPosture: outskirtsGold,
-      notes,
+      notes: [...notes, ...(parity?.roleBoundaryDrift ?? [])],
     };
   });
 }
