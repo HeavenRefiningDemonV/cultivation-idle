@@ -27,6 +27,11 @@ import { useMedicinePouchStore } from '../stores/medicinePouchStore';
 import { useCraftSessionStore } from '../stores/craftSessionStore';
 import { useRecipeMasteryStore } from '../stores/recipeMasteryStore';
 import { useContentStore } from '../stores/contentStore';
+import {
+  cloneActiveCultivationConsumable,
+  isCultivationConsumableFamily,
+  type CultivationConsumableFamily,
+} from '../systems/consumables/cultivationConsumableTypes.js';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
 import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSION } from '../save/defaultSaveState.js';
 import { getLastMigrationReport } from '../save/migrations/index.js';
@@ -254,6 +259,7 @@ function gatherGameState(): SaveData {
       insight: heartLawState.insight ?? null,
       stability: heartLawState.stability,
       stabilityCap: heartLawState.stabilityCap,
+      activeConsumables: heartLawState.activeConsumables.map((entry) => cloneActiveCultivationConsumable(entry)),
     },
 
     manualPavilionState: {
@@ -1159,6 +1165,50 @@ function applySaveData(saveData: SaveData): void {
         typeof heartLawState.stabilityCap === 'number' && Number.isFinite(heartLawState.stabilityCap)
           ? heartLawState.stabilityCap
           : 100,
+      activeConsumables: Array.isArray((heartLawState as { activeConsumables?: unknown[] }).activeConsumables)
+        ? (heartLawState as { activeConsumables: unknown[] }).activeConsumables
+            .filter(
+              (entry): entry is {
+                itemId: string;
+                family: CultivationConsumableFamily;
+                activatedAt: number;
+                expiresAt: number;
+                modifiers: {
+                  qiRateMult?: number;
+                  stabilityGainMult?: number;
+                  comprehensionGainMult?: number;
+                  insightFrequencyMult?: number;
+                  breakthroughQiCostMult?: number;
+                  breakthroughStabilityBonus?: number;
+                };
+                breakthroughChargesRemaining?: number;
+              } =>
+                !!entry
+                && typeof entry === 'object'
+                && typeof (entry as { itemId?: unknown }).itemId === 'string'
+                && isCultivationConsumableFamily((entry as { family?: unknown }).family)
+                && typeof (entry as { activatedAt?: unknown }).activatedAt === 'number'
+                && typeof (entry as { expiresAt?: unknown }).expiresAt === 'number'
+                && !!(entry as { modifiers?: unknown }).modifiers
+                && typeof (entry as { modifiers?: { qiRateMult?: unknown } }).modifiers?.qiRateMult !== 'undefined',
+            )
+            .map((entry) => ({
+              itemId: entry.itemId,
+              family: entry.family,
+              activatedAt: entry.activatedAt,
+              expiresAt: entry.expiresAt,
+              modifiers: {
+                qiRateMult: Number(entry.modifiers.qiRateMult ?? 1) || 1,
+                stabilityGainMult: Number(entry.modifiers.stabilityGainMult ?? 1) || 1,
+                comprehensionGainMult: Number(entry.modifiers.comprehensionGainMult ?? 1) || 1,
+                insightFrequencyMult: Number(entry.modifiers.insightFrequencyMult ?? 1) || 1,
+                breakthroughQiCostMult: Number(entry.modifiers.breakthroughQiCostMult ?? 1) || 1,
+                breakthroughStabilityBonus: Number(entry.modifiers.breakthroughStabilityBonus ?? 0) || 0,
+              },
+              breakthroughChargesRemaining:
+                typeof entry.breakthroughChargesRemaining === 'number' ? entry.breakthroughChargesRemaining : undefined,
+            }))
+        : [],
     });
 
     const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? {

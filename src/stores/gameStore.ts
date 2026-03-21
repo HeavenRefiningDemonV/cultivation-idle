@@ -28,6 +28,7 @@ import { useUIStore } from './uiStore';
 import { useEquipmentStore } from './equipmentStore';
 import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
 import { useHeartLawStore } from './heartLawStore';
+import { useCultivationStore } from './cultivationStore';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { useContentStore } from './contentStore';
 import { useCityStore } from './cityStore';
@@ -140,6 +141,70 @@ function unlockContentForRealm(realmIndex: number) {
   }
 }
 
+function computeBaseQiPerSecondValue(state: Pick<GameState, 'realm' | 'focusMode' | 'selectedPath' | 'upgradeTiers' | 'pathPerks'>): Decimal {
+  const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
+
+  let qiPerSec = D(currentRealm.qiPerSecond);
+  const substageBonus = D(1).plus(D(0.2).times(state.realm.substage - 1));
+  qiPerSec = multiply(qiPerSec, substageBonus);
+
+  const focusMod = FOCUS_MODE_MODIFIERS[state.focusMode];
+  qiPerSec = multiply(qiPerSec, focusMod.qiMultiplier);
+
+  if (state.selectedPath) {
+    const pathMod = PATH_MODIFIERS[state.selectedPath];
+    qiPerSec = multiply(qiPerSec, pathMod.qiMultiplier);
+  }
+
+  const idleUpgradeMultiplier = D(1).plus(
+    D(UPGRADE_COSTS.idle.effectPerTier).times(state.upgradeTiers.idle),
+  );
+  qiPerSec = multiply(qiPerSec, idleUpgradeMultiplier);
+
+  if (_getPrestigeStore) {
+    try {
+      const prestigeStore = _getPrestigeStore();
+      const prestigeMultiplier = prestigeStore.getQiMultiplier();
+      qiPerSec = multiply(qiPerSec, prestigeMultiplier);
+
+      const spiritRootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
+      qiPerSec = multiply(qiPerSec, spiritRootMultiplier);
+
+      const spiritRoot = prestigeStore.spiritRoot;
+      if (spiritRoot && spiritRoot.element && spiritRoot.element in ELEMENT_BONUSES) {
+        const elementBonus = ELEMENT_BONUSES[spiritRoot.element as keyof typeof ELEMENT_BONUSES];
+        if ('qiPerSecond' in elementBonus && elementBonus.qiPerSecond) {
+          const purityMultiplier = spiritRoot.purity / 100;
+          const qiBonus = D(1).plus(D(elementBonus.qiPerSecond).times(purityMultiplier));
+          qiPerSec = multiply(qiPerSec, qiBonus);
+        }
+      }
+    } catch {
+      // Prestige store not available
+    }
+  }
+
+  for (const perkId of state.pathPerks) {
+    const perk = getPerkById(perkId);
+    if (perk && perk.effect.stat === 'qiMultiplier') {
+      qiPerSec = multiply(qiPerSec, D(1).plus(perk.effect.value));
+    }
+  }
+
+  const heartLawId = useHeartLawStore.getState().selectedHeartLawId;
+  if (heartLawId) {
+    const heartLawDef = useContentStore.getState().maps.heartLawsById[heartLawId] ?? null;
+    const bonuses = getHeartLawBonuses({
+      heartLawDef,
+      chapter: useHeartLawStore.getState().chapter,
+      spiritRoot: getSpiritRootSnapshot(),
+    });
+    qiPerSec = multiply(qiPerSec, D(bonuses.cultivateRateMult));
+  }
+
+  return qiPerSec;
+}
+
 /**
  * Main game store managing cultivation progression
  */
@@ -152,6 +217,10 @@ export const useGameStore = create<GameState>()(
      * Main game tick - called regularly to update Qi and state
      */
     tick: (deltaTime: number) => {
+      const clearedCultivationBuffs = useCultivationStore.getState().clearExpiredCultivationConsumables(Date.now());
+      if (clearedCultivationBuffs) {
+        get().calculateQiPerSecond();
+      }
       get().removeExpiredBuffs();
 
       set((state) => {
@@ -367,6 +436,7 @@ export const useGameStore = create<GameState>()(
       }
 
       const previousRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
+      const majorBreakthroughSucceeded = canAdvanceToNextRealm;
 
       set((state) => {
         // Deduct Qi
@@ -409,6 +479,10 @@ export const useGameStore = create<GameState>()(
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
 
+      if (majorBreakthroughSucceeded) {
+        useCultivationStore.getState().consumeMajorBreakthroughBonus();
+      }
+
       // Trigger perk selection for newly reached realms when a path is selected
       const selectedPath = get().selectedPath;
 
@@ -437,80 +511,17 @@ export const useGameStore = create<GameState>()(
      */
     calculateQiPerSecond: () => {
       const state = get();
-      const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
-
-      // Base Qi/s from realm
-      let qiPerSec = D(currentRealm.qiPerSecond);
-
-      // Substage multiplier (each substage increases base slightly)
-      const substageBonus = D(1).plus(D(0.2).times(state.realm.substage - 1));
-      qiPerSec = multiply(qiPerSec, substageBonus);
-
-      // Apply focus mode multiplier
-      const focusMod = FOCUS_MODE_MODIFIERS[state.focusMode];
-      qiPerSec = multiply(qiPerSec, focusMod.qiMultiplier);
-
-      // Apply path multiplier
-      if (state.selectedPath) {
-        const pathMod = PATH_MODIFIERS[state.selectedPath];
-        qiPerSec = multiply(qiPerSec, pathMod.qiMultiplier);
-      }
-
-      // Apply idle upgrade multiplier
-      const idleUpgradeMultiplier = D(1).plus(
-        D(UPGRADE_COSTS.idle.effectPerTier).times(state.upgradeTiers.idle)
-      );
-      qiPerSec = multiply(qiPerSec, idleUpgradeMultiplier);
-
-      // Apply prestige Qi multiplier
-      if (_getPrestigeStore) {
-        try {
-          const prestigeStore = _getPrestigeStore();
-          const prestigeMultiplier = prestigeStore.getQiMultiplier();
-          qiPerSec = multiply(qiPerSec, prestigeMultiplier);
-
-          // Apply spirit root multipliers to cultivation gains
-          const spiritRootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
-          qiPerSec = multiply(qiPerSec, spiritRootMultiplier);
-
-          // Apply spirit root element Qi bonus (scaled by purity)
-          const spiritRoot = prestigeStore.spiritRoot;
-          if (spiritRoot && spiritRoot.element && spiritRoot.element in ELEMENT_BONUSES) {
-            const elementBonus = ELEMENT_BONUSES[spiritRoot.element as keyof typeof ELEMENT_BONUSES];
-            if ('qiPerSecond' in elementBonus && elementBonus.qiPerSecond) {
-              const purityMultiplier = spiritRoot.purity / 100;
-              const qiBonus = D(1).plus(D(elementBonus.qiPerSecond).times(purityMultiplier));
-              qiPerSec = multiply(qiPerSec, qiBonus);
-            }
-          }
-        } catch {
-          // Prestige store not available
-        }
-      }
-
-      // Apply path perk bonuses
-      for (const perkId of state.pathPerks) {
-        const perk = getPerkById(perkId);
-        if (perk && perk.effect.stat === 'qiMultiplier') {
-          const perkMultiplier = D(1).plus(perk.effect.value);
-          qiPerSec = multiply(qiPerSec, perkMultiplier);
-        }
-      }
-
-      const heartLawId = useHeartLawStore.getState().selectedHeartLawId;
-      if (heartLawId) {
-        const heartLawDef = useContentStore.getState().maps.heartLawsById[heartLawId] ?? null;
-        const bonuses = getHeartLawBonuses({
-          heartLawDef,
-          chapter: useHeartLawStore.getState().chapter,
-          spiritRoot: getSpiritRootSnapshot(),
-        });
-        qiPerSec = multiply(qiPerSec, D(bonuses.cultivateRateMult));
-      }
+      let qiPerSec = computeBaseQiPerSecondValue(state);
+      const cultivationModifiers = useCultivationStore.getState().getCultivationConsumableModifiers(Date.now());
+      qiPerSec = multiply(qiPerSec, cultivationModifiers.qiRateMult);
 
       set((state) => {
         state.qiPerSecond = qiPerSec.toString();
       });
+    },
+
+    getBaseQiPerSecond: () => {
+      return computeBaseQiPerSecondValue(get()).toString();
     },
 
     /**
@@ -792,11 +803,16 @@ export const useGameStore = create<GameState>()(
     getBreakthroughRequirement: () => {
       const state = get();
       const currentRealm = REALMS[clampRealmIndexToSemesterSlice(state.realm.index)] ?? REALMS[0];
+      const isMajorBreakthrough = state.realm.substage >= currentRealm.substages && hasNextLiveRealm(state.realm.index);
 
       // Calculate Qi requirement for current substage
       const baseRequirement = D(currentRealm.qiRequirement);
       const substageMultiplier = D(BREAKTHROUGH_QI_MULTIPLIER).pow(state.realm.substage - 1);
-      const requiredQi = multiply(baseRequirement, substageMultiplier);
+      let requiredQi = multiply(baseRequirement, substageMultiplier);
+      if (isMajorBreakthrough) {
+        const cultivationModifiers = useCultivationStore.getState().getCultivationConsumableModifiers(Date.now());
+        requiredQi = multiply(requiredQi, cultivationModifiers.breakthroughQiCostMult);
+      }
 
       return requiredQi.toString();
     },

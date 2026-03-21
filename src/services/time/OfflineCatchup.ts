@@ -1,4 +1,4 @@
-import { useGameStore } from '../../stores/gameStore';
+import { useGameStore } from '../../stores/gameStore.js';
 import { useProfessionStore } from '../../stores/professionStore';
 import { useExpeditionStore } from '../../stores/expeditionStore';
 import { formatNumber, D } from '../../utils/numbers';
@@ -6,6 +6,8 @@ import type { OfflineContext } from '../../systems/offline';
 import { MAX_OFFLINE_MS } from './offlineShared';
 import { formatOfflineDuration, getOfflineEfficiency } from '../../systems/offline';
 import { cultivationService } from '../cultivationService';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { getCultivationConsumableWindowBreakpoints } from '../../systems/consumables/cultivationConsumableEffects.js';
 
 export interface OfflineCatchupSummaryPart {
   label: string;
@@ -35,8 +37,23 @@ export function apply(context: OfflineContext): OfflineCatchupResult {
   // Cultivation gain
   const gameStore = useGameStore.getState();
   const offlineEfficiency = context.wasMeditating ? getOfflineEfficiency() : 0;
-  const qiPerSecond = D(gameStore.qiPerSecond ?? '0');
-  const qiGain = qiPerSecond.times(seconds).times(offlineEfficiency);
+  const cultivationStore = useCultivationStore.getState();
+  const activeCultivationConsumables = cultivationStore.getActiveCultivationConsumables(context.now - seconds * 1000);
+  const baseQiPerSecond = D(gameStore.getBaseQiPerSecond());
+  const segmentBreakpoints = getCultivationConsumableWindowBreakpoints(
+    activeCultivationConsumables,
+    context.now - seconds * 1000,
+    context.now,
+  );
+  let qiGain = D(0);
+  for (let index = 0; index < segmentBreakpoints.length - 1; index += 1) {
+    const startAt = segmentBreakpoints[index] ?? context.now;
+    const endAt = segmentBreakpoints[index + 1] ?? context.now;
+    const durationSec = Math.max(0, endAt - startAt) / 1000;
+    if (durationSec <= 0) continue;
+    const modifiers = cultivationStore.getCultivationConsumableModifiers(startAt);
+    qiGain = qiGain.plus(baseQiPerSecond.times(modifiers.qiRateMult).times(durationSec).times(offlineEfficiency));
+  }
   if (qiGain.greaterThan(0)) {
     const nextQi = D(gameStore.qi ?? '0').plus(qiGain);
     useGameStore.setState({

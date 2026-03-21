@@ -1141,6 +1141,27 @@ export const useCombatStore = create<ExtendedCombatState>()(
           );
           break;
         }
+        case 'cleanseOrFallbackCombatBuff': {
+          const fallback = effect.fallback;
+          const buffId = `consumable:${itemId}:${fallback.stat}`;
+          const endsAt = now + fallback.durationSec * 1000;
+          set((draft) => {
+            draft.combatBuffs = draft.combatBuffs.filter((buff) => buff.id !== buffId);
+            draft.combatBuffs.push({
+              id: buffId,
+              stat: fallback.stat,
+              mode: fallback.mode,
+              value: fallback.value,
+              endsAt,
+            });
+          });
+          get().addLogEntry(
+            'system',
+            `Used ${spec.shortLabel}: no venom detected, gained ${Math.round(fallback.value * 100)}% DEF for ${fallback.durationSec}s`,
+            '#38bdf8',
+          );
+          break;
+        }
         case 'restoreQiPct': {
           const gain = state.combatResources.maxQi * effect.pct;
           let applied = 0;

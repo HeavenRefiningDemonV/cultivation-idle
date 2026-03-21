@@ -5,6 +5,8 @@ import { getItemDef } from '../../stores/contentStore';
 import { useBuffStore } from '../../stores/buffStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore';
+import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
+import { isLiveCultivationConsumable } from '../../systems/consumables/liveConsumableRoster.js';
 import EquipmentDrawer from '../inventory/EquipmentDrawer';
 import InventorySlotTile from '../inventory/InventorySlotTile';
 import type { DisplayStack } from '../inventory/inventoryTypes';
@@ -760,6 +762,21 @@ export default function InventoryScreen() {
                       }}
                     >
                       Activate Talisman
+                    </button>
+                  ) : selectedStack.usage === 'cultivate_only' && isLiveCultivationConsumable(selectedStack.itemId) ? (
+                    <button
+                      className="button-standard inventoryPrimaryButton"
+                      type="button"
+                      onClick={() => {
+                        const result = consumeConsumable(selectedStack.itemId);
+                        if (!result.ok) {
+                          addNotification('error', `Unable to use ${selectedStack.name}.`);
+                          return;
+                        }
+                        addNotification('success', result.message, 3000);
+                      }}
+                    >
+                      Use Now
                     </button>
                   ) : (
                     <div className="inventoryInspectorEmptyAction">No actions available.</div>

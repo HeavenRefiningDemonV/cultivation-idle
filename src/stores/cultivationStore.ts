@@ -3,7 +3,13 @@ import { immer } from 'zustand/middleware/immer';
 import type { HeartLawDef } from '../content/index.js';
 import { useContentStore } from './contentStore';
 import { GameEvents } from '../services/events/GameEvents';
-import type { ComprehensionSource, InsightChoiceId, InsightMomentState } from '../types/index.js';
+import type {
+  ActiveCultivationConsumable,
+  ComprehensionSource,
+  CultivationConsumableModifiers,
+  InsightChoiceId,
+  InsightMomentState,
+} from '../types/index.js';
 import {
   INSIGHT_BURSTS,
   INSIGHT_INTERVAL_RANGE_MS,
@@ -13,6 +19,8 @@ import {
 import type { BreathMode } from '../types/index.js';
 import { useUIStore } from './uiStore';
 import { D } from '../utils/numbers';
+import { combineCultivationConsumableModifiers, getCultivationConsumableActivation } from '../systems/consumables/cultivationConsumableEffects.js';
+import { createBaseCultivationConsumableModifiers } from '../systems/consumables/cultivationConsumableTypes.js';
 
 interface CultivationState {
   selectedHeartLawId: string | null;
@@ -27,8 +35,10 @@ interface CultivationState {
   insight: InsightMomentState | null;
   stability: number;
   stabilityCap: number;
+  activeConsumables: ActiveCultivationConsumable[];
   selectHeartLaw: (id: string) => void;
   addComprehension: (amount: number, source: ComprehensionSource) => void;
+  addStability: (amount: number) => void;
   tryAdvanceChapter: () => void;
   isUnlocked: (id: string) => boolean;
   setUnlocked: (ids: string[]) => void;
@@ -39,6 +49,11 @@ interface CultivationState {
   markInsight: (timestampMs?: number) => void;
   getComprehensionRequirementForNextChapter: () => number;
   scheduleNextInsight: (now: number) => void;
+  useCultivationConsumable: (itemId: string, now?: number) => { ok: true } | { ok: false; reason: string };
+  getActiveCultivationConsumables: (now?: number) => ActiveCultivationConsumable[];
+  clearExpiredCultivationConsumables: (now?: number) => boolean;
+  getCultivationConsumableModifiers: (now?: number) => CultivationConsumableModifiers;
+  consumeMajorBreakthroughBonus: (now?: number) => number;
   resolveInsight: (choiceId?: InsightChoiceId | 'auto') => void;
   resetForNewLife: () => void;
 }
@@ -60,10 +75,10 @@ function clampStability(value: number, cap: number) {
   return value;
 }
 
-function pickNextInsightTime(now: number) {
+function pickNextInsightTime(now: number, insightFrequencyMult = 1) {
   const span = INSIGHT_INTERVAL_RANGE_MS.max - INSIGHT_INTERVAL_RANGE_MS.min;
   const offset = Math.random() * span + INSIGHT_INTERVAL_RANGE_MS.min;
-  return now + offset;
+  return now + offset / Math.max(0.0001, insightFrequencyMult);
 }
 
 export const useCultivationStore = create<CultivationState>()(
@@ -80,6 +95,7 @@ export const useCultivationStore = create<CultivationState>()(
     insight: null,
     stability: 0,
     stabilityCap: 100,
+    activeConsumables: [],
 
     selectHeartLaw: (id) => {
       if (!get().isUnlocked(id)) return;
@@ -95,6 +111,7 @@ export const useCultivationStore = create<CultivationState>()(
         state.nextInsightAt = null;
         state.insight = null;
         state.stability = 0;
+        state.activeConsumables = [];
       });
       GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: id } });
     },
@@ -106,6 +123,13 @@ export const useCultivationStore = create<CultivationState>()(
         state.comprehension += amount;
       });
       get().tryAdvanceChapter();
+    },
+
+    addStability: (amount) => {
+      if (!Number.isFinite(amount) || amount === 0) return;
+      set((state) => {
+        state.stability = clampStability(state.stability + amount, state.stabilityCap);
+      });
     },
 
     tryAdvanceChapter: () => {
@@ -180,8 +204,78 @@ export const useCultivationStore = create<CultivationState>()(
     scheduleNextInsight: (now) => {
       set((state) => {
         const reference = typeof now === 'number' ? now : Date.now();
-        state.nextInsightAt = pickNextInsightTime(reference);
+        const modifiers = combineCultivationConsumableModifiers(state.activeConsumables, reference);
+        state.nextInsightAt = pickNextInsightTime(reference, modifiers.insightFrequencyMult);
       });
+    },
+
+    useCultivationConsumable: (itemId, now) => {
+      const activatedAt = typeof now === 'number' ? now : Date.now();
+      const activation = getCultivationConsumableActivation(itemId, activatedAt);
+      if (!activation) return { ok: false, reason: 'invalid_cultivation_consumable' };
+
+      set((state) => {
+        const previousModifiers = combineCultivationConsumableModifiers(state.activeConsumables, activatedAt);
+        state.activeConsumables = state.activeConsumables
+          .filter((entry) => entry.expiresAt > activatedAt)
+          .filter((entry) => entry.family !== activation.family);
+        state.activeConsumables.push(activation);
+
+        const nextModifiers = combineCultivationConsumableModifiers(state.activeConsumables, activatedAt);
+        if (state.nextInsightAt && nextModifiers.insightFrequencyMult > previousModifiers.insightFrequencyMult) {
+          const remainingMs = Math.max(0, state.nextInsightAt - activatedAt);
+          const adjustedRemainingMs = remainingMs * (previousModifiers.insightFrequencyMult / nextModifiers.insightFrequencyMult);
+          state.nextInsightAt = activatedAt + adjustedRemainingMs;
+        }
+      });
+
+      return { ok: true };
+    },
+
+    getActiveCultivationConsumables: (now) => {
+      const at = typeof now === 'number' ? now : Date.now();
+      return get().activeConsumables.filter((entry) => entry.expiresAt > at).map((entry) => ({
+        ...entry,
+        modifiers: { ...entry.modifiers },
+      }));
+    },
+
+    clearExpiredCultivationConsumables: (now) => {
+      const at = typeof now === 'number' ? now : Date.now();
+      const before = get().activeConsumables.length;
+      if (before === 0) return false;
+      set((state) => {
+        state.activeConsumables = state.activeConsumables.filter((entry) => entry.expiresAt > at);
+      });
+      return get().activeConsumables.length !== before;
+    },
+
+    getCultivationConsumableModifiers: (now) => {
+      const at = typeof now === 'number' ? now : Date.now();
+      return combineCultivationConsumableModifiers(get().activeConsumables, at);
+    },
+
+    consumeMajorBreakthroughBonus: (now) => {
+      const at = typeof now === 'number' ? now : Date.now();
+      let totalBonus = 0;
+      set((state) => {
+        state.activeConsumables = state.activeConsumables.flatMap((entry) => {
+          if (entry.expiresAt <= at || entry.family !== 'breakthrough') {
+            return entry.expiresAt > at ? [entry] : [];
+          }
+          if ((entry.breakthroughChargesRemaining ?? 0) <= 0) return [entry];
+          totalBonus += entry.modifiers.breakthroughStabilityBonus;
+          const remainingCharges = (entry.breakthroughChargesRemaining ?? 0) - 1;
+          if (remainingCharges <= 0) {
+            return [];
+          }
+          return [{ ...entry, breakthroughChargesRemaining: remainingCharges }];
+        });
+      });
+      if (totalBonus > 0) {
+        get().addStability(totalBonus);
+      }
+      return totalBonus;
     },
 
     resolveInsight: (choiceId) => {
@@ -192,7 +286,8 @@ export const useCultivationStore = create<CultivationState>()(
       set((draft) => {
         draft.insight = null;
         draft.lastInsightAt = now;
-        draft.nextInsightAt = pickNextInsightTime(now);
+        const modifiers = combineCultivationConsumableModifiers(draft.activeConsumables, now);
+        draft.nextInsightAt = pickNextInsightTime(now, modifiers.insightFrequencyMult);
       });
 
       switch (chosenId) {
@@ -241,6 +336,7 @@ export const useCultivationStore = create<CultivationState>()(
         state.nextInsightAt = null;
         state.insight = null;
         state.stability = 0;
+        state.activeConsumables = [];
       });
       if (lastSelected) {
         useUIStore.getState().setLifeStartWizardContext(lastSelected);
