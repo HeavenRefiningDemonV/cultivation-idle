@@ -92,7 +92,6 @@ export const RECOGNIZED_SECONDARY_EFFECT_TYPES: readonly string[] = Object.freez
   'upgradeStatus',
 ]);
 
-const EXPLICIT_AOE_TAGS = new Set(['aoe', 'area', 'cleave', 'multi-target']);
 const TEMPO_TAGS = new Set(['tempo', 'combo', 'multihit', 'qi', 'drain', 'stance']);
 const GUARD_STAT_KEYS = new Set([
   'damageReduction',
@@ -283,6 +282,10 @@ function hasAnyTag(def: TechniqueDef, tags: readonly string[]): boolean {
   return tags.some((tag) => tagSet.has(tag));
 }
 
+function getMatchingStats(summary: TechniqueSignalSummary, group: ReadonlySet<string>): string[] {
+  return summary.statKeys.filter((stat) => group.has(stat));
+}
+
 function hasPrimaryEffectType(summary: TechniqueSignalSummary, type: string): boolean {
   return summary.primaryEffectTypes.includes(type);
 }
@@ -390,6 +393,46 @@ function hasSelfBuffAndStat(def: TechniqueDef, statKeys: readonly string[]): boo
   return found;
 }
 
+function isBossLockedHeal(def: TechniqueDef, summary: TechniqueSignalSummary): boolean {
+  return hasPrimaryEffectType(summary, 'lifestealOnBossHit');
+}
+
+function shouldTreatAsSetup(def: TechniqueDef, summary: TechniqueSignalSummary): boolean {
+  const hasSetupSignal =
+    hasAnyStat(summary, SETUP_ENEMY_STAT_KEYS) ||
+    hasAnyStatus(summary, SETUP_STATUSES) ||
+    hasSecondaryEffectType(summary, 'conditionalBonus') ||
+    hasIgnoreDefSignal(summary);
+
+  if (!hasSetupSignal) {
+    return false;
+  }
+
+  const isBurstUltimateDamage =
+    (def.type === 'ultimate' || hasTag(def, 'burst')) &&
+    (hasPrimaryEffectType(summary, 'damage') || hasPrimaryEffectType(summary, 'damageWithStacks'));
+
+  return !isBurstUltimateDamage;
+}
+
+function shouldTreatAsGuard(def: TechniqueDef, summary: TechniqueSignalSummary): boolean {
+  if (hasPrimaryEffectType(summary, 'shield') || hasPrimaryEffectType(summary, 'nextHitReduction') || hasTag(def, 'counter')) {
+    return true;
+  }
+
+  const guardStats = getMatchingStats(summary, GUARD_STAT_KEYS);
+  const nonDodgeGuardStats = guardStats.filter((stat) => stat !== 'dodge');
+  if (nonDodgeGuardStats.length > 0) {
+    return true;
+  }
+
+  if (def.role === 'defense' && !isBossLockedHeal(def, summary)) {
+    return true;
+  }
+
+  return false;
+}
+
 function deriveFamiliesWithTrace(def: TechniqueDef): { families: TechniqueFamily[]; fallbackMarkers: string[] } {
   const summary = buildTechniqueSignalSummary(def);
   const families = new Set<TechniqueFamily>();
@@ -425,13 +468,7 @@ function deriveFamiliesWithTrace(def: TechniqueDef): { families: TechniqueFamily
     families.add('execute');
   }
 
-  if (
-    def.role === 'defense' ||
-    hasPrimaryEffectType(summary, 'shield') ||
-    hasPrimaryEffectType(summary, 'nextHitReduction') ||
-    hasTag(def, 'counter') ||
-    hasAnyStat(summary, GUARD_STAT_KEYS)
-  ) {
+  if (shouldTreatAsGuard(def, summary)) {
     families.add('guard');
   }
 
@@ -445,17 +482,13 @@ function deriveFamiliesWithTrace(def: TechniqueDef): { families: TechniqueFamily
 
   if (
     hasPrimaryEffectType(summary, 'buff') ||
-    hasAnyStat(summary, BUFF_STAT_KEYS)
+    hasAnyStat(summary, BUFF_STAT_KEYS) ||
+    (hasAnyStat(summary, FARM_STAT_KEYS) && (def.type === 'passive' || def.role === 'utility'))
   ) {
     families.add('buff');
   }
 
-  if (
-    hasAnyStat(summary, SETUP_ENEMY_STAT_KEYS) ||
-    hasAnyStatus(summary, SETUP_STATUSES) ||
-    hasSecondaryEffectType(summary, 'conditionalBonus') ||
-    hasIgnoreDefSignal(summary)
-  ) {
+  if (shouldTreatAsSetup(def, summary)) {
     families.add('setup');
   }
 
@@ -574,7 +607,8 @@ export function deriveTechniqueSupportFlags(
     hasIgnoreDefSignal(summary) ||
     hasSecondaryEffectType(summary, 'conditionalBonus') ||
     hasSecondaryEffectType(summary, 'conditionalRefund') ||
-    hasGuaranteedCrit(def)
+    hasGuaranteedCrit(def) ||
+    hasPrimaryEffectType(summary, 'lifestealOnBossHit')
   ) {
     flags.add('boss');
   }
