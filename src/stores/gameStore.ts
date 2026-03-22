@@ -28,6 +28,7 @@ import { useUIStore } from './uiStore';
 import { useEquipmentStore } from './equipmentStore';
 import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
 import { useHeartLawStore } from './heartLawStore';
+import { useCultivationStore } from './cultivationStore';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
 import { useContentStore } from './contentStore';
 import { useCityStore } from './cityStore';
@@ -157,6 +158,7 @@ export const useGameStore = create<GameState>()(
       set((state) => {
         // Calculate Qi gained this tick
         const breath = getBreathModeMultipliers(useHeartLawStore.getState().breathMode);
+        useCultivationStore.getState().clearExpiredCultivationConsumables(Date.now());
         const qiGain = multiply(state.qiPerSecond, (deltaTime / 1000) * breath.qiRateMult);
         state.qi = add(state.qi, qiGain).toString();
 
@@ -331,7 +333,7 @@ export const useGameStore = create<GameState>()(
       const isFinalSubstage = state.realm.substage >= currentRealm.substages;
       const canAdvanceToNextRealm = isFinalSubstage && hasNextLiveRealm(currentRealmIndex);
 
-      // Get Qi requirement (includes prestige multipliers)
+      // Get Qi requirement (includes prestige multipliers and live cultivation buffs)
       const requiredQi = get().getBreakthroughRequirement();
 
       // Check if player has enough Qi
@@ -403,6 +405,10 @@ export const useGameStore = create<GameState>()(
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
         useCityStore.getState().syncRealmEntry(getLiveRealmByIndex(newRealmIndex).id);
+        const bonusStability = useCultivationStore.getState().consumeMajorBreakthroughBonus(Date.now());
+        if (bonusStability > 0) {
+          useCultivationStore.getState().addStability(bonusStability);
+        }
       }
 
       // Recalculate stats and Qi generation
@@ -497,6 +503,8 @@ export const useGameStore = create<GameState>()(
         }
       }
 
+      const cultivationStore = useCultivationStore.getState();
+      cultivationStore.clearExpiredCultivationConsumables(Date.now());
       const heartLawId = useHeartLawStore.getState().selectedHeartLawId;
       if (heartLawId) {
         const heartLawDef = useContentStore.getState().maps.heartLawsById[heartLawId] ?? null;
@@ -507,6 +515,8 @@ export const useGameStore = create<GameState>()(
         });
         qiPerSec = multiply(qiPerSec, D(bonuses.cultivateRateMult));
       }
+
+      qiPerSec = multiply(qiPerSec, D(cultivationStore.getCultivationConsumableModifiers(Date.now()).qiRateMult));
 
       set((state) => {
         state.qiPerSecond = qiPerSec.toString();
@@ -796,7 +806,13 @@ export const useGameStore = create<GameState>()(
       // Calculate Qi requirement for current substage
       const baseRequirement = D(currentRealm.qiRequirement);
       const substageMultiplier = D(BREAKTHROUGH_QI_MULTIPLIER).pow(state.realm.substage - 1);
-      const requiredQi = multiply(baseRequirement, substageMultiplier);
+      let requiredQi = multiply(baseRequirement, substageMultiplier);
+
+      const isMajorBreakthrough = state.realm.substage >= currentRealm.substages && hasNextLiveRealm(clampRealmIndexToSemesterSlice(state.realm.index));
+      if (isMajorBreakthrough) {
+        const modifiers = useCultivationStore.getState().getCultivationConsumableModifiers(Date.now());
+        requiredQi = multiply(requiredQi, D(modifiers.majorBreakthroughQiCostMult));
+      }
 
       return requiredQi.toString();
     },

@@ -254,6 +254,9 @@ function gatherGameState(): SaveData {
       insight: heartLawState.insight ?? null,
       stability: heartLawState.stability,
       stabilityCap: heartLawState.stabilityCap,
+      activeCultivationConsumables: heartLawState.activeCultivationConsumables.map((entry) => ({ ...entry, modifiers: { ...entry.modifiers } })),
+      insightProgressMs: heartLawState.insightProgressMs,
+      insightTargetMs: heartLawState.insightTargetMs ?? null,
     },
 
     manualPavilionState: {
@@ -524,6 +527,15 @@ function validateSaveData(data: unknown): data is SaveData {
         return false;
       }
       if ('stabilityCap' in hs && hs.stabilityCap !== undefined && typeof hs.stabilityCap !== 'number') {
+        return false;
+      }
+      if ('activeCultivationConsumables' in hs && hs.activeCultivationConsumables !== undefined && !Array.isArray(hs.activeCultivationConsumables)) {
+        return false;
+      }
+      if ('insightProgressMs' in hs && hs.insightProgressMs !== undefined && typeof hs.insightProgressMs !== 'number') {
+        return false;
+      }
+      if ('insightTargetMs' in hs && hs.insightTargetMs !== null && hs.insightTargetMs !== undefined && typeof hs.insightTargetMs !== 'number') {
         return false;
       }
     }
@@ -1159,6 +1171,33 @@ function applySaveData(saveData: SaveData): void {
         typeof heartLawState.stabilityCap === 'number' && Number.isFinite(heartLawState.stabilityCap)
           ? heartLawState.stabilityCap
           : 100,
+      activeCultivationConsumables: Array.isArray((heartLawState as any).activeCultivationConsumables)
+        ? (heartLawState as any).activeCultivationConsumables
+            .filter((entry: any) => entry && typeof entry.itemId === 'string' && typeof entry.family === 'string')
+            .map((entry: any) => ({
+              itemId: entry.itemId,
+              family: entry.family,
+              activatedAt: typeof entry.activatedAt === 'number' ? entry.activatedAt : Date.now(),
+              expiresAt: typeof entry.expiresAt === 'number' ? entry.expiresAt : Date.now(),
+              modifiers: {
+                qiRateMult: typeof entry?.modifiers?.qiRateMult === 'number' ? entry.modifiers.qiRateMult : 1,
+                comprehensionGainMult: typeof entry?.modifiers?.comprehensionGainMult === 'number' ? entry.modifiers.comprehensionGainMult : 1,
+                stabilityGainMult: typeof entry?.modifiers?.stabilityGainMult === 'number' ? entry.modifiers.stabilityGainMult : 1,
+                insightFrequencyMult: typeof entry?.modifiers?.insightFrequencyMult === 'number' ? entry.modifiers.insightFrequencyMult : 1,
+                majorBreakthroughQiCostMult: typeof entry?.modifiers?.majorBreakthroughQiCostMult === 'number' ? entry.modifiers.majorBreakthroughQiCostMult : 1,
+                majorBreakthroughStabilityBonus: typeof entry?.modifiers?.majorBreakthroughStabilityBonus === 'number' ? entry.modifiers.majorBreakthroughStabilityBonus : 0,
+              },
+              consumedOnMajorBreakthrough: Boolean(entry.consumedOnMajorBreakthrough),
+            }))
+        : [],
+      insightProgressMs:
+        typeof (heartLawState as any).insightProgressMs === 'number' && Number.isFinite((heartLawState as any).insightProgressMs)
+          ? (heartLawState as any).insightProgressMs
+          : 0,
+      insightTargetMs:
+        typeof (heartLawState as any).insightTargetMs === 'number' && Number.isFinite((heartLawState as any).insightTargetMs)
+          ? (heartLawState as any).insightTargetMs
+          : null,
     });
 
     const manualSatchelState = saveData.manualSatchelState ?? defaults.manualSatchelState ?? {

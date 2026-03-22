@@ -17,6 +17,7 @@ import {
 import { ApothecaryBrewPanel } from '../../features/apothecary/ApothecaryBrewPanel';
 import { GameEvents } from '../../services/events/GameEvents';
 import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
+import { consumeConsumable } from '../../systems/consumables/consumeConsumable';
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
@@ -212,6 +213,15 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
       spec: consumableSpec,
     });
 
+    const handleUseNow = () => {
+      const result = consumeConsumable(stockEntry.itemId);
+      setStatusByStock((prev) => ({
+        ...prev,
+        [stockEntry.id]: { type: result.ok ? 'success' : 'error', message: result.message },
+      }));
+      addNotification(result.ok ? 'success' : 'error', result.message, 3000);
+    };
+
     const handlePurchase = (qty: number) => {
       if (qty <= 0) return;
       GameEvents.emit({
@@ -306,6 +316,16 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
           >
             Buy Max
           </button>
+          {itemDef?.usage === 'cultivate_only' ? (
+            <button
+              className={`apothecaryActionButton${owned > 0 ? ' apothecaryActionButton--active' : ''}`}
+              onClick={handleUseNow}
+              disabled={owned <= 0}
+              title={owned <= 0 ? 'Own at least one to use it now.' : undefined}
+            >
+              Drink Now
+            </button>
+          ) : null}
         </div>
 
         {renderStatus(status)}

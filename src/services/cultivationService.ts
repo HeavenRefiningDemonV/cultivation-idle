@@ -1,38 +1,18 @@
-import { COMPREHENSION_PER_MINUTE_BASE, INSIGHT_DURATION_MS, INSIGHT_INTERVAL_RANGE_MS, STUDY_MASTERY_PER_MINUTE_BASE, getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
+import {
+  COMPREHENSION_PER_MINUTE_BASE,
+  INSIGHT_DURATION_MS,
+  STUDY_MASTERY_PER_MINUTE_BASE,
+  getBreathModeMultipliers,
+} from '../content/tuning/cultivationTuning';
 import { useActivityStore } from '../stores/activityStore';
 import { useCultivationStore } from '../stores/cultivationStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
 import type { InsightChoiceId } from '../types';
 
-function randomInsightTime(now: number) {
-  const span = INSIGHT_INTERVAL_RANGE_MS.max - INSIGHT_INTERVAL_RANGE_MS.min;
-  return now + Math.random() * span + INSIGHT_INTERVAL_RANGE_MS.min;
-}
-
 function ensureInsightScheduled(now: number) {
   const store = useCultivationStore.getState();
   if (!store.selectedHeartLawId) return;
-  if (store.nextInsightAt && store.nextInsightAt > now) return;
-  useCultivationStore.getState().scheduleNextInsight(now);
-}
-
-function openInsight(now: number) {
-  const store = useCultivationStore.getState();
-  if (!store.selectedHeartLawId) return;
-  useCultivationStore.setState((state) => {
-    state.insight = {
-      pending: true,
-      startedAt: now,
-      expiresAt: now + INSIGHT_DURATION_MS,
-      defaultChoiceId: 'contemplate',
-      choices: [
-        { id: 'contemplate', title: 'Contemplate', description: 'Focus inward for a burst of insight.' },
-        { id: 'stabilize', title: 'Stabilize', description: 'Calm your breath to steady your foundation.' },
-        { id: 'drawQi', title: 'Draw Qi', description: 'Absorb ambient qi for a quick boost.' },
-      ],
-    };
-    state.nextInsightAt = randomInsightTime(now);
-  });
+  store.ensureInsightCycle(now);
 }
 
 function autoResolveInsight(now: number) {
@@ -42,9 +22,10 @@ function autoResolveInsight(now: number) {
   useCultivationStore.getState().resolveInsight('auto');
 }
 
-function applyContinuousGains(deltaMs: number, ignoreActivityGate = false) {
+function applyContinuousGains(deltaMs: number, now = Date.now(), ignoreActivityGate = false) {
   if (deltaMs <= 0) return;
   const heart = useCultivationStore.getState();
+  heart.clearExpiredCultivationConsumables(now);
   if (!heart.selectedHeartLawId) return;
 
   const activity = useActivityStore.getState().active;
@@ -52,10 +33,11 @@ function applyContinuousGains(deltaMs: number, ignoreActivityGate = false) {
   if (!isCultivating && !ignoreActivityGate) return;
 
   const breath = getBreathModeMultipliers(heart.breathMode);
+  const modifiers = heart.getCultivationConsumableModifiers(now);
   const deltaMinutes = deltaMs / 60000;
-  const comprehensionGain = COMPREHENSION_PER_MINUTE_BASE * deltaMinutes * breath.comprehensionMult;
+  const comprehensionGain = COMPREHENSION_PER_MINUTE_BASE * deltaMinutes * breath.comprehensionMult * modifiers.comprehensionGainMult;
   if (comprehensionGain > 0) {
-    useCultivationStore.getState().addComprehension(comprehensionGain, 'meditation');
+    heart.addComprehension(comprehensionGain, 'meditation');
   }
 
   if (heart.studyEnabled && heart.studyTechniqueId) {
@@ -64,31 +46,41 @@ function applyContinuousGains(deltaMs: number, ignoreActivityGate = false) {
       useTechCollectionStore.getState().addMasteryXp(heart.studyTechniqueId, masteryGain);
     }
   }
+
+  heart.advanceInsightTimer(deltaMs, now, modifiers.insightFrequencyMult);
 }
 
-function processInsights(now: number, endAt: number) {
-  ensureInsightScheduled(now);
-  let cursor = now;
+function processInsights(startAt: number, endAt: number) {
+  ensureInsightScheduled(startAt);
+  let cursor = startAt;
   while (cursor < endAt) {
-    const store = useCultivationStore.getState();
-    const nextTrigger = store.insight?.expiresAt ?? store.nextInsightAt ?? endAt;
-    const stepEnd = Math.min(endAt, nextTrigger ?? endAt);
-    const delta = stepEnd - cursor;
-    if (delta > 0) {
-      applyContinuousGains(delta, true);
-      cursor += delta;
-    } else {
-      cursor = stepEnd;
+    const heart = useCultivationStore.getState();
+    if (heart.insight) {
+      const stepEnd = Math.min(endAt, heart.insight.expiresAt);
+      if (stepEnd > cursor) cursor = stepEnd;
+      autoResolveInsight(cursor);
+      continue;
     }
 
+    const nextExpiry = heart.getActiveCultivationConsumables(cursor)
+      .map((entry) => entry.expiresAt)
+      .filter((value) => Number.isFinite(value))
+      .sort((a, b) => a - b)[0] ?? endAt;
+    const nextInsight = heart.nextInsightAt ?? endAt;
+    const stepEnd = Math.min(endAt, nextExpiry, nextInsight);
+    const delta = Math.max(0, stepEnd - cursor);
+    if (delta > 0) {
+      applyContinuousGains(delta, stepEnd, true);
+    }
+    cursor = stepEnd;
+
     const latest = useCultivationStore.getState();
-    if (latest.insight && latest.insight.expiresAt <= cursor) {
-      useCultivationStore.getState().resolveInsight('auto');
-    } else if (!latest.insight && latest.nextInsightAt && latest.nextInsightAt <= cursor) {
-      openInsight(latest.nextInsightAt);
-      cursor = Math.max(cursor, latest.nextInsightAt);
-    } else if (!latest.insight && latest.nextInsightAt && latest.nextInsightAt < cursor) {
-      openInsight(cursor);
+    latest.clearExpiredCultivationConsumables(cursor);
+    if (latest.insight && latest.insight.startedAt <= cursor) {
+      continue;
+    }
+    if (!latest.insight) {
+      latest.ensureInsightCycle(cursor);
     }
   }
 }
@@ -96,27 +88,26 @@ function processInsights(now: number, endAt: number) {
 export const cultivationService = {
   tick(deltaMs: number) {
     const now = Date.now();
-    applyContinuousGains(deltaMs);
+    applyContinuousGains(deltaMs, now);
     autoResolveInsight(now);
     const store = useCultivationStore.getState();
-    if (!store.insight && store.nextInsightAt && store.nextInsightAt <= now) {
-      openInsight(store.nextInsightAt);
-    } else if (!store.nextInsightAt) {
+    if (!store.insight) {
       ensureInsightScheduled(now);
     }
   },
   applyOfflineProgress(deltaMs: number, startAt: number, endAt: number) {
-    processInsights(startAt, endAt);
-    // Ensure next insight is scheduled after offline catch-up
+    if (deltaMs > 0) {
+      processInsights(startAt, endAt);
+    }
     const now = Date.now();
     const store = useCultivationStore.getState();
-    if (!store.nextInsightAt || store.nextInsightAt < now) {
-      useCultivationStore.setState((state) => {
-        state.nextInsightAt = randomInsightTime(now);
-      });
+    store.clearExpiredCultivationConsumables(now);
+    if (!store.insight) {
+      store.ensureInsightCycle(now);
     }
   },
   resolveInsight(choiceId: InsightChoiceId) {
     useCultivationStore.getState().resolveInsight(choiceId);
   },
+  applyContinuousGains,
 };

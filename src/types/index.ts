@@ -307,6 +307,23 @@ export interface SaveHeartLawState {
   insight?: InsightMomentState | null;
   stability?: number;
   stabilityCap?: number;
+  activeCultivationConsumables?: Array<{
+    itemId: string;
+    family: 'circulation' | 'warmth' | 'doctrine' | 'breakthrough';
+    activatedAt: number;
+    expiresAt: number;
+    modifiers: {
+      qiRateMult: number;
+      comprehensionGainMult: number;
+      stabilityGainMult: number;
+      insightFrequencyMult: number;
+      majorBreakthroughQiCostMult: number;
+      majorBreakthroughStabilityBonus: number;
+    };
+    consumedOnMajorBreakthrough?: boolean;
+  }>;
+  insightProgressMs?: number;
+  insightTargetMs?: number | null;
 }
 
 export interface SaveActivityState {

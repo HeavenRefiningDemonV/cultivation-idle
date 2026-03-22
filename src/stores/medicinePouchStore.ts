@@ -6,6 +6,7 @@ import type {
   MedicinePouchState,
   MedicinePouchTrigger,
 } from '../types/index.js';
+import { isCombatUsableConsumable } from '../systems/consumables/consumableCatalog.js';
 
 type SlotConfigUpdate = Partial<
   Pick<MedicinePouchSlotState, 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly'>
@@ -74,7 +75,7 @@ function sanitizeSlot(
   fallback: MedicinePouchSlotState,
 ): MedicinePouchSlotState {
   if (!raw || typeof raw !== 'object') return fallback;
-  const equippedItemId = typeof raw.equippedItemId === 'string' ? raw.equippedItemId : null;
+  const equippedItemId = typeof raw.equippedItemId === 'string' && isCombatUsableConsumable(raw.equippedItemId) ? raw.equippedItemId : null;
   const enabled = raw.enabled !== undefined ? Boolean(raw.enabled) : fallback.enabled;
   const trigger = isValidTrigger(raw.trigger) ? raw.trigger : fallback.trigger;
   const thresholdPct = clamp(
@@ -110,7 +111,7 @@ export const useMedicinePouchStore = create<MedicinePouchStoreState>()(
       set((state) => {
         const slot = state.slots[slotKey];
         if (!slot) return;
-        slot.equippedItemId = itemId ?? null;
+        slot.equippedItemId = itemId && isCombatUsableConsumable(itemId) ? itemId : null;
       });
     },
 

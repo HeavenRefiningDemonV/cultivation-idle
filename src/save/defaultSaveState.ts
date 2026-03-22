@@ -309,6 +309,9 @@ export function buildDefaultSaveState(): SaveData {
       insight: heartLawState.insight ?? null,
       stability: heartLawState.stability,
       stabilityCap: heartLawState.stabilityCap,
+      activeCultivationConsumables: heartLawState.activeCultivationConsumables.map((entry) => ({ ...entry, modifiers: { ...entry.modifiers } })),
+      insightProgressMs: heartLawState.insightProgressMs,
+      insightTargetMs: heartLawState.insightTargetMs ?? null,
     },
     manualPavilionState: {
       stockByPavilionId: cloneManualPavilionState(manualPavilionState.stockByPavilionId),
@@ -672,6 +675,11 @@ function isValidHeartLawState(value: unknown): value is SaveData['heartLawState'
   if ('stabilityCap' in value && value.stabilityCap !== undefined && typeof value.stabilityCap !== 'number') {
     return false;
   }
+  if ('activeCultivationConsumables' in value && value.activeCultivationConsumables !== undefined) {
+    if (!Array.isArray(value.activeCultivationConsumables)) return false;
+  }
+  if ('insightProgressMs' in value && value.insightProgressMs !== undefined && typeof value.insightProgressMs !== 'number') return false;
+  if ('insightTargetMs' in value && value.insightTargetMs !== null && value.insightTargetMs !== undefined && typeof value.insightTargetMs !== 'number') return false;
   return true;
 }
 

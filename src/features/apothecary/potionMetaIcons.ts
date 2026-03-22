@@ -39,7 +39,7 @@ const effectIconMap: Record<EffectKind, IconId> = {
   fallback: 'herbBundle',
 };
 
-const recommendedSlotMap: Record<ConsumableSpec['recommendedSlot'], Omit<MetaChip, 'key'>> = {
+const recommendedSlotMap: Record<'healing' | 'utility' | 'specialty', Omit<MetaChip, 'key'>> = {
   healing: { iconId: 'inkHeart', tooltip: 'Recommended slot: Healing' },
   utility: { iconId: 'inkSwirl', tooltip: 'Recommended slot: Utility' },
   specialty: { iconId: 'inkSparkles', tooltip: 'Recommended slot: Specialty' },

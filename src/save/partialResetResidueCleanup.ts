@@ -26,6 +26,9 @@ const normalizeHeartLawState = (value: unknown): Record<string, unknown> => {
     nextInsightAt: null,
     insight: null,
     stability: 0,
+    activeCultivationConsumables: [],
+    insightProgressMs: 0,
+    insightTargetMs: null,
   };
 };
 

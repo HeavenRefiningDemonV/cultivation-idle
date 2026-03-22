@@ -1110,34 +1110,28 @@ export const useCombatStore = create<ExtendedCombatState>()(
           );
           break;
         }
-        case 'combatBuff': {
-          const buffId = `consumable:${itemId}:${effect.stat}`;
+        case 'combatBuff':
+        case 'cleanseOrFallbackBuff': {
+          const buffStat = effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackStat : effect.stat;
+          const buffMode = effect.kind === 'cleanseOrFallbackBuff' ? 'pct' : effect.mode;
+          const buffValue = effect.kind === 'cleanseOrFallbackBuff' ? effect.fallbackValue : effect.value;
+          const buffId = `consumable:${itemId}:${buffStat}`;
           const endsAt = now + effect.durationSec * 1000;
           let refreshed = false;
 
           set((state) => {
             refreshed = state.combatBuffs.some((buff) => buff.id === buffId);
             state.combatBuffs = state.combatBuffs.filter((buff) => buff.id !== buffId);
-            state.combatBuffs.push({
-              id: buffId,
-              stat: effect.stat,
-              mode: effect.mode,
-              value: effect.value,
-              endsAt,
-            });
+            state.combatBuffs.push({ id: buffId, stat: buffStat, mode: buffMode, value: buffValue, endsAt });
           });
 
-          const valueLabel = `${(effect.value * 100).toFixed(0)}${effect.mode === 'pct' ? '%' : ''}`;
-          emitEvent('STATUS_APPLIED', {
-            statusId: buffId,
-            stacks: 1,
-            durationSec: effect.durationSec,
-            refreshed,
-            target: 'player',
-          });
+          const valueLabel = `${(buffValue * 100).toFixed(0)}${buffMode === 'pct' ? '%' : ''}`;
+          emitEvent('STATUS_APPLIED', { statusId: buffId, stacks: 1, durationSec: effect.durationSec, refreshed, target: 'player' });
           get().addLogEntry(
             'system',
-            `Used ${spec.shortLabel}: ${effect.stat} +${valueLabel} for ${effect.durationSec}s`,
+            effect.kind === 'cleanseOrFallbackBuff'
+              ? `Used ${spec.shortLabel}: no venom to cleanse, ${buffStat} +${valueLabel} for ${effect.durationSec}s`
+              : `Used ${spec.shortLabel}: ${buffStat} +${valueLabel} for ${effect.durationSec}s`,
             '#38bdf8',
           );
           break;

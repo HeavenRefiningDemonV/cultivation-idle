@@ -11,6 +11,7 @@ import type { DisplayStack } from '../inventory/inventoryTypes';
 import type { ItemDefinition } from '../../types';
 import type { IconId } from '../../ui/icons';
 import { GameIcon } from '../../ui/icons';
+import { consumeConsumable } from '../../systems/consumables/consumeConsumable';
 import './InventoryScreen.scss';
 
 type InventorySlot =
@@ -760,6 +761,17 @@ export default function InventoryScreen() {
                       }}
                     >
                       Activate Talisman
+                    </button>
+                  ) : selectedStack.usage === 'cultivate_only' && selectedStack.quantity > 0 ? (
+                    <button
+                      className="button-standard inventoryPrimaryButton"
+                      type="button"
+                      onClick={() => {
+                        const result = consumeConsumable(selectedStack.itemId);
+                        addNotification(result.ok ? 'success' : 'error', result.message);
+                      }}
+                    >
+                      Drink Now
                     </button>
                   ) : (
                     <div className="inventoryInspectorEmptyAction">No actions available.</div>

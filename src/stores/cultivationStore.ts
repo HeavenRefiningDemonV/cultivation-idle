@@ -6,6 +6,7 @@ import { GameEvents } from '../services/events/GameEvents';
 import type { ComprehensionSource, InsightChoiceId, InsightMomentState } from '../types/index.js';
 import {
   INSIGHT_BURSTS,
+  INSIGHT_DURATION_MS,
   INSIGHT_INTERVAL_RANGE_MS,
   VERSE_COMPREHENSION_THRESHOLD,
   getBreathModeMultipliers,
@@ -13,6 +14,21 @@ import {
 import type { BreathMode } from '../types/index.js';
 import { useUIStore } from './uiStore';
 import { D } from '../utils/numbers';
+import { getConsumableSpec } from '../systems/consumables/consumableCatalog.js';
+import {
+  filterActiveCultivationConsumables,
+  mergeCultivationConsumableModifiers,
+} from '../systems/consumables/cultivationConsumableEffects.js';
+import type {
+  ActiveCultivationConsumable,
+  CultivationConsumableModifiers,
+} from '../systems/consumables/cultivationConsumableTypes.js';
+
+interface UseCultivationConsumableResult {
+  ok: boolean;
+  reason: string;
+  message: string;
+}
 
 interface CultivationState {
   selectedHeartLawId: string | null;
@@ -27,8 +43,12 @@ interface CultivationState {
   insight: InsightMomentState | null;
   stability: number;
   stabilityCap: number;
+  activeCultivationConsumables: ActiveCultivationConsumable[];
+  insightProgressMs: number;
+  insightTargetMs: number | null;
   selectHeartLaw: (id: string) => void;
   addComprehension: (amount: number, source: ComprehensionSource) => void;
+  addStability: (amount: number) => void;
   tryAdvanceChapter: () => void;
   isUnlocked: (id: string) => boolean;
   setUnlocked: (ids: string[]) => void;
@@ -38,8 +58,15 @@ interface CultivationState {
   setStudyTechniqueId: (techniqueId: string | null) => void;
   markInsight: (timestampMs?: number) => void;
   getComprehensionRequirementForNextChapter: () => number;
+  ensureInsightCycle: (now: number) => void;
   scheduleNextInsight: (now: number) => void;
+  advanceInsightTimer: (deltaMs: number, now: number, frequencyMultiplier?: number) => boolean;
   resolveInsight: (choiceId?: InsightChoiceId | 'auto') => void;
+  useCultivationConsumable: (itemId: string, now?: number) => UseCultivationConsumableResult;
+  getActiveCultivationConsumables: (now?: number) => ActiveCultivationConsumable[];
+  clearExpiredCultivationConsumables: (now?: number) => void;
+  getCultivationConsumableModifiers: (now?: number) => CultivationConsumableModifiers;
+  consumeMajorBreakthroughBonus: (now?: number) => number;
   resetForNewLife: () => void;
 }
 
@@ -60,41 +87,46 @@ function clampStability(value: number, cap: number) {
   return value;
 }
 
-function pickNextInsightTime(now: number) {
+function pickInsightTargetMs() {
   const span = INSIGHT_INTERVAL_RANGE_MS.max - INSIGHT_INTERVAL_RANGE_MS.min;
-  const offset = Math.random() * span + INSIGHT_INTERVAL_RANGE_MS.min;
-  return now + offset;
+  return Math.random() * span + INSIGHT_INTERVAL_RANGE_MS.min;
 }
+
+function deriveNextInsightAt(now: number, progressMs: number, targetMs: number | null, frequencyMultiplier = 1) {
+  if (!targetMs || frequencyMultiplier <= 0) return null;
+  const remaining = Math.max(0, targetMs - progressMs);
+  return now + remaining / frequencyMultiplier;
+}
+
+const baseState = {
+  selectedHeartLawId: null,
+  chapter: 1,
+  comprehension: 0,
+  unlockedHeartLawIds: [],
+  breathMode: 'balanced' as BreathMode,
+  studyEnabled: false,
+  studyTechniqueId: null,
+  lastInsightAt: null as number | null,
+  nextInsightAt: null as number | null,
+  insight: null as InsightMomentState | null,
+  stability: 0,
+  stabilityCap: 100,
+  activeCultivationConsumables: [] as ActiveCultivationConsumable[],
+  insightProgressMs: 0,
+  insightTargetMs: null as number | null,
+};
 
 export const useCultivationStore = create<CultivationState>()(
   immer((set, get) => ({
-    selectedHeartLawId: null,
-    chapter: 1,
-    comprehension: 0,
-    unlockedHeartLawIds: [],
-    breathMode: 'balanced',
-    studyEnabled: false,
-    studyTechniqueId: null,
-    lastInsightAt: null,
-    nextInsightAt: null,
-    insight: null,
-    stability: 0,
-    stabilityCap: 100,
+    ...baseState,
 
     selectHeartLaw: (id) => {
       if (!get().isUnlocked(id)) return;
       if (get().selectedHeartLawId === id) return;
       useUIStore.getState().setLifeStartWizardContext(id);
       set((state) => {
+        Object.assign(state, baseState);
         state.selectedHeartLawId = id;
-        state.chapter = 1;
-        state.comprehension = 0;
-        state.studyTechniqueId = null;
-        state.studyEnabled = false;
-        state.lastInsightAt = null;
-        state.nextInsightAt = null;
-        state.insight = null;
-        state.stability = 0;
       });
       GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: id } });
     },
@@ -108,10 +140,16 @@ export const useCultivationStore = create<CultivationState>()(
       get().tryAdvanceChapter();
     },
 
+    addStability: (amount) => {
+      if (!Number.isFinite(amount) || amount <= 0) return;
+      set((state) => {
+        state.stability = clampStability(state.stability + amount, state.stabilityCap);
+      });
+    },
+
     tryAdvanceChapter: () => {
       const { selectedHeartLawId } = get();
       if (!selectedHeartLawId) return;
-
       set((state) => {
         while (state.chapter < 5 && state.comprehension >= getChapterRequirement(state.chapter)) {
           state.comprehension -= getChapterRequirement(state.chapter);
@@ -130,58 +168,69 @@ export const useCultivationStore = create<CultivationState>()(
       if (starters.includes(id)) return true;
       return get().unlockedHeartLawIds.includes(id);
     },
-
-    setUnlocked: (ids) => {
-      const unique = Array.from(new Set(ids));
-      set((state) => {
-        state.unlockedHeartLawIds = unique;
-      });
-    },
-
-    unlock: (id) => {
-      set((state) => {
-        if (!state.unlockedHeartLawIds.includes(id)) {
-          state.unlockedHeartLawIds.push(id);
-        }
-      });
-    },
-
-    setBreathMode: (mode) => {
-      set((state) => {
-        state.breathMode = mode;
-      });
-    },
-
-    setStudyEnabled: (enabled) => {
-      set((state) => {
-        state.studyEnabled = enabled;
-      });
-    },
-
-    setStudyTechniqueId: (techniqueId) => {
-      set((state) => {
-        state.studyTechniqueId = techniqueId;
-      });
-    },
-
-    markInsight: (timestampMs) => {
-      const at = typeof timestampMs === 'number' ? timestampMs : Date.now();
-      set((state) => {
-        state.lastInsightAt = at;
-      });
-    },
-
+    setUnlocked: (ids) => set((state) => { state.unlockedHeartLawIds = Array.from(new Set(ids)); }),
+    unlock: (id) => set((state) => { if (!state.unlockedHeartLawIds.includes(id)) state.unlockedHeartLawIds.push(id); }),
+    setBreathMode: (mode) => set((state) => { state.breathMode = mode; }),
+    setStudyEnabled: (enabled) => set((state) => { state.studyEnabled = enabled; }),
+    setStudyTechniqueId: (techniqueId) => set((state) => { state.studyTechniqueId = techniqueId; }),
+    markInsight: (timestampMs) => set((state) => { state.lastInsightAt = typeof timestampMs === 'number' ? timestampMs : Date.now(); }),
     getComprehensionRequirementForNextChapter: () => {
       const chapter = get().chapter;
       if (chapter >= 5) return 0;
       return getChapterRequirement(chapter);
     },
-
+    ensureInsightCycle: (now) => {
+      set((state) => {
+        if (!state.selectedHeartLawId) return;
+        if (state.insightTargetMs === null || state.insightTargetMs <= 0) {
+          state.insightTargetMs = pickInsightTargetMs();
+          state.insightProgressMs = 0;
+        }
+        const frequency = get().getCultivationConsumableModifiers(now).insightFrequencyMult;
+        state.nextInsightAt = deriveNextInsightAt(now, state.insightProgressMs, state.insightTargetMs, frequency);
+      });
+    },
     scheduleNextInsight: (now) => {
       set((state) => {
         const reference = typeof now === 'number' ? now : Date.now();
-        state.nextInsightAt = pickNextInsightTime(reference);
+        state.insightTargetMs = pickInsightTargetMs();
+        state.insightProgressMs = 0;
+        const frequency = get().getCultivationConsumableModifiers(reference).insightFrequencyMult;
+        state.nextInsightAt = deriveNextInsightAt(reference, 0, state.insightTargetMs, frequency);
       });
+    },
+    advanceInsightTimer: (deltaMs, now, frequencyMultiplier = 1) => {
+      if (deltaMs <= 0 || !get().selectedHeartLawId) return false;
+      let opened = false;
+      set((state) => {
+        if (state.insight) return;
+        if (state.insightTargetMs === null || state.insightTargetMs <= 0) {
+          state.insightTargetMs = pickInsightTargetMs();
+          state.insightProgressMs = 0;
+        }
+        state.insightProgressMs += deltaMs * Math.max(0, frequencyMultiplier);
+        if (state.insightTargetMs !== null && state.insightProgressMs >= state.insightTargetMs) {
+          opened = true;
+          state.insight = {
+            pending: true,
+            startedAt: now,
+            expiresAt: now + INSIGHT_DURATION_MS,
+            defaultChoiceId: 'contemplate',
+            choices: [
+              { id: 'contemplate', title: 'Contemplate', description: 'Focus inward for a burst of insight.' },
+              { id: 'stabilize', title: 'Stabilize', description: 'Calm your breath to steady your foundation.' },
+              { id: 'drawQi', title: 'Draw Qi', description: 'Absorb ambient qi for a quick boost.' },
+            ],
+          };
+          state.lastInsightAt = now;
+          state.insightProgressMs = 0;
+          state.insightTargetMs = pickInsightTargetMs();
+          state.nextInsightAt = null;
+        } else {
+          state.nextInsightAt = deriveNextInsightAt(now, state.insightProgressMs, state.insightTargetMs, frequencyMultiplier);
+        }
+      });
+      return opened;
     },
 
     resolveInsight: (choiceId) => {
@@ -192,7 +241,10 @@ export const useCultivationStore = create<CultivationState>()(
       set((draft) => {
         draft.insight = null;
         draft.lastInsightAt = now;
-        draft.nextInsightAt = pickNextInsightTime(now);
+        draft.insightProgressMs = 0;
+        draft.insightTargetMs = pickInsightTargetMs();
+        const frequency = get().getCultivationConsumableModifiers(now).insightFrequencyMult;
+        draft.nextInsightAt = deriveNextInsightAt(now, 0, draft.insightTargetMs, frequency);
       });
 
       switch (chosenId) {
@@ -207,44 +259,77 @@ export const useCultivationStore = create<CultivationState>()(
           if (qiBonus.greaterThan(0)) {
             useGameStore.setState((s: any) => {
               const currentQi = D((s as any).qi ?? '0');
-              return {
-                qi: currentQi.plus(qiBonus).toString(),
-                lastActiveTime: now,
-                lastTickTime: now,
-              };
+              return { qi: currentQi.plus(qiBonus).toString(), lastActiveTime: now, lastTickTime: now };
             });
           }
           break;
         }
         case 'stabilize':
-        default:
-          set((draft) => {
-            draft.stability = clampStability(
-              draft.stability + INSIGHT_BURSTS.stability,
-              draft.stabilityCap,
-            );
-          });
+        default: {
+          const breath = getBreathModeMultipliers(get().breathMode);
+          const modifiers = get().getCultivationConsumableModifiers(now);
+          get().addStability(INSIGHT_BURSTS.stability * breath.stabilityMult * modifiers.stabilityGainMult);
           break;
+        }
       }
     },
 
+    useCultivationConsumable: (itemId, now = Date.now()) => {
+      const spec = getConsumableSpec(itemId);
+      if (!spec || spec.domain !== 'cultivation' || spec.effect.kind !== 'cultivationBuff' || !spec.family) {
+        return { ok: false, reason: 'not_cultivation_consumable', message: 'That item cannot be used for cultivation.' };
+      }
+      const effect = spec.effect;
+      const family = spec.family;
+
+      set((state) => {
+        state.activeCultivationConsumables = state.activeCultivationConsumables.filter(
+          (entry) => entry.expiresAt > now && entry.family !== family,
+        );
+        state.activeCultivationConsumables.push({
+          itemId,
+          family,
+          activatedAt: now,
+          expiresAt: now + effect.durationSec * 1000,
+          modifiers: { ...effect.modifiers },
+          consumedOnMajorBreakthrough: false,
+        });
+      });
+
+      get().clearExpiredCultivationConsumables(now);
+      get().ensureInsightCycle(now);
+      return {
+        ok: true,
+        reason: 'ok',
+        message: spec.longLabel ?? `Used ${spec.shortLabel}.`,
+      };
+    },
+
+    getActiveCultivationConsumables: (now = Date.now()) => filterActiveCultivationConsumables(get().activeCultivationConsumables, now),
+    clearExpiredCultivationConsumables: (now = Date.now()) => {
+      set((state) => {
+        state.activeCultivationConsumables = filterActiveCultivationConsumables(state.activeCultivationConsumables, now);
+        const frequency = mergeCultivationConsumableModifiers(state.activeCultivationConsumables, now).insightFrequencyMult;
+        state.nextInsightAt = deriveNextInsightAt(now, state.insightProgressMs, state.insightTargetMs, frequency);
+      });
+    },
+    getCultivationConsumableModifiers: (now = Date.now()) => mergeCultivationConsumableModifiers(get().activeCultivationConsumables, now),
+    consumeMajorBreakthroughBonus: (now = Date.now()) => {
+      let granted = 0;
+      set((state) => {
+        const target = state.activeCultivationConsumables.find(
+          (entry) => entry.family === 'breakthrough' && entry.expiresAt > now && !entry.consumedOnMajorBreakthrough,
+        );
+        if (!target) return;
+        target.consumedOnMajorBreakthrough = true;
+        granted = target.modifiers.majorBreakthroughStabilityBonus;
+      });
+      return granted;
+    },
     resetForNewLife: () => {
       const lastSelected = get().selectedHeartLawId;
-      set((state) => {
-        state.selectedHeartLawId = null;
-        state.chapter = 1;
-        state.comprehension = 0;
-        state.breathMode = 'balanced';
-        state.studyTechniqueId = null;
-        state.studyEnabled = false;
-        state.lastInsightAt = null;
-        state.nextInsightAt = null;
-        state.insight = null;
-        state.stability = 0;
-      });
-      if (lastSelected) {
-        useUIStore.getState().setLifeStartWizardContext(lastSelected);
-      }
+      set((state) => { Object.assign(state, baseState); });
+      if (lastSelected) useUIStore.getState().setLifeStartWizardContext(lastSelected);
       GameEvents.emit({ type: 'heartlaw/selected', payload: { heartLawId: null } });
     },
   })),
@@ -259,26 +344,17 @@ export function getDefaultUnlockedHeartLawIds(): string[] {
 export function getSelectedHeartLawDef(): HeartLawDef | null {
   const selectedId = useCultivationStore.getState().selectedHeartLawId;
   if (!selectedId) return null;
-  const content = useContentStore.getState();
-  return content.maps.heartLawsById[selectedId] ?? null;
+  return useContentStore.getState().maps.heartLawsById[selectedId] ?? null;
 }
 
 export function getAvailableHeartLaws(): { unlocked: HeartLawDef[]; locked: HeartLawDef[] } {
   const content = useContentStore.getState();
-  if (!content.isLoaded || !content.raw?.heart_laws) {
-    return { unlocked: [], locked: [] };
-  }
+  if (!content.isLoaded || !content.raw?.heart_laws) return { unlocked: [], locked: [] };
   const laws = content.listHeartLaws();
   const store = useCultivationStore.getState();
   const unlocked: HeartLawDef[] = [];
   const locked: HeartLawDef[] = [];
-  laws.forEach((law) => {
-    if (store.isUnlocked(law.id)) {
-      unlocked.push(law);
-    } else {
-      locked.push(law);
-    }
-  });
+  laws.forEach((law) => { if (store.isUnlocked(law.id)) unlocked.push(law); else locked.push(law); });
   return { unlocked, locked };
 }
 
