@@ -9,6 +9,9 @@ export type OutskirtsDropsConfig = {
   mobCommonMatChance?: number;
   mobDoubleMatChance?: number;
   mobRareMatChance?: number;
+  mobManualScrapsChanceByCityIndex?: Record<number, number> | number[];
+  mobManualScrapsRangeByCityIndex?: Record<number, [number, number]> | Array<[number, number]>;
+  mobGearDropChanceByCityIndex?: Record<number, number> | number[];
 
   bossGoldByCityIndex?: Record<number, [number, number]>;
   bossMatCountRangeByCityIndex?: Record<number, [number, number]>;
@@ -16,6 +19,22 @@ export type OutskirtsDropsConfig = {
 
   bossSpiritStoneChanceByCityIndex?: Record<number, number>;
   bossSpiritStoneRangeByCityIndex?: Record<number, [number, number]>;
+  bossTechniqueFragmentsRangeByCityIndex?: Record<number, [number, number]> | Array<[number, number]>;
+  bossManualDropChanceByCityIndex?: Record<number, number> | number[];
+  bossManualRarityWeights?: Record<string, number>;
+  bossManualLegendaryChanceOverrideByCityIndex?: Record<number, number> | number[];
+  bossManualPity?: {
+    killsNoManualGuarantee?: number;
+    killsNoRarePlusGuarantee?: number;
+  };
+};
+
+export type RuinsDropsConfig = {
+  finalChestTechniqueFragmentsRangeByCityIndex?: Record<number, [number, number]> | Array<[number, number]>;
+  finalChestRuneDustRangeByCityIndex?: Record<number, [number, number]> | Array<[number, number]>;
+  finalChestArtifactShardsRangeByCityIndex?: Record<number, [number, number]> | Array<[number, number]>;
+  manualDropChance?: number;
+  manualPityRunGuarantee?: number;
 };
 
 export interface TtmuBudgets {
@@ -56,12 +75,18 @@ export interface EconomyConfig {
   generatedOn?: string;
   paths: PathId[];
   majorRealms: { id: MajorRealmId; name: string; index: number; stretch?: boolean }[];
-  manualSystem?: unknown;
+  manualSystem?: {
+    drops?: {
+      outskirts?: OutskirtsDropsConfig;
+      ruins?: RuinsDropsConfig;
+    };
+    [key: string]: unknown;
+  };
   tuning?: EconomyTuningConfig;
 
   drops?: {
     outskirts?: OutskirtsDropsConfig;
-    // future modules: trials?: ..., ruins?: ...
+    ruins?: RuinsDropsConfig;
   };
 }
 

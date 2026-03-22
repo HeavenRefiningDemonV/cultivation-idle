@@ -14,7 +14,7 @@ import type {
   MedicinePouchSlotKey,
 } from '../types/index.js';
 import type { TechniqueDef } from '../content/index.js';
-import type { OutskirtsDef, OutskirtsDropsConfig } from '../content/index.js';
+import type { OutskirtsDef } from '../content/index.js';
 import { useGameStore } from './gameStore';
 import { useZoneStore } from './zoneStore';
 import { useInventoryStore } from './inventoryStore';
@@ -64,6 +64,7 @@ import {
 } from '../systems/consumables/consumableCatalog';
 import { useMedicinePouchStore } from './medicinePouchStore';
 import { GameEvents } from '../services/events/GameEvents';
+import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/economy/index.js';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -377,87 +378,6 @@ function resolveShieldDurationSec(effect: unknown): number | null {
   if (type !== 'shield') return null;
   const duration = (effect as any).durationSec;
   return typeof duration === 'number' && Number.isFinite(duration) ? duration : null;
-}
-
-function buildOutskirtsRewards(
-  outskirtsDef: OutskirtsDef,
-  dropsConfig: OutskirtsDropsConfig | undefined,
-  cityIndex: number,
-  isBoss: boolean,
-): RewardBundle {
-  const idx = Math.max(0, cityIndex ?? 0);
-  const drops = dropsConfig ?? {};
-
-  const mobGoldRange = valueByIndex<[number, number]>(drops.mobGoldByCityIndex, idx, [2, 6]);
-  const mobCommonChance = drops.mobCommonMatChance ?? 0.35;
-  const mobDoubleChance = drops.mobDoubleMatChance ?? 0.1;
-  const mobRareChance = drops.mobRareMatChance ?? 0.02;
-
-  const bossGoldRange = valueByIndex<[number, number]>(drops.bossGoldByCityIndex, idx, [20, 40]);
-  const bossMatCountRange = valueByIndex<[number, number]>(drops.bossMatCountRangeByCityIndex, idx, [2, 4]);
-  const bossRareChance = valueByIndex(drops.bossRareMatChanceByCityIndex, idx, 0.1);
-  const bossSpiritChance = valueByIndex(drops.bossSpiritStoneChanceByCityIndex, idx, 0);
-  const bossSpiritRange = valueByIndex<[number, number]>(drops.bossSpiritStoneRangeByCityIndex, idx, [0, 0]);
-
-  const bundle: RewardBundle = { currencies: {} };
-  const items: RewardItemBundle[] = [];
-
-  if (isBoss) {
-    const gold = randomIntInRange(bossGoldRange, bossGoldRange);
-    bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
-
-    const matCount = Math.max(0, randomIntInRange(bossMatCountRange, bossMatCountRange));
-    const commonPool = outskirtsDef.matPools?.common ?? [];
-    for (let i = 0; i < matCount; i += 1) {
-      const mat = randomFromList(commonPool);
-      if (mat) items.push({ itemId: mat, qty: 1 });
-    }
-
-    const rarePool = outskirtsDef.matPools?.rare ?? [];
-    const rareChance = bossRareChance ?? 0;
-    if (rarePool.length > 0 && Math.random() < rareChance) {
-      const rareMat = randomFromList(rarePool);
-      if (rareMat) items.push({ itemId: rareMat, qty: 1 });
-    }
-
-    if (Math.random() < bossSpiritChance) {
-      const spiritQty = randomIntInRange(bossSpiritRange, bossSpiritRange);
-      if (spiritQty > 0) {
-        bundle.currencies = { ...bundle.currencies, spiritStones: spiritQty.toString() };
-      }
-    }
-  } else {
-    const gold = randomIntInRange(mobGoldRange, mobGoldRange);
-    bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
-
-    const commonPool = outskirtsDef.matPools?.common ?? [];
-    const rarePool = outskirtsDef.matPools?.rare ?? [];
-
-    const commonChance = mobCommonChance ?? 0;
-    const doubleChance = mobDoubleChance ?? 0;
-    const rareChance = mobRareChance ?? 0;
-
-    if (commonPool.length > 0 && Math.random() < commonChance) {
-      const mat = randomFromList(commonPool);
-      if (mat) items.push({ itemId: mat, qty: 1 });
-      if (Math.random() < doubleChance) {
-        const second = randomFromList(commonPool);
-        if (second) items.push({ itemId: second, qty: 1 });
-      }
-    }
-
-    if (rarePool.length > 0 && Math.random() < rareChance) {
-      const rareMat = randomFromList(rarePool);
-      if (rareMat) items.push({ itemId: rareMat, qty: 1 });
-    }
-  }
-
-  const collapsedItems = collapseItems(items);
-  if (collapsedItems.length > 0) {
-    bundle.items = collapsedItems;
-  }
-
-  return applyLootBonuses(bundle, 'outskirts');
 }
 
 /**
@@ -1555,7 +1475,12 @@ export const useCombatStore = create<ExtendedCombatState>()(
         }
 
         const economy = contentStore.raw?.economy;
-        const rewards = buildOutskirtsRewards(outskirtsDef, economy?.drops?.outskirts, cityIndex, isBossFight);
+        const rewards = buildOutskirtsRewardBundle(
+          outskirtsDef,
+          getOutskirtsDropsConfig(economy),
+          cityIndex,
+          isBossFight,
+        );
         RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
         emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');
 

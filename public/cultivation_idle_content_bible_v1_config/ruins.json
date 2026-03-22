@@ -56,11 +56,12 @@
         "goldMax": 55,
         "rolls": 2,
         "pool": [
-          { "itemId": "mat_stone_chunk", "weight": 35, "qtyMin": 1, "qtyMax": 2 },
-          { "itemId": "mat_iron_sand", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
-          { "itemId": "mat_quarry_ore", "weight": 20, "qtyMin": 1, "qtyMax": 1 },
-          { "itemId": "mat_fire_ash", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
-          { "itemId": "mat_beast_bone", "weight": 10, "qtyMin": 1, "qtyMax": 1 }
+          { "itemId": "mat_quarry_ore", "weight": 30, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_iron_sand", "weight": 30, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_stone_chunk", "weight": 20, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_earth_essence", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_fire_ash", "weight": 5, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_beast_bone", "weight": 5, "qtyMin": 1, "qtyMax": 1 }
         ]
       },
       "finalChestDrops": {
@@ -68,11 +69,11 @@
         "goldMax": 180,
         "rolls": 4,
         "pool": [
-          { "itemId": "mat_earth_essence", "weight": 10, "qtyMin": 1, "qtyMax": 1 },
-          { "itemId": "mat_quarry_ore", "weight": 30, "qtyMin": 2, "qtyMax": 3 },
-          { "itemId": "mat_stone_chunk", "weight": 30, "qtyMin": 2, "qtyMax": 4 },
+          { "itemId": "mat_quarry_ore", "weight": 35, "qtyMin": 2, "qtyMax": 4 },
           { "itemId": "mat_iron_sand", "weight": 20, "qtyMin": 1, "qtyMax": 3 },
-          { "itemId": "frag_manual_mortal", "weight": 10, "qtyMin": 1, "qtyMax": 1 }
+          { "itemId": "mat_earth_essence", "weight": 15, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "frag_manual_mortal", "weight": 15, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_stone_chunk", "weight": 15, "qtyMin": 2, "qtyMax": 3 }
         ],
         "guaranteed": [
           { "itemId": "frag_manual_mortal", "qty": 1 }
@@ -185,11 +186,11 @@
         "goldMax": 95,
         "rolls": 2,
         "pool": [
-          { "itemId": "mat_spirit_steel_ore", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
-          { "itemId": "mat_blade_core", "weight": 20, "qtyMin": 1, "qtyMax": 1 },
-          { "itemId": "mat_furnace_cinder", "weight": 20, "qtyMin": 1, "qtyMax": 2 },
-          { "itemId": "mat_iron_sand", "weight": 15, "qtyMin": 1, "qtyMax": 2 },
-          { "itemId": "mat_rune_dust", "weight": 20, "qtyMin": 1, "qtyMax": 2 }
+          { "itemId": "mat_spirit_steel_ore", "weight": 35, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_blade_core", "weight": 25, "qtyMin": 1, "qtyMax": 1 },
+          { "itemId": "mat_furnace_cinder", "weight": 25, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_rune_dust", "weight": 15, "qtyMin": 1, "qtyMax": 2 },
+          { "itemId": "mat_thunder_sand", "weight": 5, "qtyMin": 1, "qtyMax": 1 }
         ]
       },
       "finalChestDrops": {

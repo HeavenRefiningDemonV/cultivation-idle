@@ -4,3 +4,6 @@ export * from './liveEconomyVisibility.js';
 export * from './liveEconomyCatalog.js';
 export * from './sourceSinkAudit.js';
 export * from './hiddenCraftMigrationCatalog.js';
+export * from './activityRewardRoles.js';
+export * from './activityRewardRuntime.js';
+export * from './activityRewardAudit.js';

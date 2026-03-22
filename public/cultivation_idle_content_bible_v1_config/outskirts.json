@@ -33,12 +33,12 @@
       "matPools": {
         "common": [
           "mat_common_herb_bundle",
-          "mat_spirit_leaf",
           "mat_beast_blood",
           "mat_beast_bone",
           "mat_low_grade_ore"
         ],
         "rare": [
+          "mat_spirit_leaf",
           "mat_spirit_dew"
         ]
       }
@@ -76,11 +76,12 @@
         "common": [
           "mat_stone_chunk",
           "mat_iron_sand",
-          "mat_quarry_ore",
           "mat_beast_bone",
-          "mat_fire_ash"
+          "mat_fire_ash",
+          "mat_low_grade_ore"
         ],
         "rare": [
+          "mat_quarry_ore",
           "mat_earth_essence"
         ]
       }
@@ -116,14 +117,15 @@
       ],
       "matPools": {
         "common": [
-          "mat_core_fragment",
-          "mat_crystal_shard",
-          "mat_aura_residue",
           "mat_spirit_stone_chunk",
-          "mat_rune_dust"
+          "mat_rune_dust",
+          "mat_stone_chunk",
+          "mat_low_grade_ore",
+          "mat_beast_bone"
         ],
         "rare": [
-          "mat_artifact_shard"
+          "mat_crystal_shard",
+          "mat_aura_residue"
         ]
       }
     },
@@ -158,14 +160,16 @@
       ],
       "matPools": {
         "common": [
-          "mat_lotus_pollen",
-          "mat_mist_pearl",
           "mat_venom_sac",
-          "mat_soul_ember",
-          "mat_rune_dust"
+          "mat_rune_dust",
+          "mat_common_herb_bundle",
+          "mat_spirit_dew",
+          "mat_beast_blood"
         ],
         "rare": [
-          "mat_seed_ancient"
+          "mat_lotus_pollen",
+          "mat_mist_pearl",
+          "mat_soul_ember"
         ]
       }
     },
@@ -200,15 +204,16 @@
       ],
       "matPools": {
         "common": [
-          "mat_spirit_steel_ore",
-          "mat_blade_core",
-          "mat_furnace_cinder",
           "mat_iron_sand",
-          "mat_rune_dust"
+          "mat_rune_dust",
+          "mat_fire_ash",
+          "mat_stone_chunk",
+          "mat_low_grade_ore"
         ],
         "rare": [
-          "mat_thunder_sand",
-          "mat_artifact_shard"
+          "mat_spirit_steel_ore",
+          "mat_furnace_cinder",
+          "mat_blade_core"
         ]
       }
     }

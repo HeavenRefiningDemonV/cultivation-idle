@@ -46,6 +46,7 @@ import {
   inspectSemesterCityPackageCoverage,
 } from '../systems/world/cityPackageRegistry.js';
 import {
+  buildActivityRewardAuditReport,
   buildLiveEconomyCatalog,
   buildLiveEconomyAuditReport,
   getSinklessLiveMaterials,
@@ -1287,6 +1288,47 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     const status = liveEconomyCatalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown';
     if (family === 'forge_legacy_rune' && status === 'visible_live') {
       addErr(`legacy rune blueprint '${blueprint.id}' is still visible live`);
+    }
+  });
+
+  const activityRewardAudit = buildActivityRewardAuditReport({
+    economy: raw.economy,
+    outskirts,
+    ruins,
+  });
+
+  activityRewardAudit.cities.forEach((cityAudit) => {
+    if (cityAudit.outskirts.goldPosture !== 'primary') {
+      addErr(`outskirts '${cityAudit.outskirts.cityId}' lost its gold-engine posture`);
+    }
+    if (cityAudit.outskirts.commonFieldHits.length < Math.min(3, cityAudit.outskirts.commonPool.length)) {
+      addErr(`outskirts '${cityAudit.outskirts.cityId}' no longer reads as common-field-first`);
+    }
+    if (cityAudit.outskirts.targetedLeakageInCommon.length > 0) {
+      addErr(
+        `outskirts '${cityAudit.outskirts.cityId}' common pool leaks targeted/anchor materials: ${cityAudit.outskirts.targetedLeakageInCommon.join(', ')}`,
+      );
+    }
+    if (cityAudit.outskirts.anchorLeakage.length > 0) {
+      addErr(`outskirts '${cityAudit.outskirts.cityId}' includes deterministic ruin anchor items: ${cityAudit.outskirts.anchorLeakage.join(', ')}`);
+    }
+    if (cityAudit.outskirts.targetedRareSpikes.length === 0) {
+      addErr(`outskirts '${cityAudit.outskirts.cityId}' lost all intentional local rare spikes`);
+    }
+    if (cityAudit.ruins.goldPosture !== 'secondary') {
+      addErr(`ruins '${cityAudit.ruins.cityId}' lost its secondary gold posture`);
+    }
+    if (!cityAudit.ruins.hasDeterministicAnchor) {
+      addErr(`ruins '${cityAudit.ruins.cityId}' missing deterministic anchor '${cityAudit.ruins.deterministicAnchorItemId}'`);
+    }
+    if (cityAudit.ruins.leadMaterialsInRooms.length === 0) {
+      addErr(`ruins '${cityAudit.ruins.cityId}' room drops lost local targeted-material identity`);
+    }
+    if (cityAudit.ruins.targetedMaterialsInChest.length === 0) {
+      addErr(`ruins '${cityAudit.ruins.cityId}' final chest lost targeted-material identity`);
+    }
+    if (!cityAudit.ruins.rarePityConfigured) {
+      addErr(`ruins '${cityAudit.ruins.cityId}' boss chest pity is not configured`);
     }
   });
 

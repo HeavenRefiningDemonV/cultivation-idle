@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { RuinDef, RuinDropTable } from '../content/index.js';
+import type { RuinDef } from '../content/index.js';
 import type { CombatEvent, RuinsRunSummary } from '../types/index.js';
 import { useContentStore } from './contentStore';
 import { useActivityStore } from './activityStore';
@@ -8,9 +8,15 @@ import { useCombatStore } from './combatStore';
 import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
-import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
+import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { D } from '../utils/numbers';
 import { useUIStore } from './uiStore';
+import {
+  buildRuinsFinalChestBonusBundle,
+  getRuinsDropsConfig,
+  mergeRewardBundles,
+  rollRuinDropTable,
+} from '../systems/economy/index.js';
 
 export type RuinProgress = {
   totalRuns: number;
@@ -49,75 +55,6 @@ interface RuinsState {
   handleRunDefeat: (payload: { runId: string; ruinId: string; cityId?: string; roomIndex: number }) => void;
   setAutoRepeat: (enabled: boolean) => void;
   hardResetRuins: () => void;
-}
-
-function randomIntInclusive(minRaw?: number, maxRaw?: number): number {
-  const min = Number.isFinite(minRaw) ? (minRaw as number) : 0;
-  const max = Number.isFinite(maxRaw) ? (maxRaw as number) : min;
-  const low = Math.min(min, max);
-  const high = Math.max(min, max);
-  return Math.floor(Math.random() * (high - low + 1)) + low;
-}
-
-function pickWeighted<T extends { weight: number }>(pool: T[]): T | null {
-  const validPool = pool.filter((entry) => typeof entry.weight === 'number' && entry.weight > 0);
-  if (validPool.length === 0) return null;
-  const total = validPool.reduce((sum, entry) => sum + entry.weight, 0);
-  let roll = Math.random() * total;
-  for (const entry of validPool) {
-    roll -= entry.weight;
-    if (roll <= 0) return entry;
-  }
-  return validPool[validPool.length - 1] ?? null;
-}
-
-function collapseItems(items: RewardItemBundle[]): RewardItemBundle[] {
-  const merged = new Map<string, number>();
-  items.forEach((item) => {
-    if (!item?.itemId || typeof item.qty !== 'number' || item.qty <= 0) return;
-    merged.set(item.itemId, (merged.get(item.itemId) ?? 0) + item.qty);
-  });
-  return Array.from(merged.entries()).map(([itemId, qty]) => ({ itemId, qty }));
-}
-
-function rollDropTable(table: RuinDropTable, label: string): RewardBundle {
-  const bundle: RewardBundle = { currencies: {}, items: [] };
-
-  const goldMin = Number.isFinite(table.goldMin) ? (table.goldMin as number) : 0;
-  const goldMax = Number.isFinite(table.goldMax) ? (table.goldMax as number) : goldMin;
-  if (goldMin > 0 || goldMax > 0) {
-    const gold = randomIntInclusive(goldMin, goldMax);
-    if (gold > 0) {
-      bundle.currencies = { ...bundle.currencies, gold: gold.toString() };
-    }
-  }
-
-  const items: RewardItemBundle[] = [];
-  for (let i = 0; i < (table.rolls ?? 0); i += 1) {
-    const pick = pickWeighted(table.pool ?? []);
-    if (!pick || !pick.itemId) continue;
-    const qty = randomIntInclusive(pick.qtyMin, pick.qtyMax);
-    if (qty > 0) items.push({ itemId: pick.itemId, qty });
-  }
-
-  if (Array.isArray(table.guaranteed)) {
-    table.guaranteed.forEach((entry) => {
-      if (entry?.itemId && typeof entry.qty === 'number' && entry.qty > 0) {
-        items.push({ itemId: entry.itemId, qty: entry.qty });
-      }
-    });
-  }
-
-  const filtered = items.filter((item) => {
-    if (item.itemId.startsWith('gate_')) {
-      console.warn(`[Ruins] blocked gate item drop: ${item.itemId} (${label})`);
-      return false;
-    }
-    return true;
-  });
-
-  bundle.items = collapseItems(filtered);
-  return applyLootBonuses(bundle, 'ruins');
 }
 
 function goldFromBundle(bundle: RewardBundle | undefined): number {
@@ -336,7 +273,7 @@ export const useRuinsStore = create<RuinsState>()(
         const isFinalRoom = roomIndex >= active.roomCount - 1;
         const isStopping = active.stopping;
 
-        const perRoomRewards = rollDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`);
+        const perRoomRewards = rollRuinDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`);
         RewardService.grantRewards(
           perRoomRewards,
           `Ruins — ${ruinDef.name ?? ruinDef.id} (Room ${roomIndex + 1}/${active.roomCount})`,
@@ -353,9 +290,16 @@ export const useRuinsStore = create<RuinsState>()(
         }
 
         if (isFinalRoom) {
-          const chestRewards = rollDropTable(
-            ruinDef.finalChestDrops,
-            `Ruins ${ruinDef.id} final chest room ${roomIndex + 1}`,
+          const ruinsDropsConfig = getRuinsDropsConfig(useContentStore.getState().economy);
+          const chestRewards = mergeRewardBundles(
+            rollRuinDropTable(
+              ruinDef.finalChestDrops,
+              `Ruins ${ruinDef.id} final chest room ${roomIndex + 1}`,
+            ),
+            buildRuinsFinalChestBonusBundle(
+              ruinDef.cityIndex ?? content.maps.citiesById[ruinDef.cityId]?.index ?? 0,
+              ruinsDropsConfig,
+            ),
           );
           RewardService.grantRewards(
             chestRewards,
