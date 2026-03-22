@@ -14,14 +14,16 @@ import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
 import { GameIcon } from '../../ui/icons';
+import { AlchemyPanel } from './AlchemyPanel';
 import './ApothecaryPanel.scss';
 
-type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles';
+type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles' | 'workshop';
 
 type StatusMessage = { type: 'success' | 'error'; message: string };
 
 interface ApothecaryPanelProps {
   shopId: string | null;
+  initialShelf?: ShelfKey;
 }
 
 function stringToSeed(input: string) {
@@ -72,7 +74,7 @@ function usageToChipUsage(usage?: string): 'combat' | 'cultivation' | 'both' {
   }
 }
 
-export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
+export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryPanelProps) {
   const apothecary = useContentStore((state) =>
     shopId ? state.maps.apothecariesById[shopId] : undefined,
   );
@@ -86,7 +88,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   const canBuy = useShopStore((state) => state.canBuy);
   const buy = useShopStore((state) => state.buy);
 
-  const [activeShelf, setActiveShelf] = useState<ShelfKey>('combat');
+  const [activeShelf, setActiveShelf] = useState<ShelfKey>(initialShelf);
   const [statusByStock, setStatusByStock] = useState<Record<string, StatusMessage>>({});
   const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
   const [statusByService, setStatusByService] = useState<Record<string, StatusMessage>>({});
@@ -97,7 +99,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     ensureDayKeyCurrent();
   }, [ensureDayKeyCurrent]);
 
-  const stock = apothecary?.stock ?? [];
+  const stock = useMemo(() => apothecary?.stock ?? [], [apothecary]);
   const pouchSlots = useMedicinePouchStore((state) => state.slots);
   const badgeCount = Object.values(pouchSlots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
   const badgeDisplay = badgeCount > 9 ? '9+' : `${badgeCount}`;
@@ -138,6 +140,10 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     </div>
   );
 
+  useEffect(() => {
+    setActiveShelf(initialShelf);
+  }, [initialShelf, shopId]);
+
   if (!shopId) {
     return renderPlaceholder('No Apothecary here', 'This city does not host an apothecary.');
   }
@@ -154,6 +160,7 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
     { key: 'combat', label: `Combat (${combatStock.length})` },
     { key: 'cultivation', label: `Cultivation (${cultivationStock.length})` },
     { key: 'rotating', label: `Rotating (${rotatingStock.length})` },
+    { key: 'workshop', label: 'Workshop' },
     { key: 'services', label: 'Services' },
     { key: 'bundles', label: 'Bundles' },
   ];
@@ -416,6 +423,10 @@ export function ApothecaryPanel({ shopId }: ApothecaryPanelProps) {
   };
 
   const renderShelf = (key: ShelfKey) => {
+    if (key === 'workshop') {
+      return <AlchemyPanel cityId={apothecary.cityId} embedded />;
+    }
+
     if (key === 'bundles') {
       if (!apothecaryBundles.length) {
         return (

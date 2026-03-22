@@ -49,6 +49,9 @@ export type WorldBuildingKey =
   | 'bounties'
   | 'expeditions';
 
+const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuildingKey =>
+  buildingKey === 'alchemy' ? 'apothecary' : buildingKey;
+
 export interface UISettingsState {
   showOfflineModal: boolean;
   showCombatLog: boolean;
@@ -662,21 +665,22 @@ export const useUIStore = create<UIState>()(
     },
 
     openWorldBuildingModal: ({ cityId, buildingKey }) => {
+      const normalizedBuildingKey = normalizeWorldBuildingKey(buildingKey);
       set((state) => {
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = cityId;
-        state.worldBuildingModalKey = buildingKey;
+        state.worldBuildingModalKey = normalizedBuildingKey;
       });
-      if (buildingKey === 'manualPavilion') {
-        GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey, cityId } });
+      if (normalizedBuildingKey === 'manualPavilion') {
+        GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey: normalizedBuildingKey, cityId } });
       }
-      if (buildingKey === 'apothecary') {
+      if (normalizedBuildingKey === 'apothecary') {
         GameEvents.emit({ type: 'apothecary/opened', payload: { cityId } });
       }
-      if (buildingKey === 'alchemy' || buildingKey === 'forge' || buildingKey === 'talismanStudio') {
+      if (normalizedBuildingKey === 'forge' || normalizedBuildingKey === 'talismanStudio') {
         GameEvents.emit({
           type: 'crafting/opened',
-          payload: { station: buildingKey === 'alchemy' ? 'alchemy' : buildingKey === 'forge' ? 'forge' : 'talisman' },
+          payload: { station: normalizedBuildingKey === 'forge' ? 'forge' : 'talisman' },
         });
       }
     },

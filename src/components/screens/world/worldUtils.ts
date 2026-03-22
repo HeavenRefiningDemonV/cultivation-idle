@@ -31,6 +31,7 @@ export function resolveModuleRef(city: CityDef | null, moduleKey: string | null)
   if (!city || !moduleKey || !city.refs) return null;
   const explicitKey = MODULE_REF_KEYS[moduleKey];
   if (explicitKey && city.refs[explicitKey]) return city.refs[explicitKey];
+  if (moduleKey === 'alchemy' && city.refs.apothecaryId) return city.refs.apothecaryId;
   if (city.refs[`${moduleKey}Id`]) return city.refs[`${moduleKey}Id`];
   if (city.refs[moduleKey]) return city.refs[moduleKey];
   return null;
