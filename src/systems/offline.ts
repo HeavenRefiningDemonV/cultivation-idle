@@ -1,6 +1,9 @@
 import Decimal from 'decimal.js';
 import { useGameStore } from '../stores/gameStore.js';
 import { usePrestigeStore } from '../stores/prestigeStore.js';
+import { useCultivationStore } from '../stores/cultivationStore.js';
+import { useContentStore } from '../stores/contentStore.js';
+import { getHeartLawBonuses } from './heartLaw/heartLawLogic.js';
 import { D, multiply, formatNumber } from '../utils/numbers.js';
 import { apply as applyOfflineCatchup } from '../services/time/OfflineCatchup.js';
 import { DEFAULT_OFFLINE_EFFICIENCY, MAX_OFFLINE_MS, MAX_OFFLINE_SECONDS, ONE_WEEK_SECONDS } from '../services/time/offlineShared.js';
@@ -201,7 +204,16 @@ export function formatOfflineDuration(seconds: number): string {
 export function getOfflineEfficiency(): number {
   try {
     const prestigeStore = usePrestigeStore.getState();
-    const efficiency = DEFAULT_OFFLINE_EFFICIENCY * prestigeStore.getOfflineEfficiencyMultiplier();
+    const cultivationStore = useCultivationStore.getState();
+    const heartLawId = cultivationStore.selectedHeartLawId;
+    const heartLawDef = heartLawId ? useContentStore.getState().maps.heartLawsById[heartLawId] ?? null : null;
+    const heartLawBonus = getHeartLawBonuses({
+      heartLawDef,
+      chapter: cultivationStore.chapter,
+      spiritRoot: prestigeStore.spiritRoot,
+    }).offlineEfficiencyAdd;
+    const efficiency =
+      DEFAULT_OFFLINE_EFFICIENCY * prestigeStore.getOfflineEfficiencyMultiplier() + heartLawBonus;
     return Math.min(efficiency, 1);
   } catch {
     return DEFAULT_OFFLINE_EFFICIENCY;

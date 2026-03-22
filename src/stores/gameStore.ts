@@ -808,9 +808,21 @@ export const useGameStore = create<GameState>()(
       const substageMultiplier = D(BREAKTHROUGH_QI_MULTIPLIER).pow(state.realm.substage - 1);
       let requiredQi = multiply(baseRequirement, substageMultiplier);
 
+      const cultivationState = useCultivationStore.getState();
+      const selectedHeartLawId = cultivationState.selectedHeartLawId;
+      if (selectedHeartLawId) {
+        const heartLawDef = useContentStore.getState().maps.heartLawsById[selectedHeartLawId] ?? null;
+        const heartLawBonuses = getHeartLawBonuses({
+          heartLawDef,
+          chapter: cultivationState.chapter,
+          spiritRoot: getSpiritRootSnapshot(),
+        });
+        requiredQi = multiply(requiredQi, D(heartLawBonuses.breakthroughRequirementMult));
+      }
+
       const isMajorBreakthrough = state.realm.substage >= currentRealm.substages && hasNextLiveRealm(clampRealmIndexToSemesterSlice(state.realm.index));
       if (isMajorBreakthrough) {
-        const modifiers = useCultivationStore.getState().getCultivationConsumableModifiers(Date.now());
+        const modifiers = cultivationState.getCultivationConsumableModifiers(Date.now());
         requiredQi = multiply(requiredQi, D(modifiers.majorBreakthroughQiCostMult));
       }
 

@@ -67,7 +67,7 @@ function buildHeartLawProfile(law: HeartLawDef, affinityRules?: HeartLawAffinity
 
   const daoTags = normalizeStringList(law.daoTags);
   const spiritRootAffinities = normalizeStringList(law.spiritRootAffinities);
-  const liveSpiritRootAffinities = Object.freeze(getLiveSpiritRootAffinities(spiritRootAffinities));
+  const liveSpiritRootAffinities = Object.freeze(getLiveSpiritRootAffinities(spiritRootAffinities)) as SpiritRootElement[];
   const chapterThresholds = getHeartLawChapterThresholds();
   const signatureEffects = freezeEffectList(normalizeHeartLawEffectEntries('signature', law.signature ?? null));
   const sortedChapters = [...(law.chapters ?? [])].sort((a, b) => a.chapter - b.chapter);

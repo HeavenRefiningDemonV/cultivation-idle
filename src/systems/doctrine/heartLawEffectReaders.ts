@@ -222,14 +222,14 @@ export function getHeartLawChapterThresholds(): readonly number[] {
 export function getNormalizedHeartLawAffinityRules(
   rules: HeartLawAffinityRules | null | undefined,
 ): Required<HeartLawAffinityRules> {
-  const tierDefaults = {
+  const tierDefaults: Record<string, number> = {
     starter: 0.10,
     tier1: 0.14,
     tier2: 0.18,
     tier3: 0.22,
   };
 
-  const matchBonusByTier = { ...tierDefaults };
+  const matchBonusByTier: Record<string, number> = { ...tierDefaults };
   if (rules?.matchBonusByTier) {
     Object.entries(rules.matchBonusByTier).forEach(([tier, value]) => {
       if (typeof value === 'number' && Number.isFinite(value)) {
