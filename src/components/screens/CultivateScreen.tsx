@@ -16,6 +16,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import type { InsightMomentState } from '../../types/index.js';
 import { formatNumber, D } from '../../utils/numbers.js';
 import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../systems/consumables/cultivationConsumableTypes.js';
+import { buildCultivationConsumableReadModel } from '../../systems/consumables/cultivationConsumableEffects.js';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal.js';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks.js';
 import { DaoHeartModal } from '../modals/DaoHeartModal.js';
@@ -91,7 +92,7 @@ export function CultivateScreen() {
   const stability = useCultivationStore((state) => state.stability);
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
-  const cultivationBuffReadModel = useCultivationStore((state) => state.getCultivationConsumableReadModel());
+  const activeCultivationConsumables = useCultivationStore((state) => state.activeCultivationConsumables);
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
 
@@ -99,6 +100,7 @@ export function CultivateScreen() {
 
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
   const [showDaoHeart, setShowDaoHeart] = useState(false);
+  const [buffNow, setBuffNow] = useState(() => Date.now());
 
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
@@ -123,6 +125,19 @@ export function CultivateScreen() {
     }
     lastInsightRef.current = insight;
   }, [insight, addNotification]);
+
+  useEffect(() => {
+    if (activeCultivationConsumables.length === 0) return;
+
+    setBuffNow(Date.now());
+    const intervalId = window.setInterval(() => {
+      setBuffNow(Date.now());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [activeCultivationConsumables.length]);
 
   const requiredGateItem = useMemo(() => {
     const willAdvanceRealm = realm.substage >= currentRealm.substages && !isAtSemesterCap(liveRealmIndex);
@@ -156,11 +171,6 @@ export function CultivateScreen() {
   const breathMultipliers = getBreathModeMultipliers(breathMode);
   const baseRate = D(qiPerSecond || '0');
   const effectiveRate = baseRate.times(breathMultipliers.qiRateMult);
-  const rateTooltip = [
-    `Base: ${formatNumber(baseRate.toNumber())} Qi/s`,
-    `Breath cycle: x${breathMultipliers.qiRateMult} (${breathMode})`,
-    `Cultivation buffs: ${activeBuffSummary}`,
-  ].join('\n');
 
   const activityLabel = activeActivity ? ACTIVITY_LABELS[activeActivity.type] ?? 'Busy' : 'Idle';
   const isCultivating = activeActivity?.type === 'meditate';
@@ -169,17 +179,30 @@ export function CultivateScreen() {
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
   const heartLawTags = (heartLawDef?.daoTags ?? []).map((tag) => tag.toLowerCase());
 
-  const activeCultivationBuffs = cultivationBuffReadModel.entries.map((entry) => ({
+  const cultivationBuffReadModel = useMemo(
+    () => buildCultivationConsumableReadModel(activeCultivationConsumables, buffNow),
+    [activeCultivationConsumables, buffNow],
+  );
+
+  const activeCultivationBuffs = useMemo(() => cultivationBuffReadModel.entries.map((entry) => ({
     ...entry,
     familyMeta: CULTIVATION_CONSUMABLE_FAMILY_REGISTRY[entry.family],
     remainingSeconds: Math.max(1, Math.ceil(entry.remainingMs / 1000)),
-  }));
+  })), [cultivationBuffReadModel.entries]);
 
-  const activeBuffSummary = activeCultivationBuffs.length === 0
-    ? 'No active cultivation tonics.'
-    : activeCultivationBuffs
-        .map((entry) => `${entry.familyMeta.shortLabel}: ${entry.shortLabel} (${entry.remainingSeconds}s)`)
-        .join(' • ');
+  const activeBuffSummary = useMemo(() => (
+    activeCultivationBuffs.length === 0
+      ? 'No active cultivation tonics.'
+      : activeCultivationBuffs
+          .map((entry) => `${entry.familyMeta.shortLabel}: ${entry.shortLabel} (${entry.remainingSeconds}s)`)
+          .join(' • ')
+  ), [activeCultivationBuffs]);
+
+  const rateTooltip = useMemo(() => [
+    `Base: ${formatNumber(baseRate.toNumber())} Qi/s`,
+    `Breath cycle: x${breathMultipliers.qiRateMult} (${breathMode})`,
+    `Cultivation buffs: ${activeBuffSummary}`,
+  ].join('\n'), [activeBuffSummary, baseRate, breathMode, breathMultipliers.qiRateMult]);
 
   const hasPerkForRealm = useCallback(
     (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
