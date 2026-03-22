@@ -8,35 +8,35 @@ import type {
   CraftStation,
   CraftScript,
 } from '../systems/crafting/craftingTypes.js';
-import { useGameStore } from '../stores/gameStore';
-import { useInventoryStore } from '../stores/inventoryStore';
-import { useCombatStore } from '../stores/combatStore';
-import { useZoneStore } from '../stores/zoneStore';
-import { usePrestigeStore } from '../stores/prestigeStore';
-import { useCityStore } from '../stores/cityStore';
-import { useActivityStore } from '../stores/activityStore';
-import { useOutskirtsStore } from '../stores/outskirtsStore';
-import { normalizeTrialProgress, useTrialStore } from '../stores/trialStore';
-import { useRuinsStore } from '../stores/ruinsStore';
-import { useShopStore } from '../stores/shopStore';
-import { useTechCollectionStore } from '../stores/techCollectionStore';
-import { useTechniqueStore } from '../stores/techniqueStore';
-import { useProfessionStore } from '../stores/professionStore';
-import { useEquipmentStore } from '../stores/equipmentStore';
-import { useBuffStore } from '../stores/buffStore';
-import { useBountyStore } from '../stores/bountyStore';
-import { useExpeditionStore } from '../stores/expeditionStore';
-import { useHeartLawStore } from '../stores/heartLawStore';
-import { useManualPavilionStore } from '../stores/manualPavilionStore';
-import { useManualSatchelStore } from '../stores/manualSatchelStore';
-import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore';
-import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore';
-import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore';
-import { useContentStore } from '../stores/contentStore';
-import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore';
+import { useGameStore } from '../stores/gameStore.js';
+import { useInventoryStore } from '../stores/inventoryStore.js';
+import { useCombatStore } from '../stores/combatStore.js';
+import { useZoneStore } from '../stores/zoneStore.js';
+import { usePrestigeStore } from '../stores/prestigeStore.js';
+import { useCityStore } from '../stores/cityStore.js';
+import { useActivityStore } from '../stores/activityStore.js';
+import { useOutskirtsStore } from '../stores/outskirtsStore.js';
+import { normalizeTrialProgress, useTrialStore } from '../stores/trialStore.js';
+import { useRuinsStore } from '../stores/ruinsStore.js';
+import { useShopStore } from '../stores/shopStore.js';
+import { useTechCollectionStore } from '../stores/techCollectionStore.js';
+import { useTechniqueStore } from '../stores/techniqueStore.js';
+import { useProfessionStore } from '../stores/professionStore.js';
+import { useEquipmentStore } from '../stores/equipmentStore.js';
+import { useBuffStore } from '../stores/buffStore.js';
+import { useBountyStore } from '../stores/bountyStore.js';
+import { useExpeditionStore } from '../stores/expeditionStore.js';
+import { useHeartLawStore } from '../stores/heartLawStore.js';
+import { useManualPavilionStore } from '../stores/manualPavilionStore.js';
+import { useManualSatchelStore } from '../stores/manualSatchelStore.js';
+import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../stores/medicinePouchStore.js';
+import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore.js';
+import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
+import { useContentStore } from '../stores/contentStore.js';
+import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
-import { normalizeCitySaveState } from './cityStateNormalization';
+import { normalizeCitySaveState } from './cityStateNormalization.js';
 
 export const SAVE_VERSION = CURRENT_SAVE_VERSION;
 

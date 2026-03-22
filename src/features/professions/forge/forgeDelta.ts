@@ -1,5 +1,5 @@
-import type { PlayerStats } from '../../../types';
-import { formatNumber, formatPercentFromValue } from '../../../utils/numbers';
+import type { PlayerStats } from '../../../types/index.js';
+import { formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
 
 export type ForgeDeltaLine = {
   label: string;

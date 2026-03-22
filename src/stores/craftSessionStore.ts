@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { normalizeForgeBlueprint } from '../content/forge';
+import { normalizeForgeBlueprint } from '../content/forge.js';
 import { RewardService } from '../services/rewards/index.js';
 import type {
   CraftMode,
@@ -16,23 +16,23 @@ import type {
   ForgeSessionOutcome,
   ForgeStepResult,
   PromptDef,
-} from '../systems/crafting/craftingTypes';
+} from '../systems/crafting/craftingTypes.js';
 import {
   advancePromptStates,
   applyYieldBonuses,
   completePrompt as completeAssistedPrompt,
   instantiatePrompts,
-} from '../systems/crafting/assistedPrompts';
-import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts';
-import { buildAlchemyOutputs, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses';
-import { computeForgeOutcome } from '../systems/crafting/forgeOutcome';
+} from '../systems/crafting/assistedPrompts.js';
+import { buildAlchemyScript, buildForgeScript } from '../systems/crafting/craftScripts.js';
+import { buildAlchemyOutputs, getIdleYieldMultiplierForMastery } from '../systems/crafting/alchemyBonuses.js';
+import { computeForgeOutcome } from '../systems/crafting/forgeOutcome.js';
 import { getLiveAlchemyRecipeById, getLiveForgeBlueprintById } from '../systems/economy/index.js';
-import { useContentStore } from './contentStore';
-import { useInventoryStore } from './inventoryStore';
-import { useRecipeMasteryStore } from './recipeMasteryStore';
-import { useUIStore } from './uiStore';
-import { multiply } from '../utils/numbers';
-import { GameEvents } from '../services/events/GameEvents';
+import { useContentStore } from './contentStore.js';
+import { useInventoryStore } from './inventoryStore.js';
+import { useRecipeMasteryStore } from './recipeMasteryStore.js';
+import { useUIStore } from './uiStore.js';
+import { multiply } from '../utils/numbers.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 interface StartSessionArgs {
   station: CraftStation;

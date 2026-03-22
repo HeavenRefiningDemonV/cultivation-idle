@@ -37,11 +37,16 @@ test('support economy read model resolves current reserves against the next gate
   });
 
   assert.equal(model.nextGateIndex, 4);
+  assert.equal(model.meritMinimumReserveLow, '10');
+  assert.equal(model.meritMinimumReserveHigh, '12');
   assert.equal(model.targetMeritReserve, '25');
   assert.equal(model.spiritStoneMinimumReserve, '20');
   assert.equal(model.spiritStoneIdealReserve, '40');
   assert.equal(model.meritReserveGap, '16');
   assert.equal(model.spiritStoneMinimumGap, '10');
+  assert.equal(model.meritReserveStatus, 'below_minimum');
+  assert.equal(model.eligibleDefeatMeritReward, '5');
+  assert.equal(model.expectedMeritAfterThreeEligibleDefeats, '24');
   assert.equal(model.reserveStatus, 'below_minimum');
   assert.equal(model.nextGateFailSafeCost?.merit, '25');
 });

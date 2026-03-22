@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import './TechniqueLearnedModal.scss';
-import { GameIcon } from '../../ui/icons';
-import { useUIStore } from '../../stores/uiStore';
-import { useContentStore } from '../../stores/contentStore';
-import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
-import { GameEvents } from '../../services/events/GameEvents';
+import { GameIcon } from '../../ui/icons.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';
+import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
 
 function recommendProfile(tags?: string[]) {
   const lowered = (tags ?? []).map((tag) => tag.toLowerCase());

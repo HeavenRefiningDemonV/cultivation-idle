@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import type { CombatPresentationContext } from '../../../stores/uiStore';
-import { useUIStore } from '../../../stores/uiStore';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useActivityStore } from '../../../stores/activityStore';
-import { hpPercent } from '../../../systems/combat/minibarModel';
+import type { CombatPresentationContext } from '../../../stores/uiStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { hpPercent } from '../../../systems/combat/minibarModel.js';
 import './CombatPresentation.scss';
 
 export function CombatDock({ context }: { context: CombatPresentationContext }) {

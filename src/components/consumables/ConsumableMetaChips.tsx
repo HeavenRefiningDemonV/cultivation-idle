@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import type { MetaChip } from '../../features/apothecary/potionMetaIcons';
-import { GameIcon } from '../../ui/icons';
+import type { MetaChip } from '../../features/apothecary/potionMetaIcons.js';
+import { GameIcon } from '../../ui/icons.js';
 import './ConsumableMetaChips.scss';
 
 type ConsumableMetaChipsProps = {

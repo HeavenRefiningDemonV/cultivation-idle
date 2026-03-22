@@ -1,4 +1,4 @@
-import type { CityDef } from '../../../content';
+import type { CityDef } from '../../../content/index.js';
 
 export const MODULE_REF_KEYS: Record<string, string> = {
   outskirts: 'outskirtsId',

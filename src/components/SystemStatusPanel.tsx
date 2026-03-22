@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useActivityStore } from '../stores/activityStore';
-import { useProfessionStore } from '../stores/professionStore';
-import { useExpeditionStore } from '../stores/expeditionStore';
-import { useContentStore } from '../stores/contentStore';
-import { useCombatStore } from '../stores/combatStore';
-import { useUIStore } from '../stores/uiStore';
-import { useTelemetryStore } from '../stores/telemetryStore';
-import { useErrorLogStore } from '../stores/errorLogStore';
+import { useActivityStore } from '../stores/activityStore.js';
+import { useProfessionStore } from '../stores/professionStore.js';
+import { useExpeditionStore } from '../stores/expeditionStore.js';
+import { useContentStore } from '../stores/contentStore.js';
+import { useCombatStore } from '../stores/combatStore.js';
+import { useUIStore } from '../stores/uiStore.js';
+import { useTelemetryStore } from '../stores/telemetryStore.js';
+import { useErrorLogStore } from '../stores/errorLogStore.js';
 
 function formatCountdown(ms: number): string {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));

@@ -1,5 +1,5 @@
-import type { EnemyDefinition, LootDrop, ItemRarity, PityState } from '../types';
-import { ITEMS_DATABASE } from '../constants/itemsDatabase';
+import type { EnemyDefinition, LootDrop, ItemRarity, PityState } from '../types/index.js';
+import { ITEMS_DATABASE } from '../constants/itemsDatabase.js';
 
 /**
  * Loot generation result

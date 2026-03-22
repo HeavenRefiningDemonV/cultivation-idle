@@ -3,10 +3,11 @@ import type { ValidatedContent } from '../../content/index.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { type CurrencyKey, useInventoryStore } from '../../stores/inventoryStore.js';
 import { greaterThanOrEqualTo, subtract } from '../../utils/numbers.js';
+import { getGateFailureMeritPolicyByGateIndex, projectMeritAfterEligibleDefeats } from './gateFailureMeritPolicy.js';
 import { resolveTrialFailSafeConfig } from '../progression/runtime/trialLifecycle.js';
 import { getSupportReserveTargetsByCityIndex, type SupportReserveTargets } from './supportCurrencyTargets.js';
 
-export type SupportReserveStatus = 'below_minimum' | 'at_minimum' | 'at_ideal';
+export type SupportReserveStatus = 'below_minimum' | 'between_minimum_and_ideal' | 'at_ideal';
 
 export interface SupportEconomyReadModel {
   currentCityId: string | null;
@@ -16,13 +17,18 @@ export interface SupportEconomyReadModel {
   currentSpiritStones: string;
   nextGateTrialId: string | null;
   nextGateFailSafeCost: TrialFailSafeCost | null;
+  meritMinimumReserveLow: string;
+  meritMinimumReserveHigh: string;
   targetMeritReserve: string;
   spiritStoneMinimumReserve: string;
   spiritStoneIdealReserve: string;
   meritReserveGap: string;
   spiritStoneMinimumGap: string;
   spiritStoneIdealGap: string;
+  meritReserveStatus: SupportReserveStatus;
   reserveStatus: SupportReserveStatus;
+  eligibleDefeatMeritReward: string;
+  expectedMeritAfterThreeEligibleDefeats: string;
   failSafeAffordableNow: boolean;
 }
 
@@ -75,17 +81,25 @@ export function buildSupportEconomyReadModelFromState(input: {
   const nextGateFailSafeCost = resolveTrialFailSafeConfig(nextGateTrial).cost;
   const currentMerit = currencies.merit ?? '0';
   const currentSpiritStones = currencies.spiritStones ?? '0';
+  const gateFailurePolicy = getGateFailureMeritPolicyByGateIndex(targets.gateIndex);
   const meritTarget = String(targets.meritIdealReserve);
+  const meritMinimumReserveLow = String(gateFailurePolicy.minimumMeritReserveLow);
+  const meritMinimumReserveHigh = String(gateFailurePolicy.minimumMeritReserveHigh);
   const spiritMinimum = String(targets.spiritStoneMinimumReserve);
   const spiritIdeal = String(targets.spiritStoneIdealReserve);
   const meritReserveGap = clampGap(currentMerit, meritTarget);
   const spiritStoneMinimumGap = clampGap(currentSpiritStones, spiritMinimum);
   const spiritStoneIdealGap = clampGap(currentSpiritStones, spiritIdeal);
-  const reserveStatus: SupportReserveStatus = !greaterThanOrEqualTo(currentMerit, meritTarget) || !greaterThanOrEqualTo(currentSpiritStones, spiritMinimum)
+  const meritReserveStatus: SupportReserveStatus = !greaterThanOrEqualTo(currentMerit, meritMinimumReserveLow)
     ? 'below_minimum'
-    : greaterThanOrEqualTo(currentSpiritStones, spiritIdeal)
+    : greaterThanOrEqualTo(currentMerit, meritTarget)
       ? 'at_ideal'
-      : 'at_minimum';
+      : 'between_minimum_and_ideal';
+  const reserveStatus: SupportReserveStatus = meritReserveStatus === 'below_minimum' || !greaterThanOrEqualTo(currentSpiritStones, spiritMinimum)
+    ? 'below_minimum'
+    : greaterThanOrEqualTo(currentSpiritStones, spiritIdeal) && meritReserveStatus === 'at_ideal'
+      ? 'at_ideal'
+      : 'between_minimum_and_ideal';
 
   return {
     currentCityId,
@@ -95,13 +109,18 @@ export function buildSupportEconomyReadModelFromState(input: {
     currentSpiritStones,
     nextGateTrialId: nextGateTrial?.id ?? null,
     nextGateFailSafeCost,
+    meritMinimumReserveLow,
+    meritMinimumReserveHigh,
     targetMeritReserve: meritTarget,
     spiritStoneMinimumReserve: spiritMinimum,
     spiritStoneIdealReserve: spiritIdeal,
     meritReserveGap,
     spiritStoneMinimumGap,
     spiritStoneIdealGap,
+    meritReserveStatus,
     reserveStatus,
+    eligibleDefeatMeritReward: String(gateFailurePolicy.eligibleDefeatMerit),
+    expectedMeritAfterThreeEligibleDefeats: projectMeritAfterEligibleDefeats(currentMerit, targets.gateIndex, 3),
     failSafeAffordableNow: canAffordCost(currencies, nextGateFailSafeCost),
   };
 }

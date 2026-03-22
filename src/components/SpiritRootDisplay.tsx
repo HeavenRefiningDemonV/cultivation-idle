@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Droplet, Flame, Hexagon, Info, Leaf, Mountain, Sparkles } from 'lucide-react';
-import { usePrestigeStore } from '../stores/prestigeStore';
-import { useInventoryStore } from '../stores/inventoryStore';
-import { formatNumber, D } from '../utils/numbers';
-import type { SpiritRootElement, SpiritRootGrade } from '../types';
-import { GameIcon } from '../ui/icons';
+import { usePrestigeStore } from '../stores/prestigeStore.js';
+import { useInventoryStore } from '../stores/inventoryStore.js';
+import { formatNumber, D } from '../utils/numbers.js';
+import type { SpiritRootElement, SpiritRootGrade } from '../types/index.js';
+import { GameIcon } from '../ui/icons.js';
 import './SpiritRootDisplay.scss';
 
 /**

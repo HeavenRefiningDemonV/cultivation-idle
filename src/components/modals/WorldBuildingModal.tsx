@@ -1,21 +1,21 @@
 import { useMemo, type ReactNode } from 'react';
-import { useContentStore } from '../../stores/contentStore';
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
-import { resolveModuleRef } from '../screens/world/worldUtils';
-import { ManualPavilionPanel } from '../screens/ManualPavilionPanel';
-import { ApothecaryPanel } from '../screens/ApothecaryPanel';
-import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
-import { TalismanPanel } from '../screens/TalismanPanel';
-import { BountyBoardPanel } from '../screens/BountyBoardPanel';
-import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel';
-import { isCombatModule } from '../../systems/world/openWorldModule';
-import { GameIcon } from '../../ui/icons';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
+import { resolveModuleRef } from '../screens/world/worldUtils.js';
+import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
+import { ApothecaryPanel } from '../screens/ApothecaryPanel.js';
+import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
+import { TalismanPanel } from '../screens/TalismanPanel.js';
+import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
+import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
+import { isCombatModule } from '../../systems/world/openWorldModule.js';
+import { GameIcon } from '../../ui/icons.js';
 import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
-import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel';
-import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel';
-import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel';
-import { Modal } from '../../ui/primitives/Modal';
+import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel.js';
+import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel.js';
+import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel.js';
+import { Modal } from '../../ui/primitives/Modal.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;

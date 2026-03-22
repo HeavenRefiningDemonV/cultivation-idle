@@ -1,5 +1,5 @@
 import barShort from '../../assets/menus/bar_short.png';
-import { formatNumber } from '../../utils/numbers';
+import { formatNumber } from '../../utils/numbers.js';
 import './InkHealthBar.scss';
 
 interface InkHealthBarProps {

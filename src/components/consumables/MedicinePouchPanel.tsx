@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getItemDef } from '../../stores/contentStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
-import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
-import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog';
-import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types';
-import { GameEvents } from '../../services/events/GameEvents';
-import { ConsumableMetaChips } from './ConsumableMetaChips';
-import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
-import type { IconId } from '../../ui/icons';
-import { GameIcon } from '../../ui/icons';
+import { getItemDef } from '../../stores/contentStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useMedicinePouchStore } from '../../stores/medicinePouchStore.js';
+import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons.js';
+import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog.js';
+import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types/index.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
+import { ConsumableMetaChips } from './ConsumableMetaChips.js';
+import { InkPanel, PaperCard, PaperChip } from '../../ui/ink.js';
+import type { IconId } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons.js';
 import './MedicinePouchPanel.scss';
 
 type SlotConfigField = 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly';

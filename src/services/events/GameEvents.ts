@@ -1,8 +1,8 @@
-import type { RewardBundle, GrantRewardsResult, RewardCurrencyBundle } from '../rewards/types';
-import type { ActiveActivity } from '../../types/activity';
-import type { GameTab, WorldBuildingKey } from '../../stores/uiStore';
-import type { CraftMode, CraftStation, CraftPromptState } from '../../systems/crafting/craftingTypes';
-import type { MedicinePouchSlotKey } from '../../types';
+import type { RewardBundle, GrantRewardsResult, RewardCurrencyBundle } from '../rewards/types.js';
+import type { ActiveActivity } from '../../types/activity.js';
+import type { GameTab, WorldBuildingKey } from '../../stores/uiStore.js';
+import type { CraftMode, CraftStation, CraftPromptState } from '../../systems/crafting/craftingTypes.js';
+import type { MedicinePouchSlotKey } from '../../types/index.js';
 
 export type RewardsGrantedEvent = {
   type: 'rewards/granted';

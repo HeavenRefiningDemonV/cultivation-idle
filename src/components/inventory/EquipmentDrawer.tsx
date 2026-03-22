@@ -1,12 +1,12 @@
 // Inventory v2 equipment drawer to reduce clutter; opened via button.
 import { useEffect, useMemo, useState } from 'react';
-import { useEquipmentStore } from '../../stores/equipmentStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useUIStore } from '../../stores/uiStore';
-import { getItemDef } from '../../stores/contentStore';
-import type { ItemDefinition } from '../../types';
-import type { IconId } from '../../ui/icons';
-import { GameIcon } from '../../ui/icons';
+import { useEquipmentStore } from '../../stores/equipmentStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { getItemDef } from '../../stores/contentStore.js';
+import type { ItemDefinition } from '../../types/index.js';
+import type { IconId } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons.js';
 import './EquipmentDrawer.scss';
 
 type EquipmentDrawerProps = {

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { STUDY_MASTERY_PER_MINUTE_BASE } from '../../content/tuning/cultivationTuning';
-import { useContentStore } from '../../stores/contentStore';
-import { useCultivationStore } from '../../stores/cultivationStore';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
+import { STUDY_MASTERY_PER_MINUTE_BASE } from '../../content/tuning/cultivationTuning.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import './StudyModeWidget.scss';
 
 interface StudyOption {

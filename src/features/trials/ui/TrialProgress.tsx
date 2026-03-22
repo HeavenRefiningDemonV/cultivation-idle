@@ -1,16 +1,16 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { useInventoryStore } from '../../../stores/inventoryStore';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../systems/progression/runtime/index.js';
-import { useTrialStore } from '../../../stores/trialStore';
-import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel';
-import { hpPercent } from '../../../systems/combat/minibarModel';
-import { formatNumber, D } from '../../../utils/numbers';
-import { GameIcon } from '../../../ui/icons';
+import { useTrialStore } from '../../../stores/trialStore.js';
+import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel.js';
+import { hpPercent } from '../../../systems/combat/minibarModel.js';
+import { formatNumber, D } from '../../../utils/numbers.js';
+import { GameIcon } from '../../../ui/icons.js';
 import './TrialProgress.scss';
 
 const TRIAL_RECOMMENDATIONS: Record<string, { minRealm?: number; suggestedDps?: number; suggestedHp?: number }> = {

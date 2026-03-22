@@ -1,4 +1,4 @@
-import type { SaveData } from '../types';
+import type { SaveData } from '../types/index.js';
 import type { ValidatedContent } from '../content/index.js';
 import { SEMESTER_0_CITY_UNLOCKS } from '../systems/progression/contract/cityUnlocks.js';
 import type { MajorRealmId } from '../systems/progression/contract/index.js';

@@ -1,8 +1,8 @@
-import { getItemDef } from '../../stores/contentStore';
-import { getTalismanBonusesNow } from '../../stores/buffStore';
-import { normalizeItemList } from '../../utils/itemList';
-import { D } from '../../utils/numbers';
-import type { RewardBundle, LootContext } from './types';
+import { getItemDef } from '../../stores/contentStore.js';
+import { getTalismanBonusesNow } from '../../stores/buffStore.js';
+import { normalizeItemList } from '../../utils/itemList.js';
+import { D } from '../../utils/numbers.js';
+import type { RewardBundle, LootContext } from './types.js';
 
 export function applyLootBonuses(bundle: RewardBundle, _context: LootContext): RewardBundle {
   if (!bundle || (!bundle.currencies && !bundle.items && !bundle.techniqueFragments)) {

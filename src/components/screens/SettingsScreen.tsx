@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
-import { SaveService } from '../../services/save/SaveService';
-import { useContentStore } from '../../stores/contentStore';
-import { getContentBaseUrl } from '../../content';
-import { RewardService } from '../../services/rewards';
-import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle';
-import { useUIStore } from '../../stores/uiStore';
-import { useRewardsLogStore } from '../../stores/rewardsLogStore';
-import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import { SystemStatusPanel } from '../SystemStatusPanel';
-import { useTelemetryStore } from '../../stores/telemetryStore';
-import { useErrorLogStore } from '../../stores/errorLogStore';
-import { AudioDebugPanel } from '../../ui/debug/AudioDebugPanel';
-import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle';
+import { SaveService } from '../../services/save/SaveService.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { getContentBaseUrl } from '../../content/index.js';
+import { RewardService } from '../../services/rewards.js';
+import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useRewardsLogStore } from '../../stores/rewardsLogStore.js';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
+import { SystemStatusPanel } from '../SystemStatusPanel.js';
+import { useTelemetryStore } from '../../stores/telemetryStore.js';
+import { useErrorLogStore } from '../../stores/errorLogStore.js';
+import { AudioDebugPanel } from '../../ui/debug/AudioDebugPanel.js';
+import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle.js';
 import {
   applySafeRepairs,
   runRuntimeValidation,
   type ValidationIssue,
-} from '../../services/diagnostics/runValidation';
+} from '../../services/diagnostics/runValidation.js';
 import './SettingsScreen.scss';
 
 function downloadJson(filename: string, data: unknown) {

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { CraftStep } from '../../systems/crafting/craftingTypes';
+import type { CraftStep } from '../../systems/crafting/craftingTypes.js';
 import forgeBackground from '../../assets/background/forgewide_empty.png';
 import './ForgeWorkbenchScene.scss';
 

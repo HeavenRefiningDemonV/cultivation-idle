@@ -1,9 +1,9 @@
-import type { NormalizedForgeBlueprint } from '../content/forge';
-import type { TemperAffix, EquipmentSlot } from '../stores/equipmentStore';
-import { useEquipmentStore } from '../stores/equipmentStore';
-import { useGameStore } from '../stores/gameStore';
-import type { PlayerStats } from '../types';
-import { selectTemperAffix } from '../content/temperAffixes';
+import type { NormalizedForgeBlueprint } from '../content/forge.js';
+import type { TemperAffix, EquipmentSlot } from '../stores/equipmentStore.js';
+import { useEquipmentStore } from '../stores/equipmentStore.js';
+import { useGameStore } from '../stores/gameStore.js';
+import type { PlayerStats } from '../types/index.js';
+import { selectTemperAffix } from '../content/temperAffixes.js';
 import { randFloat, nextSeed } from '../utils/rng.js';
 
 export interface ForgeServiceResult {

@@ -1,4 +1,4 @@
-import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop';
+import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
 
 interface ForgePanelProps {
   cityId: string | null;

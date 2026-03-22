@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import type { QteTarget } from '../../features/forge/forgeQtePatterns';
+import type { QteTarget } from '../../features/forge/forgeQtePatterns.js';
 import './ForgeRingQte.scss';
 
 export type ForgeRingQteRating = 'miss' | 'good' | 'perfect';

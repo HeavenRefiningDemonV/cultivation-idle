@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { GameEvents } from '../services/events/GameEvents';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 export interface RecipeMasteryState {
   alchemy: Record<string, number>;

@@ -1,5 +1,5 @@
-import type { CombatEvent } from '../../types';
-import { D } from '../../utils/numbers';
+import type { CombatEvent } from '../../types/index.js';
+import { D } from '../../utils/numbers.js';
 
 export interface RollingDpsMetrics {
   windowMs: number;

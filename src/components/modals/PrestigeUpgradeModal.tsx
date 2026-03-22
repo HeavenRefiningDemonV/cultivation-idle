@@ -1,10 +1,10 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import type { PrestigeUpgradeDef } from '../../content';
-import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap';
-import { getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
-import { GameIcon } from '../../ui/icons';
+import type { PrestigeUpgradeDef } from '../../content/index.js';
+import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap.js';
+import { getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
+import { GameIcon } from '../../ui/icons.js';
 
 interface PrestigeUpgradeModalProps {
   open: boolean;

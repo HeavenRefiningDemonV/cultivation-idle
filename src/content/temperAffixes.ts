@@ -1,4 +1,4 @@
-import type { TemperAffix } from '../stores/equipmentStore';
+import type { TemperAffix } from '../stores/equipmentStore.js';
 import { nextSeed, randFloat } from '../utils/rng.js';
 
 const BASE_AFFIX_POOL: TemperAffix[] = [

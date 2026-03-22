@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useContentStore } from '../../stores/contentStore';
-import { useCityStore } from '../../stores/cityStore';
-import { useUIStore } from '../../stores/uiStore';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
 import {
   getCityArrivalLesson,
   getCityArrivalQuickOpenModules,

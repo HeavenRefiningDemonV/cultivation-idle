@@ -1,21 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FocusEvent, MouseEvent } from 'react';
 import './ManualPavilionPanel.scss';
-import type { TechniqueDef } from '../../content';
-import { useContentStore } from '../../stores/contentStore';
-import { useManualPavilionStore } from '../../stores/manualPavilionStore';
-import type { ManualPurchaseResult } from '../../stores/manualPavilionStore';
-import { useGameStore } from '../../stores/gameStore';
-import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
-import { formatPrice } from '../../stores/contentStore';
-import { formatDurationHMS } from '../../utils/timeFormat';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import { useUIStore } from '../../stores/uiStore';
-import { getManualTierIcon, getManualPathIcon, getManualRoleIcon } from '../../features/manuals/manualIconMap';
-import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal';
-import { PaperCard } from '../../ui/ink';
-import { GameIcon } from '../../ui/icons';
+import type { TechniqueDef } from '../../content/index.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useManualPavilionStore } from '../../stores/manualPavilionStore.js';
+import type { ManualPurchaseResult } from '../../stores/manualPavilionStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes.js';
+import { formatPrice } from '../../stores/contentStore.js';
+import { formatDurationHMS } from '../../utils/timeFormat.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { getManualTierIcon, getManualPathIcon, getManualRoleIcon } from '../../features/manuals/manualIconMap.js';
+import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal.js';
+import { PaperCard } from '../../ui/ink.js';
+import { GameIcon } from '../../ui/icons.js';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;

@@ -1,4 +1,4 @@
-import type { CurrencyKey } from '../../stores/inventoryStore';
+import type { CurrencyKey } from '../../stores/inventoryStore.js';
 
 export type RewardCurrencyBundle = Partial<Record<CurrencyKey, string>>;
 

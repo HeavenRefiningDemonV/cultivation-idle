@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react';
-import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo';
-import { useContentStore } from '../../../stores/contentStore';
-import { useCultivationStore } from '../../../stores/cultivationStore';
-import { useInventoryStore } from '../../../stores/inventoryStore';
-import { useUIStore } from '../../../stores/uiStore';
-import type { HeartLawDef } from '../../../content';
+import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
+import type { HeartLawDef } from '../../../content/index.js';
 import './HeartLawPanel.scss';
 
-import { CHANGE_HEART_LAW_COST } from '../../../systems/economy/meritRoleAudit';
+import { CHANGE_HEART_LAW_COST } from '../../../systems/economy/meritRoleAudit.js';
 
 const CHANGE_COST = CHANGE_HEART_LAW_COST.gold;
 

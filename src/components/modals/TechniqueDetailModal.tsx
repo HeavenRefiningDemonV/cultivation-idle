@@ -1,25 +1,25 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useId, useMemo, useEffect, useRef, useState, useCallback } from 'react';
-import type { TechniqueDef } from '../../content';
-import { useContentStore } from '../../stores/contentStore';
-import { useGameStore } from '../../stores/gameStore';
+import type { TechniqueDef } from '../../content/index.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
 import {
   masteryLevelFromXp,
   normalizeGrade,
   normalizeRarity,
   rankMultiplier,
   useTechCollectionStore,
-} from '../../stores/techCollectionStore';
-import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useUIStore } from '../../stores/uiStore';
-import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects';
-import { RankUpgradeRitualModal } from './RankUpgradeRitualModal';
-import { TraitRerollModal } from './TraitRerollModal';
-import { GameEvents } from '../../services/events/GameEvents';
-import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
-import type { IconId } from '../../ui/icons';
-import { GameIcon } from '../../ui/icons';
+} from '../../stores/techCollectionStore.js';
+import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects.js';
+import { RankUpgradeRitualModal } from './RankUpgradeRitualModal.js';
+import { TraitRerollModal } from './TraitRerollModal.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
+import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap.js';
+import type { IconId } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons.js';
 import './TechniqueDetailModal.scss';
 
 export interface TechniqueDetailModalProps {

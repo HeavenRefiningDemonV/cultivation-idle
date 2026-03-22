@@ -1,4 +1,4 @@
-import type { ForgeStepDef } from '../../systems/crafting/craftingTypes';
+import type { ForgeStepDef } from '../../systems/crafting/craftingTypes.js';
 
 export type ForgeStepScriptValidation = {
   ok: boolean;

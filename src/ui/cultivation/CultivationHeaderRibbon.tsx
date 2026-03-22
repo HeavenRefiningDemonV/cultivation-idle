@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
-import { formatNumber } from '../../utils/numbers';
-import { QiLotusIcon, type QiLotusState } from './QiLotusIcon';
+import { formatNumber } from '../../utils/numbers.js';
+import { QiLotusIcon, type QiLotusState } from './QiLotusIcon.js';
 import './CultivationHeaderRibbon.scss';
 
 type CultivationHeaderRibbonProps = {

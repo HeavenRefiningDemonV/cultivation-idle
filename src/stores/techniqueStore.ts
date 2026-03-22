@@ -3,10 +3,10 @@ import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content/index.js';
 import type { SaveTechniqueLoadout } from '../types/index.js';
 import { clampRealmIndexToSemesterSlice, getLiveRealmNameByIndex } from '../systems/progression/runtime/index.js';
-import { useContentStore } from './contentStore';
-import { useGameStore } from './gameStore';
-import { GameEvents } from '../services/events/GameEvents';
-import { useTechCollectionStore } from './techCollectionStore';
+import { useContentStore } from './contentStore.js';
+import { useGameStore } from './gameStore.js';
+import { GameEvents } from '../services/events/GameEvents.js';
+import { useTechCollectionStore } from './techCollectionStore.js';
 
 export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
 export type CastingPolicy = 'aggressive' | 'balanced' | 'defensive';

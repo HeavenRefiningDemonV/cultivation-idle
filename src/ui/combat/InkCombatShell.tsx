@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { GameIcon } from '../icons';
+import { GameIcon } from '../icons.js';
 import './InkCombatShell.scss';
 
 interface InkCombatShellProps {

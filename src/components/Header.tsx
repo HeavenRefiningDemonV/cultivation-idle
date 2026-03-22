@@ -1,14 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useGameStore } from '../stores/gameStore';
-import { useUIStore } from '../stores/uiStore';
-import { useCityStore } from '../stores/cityStore';
-import { useBountyStore } from '../stores/bountyStore';
-import { useContentStore } from '../stores/contentStore';
-import { openWorldModule } from '../systems/world/openWorldModule';
-import { isAllowedLiveWorldSurfaceModule } from '../systems/world/liveWorldLeakAudit';
-import { resolveBountyDestination } from '../utils/bountyRouting';
-import { formatNumber } from '../utils/numbers';
-import { SaveService } from '../services/save/SaveService';
+import { useGameStore } from '../stores/gameStore.js';
+import { useUIStore } from '../stores/uiStore.js';
+import { useCityStore } from '../stores/cityStore.js';
+import { useBountyStore } from '../stores/bountyStore.js';
+import { useContentStore } from '../stores/contentStore.js';
+import { openWorldModule } from '../systems/world/openWorldModule.js';
+import { buildLiveCraftBountyRouteSupportState } from '../systems/bounties/liveCraftBountyRouteSupport.js';
+import { isAllowedLiveWorldSurfaceModule } from '../systems/world/liveWorldLeakAudit.js';
+import { resolveBountyDestination } from '../utils/bountyRouting.js';
+import { formatNumber } from '../utils/numbers.js';
+import { SaveService } from '../services/save/SaveService.js';
 import './Header.scss';
 
 const EMPTY_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -50,6 +51,7 @@ export function Header() {
       cityId: currentCityId,
       bountyKind: trackedBounty.kind,
       cityModules: currentCityModules,
+      craftRouteSupportState: buildLiveCraftBountyRouteSupportState(currentCityId),
     });
 
     const targetModule =

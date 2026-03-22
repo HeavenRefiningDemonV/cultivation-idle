@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useActivityStore } from '../../../../stores/activityStore';
-import { useCombatStore } from '../../../../stores/combatStore';
-import { useContentStore } from '../../../../stores/contentStore';
-import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
-import { useUIStore } from '../../../../stores/uiStore';
-import { pickEnemyFromPool, resolveModuleRef } from '../worldUtils';
+import { useActivityStore } from '../../../../stores/activityStore.js';
+import { useCombatStore } from '../../../../stores/combatStore.js';
+import { useContentStore } from '../../../../stores/contentStore.js';
+import { useOutskirtsStore } from '../../../../stores/outskirtsStore.js';
+import { useUIStore } from '../../../../stores/uiStore.js';
+import { pickEnemyFromPool, resolveModuleRef } from '../worldUtils.js';
 import cultivatorFight from "../../../../assets/onscreen/cultivator_backshots.png"
-import { hpPercent } from '../../../../systems/combat/minibarModel';
-import { formatNumber } from '../../../../utils/numbers';
-import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles';
-import { InkCombatShell } from '../../../../ui/combat/InkCombatShell';
-import { InkHealthBar } from '../../../../ui/combat/InkHealthBar';
+import { hpPercent } from '../../../../systems/combat/minibarModel.js';
+import { formatNumber } from '../../../../utils/numbers.js';
+import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles.js';
+import { InkCombatShell } from '../../../../ui/combat/InkCombatShell.js';
+import { InkHealthBar } from '../../../../ui/combat/InkHealthBar.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 

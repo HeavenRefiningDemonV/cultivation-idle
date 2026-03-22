@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
-import { useContentStore } from '../../stores/contentStore';
-import { useGameStore } from '../../stores/gameStore';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
 import {
   masteryLevelFromXp,
   masteryMultiplier,
@@ -9,22 +9,22 @@ import {
   normalizeRarity,
   rankMultiplier,
   useTechCollectionStore,
-} from '../../stores/techCollectionStore';
-import type { CastingPolicy, EquipResult, SlotType } from '../../stores/techniqueStore';
-import { useTechniqueStore } from '../../stores/techniqueStore';
-import { useUIStore } from '../../stores/uiStore';
-import { TechniqueDetailModal } from '../modals/TechniqueDetailModal';
+} from '../../stores/techCollectionStore.js';
+import type { CastingPolicy, EquipResult, SlotType } from '../../stores/techniqueStore.js';
+import { useTechniqueStore } from '../../stores/techniqueStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { TechniqueDetailModal } from '../modals/TechniqueDetailModal.js';
 import {
   TechniqueFilterDrawer,
   type GradeFilter,
   type SortKey,
   type TypeFilter,
-} from '../modals/TechniqueFilterDrawer';
-import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap';
-import { TechniqueSpine } from '../techniques/TechniqueSpine';
-import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar';
-import { InkPanel, PaperCard } from '../../ui/ink';
-import { GameIcon } from '../../ui/icons';
+} from '../modals/TechniqueFilterDrawer.js';
+import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap.js';
+import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
+import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
+import { InkPanel, PaperCard } from '../../ui/ink.js';
+import { GameIcon } from '../../ui/icons.js';
 import './TechniqueLibraryScreen.scss';
 
 type SlotSelection = { type: SlotType; index: number };

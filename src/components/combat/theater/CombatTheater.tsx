@@ -1,21 +1,21 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../../stores/combatStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { useUIStore } from '../../../stores/uiStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { computeCombatSafety, hpPercent } from '../../../systems/combat/minibarModel';
-import { formatNumber, D } from '../../../utils/numbers';
-import { CombatCanvas } from '../CombatCanvas';
-import { TechniqueStrip } from './TechniqueStrip';
-import { FightIntelPanel } from './FightIntelPanel';
-import { LootTicker } from './LootTicker';
-import { StatusEffectRow } from './StatusEffectRow';
-import { ProgressPanel, type CombatTheaterFocus } from './ProgressPanel';
-import { AI_PROFILE_OPTIONS, buildAiReason, getTechniqueAiTags } from '../../../systems/combat/aiProfiles';
-import { normalizeTechniqueEffects } from '../../../systems/techniques/effects';
-import { MedicinePouchStrip } from '../MedicinePouchStrip';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../../stores/combatStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { computeCombatSafety, hpPercent } from '../../../systems/combat/minibarModel.js';
+import { formatNumber, D } from '../../../utils/numbers.js';
+import { CombatCanvas } from '../CombatCanvas.js';
+import { TechniqueStrip } from './TechniqueStrip.js';
+import { FightIntelPanel } from './FightIntelPanel.js';
+import { LootTicker } from './LootTicker.js';
+import { StatusEffectRow } from './StatusEffectRow.js';
+import { ProgressPanel, type CombatTheaterFocus } from './ProgressPanel.js';
+import { AI_PROFILE_OPTIONS, buildAiReason, getTechniqueAiTags } from '../../../systems/combat/aiProfiles.js';
+import { normalizeTechniqueEffects } from '../../../systems/techniques/effects.js';
+import { MedicinePouchStrip } from '../MedicinePouchStrip.js';
 import './CombatTheater.scss';
 
 function formatActivityLabel(type: string | null | undefined): string {

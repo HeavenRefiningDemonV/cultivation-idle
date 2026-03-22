@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
 
-import type { CraftPromptState } from '../../systems/crafting/craftingTypes';
+import type { CraftPromptState } from '../../systems/crafting/craftingTypes.js';
 
 interface AssistedPromptCardProps {
   prompt: CraftPromptState;

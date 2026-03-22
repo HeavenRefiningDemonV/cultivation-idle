@@ -1,0 +1,63 @@
+import type { ValidatedContent } from '../../content/index.js';
+import type { CurrencyKey } from '../../stores/inventoryStore.js';
+import { buildSupportEconomyReadModelFromState, type SupportEconomyReadModel } from './supportEconomyReadModel.js';
+
+export interface SupportEconomySurfaceModel {
+  readModel: SupportEconomyReadModel;
+  reserveHeadline: string;
+  reserveTone: 'warning' | 'steady' | 'ready';
+  meritReserveLine: string;
+  spiritReserveLine: string;
+  failSafeLine: string;
+  reserveGapLine: string;
+  eligibleDefeatRewardLine: string;
+}
+
+function formatMeritBand(model: SupportEconomyReadModel) {
+  return `${model.meritMinimumReserveLow}–${model.meritMinimumReserveHigh}`;
+}
+
+export function buildSupportEconomySurfaceModelFromReadModel(readModel: SupportEconomyReadModel): SupportEconomySurfaceModel {
+  const reserveTone =
+    readModel.meritReserveStatus === 'at_ideal'
+      ? 'ready'
+      : readModel.meritReserveStatus === 'between_minimum_and_ideal'
+        ? 'steady'
+        : 'warning';
+  const reserveHeadline =
+    readModel.meritReserveStatus === 'at_ideal'
+      ? 'Merit reserve on target'
+      : readModel.meritReserveStatus === 'between_minimum_and_ideal'
+        ? 'Merit reserve above the minimum band'
+        : 'Merit reserve below the safe band';
+
+  return {
+    readModel,
+    reserveHeadline,
+    reserveTone,
+    meritReserveLine: `Merit ${readModel.currentMerit} • safe band ${formatMeritBand(readModel)} • target ${readModel.targetMeritReserve}`,
+    spiritReserveLine: `Spirit Stones ${readModel.currentSpiritStones} • minimum ${readModel.spiritStoneMinimumReserve} • ideal ${readModel.spiritStoneIdealReserve}`,
+    failSafeLine: readModel.nextGateFailSafeCost
+      ? `Next fail-safe costs ${readModel.nextGateFailSafeCost.merit ?? '0'} Merit and ${readModel.nextGateFailSafeCost.spiritStones ?? '0'} Spirit Stones.`
+      : 'Next fail-safe cost is unavailable.',
+    reserveGapLine:
+      readModel.meritReserveStatus === 'at_ideal'
+        ? `Reserve gap closed. After 3 eligible defeats you would hold ${readModel.expectedMeritAfterThreeEligibleDefeats} Merit.`
+        : `Reserve gap: ${readModel.meritReserveGap} Merit to target and ${readModel.spiritStoneMinimumGap} Spirit Stones to minimum.`,
+    eligibleDefeatRewardLine: `Eligible defeat reward: +${readModel.eligibleDefeatMeritReward} Merit • after 3 eligible defeats: ${readModel.expectedMeritAfterThreeEligibleDefeats} Merit.`,
+  };
+}
+
+export function buildSupportEconomySurfaceModel(input: {
+  content: ValidatedContent | null | undefined;
+  currencies: Partial<Record<CurrencyKey, string>>;
+  cityId?: string | null;
+}): SupportEconomySurfaceModel {
+  return buildSupportEconomySurfaceModelFromReadModel(
+    buildSupportEconomyReadModelFromState({
+      content: input.content,
+      currencies: input.currencies,
+      cityId: input.cityId,
+    }),
+  );
+}

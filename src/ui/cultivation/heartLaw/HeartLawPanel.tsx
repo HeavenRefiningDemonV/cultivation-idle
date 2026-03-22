@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { INITIAL_REALM } from '../../../constants';
-import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning';
-import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic';
-import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useCultivationStore } from '../../../stores/cultivationStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { usePrestigeStore } from '../../../stores/prestigeStore';
-import { useUIStore } from '../../../stores/uiStore';
-import type { HeartLawChapter, HeartLawDef } from '../../../content';
-import { ChangeHeartLawModal } from './ChangeHeartLawModal';
+import { INITIAL_REALM } from '../../../constants.js';
+import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
+import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
+import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo.js';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { usePrestigeStore } from '../../../stores/prestigeStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
+import type { HeartLawChapter, HeartLawDef } from '../../../content/index.js';
+import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
 import './HeartLawPanel.scss';
 
 const roman = ['I', 'II', 'III', 'IV', 'V'];

@@ -4,7 +4,7 @@ import type {
   ForgeHandsOnBonus,
   ForgeSessionOutcome,
   ForgeStepResult,
-} from './craftingTypes';
+} from './craftingTypes.js';
 
 function clamp01(value: number): number {
   if (!Number.isFinite(value)) return 0;

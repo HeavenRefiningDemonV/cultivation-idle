@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { formatNumber } from '../../../utils/numbers';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { formatNumber } from '../../../utils/numbers.js';
 
 interface StatusChip {
   key: string;

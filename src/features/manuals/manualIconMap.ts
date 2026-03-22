@@ -1,8 +1,8 @@
-import type { ManualGrade } from './pavilionStockTypes';
-import type { TechniqueDef } from '../../content';
-import type { PathId } from '../../content/types';
-import type { IconId } from '../../ui/icons';
-import { normalizeGrade } from '../../stores/techCollectionStore';
+import type { ManualGrade } from './pavilionStockTypes.js';
+import type { TechniqueDef } from '../../content/index.js';
+import type { PathId } from '../../content/types.js';
+import type { IconId } from '../../ui/icons.js';
+import { normalizeGrade } from '../../stores/techCollectionStore.js';
 
 export type ManualType = 'active' | 'passive' | 'ultimate';
 export type ManualRole = 'offense' | 'defense' | 'utility' | 'general';

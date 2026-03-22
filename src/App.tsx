@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { GameLayout } from './components/GameLayout';
-import { ContentInitGate } from './components/system/ContentInitGate';
-import { initializeGame } from './systems/gameLoop';
-import { useShopStore } from './stores/shopStore';
+import { GameLayout } from './components/GameLayout.js';
+import { ContentInitGate } from './components/system/ContentInitGate.js';
+import { initializeGame } from './systems/gameLoop.js';
+import { useShopStore } from './stores/shopStore.js';
 import paperTexture from "./assets/texture_overlay.png";
-import { GameIcon } from './ui/icons';
+import { GameIcon } from './ui/icons.js';
 import './App.scss';
 
 /**

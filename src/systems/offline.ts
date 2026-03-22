@@ -1,9 +1,9 @@
 import Decimal from 'decimal.js';
-import { useGameStore } from '../stores/gameStore';
-import { usePrestigeStore } from '../stores/prestigeStore';
-import { D, multiply, formatNumber } from '../utils/numbers';
-import { apply as applyOfflineCatchup } from '../services/time/OfflineCatchup';
-import { DEFAULT_OFFLINE_EFFICIENCY, MAX_OFFLINE_MS, MAX_OFFLINE_SECONDS, ONE_WEEK_SECONDS } from '../services/time/offlineShared';
+import { useGameStore } from '../stores/gameStore.js';
+import { usePrestigeStore } from '../stores/prestigeStore.js';
+import { D, multiply, formatNumber } from '../utils/numbers.js';
+import { apply as applyOfflineCatchup } from '../services/time/OfflineCatchup.js';
+import { DEFAULT_OFFLINE_EFFICIENCY, MAX_OFFLINE_MS, MAX_OFFLINE_SECONDS, ONE_WEEK_SECONDS } from '../services/time/offlineShared.js';
 
 /**
  * Offline progress result

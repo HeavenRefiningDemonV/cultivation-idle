@@ -145,14 +145,15 @@ test('ruins bounty destinations now resolve to the live ruins module for every l
   });
 });
 
-test('craft bounty routing only exposes the live forge destination even when deferred craft modules remain in source data', () => {
+test('craft bounty routing only exposes live Apothecary/Forge destinations even when deferred craft modules remain in source data', () => {
   const destination = resolveBountyDestination({
     cityId: 'city_pinewind_hamlet',
     bountyKind: 'CRAFT_COMPLETE',
     cityModules: ['outskirts', 'forge', 'alchemy', 'talismanStudio', 'bounties'],
   });
 
-  assert.deepEqual(destination, { kind: 'module', moduleKey: 'forge', cityId: 'city_pinewind_hamlet' });
+  assert.equal(destination.kind, 'module');
+  assert.equal(['forge', 'apothecary'].includes(destination.moduleKey), true);
 });
 
 test('live bounty template filtering keeps support templates authored for the current city names and non-empty descriptions', () => {

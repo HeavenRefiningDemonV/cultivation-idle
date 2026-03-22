@@ -1,7 +1,7 @@
-import type { GameTab } from '../stores/uiStore';
-import { useUIStore } from '../stores/uiStore';
-import { useGameStore } from '../stores/gameStore';
-import { formatNumber } from '../utils/numbers';
+import type { GameTab } from '../stores/uiStore.js';
+import { useUIStore } from '../stores/uiStore.js';
+import { useGameStore } from '../stores/gameStore.js';
+import { formatNumber } from '../utils/numbers.js';
 import './Sidebar.scss';
 
 interface NavButtonProps {

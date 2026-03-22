@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import './TraitRerollModal.scss';
-import { GameIcon } from '../../ui/icons';
-import { useContentStore } from '../../stores/contentStore';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
+import { GameIcon } from '../../ui/icons.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 
 interface TraitRerollModalProps {
   techId: string;

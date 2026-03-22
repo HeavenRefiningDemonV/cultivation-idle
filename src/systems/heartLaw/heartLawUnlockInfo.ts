@@ -1,5 +1,5 @@
-import type { PrestigeUpgradeDef } from '../../content';
-import { useContentStore } from '../../stores/contentStore';
+import type { PrestigeUpgradeDef } from '../../content/index.js';
+import { useContentStore } from '../../stores/contentStore.js';
 
 export type HeartLawUnlockInfo =
   | { kind: 'starter' }

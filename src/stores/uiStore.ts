@@ -1,18 +1,18 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { OfflineProgressSummary } from '../systems/offline.js';
-import type { OfflineCatchupResult } from '../services/time/OfflineCatchup';
-import { useActivityStore } from './activityStore';
-import { useCombatStore } from './combatStore';
-import { useOutskirtsStore } from './outskirtsStore';
-import { useRuinsStore } from './ruinsStore';
-import { useContentStore } from './contentStore';
-import { useTrialStore } from './trialStore';
-import { useGameStore } from './gameStore';
-import { useInventoryStore } from './inventoryStore';
+import type { OfflineCatchupResult } from '../services/time/OfflineCatchup.js';
+import { useActivityStore } from './activityStore.js';
+import { useCombatStore } from './combatStore.js';
+import { useOutskirtsStore } from './outskirtsStore.js';
+import { useRuinsStore } from './ruinsStore.js';
+import { useContentStore } from './contentStore.js';
+import { useTrialStore } from './trialStore.js';
+import { useGameStore } from './gameStore.js';
+import { useInventoryStore } from './inventoryStore.js';
 import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../systems/progression/runtime/index.js';
-import { pickEnemyFromPool } from '../components/screens/world/worldUtils';
-import { GameEvents } from '../services/events/GameEvents';
+import { pickEnemyFromPool } from '../components/screens/world/worldUtils.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 /**
  * UI notification types

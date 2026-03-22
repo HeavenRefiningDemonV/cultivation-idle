@@ -1,6 +1,6 @@
-import { D } from '../utils/numbers';
-import { useContentStore } from '../stores/contentStore';
-import type { EnemyDefinition, EnemyMechanic } from '../types';
+import { D } from '../utils/numbers.js';
+import { useContentStore } from '../stores/contentStore.js';
+import type { EnemyDefinition, EnemyMechanic } from '../types/index.js';
 
 interface PlayerPowerSnapshot {
   atk: string;

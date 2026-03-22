@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ActiveActivity } from '../../../../types/activity';
-import { useActivityStore } from '../../../../stores/activityStore';
-import { useCombatStore } from '../../../../stores/combatStore';
-import { useContentStore } from '../../../../stores/contentStore';
-import { useOutskirtsStore } from '../../../../stores/outskirtsStore';
-import { ZONE_REALM_REQUIREMENTS } from '../../../../stores/zoneStore';
-import type { CombatEvent, EnemyMechanic } from '../../../../types';
+import type { ActiveActivity } from '../../../../types/activity.js';
+import { useActivityStore } from '../../../../stores/activityStore.js';
+import { useCombatStore } from '../../../../stores/combatStore.js';
+import { useContentStore } from '../../../../stores/contentStore.js';
+import { useOutskirtsStore } from '../../../../stores/outskirtsStore.js';
+import { ZONE_REALM_REQUIREMENTS } from '../../../../stores/zoneStore.js';
+import type { CombatEvent, EnemyMechanic } from '../../../../types/index.js';
 import './OutskirtsProgress.scss';
 
 const HEADLINE_MECHANICS: Record<string, { title: string; description: string }> = {

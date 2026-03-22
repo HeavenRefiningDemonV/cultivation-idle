@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useCombatStore } from '../../stores/combatStore';
-import { useGameStore } from '../../stores/gameStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useZoneStore } from '../../stores/zoneStore';
-import { formatNumber, divide, D, formatPercentFromFraction } from '../../utils/numbers';
-import type { EnemyDefinition } from '../../types';
-import { CombatCanvas } from '../combat/CombatCanvas';
-import { GameIcon } from '../../ui/icons';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useZoneStore } from '../../stores/zoneStore.js';
+import { formatNumber, divide, D, formatPercentFromFraction } from '../../utils/numbers.js';
+import type { EnemyDefinition } from '../../types/index.js';
+import { CombatCanvas } from '../combat/CombatCanvas.js';
+import { GameIcon } from '../../ui/icons.js';
 import './AdventureTab.scss';
 
 /**

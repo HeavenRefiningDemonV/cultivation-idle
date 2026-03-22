@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { getItemDef } from '../../stores/contentStore';
-import type { AlchemyHandsOnResult } from '../../systems/crafting/craftingTypes';
+import { getItemDef } from '../../stores/contentStore.js';
+import type { AlchemyHandsOnResult } from '../../systems/crafting/craftingTypes.js';
 import './AlchemyResultModal.scss';
 
 interface AlchemyResultModalProps {

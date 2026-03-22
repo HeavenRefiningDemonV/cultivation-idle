@@ -1,4 +1,4 @@
-import type { BreathMode } from '../../types';
+import type { BreathMode } from '../../types/index.js';
 
 export const BREATH_MODE_MULTIPLIERS: Record<BreathMode, { qiRateMult: number; comprehensionMult: number; stabilityMult: number }>
   = {

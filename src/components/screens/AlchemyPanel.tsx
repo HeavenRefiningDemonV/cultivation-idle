@@ -1,22 +1,22 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
+import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore.js';
 import { listAlchemyRecipesForCity } from '../../content/alchemy.js';
-import { useCraftSessionStore } from '../../stores/craftSessionStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useProfessionStore } from '../../stores/professionStore';
-import { useRecipeMasteryStore } from '../../stores/recipeMasteryStore';
-import { useUIStore } from '../../stores/uiStore';
-import { summarizePrompts } from '../../systems/crafting/assistedPrompts';
-import { getAlchemyTimeMultiplier } from '../../systems/crafting/alchemyBonuses';
-import { multiply, greaterThanOrEqualTo } from '../../utils/numbers';
-import { formatDurationHMS } from '../../utils/timeFormat';
-import { AssistedPromptCard } from '../crafting/AssistedPromptCard';
-import { HandsOnAlchemySession } from '../crafting/HandsOnAlchemySession';
-import { UsedForLinks } from '../crafting/UsedForLinks';
-import { AlchemyResultModal } from '../modals/AlchemyResultModal';
-import type { AlchemyHandsOnResult } from '../../systems/crafting/craftingTypes';
-import { GameEvents } from '../../services/events/GameEvents';
+import { useCraftSessionStore } from '../../stores/craftSessionStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useProfessionStore } from '../../stores/professionStore.js';
+import { useRecipeMasteryStore } from '../../stores/recipeMasteryStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { summarizePrompts } from '../../systems/crafting/assistedPrompts.js';
+import { getAlchemyTimeMultiplier } from '../../systems/crafting/alchemyBonuses.js';
+import { multiply, greaterThanOrEqualTo } from '../../utils/numbers.js';
+import { formatDurationHMS } from '../../utils/timeFormat.js';
+import { AssistedPromptCard } from '../crafting/AssistedPromptCard.js';
+import { HandsOnAlchemySession } from '../crafting/HandsOnAlchemySession.js';
+import { UsedForLinks } from '../crafting/UsedForLinks.js';
+import { AlchemyResultModal } from '../modals/AlchemyResultModal.js';
+import type { AlchemyHandsOnResult } from '../../systems/crafting/craftingTypes.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
 
 interface AlchemyPanelProps {
   cityId: string | null;

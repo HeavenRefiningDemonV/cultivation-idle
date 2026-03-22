@@ -1,4 +1,4 @@
-import type { ForgeStepDef } from '../../systems/crafting/craftingTypes';
+import type { ForgeStepDef } from '../../systems/crafting/craftingTypes.js';
 import { nextSeed, randFloat } from '../../utils/rng.js';
 
 export type ForgeSessionMode = 'IDLE' | 'ASSISTED' | 'HANDS_ON';

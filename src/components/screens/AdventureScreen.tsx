@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { useCombatStore } from '../../stores/combatStore';
-import { useZoneStore } from '../../stores/zoneStore';
-import { useGameStore } from '../../stores/gameStore';
-import { useUIStore } from '../../stores/uiStore';
-import { clamp, D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers';
-import { TechniquePanel } from '../TechniquePanel';
-import { GameIcon } from '../../ui/icons';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useZoneStore } from '../../stores/zoneStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { clamp, D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers.js';
+import { TechniquePanel } from '../TechniquePanel.js';
+import { GameIcon } from '../../ui/icons.js';
 import './AdventureScreen.scss';
 
 /**

@@ -15,30 +15,30 @@ import type {
 } from '../types/index.js';
 import type { TechniqueDef } from '../content/index.js';
 import type { OutskirtsDef } from '../content/index.js';
-import { useGameStore } from './gameStore';
-import { useZoneStore } from './zoneStore';
-import { useInventoryStore } from './inventoryStore';
-import { useContentStore } from './contentStore';
-import { useActivityStore } from './activityStore';
-import { useOutskirtsStore } from './outskirtsStore';
-import { useCityStore } from './cityStore';
-import { useTrialStore } from './trialStore';
-import { useRuinsStore } from './ruinsStore';
-import { useTechniqueStore, type AiProfile, type CastingPolicy } from './techniqueStore';
-import { useBountyStore } from './bountyStore';
-import { useHeartLawStore } from './heartLawStore';
-import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore';
-import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
-import { BossMechanics } from '../systems/bossMechanics';
-import { generateLoot, formatLootMessage } from '../systems/loot';
+import { useGameStore } from './gameStore.js';
+import { useZoneStore } from './zoneStore.js';
+import { useInventoryStore } from './inventoryStore.js';
+import { useContentStore } from './contentStore.js';
+import { useActivityStore } from './activityStore.js';
+import { useOutskirtsStore } from './outskirtsStore.js';
+import { useCityStore } from './cityStore.js';
+import { useTrialStore } from './trialStore.js';
+import { useRuinsStore } from './ruinsStore.js';
+import { useTechniqueStore, type AiProfile, type CastingPolicy } from './techniqueStore.js';
+import { useBountyStore } from './bountyStore.js';
+import { useHeartLawStore } from './heartLawStore.js';
+import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
+import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
+import { BossMechanics } from '../systems/bossMechanics.js';
+import { generateLoot, formatLootMessage } from '../systems/loot.js';
 import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
-import { getTalismanBonusesNow } from './buffStore';
-import { createEnemy } from '../systems/enemyFactory';
-import type { NormalizedEffect } from '../systems/techniques/effects';
-import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects';
-import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
-import { getSpiritRootSnapshot } from './gameStore';
+import { getTalismanBonusesNow } from './buffStore.js';
+import { createEnemy } from '../systems/enemyFactory.js';
+import type { NormalizedEffect } from '../systems/techniques/effects.js';
+import { applyRankMultiplier, classifyTechnique, normalizeTechniqueEffects, summarizeEffects } from '../systems/techniques/effects.js';
+import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
+import { getSpiritRootSnapshot } from './gameStore.js';
 
 type CombatEventVariantInput<TType extends CombatEvent['type']> =
   Omit<Extract<CombatEvent, { type: TType }>, 'id' | 'at' | 'type'>
@@ -55,17 +55,18 @@ function stampCombatEvent<TType extends CombatEvent['type']>(
   return { ...event, type, at, id: event.id ?? makeCombatEventId(at) } as Extract<CombatEvent, { type: TType }>;
 }
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
-import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning';
-import { buildTrialDefeatSummary } from '../systems/combat/trialModel';
-import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles';
-import { useUIStore } from './uiStore';
+import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning.js';
+import { buildTrialDefeatSummary } from '../systems/combat/trialModel.js';
+import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles.js';
+import { useUIStore } from './uiStore.js';
 import {
   getConsumableSpec,
   isCombatUsableConsumable,
-} from '../systems/consumables/consumableCatalog';
-import { useMedicinePouchStore } from './medicinePouchStore';
-import { GameEvents } from '../services/events/GameEvents';
+} from '../systems/consumables/consumableCatalog.js';
+import { useMedicinePouchStore } from './medicinePouchStore.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/economy/index.js';
+import { getGateFailureMeritPolicyForTrial } from '../systems/economy/gateFailureMeritPolicy.js';
 
 
 function getHeartLawCombatMultiplier(): number {
@@ -420,6 +421,7 @@ const createInitialCombatState = () => ({
   combatStartTime: 0,
   enemyMechanics: [] as EnemyMechanic[],
   activeAura: null as ExtendedCombatState['activeAura'],
+  combatResolved: false,
 });
 
 /**
@@ -954,6 +956,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatContext = context ?? { type: null };
         state.enemyMechanics = enemy.mechanics || [];
         state.activeAura = null;
+        state.combatResolved = false;
 
         // Initialize HP
         state.playerHP = playerStats.hp;
@@ -1036,6 +1039,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         state.combatStartTime = 0;
         state.enemyMechanics = [];
         state.activeAura = null;
+        state.combatResolved = false;
       });
     },
 
@@ -1368,7 +1372,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
      */
     defeatEnemy: () => {
       const state = get();
-      if (!state.currentEnemy) return;
+      if (!state.currentEnemy || state.combatResolved) return;
+
+      set((draft) => {
+        draft.combatResolved = true;
+      });
 
       const enemy = state.currentEnemy;
       const currentZone = state.currentZone;
@@ -1598,12 +1606,18 @@ export const useCombatStore = create<ExtendedCombatState>()(
      */
     playerDefeat: () => {
       const state = get();
-      if (!state.currentEnemy) return;
+      if (!state.currentEnemy || state.combatResolved) return;
+
+      set((draft) => {
+        draft.combatResolved = true;
+      });
 
       const now = Date.now();
       const enemy = state.currentEnemy;
       const context = state.combatContext;
-      const uiSettings = useUIStore.getState().settings;
+      const uiStore = useUIStore.getState();
+      const uiSettings = uiStore.settings;
+      const addNotification = uiStore.addNotification;
       const autoRetryOnDeath = uiSettings.autoRetryOnDeath;
 
       // Add defeat message
@@ -1640,6 +1654,17 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const trialStore = useTrialStore.getState();
         trialStore.recordAttemptSummary(context.trialId, summary);
         trialStore.recordFailure(context.trialId, context.countsTowardFailSafe);
+
+        if (context.countsTowardFailSafe) {
+          const content = useContentStore.getState().raw;
+          const trial = useContentStore.getState().maps.trialsById[context.trialId] ?? null;
+          const policy = getGateFailureMeritPolicyForTrial(content ?? null, trial);
+          RewardService.grantRewards(
+            { currencies: { merit: String(policy.eligibleDefeatMerit) } },
+            `Gate Trial eligible defeat:${context.trialId}`,
+          );
+          addNotification('info', `Eligible defeat reward: +${policy.eligibleDefeatMerit} Merit`, { durationMs: 1800 });
+        }
       }
 
       if (context?.type === 'ruins') {

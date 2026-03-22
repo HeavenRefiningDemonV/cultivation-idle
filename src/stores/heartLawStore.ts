@@ -5,5 +5,5 @@ export {
   getAvailableHeartLaws,
   getDefaultUnlockedHeartLawIds,
   getSelectedHeartLawDef,
-} from './cultivationStore';
+} from './cultivationStore.js';
 export type { ComprehensionSource } from '../types/index.js';

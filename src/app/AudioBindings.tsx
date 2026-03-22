@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { audio } from '../services/audio';
-import { useUIStore, type UIState } from '../stores/uiStore';
-import { isSoundId } from '../services/audio/soundIds';
-import type { UINotification } from '../stores/uiStore';
-import { initSoundRouter } from '../services/audio/SoundRouter';
-import { initAmbienceManager } from '../services/audio/AmbienceManager';
+import { audio } from '../services/audio.js';
+import { useUIStore, type UIState } from '../stores/uiStore.js';
+import { isSoundId } from '../services/audio/soundIds.js';
+import type { UINotification } from '../stores/uiStore.js';
+import { initSoundRouter } from '../services/audio/SoundRouter.js';
+import { initAmbienceManager } from '../services/audio/AmbienceManager.js';
 
 const selectActiveTab = (state: UIState) => state.activeTab;
 const selectNotifications = (state: UIState) => state.notifications;

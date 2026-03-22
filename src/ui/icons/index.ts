@@ -1,3 +1,3 @@
-export { GameIcon } from './GameIcon';
-export { ICONS, getIconMeta, type IconId } from './iconRegistry';
-export { EMOJI_REPLACEMENTS } from './emojiReplacements';
+export { GameIcon } from './GameIcon.js';
+export { ICONS, getIconMeta, type IconId } from './iconRegistry.js';
+export { EMOJI_REPLACEMENTS } from './emojiReplacements.js';

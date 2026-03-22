@@ -1,6 +1,6 @@
-import { PaperCard } from '../../ui/ink';
-import { AlchemyPanel } from '../../components/screens/AlchemyPanel';
-import type { ApothecaryBrewSummary } from './apothecaryPrepReadModel';
+import { PaperCard } from '../../ui/ink.js';
+import { AlchemyPanel } from '../../components/screens/AlchemyPanel.js';
+import type { ApothecaryBrewSummary } from './apothecaryPrepReadModel.js';
 
 interface ApothecaryBrewPanelProps {
   cityId: string;

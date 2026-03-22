@@ -965,6 +965,7 @@ export interface CombatState {
   // Enemy mechanics
   enemyMechanics: EnemyMechanic[];
   activeAura: { damagePerSec: number; description?: string } | null;
+  combatResolved: boolean;
 
   // Actions
   enterCombat: (zone: string, enemy: EnemyDefinition) => void;

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useCombatStore } from '../../../stores/combatStore';
-import { OutskirtsProgress } from './panels/OutskirtsProgress';
-import { TrialProgress } from '../../../features/trials/ui/TrialProgress';
-import { RuinsProgress } from '../../../features/ruins/ui/RuinsProgress';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { OutskirtsProgress } from './panels/OutskirtsProgress.js';
+import { TrialProgress } from '../../../features/trials/ui/TrialProgress.js';
+import { RuinsProgress } from '../../../features/ruins/ui/RuinsProgress.js';
 
 export type CombatTheaterFocus =
   | { type: 'outskirts'; id: string }

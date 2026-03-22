@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useCombatStore } from '../../stores/combatStore';
-import { useContentStore } from '../../stores/contentStore';
-import { formatNumber } from '../../utils/numbers';
-import type { CombatEvent } from '../../types';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { formatNumber } from '../../utils/numbers.js';
+import type { CombatEvent } from '../../types/index.js';
 
 const MAX_ENTRIES = 6;
 

@@ -1,7 +1,7 @@
-import type { AiProfile } from '../../stores/techniqueStore';
-import type { TechniqueDef } from '../../content';
-import type { NormalizedEffect } from '../techniques/effects';
-import { classifyTechnique } from '../techniques/effects';
+import type { AiProfile } from '../../stores/techniqueStore.js';
+import type { TechniqueDef } from '../../content/index.js';
+import type { NormalizedEffect } from '../techniques/effects.js';
+import { classifyTechnique } from '../techniques/effects.js';
 
 export type TechniqueAiTags = {
   isHeal: boolean;

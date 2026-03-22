@@ -1,5 +1,5 @@
-import type { HeartLawDef } from '../../content';
-import type { SpiritRoot } from '../../types';
+import type { HeartLawDef } from '../../content/index.js';
+import type { SpiritRoot } from '../../types/index.js';
 
 export type AffinityStatus = 'match' | 'mismatch' | 'none';
 

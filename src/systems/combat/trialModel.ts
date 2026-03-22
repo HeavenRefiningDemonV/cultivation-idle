@@ -1,7 +1,7 @@
-import type { CombatEvent, EnemyMechanic, TrialAttemptSummary } from '../../types';
-import { D } from '../../utils/numbers';
-import { hpPercent } from './minibarModel';
-import { clampNumber, computeEffectiveHp, computeRollingDps } from './theaterModel';
+import type { CombatEvent, EnemyMechanic, TrialAttemptSummary } from '../../types/index.js';
+import { D } from '../../utils/numbers.js';
+import { hpPercent } from './minibarModel.js';
+import { clampNumber, computeEffectiveHp, computeRollingDps } from './theaterModel.js';
 
 interface BuildSummaryInput {
   trialId: string;

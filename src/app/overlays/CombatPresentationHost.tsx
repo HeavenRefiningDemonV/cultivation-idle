@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { CombatTheaterModal } from '../../components/combat/presentation/CombatTheaterModal';
-import { CombatDock } from '../../components/combat/presentation/CombatDock';
-import { useUIStore } from '../../stores/uiStore';
-import { useActivityStore } from '../../stores/activityStore';
-import type { CombatPresentationContext } from '../../stores/uiStore';
-import type { CombatTheaterFocus } from '../../components/combat/theater/ProgressPanel';
-import { COMBAT_ACTIVITY_TYPES } from '../../types/activity';
-import { useCombatStore } from '../../stores/combatStore';
+import { CombatTheaterModal } from '../../components/combat/presentation/CombatTheaterModal.js';
+import { CombatDock } from '../../components/combat/presentation/CombatDock.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import type { CombatPresentationContext } from '../../stores/uiStore.js';
+import type { CombatTheaterFocus } from '../../components/combat/theater/ProgressPanel.js';
+import { COMBAT_ACTIVITY_TYPES } from '../../types/activity.js';
+import { useCombatStore } from '../../stores/combatStore.js';
 
 export function CombatPresentationHost() {
   const { context } = useUIStore((state) => state.combatPresentation);

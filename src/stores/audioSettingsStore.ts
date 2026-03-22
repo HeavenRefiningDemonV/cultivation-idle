@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { SoundCategory } from '../services/audio/soundCatalog';
+import type { SoundCategory } from '../services/audio/soundCatalog.js';
 
 export type AudioSettingsState = {
   muted: boolean;

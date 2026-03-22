@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
-import { useUIStore } from '../../stores/uiStore';
+import { useUIStore } from '../../stores/uiStore.js';
 
 interface UsedForLinksProps {
   usageText?: string;

@@ -1,15 +1,15 @@
 import { useEffect, useMemo, type ChangeEvent } from 'react';
-import type { TechniqueDef } from '../content';
-import { useCombatStore } from '../stores/combatStore';
-import { useContentStore } from '../stores/contentStore';
-import { useInventoryStore } from '../stores/inventoryStore';
+import type { TechniqueDef } from '../content/index.js';
+import { useCombatStore } from '../stores/combatStore.js';
+import { useContentStore } from '../stores/contentStore.js';
+import { useInventoryStore } from '../stores/inventoryStore.js';
 import {
   MASTERY_XP_SCALE,
   masteryLevelFromXp,
   masteryMilestones,
   useTechCollectionStore,
-} from '../stores/techCollectionStore';
-import { useTechniqueStore, type AiProfile } from '../stores/techniqueStore';
+} from '../stores/techCollectionStore.js';
+import { useTechniqueStore, type AiProfile } from '../stores/techniqueStore.js';
 
 const aiProfiles: AiProfile[] = ['balanced', 'survivor', 'burst', 'farmer'];
 

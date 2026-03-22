@@ -1,4 +1,4 @@
-import type { SoundId } from './soundIds';
+import type { SoundId } from './soundIds.js';
 
 export type SoundCategory = 'ui' | 'sfx' | 'amb' | 'stg';
 

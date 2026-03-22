@@ -13,3 +13,5 @@ export * from './activityRewardReadModel.js';
 export * from './rewardParityAudit.js';
 export * from './supportCurrencyTargets.js';
 export * from './meritRoleAudit.js';
+export * from './gateFailureMeritPolicy.js';
+export * from './supportEconomySurfaceModel.js';

@@ -1,10 +1,10 @@
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import { useTechCollectionStore, type ManualGrade, type TechRarity } from '../../stores/techCollectionStore';
-import { useActivityStore } from '../../stores/activityStore';
-import { useProfessionStore } from '../../stores/professionStore';
-import { useExpeditionStore } from '../../stores/expeditionStore';
-import { useContentStore } from '../../stores/contentStore';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
+import { useTechCollectionStore, type ManualGrade, type TechRarity } from '../../stores/techCollectionStore.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import { useProfessionStore } from '../../stores/professionStore.js';
+import { useExpeditionStore } from '../../stores/expeditionStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
 
 export type ValidationSeverity = 'error' | 'warning';
 

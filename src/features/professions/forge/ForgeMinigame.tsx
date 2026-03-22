@@ -1,5 +1,5 @@
-import type { CraftSession, ForgeHandsOnBonus, ForgeSessionOutcome } from '../../../systems/crafting/craftingTypes';
-import { ForgeHandsOnSession } from '../../../components/crafting/ForgeHandsOnSession';
+import type { CraftSession, ForgeHandsOnBonus, ForgeSessionOutcome } from '../../../systems/crafting/craftingTypes.js';
+import { ForgeHandsOnSession } from '../../../components/crafting/ForgeHandsOnSession.js';
 
 export type ForgeMinigameProps = {
   session: CraftSession;

@@ -1,10 +1,10 @@
-import type { SoundId } from './soundIds';
-import { audio } from './index';
-import { useUIStore, type WorldBuildingKey, type UIState } from '../../stores/uiStore';
-import { useActivityStore } from '../../stores/activityStore';
-import { useCombatStore } from '../../stores/combatStore';
-import { useCityStore, type CityState } from '../../stores/cityStore';
-import { isCombatModule } from '../../systems/world/openWorldModule';
+import type { SoundId } from './soundIds.js';
+import { audio } from './index.js';
+import { useUIStore, type WorldBuildingKey, type UIState } from '../../stores/uiStore.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useCityStore, type CityState } from '../../stores/cityStore.js';
+import { isCombatModule } from '../../systems/world/openWorldModule.js';
 
 const AMBIENCE_BY_BUILDING: Partial<Record<WorldBuildingKey, SoundId>> = {
   apothecary: 'amb_building_apothecary_loop',

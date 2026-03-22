@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { greaterThanOrEqualTo, multiply } from '../utils/numbers';
-import { getDayKey } from '../utils/dayKey';
-import { useContentStore } from './contentStore';
-import { useInventoryStore, type CurrencyKey } from './inventoryStore';
+import { greaterThanOrEqualTo, multiply } from '../utils/numbers.js';
+import { getDayKey } from '../utils/dayKey.js';
+import { useContentStore } from './contentStore.js';
+import { useInventoryStore, type CurrencyKey } from './inventoryStore.js';
 import { RewardService } from '../services/rewards/index.js';
 
 export type PurchasedToday = Record<string, Record<string, number>>;

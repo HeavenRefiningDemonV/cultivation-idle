@@ -1,8 +1,8 @@
-import { normalizeForgeBlueprint } from '../../content/forge';
-import { resolveForgeStepScript } from '../../features/professions/forge/forgeScriptBuilder';
-import { useContentStore } from '../../stores/contentStore';
-import { nextSeed, randFloat } from '../../utils/rng';
-import type { CraftScript, CraftStep, ForgeHandsOnBonus, ForgeStepDef } from './craftingTypes';
+import { normalizeForgeBlueprint } from '../../content/forge.js';
+import { resolveForgeStepScript } from '../../features/professions/forge/forgeScriptBuilder.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { nextSeed, randFloat } from '../../utils/rng.js';
+import type { CraftScript, CraftStep, ForgeHandsOnBonus, ForgeStepDef } from './craftingTypes.js';
 
 function createRng(seed: number): () => number {
   let current = seed;

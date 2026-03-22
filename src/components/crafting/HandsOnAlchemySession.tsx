@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { AlchemyHandsOnResult, CraftSession, CraftStep } from '../../systems/crafting/craftingTypes';
-import { getItemDef } from '../../stores/contentStore';
-import { useCraftSessionStore } from '../../stores/craftSessionStore';
-import { useUIStore } from '../../stores/uiStore';
-import { GameEvents } from '../../services/events/GameEvents';
+import type { AlchemyHandsOnResult, CraftSession, CraftStep } from '../../systems/crafting/craftingTypes.js';
+import { getItemDef } from '../../stores/contentStore.js';
+import { useCraftSessionStore } from '../../stores/craftSessionStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
 
 interface HandsOnAlchemySessionProps {
   session: CraftSession;

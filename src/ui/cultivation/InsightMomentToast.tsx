@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { InsightChoiceId, InsightMomentState } from '../../types';
+import type { InsightChoiceId, InsightMomentState } from '../../types/index.js';
 import './InsightMomentToast.scss';
 
 interface Props {

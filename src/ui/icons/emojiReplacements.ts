@@ -1,4 +1,4 @@
-import type { IconId } from './iconRegistry';
+import type { IconId } from './iconRegistry.js';
 
 type EmojiReplacement = {
   emoji: string;

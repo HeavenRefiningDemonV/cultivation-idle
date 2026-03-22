@@ -1,4 +1,4 @@
-import { useErrorLogStore } from '../../stores/errorLogStore';
+import { useErrorLogStore } from '../../stores/errorLogStore.js';
 
 let initialized = false;
 

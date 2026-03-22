@@ -1,6 +1,6 @@
-import type { AlchemyRecipesConfig } from './types';
+import type { AlchemyRecipesConfig } from './types.js';
 import type { ValidatedContent } from './validators.js';
-import { useContentStore } from '../stores/contentStore';
+import { useContentStore } from '../stores/contentStore.js';
 import { getVisibleAlchemyRecipes } from '../systems/economy/liveEconomyCatalog.js';
 
 type AlchemyRecipe = AlchemyRecipesConfig['recipes'][number];

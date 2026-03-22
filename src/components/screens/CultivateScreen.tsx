@@ -1,29 +1,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { REALMS } from '../../constants';
+import { REALMS } from '../../constants.js';
 import {
   clampRealmIndexToSemesterSlice,
   getGateTransitionItemIdForRealmIndex,
   getNextLiveRealm,
   isAtSemesterCap,
 } from '../../systems/progression/runtime/index.js';
-import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning';
-import { useActivityStore } from '../../stores/activityStore';
-import { useContentStore, getItemDef } from '../../stores/contentStore';
-import { useCultivationStore } from '../../stores/cultivationStore';
-import { useGameStore } from '../../stores/gameStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useUIStore } from '../../stores/uiStore';
-import type { InsightMomentState } from '../../types';
-import { formatNumber, D } from '../../utils/numbers';
+import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import { useContentStore, getItemDef } from '../../stores/contentStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import type { InsightMomentState } from '../../types/index.js';
+import { formatNumber, D } from '../../utils/numbers.js';
 import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../systems/consumables/cultivationConsumableTypes.js';
-import { PerkSelectionModal } from '../modals/PerkSelectionModal';
-import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
-import { DaoHeartModal } from '../modals/DaoHeartModal';
+import { PerkSelectionModal } from '../modals/PerkSelectionModal.js';
+import { getAvailablePerks, getPerkById } from '../../data/pathPerks.js';
+import { DaoHeartModal } from '../modals/DaoHeartModal.js';
 import cultivator from "../../assets/onscreen/cbg_full.png";
 import barLong from "../../assets/menus/bar_long.png";
-import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon';
-import { DantianOrb } from '../../ui/cultivation/DantianOrb';
-import { GameIcon } from '../../ui/icons';
+import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon.js';
+import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
+import { GameIcon } from '../../ui/icons.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
-import { COMBAT_ACTIVITY_TYPES } from '../../types/activity';
-import { useActivityStore } from '../../stores/activityStore';
-import type { ActiveActivity } from '../../stores/activityStore';
-import { DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN, PLAYER_ATTACK_COOLDOWN, useCombatStore } from '../../stores/combatStore';
-import { useGameStore } from '../../stores/gameStore';
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
-import { isCombatModule } from '../../systems/world/openWorldModule';
-import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel';
-import { formatNumber } from '../../utils/numbers';
-import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles';
-import { MedicinePouchStrip } from './MedicinePouchStrip';
-import { GameIcon } from '../../ui/icons';
+import { COMBAT_ACTIVITY_TYPES } from '../../types/activity.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import type { ActiveActivity } from '../../stores/activityStore.js';
+import { DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN, PLAYER_ATTACK_COOLDOWN, useCombatStore } from '../../stores/combatStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
+import { isCombatModule } from '../../systems/world/openWorldModule.js';
+import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionTimerMs, hpPercent } from '../../systems/combat/minibarModel.js';
+import { formatNumber } from '../../utils/numbers.js';
+import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles.js';
+import { MedicinePouchStrip } from './MedicinePouchStrip.js';
+import { GameIcon } from '../../ui/icons.js';
 import './CombatMinibar.scss';
 
 type LogEntry =

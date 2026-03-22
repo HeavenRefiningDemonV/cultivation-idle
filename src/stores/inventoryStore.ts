@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { D, add, greaterThanOrEqualTo, subtract } from '../utils/numbers';
+import { D, add, greaterThanOrEqualTo, subtract } from '../utils/numbers.js';
 
 export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
 

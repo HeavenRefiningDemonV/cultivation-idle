@@ -15,7 +15,7 @@ import {
   Unlock,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { PrestigeCategoryKey } from './prestigeCategories';
+import type { PrestigeCategoryKey } from './prestigeCategories.js';
 
 export type PrestigeEdictKind =
   | 'multiplier'

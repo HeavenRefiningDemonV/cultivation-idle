@@ -1,7 +1,7 @@
-import type { SoundCategory, SoundDef } from './soundCatalog';
-import { SOUND_CATALOG } from './soundCatalog';
-import type { SoundId } from './soundIds';
-import { useAudioSettingsStore } from '../../stores/audioSettingsStore';
+import type { SoundCategory, SoundDef } from './soundCatalog.js';
+import { SOUND_CATALOG } from './soundCatalog.js';
+import type { SoundId } from './soundIds.js';
+import { useAudioSettingsStore } from '../../stores/audioSettingsStore.js';
 
 export type AudioPlayOptions = {
   volume?: number;

@@ -3,10 +3,10 @@ import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types/index.js';
 import { REALMS } from '../constants/index.js';
 import { clampRealmIndexToSemesterSlice } from '../systems/progression/runtime/index.js';
-import { SaveService } from '../services/save/SaveService';
-import { useContentStore } from './contentStore';
+import { SaveService } from '../services/save/SaveService.js';
+import { useContentStore } from './contentStore.js';
 import type { PrestigeUpgradeDef } from '../content/index.js';
-import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects';
+import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects.js';
 import {
   canPurchasePrestigeNode,
   getPrestigeNodeRuntimeStatus,

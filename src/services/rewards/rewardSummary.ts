@@ -1,7 +1,7 @@
-import { getItemDef } from '../../stores/contentStore';
-import { normalizeItemList } from '../../utils/itemList';
-import { D } from '../../utils/numbers';
-import type { GrantRewardsResult, RewardBundle, RewardCurrencyBundle } from './types';
+import { getItemDef } from '../../stores/contentStore.js';
+import { normalizeItemList } from '../../utils/itemList.js';
+import { D } from '../../utils/numbers.js';
+import type { GrantRewardsResult, RewardBundle, RewardCurrencyBundle } from './types.js';
 
 const allowedGrades = ['mortal', 'earth', 'heaven', 'mystic'] as const;
 const allowedRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;

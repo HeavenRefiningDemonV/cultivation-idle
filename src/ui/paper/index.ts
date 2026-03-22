@@ -1,6 +1,6 @@
-export { PaperCard } from './PaperCard';
-export type { PaperCardProps } from './PaperCard';
-export { PaperChip } from './PaperChip';
-export type { PaperChipProps } from './PaperChip';
-export { PaperStamp } from './PaperStamp';
-export type { PaperStampProps } from './PaperStamp';
+export { PaperCard } from './PaperCard.js';
+export type { PaperCardProps } from './PaperCard.js';
+export { PaperChip } from './PaperChip.js';
+export type { PaperChipProps } from './PaperChip.js';
+export { PaperStamp } from './PaperStamp.js';
+export type { PaperStampProps } from './PaperStamp.js';

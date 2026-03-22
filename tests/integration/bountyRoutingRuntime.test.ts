@@ -30,15 +30,36 @@ test.beforeEach(async () => {
   await primeBountyRuntimeStores();
 });
 
-test('CRAFT_COMPLETE routes to the live prep module truth for the semester slice', () => {
+test('CRAFT_COMPLETE routes to Apothecary when live prep stock is the honest support need', () => {
   const destination = resolveBountyDestination({
     cityId: 'city_pinewind_hamlet',
     bountyKind: 'CRAFT_COMPLETE',
     cityModules: LIVE_CITY_MODULES,
+    craftRouteSupportState: {
+      apothecaryBelowFloor: true,
+      forgeBelowFloor: false,
+      apothecaryQueueOrStockGap: true,
+    },
   });
 
-  assert.deepEqual(destination, { kind: 'module', moduleKey: 'forge', cityId: 'city_pinewind_hamlet', reason: 'Forge claims count for craft support bounties.' });
+  assert.deepEqual(destination, { kind: 'module', moduleKey: 'apothecary', cityId: 'city_pinewind_hamlet', reason: 'Apothecary prep stock is below the live support floor.' });
   assert.notDeepEqual(destination.kind, 'moduleChoice');
+});
+
+test('craft destination routes to Forge when the forge floor is the honest gate need', () => {
+  const destination = resolveBountyDestination({
+    cityId: 'city_pinewind_hamlet',
+    bountyKind: 'CRAFT_COMPLETE',
+    cityModules: LIVE_CITY_MODULES,
+    craftRouteSupportState: {
+      apothecaryBelowFloor: false,
+      forgeBelowFloor: true,
+      apothecaryQueueOrStockGap: false,
+    },
+  });
+
+  assert.equal(destination.kind, 'module');
+  assert.equal(destination.moduleKey, 'forge');
 });
 
 test('craft destination falls back to Apothecary Brew if Forge is absent', () => {
@@ -46,6 +67,11 @@ test('craft destination falls back to Apothecary Brew if Forge is absent', () =>
     cityId: 'city_pinewind_hamlet',
     bountyKind: 'CRAFT_COMPLETE',
     cityModules: LIVE_CITY_MODULES.filter((moduleKey) => moduleKey !== 'forge'),
+    craftRouteSupportState: {
+      apothecaryBelowFloor: false,
+      forgeBelowFloor: true,
+      apothecaryQueueOrStockGap: false,
+    },
   });
 
   assert.equal(destination.kind, 'module');

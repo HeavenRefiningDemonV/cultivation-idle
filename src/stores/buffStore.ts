@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { useContentStore } from './contentStore';
-import { useInventoryStore } from './inventoryStore';
-import { GameEvents } from '../services/events/GameEvents';
+import { useContentStore } from './contentStore.js';
+import { useInventoryStore } from './inventoryStore.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 export type TalismanBonuses = {
   goldDropBonusPct?: number;

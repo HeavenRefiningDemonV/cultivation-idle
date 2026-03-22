@@ -1,27 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
-import { useProfessionStore } from '../../stores/professionStore';
-import { useShopStore } from '../../stores/shopStore';
-import { useUIStore } from '../../stores/uiStore';
-import { buildApothecaryBuyReadModel } from '../../features/apothecary/apothecaryBuyReadModel';
-import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
-import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
+import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useMedicinePouchStore } from '../../stores/medicinePouchStore.js';
+import { useProfessionStore } from '../../stores/professionStore.js';
+import { useShopStore } from '../../stores/shopStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { buildApothecaryBuyReadModel } from '../../features/apothecary/apothecaryBuyReadModel.js';
+import { apothecaryServices } from '../../features/apothecary/apothecaryServices.js';
+import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons.js';
 import {
   buildApothecaryPrepReadModel,
   type ApothecaryRecommendedPackageEntry,
   type ApothecaryRouteIntent,
-} from '../../features/apothecary/apothecaryPrepReadModel';
-import { ApothecaryBrewPanel } from '../../features/apothecary/ApothecaryBrewPanel';
-import { GameEvents } from '../../services/events/GameEvents';
-import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
-import { consumeConsumable } from '../../systems/consumables/consumeConsumable';
-import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
-import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
-import { MedicinePouchModal } from '../modals/MedicinePouchModal';
-import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
-import { GameIcon } from '../../ui/icons';
+} from '../../features/apothecary/apothecaryPrepReadModel.js';
+import { ApothecaryBrewPanel } from '../../features/apothecary/ApothecaryBrewPanel.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
+import { getConsumableSpec } from '../../systems/consumables/consumableCatalog.js';
+import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
+import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips.js';
+import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel.js';
+import { MedicinePouchModal } from '../modals/MedicinePouchModal.js';
+import { InkPanel, PaperCard, PaperChip } from '../../ui/ink.js';
+import { GameIcon } from '../../ui/icons.js';
 import './ApothecaryPanel.scss';
 
 type BuyFilterKey = 'all' | 'combat' | 'cultivation' | 'rotating';

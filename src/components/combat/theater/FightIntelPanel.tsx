@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../../stores/combatStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { computeCombatSafety } from '../../../systems/combat/minibarModel';
+import { useCombatStore, DEFENSE_CONSTANT_K, ENEMY_ATTACK_COOLDOWN } from '../../../stores/combatStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { computeCombatSafety } from '../../../systems/combat/minibarModel.js';
 import {
   clampNumber,
   computeEffectiveHp,
   computeRollingDps,
   safeDurationSeconds,
-} from '../../../systems/combat/theaterModel';
-import { formatNumber, D } from '../../../utils/numbers';
+} from '../../../systems/combat/theaterModel.js';
+import { formatNumber, D } from '../../../utils/numbers.js';
 
 const DPS_WINDOW_MS = 10000;
 

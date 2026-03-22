@@ -1,5 +1,5 @@
-import { GameEvents } from '../events/GameEvents';
-import { formatGameEventSummary, useTelemetryStore } from '../../stores/telemetryStore';
+import { GameEvents } from '../events/GameEvents.js';
+import { formatGameEventSummary, useTelemetryStore } from '../../stores/telemetryStore.js';
 
 let initialized = false;
 

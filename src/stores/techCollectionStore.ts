@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content/index.js';
-import { useContentStore } from './contentStore';
-import { useInventoryStore } from './inventoryStore';
-import { randFloat } from '../utils/rng';
-import { useUIStore } from './uiStore';
-import { GameEvents } from '../services/events/GameEvents';
+import { useContentStore } from './contentStore.js';
+import { useInventoryStore } from './inventoryStore.js';
+import { randFloat } from '../utils/rng.js';
+import { useUIStore } from './uiStore.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
 export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';

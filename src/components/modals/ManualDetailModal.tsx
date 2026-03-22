@@ -1,12 +1,12 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import type { TechniqueDef } from '../../content';
-import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes';
-import type { ManualPurchaseResult as StoreManualPurchaseResult } from '../../stores/manualPavilionStore';
-import { getManualPathIcon, getManualRoleIcon, getManualTierIcon } from '../../features/manuals/manualIconMap';
-import { formatPrice } from '../../stores/contentStore';
-import { GameIcon } from '../../ui/icons';
+import type { TechniqueDef } from '../../content/index.js';
+import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../features/manuals/pavilionStockTypes.js';
+import type { ManualPurchaseResult as StoreManualPurchaseResult } from '../../stores/manualPavilionStore.js';
+import { getManualPathIcon, getManualRoleIcon, getManualTierIcon } from '../../features/manuals/manualIconMap.js';
+import { formatPrice } from '../../stores/contentStore.js';
+import { GameIcon } from '../../ui/icons.js';
 
 export interface ManualDetailData {
   slot: PavilionStockSlot;

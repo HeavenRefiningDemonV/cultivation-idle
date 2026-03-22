@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { useBountyStore } from '../../stores/bountyStore';
-import { useCityStore } from '../../stores/cityStore';
-import { useContentStore } from '../../stores/contentStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { bountyKindToLabel, bountyKindToProgressRule, resolveBountyDestination } from '../../utils/bountyRouting';
-import { formatDurationHMS } from '../../utils/timeFormat';
-import type { RewardBundle } from '../../services/rewards';
+import { useBountyStore } from '../../stores/bountyStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { bountyKindToLabel, bountyKindToProgressRule, resolveBountyDestination } from '../../utils/bountyRouting.js';
+import { formatDurationHMS } from '../../utils/timeFormat.js';
+import type { RewardBundle } from '../../services/rewards.js';
 import './BountyBoardPanel.scss';
-import { openWorldModule } from '../../systems/world/openWorldModule';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
-import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
-import { normalizeItemList } from '../../utils/itemList';
-import type { BountyInstance } from '../../stores/bountyStore';
+import { openWorldModule } from '../../systems/world/openWorldModule.js';
+import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper.js';
+import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
+import { normalizeItemList } from '../../utils/itemList.js';
+import type { BountyInstance } from '../../stores/bountyStore.js';
+import { buildSupportEconomySurfaceModel } from '../../systems/economy/supportEconomySurfaceModel.js';
+import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -26,6 +28,7 @@ const moduleLabelMap: Record<string, string> = {
   gateTrial: 'Gate Trial',
   expeditions: 'Expeditions',
   forge: 'Forge',
+  apothecary: 'Apothecary',
   manualPavilion: 'Manual Pavilion',
 };
 
@@ -66,6 +69,7 @@ export function BountyBoardPanel() {
   const previousProgressRef = useRef<Record<string, number>>({});
   const cityMap = useContentStore((state) => state.maps.citiesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
+  const content = useContentStore((state) => state.raw);
 
   const currentCityId = useCityStore((state) => state.currentCityId);
 
@@ -79,6 +83,7 @@ export function BountyBoardPanel() {
   const setTrackedBounty = useBountyStore((state) => state.setTrackedBounty);
 
   const merit = useInventoryStore((state) => state.merit);
+  const spiritStones = useInventoryStore((state) => state.spiritStones);
 
   const city = currentCityId ? cityMap[currentCityId] : null;
   const cityIndex = city?.index ?? null;
@@ -147,6 +152,22 @@ export function BountyBoardPanel() {
   );
 
   const cityName = city?.name ?? 'Unknown City';
+  const craftRouteSupportState = useMemo(
+    () => (currentCityId ? buildLiveCraftBountyRouteSupportState(currentCityId) : undefined),
+    [currentCityId, content, merit, spiritStones],
+  );
+  const supportSurface = useMemo(
+    () =>
+      buildSupportEconomySurfaceModel({
+        content,
+        cityId: currentCityId,
+        currencies: {
+          merit,
+          spiritStones,
+        },
+      }),
+    [content, currentCityId, merit, spiritStones],
+  );
 
   const destination = useMemo(
     () =>
@@ -155,9 +176,10 @@ export function BountyBoardPanel() {
             cityId: selectedBounty.cityId,
             bountyKind: selectedBounty.kind,
             cityModules,
+            craftRouteSupportState,
           })
         : null,
-    [cityModules, selectedBounty],
+    [cityModules, craftRouteSupportState, selectedBounty],
   );
 
   const rewardEntries = useMemo(
@@ -180,8 +202,9 @@ export function BountyBoardPanel() {
       cityId: primaryBounty.cityId,
       bountyKind: primaryBounty.kind,
       cityModules,
+      craftRouteSupportState,
     });
-  }, [cityModules, primaryBounty]);
+  }, [cityModules, craftRouteSupportState, primaryBounty]);
   const primaryActionLabel = 'Go There';
 
   const handleGoToModule = (cityId: string, moduleKey: string) => {
@@ -330,6 +353,56 @@ export function BountyBoardPanel() {
         </PaperCard>
       </div>
 
+      <PaperCard
+        variant="card"
+        className={classNames('bountySupportSummaryCard', {
+          'bountySupportSummaryCard--warning': supportSurface.reserveTone === 'warning',
+          'bountySupportSummaryCard--ready': supportSurface.reserveTone === 'ready',
+        })}
+      >
+        <div className="bountySupportSummaryCard__header">
+          <div>
+            <div className="bountySupportSummaryCard__title">Gate support reserve</div>
+            <div className="bountySupportSummaryCard__subtitle">{supportSurface.reserveHeadline}</div>
+          </div>
+          <PaperStamp
+            text={
+              supportSurface.readModel.meritReserveStatus === 'at_ideal'
+                ? 'At target'
+                : supportSurface.readModel.meritReserveStatus === 'between_minimum_and_ideal'
+                  ? 'Above minimum'
+                  : 'Below target'
+            }
+            size="sm"
+            tone={supportSurface.reserveTone === 'warning' ? 'danger' : supportSurface.reserveTone === 'ready' ? 'success' : 'ink'}
+          />
+        </div>
+        <div className="bountySupportSummaryCard__chips">
+          <PaperChip
+            variant="pill"
+            tone="merit"
+            text={`Merit ${supportSurface.readModel.currentMerit} / ${supportSurface.readModel.targetMeritReserve} target`}
+          />
+          <PaperChip
+            variant="pill"
+            tone="neutral"
+            text={`Spirit Stones ${supportSurface.readModel.currentSpiritStones} / ${supportSurface.readModel.spiritStoneMinimumReserve} minimum`}
+          />
+          <PaperChip
+            variant="pill"
+            tone={supportSurface.readModel.meritReserveGap === '0' ? 'success' : 'neutral'}
+            text={
+              supportSurface.readModel.meritReserveGap === '0'
+                ? 'Reserve gap closed'
+                : `${supportSurface.readModel.meritReserveGap} Merit to target`
+            }
+          />
+        </div>
+        <div className="bountySupportSummaryCard__summary">
+          Merit supports fail-safe gate access. Keep this reserve healthy.
+        </div>
+      </PaperCard>
+
       <div className={'bountyStageArea'}>
         {paperSlots.map(({ bounty, positionClass }) => {
           if (!bounty) {
@@ -360,6 +433,7 @@ export function BountyBoardPanel() {
             cityId: bounty.cityId,
             bountyKind: bounty.kind,
             cityModules,
+            craftRouteSupportState,
           });
           const canGoThere = bountyDestination.kind !== 'unavailable';
           const isPinPulse = pinPulseId === bounty.instanceId;

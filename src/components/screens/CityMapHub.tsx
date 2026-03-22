@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useUIStore } from '../../stores/uiStore';
+import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';

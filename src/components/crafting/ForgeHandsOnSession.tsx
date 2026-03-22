@@ -6,16 +6,16 @@ import type {
   ForgeHandsOnBonus,
   ForgeSessionOutcome,
   ForgeStepResult,
-} from '../../systems/crafting/craftingTypes';
-import { computeForgeOutcome } from '../../systems/crafting/forgeOutcome';
-import { useCraftSessionStore } from '../../stores/craftSessionStore';
-import { useProfessionStore } from '../../stores/professionStore';
-import { useUIStore } from '../../stores/uiStore';
-import { GameEvents } from '../../services/events/GameEvents';
-import { ForgeWorkbenchScene, type ForgePhaseKind } from './ForgeWorkbenchScene';
-import { TimingCircleQTE, type TimingCircleResult } from '../qte/TimingCircleQTE';
-import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte';
-import { ForgeHeatPullOutQTE, type ForgeHeatPullOutResult } from '../../ui/forge/ForgeHeatPullOutQTE';
+} from '../../systems/crafting/craftingTypes.js';
+import { computeForgeOutcome } from '../../systems/crafting/forgeOutcome.js';
+import { useCraftSessionStore } from '../../stores/craftSessionStore.js';
+import { useProfessionStore } from '../../stores/professionStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
+import { ForgeWorkbenchScene, type ForgePhaseKind } from './ForgeWorkbenchScene.js';
+import { TimingCircleQTE, type TimingCircleResult } from '../qte/TimingCircleQTE.js';
+import { ForgeRingQte, type ForgeRingQteRating } from './ForgeRingQte.js';
+import { ForgeHeatPullOutQTE, type ForgeHeatPullOutResult } from '../../ui/forge/ForgeHeatPullOutQTE.js';
 
 interface ForgeHandsOnSessionProps {
   session: CraftSession;

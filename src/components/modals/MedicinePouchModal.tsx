@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
-import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
-import { InkModalFrame } from '../../ui/ink';
-import { GameIcon } from '../../ui/icons';
+import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel.js';
+import { InkModalFrame } from '../../ui/ink.js';
+import { GameIcon } from '../../ui/icons.js';
 import './MedicinePouchModal.scss';
 
 type MedicinePouchModalProps = {

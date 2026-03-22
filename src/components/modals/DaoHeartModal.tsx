@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react';
-import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget';
-import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel';
-import { useContentStore } from '../../stores/contentStore';
-import { useCultivationStore } from '../../stores/cultivationStore';
+import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget.js';
+import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
 import './DaoHeartModal.scss';
 
 interface DaoHeartModalProps {

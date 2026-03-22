@@ -2,11 +2,11 @@ import {
   COMPREHENSION_PER_MINUTE_BASE,
   STUDY_MASTERY_PER_MINUTE_BASE,
   getBreathModeMultipliers,
-} from '../content/tuning/cultivationTuning';
-import { useActivityStore } from '../stores/activityStore';
-import { useCultivationStore } from '../stores/cultivationStore';
-import { useTechCollectionStore } from '../stores/techCollectionStore';
-import type { InsightChoiceId } from '../types';
+} from '../content/tuning/cultivationTuning.js';
+import { useActivityStore } from '../stores/activityStore.js';
+import { useCultivationStore } from '../stores/cultivationStore.js';
+import { useTechCollectionStore } from '../stores/techCollectionStore.js';
+import type { InsightChoiceId } from '../types/index.js';
 import { buildCultivationConsumableCarryoverWindows } from '../systems/consumables/cultivationConsumableEffects.js';
 
 function ensureInsightScheduled(now: number) {

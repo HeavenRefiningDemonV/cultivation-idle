@@ -1,8 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
-import type { ApBreakdown } from '../../stores/prestigeStore';
-import { GameIcon } from '../../ui/icons';
+import type { ApBreakdown } from '../../stores/prestigeStore.js';
+import { GameIcon } from '../../ui/icons.js';
 
 interface PrestigeRitualModalProps {
   open: boolean;

@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { GameIcon } from '../../ui/icons';
-import type { ApBreakdown } from '../../stores/prestigeStore';
+import { GameIcon } from '../../ui/icons.js';
+import type { ApBreakdown } from '../../stores/prestigeStore.js';
 
 interface ApBreakdownModalProps {
   open: boolean;

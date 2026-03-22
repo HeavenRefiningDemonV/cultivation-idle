@@ -1,11 +1,11 @@
 import type { CSSProperties } from 'react';
-import type { PrestigeUpgradeDef } from '../../systems/prestige/applyPrestigeEffects';
-import { getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories';
+import type { PrestigeUpgradeDef } from '../../systems/prestige/applyPrestigeEffects.js';
+import { getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
 import {
   getPrestigeCategoryIcon,
   getPrestigeEdictKind,
   getPrestigeKindIcon,
-} from '../../features/prestige/prestigeEdictIconMap';
+} from '../../features/prestige/prestigeEdictIconMap.js';
 
 interface PrestigeEdictSpineProps {
   upgrade: PrestigeUpgradeDef;

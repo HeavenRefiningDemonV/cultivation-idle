@@ -1,4 +1,4 @@
-import type { CultivationPath } from '../types';
+import type { CultivationPath } from '../types/index.js';
 
 /**
  * Path Perk represents a special ability or bonus unlocked for a specific cultivation path

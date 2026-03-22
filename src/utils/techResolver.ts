@@ -1,6 +1,6 @@
-import type { LifePath } from '../types';
-import type { PavilionPoolEntry, TechniqueDef } from '../content';
-import { useContentStore } from '../stores/contentStore';
+import type { LifePath } from '../types/index.js';
+import type { PavilionPoolEntry, TechniqueDef } from '../content/index.js';
+import { useContentStore } from '../stores/contentStore.js';
 
 export interface ResolvedPoolEntry {
   techId: string;

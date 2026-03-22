@@ -1,4 +1,4 @@
-import type { ItemDefinition } from '../types';
+import type { ItemDefinition } from '../types/index.js';
 
 export const ITEMS_DATABASE: Record<string, ItemDefinition> = {
   // ===== WEAPONS =====

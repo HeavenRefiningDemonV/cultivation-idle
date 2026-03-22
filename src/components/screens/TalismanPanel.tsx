@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useProfessionStore } from '../../stores/professionStore';
-import { greaterThanOrEqualTo, multiply } from '../../utils/numbers';
-import { useBuffStore } from '../../stores/buffStore';
-import { GameEvents } from '../../services/events/GameEvents';
+import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useProfessionStore } from '../../stores/professionStore.js';
+import { greaterThanOrEqualTo, multiply } from '../../utils/numbers.js';
+import { useBuffStore } from '../../stores/buffStore.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
 
 interface TalismanPanelProps {
   cityId: string | null;

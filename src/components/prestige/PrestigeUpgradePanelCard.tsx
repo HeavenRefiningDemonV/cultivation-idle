@@ -1,6 +1,6 @@
 import type { ComponentType, MouseEvent } from 'react';
 import type { LucideProps } from 'lucide-react';
-import type { PrestigeUpgradeDef } from '../../content';
+import type { PrestigeUpgradeDef } from '../../content/index.js';
 
 interface PrestigeUpgradePanelCardProps {
   upgrade: PrestigeUpgradeDef;

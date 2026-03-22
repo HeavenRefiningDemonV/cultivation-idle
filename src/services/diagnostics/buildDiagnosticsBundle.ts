@@ -1,13 +1,13 @@
-import { SaveService } from '../save/SaveService';
-import { useActivityStore } from '../../stores/activityStore';
-import { useCombatStore } from '../../stores/combatStore';
-import { useContentStore } from '../../stores/contentStore';
-import { useTelemetryStore } from '../../stores/telemetryStore';
-import { useErrorLogStore } from '../../stores/errorLogStore';
-import { useUIStore } from '../../stores/uiStore';
-import { runRuntimeValidation } from './runValidation';
-import type { ValidationIssue } from './runValidation';
-import type { SaveInfo } from '../../utils/saveload';
+import { SaveService } from '../save/SaveService.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useTelemetryStore } from '../../stores/telemetryStore.js';
+import { useErrorLogStore } from '../../stores/errorLogStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { runRuntimeValidation } from './runValidation.js';
+import type { ValidationIssue } from './runValidation.js';
+import type { SaveInfo } from '../../utils/saveload.js';
 
 export type DiagnosticsBundleV1 = {
   schemaVersion: 1;

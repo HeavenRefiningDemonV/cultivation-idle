@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { GameEvents, type RewardsGrantedEvent } from '../services/events/GameEvents';
+import { GameEvents, type RewardsGrantedEvent } from '../services/events/GameEvents.js';
 
 export type RewardsLogEntry = {
   id: string;

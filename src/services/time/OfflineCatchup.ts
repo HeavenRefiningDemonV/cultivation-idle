@@ -1,12 +1,12 @@
-import { useGameStore } from '../../stores/gameStore';
-import { useProfessionStore } from '../../stores/professionStore';
-import { useExpeditionStore } from '../../stores/expeditionStore';
-import { useCultivationStore } from '../../stores/cultivationStore';
-import { formatNumber, D } from '../../utils/numbers';
-import type { OfflineContext } from '../../systems/offline';
-import { MAX_OFFLINE_MS } from './offlineShared';
-import { formatOfflineDuration, getOfflineEfficiency } from '../../systems/offline';
-import { cultivationService } from '../cultivationService';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useProfessionStore } from '../../stores/professionStore.js';
+import { useExpeditionStore } from '../../stores/expeditionStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { formatNumber, D } from '../../utils/numbers.js';
+import type { OfflineContext } from '../../systems/offline.js';
+import { MAX_OFFLINE_MS } from './offlineShared.js';
+import { formatOfflineDuration, getOfflineEfficiency } from '../../systems/offline.js';
+import { cultivationService } from '../cultivationService.js';
 import { buildCultivationConsumableCarryoverWindows } from '../../systems/consumables/cultivationConsumableEffects.js';
 
 export interface OfflineCatchupSummaryPart {

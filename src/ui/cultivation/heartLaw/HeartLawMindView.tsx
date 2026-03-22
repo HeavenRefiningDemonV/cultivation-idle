@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { INITIAL_REALM } from '../../../constants';
-import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning';
-import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useCultivationStore } from '../../../stores/cultivationStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { usePrestigeStore } from '../../../stores/prestigeStore';
-import type { HeartLawChapter } from '../../../content';
-import { ChangeHeartLawModal } from './ChangeHeartLawModal';
-import { RadialVerseRing } from './RadialVerseRing';
+import { INITIAL_REALM } from '../../../constants.js';
+import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
+import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { usePrestigeStore } from '../../../stores/prestigeStore.js';
+import type { HeartLawChapter } from '../../../content/index.js';
+import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
+import { RadialVerseRing } from './RadialVerseRing.js';
 import './HeartLawMindView.scss';
 
 const roman = ['I', 'II', 'III', 'IV', 'V'];

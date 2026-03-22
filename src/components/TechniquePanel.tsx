@@ -1,6 +1,6 @@
-import { useTechniqueStore } from '../stores/techniqueStore';
-import { useContentStore } from '../stores/contentStore';
-import { useUIStore } from '../stores/uiStore';
+import { useTechniqueStore } from '../stores/techniqueStore.js';
+import { useContentStore } from '../stores/contentStore.js';
+import { useUIStore } from '../stores/uiStore.js';
 import './TechniquePanel.scss';
 
 export function TechniquePanel() {

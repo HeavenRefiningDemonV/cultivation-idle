@@ -1,6 +1,6 @@
-import { GameEvents } from '../events/GameEvents';
-import { audio } from './index';
-import { isSoundId } from './soundIds';
+import { GameEvents } from '../events/GameEvents.js';
+import { audio } from './index.js';
+import { isSoundId } from './soundIds.js';
 
 const CURRENCY_SOUND_INTERVAL_MS = 250;
 const LARGE_CURRENCY_THRESHOLD = 100;

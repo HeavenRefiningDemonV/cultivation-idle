@@ -1,4 +1,4 @@
-import type { TechniqueDef } from '../../content';
+import type { TechniqueDef } from '../../content/index.js';
 
 type EffectSource = 'primary' | 'secondary';
 

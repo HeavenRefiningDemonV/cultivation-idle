@@ -1,4 +1,4 @@
-import { randFloat } from '../../utils/rng';
+import { randFloat } from '../../utils/rng.js';
 
 export type PityCounter = number;
 

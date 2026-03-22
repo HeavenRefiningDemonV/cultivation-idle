@@ -1,5 +1,5 @@
-import type { GameTab } from '../stores/uiStore';
-import { useUIStore } from '../stores/uiStore';
+import type { GameTab } from '../stores/uiStore.js';
+import { useUIStore } from '../stores/uiStore.js';
 import './BottomTabBar.scss';
 
 interface TabDefinition {

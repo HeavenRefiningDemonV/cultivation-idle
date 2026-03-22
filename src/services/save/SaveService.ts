@@ -11,11 +11,11 @@ import {
   getSaveInfo as legacyGetSaveInfo,
   consumeOfflineContext,
   getLastLoadMigrationReport,
-} from '../../utils/saveload';
-import { GameEvents } from '../events/GameEvents';
-import { apply as applyOfflineCatchup } from '../time/OfflineCatchup';
-import { GameClock } from '../time/GameClock';
-import { useUIStore } from '../../stores/uiStore';
+} from '../../utils/saveload.js';
+import { GameEvents } from '../events/GameEvents.js';
+import { apply as applyOfflineCatchup } from '../time/OfflineCatchup.js';
+import { GameClock } from '../time/GameClock.js';
+import { useUIStore } from '../../stores/uiStore.js';
 
 function recordLastSave(timestamp: number) {
   try {

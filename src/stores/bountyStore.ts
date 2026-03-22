@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { useContentStore } from './contentStore';
+import { useContentStore } from './contentStore.js';
 import { RewardService, type RewardBundle } from '../services/rewards/index.js';
-import { useUIStore } from './uiStore';
+import { useUIStore } from './uiStore.js';
 import {
   buildLiveBountyDescription,
   getCanonicalLiveBountyDifficultyOrder,

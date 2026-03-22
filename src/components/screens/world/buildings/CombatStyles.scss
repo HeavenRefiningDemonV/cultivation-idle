@@ -105,6 +105,14 @@
     }
 }
 
+.gate-trial__support-summary {
+    min-height: 136px;
+}
+
+.gate-trial__eligible-merit-line {
+    font-weight: 600;
+}
+
 @keyframes combat-player-attack {
     0% {
         transform: translateX(0);

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { formatNumber } from '../../../utils/numbers';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { formatNumber } from '../../../utils/numbers.js';
 
 const MAX_LOOT_ENTRIES = 5;
 

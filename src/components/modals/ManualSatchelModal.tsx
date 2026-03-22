@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import './ManualSatchelModal.scss';
-import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import { useUIStore } from '../../stores/uiStore';
-import { useContentStore } from '../../stores/contentStore';
-import { useTechCollectionStore } from '../../stores/techCollectionStore';
-import { formatDurationHMS } from '../../utils/timeFormat';
-import { GameIcon } from '../../ui/icons';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
+import { formatDurationHMS } from '../../utils/timeFormat.js';
+import { GameIcon } from '../../ui/icons.js';
 
 type FocusStage = 'idle' | 'arming' | 'focusing' | 'result';
 type ManualSortMode = 'newest' | 'rarity' | 'grade' | 'name';

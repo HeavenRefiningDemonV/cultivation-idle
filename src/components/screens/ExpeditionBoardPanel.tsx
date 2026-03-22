@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import type { RewardBundle } from '../../services/rewards';
-import { pityProgressPercent } from '../../services/economy/pity';
-import { normalizeItemList } from '../../utils/itemList';
-import { multiply } from '../../utils/numbers';
-import { useCityStore } from '../../stores/cityStore';
-import { useContentStore } from '../../stores/contentStore';
-import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore';
-import { openWorldModule } from '../../systems/world/openWorldModule';
+import type { RewardBundle } from '../../services/rewards.js';
+import { pityProgressPercent } from '../../services/economy/pity.js';
+import { normalizeItemList } from '../../utils/itemList.js';
+import { multiply } from '../../utils/numbers.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore.js';
+import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRouteContract.js';
-import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper';
-import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal';
+import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting.js';
+import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper.js';
+import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import './ExpeditionBoardPanel.scss';
 
 function formatDuration(seconds: number): string {

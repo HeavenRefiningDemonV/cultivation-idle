@@ -20,6 +20,12 @@ export type BountyDestination =
   | { kind: 'module'; moduleKey: string; cityId: string; reason?: string }
   | { kind: 'unavailable'; cityId: string; reason: string };
 
+export interface CraftBountyRouteSupportState {
+  apothecaryBelowFloor: boolean;
+  forgeBelowFloor: boolean;
+  apothecaryQueueOrStockGap: boolean;
+}
+
 function hasModule(cityModules: readonly string[], moduleKey: string): boolean {
   return Array.isArray(cityModules) && cityModules.includes(moduleKey);
 }
@@ -28,6 +34,7 @@ export function resolveBountyDestination(args: {
   cityId: string;
   bountyKind: string;
   cityModules: string[];
+  craftRouteSupportState?: Partial<CraftBountyRouteSupportState>;
 }): BountyDestination {
   const { cityId, bountyKind, cityModules } = args;
   const modules = normalizeCityModulesForLiveSlice(cityModules);
@@ -51,11 +58,28 @@ export function resolveBountyDestination(args: {
   }
 
   if (bountyKind === 'CRAFT_COMPLETE') {
+    const craftRouteSupportState = normalizeCraftBountyRouteSupportState(cityId, args.craftRouteSupportState);
+
+    if (hasModule(modules, 'apothecary') && !hasModule(modules, 'forge')) {
+      return { kind: 'module', moduleKey: 'apothecary', cityId, reason: 'Apothecary Brew is the only live craft support route here.' };
+    }
+    if (hasModule(modules, 'forge') && !hasModule(modules, 'apothecary')) {
+      return { kind: 'module', moduleKey: 'forge', cityId, reason: 'Forge is the only live craft support route here.' };
+    }
+    if (hasModule(modules, 'apothecary') && craftRouteSupportState.apothecaryBelowFloor) {
+      return { kind: 'module', moduleKey: 'apothecary', cityId, reason: 'Apothecary prep stock is below the live support floor.' };
+    }
+    if (hasModule(modules, 'forge') && craftRouteSupportState.forgeBelowFloor) {
+      return { kind: 'module', moduleKey: 'forge', cityId, reason: 'Forge floor is below the next gate recommendation.' };
+    }
+    if (hasModule(modules, 'apothecary') && craftRouteSupportState.apothecaryQueueOrStockGap) {
+      return { kind: 'module', moduleKey: 'apothecary', cityId, reason: 'Apothecary Brew has the live prep gap for this craft support bounty.' };
+    }
     if (hasModule(modules, 'forge')) {
-      return { kind: 'module', moduleKey: 'forge', cityId, reason: 'Forge claims count for craft support bounties.' };
+      return { kind: 'module', moduleKey: 'forge', cityId, reason: 'Forge remains the fallback craft support route.' };
     }
     if (hasModule(modules, 'apothecary')) {
-      return { kind: 'module', moduleKey: 'apothecary', cityId, reason: 'Apothecary Brew claims count for craft support bounties.' };
+      return { kind: 'module', moduleKey: 'apothecary', cityId, reason: 'Apothecary Brew remains the fallback craft support route.' };
     }
     return { kind: 'unavailable', cityId, reason: 'Forge or Apothecary unavailable' };
   }
@@ -147,4 +171,15 @@ export function getLiveCraftBountySourceLabel(source: LiveCraftBountyProgressSou
 
 export function getExpeditionBountyCreditCityId(run: { cityId: string }): string {
   return run.cityId;
+}
+
+export function normalizeCraftBountyRouteSupportState(
+  _cityId: string,
+  override?: Partial<CraftBountyRouteSupportState>,
+): CraftBountyRouteSupportState {
+  return {
+    apothecaryBelowFloor: override?.apothecaryBelowFloor ?? false,
+    forgeBelowFloor: override?.forgeBelowFloor ?? false,
+    apothecaryQueueOrStockGap: override?.apothecaryQueueOrStockGap ?? false,
+  };
 }

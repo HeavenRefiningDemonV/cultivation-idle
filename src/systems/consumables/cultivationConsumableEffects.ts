@@ -7,7 +7,7 @@ import {
   type CultivationConsumableModifiers,
   type CultivationConsumableReadModel,
   type CultivationConsumableReadModelEntry,
-} from './cultivationConsumableTypes';
+} from './cultivationConsumableTypes.js';
 
 export function mergeCultivationConsumableModifiers(
   consumables: readonly ActiveCultivationConsumable[],

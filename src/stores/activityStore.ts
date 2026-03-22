@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { GameEvents } from '../services/events/GameEvents';
+import { GameEvents } from '../services/events/GameEvents.js';
 import type {
   ActiveActivity,
   ActivityHistoryEntry,
   ForegroundActivityPayload,
   ForegroundActivityType,
-} from '../types/activity';
+} from '../types/activity.js';
 
-export type { ActiveActivity, ForegroundActivityPayload, ForegroundActivityType } from '../types/activity';
+export type { ActiveActivity, ForegroundActivityPayload, ForegroundActivityType } from '../types/activity.js';
 
 interface ActivityState {
   /**

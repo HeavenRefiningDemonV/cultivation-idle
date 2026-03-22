@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { SOUND_IDS } from '../../services/audio/soundIds';
-import { audio } from '../../services/audio';
+import { SOUND_IDS } from '../../services/audio/soundIds.js';
+import { audio } from '../../services/audio.js';
 import './AudioDebugPanel.scss';
 
 export function AudioDebugPanel() {

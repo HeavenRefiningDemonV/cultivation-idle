@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useCombatStore } from '../../stores/combatStore';
-import { ParticlePool, DamageNumberPool } from './particles';
-import { createAnimation, updateAnimation, ScreenShake, FlashEffect, Easing } from './animations';
-import type { Animation } from './animations';
-import { D } from '../../utils/numbers';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { ParticlePool, DamageNumberPool } from './particles.js';
+import { createAnimation, updateAnimation, ScreenShake, FlashEffect, Easing } from './animations.js';
+import type { Animation } from './animations.js';
+import { D } from '../../utils/numbers.js';
 import './CombatCanvas.scss';
 
 interface CombatCanvasProps {

@@ -133,6 +133,53 @@
   padding-bottom: 120px;
 }
 
+.bountySupportSummaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 92px;
+  padding: 12px 14px;
+}
+
+.bountySupportSummaryCard--warning {
+  border-color: rgba(158, 69, 39, 0.35);
+}
+
+.bountySupportSummaryCard--ready {
+  border-color: rgba(47, 143, 102, 0.35);
+}
+
+.bountySupportSummaryCard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bountySupportSummaryCard__title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.bountySupportSummaryCard__subtitle {
+  font-size: 12px;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.75));
+}
+
+.bountySupportSummaryCard__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bountySupportSummaryCard__summary {
+  min-height: 18px;
+  font-size: 12px;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.78));
+}
+
 .bountyPaperButton {
   position: absolute;
   background: transparent;

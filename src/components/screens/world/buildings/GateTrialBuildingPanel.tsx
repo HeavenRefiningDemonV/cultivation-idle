@@ -1,19 +1,20 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useActivityStore } from '../../../../stores/activityStore';
-import { useCombatStore } from '../../../../stores/combatStore';
-import { useContentStore } from '../../../../stores/contentStore';
-import { useInventoryStore } from '../../../../stores/inventoryStore';
-import { useGameStore } from '../../../../stores/gameStore';
+import { useActivityStore } from '../../../../stores/activityStore.js';
+import { useCombatStore } from '../../../../stores/combatStore.js';
+import { useContentStore } from '../../../../stores/contentStore.js';
+import { useInventoryStore } from '../../../../stores/inventoryStore.js';
+import { useGameStore } from '../../../../stores/gameStore.js';
 import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../../systems/progression/runtime/index.js';
-import { useTrialStore } from '../../../../stores/trialStore';
-import { RewardService } from '../../../../services/rewards';
-import { resolveModuleRef } from '../worldUtils';
-import { useUIStore } from '../../../../stores/uiStore';
-import { hpPercent } from '../../../../systems/combat/minibarModel';
-import { formatNumber } from '../../../../utils/numbers';
-import { InkCombatShell } from '../../../../ui/combat/InkCombatShell';
-import { InkHealthBar } from '../../../../ui/combat/InkHealthBar';
+import { useTrialStore } from '../../../../stores/trialStore.js';
+import { RewardService } from '../../../../services/rewards.js';
+import { resolveModuleRef } from '../worldUtils.js';
+import { useUIStore } from '../../../../stores/uiStore.js';
+import { hpPercent } from '../../../../systems/combat/minibarModel.js';
+import { formatNumber } from '../../../../utils/numbers.js';
+import { buildSupportEconomySurfaceModel } from '../../../../systems/economy/supportEconomySurfaceModel.js';
+import { InkCombatShell } from '../../../../ui/combat/InkCombatShell.js';
+import { InkHealthBar } from '../../../../ui/combat/InkHealthBar.js';
 import cultivatorFight from '../../../../assets/onscreen/cultivator_backshots.png';
 import wildBoar from '../../../../assets/enemies/widboar.png';
 import './CombatStyles.scss';
@@ -95,6 +96,8 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const addNotification = useUIStore((state) => state.addNotification);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
+  const merit = useInventoryStore((state) => state.merit);
+  const spiritStones = useInventoryStore((state) => state.spiritStones);
   const gameRealm = useGameStore((state) => state.realm);
   const qi = useGameStore((state) => state.qi);
   const breakthroughRequirement = useGameStore((state) => state.getBreakthroughRequirement());
@@ -135,6 +138,15 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const filledSegments = Math.floor(progressRatio * totalSegments);
   const nextSegment = Math.min(totalSegments, filledSegments + 1);
   const eligibilitySummary = formatEligibility(trialDef?.eligibilityRule);
+  const supportSurface = useMemo(
+    () =>
+      buildSupportEconomySurfaceModel({
+        content: useContentStore.getState().raw,
+        cityId,
+        currencies: { merit, spiritStones },
+      }),
+    [cityId, merit, spiritStones],
+  );
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;
@@ -284,6 +296,24 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                   <pre>{eligibilitySummary.raw}</pre>
                 </details>
               ) : null}
+            </div>
+            <div className="ink-combat-shell__section gate-trial__support-summary">
+              <div className="ink-combat-shell__section-title">Fail-safe Reserve</div>
+              <div className="ink-combat-shell__stat-line">{supportSurface.reserveHeadline}</div>
+              <div className="ink-combat-shell__stat-line">
+                Merit on hand: {supportSurface.readModel.currentMerit} / fail-safe cost {supportSurface.readModel.nextGateFailSafeCost?.merit ?? '0'}
+              </div>
+              <div className="ink-combat-shell__stat-line">
+                Merit safe band: {supportSurface.readModel.meritMinimumReserveLow}–{supportSurface.readModel.meritMinimumReserveHigh} • target {supportSurface.readModel.targetMeritReserve}
+              </div>
+              <div className="ink-combat-shell__stat-line">
+                Spirit Stones: {supportSurface.readModel.currentSpiritStones} / fail-safe cost {supportSurface.readModel.nextGateFailSafeCost?.spiritStones ?? '0'}
+              </div>
+              <div className="ink-combat-shell__stat-line">
+                Spirit reserve minimum {supportSurface.readModel.spiritStoneMinimumReserve} • ideal {supportSurface.readModel.spiritStoneIdealReserve}
+              </div>
+              <div className="ink-combat-shell__stat-line">{supportSurface.reserveGapLine}</div>
+              <div className="ink-combat-shell__stat-line gate-trial__eligible-merit-line">{supportSurface.eligibleDefeatRewardLine}</div>
             </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Run Options</div>

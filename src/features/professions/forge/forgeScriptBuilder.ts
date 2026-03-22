@@ -1,6 +1,6 @@
-import type { ForgeStepDef } from '../../../systems/crafting/craftingTypes';
-import type { NormalizedForgeBlueprint } from '../../../content/forge';
-import { isRuneBlueprint } from '../../../content/forge';
+import type { ForgeStepDef } from '../../../systems/crafting/craftingTypes.js';
+import type { NormalizedForgeBlueprint } from '../../../content/forge.js';
+import { isRuneBlueprint } from '../../../content/forge.js';
 
 type SpecialStepType = Extract<ForgeStepDef['type'], 'ENGRAVE_RUNE' | 'LAY_FORMATION' | 'TEMPER' | 'QUENCH'>;
 

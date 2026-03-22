@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { CityDef } from '../content/index.js';
-import { useContentStore } from './contentStore';
-import { useBountyStore } from './bountyStore';
-import { useUIStore } from './uiStore';
-import type { MajorRealmId } from '../systems/progression/contract';
+import { useContentStore } from './contentStore.js';
+import { useBountyStore } from './bountyStore.js';
+import { useUIStore } from './uiStore.js';
+import type { MajorRealmId } from '../systems/progression/contract/index.js';
 import { syncRuntimeCityStateToRealmEntry } from '../systems/progression/runtime/index.js';
 import {
   getQueuedCityArrivalCandidate,

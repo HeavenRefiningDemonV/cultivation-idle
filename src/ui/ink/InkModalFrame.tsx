@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
-import { InkPanel, type InkPanelVariant } from './InkPanel';
+import { InkPanel, type InkPanelVariant } from './InkPanel.js';
 import './InkModalFrame.scss';
 
 export interface InkModalFrameProps {

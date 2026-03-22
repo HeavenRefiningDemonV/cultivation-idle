@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { useActivityStore } from '../../../../stores/activityStore';
-import { useCombatStore } from '../../../../stores/combatStore';
-import { useContentStore } from '../../../../stores/contentStore';
-import { useRuinsStore } from '../../../../stores/ruinsStore';
-import { useUIStore } from '../../../../stores/uiStore';
-import { resolveModuleRef } from '../worldUtils';
+import { useActivityStore } from '../../../../stores/activityStore.js';
+import { useCombatStore } from '../../../../stores/combatStore.js';
+import { useContentStore } from '../../../../stores/contentStore.js';
+import { useRuinsStore } from '../../../../stores/ruinsStore.js';
+import { useUIStore } from '../../../../stores/uiStore.js';
+import { resolveModuleRef } from '../worldUtils.js';
 
 interface RuinsBuildingPanelProps {
   cityId: string;

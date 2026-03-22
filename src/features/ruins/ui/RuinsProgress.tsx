@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useRuinsStore } from '../../../stores/ruinsStore';
-import type { RuinsRunSummary } from '../../../types';
-import { pityProgressPercent } from '../../../services/economy/pity';
-import { formatNumber } from '../../../utils/numbers';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useRuinsStore } from '../../../stores/ruinsStore.js';
+import type { RuinsRunSummary } from '../../../types/index.js';
+import { pityProgressPercent } from '../../../services/economy/pity.js';
+import { formatNumber } from '../../../utils/numbers.js';
 import './RuinsProgress.scss';
 
 function formatDuration(seconds: number): string {

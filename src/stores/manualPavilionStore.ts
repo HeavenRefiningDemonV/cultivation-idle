@@ -1,20 +1,20 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { GameEvents } from '../services/events/GameEvents';
-import { buildInitialStock, refreshStock as generateRefresh } from '../features/manuals/pavilionStockGenerator';
+import { GameEvents } from '../services/events/GameEvents.js';
+import { buildInitialStock, refreshStock as generateRefresh } from '../features/manuals/pavilionStockGenerator.js';
 import type {
   ManualGrade,
   ManualPavilionSaveState,
   ManualRarity,
   PavilionStockSlot,
   PavilionStockState,
-} from '../features/manuals/pavilionStockTypes';
-import { RewardService } from '../services/rewards/RewardService';
-import type { RewardCurrencyBundle } from '../services/rewards/types';
-import { useContentStore } from './contentStore';
-import { useInventoryStore } from './inventoryStore';
-import { useTechCollectionStore, isHigherGrade, isHigherRarity } from './techCollectionStore';
-import { useManualSatchelStore } from './manualSatchelStore';
+} from '../features/manuals/pavilionStockTypes.js';
+import { RewardService } from '../services/rewards/RewardService.js';
+import type { RewardCurrencyBundle } from '../services/rewards/types.js';
+import { useContentStore } from './contentStore.js';
+import { useInventoryStore } from './inventoryStore.js';
+import { useTechCollectionStore, isHigherGrade, isHigherRarity } from './techCollectionStore.js';
+import { useManualSatchelStore } from './manualSatchelStore.js';
 
 export type ManualPurchaseResult =
   | { ok: false; reason: string }

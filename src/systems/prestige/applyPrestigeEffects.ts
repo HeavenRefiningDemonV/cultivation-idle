@@ -1,10 +1,10 @@
-import type { PrestigeUpgradeDef } from '../../content';
+import type { PrestigeUpgradeDef } from '../../content/index.js';
 
-export type { PrestigeUpgradeDef } from '../../content';
-import { useContentStore } from '../../stores/contentStore';
-import { useExpeditionStore } from '../../stores/expeditionStore';
-import { useHeartLawStore } from '../../stores/heartLawStore';
-import { BASE_ACTIVE_SLOTS, useTechniqueStore } from '../../stores/techniqueStore';
+export type { PrestigeUpgradeDef } from '../../content/index.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useExpeditionStore } from '../../stores/expeditionStore.js';
+import { useHeartLawStore } from '../../stores/heartLawStore.js';
+import { BASE_ACTIVE_SLOTS, useTechniqueStore } from '../../stores/techniqueStore.js';
 import { getVisiblePrestigeUpgrades } from './runtime/prestigeRuntimeCatalog.js';
 
 type PrestigeDerivedUnlocks = {

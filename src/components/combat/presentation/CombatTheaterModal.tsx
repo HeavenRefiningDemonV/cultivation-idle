@@ -1,16 +1,16 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { CombatTheater, type CombatTheaterMode } from '../theater/CombatTheater';
-import type { CombatTheaterFocus } from '../theater/ProgressPanel';
-import { useUIStore, type CombatPresentationContext } from '../../../stores/uiStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useOutskirtsStore } from '../../../stores/outskirtsStore';
-import { useTrialStore } from '../../../stores/trialStore';
-import { useRuinsStore } from '../../../stores/ruinsStore';
+import { CombatTheater, type CombatTheaterMode } from '../theater/CombatTheater.js';
+import type { CombatTheaterFocus } from '../theater/ProgressPanel.js';
+import { useUIStore, type CombatPresentationContext } from '../../../stores/uiStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useOutskirtsStore } from '../../../stores/outskirtsStore.js';
+import { useTrialStore } from '../../../stores/trialStore.js';
+import { useRuinsStore } from '../../../stores/ruinsStore.js';
 import { getTrialLifecycleSnapshot } from '../../../systems/progression/runtime/index.js';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { useInventoryStore } from '../../../stores/inventoryStore';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import './CombatPresentation.scss';
 
 interface PreviewDetails {

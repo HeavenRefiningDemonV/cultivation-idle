@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 
 import './GameIcon.css';
 
-import { getIconMeta, type IconId } from './iconRegistry';
+import { getIconMeta, type IconId } from './iconRegistry.js';
 
 type GameIconProps = {
   icon: IconId;

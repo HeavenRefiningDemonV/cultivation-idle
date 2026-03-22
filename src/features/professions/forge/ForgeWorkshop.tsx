@@ -1,23 +1,23 @@
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
-import type { PlayerStats } from '../../../types';
+import type { PlayerStats } from '../../../types/index.js';
 
-import { ForgeMinigame } from './ForgeMinigame';
-import { ErrorBoundary } from '../../../ui/feedback/ErrorBoundary';
-import { UsedForLinks } from '../../../components/crafting/UsedForLinks';
-import { computeForgeOutcome } from '../../../systems/crafting/forgeOutcome';
-import { listForgeBlueprints, listForgeBlueprintsForCity, getForgeBlueprint, getItemDef } from '../../../stores/contentStore';
-import { useCraftSessionStore } from '../../../stores/craftSessionStore';
-import { useProfessionStore } from '../../../stores/professionStore';
-import { useUIStore } from '../../../stores/uiStore';
-import { useActivityStore } from '../../../stores/activityStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { isRuneBlueprint } from '../../../content';
-import { buildItemDelta } from './forgeDelta';
-import { resolveForgeStepScript } from './forgeScriptBuilder';
-import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink';
-import type { IconId } from '../../../ui/icons';
-import { GameIcon } from '../../../ui/icons';
+import { ForgeMinigame } from './ForgeMinigame.js';
+import { ErrorBoundary } from '../../../ui/feedback/ErrorBoundary.js';
+import { UsedForLinks } from '../../../components/crafting/UsedForLinks.js';
+import { computeForgeOutcome } from '../../../systems/crafting/forgeOutcome.js';
+import { listForgeBlueprints, listForgeBlueprintsForCity, getForgeBlueprint, getItemDef } from '../../../stores/contentStore.js';
+import { useCraftSessionStore } from '../../../stores/craftSessionStore.js';
+import { useProfessionStore } from '../../../stores/professionStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
+import { useActivityStore } from '../../../stores/activityStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { isRuneBlueprint } from '../../../content/index.js';
+import { buildItemDelta } from './forgeDelta.js';
+import { resolveForgeStepScript } from './forgeScriptBuilder.js';
+import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink.js';
+import type { IconId } from '../../../ui/icons.js';
+import { GameIcon } from '../../../ui/icons.js';
 import {
   buildForgeSurfaceModel,
   getAllowedForgeModes,

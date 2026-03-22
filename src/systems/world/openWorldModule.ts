@@ -1,8 +1,8 @@
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore';
-import { useCityStore } from '../../stores/cityStore';
-import { useContentStore } from '../../stores/contentStore';
-import { useActivityStore } from '../../stores/activityStore';
-import { useCombatStore } from '../../stores/combatStore';
+import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
 import { SEMESTER_SLICE_CONTRACT } from '../progression/contract/semesterSlice.js';
 import { inspectWorldFacingModuleTarget } from './liveWorldLeakAudit.js';
 import {

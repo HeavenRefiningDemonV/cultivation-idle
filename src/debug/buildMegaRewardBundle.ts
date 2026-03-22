@@ -1,5 +1,5 @@
-import { useContentStore } from '../stores/contentStore';
-import type { RewardBundle } from '../services/rewards';
+import { useContentStore } from '../stores/contentStore.js';
+import type { RewardBundle } from '../services/rewards.js';
 
 const clampQty = (value: number, fallback: number): number => {
   if (!Number.isFinite(value) || value <= 0) return fallback;

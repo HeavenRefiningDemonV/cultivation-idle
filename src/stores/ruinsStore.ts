@@ -2,16 +2,16 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { RuinDef } from '../content/index.js';
 import type { CombatEvent, RuinsRunSummary } from '../types/index.js';
-import { useContentStore } from './contentStore';
-import { useActivityStore } from './activityStore';
-import { useCombatStore } from './combatStore';
-import { useCityStore } from './cityStore';
-import { useBountyStore } from './bountyStore';
-import { useHeartLawStore } from './heartLawStore';
+import { useContentStore } from './contentStore.js';
+import { useActivityStore } from './activityStore.js';
+import { useCombatStore } from './combatStore.js';
+import { useCityStore } from './cityStore.js';
+import { useBountyStore } from './bountyStore.js';
+import { useHeartLawStore } from './heartLawStore.js';
 import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
-import { D } from '../utils/numbers';
-import { useUIStore } from './uiStore';
+import { D } from '../utils/numbers.js';
+import { useUIStore } from './uiStore.js';
 import {
   buildRuinsFinalChestBonusBundle,
   getRuinsDropsConfig,

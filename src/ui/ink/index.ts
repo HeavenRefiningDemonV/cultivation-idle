@@ -1,8 +1,8 @@
-export { InkPanel } from './InkPanel';
-export type { InkPanelVariant, InkPanelProps } from './InkPanel';
-export { PaperCard } from './PaperCard';
-export type { PaperCardProps } from './PaperCard';
-export { PaperChip } from './PaperChip';
-export type { PaperChipProps } from './PaperChip';
-export { InkModalFrame } from './InkModalFrame';
-export type { InkModalFrameProps } from './InkModalFrame';
+export { InkPanel } from './InkPanel.js';
+export type { InkPanelVariant, InkPanelProps } from './InkPanel.js';
+export { PaperCard } from './PaperCard.js';
+export type { PaperCardProps } from './PaperCard.js';
+export { PaperChip } from './PaperChip.js';
+export type { PaperChipProps } from './PaperChip.js';
+export { InkModalFrame } from './InkModalFrame.js';
+export type { InkModalFrameProps } from './InkModalFrame.js';

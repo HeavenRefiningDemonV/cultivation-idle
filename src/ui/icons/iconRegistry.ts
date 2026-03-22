@@ -1,4 +1,4 @@
-import type { IconComponent } from './InkIcon';
+import type { IconComponent } from './InkIcon.js';
 
 import ancientSeedPng from '../../assets/icons/ancientseed.png';
 import artifactBundlePng from '../../assets/icons/artifactbundle.png';
@@ -37,7 +37,7 @@ import {
   InkWarningIcon,
   InkWipIcon,
   InkXIcon,
-} from './InkIcon';
+} from './InkIcon.js';
 
 export type PngIconMeta = {
   kind: 'png';

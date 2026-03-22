@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getItemDef } from '../../stores/contentStore';
-import { useCombatStore } from '../../stores/combatStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
-import { useUIStore } from '../../stores/uiStore';
-import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog';
-import type { MedicinePouchSlotKey } from '../../types';
-import { GameEvents } from '../../services/events/GameEvents';
+import { getItemDef } from '../../stores/contentStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useMedicinePouchStore } from '../../stores/medicinePouchStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consumables/consumableCatalog.js';
+import type { MedicinePouchSlotKey } from '../../types/index.js';
+import { GameEvents } from '../../services/events/GameEvents.js';
 import './MedicinePouchStrip.scss';
 
 const slotOrder: MedicinePouchSlotKey[] = ['healing', 'utility', 'specialty'];

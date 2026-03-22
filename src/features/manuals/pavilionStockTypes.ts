@@ -1,4 +1,4 @@
-import type { PathId, TechniqueDef } from '../../content';
+import type { PathId, TechniqueDef } from '../../content/index.js';
 
 export type ManualRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';

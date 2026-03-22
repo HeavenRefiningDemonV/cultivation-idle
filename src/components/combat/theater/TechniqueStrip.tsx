@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useCombatStore } from '../../../stores/combatStore';
-import { useContentStore } from '../../../stores/contentStore';
-import { useGameStore } from '../../../stores/gameStore';
-import { useTechniqueStore } from '../../../stores/techniqueStore';
-import { formatSeconds } from '../../../systems/combat/minibarModel';
+import { useCombatStore } from '../../../stores/combatStore.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { useTechniqueStore } from '../../../stores/techniqueStore.js';
+import { formatSeconds } from '../../../systems/combat/minibarModel.js';
 import './TechniqueStrip.scss';
 
 interface TechniqueTileProps {

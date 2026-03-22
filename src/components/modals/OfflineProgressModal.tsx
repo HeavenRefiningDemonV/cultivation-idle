@@ -1,4 +1,4 @@
-import { useUIStore } from '../../stores/uiStore';
+import { useUIStore } from '../../stores/uiStore.js';
 import './OfflineProgressModal.scss';
 
 export function OfflineProgressModal() {

@@ -1,23 +1,24 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import type { CityDef } from '../../content';
-import { useContentStore } from '../../stores/contentStore';
-import { useCityStore } from '../../stores/cityStore';
-import { useUIStore } from '../../stores/uiStore';
-import { useCombatStore } from '../../stores/combatStore';
-import { useBountyStore } from '../../stores/bountyStore';
-import { useActivityStore } from '../../stores/activityStore';
+import type { CityDef } from '../../content/index.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useBountyStore } from '../../stores/bountyStore.js';
+import { useActivityStore } from '../../stores/activityStore.js';
 import './WorldScreen.scss';
-import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations';
-import { resolveBountyDestination } from '../../utils/bountyRouting';
-import { CityMapHub } from './CityMapHub';
-import { openWorldModule } from '../../systems/world/openWorldModule';
+import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations.js';
+import { resolveBountyDestination } from '../../utils/bountyRouting.js';
+import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
+import { CityMapHub } from './CityMapHub.js';
+import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import { getCityArrivalLesson } from '../../systems/world/cityArrivalContract.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import {
   getProgressionContract,
   adaptProgressionAuthoredContent,
-} from '../../systems/progression/contract';
-import { getCityUnlockRequirementText } from '../../systems/progression/runtime/cityProgression';
+} from '../../systems/progression/contract/index.js';
+import { getCityUnlockRequirementText } from '../../systems/progression/runtime/cityProgression.js';
 import {
   buildWorldCitySelectorEntries,
   getWorldTravelBlockMessage,
@@ -156,6 +157,7 @@ export function WorldScreen() {
       cityId: selectedCity.id,
       bountyKind: trackedBounty.kind,
       cityModules: selectedCity.modules,
+      craftRouteSupportState: buildLiveCraftBountyRouteSupportState(selectedCity.id),
     });
   }, [selectedCity, trackedBounty]);
 

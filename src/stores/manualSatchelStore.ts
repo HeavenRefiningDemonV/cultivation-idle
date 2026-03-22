@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { GameEvents } from '../services/events/GameEvents';
-import { useContentStore } from './contentStore';
+import { GameEvents } from '../services/events/GameEvents.js';
+import { useContentStore } from './contentStore.js';
 import {
   type ManualGrade,
   type TechRarity,
@@ -9,9 +9,9 @@ import {
   normalizeGrade,
   normalizeRarity,
   useTechCollectionStore,
-} from './techCollectionStore';
-import { useUIStore } from './uiStore';
-import { useGameStore } from './gameStore';
+} from './techCollectionStore.js';
+import { useUIStore } from './uiStore.js';
+import { useGameStore } from './gameStore.js';
 import type { CultivationPath } from '../types/index.js';
 
 export type FocusRewardType = 'time' | 'mastery' | 'traitQuality';

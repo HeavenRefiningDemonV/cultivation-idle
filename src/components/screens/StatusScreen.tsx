@@ -1,17 +1,17 @@
 import { useEffect } from 'react';
-import { useGameStore } from '../../stores/gameStore';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { useCombatStore } from '../../stores/combatStore';
-import { useZoneStore } from '../../stores/zoneStore';
-import { useUIStore } from '../../stores/uiStore';
-import { formatNumber, formatPercentFromValue } from '../../utils/numbers';
-import { REALMS } from '../../constants';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useZoneStore } from '../../stores/zoneStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { formatNumber, formatPercentFromValue } from '../../utils/numbers.js';
+import { REALMS } from '../../constants.js';
 import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtime/index.js';
-import { SpiritRootDisplay } from '../SpiritRootDisplay';
-import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader';
-import { CombatStatTile } from '../../ui/status/CombatStatTile';
-import type { IconId } from '../../ui/icons';
-import { GameIcon } from '../../ui/icons';
+import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
+import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
+import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
+import type { IconId } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons.js';
 import {
   Crosshair,
   Droplets,

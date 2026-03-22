@@ -1,4 +1,4 @@
-import type { CraftPromptState, CraftPromptStatus, CraftPromptType, PromptDef } from './craftingTypes';
+import type { CraftPromptState, CraftPromptStatus, CraftPromptType, PromptDef } from './craftingTypes.js';
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 

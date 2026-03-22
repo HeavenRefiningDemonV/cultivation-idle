@@ -3,16 +3,16 @@ import './LifeStartWizardModal.scss';
 import heavenArt from '../../assets/menus/path_heaven 1.png';
 import earthArt from '../../assets/menus/path_earth 1.png';
 import martialArt from '../../assets/menus/path_martial 1.png';
-import { SaveService } from '../../services/save/SaveService';
-import { useContentStore } from '../../stores/contentStore';
-import { useGameStore } from '../../stores/gameStore';
-import { useHeartLawStore } from '../../stores/heartLawStore';
-import { usePrestigeStore } from '../../stores/prestigeStore';
-import { useUIStore } from '../../stores/uiStore';
-import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic';
-import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo';
-import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink';
-import type { CultivationPath, HeartLawDef } from '../../types';
+import { SaveService } from '../../services/save/SaveService.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
+import { useHeartLawStore } from '../../stores/heartLawStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
+import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
+import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink.js';
+import type { CultivationPath, HeartLawDef } from '../../types/index.js';
 
 const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [
   { id: 'heaven', title: 'HEAVEN', art: heavenArt, alt: 'Heaven path' },

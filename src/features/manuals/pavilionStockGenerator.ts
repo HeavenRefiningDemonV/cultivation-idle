@@ -1,6 +1,6 @@
-import { useContentStore } from '../../stores/contentStore';
-import { nextSeed, randFloat } from '../../utils/rng';
-import type { ManualGrade, ManualRarity, PavilionStockSlot, PavilionStockState } from './pavilionStockTypes';
+import { useContentStore } from '../../stores/contentStore.js';
+import { nextSeed, randFloat } from '../../utils/rng.js';
+import type { ManualGrade, ManualRarity, PavilionStockSlot, PavilionStockState } from './pavilionStockTypes.js';
 
 type RarityWeights = Partial<Record<ManualRarity, number>>;
 

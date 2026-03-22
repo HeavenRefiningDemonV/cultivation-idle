@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Backpack, Coins, Gem, Medal } from 'lucide-react';
-import { useInventoryStore } from '../../stores/inventoryStore';
-import { getItemDef } from '../../stores/contentStore';
-import { useBuffStore } from '../../stores/buffStore';
-import { useUIStore } from '../../stores/uiStore';
-import { useManualSatchelStore } from '../../stores/manualSatchelStore';
-import EquipmentDrawer from '../inventory/EquipmentDrawer';
-import InventorySlotTile from '../inventory/InventorySlotTile';
-import type { DisplayStack } from '../inventory/inventoryTypes';
-import type { ItemDefinition } from '../../types';
-import type { IconId } from '../../ui/icons';
-import { GameIcon } from '../../ui/icons';
-import { consumeConsumable } from '../../systems/consumables/consumeConsumable';
+import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { getItemDef } from '../../stores/contentStore.js';
+import { useBuffStore } from '../../stores/buffStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
+import EquipmentDrawer from '../inventory/EquipmentDrawer.js';
+import InventorySlotTile from '../inventory/InventorySlotTile.js';
+import type { DisplayStack } from '../inventory/inventoryTypes.js';
+import type { ItemDefinition } from '../../types/index.js';
+import type { IconId } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons.js';
+import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
 import './InventoryScreen.scss';
 
 type InventorySlot =

@@ -12,26 +12,26 @@ import {
   UPGRADE_COSTS,
   ELEMENT_BONUSES,
 } from '../constants/index.js';
-import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
+import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers.js';
 import {
   clampRealmIndexToSemesterSlice,
   getGateTransitionItemIdForRealmIndex,
   hasNextLiveRealm,
 } from '../systems/progression/runtime/index.js';
-import { getAvailablePerks, getPerkById } from '../data/pathPerks';
+import { getAvailablePerks, getPerkById } from '../data/pathPerks.js';
 import {
   useZoneStore,
   ZONE_REALM_REQUIREMENTS,
   ZONE_UNLOCK_REQUIREMENTS,
-} from './zoneStore';
-import { useUIStore } from './uiStore';
-import { useEquipmentStore } from './equipmentStore';
-import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning';
-import { useHeartLawStore } from './heartLawStore';
-import { useCultivationStore } from './cultivationStore';
-import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic';
-import { useContentStore } from './contentStore';
-import { useCityStore } from './cityStore';
+} from './zoneStore.js';
+import { useUIStore } from './uiStore.js';
+import { useEquipmentStore } from './equipmentStore.js';
+import { getBreathModeMultipliers } from '../content/tuning/cultivationTuning.js';
+import { useHeartLawStore } from './heartLawStore.js';
+import { useCultivationStore } from './cultivationStore.js';
+import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
+import { useContentStore } from './contentStore.js';
+import { useCityStore } from './cityStore.js';
 import { getLiveRealmByIndex } from '../systems/progression/runtime/index.js';
 import { performPrestigeReset as performCentralPrestigeReset } from '../services/prestige/PrestigeResetService.js';
 

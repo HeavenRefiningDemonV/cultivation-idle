@@ -72,7 +72,9 @@ import { buildApothecaryCityBundle } from '../features/apothecary/apothecaryBund
 import { evaluateGatePrepPackageCoverage } from '../features/apothecary/apothecaryPackageCoverage.js';
 import { getGatePrepPackageForCity } from '../features/apothecary/gatePrepPackageCatalog.js';
 import { buildMeritRoleAudit } from '../systems/economy/meritRoleAudit.js';
+import { getAllGateFailureMeritPolicies } from '../systems/economy/gateFailureMeritPolicy.js';
 import { getAllSupportBountyClaimExpectations, getAllSupportReserveTargets } from '../systems/economy/supportCurrencyTargets.js';
+import { buildSupportEconomyReadModelFromState } from '../systems/economy/supportEconomyReadModel.js';
 import {
   bountyKindToProgressRule,
   getExpeditionBountyCreditCityId,
@@ -1046,6 +1048,18 @@ function validateSupportEconomyRuntimeTruth(options: {
     addErr(`support bounty claim expectations must cover all five city phases; found ${claimExpectations.length}`);
   }
 
+  const failurePolicies = getAllGateFailureMeritPolicies();
+  const expectedFailurePolicies = [
+    { gateIndex: 1, eligibleDefeatMerit: 2, minimumMeritReserveLow: 4, minimumMeritReserveHigh: 6 },
+    { gateIndex: 2, eligibleDefeatMerit: 3, minimumMeritReserveLow: 6, minimumMeritReserveHigh: 8 },
+    { gateIndex: 3, eligibleDefeatMerit: 4, minimumMeritReserveLow: 8, minimumMeritReserveHigh: 10 },
+    { gateIndex: 4, eligibleDefeatMerit: 5, minimumMeritReserveLow: 10, minimumMeritReserveHigh: 12 },
+    { gateIndex: 5, eligibleDefeatMerit: 7, minimumMeritReserveLow: 14, minimumMeritReserveHigh: 16 },
+  ];
+  if (JSON.stringify(failurePolicies) !== JSON.stringify(expectedFailurePolicies)) {
+    addErr('eligible gate-failure Merit policy drifted away from Packet 3.8A');
+  }
+
   const meritAudit = buildMeritRoleAudit(content);
   if (meritAudit.violations.length > 0) {
     addErr(`visible live Merit sinks must be fail-safe only; found ${meritAudit.violations.map((entry) => entry.id).join(', ')}`);
@@ -1076,13 +1090,44 @@ function validateSupportEconomyRuntimeTruth(options: {
     cityId: 'city_pinewind_hamlet',
     bountyKind: 'CRAFT_COMPLETE',
     cityModules: ['apothecary'],
+    craftRouteSupportState: {
+      apothecaryBelowFloor: true,
+      forgeBelowFloor: false,
+      apothecaryQueueOrStockGap: true,
+    },
   });
   if (craftDestination.kind !== 'module' || craftDestination.moduleKey !== 'apothecary') {
     addErr('CRAFT_COMPLETE must remain routable through live Apothecary Brew support when Forge is absent');
   }
 
+  const forgeDestination = resolveBountyDestination({
+    cityId: 'city_stonecrag_town',
+    bountyKind: 'CRAFT_COMPLETE',
+    cityModules: ['apothecary', 'forge'],
+    craftRouteSupportState: {
+      apothecaryBelowFloor: false,
+      forgeBelowFloor: true,
+      apothecaryQueueOrStockGap: false,
+    },
+  });
+  if (forgeDestination.kind !== 'module' || forgeDestination.moduleKey !== 'forge') {
+    addErr('CRAFT_COMPLETE must remain routable through the live Forge floor when forge support is the honest need');
+  }
+
   if (getExpeditionBountyCreditCityId({ cityId: 'city_stonecrag_town' }) !== 'city_stonecrag_town') {
     addErr('EXPEDITION_COMPLETE credit must remain pinned to expedition origin city');
+  }
+
+  const supportModel = buildSupportEconomyReadModelFromState({
+    content,
+    cityId: 'city_stonecrag_town',
+    currencies: { merit: '7', spiritStones: '2', gold: '1000000' },
+  });
+  if (supportModel.meritMinimumReserveLow !== '6' || supportModel.meritMinimumReserveHigh !== '8') {
+    addErr('support economy read model drifted away from the locked minimum Merit reserve band');
+  }
+  if (supportModel.expectedMeritAfterThreeEligibleDefeats !== '16') {
+    addErr('support economy read model drifted away from the locked eligible-failure Merit projection');
   }
 }
 
