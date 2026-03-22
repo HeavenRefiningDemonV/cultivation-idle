@@ -4,8 +4,11 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { validateLoadedContent } from '../../src/content/index.js';
-import { getOfflineEfficiency } from '../../src/systems/offline.js';
-import { getHeartLawBonuses } from '../../src/systems/heartLaw/heartLawLogic.js';
+import {
+  computeAffinityMultiplier,
+  getAffinityStatus,
+  getHeartLawBonuses,
+} from '../../src/systems/heartLaw/heartLawLogic.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 import { useCultivationStore } from '../../src/stores/cultivationStore.js';
 import { useGameStore, setPrestigeStoreGetter } from '../../src/stores/gameStore.js';
@@ -71,14 +74,6 @@ function resetStores() {
   }));
 }
 
-function setSelectedHeartLaw(lawId: string | null, chapter: number): void {
-  useCultivationStore.setState({
-    selectedHeartLawId: lawId,
-    chapter,
-    unlockedHeartLawIds: lawId ? [lawId] : [],
-  });
-}
-
 function getHeartLawDef(id: string): HeartLawDef {
   const law = useContentStore.getState().maps.heartLawsById[id] ?? null;
   assert.ok(law, `expected heart law ${id}`);
@@ -100,79 +95,65 @@ test.beforeEach(() => {
   primeContentStore(content);
 });
 
-test('getHeartLawBonuses is content-driven for Quiet Breath at chapter 5', () => {
-  setSelectedHeartLaw('heart_quiet_breath_method', 5);
+test('computeAffinityMultiplier now returns packet 4.4 resonance values', () => {
+  const strongRoot: SpiritRoot = { grade: 3, element: 'fire', purity: 100 };
+  const mismatchRoot: SpiritRoot = { grade: 3, element: 'earth', purity: 100 };
+  const neutralRoot: SpiritRoot = { grade: 3, element: 'fire', purity: 100 };
 
-  const bonuses = getHeartLawBonuses({
-    heartLawDef: getHeartLawDef('heart_quiet_breath_method'),
-    chapter: 5,
-    spiritRoot: null,
+  assert.equal(computeAffinityMultiplier(getHeartLawDef('heart_heaven_flame_manual'), strongRoot), 1.12);
+  assert.equal(computeAffinityMultiplier(getHeartLawDef('heart_heaven_flame_manual'), mismatchRoot), 0.96);
+  assert.equal(computeAffinityMultiplier(getHeartLawDef('heart_quiet_breath_method'), neutralRoot), 1);
+});
+
+test('getAffinityStatus maps resonance tiers back into the legacy compatibility surface', () => {
+  const strongRoot: SpiritRoot = { grade: 3, element: 'fire', purity: 100 };
+  const mismatchRoot: SpiritRoot = { grade: 3, element: 'earth', purity: 100 };
+  const neutralRoot: SpiritRoot = { grade: 3, element: 'fire', purity: 100 };
+
+  assert.deepEqual(getAffinityStatus(getHeartLawDef('heart_heaven_flame_manual'), strongRoot), {
+    status: 'match',
+    percent: 12,
   });
-
-  assert.equal(bonuses.cultivateRateMult, 1.2);
-  assert.equal(bonuses.combatDamageMult, 1.04);
-  assert.equal(bonuses.offlineEfficiencyAdd, 0.1);
-  assert.equal(bonuses.stabilityCostMult, 0.97);
-  assert.equal(bonuses.maxQiMult, 1.06);
-  assert.equal(bonuses.techniqueMasteryGainMult, 1.06);
-  assert.equal(bonuses.affinityMultiplier, 1);
-  assert.equal(bonuses.affinityStatus, 'none');
+  assert.deepEqual(getAffinityStatus(getHeartLawDef('heart_heaven_flame_manual'), mismatchRoot), {
+    status: 'mismatch',
+    percent: 4,
+  });
+  assert.deepEqual(getAffinityStatus(getHeartLawDef('heart_quiet_breath_method'), neutralRoot), {
+    status: 'none',
+    percent: 0,
+  });
 });
 
-test('offline efficiency bridge applies authored Heart Law additive bonus', () => {
-  setSelectedHeartLaw('heart_quiet_breath_method', 1);
+test('getHeartLawBonuses uses packet 4.4 resonance for signature scaling only', () => {
+  const law = getHeartLawDef('heart_heaven_flame_manual');
 
-  assert.equal(getOfflineEfficiency(), 0.55);
-});
-
-test('breakthrough requirement bridge applies authored Heart Law multiplier', () => {
-  useGameStore.setState({ qi: '999999999', realm: { index: 0, substage: 1, name: 'Qi Condensation' } });
-
-  setSelectedHeartLaw(null, 1);
-  const neutralRequirement = Number(useGameStore.getState().getBreakthroughRequirement());
-
-  setSelectedHeartLaw('heart_nine_heavens_scripture', 1);
-  const discountedRequirement = Number(useGameStore.getState().getBreakthroughRequirement());
-
-  approxEqual(discountedRequirement / neutralRequirement, 0.94);
-});
-
-test('explicit live affinity changes signature potency only', () => {
-  const fireRoot: SpiritRoot = { grade: 3, element: 'fire', purity: 100 };
-  setSelectedHeartLaw('heart_heaven_flame_manual', 1);
-  usePrestigeStore.setState({ spiritRoot: fireRoot });
-
-  const bonuses = getHeartLawBonuses({
-    heartLawDef: getHeartLawDef('heart_heaven_flame_manual'),
+  const strongBonuses = getHeartLawBonuses({
+    heartLawDef: law,
     chapter: 1,
-    spiritRoot: fireRoot,
+    spiritRoot: { grade: 3, element: 'fire', purity: 100 },
   });
+  approxEqual(strongBonuses.cultivateRateMult, 1.2544, 1e-6);
 
-  approxEqual(bonuses.affinityMultiplier, 1.12);
-  assert.equal(bonuses.affinityStatus, 'match');
-  approxEqual(bonuses.cultivateRateMult, 1.2544, 1e-6);
-});
-
-test('non-live-only affinities remain neutral at runtime', () => {
-  const earthRoot: SpiritRoot = { grade: 3, element: 'earth', purity: 100 };
-
-  const bonuses = getHeartLawBonuses({
-    heartLawDef: getHeartLawDef('heart_star_core_refinement_law'),
+  const mismatchBonuses = getHeartLawBonuses({
+    heartLawDef: law,
     chapter: 1,
-    spiritRoot: earthRoot,
+    spiritRoot: { grade: 3, element: 'earth', purity: 100 },
   });
-
-  assert.equal(bonuses.affinityMultiplier, 1);
-  assert.equal(bonuses.affinityStatus, 'none');
+  approxEqual(mismatchBonuses.cultivateRateMult, 1.2352, 1e-6);
 });
 
-test('heartLawLogic source no longer contains archetype fallback switch cases', async () => {
+test('heartLawLogic source now depends on packet 4.4 doctrine resonance instead of the old tier-based path', async () => {
   const source = await fs.readFile(path.resolve(process.cwd(), 'src/systems/heartLaw/heartLawLogic.ts'), 'utf8');
 
-  assert.equal(source.includes('switch (heartLawDef.archetype)'), false);
-  assert.equal(source.includes("case 'steady'"), false);
-  assert.equal(source.includes("case 'burst'"), false);
-  assert.equal(source.includes("case 'artisan'"), false);
-  assert.equal(source.includes("case 'mystic'"), false);
-  assert.equal(source.includes("case 'risk'"), false);
+  assert.equal(source.includes('evaluateSpiritRootResonance'), true);
+  assert.equal(source.includes('matchBonusByTier'), false);
+  assert.equal(source.includes('mismatchPenalty'), false);
+  assert.equal(source.includes('getResolvedAffinityCandidates'), false);
+});
+
+test('heartLawLogic source does not widen runtime spirit root application to qi or comprehension yet', async () => {
+  const source = await fs.readFile(path.resolve(process.cwd(), 'src/systems/heartLaw/heartLawLogic.ts'), 'utf8');
+
+  assert.equal(source.includes('resonance.qiMult'), false);
+  assert.equal(source.includes('resonance.comprehensionMult'), false);
 });

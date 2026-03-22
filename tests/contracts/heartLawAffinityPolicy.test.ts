@@ -68,19 +68,19 @@ test('any affinity is neutral', () => {
 
 test('explicit live matches use normalized content rules', () => {
   const heavenFlame = getLaw(config, 'heart_heaven_flame_manual');
-  approxEqual(computeAffinityMultiplier(heavenFlame, FIRE_ROOT), 1.14);
-  assert.deepEqual(getAffinityStatus(heavenFlame, FIRE_ROOT), { status: 'match', percent: 14 });
+  approxEqual(computeAffinityMultiplier(heavenFlame, FIRE_ROOT), 1.12);
+  assert.deepEqual(getAffinityStatus(heavenFlame, FIRE_ROOT), { status: 'match', percent: 12 });
 
   const soulLantern = getLaw(config, 'heart_soul_lantern_sutra');
-  approxEqual(computeAffinityMultiplier(soulLantern, WATER_ROOT), 1.18);
-  assert.deepEqual(getAffinityStatus(soulLantern, WATER_ROOT), { status: 'match', percent: 18 });
+  approxEqual(computeAffinityMultiplier(soulLantern, WATER_ROOT), 1.12);
+  assert.deepEqual(getAffinityStatus(soulLantern, WATER_ROOT), { status: 'match', percent: 12 });
 });
 
 test('explicit live mismatches use the normalized mismatch rule only', () => {
   const heavenFlame = getLaw(config, 'heart_heaven_flame_manual');
 
-  approxEqual(computeAffinityMultiplier(heavenFlame, EARTH_ROOT), 0.95);
-  assert.deepEqual(getAffinityStatus(heavenFlame, EARTH_ROOT), { status: 'mismatch', percent: 5 });
+  approxEqual(computeAffinityMultiplier(heavenFlame, EARTH_ROOT), 0.96);
+  assert.deepEqual(getAffinityStatus(heavenFlame, EARTH_ROOT), { status: 'mismatch', percent: 4 });
 });
 
 test('non-live-only affinities are neutral instead of mismatches', () => {
