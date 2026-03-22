@@ -264,7 +264,7 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
           <div>
             <div className={'medicinePouchTitle'}>Medicine Pouch</div>
             <div className={'medicinePouchSubtitle'}>
-              Configure automatic combat consumables. Auto-use respects the combat toggle.
+              Configure the consumables you keep ready. Auto-use still respects the combat toggle.
             </div>
           </div>
           <div className={'medicinePouchFootnote'}>
@@ -276,7 +276,7 @@ export function MedicinePouchPanel({ variant = 'default' }: MedicinePouchPanelPr
       {variant === 'modal' && equippedCount === 0 && (
         <PaperCard className={'medicinePouchEmptyState'} variant="label">
           <div className={'medicinePouchEmptyTitle'}>Your pouch is empty.</div>
-          <div className={'medicinePouchEmptyBody'}>Stock up at the apothecary to prepare for combat.</div>
+          <div className={'medicinePouchEmptyBody'}>Buy or brew a few consumables in the Apothecary, then equip them here.</div>
         </PaperCard>
       )}
 

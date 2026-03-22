@@ -2,51 +2,36 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatPrice, getItemDef, useContentStore } from '../../stores/contentStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
+import { useProfessionStore } from '../../stores/professionStore';
 import { useShopStore } from '../../stores/shopStore';
-import { randFloat } from '../../utils/rng';
+import { useUIStore } from '../../stores/uiStore';
 import { RewardService } from '../../services/rewards';
 import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
+import {
+  buildApothecaryPrepReadModel,
+  type ApothecaryRecommendedPackageEntry,
+  type ApothecaryRouteIntent,
+} from '../../features/apothecary/apothecaryPrepReadModel';
+import { ApothecaryBrewPanel } from '../../features/apothecary/ApothecaryBrewPanel';
 import { GameEvents } from '../../services/events/GameEvents';
 import { getConsumableSpec } from '../../systems/consumables/consumableCatalog';
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips';
+import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal';
 import { InkPanel, PaperCard, PaperChip } from '../../ui/ink';
 import { GameIcon } from '../../ui/icons';
-import { AlchemyPanel } from './AlchemyPanel';
 import './ApothecaryPanel.scss';
 
-type ShelfKey = 'combat' | 'cultivation' | 'rotating' | 'services' | 'bundles' | 'workshop';
+type BuyFilterKey = 'all' | 'combat' | 'cultivation' | 'rotating';
+type PrimaryTabKey = 'buy' | 'brew' | 'pouch';
 
 type StatusMessage = { type: 'success' | 'error'; message: string };
 
 interface ApothecaryPanelProps {
   shopId: string | null;
-  initialShelf?: ShelfKey;
-}
-
-function stringToSeed(input: string) {
-  let seed = 0;
-  for (let i = 0; i < input.length; i += 1) {
-    seed = (seed * 31 + input.charCodeAt(i)) >>> 0;
-  }
-  return seed;
-}
-
-function pickDeterministic<T>(pool: T[], count: number, seed: number) {
-  const available = [...pool];
-  const picks: T[] = [];
-  let currentSeed = seed;
-
-  while (picks.length < count && available.length > 0) {
-    const { value, seed: nextSeed } = randFloat(currentSeed || 1);
-    currentSeed = nextSeed;
-    const idx = Math.floor(value * available.length);
-    picks.push(available.splice(idx, 1)[0]);
-  }
-
-  return { picks, seed: currentSeed };
+  initialSurface?: PrimaryTabKey;
 }
 
 function usageLabel(usage?: string) {
@@ -74,11 +59,17 @@ function usageToChipUsage(usage?: string): 'combat' | 'cultivation' | 'both' {
   }
 }
 
-export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryPanelProps) {
+export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPanelProps) {
   const apothecary = useContentStore((state) =>
     shopId ? state.maps.apothecariesById[shopId] : undefined,
   );
+  const raw = useContentStore((state) => state.raw);
+  const city = useContentStore((state) =>
+    apothecary?.cityId ? state.maps.citiesById[apothecary.cityId] : undefined,
+  );
+
   const currencies = useInventoryStore((state) => state.currencies);
+  const inventoryItems = useInventoryStore((state) => state.items);
   const getQty = useInventoryStore((state) => state.getQty);
 
   const dayKey = useShopStore((state) => state.dayKey);
@@ -87,11 +78,16 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
   const getRemainingToday = useShopStore((state) => state.getRemainingToday);
   const canBuy = useShopStore((state) => state.canBuy);
   const buy = useShopStore((state) => state.buy);
+  const purchasedToday = useShopStore((state) => (shopId ? state.purchasedToday[shopId] ?? {} : {}));
 
-  const [activeShelf, setActiveShelf] = useState<ShelfKey>(initialShelf);
+  const pouchSlots = useMedicinePouchStore((state) => state.slots);
+  const brewQueue = useProfessionStore((state) => state.alchemyQueue);
+  const addNotification = useUIStore((state) => state.addNotification);
+
+  const [activeTab, setActiveTab] = useState<PrimaryTabKey>(initialSurface);
+  const [buyFilter, setBuyFilter] = useState<BuyFilterKey>('all');
   const [statusByStock, setStatusByStock] = useState<Record<string, StatusMessage>>({});
   const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
-  const [statusByService, setStatusByService] = useState<Record<string, StatusMessage>>({});
   const [pouchOpen, setPouchOpen] = useState(false);
   const pouchButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -99,37 +95,9 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
     ensureDayKeyCurrent();
   }, [ensureDayKeyCurrent]);
 
-  const stock = useMemo(() => apothecary?.stock ?? [], [apothecary]);
-  const pouchSlots = useMedicinePouchStore((state) => state.slots);
-  const badgeCount = Object.values(pouchSlots || {}).filter((slot) => Boolean(slot?.equippedItemId)).length;
-  const badgeDisplay = badgeCount > 9 ? '9+' : `${badgeCount}`;
-  const hasReadyPouchItem = Object.values(pouchSlots || {}).some(
-    (slot) => Boolean(slot?.enabled && slot?.equippedItemId && getQty(slot.equippedItemId) > 0),
-  );
-
-  const combatStock = useMemo(
-    () =>
-      stock.filter((entry) => {
-        const usage = getItemDef(entry.itemId)?.usage;
-        // Default unknown usage to combat to keep items visible until tagged.
-        return usage === 'combat_only' || usage === 'combat_or_world' || usage === undefined;
-      }),
-    [stock],
-  );
-
-  const cultivationStock = useMemo(
-    () => stock.filter((entry) => getItemDef(entry.itemId)?.usage === 'cultivate_only'),
-    [stock],
-  );
-
-  const rotatingStock = useMemo(() => {
-    if (!apothecary) return [] as typeof stock;
-    let seed = stringToSeed(`${apothecary.id}${dayKey}rotating`);
-    const combatPick = pickDeterministic(combatStock, 2, seed);
-    seed = combatPick.seed;
-    const cultivationPick = pickDeterministic(cultivationStock, 2, seed);
-    return [...combatPick.picks, ...cultivationPick.picks];
-  }, [apothecary, dayKey, combatStock, cultivationStock]);
+  useEffect(() => {
+    setActiveTab(initialSurface);
+  }, [initialSurface, shopId]);
 
   const renderPlaceholder = (title: string, body: string) => (
     <div className={'worldScreenPlaceholder'}>
@@ -140,30 +108,64 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
     </div>
   );
 
-  useEffect(() => {
-    setActiveShelf(initialShelf);
-  }, [initialShelf, shopId]);
+  const stock = apothecary?.stock ?? [];
+  const combatStock = stock.filter((entry) => {
+    const usage = getItemDef(entry.itemId)?.usage;
+    return usage === 'combat_only' || usage === 'combat_or_world' || usage === undefined;
+  });
+  const cultivationStock = stock.filter((entry) => getItemDef(entry.itemId)?.usage === 'cultivate_only');
+  const rotatingStock = stock.filter((entry, index) => index < 2 || index === stock.length - 1);
 
-  if (!shopId) {
-    return renderPlaceholder('No Apothecary here', 'This city does not host an apothecary.');
-  }
+  const prepModel = useMemo(
+    () =>
+      buildApothecaryPrepReadModel({
+        content: raw,
+        shop: apothecary,
+        inventoryItems,
+        pouchSlots,
+        purchasedTodayByStockId: purchasedToday,
+        brewQueue,
+        bundleCount: apothecaryBundles.length,
+      }),
+    [apothecary, brewQueue, inventoryItems, pouchSlots, purchasedToday, raw],
+  );
 
-  if (!apothecary) {
-    return renderPlaceholder('Apothecary data missing', `Shop definition not found (id: ${shopId}).`);
-  }
+  const pouchBadgeCount = prepModel.pouchSummary.filledSlots;
+  const badgeDisplay = pouchBadgeCount > 9 ? '9+' : `${pouchBadgeCount}`;
+  const hasReadyPouchItem = prepModel.pouchSummary.stocked;
 
-  if (!apothecary.stock || apothecary.stock.length === 0) {
-    return renderPlaceholder(apothecary.name ?? 'Apothecary', 'No stock available.');
-  }
+  const primaryTabs: Array<{ key: PrimaryTabKey; label: string; blurb: string }> = [
+    { key: 'buy', label: 'Buy', blurb: 'Instant convenience and shelf stock.' },
+    { key: 'brew', label: 'Brew', blurb: 'Turn reagents into reserves more efficiently.' },
+    { key: 'pouch', label: 'Medicine Pouch', blurb: 'Set what stays ready for emergencies.' },
+  ];
 
-  const shelfOptions: { key: ShelfKey; label: string }[] = [
+  const buyFilters: Array<{ key: BuyFilterKey; label: string }> = [
+    { key: 'all', label: `All (${stock.length})` },
     { key: 'combat', label: `Combat (${combatStock.length})` },
     { key: 'cultivation', label: `Cultivation (${cultivationStock.length})` },
-    { key: 'rotating', label: `Rotating (${rotatingStock.length})` },
-    { key: 'workshop', label: 'Workshop' },
-    { key: 'services', label: 'Services' },
-    { key: 'bundles', label: 'Bundles' },
+    { key: 'rotating', label: `Quick Picks (${rotatingStock.length})` },
   ];
+
+  const filteredStock =
+    buyFilter === 'combat'
+      ? combatStock
+      : buyFilter === 'cultivation'
+        ? cultivationStock
+        : buyFilter === 'rotating'
+          ? rotatingStock
+          : stock;
+
+  const handleRouteIntent = (routeIntent: ApothecaryRouteIntent) => {
+    if (routeIntent.kind === 'source_missing_mats') {
+      addNotification('info', routeIntent.note, 3500);
+      setActiveTab(routeIntent.targetTab);
+      return;
+    }
+
+    setActiveTab(routeIntent.targetTab);
+    addNotification('info', routeIntent.note, 2500);
+  };
 
   const renderStatus = (status?: StatusMessage) =>
     status ? (
@@ -226,12 +228,6 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
           type: 'apothecary/buy_failed',
           payload: { shopId: apothecary.id, itemId: stockEntry.itemId, reason: result.error || 'Purchase failed.' },
         });
-        if (result.error && /daily limit|sold out/i.test(result.error)) {
-          GameEvents.emit({
-            type: 'apothecary/daily_limit_hit',
-            payload: { shopId: apothecary.id, itemId: stockEntry.itemId },
-          });
-        }
         return;
       }
 
@@ -351,7 +347,7 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
             <div className={'apothecaryCardTitle'}>{bundle.name}</div>
             <div className={'apothecaryCardSubtitle'}>{bundle.description}</div>
           </div>
-          <div className={'apothecaryTag'}>Bundle</div>
+          <div className={'apothecaryTag'}>Convenience</div>
         </div>
 
         <div className={'apothecaryCardBody'}>
@@ -385,109 +381,139 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
     );
   };
 
-  const renderServiceCard = (service: (typeof apothecaryServices)[number]) => {
-    const status = statusByService[service.id];
-
-    const handleClick = () => {
-      setStatusByService((prev) => ({
-        ...prev,
-        [service.id]: {
-          type: 'error',
-          message: 'Service not implemented yet.',
-        },
-      }));
-    };
-
-    return (
-      <PaperCard key={service.id} className={'apothecaryCard apothecaryCard--service'} variant="tray">
-        <div className={'apothecaryCardHeader'}>
-          <div>
-            <div className={'apothecaryCardTitle'}>{service.name}</div>
-            <div className={'apothecaryCardSubtitle'}>{service.description}</div>
-          </div>
-          <div className={'apothecaryTag'}>Service</div>
+  const renderRecommendedPackageCard = (entry: ApothecaryRecommendedPackageEntry) => (
+    <div key={entry.key} className={'apothecaryPackageEntry'}>
+      <div>
+        <div className={'apothecaryPackageLabel'}>{entry.label}</div>
+        <div className={'apothecaryPackageName'}>{entry.itemName}</div>
+        <div className={'apothecaryPackageMeta'}>
+          Owned {entry.ownedQty} / Target {entry.targetQty}
+          {entry.missingQty > 0 ? ` • Missing ${entry.missingQty}` : ' • Reserve met'}
         </div>
-
-        <div className={'apothecaryActions'}>
-          <button
-            className={'apothecaryActionButton apothecaryActionButton--active'}
-            onClick={handleClick}
-          >
-            {service.actionLabel}
-          </button>
-        </div>
-
-        {renderStatus(status)}
-      </PaperCard>
-    );
-  };
-
-  const renderShelf = (key: ShelfKey) => {
-    if (key === 'workshop') {
-      return <AlchemyPanel cityId={apothecary.cityId} embedded />;
-    }
-
-    if (key === 'bundles') {
-      if (!apothecaryBundles.length) {
-        return (
-          <div className={'apothecaryEmpty'}>
-            <div className={'apothecaryEmptyTitle'}>No bundles available.</div>
-            <div className={'apothecaryEmptyBody'}>Special bundles will appear here when stocked.</div>
-          </div>
-        );
-      }
-
-      return (
-        <div className={'apothecaryGrid apothecaryGrid--bundles'}>
-          {apothecaryBundles.map((bundle) => renderBundleCard(bundle))}
-        </div>
-      );
-    }
-
-    if (key === 'services') {
-      if (!apothecaryServices.length) {
-        return (
-          <div className={'apothecaryEmpty'}>
-            <div className={'apothecaryEmptyTitle'}>No services active.</div>
-            <div className={'apothecaryEmptyBody'}>Service counters will open here soon.</div>
-          </div>
-        );
-      }
-
-      return (
-        <div className={'apothecaryGrid apothecaryGrid--services'}>
-          {apothecaryServices.map((service) => renderServiceCard(service))}
-        </div>
-      );
-    }
-
-    const shelfStock = key === 'combat' ? combatStock : key === 'cultivation' ? cultivationStock : rotatingStock;
-
-    if (!shelfStock.length) {
-      return (
-        <div className={'apothecaryEmpty'}>
-          <div className={'apothecaryEmptyTitle'}>Nothing available.</div>
-          <div className={'apothecaryEmptyBody'}>No items match this shelf right now.</div>
-        </div>
-      );
-    }
-
-    return (
-      <div className={'apothecaryGrid'}>
-        {shelfStock.map((entry) => renderStockCard(entry.id))}
       </div>
-    );
-  };
+      <button
+        type="button"
+        className={'apothecaryActionButton apothecaryActionButton--active'}
+        onClick={() => handleRouteIntent(entry.routeIntent)}
+      >
+        {entry.routeIntent.label}
+      </button>
+    </div>
+  );
+
+  const renderBuySurface = () => (
+    <>
+      <PaperCard className={'apothecarySectionCard apothecarySectionCard--intro'} variant="tray">
+        <div className={'apothecarySectionEyebrow'}>Buy</div>
+        <div className={'apothecarySectionTitle'}>Instant convenience for missing prep.</div>
+        <div className={'apothecarySectionBody'}>
+          Buy is the fast answer: immediate shelf stock, visible prices, and honest daily limits for today’s city pressure.
+        </div>
+        <div className={'apothecarySectionMeta'}>
+          <span>Stocked lines: {prepModel.buySummary.stockCount}</span>
+          <span>Limited today: {prepModel.buySummary.limitedCount}</span>
+          <span>Still available today: {prepModel.buySummary.availableTodayCount}</span>
+        </div>
+      </PaperCard>
+
+      <PaperCard className={'apothecarySectionCard'} variant="tray">
+        <div className={'apothecarySubTabs'}>
+          {buyFilters.map((option) => (
+            <PaperChip
+              key={option.key}
+              className={`apothecaryShelfTab${buyFilter === option.key ? ' apothecaryShelfTab--active' : ''}`}
+              text={option.label}
+              onClick={() => setBuyFilter(option.key)}
+            />
+          ))}
+        </div>
+
+        {filteredStock.length > 0 ? (
+          <div className={'apothecaryGrid'}>{filteredStock.map((entry) => renderStockCard(entry.id))}</div>
+        ) : (
+          <div className={'apothecaryEmpty'}>
+            <div className={'apothecaryEmptyTitle'}>Nothing on this shelf right now.</div>
+            <div className={'apothecaryEmptyBody'}>Switch filters or brew what the shelf cannot supply today.</div>
+          </div>
+        )}
+      </PaperCard>
+
+      {apothecaryBundles.length > 0 && (
+        <PaperCard className={'apothecarySectionCard'} variant="tray">
+          <div className={'apothecarySectionEyebrow'}>Convenience Bundles</div>
+          <div className={'apothecarySectionBody'}>
+            Secondary convenience only. Bundles save clicks, but Buy and Brew remain the real prep loop this semester.
+          </div>
+          <div className={'apothecaryGrid apothecaryGrid--bundles'}>
+            {apothecaryBundles.map((bundle) => renderBundleCard(bundle))}
+          </div>
+        </PaperCard>
+      )}
+
+      <PaperCard className={'apothecarySectionCard apothecarySectionCard--secondary'} variant="tray">
+        <div className={'apothecarySectionEyebrow'}>Counter Services</div>
+        <div className={'apothecarySectionBody'}>
+          Services are not a main semester pillar yet. For now, this counter is informational so it does not crowd out readiness prep.
+        </div>
+        <div className={'apothecarySecondaryList'}>
+          {apothecaryServices.map((service) => (
+            <div key={service.id} className={'apothecarySecondaryItem'}>
+              <strong>{service.name}</strong>
+              <span>{service.description}</span>
+            </div>
+          ))}
+        </div>
+      </PaperCard>
+    </>
+  );
+
+  const renderPouchSurface = () => (
+    <>
+      <PaperCard className={'apothecarySectionCard apothecarySectionCard--intro'} variant="tray">
+        <div className={'apothecarySectionEyebrow'}>Medicine Pouch</div>
+        <div className={'apothecarySectionTitle'}>Keep emergency consumables ready, not hidden.</div>
+        <div className={'apothecarySectionBody'}>
+          Your pouch is part of readiness. Equip stocked items here so combat can actually use what you prepared.
+        </div>
+        <div className={'apothecarySectionMeta'}>
+          <span>{prepModel.pouchSummary.readyLabel}</span>
+          <span>{prepModel.pouchSummary.triggerSummary}</span>
+        </div>
+      </PaperCard>
+
+      <MedicinePouchPanel variant="default" />
+    </>
+  );
+
+  if (!shopId) {
+    return renderPlaceholder('No Apothecary here', 'This city does not host an apothecary.');
+  }
+
+  if (!apothecary) {
+    return renderPlaceholder('Apothecary data missing', `Shop definition not found (id: ${shopId}).`);
+  }
+
+  if (stock.length === 0) {
+    return renderPlaceholder(apothecary.name ?? 'Apothecary', 'No stock available.');
+  }
 
   return (
     <InkPanel variant="apothecary" watermark className={'apothecaryPanel apothecaryPanel--v2'}>
       <header className={'apothecaryTopRibbon'}>
         <div className={'apothecaryTopLeft'}>
           <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>
+          <div className={'apothecaryPurpose'}>{prepModel.purposeSentence}</div>
           <div className={'apothecarySubheading'}>
-            Buy remedies for combat and cultivation. Daily limits reset at local midnight.
+            Buy is speed. Brew is efficiency. Keep the pouch configured so today’s prep actually reaches combat.
           </div>
-          <div className={'apothecaryDayKey'}>Day: {dayKey}</div>
+          <div className={'apothecaryDayKey'}>
+            City: {city?.name ?? prepModel.cityName} • Day: {dayKey}
+          </div>
+          {prepModel.specialtyItemNames.length > 0 && (
+            <div className={'apothecarySpecialtyLine'}>
+              <strong>{prepModel.specialtyLineLabel}:</strong> {prepModel.specialtyItemNames.join(' • ')}
+            </div>
+          )}
         </div>
         <div className={'apothecaryTopRight'}>
           <PaperCard className={'apothecaryWallet'} variant="label">
@@ -504,6 +530,70 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
         </div>
       </header>
 
+      <div className={'apothecaryOverviewGrid'}>
+        <PaperCard className={'apothecaryOverviewCard'} variant="tray">
+          <div className={'apothecaryOverviewTitle'}>Prep Warnings</div>
+          {prepModel.stockWarnings.length > 0 ? (
+            <div className={'apothecaryWarningList'}>
+              {prepModel.stockWarnings.map((warning) => (
+                <button
+                  key={warning.code}
+                  type="button"
+                  className={'apothecaryWarningCard'}
+                  onClick={() => setActiveTab(warning.targetTab)}
+                >
+                  <div className={'apothecaryWarningTitle'}>{warning.title}</div>
+                  <div className={'apothecaryWarningBody'}>{warning.detail}</div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className={'apothecaryOverviewEmpty'}>No immediate readiness blockers detected.</div>
+          )}
+        </PaperCard>
+
+        <PaperCard className={'apothecaryOverviewCard'} variant="tray">
+          <div className={'apothecaryOverviewTitle'}>Recommended Package</div>
+          <div className={'apothecaryOverviewHint'}>
+            Small and honest for this semester: top up today’s city line, keep healing reserve, and cover breakthrough prep.
+          </div>
+          <div className={'apothecaryPackageList'}>
+            {prepModel.recommendedPackage.map((entry) => renderRecommendedPackageCard(entry))}
+          </div>
+        </PaperCard>
+
+        <PaperCard className={'apothecaryOverviewCard'} variant="tray">
+          <div className={'apothecaryOverviewTitle'}>Medicine Pouch Summary</div>
+          <div className={'apothecaryPouchSummaryState'}>{prepModel.pouchSummary.readyLabel}</div>
+          <div className={'apothecaryOverviewHint'}>{prepModel.pouchSummary.triggerSummary}</div>
+          <div className={'apothecaryPouchSummaryGrid'}>
+            {prepModel.pouchSummary.slotStatuses.map((slot) => (
+              <div key={slot.slotKey} className={'apothecaryPouchSummaryRow'}>
+                <strong>{slot.slotKey}</strong>
+                <span>{slot.itemName}</span>
+                <span>{slot.enabled ? slot.trigger : 'Disabled'}</span>
+              </div>
+            ))}
+          </div>
+          <div className={'apothecaryActions'}>
+            <button
+              type="button"
+              className={'apothecaryActionButton apothecaryActionButton--active'}
+              onClick={() => setActiveTab('pouch')}
+            >
+              Review Pouch
+            </button>
+            <button
+              type="button"
+              className={'apothecaryActionButton'}
+              onClick={() => setPouchOpen(true)}
+            >
+              Open Editor
+            </button>
+          </div>
+        </PaperCard>
+      </div>
+
       <div className={'apothecaryStage'}>
         <div className={'apothecaryPouchTrigger'}>
           <button
@@ -519,28 +609,34 @@ export function ApothecaryPanel({ shopId, initialShelf = 'combat' }: ApothecaryP
             <span className="apothecaryPouchIcon" aria-hidden="true">
               <GameIcon icon="herbBundle" size={18} decorative />
             </span>
-            {badgeCount > 0 && (
-              <span className="apothecaryPouchBadge" aria-label={`${badgeCount} items`}>
+            {pouchBadgeCount > 0 && (
+              <span className="apothecaryPouchBadge" aria-label={`${pouchBadgeCount} items`}>
                 {badgeDisplay}
               </span>
             )}
             {hasReadyPouchItem && <span className="apothecaryPouchReadyDot" aria-hidden="true" />}
           </button>
         </div>
+
         <div className={'apothecarySafeZone'}>
           <PaperCard className={'apothecaryStoreFrame'} variant="tray">
-            <div className={'apothecaryShelfTabs'}>
-              {shelfOptions.map((option) => (
-                <PaperChip
+            <div className={'apothecaryPrimaryTabs'}>
+              {primaryTabs.map((option) => (
+                <button
                   key={option.key}
-                  className={`apothecaryShelfTab${activeShelf === option.key ? ' apothecaryShelfTab--active' : ''}`}
-                  text={option.label}
-                  onClick={() => setActiveShelf(option.key)}
-                />
+                  type="button"
+                  className={`apothecaryPrimaryTab${activeTab === option.key ? ' apothecaryPrimaryTab--active' : ''}`}
+                  onClick={() => setActiveTab(option.key)}
+                >
+                  <span className={'apothecaryPrimaryTabLabel'}>{option.label}</span>
+                  <span className={'apothecaryPrimaryTabBlurb'}>{option.blurb}</span>
+                </button>
               ))}
             </div>
 
-            {renderShelf(activeShelf)}
+            {activeTab === 'buy' && renderBuySurface()}
+            {activeTab === 'brew' && <ApothecaryBrewPanel cityId={apothecary.cityId} summary={prepModel.brewSummary} />}
+            {activeTab === 'pouch' && renderPouchSurface()}
           </PaperCard>
         </div>
         <div className={'apothecaryAmbientZone'} aria-hidden="true" />

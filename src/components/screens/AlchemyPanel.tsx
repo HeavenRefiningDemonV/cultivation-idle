@@ -405,9 +405,9 @@ export function AlchemyPanel({ cityId, embedded = false }: AlchemyPanelProps) {
     return (
       <div className={'worldScreenPlaceholder'}>
         <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>No Alchemy in this city</div>
+          <div className={'worldScreenPlaceholderTitle'}>No Apothecary brew station in this city</div>
         </div>
-        <div className={'worldScreenPlaceholderBody'}>This city does not host an alchemy station.</div>
+        <div className={'worldScreenPlaceholderBody'}>This city does not host a live brew station this semester.</div>
       </div>
     );
   }
@@ -416,9 +416,9 @@ export function AlchemyPanel({ cityId, embedded = false }: AlchemyPanelProps) {
     return (
       <div className={'worldScreenPlaceholder'}>
         <div className={'worldScreenPlaceholderHeader'}>
-          <div className={'worldScreenPlaceholderTitle'}>No alchemy recipes</div>
+          <div className={'worldScreenPlaceholderTitle'}>No brew recipes</div>
         </div>
-        <div className={'worldScreenPlaceholderBody'}>Alchemy recipes were not found in content.</div>
+        <div className={'worldScreenPlaceholderBody'}>Live Apothecary brew recipes were not found in content.</div>
       </div>
     );
   }
@@ -428,9 +428,9 @@ export function AlchemyPanel({ cityId, embedded = false }: AlchemyPanelProps) {
       {!embedded && (
         <div className={'alchemyPanelHeader stationBanner craftPurposeBanner'}>
           <div>
-            <div className={'stationBannerTitle'}>Alchemy</div>
+            <div className={'stationBannerTitle'}>Apothecary Brew</div>
             <div className={'stationBannerSubtitle'}>
-              Brew pills, elixirs, and reagents for combat and cultivation.
+              Convert reagents into combat and cultivation readiness.
             </div>
           </div>
           <div className={'stationBannerMeta'}>Queue size: {queue.length}</div>

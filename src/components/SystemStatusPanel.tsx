@@ -54,7 +54,7 @@ export function SystemStatusPanel() {
   const professionJobs = useMemo(() => {
     const jobs = [
       ...alchemyQueue.map((job) => ({
-        type: 'Alchemy',
+        type: 'Brew',
         id: job.id,
         label: job.recipeId,
         endsAt: job.endsAt,
@@ -166,7 +166,7 @@ export function SystemStatusPanel() {
       <div className={'settingsDebugRow'}>
         <div className={'settingsDebugLabel'}>Craft Queues</div>
         <div className={'settingsDebugValue'}>
-          Alchemy: {alchemyQueue.length} • Talisman: {talismanQueue.length} • Forge: {forgeQueue.length}
+          Brew: {alchemyQueue.length} • Talisman: {talismanQueue.length} • Forge: {forgeQueue.length}
         </div>
       </div>
 

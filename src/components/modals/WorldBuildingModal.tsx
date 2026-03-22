@@ -80,7 +80,7 @@ export function WorldBuildingModal({
         break;
       case 'apothecary':
       case 'alchemy':
-        content = <ApothecaryPanel shopId={moduleRefId ?? null} initialShelf={buildingKey === 'alchemy' ? 'workshop' : 'combat'} />;
+        content = <ApothecaryPanel shopId={moduleRefId ?? null} initialSurface={buildingKey === 'alchemy' ? 'brew' : 'buy'} />;
         break;
       case 'forge':
         content = <ForgeWorkshop cityId={storeCityId} />;

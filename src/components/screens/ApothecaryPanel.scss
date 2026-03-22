@@ -704,3 +704,176 @@
     opacity: 0.6;
   }
 }
+
+.apothecaryPurpose {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--apoth-ink);
+}
+
+.apothecarySpecialtyLine {
+  font-size: 13px;
+  color: var(--apoth-muted);
+}
+
+.apothecaryOverviewGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.apothecaryOverviewCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+}
+
+.apothecaryOverviewTitle {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.apothecaryOverviewHint,
+.apothecaryOverviewEmpty {
+  font-size: 13px;
+  color: var(--apoth-muted);
+}
+
+.apothecaryWarningList,
+.apothecaryPackageList,
+.apothecaryPouchSummaryGrid,
+.apothecarySecondaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.apothecaryWarningCard {
+  text-align: left;
+  border: 1px solid rgba(145, 58, 37, 0.28);
+  background: rgba(248, 230, 226, 0.55);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.apothecaryWarningTitle,
+.apothecaryPackageLabel,
+.apothecarySectionEyebrow,
+.apothecaryPrimaryTabLabel {
+  font-weight: 800;
+}
+
+.apothecaryWarningBody,
+.apothecaryPackageMeta,
+.apothecaryPouchSummaryRow,
+.apothecarySecondaryItem,
+.apothecarySectionBody,
+.apothecaryPrimaryTabBlurb,
+.apothecarySectionMeta {
+  font-size: 13px;
+  color: var(--apoth-muted);
+}
+
+.apothecaryPackageEntry,
+.apothecaryPouchSummaryRow,
+.apothecarySecondaryItem {
+  display: grid;
+  gap: 6px;
+  align-items: center;
+}
+
+.apothecaryPackageEntry {
+  grid-template-columns: 1fr auto;
+  border: 1px solid rgba(120, 72, 33, 0.2);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(248, 239, 221, 0.6);
+}
+
+.apothecaryPackageName,
+.apothecarySectionTitle,
+.apothecaryPouchSummaryState {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--apoth-ink);
+}
+
+.apothecaryPouchSummaryState {
+  font-size: 18px;
+}
+
+.apothecarySectionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.apothecarySectionCard--secondary {
+  background: rgba(248, 239, 221, 0.5);
+}
+
+.apothecarySectionEyebrow {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--apoth-muted);
+}
+
+.apothecarySectionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.apothecaryPrimaryTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.apothecaryPrimaryTab {
+  text-align: left;
+  border: 1px solid rgba(120, 72, 33, 0.3);
+  border-radius: 12px;
+  background: rgba(248, 239, 221, 0.68);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.apothecaryPrimaryTab--active {
+  background: rgba(252, 245, 232, 0.96);
+  border-color: rgba(120, 72, 33, 0.55);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.apothecarySubTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.apothecaryBrewPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 1100px) {
+  .apothecaryOverviewGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .apothecaryPrimaryTabs {
+    grid-template-columns: 1fr;
+  }
+
+  .apothecaryPackageEntry {
+    grid-template-columns: 1fr;
+  }
+}

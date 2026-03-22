@@ -48,6 +48,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
   useEffect(() => {
     if (!open) return;
     previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const anchorNode = anchorRef.current;
     const { style } = document.body;
     const previousOverflow = style.overflow;
     const previousPaddingRight = style.paddingRight;
@@ -94,8 +95,8 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
       scrollNode?.removeEventListener('scroll', updateScrollShadows);
       style.overflow = previousOverflow;
       style.paddingRight = previousPaddingRight;
-      if (anchorRef.current) {
-        anchorRef.current.focus();
+      if (anchorNode) {
+        anchorNode.focus();
       } else {
         previousFocusRef.current?.focus();
       }
@@ -119,7 +120,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
           <div className="medicinePouchHeader">
             <div>
               <div className="medicinePouchTitle">Medicine Pouch</div>
-              <div className="medicinePouchHint">Configure what you carry into combat.</div>
+              <div className="medicinePouchHint">Configure what stays ready for combat.</div>
             </div>
             <button
               type="button"
