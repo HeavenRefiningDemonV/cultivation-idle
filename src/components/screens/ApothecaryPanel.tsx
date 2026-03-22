@@ -5,7 +5,7 @@ import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
 import { useProfessionStore } from '../../stores/professionStore';
 import { useShopStore } from '../../stores/shopStore';
 import { useUIStore } from '../../stores/uiStore';
-import { buildApothecaryCityBundle } from '../../features/apothecary/apothecaryBundles';
+import { buildApothecaryBuyReadModel } from '../../features/apothecary/apothecaryBuyReadModel';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
 import {
@@ -121,6 +121,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
       buildApothecaryPrepReadModel({
         content: raw,
         shop: apothecary,
+        inventoryItems,
         pouchSlots,
         purchasedTodayByStockId: purchasedToday,
         brewQueue,
@@ -129,16 +130,19 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
     [apothecary, brewQueue, inventoryItems, pouchSlots, purchasedToday, raw],
   );
 
-  const cityBundle = useMemo(
+  const buyReadModel = useMemo(
     () =>
-      buildApothecaryCityBundle({
+      buildApothecaryBuyReadModel({
         content: raw,
         shop: apothecary ?? null,
+        inventoryItems,
+        currencies,
         purchasedTodayByStockId: purchasedToday,
-        recommendedPackage: prepModel.recommendedPackage,
       }),
-    [apothecary, prepModel.recommendedPackage, purchasedToday, raw],
+    [apothecary, currencies, inventoryItems, purchasedToday, raw],
   );
+
+  const cityBundle = buyReadModel.bundleState.bundle;
 
   const pouchBadgeCount = prepModel.pouchSummary.filledSlots;
   const badgeDisplay = pouchBadgeCount > 9 ? '9+' : `${pouchBadgeCount}`;
@@ -186,6 +190,80 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         {status.message}
       </div>
     ) : null;
+
+
+  const renderFloorSummary = () => (
+    <PaperCard className={'apothecarySectionCard'} variant="tray">
+      <div className={'apothecarySectionEyebrow'}>Stock Floors</div>
+      <div className={'apothecarySectionBody'}>
+        Floors show what instant readiness looks like in this city right now. If Buy is capped, Brew covers the honest remainder.
+      </div>
+      <div className={'apothecarySecondaryList'}>
+        {buyReadModel.floorStatuses.map((floor) => (
+          <div key={floor.key} className={'apothecarySecondaryItem'}>
+            <strong>{floor.label}</strong>
+            <span>
+              {floor.itemName}: {floor.ownedQty} / {floor.targetQty}
+              {floor.met ? ' • Met' : ' • Below floor'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </PaperCard>
+  );
+
+  const renderPackageCoverage = () => {
+    const coverage = buyReadModel.packageCoverage;
+    if (!coverage) return null;
+
+    return (
+      <PaperCard className={'apothecarySectionCard'} variant="tray">
+        <div className={'apothecarySectionEyebrow'}>Gate Prep Coverage</div>
+        <div className={'apothecarySectionTitle'}>{coverage.packageDef.label}</div>
+        <div className={'apothecarySectionBody'}>
+          Buy covers speed. Brew covers the honest remainder whenever daily caps start throttling convenience.
+        </div>
+        <div className={'apothecarySectionMeta'}>
+          <span>Instant lines: {coverage.instantBuyCoveredCount} / {coverage.lineCoverage.length}</span>
+          <span>Capped lines: {coverage.cappedCount}</span>
+          <span>Brew-backed lines: {coverage.brewSupportedCount}</span>
+        </div>
+        <div className={'apothecarySecondaryList'}>
+          {coverage.lineCoverage.map((line) => {
+            const itemDef = getItemDef(line.itemId);
+            const itemName = itemDef?.name ?? line.itemId;
+            const status = line.instantBuyCovered
+              ? 'Instant buy-covered'
+              : line.dailyLimitCapped
+                ? line.visibleLiveBrew
+                  ? 'Daily-limit capped • Brew-supported'
+                  : 'Daily-limit capped'
+                : line.visibleLiveBrew
+                  ? 'Brew-supported only'
+                  : 'Unavailable';
+            return (
+              <div key={line.itemId} className={'apothecarySecondaryItem'}>
+                <strong>{itemName} ×{line.qty}</strong>
+                <span>{status}</span>
+              </div>
+            );
+          })}
+          {coverage.supplementCoverage.map((lane) => (
+            <div key={lane.key} className={'apothecarySecondaryItem'}>
+              <strong>{lane.label}</strong>
+              <span>
+                {lane.supportedByShop
+                  ? 'Has live shelf support'
+                  : lane.supportedByBrew
+                    ? 'Brew-supported supplement lane'
+                    : 'No live support'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </PaperCard>
+    );
+  };
 
   const renderStockCard = (entryId: string) => {
     const stockEntry = stock.find((s) => s.id === entryId);
@@ -345,8 +423,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
   const renderBundleCard = () => {
     if (!cityBundle) return null;
 
-    const bundleBlockedReason =
-      cityBundle.items.find((item) => !canBuy(apothecary.id, item.stockId, item.qty).ok)?.itemName ?? null;
+    const bundleBlockedReason = buyReadModel.bundleState.disableReason;
 
     const handlePurchase = () => {
       GameEvents.emit({
@@ -412,13 +489,13 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
             className={`apothecaryActionButton${!bundleBlockedReason ? ' apothecaryActionButton--active' : ''}`}
             onClick={handlePurchase}
             disabled={Boolean(bundleBlockedReason)}
-            title={bundleBlockedReason ? `${bundleBlockedReason} cannot be added right now.` : undefined}
+            title={bundleBlockedReason ?? undefined}
           >
             Buy Bundle
           </button>
         </div>
 
-        {renderStatus(bundleStatus ?? undefined)}
+        {renderStatus(bundleStatus ?? (bundleBlockedReason ? { type: 'error', message: bundleBlockedReason } : undefined))}
       </PaperCard>
     );
   };
@@ -458,6 +535,10 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         </div>
       </PaperCard>
 
+      {renderFloorSummary()}
+
+      {renderPackageCoverage()}
+
       <PaperCard className={'apothecarySectionCard'} variant="tray">
         <div className={'apothecarySubTabs'}>
           {buyFilters.map((option) => (
@@ -480,17 +561,21 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         )}
       </PaperCard>
 
-      {cityBundle && (
-        <PaperCard className={'apothecarySectionCard'} variant="tray">
-          <div className={'apothecarySectionEyebrow'}>Convenience Bundles</div>
+      <PaperCard className={'apothecarySectionCard'} variant="tray">
+        <div className={'apothecarySectionEyebrow'}>Convenience Bundles</div>
           <div className={'apothecarySectionBody'}>
-            Secondary convenience only. Bundles save clicks, but Buy and Brew remain the real prep loop this semester.
+            Bundles live inside Buy as the fast path. Daily caps throttle convenience, but Brew keeps the prep contract honest when shelf stock runs thin.
+          </div>
+          <div className={'apothecarySectionMeta'}>
+            <span>Buyable now: {buyReadModel.bundleState.buyableNow ? 'Yes' : 'No'}</span>
+            <span>Remaining today: {buyReadModel.bundleState.remainingPurchasesToday}</span>
+            <span>{buyReadModel.bundleImprovesBiggestShortfall ? 'Bundle fixes the biggest shortfall' : 'Bundle is not the main shortfall fix'}</span>
           </div>
           <div className={'apothecaryGrid apothecaryGrid--bundles'}>
             {cityBundle ? renderBundleCard() : null}
           </div>
+          {!cityBundle ? renderStatus({ type: 'error', message: buyReadModel.bundleState.disableReason || 'No bundle in this city.' }) : null}
         </PaperCard>
-      )}
 
       <PaperCard className={'apothecarySectionCard apothecarySectionCard--secondary'} variant="tray">
         <div className={'apothecarySectionEyebrow'}>Counter Services</div>

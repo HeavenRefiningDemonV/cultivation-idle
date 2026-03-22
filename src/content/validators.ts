@@ -68,6 +68,9 @@ import {
   LIVE_RUNE_CITY_PAIRS,
   LIVE_TEMPER_LADDER_IDS,
 } from '../systems/forge/index.js';
+import { buildApothecaryCityBundle } from '../features/apothecary/apothecaryBundles.js';
+import { evaluateGatePrepPackageCoverage } from '../features/apothecary/apothecaryPackageCoverage.js';
+import { getGatePrepPackageForCity } from '../features/apothecary/gatePrepPackageCatalog.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -961,6 +964,55 @@ function validateRecipeItems(
   });
 }
 
+
+function validateApothecaryGatePrepPackages(options: {
+  content: ValidatedContent;
+  addErr: (msg: string) => void;
+}) {
+  const { content, addErr } = options;
+  content.apothecary_shops.forEach((shop) => {
+    const packageDef = getGatePrepPackageForCity(shop.cityId);
+    if (!packageDef) return;
+
+    const bundle = buildApothecaryCityBundle({
+      content,
+      shop,
+      inventoryItems: {},
+      purchasedTodayByStockId: {},
+    });
+    const coverage = evaluateGatePrepPackageCoverage({ content, shop, bundle, packageDef });
+    if (!coverage) {
+      addErr(`apothecary gate-prep package missing coverage for ${shop.cityId}`);
+      return;
+    }
+
+    coverage.lineCoverage.forEach((line) => {
+      if (!(line.itemId in buildIdMap(content.items))) {
+        addErr(`gate prep package ${packageDef.transitionId} references missing item ${line.itemId}`);
+      }
+      if (!line.soldDirectly) {
+        addErr(`gate prep package ${packageDef.transitionId} direct-core line ${line.itemId} is not sold by ${shop.id}`);
+      }
+      if (line.dailyLimitCapped && !line.visibleLiveBrew) {
+        addErr(`gate prep package ${packageDef.transitionId} line ${line.itemId} exceeds live daily stock without brew support`);
+      }
+      if (line.exceedsSafeConvenienceShare && !line.visibleLiveBrew) {
+        addErr(`gate prep package ${packageDef.transitionId} line ${line.itemId} exceeds 70% of daily limit without brew support`);
+      }
+    });
+
+    coverage.supplementCoverage.forEach((lane) => {
+      if (!lane.honest) {
+        addErr(`gate prep package ${packageDef.transitionId} supplement lane ${lane.key} has no visible live support`);
+      }
+    });
+
+    if (!coverage.honest) {
+      addErr(`gate prep package ${packageDef.transitionId} is not economically honest for ${shop.cityId}`);
+    }
+  });
+}
+
 export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const errors: string[] = [];
   const addErr = (msg: string) => errors.push(`[ContentValidation] ${msg}`);
@@ -1031,6 +1083,31 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
         addErr(`apothecary_shops.shops[${idx}].stock[${stockIdx}] missing item`);
       }
     });
+  });
+
+  validateApothecaryGatePrepPackages({
+    content: {
+      raw,
+      economy: raw.economy,
+      cities,
+      items,
+      techniques,
+      pavilions,
+      outskirts,
+      enemies,
+      trials: normalizedTrials,
+      ruins,
+      runes,
+      talisman_recipes: talismanRecipes,
+      alchemy_recipes: alchemyRecipes,
+      forge_blueprints: forgeBlueprints,
+      apothecary_shops: apothecaryShops,
+      expeditions,
+      bounties: bountyConfig,
+      heart_laws: heartLaws,
+      prestige_store: prestige,
+    },
+    addErr,
   });
 
   pavilions.forEach((pavilion, idx) => {

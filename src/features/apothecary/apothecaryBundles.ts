@@ -1,6 +1,7 @@
-import type { ApothecaryShopDef, ValidatedContent } from '../../content/index.js';
+import type { ApothecaryShopDef } from '../../content/types.js';
+import type { ValidatedContent } from '../../content/index.js';
 import type { ApothecaryPrice } from '../../content/types.js';
-import type { ApothecaryRecommendedPackageEntry } from './apothecaryPrepReadModel.js';
+import { getApothecaryBundleCatalogEntry } from './apothecaryBundleCatalog.js';
 
 type BundleLine = {
   stockId: string;
@@ -38,34 +39,43 @@ function formatCityName(content: ValidatedContent | null, cityId: string | undef
   return content?.cities.find((city) => city.id === cityId)?.name ?? 'Today';
 }
 
+function formatItemName(content: ValidatedContent | null, itemId: string) {
+  return content?.items.find((item) => item.id === itemId)?.name ?? itemId;
+}
+
 export function buildApothecaryCityBundle(options: {
   content: ValidatedContent | null;
   shop: ApothecaryShopDef | null;
+  inventoryItems: Record<string, number>;
   purchasedTodayByStockId?: Record<string, number>;
-  recommendedPackage: ApothecaryRecommendedPackageEntry[];
 }): ApothecaryCityBundle | null {
-  const { content, shop, purchasedTodayByStockId = {}, recommendedPackage } = options;
+  const { content, shop, inventoryItems, purchasedTodayByStockId = {} } = options;
   if (!shop) return null;
+  const bundleDef = getApothecaryBundleCatalogEntry(shop);
+  if (!bundleDef) return null;
 
   const items: BundleLine[] = [];
   let cost: ApothecaryPrice = {};
 
-  recommendedPackage.forEach((entry) => {
-    if (entry.routeIntent.kind !== 'buy' || entry.missingQty <= 0) return;
-    const stockEntry = shop.stock.find((stock) => stock.itemId === entry.itemId);
+  bundleDef.lines.forEach((line) => {
+    const stockEntry = shop.stock.find((stock) => stock.itemId === line.itemId);
     if (!stockEntry) return;
+
+    const ownedQty = inventoryItems[line.itemId] ?? 0;
+    const missingQty = Math.max(0, line.targetQty - ownedQty);
+    if (missingQty <= 0) return;
 
     const purchased = purchasedTodayByStockId[stockEntry.id] ?? 0;
     const remainingByLimit =
-      stockEntry.dailyLimit == null ? entry.missingQty : Math.max(0, stockEntry.dailyLimit - purchased);
-    const qty = Math.min(entry.missingQty, remainingByLimit);
+      stockEntry.dailyLimit == null ? missingQty : Math.max(0, stockEntry.dailyLimit - purchased);
+    const qty = Math.min(missingQty, remainingByLimit);
     if (qty <= 0) return;
 
     items.push({
       stockId: stockEntry.id,
-      itemId: entry.itemId,
+      itemId: line.itemId,
       qty,
-      itemName: entry.itemName,
+      itemName: formatItemName(content, line.itemId),
     });
     cost = addPrice(cost, stockEntry.price, qty);
   });
@@ -73,12 +83,11 @@ export function buildApothecaryCityBundle(options: {
   if (items.length === 0) return null;
 
   const cityName = formatCityName(content, shop.cityId);
-  const bundleLineNames = items.map((item) => item.itemName).join(', ');
 
   return {
     id: `${shop.id}_daily_readiness_bundle`,
-    name: `${cityName} Readiness Bundle`,
-    description: `Top back up to today’s reserve floor with ${bundleLineNames}.`,
+    name: `${cityName} ${bundleDef.nameSuffix}`,
+    description: bundleDef.description,
     cost,
     items,
   };

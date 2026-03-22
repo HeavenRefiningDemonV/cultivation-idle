@@ -1,6 +1,7 @@
 import type { ApothecaryShopDef, ValidatedContent } from '../../content/index.js';
 import { getConsumableSpec } from '../../systems/consumables/consumableCatalog.js';
 import type { MedicinePouchSlotKey, MedicinePouchSlotState } from '../../types/index.js';
+import { APOTHECARY_STOCK_FLOORS } from './apothecaryStockFloors.js';
 
 export const APOTHECARY_PURPOSE_SENTENCE = 'Use Apothecary to convert gold and reagents into immediate readiness.';
 
@@ -96,9 +97,9 @@ export interface ApothecaryPrepReadModelInput {
 }
 
 const WARNING_FLOORS = {
-  healing: 12,
-  specialty: 4,
-  breakthrough: 3,
+  healing: APOTHECARY_STOCK_FLOORS.healing.targetQty,
+  specialty: APOTHECARY_STOCK_FLOORS.specialty.targetQty,
+  breakthrough: APOTHECARY_STOCK_FLOORS.cultivation.targetQty,
 } as const;
 
 function formatItemName(content: ValidatedContent | null, itemId: string): string {
