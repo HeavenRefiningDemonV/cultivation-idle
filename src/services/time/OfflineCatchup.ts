@@ -7,6 +7,7 @@ import type { OfflineContext } from '../../systems/offline';
 import { MAX_OFFLINE_MS } from './offlineShared';
 import { formatOfflineDuration, getOfflineEfficiency } from '../../systems/offline';
 import { cultivationService } from '../cultivationService';
+import { buildCultivationConsumableCarryoverWindows } from '../../systems/consumables/cultivationConsumableEffects.js';
 
 export interface OfflineCatchupSummaryPart {
   label: string;
@@ -30,33 +31,17 @@ function calculateOfflineQiGain(startAt: number, endAt: number, offlineEfficienc
   const cultivation = useCultivationStore.getState();
   const gameStore = useGameStore.getState();
   cultivation.clearExpiredCultivationConsumables(startAt);
-  const startModifiers = cultivation.getCultivationConsumableModifiers(startAt);
+  const readModel = cultivation.getCultivationConsumableReadModel(startAt);
   const currentQiPerSecond = D(gameStore.qiPerSecond ?? '0');
-  const baseQiPerSecond = startModifiers.qiRateMult > 0
-    ? currentQiPerSecond.dividedBy(startModifiers.qiRateMult)
+  const baseQiPerSecond = readModel.modifiers.qiRateMult > 0
+    ? currentQiPerSecond.dividedBy(readModel.modifiers.qiRateMult)
     : currentQiPerSecond;
-  const consumables = cultivation.getActiveCultivationConsumables(startAt).sort((a, b) => a.expiresAt - b.expiresAt);
-  let cursor = startAt;
-  let total = D(0);
 
-  for (const buff of consumables) {
-    if (buff.expiresAt <= cursor) continue;
-    const stepEnd = Math.min(endAt, buff.expiresAt);
-    if (stepEnd <= cursor) continue;
-    const modifiers = cultivation.getCultivationConsumableModifiers(cursor);
-    const seconds = (stepEnd - cursor) / 1000;
-    total = total.plus(baseQiPerSecond.times(modifiers.qiRateMult).times(seconds).times(offlineEfficiency));
-    cursor = stepEnd;
-    cultivation.clearExpiredCultivationConsumables(cursor);
-  }
-
-  if (cursor < endAt) {
-    const seconds = (endAt - cursor) / 1000;
-    const modifiers = cultivation.getCultivationConsumableModifiers(cursor);
-    total = total.plus(baseQiPerSecond.times(modifiers.qiRateMult).times(seconds).times(offlineEfficiency));
-  }
-
-  return total;
+  return buildCultivationConsumableCarryoverWindows(cultivation.activeCultivationConsumables, startAt, endAt)
+    .reduce((total, window) => {
+      const seconds = window.elapsedMs / 1000;
+      return total.plus(baseQiPerSecond.times(window.modifiers.qiRateMult).times(seconds).times(offlineEfficiency));
+    }, D(0));
 }
 
 export function apply(context: OfflineContext): OfflineCatchupResult {

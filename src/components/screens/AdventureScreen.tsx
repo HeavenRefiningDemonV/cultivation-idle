@@ -346,11 +346,11 @@ export function CombatView() {
             <h3 className={'adventureScreenCombatLogTitle'}>Combat Log</h3>
             <div className={'adventureScreenCombatLogBody'}>
               {combatLog.length === 0 ? (
-                <p className={'adventureScreenCombatLogEmpty'}>No messages yet...</p>
+                <p className={'adventureScreenCombatLogEmpty'}>No combat exchanges yet.</p>
               ) : (
                 combatLog.slice(-6).map((log, idx) => (
                   <div key={`${log.timestamp}-${idx}`} className={log.color || 'adventureScreenCombatLogDefault'}>
-                    {log.text}
+                    {idx === combatLog.slice(-6).length - 1 ? 'Latest • ' : ''}{log.text}
                   </div>
                 ))
               )}

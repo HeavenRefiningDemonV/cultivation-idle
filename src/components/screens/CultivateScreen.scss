@@ -485,3 +485,62 @@
     border-color: rgba(34, 211, 238, 0);
   }
 }
+
+
+.cultivationBuffSummary {
+  width: min(92%, 880px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: -6px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(15, 18, 28, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.cultivationBuffSummaryTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.74);
+}
+
+.cultivationBuffSummaryEmpty {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.cultivationBuffSummaryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cultivationBuffChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(248, 250, 252, 0.95);
+  font-size: 12px;
+}
+
+.cultivationBuffChipFamily {
+  font-weight: 700;
+  color: rgba(125, 211, 252, 0.95);
+}
+
+.cultivationBuffChipBody {
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.cultivationBuffChipTimer {
+  font-variant-numeric: tabular-nums;
+  color: rgba(253, 224, 71, 0.95);
+}

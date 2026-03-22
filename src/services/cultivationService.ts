@@ -1,6 +1,5 @@
 import {
   COMPREHENSION_PER_MINUTE_BASE,
-  INSIGHT_DURATION_MS,
   STUDY_MASTERY_PER_MINUTE_BASE,
   getBreathModeMultipliers,
 } from '../content/tuning/cultivationTuning';
@@ -8,6 +7,7 @@ import { useActivityStore } from '../stores/activityStore';
 import { useCultivationStore } from '../stores/cultivationStore';
 import { useTechCollectionStore } from '../stores/techCollectionStore';
 import type { InsightChoiceId } from '../types';
+import { buildCultivationConsumableCarryoverWindows } from '../systems/consumables/cultivationConsumableEffects.js';
 
 function ensureInsightScheduled(now: number) {
   const store = useCultivationStore.getState();
@@ -52,6 +52,12 @@ function applyContinuousGains(deltaMs: number, now = Date.now(), ignoreActivityG
 
 function processInsights(startAt: number, endAt: number) {
   ensureInsightScheduled(startAt);
+  const windows = buildCultivationConsumableCarryoverWindows(
+    useCultivationStore.getState().activeCultivationConsumables,
+    startAt,
+    endAt,
+  );
+
   let cursor = startAt;
   while (cursor < endAt) {
     const heart = useCultivationStore.getState();
@@ -62,12 +68,9 @@ function processInsights(startAt: number, endAt: number) {
       continue;
     }
 
-    const nextExpiry = heart.getActiveCultivationConsumables(cursor)
-      .map((entry) => entry.expiresAt)
-      .filter((value) => Number.isFinite(value))
-      .sort((a, b) => a - b)[0] ?? endAt;
+    const nextWindowEnd = windows.find((window) => window.startedAt <= cursor && window.endedAt > cursor)?.endedAt ?? endAt;
     const nextInsight = heart.nextInsightAt ?? endAt;
-    const stepEnd = Math.min(endAt, nextExpiry, nextInsight);
+    const stepEnd = Math.min(endAt, nextWindowEnd, nextInsight);
     const delta = Math.max(0, stepEnd - cursor);
     if (delta > 0) {
       applyContinuousGains(delta, stepEnd, true);

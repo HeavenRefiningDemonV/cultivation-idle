@@ -9,6 +9,7 @@ import { apply as applyOfflineCatchup } from '../../src/services/time/OfflineCat
 import { cultivationService } from '../../src/services/cultivationService.js';
 import { getConsumableSpec } from '../../src/systems/consumables/consumableCatalog.js';
 import { buildLiveConsumableRoster } from '../../src/systems/consumables/liveConsumableRoster.js';
+import { buildCultivationConsumableCarryoverWindows } from '../../src/systems/consumables/cultivationConsumableEffects.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 import { useCultivationStore } from '../../src/stores/cultivationStore.js';
 import { useGameStore, setInventoryStoreGetter, setPrestigeStoreGetter } from '../../src/stores/gameStore.js';
@@ -118,7 +119,7 @@ test('all live cultivation-use items have implemented use logic', () => {
   assert.equal(buildLiveConsumableRoster(content).some((entry) => entry.itemId === 'cons_tribulation_buffer_t1' && entry.status === 'live'), false);
 });
 
-test('Qi Elixir t1/t2 adjust qps and circulation t2 overrides t1', () => {
+test('Qi Elixir t1/t2 adjust qps and circulation t2 overrides t1 within the same family registry slot', () => {
   const now = Date.now();
   useGameStore.getState().calculateQiPerSecond();
   const base = Number(useGameStore.getState().qiPerSecond);
@@ -130,7 +131,9 @@ test('Qi Elixir t1/t2 adjust qps and circulation t2 overrides t1', () => {
   useCultivationStore.getState().useCultivationConsumable('cons_qi_elixir_t2', now + 1_000);
   useGameStore.getState().calculateQiPerSecond();
   approxEqual(Number(useGameStore.getState().qiPerSecond), base * 1.4);
-  assert.deepEqual(useCultivationStore.getState().getActiveCultivationConsumables(now + 2_000).map((entry) => entry.itemId), ['cons_qi_elixir_t2']);
+  const readModel = useCultivationStore.getState().getCultivationConsumableReadModel(now + 2_000);
+  assert.deepEqual(readModel.entries.map((entry) => entry.itemId), ['cons_qi_elixir_t2']);
+  assert.equal(readModel.activeByFamily.circulation?.itemId, 'cons_qi_elixir_t2');
 });
 
 test('Meridian Warmth boosts qps and stability gain, Quiet Breath boosts comprehension and insight cadence', () => {
@@ -208,4 +211,39 @@ test('offline catch-up honors partial buff duration and save snapshot carries cu
   const save = buildDefaultSaveState();
   assert.equal(save.heartLawState?.activeCultivationConsumables?.[0]?.itemId, 'cons_quiet_breath_tea_t1');
   assert.equal(typeof save.heartLawState?.insightProgressMs, 'number');
+});
+
+
+test('carryover windows keep cultivation buff modifiers honest across overlapping families and expiry boundaries', () => {
+  const now = Date.now();
+  useCultivationStore.getState().useCultivationConsumable('cons_qi_elixir_t1', now);
+  useCultivationStore.setState((state) => {
+    state.activeCultivationConsumables.push({
+      itemId: 'cons_meridian_warmth_draft_t1',
+      family: 'warmth',
+      activatedAt: now + 300_000,
+      expiresAt: now + 1_200_000,
+      modifiers: {
+        qiRateMult: 1.15,
+        comprehensionGainMult: 1,
+        stabilityGainMult: 1.25,
+        insightFrequencyMult: 1,
+        majorBreakthroughQiCostMult: 1,
+        majorBreakthroughStabilityBonus: 0,
+      },
+      consumedOnMajorBreakthrough: false,
+    });
+  });
+
+  const windows = buildCultivationConsumableCarryoverWindows(useCultivationStore.getState().activeCultivationConsumables, now, now + 950_000);
+
+  assert.equal(windows.length, 3);
+  assert.deepEqual(windows.map((window) => window.activeFamilies), [
+    ['circulation'],
+    ['circulation', 'warmth'],
+    ['warmth'],
+  ]);
+  approxEqual(windows[0]?.modifiers.qiRateMult ?? 0, 1.25);
+  approxEqual(windows[1]?.modifiers.qiRateMult ?? 0, 1.4375);
+  approxEqual(windows[2]?.modifiers.qiRateMult ?? 0, 1.15);
 });

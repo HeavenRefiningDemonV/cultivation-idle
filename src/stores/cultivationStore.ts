@@ -16,12 +16,14 @@ import { useUIStore } from './uiStore';
 import { D } from '../utils/numbers';
 import { getConsumableSpec } from '../systems/consumables/consumableCatalog.js';
 import {
+  buildCultivationConsumableReadModel,
   filterActiveCultivationConsumables,
   mergeCultivationConsumableModifiers,
 } from '../systems/consumables/cultivationConsumableEffects.js';
 import type {
   ActiveCultivationConsumable,
   CultivationConsumableModifiers,
+  CultivationConsumableReadModel,
 } from '../systems/consumables/cultivationConsumableTypes.js';
 
 interface UseCultivationConsumableResult {
@@ -66,6 +68,7 @@ interface CultivationState {
   getActiveCultivationConsumables: (now?: number) => ActiveCultivationConsumable[];
   clearExpiredCultivationConsumables: (now?: number) => void;
   getCultivationConsumableModifiers: (now?: number) => CultivationConsumableModifiers;
+  getCultivationConsumableReadModel: (now?: number) => CultivationConsumableReadModel;
   consumeMajorBreakthroughBonus: (now?: number) => number;
   resetForNewLife: () => void;
 }
@@ -314,6 +317,7 @@ export const useCultivationStore = create<CultivationState>()(
       });
     },
     getCultivationConsumableModifiers: (now = Date.now()) => mergeCultivationConsumableModifiers(get().activeCultivationConsumables, now),
+    getCultivationConsumableReadModel: (now = Date.now()) => buildCultivationConsumableReadModel(get().activeCultivationConsumables, now),
     consumeMajorBreakthroughBonus: (now = Date.now()) => {
       let granted = 0;
       set((state) => {

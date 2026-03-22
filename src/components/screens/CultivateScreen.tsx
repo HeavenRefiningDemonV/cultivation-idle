@@ -15,6 +15,7 @@ import { useInventoryStore } from '../../stores/inventoryStore';
 import { useUIStore } from '../../stores/uiStore';
 import type { InsightMomentState } from '../../types';
 import { formatNumber, D } from '../../utils/numbers';
+import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../systems/consumables/cultivationConsumableTypes.js';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks';
 import { DaoHeartModal } from '../modals/DaoHeartModal';
@@ -90,6 +91,7 @@ export function CultivateScreen() {
   const stability = useCultivationStore((state) => state.stability);
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
+  const cultivationBuffReadModel = useCultivationStore((state) => state.getCultivationConsumableReadModel());
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
 
@@ -157,7 +159,7 @@ export function CultivateScreen() {
   const rateTooltip = [
     `Base: ${formatNumber(baseRate.toNumber())} Qi/s`,
     `Breath cycle: x${breathMultipliers.qiRateMult} (${breathMode})`,
-    'Heart Law bonus: x1 (future tuning)',
+    `Cultivation buffs: ${activeBuffSummary}`,
   ].join('\n');
 
   const activityLabel = activeActivity ? ACTIVITY_LABELS[activeActivity.type] ?? 'Busy' : 'Idle';
@@ -166,6 +168,18 @@ export function CultivateScreen() {
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
   const heartLawTags = (heartLawDef?.daoTags ?? []).map((tag) => tag.toLowerCase());
+
+  const activeCultivationBuffs = cultivationBuffReadModel.entries.map((entry) => ({
+    ...entry,
+    familyMeta: CULTIVATION_CONSUMABLE_FAMILY_REGISTRY[entry.family],
+    remainingSeconds: Math.max(1, Math.ceil(entry.remainingMs / 1000)),
+  }));
+
+  const activeBuffSummary = activeCultivationBuffs.length === 0
+    ? 'No active cultivation tonics.'
+    : activeCultivationBuffs
+        .map((entry) => `${entry.familyMeta.shortLabel}: ${entry.shortLabel} (${entry.remainingSeconds}s)`)
+        .join(' • ');
 
   const hasPerkForRealm = useCallback(
     (realmIndex: number) => pathPerks.some((perkId) => getPerkById(perkId)?.requiredRealm === realmIndex),
@@ -313,6 +327,22 @@ export function CultivateScreen() {
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
+          <div className="cultivationBuffSummary" aria-live="polite">
+            <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
+            {activeCultivationBuffs.length === 0 ? (
+              <div className="cultivationBuffSummaryEmpty">No active tonics. Families overwrite weaker effects in the same lane.</div>
+            ) : (
+              <div className="cultivationBuffSummaryChips">
+                {activeCultivationBuffs.map((entry) => (
+                  <div key={entry.family} className="cultivationBuffChip" title={entry.description}>
+                    <span className="cultivationBuffChipFamily">{entry.familyMeta.label}</span>
+                    <span className="cultivationBuffChipBody">{entry.shortLabel}</span>
+                    <span className="cultivationBuffChipTimer">{entry.remainingSeconds}s</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           {/* VerseMiniBar hidden per request. */}
           <div className="cultivationActionStack">
             <button
