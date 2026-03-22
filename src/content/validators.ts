@@ -71,6 +71,15 @@ import {
 import { buildApothecaryCityBundle } from '../features/apothecary/apothecaryBundles.js';
 import { evaluateGatePrepPackageCoverage } from '../features/apothecary/apothecaryPackageCoverage.js';
 import { getGatePrepPackageForCity } from '../features/apothecary/gatePrepPackageCatalog.js';
+import { buildMeritRoleAudit } from '../systems/economy/meritRoleAudit.js';
+import { getAllSupportBountyClaimExpectations, getAllSupportReserveTargets } from '../systems/economy/supportCurrencyTargets.js';
+import {
+  bountyKindToProgressRule,
+  getExpeditionBountyCreditCityId,
+  getLiveCraftBountyCountedSources,
+  getLiveCraftBountyExcludedSources,
+  resolveBountyDestination,
+} from '../utils/bountyRouting.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1013,6 +1022,70 @@ function validateApothecaryGatePrepPackages(options: {
   });
 }
 
+
+function validateSupportEconomyRuntimeTruth(options: {
+  content: ValidatedContent;
+  addErr: (msg: string) => void;
+}) {
+  const { content, addErr } = options;
+
+  const reserveTargets = getAllSupportReserveTargets();
+  const expectedReserveTargets = [
+    { gateIndex: 1, meritIdealReserve: 10, spiritStoneMinimumReserve: 0, spiritStoneIdealReserve: 0 },
+    { gateIndex: 2, meritIdealReserve: 15, spiritStoneMinimumReserve: 3, spiritStoneIdealReserve: 5 },
+    { gateIndex: 3, meritIdealReserve: 20, spiritStoneMinimumReserve: 8, spiritStoneIdealReserve: 15 },
+    { gateIndex: 4, meritIdealReserve: 25, spiritStoneMinimumReserve: 20, spiritStoneIdealReserve: 40 },
+    { gateIndex: 5, meritIdealReserve: 35, spiritStoneMinimumReserve: 50, spiritStoneIdealReserve: 100 },
+  ];
+  if (JSON.stringify(reserveTargets) != JSON.stringify(expectedReserveTargets)) {
+    addErr('support reserve targets drifted away from Packet 3.8A');
+  }
+
+  const claimExpectations = getAllSupportBountyClaimExpectations();
+  if (claimExpectations.length !== 5) {
+    addErr(`support bounty claim expectations must cover all five city phases; found ${claimExpectations.length}`);
+  }
+
+  const meritAudit = buildMeritRoleAudit(content);
+  if (meritAudit.violations.length > 0) {
+    addErr(`visible live Merit sinks must be fail-safe only; found ${meritAudit.violations.map((entry) => entry.id).join(', ')}`);
+  }
+
+  const countedSources = getLiveCraftBountyCountedSources().slice().sort().join(',');
+  if (countedSources !== ['apothecary_brew_claim', 'forge_claim'].sort().join(',')) {
+    addErr(`CRAFT_COMPLETE counted sources drifted: ${countedSources}`);
+  }
+
+  const excludedSources = getLiveCraftBountyExcludedSources();
+  ['talisman_claim', 'shop_buy', 'deferred_craft'].forEach((source) => {
+    if (!excludedSources.includes(source as (typeof excludedSources)[number])) {
+      addErr(`CRAFT_COMPLETE must exclude ${source}`);
+    }
+  });
+
+  if (!/forge or Apothecary Brew/i.test(bountyKindToProgressRule('CRAFT_COMPLETE'))) {
+    addErr('CRAFT_COMPLETE progress rule must explicitly mention forge or Apothecary Brew claims');
+  }
+
+  const liveTemplateKinds = new Set(content.bounties.templates.map((template) => template.kind));
+  if (liveTemplateKinds.has('TRIAL_CLEAR')) {
+    addErr('live bounty templates must not include TRIAL_CLEAR');
+  }
+
+  const craftDestination = resolveBountyDestination({
+    cityId: 'city_pinewind_hamlet',
+    bountyKind: 'CRAFT_COMPLETE',
+    cityModules: ['apothecary'],
+  });
+  if (craftDestination.kind !== 'module' || craftDestination.moduleKey !== 'apothecary') {
+    addErr('CRAFT_COMPLETE must remain routable through live Apothecary Brew support when Forge is absent');
+  }
+
+  if (getExpeditionBountyCreditCityId({ cityId: 'city_stonecrag_town' }) !== 'city_stonecrag_town') {
+    addErr('EXPEDITION_COMPLETE credit must remain pinned to expedition origin city');
+  }
+}
+
 export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const errors: string[] = [];
   const addErr = (msg: string) => errors.push(`[ContentValidation] ${msg}`);
@@ -1086,6 +1159,31 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   });
 
   validateApothecaryGatePrepPackages({
+    content: {
+      raw,
+      economy: raw.economy,
+      cities,
+      items,
+      techniques,
+      pavilions,
+      outskirts,
+      enemies,
+      trials: normalizedTrials,
+      ruins,
+      runes,
+      talisman_recipes: talismanRecipes,
+      alchemy_recipes: alchemyRecipes,
+      forge_blueprints: forgeBlueprints,
+      apothecary_shops: apothecaryShops,
+      expeditions,
+      bounties: bountyConfig,
+      heart_laws: heartLaws,
+      prestige_store: prestige,
+    },
+    addErr,
+  });
+
+  validateSupportEconomyRuntimeTruth({
     content: {
       raw,
       economy: raw.economy,

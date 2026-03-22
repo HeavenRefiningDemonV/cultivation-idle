@@ -90,7 +90,7 @@ test('every generated board is canonical for all five live cities', () => {
     assert.equal(SUPPORT_KINDS.has(board[0].kind), true);
     assert.equal(ROUTE_KINDS.has(board[1].kind), true);
     assert.equal(CHALLENGE_KINDS.has(board[2].kind), true);
-    assert.equal(board.some((entry) => entry.kind === 'TRIAL_CLEAR'), false);
+    assert.equal(board.some((entry) => String(entry.kind) === 'TRIAL_CLEAR'), false);
     board.forEach((entry) => {
       assert.equal(entry.description.trim().length > 0, true);
       const destination = resolveBountyDestination({
@@ -118,7 +118,7 @@ test('refresh preserves canonical composition', () => {
   assert.equal(SUPPORT_KINDS.has(board[0].kind), true);
   assert.equal(ROUTE_KINDS.has(board[1].kind), true);
   assert.equal(CHALLENGE_KINDS.has(board[2].kind), true);
-  assert.equal(board.some((entry) => entry.kind === 'TRIAL_CLEAR'), false);
+  assert.equal(board.some((entry) => String(entry.kind) === 'TRIAL_CLEAR'), false);
   board.forEach((entry) => {
     const destination = resolveBountyDestination({
       cityId: city.id,
@@ -145,7 +145,7 @@ test('generateForCity sanitizes stale legacy invalid boards instead of blindly a
           cityIndex: city.index,
           templateId: 'tmpl_trial_clear',
           difficulty: 'hard',
-          kind: 'TRIAL_CLEAR',
+          kind: 'TRIAL_CLEAR' as never,
           title: 'Embermist Challenge',
           description: '',
           progress: 0,
@@ -205,7 +205,7 @@ test('generateForCity sanitizes stale legacy invalid boards instead of blindly a
   assert.equal(SUPPORT_KINDS.has(board[0].kind), true);
   assert.equal(ROUTE_KINDS.has(board[1].kind), true);
   assert.equal(CHALLENGE_KINDS.has(board[2].kind), true);
-  assert.equal(board.some((entry) => entry.kind === 'TRIAL_CLEAR'), false);
+  assert.equal(board.some((entry) => String(entry.kind) === 'TRIAL_CLEAR'), false);
   board.forEach((entry) => {
     assert.equal(entry.description.trim().length > 0, true);
     assert.equal(/Embermist|Silverkeep|Starsea/i.test(`${entry.title} ${entry.description}`), false);

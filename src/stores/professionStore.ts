@@ -939,13 +939,6 @@ export const useProfessionStore = create<ProfessionState>()(
       GameEvents.emit({ type: 'crafting/queue_completed', payload: { station: 'talisman', sourceId: job.recipeId, qty: job.qty } });
       GameEvents.emit({ type: 'talisman/craft_result', payload: { ok: true } });
 
-      const cityId =
-        job.cityId ??
-        useCityStore.getState().currentCityId ??
-        useCityStore.getState().unlockedCityIds[0] ??
-        'city_pinewind_hamlet';
-      useBountyStore.getState().recordEvent({ type: 'CRAFT_COMPLETE', cityId, amount: 1 });
-
       return { ok: true };
     },
 

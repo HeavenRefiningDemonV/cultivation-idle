@@ -18,7 +18,7 @@ import { useTechCollectionStore } from '../stores/techCollectionStore';
 import { useProfessionStore } from '../stores/professionStore';
 import { useEquipmentStore } from '../stores/equipmentStore';
 import { useBuffStore } from '../stores/buffStore';
-import { useBountyStore } from '../stores/bountyStore';
+import { sanitizeStoredBountyState, useBountyStore } from '../stores/bountyStore';
 import { useExpeditionStore } from '../stores/expeditionStore';
 import { getDefaultUnlockedHeartLawIds, useHeartLawStore } from '../stores/heartLawStore';
 import { useManualPavilionStore } from '../stores/manualPavilionStore';
@@ -1113,12 +1113,17 @@ function applySaveData(saveData: SaveData): void {
       progressByTrialId: restoredTrials,
     });
 
+    const sanitizedBounties = sanitizeStoredBountyState({
+      activeByCityId: bountyState.activeByCityId ?? {},
+      trackedByCityId: bountyState.trackedByCityId ?? {},
+    });
+
     useBountyStore.setState({
-      activeByCityId: { ...(bountyState.activeByCityId ?? {}) },
+      activeByCityId: sanitizedBounties.activeByCityId,
       lastRefreshAtByCityId: {
         ...(bountyState.lastRefreshAtByCityId ?? {}),
       },
-      trackedByCityId: { ...(bountyState.trackedByCityId ?? {}) },
+      trackedByCityId: sanitizedBounties.trackedByCityId,
     });
 
     useExpeditionStore.getState().hydrate(

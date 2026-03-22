@@ -1400,7 +1400,6 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const { cityId, trialId, countsTowardFailSafe, rewardBundle } = combatContext;
 
         useActivityStore.getState().stopActivity();
-        useBountyStore.getState().recordEvent({ type: 'TRIAL_CLEAR', cityId, amount: 1 });
         if (useHeartLawStore.getState().selectedHeartLawId) {
           useHeartLawStore
             .getState()

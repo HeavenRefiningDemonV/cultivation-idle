@@ -10,6 +10,7 @@ import { randFloat } from '../utils/rng';
 import { useBountyStore } from './bountyStore';
 import { rollWithPity } from '../services/economy/pity';
 import { useUIStore } from './uiStore';
+import { getExpeditionBountyCreditCityId } from '../utils/bountyRouting.js';
 
 export type ExpeditionRunStatus = 'running' | 'complete';
 
@@ -560,7 +561,11 @@ export const useExpeditionStore = create<ExpeditionState>()(
         `expedition_claim:${run.expeditionTypeId}:${run.durationId}:city=${run.cityId}`,
       );
 
-      useBountyStore.getState().recordEvent({ type: 'EXPEDITION_COMPLETE', cityId: run.cityId, amount: 1 });
+      useBountyStore.getState().recordEvent({
+        type: 'EXPEDITION_COMPLETE',
+        cityId: getExpeditionBountyCreditCityId(run),
+        amount: 1,
+      });
 
       if (rareDrop) {
         const itemName = useContentStore.getState().maps.itemsById[rareDrop.itemId]?.name ?? rareDrop.itemId;

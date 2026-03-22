@@ -298,23 +298,6 @@
       "minCityIndex": 0
     },
     {
-      "id": "tmpl_trial_clear",
-      "name": "Prove Your Worth",
-      "desc": "Clear the Gate Trial {target} times.",
-      "kind": "TRIAL_CLEAR",
-      "targets": {
-        "easy": 1,
-        "medium": 1,
-        "hard": 2
-      },
-      "difficulties": [
-        "easy",
-        "medium",
-        "hard"
-      ],
-      "minCityIndex": 0
-    },
-    {
       "id": "bounty_pinewind_craft",
       "name": "Pinewind Craft Orders",
       "kind": "CRAFT_COMPLETE",
@@ -334,7 +317,7 @@
         "hard"
       ],
       "minCityIndex": 0,
-      "desc": "Finish {target} crafting jobs for Pinewind Hamlet."
+      "desc": "Claim {target} completed forge or Apothecary Brew jobs for Pinewind."
     },
     {
       "id": "bounty_pinewind_expedition",
@@ -378,7 +361,7 @@
         "hard"
       ],
       "minCityIndex": 1,
-      "desc": "Finish {target} crafting jobs for Stonecrag Town."
+      "desc": "Claim {target} completed forge or Apothecary Brew jobs for Stonecrag."
     },
     {
       "id": "bounty_stonecrag_expedition",
@@ -422,7 +405,7 @@
         "hard"
       ],
       "minCityIndex": 2,
-      "desc": "Finish {target} crafting jobs for Spirit Cavern City."
+      "desc": "Claim {target} completed forge or Apothecary Brew jobs for Spirit Cavern."
     },
     {
       "id": "bounty_embermist_expedition",
@@ -466,7 +449,7 @@
         "hard"
       ],
       "minCityIndex": 3,
-      "desc": "Finish {target} crafting jobs for Lotusford."
+      "desc": "Claim {target} completed forge or Apothecary Brew jobs for Lotusford."
     },
     {
       "id": "bounty_silverkeep_expedition",
@@ -510,7 +493,7 @@
         "hard"
       ],
       "minCityIndex": 4,
-      "desc": "Finish {target} crafting jobs for Ironpeak Bastion."
+      "desc": "Claim {target} completed forge or Apothecary Brew jobs for Ironpeak."
     },
     {
       "id": "bounty_starsea_expedition",

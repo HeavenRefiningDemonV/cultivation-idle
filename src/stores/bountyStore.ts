@@ -19,7 +19,6 @@ export type BountyKind =
   | 'OUTSKIRTS_BOSS_KILL'
   | 'RUINS_ROOM_CLEAR'
   | 'RUINS_RUN_CLEAR'
-  | 'TRIAL_CLEAR'
   | 'CRAFT_COMPLETE'
   | 'EXPEDITION_COMPLETE';
 
@@ -46,7 +45,6 @@ export type BountyEvent =
   | { type: 'OUTSKIRTS_BOSS_KILL'; cityId: string; amount?: number }
   | { type: 'RUINS_ROOM_CLEAR'; cityId: string; amount?: number }
   | { type: 'RUINS_RUN_CLEAR'; cityId: string; amount?: number }
-  | { type: 'TRIAL_CLEAR'; cityId: string; amount?: number }
   | { type: 'CRAFT_COMPLETE'; cityId: string; amount: number }
   | { type: 'EXPEDITION_COMPLETE'; cityId: string; amount: number };
 
@@ -100,11 +98,6 @@ function buildEventTargetLookup(): Record<BountyKind, Record<BountyDifficulty, [
       medium: [1, 2],
       hard: [2, 3],
     },
-    TRIAL_CLEAR: {
-      easy: [1, 1],
-      medium: [1, 1],
-      hard: [1, 1],
-    },
     CRAFT_COMPLETE: {
       easy: [1, 2],
       medium: [2, 4],
@@ -119,6 +112,36 @@ function buildEventTargetLookup(): Record<BountyKind, Record<BountyDifficulty, [
 }
 
 const EVENT_TARGET_LOOKUP = buildEventTargetLookup();
+
+export function isRuntimeBountyKind(kind: string): kind is BountyKind {
+  return [
+    'OUTSKIRTS_KILL',
+    'OUTSKIRTS_BOSS_KILL',
+    'RUINS_ROOM_CLEAR',
+    'RUINS_RUN_CLEAR',
+    'CRAFT_COMPLETE',
+    'EXPEDITION_COMPLETE',
+  ].includes(kind);
+}
+
+export function sanitizeStoredBountyState(input: {
+  activeByCityId?: Record<string, Array<Omit<BountyInstance, 'kind'> & { kind: string }>> | null | undefined;
+  trackedByCityId?: Record<string, string | null> | null | undefined;
+}) {
+  const activeByCityId = Object.fromEntries(
+    Object.entries(input.activeByCityId ?? {}).map(([cityId, board]) => [
+      cityId,
+      (Array.isArray(board) ? board : []).filter((entry): entry is BountyInstance => isRuntimeBountyKind(entry.kind)),
+    ]),
+  );
+  const trackedByCityId = Object.fromEntries(
+    Object.entries(input.trackedByCityId ?? {}).map(([cityId, trackedId]) => {
+      const exists = activeByCityId[cityId]?.some((entry) => entry.instanceId === trackedId) ?? false;
+      return [cityId, exists ? trackedId : null];
+    }),
+  );
+  return { activeByCityId, trackedByCityId };
+}
 
 function buildRewardBundle(range: { gold: [number, number]; merit: [number, number]; spiritStones: [number, number] }): RewardBundle {
   const gold = rollRange(range.gold);

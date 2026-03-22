@@ -7,7 +7,9 @@ import { useUIStore } from '../../../stores/uiStore';
 import type { HeartLawDef } from '../../../content';
 import './HeartLawPanel.scss';
 
-const CHANGE_COST = '100';
+import { CHANGE_HEART_LAW_COST } from '../../../systems/economy/meritRoleAudit';
+
+const CHANGE_COST = CHANGE_HEART_LAW_COST.gold;
 
 interface ChangeHeartLawModalProps {
   currentHeartLawId: string | null;
@@ -38,7 +40,7 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
   const [selected, setSelected] = useState<string | null>(currentHeartLawId);
   const [status, setStatus] = useState<string | null>(null);
 
-  const cost = useMemo(() => ({ merit: CHANGE_COST }), []);
+  const cost = useMemo(() => ({ gold: CHANGE_COST }), []);
   const canAfford = canAffordCurrency(cost);
 
   const handleConfirm = () => {
@@ -60,7 +62,7 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
     }
     const success = spendCurrencies(cost);
     if (!success) {
-      setStatus('Insufficient Merit.');
+      setStatus('Insufficient Gold.');
       return;
     }
     selectHeartLaw(selected);
@@ -95,8 +97,8 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
           <div className="inlineMessage inlineMessage--warning">
             Changing your Heart Law resets you to Verse I and clears comprehension.
           </div>
-          <div className="modalCost">Cost: {CHANGE_COST} Merit</div>
-          {!canAfford ? <div className="inlineMessage inlineMessage--error">Not enough Merit to rewrite.</div> : null}
+          <div className="modalCost">Cost: {CHANGE_COST} Gold</div>
+          {!canAfford ? <div className="inlineMessage inlineMessage--error">Not enough Gold to rewrite.</div> : null}
 
           <div className="heartLawList">
             {heartLaws.map((law) => {

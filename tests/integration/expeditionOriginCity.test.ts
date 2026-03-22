@@ -7,6 +7,7 @@ import { useBountyStore } from '../../src/stores/bountyStore.js';
 import { useCityStore } from '../../src/stores/cityStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 import { normalizeExpeditionRunOrigin, useExpeditionStore } from '../../src/stores/expeditionStore.js';
+import { getExpeditionBountyCreditCityId } from '../../src/utils/bountyRouting.js';
 import {
   loadExpeditionValidatedContent,
   primeExpeditionRuntimeStores,
@@ -135,6 +136,10 @@ test('hydration sanitation preserves claimability for legacy origin-less runs', 
     }),
     null,
   );
+});
+
+test('expedition bounty credit helper returns the run origin city verbatim', () => {
+  assert.equal(getExpeditionBountyCreditCityId({ cityId: 'city_lotusford' }), 'city_lotusford');
 });
 
 test('go use materials is now origin-city-safe in source wiring', async () => {

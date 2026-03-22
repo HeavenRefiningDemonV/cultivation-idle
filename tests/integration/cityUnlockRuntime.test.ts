@@ -255,7 +255,7 @@ test('generateForCity replaces stale three-entry boards that no longer satisfy t
           cityIndex: 0,
           templateId: 'tmpl_trial_clear',
           difficulty: 'hard',
-          kind: 'TRIAL_CLEAR',
+          kind: 'TRIAL_CLEAR' as never,
           title: 'Legacy Trial',
           description: '',
           progress: 0,

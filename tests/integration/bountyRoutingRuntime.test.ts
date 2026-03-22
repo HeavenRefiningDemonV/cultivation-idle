@@ -30,26 +30,26 @@ test.beforeEach(async () => {
   await primeBountyRuntimeStores();
 });
 
-test('CRAFT_COMPLETE routes to Forge only for live semester cities', () => {
+test('CRAFT_COMPLETE routes to the live prep module truth for the semester slice', () => {
   const destination = resolveBountyDestination({
     cityId: 'city_pinewind_hamlet',
     bountyKind: 'CRAFT_COMPLETE',
     cityModules: LIVE_CITY_MODULES,
   });
 
-  assert.deepEqual(destination, { kind: 'module', moduleKey: 'forge', cityId: 'city_pinewind_hamlet' });
+  assert.deepEqual(destination, { kind: 'module', moduleKey: 'forge', cityId: 'city_pinewind_hamlet', reason: 'Forge claims count for craft support bounties.' });
   assert.notDeepEqual(destination.kind, 'moduleChoice');
 });
 
-test('craft destination is unavailable if Forge is absent', () => {
+test('craft destination falls back to Apothecary Brew if Forge is absent', () => {
   const destination = resolveBountyDestination({
     cityId: 'city_pinewind_hamlet',
     bountyKind: 'CRAFT_COMPLETE',
     cityModules: LIVE_CITY_MODULES.filter((moduleKey) => moduleKey !== 'forge'),
   });
 
-  assert.equal(destination.kind, 'unavailable');
-  assert.match(destination.reason, /Forge/i);
+  assert.equal(destination.kind, 'module');
+  assert.equal(destination.moduleKey, 'apothecary');
 });
 
 test('existing route, challenge, and expedition destinations remain correct', () => {
@@ -116,7 +116,7 @@ test('board inspector rejects non-live semester board drift', () => {
         cityIndex: 2,
         templateId: 'tmpl_trial_clear',
         difficulty: 'easy',
-        kind: 'TRIAL_CLEAR',
+        kind: 'TRIAL_CLEAR' as never,
         title: 'Trial drift',
         description: 'Clear the trial.',
       },
@@ -136,7 +136,7 @@ test('board inspector rejects non-live semester board drift', () => {
   assert.equal(report.valid, false);
   assert.equal(report.reasons.some((reason) => /TRIAL_CLEAR/.test(reason)), true);
   assert.equal(report.reasons.some((reason) => /blank description/i.test(reason)), true);
-  assert.equal(report.reasons.some((reason) => /moduleChoice|unavailable|Forge unavailable/i.test(reason)), true);
+  assert.equal(report.reasons.some((reason) => /unavailable|Forge or Apothecary unavailable/i.test(reason)), true);
   assert.equal(report.reasons.some((reason) => /legacy city naming/i.test(reason)), true);
   assert.equal(report.reasons.some((reason) => /support slot template/i.test(reason)), true);
 });
@@ -194,7 +194,7 @@ test('tracked bounty ids invalidate cleanly on refresh and sanitize-regeneration
           cityIndex: 0,
           templateId: 'tmpl_trial_clear',
           difficulty: 'hard',
-          kind: 'TRIAL_CLEAR',
+          kind: 'TRIAL_CLEAR' as never,
           title: 'Legacy Trial',
           description: '',
           progress: 0,
@@ -258,7 +258,7 @@ test('first-visit city bounty generation now produces canonical boards', () => {
   assert.equal(['CRAFT_COMPLETE', 'EXPEDITION_COMPLETE'].includes(board[0].kind), true);
   assert.equal(['OUTSKIRTS_KILL', 'RUINS_ROOM_CLEAR'].includes(board[1].kind), true);
   assert.equal(['OUTSKIRTS_BOSS_KILL', 'RUINS_RUN_CLEAR'].includes(board[2].kind), true);
-  assert.equal(board.some((entry) => entry.kind === 'TRIAL_CLEAR'), false);
+  assert.equal(board.some((entry) => String(entry.kind) === 'TRIAL_CLEAR'), false);
 });
 
 function useContentStoreState() {

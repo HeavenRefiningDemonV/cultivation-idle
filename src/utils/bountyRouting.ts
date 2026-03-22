@@ -1,6 +1,21 @@
 import { getLiveExpeditionRoutePurpose, type ExpeditionRouteModuleKey } from '../systems/world/expeditionRouteContract.js';
 import { normalizeCityModulesForLiveSlice } from '../systems/world/liveWorldSchema.js';
 
+export type LiveCraftBountyProgressSource =
+  | 'forge_claim'
+  | 'apothecary_brew_claim'
+  | 'talisman_claim'
+  | 'shop_buy'
+  | 'deferred_craft';
+
+const LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES: Record<LiveCraftBountyProgressSource, { counts: boolean; label: string }> = {
+  forge_claim: { counts: true, label: 'Forge claim' },
+  apothecary_brew_claim: { counts: true, label: 'Apothecary Brew claim' },
+  talisman_claim: { counts: false, label: 'Talisman claim' },
+  shop_buy: { counts: false, label: 'Shop buy' },
+  deferred_craft: { counts: false, label: 'Deferred craft module claim' },
+};
+
 export type BountyDestination =
   | { kind: 'module'; moduleKey: string; cityId: string; reason?: string }
   | { kind: 'unavailable'; cityId: string; reason: string };
@@ -29,12 +44,6 @@ export function resolveBountyDestination(args: {
       : { kind: 'unavailable', cityId, reason: 'Ruins unavailable' };
   }
 
-  if (bountyKind === 'TRIAL_CLEAR') {
-    return hasModule(modules, 'gateTrial')
-      ? { kind: 'module', moduleKey: 'gateTrial', cityId }
-      : { kind: 'unavailable', cityId, reason: 'Gate Trial unavailable' };
-  }
-
   if (bountyKind === 'EXPEDITION_COMPLETE') {
     return hasModule(modules, 'expeditions')
       ? { kind: 'module', moduleKey: 'expeditions', cityId }
@@ -42,9 +51,13 @@ export function resolveBountyDestination(args: {
   }
 
   if (bountyKind === 'CRAFT_COMPLETE') {
-    return hasModule(modules, 'forge')
-      ? { kind: 'module', moduleKey: 'forge', cityId }
-      : { kind: 'unavailable', cityId, reason: 'Forge unavailable' };
+    if (hasModule(modules, 'forge')) {
+      return { kind: 'module', moduleKey: 'forge', cityId, reason: 'Forge claims count for craft support bounties.' };
+    }
+    if (hasModule(modules, 'apothecary')) {
+      return { kind: 'module', moduleKey: 'apothecary', cityId, reason: 'Apothecary Brew claims count for craft support bounties.' };
+    }
+    return { kind: 'unavailable', cityId, reason: 'Forge or Apothecary unavailable' };
   }
 
   return { kind: 'unavailable', cityId, reason: 'Unknown bounty kind' };
@@ -60,10 +73,8 @@ export function bountyKindToLabel(kind: string): string {
       return 'Ruins Room Clear';
     case 'RUINS_RUN_CLEAR':
       return 'Ruins Run';
-    case 'TRIAL_CLEAR':
-      return 'Gate Trial';
     case 'CRAFT_COMPLETE':
-      return 'Crafting Task';
+      return 'Craft Support';
     case 'EXPEDITION_COMPLETE':
       return 'Expedition';
     default:
@@ -81,10 +92,8 @@ export function bountyKindToProgressRule(kind: string): string {
       return 'Clear rooms in the ruins.';
     case 'RUINS_RUN_CLEAR':
       return 'Complete ruins runs.';
-    case 'TRIAL_CLEAR':
-      return 'Clear gate trials.';
     case 'CRAFT_COMPLETE':
-      return 'Claim completed crafting jobs (1 per job).';
+      return 'Claim completed forge or Apothecary Brew jobs.';
     case 'EXPEDITION_COMPLETE':
       return 'Claim completed expeditions (1 per run).';
     default:
@@ -114,4 +123,28 @@ export function resolveExpeditionUseMaterialsDestinations(args: {
   return orderedCandidates
     .filter((moduleKey) => hasModule(modules, moduleKey))
     .map((moduleKey) => ({ cityId, moduleKey }));
+}
+
+export function doesLiveCraftBountySourceCount(source: LiveCraftBountyProgressSource): boolean {
+  return LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES[source].counts;
+}
+
+export function getLiveCraftBountyCountedSources(): LiveCraftBountyProgressSource[] {
+  return (Object.keys(LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES) as LiveCraftBountyProgressSource[]).filter(
+    (source) => LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES[source].counts,
+  );
+}
+
+export function getLiveCraftBountyExcludedSources(): LiveCraftBountyProgressSource[] {
+  return (Object.keys(LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES) as LiveCraftBountyProgressSource[]).filter(
+    (source) => !LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES[source].counts,
+  );
+}
+
+export function getLiveCraftBountySourceLabel(source: LiveCraftBountyProgressSource): string {
+  return LIVE_CRAFT_BOUNTY_PROGRESS_SOURCES[source].label;
+}
+
+export function getExpeditionBountyCreditCityId(run: { cityId: string }): string {
+  return run.cityId;
 }
