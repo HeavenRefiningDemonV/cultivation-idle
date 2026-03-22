@@ -5,8 +5,7 @@ import { useMedicinePouchStore } from '../../stores/medicinePouchStore';
 import { useProfessionStore } from '../../stores/professionStore';
 import { useShopStore } from '../../stores/shopStore';
 import { useUIStore } from '../../stores/uiStore';
-import { RewardService } from '../../services/rewards';
-import { apothecaryBundles } from '../../features/apothecary/apothecaryBundles';
+import { buildApothecaryCityBundle } from '../../features/apothecary/apothecaryBundles';
 import { apothecaryServices } from '../../features/apothecary/apothecaryServices';
 import { buildPotionMetaChips } from '../../features/apothecary/potionMetaIcons';
 import {
@@ -88,7 +87,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
   const [activeTab, setActiveTab] = useState<PrimaryTabKey>(initialSurface);
   const [buyFilter, setBuyFilter] = useState<BuyFilterKey>('all');
   const [statusByStock, setStatusByStock] = useState<Record<string, StatusMessage>>({});
-  const [statusByBundle, setStatusByBundle] = useState<Record<string, StatusMessage>>({});
+  const [bundleStatus, setBundleStatus] = useState<StatusMessage | null>(null);
   const [pouchOpen, setPouchOpen] = useState(false);
   const pouchButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -122,13 +121,23 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
       buildApothecaryPrepReadModel({
         content: raw,
         shop: apothecary,
-        inventoryItems,
         pouchSlots,
         purchasedTodayByStockId: purchasedToday,
         brewQueue,
-        bundleCount: apothecaryBundles.length,
+        bundleCount: 0,
       }),
     [apothecary, brewQueue, inventoryItems, pouchSlots, purchasedToday, raw],
+  );
+
+  const cityBundle = useMemo(
+    () =>
+      buildApothecaryCityBundle({
+        content: raw,
+        shop: apothecary ?? null,
+        purchasedTodayByStockId: purchasedToday,
+        recommendedPackage: prepModel.recommendedPackage,
+      }),
+    [apothecary, prepModel.recommendedPackage, purchasedToday, raw],
   );
 
   const pouchBadgeCount = prepModel.pouchSummary.filledSlots;
@@ -333,48 +342,59 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
     );
   };
 
-  const renderBundleCard = (bundle: (typeof apothecaryBundles)[number]) => {
-    const status = statusByBundle[bundle.id];
+  const renderBundleCard = () => {
+    if (!cityBundle) return null;
+
+    const bundleBlockedReason =
+      cityBundle.items.find((item) => !canBuy(apothecary.id, item.stockId, item.qty).ok)?.itemName ?? null;
 
     const handlePurchase = () => {
       GameEvents.emit({
         type: 'apothecary/item_selected',
-        payload: { shopId: apothecary.id, itemId: bundle.items[0]?.itemId ?? bundle.id, qty: 1 },
+        payload: { shopId: apothecary.id, itemId: cityBundle.items[0]?.itemId ?? cityBundle.id, qty: 1 },
       });
-      const reason = `apothecary_bundle:${bundle.id}`;
-      const spent = RewardService.spendCurrency(bundle.cost, reason);
-      if (!spent) {
-        setStatusByBundle((prev) => ({
-          ...prev,
-          [bundle.id]: { type: 'error', message: 'Not enough currency for this bundle.' },
-        }));
-        GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: bundle.id, ok: false } });
+
+      const blocked = cityBundle.items.find((item) => {
+        const result = canBuy(apothecary.id, item.stockId, item.qty);
+        return !result.ok;
+      });
+      if (blocked) {
+        const failure = canBuy(apothecary.id, blocked.stockId, blocked.qty);
+        setBundleStatus({ type: 'error', message: failure.error || `Cannot buy ${blocked.itemName} today.` });
+        GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: cityBundle.id, ok: false } });
         return;
       }
 
-      RewardService.grantRewards({ items: bundle.items }, reason);
-      setStatusByBundle((prev) => ({
-        ...prev,
-        [bundle.id]: { type: 'success', message: 'Bundle purchased. Items delivered to inventory.' },
-      }));
-      GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: bundle.id, ok: true } });
+      const purchasedItems: string[] = [];
+      for (const item of cityBundle.items) {
+        const result = buy(apothecary.id, item.stockId, item.qty);
+        if (!result.ok) {
+          setBundleStatus({ type: 'error', message: result.error || `Failed to buy ${item.itemName}.` });
+          GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: cityBundle.id, ok: false } });
+          return;
+        }
+        purchasedItems.push(`${item.itemName} ×${result.grantedQty ?? item.qty}`);
+      }
+
+      setBundleStatus({ type: 'success', message: `Bundle purchased: ${purchasedItems.join(', ')}.` });
+      GameEvents.emit({ type: 'apothecary/bundle_buy', payload: { bundleId: cityBundle.id, ok: true } });
     };
 
     return (
-      <PaperCard key={bundle.id} className={'apothecaryCard apothecaryCard--bundle'} variant="tray">
+      <PaperCard key={cityBundle.id} className={'apothecaryCard apothecaryCard--bundle'} variant="tray">
         <div className={'apothecaryCardHeader'}>
           <div>
-            <div className={'apothecaryCardTitle'}>{bundle.name}</div>
-            <div className={'apothecaryCardSubtitle'}>{bundle.description}</div>
+            <div className={'apothecaryCardTitle'}>{cityBundle.name}</div>
+            <div className={'apothecaryCardSubtitle'}>{cityBundle.description}</div>
           </div>
           <div className={'apothecaryTag'}>Convenience</div>
         </div>
 
         <div className={'apothecaryCardBody'}>
-          <div className={'apothecaryBundlePrice'}>Total: {formatPrice(bundle.cost) || 'Free'}</div>
+          <div className={'apothecaryBundlePrice'}>Total: {formatPrice(cityBundle.cost) || 'Free'}</div>
           <div className={'apothecaryBundleIncludesLabel'}>Includes</div>
           <ul className={'apothecaryBundleList'}>
-            {bundle.items.map((item) => {
+            {cityBundle.items.map((item) => {
               const itemDef = getItemDef(item.itemId);
               const name = itemDef?.name ?? item.itemId;
               return (
@@ -389,14 +409,16 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
 
         <div className={'apothecaryActions'}>
           <button
-            className={'apothecaryActionButton apothecaryActionButton--active'}
+            className={`apothecaryActionButton${!bundleBlockedReason ? ' apothecaryActionButton--active' : ''}`}
             onClick={handlePurchase}
+            disabled={Boolean(bundleBlockedReason)}
+            title={bundleBlockedReason ? `${bundleBlockedReason} cannot be added right now.` : undefined}
           >
             Buy Bundle
           </button>
         </div>
 
-        {renderStatus(status)}
+        {renderStatus(bundleStatus ?? undefined)}
       </PaperCard>
     );
   };
@@ -458,14 +480,14 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         )}
       </PaperCard>
 
-      {apothecaryBundles.length > 0 && (
+      {cityBundle && (
         <PaperCard className={'apothecarySectionCard'} variant="tray">
           <div className={'apothecarySectionEyebrow'}>Convenience Bundles</div>
           <div className={'apothecarySectionBody'}>
             Secondary convenience only. Bundles save clicks, but Buy and Brew remain the real prep loop this semester.
           </div>
           <div className={'apothecaryGrid apothecaryGrid--bundles'}>
-            {apothecaryBundles.map((bundle) => renderBundleCard(bundle))}
+            {cityBundle ? renderBundleCard() : null}
           </div>
         </PaperCard>
       )}
