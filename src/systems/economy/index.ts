@@ -20,3 +20,8 @@ export * from './prepBudgetRegistry.js';
 export * from './spendOrderPolicy.js';
 export * from './economicPhaseResolver.js';
 export * from './moduleRoleRegistry.js';
+export * from './economicProblemKinds.js';
+export * from './problemDestinationPolicy.js';
+export * from './economicSourceAdapters.js';
+export * from './bestSourceIndex.js';
+export * from './missingMaterialRouteResolver.js';

@@ -43,3 +43,14 @@ export function listAlchemyRecipesForCity(cityId: string | null): AlchemyRecipe[
   const cities = useContentStore.getState().raw?.cities ?? [];
   return filterRecipesForCity(recipes, cities, cityId);
 }
+
+
+export function getLiveAlchemyRecipeByOutputItemId(itemId: string, cityId?: string | null): AlchemyRecipe | null {
+  const recipes = cityId ? listAlchemyRecipesForCity(cityId) : listAlchemyRecipes();
+  return recipes.find((recipe) => Number(recipe.outputs?.[itemId] ?? 0) > 0) ?? null;
+}
+
+export function listLiveAlchemyRecipeInputsByOutputItemId(itemId: string, cityId?: string | null) {
+  const recipe = getLiveAlchemyRecipeByOutputItemId(itemId, cityId);
+  return recipe ? Object.entries(recipe.inputs ?? {}).map(([inputItemId, qty]) => ({ itemId: inputItemId, qty: Number(qty ?? 0) })) : [];
+}

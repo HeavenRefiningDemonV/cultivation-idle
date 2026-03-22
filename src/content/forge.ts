@@ -191,3 +191,12 @@ export function isRefineBlueprint(blueprint: NormalizedForgeBlueprint): boolean 
 export function isTemperBlueprint(blueprint: NormalizedForgeBlueprint): boolean {
   return blueprint.type === 'service' && blueprint.service === 'temper';
 }
+
+
+export function listNormalizedForgeInputItems(blueprint: NormalizedForgeBlueprint) {
+  return [...blueprint.costs.items];
+}
+
+export function blueprintUsesInputItem(blueprint: NormalizedForgeBlueprint, itemId: string): boolean {
+  return blueprint.costs.items.some((entry) => entry.itemId === itemId);
+}

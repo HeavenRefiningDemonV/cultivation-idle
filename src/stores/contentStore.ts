@@ -28,6 +28,7 @@ import {
   getAllPrepBudgetRegistryEntries,
   getAllSpendOrderPolicies,
   getEconomicModuleRoleEntries,
+  buildBestSourceIndex,
   type LiveEconomyCatalog,
   type TargetedMaterialSinkAudit,
 } from '../systems/economy/index.js';
@@ -91,6 +92,7 @@ interface ContentStoreState {
   getPrepBudgetRegistry: () => ReturnType<typeof getAllPrepBudgetRegistryEntries>;
   getSpendOrderPolicies: () => ReturnType<typeof getAllSpendOrderPolicies>;
   getEconomicModuleRoles: () => ReturnType<typeof getEconomicModuleRoleEntries>;
+  getBestSourceIndex: () => ReturnType<typeof import('../systems/economy/index.js').buildBestSourceIndex>;
 }
 
 const emptyMaps: ContentMaps = {
@@ -374,6 +376,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
   getSpendOrderPolicies: () => getAllSpendOrderPolicies(),
 
   getEconomicModuleRoles: () => getEconomicModuleRoleEntries(),
+
+  getBestSourceIndex: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return buildBestSourceIndex(raw);
+  },
 }));
 
 export function getItemDef(itemId: string): ItemDef | null {

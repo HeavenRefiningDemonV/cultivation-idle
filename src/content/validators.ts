@@ -64,6 +64,9 @@ import {
   hasVisibleLiveReagentPath,
   getSinklessLiveMaterials,
   listKnownLiveEconomyBlockers,
+  buildBestSourceIndex,
+  resolveMissingMaterialRoutes,
+  getAllProblemDestinationPolicies,
 } from '../systems/economy/index.js';
 import { SEMESTER_SLICE_CONTRACT } from '../systems/progression/contract/semesterSlice.js';
 import {
@@ -1220,6 +1223,100 @@ function validateEconomicRecommendationRuntimeTruth(options: {
   }
 }
 
+
+function validateEconomicSourceRoutingTruth(options: {
+  content: ValidatedContent;
+  addErr: (msg: string) => void;
+}) {
+  const { content, addErr } = options;
+  const index = buildBestSourceIndex(content);
+  if (index.scopeTargetIds.length === 0) {
+    addErr('best-source index must cover a non-empty live-critical scope');
+    return;
+  }
+
+  const missingPrimary = index.entries.filter((entry) => !entry.primarySource);
+  if (missingPrimary.length > 0) {
+    addErr(`best-source index missing primary source for: ${missingPrimary.map((entry) => entry.targetId).join(', ')}`);
+  }
+
+  const invalidRoutes = index.entries.flatMap((entry) => entry.sourceOptions.filter((option) => option.moduleKey === 'alchemy' as never));
+  if (invalidRoutes.length > 0) {
+    addErr('best-source index must not point at a separate live Alchemy room');
+  }
+
+  const deferredLeaks = index.entries.flatMap((entry) =>
+    entry.sourceOptions.filter((option) => !['outskirts', 'ruins', 'apothecary', 'forge', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial'].includes(option.moduleKey)),
+  );
+  if (deferredLeaks.length > 0) {
+    addErr(`best-source index leaked non-live modules: ${deferredLeaks.map((entry) => entry.moduleKey).join(', ')}`);
+  }
+
+  const commonField = index.entriesByTargetId['mat_common_herb_bundle'];
+  if (commonField?.primarySource?.sourceKind !== 'outskirts') {
+    addErr('common shortages must route to Outskirts first');
+  }
+
+  const targeted = index.entriesByTargetId['mat_spirit_leaf'];
+  if (targeted?.primarySource?.sourceKind !== 'ruins') {
+    addErr('targeted local shortages must route to Ruins first');
+  }
+
+  const merit = index.entriesByTargetId['merit'];
+  if (merit?.primarySource?.sourceKind !== 'bounties') {
+    addErr('Merit reserve gaps must route to Bounties first');
+  }
+
+  const spiritStones = index.entriesByTargetId['spiritStones'];
+  if (spiritStones?.primarySource?.sourceKind !== 'bounties') {
+    addErr('Spirit-stone reserve gaps must route to Bounties first');
+  }
+
+  const expeditionMismatch = index.entries.flatMap((entry) =>
+    entry.sourceOptions.filter((option) => option.sourceKind === 'expeditions' && option.moduleKey !== 'expeditions'),
+  );
+  if (expeditionMismatch.length > 0) {
+    addErr('expedition-derived best-source entries must preserve expeditionRouteContract module truth');
+  }
+
+  const multiFallback = index.entries.flatMap((entry) =>
+    entry.sourceOptions.filter((option) => option.locality === 'one_prior_fallback' && option.cityId && content.cities.find((city) => city.id === option.cityId)?.index! < 0),
+  );
+  if (multiFallback.length > 0) {
+    addErr('best-source index emitted an invalid backward fallback');
+  }
+
+  const sampleRoutes = [
+    resolveMissingMaterialRoutes({
+      content,
+      targetId: 'cons_healing_pellet_t1',
+      currentCityId: 'city_pinewind_hamlet',
+      unlockedCityIds: ['city_pinewind_hamlet'],
+      availableModuleKeys: ['apothecary', 'forge', 'outskirts', 'ruins', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial'],
+      shortageQty: 1,
+    }),
+    resolveMissingMaterialRoutes({
+      content,
+      targetId: 'mat_spirit_steel_ore',
+      currentCityId: 'city_ironpeak_bastion',
+      unlockedCityIds: content.cities.map((city) => city.id),
+      availableModuleKeys: ['apothecary', 'forge', 'outskirts', 'ruins', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial'],
+    }),
+  ];
+
+  if (sampleRoutes.some((routes) => routes.some((route) => route.destinationModuleKey === 'alchemy' as never))) {
+    addErr('route resolver must not point to a separate live Alchemy room');
+  }
+  if (sampleRoutes.some((routes) => routes.some((route) => (route.blockedReason ?? '').includes('multiple older cities')))) {
+    addErr('route resolver must not require multiple prior-city fallback hops');
+  }
+
+  const missingPolicies = getAllProblemDestinationPolicies().filter((policy) => policy.primaryDestinations.length === 0 || policy.primaryModuleKeys.length === 0);
+  if (missingPolicies.length > 0) {
+    addErr(`problem destination policy missing primary destinations for: ${missingPolicies.map((policy) => policy.problemKind).join(', ')}`);
+  }
+}
+
 export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const errors: string[] = [];
   const addErr = (msg: string) => errors.push(`[ContentValidation] ${msg}`);
@@ -1342,6 +1439,30 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     addErr,
   });
   validateEconomicRecommendationRuntimeTruth({
+    content: {
+      raw,
+      economy: raw.economy,
+      cities,
+      items,
+      techniques,
+      pavilions,
+      outskirts,
+      enemies,
+      trials: normalizedTrials,
+      ruins,
+      runes,
+      talisman_recipes: talismanRecipes,
+      alchemy_recipes: alchemyRecipes,
+      forge_blueprints: forgeBlueprints,
+      apothecary_shops: apothecaryShops,
+      expeditions,
+      bounties: bountyConfig,
+      heart_laws: heartLaws,
+      prestige_store: prestige,
+    },
+    addErr,
+  });
+  validateEconomicSourceRoutingTruth({
     content: {
       raw,
       economy: raw.economy,
