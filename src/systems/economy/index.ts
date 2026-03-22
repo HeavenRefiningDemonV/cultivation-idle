@@ -25,3 +25,8 @@ export * from './problemDestinationPolicy.js';
 export * from './economicSourceAdapters.js';
 export * from './bestSourceIndex.js';
 export * from './missingMaterialRouteResolver.js';
+export * from './economicRecommendationTypes.js';
+export * from './economicSnapshot.js';
+export * from './economicShortfallEvaluator.js';
+export * from './moduleRecommendationSummaries.js';
+export * from './economicRecommendationEngine.js';
