@@ -13,6 +13,7 @@ import {
   formatCityPackageCoverageReport,
   inspectSemesterCityPackageCoverage,
 } from '../../world/cityPackageRegistry.js';
+import { buildRewardParityAuditReport } from '../../economy/index.js';
 
 export interface ProgressionScenarioLike {
   kind: string;
@@ -86,6 +87,35 @@ const readRawPavilions = (rawContent: RawProgressionContentLike) =>
   Array.isArray(rawContent.pavilions) ? rawContent.pavilions : rawContent.pavilions?.pavilions ?? [];
 const readRawApothecaryShops = (rawContent: RawProgressionContentLike) =>
   Array.isArray(rawContent.apothecary_shops) ? rawContent.apothecary_shops : rawContent.apothecary_shops?.shops ?? [];
+
+const validateRawRewardParity = (rawContent: RawProgressionContentLike): DriftIssue[] => {
+  const issues: DriftIssue[] = [];
+  const outskirts = readRawOutskirts(rawContent);
+  const ruins = readRawRuins(rawContent);
+  const report = buildRewardParityAuditReport({
+    economy: rawContent.economy as never,
+    outskirts: outskirts as never,
+    ruins: ruins as never,
+  });
+
+  report.cities.forEach((cityAudit) => {
+    cityAudit.rules.forEach((rule) => {
+      if (rule.passed) return;
+      pushIssue(issues, {
+        id: `reward-parity-${cityAudit.cityId}-${rule.ruleId}`,
+        category: 'REWARD_PARITY_DRIFT',
+        severity: 'error',
+        summary: `City ${cityAudit.cityId} drifted away from the packet 3.2 activity reward boundary.`,
+        evidence: [{ path: `content/cities/${cityAudit.cityId}`, detail: `${rule.ruleId}: ${rule.detail}` }],
+        suggestedOwnerPacket: '3.2',
+        fixStrategySummary: 'Keep Outskirts as the gold/common loop and Ruins as the targeted/anchor loop through the shared reward parity audit and read-model.',
+        autoFixable: true,
+      });
+    });
+  });
+
+  return issues;
+};
 
 const validateRawWorldCitySchema = (rawContent: RawProgressionContentLike): DriftIssue[] => {
   const issues: DriftIssue[] = [];

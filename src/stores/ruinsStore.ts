@@ -9,6 +9,7 @@ import { useCityStore } from './cityStore';
 import { useBountyStore } from './bountyStore';
 import { useHeartLawStore } from './heartLawStore';
 import { RewardService, type RewardBundle } from '../services/rewards/index.js';
+import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
 import { D } from '../utils/numbers';
 import { useUIStore } from './uiStore';
 import {
@@ -273,7 +274,7 @@ export const useRuinsStore = create<RuinsState>()(
         const isFinalRoom = roomIndex >= active.roomCount - 1;
         const isStopping = active.stopping;
 
-        const perRoomRewards = rollRuinDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`);
+        const perRoomRewards = rollRuinDropTable(ruinDef.dropsPerRoom, `Ruins ${ruinDef.id} room ${roomIndex + 1}`, undefined, applyLootBonuses);
         RewardService.grantRewards(
           perRoomRewards,
           `Ruins — ${ruinDef.name ?? ruinDef.id} (Room ${roomIndex + 1}/${active.roomCount})`,
@@ -295,10 +296,14 @@ export const useRuinsStore = create<RuinsState>()(
             rollRuinDropTable(
               ruinDef.finalChestDrops,
               `Ruins ${ruinDef.id} final chest room ${roomIndex + 1}`,
+              undefined,
+              applyLootBonuses,
             ),
             buildRuinsFinalChestBonusBundle(
               ruinDef.cityIndex ?? content.maps.citiesById[ruinDef.cityId]?.index ?? 0,
               ruinsDropsConfig,
+              undefined,
+              applyLootBonuses,
             ),
           );
           RewardService.grantRewards(

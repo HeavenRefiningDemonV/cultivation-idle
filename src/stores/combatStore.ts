@@ -31,7 +31,8 @@ import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './te
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
-import { RewardService, applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
+import { RewardService, type RewardBundle, type RewardItemBundle } from '../services/rewards/index.js';
+import { applyLootBonuses } from '../services/rewards/applyLootBonuses.js';
 import { getTalismanBonusesNow } from './buffStore';
 import { createEnemy } from '../systems/enemyFactory';
 import type { NormalizedEffect } from '../systems/techniques/effects';
@@ -1480,6 +1481,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
           getOutskirtsDropsConfig(economy),
           cityIndex,
           isBossFight,
+          undefined,
+          applyLootBonuses,
         );
         RewardService.grantRewards(rewards, `Outskirts Victory (${isBossFight ? 'Boss' : 'Mob'})`);
         emitLootDrops(rewards.items, isBossFight ? 'Outskirts Boss' : 'Outskirts Victory');

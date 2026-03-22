@@ -1,9 +1,15 @@
 import type { EconomyConfig, OutskirtsDef, OutskirtsDropsConfig, RuinDropTable, RuinsDropsConfig } from '../../content/types.js';
-import { applyLootBonuses, type RewardBundle, type RewardItemBundle } from '../../services/rewards/index.js';
+import type { RewardBundle, RewardItemBundle } from '../../services/rewards/types.js';
 
 export interface RewardRandomSource {
   next: () => number;
 }
+
+export interface RewardBonusApplicator {
+  (bundle: RewardBundle, context: 'outskirts' | 'ruins'): RewardBundle;
+}
+
+const identityRewardBonusApplicator: RewardBonusApplicator = (bundle) => bundle;
 
 export const mathRandomSource: RewardRandomSource = {
   next: () => Math.random(),
@@ -110,6 +116,7 @@ export function buildOutskirtsRewardBundle(
   cityIndex: number,
   isBoss: boolean,
   random: RewardRandomSource = mathRandomSource,
+  bonusApplicator: RewardBonusApplicator = identityRewardBonusApplicator,
 ): RewardBundle {
   const idx = Math.max(0, cityIndex ?? 0);
   const drops = dropsConfig ?? {};
@@ -175,10 +182,15 @@ export function buildOutskirtsRewardBundle(
 
   const collapsed = collapseItems(items);
   if (collapsed.length > 0) bundle.items = collapsed;
-  return applyLootBonuses(bundle, 'outskirts');
+  return bonusApplicator(bundle, 'outskirts');
 }
 
-export function rollRuinDropTable(table: RuinDropTable, label: string, random: RewardRandomSource = mathRandomSource): RewardBundle {
+export function rollRuinDropTable(
+  table: RuinDropTable,
+  label: string,
+  random: RewardRandomSource = mathRandomSource,
+  bonusApplicator: RewardBonusApplicator = identityRewardBonusApplicator,
+): RewardBundle {
   const bundle: RewardBundle = { currencies: {}, items: [] };
   const goldMin = Number.isFinite(table.goldMin) ? Number(table.goldMin) : 0;
   const goldMax = Number.isFinite(table.goldMax) ? Number(table.goldMax) : goldMin;
@@ -207,13 +219,14 @@ export function rollRuinDropTable(table: RuinDropTable, label: string, random: R
   });
 
   bundle.items = collapseItems(filtered);
-  return applyLootBonuses(bundle, 'ruins');
+  return bonusApplicator(bundle, 'ruins');
 }
 
 export function buildRuinsFinalChestBonusBundle(
   cityIndex: number,
   dropsConfig: RuinsDropsConfig | undefined,
   random: RewardRandomSource = mathRandomSource,
+  bonusApplicator: RewardBonusApplicator = identityRewardBonusApplicator,
 ): RewardBundle {
   if (!dropsConfig) return {};
   const idx = Math.max(0, cityIndex ?? 0);
@@ -231,5 +244,5 @@ export function buildRuinsFinalChestBonusBundle(
     if (qty > 0) items.push({ itemId: 'mat_artifact_shard', qty });
   }
 
-  return items.length > 0 ? applyLootBonuses({ items }, 'ruins') : {};
+  return items.length > 0 ? bonusApplicator({ items }, 'ruins') : {};
 }

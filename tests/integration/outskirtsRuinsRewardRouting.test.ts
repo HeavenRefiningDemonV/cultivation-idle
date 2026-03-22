@@ -12,7 +12,7 @@ import {
   rollRuinDropTable,
   type RewardRandomSource,
 } from '../../src/systems/economy/index.js';
-import type { RewardBundle } from '../../src/services/rewards/index.js';
+import type { RewardBundle } from '../../src/services/rewards/types.js';
 import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
 
 type RewardSampleSummary = {

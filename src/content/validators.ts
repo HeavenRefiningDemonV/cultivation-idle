@@ -47,6 +47,7 @@ import {
 } from '../systems/world/cityPackageRegistry.js';
 import {
   buildActivityRewardAuditReport,
+  buildRewardParityAuditReport,
   buildLiveEconomyCatalog,
   buildLiveEconomyAuditReport,
   getSinklessLiveMaterials,
@@ -1330,6 +1331,20 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     if (!cityAudit.ruins.rarePityConfigured) {
       addErr(`ruins '${cityAudit.ruins.cityId}' boss chest pity is not configured`);
     }
+  });
+
+  const rewardParityAudit = buildRewardParityAuditReport({
+    economy: raw.economy,
+    outskirts,
+    ruins,
+  });
+
+  rewardParityAudit.cities.forEach((cityAudit) => {
+    cityAudit.rules.forEach((rule) => {
+      if (!rule.passed) {
+        addErr(`reward parity drift for '${cityAudit.cityId}' (${rule.ruleId}): ${rule.detail}`);
+      }
+    });
   });
 
   if (errors.length > 0) {
