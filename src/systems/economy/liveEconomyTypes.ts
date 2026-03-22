@@ -34,7 +34,7 @@ export type LiveEconomySourceKind =
   | 'alchemy_output'
   | 'forge_output';
 
-export type LiveEconomySinkKind = 'alchemy_input' | 'forge_input';
+export type LiveEconomySinkKind = 'alchemy_input' | 'forge_input' | 'technique_reroll';
 
 export interface LiveEconomyRouteRef {
   kind: LiveEconomySourceKind | LiveEconomySinkKind;

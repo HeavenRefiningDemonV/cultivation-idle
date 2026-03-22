@@ -5,6 +5,7 @@ import { validateLoadedContent } from '../../src/content/index.js';
 import {
   buildLiveEconomyAuditReport,
   getSinklessLiveMaterials,
+  getVisibleAlchemyRecipes,
   listKnownLiveEconomyBlockers,
 } from '../../src/systems/economy/index.js';
 import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
@@ -20,42 +21,37 @@ async function getValidated() {
   return validatedPromise;
 }
 
-test('packet 3.1A visible live materials either have live sinks or match the explicit blocker registry', async () => {
+test('packet 3.1 every visible live material now has at least one visible live sink', async () => {
   const validated = await getValidated();
   const report = buildLiveEconomyAuditReport(validated);
   const sinkless = getSinklessLiveMaterials(report);
-  const actualIds = sinkless.map((entry) => entry.itemId).sort();
-  const expectedIds = ['mat_artifact_shard', 'mat_spirit_dew'];
 
-  assert.deepEqual(actualIds, expectedIds);
-  sinkless.forEach((entry) => {
-    assert.equal(entry.isBlocked, true, `${entry.itemId} should be explicitly blocked`);
-    assert.match(entry.blockerReason ?? '', /live sink|live source path|missing live reagent path/i);
-  });
+  assert.deepEqual(sinkless, []);
+  assert.deepEqual(listKnownLiveEconomyBlockers(), []);
+  assert.deepEqual(report.activeBlockerIds, []);
 });
 
-test('packet 3.1A blocker registry matches the actual audit exactly and does not drift silently', async () => {
+test('packet 3.1 spirit dew and artifact shards resolve to real live sinks', async () => {
   const validated = await getValidated();
   const report = buildLiveEconomyAuditReport(validated);
-  const registryIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
+  const spiritDew = report.itemAudits.find((entry) => entry.itemId === 'mat_spirit_dew');
+  const artifactShard = report.itemAudits.find((entry) => entry.itemId === 'mat_artifact_shard');
 
-  assert.deepEqual(report.activeBlockerIds, registryIds);
-  assert.deepEqual(registryIds, [
-    'forge_refine_legendary_t5',
-    'mat_artifact_shard',
-    'mat_spirit_dew',
-    'reagent_quenching_oil_t2',
-  ]);
+  assert.ok(spiritDew?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_temper_accessory_t1'));
+  assert.ok(artifactShard?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_uncommon_t3'));
+  assert.ok(artifactShard?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_rare_t4'));
+  assert.ok(artifactShard?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_legendary_t5'));
 });
 
-test('packet 3.1A reagent path audit surfaces the legendary refine blocker and no other hidden reagent-path gaps', async () => {
+test('packet 3.1 legendary refine now resolves to a live Quenching Oil t2 source path', async () => {
   const validated = await getValidated();
   const report = buildLiveEconomyAuditReport(validated);
-  const missingPaths = report.reagentPathAudits.filter((entry) => entry.missingDependencyIds.length > 0);
+  const legendaryPath = report.reagentPathAudits.find((entry) => entry.blueprintId === 'forge_refine_legendary_t5');
+  const liveAlchemyIds = getVisibleAlchemyRecipes(validated).map((recipe) => recipe.id);
+  const quenchingOilT2 = report.itemAudits.find((entry) => entry.itemId === 'reagent_quenching_oil_t2');
 
-  assert.deepEqual(
-    missingPaths.map((entry) => ({ blueprintId: entry.blueprintId, missingDependencyIds: entry.missingDependencyIds })),
-    [{ blueprintId: 'forge_refine_legendary_t5', missingDependencyIds: ['reagent_quenching_oil_t2'] }],
-  );
-  assert.equal(missingPaths[0]?.isBlocked, true);
+  assert.equal(legendaryPath?.missingDependencyIds.length ?? 0, 0);
+  assert.ok(liveAlchemyIds.includes('alc_reagent_quenching_oil_t2'));
+  assert.ok(quenchingOilT2?.liveSources.some((entry) => entry.kind === 'alchemy_output' && entry.refId === 'alc_reagent_quenching_oil_t2'));
+  assert.ok(quenchingOilT2?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_legendary_t5'));
 });

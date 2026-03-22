@@ -34,11 +34,19 @@
       "effect": {
         "type": "temperGear",
         "baseProcChancePct": 25,
-        "affixPool": ["boss_damage_pct", "crit_chance_pct"],
+        "affixPool": [
+          "boss_damage_pct",
+          "crit_chance_pct"
+        ],
         "targetSlot": "weapon"
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 620, "tolerance": 18 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 620,
+          "tolerance": 18
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -48,7 +56,12 @@
           "difficulty": 1,
           "patternId": "temper_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 660, "tolerance": 16 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 660,
+          "tolerance": 16
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -58,14 +71,52 @@
           "difficulty": 1,
           "patternId": "temper_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 690, "tolerance": 14 },
-        { "id": "temper_edge", "type": "TEMPER", "targetMin": 430, "targetMax": 560, "holdMs": 3000 },
-        { "id": "finish_temper", "type": "FINISH", "uiLabel": "Seal edge" }
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 690,
+          "tolerance": 14
+        },
+        {
+          "id": "temper_edge",
+          "type": "TEMPER",
+          "targetMin": 430,
+          "targetMax": 560,
+          "holdMs": 3000
+        },
+        {
+          "id": "finish_temper",
+          "type": "FINISH",
+          "uiLabel": "Seal edge"
+        }
       ],
       "handsOnBonus": {
         "temperProcChancePct": 10,
         "masteryMult": 1.05,
         "timeReductionPct": 0.1
+      }
+    },
+    {
+      "id": "forge_temper_accessory_t1",
+      "unlocksAtCityId": "city_pinewind_hamlet",
+      "station": "forge",
+      "timeSec": 90,
+      "service": "temper",
+      "inputs": {
+        "mat_low_grade_ore": 4,
+        "mat_spirit_dew": 1
+      },
+      "cost": {
+        "gold": 900
+      },
+      "effect": {
+        "type": "temperGear",
+        "baseProcChancePct": 25,
+        "affixPool": [
+          "hp_pct",
+          "def_pct"
+        ],
+        "targetSlot": "accessory"
       }
     },
     {
@@ -87,7 +138,12 @@
         "maxLevelCap": 3
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 600, "tolerance": 20 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 600,
+          "tolerance": 20
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -97,7 +153,12 @@
           "difficulty": 1,
           "patternId": "refine_basic_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 630, "tolerance": 18 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 630,
+          "tolerance": 18
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -107,8 +168,17 @@
           "difficulty": 1,
           "patternId": "refine_basic_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 660, "tolerance": 16 },
-        { "id": "finish_refine_basic", "type": "FINISH", "uiLabel": "Finish refinement" }
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 660,
+          "tolerance": 16
+        },
+        {
+          "id": "finish_refine_basic",
+          "type": "FINISH",
+          "uiLabel": "Finish refinement"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 6,
@@ -133,7 +203,12 @@
         "rune_ember_t1": 1
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 630, "tolerance": 18 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 630,
+          "tolerance": 18
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -143,7 +218,12 @@
           "difficulty": 1,
           "patternId": "rune_basic_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 670, "tolerance": 16 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 670,
+          "tolerance": 16
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -153,7 +233,12 @@
           "difficulty": 1,
           "patternId": "rune_basic_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 700,
+          "tolerance": 14
+        },
         {
           "id": "engrave_rune",
           "type": "ENGRAVE_RUNE",
@@ -163,7 +248,11 @@
           "optional": false,
           "runeFamily": "ember"
         },
-        { "id": "finish_rune", "type": "FINISH", "uiLabel": "Seal rune" }
+        {
+          "id": "finish_rune",
+          "type": "FINISH",
+          "uiLabel": "Seal rune"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 10,
@@ -188,7 +277,12 @@
         "tal_guardian_seal_t1": 1
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 620, "tolerance": 18 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 620,
+          "tolerance": 18
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -198,7 +292,12 @@
           "difficulty": 1,
           "patternId": "formation_basic_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 650, "tolerance": 16 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 650,
+          "tolerance": 16
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -208,7 +307,12 @@
           "difficulty": 1,
           "patternId": "formation_basic_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 680, "tolerance": 14 },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 680,
+          "tolerance": 14
+        },
         {
           "id": "lay_formation",
           "type": "LAY_FORMATION",
@@ -218,7 +322,11 @@
           "optional": false,
           "formationId": "guardian_seal"
         },
-        { "id": "finish_formation", "type": "FINISH", "uiLabel": "Set formation" }
+        {
+          "id": "finish_formation",
+          "type": "FINISH",
+          "uiLabel": "Set formation"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 8,
@@ -246,7 +354,12 @@
         "maxLevelCap": 5
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 700,
+          "tolerance": 14
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -256,7 +369,12 @@
           "difficulty": 2,
           "patternId": "refine_adv_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 730, "tolerance": 12 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 730,
+          "tolerance": 12
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -266,8 +384,17 @@
           "difficulty": 2,
           "patternId": "refine_adv_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 760, "tolerance": 10 },
-        { "id": "finish_refine_adv", "type": "FINISH", "uiLabel": "Finish refinement" }
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 760,
+          "tolerance": 10
+        },
+        {
+          "id": "finish_refine_adv",
+          "type": "FINISH",
+          "uiLabel": "Finish refinement"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 8,
@@ -292,7 +419,12 @@
         "rune_fortify_t1": 1
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 700,
+          "tolerance": 14
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -302,7 +434,12 @@
           "difficulty": 2,
           "patternId": "rune_adv_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 740, "tolerance": 12 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 740,
+          "tolerance": 12
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -312,7 +449,12 @@
           "difficulty": 2,
           "patternId": "rune_adv_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 770, "tolerance": 10 },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 770,
+          "tolerance": 10
+        },
         {
           "id": "engrave_rune",
           "type": "ENGRAVE_RUNE",
@@ -322,7 +464,11 @@
           "optional": false,
           "runeFamily": "fortify"
         },
-        { "id": "finish_rune_adv", "type": "FINISH", "uiLabel": "Seal rune" }
+        {
+          "id": "finish_rune_adv",
+          "type": "FINISH",
+          "uiLabel": "Seal rune"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 12,
@@ -347,7 +493,12 @@
         "rune_ember_t1": 1
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 630, "tolerance": 18 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 630,
+          "tolerance": 18
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -357,7 +508,12 @@
           "difficulty": 1,
           "patternId": "ember_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 670, "tolerance": 16 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 670,
+          "tolerance": 16
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -367,7 +523,12 @@
           "difficulty": 1,
           "patternId": "ember_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 700, "tolerance": 14 },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 700,
+          "tolerance": 14
+        },
         {
           "id": "engrave_ember",
           "type": "ENGRAVE_RUNE",
@@ -377,7 +538,11 @@
           "optional": false,
           "runeFamily": "ember"
         },
-        { "id": "finish_ember", "type": "FINISH", "uiLabel": "Seal rune" }
+        {
+          "id": "finish_ember",
+          "type": "FINISH",
+          "uiLabel": "Seal rune"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 12,
@@ -391,7 +556,9 @@
           "type": "STABILIZE_FLAME",
           "atPct": 0.4,
           "windowSec": 8,
-          "bonus": { "yieldPct": 2 },
+          "bonus": {
+            "yieldPct": 2
+          },
           "ui": {
             "title": "Hold the forge heat",
             "body": "Keep the embers steady to slightly improve the rune quality."
@@ -402,7 +569,9 @@
           "type": "ADD_CATALYST",
           "atPct": 0.75,
           "windowSec": 10,
-          "bonus": { "yieldPct": 2 },
+          "bonus": {
+            "yieldPct": 2
+          },
           "ui": {
             "title": "Add catalyst to the mold",
             "body": "Drag the catalyst into the mold opening before the heat fades."
@@ -426,7 +595,12 @@
         "rune_stone_t1": 1
       },
       "stepScript": [
-        { "id": "heat_1", "type": "HEAT_TO", "targetHeat": 610, "tolerance": 18 },
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 610,
+          "tolerance": 18
+        },
         {
           "id": "strike_1",
           "type": "HAMMER_PATTERN",
@@ -436,7 +610,12 @@
           "difficulty": 1,
           "patternId": "stone_strike_1"
         },
-        { "id": "heat_2", "type": "HEAT_TO", "targetHeat": 650, "tolerance": 16 },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 650,
+          "tolerance": 16
+        },
         {
           "id": "strike_2",
           "type": "HAMMER_PATTERN",
@@ -446,7 +625,12 @@
           "difficulty": 1,
           "patternId": "stone_strike_2"
         },
-        { "id": "heat_3", "type": "HEAT_TO", "targetHeat": 680, "tolerance": 14 },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 680,
+          "tolerance": 14
+        },
         {
           "id": "engrave_stone",
           "type": "ENGRAVE_RUNE",
@@ -456,7 +640,11 @@
           "optional": false,
           "runeFamily": "stone"
         },
-        { "id": "finish_stone", "type": "FINISH", "uiLabel": "Set rune core" }
+        {
+          "id": "finish_stone",
+          "type": "FINISH",
+          "uiLabel": "Set rune core"
+        }
       ],
       "handsOnBonus": {
         "qualityProcChancePct": 10,
@@ -556,7 +744,8 @@
       "service": "refine",
       "inputs": {
         "mat_crystal_shard": 10,
-        "reagent_quenching_oil_t1": 2
+        "reagent_quenching_oil_t1": 2,
+        "mat_artifact_shard": 2
       },
       "cost": {
         "gold": 60000
@@ -626,7 +815,8 @@
       "service": "refine",
       "inputs": {
         "mat_mist_pearl": 6,
-        "reagent_quenching_oil_t1": 3
+        "reagent_quenching_oil_t1": 3,
+        "mat_artifact_shard": 4
       },
       "cost": {
         "gold": 300000
@@ -696,7 +886,8 @@
       "service": "refine",
       "inputs": {
         "mat_spirit_steel_ore": 10,
-        "reagent_quenching_oil_t2": 2
+        "reagent_quenching_oil_t2": 2,
+        "mat_artifact_shard": 8
       },
       "cost": {
         "gold": 1000000

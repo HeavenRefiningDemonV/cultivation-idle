@@ -19,7 +19,9 @@
           "type": "STABILIZE_FLAME",
           "atPct": 0.33,
           "windowSec": 8,
-          "bonus": { "yieldPct": 2 },
+          "bonus": {
+            "yieldPct": 2
+          },
           "ui": {
             "title": "Stabilize the flame",
             "body": "Hold the flame steady during the simmer to earn a small yield bonus."
@@ -30,7 +32,9 @@
           "type": "ADD_CATALYST",
           "atPct": 0.75,
           "windowSec": 10,
-          "bonus": { "yieldPct": 2 },
+          "bonus": {
+            "yieldPct": 2
+          },
           "ui": {
             "title": "Add the catalyst",
             "body": "Guide the catalyst into the cauldron at the right moment for a slight yield boost."
@@ -270,6 +274,20 @@
       },
       "outputs": {
         "cons_ward_salt_t2": 1
+      }
+    },
+    {
+      "id": "alc_reagent_quenching_oil_t2",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "alchemy",
+      "timeSec": 180,
+      "inputs": {
+        "reagent_quenching_oil_t1": 1,
+        "mat_furnace_cinder": 2,
+        "mat_spirit_steel_ore": 1
+      },
+      "outputs": {
+        "reagent_quenching_oil_t2": 1
       }
     },
     {

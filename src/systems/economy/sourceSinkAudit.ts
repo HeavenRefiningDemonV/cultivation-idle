@@ -6,6 +6,8 @@ import { buildLiveEconomyCatalog, getVisibleAlchemyRecipes, getVisibleForgeBluep
 import { getLiveEconomyItemFamily } from './liveEconomyVisibility.js';
 import type { LiveEconomyAuditReport, LiveEconomyItemAudit, LiveEconomyRouteRef, LiveReagentPathAudit } from './liveEconomyTypes.js';
 
+const TECHNIQUE_REROLL_SINK_ITEM_ID = 'reagent_soul_ink_t0';
+
 function pushRoute(map: Map<string, LiveEconomyRouteRef[]>, route: LiveEconomyRouteRef) {
   const list = map.get(route.itemId) ?? [];
   list.push(route);
@@ -76,6 +78,8 @@ export function buildLiveEconomyAuditReport(content: ValidatedContent): LiveEcon
     Object.keys(recipe.inputs ?? {}).forEach((itemId) => pushRoute(sinkMap, { kind: 'alchemy_input', refId: recipe.id, itemId }));
   });
 
+  pushRoute(sinkMap, { kind: 'technique_reroll', refId: 'technique_reroll', itemId: TECHNIQUE_REROLL_SINK_ITEM_ID });
+
   visibleForgeBlueprints.forEach((blueprint) => {
     const normalized = normalizeForgeBlueprint(blueprint);
     if (normalized.output?.itemId) {
@@ -130,16 +134,7 @@ export function buildLiveEconomyAuditReport(content: ValidatedContent): LiveEcon
     .filter((entry) => entry.missingDependencyIds.length > 0 || entry.isBlocked)
     .sort((a, b) => a.blueprintId.localeCompare(b.blueprintId));
 
-  const activeBlockerIds = [
-    ...new Set([
-      ...itemAudits.filter((entry) => entry.isBlocked).map((entry) => entry.itemId),
-      ...reagentPathAudits.filter((entry) => entry.isBlocked).map((entry) => entry.blueprintId),
-      ...listKnownLiveEconomyBlockers().map((entry) => entry.id).filter((id) => {
-        if (id.startsWith('forge_')) return reagentPathAudits.some((audit) => audit.blueprintId === id && audit.isBlocked);
-        return itemAudits.some((audit) => audit.itemId === id && audit.isBlocked);
-      }),
-    ]),
-  ].sort();
+  const activeBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
 
   return { catalog, itemAudits, reagentPathAudits, activeBlockerIds, craftRelevantItemIds };
 }

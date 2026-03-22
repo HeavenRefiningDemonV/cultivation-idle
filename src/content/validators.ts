@@ -1211,10 +1211,10 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
 
   alchemyRecipes.forEach((recipe, idx) => {
     const status = liveEconomyCatalog.alchemyRecipeStatusById[recipe.id] ?? 'unknown';
-    if (status !== 'visible_live' && status !== 'visible_live_blocked') return;
+    if (status !== 'visible_live') return;
     Object.keys(recipe.outputs ?? {}).forEach((itemId) => {
       const itemStatus = liveEconomyCatalog.itemStatusById[itemId] ?? 'unknown';
-      if (itemStatus !== 'visible_live' && itemStatus !== 'visible_live_blocked') {
+      if (itemStatus !== 'visible_live') {
         addErr(`alchemy_recipes.recipes[${idx}] visible live recipe outputs non-live item '${itemId}' (${itemStatus})`);
       }
     });
@@ -1223,10 +1223,10 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const visibleRuneOutputToBlueprintIds = new Map<string, string[]>();
   forgeBlueprints.forEach((blueprint, idx) => {
     const status = liveEconomyCatalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown';
-    if (status !== 'visible_live' && status !== 'visible_live_blocked') return;
+    if (status !== 'visible_live') return;
     Object.keys(blueprint.outputs ?? {}).forEach((itemId) => {
       const itemStatus = liveEconomyCatalog.itemStatusById[itemId] ?? 'unknown';
-      if (itemStatus !== 'visible_live' && itemStatus !== 'visible_live_blocked') {
+      if (itemStatus !== 'visible_live') {
         addErr(`forge_blueprints.blueprints[${idx}] visible live blueprint outputs non-live item '${itemId}' (${itemStatus})`);
       }
       if (itemId.startsWith('rune_')) {
@@ -1269,27 +1269,23 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
 
   const expectedBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
   const actualBlockerIds = liveEconomyReport.activeBlockerIds.slice().sort();
-  if (JSON.stringify(expectedBlockerIds) !== JSON.stringify(actualBlockerIds)) {
-    addErr(`live economy blocker registry drift: expected=${expectedBlockerIds.join(', ')} actual=${actualBlockerIds.join(', ')}`);
+  if (expectedBlockerIds.length > 0 || actualBlockerIds.length > 0) {
+    addErr(`Packet 3.1 blocker registry must be empty: expected=${expectedBlockerIds.join(', ')} actual=${actualBlockerIds.join(', ')}`);
   }
 
   getSinklessLiveMaterials(liveEconomyReport).forEach((entry) => {
-    if (!entry.isBlocked) {
-      addErr(`live material '${entry.itemId}' has no visible live sink and is not in the Packet 3.1A blocker registry`);
-    }
+    addErr(`live material '${entry.itemId}' has no visible live sink`);
   });
 
   liveEconomyReport.reagentPathAudits.forEach((entry) => {
     if (entry.missingDependencyIds.length === 0) return;
-    if (!entry.isBlocked) {
-      addErr(`visible live reagent path missing for '${entry.blueprintId}': ${entry.missingDependencyIds.join(', ')}`);
-    }
+    addErr(`visible live reagent path missing for '${entry.blueprintId}': ${entry.missingDependencyIds.join(', ')}`);
   });
 
   forgeBlueprints.forEach((blueprint) => {
     const family = getForgeBlueprintFamily(blueprint, { forge_blueprints: forgeBlueprints } as never);
     const status = liveEconomyCatalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown';
-    if (family === 'forge_legacy_rune' && (status === 'visible_live' || status === 'visible_live_blocked')) {
+    if (family === 'forge_legacy_rune' && status === 'visible_live') {
       addErr(`legacy rune blueprint '${blueprint.id}' is still visible live`);
     }
   });

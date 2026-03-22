@@ -9,7 +9,6 @@ const DEFERRED_ITEM_IDS = new Set<string>([
   'item_jade_core_shell_t1',
   'reagent_spirit_solvent_t1',
   'reagent_spirit_solvent_t2',
-  'reagent_soul_ink_t0',
   'reagent_soul_ink_t1',
 ]);
 
