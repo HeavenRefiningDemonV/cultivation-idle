@@ -13,8 +13,8 @@ type PathDoctrineSemanticAuthoring = {
   readonly forgeBias: readonly string[];
   readonly buildBias: readonly string[];
   readonly recommendedAiByPhase: {
-    readonly early: readonly PathDoctrineProfile['recommendedAiByPhase']['early'];
-    readonly boss: readonly PathDoctrineProfile['recommendedAiByPhase']['boss'];
+    early: PathDoctrineProfile['recommendedAiByPhase']['early'];
+    boss: PathDoctrineProfile['recommendedAiByPhase']['boss'];
   };
   readonly commonFailureModes: readonly string[];
 };
@@ -29,8 +29,8 @@ const PATH_DOCTRINE_SEMANTICS: Readonly<Record<CultivationPath, PathDoctrineSema
     forgeBias: Object.freeze(['weapon-first', 'offense-runes', 'survival-patch-before-push']),
     buildBias: Object.freeze(['technique-pressure', 'utility-setup', 'guard-backstop']),
     recommendedAiByPhase: Object.freeze({
-      early: Object.freeze(['balanced', 'farmer']),
-      boss: Object.freeze(['burst', 'balanced']),
+      early: Object.freeze(['balanced', 'farmer'] as const),
+      boss: Object.freeze(['burst', 'balanced'] as const),
     }),
     commonFailureModes: Object.freeze([
       'greedy-without-backstop',
@@ -47,8 +47,8 @@ const PATH_DOCTRINE_SEMANTICS: Readonly<Record<CultivationPath, PathDoctrineSema
     forgeBias: Object.freeze(['armor-first', 'balanced-refine', 'defense-runes']),
     buildBias: Object.freeze(['durable-rotation', 'guard-backstop', 'single-target-finisher']),
     recommendedAiByPhase: Object.freeze({
-      early: Object.freeze(['balanced', 'survivor']),
-      boss: Object.freeze(['survivor', 'balanced']),
+      early: Object.freeze(['balanced', 'survivor'] as const),
+      boss: Object.freeze(['survivor', 'balanced'] as const),
     }),
     commonFailureModes: Object.freeze([
       'stalling-without-finisher',
@@ -65,8 +65,8 @@ const PATH_DOCTRINE_SEMANTICS: Readonly<Record<CultivationPath, PathDoctrineSema
     forgeBias: Object.freeze(['weapon-first', 'offense-runes', 'survival-patch-before-push']),
     buildBias: Object.freeze(['tempo-chain', 'single-target-finisher', 'minimum-sustain']),
     recommendedAiByPhase: Object.freeze({
-      early: Object.freeze(['farmer', 'burst']),
-      boss: Object.freeze(['burst', 'balanced']),
+      early: Object.freeze(['farmer', 'burst'] as const),
+      boss: Object.freeze(['burst', 'balanced'] as const),
     }),
     commonFailureModes: Object.freeze([
       'overextending-burst-window',
