@@ -15,6 +15,7 @@ import { GameEvents } from '../services/events/GameEvents';
 import { useActivityStore } from './activityStore';
 import { useCraftSessionStore } from './craftSessionStore';
 import type { ForgeStepResult } from '../systems/crafting/craftingTypes.js';
+import { fromForgeJobMode, isForgeModeAllowed } from '../systems/forge/index.js';
 
 export type AlchemyJob = {
   id: string;
@@ -448,6 +449,10 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, reason: 'Unsupported service' };
       }
 
+      if (!isForgeModeAllowed(blueprint, fromForgeJobMode('IDLE'))) {
+        return { ok: false, reason: 'Blueprint is not available this semester' };
+      }
+
       const inventory = useInventoryStore.getState();
       const contentStore = useContentStore.getState();
       for (const entry of blueprint.costs.items) {
@@ -497,8 +502,8 @@ export const useProfessionStore = create<ProfessionState>()(
         return { ok: false, error: 'Unsupported service' };
       }
 
-      if (resolvedMode === 'HANDS_ON' && blueprint.type !== 'craft') {
-        return { ok: false, error: 'Hands-on forging is only available for crafted items' };
+      if (!isForgeModeAllowed(blueprint, fromForgeJobMode(resolvedMode))) {
+        return { ok: false, error: `${blueprint.name ?? blueprint.id} does not support that forge mode` };
       }
 
       const cityId = resolveActiveCityId();

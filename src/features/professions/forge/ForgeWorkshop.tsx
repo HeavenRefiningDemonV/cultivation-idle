@@ -11,12 +11,22 @@ import { useCraftSessionStore } from '../../../stores/craftSessionStore';
 import { useProfessionStore } from '../../../stores/professionStore';
 import { useUIStore } from '../../../stores/uiStore';
 import { useActivityStore } from '../../../stores/activityStore';
-import { isRuneBlueprint, isRefineBlueprint } from '../../../content';
+import { useContentStore } from '../../../stores/contentStore';
+import { isRuneBlueprint } from '../../../content';
 import { buildItemDelta } from './forgeDelta';
 import { resolveForgeStepScript } from './forgeScriptBuilder';
 import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink';
 import type { IconId } from '../../../ui/icons';
 import { GameIcon } from '../../../ui/icons';
+import {
+  buildForgeSurfaceModel,
+  getAllowedForgeModes,
+  getDefaultForgeMode,
+  getForgeSurfaceTabForBlueprint,
+  toForgeJobMode,
+  type LiveForgeSurfaceTab,
+} from '../../../systems/forge/index.js';
+import { getLiveForgeFloorReadModel } from '../../../systems/forge/liveForgeFloorStore.js';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -37,13 +47,6 @@ type ForgeClaimResult = {
   };
   serviceResult?: { type?: string };
 };
-
-const FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'refine', label: 'Refine' },
-  { id: 'temper', label: 'Temper' },
-  { id: 'rune', label: 'Runes' },
-];
 
 const MODE_COPY = {
   idle: 'Fast, baseline quality.',
@@ -94,7 +97,7 @@ const resolveQualityLabel = (qualityScore?: number): string => {
 };
 
 export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
-  const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const setUiActiveTab = useUIStore((state) => state.setActiveTab);
   const setCraftMode = useCraftSessionStore((state) => state.setMode);
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
   const activeSession = useCraftSessionStore((state) => state.activeSession);
@@ -104,9 +107,10 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const canStartForge = useProfessionStore((state) => state.canStartForge);
   const getForgeJobStatus = useProfessionStore((state) => state.getForgeJobStatus);
   const activeActivity = useActivityStore((state) => state.active);
+  const cityName = useContentStore((state) => (cityId ? state.maps.citiesById[cityId]?.name ?? cityId : 'Forge'));
 
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
-  const [filterId, setFilterId] = useState('all');
+  const [activeTab, setActiveTab] = useState<LiveForgeSurfaceTab>('refine');
   const [query, setQuery] = useState('');
   const [now, setNow] = useState(() => Date.now());
   const [sessionStatus, setSessionStatus] = useState<string | null>(null);
@@ -125,32 +129,46 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const activeOtherStation = activeSession && activeSession.station !== 'forge';
 
   const blueprints = useMemo(() => (cityId ? listForgeBlueprintsForCity({ cityId }) : listForgeBlueprints()), [cityId]);
-  const filteredBlueprints = useMemo(() => {
-    const lowered = query.trim().toLowerCase();
-    return blueprints.filter((blueprint) => {
-      if (filterId === 'refine' && !isRefineBlueprint(blueprint)) return false;
-      if (filterId === 'rune' && !isRuneBlueprint(blueprint)) return false;
-      if (filterId === 'temper' && blueprint.service !== 'temper') return false;
-      if (!lowered) return true;
-      const outputName = blueprint.output ? getItemDef(blueprint.output.itemId)?.name ?? blueprint.output.itemId : '';
-      return blueprint.name?.toLowerCase().includes(lowered) || outputName.toLowerCase().includes(lowered);
-    });
-  }, [blueprints, filterId, query]);
+  const floorModel = useMemo(() => getLiveForgeFloorReadModel({ cityId }), [cityId]);
+  const surfaceModel = useMemo(
+    () => buildForgeSurfaceModel({ blueprints, activeTab, query, floor: floorModel }),
+    [activeTab, blueprints, floorModel, query],
+  );
+  const filteredBlueprints = surfaceModel.activeBlueprints;
 
   useEffect(() => {
     if (activeForgeSession?.sourceId) {
       setSelectedBlueprintId(activeForgeSession.sourceId);
+      const activeBlueprint = blueprints.find((blueprint) => blueprint.id === activeForgeSession.sourceId);
+      if (activeBlueprint) {
+        setActiveTab(getForgeSurfaceTabForBlueprint(activeBlueprint));
+      }
       return;
     }
     if (!selectedBlueprintId && filteredBlueprints.length > 0) {
       setSelectedBlueprintId(filteredBlueprints[0].id);
     }
-  }, [activeForgeSession?.sourceId, filteredBlueprints, selectedBlueprintId]);
+  }, [activeForgeSession?.sourceId, blueprints, filteredBlueprints, selectedBlueprintId]);
+
+  useEffect(() => {
+    if (selectedBlueprintId && filteredBlueprints.some((blueprint) => blueprint.id === selectedBlueprintId)) return;
+    setSelectedBlueprintId(filteredBlueprints[0]?.id ?? null);
+  }, [filteredBlueprints, selectedBlueprintId]);
 
   const selectedBlueprint = useMemo(
     () => blueprints.find((blueprint) => blueprint.id === selectedBlueprintId) ?? null,
     [blueprints, selectedBlueprintId],
   );
+  const allowedModes = useMemo(
+    () => (selectedBlueprint ? getAllowedForgeModes(selectedBlueprint) : ['idle']),
+    [selectedBlueprint],
+  );
+
+  useEffect(() => {
+    if (!selectedBlueprint) return;
+    if (allowedModes.includes(currentMode)) return;
+    setCraftMode('forge', getDefaultForgeMode(selectedBlueprint));
+  }, [allowedModes, currentMode, selectedBlueprint, setCraftMode]);
 
   const resolvedStepScript = useMemo(
     () => (selectedBlueprint ? resolveForgeStepScript(selectedBlueprint) : []),
@@ -227,10 +245,12 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const selectedTargetSlot = selectedBlueprint?.type === 'service' ? selectedServiceSlot : undefined;
   const startEligibility = selectedBlueprint ? canStartForge(selectedBlueprint.id, 1, selectedTargetSlot) : { ok: false };
   const isHandsOnMode = currentMode === 'handsOn';
+  const isModeAllowed = selectedBlueprint ? allowedModes.includes(currentMode) : false;
   const canStart = Boolean(
     selectedBlueprint &&
       startEligibility.ok &&
-      !(isHandsOnMode && selectedBlueprint.type === 'service'),
+      isModeAllowed &&
+      !(activeTab === 'refine' && isHandsOnMode),
   );
   const isLocked = Boolean(selectedBlueprint?.cityId && cityId && selectedBlueprint.cityId !== cityId);
   const isBlocked = Boolean(activeOtherStation || (activeActivity && activeActivity.type !== 'forge'));
@@ -238,7 +258,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
     setSessionStatus(null);
-    const mode = currentMode === 'handsOn' ? 'HANDS_ON' : currentMode === 'assisted' ? 'ASSISTED' : 'IDLE';
+    const mode = toForgeJobMode(currentMode);
     const result = startForgeJob({
       blueprintId: selectedBlueprint.id,
       mode,
@@ -257,26 +277,52 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
       <InkPanel variant="forge" className="forgeWorkshop__banner">
         <div>
           <div className="forgeWorkshop__bannerTitle">Forge Workshop</div>
-          <div className="forgeWorkshop__bannerBody">Refine gear and craft runes that empower techniques.</div>
+          <div className="forgeWorkshop__bannerBody">{surfaceModel.headline}</div>
+          <div className="forgeWorkshop__bannerHint">{cityName} · {surfaceModel.tabCopy}</div>
         </div>
         <div className="forgeWorkshop__bannerActions">
           <button
             type="button"
             className="worldScreenModuleButton forgeWorkshop__navButton"
-            onClick={() => setActiveTab('techniques')}
+            onClick={() => setUiActiveTab('techniques')}
           >
             Techniques
           </button>
           <button
             type="button"
             className="worldScreenModuleButton forgeWorkshop__navButton"
-            onClick={() => setActiveTab('inventory')}
+            onClick={() => setUiActiveTab('inventory')}
           >
             Equipment
           </button>
         </div>
         <UsedForLinks usageText="Techniques and equipment upgrades" className="forgeWorkshop__usedFor" />
       </InkPanel>
+
+      <div className="forgeWorkshop__summaryGrid">
+        <PaperCard variant="tray" className="forgeWorkshop__summaryCard">
+          <div className="forgeWorkshop__summaryLabel">Current forge floor</div>
+          <div className="forgeWorkshop__summaryRows">
+            <div className="forgeWorkshop__summaryRow"><span>Weapon refine</span><strong>+{floorModel.weaponRefineFloor}</strong></div>
+            <div className="forgeWorkshop__summaryRow"><span>Accessory refine</span><strong>+{floorModel.accessoryRefineFloor}</strong></div>
+            <div className="forgeWorkshop__summaryRow"><span>Temper successes</span><strong>{floorModel.temperSuccessTotal}</strong></div>
+            <div className="forgeWorkshop__summaryRow"><span>Rune floor</span><strong>{floorModel.runeSummaryLabel}</strong></div>
+          </div>
+        </PaperCard>
+        <PaperCard variant="tray" className="forgeWorkshop__summaryCard">
+          <div className="forgeWorkshop__summaryLabel">Next gate baseline</div>
+          {floorModel.nextGateRecommendation ? (
+            <div className="forgeWorkshop__summaryRows">
+              <div className="forgeWorkshop__summaryRow"><span>Weapon refine</span><strong>+{floorModel.nextGateRecommendation.weaponRefine}</strong></div>
+              <div className="forgeWorkshop__summaryRow"><span>Accessory refine</span><strong>+{floorModel.nextGateRecommendation.accessoryRefine}</strong></div>
+              <div className="forgeWorkshop__summaryRow"><span>Temper successes</span><strong>{floorModel.nextGateRecommendation.temperSuccesses}</strong></div>
+              <div className="forgeWorkshop__summaryRow"><span>Rune target</span><strong>{floorModel.nextGateRecommendation.runeCountLabel}</strong></div>
+            </div>
+          ) : (
+            <div className="forgeWorkshop__summaryEmpty">No next-gate baseline is available for this city yet.</div>
+          )}
+        </PaperCard>
+      </div>
 
       <div className="forgeWorkshop__body">
         <div className="forgeWorkshop__workbench">
@@ -311,8 +357,13 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                 {!selectedBlueprint && <div className="forgeWorkshop__idleHint">Choose a blueprint from the list.</div>}
                 {isBlocked && <div className="forgeWorkshop__idleHint">Finish the active activity to start forging.</div>}
                 {isLocked && <div className="forgeWorkshop__idleHint">Unlock this blueprint in another city.</div>}
-                {isHandsOnMode && selectedBlueprint?.type === 'service' && (
-                  <div className="forgeWorkshop__idleHint">Hands-on forging is only for crafted items.</div>
+                {!isModeAllowed && selectedBlueprint && (
+                  <div className="forgeWorkshop__idleHint">
+                    {selectedBlueprint.name ?? selectedBlueprint.id} does not support {currentMode === 'handsOn' ? 'hands-on' : currentMode} mode.
+                  </div>
+                )}
+                {activeTab === 'refine' && isHandsOnMode && (
+                  <div className="forgeWorkshop__idleHint">Refine stays queue-first this semester. Use idle or assisted mode.</div>
                 )}
                 {!canStart && startEligibility.reason && (
                   <div className="forgeWorkshop__idleHint">{startEligibility.reason}</div>
@@ -327,20 +378,21 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           <PaperCard variant="tray" className="forgeWorkshop__filters">
             <input
               className="forgeWorkshop__search"
-              placeholder="Search blueprints"
+              placeholder={`Search ${activeTab}`}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
             <div className="forgeWorkshop__chips">
-              {FILTERS.map((filter) => (
+              {surfaceModel.tabs.map((filter) => (
                 <PaperChip
                   key={filter.id}
-                  text={filter.label}
-                  className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': filterId === filter.id })}
-                  onClick={() => setFilterId(filter.id)}
+                  text={`${filter.label} (${filter.count})`}
+                  className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': activeTab === filter.id })}
+                  onClick={() => setActiveTab(filter.id)}
                 />
               ))}
             </div>
+            <div className="forgeWorkshop__tabCopy">{surfaceModel.tabCopy}</div>
           </PaperCard>
 
           <PaperCard variant="tray" className="forgeWorkshop__list">
@@ -413,6 +465,16 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                   <div className="forgeWorkshop__detailValue">{getProduceSummary(selectedBlueprint.id)}</div>
                 </div>
               </div>
+              <div className="forgeWorkshop__detailSection">
+                <div className="forgeWorkshop__detailLabel">Permanent-floor impact</div>
+                <div className="forgeWorkshop__detailValue">
+                  {activeTab === 'refine'
+                    ? `Current weapon +${floorModel.weaponRefineFloor} / accessory +${floorModel.accessoryRefineFloor}.`
+                    : activeTab === 'temper'
+                      ? `Current temper total ${floorModel.temperSuccessTotal} (${floorModel.temperSuccessesBySlot.weapon} weapon, ${floorModel.temperSuccessesBySlot.accessory} accessory).`
+                      : `Current rune floor: ${floorModel.runeSummaryLabel}.`}
+                </div>
+              </div>
               {selectedBlueprint.type === 'service' &&
                 (selectedBlueprint.service === 'refine' || selectedBlueprint.service === 'temper') && (
                   <div className="forgeWorkshop__detailSection">
@@ -461,7 +523,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               <div className="craftingModeSelector">
                 <div className="craftingModeLabel">Mode</div>
                 <div className="craftingModeButtons craftModeTabs">
-                  {(['idle', 'assisted', 'handsOn'] as const).map((mode) => (
+                  {allowedModes.map((mode) => (
                     <button
                       key={mode}
                       type="button"

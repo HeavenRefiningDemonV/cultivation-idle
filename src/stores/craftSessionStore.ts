@@ -588,7 +588,6 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
           const rawBlueprint = getLiveForgeBlueprintById(content.raw, args.sourceId);
           const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
           if (!blueprint) return { ok: false, reason: 'missing_blueprint' };
-          if (blueprint.type !== 'craft') return { ok: false, reason: 'invalid_blueprint' };
           itemCosts = buildItemCosts(blueprint.costs.items, qty);
           const currencies = buildCurrencyCosts(
             { gold: blueprint.costs.gold, spiritStones: blueprint.costs.spiritStones },
@@ -970,7 +969,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
       if (active.station === 'forge') {
         const rawBlueprint = useContentStore.getState().raw?.forge_blueprints?.find((entry) => entry.id === active.sourceId);
         const blueprint = rawBlueprint ? normalizeForgeBlueprint(rawBlueprint) : undefined;
-        if (!blueprint || blueprint.type !== 'craft' || !blueprint.output) {
+        if (!blueprint) {
           return { ok: false, reason: 'missing_blueprint' };
         }
         const settledPrompts = advancePromptStates(active.prompts ?? [], now);

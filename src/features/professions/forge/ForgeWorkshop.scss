@@ -30,6 +30,12 @@
   color: var(--forge-ink-muted);
 }
 
+.forgeWorkshop__bannerHint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(145, 58, 37, 0.92);
+}
+
 .forgeWorkshop__bannerActions {
   display: flex;
   gap: 8px;
@@ -66,6 +72,43 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
   gap: 16px;
+}
+
+.forgeWorkshop__summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.forgeWorkshop__summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forgeWorkshop__summaryLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.forgeWorkshop__summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.forgeWorkshop__summaryEmpty {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
 }
 
 .forgeWorkshop__workbench {
@@ -145,6 +188,11 @@
   color: var(--forge-ink);
   background: rgba(252, 245, 232, 0.9);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+.forgeWorkshop__tabCopy {
+  font-size: 12px;
+  color: var(--forge-ink-muted);
 }
 
 .forgeWorkshop__list {
