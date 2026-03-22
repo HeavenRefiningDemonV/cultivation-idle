@@ -177,6 +177,22 @@ const QUALITY_NAMES = ['', 'Mortal', 'Common', 'Uncommon', 'Rare', 'Legendary'];
  */
 const ELEMENTS: SpiritRootElement[] = ['fire', 'water', 'earth', 'metal', 'wood'];
 
+export function getSpiritRootQualityMultiplierForGrade(grade: SpiritRootGrade): number {
+  return 1.0 + (grade - 1) * 0.4;
+}
+
+export function getSpiritRootPurityMultiplierForPurity(purity: number): number {
+  return 1.0 + purity / 100;
+}
+
+export function getSpiritRootTotalMultiplierForRoot(root: SpiritRoot | null): number {
+  if (!root) {
+    return 1.0;
+  }
+
+  return getSpiritRootQualityMultiplierForGrade(root.grade) * getSpiritRootPurityMultiplierForPurity(root.purity);
+}
+
 const createInitialPrestigeState = () => ({
   totalAP: 0,
   lifetimeAP: 0,
@@ -505,7 +521,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     getSpiritRootQualityMultiplier: () => {
       const state = get();
       if (!state.spiritRoot) return 1.0;
-      return 1.0 + (state.spiritRoot.grade - 1) * 0.4;
+      return getSpiritRootQualityMultiplierForGrade(state.spiritRoot.grade);
     },
 
     /**
@@ -514,7 +530,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     getSpiritRootPurityMultiplier: () => {
       const state = get();
       if (!state.spiritRoot) return 1.0;
-      return 1.0 + state.spiritRoot.purity / 100;
+      return getSpiritRootPurityMultiplierForPurity(state.spiritRoot.purity);
     },
 
     /**
@@ -522,7 +538,7 @@ export const usePrestigeStore = create<PrestigeState>()(
      */
     getSpiritRootTotalMultiplier: () => {
       const state = get();
-      return state.getSpiritRootQualityMultiplier() * state.getSpiritRootPurityMultiplier();
+      return getSpiritRootTotalMultiplierForRoot(state.spiritRoot);
     },
 
     hardResetPrestige: () => {

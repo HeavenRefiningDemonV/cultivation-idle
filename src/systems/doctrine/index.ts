@@ -10,3 +10,7 @@ export * from './heartLawFamilyRegistry.js';
 export * from './heartLawEffectReaders.js';
 export * from './heartLawCatalog.js';
 export * from './heartLawEffectAudit.js';
+
+export * from './spiritRootDoctrine.js';
+export * from './spiritRootResonance.js';
+export * from './spiritRootRerollPolicy.js';
