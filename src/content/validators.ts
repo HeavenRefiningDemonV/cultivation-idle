@@ -50,6 +50,10 @@ import {
   buildRewardParityAuditReport,
   buildLiveEconomyCatalog,
   buildLiveEconomyAuditReport,
+  getLiveEconomyItemAuditById,
+  getLiveReagentPathAuditByBlueprintId,
+  getPacket36AMaterialSinkStatus,
+  hasVisibleLiveReagentPath,
   getSinklessLiveMaterials,
   listKnownLiveEconomyBlockers,
 } from '../systems/economy/index.js';
@@ -1362,6 +1366,14 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     addErr(`Packet 3.1 blocker registry must be empty: expected=${expectedBlockerIds.join(', ')} actual=${actualBlockerIds.join(', ')}`);
   }
 
+  const packet36AMaterialSinkStatus = getPacket36AMaterialSinkStatus(liveEconomyReport);
+  if (!packet36AMaterialSinkStatus.mat_spirit_dew.hasVisibleLiveSink) {
+    addErr('Packet 3.6A named blocker unresolved: mat_spirit_dew has no visible live sink');
+  }
+  if (!packet36AMaterialSinkStatus.mat_artifact_shard.hasVisibleLiveSink) {
+    addErr('Packet 3.6A named blocker unresolved: mat_artifact_shard has no visible live sink');
+  }
+
   getSinklessLiveMaterials(liveEconomyReport).forEach((entry) => {
     addErr(`live material '${entry.itemId}' has no visible live sink`);
   });
@@ -1370,6 +1382,42 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     if (entry.missingDependencyIds.length === 0) return;
     addErr(`visible live reagent path missing for '${entry.blueprintId}': ${entry.missingDependencyIds.join(', ')}`);
   });
+
+  const spiritDewAudit = getLiveEconomyItemAuditById(liveEconomyReport, 'mat_spirit_dew');
+  if ((spiritDewAudit?.liveSinks.length ?? 0) === 0) {
+    addErr('Packet 3.6A named blocker unresolved: mat_spirit_dew does not route into any visible live sink');
+  }
+
+  const artifactShardAudit = getLiveEconomyItemAuditById(liveEconomyReport, 'mat_artifact_shard');
+  if ((artifactShardAudit?.liveSinks.length ?? 0) === 0) {
+    addErr('Packet 3.6A named blocker unresolved: mat_artifact_shard does not route into any visible live sink');
+  }
+
+  const quenchingOilRecipe = alchemyRecipes.filter((recipe) => recipe.id === 'alc_reagent_quenching_oil_t2');
+  if (quenchingOilRecipe.length !== 1) {
+    addErr(`Packet 3.6A requires exactly one alc_reagent_quenching_oil_t2 recipe, found ${quenchingOilRecipe.length}`);
+  } else {
+    const [recipe] = quenchingOilRecipe;
+    if ((liveEconomyCatalog.alchemyRecipeStatusById[recipe.id] ?? 'unknown') !== 'visible_live') {
+      addErr('Packet 3.6A requires alc_reagent_quenching_oil_t2 to remain visible_live');
+    }
+    if ((recipe.timeSec ?? 0) !== 240) {
+      addErr('Packet 3.6A requires alc_reagent_quenching_oil_t2 to run at 240 seconds');
+    }
+    const inputIds = Object.keys(recipe.inputs ?? {}).sort();
+    if (inputIds.join(',') !== ['mat_furnace_cinder', 'mat_thunder_sand'].join(',')) {
+      addErr(`Packet 3.6A requires alc_reagent_quenching_oil_t2 to use only mat_furnace_cinder and mat_thunder_sand; found ${inputIds.join(', ')}`);
+    }
+  }
+
+  if (!hasVisibleLiveReagentPath(liveEconomyReport, 'forge_refine_legendary_t5', 'reagent_quenching_oil_t2')) {
+    addErr('Packet 3.6A named blocker unresolved: forge_refine_legendary_t5 lacks a visible live reagent_quenching_oil_t2 path');
+  }
+
+  const legendaryPathAudit = getLiveReagentPathAuditByBlueprintId(liveEconomyReport, 'forge_refine_legendary_t5');
+  if ((legendaryPathAudit?.missingDependencyIds ?? []).includes('reagent_quenching_oil_t2')) {
+    addErr('Packet 3.6A named blocker unresolved: forge_refine_legendary_t5 still reports missing reagent_quenching_oil_t2');
+  }
 
   forgeBlueprints.forEach((blueprint) => {
     const family = getForgeBlueprintFamily(blueprint);

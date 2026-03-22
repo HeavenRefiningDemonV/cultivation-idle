@@ -280,11 +280,10 @@
       "id": "alc_reagent_quenching_oil_t2",
       "unlocksAtCityId": "city_ironpeak_bastion",
       "station": "alchemy",
-      "timeSec": 180,
+      "timeSec": 240,
       "inputs": {
-        "reagent_quenching_oil_t1": 1,
         "mat_furnace_cinder": 2,
-        "mat_spirit_steel_ore": 1
+        "mat_thunder_sand": 1
       },
       "outputs": {
         "reagent_quenching_oil_t2": 1

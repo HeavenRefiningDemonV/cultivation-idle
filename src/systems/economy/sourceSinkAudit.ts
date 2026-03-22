@@ -7,6 +7,10 @@ import { getLiveEconomyItemFamily } from './liveEconomyVisibility.js';
 import type { LiveEconomyAuditReport, LiveEconomyItemAudit, LiveEconomyRouteRef, LiveReagentPathAudit } from './liveEconomyTypes.js';
 
 const TECHNIQUE_REROLL_SINK_ITEM_ID = 'reagent_soul_ink_t0';
+export const PACKET_3_6A_NAMED_MATERIAL_SINK_IDS = ['mat_spirit_dew', 'mat_artifact_shard'] as const;
+export const PACKET_3_6A_REAGENT_PATH_BLUEPRINT_ID = 'forge_refine_legendary_t5';
+export const PACKET_3_6A_REAGENT_RECIPE_ID = 'alc_reagent_quenching_oil_t2';
+export const PACKET_3_6A_REAGENT_ITEM_ID = 'reagent_quenching_oil_t2';
 
 function pushRoute(map: Map<string, LiveEconomyRouteRef[]>, route: LiveEconomyRouteRef) {
   const list = map.get(route.itemId) ?? [];
@@ -146,4 +150,55 @@ export function getSinklessLiveMaterials(report: LiveEconomyAuditReport): LiveEc
     if (!report.craftRelevantItemIds.includes(entry.itemId)) return false;
     return entry.liveSinks.length === 0;
   });
+}
+
+export function getLiveEconomyItemAuditById(report: LiveEconomyAuditReport, itemId: string): LiveEconomyItemAudit | undefined {
+  return report.itemAudits.find((entry) => entry.itemId === itemId);
+}
+
+export function getLiveReagentPathAuditByBlueprintId(report: LiveEconomyAuditReport, blueprintId: string): LiveReagentPathAudit | undefined {
+  return report.reagentPathAudits.find((entry) => entry.blueprintId === blueprintId);
+}
+
+export function getVisibleLiveSourcesForItem(report: LiveEconomyAuditReport, itemId: string): LiveEconomyRouteRef[] {
+  return getLiveEconomyItemAuditById(report, itemId)?.liveSources ?? [];
+}
+
+export function getVisibleLiveSinksForItem(report: LiveEconomyAuditReport, itemId: string): LiveEconomyRouteRef[] {
+  return getLiveEconomyItemAuditById(report, itemId)?.liveSinks ?? [];
+}
+
+export function hasVisibleLiveSink(report: LiveEconomyAuditReport, itemId: string): boolean {
+  return getVisibleLiveSinksForItem(report, itemId).length > 0;
+}
+
+export function hasVisibleLiveSource(report: LiveEconomyAuditReport, itemId: string): boolean {
+  return getVisibleLiveSourcesForItem(report, itemId).length > 0;
+}
+
+export function hasVisibleLiveReagentPath(
+  report: LiveEconomyAuditReport,
+  blueprintId: string,
+  reagentItemId?: string,
+): boolean {
+  const audit = getLiveReagentPathAuditByBlueprintId(report, blueprintId);
+  if (audit?.missingDependencyIds.length) {
+    if (!reagentItemId) return false;
+    return !audit.missingDependencyIds.includes(reagentItemId);
+  }
+  if (!reagentItemId) return true;
+  return hasVisibleLiveSource(report, reagentItemId);
+}
+
+export function getPacket36AMaterialSinkStatus(report: LiveEconomyAuditReport) {
+  return Object.fromEntries(
+    PACKET_3_6A_NAMED_MATERIAL_SINK_IDS.map((itemId) => [
+      itemId,
+      {
+        itemId,
+        hasVisibleLiveSink: hasVisibleLiveSink(report, itemId),
+        sinkIds: getVisibleLiveSinksForItem(report, itemId).map((entry) => entry.refId).sort(),
+      },
+    ]),
+  ) as Record<(typeof PACKET_3_6A_NAMED_MATERIAL_SINK_IDS)[number], { itemId: string; hasVisibleLiveSink: boolean; sinkIds: string[] }>;
 }

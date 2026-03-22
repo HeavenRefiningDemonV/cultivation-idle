@@ -4,6 +4,8 @@ import test from 'node:test';
 import { validateLoadedContent } from '../../src/content/index.js';
 import {
   buildLiveEconomyAuditReport,
+  getLiveEconomyItemAuditById,
+  getPacket36AMaterialSinkStatus,
   getSinklessLiveMaterials,
   getVisibleAlchemyRecipes,
   listKnownLiveEconomyBlockers,
@@ -34,13 +36,18 @@ test('packet 3.1 every visible live material now has at least one visible live s
 test('packet 3.1 spirit dew and artifact shards resolve to real live sinks', async () => {
   const validated = await getValidated();
   const report = buildLiveEconomyAuditReport(validated);
-  const spiritDew = report.itemAudits.find((entry) => entry.itemId === 'mat_spirit_dew');
-  const artifactShard = report.itemAudits.find((entry) => entry.itemId === 'mat_artifact_shard');
+  const spiritDew = getLiveEconomyItemAuditById(report, 'mat_spirit_dew');
+  const artifactShard = getLiveEconomyItemAuditById(report, 'mat_artifact_shard');
+  const namedStatus = getPacket36AMaterialSinkStatus(report);
 
+  assert.equal(namedStatus.mat_spirit_dew.hasVisibleLiveSink, true);
+  assert.equal(namedStatus.mat_artifact_shard.hasVisibleLiveSink, true);
   assert.ok(spiritDew?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_temper_accessory_t1'));
+  assert.equal(spiritDew?.liveSinks.some((entry) => entry.refId === 'formation_plate_basic'), false);
   assert.ok(artifactShard?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_uncommon_t3'));
   assert.ok(artifactShard?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_rare_t4'));
   assert.ok(artifactShard?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_legendary_t5'));
+  assert.equal(artifactShard?.liveSinks.some((entry) => entry.refId === 'forge_jade_core_shell_t1'), false);
 });
 
 test('packet 3.1 legendary refine now resolves to a live Quenching Oil t2 source path', async () => {
