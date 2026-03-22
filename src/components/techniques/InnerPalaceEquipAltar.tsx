@@ -3,8 +3,8 @@ import type { TechniqueDef } from '../../content/index.js';
 import type { EquipResult, SlotType } from '../../stores/techniqueStore.js';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap.js';
 import { normalizeGrade, normalizeRarity } from '../../stores/techCollectionStore.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './InnerPalaceEquipAltar.scss';
 
 export type InnerPalaceSlot = {

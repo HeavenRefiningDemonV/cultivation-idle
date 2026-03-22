@@ -11,7 +11,7 @@ import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
-import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink.js';
+import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink/index.js';
 import type { CultivationPath, HeartLawDef } from '../../types/index.js';
 
 const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [

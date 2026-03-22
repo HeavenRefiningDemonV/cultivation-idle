@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import type { RewardBundle } from '../../services/rewards.js';
+import type { RewardBundle } from '../../services/rewards/index.js';
 import { pityProgressPercent } from '../../services/economy/pity.js';
 import { normalizeItemList } from '../../utils/itemList.js';
 import { multiply } from '../../utils/numbers.js';
@@ -10,7 +10,7 @@ import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionS
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRouteContract.js';
 import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting.js';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper.js';
+import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import './ExpeditionBoardPanel.scss';
 

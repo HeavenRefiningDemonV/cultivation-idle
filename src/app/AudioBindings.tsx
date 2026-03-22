@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { audio } from '../services/audio.js';
+import { audio } from '../services/audio/index.js';
 import { useUIStore, type UIState } from '../stores/uiStore.js';
 import { isSoundId } from '../services/audio/soundIds.js';
 import type { UINotification } from '../stores/uiStore.js';

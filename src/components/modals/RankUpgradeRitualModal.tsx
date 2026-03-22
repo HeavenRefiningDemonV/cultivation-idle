@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import './RankUpgradeRitualModal.scss';
 import { useContentStore } from '../../stores/contentStore.js';
 import { rankMultiplier, useTechCollectionStore } from '../../stores/techCollectionStore.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 interface RankUpgradeRitualModalProps {
   techId: string;

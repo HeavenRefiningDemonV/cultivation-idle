@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { SaveService } from '../../services/save/SaveService.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { getContentBaseUrl } from '../../content/index.js';
-import { RewardService } from '../../services/rewards.js';
+import { RewardService } from '../../services/rewards/index.js';
 import { buildMegaRewardBundle } from '../../debug/buildMegaRewardBundle.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { useRewardsLogStore } from '../../stores/rewardsLogStore.js';

@@ -2,9 +2,9 @@ import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
-import { getLiveRealmByIndex } from '../../systems/progression/runtime.js';
+import { getLiveRealmByIndex } from '../../systems/progression/runtime/index.js';
 import { bootstrapLiveWorldStores } from '../../systems/world/bootstrapLiveWorld.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 const EMPTY_RUINS = Object.freeze([]) as ReadonlyArray<
   NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['ruins'][number]

@@ -1,4 +1,4 @@
-import { PaperCard } from '../../ui/ink.js';
+import { PaperCard } from '../../ui/ink/index.js';
 import { AlchemyPanel } from '../../components/screens/AlchemyPanel.js';
 import type { ApothecaryBrewSummary } from './apothecaryPrepReadModel.js';
 

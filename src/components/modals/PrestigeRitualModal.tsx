@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { createPortal } from 'react-dom';
 import type { ApBreakdown } from '../../stores/prestigeStore.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 interface PrestigeRitualModalProps {
   open: boolean;

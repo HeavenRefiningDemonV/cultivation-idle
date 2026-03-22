@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import type { TechniqueTypeKey } from '../../features/manuals/manualIconMap.js';
 import { getPathIcon, getTierIcon, getTypeIcon } from '../../features/manuals/manualIconMap.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './TechniqueSpine.scss';
 
 export type TechniqueSpineState = 'available' | 'locked' | 'equipped' | 'unknown';

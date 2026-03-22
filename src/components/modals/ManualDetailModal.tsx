@@ -6,7 +6,7 @@ import type { ManualGrade, ManualRarity, PavilionStockSlot } from '../../feature
 import type { ManualPurchaseResult as StoreManualPurchaseResult } from '../../stores/manualPavilionStore.js';
 import { getManualPathIcon, getManualRoleIcon, getManualTierIcon } from '../../features/manuals/manualIconMap.js';
 import { formatPrice } from '../../stores/contentStore.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 export interface ManualDetailData {
   slot: PavilionStockSlot;

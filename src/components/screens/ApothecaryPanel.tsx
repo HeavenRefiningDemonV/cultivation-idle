@@ -20,8 +20,8 @@ import { consumeConsumable } from '../../systems/consumables/consumeConsumable.j
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips.js';
 import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel.js';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal.js';
-import { InkPanel, PaperCard, PaperChip } from '../../ui/ink.js';
-import { GameIcon } from '../../ui/icons.js';
+import { InkPanel, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './ApothecaryPanel.scss';
 
 type BuyFilterKey = 'all' | 'combat' | 'cultivation' | 'rotating';

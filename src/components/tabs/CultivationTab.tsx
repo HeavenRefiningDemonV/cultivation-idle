@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '../../stores/gameStore.js';
 import { D, formatNumber, greaterThanOrEqualTo, divide } from '../../utils/numbers.js';
 import type { FocusMode } from '../../types/index.js';
-import { REALMS, FOCUS_MODE_MODIFIERS } from '../../constants.js';
+import { REALMS, FOCUS_MODE_MODIFIERS } from '../../constants/index.js';
 import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtime/index.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './CultivationTab.scss';
 
 /**

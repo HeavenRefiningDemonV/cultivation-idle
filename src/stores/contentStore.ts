@@ -25,6 +25,9 @@ import {
 import {
   buildLiveEconomyCatalog,
   buildTargetedMaterialSinkAudit,
+  getAllPrepBudgetRegistryEntries,
+  getAllSpendOrderPolicies,
+  getEconomicModuleRoleEntries,
   type LiveEconomyCatalog,
   type TargetedMaterialSinkAudit,
 } from '../systems/economy/index.js';
@@ -85,6 +88,9 @@ interface ContentStoreState {
   getPrestigeRuntimeCatalog: () => ReturnType<typeof getPrestigeRuntimeCatalog>;
   getLiveEconomyCatalog: () => LiveEconomyCatalog;
   getTargetedMaterialSinkAudit: () => TargetedMaterialSinkAudit;
+  getPrepBudgetRegistry: () => ReturnType<typeof getAllPrepBudgetRegistryEntries>;
+  getSpendOrderPolicies: () => ReturnType<typeof getAllSpendOrderPolicies>;
+  getEconomicModuleRoles: () => ReturnType<typeof getEconomicModuleRoleEntries>;
 }
 
 const emptyMaps: ContentMaps = {
@@ -362,6 +368,12 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     }
     return buildTargetedMaterialSinkAudit(raw);
   },
+
+  getPrepBudgetRegistry: () => getAllPrepBudgetRegistryEntries(),
+
+  getSpendOrderPolicies: () => getAllSpendOrderPolicies(),
+
+  getEconomicModuleRoles: () => getEconomicModuleRoleEntries(),
 }));
 
 export function getItemDef(itemId: string): ItemDef | null {

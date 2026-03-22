@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useUIStore } from '../stores/uiStore.js';
 import './NotificationToasts.scss';
-import { GameIcon } from '../ui/icons.js';
+import { GameIcon } from '../ui/icons/index.js';
 
 export function NotificationToasts() {
   const notifications = useUIStore((state) => state.notifications);

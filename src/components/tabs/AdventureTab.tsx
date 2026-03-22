@@ -7,7 +7,7 @@ import { useZoneStore } from '../../stores/zoneStore.js';
 import { formatNumber, divide, D, formatPercentFromFraction } from '../../utils/numbers.js';
 import type { EnemyDefinition } from '../../types/index.js';
 import { CombatCanvas } from '../combat/CombatCanvas.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './AdventureTab.scss';
 
 /**

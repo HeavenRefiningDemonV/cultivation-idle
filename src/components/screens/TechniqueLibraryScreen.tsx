@@ -23,8 +23,8 @@ import {
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap.js';
 import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
-import { InkPanel, PaperCard } from '../../ui/ink.js';
-import { GameIcon } from '../../ui/icons.js';
+import { InkPanel, PaperCard } from '../../ui/ink/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './TechniqueLibraryScreen.scss';
 
 type SlotSelection = { type: SlotType; index: number };

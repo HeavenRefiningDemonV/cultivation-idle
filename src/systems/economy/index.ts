@@ -15,3 +15,8 @@ export * from './supportCurrencyTargets.js';
 export * from './meritRoleAudit.js';
 export * from './gateFailureMeritPolicy.js';
 export * from './supportEconomySurfaceModel.js';
+export * from './economicConstants.js';
+export * from './prepBudgetRegistry.js';
+export * from './spendOrderPolicy.js';
+export * from './economicPhaseResolver.js';
+export * from './moduleRoleRegistry.js';

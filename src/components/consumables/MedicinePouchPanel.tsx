@@ -7,9 +7,9 @@ import { getConsumableSpec, isCombatUsableConsumable } from '../../systems/consu
 import type { MedicinePouchSlotKey, MedicinePouchTrigger } from '../../types/index.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
 import { ConsumableMetaChips } from './ConsumableMetaChips.js';
-import { InkPanel, PaperCard, PaperChip } from '../../ui/ink.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import { InkPanel, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './MedicinePouchPanel.scss';
 
 type SlotConfigField = 'enabled' | 'trigger' | 'thresholdPct' | 'cooldownSec' | 'bossOnly';

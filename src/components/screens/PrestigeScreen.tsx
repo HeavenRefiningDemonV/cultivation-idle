@@ -6,7 +6,7 @@ import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
-import { RewardService } from '../../services/rewards.js';
+import { RewardService } from '../../services/rewards/index.js';
 import type { PrestigeUpgradeDef } from '../../content/index.js';
 import { PRESTIGE_CATEGORIES, buildPrestigeCategorySections } from '../../features/prestige/prestigeCategories.js';
 import type { PrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
@@ -16,8 +16,8 @@ import { PrestigeUpgradeModal } from '../modals/PrestigeUpgradeModal.js';
 import { ApBreakdownModal } from '../modals/ApBreakdownModal.js';
 import { PrestigeRitualModal } from '../modals/PrestigeRitualModal.js';
 import { D } from '../../utils/numbers.js';
-import { InkPanel, PaperCard } from '../../ui/ink.js';
-import { GameIcon } from '../../ui/icons.js';
+import { InkPanel, PaperCard } from '../../ui/ink/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './PrestigeScreen.scss';
 
 export function PrestigeScreen() {

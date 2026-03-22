@@ -1,7 +1,7 @@
 import type { ItemType } from '../../types/index.js';
 import type { DisplayStack } from './inventoryTypes.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 type InventorySlotTileProps = {
   stack: DisplayStack;

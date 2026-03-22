@@ -14,8 +14,8 @@ import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { getManualTierIcon, getManualPathIcon, getManualRoleIcon } from '../../features/manuals/manualIconMap.js';
 import { ManualDetailModal, type ManualDetailData, type ManualPurchaseState } from '../modals/ManualDetailModal.js';
-import { PaperCard } from '../../ui/ink.js';
-import { GameIcon } from '../../ui/icons.js';
+import { PaperCard } from '../../ui/ink/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;

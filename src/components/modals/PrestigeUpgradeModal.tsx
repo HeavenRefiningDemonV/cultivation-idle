@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import type { PrestigeUpgradeDef } from '../../content/index.js';
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap.js';
 import { getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 interface PrestigeUpgradeModalProps {
   open: boolean;

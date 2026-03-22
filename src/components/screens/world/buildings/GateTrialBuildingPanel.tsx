@@ -7,7 +7,7 @@ import { useInventoryStore } from '../../../../stores/inventoryStore.js';
 import { useGameStore } from '../../../../stores/gameStore.js';
 import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../../systems/progression/runtime/index.js';
 import { useTrialStore } from '../../../../stores/trialStore.js';
-import { RewardService } from '../../../../services/rewards.js';
+import { RewardService } from '../../../../services/rewards/index.js';
 import { resolveModuleRef } from '../worldUtils.js';
 import { useUIStore } from '../../../../stores/uiStore.js';
 import { hpPercent } from '../../../../systems/combat/minibarModel.js';

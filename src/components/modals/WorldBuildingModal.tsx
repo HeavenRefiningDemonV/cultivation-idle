@@ -9,7 +9,7 @@ import { TalismanPanel } from '../screens/TalismanPanel.js';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
 import { isCombatModule } from '../../systems/world/openWorldModule.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import hammer from "../../assets/onscreen/hammer.png";
 import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel.js';

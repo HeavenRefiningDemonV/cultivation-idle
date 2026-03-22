@@ -18,7 +18,7 @@ import { CityArrivalBanner } from './system/CityArrivalBanner.js';
 import { BottomTabBar } from './BottomTabBar.js';
 import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
 import { AudioBindings } from '../app/AudioBindings.js';
-import { GameIcon } from '../ui/icons.js';
+import { GameIcon } from '../ui/icons/index.js';
 import './GameLayout.scss';
 
 /**

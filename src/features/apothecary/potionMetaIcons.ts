@@ -1,5 +1,5 @@
 import type { ConsumableSpec } from '../../systems/consumables/consumableCatalog.js';
-import type { IconId } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
 
 export type MetaChip = {
   key: string;

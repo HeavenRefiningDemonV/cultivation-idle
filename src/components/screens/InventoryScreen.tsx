@@ -9,8 +9,8 @@ import EquipmentDrawer from '../inventory/EquipmentDrawer.js';
 import InventorySlotTile from '../inventory/InventorySlotTile.js';
 import type { DisplayStack } from '../inventory/inventoryTypes.js';
 import type { ItemDefinition } from '../../types/index.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
 import './InventoryScreen.scss';
 

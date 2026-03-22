@@ -15,9 +15,9 @@ import { useContentStore } from '../../../stores/contentStore.js';
 import { isRuneBlueprint } from '../../../content/index.js';
 import { buildItemDelta } from './forgeDelta.js';
 import { resolveForgeStepScript } from './forgeScriptBuilder.js';
-import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink.js';
-import type { IconId } from '../../../ui/icons.js';
-import { GameIcon } from '../../../ui/icons.js';
+import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink/index.js';
+import type { IconId } from '../../../ui/icons/index.js';
+import { GameIcon } from '../../../ui/icons/index.js';
 import {
   buildForgeSurfaceModel,
   getAllowedForgeModes,

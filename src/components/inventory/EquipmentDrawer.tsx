@@ -5,8 +5,8 @@ import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { getItemDef } from '../../stores/contentStore.js';
 import type { ItemDefinition } from '../../types/index.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './EquipmentDrawer.scss';
 
 type EquipmentDrawerProps = {

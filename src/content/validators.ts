@@ -51,6 +51,13 @@ import {
   buildLiveEconomyCatalog,
   buildLiveEconomyAuditReport,
   buildTargetedMaterialSinkAudit,
+  buildEconomicPhaseSnapshotFromState,
+  buildEconomicStockFloorSnapshot,
+  getAllPrepBudgetRegistryEntries,
+  getAllSpendOrderPolicies,
+  getDeferredModuleLeakKeysForModuleRoleRegistry,
+  getEconomicModuleRoleEntries,
+  getExpeditionPurposeConsistencySummary,
   getLiveEconomyItemAuditById,
   getLiveReagentPathAuditByBlueprintId,
   getPacket36AMaterialSinkStatus,
@@ -58,6 +65,7 @@ import {
   getSinklessLiveMaterials,
   listKnownLiveEconomyBlockers,
 } from '../systems/economy/index.js';
+import { SEMESTER_SLICE_CONTRACT } from '../systems/progression/contract/semesterSlice.js';
 import {
   buildForgeLadderAudit,
   buildLiveForgeCatalog,
@@ -1131,6 +1139,87 @@ function validateSupportEconomyRuntimeTruth(options: {
   }
 }
 
+function validateEconomicRecommendationRuntimeTruth(options: {
+  content: ValidatedContent;
+  addErr: (msg: string) => void;
+}) {
+  const { content, addErr } = options;
+  const prepBudgets = getAllPrepBudgetRegistryEntries();
+  if (prepBudgets.length !== 5) {
+    addErr(`prep-budget registry must cover all five live transitions; found ${prepBudgets.length}`);
+  }
+
+  const expectedTransitions = [
+    'qi_condensation_to_foundation',
+    'foundation_to_core_formation',
+    'core_formation_to_nascent_soul',
+    'nascent_soul_to_soul_formation',
+    'soul_formation_to_spirit_severing',
+  ];
+  if (prepBudgets.map((entry) => entry.transitionId).join(',') !== expectedTransitions.join(',')) {
+    addErr('prep-budget registry drifted away from the canonical semester transition order');
+  }
+
+  const spendPolicies = getAllSpendOrderPolicies();
+  if (spendPolicies.length !== 5) {
+    addErr(`spend-order policy must expose five gate snapshots; found ${spendPolicies.length}`);
+  }
+  if (spendPolicies.some((entry) => entry.priorities.length !== 7)) {
+    addErr('spend-order policy must preserve all seven priorities');
+  }
+  if (spendPolicies.some((entry) => entry.pavilionSpendCeilingBeforeResolve <= 0)) {
+    addErr('spend-order policy must expose a pavilion spend ceiling for every gate');
+  }
+  if (spendPolicies.some((entry) => entry.spiritRootRerollSpendCeilingBeforeResolve <= 0)) {
+    addErr('spend-order policy must expose a spirit-root reroll spend ceiling for every gate');
+  }
+
+  const moduleRoles = getEconomicModuleRoleEntries();
+  if (moduleRoles.length !== 8) {
+    addErr(`module-role registry must cover eight live economy-facing modules; found ${moduleRoles.length}`);
+  }
+
+  const deferredLeaks = getDeferredModuleLeakKeysForModuleRoleRegistry();
+  if (deferredLeaks.length > 0) {
+    addErr(`module-role registry must not include deferred modules: ${deferredLeaks.join(', ')}`);
+  }
+
+  const missingModuleRoles = ['outskirts', 'ruins', 'apothecary', 'forge', 'bounties', 'expeditions', 'manualPavilion', 'gateTrial']
+    .filter((moduleKey) => !moduleRoles.some((entry) => entry.moduleKey === moduleKey));
+  if (missingModuleRoles.length > 0) {
+    addErr(`module-role registry missing economy-facing modules: ${missingModuleRoles.join(', ')}`);
+  }
+
+  const expeditionConsistency = getExpeditionPurposeConsistencySummary();
+  if (expeditionConsistency.missingModuleRoles.length > 0) {
+    addErr(`module-role registry drifted away from expedition route purposes: ${expeditionConsistency.missingModuleRoles.join(', ')}`);
+  }
+
+  for (const cityId of SEMESTER_SLICE_CONTRACT.liveCityIds) {
+    const city = content.cities.find((entry) => entry.id === cityId);
+    if (!city) continue;
+    const floorSnapshot = buildEconomicStockFloorSnapshot({ gateIndex: city.index + 1, cityId });
+    if (!floorSnapshot.cultivationPrepItemId) {
+      addErr(`economic stock-floor adapter must resolve a cultivation prep item for ${cityId}`);
+    }
+  }
+
+  const phaseSnapshot = buildEconomicPhaseSnapshotFromState({
+    content,
+    currentCityId: 'city_stonecrag_town',
+    unlockedCityIds: ['city_pinewind_hamlet', 'city_stonecrag_town'],
+    currentRealmIndex: 1,
+    selectedPath: 'earth',
+    trialProgressById: {},
+  });
+  if (phaseSnapshot.currentGateIndex !== 2) {
+    addErr('economic phase resolver drifted away from the canonical Stonecrag gate index');
+  }
+  if (phaseSnapshot.nextUnresolvedGateTransition?.toRealmId === 'spirit_severing' && phaseSnapshot.currentGateIndex > 5) {
+    addErr('economic phase resolver must not invent a fake gate 6 transition');
+  }
+}
+
 export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const errors: string[] = [];
   const addErr = (msg: string) => errors.push(`[ContentValidation] ${msg}`);
@@ -1229,6 +1318,30 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   });
 
   validateSupportEconomyRuntimeTruth({
+    content: {
+      raw,
+      economy: raw.economy,
+      cities,
+      items,
+      techniques,
+      pavilions,
+      outskirts,
+      enemies,
+      trials: normalizedTrials,
+      ruins,
+      runes,
+      talisman_recipes: talismanRecipes,
+      alchemy_recipes: alchemyRecipes,
+      forge_blueprints: forgeBlueprints,
+      apothecary_shops: apothecaryShops,
+      expeditions,
+      bounties: bountyConfig,
+      heart_laws: heartLaws,
+      prestige_store: prestige,
+    },
+    addErr,
+  });
+  validateEconomicRecommendationRuntimeTruth({
     content: {
       raw,
       economy: raw.economy,

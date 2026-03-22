@@ -6,7 +6,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { formatDurationHMS } from '../../utils/timeFormat.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 type FocusStage = 'idle' | 'arming' | 'focusing' | 'result';
 type ManualSortMode = 'newest' | 'rarity' | 'grade' | 'name';

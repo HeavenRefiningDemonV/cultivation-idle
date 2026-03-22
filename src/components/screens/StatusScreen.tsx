@@ -5,13 +5,13 @@ import { useCombatStore } from '../../stores/combatStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers.js';
-import { REALMS } from '../../constants.js';
+import { REALMS } from '../../constants/index.js';
 import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtime/index.js';
 import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
 import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import {
   Crosshair,
   Droplets,

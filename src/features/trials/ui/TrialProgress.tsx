@@ -10,7 +10,7 @@ import { useTrialStore } from '../../../stores/trialStore.js';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel.js';
 import { hpPercent } from '../../../systems/combat/minibarModel.js';
 import { formatNumber, D } from '../../../utils/numbers.js';
-import { GameIcon } from '../../../ui/icons.js';
+import { GameIcon } from '../../../ui/icons/index.js';
 import './TrialProgress.scss';
 
 const TRIAL_RECOMMENDATIONS: Record<string, { minRealm?: number; suggestedDps?: number; suggestedHp?: number }> = {

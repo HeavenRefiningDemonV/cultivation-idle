@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { REALMS } from '../../constants.js';
+import { REALMS } from '../../constants/index.js';
 import {
   clampRealmIndexToSemesterSlice,
   getGateTransitionItemIdForRealmIndex,
@@ -23,7 +23,7 @@ import cultivator from "../../assets/onscreen/cbg_full.png";
 import barLong from "../../assets/menus/bar_long.png";
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {

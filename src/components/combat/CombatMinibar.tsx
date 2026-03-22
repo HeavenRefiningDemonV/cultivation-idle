@@ -10,7 +10,7 @@ import { computeCombatSafety, formatSeconds, getCooldownProgress, getNextActionT
 import { formatNumber } from '../../utils/numbers.js';
 import { AI_PROFILE_OPTIONS } from '../../systems/combat/aiProfiles.js';
 import { MedicinePouchStrip } from './MedicinePouchStrip.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './CombatMinibar.scss';
 
 type LogEntry =

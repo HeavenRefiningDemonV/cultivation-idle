@@ -1,7 +1,7 @@
 import type { ManualGrade } from './pavilionStockTypes.js';
 import type { TechniqueDef } from '../../content/index.js';
 import type { PathId } from '../../content/types.js';
-import type { IconId } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
 import { normalizeGrade } from '../../stores/techCollectionStore.js';
 
 export type ManualType = 'active' | 'passive' | 'ultimate';

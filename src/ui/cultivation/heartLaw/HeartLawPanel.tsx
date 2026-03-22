@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { INITIAL_REALM } from '../../../constants.js';
+import { INITIAL_REALM } from '../../../constants/index.js';
 import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
 import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo.js';

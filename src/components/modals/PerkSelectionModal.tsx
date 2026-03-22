@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useGameStore } from '../../stores/gameStore.js';
 import { getAvailablePerks } from '../../data/pathPerks.js';
 import type { PathPerk } from '../../data/pathPerks.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './PerkSelectionModal.scss';
 
 interface PerkSelectionModalProps {

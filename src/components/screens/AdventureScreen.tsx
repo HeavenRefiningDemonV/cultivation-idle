@@ -5,7 +5,7 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { clamp, D, formatNumber, formatPercentFromFraction, formatPercentFromValue } from '../../utils/numbers.js';
 import { TechniquePanel } from '../TechniquePanel.js';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './AdventureScreen.scss';
 
 /**

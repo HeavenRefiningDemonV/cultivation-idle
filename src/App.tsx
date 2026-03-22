@@ -4,7 +4,7 @@ import { ContentInitGate } from './components/system/ContentInitGate.js';
 import { initializeGame } from './systems/gameLoop.js';
 import { useShopStore } from './stores/shopStore.js';
 import paperTexture from "./assets/texture_overlay.png";
-import { GameIcon } from './ui/icons.js';
+import { GameIcon } from './ui/icons/index.js';
 import './App.scss';
 
 /**

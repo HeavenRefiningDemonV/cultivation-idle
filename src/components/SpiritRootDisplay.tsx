@@ -4,7 +4,7 @@ import { usePrestigeStore } from '../stores/prestigeStore.js';
 import { useInventoryStore } from '../stores/inventoryStore.js';
 import { formatNumber, D } from '../utils/numbers.js';
 import type { SpiritRootElement, SpiritRootGrade } from '../types/index.js';
-import { GameIcon } from '../ui/icons.js';
+import { GameIcon } from '../ui/icons/index.js';
 import './SpiritRootDisplay.scss';
 
 /**

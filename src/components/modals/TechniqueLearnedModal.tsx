@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import './TechniqueLearnedModal.scss';
-import { GameIcon } from '../../ui/icons.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';

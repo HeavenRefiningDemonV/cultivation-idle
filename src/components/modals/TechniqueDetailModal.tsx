@@ -18,8 +18,8 @@ import { RankUpgradeRitualModal } from './RankUpgradeRitualModal.js';
 import { TraitRerollModal } from './TraitRerollModal.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap.js';
-import type { IconId } from '../../ui/icons.js';
-import { GameIcon } from '../../ui/icons.js';
+import type { IconId } from '../../ui/icons/index.js';
+import { GameIcon } from '../../ui/icons/index.js';
 import './TechniqueDetailModal.scss';
 
 export interface TechniqueDetailModalProps {
