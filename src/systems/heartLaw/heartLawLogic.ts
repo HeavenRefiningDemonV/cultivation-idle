@@ -1,11 +1,8 @@
 import type { HeartLawDef } from '../../content/index.js';
 import { getHeartLawProfile } from '../doctrine/heartLawCatalog.js';
-import {
-  LIVE_SPIRIT_ROOT_ELEMENTS,
-  getNormalizedHeartLawAffinityRules,
-} from '../doctrine/heartLawEffectReaders.js';
-import { useContentStore } from '../../stores/contentStore.js';
-import type { SpiritRoot, SpiritRootElement } from '../../types/index.js';
+import { evaluateSpiritRootResonance } from '../doctrine/spiritRootResonance.js';
+import type { ResonanceTier } from '../doctrine/spiritRootResonance.js';
+import type { SpiritRoot } from '../../types/index.js';
 
 export type AffinityStatus = 'match' | 'mismatch' | 'none';
 
@@ -49,7 +46,6 @@ export type HeartLawBonuses = {
   notes: string[];
 };
 
-const LIVE_SPIRIT_ROOT_ELEMENT_SET = new Set<SpiritRootElement>(LIVE_SPIRIT_ROOT_ELEMENTS);
 const MULTIPLIER_KEY_TO_FIELD = {
   cultivateQiMult: 'cultivateRateMult',
   combatDamageMult: 'combatDamageMult',
@@ -135,70 +131,30 @@ function normalizeRequestedChapter(chapter: number): number {
   return Math.max(1, Math.floor(chapter));
 }
 
-function getResolvedAffinityCandidates(heartLawDef: HeartLawDef | null):
-  | { kind: 'none' }
-  | { kind: 'any' }
-  | { kind: 'matchable'; values: readonly SpiritRootElement[] } {
-  const profile = getHeartLawProfile(heartLawDef?.id ?? null);
-  if (!profile) {
-    return { kind: 'none' };
+function getResonanceTierCompatStatus(tier: ResonanceTier): {
+  status: AffinityStatus;
+  percent: number;
+} {
+  switch (tier) {
+    case 'strong':
+      return { status: 'match', percent: 12 };
+    case 'partial':
+      return { status: 'match', percent: 6 };
+    case 'mismatch':
+      return { status: 'mismatch', percent: 4 };
+    case 'neutral':
+    default:
+      return { status: 'none', percent: 0 };
   }
-
-  if (profile.spiritRootAffinities.includes('any')) {
-    return { kind: 'any' };
-  }
-
-  if (profile.spiritRootAffinities.length > 0) {
-    if (profile.liveSpiritRootAffinities.length === 0) {
-      return { kind: 'none' };
-    }
-
-    return { kind: 'matchable', values: profile.liveSpiritRootAffinities };
-  }
-
-  const liveDaoTagAffinities = profile.daoTags.filter(
-    (tag): tag is SpiritRootElement => LIVE_SPIRIT_ROOT_ELEMENT_SET.has(tag as SpiritRootElement),
-  );
-
-  if (liveDaoTagAffinities.length === 0) {
-    return { kind: 'none' };
-  }
-
-  return { kind: 'matchable', values: liveDaoTagAffinities };
 }
 
-function getNormalizedRuntimeAffinityRules() {
-  return getNormalizedHeartLawAffinityRules(useContentStore.getState().raw?.heart_law_affinity_rules);
-}
-
-function getMatchBonusForTier(tier: string | null | undefined): number {
-  const normalizedRules = getNormalizedRuntimeAffinityRules();
-  const tierKey = typeof tier === 'string' && tier.trim().length > 0 ? tier : 'starter';
-  return normalizedRules.matchBonusByTier[tierKey] ?? normalizedRules.matchBonusByTier.starter ?? 0;
-}
-
-function shouldApplyAffinityScaling(appliesTo: string | undefined, source: 'signature' | `chapter:${number}`): boolean {
-  const normalizedAppliesTo = appliesTo === 'signatureOnly' ? appliesTo : 'signatureOnly';
-  return normalizedAppliesTo === 'signatureOnly' && source === 'signature';
+function shouldApplyAffinityScaling(source: 'signature' | `chapter:${number}`): boolean {
+  return source === 'signature';
 }
 
 export function computeAffinityMultiplier(heartLawDef: HeartLawDef | null, spiritRoot: SpiritRoot | null): number {
   const profile = getHeartLawProfile(heartLawDef?.id ?? null);
-  if (!profile || !spiritRoot) {
-    return 1;
-  }
-
-  const resolvedCandidates = getResolvedAffinityCandidates(heartLawDef);
-  if (resolvedCandidates.kind === 'none' || resolvedCandidates.kind === 'any') {
-    return 1;
-  }
-
-  const isMatch = resolvedCandidates.values.includes(spiritRoot.element);
-  if (!isMatch) {
-    return 1 - getNormalizedRuntimeAffinityRules().mismatchPenalty;
-  }
-
-  return 1 + getMatchBonusForTier(profile.tier);
+  return evaluateSpiritRootResonance(spiritRoot, profile).heartLawEffectMult;
 }
 
 export function getAffinityStatus(heartLawDef: HeartLawDef | null, spiritRoot: SpiritRoot | null): {
@@ -206,26 +162,7 @@ export function getAffinityStatus(heartLawDef: HeartLawDef | null, spiritRoot: S
   percent: number;
 } {
   const profile = getHeartLawProfile(heartLawDef?.id ?? null);
-  if (!profile || !spiritRoot) {
-    return { status: 'none', percent: 0 };
-  }
-
-  const resolvedCandidates = getResolvedAffinityCandidates(heartLawDef);
-  if (resolvedCandidates.kind === 'none' || resolvedCandidates.kind === 'any') {
-    return { status: 'none', percent: 0 };
-  }
-
-  if (!resolvedCandidates.values.includes(spiritRoot.element)) {
-    return {
-      status: 'mismatch',
-      percent: Math.round(getNormalizedRuntimeAffinityRules().mismatchPenalty * 100),
-    };
-  }
-
-  return {
-    status: 'match',
-    percent: Math.round(getMatchBonusForTier(profile.tier) * 100),
-  };
+  return getResonanceTierCompatStatus(evaluateSpiritRootResonance(spiritRoot, profile).tier);
 }
 
 export function getHeartLawBonuses(options: {
@@ -242,9 +179,9 @@ export function getHeartLawBonuses(options: {
   }
 
   const requestedChapter = normalizeRequestedChapter(chapter);
-  const affinityMultiplier = computeAffinityMultiplier(heartLawDef, spiritRoot);
-  const affinityStatus = getAffinityStatus(heartLawDef, spiritRoot).status;
-  const appliesTo = getNormalizedRuntimeAffinityRules().appliesTo;
+  const resonance = evaluateSpiritRootResonance(spiritRoot, profile);
+  const affinityMultiplier = resonance.heartLawEffectMult;
+  const affinityStatus = getResonanceTierCompatStatus(resonance.tier).status;
 
   bonuses.affinityMultiplier = affinityMultiplier;
   bonuses.affinityStatus = affinityStatus;
@@ -264,7 +201,7 @@ export function getHeartLawBonuses(options: {
     }
 
     const scaledValue =
-      effect.appliesAffinity && shouldApplyAffinityScaling(appliesTo, effect.source)
+      effect.appliesAffinity && shouldApplyAffinityScaling(effect.source)
         ? effect.value * affinityMultiplier
         : effect.value;
 
