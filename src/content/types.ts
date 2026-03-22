@@ -457,9 +457,17 @@ export interface BountiesConfig {
   templates: BountyTemplate[];
 }
 
+export interface HeartLawAffinityRules {
+  matchBonusByTier?: Record<string, number>;
+  mismatchPenalty?: number;
+  appliesTo?: string;
+}
+
+export type HeartLawEffectPayload = Record<string, unknown>;
+
 export interface HeartLawChapter {
   chapter: number;
-  effects: unknown;
+  effects: HeartLawEffectPayload;
 }
 
 export interface HeartLawDef {
@@ -469,14 +477,14 @@ export interface HeartLawDef {
   archetype?: string;
   daoTags?: string[];
   spiritRootAffinities?: string[];
-  signature?: unknown;
+  signature?: HeartLawEffectPayload;
   chapters?: HeartLawChapter[];
   isStarter?: boolean;
 }
 
 export interface HeartLawsConfig {
   version?: string;
-  affinityRules?: unknown;
+  affinityRules?: HeartLawAffinityRules;
   heartLaws: HeartLawDef[];
 }
 

@@ -14,6 +14,7 @@ import type {
   ExpeditionDurationDef,
   ExpeditionTypeDef,
   ForgeBlueprintsConfig,
+  HeartLawAffinityRules,
   HeartLawsConfig,
   ItemsConfig,
   OutskirtsConfig,
@@ -113,6 +114,7 @@ export interface ValidatedContent {
   expeditions: ExpeditionsContent;
   bounties: BountiesConfig;
   heart_laws: HeartLawsConfig['heartLaws'];
+  heart_law_affinity_rules: HeartLawAffinityRules | null;
   prestige_store: PrestigeStoreConfig;
 }
 
@@ -514,13 +516,54 @@ function validateRunes(config: RunesConfig) {
   return runes;
 }
 
+function normalizeHeartLawAffinityRules(raw: unknown): HeartLawAffinityRules | null {
+  if (raw == null) {
+    return null;
+  }
+
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    return {};
+  }
+
+  const record = raw as Record<string, unknown>;
+  const normalized: HeartLawAffinityRules = {};
+
+  if (record.matchBonusByTier && typeof record.matchBonusByTier === 'object' && !Array.isArray(record.matchBonusByTier)) {
+    const normalizedMatchBonusByTier: Record<string, number> = {};
+    Object.entries(record.matchBonusByTier as Record<string, unknown>).forEach(([key, value]) => {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        normalizedMatchBonusByTier[key] = value;
+      }
+    });
+    if (Object.keys(normalizedMatchBonusByTier).length > 0) {
+      normalized.matchBonusByTier = normalizedMatchBonusByTier;
+    }
+  }
+
+  if (typeof record.mismatchPenalty === 'number' && Number.isFinite(record.mismatchPenalty)) {
+    normalized.mismatchPenalty = record.mismatchPenalty;
+  }
+
+  if (typeof record.appliesTo === 'string') {
+    const appliesTo = record.appliesTo.trim();
+    if (appliesTo.length > 0) {
+      normalized.appliesTo = appliesTo;
+    }
+  }
+
+  return normalized;
+}
+
 function validateHeartLaws(config: HeartLawsConfig) {
   assertObject(config, 'heart_laws.json root');
   assertHasKey(config, 'heartLaws', 'heart_laws.json');
   assertArray((config as any).heartLaws, 'heart_laws.json.heartLaws');
   const laws = (config as any).heartLaws as HeartLawsConfig['heartLaws'];
   assertUniqueIds(laws, 'heart_laws.json.heartLaws');
-  return laws;
+  return {
+    laws,
+    affinityRules: normalizeHeartLawAffinityRules((config as { affinityRules?: unknown }).affinityRules),
+  };
 }
 
 function normalizePrereqs(raw: unknown, validIds: Set<string>, label: string): PrestigePrereq[] {
@@ -1331,7 +1374,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   const trials = validateTrials(raw.trials);
   const ruins = validateRuins(raw.ruins);
   const runes = validateRunes(raw.runes);
-  const heartLaws = validateHeartLaws(raw.heart_laws);
+  const { laws: heartLaws, affinityRules: heartLawAffinityRules } = validateHeartLaws(raw.heart_laws);
   const prestige = validatePrestige(raw.prestige_store);
   const alchemyRecipes = validateAlchemy(raw.alchemy_recipes);
   const forgeBlueprints = validateForge(raw.forge_blueprints);
@@ -1409,6 +1452,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       expeditions,
       bounties: bountyConfig,
       heart_laws: heartLaws,
+      heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
     },
     addErr,
@@ -1434,6 +1478,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       expeditions,
       bounties: bountyConfig,
       heart_laws: heartLaws,
+      heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
     },
     addErr,
@@ -1458,6 +1503,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       expeditions,
       bounties: bountyConfig,
       heart_laws: heartLaws,
+      heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
     },
     addErr,
@@ -1482,6 +1528,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
       expeditions,
       bounties: bountyConfig,
       heart_laws: heartLaws,
+      heart_law_affinity_rules: heartLawAffinityRules,
       prestige_store: prestige,
     },
     addErr,
@@ -1812,6 +1859,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     expeditions,
     bounties: bountyConfig,
     heart_laws: heartLaws,
+    heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
   });
   const targetedMaterialAudit = buildTargetedMaterialSinkAudit({
@@ -1833,6 +1881,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     expeditions,
     bounties: bountyConfig,
     heart_laws: heartLaws,
+    heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
   });
 
@@ -1997,6 +2046,7 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     expeditions,
     bounties: bountyConfig,
     heart_laws: heartLaws,
+    heart_law_affinity_rules: heartLawAffinityRules,
     prestige_store: prestige,
   };
 }
