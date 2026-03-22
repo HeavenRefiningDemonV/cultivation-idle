@@ -1,12 +1,14 @@
-import { normalizeForgeBlueprint } from '../../content/forge.js';
 import type { ValidatedContent } from '../../content/validators.js';
 import { getAlchemyRecipeRuntimeStatus, getForgeBlueprintRuntimeStatus, getItemRuntimeStatus } from './liveEconomyVisibility.js';
+import { getVisibleLiveForgeBlueprints, getVisibleNormalizedLiveForgeBlueprints, getLiveForgeBlueprintById as getLiveForgeBlueprintByIdFromCatalog } from '../forge/index.js';
 import type { AlchemyRecipeDef, ForgeBlueprintDef, LiveEconomyCatalog, LiveEconomyRuntimeStatus } from './liveEconomyTypes.js';
 
 const isLiveFacingStatus = (status: LiveEconomyRuntimeStatus): boolean =>
   status === 'visible_live' || status === 'visible_live_blocked';
 
-export function buildLiveEconomyCatalog(content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'>): LiveEconomyCatalog {
+type LiveEconomyCatalogInput = Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'> & Partial<Pick<ValidatedContent, 'cities'>>;
+
+export function buildLiveEconomyCatalog(content: LiveEconomyCatalogInput): LiveEconomyCatalog {
   const itemStatusById = Object.fromEntries(content.items.map((item) => [item.id, getItemRuntimeStatus(item)]));
   const alchemyRecipeStatusById = Object.fromEntries(
     content.alchemy_recipes.map((recipe) => [recipe.id, getAlchemyRecipeRuntimeStatus(recipe)]),
@@ -53,18 +55,17 @@ export function buildLiveEconomyCatalog(content: Pick<ValidatedContent, 'items' 
   };
 }
 
-export function getVisibleAlchemyRecipes(content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'>): AlchemyRecipeDef[] {
+export function getVisibleAlchemyRecipes(content: LiveEconomyCatalogInput): AlchemyRecipeDef[] {
   const catalog = buildLiveEconomyCatalog(content);
   return content.alchemy_recipes.filter((recipe) => isLiveFacingStatus(catalog.alchemyRecipeStatusById[recipe.id] ?? 'unknown'));
 }
 
-export function getVisibleForgeBlueprints(content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'>): ForgeBlueprintDef[] {
-  const catalog = buildLiveEconomyCatalog(content);
-  return content.forge_blueprints.filter((blueprint) => isLiveFacingStatus(catalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown'));
+export function getVisibleForgeBlueprints(content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints' | 'cities'>): ForgeBlueprintDef[] {
+  return getVisibleLiveForgeBlueprints(content);
 }
 
-export function getVisibleNormalizedForgeBlueprints(content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'>) {
-  return getVisibleForgeBlueprints(content).map((blueprint) => normalizeForgeBlueprint(blueprint));
+export function getVisibleNormalizedForgeBlueprints(content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints' | 'cities'>) {
+  return getVisibleNormalizedLiveForgeBlueprints(content);
 }
 
 export function getRawAlchemyRecipeById(
@@ -75,7 +76,7 @@ export function getRawAlchemyRecipeById(
 }
 
 export function getLiveAlchemyRecipeById(
-  content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'> | null | undefined,
+  content: LiveEconomyCatalogInput | null | undefined,
   recipeId: string,
 ): AlchemyRecipeDef | undefined {
   if (!content) return undefined;
@@ -90,9 +91,8 @@ export function getRawForgeBlueprintById(
 }
 
 export function getLiveForgeBlueprintById(
-  content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints'> | null | undefined,
+  content: Pick<ValidatedContent, 'items' | 'alchemy_recipes' | 'forge_blueprints' | 'cities'> | null | undefined,
   blueprintId: string,
 ): ForgeBlueprintDef | undefined {
-  if (!content) return undefined;
-  return getVisibleForgeBlueprints(content).find((blueprint) => blueprint.id === blueprintId);
+  return getLiveForgeBlueprintByIdFromCatalog(content, blueprintId);
 }

@@ -107,14 +107,15 @@
         "mat_spirit_dew": 1
       },
       "cost": {
-        "gold": 900
+        "gold": 700
       },
       "effect": {
         "type": "temperGear",
-        "baseProcChancePct": 25,
+        "baseProcChancePct": 30,
         "affixPool": [
+          "defense_pct",
           "hp_pct",
-          "def_pct"
+          "status_resist"
         ],
         "targetSlot": "accessory"
       }
@@ -705,6 +706,106 @@
       }
     },
     {
+      "id": "forge_refine_uncommon_t3",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "forge",
+      "timeSec": 0,
+      "service": "refine",
+      "inputs": {
+        "mat_crystal_shard": 10,
+        "reagent_quenching_oil_t1": 2,
+        "mat_artifact_shard": 1
+      },
+      "cost": {
+        "gold": 60000
+      },
+      "effect": {
+        "type": "refineGear",
+        "addLevel": 1,
+        "maxLevelCap": 7
+      }
+    },
+    {
+      "id": "forge_temper_weapon_t2",
+      "unlocksAtCityId": "city_spirit_cavern_city",
+      "station": "forge",
+      "timeSec": 180,
+      "service": "temper",
+      "inputs": {
+        "mat_crystal_shard": 6,
+        "mat_aura_residue": 2,
+        "mat_artifact_shard": 1
+      },
+      "cost": {
+        "gold": 80000
+      },
+      "effect": {
+        "type": "temperGear",
+        "baseProcChancePct": 40,
+        "affixPool": [
+          "boss_damage_pct",
+          "crit_chance_pct",
+          "defense_pct"
+        ],
+        "targetSlot": "weapon"
+      },
+      "handsOnBonus": {
+        "temperProcChancePct": 12,
+        "masteryMult": 1.06,
+        "timeReductionPct": 0.12
+      },
+      "stepScript": [
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 620,
+          "tolerance": 18
+        },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 720,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "temper_weapon_t2_strike_1"
+        },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 660,
+          "tolerance": 16
+        },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 700,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "temper_weapon_t2_strike_2"
+        },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 690,
+          "tolerance": 14
+        },
+        {
+          "id": "temper_edge",
+          "type": "TEMPER",
+          "targetMin": 430,
+          "targetMax": 560,
+          "holdMs": 3000
+        },
+        {
+          "id": "finish_temper",
+          "type": "FINISH",
+          "uiLabel": "Seal edge"
+        }
+      ]
+    },
+    {
       "id": "forge_rune_astral_t1",
       "unlocksAtCityId": "city_spirit_cavern_city",
       "station": "forge",
@@ -734,26 +835,6 @@
       },
       "outputs": {
         "rune_ward_t1": 1
-      }
-    },
-    {
-      "id": "forge_refine_uncommon_t3",
-      "unlocksAtCityId": "city_spirit_cavern_city",
-      "station": "forge",
-      "timeSec": 0,
-      "service": "refine",
-      "inputs": {
-        "mat_crystal_shard": 10,
-        "reagent_quenching_oil_t1": 2,
-        "mat_artifact_shard": 2
-      },
-      "cost": {
-        "gold": 60000
-      },
-      "effect": {
-        "type": "refineGear",
-        "addLevel": 1,
-        "maxLevelCap": 7
       }
     },
     {
@@ -816,7 +897,7 @@
       "inputs": {
         "mat_mist_pearl": 6,
         "reagent_quenching_oil_t1": 3,
-        "mat_artifact_shard": 4
+        "mat_artifact_shard": 2
       },
       "cost": {
         "gold": 300000
@@ -826,6 +907,86 @@
         "addLevel": 1,
         "maxLevelCap": 9
       }
+    },
+    {
+      "id": "forge_temper_accessory_t2",
+      "unlocksAtCityId": "city_lotusford",
+      "station": "forge",
+      "timeSec": 180,
+      "service": "temper",
+      "inputs": {
+        "mat_mist_pearl": 2,
+        "mat_soul_ember": 1,
+        "mat_artifact_shard": 1
+      },
+      "cost": {
+        "gold": 250000
+      },
+      "effect": {
+        "type": "temperGear",
+        "baseProcChancePct": 45,
+        "affixPool": [
+          "hp_pct",
+          "defense_pct",
+          "status_resist"
+        ],
+        "targetSlot": "accessory"
+      },
+      "handsOnBonus": {
+        "temperProcChancePct": 12,
+        "masteryMult": 1.06,
+        "timeReductionPct": 0.12
+      },
+      "stepScript": [
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 620,
+          "tolerance": 18
+        },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 720,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "temper_accessory_t2_strike_1"
+        },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 660,
+          "tolerance": 16
+        },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 700,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "temper_accessory_t2_strike_2"
+        },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 690,
+          "tolerance": 14
+        },
+        {
+          "id": "temper_edge",
+          "type": "TEMPER",
+          "targetMin": 430,
+          "targetMax": 560,
+          "holdMs": 3000
+        },
+        {
+          "id": "finish_temper",
+          "type": "FINISH",
+          "uiLabel": "Seal edge"
+        }
+      ]
     },
     {
       "id": "forge_jade_core_upgrade_t2",
@@ -887,7 +1048,7 @@
       "inputs": {
         "mat_spirit_steel_ore": 10,
         "reagent_quenching_oil_t2": 2,
-        "mat_artifact_shard": 8
+        "mat_artifact_shard": 4
       },
       "cost": {
         "gold": 1000000
@@ -897,6 +1058,170 @@
         "addLevel": 1,
         "maxLevelCap": 10
       }
+    },
+    {
+      "id": "forge_temper_weapon_t3",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "forge",
+      "timeSec": 240,
+      "service": "temper",
+      "inputs": {
+        "mat_spirit_steel_ore": 6,
+        "mat_blade_core": 1,
+        "mat_thunder_sand": 1,
+        "mat_artifact_shard": 2
+      },
+      "cost": {
+        "gold": 1200000
+      },
+      "effect": {
+        "type": "temperGear",
+        "baseProcChancePct": 55,
+        "affixPool": [
+          "boss_damage_pct",
+          "crit_chance_pct",
+          "defense_pct",
+          "hp_pct"
+        ],
+        "targetSlot": "weapon"
+      },
+      "handsOnBonus": {
+        "temperProcChancePct": 15,
+        "masteryMult": 1.08,
+        "timeReductionPct": 0.15
+      },
+      "stepScript": [
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 620,
+          "tolerance": 18
+        },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 720,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "temper_weapon_t3_strike_1"
+        },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 660,
+          "tolerance": 16
+        },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 700,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "temper_weapon_t3_strike_2"
+        },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 690,
+          "tolerance": 14
+        },
+        {
+          "id": "temper_edge",
+          "type": "TEMPER",
+          "targetMin": 430,
+          "targetMax": 560,
+          "holdMs": 3000
+        },
+        {
+          "id": "finish_temper",
+          "type": "FINISH",
+          "uiLabel": "Seal edge"
+        }
+      ]
+    },
+    {
+      "id": "forge_temper_accessory_t3",
+      "unlocksAtCityId": "city_ironpeak_bastion",
+      "station": "forge",
+      "timeSec": 240,
+      "service": "temper",
+      "inputs": {
+        "mat_spirit_steel_ore": 4,
+        "mat_furnace_cinder": 2,
+        "mat_thunder_sand": 1,
+        "mat_artifact_shard": 2
+      },
+      "cost": {
+        "gold": 1100000
+      },
+      "effect": {
+        "type": "temperGear",
+        "baseProcChancePct": 55,
+        "affixPool": [
+          "hp_pct",
+          "defense_pct",
+          "status_resist",
+          "crit_chance_pct"
+        ],
+        "targetSlot": "accessory"
+      },
+      "handsOnBonus": {
+        "temperProcChancePct": 15,
+        "masteryMult": 1.08,
+        "timeReductionPct": 0.15
+      },
+      "stepScript": [
+        {
+          "id": "heat_1",
+          "type": "HEAT_TO",
+          "targetHeat": 620,
+          "tolerance": 18
+        },
+        {
+          "id": "strike_1",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 720,
+          "tolerance": 0.22,
+          "difficulty": 1,
+          "patternId": "temper_accessory_t3_strike_1"
+        },
+        {
+          "id": "heat_2",
+          "type": "HEAT_TO",
+          "targetHeat": 660,
+          "tolerance": 16
+        },
+        {
+          "id": "strike_2",
+          "type": "HAMMER_PATTERN",
+          "hits": 4,
+          "shrinkMs": 700,
+          "tolerance": 0.2,
+          "difficulty": 1,
+          "patternId": "temper_accessory_t3_strike_2"
+        },
+        {
+          "id": "heat_3",
+          "type": "HEAT_TO",
+          "targetHeat": 690,
+          "tolerance": 14
+        },
+        {
+          "id": "temper_edge",
+          "type": "TEMPER",
+          "targetMin": 430,
+          "targetMax": 560,
+          "holdMs": 3000
+        },
+        {
+          "id": "finish_temper",
+          "type": "FINISH",
+          "uiLabel": "Seal edge"
+        }
+      ]
     },
     {
       "id": "forge_jade_core_upgrade_t3",

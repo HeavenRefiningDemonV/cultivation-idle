@@ -1,7 +1,7 @@
-import { normalizeForgeBlueprint } from '../../content/forge.js';
 import type { ValidatedContent } from '../../content/validators.js';
 import { getKnownLiveEconomyBlocker } from './knownLiveEconomyBlockers.js';
 import type { AlchemyRecipeDef, ForgeBlueprintDef, ItemDefLike, LiveEconomyFamily, LiveEconomyRuntimeStatus } from './liveEconomyTypes.js';
+import { getLiveForgeFamily, getLiveForgeRuntimeStatus } from '../forge/index.js';
 
 const DEFERRED_ITEM_PREFIXES = ['tal_'];
 const DEFERRED_ITEM_IDS = new Set<string>([
@@ -47,45 +47,13 @@ export function getAlchemyRecipeRuntimeStatus(recipe: AlchemyRecipeDef): LiveEco
   return 'visible_live';
 }
 
-function hasCanonicalRuneBlueprint(content: Pick<ValidatedContent, 'forge_blueprints'>, runeOutputId: string): boolean {
-  return content.forge_blueprints.some((candidate) => {
-    if (!candidate.id.startsWith('forge_rune_')) return false;
-    return Object.keys(candidate.outputs ?? {}).includes(runeOutputId);
-  });
-}
-
-export function getForgeBlueprintFamily(
-  blueprint: ForgeBlueprintDef,
-  content?: Pick<ValidatedContent, 'forge_blueprints'>,
-): LiveEconomyFamily {
-  const normalized = normalizeForgeBlueprint(blueprint);
-  if (normalized.type === 'service' && normalized.service === 'refine') return 'forge_refine';
-  if (normalized.type === 'service' && normalized.service === 'temper') return 'forge_temper';
-  if (blueprint.id.startsWith('forge_rune_')) return 'forge_rune';
-  if (blueprint.id.startsWith('rune_inscription_')) return 'forge_legacy_rune';
-  const outputs = Object.keys(blueprint.outputs ?? {});
-  if (outputs.some((itemId) => itemId.startsWith('tal_'))) return 'forge_talisman';
-  if (blueprint.id.includes('jade_core') || outputs.some((itemId) => itemId.includes('jade_core'))) return 'forge_jade_core';
-  if (content && outputs.some((itemId) => hasCanonicalRuneBlueprint(content, itemId))) return 'forge_legacy_rune';
-  return 'other';
-}
-
 export function getForgeBlueprintRuntimeStatus(
   blueprint: ForgeBlueprintDef,
-  content: Pick<ValidatedContent, 'forge_blueprints'>,
+  _content: Pick<ValidatedContent, 'forge_blueprints'>,
 ): LiveEconomyRuntimeStatus {
   const blocker = getKnownLiveEconomyBlocker(blueprint.id);
   if (blocker && blocker.entityKind === 'forge_blueprint') return blocker.status;
 
-  const family = getForgeBlueprintFamily(blueprint, content);
-  if (family === 'forge_refine' || family === 'forge_temper' || family === 'forge_rune') {
-    return 'visible_live';
-  }
-  if (family === 'forge_legacy_rune') {
-    return 'migration_refund_only';
-  }
-  if (family === 'forge_talisman' || family === 'forge_jade_core') {
-    return 'hidden_deferred';
-  }
-  return 'hidden_deferred';
+  const status = getLiveForgeRuntimeStatus(blueprint);
+  return status === 'unknown_invalid' ? 'unknown' : status;
 }

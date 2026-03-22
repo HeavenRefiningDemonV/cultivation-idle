@@ -24,10 +24,14 @@ import {
 } from '../content/index.js';
 import {
   buildLiveEconomyCatalog,
-  getLiveForgeBlueprintById,
-  getVisibleNormalizedForgeBlueprints,
   type LiveEconomyCatalog,
 } from '../systems/economy/index.js';
+import {
+  buildLiveForgeCatalog,
+  getLiveForgeBlueprintById,
+  getVisibleNormalizedLiveForgeBlueprints,
+  getVisibleLiveForgeBlueprintsForCity,
+} from '../systems/forge/index.js';
 import {
   getPrestigeRuntimeCatalog,
   getVisiblePrestigeUpgrades as getVisiblePrestigeUpgradesFromRuntime,
@@ -374,7 +378,7 @@ export function listRawForgeBlueprints(): NormalizedForgeBlueprint[] {
 export function listForgeBlueprints(): NormalizedForgeBlueprint[] {
   const raw = useContentStore.getState().raw;
   if (!raw) return [];
-  return getVisibleNormalizedForgeBlueprints(raw);
+  return getVisibleNormalizedLiveForgeBlueprints(raw);
 }
 
 export function getForgeBlueprint(id: string): NormalizedForgeBlueprint | undefined {
@@ -387,26 +391,32 @@ export function getRawForgeBlueprint(id: string): NormalizedForgeBlueprint | und
   return listRawForgeBlueprints().find((blueprint) => blueprint.id === id);
 }
 
+
+export function getLiveForgeCatalog() {
+  const raw = useContentStore.getState().raw;
+  if (!raw) return null;
+  return buildLiveForgeCatalog(raw);
+}
+
 export function listForgeBlueprintsForCity(options: {
   cityId?: string | null;
   cityIndex?: number | null;
   tier?: number | null;
 } = {}): NormalizedForgeBlueprint[] {
   const { cityId, cityIndex, tier } = options;
-  const list = listForgeBlueprints();
+  const raw = useContentStore.getState().raw;
+  if (!raw) return [];
 
   if (cityId) {
-    const filtered = list.filter((blueprint) => blueprint.cityId === cityId);
-    return filtered.length > 0 ? filtered : list;
+    return getVisibleLiveForgeBlueprintsForCity(raw, cityId).map((blueprint) => normalizeForgeBlueprint(blueprint));
   }
 
   const gatingIndex = cityIndex ?? tier;
   if (typeof gatingIndex === 'number') {
-    const filtered = list.filter((blueprint) => blueprint.cityIndex === gatingIndex);
-    return filtered.length > 0 ? filtered : list;
+    return getVisibleNormalizedLiveForgeBlueprints(raw).filter((blueprint) => blueprint.cityIndex === gatingIndex);
   }
 
-  return list;
+  return getVisibleNormalizedLiveForgeBlueprints(raw);
 }
 
 export { isRuneBlueprint, isRefineBlueprint };

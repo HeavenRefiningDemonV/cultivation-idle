@@ -6,7 +6,7 @@ import { ForgeMinigame } from './ForgeMinigame';
 import { ErrorBoundary } from '../../../ui/feedback/ErrorBoundary';
 import { UsedForLinks } from '../../../components/crafting/UsedForLinks';
 import { computeForgeOutcome } from '../../../systems/crafting/forgeOutcome';
-import { listForgeBlueprints, getForgeBlueprint, getItemDef } from '../../../stores/contentStore';
+import { listForgeBlueprints, listForgeBlueprintsForCity, getForgeBlueprint, getItemDef } from '../../../stores/contentStore';
 import { useCraftSessionStore } from '../../../stores/craftSessionStore';
 import { useProfessionStore } from '../../../stores/professionStore';
 import { useUIStore } from '../../../stores/uiStore';
@@ -41,9 +41,8 @@ type ForgeClaimResult = {
 const FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'refine', label: 'Refine' },
-  { id: 'rune', label: 'Rune' },
-  { id: 'formation', label: 'Formation' },
-  { id: 'components', label: 'Components' },
+  { id: 'temper', label: 'Temper' },
+  { id: 'rune', label: 'Runes' },
 ];
 
 const MODE_COPY = {
@@ -125,14 +124,13 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const activeForgeSession = activeSession?.station === 'forge' ? activeSession : null;
   const activeOtherStation = activeSession && activeSession.station !== 'forge';
 
-  const blueprints = useMemo(() => listForgeBlueprints(), []);
+  const blueprints = useMemo(() => (cityId ? listForgeBlueprintsForCity({ cityId }) : listForgeBlueprints()), [cityId]);
   const filteredBlueprints = useMemo(() => {
     const lowered = query.trim().toLowerCase();
     return blueprints.filter((blueprint) => {
       if (filterId === 'refine' && !isRefineBlueprint(blueprint)) return false;
       if (filterId === 'rune' && !isRuneBlueprint(blueprint)) return false;
-      if (filterId === 'formation' && !blueprint.tags?.some((tag) => tag.includes('formation'))) return false;
-      if (filterId === 'components' && (isRuneBlueprint(blueprint) || isRefineBlueprint(blueprint))) return false;
+      if (filterId === 'temper' && blueprint.service !== 'temper') return false;
       if (!lowered) return true;
       const outputName = blueprint.output ? getItemDef(blueprint.output.itemId)?.name ?? blueprint.output.itemId : '';
       return blueprint.name?.toLowerCase().includes(lowered) || outputName.toLowerCase().includes(lowered);

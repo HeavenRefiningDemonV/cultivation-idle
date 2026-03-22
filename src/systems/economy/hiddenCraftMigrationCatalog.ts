@@ -1,6 +1,7 @@
 import type { CurrencyKey, ForgeBlueprintsConfig, TalismanRecipesConfig } from '../../content/types.js';
 import type { AlchemyRecipesConfig } from '../../content/types.js';
-import { getAlchemyRecipeRuntimeStatus, getForgeBlueprintRuntimeStatus, getItemRuntimeStatus } from './liveEconomyVisibility.js';
+import { getAlchemyRecipeRuntimeStatus, getItemRuntimeStatus } from './liveEconomyVisibility.js';
+import { getLiveForgeRuntimeStatus } from '../forge/index.js';
 
 export type HiddenCraftStation = 'alchemy' | 'forge' | 'talisman';
 
@@ -198,9 +199,8 @@ export function listHiddenCraftRefundDefinitions(): HiddenCraftRefundDefinition[
     });
   });
 
-  const forgeContext = { forge_blueprints: [...HIDDEN_FORGE_BLUEPRINTS] };
   HIDDEN_FORGE_BLUEPRINTS.forEach((blueprint) => {
-    const status = getForgeBlueprintRuntimeStatus(blueprint, forgeContext);
+    const status = getLiveForgeRuntimeStatus(blueprint);
     if (status === 'visible_live') return;
     definitions.push({
       sourceId: blueprint.id,

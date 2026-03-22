@@ -6,3 +6,4 @@ export type { ForgeBlueprintRaw, NormalizedForgeBlueprint } from './forge.js';
 export * from './types.js';
 export type { LoadedContentRaw } from './loaders.js';
 export type { ValidatedContent } from './validators.js';
+export * from '../systems/forge/index.js';

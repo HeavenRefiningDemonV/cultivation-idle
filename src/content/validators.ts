@@ -51,9 +51,18 @@ import {
   buildLiveEconomyCatalog,
   buildLiveEconomyAuditReport,
   getSinklessLiveMaterials,
-  getForgeBlueprintFamily,
   listKnownLiveEconomyBlockers,
 } from '../systems/economy/index.js';
+import {
+  buildForgeLadderAudit,
+  buildLiveForgeCatalog,
+  DEFERRED_FORGE_BLUEPRINT_IDS,
+  LEGACY_RUNE_BLUEPRINT_IDS,
+  getLiveForgeFamily as getForgeBlueprintFamily,
+  LIVE_REFINE_LADDER_IDS,
+  LIVE_RUNE_CITY_PAIRS,
+  LIVE_TEMPER_LADDER_IDS,
+} from '../systems/forge/index.js';
 
 export interface ValidatedContent {
   raw: LoadedContentRaw;
@@ -1209,7 +1218,9 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   Object.keys(prestigeMap);
   Object.keys(bountyTemplateMap);
 
-  const liveEconomyCatalog = buildLiveEconomyCatalog({ items, alchemy_recipes: alchemyRecipes, forge_blueprints: forgeBlueprints });
+  const liveEconomyCatalog = buildLiveEconomyCatalog({ items, alchemy_recipes: alchemyRecipes, forge_blueprints: forgeBlueprints, cities });
+  const liveForgeCatalog = buildLiveForgeCatalog({ forge_blueprints: forgeBlueprints, cities });
+  const forgeLadderAudit = buildForgeLadderAudit({ forge_blueprints: forgeBlueprints, cities });
 
   alchemyRecipes.forEach((recipe, idx) => {
     const status = liveEconomyCatalog.alchemyRecipeStatusById[recipe.id] ?? 'unknown';
@@ -1245,6 +1256,82 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     if (canonical.length > 0 && legacy.length > 0) {
       addErr(`visible rune family drift remains for '${itemId}': canonical=${canonical.join(', ')} legacy=${legacy.join(', ')}`);
     }
+  });
+
+  LIVE_REFINE_LADDER_IDS.forEach((id) => {
+    if (!liveForgeCatalog.entriesById[id] || liveForgeCatalog.entriesById[id].status !== 'visible_live') {
+      addErr(`live forge refine ladder missing visible tier '${id}'`);
+    }
+  });
+
+  LIVE_TEMPER_LADDER_IDS.forEach((id) => {
+    if (!liveForgeCatalog.entriesById[id] || liveForgeCatalog.entriesById[id].status !== 'visible_live') {
+      addErr(`live forge temper ladder missing visible tier '${id}'`);
+    }
+  });
+
+  Object.entries(LIVE_RUNE_CITY_PAIRS).forEach(([cityId, ids]) => {
+    ids.forEach((id) => {
+      if (!liveForgeCatalog.entriesById[id] || liveForgeCatalog.entriesById[id].status !== 'visible_live') {
+        addErr(`live forge rune ladder missing '${id}' for city '${cityId}'`);
+      }
+    });
+  });
+
+  const visibleForgeFamilies = Array.from(new Set(
+    Object.values(liveForgeCatalog.entriesById)
+      .filter((entry) => entry.status === 'visible_live')
+      .map((entry) => entry.familyLabel),
+  ));
+  if (visibleForgeFamilies.some((label) => !['Refine', 'Temper', 'Runes'].includes(label))) {
+    addErr(`live forge visibility leaked non-semester family: ${visibleForgeFamilies.join(', ')}`);
+  }
+
+  DEFERRED_FORGE_BLUEPRINT_IDS.forEach((id) => {
+    if (liveForgeCatalog.entriesById[id]?.status === 'visible_live') {
+      addErr(`deferred forge blueprint '${id}' leaked into live visibility`);
+    }
+  });
+
+  LEGACY_RUNE_BLUEPRINT_IDS.forEach((id) => {
+    if (liveForgeCatalog.entriesById[id]?.status === 'visible_live') {
+      addErr(`legacy rune blueprint '${id}' leaked into live forge visibility`);
+    }
+  });
+
+  if (!forgeLadderAudit.spiritDewSinkIds.includes('forge_temper_accessory_t1')) {
+    addErr('spirit_dew no longer resolves to visible accessory temper t1 sink');
+  }
+
+  ['forge_temper_weapon_t2', 'forge_temper_accessory_t2', 'forge_temper_weapon_t3', 'forge_temper_accessory_t3'].forEach((id) => {
+    if (!forgeLadderAudit.artifactShardSinkIds.includes(id)) {
+      addErr(`artifact_shard missing visible temper sink '${id}'`);
+    }
+  });
+
+  if (forgeLadderAudit.lateRefineArtifactShardCounts.forge_refine_uncommon_t3 !== 1) addErr('forge_refine_uncommon_t3 must consume 1 mat_artifact_shard');
+  if (forgeLadderAudit.lateRefineArtifactShardCounts.forge_refine_rare_t4 !== 2) addErr('forge_refine_rare_t4 must consume 2 mat_artifact_shard');
+  if (forgeLadderAudit.lateRefineArtifactShardCounts.forge_refine_legendary_t5 !== 4) addErr('forge_refine_legendary_t5 must consume 4 mat_artifact_shard');
+
+  const visibleForgeByCity = cities.map((city) => ({
+    cityId: city.id,
+    count: Object.values(liveForgeCatalog.entriesById).filter((entry) => entry.cityId === city.id && entry.status === 'visible_live').length,
+  }));
+  visibleForgeByCity.forEach((entry) => {
+    if (entry.count === 0) addErr(`city '${entry.cityId}' has no visible live forge pressure`);
+  });
+
+  const visibleForgeOutputToBlueprintIds = new Map<string, string[]>();
+  Object.values(liveForgeCatalog.entriesById).forEach((entry) => {
+    if (entry.status !== 'visible_live') return;
+    Object.keys(entry.blueprint.outputs ?? {}).forEach((itemId) => {
+      const ids = visibleForgeOutputToBlueprintIds.get(itemId) ?? [];
+      ids.push(entry.blueprintId);
+      visibleForgeOutputToBlueprintIds.set(itemId, ids);
+    });
+  });
+  visibleForgeOutputToBlueprintIds.forEach((ids, outputId) => {
+    if (ids.length > 1) addErr(`visible forge output '${outputId}' is duplicated across blueprints: ${ids.join(', ')}`);
   });
 
   const liveEconomyReport = buildLiveEconomyAuditReport({
@@ -1285,9 +1372,9 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   });
 
   forgeBlueprints.forEach((blueprint) => {
-    const family = getForgeBlueprintFamily(blueprint, { forge_blueprints: forgeBlueprints } as never);
+    const family = getForgeBlueprintFamily(blueprint);
     const status = liveEconomyCatalog.forgeBlueprintStatusById[blueprint.id] ?? 'unknown';
-    if (family === 'forge_legacy_rune' && status === 'visible_live') {
+    if (family === 'hidden-other' && LEGACY_RUNE_BLUEPRINT_IDS.includes(blueprint.id as (typeof LEGACY_RUNE_BLUEPRINT_IDS)[number]) && status === 'visible_live') {
       addErr(`legacy rune blueprint '${blueprint.id}' is still visible live`);
     }
   });
