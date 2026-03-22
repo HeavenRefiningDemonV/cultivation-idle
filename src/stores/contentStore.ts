@@ -24,7 +24,9 @@ import {
 } from '../content/index.js';
 import {
   buildLiveEconomyCatalog,
+  buildTargetedMaterialSinkAudit,
   type LiveEconomyCatalog,
+  type TargetedMaterialSinkAudit,
 } from '../systems/economy/index.js';
 import {
   buildLiveForgeCatalog,
@@ -82,6 +84,7 @@ interface ContentStoreState {
   getVisiblePrestigeUpgrades: () => ValidatedContent['prestige_store']['upgrades'];
   getPrestigeRuntimeCatalog: () => ReturnType<typeof getPrestigeRuntimeCatalog>;
   getLiveEconomyCatalog: () => LiveEconomyCatalog;
+  getTargetedMaterialSinkAudit: () => TargetedMaterialSinkAudit;
 }
 
 const emptyMaps: ContentMaps = {
@@ -350,6 +353,14 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
       throw new Error('[ContentStore] Content not loaded');
     }
     return buildLiveEconomyCatalog(raw);
+  },
+
+  getTargetedMaterialSinkAudit: () => {
+    const { isLoaded, raw } = get();
+    if (!isLoaded || !raw) {
+      throw new Error('[ContentStore] Content not loaded');
+    }
+    return buildTargetedMaterialSinkAudit(raw);
   },
 }));
 

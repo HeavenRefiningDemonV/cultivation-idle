@@ -50,6 +50,7 @@ import {
   buildRewardParityAuditReport,
   buildLiveEconomyCatalog,
   buildLiveEconomyAuditReport,
+  buildTargetedMaterialSinkAudit,
   getLiveEconomyItemAuditById,
   getLiveReagentPathAuditByBlueprintId,
   getPacket36AMaterialSinkStatus,
@@ -1359,6 +1360,27 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
     heart_laws: heartLaws,
     prestige_store: prestige,
   });
+  const targetedMaterialAudit = buildTargetedMaterialSinkAudit({
+    raw,
+    economy: raw.economy,
+    cities,
+    items,
+    techniques,
+    pavilions,
+    outskirts,
+    enemies,
+    trials: normalizedTrials,
+    ruins,
+    alchemy_recipes: alchemyRecipes,
+    forge_blueprints: forgeBlueprints,
+    runes,
+    talisman_recipes: talismanRecipes,
+    apothecary_shops: apothecaryShops,
+    expeditions,
+    bounties: bountyConfig,
+    heart_laws: heartLaws,
+    prestige_store: prestige,
+  });
 
   const expectedBlockerIds = listKnownLiveEconomyBlockers().map((entry) => entry.id).sort();
   const actualBlockerIds = liveEconomyReport.activeBlockerIds.slice().sort();
@@ -1418,6 +1440,18 @@ export function validateLoadedContent(raw: LoadedContentRaw): ValidatedContent {
   if ((legendaryPathAudit?.missingDependencyIds ?? []).includes('reagent_quenching_oil_t2')) {
     addErr('Packet 3.6A named blocker unresolved: forge_refine_legendary_t5 still reports missing reagent_quenching_oil_t2');
   }
+
+  targetedMaterialAudit.entries.forEach((entry) => {
+    if (!entry.hasVisibleLiveSink) {
+      addErr(`Packet 3.6 targeted material '${entry.materialId}' has no visible live sink`);
+    }
+    if (entry.onlyHiddenOrDeferred) {
+      addErr(`Packet 3.6 targeted material '${entry.materialId}' resolves only to hidden/deferred sink paths: ${entry.hiddenOrDeferredSinkIds.join(', ')}`);
+    }
+    if (entry.onlyDuplicateNoisy) {
+      addErr(`Packet 3.6 targeted material '${entry.materialId}' resolves only to duplicate-noisy visible outputs`);
+    }
+  });
 
   forgeBlueprints.forEach((blueprint) => {
     const family = getForgeBlueprintFamily(blueprint);

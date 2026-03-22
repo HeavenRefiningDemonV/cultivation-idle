@@ -4,10 +4,12 @@ import test from 'node:test';
 import { validateLoadedContent } from '../../src/content/index.js';
 import {
   buildLiveEconomyAuditReport,
+  buildTargetedMaterialSinkAudit,
   getLiveEconomyItemAuditById,
   getPacket36AMaterialSinkStatus,
   getSinklessLiveMaterials,
   getVisibleAlchemyRecipes,
+  listTargetedMaterialIds,
   listKnownLiveEconomyBlockers,
 } from '../../src/systems/economy/index.js';
 import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
@@ -61,4 +63,20 @@ test('packet 3.1 legendary refine now resolves to a live Quenching Oil t2 source
   assert.ok(liveAlchemyIds.includes('alc_reagent_quenching_oil_t2'));
   assert.ok(quenchingOilT2?.liveSources.some((entry) => entry.kind === 'alchemy_output' && entry.refId === 'alc_reagent_quenching_oil_t2'));
   assert.ok(quenchingOilT2?.liveSinks.some((entry) => entry.kind === 'forge_input' && entry.refId === 'forge_refine_legendary_t5'));
+});
+
+test('packet 3.6 targeted-material subset is explicitly sink-complete, not just implied by the global sinkless check', async () => {
+  const validated = await getValidated();
+  const audit = buildTargetedMaterialSinkAudit(validated);
+
+  assert.deepEqual(
+    audit.entries.map((entry) => entry.materialId),
+    listTargetedMaterialIds(),
+  );
+
+  audit.entries.forEach((entry) => {
+    assert.equal(entry.hasVisibleLiveSink, true, `${entry.materialId} lost its visible-live sink`);
+    assert.equal(entry.onlyHiddenOrDeferred, false, `${entry.materialId} only resolves through hidden/deferred content`);
+    assert.equal(entry.onlyDuplicateNoisy, false, `${entry.materialId} only resolves through duplicate-noisy outputs`);
+  });
 });
