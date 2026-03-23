@@ -13,3 +13,6 @@ export * from "./aiProfileFit.js";
 export * from "./castingPolicyFit.js";
 export * from "./medicinePouchFit.js";
 export * from "./combatPostureFit.js";
+export * from "./buildAnalysisTypes.js";
+export * from "./archetypeRegistry.js";
+export * from "./archetypeDetector.js";
