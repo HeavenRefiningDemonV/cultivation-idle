@@ -4,6 +4,7 @@ export type { PrestigeUpgradeDef } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useHeartLawStore } from '../../stores/heartLawStore.js';
+import { SEMESTER_SLOT_CAPS } from '../builds/index.js';
 import { BASE_ACTIVE_SLOTS, useTechniqueStore } from '../../stores/techniqueStore.js';
 import { getVisiblePrestigeUpgrades } from './runtime/prestigeRuntimeCatalog.js';
 
@@ -82,7 +83,10 @@ export function applyPrestigeDerivedUnlocks(derived: PrestigeDerivedUnlocks) {
   const expeditionStore = useExpeditionStore.getState();
   const heartLawStore = useHeartLawStore.getState();
 
-  const activeSlots = BASE_ACTIVE_SLOTS + Math.max(0, Math.floor(derived.extraTechniqueSlots));
+  const activeSlots = Math.min(
+    SEMESTER_SLOT_CAPS.active,
+    BASE_ACTIVE_SLOTS + Math.max(0, Math.floor(derived.extraTechniqueSlots)),
+  );
   techniqueStore.setSlotCounts({ active: activeSlots });
 
   const expeditionSlots = BASE_EXPEDITION_SLOTS + Math.max(0, Math.floor(derived.expeditionSlots));

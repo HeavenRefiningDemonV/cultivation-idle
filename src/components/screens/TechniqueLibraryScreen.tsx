@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { buildLoadoutSnapshot } from '../../systems/builds/index.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -129,6 +130,8 @@ export function TechniqueLibraryScreen() {
   const setCastingPolicy = useTechniqueStore((state) => state.setCastingPolicy);
   const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
+  const activeSlots = useTechniqueStore((state) => state.activeSlots);
+  const passiveSlots = useTechniqueStore((state) => state.passiveSlots);
   const unlockedTechs = useTechCollectionStore((state) => state.unlockedTechs);
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const isContentLoading = useContentStore((state) => state.isLoading);
@@ -152,26 +155,34 @@ export function TechniqueLibraryScreen() {
 
   const selectedCastingPolicy: CastingPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
 
-  const activeCap = progression.unlocked.active;
-  const passiveCap = progression.unlocked.passive;
-  const ultimateCap = progression.unlocked.ultimate ? 1 : 0;
-  const activeEquipped = selectedLoadout?.slots.active.filter(Boolean).length ?? 0;
-  const passiveEquipped = selectedLoadout?.slots.passive.filter(Boolean).length ?? 0;
-  const ultimateEquipped = selectedLoadout?.slots.ultimate ? 1 : 0;
+  const selectedLoadoutSnapshot = useMemo(
+    () => (selectedLoadout ? buildLoadoutSnapshot(selectedLoadout.id) : null),
+    [activeSlots, loadouts, passiveSlots, realmIndex, selectedLoadout],
+  );
+
+  const activeCap = selectedLoadoutSnapshot?.unlocked.active ?? progression.unlocked.active;
+  const passiveCap = selectedLoadoutSnapshot?.unlocked.passive ?? progression.unlocked.passive;
+  const ultimateCap = selectedLoadoutSnapshot?.unlocked.ultimate ? 1 : 0;
+  const activeEquipped = selectedLoadoutSnapshot?.filled.active ?? 0;
+  const passiveEquipped = selectedLoadoutSnapshot?.filled.passive ?? 0;
+  const ultimateEquipped = selectedLoadoutSnapshot?.filled.ultimate ?? 0;
+  const parkedCount = selectedLoadoutSnapshot?.parkedLockedAssignments.length ?? 0;
   const equippedCount = activeEquipped + passiveEquipped + ultimateEquipped;
   const equippedCap = activeCap + passiveCap + ultimateCap;
   const equippedSummary = selectedLoadout
-    ? `Equipped: ${equippedCount}/${equippedCap} • Active: ${activeEquipped}/${activeCap} • Passive: ${passiveEquipped}/${passiveCap}`
-    : 'Equipped: —';
+    ? parkedCount === 0
+      ? `Equipped now: ${equippedCount}/${equippedCap} • Active: ${activeEquipped}/${activeCap} • Passive: ${passiveEquipped}/${passiveCap}`
+      : `Equipped now: ${equippedCount}/${equippedCap} • Active: ${activeEquipped}/${activeCap} • Passive: ${passiveEquipped}/${passiveCap} • Parked: ${parkedCount}`
+    : 'Equipped now: —';
 
   const activeLoadoutEquipped = useMemo(() => {
     const ids = new Set<string>();
-    if (!selectedLoadout) return ids;
-    selectedLoadout.slots.active.forEach((id) => id && ids.add(id));
-    selectedLoadout.slots.passive.forEach((id) => id && ids.add(id));
-    if (selectedLoadout.slots.ultimate) ids.add(selectedLoadout.slots.ultimate);
+    if (!selectedLoadoutSnapshot) return ids;
+    selectedLoadoutSnapshot.equipped.active.forEach((id) => id && ids.add(id));
+    selectedLoadoutSnapshot.equipped.passive.forEach((id) => id && ids.add(id));
+    if (selectedLoadoutSnapshot.equipped.ultimate) ids.add(selectedLoadoutSnapshot.equipped.ultimate);
     return ids;
-  }, [selectedLoadout]);
+  }, [selectedLoadoutSnapshot]);
 
   const ownedTechniques = useMemo<OwnedTechniqueView[]>(() => {
     return Object.entries(unlockedTechs)

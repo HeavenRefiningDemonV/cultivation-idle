@@ -4,6 +4,7 @@ import { GameIcon } from '../../ui/icons/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
 
@@ -23,6 +24,17 @@ function slotTypeFromTechnique(type?: string): SlotType {
   return 'active';
 }
 
+type SlotButtonModel = {
+  slotType: SlotType;
+  slotIndex: number;
+  techId: string;
+  isUnlocked: boolean;
+  unlockLabel: string | null;
+  title: string;
+};
+
+const LOCKED_SLOT_TOOLTIP = 'Breakthrough to unlock this meridian.';
+
 export function TechniqueLearnedModal() {
   const showModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const payload = useUIStore((state) => state.techniqueLearnedPayload);
@@ -37,8 +49,10 @@ export function TechniqueLearnedModal() {
   const setSelectedLoadout = useTechniqueStore((state) => state.setSelectedLoadout);
   const equipTechnique = useTechniqueStore((state) => state.equipTechnique);
   const getEquippedTechIds = useTechniqueStore((state) => state.getEquippedTechIds);
+  const getSlotProgressionSnapshot = useTechniqueStore((state) => state.getSlotProgressionSnapshot);
 
   const hasTech = useTechCollectionStore((state) => state.hasTech);
+  const realmIndex = useGameStore((state) => state.realm.index);
 
   const [loadoutId, setLoadoutId] = useState(selectedLoadoutId);
   const [slotType, setSlotType] = useState<SlotType>('active');
@@ -54,40 +68,99 @@ export function TechniqueLearnedModal() {
     if (!showModal || !payload) return;
     const nextSlotType = slotTypeFromTechnique(techniquesById[payload.techId]?.type);
     setSlotType(nextSlotType);
-    setSlotIndex(0);
     setShowEquipPanel(false);
   }, [payload, showModal, techniquesById]);
 
   const technique = payload ? techniquesById[payload.techId] : undefined;
   const recommendedProfile = useMemo(() => recommendProfile(technique?.tags), [technique?.tags]);
+  const progression = useMemo(() => getSlotProgressionSnapshot(realmIndex), [getSlotProgressionSnapshot, realmIndex]);
+
+  const loadout = useMemo(
+    () => loadouts.find((l) => l.id === loadoutId) ?? loadouts[0],
+    [loadoutId, loadouts],
+  );
+
+  const normalizedSlots = useMemo(
+    () => (loadout ? getEquippedTechIds(loadout.id) : { active: [], passive: [], ultimate: null }),
+    [getEquippedTechIds, loadout, loadouts, progression],
+  );
+
+  const slotButtons = useMemo<SlotButtonModel[]>(() => {
+    if (!loadout) return [];
+
+    if (slotType === 'ultimate') {
+      const unlockLabel = progression.unlockRequirements.ultimate?.realmName
+        ? `Unlocks at ${progression.unlockRequirements.ultimate.realmName}`
+        : null;
+      return [{
+        slotType: 'ultimate',
+        slotIndex: 0,
+        techId: normalizedSlots.ultimate ?? '',
+        isUnlocked: progression.unlocked.ultimate,
+        unlockLabel,
+        title: `${unlockLabel ?? ''}${unlockLabel ? ' • ' : ''}${LOCKED_SLOT_TOOLTIP}` ,
+      }];
+    }
+
+    const displayedCount = progression.displayed[slotType];
+    const unlockedCount = progression.unlocked[slotType];
+    const storedIds = slotType === 'active' ? normalizedSlots.active : normalizedSlots.passive;
+
+    return Array.from({ length: displayedCount }, (_, index) => {
+      const requirement = progression.unlockRequirements[slotType][index];
+      const unlockLabel = requirement?.realmName ? `Unlocks at ${requirement.realmName}` : null;
+      return {
+        slotType,
+        slotIndex: index,
+        techId: storedIds[index] ?? '',
+        isUnlocked: index < unlockedCount,
+        unlockLabel,
+        title: `${unlockLabel ?? ''}${unlockLabel ? ' • ' : ''}${LOCKED_SLOT_TOOLTIP}` ,
+      };
+    });
+  }, [loadout, normalizedSlots.active, normalizedSlots.passive, normalizedSlots.ultimate, progression, slotType]);
+
+  const firstUnlockedSlotIndex = useMemo(
+    () => slotButtons.find((slot) => slot.isUnlocked)?.slotIndex ?? 0,
+    [slotButtons],
+  );
+
+  useEffect(() => {
+    if (!showModal) return;
+    setSlotIndex(firstUnlockedSlotIndex);
+  }, [firstUnlockedSlotIndex, loadoutId, showModal, slotType]);
+
+  const hasUnlockedCompatibleSlot = slotButtons.some((slot) => slot.isUnlocked);
+  const selectedSlotButton = slotButtons.find((slot) => slot.slotIndex === slotIndex) ?? slotButtons[0] ?? null;
+  const equipBlockedNote = !hasUnlockedCompatibleSlot
+    ? selectedSlotButton?.unlockLabel
+      ? `This slot type is still locked. ${selectedSlotButton.unlockLabel}.`
+      : 'This slot type is still locked.'
+    : null;
 
   if (!showModal || !payload) return null;
 
-  const loadout = loadouts.find((l) => l.id === loadoutId) ?? loadouts[0];
-  const slotNames = loadout
-    ? slotType === 'active'
-      ? loadout.slots.active
-      : slotType === 'passive'
-        ? loadout.slots.passive
-        : [loadout.slots.ultimate ?? '']
-    : [];
-
-  const slotLabel = (techId: string, index: number) => {
-    const name = techId ? techniquesById[techId]?.name ?? techId : 'Empty';
-    if (slotType === 'ultimate') {
-      return `Ultimate Slot — ${name}`;
+  const slotLabel = (slot: SlotButtonModel) => {
+    const name = slot.techId ? techniquesById[slot.techId]?.name ?? slot.techId : 'Empty';
+    const unlockSuffix = !slot.isUnlocked && slot.unlockLabel ? ` — ${slot.unlockLabel}` : '';
+    if (slot.slotType === 'ultimate') {
+      return `Ultimate Slot — ${name}${unlockSuffix}`;
     }
-    return `Slot ${index + 1} — ${name}`;
+    return `Slot ${slot.slotIndex + 1} — ${name}${unlockSuffix}`;
   };
 
   const handleLoadoutChange = (id: string) => {
     setLoadoutId(id);
     setSelectedLoadout(id);
-    setSlotIndex(0);
   };
 
   const handleEquip = () => {
     if (!payload) return;
+    if (!hasUnlockedCompatibleSlot || !selectedSlotButton?.isUnlocked) {
+      addNotification('error', equipBlockedNote ?? 'That slot is locked.');
+      return;
+    }
+
     GameEvents.emit({ type: 'techniques/equip_now_clicked', payload: { techniqueId: payload.techId } });
     const targetLoadout = loadouts.find((l) => l.id === loadoutId) ?? loadouts[0];
     if (!targetLoadout) {
@@ -98,20 +171,12 @@ export function TechniqueLearnedModal() {
       addNotification('error', 'Technique is not learned yet.');
       return;
     }
-    // Ensure store selected loadout matches the chosen one
+
     setSelectedLoadout(targetLoadout.id);
 
-    equipTechnique(slotType, slotIndex, payload.techId);
-    const after = getEquippedTechIds(targetLoadout.id);
-    const equipped =
-      slotType === 'active'
-        ? after.active[slotIndex] === payload.techId
-        : slotType === 'passive'
-          ? after.passive[slotIndex] === payload.techId
-          : after.ultimate === payload.techId;
-
-    if (!equipped) {
-      addNotification('error', 'Unable to equip technique. Check slot compatibility.');
+    const result = equipTechnique(slotType, slotIndex, payload.techId, targetLoadout.id);
+    if (!result.ok) {
+      addNotification('error', result.unlockAt ? `${result.message} Unlocks at ${result.unlockAt.realmName}.` : result.message);
       return;
     }
 
@@ -121,28 +186,18 @@ export function TechniqueLearnedModal() {
 
   const renderSlotPicker = () => {
     if (!loadout) return <div className={'techniqueLearnedNote'}>Loadout missing.</div>;
-    if (slotType === 'ultimate') {
-      return (
-        <div className={'techniqueLearnedSlots'}>
-          <button
-            className={`techniqueSlotButton ${slotIndex === 0 ? 'selected' : ''}`}
-            onClick={() => setSlotIndex(0)}
-          >
-            {slotLabel(slotNames[0] ?? '', 0)}
-          </button>
-        </div>
-      );
-    }
 
     return (
       <div className={'techniqueLearnedSlots'}>
-        {slotNames.map((techId, idx) => (
+        {slotButtons.map((slot) => (
           <button
-            key={`${slotType}-${idx}`}
-            className={`techniqueSlotButton ${slotIndex === idx ? 'selected' : ''}`}
-            onClick={() => setSlotIndex(idx)}
+            key={`${slot.slotType}-${slot.slotIndex}`}
+            className={`techniqueSlotButton ${slotIndex === slot.slotIndex ? 'selected' : ''}`}
+            onClick={() => setSlotIndex(slot.slotIndex)}
+            disabled={!slot.isUnlocked}
+            title={!slot.isUnlocked ? slot.title : undefined}
           >
-            {slotLabel(techId, idx)}
+            {slotLabel(slot)}
           </button>
         ))}
       </div>
@@ -213,9 +268,10 @@ export function TechniqueLearnedModal() {
               </div>
 
               <div className={'techniqueEquipFootnote'}>Chosen slot type: {slotType}</div>
+              {equipBlockedNote && <div className={'techniqueLearnedNote'}>{equipBlockedNote}</div>}
 
               <div className={'techniqueEquipConfirm'}>
-                <button className={'techniqueLearnedButton'} onClick={handleEquip}>
+                <button className={'techniqueLearnedButton'} onClick={handleEquip} disabled={!hasUnlockedCompatibleSlot}>
                   Equip Technique
                 </button>
               </div>
