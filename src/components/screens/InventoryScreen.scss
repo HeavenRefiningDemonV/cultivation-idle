@@ -1066,3 +1066,26 @@
     display: none;
   }
 }
+
+.inventoryCurrencyGuidanceRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.inventoryCurrencyGuidanceCard {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.inventoryCurrencyGuidanceTitle {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(88, 67, 48, 0.82);
+}
+
+.inventoryInspectorPurpose {
+  margin-bottom: 0.75rem;
+}

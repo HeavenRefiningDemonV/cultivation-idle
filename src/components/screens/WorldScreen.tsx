@@ -26,6 +26,8 @@ import {
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
+import { buildModulePurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
+import { PurposeSourceCallout, PaperCard } from '../../ui/ink/index.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
@@ -185,6 +187,15 @@ export function WorldScreen() {
       : 'Current city ready.';
   }, [alternateUnlockedCityId, currentCityTravelBlocked, selectedCity, travelGuardForOtherCity.reason, worldSelectorEntries]);
 
+  const purposeSourceContext = useMemo(() => (rawContent ? buildPurposeSourceContext(rawContent) : null), [rawContent]);
+
+  const moduleGuidance = useMemo(() => {
+    if (!selectedCity || !rawContent || !purposeSourceContext) return [];
+    return visibleCityModules
+      .map((moduleKey) => buildModulePurposeSourceSurface(rawContent, purposeSourceContext, selectedCity.id, moduleKey as never))
+      .filter(Boolean);
+  }, [purposeSourceContext, rawContent, selectedCity, visibleCityModules]);
+
   const cityLesson = useMemo(() => {
     if (!selectedCity) return null;
     const lesson = getCityArrivalLesson(selectedCity.id);
@@ -277,7 +288,7 @@ export function WorldScreen() {
           <div className={'worldScreenPanel worldScreenCitySummary'}>
             <div className={'worldScreenPanelHeader'}>
               <div className={'worldScreenCitySummaryBody'}>
-                <div className={'worldScreenCitySummaryName'}>{selectedCity.name}</div>
+                <div className={'worldScreenCitySummaryName'}>{sanitizeLiveCityName(selectedCity.name)}</div>
                 <div
                   className={`worldScreenCitySummaryStatus ${currentCityTravelBlocked ? 'worldScreenCitySummaryStatus--blocked' : ''}`}
                 >
@@ -316,6 +327,22 @@ export function WorldScreen() {
               getModuleLabel={getWorldModuleLabel}
               onOpenModule={handleOpenModule}
             />
+          </div>
+
+          <div className={'worldScreenPanel'}>
+            <PaperCard variant="tray">
+              <div className={'worldScreenPanelHeader'}>Current city module guidance</div>
+              <div className={'worldScreenCitySummaryStatus'}>Each live module now shows what it is for and when to use it.</div>
+              <div className={'worldScreenModuleGuidanceGrid'}>
+                {moduleGuidance.map((moduleSurface) => (
+                  <div key={moduleSurface.moduleKey} className="worldScreenModuleGuidanceCard">
+                    <div className="worldScreenModuleGuidanceTitle">{moduleSurface.moduleLabel}</div>
+                    <PurposeSourceCallout surface={moduleSurface} compact />
+                    {moduleSurface.outputHint ? <div className={'worldScreenCitySummaryLesson'}>{moduleSurface.outputHint}</div> : null}
+                  </div>
+                ))}
+              </div>
+            </PaperCard>
           </div>
         </div>
       )}

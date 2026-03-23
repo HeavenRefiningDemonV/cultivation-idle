@@ -20,9 +20,10 @@ import { consumeConsumable } from '../../systems/consumables/consumeConsumable.j
 import { ConsumableMetaChips } from '../consumables/ConsumableMetaChips.js';
 import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel.js';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal.js';
-import { InkPanel, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import { InkPanel, PaperCard, PaperChip, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import './ApothecaryPanel.scss';
+import { buildItemPurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
 
 type BuyFilterKey = 'all' | 'combat' | 'cultivation' | 'rotating';
 type PrimaryTabKey = 'buy' | 'brew' | 'pouch';
@@ -143,6 +144,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
   );
 
   const cityBundle = buyReadModel.bundleState.bundle;
+  const purposeSourceContext = useMemo(() => (raw ? buildPurposeSourceContext(raw) : null), [raw]);
 
   const pouchBadgeCount = prepModel.pouchSummary.filledSlots;
   const badgeDisplay = pouchBadgeCount > 9 ? '9+' : `${pouchBadgeCount}`;
@@ -300,6 +302,10 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
       spec: consumableSpec,
     });
 
+    const itemPurpose = raw && purposeSourceContext
+      ? buildItemPurposeSourceSurface(raw, purposeSourceContext, stockEntry.itemId, city?.id ?? apothecary.cityId)
+      : null;
+
     const handleUseNow = () => {
       const result = consumeConsumable(stockEntry.itemId);
       setStatusByStock((prev) => ({
@@ -372,6 +378,9 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         <div className={'apothecaryCardChips'}>
           <ConsumableMetaChips chips={chips} />
         </div>
+        {itemPurpose?.purposeTag === 'Gate Prep' ? (
+          <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
+        ) : null}
 
         <div className={'apothecaryLimitBlock'}>
           {limit != null ? (
@@ -500,25 +509,34 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
     );
   };
 
-  const renderRecommendedPackageCard = (entry: ApothecaryRecommendedPackageEntry) => (
-    <div key={entry.key} className={'apothecaryPackageEntry'}>
-      <div>
-        <div className={'apothecaryPackageLabel'}>{entry.label}</div>
-        <div className={'apothecaryPackageName'}>{entry.itemName}</div>
-        <div className={'apothecaryPackageMeta'}>
-          Owned {entry.ownedQty} / Target {entry.targetQty}
-          {entry.missingQty > 0 ? ` • Missing ${entry.missingQty}` : ' • Reserve met'}
+  const renderRecommendedPackageCard = (entry: ApothecaryRecommendedPackageEntry) => {
+    const itemPurpose = raw && purposeSourceContext
+      ? buildItemPurposeSourceSurface(raw, purposeSourceContext, entry.itemId, city?.id ?? apothecary.cityId)
+      : null;
+
+    return (
+      <div key={entry.key} className={'apothecaryPackageEntry'}>
+        <div>
+          <div className={'apothecaryPackageLabel'}>{entry.label}</div>
+          <div className={'apothecaryPackageName'}>{entry.itemName}</div>
+          <div className={'apothecaryPackageMeta'}>
+            Owned {entry.ownedQty} / Target {entry.targetQty}
+            {entry.missingQty > 0 ? ` • Missing ${entry.missingQty}` : ' • Reserve met'}
+          </div>
+          {itemPurpose?.purposeTag === 'Gate Prep' ? (
+          <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
+        ) : null}
         </div>
+        <button
+          type="button"
+          className={'apothecaryActionButton apothecaryActionButton--active'}
+          onClick={() => handleRouteIntent(entry.routeIntent)}
+        >
+          {entry.routeIntent.label}
+        </button>
       </div>
-      <button
-        type="button"
-        className={'apothecaryActionButton apothecaryActionButton--active'}
-        onClick={() => handleRouteIntent(entry.routeIntent)}
-      >
-        {entry.routeIntent.label}
-      </button>
-    </div>
-  );
+    );
+  };
 
   const renderBuySurface = () => (
     <>

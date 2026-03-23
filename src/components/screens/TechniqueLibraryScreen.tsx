@@ -24,9 +24,10 @@ import {
 import { getPathIcon, getTierIcon, getTypeIcon, resolveTechniqueType } from '../../features/manuals/manualIconMap.js';
 import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
-import { InkPanel, PaperCard } from '../../ui/ink/index.js';
+import { InkPanel, PaperCard, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import './TechniqueLibraryScreen.scss';
+import { buildPurposeSourceContext, buildTechniqueFragmentPurposeSourceSurface } from '../../systems/economy/purposeSourceSurface.js';
 
 type SlotSelection = { type: SlotType; index: number };
 
@@ -136,6 +137,7 @@ export function TechniqueLibraryScreen() {
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const isContentLoading = useContentStore((state) => state.isLoading);
   const realmIndex = useGameStore((state) => state.realm.index);
+  const rawContent = useContentStore((state) => state.raw);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
@@ -183,6 +185,19 @@ export function TechniqueLibraryScreen() {
     if (selectedLoadoutSnapshot.equipped.ultimate) ids.add(selectedLoadoutSnapshot.equipped.ultimate);
     return ids;
   }, [selectedLoadoutSnapshot]);
+
+
+  const purposeSourceContext = useMemo(
+    () => (rawContent ? buildPurposeSourceContext(rawContent) : null),
+    [rawContent],
+  );
+
+  const fragmentPurposeSurface = useMemo(
+    () => (rawContent && purposeSourceContext
+      ? buildTechniqueFragmentPurposeSourceSurface(rawContent, purposeSourceContext)
+      : null),
+    [purposeSourceContext, rawContent],
+  );
 
   const ownedTechniques = useMemo<OwnedTechniqueView[]>(() => {
     return Object.entries(unlockedTechs)
@@ -781,6 +796,7 @@ export function TechniqueLibraryScreen() {
                       <span className="techniqueLibrarySummaryRank">{formatRankLabel(selectedRank)}</span>
                     </div>
                     <div className="techniqueLibrarySummaryLine">{summaryLine}</div>
+                    <PurposeSourceCallout surface={fragmentPurposeSurface} compact className="techniqueLibraryFragmentPurpose" />
                     <div className="techniqueLibrarySummaryActions">
                       <button
                         className="techniqueLibraryPrimaryButton"

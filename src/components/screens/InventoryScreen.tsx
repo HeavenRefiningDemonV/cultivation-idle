@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useShallow } from 'zustand/shallow';
 import { Backpack, Coins, Gem, Medal } from 'lucide-react';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
-import { getItemDef } from '../../stores/contentStore.js';
+import { getItemDef, useContentStore } from '../../stores/contentStore.js';
 import { useBuffStore } from '../../stores/buffStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
 import EquipmentDrawer from '../inventory/EquipmentDrawer.js';
 import InventorySlotTile from '../inventory/InventorySlotTile.js';
 import type { DisplayStack } from '../inventory/inventoryTypes.js';
@@ -13,6 +15,8 @@ import type { IconId } from '../../ui/icons/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import { consumeConsumable } from '../../systems/consumables/consumeConsumable.js';
 import './InventoryScreen.scss';
+import { buildCurrencyPurposeSourceSurface, buildItemPurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
+import { PurposeSourceCallout } from '../../ui/ink/index.js';
 
 type InventorySlot =
   | { kind: 'item'; stack: DisplayStack; slotIndex: number }
@@ -101,6 +105,9 @@ export default function InventoryScreen() {
   const [newStackIds, setNewStackIds] = useState<Set<string>>(new Set());
   const warnedMissingDefs = useRef(new Set<string>());
   const filtersLoadedRef = useRef(false);
+
+  const rawContent = useContentStore((state) => state.raw);
+  const currentCityId = useCityStore((state) => state.currentCityId);
 
   const { displayStacks, missingItemIds } = useMemo(() => {
     const missing: string[] = [];
@@ -495,6 +502,26 @@ export default function InventoryScreen() {
     });
   };
 
+
+  const purposeSourceContext = useMemo(
+    () => (rawContent ? buildPurposeSourceContext(rawContent) : null),
+    [rawContent],
+  );
+
+  const selectedItemPurpose = useMemo(() => {
+    if (!rawContent || !purposeSourceContext || !selectedStack) return null;
+    return buildItemPurposeSourceSurface(rawContent, purposeSourceContext, selectedStack.itemId, currentCityId);
+  }, [currentCityId, purposeSourceContext, rawContent, selectedStack]);
+
+  const currencyGuidance = useMemo(() => {
+    if (!rawContent || !purposeSourceContext) return [];
+    return [
+      { id: 'gold', label: 'Gold', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'gold', currentCityId) },
+      { id: 'spiritStones', label: 'Spirit Stones', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'spiritStones', currentCityId) },
+      { id: 'merit', label: 'Merit', surface: buildCurrencyPurposeSourceSurface(rawContent, purposeSourceContext, 'merit', currentCityId) },
+    ].filter((entry) => entry.surface);
+  }, [currentCityId, purposeSourceContext, rawContent]);
+
   const selectedItemInfo = useMemo(() => {
     if (!selectedStackId) return { id: null, type: null, name: null };
     const stack = displayStacks.find((entry) => entry.stackId === selectedStackId);
@@ -562,6 +589,15 @@ export default function InventoryScreen() {
             <span className="inventoryHeaderEquipmentLabel">Equipment</span>
           </button>
         </div>
+      </div>
+
+      <div className="inventoryCurrencyGuidanceRow">
+        {currencyGuidance.map((entry) => (
+          <div key={entry.id} className="inventoryCurrencyGuidanceCard">
+            <div className="inventoryCurrencyGuidanceTitle">{entry.label}</div>
+            <PurposeSourceCallout surface={entry.surface} compact />
+          </div>
+        ))}
       </div>
 
       <div className="inventoryScreenBody">
@@ -722,6 +758,7 @@ export default function InventoryScreen() {
                   <p className="inventoryInspectorDescription">{selectedStack.description}</p>
                 ) : null}
                 {selectedStack.note ? <p className="inventoryInspectorNote">{selectedStack.note}</p> : null}
+                <PurposeSourceCallout surface={selectedItemPurpose} className="inventoryInspectorPurpose" />
                 <div className="inventoryInspectorDetails">
                   <div className="inventoryInspectorDetail">
                     <span className="inventoryInspectorLabel">Item ID</span>

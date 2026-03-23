@@ -3842,3 +3842,22 @@
   position: relative;
   overflow: hidden;
 }
+
+.worldScreenModuleGuidanceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.worldScreenModuleGuidanceCard {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.worldScreenModuleGuidanceTitle {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(88, 67, 48, 0.82);
+}

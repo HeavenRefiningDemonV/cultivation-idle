@@ -14,8 +14,10 @@ import {
   getManualRoleIcon,
   getManualTierIcon,
 } from "../../features/manuals/manualIconMap.js";
-import { formatPrice } from "../../stores/contentStore.js";
+import { formatPrice, useContentStore } from "../../stores/contentStore.js";
 import { GameIcon } from "../../ui/icons/index.js";
+import { PurposeSourceCallout } from "../../ui/ink/index.js";
+import { buildManualPurposeSourceSurface, buildPurposeSourceContext, buildTechniqueFragmentPurposeSourceSurface } from "../../systems/economy/purposeSourceSurface.js";
 
 export interface ManualDetailData {
   slot: PavilionStockSlot;
@@ -160,6 +162,15 @@ export function ManualDetailModal({
   const scrollPositionsRef = useRef<Map<string, number>>(new Map());
   const currentManualIdRef = useRef<string | null>(null);
 
+  const rawContent = useContentStore((state) => state.raw);
+  const manualPurposeSurface = useMemo(() => buildManualPurposeSourceSurface(), []);
+  const purposeSourceContext = useMemo(() => (rawContent ? buildPurposeSourceContext(rawContent) : null), [rawContent]);
+  const fragmentPurposeSurface = useMemo(() => (
+    rawContent && purposeSourceContext
+      ? buildTechniqueFragmentPurposeSourceSurface(rawContent, purposeSourceContext)
+      : null
+  ), [purposeSourceContext, rawContent]);
+
   const manualId = manual?.slot.techniqueId ?? null;
   const technique = manual?.technique;
   const tierIcon = manual ? getManualTierIcon(manual.slot.grade) : null;
@@ -217,6 +228,7 @@ export function ManualDetailModal({
                 <dd>{tags}</dd>
               </div>
             </dl>
+            <PurposeSourceCallout surface={manualPurposeSurface} compact className="pavilionDetailPurpose" />
             <div className="pavilionDetailSubsection">
               <div className="pavilionDetailSubsectionTitle">Build Fit</div>
               <div className="pavilionDetailEffectList">
@@ -258,6 +270,9 @@ export function ManualDetailModal({
                   )}
               </div>
             </div>
+            {offerAnalysis?.isDuplicate ? (
+              <PurposeSourceCallout surface={fragmentPurposeSurface} compact className="pavilionDetailPurpose" />
+            ) : null}
           </div>
         ),
       },

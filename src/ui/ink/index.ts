@@ -6,3 +6,4 @@ export { PaperChip } from './PaperChip.js';
 export type { PaperChipProps } from './PaperChip.js';
 export { InkModalFrame } from './InkModalFrame.js';
 export type { InkModalFrameProps } from './InkModalFrame.js';
+export { PurposeSourceCallout } from './PurposeSourceCallout.js';
