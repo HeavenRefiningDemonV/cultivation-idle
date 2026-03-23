@@ -16,3 +16,4 @@ export * from "./combatPostureFit.js";
 export * from "./buildAnalysisTypes.js";
 export * from "./archetypeRegistry.js";
 export * from "./archetypeDetector.js";
+export * from "./buildAnalysisService.js";
