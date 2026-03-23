@@ -491,7 +491,7 @@ function generateStock(
     generatedAt: now,
     nextRefreshAt: now + freeRefreshHours * 60 * 60 * 1000,
     rngSeed: seed,
-    slots,
+    slots: corrected.slots,
     pity,
     history,
   };
