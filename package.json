@@ -16,6 +16,7 @@
     "validate:content": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/validateContent.ts",
     "preview": "vite preview",
     "test:contracts": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tmp-tests/tests/contracts/**/*.js",
+    "test:progression-packets-4.7-4.8": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tmp-tests/tests/contracts/loadoutProgressionContract.test.js tmp-tests/tests/contracts/loadoutSnapshotContract.test.js tmp-tests/tests/contracts/loadoutUiHonestyGuard.test.js tmp-tests/tests/contracts/techniqueGradeCaps.test.js tmp-tests/tests/contracts/techniqueProgressionSnapshot.test.js tmp-tests/tests/contracts/techniqueProgressionDriftGuard.test.js tmp-tests/tests/contracts/masteryContract.test.js tmp-tests/tests/integration/loadoutProgressionStoreBridge.test.js tmp-tests/tests/integration/techniqueProgressionStoreBridge.test.js",
     "progression:report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/progressionContractReport.js",
     "validate:progression-contract": "npm run test:contracts && npm run progression:report",
     "docs:progression-contract": "tsc --project tsconfig.tests.json && node tmp-tests/scripts/generateProgressionContractDoc.js",

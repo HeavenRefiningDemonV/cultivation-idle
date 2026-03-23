@@ -109,6 +109,17 @@ Provide one canonical, typed progression truth for semester-slice live content, 
 - Integration skeleton suites: `tests/integration/`
 - Harness smoke test: `tests/contracts/progressionHarnessSmoke.test.ts`
 - 0.1A diagnostics/report: `npm run progression:report`
+- Focused packet 4.7–4.8 verification: `npm run test:progression-packets-4.7-4.8`
+- Packet 4.7 coverage bundle:
+  - loadout semester ladder + slot caps
+  - loadout snapshot honesty for equipped-vs-parked assignments
+  - UI drift guards for the technique library and learned-technique picker
+  - technique-store integration bridges around hydrate/reset/prestige slot behavior
+- Packet 4.8 coverage bundle:
+  - semester technique grade policy, trait-slot caps, and rune socket caps
+  - mastery XP/rank contract and Heaven-only mastery-75 secondary potency
+  - tech-collection-store normalization and snapshot bridge behavior
+  - drift guards keeping combat/detail UI on the shared progression contract
 
 ## 12) Future packet ownership map
 
