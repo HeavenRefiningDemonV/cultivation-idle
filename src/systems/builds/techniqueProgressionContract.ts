@@ -76,7 +76,7 @@ const sanitizeFiniteNonNegative = (value: number | null | undefined): number => 
   return Math.max(0, value ?? 0);
 };
 
-const MASTERY_SUMMARIES: Readonly<Record<MasteryMilestoneLevel, string[]>> = Object.freeze({
+const MASTERY_SUMMARIES: Readonly<Record<MasteryMilestoneLevel, readonly string[]>> = Object.freeze({
   25: Object.freeze(['Cooldown 5%']),
   50: Object.freeze(['Cost 10%']),
   75: Object.freeze(['Secondary effect unlock']),
