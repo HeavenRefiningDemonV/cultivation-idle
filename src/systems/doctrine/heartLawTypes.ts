@@ -30,6 +30,8 @@ export interface NormalizedHeartLawEffect {
   budgetWeight: number;
 }
 
+export type NormalizedHeartLawAffinityRules = Required<HeartLawAffinityRules>;
+
 export interface HeartLawProfile {
   id: string;
   name: string;
@@ -39,6 +41,7 @@ export interface HeartLawProfile {
   daoTags: string[];
   spiritRootAffinities: string[];
   liveSpiritRootAffinities: SpiritRootElement[];
+  affinityRules: NormalizedHeartLawAffinityRules;
   chapterThresholds: readonly number[];
   signatureEffects: readonly NormalizedHeartLawEffect[];
   chapterEffectsByChapter: Readonly<Record<number, readonly NormalizedHeartLawEffect[]>>;

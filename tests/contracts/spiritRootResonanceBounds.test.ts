@@ -33,6 +33,16 @@ function createSyntheticProfile(): HeartLawProfile {
     daoTags: ['wood', 'growth'],
     spiritRootAffinities: [],
     liveSpiritRootAffinities: [],
+    affinityRules: {
+      matchBonusByTier: {
+        starter: 0.1,
+        tier1: 0.14,
+        tier2: 0.18,
+        tier3: 0.22,
+      },
+      mismatchPenalty: 0.05,
+      appliesTo: 'signatureOnly',
+    },
     chapterThresholds: [0, 100, 200, 300, 400],
     signatureEffects: [],
     chapterEffectsByChapter: {

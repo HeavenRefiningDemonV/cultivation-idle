@@ -62,6 +62,27 @@ test('every profile exposes the semester chapter thresholds through the builder 
   });
 });
 
+
+test('normalized catalog preserves the validated affinity rules on every profile', async () => {
+  const config = await readHeartLawsConfig();
+  const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);
+
+  Object.values(catalog).forEach((profile) => {
+    assert.deepEqual(profile.affinityRules, {
+      matchBonusByTier: {
+        starter: 0.1,
+        tier1: 0.14,
+        tier2: 0.18,
+        tier3: 0.22,
+      },
+      mismatchPenalty: 0.05,
+      appliesTo: 'signatureOnly',
+    });
+    assert.notEqual(profile.affinityRules, config.affinityRules);
+    assert.notEqual(profile.affinityRules.matchBonusByTier, config.affinityRules?.matchBonusByTier);
+  });
+});
+
 test('signature and chapter duplication is preserved in normalized effects', async () => {
   const config = await readHeartLawsConfig();
   const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);

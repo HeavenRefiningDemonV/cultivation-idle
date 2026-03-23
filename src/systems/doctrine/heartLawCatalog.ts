@@ -8,7 +8,11 @@ import {
   getNormalizedHeartLawAffinityRules,
   normalizeHeartLawEffectEntries,
 } from './heartLawEffectReaders.js';
-import type { HeartLawProfile, NormalizedHeartLawEffect } from './heartLawTypes.js';
+import type {
+  HeartLawProfile,
+  NormalizedHeartLawAffinityRules,
+  NormalizedHeartLawEffect,
+} from './heartLawTypes.js';
 
 function normalizeStringList(values: readonly string[] | undefined): string[] {
   if (!Array.isArray(values)) {
@@ -57,8 +61,10 @@ function computeCombatBudgetPct(effects: readonly NormalizedHeartLawEffect[]): n
   return Math.round((combatWeight / total) * 100);
 }
 
-function buildHeartLawProfile(law: HeartLawDef, affinityRules?: HeartLawAffinityRules | null): HeartLawProfile {
-  getNormalizedHeartLawAffinityRules(affinityRules);
+function buildHeartLawProfile(
+  law: HeartLawDef,
+  affinityRules: NormalizedHeartLawAffinityRules,
+): HeartLawProfile {
 
   const family = getHeartLawFamily(law.id);
   if (!family) {
@@ -105,6 +111,7 @@ function buildHeartLawProfile(law: HeartLawDef, affinityRules?: HeartLawAffinity
     daoTags,
     spiritRootAffinities,
     liveSpiritRootAffinities,
+    affinityRules,
     chapterThresholds,
     signatureEffects,
     chapterEffectsByChapter,
@@ -119,9 +126,10 @@ export function buildHeartLawCatalogFromDefinitions(
   affinityRules?: HeartLawAffinityRules | null,
 ): Record<string, HeartLawProfile> {
   const catalog: Record<string, HeartLawProfile> = {};
+  const normalizedAffinityRules = getNormalizedHeartLawAffinityRules(affinityRules);
 
   laws.forEach((law) => {
-    catalog[law.id] = buildHeartLawProfile(law, affinityRules);
+    catalog[law.id] = buildHeartLawProfile(law, normalizedAffinityRules);
   });
 
   return Object.freeze(catalog);
