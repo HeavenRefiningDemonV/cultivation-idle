@@ -1,28 +1,32 @@
-import type { CraftSessionSaveState } from '../systems/crafting/craftingTypes.js';
-import type { RewardBundle } from '../services/rewards/index.js';
+import type { CraftSessionSaveState } from "../systems/crafting/craftingTypes.js";
+import type { RewardBundle } from "../services/rewards/index.js";
 
 /**
  * Cultivation path types
  */
-export type CultivationPath = 'heaven' | 'earth' | 'martial';
-export type LifePath = 'heaven' | 'earth' | 'martial';
+export type CultivationPath = "heaven" | "earth" | "martial";
+export type LifePath = "heaven" | "earth" | "martial";
 
 /**
  * Focus mode for cultivation
  */
-export type FocusMode = 'balanced' | 'body' | 'spirit';
-export type BreathMode = 'balanced' | 'safe' | 'fast';
-export type ComprehensionSource = 'meditation' | 'outskirtsBoss' | 'trialClear' | 'ruinsClear';
-export type InsightChoiceId = 'contemplate' | 'stabilize' | 'drawQi';
+export type FocusMode = "balanced" | "body" | "spirit";
+export type BreathMode = "balanced" | "safe" | "fast";
+export type ComprehensionSource =
+  | "meditation"
+  | "outskirtsBoss"
+  | "trialClear"
+  | "ruinsClear";
+export type InsightChoiceId = "contemplate" | "stabilize" | "drawQi";
 
-export type MedicinePouchSlotKey = 'healing' | 'utility' | 'specialty';
+export type MedicinePouchSlotKey = "healing" | "utility" | "specialty";
 export type MedicinePouchTrigger =
-  | 'manual'
-  | 'hpBelowPct'
-  | 'qiBelowPct'
-  | 'intentBelowPct'
-  | 'fightStart'
-  | 'bossStart';
+  | "manual"
+  | "hpBelowPct"
+  | "qiBelowPct"
+  | "intentBelowPct"
+  | "fightStart"
+  | "bossStart";
 
 export interface MedicinePouchSlotState {
   slotKey: MedicinePouchSlotKey;
@@ -69,18 +73,18 @@ export interface Realm {
  * UI should format them using helpers like formatPercentFromValue to avoid scaling mistakes.
  */
 export interface PlayerStats {
-  hp: string;           // Current HP (Decimal string)
-  maxHp: string;        // Max HP (Decimal string)
-  atk: string;          // Attack power (Decimal string)
-  def: string;          // Defense (Decimal string)
-  crit: number;         // Critical hit chance (0-100)
-  critDmg: number;      // Critical damage multiplier (%)
-  dodge: number;        // Dodge chance (0-100)
-  regen: string;        // HP regeneration per second (Decimal string)
-  speed: number;        // Attack speed
+  hp: string; // Current HP (Decimal string)
+  maxHp: string; // Max HP (Decimal string)
+  atk: string; // Attack power (Decimal string)
+  def: string; // Defense (Decimal string)
+  crit: number; // Critical hit chance (0-100)
+  critDmg: number; // Critical damage multiplier (%)
+  dodge: number; // Dodge chance (0-100)
+  regen: string; // HP regeneration per second (Decimal string)
+  speed: number; // Attack speed
 }
 
-export type BuffStat = 'atk' | 'def' | 'crit_chance' | 'absorption';
+export type BuffStat = "atk" | "def" | "crit_chance" | "absorption";
 
 export interface ActiveBuff {
   id: string;
@@ -103,7 +107,7 @@ export interface Technique {
   level: number;
   unlocked: boolean;
   effect: {
-    type: 'damage' | 'heal' | 'buff' | 'debuff';
+    type: "damage" | "heal" | "buff" | "debuff";
     value: number;
     duration?: number;
     stat?: BuffStat;
@@ -114,9 +118,9 @@ export interface Technique {
  * Upgrade tier levels
  */
 export interface UpgradeTiers {
-  idle: number;         // Idle cultivation upgrade tier
-  damage: number;       // Damage upgrade tier
-  hp: number;           // HP upgrade tier
+  idle: number; // Idle cultivation upgrade tier
+  damage: number; // Damage upgrade tier
+  hp: number; // HP upgrade tier
 }
 
 /**
@@ -127,8 +131,8 @@ export interface RealmDefinition {
   name: string;
   majorRealm: string;
   substages: number;
-  qiRequirement: string;        // Qi required for each substage (Decimal string)
-  qiPerSecond: string;          // Base Qi/s for this realm (Decimal string)
+  qiRequirement: string; // Qi required for each substage (Decimal string)
+  qiPerSecond: string; // Base Qi/s for this realm (Decimal string)
   baseStats: {
     hp: string;
     atk: string;
@@ -179,8 +183,8 @@ export interface PityState {
 export interface GameState {
   // Core progression
   realm: Realm;
-  qi: string;                           // Current Qi (Decimal string)
-  qiPerSecond: string;                  // Qi generation rate (Decimal string)
+  qi: string; // Current Qi (Decimal string)
+  qiPerSecond: string; // Qi generation rate (Decimal string)
 
   // Player stats
   stats: PlayerStats;
@@ -191,20 +195,20 @@ export interface GameState {
   // Cultivation choices
   selectedPath: CultivationPath | null;
   focusMode: FocusMode;
-  pathPerks: string[];                  // Selected path perk IDs
+  pathPerks: string[]; // Selected path perk IDs
 
   // Progression tracking
-  totalAuras: number;                   // Total breakthroughs achieved
+  totalAuras: number; // Total breakthroughs achieved
   upgradeTiers: UpgradeTiers;
 
   // Loot system
-  pityState: PityState;                 // Pity counter for guaranteed drops
-  playerLuck: number;                   // Luck stat for loot drop chance
+  pityState: PityState; // Pity counter for guaranteed drops
+  playerLuck: number; // Luck stat for loot drop chance
 
   // Time management
-  lastTickTime: number;                 // Timestamp of last tick
-  lastActiveTime: number;               // Timestamp when player was last active (for offline gains)
-  runStartTime: number;                 // Timestamp when current run started (for prestige)
+  lastTickTime: number; // Timestamp of last tick
+  lastActiveTime: number; // Timestamp when player was last active (for offline gains)
+  runStartTime: number; // Timestamp when current run started (for prestige)
 
   // Actions
   tick: (deltaTime: number) => void;
@@ -214,17 +218,20 @@ export interface GameState {
   breakthrough: () => boolean;
   calculateQiPerSecond: () => void;
   calculatePlayerStats: () => void;
-  addBuff: (buff: { id: string; stat: BuffStat; value: number; duration: number }) => void;
+  addBuff: (buff: {
+    id: string;
+    stat: BuffStat;
+    value: number;
+    duration: number;
+  }) => void;
   removeExpiredBuffs: () => void;
-  applyAbsorptionShield: (
-    damage: string
-  ) => {
+  applyAbsorptionShield: (damage: string) => {
     remainingDamage: string;
     absorbed: string;
   };
   resetRun: () => void;
   performPrestigeReset: () => void;
-  purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
+  purchaseUpgrade: (type: "idle" | "damage" | "hp") => boolean;
   getBreakthroughRequirement: () => string;
   hardResetGameState: () => void;
 }
@@ -232,11 +239,24 @@ export interface GameState {
 /**
  * Save data structure
  */
-export type TechniqueSlotType = 'active' | 'passive' | 'ultimate';
-export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
-export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
-export type CastingPolicy = 'aggressive' | 'balanced' | 'defensive';
+export type TechniqueSlotType = "active" | "passive" | "ultimate";
+export type ManualGrade = "mortal" | "earth" | "heaven" | "mystic";
+export type TechRarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
+export type TechniqueFamily =
+  | "coreDamage"
+  | "aoe"
+  | "execute"
+  | "guard"
+  | "heal"
+  | "buff"
+  | "setup"
+  | "control"
+  | "mobility"
+  | "cleanse"
+  | "farm";
+export type TechniqueSupportFlag = "survival" | "tempo" | "boss" | "farm";
+export type AiProfile = "balanced" | "survivor" | "burst" | "farmer";
+export type CastingPolicy = "aggressive" | "balanced" | "defensive";
 
 export interface SaveTechniqueLoadout {
   id: string;
@@ -266,15 +286,15 @@ export interface SaveBountyInstance {
   cityId: string;
   cityIndex: number;
   templateId: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: "easy" | "medium" | "hard";
   kind:
-    | 'OUTSKIRTS_KILL'
-    | 'OUTSKIRTS_BOSS_KILL'
-    | 'RUINS_ROOM_CLEAR'
-    | 'RUINS_RUN_CLEAR'
-    | 'TRIAL_CLEAR'
-    | 'CRAFT_COMPLETE'
-    | 'EXPEDITION_COMPLETE';
+    | "OUTSKIRTS_KILL"
+    | "OUTSKIRTS_BOSS_KILL"
+    | "RUINS_ROOM_CLEAR"
+    | "RUINS_RUN_CLEAR"
+    | "TRIAL_CLEAR"
+    | "CRAFT_COMPLETE"
+    | "EXPEDITION_COMPLETE";
   title: string;
   description: string;
   progress: number;
@@ -293,7 +313,7 @@ export interface SaveExpeditionRun {
   startedAt: number;
   endsAt: number;
   seed?: number;
-  status: 'running' | 'complete';
+  status: "running" | "complete";
 }
 
 export interface SaveHeartLawState {
@@ -311,7 +331,7 @@ export interface SaveHeartLawState {
   stabilityCap?: number;
   activeCultivationConsumables?: Array<{
     itemId: string;
-    family: 'circulation' | 'warmth' | 'doctrine' | 'breakthrough';
+    family: "circulation" | "warmth" | "doctrine" | "breakthrough";
     activatedAt: number;
     expiresAt: number;
     modifiers: {
@@ -338,8 +358,8 @@ export interface SaveActivityState {
   } | null;
   lastChangedAt?: number | null;
   history?: {
-    previous: SaveActivityState['active'];
-    next: SaveActivityState['active'];
+    previous: SaveActivityState["active"];
+    next: SaveActivityState["active"];
     changedAt: number;
     reason?: string;
   }[];
@@ -374,7 +394,7 @@ export interface SaveActiveManualStudy {
   startedAt: number;
   endsAt: number;
   focusUsed: boolean;
-  focusReward?: 'time' | 'mastery' | 'traitQuality';
+  focusReward?: "time" | "mastery" | "traitQuality";
   focusAppliedAt?: number;
   completionHandled?: boolean;
 }
@@ -382,7 +402,13 @@ export interface SaveActiveManualStudy {
 export interface SaveManualSatchelState {
   manuals: SaveManualSatchelEntry[];
   activeStudy: SaveActiveManualStudy | null;
-  lastLearned?: { techId: string; grade: SaveManualSatchelEntry['grade']; rarity: SaveManualSatchelEntry['rarity']; focusReward?: 'time' | 'mastery' | 'traitQuality'; learnedAt: number } | null;
+  lastLearned?: {
+    techId: string;
+    grade: SaveManualSatchelEntry["grade"];
+    rarity: SaveManualSatchelEntry["rarity"];
+    focusReward?: "time" | "mastery" | "traitQuality";
+    learnedAt: number;
+  } | null;
 }
 
 export interface SaveRecipeMasteryState {
@@ -390,8 +416,8 @@ export interface SaveRecipeMasteryState {
 }
 
 export interface SaveData {
-  version: string;              // Save format version
-  timestamp: number;            // When save was created
+  version: string; // Save format version
+  timestamp: number; // When save was created
   meta?: {
     lastActiveAtMs: number;
   };
@@ -451,13 +477,16 @@ export interface SaveData {
   // Zone progression
   zoneState: {
     unlockedZones: string[];
-    zoneProgress: Record<string, {
-      enemiesDefeated: number;
-      enemyKills: Record<string, number>;
-      bossDefeated: boolean;
-      completed: boolean;
-      firstClearTime?: number;
-    }>;
+    zoneProgress: Record<
+      string,
+      {
+        enemiesDefeated: number;
+        enemyKills: Record<string, number>;
+        bossDefeated: boolean;
+        completed: boolean;
+        firstClearTime?: number;
+      }
+    >;
   };
 
   // City progression
@@ -534,7 +563,7 @@ export interface SaveData {
         attempts: number;
         sessionAttempts?: number;
         eligibleFailures?: number;
-        resolution?: 'none' | 'cleared' | 'bypassed';
+        resolution?: "none" | "cleared" | "bypassed";
         cleared: boolean;
         lastAttemptAt: number | null;
         lastClearAt: number | null;
@@ -555,7 +584,12 @@ export interface SaveData {
         bossKills: number;
         bossChestRareFailures?: number;
         bestRunSeconds?: number;
-        lastRun?: { endedAt: number; victory: boolean; roomsCleared: number; seconds: number };
+        lastRun?: {
+          endedAt: number;
+          victory: boolean;
+          roomsCleared: number;
+          seconds: number;
+        };
       }
     >;
     autoRepeatDefault?: boolean;
@@ -577,8 +611,11 @@ export interface SaveData {
       weapon: number;
       accessory: number;
     };
-    temperBonusesBySlot?: Record<import('../stores/equipmentStore').EquipmentSlot, import('../stores/equipmentStore').TemperAffix[]>;
-    forgeToolTiers?: import('../stores/equipmentStore').ForgeToolTiers;
+    temperBonusesBySlot?: Record<
+      import("../stores/equipmentStore").EquipmentSlot,
+      import("../stores/equipmentStore").TemperAffix[]
+    >;
+    forgeToolTiers?: import("../stores/equipmentStore").ForgeToolTiers;
   };
 
   buffState?: {
@@ -620,10 +657,10 @@ export interface SaveData {
       qty: number;
       startedAt: number;
       endsAt: number;
-      targetSlot?: 'weapon' | 'accessory';
+      targetSlot?: "weapon" | "accessory";
       cityId?: string;
-      mode?: 'IDLE' | 'ASSISTED' | 'HANDS_ON';
-      status?: 'QUEUED' | 'ACTIVE' | 'READY_TO_CLAIM' | 'CLAIMED';
+      mode?: "IDLE" | "ASSISTED" | "HANDS_ON";
+      status?: "QUEUED" | "ACTIVE" | "READY_TO_CLAIM" | "CLAIMED";
       sessionId?: string;
       performance?: {
         heatScore?: number;
@@ -644,7 +681,7 @@ export interface SaveData {
 }
 
 export interface PrestigeUpgradeEffect {
-  type: 'multiplier' | 'unlock' | 'flat_bonus';
+  type: "multiplier" | "unlock" | "flat_bonus";
   stat?: string;
   value?: number;
   valuePerLevel?: number;
@@ -676,21 +713,21 @@ export interface EnemyDefinition {
   name: string;
   level: number;
   zone: string;
-  hp: string;              // Max HP (Decimal string)
-  atk: string;             // Attack power (Decimal string)
-  def: string;             // Defense (Decimal string)
-  crit: number;            // Critical hit chance (0-100)
-  critDmg: number;         // Critical damage multiplier (%)
-  dodge: number;           // Dodge chance (0-100)
-  speed: number;           // Attack speed
-  goldReward: string;      // Gold dropped on defeat (Decimal string)
-  expReward: string;       // Experience gained (Decimal string)
-  lootTable?: LootDrop[];  // Possible item drops
-  isBoss?: boolean;        // Is this a boss enemy
+  hp: string; // Max HP (Decimal string)
+  atk: string; // Attack power (Decimal string)
+  def: string; // Defense (Decimal string)
+  crit: number; // Critical hit chance (0-100)
+  critDmg: number; // Critical damage multiplier (%)
+  dodge: number; // Dodge chance (0-100)
+  speed: number; // Attack speed
+  goldReward: string; // Gold dropped on defeat (Decimal string)
+  expReward: string; // Experience gained (Decimal string)
+  lootTable?: LootDrop[]; // Possible item drops
+  isBoss?: boolean; // Is this a boss enemy
 }
 
 export interface EnemyMechanic {
-  type: 'shield' | 'aura' | 'enrage';
+  type: "shield" | "aura" | "enrage";
   trigger: { hpPercent: number };
   effect: { shieldAmount?: number; auraDamagePerSec?: number };
   description?: string;
@@ -701,51 +738,51 @@ export interface EnemyMechanic {
  */
 export interface LootDrop {
   itemId: string;
-  dropChance: number;      // Probability (0-100)
+  dropChance: number; // Probability (0-100)
   minAmount: number;
   maxAmount: number;
 }
 
 export type CombatEventType =
-  | 'HIT'
-  | 'SKILL_CAST'
-  | 'STATUS_APPLIED'
-  | 'STATUS_TICK'
-  | 'SHIELD_GAINED'
-  | 'HEAL'
-  | 'ENEMY_SPECIAL_TELEGRAPH'
-  | 'LOOT_DROP'
-  | 'BOSS_SPAWN'
-  | 'BOSS_DEFEATED'
-  | 'PLAYER_DEFEATED';
+  | "HIT"
+  | "SKILL_CAST"
+  | "STATUS_APPLIED"
+  | "STATUS_TICK"
+  | "SHIELD_GAINED"
+  | "HEAL"
+  | "ENEMY_SPECIAL_TELEGRAPH"
+  | "LOOT_DROP"
+  | "BOSS_SPAWN"
+  | "BOSS_DEFEATED"
+  | "PLAYER_DEFEATED";
 
-export type CombatEventSource = 'player' | 'enemy' | 'system';
-export type CombatEventTarget = 'player' | 'enemy';
+export type CombatEventSource = "player" | "enemy" | "system";
+export type CombatEventTarget = "player" | "enemy";
 
 export type CombatEvent =
   | {
       id: string;
       at: number;
-      type: 'HIT';
+      type: "HIT";
       source: CombatEventSource;
       target: CombatEventTarget;
       amount: string;
       isCrit: boolean;
       techniqueId?: string;
       absorbed?: string;
-      kind?: 'basic' | 'technique' | 'aura' | 'boss_ultimate';
+      kind?: "basic" | "technique" | "aura" | "boss_ultimate";
     }
   | {
       id: string;
       at: number;
-      type: 'SKILL_CAST';
+      type: "SKILL_CAST";
       techniqueId: string;
-      source: 'ai' | 'manual' | 'system';
+      source: "ai" | "manual" | "system";
     }
   | {
       id: string;
       at: number;
-      type: 'STATUS_APPLIED';
+      type: "STATUS_APPLIED";
       statusId: string;
       stacks: number;
       durationSec?: number;
@@ -756,7 +793,7 @@ export type CombatEvent =
   | {
       id: string;
       at: number;
-      type: 'STATUS_TICK';
+      type: "STATUS_TICK";
       statusId: string;
       amount: string;
       target?: CombatEventTarget;
@@ -764,7 +801,7 @@ export type CombatEvent =
   | {
       id: string;
       at: number;
-      type: 'SHIELD_GAINED';
+      type: "SHIELD_GAINED";
       amount: string;
       total?: string;
       durationSec?: number;
@@ -773,21 +810,21 @@ export type CombatEvent =
   | {
       id: string;
       at: number;
-      type: 'HEAL';
+      type: "HEAL";
       amount: string;
       techniqueId?: string;
     }
   | {
       id: string;
       at: number;
-      type: 'ENEMY_SPECIAL_TELEGRAPH';
+      type: "ENEMY_SPECIAL_TELEGRAPH";
       specialId: string;
       resolvesInMs: number;
     }
   | {
       id: string;
       at: number;
-      type: 'LOOT_DROP';
+      type: "LOOT_DROP";
       itemId: string;
       qty: number;
       rarity: string;
@@ -796,21 +833,21 @@ export type CombatEvent =
   | {
       id: string;
       at: number;
-      type: 'BOSS_SPAWN';
+      type: "BOSS_SPAWN";
       enemyId: string;
       enemyName?: string;
     }
   | {
       id: string;
       at: number;
-      type: 'BOSS_DEFEATED';
+      type: "BOSS_DEFEATED";
       enemyId: string;
       enemyName?: string;
     }
   | {
       id: string;
       at: number;
-      type: 'PLAYER_DEFEATED';
+      type: "PLAYER_DEFEATED";
       enemyId?: string;
       enemyName?: string;
     };
@@ -819,7 +856,15 @@ export type CombatEvent =
  * Combat log entry
  */
 export interface CombatLogEntry {
-  type: 'player' | 'enemy' | 'system' | 'damage' | 'heal' | 'loot' | 'victory' | 'defeat';
+  type:
+    | "player"
+    | "enemy"
+    | "system"
+    | "damage"
+    | "heal"
+    | "loot"
+    | "victory"
+    | "defeat";
   text: string;
   timestamp: number;
   color: string;
@@ -827,7 +872,7 @@ export interface CombatLogEntry {
 
 export interface CombatTechniqueLogEntry {
   at: number;
-  kind: 'cast' | 'effect' | 'warn';
+  kind: "cast" | "effect" | "warn";
   message: string;
   techId?: string;
 }
@@ -856,13 +901,18 @@ export interface RuinsRunSummary {
   goldGained: number;
   drops: RuinsRunDropSummary[];
   rareDropCount: number;
-  bossChestRare?: { hit: boolean; guaranteed: boolean; failuresBefore: number; pityCap: number };
+  bossChestRare?: {
+    hit: boolean;
+    guaranteed: boolean;
+    failuresBefore: number;
+    pityCap: number;
+  };
 }
 
 export interface CombatBuff {
   id: string;
   stat: string;
-  mode: 'pct' | 'flat';
+  mode: "pct" | "flat";
   value: number;
   endsAt: number;
 }
@@ -891,26 +941,26 @@ export interface TrialAttemptSummary {
  * This tags where the fight originated (city module), so reward formulas and
  * progression hooks can be applied without hard-coding per-screen logic.
  */
-export type CombatContextType = 'outskirts' | 'trial' | 'ruins' | null;
+export type CombatContextType = "outskirts" | "trial" | "ruins" | null;
 
 export type CombatContext =
   | { type: null }
   | {
-      type: 'outskirts';
+      type: "outskirts";
       cityId?: string;
       sourceId?: string;
       cityIndex?: number;
       isBoss?: boolean;
     }
   | {
-      type: 'trial';
+      type: "trial";
       cityId: string;
       trialId: string;
       countsTowardFailSafe: boolean;
       rewardBundle?: RewardBundle;
     }
   | {
-      type: 'ruins';
+      type: "ruins";
       cityId: string;
       sourceId: string;
       ruinsId?: string;
@@ -934,10 +984,10 @@ export interface CombatState {
   combatContext: CombatContext;
 
   // HP tracking
-  playerHP: string;        // Current player HP (Decimal string)
-  playerMaxHP: string;     // Max player HP (Decimal string)
-  enemyHP: string;         // Current enemy HP (Decimal string)
-  enemyMaxHP: string;      // Max enemy HP (Decimal string)
+  playerHP: string; // Current player HP (Decimal string)
+  playerMaxHP: string; // Max player HP (Decimal string)
+  enemyHP: string; // Current enemy HP (Decimal string)
+  enemyMaxHP: string; // Max enemy HP (Decimal string)
 
   // Combat log
   combatLog: CombatLogEntry[];
@@ -976,7 +1026,7 @@ export interface CombatState {
   exitCombat: () => void;
   consumeCombatConsumable: (
     itemId: string,
-    source: 'auto' | 'manual',
+    source: "auto" | "manual",
     now?: number,
   ) => { ok: boolean; reason?: string };
   playerAttack: () => void;
@@ -985,8 +1035,16 @@ export interface CombatState {
   playerDefeat: () => void;
   tick: (deltaTime: number) => void;
   canCastTechnique: (techId: string, now?: number) => boolean;
-  castTechnique: (techId: string, now?: number, source?: 'ai' | 'manual') => boolean;
-  addLogEntry: (type: CombatLogEntry['type'], text: string, color: string) => void;
+  castTechnique: (
+    techId: string,
+    now?: number,
+    source?: "ai" | "manual",
+  ) => boolean;
+  addLogEntry: (
+    type: CombatLogEntry["type"],
+    text: string,
+    color: string,
+  ) => void;
   pushEvent: (event: CombatEvent) => void;
   clearEvents: () => void;
   setAutoAttack: (enabled: boolean) => void;
@@ -998,12 +1056,23 @@ export interface CombatState {
 /**
  * Item type categories
  */
-export type ItemType = 'weapon' | 'accessory' | 'consumable' | 'material' | 'treasure';
+export type ItemType =
+  | "weapon"
+  | "accessory"
+  | "consumable"
+  | "material"
+  | "treasure";
 
 /**
  * Item rarity tiers
  */
-export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic';
+export type ItemRarity =
+  | "common"
+  | "uncommon"
+  | "rare"
+  | "epic"
+  | "legendary"
+  | "mythic";
 
 /**
  * Item definition (blueprint)
@@ -1018,37 +1087,37 @@ export interface ItemDefinition {
 
   // Equipment stats (if applicable)
   stats?: {
-    hp?: string;           // Bonus HP (Decimal string)
-    atk?: string;          // Bonus attack (Decimal string)
-    def?: string;          // Bonus defense (Decimal string)
-    crit?: number;         // Bonus crit chance (0-100)
-    critDmg?: number;      // Bonus crit damage (%)
-    dodge?: number;        // Bonus dodge (0-100)
-    qiGain?: number;       // Qi gain multiplier (%)
+    hp?: string; // Bonus HP (Decimal string)
+    atk?: string; // Bonus attack (Decimal string)
+    def?: string; // Bonus defense (Decimal string)
+    crit?: number; // Bonus crit chance (0-100)
+    critDmg?: number; // Bonus crit damage (%)
+    dodge?: number; // Bonus dodge (0-100)
+    qiGain?: number; // Qi gain multiplier (%)
   };
 
   // Consumable effects (if applicable)
   consumable?: {
-    healHP?: string;       // HP to restore (Decimal string)
-    healPercent?: number;  // HP to restore (% of max)
-    restoreQi?: string;    // Qi to restore (Decimal string)
+    healHP?: string; // HP to restore (Decimal string)
+    healPercent?: number; // HP to restore (% of max)
+    restoreQi?: string; // Qi to restore (Decimal string)
     restoreQiPercent?: number; // Qi to restore (% of breakthrough requirement)
     triggerBreakthrough?: boolean; // If true, attempts a breakthrough when used
     buffDuration?: number; // Buff duration in seconds
     buffStats?: {
-      atk?: number;        // Temporary attack % bonus
-      def?: number;        // Temporary defense % bonus
-      crit?: number;       // Temporary crit % bonus
+      atk?: number; // Temporary attack % bonus
+      def?: number; // Temporary defense % bonus
+      crit?: number; // Temporary crit % bonus
     };
   };
 
   // Value and usage
-  value: string;           // Sell price (Decimal string)
+  value: string; // Sell price (Decimal string)
   stackable: boolean;
   maxStack: number;
 }
 
-export type CurrencyKey = 'gold' | 'spiritStones' | 'merit';
+export type CurrencyKey = "gold" | "spiritStones" | "merit";
 
 /**
  * Inventory state
@@ -1081,7 +1150,7 @@ export interface InventoryState {
 /**
  * Spirit root element types
  */
-export type SpiritRootElement = 'fire' | 'water' | 'earth' | 'metal' | 'wood';
+export type SpiritRootElement = "fire" | "water" | "earth" | "metal" | "wood";
 
 /**
  * Spirit root quality grade
@@ -1094,17 +1163,17 @@ export type SpiritRootGrade = 1 | 2 | 3 | 4 | 5; // 1=Mortal, 2=Common, 3=Uncomm
 export interface SpiritRoot {
   grade: SpiritRootGrade;
   element: SpiritRootElement;
-  purity: number;          // 0-100, affects stat bonuses
+  purity: number; // 0-100, affects stat bonuses
 }
 
 /**
  * AP (Ascension Points) upgrades
  */
 export interface APUpgrades {
-  qiGain: number;          // Increases Qi generation
-  combatPower: number;     // Increases combat stats
-  cultivation: number;     // Reduces breakthrough costs
-  luckBonus: number;       // Increases item drop rates
+  qiGain: number; // Increases Qi generation
+  combatPower: number; // Increases combat stats
+  cultivation: number; // Reduces breakthrough costs
+  luckBonus: number; // Increases item drop rates
 }
 
 /**
@@ -1113,8 +1182,8 @@ export interface APUpgrades {
 export interface PrestigeState {
   // Prestige progress
   totalRebirths: number;
-  availableAP: number;     // Available Ascension Points
-  lifetimeAP: number;      // Total AP ever earned
+  availableAP: number; // Available Ascension Points
+  lifetimeAP: number; // Total AP ever earned
 
   // Spirit root (set once per rebirth)
   spiritRoot: SpiritRoot | null;
@@ -1138,4 +1207,4 @@ export interface PrestigeState {
   updateHighestRealm: (realmIndex: number) => void;
   incrementBossesDefeated: () => void;
 }
-import type { ManualPavilionSaveState } from '../features/manuals/pavilionStockTypes.js';
+import type { ManualPavilionSaveState } from "../features/manuals/pavilionStockTypes.js";
