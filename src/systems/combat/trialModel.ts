@@ -64,6 +64,21 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
   const spikeRatio = effectiveHp > 0 ? maxHit.amount / effectiveHp : 0;
 
   const suggestions: string[] = [];
+  const auraPressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'aura'));
+  const shieldPhaseSeen = Boolean(enemyMechanics?.some((m) => m.type === 'shield'));
+  const rollingPlayerDps = Number.isFinite(dpsMetrics.playerDps)
+    ? clampNumber(dpsMetrics.playerDps, 0, Number.POSITIVE_INFINITY)
+    : 0;
+  const rollingEnemyDps = Number.isFinite(dpsMetrics.enemyDps)
+    ? clampNumber(dpsMetrics.enemyDps, 0, Number.POSITIVE_INFINITY)
+    : 0;
+  const clampedEffectiveHp = clampNumber(effectiveHp, 0, Number.POSITIVE_INFINITY);
+  const clampedTimeToDieSec = Number.isFinite(timeToDieSec)
+    ? clampNumber(timeToDieSec, 0, Number.POSITIVE_INFINITY)
+    : null;
+  const clampedSpikeRatio = Number.isFinite(spikeRatio)
+    ? clampNumber(spikeRatio, 0, Number.POSITIVE_INFINITY)
+    : 0;
 
   if (spikeRatio >= 0.6) {
     suggestions.push('Reduce spike damage (more HP/defense/shields).');
@@ -77,11 +92,11 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
     suggestions.push('Need more DPS or burst to push boss phases.');
   }
 
-  if (enemyMechanics?.some((m) => m.type === 'aura')) {
+  if (auraPressureSeen) {
     suggestions.push('Boss aura pressure noted: bring sustain or mitigation.');
   }
 
-  if (enemyMechanics?.some((m) => m.type === 'shield')) {
+  if (shieldPhaseSeen) {
     suggestions.push('Break shield phases faster with burst damage.');
   }
 
@@ -106,5 +121,12 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
     maxHit: maxHit.amount,
     maxHitLabel: maxHit.label,
     suggestions: suggestions.slice(0, 4),
+    rollingPlayerDps,
+    rollingEnemyDps,
+    effectiveHp: clampedEffectiveHp,
+    timeToDieSec: clampedTimeToDieSec,
+    spikeRatio: clampedSpikeRatio,
+    auraPressureSeen,
+    shieldPhaseSeen,
   };
 }

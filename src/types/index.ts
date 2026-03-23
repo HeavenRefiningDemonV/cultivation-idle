@@ -933,6 +933,13 @@ export interface TrialAttemptSummary {
   maxHit: number;
   maxHitLabel: string;
   suggestions: string[];
+  rollingPlayerDps?: number;
+  rollingEnemyDps?: number;
+  effectiveHp?: number;
+  timeToDieSec?: number | null;
+  spikeRatio?: number;
+  auraPressureSeen?: boolean;
+  shieldPhaseSeen?: boolean;
 }
 
 /**

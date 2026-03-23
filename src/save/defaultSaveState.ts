@@ -415,6 +415,13 @@ function isValidTrialState(value: unknown): value is SaveData['trialState'] {
       if (typeof summary.maxHit !== 'number') return false;
       if (typeof summary.maxHitLabel !== 'string') return false;
       if (!Array.isArray(summary.suggestions)) return false;
+      if ('rollingPlayerDps' in summary && typeof summary.rollingPlayerDps !== 'number') return false;
+      if ('rollingEnemyDps' in summary && typeof summary.rollingEnemyDps !== 'number') return false;
+      if ('effectiveHp' in summary && typeof summary.effectiveHp !== 'number') return false;
+      if ('timeToDieSec' in summary && summary.timeToDieSec !== null && typeof summary.timeToDieSec !== 'number') return false;
+      if ('spikeRatio' in summary && typeof summary.spikeRatio !== 'number') return false;
+      if ('auraPressureSeen' in summary && typeof summary.auraPressureSeen !== 'boolean') return false;
+      if ('shieldPhaseSeen' in summary && typeof summary.shieldPhaseSeen !== 'boolean') return false;
     }
   }
   return true;
