@@ -4,8 +4,8 @@ import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { formatNumber, D } from '../../utils/numbers.js';
 import type { OfflineContext } from '../../systems/offline.js';
-import { MAX_OFFLINE_MS } from './offlineShared.js';
-import { formatOfflineDuration, getOfflineEfficiency } from '../../systems/offline.js';
+import { DEFAULT_OFFLINE_EFFICIENCY, MAX_OFFLINE_MS } from './offlineShared.js';
+import { formatOfflineDuration } from '../../systems/offline.js';
 import { cultivationService } from '../cultivationService.js';
 import { buildCultivationConsumableCarryoverWindows } from '../../systems/consumables/cultivationConsumableEffects.js';
 
@@ -54,7 +54,7 @@ export function apply(context: OfflineContext): OfflineCatchupResult {
   const startAt = context.now - seconds * 1000;
 
   const gameStore = useGameStore.getState();
-  const offlineEfficiency = context.wasMeditating ? getOfflineEfficiency() : 0;
+  const offlineEfficiency = context.wasMeditating ? DEFAULT_OFFLINE_EFFICIENCY : 0;
   const qiGain = calculateOfflineQiGain(startAt, context.now, offlineEfficiency);
   if (qiGain.greaterThan(0)) {
     const nextQi = D(gameStore.qi ?? '0').plus(qiGain);
