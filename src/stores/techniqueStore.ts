@@ -9,6 +9,7 @@ import {
   type SlotUnlockRequirement as ContractSlotUnlockRequirement,
 } from '../systems/builds/loadoutProgressionContract.js';
 import { buildLoadoutSnapshotFromLoadout } from '../systems/builds/loadoutSnapshot.js';
+import { getDefaultCastingPolicyForAiProfile } from '../systems/builds/castingPolicyFit.js';
 import { useContentStore } from './contentStore.js';
 import { useGameStore } from './gameStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
@@ -88,19 +89,6 @@ export const BASE_PASSIVE_SLOTS = 1;
 
 type SlotUnlockRequirement = Pick<ContractSlotUnlockRequirement, 'realmIndex' | 'realmName' | 'reasonText'>;
 
-const mapAiProfileToCastingPolicy = (profile: AiProfile | undefined): CastingPolicy => {
-  switch (profile) {
-    case 'burst':
-      return 'aggressive';
-    case 'survivor':
-      return 'defensive';
-    case 'farmer':
-      return 'balanced';
-    default:
-      return 'balanced';
-  }
-};
-
 const createEmptyLoadout = (
   id: string,
   name: string,
@@ -112,7 +100,7 @@ const createEmptyLoadout = (
   id,
   name,
   aiProfile,
-  castingPolicy: castingPolicy ?? mapAiProfileToCastingPolicy(aiProfile),
+  castingPolicy: castingPolicy ?? getDefaultCastingPolicyForAiProfile(aiProfile),
   slots: {
     active: Array.from({ length: activeSlots }, () => ''),
     passive: Array.from({ length: passiveSlots }, () => ''),
@@ -448,7 +436,7 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       if (!data || !Array.isArray(data.loadouts) || data.loadouts.length === 0) return;
       const normalizedLoadouts = data.loadouts.map((loadout) => ({
         ...loadout,
-        castingPolicy: loadout.castingPolicy ?? mapAiProfileToCastingPolicy(loadout.aiProfile),
+        castingPolicy: loadout.castingPolicy ?? getDefaultCastingPolicyForAiProfile(loadout.aiProfile),
         slots: normalizeLoadoutSlots(loadout),
       }));
 

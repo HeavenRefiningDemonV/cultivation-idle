@@ -65,6 +65,7 @@ import {
 } from '../systems/consumables/consumableCatalog.js';
 import { useMedicinePouchStore } from './medicinePouchStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { getDefaultCastingPolicyForAiProfile } from '../systems/builds/castingPolicyFit.js';
 import { buildOutskirtsRewardBundle, getOutskirtsDropsConfig } from '../systems/economy/index.js';
 import { getGateFailureMeritPolicyForTrial } from '../systems/economy/gateFailureMeritPolicy.js';
 
@@ -241,23 +242,6 @@ function computeResourceAfterCastPct(
 
   return { resourceAfterPct: 1, resourceModel: 'none' };
 }
-
-const mapAiProfileToCastingPolicy = (
-  profile: AiProfile,
-  fallback?: CastingPolicy,
-): CastingPolicy => {
-  if (fallback) return fallback;
-  switch (profile) {
-    case 'burst':
-      return 'aggressive';
-    case 'survivor':
-      return 'defensive';
-    case 'farmer':
-      return 'balanced';
-    default:
-      return 'balanced';
-  }
-};
 
 type CandidateScoreInput = {
   policy: CastingPolicy;
@@ -525,10 +509,9 @@ export const useCombatStore = create<ExtendedCombatState>()(
       const uiSettings = useUIStore.getState().settings;
       const aiProfile: AiProfile =
         uiSettings?.combatAIProfile ?? (loadout?.aiProfile as AiProfile | undefined) ?? 'balanced';
-      const castingPolicy = mapAiProfileToCastingPolicy(
-        aiProfile,
-        loadout?.castingPolicy as CastingPolicy | undefined,
-      );
+      const castingPolicy =
+        (loadout?.castingPolicy as CastingPolicy | undefined) ??
+        getDefaultCastingPolicyForAiProfile(aiProfile);
       const techCollection = useTechCollectionStore.getState();
       const contentStore = useContentStore.getState();
       const equipped = useTechniqueStore.getState().getCombatEquippedTechIds();
