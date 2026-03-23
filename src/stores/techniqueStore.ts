@@ -4,11 +4,11 @@ import type { TechniqueDef } from '../content/index.js';
 import type { SaveTechniqueLoadout } from '../types/index.js';
 import {
   SEMESTER_SLOT_CAPS,
-  buildLoadoutSnapshotFromLoadout,
   getSlotUnlockRequirementForProgression,
   resolveLoadoutProgressionSnapshot,
   type SlotUnlockRequirement as ContractSlotUnlockRequirement,
-} from '../systems/builds/index.js';
+} from '../systems/builds/loadoutProgressionContract.js';
+import { buildLoadoutSnapshotFromLoadout } from '../systems/builds/loadoutSnapshot.js';
 import { useContentStore } from './contentStore.js';
 import { useGameStore } from './gameStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
