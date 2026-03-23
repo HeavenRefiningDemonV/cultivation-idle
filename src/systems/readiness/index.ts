@@ -3,3 +3,5 @@ export * from './gateBuildFloorRegistry.js';
 export * from './readinessScoringTypes.js';
 export * from './readinessScoringEngine.js';
 export * from './readinessRuntime.js';
+export * from './failureDiagnosisTypes.js';
+export * from './failureDiagnosis.js';
