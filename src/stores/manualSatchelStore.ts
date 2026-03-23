@@ -1,7 +1,13 @@
-import { create } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
-import { GameEvents } from '../services/events/GameEvents.js';
-import { useContentStore } from './contentStore.js';
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+import { GameEvents } from "../services/events/GameEvents.js";
+import {
+  getDuplicateFragmentValue,
+  getStudyDurationByGrade,
+  isDuplicateManualOffer,
+  isManualOfferQualityUpgrade,
+} from "../systems/manuals/index.js";
+import { useContentStore } from "./contentStore.js";
 import {
   type ManualGrade,
   type TechRarity,
@@ -9,12 +15,12 @@ import {
   normalizeGrade,
   normalizeRarity,
   useTechCollectionStore,
-} from './techCollectionStore.js';
-import { useUIStore } from './uiStore.js';
-import { useGameStore } from './gameStore.js';
-import type { CultivationPath } from '../types/index.js';
+} from "./techCollectionStore.js";
+import { useUIStore } from "./uiStore.js";
+import { useGameStore } from "./gameStore.js";
+import type { CultivationPath } from "../types/index.js";
 
-export type FocusRewardType = 'time' | 'mastery' | 'traitQuality';
+export type FocusRewardType = "time" | "mastery" | "traitQuality";
 
 export interface ManualInstance {
   id: string;
@@ -40,22 +46,47 @@ export interface ActiveStudy {
 export interface ManualSatchelState {
   manuals: ManualInstance[];
   activeStudy: ActiveStudy | null;
-  lastLearned?: { techId: string; grade: ManualGrade; rarity: TechRarity; focusReward?: FocusRewardType; learnedAt: number } | null;
+  lastLearned?: {
+    techId: string;
+    grade: ManualGrade;
+    rarity: TechRarity;
+    focusReward?: FocusRewardType;
+    learnedAt: number;
+  } | null;
 }
 
 interface ManualSatchelStoreState extends ManualSatchelState {
   addManual: (
-    manual: Omit<ManualInstance, 'id' | 'acquiredAt'> & Partial<Pick<ManualInstance, 'id' | 'acquiredAt'>>,
+    manual: Omit<ManualInstance, "id" | "acquiredAt"> &
+      Partial<Pick<ManualInstance, "id" | "acquiredAt">>,
   ) => ManualInstance;
-  dismantleManual: (instanceId: string) => { ok: boolean; fragmentsGained?: number; techId?: string; reason?: string };
-  startStudy: (instanceId: string, now?: number) => { ok: boolean; reason?: string };
-  applyFocusReward: (now?: number) => { ok: boolean; reward?: FocusRewardType; reason?: string };
+  dismantleManual: (instanceId: string) => {
+    ok: boolean;
+    fragmentsGained?: number;
+    techId?: string;
+    reason?: string;
+  };
+  startStudy: (
+    instanceId: string,
+    now?: number,
+  ) => { ok: boolean; reason?: string };
+  applyFocusReward: (now?: number) => {
+    ok: boolean;
+    reward?: FocusRewardType;
+    reason?: string;
+  };
   tick: (now?: number) => void;
-  unlockRandomTechnique: (options?: UnlockRandomTechniqueOptions) => string | null;
+  unlockRandomTechnique: (
+    options?: UnlockRandomTechniqueOptions,
+  ) => string | null;
   hydrate: (slice?: Partial<ManualSatchelState>) => void;
   toSaveState: () => ManualSatchelState;
   hardReset: () => void;
-  getManualCount: (techId: string, grade: ManualGrade, rarity: TechRarity) => number;
+  getManualCount: (
+    techId: string,
+    grade: ManualGrade,
+    rarity: TechRarity,
+  ) => number;
 }
 
 export type UnlockRandomTechniqueOptions = {
@@ -64,40 +95,21 @@ export type UnlockRandomTechniqueOptions = {
   includePrestigeLocked?: boolean;
 };
 
-const STUDY_DURATION_MS: Record<ManualGrade, number> = {
-  mortal: 1_000,
-  earth: 1_000,
-  heaven: 1_000,
-  mystic: 1_000,
-};
-
-const DEFAULT_RARITY_FRAGMENT_VALUES: Record<TechRarity, number> = {
-  common: 1,
-  uncommon: 2,
-  rare: 4,
-  epic: 8,
-  legendary: 16,
-};
-
-const DEFAULT_GRADE_FRAGMENT_MULTIPLIER: Record<ManualGrade, number> = {
-  mortal: 1,
-  earth: 2,
-  heaven: 4,
-  mystic: 8,
-};
-
-const GRADE_TIER_ORDER: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
+const GRADE_TIER_ORDER: ManualGrade[] = ["mortal", "earth", "heaven", "mystic"];
 
 function generateManualId(): string {
   return `man_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 }
 
-function sanitizeManual(manual: Partial<ManualInstance>): ManualInstance | null {
-  if (!manual || typeof manual.techId !== 'string') return null;
-  const id = typeof manual.id === 'string' ? manual.id : generateManualId();
+function sanitizeManual(
+  manual: Partial<ManualInstance>,
+): ManualInstance | null {
+  if (!manual || typeof manual.techId !== "string") return null;
+  const id = typeof manual.id === "string" ? manual.id : generateManualId();
   const grade = normalizeGrade(manual.grade);
   const rarity = normalizeRarity(manual.rarity);
-  const acquiredAt = typeof manual.acquiredAt === 'number' ? manual.acquiredAt : Date.now();
+  const acquiredAt =
+    typeof manual.acquiredAt === "number" ? manual.acquiredAt : Date.now();
   return {
     id,
     pavilionId: manual.pavilionId ?? null,
@@ -109,30 +121,29 @@ function sanitizeManual(manual: Partial<ManualInstance>): ManualInstance | null 
   };
 }
 
-function sanitizeActiveStudy(study: Partial<ActiveStudy> | null | undefined): ActiveStudy | null {
+function sanitizeActiveStudy(
+  study: Partial<ActiveStudy> | null | undefined,
+): ActiveStudy | null {
   if (!study || !study.manual) return null;
   const manual = sanitizeManual(study.manual);
   if (!manual) return null;
-  const startedAt = typeof study.startedAt === 'number' ? study.startedAt : Date.now();
-  const endsAt = typeof study.endsAt === 'number' ? study.endsAt : startedAt;
+  const startedAt =
+    typeof study.startedAt === "number" ? study.startedAt : Date.now();
+  const endsAt = typeof study.endsAt === "number" ? study.endsAt : startedAt;
   return {
-    studyId: typeof study.studyId === 'string' ? study.studyId : `study_${manual.id}`,
+    studyId:
+      typeof study.studyId === "string" ? study.studyId : `study_${manual.id}`,
     manual,
     startedAt,
     endsAt,
     focusUsed: Boolean(study.focusUsed),
     focusReward: study.focusReward,
-    focusAppliedAt: typeof study.focusAppliedAt === 'number' ? study.focusAppliedAt : undefined,
+    focusAppliedAt:
+      typeof study.focusAppliedAt === "number"
+        ? study.focusAppliedAt
+        : undefined,
     completionHandled: Boolean(study.completionHandled),
   };
-}
-
-function getFragmentConfig() {
-  const economy = useContentStore.getState().raw as any;
-  const manualSystem = economy?.economy?.manualSystem;
-  const rarityFragmentValue: Partial<Record<TechRarity, number>> = manualSystem?.rarityFragmentValue ?? {};
-  const gradeFragmentMultiplier: Partial<Record<ManualGrade, number>> = manualSystem?.gradeFragmentMultiplier ?? {};
-  return { rarityFragmentValue, gradeFragmentMultiplier };
 }
 
 function isTechniquePathAllowed(
@@ -148,15 +159,6 @@ function isTechniqueTierAllowed(grade: ManualGrade, maxTier: number) {
   const tierIndex = GRADE_TIER_ORDER.indexOf(grade);
   if (tierIndex < 0) return false;
   return tierIndex + 1 <= maxTier;
-}
-
-function computeFragments(grade: ManualGrade, rarity: TechRarity): number {
-  const config = getFragmentConfig();
-  const rarityValue = Number(config.rarityFragmentValue[rarity] ?? DEFAULT_RARITY_FRAGMENT_VALUES[rarity] ?? 0);
-  const gradeMultiplier = Number(
-    config.gradeFragmentMultiplier[grade] ?? DEFAULT_GRADE_FRAGMENT_MULTIPLIER[grade] ?? 1,
-  );
-  return Math.max(0, Math.floor(rarityValue * gradeMultiplier));
 }
 
 function ensureMasteryAtLeast(techId: string, level: number) {
@@ -177,8 +179,12 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
         state.manuals.push(sanitized);
       });
       GameEvents.emit({
-        type: 'manuals/purchased',
-        payload: { manualId: sanitized.techId, techniqueId: sanitized.techId, quantity: 1 },
+        type: "manuals/purchased",
+        payload: {
+          manualId: sanitized.techId,
+          techniqueId: sanitized.techId,
+          quantity: 1,
+        },
       });
       return sanitized;
     },
@@ -186,33 +192,46 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
     dismantleManual: (instanceId) => {
       const currentState = get();
       if (currentState.activeStudy?.manual.id === instanceId) {
-        return { ok: false, reason: 'manual_in_use' };
+        return { ok: false, reason: "manual_in_use" };
       }
       let removed: ManualInstance | null = null;
       set((state) => {
-        const index = state.manuals.findIndex((manual) => manual.id === instanceId);
+        const index = state.manuals.findIndex(
+          (manual) => manual.id === instanceId,
+        );
         if (index === -1) return;
         removed = state.manuals.splice(index, 1)[0];
       });
-      if (!removed) return { ok: false, reason: 'manual_not_found' };
+      if (!removed) return { ok: false, reason: "manual_not_found" };
       const manual = removed as ManualInstance;
-      const fragmentsGained = computeFragments(manual.grade, manual.rarity);
+      const fragmentsGained = getDuplicateFragmentValue(
+        manual.grade,
+        manual.rarity,
+      );
       if (fragmentsGained > 0) {
-        useTechCollectionStore.getState().addFragments(manual.techId, fragmentsGained);
+        useTechCollectionStore
+          .getState()
+          .addFragments(manual.techId, fragmentsGained);
       }
-      GameEvents.emit({ type: 'rewards/granted', payload: { type: 'techniqueFragments', techId: manual.techId } as any });
+      GameEvents.emit({
+        type: "rewards/granted",
+        payload: { type: "techniqueFragments", techId: manual.techId } as any,
+      });
       return { ok: true, fragmentsGained, techId: manual.techId };
     },
 
     startStudy: (instanceId, now = Date.now()) => {
       const currentState = get();
-      if (currentState.activeStudy) return { ok: false, reason: 'Already studying a manual.' };
+      if (currentState.activeStudy)
+        return { ok: false, reason: "Already studying a manual." };
       let manual: ManualInstance | null = null;
       set((draft) => {
-        const index = draft.manuals.findIndex((entry) => entry.id === instanceId);
+        const index = draft.manuals.findIndex(
+          (entry) => entry.id === instanceId,
+        );
         if (index === -1) return;
         manual = draft.manuals.splice(index, 1)[0];
-        const durationMs = manual ? STUDY_DURATION_MS[manual.grade] ?? STUDY_DURATION_MS.mortal : 0;
+        const durationMs = manual ? getStudyDurationByGrade(manual.grade) : 0;
         draft.activeStudy = manual
           ? {
               studyId: `study_${manual.id}`,
@@ -223,24 +242,39 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
             }
           : draft.activeStudy;
       });
-      if (!manual) return { ok: false, reason: 'Manual not found.' };
+      if (!manual) return { ok: false, reason: "Manual not found." };
       const manualInstance = manual as ManualInstance;
-      GameEvents.emit({ type: 'manuals/focus_prompt', payload: { manualId: manualInstance.techId } });
-      GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manualInstance.techId, progress: 0 } });
+      GameEvents.emit({
+        type: "manuals/focus_prompt",
+        payload: { manualId: manualInstance.techId },
+      });
+      GameEvents.emit({
+        type: "manuals/studied",
+        payload: { manualId: manualInstance.techId, progress: 0 },
+      });
       return { ok: true };
     },
 
     applyFocusReward: (now = Date.now()) => {
       const active = get().activeStudy;
       if (!active) {
-        GameEvents.emit({ type: 'manuals/focus_failed', payload: { reason: 'No active study.' } });
-        return { ok: false, reason: 'No active study.' };
+        GameEvents.emit({
+          type: "manuals/focus_failed",
+          payload: { reason: "No active study." },
+        });
+        return { ok: false, reason: "No active study." };
       }
       if (active.focusUsed) {
-        GameEvents.emit({ type: 'manuals/focus_failed', payload: { manualId: active.manual.techId, reason: 'Focus already applied.' } });
-        return { ok: false, reason: 'Focus already applied.' };
+        GameEvents.emit({
+          type: "manuals/focus_failed",
+          payload: {
+            manualId: active.manual.techId,
+            reason: "Focus already applied.",
+          },
+        });
+        return { ok: false, reason: "Focus already applied." };
       }
-      const rewards: FocusRewardType[] = ['time', 'mastery', 'traitQuality'];
+      const rewards: FocusRewardType[] = ["time", "mastery", "traitQuality"];
       const roll = rewards[Math.floor(Math.random() * rewards.length)];
       set((state) => {
         const study = state.activeStudy;
@@ -248,13 +282,19 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
         study.focusUsed = true;
         study.focusReward = roll;
         study.focusAppliedAt = now;
-        if (roll === 'time') {
+        if (roll === "time") {
           const remaining = Math.max(0, study.endsAt - now);
           study.endsAt = now + remaining * 0.9;
         }
       });
-      GameEvents.emit({ type: 'manuals/focus_applied', payload: { manualId: active.manual.techId, reward: roll } });
-      GameEvents.emit({ type: 'manuals/studied', payload: { manualId: active.manual.techId, progress: 0.5 } });
+      GameEvents.emit({
+        type: "manuals/focus_applied",
+        payload: { manualId: active.manual.techId, reward: roll },
+      });
+      GameEvents.emit({
+        type: "manuals/studied",
+        payload: { manualId: active.manual.techId, progress: 0.5 },
+      });
       return { ok: true, reward: roll };
     },
 
@@ -272,7 +312,10 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       const hasTech = collection.hasTech(manual.techId);
 
       if (hasTech) {
-        const fragmentsGained = computeFragments(manual.grade, manual.rarity);
+        const fragmentsGained = getDuplicateFragmentValue(
+          manual.grade,
+          manual.rarity,
+        );
         if (fragmentsGained > 0) {
           collection.addFragments(manual.techId, fragmentsGained);
         }
@@ -280,19 +323,29 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
           state.activeStudy = null;
           state.lastLearned = null;
         });
-        ui.addNotification('info', `Manual converted to fragments for ${manual.techId}`);
-        GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manual.techId, progress: 1 } });
+        ui.addNotification(
+          "info",
+          `Manual converted to fragments for ${manual.techId}`,
+        );
+        GameEvents.emit({
+          type: "manuals/studied",
+          payload: { manualId: manual.techId, progress: 1 },
+        });
         return;
       }
 
-      collection.unlockTech(manual.techId, { unlocked: true, manualGrade: manual.grade, rarity: manual.rarity });
+      collection.unlockTech(manual.techId, {
+        unlocked: true,
+        manualGrade: manual.grade,
+        rarity: manual.rarity,
+      });
       collection.setManualGrade(manual.techId, manual.grade);
       collection.setRarityIfHigher(manual.techId, manual.rarity);
 
-      if (focusReward === 'mastery') {
+      if (focusReward === "mastery") {
         ensureMasteryAtLeast(manual.techId, 10);
       }
-      if (focusReward === 'traitQuality') {
+      if (focusReward === "traitQuality") {
         collection.applyTraitQualityBoost(manual.techId, 0.05);
       }
 
@@ -309,7 +362,10 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
         state.lastLearned = learnedPayload;
       });
       ui.openTechniqueLearned(learnedPayload);
-      GameEvents.emit({ type: 'manuals/studied', payload: { manualId: manual.techId, progress: 1 } });
+      GameEvents.emit({
+        type: "manuals/studied",
+        payload: { manualId: manual.techId, progress: 1 },
+      });
     },
 
     unlockRandomTechnique: (options) => {
@@ -324,15 +380,22 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
 
       const selectedPath = useGameStore.getState().selectedPath;
       const techCollection = useTechCollectionStore.getState();
-      const techniques = Object.values(content.maps.techniquesById ?? {}).filter(Boolean);
+      const techniques = Object.values(
+        content.maps.techniquesById ?? {},
+      ).filter(Boolean);
       const unlockable = techniques.filter((technique) => {
         const tech = technique!;
         if (techCollection.hasTech(tech.id)) return false;
-        if (!isTechniquePathAllowed(tech.path, selectedPath, allowCrossPath)) return false;
+        if (!isTechniquePathAllowed(tech.path, selectedPath, allowCrossPath))
+          return false;
         const grade = getManualGradeFromTechnique(tech);
         if (!isTechniqueTierAllowed(grade, maxTier)) return false;
         if (!includePrestigeLocked && Array.isArray(tech.tags)) {
-          if (tech.tags.includes('prestige_locked') || tech.tags.includes('hidden')) return false;
+          if (
+            tech.tags.includes("prestige_locked") ||
+            tech.tags.includes("hidden")
+          )
+            return false;
         }
         return true;
       });
@@ -356,7 +419,9 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       const startResult = get().startStudy(manualInstance.id);
       if (!startResult.ok) {
         set((state) => {
-          state.manuals = state.manuals.filter((manual) => manual.id !== manualInstance.id);
+          state.manuals = state.manuals.filter(
+            (manual) => manual.id !== manualInstance.id,
+          );
         });
         return null;
       }
@@ -371,7 +436,7 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
     },
 
     hydrate: (slice) => {
-      if (!slice || typeof slice !== 'object') return;
+      if (!slice || typeof slice !== "object") return;
       const manuals: ManualInstance[] = Array.isArray(slice.manuals)
         ? slice.manuals
             .map((entry) => sanitizeManual(entry))
@@ -387,7 +452,9 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       const state = get();
       return {
         manuals: state.manuals.map((manual) => ({ ...manual })),
-        activeStudy: state.activeStudy ? { ...state.activeStudy, manual: { ...state.activeStudy.manual } } : null,
+        activeStudy: state.activeStudy
+          ? { ...state.activeStudy, manual: { ...state.activeStudy.manual } }
+          : null,
         lastLearned: state.lastLearned ? { ...state.lastLearned } : null,
       };
     },
@@ -395,8 +462,12 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
     hardReset: () => set({ manuals: [], activeStudy: null, lastLearned: null }),
 
     getManualCount: (techId, grade, rarity) => {
-      return get().manuals.filter((manual) => manual.techId === techId && manual.grade === grade && manual.rarity === rarity)
-        .length;
+      return get().manuals.filter(
+        (manual) =>
+          manual.techId === techId &&
+          manual.grade === grade &&
+          manual.rarity === rarity,
+      ).length;
     },
   })),
 );
