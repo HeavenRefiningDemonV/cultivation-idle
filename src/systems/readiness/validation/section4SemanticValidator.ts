@@ -4,7 +4,7 @@ import type { GateBuildFloor } from '../gateBuildFloorTypes.js';
 import { getAllGateBuildFloors } from '../gateBuildFloorRegistry.js';
 import { diagnoseTrialFailure } from '../failureDiagnosis.js';
 import type { FailureDiagnosisCode, TrialFailureDiagnosisInput } from '../failureDiagnosisTypes.js';
-import type { BuildArchetypeProfile } from '../../builds/buildAnalysisTypes.js';
+import type { BuildAnalysis, BuildArchetypeProfile } from '../../builds/buildAnalysisTypes.js';
 import { SEMESTER_BUILD_ARCHETYPES } from '../../builds/archetypeRegistry.js';
 import { buildTechniqueTaxonomyFromDefinitions, type TechniqueTaxonomyProfile } from '../../builds/techniqueTaxonomy.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../progression/contract/semesterSlice.js';
@@ -54,7 +54,7 @@ function sortIssues(issues: readonly Section4SemanticIssue[]): Section4SemanticI
   );
 }
 
-function makeBuildAnalysis() {
+function makeBuildAnalysis(): BuildAnalysis {
   return {
     loadoutId: 'loadout_1',
     archetypeId: null,
@@ -84,7 +84,7 @@ function makeBuildAnalysis() {
     runeFloorMet: true,
     equippedTechniques: [],
     gaps: [],
-  } as const;
+  };
 }
 
 function makeReadiness(input: {
