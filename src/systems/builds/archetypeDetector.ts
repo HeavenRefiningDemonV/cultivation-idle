@@ -1,7 +1,7 @@
 import type { CultivationPath } from '../../types/index.js';
 import type { TechniqueFamily, TechniqueSupportFlag } from './techniqueFamilies.js';
 import type { BuildArchetypeProfile } from './buildAnalysisTypes.js';
-import { BUILD_ARCHETYPE_ORDER, getBuildArchetype } from './archetypeRegistry.js';
+import { BUILD_ARCHETYPE_ORDER, getBuildArchetypesForPath } from './archetypeRegistry.js';
 
 export function scoreArchetypeMatch(input: {
   archetype: BuildArchetypeProfile;
@@ -27,9 +27,11 @@ export function detectArchetypeFromCoverage(input: {
   let bestId: string | null = null;
   let bestScore = -1;
 
+  const archetypesForPath = getBuildArchetypesForPath(input.path);
+
   BUILD_ARCHETYPE_ORDER.forEach((archetypeId) => {
-    const archetype = getBuildArchetype(archetypeId);
-    if (!archetype || archetype.path !== input.path) {
+    const archetype = archetypesForPath.find((candidate) => candidate.id === archetypeId);
+    if (!archetype) {
       return;
     }
 
