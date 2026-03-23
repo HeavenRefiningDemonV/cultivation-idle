@@ -1,11 +1,21 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { TechniqueDef } from '../content/index.js';
+import {
+  BASE_ACTIVE_SLOTS,
+  BASE_PASSIVE_SLOTS,
+  buildSemesterTechniqueSlotProgressionSnapshot,
+  clampTechniqueSlotCount,
+  getSemesterTechniqueSlotUnlockRequirement,
+  isSemesterTechniqueSlotUnlocked,
+  normalizeTechniqueSlotIds,
+  resolveSemesterRealmIndex,
+  type SemesterTechniqueSlotUnlockRequirement as SlotUnlockRequirement,
+} from '../systems/builds/semesterTechniqueSlots.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 import type { SaveTechniqueLoadout } from '../types/index.js';
-import { clampRealmIndexToSemesterSlice, getLiveRealmNameByIndex } from '../systems/progression/runtime/index.js';
 import { useContentStore } from './contentStore.js';
 import { useGameStore } from './gameStore.js';
-import { GameEvents } from '../services/events/GameEvents.js';
 import { useTechCollectionStore } from './techCollectionStore.js';
 
 export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
@@ -48,20 +58,12 @@ interface TechniqueStoreState {
     };
   };
   isSlotUnlocked: (slotType: SlotType, slotIndex: number, realmIndex?: number) => boolean;
-  getSlotUnlockRequirement: (
-    slotType: SlotType,
-    slotIndex: number,
-  ) => SlotUnlockRequirement | null;
+  getSlotUnlockRequirement: (slotType: SlotType, slotIndex: number) => SlotUnlockRequirement | null;
   setSelectedLoadout: (id: string) => void;
   setSlotCounts: (slots: { active?: number; passive?: number }) => void;
   setAiProfile: (loadoutId: string, profile: AiProfile) => void;
   setCastingPolicy: (loadoutId: string, policy: CastingPolicy) => void;
-  equipTechnique: (
-    slotType: SlotType,
-    slotIndex: number,
-    techId: string,
-    loadoutId?: string,
-  ) => EquipResult;
+  equipTechnique: (slotType: SlotType, slotIndex: number, techId: string, loadoutId?: string) => EquipResult;
   hydrateFromSave: (
     data: { loadouts: SaveTechniqueLoadout[]; selectedLoadoutId: string } | null | undefined,
   ) => void;
@@ -69,25 +71,9 @@ interface TechniqueStoreState {
   getSelectedLoadout: () => TechniqueLoadout | undefined;
   getSelectedAiProfile: () => AiProfile;
   getSelectedCastingPolicy: () => CastingPolicy;
-  getEquippedTechIds: (
-    loadoutId?: string
-  ) => { active: string[]; passive: string[]; ultimate: string | null };
-  getCombatEquippedTechIds: (
-    loadoutId?: string,
-  ) => { active: string[]; passive: string[]; ultimate: string | null };
+  getEquippedTechIds: (loadoutId?: string) => { active: string[]; passive: string[]; ultimate: string | null };
+  getCombatEquippedTechIds: (loadoutId?: string) => { active: string[]; passive: string[]; ultimate: string | null };
 }
-
-export const BASE_ACTIVE_SLOTS = 2;
-export const BASE_PASSIVE_SLOTS = 1;
-
-const MIN_DISPLAY_ACTIVE_SLOTS = 3;
-const MIN_DISPLAY_PASSIVE_SLOTS = 2;
-
-type SlotUnlockRequirement = {
-  realmIndex: number;
-  realmName: string;
-  reasonText: string;
-};
 
 const mapAiProfileToCastingPolicy = (profile: AiProfile | undefined): CastingPolicy => {
   switch (profile) {
@@ -121,17 +107,6 @@ const createEmptyLoadout = (
   },
 });
 
-const clampSlotCount = (value: number, minimum: number) => {
-  if (!Number.isFinite(value)) return minimum;
-  return Math.max(minimum, Math.floor(value));
-};
-
-const normalizeSlots = (slots: string[], nextCount: number) => {
-  if (slots.length === nextCount) return slots;
-  if (slots.length > nextCount) return slots.slice(0, nextCount);
-  return [...slots, ...Array.from({ length: nextCount - slots.length }, () => '')];
-};
-
 const isPassive = (tech: TechniqueDef | undefined) => {
   if (!tech) return false;
   if (tech.type === 'passive') return true;
@@ -141,51 +116,21 @@ const isPassive = (tech: TechniqueDef | undefined) => {
 const isUltimate = (tech: TechniqueDef | undefined) => tech?.type === 'ultimate';
 
 const getRealmIndex = (realmIndex?: number) => {
-  if (typeof realmIndex === 'number') return realmIndex;
-  return useGameStore.getState().realm.index ?? 0;
+  if (typeof realmIndex === 'number') return resolveSemesterRealmIndex(realmIndex);
+  return resolveSemesterRealmIndex(useGameStore.getState().realm.index ?? 0);
 };
 
-const getRealmName = (realmIndex: number) => getLiveRealmNameByIndex(clampRealmIndexToSemesterSlice(realmIndex));
-
-// Slot progression: Active 1-2 + Passive 1 always, Active 3 at realm 1, Passive 2 at realm 2, Ultimate at realm 3.
-const computeSlotProgression = (
-  activeSlots: number,
-  passiveSlots: number,
-  realmIndex: number,
-) => {
-  const displayedActive = Math.max(MIN_DISPLAY_ACTIVE_SLOTS, activeSlots);
-  const displayedPassive = Math.max(MIN_DISPLAY_PASSIVE_SLOTS, passiveSlots);
-
-  const baselineUnlockedActive = realmIndex >= 1 ? 3 : 2;
-  const baselineUnlockedPassive = realmIndex >= 2 ? 2 : 1;
-  const unlockedActive = Math.max(activeSlots, baselineUnlockedActive);
-  const unlockedPassive = Math.max(passiveSlots, baselineUnlockedPassive);
-  const ultimateUnlocked = realmIndex >= 3;
-
-  return {
-    displayed: { active: displayedActive, passive: displayedPassive },
-    unlocked: { active: unlockedActive, passive: unlockedPassive, ultimate: ultimateUnlocked },
-  };
-};
-
-const createUnlockRequirement = (
-  realmIndex: number,
-  reasonText: string,
-): SlotUnlockRequirement => ({
-  realmIndex,
-  realmName: getRealmName(realmIndex),
-  reasonText,
-});
+export { BASE_ACTIVE_SLOTS, BASE_PASSIVE_SLOTS };
 
 export const useTechniqueStore = create<TechniqueStoreState>()(
   immer((set, get) => ({
     activeSlots: BASE_ACTIVE_SLOTS,
     passiveSlots: BASE_PASSIVE_SLOTS,
     loadouts: (() => {
-      const { displayed } = computeSlotProgression(
+      const { displayed } = buildSemesterTechniqueSlotProgressionSnapshot(
         BASE_ACTIVE_SLOTS,
         BASE_PASSIVE_SLOTS,
-        getRealmIndex(0),
+        0,
       );
       return [
         createEmptyLoadout('loadout_1', 'Loadout 1', 'balanced', displayed.active, displayed.passive),
@@ -197,68 +142,37 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
 
     getSlotProgressionSnapshot: (realmIndex) => {
       const state = get();
-      const resolvedRealmIndex = getRealmIndex(realmIndex);
-      const { displayed, unlocked } = computeSlotProgression(
+      return buildSemesterTechniqueSlotProgressionSnapshot(
         state.activeSlots,
         state.passiveSlots,
-        resolvedRealmIndex,
+        getRealmIndex(realmIndex),
       );
-
-      const unlockRequirements = {
-        active: {
-          0: null,
-          1: null,
-          2:
-            unlocked.active > 2
-              ? null
-              : createUnlockRequirement(1, `Unlocks at: ${getRealmName(1)}`),
-        } as Record<number, SlotUnlockRequirement | null>,
-        passive: {
-          0: null,
-          1:
-            unlocked.passive > 1
-              ? null
-              : createUnlockRequirement(2, `Unlocks at: ${getRealmName(2)}`),
-        } as Record<number, SlotUnlockRequirement | null>,
-        ultimate:
-          unlocked.ultimate || resolvedRealmIndex >= 3
-            ? null
-            : createUnlockRequirement(3, `Unlocks at: ${getRealmName(3)}`),
-      };
-
-      return { displayed, unlocked, unlockRequirements };
     },
 
     isSlotUnlocked: (slotType, slotIndex, realmIndex) => {
       const state = get();
-      const resolvedRealmIndex = getRealmIndex(realmIndex);
-      const progression = computeSlotProgression(
+      const progression = buildSemesterTechniqueSlotProgressionSnapshot(
         state.activeSlots,
         state.passiveSlots,
-        resolvedRealmIndex,
+        getRealmIndex(realmIndex),
       );
-      if (slotType === 'ultimate') {
-        return progression.unlocked.ultimate;
-      }
-
-      const unlockedCount = slotType === 'active'
-        ? progression.unlocked.active
-        : progression.unlocked.passive;
-      return slotIndex >= 0 && slotIndex < unlockedCount;
+      return isSemesterTechniqueSlotUnlocked(slotType, slotIndex, progression.unlocked);
     },
 
     getSlotUnlockRequirement: (slotType, slotIndex) => {
-      if (get().isSlotUnlocked(slotType, slotIndex)) return null;
+      const progression = get().getSlotProgressionSnapshot();
+      if (isSemesterTechniqueSlotUnlocked(slotType, slotIndex, progression.unlocked)) {
+        return null;
+      }
+
       if (slotType === 'ultimate') {
-        return createUnlockRequirement(3, `Unlocks at: ${getRealmName(3)}`);
+        return getSemesterTechniqueSlotUnlockRequirement('ultimate', 0, progression.unlocked);
       }
-      if (slotType === 'active') {
-        if (slotIndex === 2) return createUnlockRequirement(1, `Unlocks at: ${getRealmName(1)}`);
-        return null;
+      if (slotType === 'active' && slotIndex === 2) {
+        return getSemesterTechniqueSlotUnlockRequirement('active', 2, progression.unlocked);
       }
-      if (slotType === 'passive') {
-        if (slotIndex === 1) return createUnlockRequirement(2, `Unlocks at: ${getRealmName(2)}`);
-        return null;
+      if (slotType === 'passive' && slotIndex === 1) {
+        return getSemesterTechniqueSlotUnlockRequirement('passive', 1, progression.unlocked);
       }
       return null;
     },
@@ -276,17 +190,17 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
       const current = get();
       const previousActive = current.activeSlots;
       const previousPassive = current.passiveSlots;
-      const nextActive = clampSlotCount(active ?? current.activeSlots, BASE_ACTIVE_SLOTS);
-      const nextPassive = clampSlotCount(passive ?? current.passiveSlots, BASE_PASSIVE_SLOTS);
+      const nextActive = clampTechniqueSlotCount(active ?? current.activeSlots, BASE_ACTIVE_SLOTS);
+      const nextPassive = clampTechniqueSlotCount(passive ?? current.passiveSlots, BASE_PASSIVE_SLOTS);
       if (nextActive === current.activeSlots && nextPassive === current.passiveSlots) return;
 
       set((state) => {
         state.activeSlots = nextActive;
         state.passiveSlots = nextPassive;
-        const progression = computeSlotProgression(nextActive, nextPassive, getRealmIndex());
+        const progression = buildSemesterTechniqueSlotProgressionSnapshot(nextActive, nextPassive, getRealmIndex());
         state.loadouts.forEach((loadout) => {
-          loadout.slots.active = normalizeSlots(loadout.slots.active, progression.displayed.active);
-          loadout.slots.passive = normalizeSlots(loadout.slots.passive, progression.displayed.passive);
+          loadout.slots.active = normalizeTechniqueSlotIds(loadout.slots.active, progression.displayed.active);
+          loadout.slots.passive = normalizeTechniqueSlotIds(loadout.slots.passive, progression.displayed.passive);
         });
       });
 
@@ -337,8 +251,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         slotType === 'active'
           ? progression.displayed.active
           : slotType === 'passive'
-          ? progression.displayed.passive
-          : 1;
+            ? progression.displayed.passive
+            : 1;
 
       if (slotIndex < 0 || slotIndex >= displayedLimit || (slotType === 'ultimate' && slotIndex !== 0)) {
         GameEvents.emit({
@@ -431,8 +345,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         slotType === 'active'
           ? loadout.slots.active[slotIndex]
           : slotType === 'passive'
-          ? loadout.slots.passive[slotIndex]
-          : loadout.slots.ultimate ?? '';
+            ? loadout.slots.passive[slotIndex]
+            : loadout.slots.ultimate ?? '';
 
       set((draft) => {
         const targetLoadout = draft.loadouts.find((l) => l.id === (loadoutId ?? draft.selectedLoadoutId));
@@ -467,8 +381,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         techId === ''
           ? 'unequip'
           : previousTechId && previousTechId !== '' && previousTechId !== techId
-          ? 'swap'
-          : 'equip';
+            ? 'swap'
+            : 'equip';
       GameEvents.emit({
         type: 'techniques/equip_changed',
         payload: { techniqueId: techId, slotType, slotIndex, action },
@@ -484,8 +398,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         ...loadout,
         castingPolicy: loadout.castingPolicy ?? mapAiProfileToCastingPolicy(loadout.aiProfile),
         slots: {
-          active: normalizeSlots(loadout.slots?.active ?? [], progression.displayed.active),
-          passive: normalizeSlots(loadout.slots?.passive ?? [], progression.displayed.passive),
+          active: normalizeTechniqueSlotIds(loadout.slots?.active ?? [], progression.displayed.active),
+          passive: normalizeTechniqueSlotIds(loadout.slots?.passive ?? [], progression.displayed.passive),
           ultimate: loadout.slots?.ultimate ?? null,
         },
       }));
@@ -534,8 +448,8 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         };
       }
       return {
-        active: normalizeSlots([...loadout.slots.active], progression.displayed.active),
-        passive: normalizeSlots([...loadout.slots.passive], progression.displayed.passive),
+        active: normalizeTechniqueSlotIds([...loadout.slots.active], progression.displayed.active),
+        passive: normalizeTechniqueSlotIds([...loadout.slots.passive], progression.displayed.passive),
         ultimate: loadout.slots.ultimate || null,
       };
     },
@@ -555,5 +469,5 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
         ultimate,
       };
     },
-  }))
+  })),
 );
