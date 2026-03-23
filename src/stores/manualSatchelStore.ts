@@ -200,7 +200,8 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
           (manual) => manual.id === instanceId,
         );
         if (index === -1) return;
-        removed = state.manuals.splice(index, 1)[0];
+        const [removedManual] = state.manuals.splice(index, 1);
+        removed = removedManual ? { ...removedManual } : null;
       });
       if (!removed) return { ok: false, reason: "manual_not_found" };
       const manual = removed as ManualInstance;
@@ -230,7 +231,8 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
           (entry) => entry.id === instanceId,
         );
         if (index === -1) return;
-        manual = draft.manuals.splice(index, 1)[0];
+        const [removedManual] = draft.manuals.splice(index, 1);
+        manual = removedManual ? { ...removedManual } : null;
         const durationMs = manual ? getStudyDurationByGrade(manual.grade) : 0;
         draft.activeStudy = manual
           ? {
@@ -309,9 +311,24 @@ export const useManualSatchelStore = create<ManualSatchelStoreState>()(
       const collection = useTechCollectionStore.getState();
       const ui = useUIStore.getState();
       const { manual, focusReward } = active;
+      const owned = collection.ensureTechState(manual.techId);
       const hasTech = collection.hasTech(manual.techId);
+      const qualityUpgrade = isManualOfferQualityUpgrade({
+        hasTechnique: hasTech,
+        ownedGrade: owned.manualGrade,
+        ownedRarity: owned.rarity,
+        offerGrade: manual.grade,
+        offerRarity: manual.rarity,
+      });
+      const duplicateOffer = isDuplicateManualOffer({
+        hasTechnique: hasTech,
+        ownedGrade: owned.manualGrade,
+        ownedRarity: owned.rarity,
+        offerGrade: manual.grade,
+        offerRarity: manual.rarity,
+      });
 
-      if (hasTech) {
+      if (duplicateOffer && !qualityUpgrade) {
         const fragmentsGained = getDuplicateFragmentValue(
           manual.grade,
           manual.rarity,

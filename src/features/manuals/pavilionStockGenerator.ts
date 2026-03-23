@@ -472,7 +472,7 @@ function generateStock(
 
   const corrected = applyPavilionCorrectionPass({
     pavilionId,
-    slots: corrected.slots,
+    slots,
     candidates,
     context,
   });
