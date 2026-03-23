@@ -5,3 +5,5 @@ export * from './techniqueTaxonomy.js';
 export * from './techniqueTaxonomyAudit.js';
 export * from './loadoutProgressionContract.js';
 export * from './loadoutSnapshot.js';
+export * from './techniqueGradePolicy.js';
+export * from './techniqueProgressionContract.js';

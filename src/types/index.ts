@@ -233,6 +233,8 @@ export interface GameState {
  * Save data structure
  */
 export type TechniqueSlotType = 'active' | 'passive' | 'ultimate';
+export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
+export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 export type AiProfile = 'balanced' | 'survivor' | 'burst' | 'farmer';
 export type CastingPolicy = 'aggressive' | 'balanced' | 'defensive';
 
@@ -361,8 +363,8 @@ export interface SaveManualSatchelEntry {
   pavilionId?: string | null;
   cityId?: string | null;
   techId: string;
-  grade: 'mortal' | 'earth' | 'heaven' | 'mystic';
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  grade: ManualGrade;
+  rarity: TechRarity;
   acquiredAt: number;
 }
 
@@ -509,8 +511,8 @@ export interface SaveData {
         unlocked: boolean;
         masteryXp: number;
         rank: number;
-        manualGrade?: 'mortal' | 'earth' | 'heaven' | 'mystic';
-        rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+        manualGrade?: ManualGrade;
+        rarity?: TechRarity;
         traits?: Array<{ id: string; value: number }>;
         runes?: Array<string | null>;
         tier?: string;
