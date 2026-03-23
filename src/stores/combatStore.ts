@@ -27,7 +27,7 @@ import { useRuinsStore } from './ruinsStore.js';
 import { useTechniqueStore, type AiProfile, type CastingPolicy } from './techniqueStore.js';
 import { useBountyStore } from './bountyStore.js';
 import { useHeartLawStore } from './heartLawStore.js';
-import { masteryLevelFromXp, rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
+import { rankMultiplier, useTechCollectionStore } from './techCollectionStore.js';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add, clamp } from '../utils/numbers.js';
 import { BossMechanics } from '../systems/bossMechanics.js';
 import { generateLoot, formatLootMessage } from '../systems/loot.js';
@@ -748,29 +748,16 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
     const getTechniqueScaling = (techId: string, technique?: TechniqueDef) => {
       const techCollection = useTechCollectionStore.getState();
-      const entry = techCollection.unlockedTechs[techId];
-      const masteryLevel = masteryLevelFromXp(entry?.masteryXp ?? 0);
-      const milestoneEffects = techCollection.getMasteryMilestoneEffects(masteryLevel);
+      const progression = techCollection.getTechniqueProgressionSnapshot(techId);
+      const milestoneEffects = progression.masteryMilestoneEffects;
       const isBoss = get().isBoss || get().combatContext.type === 'trial';
       const traitMods = techCollection.getTraitModifiers(techId, isBoss);
       const runeMods = techCollection.getRuneModifiers(techId, technique);
       const masteryCdr = techCollection.getMasteryCooldownReductionPct(techId);
       const masteryCostReduction = techCollection.getMasteryCostReductionPct(techId);
       const masteryEffectMult = techCollection.getMasteryEffectMultiplier(techId);
-
-      const manualSystem = useContentStore.getState().raw?.economy?.manualSystem;
-      const heavenBonus =
-        isRecord(manualSystem)
-        && isRecord(manualSystem.grades)
-        && isRecord(manualSystem.grades.heaven)
-        && typeof manualSystem.grades.heaven.mastery75PotencyBonus === 'number'
-          ? manualSystem.grades.heaven.mastery75PotencyBonus
-          : undefined;
       const secondaryUnlocked = milestoneEffects.secondaryUnlocked;
-      const secondaryPotencyMult =
-        entry?.manualGrade === 'heaven' && masteryLevel >= 75 && secondaryUnlocked
-          ? 1 + (typeof heavenBonus === 'number' ? heavenBonus : 0.25)
-          : 1;
+      const secondaryPotencyMult = secondaryUnlocked ? progression.secondaryPotencyMult : 1;
 
       const cooldownReductionPct = Math.min(
         0.3,

@@ -120,9 +120,6 @@ export function TechniqueDetailModal({
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
   const runesById = useContentStore((state) => state.maps.runesById);
-  const heavenBonus = useContentStore(
-    (state) => state.raw?.economy?.manualSystem?.grades?.heaven?.mastery75PotencyBonus,
-  );
   const realmIndex = useGameStore((state) => state.realm.index);
   const loadouts = useTechniqueStore((state) => state.loadouts);
   const selectedLoadoutId = useTechniqueStore((state) => state.selectedLoadoutId);
@@ -147,6 +144,7 @@ export function TechniqueDetailModal({
   const getMasteryCostReductionPct = useTechCollectionStore((state) => state.getMasteryCostReductionPct);
   const getNextMasteryMilestoneHelper = useTechCollectionStore((state) => state.getNextMasteryMilestone);
   const getMasteryMilestoneEffectsHelper = useTechCollectionStore((state) => state.getMasteryMilestoneEffects);
+  const getTechniqueProgressionSnapshot = useTechCollectionStore((state) => state.getTechniqueProgressionSnapshot);
   const inventoryItems = useInventoryStore((state) => state.items);
   const addNotification = useUIStore((state) => state.addNotification);
 
@@ -227,6 +225,10 @@ export function TechniqueDetailModal({
   );
 
   const selectedEntry = techniqueId ? unlockedTechs[techniqueId] : undefined;
+  const progressionSnapshot = useMemo(
+    () => (techniqueId ? getTechniqueProgressionSnapshot(techniqueId) : null),
+    [getTechniqueProgressionSnapshot, techniqueId],
+  );
   const masteryLevel = masteryLevelFromXp(selectedEntry?.masteryXp ?? 0);
   const masteryCdr = techniqueId ? getMasteryCooldownReductionPct(techniqueId) : 0;
   const masteryCostReduction = techniqueId ? getMasteryCostReductionPct(techniqueId) : 0;
@@ -816,7 +818,7 @@ export function TechniqueDetailModal({
                 )}
                 {selectedGrade === 'heaven' && masteryLevel >= 75 && (
                   <div className="techniqueDetailModalHint">
-                    Heaven bonus: Secondary potency +{(((heavenBonus as number | undefined) ?? 0.25) * 100).toFixed(0)}%
+                    Heaven bonus: Secondary potency +{((((progressionSnapshot?.secondaryPotencyMult ?? 1) - 1) * 100)).toFixed(0)}%
                   </div>
                 )}
               </div>

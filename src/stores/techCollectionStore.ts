@@ -6,9 +6,27 @@ import { useInventoryStore } from './inventoryStore.js';
 import { randFloat } from '../utils/rng.js';
 import { useUIStore } from './uiStore.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import type { ManualGrade, TechRarity } from '../types/index.js';
+import {
+  buildTechniqueProgressionSnapshot,
+  getMasteryMilestoneContract,
+  getNextMasteryMilestoneContract,
+  getTechniqueMaxRankForGrade,
+  getTechniqueTraitSlotBreakdown,
+  getTechniqueEffectiveRuneSockets,
+  isHigherTechniqueGrade,
+  isHigherTechniqueRarity,
+  masteryLevelFromXp,
+  masteryMultiplier,
+  normalizeManualGrade,
+  normalizeTechniqueProgressionState,
+  normalizeTechniqueRarity,
+  rankMultiplier,
+  xpNeededForLevel,
+  type TechniqueProgressionSnapshot,
+} from '../systems/builds/index.js';
 
-export type ManualGrade = 'mortal' | 'earth' | 'heaven' | 'mystic';
-export type TechRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+export type { ManualGrade, TechRarity } from '../types/index.js';
 
 export interface TechniqueTrait {
   id: string;
@@ -43,6 +61,7 @@ interface TechCollectionState {
   setRarityIfHigher: (techId: string, rarity: TechRarity) => void;
   getMasteryLevel: (techId: string) => number;
   ensureMasteryLevelAtLeast: (techId: string, level: number) => void;
+  getTechniqueProgressionSnapshot: (techId: string) => TechniqueProgressionSnapshot;
   getEffectiveRuneSlots: (techId: string) => number;
   getEffectiveTraitSlots: (techId: string) => number;
   ensureTraits: (techId: string) => void;
@@ -123,31 +142,8 @@ interface TechCollectionState {
   hardReset: () => void;
 }
 
-const XP_SCALE = 3;
-export const MASTERY_XP_SCALE = XP_SCALE;
-
-export function xpNeededForLevel(level: number): number {
-  if (level <= 1) return 0;
-  return Math.max(0, (level - 1) ** 2 * XP_SCALE);
-}
-
-const gradeOrder: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
-const rarityOrder: TechRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-
-const DEFAULT_GRADE_RULES: Record<ManualGrade, { rankCap: number; traitCap: number; runeSockets: number }> = {
-  mortal: { rankCap: 5, traitCap: 1, runeSockets: 0 },
-  earth: { rankCap: 7, traitCap: 2, runeSockets: 1 },
-  heaven: { rankCap: 9, traitCap: 2, runeSockets: 1 },
-  mystic: { rankCap: 10, traitCap: 3, runeSockets: 2 },
-};
-
-const DEFAULT_RARITY_TRAIT_SLOTS: Record<TechRarity, number> = {
-  common: 1,
-  uncommon: 1,
-  rare: 2,
-  epic: 2,
-  legendary: 3,
-};
+export { xpNeededForLevel, masteryLevelFromXp, masteryMultiplier, rankMultiplier } from '../systems/builds/index.js';
+export const MASTERY_XP_SCALE = 3;
 
 const DEFAULT_RANK_COSTS: Array<{
   toRank: number;
@@ -168,110 +164,27 @@ const DEFAULT_RANK_COSTS: Array<{
   { toRank: 10, fragments: 1100, runeDust: 110, soulInkTier: 2, requiresGradeAtLeast: 'mystic' },
 ];
 
-const DEFAULT_RANK_MULTIPLIER_PER_RANK = 0.1;
-const DEFAULT_EFFECT_MULTIPLIER_PER_LEVEL = 0.003;
-const DEFAULT_MASTERY_MILESTONES = [
-  { level: 25, effects: [{ type: 'cooldownMultiplier', value: 0.95 }] },
-  { level: 50, effects: [{ type: 'resourceCostMultiplier', value: 0.9 }] },
-  { level: 75, effects: [{ type: 'unlockSecondary' }] },
-  { level: 100, effects: [{ type: 'effectMultiplier', value: 1.1 }, { type: 'cosmeticTitle', value: 'Perfected' }] },
-];
-
-type MasteryEffect =
-  | { type: 'cooldownMultiplier'; value: number }
-  | { type: 'resourceCostMultiplier'; value: number }
-  | { type: 'effectMultiplier'; value: number }
-  | { type: 'unlockSecondary' }
-  | { type: 'cosmeticTitle'; value: string };
-
-function getManualSystemEconomy(): any | null {
-  return useContentStore.getState().raw?.economy?.manualSystem ?? null;
-}
-
-export function masteryLevelFromXp(xp: number): number {
-  const normalized = Math.max(0, xp);
-  const level = 1 + Math.floor(Math.sqrt(normalized / XP_SCALE));
-  return Math.min(100, Math.max(1, level));
-}
-
-function getEffectMultiplierPerLevel(): number {
-  const economy = getManualSystemEconomy();
-  const value = economy?.mastery?.effectMultiplierPerLevel;
-  return typeof value === 'number' ? value : DEFAULT_EFFECT_MULTIPLIER_PER_LEVEL;
-}
-
-function getRankMultiplierPerRank(): number {
-  const economy = getManualSystemEconomy();
-  const value = economy?.rank?.multiplierPerRank;
-  return typeof value === 'number' ? value : DEFAULT_RANK_MULTIPLIER_PER_RANK;
-}
-
-export function masteryMultiplier(level: number): number {
-  const clamped = Math.min(100, Math.max(1, level));
-  const base = 1 + getEffectMultiplierPerLevel() * clamped;
-  const milestoneMult = getMasteryMilestoneEffects(clamped).effectMult;
-  return base * milestoneMult;
-}
-
-export function rankMultiplier(rank: number): number {
-  const clamped = Math.min(10, Math.max(1, rank));
-  const step = getRankMultiplierPerRank();
-  return 1 + step * (clamped - 1);
-}
-
-export function masteryMilestones(level: number) {
+export const masteryMilestones = (level: number) => {
+  const snapshot = getMasteryMilestoneContract(level);
   return {
-    at25: level >= 25,
-    at50: level >= 50,
-    at75: level >= 75,
-    at100: level >= 100,
+    at25: snapshot.highestUnlockedMilestone >= 25,
+    at50: snapshot.highestUnlockedMilestone >= 50,
+    at75: snapshot.highestUnlockedMilestone >= 75,
+    at100: snapshot.highestUnlockedMilestone >= 100,
   };
-}
+};
 
-export function normalizeGrade(input?: string): ManualGrade {
-  const value = (input ?? '').toLowerCase();
-  if (value === 'earth' || value === 'heaven' || value === 'mystic' || value === 'mortal') {
-    return value;
-  }
-  return 'mortal';
-}
-
-export function normalizeRarity(input?: string): TechRarity {
-  const value = (input ?? '').toLowerCase();
-  if (value === 'uncommon' || value === 'rare' || value === 'epic' || value === 'legendary') {
-    return value;
-  }
-  return 'common';
-}
-
-export function isHigherGrade(current: ManualGrade, next: ManualGrade): boolean {
-  return gradeOrder.indexOf(next) > gradeOrder.indexOf(current);
-}
-
-export function isHigherRarity(current: TechRarity, next: TechRarity): boolean {
-  return rarityOrder.indexOf(next) > rarityOrder.indexOf(current);
-}
+export const normalizeGrade = (input?: string): ManualGrade => normalizeManualGrade(input);
+export const normalizeRarity = (input?: string): TechRarity => normalizeTechniqueRarity(input);
+export const isHigherGrade = (current: ManualGrade, next: ManualGrade): boolean =>
+  isHigherTechniqueGrade(current, next);
+export const isHigherRarity = (current: TechRarity, next: TechRarity): boolean =>
+  isHigherTechniqueRarity(current, next);
+export const getMasteryMilestoneEffects = (level: number) => getMasteryMilestoneContract(level);
+export const getNextMasteryMilestone = (level: number) => getNextMasteryMilestoneContract(level);
 
 export function getManualGradeFromTechnique(technique?: TechniqueDef): ManualGrade {
   return normalizeGrade(technique?.tier);
-}
-
-function getGradeRule(grade: ManualGrade) {
-  const economy = getManualSystemEconomy();
-  const rawGrade = economy?.grades?.[grade];
-  const fallback = DEFAULT_GRADE_RULES[grade];
-  return {
-    rankCap: rawGrade?.rankCap ?? fallback.rankCap,
-    traitCap: rawGrade?.traitCap ?? fallback.traitCap,
-    runeSockets: rawGrade?.runeSockets ?? fallback.runeSockets,
-  };
-}
-
-function getRarityTraitSlotCount(rarity: TechRarity): number {
-  const economy = getManualSystemEconomy();
-  const slots = economy?.rarityTraitSlots?.[rarity];
-  if (typeof slots === 'number') return slots;
-  return DEFAULT_RARITY_TRAIT_SLOTS[rarity];
 }
 
 function getRankCostTable(): Record<
@@ -284,9 +197,7 @@ function getRankCostTable(): Record<
     requiredGrade?: ManualGrade;
   }
 > {
-  const economy = getManualSystemEconomy();
-  const entries: typeof DEFAULT_RANK_COSTS = economy?.rank?.rankUpCosts ?? DEFAULT_RANK_COSTS;
-  return entries.reduce<Record<number, { fragmentsRequired: number; runeDustRequired: number; soulInkRequired: number; soulInkItemId: string; requiredGrade?: ManualGrade }>>((acc, entry) => {
+  return DEFAULT_RANK_COSTS.reduce<Record<number, { fragmentsRequired: number; runeDustRequired: number; soulInkRequired: number; soulInkItemId: string; requiredGrade?: ManualGrade }>>((acc, entry) => {
     const soulInkTier = typeof entry.soulInkTier === 'number' ? entry.soulInkTier : 0;
     const soulInkItemId = `reagent_soul_ink_t${soulInkTier}`;
     const cost = {
@@ -299,95 +210,6 @@ function getRankCostTable(): Record<
     acc[entry.toRank] = cost;
     return acc;
   }, {});
-}
-
-function getMasteryMilestonesConfig(): Array<{ level: number; effects: MasteryEffect[] }> {
-  const economy = getManualSystemEconomy();
-  return economy?.mastery?.milestones ?? DEFAULT_MASTERY_MILESTONES;
-}
-
-function formatMilestoneEffectsSummary(effects: MasteryEffect[] | undefined): string[] {
-  if (!effects?.length) return [];
-
-  return effects.map((effect) => {
-    switch (effect.type) {
-      case 'cooldownMultiplier':
-        return `Cooldown ${formatPercent(1 - (effect.value ?? 1))}`;
-      case 'resourceCostMultiplier':
-        return `Cost ${formatPercent(1 - (effect.value ?? 1))}`;
-      case 'effectMultiplier':
-        return `Effect ${formatPercent((effect.value ?? 1) - 1)}`;
-      case 'unlockSecondary':
-        return 'Secondary effect unlock';
-      case 'cosmeticTitle':
-        return `Title: ${effect.value}`;
-      default:
-        return 'Milestone bonus';
-    }
-  });
-}
-
-export function getMasteryMilestoneEffects(level: number) {
-  const clamped = Math.max(0, Math.min(100, Math.floor(level)));
-  const milestones = getMasteryMilestonesConfig();
-  let cooldownMult = 1;
-  let costMult = 1;
-  let effectMult = 1;
-  let secondaryUnlocked = false;
-  let cosmeticTitle: string | undefined;
-
-  milestones
-    .filter((milestone) => milestone.level <= clamped)
-    .forEach((milestone) => {
-      milestone.effects?.forEach((effect) => {
-        switch (effect.type) {
-          case 'cooldownMultiplier':
-            cooldownMult *= typeof effect.value === 'number' ? effect.value : 1;
-            break;
-          case 'resourceCostMultiplier':
-            costMult *= typeof effect.value === 'number' ? effect.value : 1;
-            break;
-          case 'effectMultiplier':
-            effectMult *= typeof effect.value === 'number' ? effect.value : 1;
-            break;
-          case 'unlockSecondary':
-            secondaryUnlocked = true;
-            break;
-          case 'cosmeticTitle':
-            cosmeticTitle = effect.value;
-            break;
-          default:
-            break;
-        }
-      });
-    });
-
-  return { cooldownMult, costMult, effectMult, secondaryUnlocked, cosmeticTitle };
-}
-
-export function getNextMasteryMilestone(level: number): { level: number; effectsSummary: string[] } | null {
-  const clamped = Math.max(0, Math.min(100, Math.floor(level)));
-  const milestones = getMasteryMilestonesConfig().filter((milestone) => milestone.level > clamped);
-  if (!milestones.length) return null;
-  const next = milestones.reduce((lowest, current) => (current.level < lowest.level ? current : lowest));
-  const effectsSummary = next.effects?.map((effect) => {
-    switch (effect.type) {
-      case 'cooldownMultiplier':
-        return `Cooldown ${formatPercent(1 - (effect.value ?? 1))}`;
-      case 'resourceCostMultiplier':
-        return `Cost ${formatPercent(1 - (effect.value ?? 1))}`;
-      case 'effectMultiplier':
-        return `Effect ${formatPercent((effect.value ?? 1) - 1)}`;
-      case 'unlockSecondary':
-        return 'Secondary effect unlock';
-      case 'cosmeticTitle':
-        return `Title: ${effect.value}`;
-      default:
-        return 'Milestone bonus';
-    }
-  });
-
-  return { level: next.level, effectsSummary: effectsSummary ?? [] };
 }
 
 const createDefaultOwnedState = (): TechniqueOwnedState => ({
@@ -508,7 +330,7 @@ function normalizeRunes(runes: Array<string | null> | undefined, slots: number) 
 }
 
 function getRuneSlotsForGrade(grade: ManualGrade) {
-  return getGradeRule(grade).runeSockets;
+  return getTechniqueEffectiveRuneSockets(grade);
 }
 
 export function normalizeTechEntry(
@@ -521,14 +343,22 @@ export function normalizeTechEntry(
     ...(incoming ?? {}),
   };
 
+  const normalized = normalizeTechniqueProgressionState({
+    manualGrade: incoming?.manualGrade ?? merged.manualGrade,
+    rarity: incoming?.rarity ?? merged.rarity,
+    masteryXp: Number(incoming?.masteryXp ?? merged.masteryXp ?? 0),
+    rank: Number(incoming?.rank ?? merged.rank ?? 1),
+    traits: Array.isArray(incoming?.traits) ? incoming.traits.filter(Boolean) : base.traits,
+    runes: Array.isArray(incoming?.runes) ? incoming.runes.map((rune) => rune ?? null) : base.runes,
+  });
+
   merged.unlocked = Boolean(incoming?.unlocked ?? merged.unlocked);
-  merged.masteryXp = Math.max(0, Number(incoming?.masteryXp ?? merged.masteryXp ?? 0));
-  merged.rank = Math.max(1, Number(incoming?.rank ?? merged.rank ?? 1));
-  merged.manualGrade = normalizeGrade(incoming?.manualGrade);
-  merged.rarity = normalizeRarity(incoming?.rarity);
-  merged.traits = Array.isArray(incoming?.traits) ? incoming!.traits!.filter(Boolean) : base.traits;
-  const normalizedRunes = Array.isArray(incoming?.runes) ? incoming!.runes!.map((rune) => rune ?? null) : base.runes;
-  merged.runes = normalizeRunes(normalizedRunes, getRuneSlotsForGrade(merged.manualGrade));
+  merged.masteryXp = normalized.masteryXp;
+  merged.rank = normalized.rank;
+  merged.manualGrade = normalized.manualGrade;
+  merged.rarity = normalized.rarity;
+  merged.traits = normalized.traits as TechniqueTrait[];
+  merged.runes = normalizeRunes(normalized.runes, getRuneSlotsForGrade(normalized.manualGrade));
   merged.tier = incoming?.tier ?? merged.tier;
   merged.lastCastAt = incoming?.lastCastAt;
   merged.unlockedAt = typeof incoming?.unlockedAt === 'number' ? incoming.unlockedAt : merged.unlockedAt;
@@ -608,16 +438,16 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
       const nextLevel = get().getMasteryLevel(techId);
       if (nextLevel > prevLevel) {
-        const milestonesCrossed = getMasteryMilestonesConfig().filter(
-          (milestone) => milestone.level > prevLevel && milestone.level <= nextLevel,
+        const milestonesCrossed = [25, 50, 75, 100].filter(
+          (milestone) => milestone > prevLevel && milestone <= nextLevel,
         );
         if (milestonesCrossed.length) {
           const ui = useUIStore.getState();
           milestonesCrossed.forEach((milestone) => {
-            const summaryParts = formatMilestoneEffectsSummary(milestone.effects);
+            const summaryParts = getNextMasteryMilestoneContract(milestone - 1)?.effectsSummary ?? [];
             const message = summaryParts.length
-              ? `Mastery ${milestone.level} reached: ${summaryParts.join(', ')}`
-              : `Mastery ${milestone.level} reached.`;
+              ? `Mastery ${milestone} reached: ${summaryParts.join(', ')}`
+              : `Mastery ${milestone} reached.`;
             ui.addNotification('success', message, 2500);
           });
         }
@@ -631,9 +461,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           state.unlockedTechs[techId] = entry;
           return;
         }
-        entry.manualGrade = grade;
-        entry.runes = normalizeRunes(entry.runes, getRuneSlotsForGrade(entry.manualGrade));
-        state.unlockedTechs[techId] = entry;
+        state.unlockedTechs[techId] = normalizeTechEntry(techId, {
+          ...entry,
+          manualGrade: grade,
+        });
       });
       get().ensureRunes(techId);
     },
@@ -645,8 +476,10 @@ export const useTechCollectionStore = create<TechCollectionState>()(
           state.unlockedTechs[techId] = entry;
           return;
         }
-        entry.rarity = rarity;
-        state.unlockedTechs[techId] = entry;
+        state.unlockedTechs[techId] = normalizeTechEntry(techId, {
+          ...entry,
+          rarity,
+        });
       });
     },
 
@@ -666,49 +499,53 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       });
     },
 
+    getTechniqueProgressionSnapshot: (techId) => {
+      const entry = get().unlockedTechs[techId];
+      return buildTechniqueProgressionSnapshot({
+        manualGrade: entry?.manualGrade,
+        rarity: entry?.rarity,
+        masteryXp: entry?.masteryXp,
+        rank: entry?.rank,
+        traits: entry?.traits,
+        runes: entry?.runes,
+      });
+    },
+
     getMasteryCooldownReductionPct: (techId) => {
-      const level = get().getMasteryLevel(techId);
-      const effects = getMasteryMilestoneEffects(level);
+      const effects = get().getTechniqueProgressionSnapshot(techId).masteryMilestoneEffects;
       return clamp(1 - effects.cooldownMult, 0, 1);
     },
 
     getMasteryCostReductionPct: (techId) => {
-      const level = get().getMasteryLevel(techId);
-      const effects = getMasteryMilestoneEffects(level);
+      const effects = get().getTechniqueProgressionSnapshot(techId).masteryMilestoneEffects;
       return clamp(1 - effects.costMult, 0, 1);
     },
 
     getMasteryEffectMultiplier: (techId) => {
-      const level = get().getMasteryLevel(techId);
-      const effects = getMasteryMilestoneEffects(level);
-      const base = 1 + getEffectMultiplierPerLevel() * level;
-      return base * effects.effectMult;
+      return get().getTechniqueProgressionSnapshot(techId).effectMultiplier;
     },
 
-    getMasteryMilestoneEffects: (level) => getMasteryMilestoneEffects(level),
+    getMasteryMilestoneEffects: (level) => {
+      const { cooldownMult, costMult, effectMult, secondaryUnlocked, cosmeticTitle } = getMasteryMilestoneEffects(level);
+      return cosmeticTitle
+        ? { cooldownMult, costMult, effectMult, secondaryUnlocked, cosmeticTitle }
+        : { cooldownMult, costMult, effectMult, secondaryUnlocked };
+    },
     getNextMasteryMilestone: (level) => getNextMasteryMilestone(level),
 
     getEffectiveRuneSlots: (techId) => {
-      const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
-      return getRuneSlotsForGrade(grade);
+      return get().getTechniqueProgressionSnapshot(techId).runeSockets;
     },
 
     getEffectiveTraitSlots: (techId) => {
-      const entry = get().unlockedTechs[techId];
-      const rarity = entry?.rarity ?? 'common';
-      const grade = entry?.manualGrade ?? 'mortal';
-
-      const raritySlots = getRarityTraitSlotCount(rarity);
-      const gradeCap = getGradeRule(grade).traitCap;
-
-      return Math.min(raritySlots, gradeCap);
+      return get().getTechniqueProgressionSnapshot(techId).traitSlotBreakdown.effectiveSlots;
     },
 
     ensureRunes: (techId) => {
       set((state) => {
         const entry = state.unlockedTechs[techId];
         if (!entry) return;
-        const slots = getRuneSlotsForGrade(entry.manualGrade);
+        const slots = getTechniqueEffectiveRuneSockets(entry.manualGrade);
         entry.runes = normalizeRunes(entry.runes, slots);
       });
     },
@@ -717,7 +554,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const entry = get().unlockedTechs[techId];
       if (!entry?.unlocked) return { ok: false, reason: 'Technique not unlocked.' };
 
-      const slots = getRuneSlotsForGrade(entry.manualGrade);
+      const slots = get().getTechniqueProgressionSnapshot(techId).runeSockets;
       if (slotIndex < 0 || slotIndex >= slots) return { ok: false, reason: 'Invalid slot.' };
 
       const currentRunes = normalizeRunes(entry.runes, slots);
@@ -764,7 +601,7 @@ export const useTechCollectionStore = create<TechCollectionState>()(
       const entry = get().unlockedTechs[techId];
       if (!entry) return { ok: false, reason: 'Technique not unlocked.' };
 
-      const slots = getRuneSlotsForGrade(entry.manualGrade);
+      const slots = get().getTechniqueProgressionSnapshot(techId).runeSockets;
       if (slotIndex < 0 || slotIndex >= slots) return { ok: false, reason: 'Invalid slot.' };
       const currentRunes = normalizeRunes(entry.runes, slots);
       const runeId = currentRunes[slotIndex];
@@ -1038,19 +875,14 @@ export const useTechCollectionStore = create<TechCollectionState>()(
     getTraitQualityPct: (trait) => getTraitQualityPct(trait),
     getTraitSlotBreakdown: (techId) => {
       const entry = get().unlockedTechs[techId];
-      const rarity = entry?.rarity ?? 'common';
-      const grade = entry?.manualGrade ?? 'mortal';
-
-      const raritySlots = getRarityTraitSlotCount(rarity);
-      const gradeCap = getGradeRule(grade).traitCap;
-      const effectiveSlots = Math.min(raritySlots, gradeCap);
-
-      return { raritySlots, gradeCap, effectiveSlots, rarity, grade };
+      return getTechniqueTraitSlotBreakdown({
+        grade: entry?.manualGrade,
+        rarity: entry?.rarity,
+      });
     },
 
     getRankCap: (techId) => {
-      const grade = get().unlockedTechs[techId]?.manualGrade ?? 'mortal';
-      return getGradeRule(grade).rankCap;
+      return getTechniqueMaxRankForGrade(get().unlockedTechs[techId]?.manualGrade);
     },
 
     getRankUpgradeCost: (nextRank) => {
@@ -1101,7 +933,8 @@ export const useTechCollectionStore = create<TechCollectionState>()(
 
       if (
         cost.requiredGrade &&
-        gradeOrder.indexOf(entry.manualGrade) < gradeOrder.indexOf(cost.requiredGrade)
+        !isHigherGrade(entry.manualGrade, cost.requiredGrade) &&
+        entry.manualGrade !== cost.requiredGrade
       ) {
         GameEvents.emit({
           type: 'techniques/rank_upgrade_failed',
