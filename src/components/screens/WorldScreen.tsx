@@ -25,35 +25,12 @@ import {
   getWorldTravelGuard,
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
+import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 
-const MODULE_METADATA: Record<string, { label: string }> = {
-  outskirts: { label: 'Outskirts' },
-  gateTrial: { label: 'Gate Trial' },
-  ruins: { label: 'Ruins' },
-  apothecary: { label: 'Apothecary' },
-  manualPavilion: { label: 'Manual Pavilion' },
-  forge: { label: 'Forge' },
-  bounties: { label: 'Bounties' },
-  expeditions: { label: 'Expeditions' },
-};
-
-function toTitleCase(key: string): string {
-  return key
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/_/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function getModuleMeta(key: string) {
-  if (MODULE_METADATA[key]) return MODULE_METADATA[key];
-  return { label: toTitleCase(key) };
-}
 
 export function WorldScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
@@ -210,7 +187,8 @@ export function WorldScreen() {
 
   const cityLesson = useMemo(() => {
     if (!selectedCity) return null;
-    return getCityArrivalLesson(selectedCity.id);
+    const lesson = getCityArrivalLesson(selectedCity.id);
+    return lesson ? sanitizeLiveCityName(lesson) : null;
   }, [selectedCity]);
 
   const handleSelectCity = (city: CityDef) => {
@@ -335,7 +313,7 @@ export function WorldScreen() {
             <CityMapHub
               modules={visibleCityModules}
               activeModuleKey={activeModuleKey}
-              getModuleLabel={(moduleKey) => getModuleMeta(moduleKey).label}
+              getModuleLabel={getWorldModuleLabel}
               onOpenModule={handleOpenModule}
             />
           </div>

@@ -1,6 +1,7 @@
 import type { ValidatedContent } from '../../content/index.js';
 import type { CurrencyKey } from '../../stores/inventoryStore.js';
 import { buildSupportEconomyReadModelFromState, type SupportEconomyReadModel } from './supportEconomyReadModel.js';
+import { GATE_SUPPORT_LABELS } from '../../ui/text/playerFacingLabels.js';
 
 export interface SupportEconomySurfaceModel {
   readModel: SupportEconomyReadModel;
@@ -38,8 +39,8 @@ export function buildSupportEconomySurfaceModelFromReadModel(readModel: SupportE
     meritReserveLine: `Merit ${readModel.currentMerit} • safe band ${formatMeritBand(readModel)} • target ${readModel.targetMeritReserve}`,
     spiritReserveLine: `Spirit Stones ${readModel.currentSpiritStones} • minimum ${readModel.spiritStoneMinimumReserve} • ideal ${readModel.spiritStoneIdealReserve}`,
     failSafeLine: readModel.nextGateFailSafeCost
-      ? `Next fail-safe costs ${readModel.nextGateFailSafeCost.merit ?? '0'} Merit and ${readModel.nextGateFailSafeCost.spiritStones ?? '0'} Spirit Stones.`
-      : 'Next fail-safe cost is unavailable.',
+      ? `Next ${GATE_SUPPORT_LABELS.support} costs ${readModel.nextGateFailSafeCost.merit ?? '0'} Merit and ${readModel.nextGateFailSafeCost.spiritStones ?? '0'} Spirit Stones.`
+      : `Next ${GATE_SUPPORT_LABELS.support} cost is unavailable.`,
     reserveGapLine:
       readModel.meritReserveStatus === 'at_ideal'
         ? `Reserve gap closed. After 3 eligible defeats you would hold ${readModel.expectedMeritAfterThreeEligibleDefeats} Merit.`

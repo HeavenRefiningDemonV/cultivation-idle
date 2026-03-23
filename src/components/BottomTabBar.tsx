@@ -1,6 +1,7 @@
 import type { GameTab } from '../stores/uiStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import './BottomTabBar.scss';
+import { getShellTabLabel } from '../ui/text/playerFacingLabels.js';
 
 interface TabDefinition {
   id: GameTab;
@@ -8,13 +9,13 @@ interface TabDefinition {
 }
 
 const TABS: TabDefinition[] = [
-  { id: 'status', label: 'Status' },
-  { id: 'cultivation', label: 'Cultivation' },
-  { id: 'adventure', label: 'World' },
-  { id: 'inventory', label: 'Inventory' },
-  { id: 'techniques', label: 'Techniques' },
-  { id: 'prestige', label: 'Prestige' },
-  { id: 'settings', label: 'Settings' },
+  { id: 'status', label: getShellTabLabel('status') },
+  { id: 'cultivation', label: getShellTabLabel('cultivation') },
+  { id: 'adventure', label: getShellTabLabel('adventure') },
+  { id: 'inventory', label: getShellTabLabel('inventory') },
+  { id: 'techniques', label: getShellTabLabel('techniques') },
+  { id: 'prestige', label: getShellTabLabel('prestige') },
+  { id: 'settings', label: getShellTabLabel('settings') },
 ];
 
 export function BottomTabBar() {

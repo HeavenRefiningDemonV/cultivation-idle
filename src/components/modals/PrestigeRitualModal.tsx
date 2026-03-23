@@ -3,6 +3,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerE
 import { createPortal } from 'react-dom';
 import type { ApBreakdown } from '../../stores/prestigeStore.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { getPrestigeRecommendationForAvailability } from '../../ui/text/playerFacingLabels.js';
 
 interface PrestigeRitualModalProps {
   open: boolean;
@@ -171,7 +172,7 @@ export function PrestigeRitualModal({
     startHold();
   };
 
-  const hintLabel = canPrestigeNow ? 'Eligible' : 'Sealed';
+  const hintLabel = getPrestigeRecommendationForAvailability(canPrestigeNow);
 
   return createPortal(
     <div className="prestigeRitualOverlay" role="presentation" onMouseDown={handleClose}>

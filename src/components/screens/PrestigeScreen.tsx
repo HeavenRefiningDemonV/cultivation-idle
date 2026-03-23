@@ -19,6 +19,7 @@ import { D } from '../../utils/numbers.js';
 import { InkPanel, PaperCard } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import './PrestigeScreen.scss';
+import { getPrestigeRecommendationForAvailability } from '../../ui/text/playerFacingLabels.js';
 
 export function PrestigeScreen() {
   const totalAP = usePrestigeStore((state) => state.totalAP);
@@ -61,10 +62,11 @@ export function PrestigeScreen() {
   const apBreakdown = getApBreakdown();
   const canPrestigeNow = canPrestige();
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
+  const prestigeRecommendationLabel = getPrestigeRecommendationForAvailability(canPrestigeNow);
   const prestigeLockHint = canPrestigeNow
-    ? 'You are ready to reincarnate.'
-    : 'Reach Foundation Establishment to unlock Reincarnation.';
-  const prestigeActionLabel = canPrestigeNow ? 'Begin Reincarnation Ritual' : 'Reincarnation Sealed';
+    ? `${prestigeRecommendationLabel}: you are ready to reincarnate.`
+    : `${prestigeRecommendationLabel}: reach Foundation Establishment to unlock Reincarnation.`;
+  const prestigeActionLabel = canPrestigeNow ? 'Begin Reincarnation Ritual' : 'Reincarnation Unavailable';
   const keepBenefits = ['Keep all Ascension Points', 'Keep all AP upgrades', 'Receive a fresh spirit root'];
   const resetCosts = ['Reset cultivation progress', 'Reset inventory & gold'];
   const visibleKeepBenefits = showBenefitDetails ? keepBenefits : keepBenefits.slice(0, 2);
@@ -138,7 +140,7 @@ export function PrestigeScreen() {
   };
 
   useEffect(() => {
-    setHeaderTitles('Reincarnation', 'Restart your cultivation journey with powerful blessings');
+    setHeaderTitles('Prestige', 'Restart your cultivation journey with powerful blessings');
   }, [setHeaderTitles]);
 
   const upgradeList = useMemo(() => {
@@ -534,7 +536,7 @@ export function PrestigeScreen() {
           <ApBreakdownModal
             open={isApBreakdownOpen}
             breakdown={apBreakdown}
-            isSealed={!canPrestigeNow}
+            recommendationLabel={prestigeRecommendationLabel}
             onClose={() => setIsApBreakdownOpen(false)}
           />
 

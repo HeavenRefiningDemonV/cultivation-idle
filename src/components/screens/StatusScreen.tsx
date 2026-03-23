@@ -131,7 +131,7 @@ export function StatusScreen() {
   const hasQiFlow = qiPerSecond > 0;
 
   useEffect(() => {
-    setHeaderTitles('Character Status', 'View your cultivation progress and combat statistics');
+    setHeaderTitles('Status', 'View your cultivation progress and combat statistics');
   }, [setHeaderTitles]);
 
   return (

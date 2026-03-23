@@ -1,31 +1,23 @@
+import { getShellTabLabel } from '../ui/text/playerFacingLabels.js';
 import { useUIStore } from '../stores/uiStore.js';
 import type { GameTab } from '../stores/uiStore.js';
 import './TabNav.scss';
 
-/**
- * Tab definition
- */
 interface TabDefinition {
   id: GameTab;
   label: string;
-  icon?: string; // Could use lucide-react icons later
+  icon?: string;
 }
 
-/**
- * Available tabs
- */
 const TABS: TabDefinition[] = [
-  { id: 'cultivation', label: 'Cultivation' },
-  { id: 'adventure', label: 'World / Cities' },
-  { id: 'inventory', label: 'Inventory' },
-  { id: 'techniques', label: 'Techniques' },
-  { id: 'prestige', label: 'Prestige' },
-  { id: 'settings', label: 'Settings' },
+  { id: 'cultivation', label: getShellTabLabel('cultivation') },
+  { id: 'adventure', label: getShellTabLabel('adventure') },
+  { id: 'inventory', label: getShellTabLabel('inventory') },
+  { id: 'techniques', label: getShellTabLabel('techniques') },
+  { id: 'prestige', label: getShellTabLabel('prestige') },
+  { id: 'settings', label: getShellTabLabel('settings') },
 ];
 
-/**
- * TabNav component - Navigation tabs for game sections
- */
 export function TabNav() {
   const activeTab = useUIStore((state) => state.activeTab);
   const setActiveTab = useUIStore((state) => state.setActiveTab);

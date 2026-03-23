@@ -2,7 +2,7 @@ import type { DoctrineSnapshot } from '../doctrine/index.js';
 import type { TrialAttemptSummary } from '../../types/index.js';
 import type { BuildAnalysis } from '../builds/buildAnalysisTypes.js';
 import type { TrialId } from '../progression/contract/index.js';
-import type { FailureDiagnosis } from './failureDiagnosisTypes.js';
+import type { FailureDiagnosis, FailureDiagnosisCode } from './failureDiagnosisTypes.js';
 import type { GateReadinessResult, ReadinessBand, ReadinessShortfallCode } from './readinessScoringTypes.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -22,6 +22,7 @@ import { getGateBuildFloor } from './gateBuildFloorRegistry.js';
 import { diagnoseTrialFailure } from './failureDiagnosis.js';
 import { buildGateForgeTargetsFromPrepBudgetEntry, evaluateCurrentGateReadiness, getCurrentGateTrialId } from './readinessRuntime.js';
 import { scoreGateReadiness } from './readinessScoringEngine.js';
+import { getDiagnosisLabel, getReadinessBandLabel } from '../../ui/text/playerFacingLabels.js';
 
 export interface Section5ReadinessSurface {
   trialId: TrialId;
@@ -40,6 +41,16 @@ export interface Section5StatusSurface {
   currentDiagnosis: FailureDiagnosis | null;
   topShortfallCodes: ReadinessShortfallCode[];
   warnings: string[];
+}
+
+export interface Section5ReadinessDisplay {
+  band: ReadinessBand;
+  label: string;
+}
+
+export interface Section5DiagnosisDisplay {
+  code: FailureDiagnosisCode;
+  label: string;
 }
 
 function asLiveTrialId(trialId: string): TrialId | null {
@@ -97,6 +108,16 @@ function buildBypassAvailability(trialId: TrialId): boolean {
   });
 
   return lifecycle.failSafe.canPurchase;
+}
+
+export function getSection5ReadinessDisplay(band: ReadinessBand | null | undefined): Section5ReadinessDisplay | null {
+  if (!band) return null;
+  return { band, label: getReadinessBandLabel(band) };
+}
+
+export function getSection5DiagnosisDisplay(code: FailureDiagnosisCode | null | undefined): Section5DiagnosisDisplay | null {
+  if (!code) return null;
+  return { code, label: getDiagnosisLabel(code) };
 }
 
 export function buildTrialGateReadinessResult(

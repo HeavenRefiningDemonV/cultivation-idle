@@ -15,6 +15,7 @@ import { normalizeItemList } from '../../utils/itemList.js';
 import type { BountyInstance } from '../../stores/bountyStore.js';
 import { buildSupportEconomySurfaceModel } from '../../systems/economy/supportEconomySurfaceModel.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
+import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -22,15 +23,6 @@ const difficultyBadge: Record<string, string> = {
   hard: 'S',
 };
 
-const moduleLabelMap: Record<string, string> = {
-  outskirts: 'Outskirts',
-  ruins: 'Ruins',
-  gateTrial: 'Gate Trial',
-  expeditions: 'Expeditions',
-  forge: 'Forge',
-  apothecary: 'Apothecary',
-  manualPavilion: 'Manual Pavilion',
-};
 
 const paperPositions = ['bountyPaperButton--left', 'bountyPaperButton--center', 'bountyPaperButton--right'] as const;
 const EMPTY_BOUNTIES: readonly BountyInstance[] = Object.freeze([]);
@@ -151,7 +143,7 @@ export function BountyBoardPanel() {
     [bounties, selectedId],
   );
 
-  const cityName = city?.name ?? 'Unknown City';
+  const cityName = sanitizeLiveCityName(city?.name ?? 'Unknown City');
   const craftRouteSupportState = useMemo(
     () => (currentCityId ? buildLiveCraftBountyRouteSupportState(currentCityId) : undefined),
     [currentCityId, content, merit, spiritStones],
@@ -362,7 +354,7 @@ export function BountyBoardPanel() {
       >
         <div className="bountySupportSummaryCard__header">
           <div>
-            <div className="bountySupportSummaryCard__title">Gate support reserve</div>
+            <div className="bountySupportSummaryCard__title">Safety Net reserve</div>
             <div className="bountySupportSummaryCard__subtitle">{supportSurface.reserveHeadline}</div>
           </div>
           <PaperStamp
@@ -399,7 +391,7 @@ export function BountyBoardPanel() {
           />
         </div>
         <div className="bountySupportSummaryCard__summary">
-          Merit supports fail-safe gate access. Keep this reserve healthy.
+          Merit supports Safety Net gate access. Keep this reserve healthy.
         </div>
       </PaperCard>
 
@@ -647,7 +639,7 @@ export function BountyBoardPanel() {
               </div>
               {destination && destination.kind === 'module' && (
                 <div className={'bountyDetailHint'}>
-                  Target: {moduleLabelMap[destination.moduleKey] ?? destination.moduleKey}
+                  Target: {getWorldModuleLabel(destination.moduleKey)}
                 </div>
               )}
               {destination && destination.kind === 'unavailable' && (

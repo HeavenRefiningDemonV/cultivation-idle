@@ -8,12 +8,7 @@ import {
 } from '../../systems/world/cityArrivalContract.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import './CityArrivalBanner.scss';
-
-const MODULE_LABELS: Record<string, string> = {
-  outskirts: 'Open Outskirts',
-  ruins: 'Open Ruins',
-  gateTrial: 'Open Gate Trial',
-};
+import { getOpenWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 
 export function CityArrivalBanner() {
   const pendingCityArrivalId = useUIStore((state) => state.pendingCityArrivalId);
@@ -51,8 +46,8 @@ export function CityArrivalBanner() {
     <div className="cityArrivalBannerShell" aria-live="polite">
       <div className="cityArrivalBannerCard">
         <div className="cityArrivalBannerEyebrow">Entered a new city</div>
-        <div className="cityArrivalBannerTitle">{city.name}</div>
-        {lesson ? <div className="cityArrivalBannerLesson">{lesson}</div> : null}
+        <div className="cityArrivalBannerTitle">{sanitizeLiveCityName(city.name)}</div>
+        {lesson ? <div className="cityArrivalBannerLesson">{sanitizeLiveCityName(lesson)}</div> : null}
         <div className="cityArrivalBannerActions">
           {quickOpenModules.map((moduleKey) => (
             <button
@@ -64,7 +59,7 @@ export function CityArrivalBanner() {
                 openWorldModule({ cityId: city.id, moduleKey, source: 'city-arrival-banner' });
               }}
             >
-              {MODULE_LABELS[moduleKey] ?? moduleKey}
+              {getOpenWorldModuleLabel(moduleKey)}
             </button>
           ))}
           <button

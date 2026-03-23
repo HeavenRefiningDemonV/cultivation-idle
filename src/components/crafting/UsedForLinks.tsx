@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import { useUIStore } from '../../stores/uiStore.js';
+import { getShellTabLabel } from '../../ui/text/playerFacingLabels.js';
 
 interface UsedForLinksProps {
   usageText?: string;
@@ -15,7 +16,7 @@ const buttonMatches = [
   },
   {
     keywords: ['Combat', 'combat', 'Outskirts', 'Trial', 'Ruins'],
-    label: 'Go to Combat',
+    label: `Go to ${getShellTabLabel('adventure')}`,
     tab: 'adventure' as const,
   },
   {

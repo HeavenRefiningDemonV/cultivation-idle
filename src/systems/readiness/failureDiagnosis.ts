@@ -11,6 +11,7 @@ import type {
   FailureFix,
   TrialFailureDiagnosisInput,
 } from './failureDiagnosisTypes.js';
+import { GATE_SUPPORT_LABELS } from '../../ui/text/playerFacingLabels.js';
 
 type TrialAttemptSummaryTelemetry = TrialAttemptSummary & {
   timeToDieSec?: number | null;
@@ -227,7 +228,7 @@ function buildReasons(input: TrialFailureDiagnosisInput, primary: FailureDiagnos
   }
 
   if (secondary === 'bypassAvailable' && reasons.length < 3) {
-    appendUniqueString(reasons, 'Gate fail-safe bypass is available right now.');
+    appendUniqueString(reasons, `${GATE_SUPPORT_LABELS.support} bypass is available right now.`);
   }
 
   return reasons.length > 0 ? reasons.slice(0, 3) : [DEFAULT_REASON];
@@ -273,7 +274,7 @@ function buildTopFixes(input: TrialFailureDiagnosisInput, primary: FailureDiagno
     fixes.push({
       code: 'buy_fail_safe',
       destination: 'trial',
-      reason: 'Fail-safe bypass is already available if you want to skip this gate.',
+      reason: `${GATE_SUPPORT_LABELS.support} bypass is already available if you want to skip this gate.`,
     });
   }
 

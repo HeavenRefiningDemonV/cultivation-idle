@@ -18,6 +18,7 @@ import { InkHealthBar } from '../../../../ui/combat/InkHealthBar.js';
 import cultivatorFight from '../../../../assets/onscreen/cultivator_backshots.png';
 import wildBoar from '../../../../assets/enemies/widboar.png';
 import './CombatStyles.scss';
+import { GATE_SUPPORT_LABELS } from '../../../../ui/text/playerFacingLabels.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -167,7 +168,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
 
   const handleFailSafePurchase = () => {
     if (!trialDef || !lifecycle.failSafe.canPurchase || !lifecycle.failSafe.cost || isTrialActive) {
-      addNotification('warning', lifecycle.failSafe.blockedReason ?? 'Fail-safe is not available.');
+      addNotification('warning', lifecycle.failSafe.blockedReason ?? `${GATE_SUPPORT_LABELS.support} is not available.`);
       return;
     }
 
@@ -183,7 +184,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     });
 
     if (!canAfford) {
-      addNotification('warning', 'Cannot afford fail-safe purchase.');
+      addNotification('warning', `Cannot afford ${GATE_SUPPORT_LABELS.support} purchase.`);
       return;
     }
 
@@ -194,11 +195,11 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     });
 
     if (!spent) {
-      addNotification('warning', 'Failed to deduct currencies for fail-safe purchase.');
+      addNotification('warning', `Failed to deduct currencies for ${GATE_SUPPORT_LABELS.support} purchase.`);
       return;
     }
 
-    RewardService.grantRewards(getTrialGateRewardBundle(useContentStore.getState().raw, trialDef), 'Gate Trial fail-safe purchase');
+    RewardService.grantRewards(getTrialGateRewardBundle(useContentStore.getState().raw, trialDef), `${GATE_SUPPORT_LABELS.support} gate purchase`);
     markBypassed(trialDef.id);
   };
 
@@ -235,7 +236,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 </button>
                 {lifecycle.failSafe.canPurchase ? (
                   <button className="button-standard" onClick={handleFailSafePurchase} type="button">
-                    Purchase Fail-safe (
+                    Purchase {GATE_SUPPORT_LABELS.support} (
                     {
                       [
                         lifecycle.failSafe.cost?.gold ? `${lifecycle.failSafe.cost.gold} Gold` : null,
@@ -252,7 +253,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               {!lifecycle.canStart ? <div className="ink-combat-shell__stat-line">Start blocked: {lifecycle.reason}</div> : null}
             </div>
             <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Eligible Failures</div>
+              <div className="ink-combat-shell__section-title">Eligible Defeats</div>
               <div className="gate-trial__progress">
                 <div className="gate-trial__segments" style={{ gridTemplateColumns: `repeat(${Math.min(totalSegments, MAX_SEGMENT_COUNT)}, minmax(0, 1fr))` }}>
                   {Array.from({ length: totalSegments }).map((_, idx) => {
@@ -285,7 +286,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 <div className="ink-combat-shell__stat-line">Required item: {requiredItemName}</div>
               ) : null}
               <div className="ink-combat-shell__stat-line">
-                Fail-safe: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
+                {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
               </div>
               {trialProgress?.resolution === 'bypassed' ? (
                 <div className="ink-combat-shell__stat-line">Resolved via bypass.</div>
@@ -298,16 +299,16 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               ) : null}
             </div>
             <div className="ink-combat-shell__section gate-trial__support-summary">
-              <div className="ink-combat-shell__section-title">Fail-safe Reserve</div>
+              <div className="ink-combat-shell__section-title">{GATE_SUPPORT_LABELS.support} Reserve</div>
               <div className="ink-combat-shell__stat-line">{supportSurface.reserveHeadline}</div>
               <div className="ink-combat-shell__stat-line">
-                Merit on hand: {supportSurface.readModel.currentMerit} / fail-safe cost {supportSurface.readModel.nextGateFailSafeCost?.merit ?? '0'}
+                Merit on hand: {supportSurface.readModel.currentMerit} / Safety Net cost {supportSurface.readModel.nextGateFailSafeCost?.merit ?? '0'}
               </div>
               <div className="ink-combat-shell__stat-line">
                 Merit safe band: {supportSurface.readModel.meritMinimumReserveLow}–{supportSurface.readModel.meritMinimumReserveHigh} • target {supportSurface.readModel.targetMeritReserve}
               </div>
               <div className="ink-combat-shell__stat-line">
-                Spirit Stones: {supportSurface.readModel.currentSpiritStones} / fail-safe cost {supportSurface.readModel.nextGateFailSafeCost?.spiritStones ?? '0'}
+                Spirit Stones: {supportSurface.readModel.currentSpiritStones} / Safety Net cost {supportSurface.readModel.nextGateFailSafeCost?.spiritStones ?? '0'}
               </div>
               <div className="ink-combat-shell__stat-line">
                 Spirit reserve minimum {supportSurface.readModel.spiritStoneMinimumReserve} • ideal {supportSurface.readModel.spiritStoneIdealReserve}

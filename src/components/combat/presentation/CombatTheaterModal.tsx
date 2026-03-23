@@ -12,6 +12,7 @@ import { useCombatStore } from '../../../stores/combatStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import './CombatPresentation.scss';
+import { GATE_SUPPORT_LABELS } from '../../../ui/text/playerFacingLabels.js';
 
 interface PreviewDetails {
   title: string;
@@ -92,7 +93,7 @@ function usePreviewDetails(context: CombatPresentationContext): PreviewDetails {
           `Attempts: ${trialProgress?.attempts ?? 0}`,
           `Gate state: ${lifecycle.state}`,
           `Gate reward: ${gateItemName}`,
-          `Fail-safe: ${lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold})`}`,
+          `${GATE_SUPPORT_LABELS.support}: ${lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold})`}`, 
         ],
         rewards: (trialDef as { rewards?: string } | undefined)?.rewards
           ? [`Rewards preview: ${(trialDef as { rewards?: string }).rewards}`]

@@ -12,6 +12,7 @@ import { hpPercent } from '../../../systems/combat/minibarModel.js';
 import { formatNumber, D } from '../../../utils/numbers.js';
 import { GameIcon } from '../../../ui/icons/index.js';
 import './TrialProgress.scss';
+import { GATE_SUPPORT_LABELS } from '../../../ui/text/playerFacingLabels.js';
 
 const TRIAL_RECOMMENDATIONS: Record<string, { minRealm?: number; suggestedDps?: number; suggestedHp?: number }> = {
   trial_novices_clearing: { minRealm: 0, suggestedDps: 38, suggestedHp: 500 },
@@ -208,7 +209,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__controls-note">
-        Fail-safe: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
+        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
       </div>
 
       <div className="trial-progress__metrics">

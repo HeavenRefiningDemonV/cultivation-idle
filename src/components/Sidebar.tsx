@@ -1,3 +1,4 @@
+import { getShellTabLabel } from '../ui/text/playerFacingLabels.js';
 import type { GameTab } from '../stores/uiStore.js';
 import { useUIStore } from '../stores/uiStore.js';
 import { useGameStore } from '../stores/gameStore.js';
@@ -34,43 +35,42 @@ export function Sidebar() {
       <nav className='sidebarNavList'>
         <NavButton
           tab="cultivation"
-          label="Cultivate"
+          label={getShellTabLabel('cultivation')}
           active={activeTab === 'cultivation'}
           onClick={() => setActiveTab('cultivation')}
         />
         <NavButton
           tab="status"
-          label="Status"
+          label={getShellTabLabel('status')}
           active={activeTab === 'status'}
           onClick={() => setActiveTab('status')}
         />
         <NavButton
           tab="adventure"
-          label="World / Cities"
+          label={getShellTabLabel('adventure')}
           active={activeTab === 'adventure'}
           onClick={() => setActiveTab('adventure')}
         />
         <NavButton
           tab="inventory"
-          label="Inventory"
+          label={getShellTabLabel('inventory')}
           active={activeTab === 'inventory'}
           onClick={() => setActiveTab('inventory')}
         />
         <NavButton
           tab="techniques"
-          label="Techniques"
+          label={getShellTabLabel('techniques')}
           active={activeTab === 'techniques'}
           onClick={() => setActiveTab('techniques')}
         />
         <NavButton
           tab="settings"
-          label="Settings"
+          label={getShellTabLabel('settings')}
           active={activeTab === 'settings'}
           onClick={() => setActiveTab('settings')}
         />
       </nav>
 
-      {/* Bottom Section - Prestige */}
       <div className={'sidebarFooter'}>
         <div className={'sidebarAuraText'}>
           Auras: <span className={'sidebarAuraValue'}>{formatNumber(totalAuras)}</span>
@@ -79,7 +79,7 @@ export function Sidebar() {
           onClick={showPrestige}
           className={'button-standard sidebarPrestigeButton'}
         >
-          Rebirth
+          {getShellTabLabel('prestige')}
         </button>
       </div>
     </aside>
