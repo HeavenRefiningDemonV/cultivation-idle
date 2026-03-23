@@ -2,6 +2,7 @@ import { useCityStore } from '../../stores/cityStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useTechniqueStore } from '../../stores/techniqueStore.js';
 import {
   SEMESTER_SLICE_CONTRACT,
   type MajorRealmId,
@@ -10,7 +11,6 @@ import {
   clampRealmIndexToSemesterSlice,
   getLiveRealmByIndex,
 } from '../progression/runtime/index.js';
-import { buildSelectedTechniqueLoadoutSnapshot } from '../builds/loadoutSnapshot.js';
 import type {
   DoctrineSnapshot,
   DoctrineSourceFlags,
@@ -61,12 +61,23 @@ function resolveDoctrineLoadout(): {
   aiProfile: DoctrineSnapshot['aiProfile'];
   castingPolicy: DoctrineSnapshot['castingPolicy'];
 } {
-  const snapshot = buildSelectedTechniqueLoadoutSnapshot();
+  const techniqueState = useTechniqueStore.getState();
+  const selectedLoadout =
+    techniqueState.getSelectedLoadout() ??
+    techniqueState.loadouts.find((loadout) => loadout.id === techniqueState.selectedLoadoutId);
+
+  if (!selectedLoadout) {
+    return {
+      selectedLoadoutId: null,
+      aiProfile: FALLBACK_AI_PROFILE,
+      castingPolicy: FALLBACK_CASTING_POLICY,
+    };
+  }
 
   return {
-    selectedLoadoutId: snapshot.selectedLoadoutId,
-    aiProfile: snapshot.aiProfile ?? FALLBACK_AI_PROFILE,
-    castingPolicy: snapshot.castingPolicy ?? FALLBACK_CASTING_POLICY,
+    selectedLoadoutId: selectedLoadout.id,
+    aiProfile: selectedLoadout.aiProfile ?? FALLBACK_AI_PROFILE,
+    castingPolicy: selectedLoadout.castingPolicy ?? FALLBACK_CASTING_POLICY,
   };
 }
 
