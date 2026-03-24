@@ -6,7 +6,12 @@ export type OnboardingPromptId =
   | 'city_arrival'
   | 'first_gate_available'
   | 'first_major_failure'
-  | 'first_prestige_viable';
+  | 'first_prestige_viable'
+  | 'inline_world_loop'
+  | 'inline_apothecary_loop'
+  | 'inline_bounties_loop'
+  | 'inline_expeditions_loop'
+  | 'inline_first_failure';
 
 export type OnboardingPromptScope = 'profile' | 'life' | 'city';
 export type OnboardingPromptSurface = 'callout' | 'city_banner' | 'inline';
@@ -80,6 +85,42 @@ export const ONBOARDING_PROMPT_DEFINITIONS: Record<OnboardingPromptId, Onboardin
     scope: 'life',
     surface: 'callout',
     priority: 'medium',
+    dismissLabel: 'Continue This Life',
+  },
+  inline_world_loop: {
+    id: 'inline_world_loop',
+    scope: 'life',
+    surface: 'inline',
+    priority: 'low',
+    dismissLabel: 'Dismiss',
+  },
+  inline_apothecary_loop: {
+    id: 'inline_apothecary_loop',
+    scope: 'life',
+    surface: 'inline',
+    priority: 'low',
+    dismissLabel: 'Dismiss',
+  },
+  inline_bounties_loop: {
+    id: 'inline_bounties_loop',
+    scope: 'life',
+    surface: 'inline',
+    priority: 'low',
+    dismissLabel: 'Dismiss',
+  },
+  inline_expeditions_loop: {
+    id: 'inline_expeditions_loop',
+    scope: 'life',
+    surface: 'inline',
+    priority: 'low',
+    dismissLabel: 'Dismiss',
+  },
+  inline_first_failure: {
+    id: 'inline_first_failure',
+    scope: 'life',
+    surface: 'inline',
+    priority: 'low',
+    dismissLabel: 'Got it',
   },
 };
 
@@ -91,6 +132,14 @@ export const buildOnboardingScopeKey = (promptId: OnboardingPromptId, scope: Onb
 
 export const buildOnboardingPromptKey = (promptId: OnboardingPromptId, scopeKey: string): string =>
   `${promptId}:${scopeKey}`;
+
+export const ONBOARDING_INLINE_LIFE_KEYS = {
+  worldLoop: buildOnboardingPromptKey('inline_world_loop', buildOnboardingScopeKey('inline_world_loop', 'life')),
+  apothecaryLoop: buildOnboardingPromptKey('inline_apothecary_loop', buildOnboardingScopeKey('inline_apothecary_loop', 'life')),
+  bountiesLoop: buildOnboardingPromptKey('inline_bounties_loop', buildOnboardingScopeKey('inline_bounties_loop', 'life')),
+  expeditionsLoop: buildOnboardingPromptKey('inline_expeditions_loop', buildOnboardingScopeKey('inline_expeditions_loop', 'life')),
+  firstFailureStrap: buildOnboardingPromptKey('inline_first_failure', buildOnboardingScopeKey('inline_first_failure', 'life')),
+} as const;
 
 export const createFirstPinewindArrivalPrompt = (cityId: string): OnboardingPromptInstance => {
   const definition = ONBOARDING_PROMPT_DEFINITIONS.first_pinewind_arrival;
@@ -140,6 +189,86 @@ export const createCityArrivalPrompt = (args: {
     cityId: args.cityId,
     secondaryAction: {
       label: definition.dismissLabel ?? 'Continue',
+      target: { kind: 'none' },
+    },
+  };
+};
+
+export const createFirstGateAvailablePrompt = (args: {
+  cityId: string;
+  cityName: string;
+}): OnboardingPromptInstance => {
+  const definition = ONBOARDING_PROMPT_DEFINITIONS.first_gate_available;
+  const scopeKey = buildOnboardingScopeKey(definition.id, definition.scope);
+  return {
+    key: buildOnboardingPromptKey(definition.id, scopeKey),
+    promptId: definition.id,
+    scope: definition.scope,
+    scopeKey,
+    surface: definition.surface,
+    priority: definition.priority,
+    title: 'First Gate Available',
+    body: 'This is your first real milestone wall. Check readiness before brute-forcing the gate.',
+    eyebrow: args.cityName,
+    badgeLabel: 'Milestone Gate',
+    cityId: args.cityId,
+    primaryAction: {
+      label: 'Open Gate Trial',
+      target: { kind: 'world_module', cityId: args.cityId, moduleKey: 'gateTrial' },
+    },
+    secondaryAction: {
+      label: 'Dismiss',
+      target: { kind: 'none' },
+    },
+  };
+};
+
+export const createFirstMajorFailurePrompt = (args: {
+  cityId: string;
+}): OnboardingPromptInstance => {
+  const definition = ONBOARDING_PROMPT_DEFINITIONS.first_major_failure;
+  const scopeKey = buildOnboardingScopeKey(definition.id, definition.scope);
+  return {
+    key: buildOnboardingPromptKey(definition.id, scopeKey),
+    promptId: definition.id,
+    scope: definition.scope,
+    scopeKey,
+    surface: definition.surface,
+    priority: definition.priority,
+    title: 'Defeat is feedback',
+    body: 'Read the diagnosis and take the top fix before retrying. The gate is teaching you what this life is missing.',
+    badgeLabel: 'Gate Trial',
+    cityId: args.cityId,
+    primaryAction: {
+      label: 'Open Gate Trial',
+      target: { kind: 'world_module', cityId: args.cityId, moduleKey: 'gateTrial' },
+    },
+    secondaryAction: {
+      label: 'Got it',
+      target: { kind: 'none' },
+    },
+  };
+};
+
+export const createFirstPrestigeViablePrompt = (): OnboardingPromptInstance => {
+  const definition = ONBOARDING_PROMPT_DEFINITIONS.first_prestige_viable;
+  const scopeKey = buildOnboardingScopeKey(definition.id, definition.scope);
+  return {
+    key: buildOnboardingPromptKey(definition.id, scopeKey),
+    promptId: definition.id,
+    scope: definition.scope,
+    scopeKey,
+    surface: definition.surface,
+    priority: definition.priority,
+    title: 'Prestige is now viable',
+    body: 'Reincarnation will grant Ascension Points. You can push further, or bank outer-loop power now.',
+    badgeLabel: 'Viable',
+    primaryAction: {
+      label: 'Open Prestige',
+      target: { kind: 'tab', tab: 'prestige' },
+    },
+    secondaryAction: {
+      label: definition.dismissLabel ?? 'Continue This Life',
       target: { kind: 'none' },
     },
   };

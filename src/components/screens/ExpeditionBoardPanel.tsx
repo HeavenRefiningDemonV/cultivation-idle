@@ -7,9 +7,12 @@ import { multiply } from '../../utils/numbers.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useExpeditionStore, type ExpeditionRun } from '../../stores/expeditionStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRouteContract.js';
 import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting.js';
+import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
+import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
@@ -240,6 +243,8 @@ export function ExpeditionBoardPanel() {
     spotlightItemId: null,
   });
   const [ceremonyError, setCeremonyError] = useState<string | null>(null);
+  const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
+  const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
 
   const cityIndex = useMemo(() => {
     if (!currentCityId) return null;
@@ -477,6 +482,7 @@ export function ExpeditionBoardPanel() {
   }));
 
   const availableSlots = Math.max(0, slots - activeRuns.length);
+  const showExpeditionInlineHint = !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.expeditionsLoop) && availableSlots > 0;
   const availableSlotIndices = Array.from({ length: slots })
     .map((_, index) => index)
     .filter((index) => !activeRuns.some((entry) => entry.slotIndex === index));
@@ -617,6 +623,17 @@ export function ExpeditionBoardPanel() {
               </div>
             </div>
           </div>
+
+          {showExpeditionInlineHint ? (
+            <InlineOnboardingCallout
+              className="expeditionInlineHint"
+              title="Keep expedition slots working"
+              body="An idle slot is missed passive supply. Forage feeds Apothecary, Mine feeds Forge, Scout feeds Manual Pavilion."
+              actionLabel="Choose a Route"
+              onAction={() => setRouteModalOpen(true)}
+              onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.expeditionsLoop)}
+            />
+          ) : null}
 
           <div className={'eqsPlannerHint'}>Select route + duration, then click a slot to send.</div>
 

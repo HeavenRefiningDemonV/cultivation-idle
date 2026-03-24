@@ -23,6 +23,8 @@ import { GateTrialReadinessCard } from '../../../ui/trials/GateTrialReadinessCar
 import { GateTrialChecklist } from '../../../ui/trials/GateTrialChecklist.js';
 import { PostFailureDiagnosisPanel } from '../../../ui/status/PostFailureDiagnosisPanel.js';
 import { performPostFailureFixAction } from '../../../systems/ui/postFailure/index.js';
+import { InlineOnboardingCallout } from '../../../components/system/InlineOnboardingCallout.js';
+import { ONBOARDING_INLINE_LIFE_KEYS } from '../../../systems/ui/onboardingPromptRegistry.js';
 
 function TrialProgressContent({ trialId }: { trialId: string }) {
   const {
@@ -62,6 +64,8 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
+  const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
+  const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
   const progress = useTrialStore((state) => state.progressByTrialId[trialId]);
   const playerRealm = useGameStore((state) => state.realm.index);
   const playerStats = useGameStore((state) => state.stats);
@@ -96,6 +100,10 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
     [trialId, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, playerRealm, requiredItemOwned],
   );
   const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
+  const showFirstFailureStrap = Boolean(postFailureSurface?.state === 'available'
+    && lastSummary
+    && (progress?.attempts ?? 0) > 0
+    && !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap));
 
   const rollingDps = useMemo(() => computeRollingDps(events, Date.now()), [events]);
   const now = Date.now();
@@ -199,7 +207,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__controls-note">
-        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Defeats)`}
+        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} qualifying defeats)`}
       </div>
 
       {gateReadinessSurface ? (
@@ -211,6 +219,17 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       ) : null}
 
       <div className="trial-progress__summary-card">
+        {showFirstFailureStrap ? (
+          <InlineOnboardingCallout
+            className="trial-progress__failure-strap"
+            title="Defeat is feedback"
+            body="Read the diagnosis and take the top fix before retrying. The gate is teaching you what this life is missing."
+            actionLabel="Got it"
+            onAction={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}
+            onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}
+            tone="ink"
+          />
+        ) : null}
         <PostFailureDiagnosisPanel
           surface={postFailureSurface}
           onAction={(fix) => {

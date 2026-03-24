@@ -207,6 +207,8 @@ export interface UIState extends UIStateBase {
   clearActiveOnboardingPrompt: () => void;
   activateNextOnboardingPrompt: () => void;
   resetOnboardingLifeState: () => void;
+  dismissOnboardingLifeKey: (key: string) => void;
+  isOnboardingLifeKeyDismissed: (key: string) => boolean;
   queueCityArrival: (cityId: string) => void;
   clearCityArrival: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
@@ -844,6 +846,20 @@ export const useUIStore = create<UIState>()(
           state.activeOnboardingPrompt = null;
         }
       });
+    },
+
+    dismissOnboardingLifeKey: (key) => {
+      if (!key) return;
+      set((state) => {
+        if (!state.dismissedOnboardingLifeKeys.includes(key)) {
+          state.dismissedOnboardingLifeKeys = [...state.dismissedOnboardingLifeKeys, key];
+        }
+      });
+    },
+
+    isOnboardingLifeKeyDismissed: (key) => {
+      if (!key) return false;
+      return get().dismissedOnboardingLifeKeys.includes(key);
     },
 
 

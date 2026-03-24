@@ -30,6 +30,8 @@ import { GateTrialSafetyNetCard } from '../../../../ui/trials/GateTrialSafetyNet
 import { GateTrialTopFixes } from '../../../../ui/trials/GateTrialTopFixes.js';
 import { GateTrialAttemptCluster } from '../../../../ui/trials/GateTrialAttemptCluster.js';
 import { performPostFailureFixAction } from '../../../../systems/ui/postFailure/index.js';
+import { InlineOnboardingCallout } from '../../../system/InlineOnboardingCallout.js';
+import { ONBOARDING_INLINE_LIFE_KEYS } from '../../../../systems/ui/onboardingPromptRegistry.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -94,6 +96,8 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const combatAIProfile = useUIStore((state) => state.settings.combatAIProfile);
   const useConsumablesInCombat = useUIStore((state) => state.settings.useConsumablesInCombat);
   const setSettings = useUIStore((state) => state.setSettings);
+  const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
+  const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
   const merit = useInventoryStore((state) => state.merit);
@@ -152,6 +156,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     [trialDef?.id, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, merit, spiritStones],
   );
   const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
+  const showFirstFailureStrap = Boolean(postFailureSurface?.state === 'available'
+    && trialProgress?.lastAttemptSummary
+    && (trialProgress?.attempts ?? 0) > 0
+    && !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap));
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;
@@ -270,6 +278,17 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               />
             </div>
             <div className="ink-combat-shell__section">
+              {showFirstFailureStrap ? (
+                <InlineOnboardingCallout
+                  className="gateTrialPanel__failure-strap"
+                  title="Defeat is feedback"
+                  body="Read the diagnosis and take the top fix before retrying. The gate is teaching you what this life is missing."
+                  actionLabel="Got it"
+                  onAction={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}
+                  onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap)}
+                  tone="ink"
+                />
+              ) : null}
               <GateTrialTopFixes
                 surface={postFailureSurface}
                 onAction={(fix) => {

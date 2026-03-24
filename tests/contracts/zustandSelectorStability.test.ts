@@ -13,6 +13,8 @@ const SELECTOR_STABILITY_FILES = [
   'src/components/screens/BountyBoardPanel.tsx',
   'src/components/Header.tsx',
   'src/components/screens/WorldScreen.tsx',
+  'src/components/screens/ApothecaryPanel.tsx',
+  'src/components/screens/ExpeditionBoardPanel.tsx',
   'src/components/screens/AlchemyPanel.tsx',
   'src/components/screens/TalismanPanel.tsx',
   'src/components/system/CityArrivalBanner.tsx',
@@ -132,6 +134,31 @@ test('world/header bounty selectors derive tracked bounties outside selector-tim
       false,
       `${relativePath} should not call state.getTrackedBounty(...) inside useBountyStore selectors`,
     );
+  }
+});
+
+test('touched onboarding guidance copy avoids stale vocabulary leaks', async () => {
+  const touchedFiles = [
+    'src/components/system/OnboardingPromptRuntime.tsx',
+    'src/systems/ui/onboardingPromptRegistry.ts',
+    'src/components/screens/WorldScreen.tsx',
+    'src/components/screens/ApothecaryPanel.tsx',
+    'src/components/screens/BountyBoardPanel.tsx',
+    'src/components/screens/ExpeditionBoardPanel.tsx',
+    'src/features/trials/ui/TrialProgress.tsx',
+  ];
+
+  const forbidden = [/Adventure/, /Fail-safe/, /Eligible/, /Sealed/];
+
+  for (const relativePath of touchedFiles) {
+    const source = await readSource(relativePath);
+    for (const pattern of forbidden) {
+      assert.equal(
+        pattern.test(source),
+        false,
+        `${relativePath} should avoid stale player-facing vocabulary (${pattern.source})`,
+      );
+    }
   }
 });
 

@@ -1,0 +1,47 @@
+.inlineOnboardingCallout {
+  border: 1px solid rgba(58, 45, 27, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.inlineOnboardingCallout--paper {
+  background: rgba(248, 240, 226, 0.92);
+}
+
+.inlineOnboardingCallout--ink {
+  background: rgba(22, 18, 15, 0.86);
+  color: #f0e6d6;
+}
+
+.inlineOnboardingCallout__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.inlineOnboardingCallout__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.inlineOnboardingCallout__badge {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.inlineOnboardingCallout__body {
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.inlineOnboardingCallout__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

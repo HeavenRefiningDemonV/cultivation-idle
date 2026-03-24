@@ -4,6 +4,7 @@ import { useBountyStore } from '../../stores/bountyStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
 import {
   bountyKindToLabel,
   bountyKindToProgressRule,
@@ -22,6 +23,8 @@ import { buildSupportEconomySurfaceModel } from '../../systems/economy/supportEc
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
+import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
+import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const difficultyBadge: Record<string, string> = {
@@ -83,6 +86,8 @@ export function BountyBoardPanel() {
 
   const merit = useInventoryStore((state) => state.merit);
   const spiritStones = useInventoryStore((state) => state.spiritStones);
+  const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
+  const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
 
   const city = currentCityId ? cityMap[currentCityId] : null;
   const cityIndex = city?.index ?? null;
@@ -205,6 +210,9 @@ export function BountyBoardPanel() {
     });
   }, [cityModules, craftRouteSupportState, primaryBounty]);
   const primaryActionLabel = getBountyDestinationCtaLabel(primaryDestination);
+  const reserveNeedsHelp = supportSurface.reserveTone === 'warning';
+  const showBountyInlineHint = !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.bountiesLoop)
+    && (reserveNeedsHelp || readyCount > 0 || Boolean(trackedBounty));
 
   const handleGoToModule = (cityId: string, moduleKey: string) => {
     openWorldModule({ cityId, moduleKey, source: 'bounty-go-there' });
@@ -403,6 +411,22 @@ export function BountyBoardPanel() {
         <div className="bountySupportSummaryCard__summary">
           Merit supports Safety Net gate access. Keep this reserve healthy.
         </div>
+        {showBountyInlineHint ? (
+          <InlineOnboardingCallout
+            className="bountySupportInlineHint"
+            title="Bounties fund your support reserve"
+            body="Bounties mainly feed Merit and Spirit Stones. Keep reserves healthy for current Safety Net and support costs."
+            actionLabel={readyCount > 0 ? 'Claim Ready' : trackedBounty ? 'Track a Bounty' : null}
+            onAction={readyCount > 0
+              ? () => {
+                if (claimReady[0]) handleClaim(claimReady[0].instanceId);
+              }
+              : trackedBounty
+                ? () => handleTrackToggle(trackedBounty.instanceId)
+                : undefined}
+            onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.bountiesLoop)}
+          />
+        ) : null}
       </PaperCard>
 
       <div className={'bountyStageArea'}>

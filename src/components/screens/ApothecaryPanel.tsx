@@ -22,6 +22,8 @@ import { MedicinePouchPanel } from '../consumables/MedicinePouchPanel.js';
 import { MedicinePouchModal } from '../modals/MedicinePouchModal.js';
 import { InkPanel, PaperCard, PaperChip, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
+import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import './ApothecaryPanel.scss';
 import { buildItemPurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
 
@@ -84,6 +86,8 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
   const pouchSlots = useMedicinePouchStore((state) => state.slots);
   const brewQueue = useProfessionStore((state) => state.alchemyQueue);
   const addNotification = useUIStore((state) => state.addNotification);
+  const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
+  const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
 
   const [activeTab, setActiveTab] = useState<PrimaryTabKey>(initialSurface);
   const [buyFilter, setBuyFilter] = useState<BuyFilterKey>('all');
@@ -149,6 +153,16 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
   const pouchBadgeCount = prepModel.pouchSummary.filledSlots;
   const badgeDisplay = pouchBadgeCount > 9 ? '9+' : `${pouchBadgeCount}`;
   const hasReadyPouchItem = prepModel.pouchSummary.stocked;
+  const showInlineApothecaryHint = !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.apothecaryLoop)
+    && (prepModel.stockWarnings.length > 0 || prepModel.recommendedPackage.length > 0 || prepModel.pouchSummary.stocked);
+  const inlineActionLabel = prepModel.stockWarnings.length > 0 ? 'Open Brew' : 'Open Medicine Pouch';
+  const inlineAction = () => {
+    if (prepModel.stockWarnings.length > 0) {
+      setActiveTab('brew');
+      return;
+    }
+    setActiveTab('pouch');
+  };
 
   const primaryTabs: Array<{ key: PrimaryTabKey; label: string; blurb: string }> = [
     { key: 'buy', label: 'Buy', blurb: 'Instant convenience and shelf stock.' },
@@ -651,6 +665,16 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
           <div className={'apothecarySubheading'}>
             Buy is speed. Brew is efficiency. Keep the pouch configured so today’s prep actually reaches combat.
           </div>
+          {showInlineApothecaryHint ? (
+            <InlineOnboardingCallout
+              className="apothecaryInlineHint"
+              title="Apothecary fixes immediate readiness"
+              body="Buy is speed, Brew is efficiency, and the Medicine Pouch automates combat stock."
+              actionLabel={inlineActionLabel}
+              onAction={inlineAction}
+              onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.apothecaryLoop)}
+            />
+          ) : null}
           <div className={'apothecaryDayKey'}>
             City: {city?.name ?? prepModel.cityName} • Day: {dayKey}
           </div>

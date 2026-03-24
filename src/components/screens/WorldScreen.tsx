@@ -7,6 +7,7 @@ import { useCombatStore } from '../../stores/combatStore.js';
 import { useBountyStore } from '../../stores/bountyStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations.js';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
@@ -38,6 +39,8 @@ import { WorldCommandAlert } from '../../ui/world/WorldCommandAlert.js';
 import { WorldModuleCard } from '../../ui/world/WorldModuleCard.js';
 import { WorldModuleGroup } from '../../ui/world/WorldModuleGroup.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
+import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
+import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -117,6 +120,11 @@ export function WorldScreen() {
   const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
+  const activeOnboardingPrompt = useUIStore((state) => state.activeOnboardingPrompt);
+  const queuedOnboardingPrompts = useUIStore((state) => state.queuedOnboardingPrompts);
+  const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
+  const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
+  const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
 
   const displayedModuleKey = useMemo(() => {
     if (!selectedCity) return null;
@@ -209,6 +217,17 @@ export function WorldScreen() {
 
   const runCompassPrimaryAction = runCompass.full?.bestNextActions[0] ?? null;
   const runCompassSecondaryAction = runCompass.full?.bestNextActions[1] ?? null;
+
+  const showWorldInlineHint = useMemo(() => {
+    if (!selectedCity) return false;
+    const dismissed = onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.worldLoop);
+    if (dismissed) return false;
+    const pinewindFocus = selectedCity.id === 'city_pinewind_hamlet' || prestigeCount === 0;
+    if (!pinewindFocus) return false;
+    const firstPinewindPromptActive = activeOnboardingPrompt?.promptId === 'first_pinewind_arrival';
+    const firstPinewindPromptQueued = queuedOnboardingPrompts.some((entry) => entry.promptId === 'first_pinewind_arrival');
+    return !firstPinewindPromptActive && !firstPinewindPromptQueued;
+  }, [activeOnboardingPrompt?.promptId, onboardingLifeKeys, prestigeCount, queuedOnboardingPrompts, selectedCity]);
 
   const economicPrimary = useMemo(() => {
     try {
@@ -380,6 +399,16 @@ export function WorldScreen() {
             <div className={`worldScreenCitySummaryStatus ${currentCityTravelBlocked ? 'worldScreenCitySummaryStatus--blocked' : ''}`}>{currentCityStatusLine}</div>
             {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
             {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
+            {showWorldInlineHint ? (
+              <InlineOnboardingCallout
+                className="worldCommandSummaryInlineHint"
+                title="Use World to route the loop"
+                body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
+                actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
+                onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
+                onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
+              />
+            ) : null}
             {recommendedHereLine ? <div className="worldCommandSummaryRecommended">{recommendedHereLine}</div> : null}
             {cityQuickOpenModules.length > 0 ? (
               <div className="worldCommandQuickOpen">

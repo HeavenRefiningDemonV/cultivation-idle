@@ -26,6 +26,7 @@ import { useHeartLawStore } from '../stores/heartLawStore.js';
 import { usePrestigeStore } from '../stores/prestigeStore.js';
 import { CurrentChapterExhaustedModal } from './modals/CurrentChapterExhaustedModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
+import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
 import './GameLayout.scss';
 
 /**
@@ -185,6 +186,7 @@ export function GameLayout() {
       {showCurrentChapterExhaustedModal && <CurrentChapterExhaustedModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
       <CombatPresentationHost />
+      <OnboardingPromptRuntime />
       <LifeStartWizardModal />
       <CityArrivalBanner />
       <OnboardingPromptHost />
