@@ -19,6 +19,9 @@ import cultivatorFight from '../../../../assets/onscreen/cultivator_backshots.pn
 import wildBoar from '../../../../assets/enemies/widboar.png';
 import './CombatStyles.scss';
 import { GATE_SUPPORT_LABELS } from '../../../../ui/text/playerFacingLabels.js';
+import { buildGateTrialReadinessSurface } from '../../../../systems/readiness/section5Adapters.js';
+import { GateTrialReadinessCard } from '../../../../ui/trials/GateTrialReadinessCard.js';
+import { GateTrialChecklist } from '../../../../ui/trials/GateTrialChecklist.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -148,6 +151,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
       }),
     [cityId, merit, spiritStones],
   );
+  const gateReadinessSurface = useMemo(
+    () => (trialDef ? buildGateTrialReadinessSurface(trialDef.id) : null),
+    [trialDef?.id, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, merit, spiritStones],
+  );
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;
@@ -276,6 +283,15 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 </div>
               </div>
             </div>
+            {gateReadinessSurface ? (
+              <div className="ink-combat-shell__section gateTrialPanel__readiness">
+                <GateTrialReadinessCard surface={gateReadinessSurface} />
+                <div className="gateTrialPanel__checklists">
+                  <GateTrialChecklist title="Minimum Floor" lines={gateReadinessSurface.minimumChecklist} />
+                  <GateTrialChecklist title="Recommended Floor" lines={gateReadinessSurface.recommendedChecklist} />
+                </div>
+              </div>
+            ) : null}
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Gate Status</div>
               <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>

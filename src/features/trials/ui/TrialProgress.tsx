@@ -9,24 +9,13 @@ import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../sy
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel.js';
 import { hpPercent } from '../../../systems/combat/minibarModel.js';
-import { formatNumber, D } from '../../../utils/numbers.js';
+import { formatNumber } from '../../../utils/numbers.js';
 import { GameIcon } from '../../../ui/icons/index.js';
 import './TrialProgress.scss';
 import { GATE_SUPPORT_LABELS } from '../../../ui/text/playerFacingLabels.js';
-
-const TRIAL_RECOMMENDATIONS: Record<string, { minRealm?: number; suggestedDps?: number; suggestedHp?: number }> = {
-  trial_novices_clearing: { minRealm: 0, suggestedDps: 38, suggestedHp: 500 },
-  trial_stone_core_sanctum: { minRealm: 1, suggestedDps: 200, suggestedHp: 3000 },
-  trial_patriarchs_seal: { minRealm: 2, suggestedDps: 800, suggestedHp: 10000 },
-};
-
-function clamp01(value: number | null | undefined): number {
-  if (!Number.isFinite(value ?? NaN)) return 0;
-  const n = Number(value);
-  if (n < 0) return 0;
-  if (n > 1) return 1;
-  return n;
-}
+import { buildGateTrialReadinessSurface } from '../../../systems/readiness/section5Adapters.js';
+import { GateTrialReadinessCard } from '../../../ui/trials/GateTrialReadinessCard.js';
+import { GateTrialChecklist } from '../../../ui/trials/GateTrialChecklist.js';
 
 function TrialProgressContent({ trialId }: { trialId: string }) {
   const {
@@ -74,7 +63,6 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const bossTemplate = trialDef ? enemiesById[trialDef.bossId] : undefined;
   const lastSummary = progress?.lastAttemptSummary ?? null;
 
-  const recommendation = TRIAL_RECOMMENDATIONS[trialId] ?? {};
   const requiredItemId = trialDef?.requiredItemId;
   const requiredItemName = requiredItemId ? itemsById[requiredItemId]?.name ?? requiredItemId : 'No required item';
   const requiredItemOwned = requiredItemId ? getItemCount(requiredItemId) > 0 : true;
@@ -89,23 +77,12 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   });
   const gateItemName = lifecycle.gateItemId ? itemsById[lifecycle.gateItemId]?.name ?? lifecycle.gateItemId : 'No gate reward';
 
-  const realmRequirement =
-    trialDef?.minRealm ?? trialDef?.realmRequirement ?? (typeof recommendation.minRealm === 'number' ? recommendation.minRealm : null);
+  const realmRequirement = trialDef?.minRealm ?? trialDef?.realmRequirement ?? null;
   const realmMet = realmRequirement == null ? true : playerRealm >= realmRequirement;
-
-  const recommendedDps =
-    trialDef?.suggestedDPS ??
-    trialDef?.suggestedDps ??
-    (typeof recommendation.suggestedDps === 'number' ? recommendation.suggestedDps : null);
-  const recommendedHp =
-    trialDef?.suggestedHP ??
-    trialDef?.suggestedHp ??
-    (typeof recommendation.suggestedHp === 'number' ? recommendation.suggestedHp : null);
-
-  const playerOffense = D(playerStats.atk ?? 0).toNumber();
-  const playerMaxHp = D(playerStats.maxHp ?? 0).toNumber();
-  const offensePct = recommendedDps ? clamp01(playerOffense / recommendedDps) : null;
-  const hpPct = recommendedHp ? clamp01(playerMaxHp / recommendedHp) : null;
+  const gateReadinessSurface = useMemo(
+    () => buildGateTrialReadinessSurface(trialId),
+    [trialId, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, playerRealm, requiredItemOwned],
+  );
 
   const rollingDps = useMemo(() => computeRollingDps(events, Date.now()), [events]);
   const now = Date.now();
@@ -212,26 +189,13 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
         {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
       </div>
 
-      <div className="trial-progress__metrics">
-        <div className="trial-progress__metric">
-          <div className="trial-progress__metric-label">Recommended DPS</div>
-          <div className="trial-progress__bar">
-            <div className="trial-progress__bar-fill" style={{ width: `${(offensePct ?? 0) * 100}%` }} />
-          </div>
-          <div className="trial-progress__metric-text">
-            {recommendedDps ? `${recommendedDps} (you: ${playerOffense.toFixed(0)})` : 'No recommendation provided'}
-          </div>
+      {gateReadinessSurface ? (
+        <div className="trial-progress__metrics">
+          <GateTrialReadinessCard surface={gateReadinessSurface} />
+          <GateTrialChecklist title="Minimum Floor" lines={gateReadinessSurface.minimumChecklist} />
+          <GateTrialChecklist title="Recommended Floor" lines={gateReadinessSurface.recommendedChecklist} />
         </div>
-        <div className="trial-progress__metric">
-          <div className="trial-progress__metric-label">Recommended HP</div>
-          <div className="trial-progress__bar">
-            <div className="trial-progress__bar-fill trial-progress__bar-fill--hp" style={{ width: `${(hpPct ?? 0) * 100}%` }} />
-          </div>
-          <div className="trial-progress__metric-text">
-            {recommendedHp ? `${recommendedHp} (you: ${playerMaxHp.toFixed(0)})` : 'No recommendation provided'}
-          </div>
-        </div>
-      </div>
+      ) : null}
 
       <div className="trial-progress__intel">
         <div className="trial-progress__intel-item">
