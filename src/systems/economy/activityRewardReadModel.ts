@@ -49,6 +49,9 @@ export interface CityActivityRewardReadModel {
   ruins: RuinsActivityRewardReadModel;
 }
 
+export const OUTSKIRTS_CARD_OUTPUT_HINTS = Object.freeze(['Gold', 'Common Mats']);
+export const RUINS_CARD_OUTPUT_HINTS = Object.freeze(['Local Mats', 'Anchor Drop']);
+
 function summarizeRarePity(content: Pick<ValidatedContent, 'economy'>): string {
   const pity = content.economy?.tuning?.pityDefaults?.ruinsBossChestRare;
   const cap = pity?.pityCap ?? 0;

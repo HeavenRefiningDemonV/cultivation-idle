@@ -127,6 +127,7 @@ export interface ModuleRecommendationSummary {
   whyItMatters: string;
   topReason: string;
   relatedIds: string[];
+  defaultChipIntent?: 'recommended_now' | 'useful_soon' | 'build_fix' | 'gate_critical' | 'stock_low';
 }
 
 export interface EconomicRecommendationEngineResult {

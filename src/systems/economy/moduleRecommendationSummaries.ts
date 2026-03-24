@@ -1,5 +1,6 @@
 import type { LiveWorldModuleKey } from '../../content/index.js';
 import type { EconomicProblemRecommendation, ModuleRecommendationSummary } from './economicRecommendationTypes.js';
+import type { EconomicProblemKind } from './economicProblemKinds.js';
 
 const ORDERED_MODULE_KEYS: readonly LiveWorldModuleKey[] = [
   'apothecary',
@@ -36,6 +37,25 @@ export function buildModuleRecommendationSummaries(
       whyItMatters: primaryCandidate?.reasonSummary ?? `${moduleKey} matters for current economic recovery.`,
       topReason: primaryCandidate?.reasonSummary ?? `${moduleKey} matters for current economic recovery.`,
       relatedIds: [...new Set(matchingCandidates.flatMap((candidate) => candidate.relatedIds))],
+      defaultChipIntent: getDefaultModuleRecommendationChipIntent(weight, primaryCandidate?.problemKind ?? null),
     }];
   });
+}
+
+export function getDefaultModuleRecommendationChipIntent(
+  weight: ModuleRecommendationSummary['weight'],
+  problemKind: EconomicProblemKind | null,
+): NonNullable<ModuleRecommendationSummary['defaultChipIntent']> {
+  if (weight !== 'primary') return 'useful_soon';
+  if (problemKind === 'missingGatePrepPackage') return 'gate_critical';
+  if (problemKind === 'buildCorrectionGap' || problemKind === 'belowMinimumForgeFloor' || problemKind === 'belowRecommendedForgeFloor') return 'build_fix';
+  if (
+    problemKind === 'belowHealingFloor'
+    || problemKind === 'belowSpecialtyFloor'
+    || problemKind === 'belowCultivationPrepFloor'
+    || problemKind === 'belowMeritReserve'
+    || problemKind === 'belowSpiritStoneMinimum'
+    || problemKind === 'belowSpiritStoneIdeal'
+  ) return 'stock_low';
+  return 'recommended_now';
 }
