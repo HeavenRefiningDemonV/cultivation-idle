@@ -1,0 +1,47 @@
+.currentChapterExhaustedOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(21, 16, 12, 0.5);
+  display: grid;
+  place-items: center;
+  z-index: 1500;
+  padding: 20px;
+}
+
+.currentChapterExhaustedModal {
+  width: min(640px, 100%);
+  background: #f6eddc;
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  border-radius: 16px;
+  box-shadow: 0 22px 36px rgba(48, 31, 15, 0.3);
+  padding: 22px;
+  display: grid;
+  gap: 12px;
+}
+
+.currentChapterExhaustedModal h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.currentChapterExhaustedModal p {
+  margin: 0;
+  color: rgba(62, 30, 6, 0.88);
+}
+
+.currentChapterExhaustedModal__actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.currentChapterExhaustedModal__actions button {
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.4);
+  background: rgba(246, 230, 206, 0.95);
+  color: #2b2116;
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+}

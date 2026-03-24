@@ -1,6 +1,7 @@
 import type { PrestigeUpgradeDef } from '../../content/types.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from './prestigeCategories.js';
 
 export type PrestigeAdvisorStateLabel = 'Too Early' | 'Viable' | 'Recommended';
 
@@ -13,15 +14,20 @@ export type PrestigeResetPreviewBuckets = {
 };
 
 export type PrestigeAdvisorRecommendedPurchase = {
+  mode: 'buy_now' | 'save_for_next';
   id: string;
   name: string;
+  categoryLabel: string;
   nextCost: number;
   currentLevel: number;
   maxLevel: number;
+  affordabilityLabel: string;
+  reasonLine: string;
 };
 
 export type PrestigeAdvisorSurface = {
   stateLabel: PrestigeAdvisorStateLabel;
+  stateDetail: string;
   apForecast: {
     potentialGain: number;
     breakdown: ReturnType<ReturnType<typeof usePrestigeStore.getState>['getApBreakdown']>;
@@ -78,6 +84,28 @@ const getPurchaseRank = (upgrade: PrestigeUpgradeDef, nextCost: number): number 
   return statPriority * 1000 + levelCap * 10 - nextCost;
 };
 
+const getAdvisorDetail = (stateLabel: PrestigeAdvisorStateLabel): string => {
+  if (stateLabel === 'Too Early') {
+    return 'Build your life to Foundation Establishment before beginning Reincarnation.';
+  }
+  if (stateLabel === 'Viable') {
+    return 'Reincarnation is unlocked. You can reset now or keep pushing this life for more AP.';
+  }
+  return 'This life is in a strong reset window. Reincarnation is likely your best outer-loop move.';
+};
+
+const getReasonLine = (upgrade: PrestigeUpgradeDef): string => {
+  if (upgrade.stat === 'idleQiMult') return 'Raises baseline Qi flow for every future life.';
+  if (upgrade.stat === 'combatMult') return 'Improves combat throughput across all runs.';
+  if (upgrade.stat === 'offlineEfficiencyAdd') return 'Improves offline cultivation efficiency.';
+  return 'Strengthens permanent progression for future lives.';
+};
+
+const getCategoryLabel = (upgradeId: string): string => {
+  const key = getPrestigeCategoryKey(upgradeId);
+  return PRESTIGE_CATEGORIES.find((category) => category.key === key)?.title ?? 'Decree';
+};
+
 const buildTopRecommendedPurchase = (): PrestigeAdvisorRecommendedPurchase | null => {
   const content = useContentStore.getState();
   const prestige = usePrestigeStore.getState();
@@ -89,16 +117,20 @@ const buildTopRecommendedPurchase = (): PrestigeAdvisorRecommendedPurchase | nul
       const maxLevel = prestige.getMaxLevel(upgrade.id);
       const nextCost = prestige.getNextLevelCost(upgrade.id);
       const prereq = prestige.checkPrereqs(upgrade.id);
-      if (!prereq.ok || nextCost === null || currentLevel >= maxLevel || nextCost > prestige.totalAP) {
+      if (!prereq.ok || nextCost === null || currentLevel >= maxLevel) {
         return null;
       }
+      const affordableNow = nextCost <= prestige.totalAP;
       return {
         id: upgrade.id,
         name: upgrade.name,
+        categoryLabel: getCategoryLabel(upgrade.id),
         nextCost,
         currentLevel,
         maxLevel,
-        rank: getPurchaseRank(upgrade, nextCost),
+        affordableNow,
+        rank: getPurchaseRank(upgrade, nextCost) + (affordableNow ? 50 : 0),
+        reasonLine: getReasonLine(upgrade),
       };
     })
     .filter((candidate): candidate is NonNullable<typeof candidate> => candidate !== null)
@@ -110,11 +142,15 @@ const buildTopRecommendedPurchase = (): PrestigeAdvisorRecommendedPurchase | nul
 
   const [top] = candidates;
   return {
+    mode: top.affordableNow ? 'buy_now' : 'save_for_next',
     id: top.id,
     name: top.name,
+    categoryLabel: top.categoryLabel,
     nextCost: top.nextCost,
     currentLevel: top.currentLevel,
     maxLevel: top.maxLevel,
+    affordabilityLabel: top.affordableNow ? 'Affordable now' : 'Save for next ritual',
+    reasonLine: top.reasonLine,
   };
 };
 
@@ -122,9 +158,11 @@ export const getPrestigeAdvisorSurface = (): PrestigeAdvisorSurface => {
   const prestige = usePrestigeStore.getState();
   const potentialGain = Math.max(0, prestige.calculateAPGain());
   const breakdown = prestige.getApBreakdown();
+  const stateLabel = toStateLabel(prestige.canPrestige(), potentialGain);
 
   return {
-    stateLabel: toStateLabel(prestige.canPrestige(), potentialGain),
+    stateLabel,
+    stateDetail: getAdvisorDetail(stateLabel),
     apForecast: {
       potentialGain,
       breakdown,

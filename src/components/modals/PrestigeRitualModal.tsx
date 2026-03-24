@@ -3,14 +3,16 @@ import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerE
 import { createPortal } from 'react-dom';
 import type { ApBreakdown } from '../../stores/prestigeStore.js';
 import { GameIcon } from '../../ui/icons/index.js';
-import { getPrestigeRecommendationForAvailability } from '../../ui/text/playerFacingLabels.js';
+import type { PrestigeResetPreviewBuckets } from '../../features/prestige/prestigeAdvisorSurface.js';
 
 interface PrestigeRitualModalProps {
   open: boolean;
   apGain: number;
   breakdown: ApBreakdown;
+  advisorLabel: 'Too Early' | 'Viable' | 'Recommended';
+  advisorDetail: string;
+  resetPreview: PrestigeResetPreviewBuckets;
   canPrestigeNow: boolean;
-  lockReason: string;
   currentRealm: string;
   sellBeforePrestige: boolean;
   errorMessage?: string | null;
@@ -39,8 +41,10 @@ export function PrestigeRitualModal({
   open,
   apGain,
   breakdown,
+  advisorLabel,
+  advisorDetail,
+  resetPreview,
   canPrestigeNow,
-  lockReason,
   currentRealm,
   sellBeforePrestige,
   errorMessage,
@@ -172,8 +176,6 @@ export function PrestigeRitualModal({
     startHold();
   };
 
-  const hintLabel = getPrestigeRecommendationForAvailability(canPrestigeNow);
-
   return createPortal(
     <div className="prestigeRitualOverlay" role="presentation" onMouseDown={handleClose}>
       <div
@@ -209,8 +211,8 @@ export function PrestigeRitualModal({
                 </div>
                 <div>
                   <div className="prestigeRitualLabel">Status</div>
-                  <div className={`prestigeRitualValue${canPrestigeNow ? '' : ' is-muted'}`}>{hintLabel}</div>
-                  {!canPrestigeNow && <div className="prestigeRitualHint">{lockReason}</div>}
+                  <div className={`prestigeRitualValue${canPrestigeNow ? '' : ' is-muted'}`}>{advisorLabel}</div>
+                  <div className="prestigeRitualHint">{advisorDetail}</div>
                 </div>
                 <div>
                   <div className="prestigeRitualLabel">Potential AP gain</div>
@@ -221,40 +223,44 @@ export function PrestigeRitualModal({
             </section>
 
             <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">What You Keep</div>
+              <div className="prestigeRitualSectionTitle">Carries Forward</div>
               <ul className="prestigeRitualList">
-                <li>
-                  <GameIcon icon="inkCheck" size={12} decorative />
-                  <span>Keep all Ascension Points</span>
-                </li>
-                <li>
-                  <GameIcon icon="inkCheck" size={12} decorative />
-                  <span>Keep all AP upgrades</span>
-                </li>
-                <li>
-                  <GameIcon icon="inkCheck" size={12} decorative />
-                  <span>Receive a fresh spirit root for the next life</span>
-                </li>
+                {resetPreview.carriesForward.map((line) => (
+                  <li key={line}>
+                    <GameIcon icon="inkCheck" size={12} decorative />
+                    <span>{line}</span>
+                  </li>
+                ))}
               </ul>
             </section>
 
             <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">What Resets</div>
+              <div className="prestigeRitualSectionTitle">Resets This Life</div>
               <ul className="prestigeRitualList is-warning">
-                <li>
-                  <GameIcon icon="inkX" size={12} decorative />
-                  <span>Reset cultivation progress</span>
-                </li>
-                <li>
-                  <GameIcon icon="inkX" size={12} decorative />
-                  <span>Reset inventory &amp; gold</span>
-                </li>
+                {resetPreview.resetsThisLife.map((line) => (
+                  <li key={line}>
+                    <GameIcon icon="inkX" size={12} decorative />
+                    <span>{line}</span>
+                  </li>
+                ))}
                 {sellBeforePrestige && (
                   <li>
                     <GameIcon icon="inkSparkles" size={12} decorative />
                     <span>Inventory will be sold for gold before the reset</span>
                   </li>
                 )}
+              </ul>
+            </section>
+
+            <section className="prestigeRitualSection">
+              <div className="prestigeRitualSectionTitle">Rebuilt Next Life</div>
+              <ul className="prestigeRitualList">
+                {resetPreview.rebuiltNextLife.map((line) => (
+                  <li key={line}>
+                    <GameIcon icon="inkSparkles" size={12} decorative />
+                    <span>{line}</span>
+                  </li>
+                ))}
               </ul>
             </section>
 

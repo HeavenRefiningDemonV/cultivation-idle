@@ -131,6 +131,8 @@ interface UIStateBase {
   worldBuildingModalCityId: string | null;
   worldBuildingModalKey: WorldBuildingKey | null;
   worldBuildingModalIntent: WorldBuildingModalIntent;
+  showCurrentChapterExhaustedModal: boolean;
+  currentChapterExhaustedAcknowledgedThisLife: boolean;
   pendingCityArrivalId: string | null;
 
   // UI Settings
@@ -190,6 +192,10 @@ export interface UIState extends UIStateBase {
   closeTechniqueLearned: () => void;
   openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey; intent?: WorldBuildingModalIntent }) => void;
   closeWorldBuildingModal: () => void;
+  openCurrentChapterExhaustedModal: () => void;
+  closeCurrentChapterExhaustedModal: () => void;
+  acknowledgeCurrentChapterExhausted: () => void;
+  clearCurrentChapterExhaustedAcknowledgement: () => void;
   queueCityArrival: (cityId: string) => void;
   clearCityArrival: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
@@ -232,6 +238,8 @@ const INITIAL_UI_STATE: UIStateBase = {
   worldBuildingModalCityId: null,
   worldBuildingModalKey: null,
   worldBuildingModalIntent: null,
+  showCurrentChapterExhaustedModal: false,
+  currentChapterExhaustedAcknowledgedThisLife: false,
   pendingCityArrivalId: null,
   settings: {
     showOfflineModal: true,
@@ -714,6 +722,31 @@ export const useUIStore = create<UIState>()(
           payload: { station: buildingKey === 'alchemy' ? 'alchemy' : buildingKey === 'forge' ? 'forge' : 'talisman' },
         });
       }
+    },
+
+    openCurrentChapterExhaustedModal: () => {
+      set((state) => {
+        state.showCurrentChapterExhaustedModal = true;
+      });
+    },
+
+    closeCurrentChapterExhaustedModal: () => {
+      set((state) => {
+        state.showCurrentChapterExhaustedModal = false;
+      });
+    },
+
+    acknowledgeCurrentChapterExhausted: () => {
+      set((state) => {
+        state.currentChapterExhaustedAcknowledgedThisLife = true;
+      });
+    },
+
+    clearCurrentChapterExhaustedAcknowledgement: () => {
+      set((state) => {
+        state.currentChapterExhaustedAcknowledgedThisLife = false;
+        state.showCurrentChapterExhaustedModal = false;
+      });
     },
 
 

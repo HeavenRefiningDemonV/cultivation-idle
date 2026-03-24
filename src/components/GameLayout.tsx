@@ -19,6 +19,11 @@ import { BottomTabBar } from './BottomTabBar.js';
 import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
 import { AudioBindings } from '../app/AudioBindings.js';
 import { GameIcon } from '../ui/icons/index.js';
+import { buildLiveEconomicRecommendationEngine } from '../systems/economy/economicRecommendationEngine.js';
+import { getNextLiveRealm, isAtSemesterCap } from '../systems/progression/runtime/index.js';
+import { useGameStore } from '../stores/gameStore.js';
+import { useHeartLawStore } from '../stores/heartLawStore.js';
+import { CurrentChapterExhaustedModal } from './modals/CurrentChapterExhaustedModal.js';
 import './GameLayout.scss';
 
 /**
@@ -62,8 +67,54 @@ export function GameLayout() {
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
+  const showCurrentChapterExhaustedModal = useUIStore((state) => state.showCurrentChapterExhaustedModal);
+  const currentChapterExhaustedAcknowledgedThisLife = useUIStore((state) => state.currentChapterExhaustedAcknowledgedThisLife);
+  const openCurrentChapterExhaustedModal = useUIStore((state) => state.openCurrentChapterExhaustedModal);
+  const clearCurrentChapterExhaustedAcknowledgement = useUIStore((state) => state.clearCurrentChapterExhaustedAcknowledgement);
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
+  const realmIndex = useGameStore((state) => state.realm.index);
   const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
+
+  useEffect(() => {
+    let atAuthoredCap = false;
+    try {
+      const economic = buildLiveEconomicRecommendationEngine();
+      const atCapByEconomy = economic.snapshot.phase.atContentCap;
+      const fallbackAtCap = isAtSemesterCap(realmIndex) && getNextLiveRealm(realmIndex) === null;
+      atAuthoredCap = atCapByEconomy || fallbackAtCap;
+    } catch (error) {
+      const fallbackAtCap = isAtSemesterCap(realmIndex) && getNextLiveRealm(realmIndex) === null;
+      atAuthoredCap = fallbackAtCap;
+      console.warn('[GameLayout] Cap truth fallback used', error);
+    }
+
+    const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
+    const blockedByOtherModal = showOfflineProgressModal || showManualSatchelModal || showTechniqueLearnedModal || showWorldBuildingModal || lifeStartWizardOpen || activeTab === 'prestige';
+
+    if (!atAuthoredCap) {
+      clearCurrentChapterExhaustedAcknowledgement();
+      return;
+    }
+
+    if (!currentChapterExhaustedAcknowledgedThisLife && !showCurrentChapterExhaustedModal && !blockedByOtherModal) {
+      openCurrentChapterExhaustedModal();
+    }
+  }, [
+    clearCurrentChapterExhaustedAcknowledgement,
+    currentChapterExhaustedAcknowledgedThisLife,
+    openCurrentChapterExhaustedModal,
+    realmIndex,
+    activeTab,
+    selectedHeartLawId,
+    selectedPath,
+    showCurrentChapterExhaustedModal,
+    showManualSatchelModal,
+    showOfflineProgressModal,
+    showTechniqueLearnedModal,
+    showWorldBuildingModal,
+  ]);
 
   // Render content based on active tab
   const renderContent = () => {
@@ -119,6 +170,7 @@ export function GameLayout() {
       {showManualSatchelModal && <ManualSatchelModal />}
       {showTechniqueLearnedModal && <TechniqueLearnedModal />}
       {showWorldBuildingModal && <WorldBuildingModal />}
+      {showCurrentChapterExhaustedModal && <CurrentChapterExhaustedModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
       <CombatPresentationHost />
       <LifeStartWizardModal />

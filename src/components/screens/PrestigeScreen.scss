@@ -1666,6 +1666,150 @@
   color: rgba(72, 45, 18, 0.75);
 }
 
+.prestigeRunCompassCompact {
+  margin-bottom: 2px;
+}
+
+.prestigeAdvisorHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.prestigeAdvisorHeader__title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.prestigeAdvisorHeader__detail {
+  font-size: 13px;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.prestigeAdvisorHeader__badge {
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.35);
+}
+
+.prestigeAdvisorHeader__badge--too-early {
+  background: rgba(224, 203, 175, 0.45);
+}
+
+.prestigeAdvisorHeader__badge--viable {
+  background: rgba(214, 225, 188, 0.45);
+}
+
+.prestigeAdvisorHeader__badge--recommended {
+  background: rgba(192, 226, 198, 0.5);
+}
+
+.prestigeForecastBlock {
+  display: grid;
+  gap: 12px;
+}
+
+.prestigeForecastBlock__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.prestigeForecastBlock__header h3 {
+  margin: 0;
+}
+
+.prestigeForecastBlock__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.prestigeForecastBlock__label {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.prestigeForecastBlock__value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.prestigeForecastBlock__rows {
+  display: grid;
+  gap: 8px;
+}
+
+.prestigeForecastBlock__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(140, 88, 30, 0.2);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.prestigeForecastBlock__row small {
+  color: rgba(72, 45, 18, 0.65);
+}
+
+.prestigeForecastBlock__meta {
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.7);
+}
+
+.prestigeResetContract {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.prestigeResetContract__column {
+  border: 1px solid rgba(140, 88, 30, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 10px;
+}
+
+.prestigeResetContract__column h4 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.prestigeResetContract__column ul {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.prestigeRecommendationStrip {
+  display: grid;
+  gap: 8px;
+}
+
+.prestigeRecommendationStrip__head {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(72, 45, 18, 0.8);
+}
+
+.prestigeRecommendationStrip__body {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.2fr;
+  gap: 10px;
+  font-size: 13px;
+}
+
 .prestigeRitualError {
   font-size: 12px;
   font-weight: 600;
@@ -1691,6 +1835,12 @@
 
   .prestigeAltarMetaActions {
     align-items: flex-start;
+  }
+
+  .prestigeForecastBlock__grid,
+  .prestigeResetContract,
+  .prestigeRecommendationStrip__body {
+    grid-template-columns: 1fr;
   }
 }
 

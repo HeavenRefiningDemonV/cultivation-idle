@@ -7,11 +7,12 @@ import type { ApBreakdown } from '../../stores/prestigeStore.js';
 interface ApBreakdownModalProps {
   open: boolean;
   breakdown: ApBreakdown;
-  recommendationLabel: string;
+  advisorLabel: 'Too Early' | 'Viable' | 'Recommended';
+  advisorDetail: string;
   onClose: () => void;
 }
 
-export function ApBreakdownModal({ open, breakdown, recommendationLabel, onClose }: ApBreakdownModalProps) {
+export function ApBreakdownModal({ open, breakdown, advisorLabel, advisorDetail, onClose }: ApBreakdownModalProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -84,12 +85,11 @@ export function ApBreakdownModal({ open, breakdown, recommendationLabel, onClose
           <div className="prestigeBreakdownPotential">
             <div className="prestigeBreakdownPotentialLabel">Potential gain on reincarnation</div>
             <div className="prestigeBreakdownPotentialValue">+{breakdown.potentialGain} AP</div>
+            <div className="prestigeBreakdownHint">State: {advisorLabel}</div>
             {breakdown.potentialGain === 0 && (
               <div className="prestigeBreakdownHint">No AP gain yet — progress further in this life.</div>
             )}
-            {recommendationLabel === 'Too Early' && (
-              <div className="prestigeBreakdownHint">{recommendationLabel}: reach Foundation Establishment to unlock Reincarnation.</div>
-            )}
+            <div className="prestigeBreakdownHint">{advisorDetail}</div>
           </div>
 
           <div className="prestigeBreakdownRows">
