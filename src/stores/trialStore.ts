@@ -182,6 +182,7 @@ export const useTrialStore = create<TrialState>()(
         progress.cleared = false;
         progress.bypassedAt = bypassedAt;
         progress.attemptStartAt = null;
+        progress.lastAttemptSummary = null;
         if (state.activeTrialSessionId === trialId) {
           state.activeTrialSessionId = null;
         }

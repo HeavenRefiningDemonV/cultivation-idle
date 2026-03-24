@@ -22,6 +22,7 @@ import {
 import { GateTrialReadinessCard } from '../../../ui/trials/GateTrialReadinessCard.js';
 import { GateTrialChecklist } from '../../../ui/trials/GateTrialChecklist.js';
 import { PostFailureDiagnosisPanel } from '../../../ui/status/PostFailureDiagnosisPanel.js';
+import { performPostFailureFixAction } from '../../../systems/ui/postFailure/index.js';
 
 function TrialProgressContent({ trialId }: { trialId: string }) {
   const {
@@ -209,6 +210,25 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
         </div>
       ) : null}
 
+      <div className="trial-progress__summary-card">
+        <PostFailureDiagnosisPanel
+          surface={postFailureSurface}
+          onAction={(fix) => {
+            performPostFailureFixAction({
+              action: fix,
+              cityId: trialDef?.cityId ?? null,
+              trialId: trialDef?.id ?? null,
+              onRetryGate: handleStart,
+              onFocusTrialSection: (section) => {
+                if (section === 'combat_options') {
+                  setActiveTab('techniques');
+                }
+              },
+            });
+          }}
+        />
+      </div>
+
       <div className="trial-progress__intel">
         <div className="trial-progress__intel-item">
           <div className="trial-progress__intel-label">Boss HP remaining</div>
@@ -230,13 +250,9 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
           </div>
         </div>
       </div>
-
-      <div className="trial-progress__summary-card">
-        <PostFailureDiagnosisPanel surface={postFailureSurface} />
-        <div className="trial-progress__ehp">
-          Effective HP (with shields):
-          {` ${formatNumber(computeEffectiveHp(playerStats.maxHp, absorptionShield, combatShield?.amount ?? 0))}`}
-        </div>
+      <div className="trial-progress__ehp">
+        Effective HP (with shields):
+        {` ${formatNumber(computeEffectiveHp(playerStats.maxHp, absorptionShield, combatShield?.amount ?? 0))}`}
       </div>
     </div>
   );

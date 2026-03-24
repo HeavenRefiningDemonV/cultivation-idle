@@ -29,7 +29,7 @@ import { GateTrialChecklist } from '../../../../ui/trials/GateTrialChecklist.js'
 import { GateTrialSafetyNetCard } from '../../../../ui/trials/GateTrialSafetyNetCard.js';
 import { GateTrialTopFixes } from '../../../../ui/trials/GateTrialTopFixes.js';
 import { GateTrialAttemptCluster } from '../../../../ui/trials/GateTrialAttemptCluster.js';
-import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
+import { performPostFailureFixAction } from '../../../../systems/ui/postFailure/index.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -273,37 +273,20 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               <GateTrialTopFixes
                 surface={postFailureSurface}
                 onAction={(fix) => {
-                  if (fix.target.kind === 'tab') {
-                    useUIStore.getState().setActiveTab(fix.target.tab);
-                    closeWorldBuildingModal();
-                    return;
-                  }
-                  if (fix.target.kind === 'world_module') {
-                    openWorldModule({
-                      cityId: fix.target.cityId ?? cityId,
-                      moduleKey: fix.target.moduleKey,
-                      source: 'gate-top-fix',
-                    });
-                    return;
-                  }
-                  if (fix.target.kind === 'apothecary_surface') {
-                    openWorldModule({
-                      cityId: fix.target.cityId ?? cityId,
-                      moduleKey: 'apothecary',
-                      source: 'gate-top-fix',
-                      intent: { apothecarySurface: fix.target.surface },
-                    });
-                    return;
-                  }
-                  if (fix.target.kind === 'trial_local') {
-                    if (fix.target.action === 'retry') {
-                      handleChallengeTrial();
-                    } else if (fix.target.action === 'buy_safety_net') {
-                      handleFailSafePurchase();
-                    } else if (fix.target.action === 'focus_combat_options') {
-                      setSettings({ combatAIProfile: 'survivor' });
-                    }
-                  }
+                  performPostFailureFixAction({
+                    action: fix,
+                    cityId,
+                    trialId: trialDef?.id ?? null,
+                    onRetryGate: handleChallengeTrial,
+                    onBuySafetyNet: handleFailSafePurchase,
+                    onFocusTrialSection: (section) => {
+                      if (section === 'combat_options') {
+                        setSettings({ combatAIProfile: 'survivor' });
+                      } else if (section === 'safety_net') {
+                        addNotification('info', `Review ${GATE_SUPPORT_LABELS.support} details in the support section.`);
+                      }
+                    },
+                  });
                 }}
               />
             </div>

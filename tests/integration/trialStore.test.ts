@@ -43,11 +43,22 @@ test('trial store preserves attempt history on clear and records bypass resoluti
   useTrialStore.getState().resetTrial('trial_novices_clearing');
   assert.deepEqual(useTrialStore.getState().getProgress('trial_novices_clearing'), createDefaultTrialProgress());
 
+  useTrialStore.getState().recordAttemptSummary('trial_novices_clearing', {
+    trialId: 'trial_novices_clearing',
+    startedAt: 1,
+    endedAt: 2,
+    durationSec: 1,
+    bossHpPct: 50,
+    maxHit: 100,
+    maxHitLabel: 'Boss hit',
+    suggestions: ['legacy summary'],
+  });
   useTrialStore.getState().markBypassed('trial_novices_clearing', bypassedAt);
   const bypassed = useTrialStore.getState().getProgress('trial_novices_clearing');
   assert.equal(bypassed.resolution, 'bypassed');
   assert.equal(bypassed.cleared, false);
   assert.equal(bypassed.bypassedAt, bypassedAt);
+  assert.equal(bypassed.lastAttemptSummary, null);
   assert.equal(useTrialStore.getState().isResolved('trial_novices_clearing'), true);
 });
 
