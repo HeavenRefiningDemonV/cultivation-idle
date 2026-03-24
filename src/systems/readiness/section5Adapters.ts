@@ -23,6 +23,7 @@ import { diagnoseTrialFailure } from './failureDiagnosis.js';
 import { buildGateForgeTargetsFromPrepBudgetEntry, evaluateCurrentGateReadiness, getCurrentGateTrialId } from './readinessRuntime.js';
 import { scoreGateReadiness } from './readinessScoringEngine.js';
 import { getDiagnosisLabel, getReadinessBandLabel } from '../../ui/text/playerFacingLabels.js';
+import { buildStatusTroubleshootingSurface, type StatusTroubleshootingSurface } from '../ui/status/statusTroubleshootingSurface.js';
 
 export interface Section5ReadinessSurface {
   trialId: TrialId;
@@ -271,4 +272,8 @@ export function buildSection5StatusSurface(
       warnings: [],
     };
   }
+}
+
+export function buildSection5StatusTroubleshootingSurface(): StatusTroubleshootingSurface {
+  return buildStatusTroubleshootingSurface();
 }

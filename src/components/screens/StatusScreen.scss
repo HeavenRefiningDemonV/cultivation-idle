@@ -201,3 +201,40 @@
 .statusScreenRunCompass {
   margin-bottom: 24px;
 }
+
+.statusTroubleshootingGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statusTroubleshootingLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(12, 18, 34, 0.12);
+  padding-bottom: 4px;
+}
+
+.statusTroubleshootingLineLabel {
+  font-size: 13px;
+  color: rgba(12, 18, 34, 0.66);
+}
+
+.statusTroubleshootingLineValue {
+  font-size: 13px;
+  color: rgba(12, 18, 34, 0.9);
+  font-weight: 700;
+  text-align: right;
+}
+
+.statusScreenRawSection {
+  margin-top: 6px;
+}
+
+@media (min-width: 1024px) {
+  .statusTroubleshootingGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

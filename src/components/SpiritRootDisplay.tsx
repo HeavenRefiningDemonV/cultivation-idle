@@ -52,7 +52,11 @@ const ELEMENT_ICONS: Record<SpiritRootElement, React.ReactNode> = {
  * Spirit Root Display Component
  * Shows the player's spirit root quality, element, purity, and bonuses
  */
-export function SpiritRootDisplay() {
+type SpiritRootDisplayProps = {
+  variant?: 'altar' | 'summary';
+};
+
+export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps) {
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const rerollSpiritRoot = usePrestigeStore((state) => state.rerollSpiritRoot);
   const getQualityMultiplier = usePrestigeStore((state) => state.getSpiritRootQualityMultiplier);
@@ -70,6 +74,29 @@ export function SpiritRootDisplay() {
     const timeout = window.setTimeout(() => setJustRerolled(false), 420);
     return () => window.clearTimeout(timeout);
   }, [justRerolled]);
+
+  if (variant === 'summary') {
+    return (
+      <div className="spiritRootSummary statusScreenCardBase">
+        <div className="spiritRootSummaryRow">
+          <span className="spiritRootSummaryLabel">Element</span>
+          <span className="spiritRootSummaryValue">{spiritRoot ? `${spiritRoot.element[0].toUpperCase()}${spiritRoot.element.slice(1)}` : 'Dormant'}</span>
+        </div>
+        <div className="spiritRootSummaryRow">
+          <span className="spiritRootSummaryLabel">Grade</span>
+          <span className="spiritRootSummaryValue">{spiritRoot ? QUALITY_NAMES[spiritRoot.grade] : 'Dormant'}</span>
+        </div>
+        <div className="spiritRootSummaryRow">
+          <span className="spiritRootSummaryLabel">Purity</span>
+          <span className="spiritRootSummaryValue">{spiritRoot ? `${Math.round(spiritRoot.purity)}%` : '0%'}</span>
+        </div>
+        <div className="spiritRootSummaryRow">
+          <span className="spiritRootSummaryLabel">Total Multiplier</span>
+          <span className="spiritRootSummaryValue">{getTotalMultiplier().toFixed(2)}x</span>
+        </div>
+      </div>
+    );
+  }
 
   // If no spirit root exists yet, show placeholder
   if (!spiritRoot) {

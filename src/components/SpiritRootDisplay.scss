@@ -578,3 +578,25 @@
     filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
   }
 }
+
+.spiritRootSummary {
+  padding: 14px;
+  margin-bottom: 0;
+}
+
+.spiritRootSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(12, 18, 34, 0.1);
+}
+
+.spiritRootSummaryLabel {
+  color: rgba(12, 18, 34, 0.66);
+  font-size: 13px;
+}
+
+.spiritRootSummaryValue {
+  color: rgba(12, 18, 34, 0.9);
+  font-weight: 700;
+}

@@ -1,259 +1,163 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers.js';
-import { REALMS } from '../../constants/index.js';
-import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtime/index.js';
-import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
 import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
-import type { IconId } from '../../ui/icons/index.js';
-import { GameIcon } from '../../ui/icons/index.js';
-import {
-  Crosshair,
-  Droplets,
-  Footprints,
-  Heart,
-  Shield,
-  Sparkles,
-  Sword,
-} from 'lucide-react';
+import { StatusMiniCard } from '../../ui/status/StatusMiniCard.js';
+import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
+import { buildStatusTroubleshootingSurface } from '../../systems/ui/status/statusTroubleshootingSurface.js';
+import { Crosshair, Droplets, Footprints, Heart, Shield, Sparkles, Sword } from 'lucide-react';
 import './StatusScreen.scss';
 import '../../ui/status/StatusSummaryHeader.scss';
 import '../../ui/status/CombatStatTile.scss';
+import '../../ui/status/StatusMiniCard.scss';
 
-type StatTone =
-  | 'gold'
-  | 'qi'
-  | 'green'
-  | 'red'
-  | 'blue'
-  | 'yellow'
-  | 'cyan'
-  | 'pink'
-  | 'muted'
-  | 'none';
-
-const toneClassMap: Record<StatTone, string> = {
-  gold: 'statusScreenStatGold',
-  qi: 'statusScreenStatQi',
-  green: 'statusScreenStatGreen',
-  red: 'statusScreenStatRed',
-  blue: 'statusScreenStatBlue',
-  yellow: 'statusScreenStatYellow',
-  cyan: 'statusScreenStatCyan',
-  pink: 'statusScreenStatPink',
-  muted: 'statusScreenStatMuted',
-  none: '',
-};
-
-/**
- * Stat Row Component for displaying key-value pairs
- */
-function StatRow({ label, value, tone = 'muted' }: { label: string; value: string | number; tone?: StatTone }) {
-  const toneClass = toneClassMap[tone];
-
+function StatusLine({ label, value }: { label: string; value: string }) {
   return (
-    <div className={'statusScreenStatRow'}>
-      <span className={'statusScreenStatLabel'}>{label}</span>
-      <span className={`${'statusScreenStatValue'} ${toneClass}`}>{value}</span>
+    <div className="statusTroubleshootingLine">
+      <span className="statusTroubleshootingLineLabel">{label}</span>
+      <span className="statusTroubleshootingLineValue">{value}</span>
     </div>
   );
 }
 
-/**
- * Section Header Component
- */
-function SectionHeader({ icon, title }: { icon: IconId; title: string }) {
-  return (
-    <div className={'statusScreenSectionHeader'}>
-      <span className={'statusScreenSectionIcon'}>
-        <GameIcon icon={icon} size={16} decorative />
-      </span>
-      <h2 className={'statusScreenSectionTitle'}>{title}</h2>
-    </div>
-  );
-}
-
-/**
- * Stat Card Component (for grouped stats)
- */
-type StatCardProps = {
-  title: string;
-  children: React.ReactNode;
-  className?: string;
-};
-
-function StatCard({ title, children, className = '' }: StatCardProps) {
-  return (
-    <div className={`statusScreenStatCard statusScreenCardBase ${className}`}>
-      <h3 className={'statusScreenStatCardTitle'}>{title}</h3>
-      <div className={'statusScreenStatList'}>{children}</div>
-    </div>
-  );
-}
-
-/**
- * Main Status Screen Component
- */
 export function StatusScreen() {
-  // Game Store
-  const realm = useGameStore((state) => state.realm);
-  const qi = useGameStore((state) => state.qi);
-  const qiPerSecond = useGameStore((state) => state.qiPerSecond);
-  const stats = useGameStore((state) => state.stats);
-  const focusMode = useGameStore((state) => state.focusMode);
-  const totalAuras = useGameStore((state) => state.totalAuras);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
-
-  // Inventory Store
-  const gold = useInventoryStore((state) => state.gold);
-  const items = useInventoryStore((state) => state.items);
-
-  // Combat Store (for statistics)
+  const runCompass = useRunCompassSurface();
+  const game = useGameStore((state) => state);
+  const inventory = useInventoryStore((state) => state);
   const combatLog = useCombatStore((state) => state.combatLog);
-
-  // Zone Store
   const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
 
-  // Calculate some derived stats
-  const currentRealm = REALMS[clampRealmIndexToSemesterSlice(realm.index)] ?? REALMS[0];
+  const troubleshooting = useMemo(
+    () => buildStatusTroubleshootingSurface(),
+    [
+      game.realm,
+      game.qi,
+      game.qiPerSecond,
+      game.focusMode,
+      game.selectedPath,
+      game.stats,
+      inventory.currencies,
+      inventory.items,
+      inventory.gold,
+    ],
+  );
+
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
-  const realmName = currentRealm.name;
-  const stageText = `Stage ${realm.substage}/${currentRealm.substages}`;
-  const qiText = formatNumber(qi);
-  const qiPerSecondText = `${formatNumber(qiPerSecond)}/s`;
-  const focusModeText = focusMode.toUpperCase();
-  const totalAurasText = formatNumber(totalAuras);
-  const hasQiFlow = qiPerSecond > 0;
-  const runCompass = useRunCompassSurface();
 
   useEffect(() => {
-    setHeaderTitles('Status', 'View your cultivation progress and combat statistics');
+    setHeaderTitles('Status', 'Troubleshoot your current run and identify the active floor gap.');
   }, [setHeaderTitles]);
 
   return (
-    <div className={'statusScreenRoot'}>
-      {/* Main Content */}
-      <div className={'statusScreenContent'}>
-        <RunCompass
-          surface={runCompass.full}
-          tone="paper"
-          className="statusScreenRunCompass statusScreenCardBase"
-        />
+    <div className="statusScreenRoot">
+      <div className="statusScreenContent">
+        <RunCompass surface={runCompass.full} tone="paper" className="statusScreenRunCompass statusScreenCardBase" />
+
         <StatusSummaryHeader
-          realmName={realmName}
-          realmIndex={realm.index}
-          stageText={stageText}
-          qiText={qiText}
-          qiPerSecondText={qiPerSecondText}
-          focusModeText={focusModeText}
-          totalAurasText={totalAurasText}
-          hasQiFlow={hasQiFlow}
+          realmName={troubleshooting.realmName}
+          stageText={troubleshooting.stageText}
+          pathLabel={troubleshooting.pathLabel}
+          archetypeLabel={troubleshooting.archetypeLabel}
+          archetypeSummary={troubleshooting.archetypeSummary}
+          biggestShortfallLine={`${troubleshooting.shortfall.diagnosisLabel} — ${troubleshooting.shortfall.reason}`}
+          topFixLine={troubleshooting.shortfall.topFix}
+          combatStrip={troubleshooting.combatStrip}
         />
-        {/* Main Grid Layout */}
-        <div className={'statusScreenGrid'}>
-          {/* LEFT COLUMN */}
-          <div className={'statusScreenColumn'}>
-            {/* Cultivation Progress Section */}
-            <div className={'statusScreenPanel statusScreenCardBase'}>
-              <SectionHeader icon="inkBolt" title="Cultivation Progress" />
 
-              <StatRow label="Current Realm" value={currentRealm.name} tone="gold" />
-              <StatRow
-                label="Substage"
-                value={`Stage ${realm.substage}/${currentRealm.substages}`}
-                tone="qi"
-              />
-              <StatRow label="Current Qi" value={formatNumber(qi)} tone="qi" />
-              <StatRow label="Qi per Second" value={`${formatNumber(qiPerSecond)}/s`} tone="qi" />
-              <StatRow label="Focus Mode" value={focusMode.toUpperCase()} tone="pink" />
-              <StatRow label="Total Auras" value={formatNumber(totalAuras)} tone="pink" />
-            </div>
+        <div className="statusTroubleshootingGrid">
+          <StatusMiniCard title="Identity" urgent={troubleshooting.urgentCardId === 'identity'}>
+            <StatusLine label="Path" value={troubleshooting.pathLabel} />
+            <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
+            <StatusLine label="Summary" value={troubleshooting.archetypeSummary} />
+            <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
+            <StatusLine label="Resonance" value={troubleshooting.identity.resonanceLabel} />
+            <SpiritRootDisplay variant="summary" />
+            <StatusLine label="Focus" value={troubleshooting.identity.focusMode} />
+            <StatusLine label="Breath" value={troubleshooting.identity.breathMode} />
+          </StatusMiniCard>
 
-            {/* Combat Statistics */}
-            <StatCard title="Combat Statistics">
+          <StatusMiniCard title="Readiness" urgent={troubleshooting.urgentCardId === 'readiness'}>
+            <StatusLine label="State" value={troubleshooting.readiness.readinessLabel} />
+            <StatusLine label="Gate" value={troubleshooting.readiness.gateTrialName} />
+            <StatusLine label="Diagnosis" value={troubleshooting.readiness.diagnosisLabel} />
+            {troubleshooting.readiness.warnings.map((warning) => <StatusLine key={warning} label="Warning" value={warning} />)}
+            <StatusLine label="Biggest Shortfall" value={troubleshooting.readiness.shortfallLine} />
+          </StatusMiniCard>
+
+          <StatusMiniCard title="Permanent Floor" urgent={troubleshooting.urgentCardId === 'permanent_floor'}>
+            <StatusLine label="Weapon Refine" value={`${troubleshooting.permanentFloor.weaponRefine}`} />
+            <StatusLine label="Accessory Refine" value={`${troubleshooting.permanentFloor.accessoryRefine}`} />
+            <StatusLine label="Temper Successes" value={`${troubleshooting.permanentFloor.temperSuccesses}`} />
+            <StatusLine label="Runes" value={troubleshooting.permanentFloor.runeSummary} />
+            <StatusLine label="Next Target" value={troubleshooting.permanentFloor.gateTargetLine} />
+            <StatusLine label="Judgment" value={troubleshooting.permanentFloor.floorJudgment} />
+          </StatusMiniCard>
+
+          <StatusMiniCard title="Preparation" urgent={troubleshooting.urgentCardId === 'preparation'}>
+            <StatusLine label="Merit" value={troubleshooting.preparation.meritReserve} />
+            <StatusLine label="Spirit Stones" value={troubleshooting.preparation.spiritStoneReserve} />
+            <StatusLine label="Pouch" value={troubleshooting.preparation.pouchSummary} />
+            <StatusLine label="Pouch Fit" value={troubleshooting.preparation.pouchFit} />
+            <StatusLine label="Top Warning" value={troubleshooting.preparation.topWarning} />
+            {troubleshooting.preparation.gateTokenLine ? <StatusLine label="Gate Token" value={troubleshooting.preparation.gateTokenLine} /> : null}
+          </StatusMiniCard>
+
+          <StatusMiniCard title="Build" urgent={troubleshooting.urgentCardId === 'build'}>
+            <StatusLine label="Path Alignment" value={troubleshooting.build.alignment} />
+            <StatusLine label="Empty Slots" value={troubleshooting.build.emptySlots} />
+            <StatusLine label="Mastery Floor" value={troubleshooting.build.mastery} />
+            <StatusLine label="Rank Floor" value={troubleshooting.build.rank} />
+            <StatusLine label="Rune Floor" value={troubleshooting.build.runes} />
+            <StatusLine label="Policy Fit" value={troubleshooting.build.policyFit} />
+            <StatusLine label="Top Gap" value={troubleshooting.build.topGap} />
+          </StatusMiniCard>
+
+          <StatusMiniCard
+            title="Safety Net"
+            urgent={troubleshooting.urgentCardId === 'safety_net'}
+            positive={troubleshooting.urgentCardId === 'safety_net'}
+          >
+            <StatusLine label="State" value={troubleshooting.safetyNet.state} />
+            <StatusLine label="Progress" value={troubleshooting.safetyNet.progress} />
+            <StatusLine label="Threshold" value={troubleshooting.safetyNet.threshold} />
+            <StatusLine label="Cost" value={troubleshooting.safetyNet.cost} />
+            <StatusLine label="Affordability" value={troubleshooting.safetyNet.affordability} />
+            <StatusLine label="Context" value={troubleshooting.safetyNet.blockedReason} />
+          </StatusMiniCard>
+        </div>
+
+        <div className="statusScreenGrid statusScreenRawSection">
+          <div className="statusScreenColumn">
+            <div className="statusScreenStatCard statusScreenCardBase">
+              <h3 className="statusScreenStatCardTitle">Combat Statistics</h3>
               <div className="combatStatTilesGrid">
-                <CombatStatTile
-                  label="Max HP"
-                  value={formatNumber(stats.hp)}
-                  icon={<Heart size={16} />}
-                  tone="hp"
-                  pulseKey={stats.hp}
-                />
-                <CombatStatTile
-                  label="Attack Power"
-                  value={formatNumber(stats.atk)}
-                  icon={<Sword size={16} />}
-                  tone="offense"
-                  pulseKey={stats.atk}
-                />
-                <CombatStatTile
-                  label="Defense"
-                  value={formatNumber(stats.def)}
-                  icon={<Shield size={16} />}
-                  tone="defense"
-                  pulseKey={stats.def}
-                />
-                <CombatStatTile
-                  label="HP Regen/s"
-                  value={formatNumber(stats.regen)}
-                  icon={<Droplets size={16} />}
-                  tone="recovery"
-                />
-                <CombatStatTile
-                  label="Critical Rate"
-                  value={formatPercentFromValue(stats.crit)}
-                  icon={<Crosshair size={16} />}
-                  tone="crit"
-                />
-                <CombatStatTile
-                  label="Critical Damage"
-                  value={formatPercentFromValue(stats.critDmg, 0)}
-                  icon={<Sparkles size={16} />}
-                  tone="crit"
-                />
-                <CombatStatTile
-                  label="Dodge Chance"
-                  value={formatPercentFromValue(stats.dodge)}
-                  icon={<Footprints size={16} />}
-                  tone="evasion"
-                />
-                <CombatStatTile
-                  label="Total Enemies Defeated"
-                  value={formatNumber(totalEnemiesDefeated)}
-                  icon={<Sword size={16} />}
-                  tone="neutral"
-                />
+                <CombatStatTile label="Max HP" value={formatNumber(game.stats.hp)} icon={<Heart size={16} />} tone="hp" pulseKey={game.stats.hp} />
+                <CombatStatTile label="Attack Power" value={formatNumber(game.stats.atk)} icon={<Sword size={16} />} tone="offense" pulseKey={game.stats.atk} />
+                <CombatStatTile label="Defense" value={formatNumber(game.stats.def)} icon={<Shield size={16} />} tone="defense" pulseKey={game.stats.def} />
+                <CombatStatTile label="HP Regen/s" value={formatNumber(game.stats.regen)} icon={<Droplets size={16} />} tone="recovery" />
+                <CombatStatTile label="Critical Rate" value={formatPercentFromValue(game.stats.crit)} icon={<Crosshair size={16} />} tone="crit" />
+                <CombatStatTile label="Critical Damage" value={formatPercentFromValue(game.stats.critDmg, 0)} icon={<Sparkles size={16} />} tone="crit" />
+                <CombatStatTile label="Dodge Chance" value={formatPercentFromValue(game.stats.dodge)} icon={<Footprints size={16} />} tone="evasion" />
+                <CombatStatTile label="Total Enemies Defeated" value={formatNumber(totalEnemiesDefeated)} icon={<Sword size={16} />} tone="neutral" />
               </div>
-            </StatCard>
+            </div>
           </div>
-
-          {/* RIGHT COLUMN */}
-          <div className={'statusScreenColumn'}>
-            {/* Spirit Root Display */}
-            <SpiritRootDisplay />
-
-            {/* Resources */}
-            <StatCard title="Resources">
-              <StatRow label="Gold" value={formatNumber(gold)} tone="gold" />
-              <StatRow label="Inventory Items" value={Object.keys(items).length} tone="muted" />
-            </StatCard>
-
-            {/* Additional Info */}
-            <StatCard title="Miscellaneous" className="statusScreenMiscPanel">
-              <StatRow label="Combat Logs" value={combatLog.length} tone="muted" />
-              <StatRow
-                label="Player Luck"
-                value={formatNumber(useGameStore.getState().playerLuck || 0)}
-                tone="pink"
-              />
-            </StatCard>
+          <div className="statusScreenColumn">
+            <div className="statusScreenStatCard statusScreenCardBase">
+              <h3 className="statusScreenStatCardTitle">Resources</h3>
+              <StatusLine label="Gold" value={formatNumber(inventory.gold)} />
+              <StatusLine label="Inventory Items" value={`${Object.keys(inventory.items).length}`} />
+              <StatusLine label="Combat Logs" value={`${combatLog.length}`} />
+              <StatusLine label="Player Luck" value={formatNumber(useGameStore.getState().playerLuck || 0)} />
+            </div>
           </div>
         </div>
       </div>

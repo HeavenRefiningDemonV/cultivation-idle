@@ -1,46 +1,33 @@
-import { Cloud, Mountain, Sun, Target } from 'lucide-react';
+import { AlertCircle, Compass, Mountain, Swords, Target } from 'lucide-react';
+import { CombatStatTile } from './CombatStatTile.js';
 
 type StatusSummaryHeaderProps = {
   realmName: string;
-  realmIndex: number;
   stageText: string;
-  qiText: string;
-  qiPerSecondText: string;
-  focusModeText: string;
-  totalAurasText: string;
-  hasQiFlow: boolean;
+  pathLabel: string;
+  archetypeLabel: string;
+  archetypeSummary: string;
+  biggestShortfallLine: string;
+  topFixLine: string | null;
+  combatStrip: Array<{ label: string; value: string; tone: 'hp' | 'offense' | 'defense' | 'crit' }>;
 };
-
-function getRealmIcon(realmIndex: number) {
-  if (realmIndex <= 1) {
-    return Cloud;
-  }
-
-  if (realmIndex >= 4) {
-    return Sun;
-  }
-
-  return Mountain;
-}
 
 export function StatusSummaryHeader({
   realmName,
-  realmIndex,
   stageText,
-  qiText,
-  qiPerSecondText,
-  focusModeText,
-  totalAurasText,
-  hasQiFlow,
+  pathLabel,
+  archetypeLabel,
+  archetypeSummary,
+  biggestShortfallLine,
+  topFixLine,
+  combatStrip,
 }: StatusSummaryHeaderProps) {
-  const RealmIcon = getRealmIcon(realmIndex);
-
   return (
     <div className="statusSummaryPanel statusScreenCardBase">
-      <div className="statusSummaryGrid">
-        <div className="statusSummaryBlock statusSummaryBlock--realm">
+      <div className="statusSummaryTopGrid">
+        <div className="statusSummaryIdentity">
           <div className="statusSummaryLabelRow">
-            <RealmIcon className="statusSummaryIcon" aria-hidden />
+            <Mountain className="statusSummaryIcon" aria-hidden />
             <span className="statusSummaryLabel">Realm</span>
           </div>
           <div className="statusSummaryValueRow">
@@ -51,33 +38,47 @@ export function StatusSummaryHeader({
           </div>
         </div>
 
-        <div className="statusSummaryBlock statusSummaryBlock--qi">
+        <div className="statusSummaryIdentity">
           <div className="statusSummaryLabelRow">
-            <span
-              className={`statusSummaryQiOrb ${hasQiFlow ? 'is-flowing' : ''}`}
-              aria-hidden
-            />
-            <span className="statusSummaryLabel">Qi</span>
+            <Target className="statusSummaryIcon" aria-hidden />
+            <span className="statusSummaryLabel">Path</span>
           </div>
           <div className="statusSummaryValueRow">
-            <span className="statusSummaryValue statusSummaryValue--qi">{qiText}</span>
+            <span className="statusSummaryValue">{pathLabel}</span>
           </div>
           <div className="statusSummarySubRow">
-            <span className="statusSummarySub">{qiPerSecondText}</span>
+            <span className="statusSummarySub">Build archetype: {archetypeLabel}</span>
+          </div>
+          <div className="statusSummarySubRow">
+            <span className="statusSummarySub">{archetypeSummary}</span>
           </div>
         </div>
 
-        <div className="statusSummaryBlock statusSummaryBlock--mode">
+        <div className="statusBiggestShortfall">
           <div className="statusSummaryLabelRow">
-            <Target className="statusSummaryIcon" aria-hidden />
-            <span className="statusSummaryLabel">Focus</span>
+            <AlertCircle className="statusSummaryIcon" aria-hidden />
+            <span className="statusSummaryLabel">Biggest Shortfall</span>
           </div>
-          <div className="statusSummaryValueRow">
-            <span className="statusSummaryFocusChip">{focusModeText}</span>
-          </div>
-          <div className="statusSummarySubRow">
-            <span className="statusSummarySub">Auras: {totalAurasText}</span>
-          </div>
+          <p className="statusBiggestShortfallBody">{biggestShortfallLine}</p>
+          {topFixLine ? <p className="statusBiggestShortfallHint">Top Fix: {topFixLine}</p> : null}
+        </div>
+      </div>
+
+      <div className="statusCombatStrip" aria-label="Combat strength strip">
+        <div className="statusSummaryLabelRow">
+          <Swords className="statusSummaryIcon" aria-hidden />
+          <span className="statusSummaryLabel">Combat Strength</span>
+        </div>
+        <div className="statusCombatStripGrid">
+          {combatStrip.slice(0, 4).map((entry) => (
+            <CombatStatTile
+              key={entry.label}
+              label={entry.label}
+              value={entry.value}
+              tone={entry.tone}
+              icon={<Compass size={14} />}
+            />
+          ))}
         </div>
       </div>
     </div>
