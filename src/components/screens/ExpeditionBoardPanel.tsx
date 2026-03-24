@@ -12,6 +12,8 @@ import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRou
 import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting.js';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
+import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
+import '../../ui/world/WorldModuleCard.scss';
 import './ExpeditionBoardPanel.scss';
 
 function formatDuration(seconds: number): string {
@@ -589,9 +591,10 @@ export function ExpeditionBoardPanel() {
                 <span className={'eqsRoutePlaceholder'}>Select a route above</span>
               )}
             </div>
-            <div className={'eqsPlannerMeta'}>
-              <span className={'eqsMetaItem'}>Slots: {availableSlots} / {slots}</span>
-              <div className={'eqsRareTag'}>
+          <div className={'eqsPlannerMeta'}>
+            <span className={'eqsMetaItem'}>Slots: {availableSlots} / {slots}</span>
+            {availableSlots > 0 ? <WorldRouteChip kind="idle_slot" tone="support" /> : null}
+            <div className={'eqsRareTag'}>
                 {selectedRoute ? (
                   <>
                     <PaperChip variant="tag" text={`Rare ${rareChancePct}%`} tone="rare" />

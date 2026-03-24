@@ -27,16 +27,18 @@ import {
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
-import { buildModulePurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/economicRecommendationEngine.js';
 import { CITY_PACKAGE_REGISTRY_BY_ID } from '../../systems/world/cityPackageRegistry.js';
-import { buildWorldCommandSurface, SUPPORT_IDENTITY_LABELS } from '../../systems/ui/world/worldCommandSurface.js';
+import { SUPPORT_IDENTITY_LABELS } from '../../systems/ui/world/worldCommandSurface.js';
+import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModuleRoutingSurface.js';
 import { WorldCommandAlert } from '../../ui/world/WorldCommandAlert.js';
-import { WorldCommandCard } from '../../ui/world/WorldCommandCard.js';
-import { WorldCommandGroup } from '../../ui/world/WorldCommandGroup.js';
+import { WorldModuleCard } from '../../ui/world/WorldModuleCard.js';
+import { WorldModuleGroup } from '../../ui/world/WorldModuleGroup.js';
+import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
+import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
@@ -53,6 +55,7 @@ export function WorldScreen() {
 
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
+  const acknowledgedArrivalCityIds = useCityStore((state) => state.acknowledgedArrivalCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
   const activeByCityId = useBountyStore((state) => state.activeByCityId);
@@ -189,18 +192,6 @@ export function WorldScreen() {
       : 'Current city ready.';
   }, [alternateUnlockedCityId, currentCityTravelBlocked, selectedCity, travelGuardForOtherCity.reason, worldSelectorEntries]);
 
-  const purposeSourceContext = useMemo(() => (rawContent ? buildPurposeSourceContext(rawContent) : null), [rawContent]);
-
-  const moduleSurfacesByKey = useMemo(() => {
-    if (!selectedCity || !rawContent || !purposeSourceContext) return {};
-    return Object.fromEntries(
-      visibleCityModules
-        .map((moduleKey) => buildModulePurposeSourceSurface(rawContent, purposeSourceContext, selectedCity.id, moduleKey as never))
-        .filter(Boolean)
-        .map((surface) => [surface.moduleKey, surface]),
-    );
-  }, [purposeSourceContext, rawContent, selectedCity, visibleCityModules]);
-
   const cityLesson = useMemo(() => {
     if (!selectedCity) return null;
     const lesson = getCityArrivalLesson(selectedCity.id);
@@ -217,6 +208,7 @@ export function WorldScreen() {
   }, [selectedCity]);
 
   const runCompassPrimaryAction = runCompass.full?.bestNextActions[0] ?? null;
+  const runCompassSecondaryAction = runCompass.full?.bestNextActions[1] ?? null;
 
   const economicPrimary = useMemo(() => {
     try {
@@ -244,6 +236,7 @@ export function WorldScreen() {
       detail: `${trackedBounty.progress}/${trackedBounty.target} progress`,
       ctaLabel: ctaModuleKey === 'bounties' ? 'View bounty board' : `Open ${getWorldModuleLabel(ctaModuleKey)}`,
       ctaModuleKey,
+      chipKind: trackedBounty.progress >= trackedBounty.target && !trackedBounty.claimed ? 'claim_ready' : 'useful_soon',
     };
   }, [trackedBounty, selectedCity, trackedDestination, visibleCityModules]);
 
@@ -258,30 +251,56 @@ export function WorldScreen() {
       detail: `${idle} expedition ${idle === 1 ? 'slot is' : 'slots are'} available right now.`,
       ctaLabel: 'Open Expeditions',
       ctaModuleKey: 'expeditions' as const,
+      chipKind: 'idle_slot' as const,
     };
   }, [expeditionActive, expeditionSlots, selectedCity, visibleCityModules]);
 
+  const newCityAlert = useMemo(() => {
+    if (!selectedCity || acknowledgedArrivalCityIds.includes(selectedCity.id)) return null;
+    return {
+      id: 'new_city' as const,
+      title: `${sanitizeLiveCityName(selectedCity.name)} is newly unlocked`,
+      detail: 'Quick-open the combat learning loop modules in this city.',
+      ctaLabel: 'Open Outskirts',
+      ctaModuleKey: 'outskirts' as const,
+      chipKind: 'new_city' as const,
+    };
+  }, [acknowledgedArrivalCityIds, selectedCity]);
+
   const worldCommandSurface = useMemo(
-    () => buildWorldCommandSurface({
-      visibleModules: visibleCityModules,
-      moduleSurfacesByKey,
-      runCompassPrimaryAction,
-      economicTopModuleKey: economicPrimary?.cityId === selectedCity?.id ? economicPrimary.moduleKey : null,
-      economicReason: economicPrimary?.reason ?? null,
-      trackedBountyModuleKey: trackedDestination?.kind === 'module' ? trackedDestination.moduleKey : null,
-      trackedBountyAlert: trackedAlert,
-      expeditionIdleAlert,
-    }),
-    [economicPrimary, expeditionIdleAlert, moduleSurfacesByKey, runCompassPrimaryAction, selectedCity?.id, trackedAlert, trackedDestination, visibleCityModules],
+    () => {
+      if (!rawContent || !selectedCity) {
+        return { groups: [], alerts: [], strongRecommendationModuleKey: null };
+      }
+      return buildWorldModuleRoutingSurface({
+        content: rawContent,
+        cityId: selectedCity.id,
+        visibleModules: visibleCityModules as never,
+        activeModuleKey,
+        runCompassPrimaryModuleKey:
+          runCompassPrimaryAction?.target?.kind === 'world_module' ? runCompassPrimaryAction.target.moduleKey ?? null : null,
+        runCompassSecondaryModuleKey:
+          runCompassSecondaryAction?.target?.kind === 'world_module' ? runCompassSecondaryAction.target.moduleKey ?? null : null,
+        economicModuleKeys: economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
+        economicPrimaryProblemKind: buildLiveEconomicRecommendationEngine().topRouteCandidates[0]?.problemKind ?? null,
+        trackedBountyModuleKey: trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
+        trackedBountyAlert: trackedAlert,
+        expeditionIdleAlert,
+        newCityAlert,
+        readyBountyCount: currentCityId ? (activeByCityId[currentCityId] ?? []).filter((entry) => entry.progress >= entry.target && !entry.claimed).length : 0,
+        idleExpeditionSlots: Math.max(0, expeditionSlots - expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length),
+      });
+    },
+    [activeByCityId, activeModuleKey, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, newCityAlert, rawContent, runCompassPrimaryAction, runCompassSecondaryAction, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
   );
 
   const recommendedHereLine = useMemo(() => {
     if (!selectedCity) return null;
-    if (worldCommandSurface.recommendation.moduleKey) {
-      return `Recommended here: ${getWorldModuleLabel(worldCommandSurface.recommendation.moduleKey)} — ${worldCommandSurface.recommendation.reason}`;
+    if (worldCommandSurface.strongRecommendationModuleKey) {
+      return `Recommended here now: ${getWorldModuleLabel(worldCommandSurface.strongRecommendationModuleKey)}.`;
     }
-    return worldCommandSurface.recommendation.reason;
-  }, [selectedCity, worldCommandSurface.recommendation]);
+    return null;
+  }, [selectedCity, worldCommandSurface.strongRecommendationModuleKey]);
 
   const handleSelectCity = (city: CityDef) => {
     if (!city || city.id === currentCityId) return;
@@ -378,34 +397,39 @@ export function WorldScreen() {
           </div>
 
           {worldCommandSurface.alerts.length > 0 ? (
-            <div className="worldCommandAlerts">
+            <div className="worldScreenAlerts">
               {worldCommandSurface.alerts.map((alert) => (
-                <WorldCommandAlert
-                  key={alert.id}
-                  title={alert.title}
-                  detail={alert.detail}
-                  ctaLabel={alert.ctaLabel}
-                  onCta={() => handleOpenModule(alert.ctaModuleKey)}
-                />
+                <div key={alert.id} className="worldScreenAlertCard">
+                  <WorldCommandAlert
+                    title={alert.title}
+                    detail={alert.detail}
+                    ctaLabel={alert.ctaLabel}
+                    onCta={() => handleOpenModule(alert.ctaModuleKey)}
+                  />
+                  {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
+                </div>
               ))}
             </div>
           ) : null}
 
           <div className="worldCommandDeck">
             {worldCommandSurface.groups.map((group) => (
-              <WorldCommandGroup key={group.id} title={group.label}>
+              <WorldModuleGroup key={group.id} title={group.label}>
                 {group.cards.map((card) => (
-                  <WorldCommandCard
+                  <WorldModuleCard
                     key={card.moduleKey}
-                    label={card.moduleLabel}
+                    moduleKey={card.moduleKey}
+                    moduleName={card.label}
                     roleTag={card.roleTag}
                     bestUsedWhen={card.bestUsedWhen}
-                    outputHint={card.outputHint}
-                    recommendedNow={card.recommendedNow}
-                    cta={<button type="button" className="worldCommandCardOpen" onClick={() => handleOpenModule(card.moduleKey)}>Open</button>}
+                    outputs={card.outputs}
+                    chips={card.chips}
+                    active={card.active}
+                    openLabel={card.openLabel}
+                    onOpen={handleOpenModule as never}
                   />
                 ))}
-              </WorldCommandGroup>
+              </WorldModuleGroup>
             ))}
           </div>
 

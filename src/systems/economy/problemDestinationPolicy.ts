@@ -118,3 +118,22 @@ export function getProblemDestinationPolicy(problemKind: EconomicProblemKind): P
 export function getAllProblemDestinationPolicies(): ProblemDestinationPolicy[] {
   return [...PROBLEM_DESTINATION_POLICIES];
 }
+
+
+export type ProblemChipFamily = 'build_fix' | 'stock_low' | 'gate_critical' | 'recommended_now' | 'useful_soon';
+
+export function getProblemChipFamily(problemKind: EconomicProblemKind | null): ProblemChipFamily {
+  if (!problemKind) return 'useful_soon';
+  if (problemKind === 'belowMinimumForgeFloor' || problemKind === 'belowRecommendedForgeFloor' || problemKind === 'buildCorrectionGap') return 'build_fix';
+  if (
+    problemKind === 'belowHealingFloor'
+    || problemKind === 'belowSpecialtyFloor'
+    || problemKind === 'belowCultivationPrepFloor'
+    || problemKind === 'belowMeritReserve'
+    || problemKind === 'belowSpiritStoneMinimum'
+    || problemKind === 'belowSpiritStoneIdeal'
+    || problemKind === 'missingGatePrepPackage'
+  ) return 'stock_low';
+  if (problemKind === 'missingTargetedLocalMaterial') return 'gate_critical';
+  return 'recommended_now';
+}

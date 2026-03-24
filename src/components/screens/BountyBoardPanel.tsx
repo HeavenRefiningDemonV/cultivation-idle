@@ -4,7 +4,12 @@ import { useBountyStore } from '../../stores/bountyStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
-import { bountyKindToLabel, bountyKindToProgressRule, resolveBountyDestination } from '../../utils/bountyRouting.js';
+import {
+  bountyKindToLabel,
+  bountyKindToProgressRule,
+  getBountyDestinationCtaLabel,
+  resolveBountyDestination,
+} from '../../utils/bountyRouting.js';
 import { formatDurationHMS } from '../../utils/timeFormat.js';
 import type { RewardBundle } from '../../services/rewards/index.js';
 import './BountyBoardPanel.scss';
@@ -16,6 +21,8 @@ import type { BountyInstance } from '../../stores/bountyStore.js';
 import { buildSupportEconomySurfaceModel } from '../../systems/economy/supportEconomySurfaceModel.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
+import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
+import '../../ui/world/WorldModuleCard.scss';
 
 const difficultyBadge: Record<string, string> = {
   easy: 'D',
@@ -197,7 +204,7 @@ export function BountyBoardPanel() {
       craftRouteSupportState,
     });
   }, [cityModules, craftRouteSupportState, primaryBounty]);
-  const primaryActionLabel = 'Go There';
+  const primaryActionLabel = getBountyDestinationCtaLabel(primaryDestination);
 
   const handleGoToModule = (cityId: string, moduleKey: string) => {
     openWorldModule({ cityId, moduleKey, source: 'bounty-go-there' });
@@ -205,7 +212,10 @@ export function BountyBoardPanel() {
 
   const handlePrimaryAction = () => {
     if (!primaryBounty || !primaryDestination) return;
-    if (primaryDestination.kind !== 'module') return;
+    if (primaryDestination.kind !== 'module') {
+      openWorldModule({ cityId: primaryBounty.cityId, moduleKey: 'bounties', source: 'bounty-primary-fallback' });
+      return;
+    }
     handleGoToModule(primaryDestination.cityId, primaryDestination.moduleKey);
   };
 
@@ -273,7 +283,7 @@ export function BountyBoardPanel() {
           className={'worldScreenModuleButton'}
           onClick={() => handleGoToModule(destination.cityId, destination.moduleKey)}
         >
-          Go There
+          {getBountyDestinationCtaLabel(destination)}
         </button>
       </div>
     );
@@ -528,6 +538,14 @@ export function BountyBoardPanel() {
               </div>
               <div className={'bqsProgress'}>
                 Progress {primaryBounty.progress} / {primaryBounty.target}
+              </div>
+              <div className={'bqsChips'}>
+                {primaryBounty.progress >= primaryBounty.target && !primaryBounty.claimed ? (
+                  <WorldRouteChip kind="claim_ready" tone="strong" />
+                ) : null}
+                {primaryDestination?.kind === 'module' ? (
+                  <WorldRouteChip kind="useful_soon" tone="support" />
+                ) : null}
               </div>
               <div className={'bqsRewards'}>
                 {formatRewards(primaryBounty.rewards, itemsById)

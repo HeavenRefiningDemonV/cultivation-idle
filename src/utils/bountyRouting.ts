@@ -125,6 +125,27 @@ export function bountyKindToProgressRule(kind: string): string {
   }
 }
 
+export function getBountyDestinationCtaLabel(destination: BountyDestination | null): string {
+  if (!destination) return 'View Bounties';
+  if (destination.kind === 'unavailable') return 'View Bounties';
+  switch (destination.moduleKey) {
+    case 'outskirts':
+      return 'Open Outskirts';
+    case 'ruins':
+      return 'Open Ruins';
+    case 'forge':
+      return 'Open Forge';
+    case 'apothecary':
+      return 'Open Apothecary';
+    case 'expeditions':
+      return 'Open Expeditions';
+    case 'bounties':
+      return 'View Bounties';
+    default:
+      return 'View Bounties';
+  }
+}
+
 export type ExpeditionUseMaterialsDestination = {
   cityId: string;
   moduleKey: ExpeditionRouteModuleKey;
