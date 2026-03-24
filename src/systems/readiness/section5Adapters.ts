@@ -62,6 +62,17 @@ export interface GateTrialReadinessSurface {
   lifecycle: TrialLifecycleSnapshot;
 }
 
+export type GateTrialAttemptState = 'not_ready' | 'attempt_gate' | 'attempt_anyway' | 'break_through';
+export interface GateTrialAttemptPresentation {
+  state: GateTrialAttemptState;
+  primaryLabel: 'Not Ready' | 'Attempt Gate' | 'Attempt Anyway' | 'Break Through';
+  primaryDisabled: boolean;
+  detail: string;
+  tone: 'blocked' | 'warning' | 'ready' | 'resolved';
+  showBuySafetyNet: boolean;
+  buySafetyNetEnabled: boolean;
+}
+
 export interface Section5ReadinessSurface {
   trialId: TrialId;
   readiness: GateReadinessResult | null;
@@ -480,5 +491,50 @@ export function buildGateTrialReadinessSurface(trialId: string): GateTrialReadin
     rawReadiness: readiness,
     rawDiagnosis: diagnosis,
     lifecycle,
+  };
+}
+
+export function buildGateTrialAttemptPresentation(surface: GateTrialReadinessSurface): GateTrialAttemptPresentation {
+  if (surface.lifecycle.isResolved) {
+    return {
+      state: 'break_through',
+      primaryLabel: 'Break Through',
+      primaryDisabled: false,
+      detail: 'Gate resolved. Return to Cultivation and complete your breakthrough.',
+      tone: 'resolved',
+      showBuySafetyNet: false,
+      buySafetyNetEnabled: false,
+    };
+  }
+  if (!surface.lifecycle.canStart) {
+    return {
+      state: 'not_ready',
+      primaryLabel: 'Not Ready',
+      primaryDisabled: true,
+      detail: surface.lifecycle.reason,
+      tone: 'blocked',
+      showBuySafetyNet: surface.lifecycle.failSafe.status !== 'resolved',
+      buySafetyNetEnabled: surface.lifecycle.failSafe.canPurchase,
+    };
+  }
+  if (surface.readinessLabel === 'Ready') {
+    return {
+      state: 'attempt_gate',
+      primaryLabel: 'Attempt Gate',
+      primaryDisabled: false,
+      detail: 'Gate is ready for a clean attempt.',
+      tone: 'ready',
+      showBuySafetyNet: true,
+      buySafetyNetEnabled: surface.lifecycle.failSafe.canPurchase,
+    };
+  }
+  return {
+    state: 'attempt_anyway',
+    primaryLabel: 'Attempt Anyway',
+    primaryDisabled: false,
+    detail: 'Gate is startable, but risk is still elevated.',
+    tone: 'warning',
+    showBuySafetyNet: true,
+    buySafetyNetEnabled: surface.lifecycle.failSafe.canPurchase,
   };
 }

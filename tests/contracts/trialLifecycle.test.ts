@@ -85,7 +85,7 @@ test('trial lifecycle reports an available first gate and exposes fail-safe prog
   assert.equal(snapshot.failSafe.eligibleFailures, 2);
   assert.equal(snapshot.failSafe.remainingEligibleFailures, 1);
   assert.equal(snapshot.failSafe.canPurchase, false);
-  assert.equal(snapshot.failSafe.blockedReason, 'Fail-safe unlocks after 3 eligible defeats.');
+  assert.equal(snapshot.failSafe.blockedReason, 'Safety Net unlocks after 3 eligible defeats.');
 });
 
 test('trial fail-safe authoring aliases normalize into canonical threshold and cost shape', async () => {

@@ -156,7 +156,7 @@ export const getTrialLifecycleSnapshot = ({
     : canPurchase
       ? null
       : state === 'available'
-        ? `Fail-safe unlocks after ${threshold} eligible defeats.`
+        ? `Safety Net unlocks after ${threshold} eligible defeats.`
         : failSafeBlockedReasonCode
           ? describeReason(failSafeBlockedReasonCode, resolution)
           : null;

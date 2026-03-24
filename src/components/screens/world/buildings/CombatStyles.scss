@@ -288,3 +288,54 @@
     font-size: 12px;
     color: #94a3b8;
 }
+
+.gateTrialPanel__actions,
+.gateTrialPanel__support {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gateTrialAttemptCluster,
+.gateTrialSafetyNetCard,
+.gateTrialTopFixes {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 8px;
+    background: rgba(15, 23, 42, 0.45);
+}
+
+.gateTrialAttemptCluster__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.gateTrialAttemptCluster__detail {
+    font-size: 12px;
+    color: #cbd5e1;
+    margin: 6px 0;
+}
+
+.gateTrialTopFixes__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.gateTrialTopFixes__badge {
+    font-size: 11px;
+    border: 1px solid rgba(134, 239, 172, 0.45);
+    border-radius: 999px;
+    padding: 2px 8px;
+    color: #86efac;
+}
+
+.gateTrialTopFixes__fix {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    align-items: start;
+    margin-top: 6px;
+}

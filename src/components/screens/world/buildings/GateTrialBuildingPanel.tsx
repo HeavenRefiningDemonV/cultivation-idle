@@ -19,9 +19,14 @@ import cultivatorFight from '../../../../assets/onscreen/cultivator_backshots.pn
 import wildBoar from '../../../../assets/enemies/widboar.png';
 import './CombatStyles.scss';
 import { GATE_SUPPORT_LABELS } from '../../../../ui/text/playerFacingLabels.js';
-import { buildGateTrialReadinessSurface } from '../../../../systems/readiness/section5Adapters.js';
+import { buildGateTrialAttemptPresentation, buildGateTrialReadinessSurface } from '../../../../systems/readiness/section5Adapters.js';
 import { GateTrialReadinessCard } from '../../../../ui/trials/GateTrialReadinessCard.js';
 import { GateTrialChecklist } from '../../../../ui/trials/GateTrialChecklist.js';
+import { GateTrialSafetyNetCard } from '../../../../ui/trials/GateTrialSafetyNetCard.js';
+import { GateTrialTopFixes } from '../../../../ui/trials/GateTrialTopFixes.js';
+import { GateTrialAttemptCluster } from '../../../../ui/trials/GateTrialAttemptCluster.js';
+import { mapGateTrialFixToAction } from '../../../../systems/ui/trials/gateTrialFixActions.js';
+import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -155,6 +160,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     () => (trialDef ? buildGateTrialReadinessSurface(trialDef.id) : null),
     [trialDef?.id, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, merit, spiritStones],
   );
+  const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;
@@ -163,6 +169,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
       return;
     }
     openCombatPreview({ type: 'trial', cityId, sourceId: trialDef.id });
+  };
+  const handleBreakThrough = () => {
+    useUIStore.getState().setActiveTab('cultivation');
+    closeWorldBuildingModal();
   };
 
   const handleStopTrial = () => {
@@ -233,32 +243,22 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
         className="ink-combat-shell--gate-trial"
         leftSidebar={
           <>
-            <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__actions">
-                <button className="button-standard" onClick={handleChallengeTrial} disabled={!lifecycle.canStart} type="button">
-                  Challenge Trial
-                </button>
-                <button className="button-standard button-standard--ghost" onClick={handleStopTrial} type="button">
-                  Stop
-                </button>
-                {lifecycle.failSafe.canPurchase ? (
-                  <button className="button-standard" onClick={handleFailSafePurchase} type="button">
-                    Purchase {GATE_SUPPORT_LABELS.support} (
-                    {
-                      [
-                        lifecycle.failSafe.cost?.gold ? `${lifecycle.failSafe.cost.gold} Gold` : null,
-                        lifecycle.failSafe.cost?.spiritStones ? `${lifecycle.failSafe.cost.spiritStones} Spirit Stones` : null,
-                        lifecycle.failSafe.cost?.merit ? `${lifecycle.failSafe.cost.merit} Merit` : null,
-                      ]
-                        .filter(Boolean)
-                        .join(' / ')
+            {attemptPresentation ? (
+              <div className="ink-combat-shell__section gateTrialPanel__actions">
+                <GateTrialAttemptCluster
+                  presentation={attemptPresentation}
+                  onPrimary={() => {
+                    if (attemptPresentation.state === 'break_through') {
+                      handleBreakThrough();
+                      return;
                     }
-                    )
-                  </button>
-                ) : null}
+                    handleChallengeTrial();
+                  }}
+                  onStop={handleStopTrial}
+                  onBuySafetyNet={handleFailSafePurchase}
+                />
               </div>
-              {!lifecycle.canStart ? <div className="ink-combat-shell__stat-line">Start blocked: {lifecycle.reason}</div> : null}
-            </div>
+            ) : null}
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Eligible Defeats</div>
               <div className="gate-trial__progress">
@@ -279,7 +279,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                   ) : null}
                 </div>
                 <div className="gate-trial__progress-text">
-                  Eligible defeats: {eligibleFailures} / {lifecycle.failSafe.threshold}
+                  Eligible Defeats: {eligibleFailures} / {lifecycle.failSafe.threshold}
                 </div>
               </div>
             </div>
@@ -302,7 +302,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 <div className="ink-combat-shell__stat-line">Required item: {requiredItemName}</div>
               ) : null}
               <div className="ink-combat-shell__stat-line">
-                {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} eligible defeats)`}
+                {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Defeats)`}
               </div>
               {trialProgress?.resolution === 'bypassed' ? (
                 <div className="ink-combat-shell__stat-line">Resolved via bypass.</div>
@@ -314,23 +314,46 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 </details>
               ) : null}
             </div>
-            <div className="ink-combat-shell__section gate-trial__support-summary">
-              <div className="ink-combat-shell__section-title">{GATE_SUPPORT_LABELS.support} Reserve</div>
-              <div className="ink-combat-shell__stat-line">{supportSurface.reserveHeadline}</div>
-              <div className="ink-combat-shell__stat-line">
-                Merit on hand: {supportSurface.readModel.currentMerit} / Safety Net cost {supportSurface.readModel.nextGateFailSafeCost?.merit ?? '0'}
-              </div>
-              <div className="ink-combat-shell__stat-line">
-                Merit safe band: {supportSurface.readModel.meritMinimumReserveLow}–{supportSurface.readModel.meritMinimumReserveHigh} • target {supportSurface.readModel.targetMeritReserve}
-              </div>
-              <div className="ink-combat-shell__stat-line">
-                Spirit Stones: {supportSurface.readModel.currentSpiritStones} / Safety Net cost {supportSurface.readModel.nextGateFailSafeCost?.spiritStones ?? '0'}
-              </div>
-              <div className="ink-combat-shell__stat-line">
-                Spirit reserve minimum {supportSurface.readModel.spiritStoneMinimumReserve} • ideal {supportSurface.readModel.spiritStoneIdealReserve}
-              </div>
-              <div className="ink-combat-shell__stat-line">{supportSurface.reserveGapLine}</div>
-              <div className="ink-combat-shell__stat-line gate-trial__eligible-merit-line">{supportSurface.eligibleDefeatRewardLine}</div>
+            <div className="ink-combat-shell__section gateTrialPanel__support">
+              <GateTrialSafetyNetCard
+                lifecycle={lifecycle}
+                reserveHeadline={supportSurface.reserveHeadline}
+                reserveGapLine={supportSurface.reserveGapLine}
+                eligibleDefeatRewardLine={supportSurface.eligibleDefeatRewardLine}
+                currentMerit={supportSurface.readModel.currentMerit}
+                currentSpiritStones={supportSurface.readModel.currentSpiritStones}
+              />
+            </div>
+            <div className="ink-combat-shell__section">
+              <GateTrialTopFixes
+                diagnosis={gateReadinessSurface?.rawDiagnosis ?? null}
+                isResolved={lifecycle.isResolved}
+                fixes={(gateReadinessSurface?.rawDiagnosis?.topFixes ?? []).map((fix) => {
+                  const mapped = mapGateTrialFixToAction(fix);
+                  return {
+                    id: fix.code,
+                    label: mapped.label,
+                    reason: fix.reason,
+                    onClick: () => {
+                      if (!trialDef) return;
+                      if (mapped.kind === 'open_cultivation') {
+                        useUIStore.getState().setActiveTab('cultivation');
+                        closeWorldBuildingModal();
+                      } else if (mapped.kind === 'open_techniques') {
+                        useUIStore.getState().setActiveTab('techniques');
+                        closeWorldBuildingModal();
+                      } else if (mapped.kind === 'open_module' && mapped.moduleKey) {
+                        openWorldModule({ cityId, moduleKey: mapped.moduleKey, source: 'gate-top-fix' });
+                      } else if (mapped.kind === 'buy_safety_net') {
+                        handleFailSafePurchase();
+                      } else if (mapped.kind === 'attempt_gate') {
+                        handleChallengeTrial();
+                      }
+                    },
+                    disabled: mapped.kind === 'attempt_gate' ? !lifecycle.canStart : false,
+                  };
+                })}
+              />
             </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Run Options</div>
