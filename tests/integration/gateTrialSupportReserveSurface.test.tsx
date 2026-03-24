@@ -10,10 +10,9 @@ const PANEL_PATH = path.resolve(process.cwd(), 'src', 'components', 'screens', '
 test('gate trial panel source surfaces reserve costs, reserve gaps, and eligible defeat reward text', async () => {
   const source = await readFile(PANEL_PATH, 'utf8');
 
-  assert.match(source, /Fail-safe Reserve/);
-  assert.match(source, /Merit on hand:/);
-  assert.match(source, /Spirit reserve minimum/);
-  assert.match(source, /Eligible defeat reward:/);
+  assert.match(source, /GateTrialSafetyNetCard/);
+  assert.match(source, /Safety Net/);
+  assert.match(source, /Eligible Defeats/);
 });
 
 test('support surface model exposes the bounded reserve gap copy needed by the gate panel', () => {

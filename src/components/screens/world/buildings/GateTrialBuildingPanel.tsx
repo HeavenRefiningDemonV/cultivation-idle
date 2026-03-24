@@ -32,21 +32,6 @@ interface GateTrialBuildingPanelProps {
   cityId: string;
 }
 
-const DEFAULT_SEGMENT_COUNT = 3;
-const MAX_SEGMENT_COUNT = 6;
-
-function clamp01(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  if (value < 0) return 0;
-  if (value > 1) return 1;
-  return value;
-}
-
-function clampSegmentCount(value: number): number {
-  if (!Number.isFinite(value)) return DEFAULT_SEGMENT_COUNT;
-  return Math.min(MAX_SEGMENT_COUNT, Math.max(1, Math.round(value)));
-}
-
 function formatEligibility(eligibility: unknown): { summary: string; raw?: string } {
   if (!eligibility) return { summary: 'No eligibility rule provided' };
   if (typeof eligibility === 'string') return { summary: eligibility };
@@ -103,6 +88,9 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const addNotification = useUIStore((state) => state.addNotification);
+  const combatAIProfile = useUIStore((state) => state.settings.combatAIProfile);
+  const useConsumablesInCombat = useUIStore((state) => state.settings.useConsumablesInCombat);
+  const setSettings = useUIStore((state) => state.setSettings);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
   const merit = useInventoryStore((state) => state.merit);
@@ -142,10 +130,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const displayEnemyName = activeEnemy?.name ?? trialBossName ?? 'Trial Guardian';
   const visibleLogEntries = combatLog.slice(-6);
   const eligibleFailures = trialProgress?.eligibleFailures ?? 0;
-  const totalSegments = clampSegmentCount(lifecycle.failSafe.threshold ?? DEFAULT_SEGMENT_COUNT);
-  const progressRatio = clamp01(eligibleFailures / Math.max(1, totalSegments));
-  const filledSegments = Math.floor(progressRatio * totalSegments);
-  const nextSegment = Math.min(totalSegments, filledSegments + 1);
   const eligibilitySummary = formatEligibility(trialDef?.eligibilityRule);
   const supportSurface = useMemo(
     () =>
@@ -259,30 +243,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 />
               </div>
             ) : null}
-            <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Eligible Defeats</div>
-              <div className="gate-trial__progress">
-                <div className="gate-trial__segments" style={{ gridTemplateColumns: `repeat(${Math.min(totalSegments, MAX_SEGMENT_COUNT)}, minmax(0, 1fr))` }}>
-                  {Array.from({ length: totalSegments }).map((_, idx) => {
-                    const segmentIndex = idx + 1;
-                    const completed = segmentIndex <= filledSegments;
-                    const current = segmentIndex === nextSegment && filledSegments < totalSegments;
-                    return (
-                      <div
-                        key={segmentIndex}
-                        className={`gate-trial__segment${completed ? ' gate-trial__segment--filled' : ''}${current ? ' gate-trial__segment--current' : ''}`}
-                      />
-                    );
-                  })}
-                  {lifecycle.failSafe.threshold > MAX_SEGMENT_COUNT ? (
-                    <div className="gate-trial__segment gate-trial__segment--overflow">+</div>
-                  ) : null}
-                </div>
-                <div className="gate-trial__progress-text">
-                  Eligible Defeats: {eligibleFailures} / {lifecycle.failSafe.threshold}
-                </div>
-              </div>
-            </div>
             {gateReadinessSurface ? (
               <div className="ink-combat-shell__section gateTrialPanel__readiness">
                 <GateTrialReadinessCard surface={gateReadinessSurface} />
@@ -292,28 +252,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 </div>
               </div>
             ) : null}
-            <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Gate Status</div>
-              <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
-              <div className="ink-combat-shell__stat-line">Gate state: {labelForState(lifecycle.state)}</div>
-              <div className="ink-combat-shell__stat-line">Gate reward: {gateItemName ?? 'Unknown'}</div>
-              <div className="ink-combat-shell__stat-line">Eligibility rule: {eligibilitySummary.summary}</div>
-              {requiredItemName ? (
-                <div className="ink-combat-shell__stat-line">Required item: {requiredItemName}</div>
-              ) : null}
-              <div className="ink-combat-shell__stat-line">
-                {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Defeats)`}
-              </div>
-              {trialProgress?.resolution === 'bypassed' ? (
-                <div className="ink-combat-shell__stat-line">Resolved via bypass.</div>
-              ) : null}
-              {eligibilitySummary.raw ? (
-                <details className="gate-trial__eligibility-details">
-                  <summary>Show requirements</summary>
-                  <pre>{eligibilitySummary.raw}</pre>
-                </details>
-              ) : null}
-            </div>
             <div className="ink-combat-shell__section gateTrialPanel__support">
               <GateTrialSafetyNetCard
                 lifecycle={lifecycle}
@@ -344,16 +282,58 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                         closeWorldBuildingModal();
                       } else if (mapped.kind === 'open_module' && mapped.moduleKey) {
                         openWorldModule({ cityId, moduleKey: mapped.moduleKey, source: 'gate-top-fix' });
+                      } else if (mapped.kind === 'open_apothecary_pouch') {
+                        openWorldModule({
+                          cityId,
+                          moduleKey: 'apothecary',
+                          source: 'gate-top-fix',
+                          intent: { apothecarySurface: 'pouch' },
+                        });
                       } else if (mapped.kind === 'buy_safety_net') {
                         handleFailSafePurchase();
                       } else if (mapped.kind === 'attempt_gate') {
                         handleChallengeTrial();
+                      } else if (mapped.kind === 'set_ai_profile_survivor') {
+                        setSettings({ combatAIProfile: 'survivor' });
+                      } else if (mapped.kind === 'enable_consumables') {
+                        setSettings({ useConsumablesInCombat: true });
                       }
                     },
                     disabled: mapped.kind === 'attempt_gate' ? !lifecycle.canStart : false,
                   };
                 })}
               />
+            </div>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Combat Options</div>
+              <div className="ink-combat-shell__stat-line">AI Profile: {combatAIProfile}</div>
+              <button className="button-standard button-standard--ghost" type="button" onClick={() => setSettings({ combatAIProfile: 'survivor' })} disabled={combatAIProfile === 'survivor'}>
+                Set AI: Survivor
+              </button>
+              <div className="ink-combat-shell__stat-line">Consumables in combat: {useConsumablesInCombat ? 'Enabled' : 'Disabled'}</div>
+              <button className="button-standard button-standard--ghost" type="button" onClick={() => setSettings({ useConsumablesInCombat: true })} disabled={useConsumablesInCombat}>
+                Enable Consumables
+              </button>
+            </div>
+            <div className="ink-combat-shell__section">
+              <div className="ink-combat-shell__section-title">Gate Facts</div>
+              <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
+              <div className="ink-combat-shell__stat-line">Gate state: {labelForState(lifecycle.state)}</div>
+              <div className="ink-combat-shell__stat-line">Gate reward: {gateItemName ?? 'Unknown'}</div>
+              <div className="ink-combat-shell__stat-line">Eligibility rule: {eligibilitySummary.summary}</div>
+              {requiredItemName ? (
+                <div className="ink-combat-shell__stat-line">Required item: {requiredItemName}</div>
+              ) : null}
+              <div className="ink-combat-shell__stat-line">
+                {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Defeats)`}
+              </div>
+              {trialProgress?.resolution === 'bypassed' ? <div className="ink-combat-shell__stat-line">Resolved via bypass.</div> : null}
+              {eligibilitySummary.raw ? (
+                <details className="gate-trial__eligibility-details">
+                  <summary>Show requirements</summary>
+                  <pre>{eligibilitySummary.raw}</pre>
+                </details>
+              ) : null}
             </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__section-title">Run Options</div>

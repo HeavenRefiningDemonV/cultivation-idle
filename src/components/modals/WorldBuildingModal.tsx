@@ -37,6 +37,7 @@ export function WorldBuildingModal({
   const storeCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const storeBuildingKey = useUIStore((state) => state.worldBuildingModalKey);
   const closeFromStore = useUIStore((state) => state.closeWorldBuildingModal);
+  const storeModalIntent = useUIStore((state) => state.worldBuildingModalIntent);
   const city = useContentStore((state) => (storeCityId ? state.maps.citiesById[storeCityId] : undefined));
   const moduleRefId = useMemo(() => resolveModuleRef(city ?? null, storeBuildingKey ?? null), [city, storeBuildingKey]);
 
@@ -80,7 +81,12 @@ export function WorldBuildingModal({
         break;
       case 'apothecary':
       case 'alchemy':
-        content = <ApothecaryPanel shopId={moduleRefId ?? null} initialSurface={buildingKey === 'alchemy' ? 'brew' : 'buy'} />;
+        content = (
+          <ApothecaryPanel
+            shopId={moduleRefId ?? null}
+            initialSurface={storeModalIntent?.apothecarySurface ?? (buildingKey === 'alchemy' ? 'brew' : 'buy')}
+          />
+        );
         break;
       case 'forge':
         content = <ForgeWorkshop cityId={storeCityId} />;

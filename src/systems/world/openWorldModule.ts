@@ -1,4 +1,4 @@
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
+import { useUIStore, type WorldBuildingKey, type WorldBuildingModalIntent } from '../../stores/uiStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
@@ -17,6 +17,7 @@ export type OpenWorldModuleArgs = {
   moduleKey: WorldModuleKey;
   open?: boolean;
   source?: string;
+  intent?: WorldBuildingModalIntent;
 };
 
 export const COMBAT_MODULE_KEYS = new Set<WorldModuleKey>(['outskirts', 'gateTrial', 'ruins']);
@@ -25,7 +26,7 @@ export function isCombatModule(moduleKey: string): boolean {
   return COMBAT_MODULE_KEYS.has(moduleKey);
 }
 
-export function openWorldModule({ cityId, moduleKey, open = true }: OpenWorldModuleArgs): void {
+export function openWorldModule({ cityId, moduleKey, open = true, intent }: OpenWorldModuleArgs): void {
   const uiStore = useUIStore.getState();
   const cityStore = useCityStore.getState();
   const contentStore = useContentStore.getState();
@@ -76,5 +77,5 @@ export function openWorldModule({ cityId, moduleKey, open = true }: OpenWorldMod
     return;
   }
 
-  uiStore.openWorldBuildingModal({ cityId, buildingKey: normalizedModuleKey as WorldBuildingKey });
+  uiStore.openWorldBuildingModal({ cityId, buildingKey: normalizedModuleKey as WorldBuildingKey, intent });
 }

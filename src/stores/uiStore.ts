@@ -49,6 +49,10 @@ export type WorldBuildingKey =
   | 'bounties'
   | 'expeditions';
 
+export type WorldBuildingModalIntent = null | {
+  apothecarySurface?: 'buy' | 'brew' | 'pouch';
+};
+
 const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuildingKey =>
   buildingKey === 'alchemy' ? 'apothecary' : buildingKey;
 
@@ -126,6 +130,7 @@ interface UIStateBase {
   showWorldBuildingModal: boolean;
   worldBuildingModalCityId: string | null;
   worldBuildingModalKey: WorldBuildingKey | null;
+  worldBuildingModalIntent: WorldBuildingModalIntent;
   pendingCityArrivalId: string | null;
 
   // UI Settings
@@ -183,7 +188,7 @@ export interface UIState extends UIStateBase {
   closeManualSatchel: () => void;
   openTechniqueLearned: (payload: UIState['techniqueLearnedPayload']) => void;
   closeTechniqueLearned: () => void;
-  openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey }) => void;
+  openWorldBuildingModal: (args: { cityId: string; buildingKey: WorldBuildingKey; intent?: WorldBuildingModalIntent }) => void;
   closeWorldBuildingModal: () => void;
   queueCityArrival: (cityId: string) => void;
   clearCityArrival: () => void;
@@ -226,6 +231,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   showWorldBuildingModal: false,
   worldBuildingModalCityId: null,
   worldBuildingModalKey: null,
+  worldBuildingModalIntent: null,
   pendingCityArrivalId: null,
   settings: {
     showOfflineModal: true,
@@ -503,6 +509,7 @@ export const useUIStore = create<UIState>()(
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = context.cityId ?? null;
         state.worldBuildingModalKey = buildingKey;
+        state.worldBuildingModalIntent = null;
       });
     },
 
@@ -664,12 +671,13 @@ export const useUIStore = create<UIState>()(
       GameEvents.emit({ type: 'satchel/closed', payload: {} });
     },
 
-    openWorldBuildingModal: ({ cityId, buildingKey }) => {
+    openWorldBuildingModal: ({ cityId, buildingKey, intent }) => {
       const normalizedBuildingKey = normalizeWorldBuildingKey(buildingKey);
       set((state) => {
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = cityId;
         state.worldBuildingModalKey = normalizedBuildingKey;
+        state.worldBuildingModalIntent = intent ?? null;
       });
       if (normalizedBuildingKey === 'manualPavilion') {
         GameEvents.emit({ type: 'pavilion/opened', payload: { buildingKey: normalizedBuildingKey, cityId } });
@@ -692,6 +700,7 @@ export const useUIStore = create<UIState>()(
         state.showWorldBuildingModal = false;
         state.worldBuildingModalCityId = null;
         state.worldBuildingModalKey = null;
+        state.worldBuildingModalIntent = null;
       });
       if (buildingKey === 'manualPavilion') {
         GameEvents.emit({ type: 'pavilion/closed', payload: { buildingKey, cityId } });

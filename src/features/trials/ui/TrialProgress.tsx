@@ -5,6 +5,7 @@ import { useCombatStore } from '../../../stores/combatStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
 import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../../../systems/progression/runtime/index.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { computeEffectiveHp, computeRollingDps, safeDurationSeconds } from '../../../systems/combat/theaterModel.js';
@@ -13,7 +14,7 @@ import { formatNumber } from '../../../utils/numbers.js';
 import { GameIcon } from '../../../ui/icons/index.js';
 import './TrialProgress.scss';
 import { GATE_SUPPORT_LABELS } from '../../../ui/text/playerFacingLabels.js';
-import { buildGateTrialReadinessSurface } from '../../../systems/readiness/section5Adapters.js';
+import { buildGateTrialAttemptPresentation, buildGateTrialReadinessSurface } from '../../../systems/readiness/section5Adapters.js';
 import { GateTrialReadinessCard } from '../../../ui/trials/GateTrialReadinessCard.js';
 import { GateTrialChecklist } from '../../../ui/trials/GateTrialChecklist.js';
 
@@ -54,6 +55,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
 
   const startActivity = useActivityStore((state) => state.startActivity);
   const stopActivity = useActivityStore((state) => state.stopActivity);
+  const setActiveTab = useUIStore((state) => state.setActiveTab);
   const progress = useTrialStore((state) => state.progressByTrialId[trialId]);
   const playerRealm = useGameStore((state) => state.realm.index);
   const playerStats = useGameStore((state) => state.stats);
@@ -83,6 +85,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
     () => buildGateTrialReadinessSurface(trialId),
     [trialId, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, playerRealm, requiredItemOwned],
   );
+  const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
 
   const rollingDps = useMemo(() => computeRollingDps(events, Date.now()), [events]);
   const now = Date.now();
@@ -94,7 +97,12 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const gateStateLabel = lifecycle.state === 'bypassed' ? 'Bypassed' : lifecycle.state.charAt(0).toUpperCase() + lifecycle.state.slice(1);
 
   const handleStart = () => {
-    if (!trialDef || !lifecycle.canStart) return;
+    if (!trialDef) return;
+    if (attemptPresentation?.state === 'break_through') {
+      setActiveTab('cultivation');
+      return;
+    }
+    if (!lifecycle.canStart) return;
     startActivity('trial', { cityId: trialDef.cityId, sourceId: trialDef.id });
     setAutoAttack(true);
     setAutoCombatAI(true);
@@ -174,14 +182,14 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__controls">
-        <button className="button-standard" onClick={handleStart} disabled={!lifecycle.canStart}>
-          Start
+        <button className="button-standard" onClick={handleStart} disabled={attemptPresentation?.primaryDisabled ?? !lifecycle.canStart}>
+          {attemptPresentation?.primaryLabel ?? 'Attempt Gate'}
         </button>
         <button className="button-standard" onClick={handleStop}>
           Stop
         </button>
-        {!lifecycle.canStart ? (
-          <div className="trial-progress__controls-note">{lifecycle.reason}</div>
+        {attemptPresentation ? (
+          <div className="trial-progress__controls-note">{attemptPresentation.detail}</div>
         ) : null}
       </div>
 
