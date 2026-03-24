@@ -9,9 +9,10 @@ type QiLotusIconProps = {
   state: QiLotusState;
   className?: string;
   title?: string;
+  label?: string;
 };
 
-export function QiLotusIcon({ state, className = '', title }: QiLotusIconProps) {
+export function QiLotusIcon({ state, className = '', title, label }: QiLotusIconProps) {
   return (
     <span className={`qiLotusIcon ${className}`.trim()} data-state={state} title={title} aria-hidden="true">
       <img
@@ -22,6 +23,7 @@ export function QiLotusIcon({ state, className = '', title }: QiLotusIconProps) 
       />
       <img className="qiLotusIcon__img qiLotusIcon__img--open" src={lotusOpen} alt="" draggable={false} />
       <img className="qiLotusIcon__img qiLotusIcon__img--full" src={lotusFull} alt="" draggable={false} />
+      {label ? <span className="qiLotusIcon__label">{label}</span> : null}
     </span>
   );
 }

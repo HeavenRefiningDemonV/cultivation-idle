@@ -13,6 +13,29 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
+.runCompass--dense {
+  gap: 10px;
+}
+
+.runCompass--dense .runCompassSection__body {
+  gap: 8px;
+}
+
+.runCompass--dense .runCompassInfoRow,
+.runCompass--dense .runCompassAction {
+  min-height: 56px;
+  padding: 8px 10px;
+}
+
+.runCompass--dense .runCompassInfoList--fixed3,
+.runCompass--dense .runCompassActionList--fixed3 {
+  grid-template-rows: repeat(3, minmax(56px, auto));
+}
+
+.runCompass--dense .runCompassSafetyNet {
+  min-height: 118px;
+}
+
 .runCompassSection {
   display: flex;
   flex-direction: column;

@@ -7,34 +7,58 @@ import {
   isAtSemesterCap,
 } from '../../systems/progression/runtime/index.js';
 import { getBreathModeMultipliers } from '../../content/tuning/cultivationTuning.js';
+import { getBreathModeSemantics, getPathDoctrineProfile, getPathDoctrineSummary, getFocusModeSemantics } from '../../systems/doctrine/index.js';
+import { adaptSpiritRootDoctrineToSemanticView } from '../../systems/doctrine/spiritRootDoctrineSemanticAdapter.js';
+import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useContentStore, getItemDef } from '../../stores/contentStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
-import type { InsightMomentState } from '../../types/index.js';
+import type { InsightMomentState, SpiritRootElement, SpiritRootGrade } from '../../types/index.js';
 import { formatNumber, D } from '../../utils/numbers.js';
 import { CULTIVATION_CONSUMABLE_FAMILY_REGISTRY } from '../../systems/consumables/cultivationConsumableTypes.js';
 import { buildCultivationConsumableReadModel } from '../../systems/consumables/cultivationConsumableEffects.js';
 import { PerkSelectionModal } from '../modals/PerkSelectionModal.js';
 import { getAvailablePerks, getPerkById } from '../../data/pathPerks.js';
 import { DaoHeartModal } from '../modals/DaoHeartModal.js';
-import cultivator from "../../assets/onscreen/cbg_full.png";
-import barLong from "../../assets/menus/bar_long.png";
+import cultivator from '../../assets/onscreen/cbg_full.png';
+import barLong from '../../assets/menus/bar_long.png';
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon.js';
+import { CultivationBreakthroughPanel } from '../../ui/cultivation/CultivationBreakthroughPanel.js';
+import { CultivationDoctrineSummary } from '../../ui/cultivation/CultivationDoctrineSummary.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
+import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
+import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
   meditate: 'Cultivating',
-  outskirts: 'Adventuring',
-  trial: 'Trial',
-  ruins: 'Ruins',
+  outskirts: getWorldModuleLabel('outskirts'),
+  trial: 'Gate Trial',
+  ruins: getWorldModuleLabel('ruins'),
+};
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+const SPIRIT_ROOT_GRADES: Record<SpiritRootGrade, string> = {
+  1: 'Mortal',
+  2: 'Common',
+  3: 'Uncommon',
+  4: 'Rare',
+  5: 'Legendary',
+};
+const SPIRIT_ROOT_ELEMENTS: Record<SpiritRootElement, string> = {
+  fire: 'Fire',
+  water: 'Water',
+  earth: 'Earth',
+  metal: 'Metal',
+  wood: 'Wood',
 };
 
 export function QiProgressBar({
@@ -67,7 +91,6 @@ export function QiProgressBar({
       </div>
       {isReady ? <div className="qiProgressReady">Ready</div> : null}
     </div>
-
   );
 }
 
@@ -86,6 +109,7 @@ export function CultivateScreen() {
   const breakthrough = useGameStore((state) => state.breakthrough);
   const selectedPath = useGameStore((state) => state.selectedPath);
   const pathPerks = useGameStore((state) => state.pathPerks);
+  const focusMode = useGameStore((state) => state.focusMode);
 
   const activeActivity = useActivityStore((state) => state.active);
   const startActivity = useActivityStore((state) => state.startActivity);
@@ -96,9 +120,13 @@ export function CultivateScreen() {
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const activeCultivationConsumables = useCultivationStore((state) => state.activeCultivationConsumables);
+  const chapter = useCultivationStore((state) => state.chapter);
+  const comprehension = useCultivationStore((state) => state.comprehension);
+  const getComprehensionRequirementForNextChapter = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter);
   const runCompass = useRunCompassSurface();
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
@@ -112,6 +140,9 @@ export function CultivateScreen() {
   const liveRealmIndex = clampRealmIndexToSemesterSlice(realm.index);
   const currentRealm = REALMS[liveRealmIndex] ?? REALMS[0];
   const realmLabel = currentRealm?.name ?? 'Realm';
+  const nextLiveRealm = getNextLiveRealm(liveRealmIndex);
+  const atContentCap = isAtSemesterCap(liveRealmIndex);
+
   useEffect(() => {
     setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
   }, [setHeaderTitles]);
@@ -144,10 +175,10 @@ export function CultivateScreen() {
   }, [activeCultivationConsumables.length]);
 
   const requiredGateItem = useMemo(() => {
-    const willAdvanceRealm = realm.substage >= currentRealm.substages && !isAtSemesterCap(liveRealmIndex);
+    const willAdvanceRealm = realm.substage >= currentRealm.substages && !atContentCap;
     if (!willAdvanceRealm) return null;
     return getGateTransitionItemIdForRealmIndex(useContentStore.getState().raw, realm.index);
-  }, [currentRealm.substages, liveRealmIndex, realm.index, realm.substage]);
+  }, [atContentCap, currentRealm.substages, realm.index, realm.substage]);
 
   const gateItemCount = useMemo(() => {
     if (!requiredGateItem) return 0;
@@ -293,6 +324,119 @@ export function CultivateScreen() {
     perkSelectionRealm,
   ]);
 
+  const verseRequirement = getComprehensionRequirementForNextChapter();
+  const verseTitle = heartLawDef
+    ? verseRequirement > 0
+      ? `${heartLawDef.name} • Next verse at ${verseRequirement.toFixed(1)} comprehension`
+      : `${heartLawDef.name} • All verses comprehended`
+    : 'Choose a Heart Law to unlock verse progress.';
+
+  const versePlaceholderLabel = heartLawDef
+    ? 'Verse Maxed'
+    : 'Verse Unavailable';
+  const versePlaceholderValue = heartLawDef
+    ? `${heartLawDef.name} • All verses comprehended`
+    : 'Choose a Heart Law in Dao to unlock scripture progress';
+
+  const breakthroughMilestoneState = atContentCap
+    ? 'content_cap'
+    : realm.substage < currentRealm.substages
+      ? 'cultivation_edge'
+      : hasRequiredToken
+        ? 'breakthrough_pending'
+        : 'gate_trial';
+
+  const breakthroughGateLine = atContentCap
+    ? 'cap reached'
+    : realm.substage < currentRealm.substages
+      ? 'not yet at realm edge'
+      : hasRequiredToken
+        ? (requiredGateItem ? 'cleared' : 'bypassed')
+        : 'unresolved';
+
+  const breakthroughTokenLine = requiredGateItem
+    ? hasRequiredToken
+      ? 'ready'
+      : 'missing'
+    : 'ready';
+
+  const breakthroughQiLine = hasEnoughQi
+    ? 'ready'
+    : `need ${formatNumber(Math.max(0, missingQi.toNumber()))} more`;
+
+  const breakthroughGuidance = (() => {
+    switch (breakthroughMilestoneState) {
+      case 'content_cap':
+        return 'This life has reached the current semester cap, so hold your gains or prepare for Prestige.';
+      case 'cultivation_edge':
+        return 'Keep cultivating toward the realm edge before the gate and breakthrough can matter.';
+      case 'gate_trial':
+        return `Your next real blocker is the Gate Trial${requiredGateItemDefinition ? ` and its ${requiredGateItemDefinition.name}` : ''}.`;
+      case 'breakthrough_pending':
+      default:
+        return canBreakthrough
+          ? 'The gate is settled and the center breakthrough action is ready now.'
+          : 'The gate is settled; finish the last Qi needed and use the center breakthrough action.';
+    }
+  })();
+
+  const breakthroughAction = useMemo(() => {
+    const actions = runCompass.full?.bestNextActions ?? [];
+    if (breakthroughMilestoneState === 'content_cap') {
+      const prestigeAction = actions.find((action) => action.target?.kind === 'tab' && action.target.tab === 'prestige' && !action.blocked);
+      return prestigeAction
+        ? { label: 'Open Prestige', detail: prestigeAction.why, action: prestigeAction }
+        : { label: 'Hold this life', detail: 'No further realm is exposed beyond the current content cap.', action: null };
+    }
+    if (breakthroughMilestoneState === 'gate_trial') {
+      const gateAction = actions.find((action) => action.target?.kind === 'world_module' && action.target.moduleKey === 'gateTrial' && !action.blocked);
+      return gateAction
+        ? { label: 'Go to Gate Trial', detail: gateAction.why, action: gateAction }
+        : { label: 'Resolve the current gate', detail: 'The gate is the blocker before breakthrough can happen.', action: null };
+    }
+    if (breakthroughMilestoneState === 'cultivation_edge') {
+      return isCultivating
+        ? { label: 'Continue Cultivation', detail: 'Meditation is already running; stay on the sacred center line.', action: null }
+        : { label: 'Press Start Cultivation', detail: 'The center cultivation toggle is the next honest action.', action: null };
+    }
+    return { label: 'Use the center breakthrough action', detail: 'The main breakthrough button below remains the primary action.', action: null };
+  }, [breakthroughMilestoneState, isCultivating, runCompass.full?.bestNextActions]);
+
+  const pathProfile = getPathDoctrineProfile(selectedPath);
+  const pathLabel = pathProfile?.label ?? 'No Path selected';
+  const pathSummary = getPathDoctrineSummary(selectedPath);
+  const spiritRootView = adaptSpiritRootDoctrineToSemanticView(spiritRoot);
+  const spiritRootLine = spiritRootView
+    ? `${SPIRIT_ROOT_ELEMENTS[spiritRootView.element]} • ${SPIRIT_ROOT_GRADES[spiritRootView.grade]} • ${Math.round(spiritRootView.purity)}% purity`
+    : 'Dormant Spirit Root';
+  const spiritRootDetail = spiritRootView
+    ? `${spiritRootView.purityBand[0].toUpperCase()}${spiritRootView.purityBand.slice(1)} foundation • ${spiritRootView.powerBand[0].toUpperCase()}${spiritRootView.powerBand.slice(1)} potential`
+    : 'Your Spirit Root has not manifested yet.';
+
+  const heartLawVerseLabel = heartLawDef
+    ? `Verse ${ROMAN[Math.max(0, chapter - 1)] ?? chapter} • Chapter ${chapter}`
+    : 'No Heart Law selected';
+  const heartLawDetail = heartLawDef
+    ? `${heartLawDef.name} • ${heartLawDef.archetype ? `${heartLawDef.archetype[0].toUpperCase()}${heartLawDef.archetype.slice(1)}` : 'Unshaped'}${heartLawDef.daoTags?.length ? ` • ${heartLawDef.daoTags.slice(0, 2).map((tag) => tag[0].toUpperCase() + tag.slice(1)).join(' / ')}` : ''}`
+    : 'Choose a Heart Law in Dao to unlock verse progress and doctrine resonance.';
+
+  const resonance = getAffinityStatus(heartLawDef, spiritRoot);
+  const resonanceLine = resonance.status === 'match'
+    ? (resonance.percent >= 20 ? 'Strong Resonance' : 'Resonant')
+    : resonance.status === 'mismatch'
+      ? 'Mismatched'
+      : 'Neutral';
+  const resonanceDetail = resonance.status === 'none'
+    ? 'No active Heart Law or Spirit Root pairing is available yet.'
+    : resonance.status === 'mismatch'
+      ? 'This pairing still works, but its signature affinity is not aligned.'
+      : resonance.percent > 0
+        ? `${resonance.percent}% signature affinity modifier from your current Spirit Root.`
+        : 'Your current doctrine is aligned without a large visible affinity swing.';
+
+  const breathSemantics = getBreathModeSemantics(breathMode);
+  const focusSemantics = getFocusModeSemantics(focusMode);
+
   return (
     <div className="cultivationScreenRoot">
       <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
@@ -316,14 +460,6 @@ export function CultivateScreen() {
         Dao
       </button>
       <div className="cultivationHeaderRail">
-        <div className="cultivationRunCompassDock">
-          <RunCompass
-            surface={runCompass.full}
-            tone="ink"
-            className="cultivationRunCompass"
-            onAction={performRunCompassAction}
-          />
-        </div>
         <CultivationHeaderRibbon
           realmLabel={realmLabel}
           substage={realm.substage}
@@ -338,6 +474,49 @@ export function CultivateScreen() {
           breakthroughReady={canBreakthrough}
         />
       </div>
+
+      <div className="cultivationCommandDeck" aria-label="Cultivation command deck">
+        <div className="cultivationCommandDeck__runCompass">
+          <RunCompass
+            surface={runCompass.full}
+            tone="ink"
+            density="dense"
+            className="cultivationRunCompass cultivationRunCompass--native"
+            onAction={performRunCompassAction}
+          />
+        </div>
+        <div className="cultivationInfoRow">
+          <CultivationBreakthroughPanel
+            milestoneState={breakthroughMilestoneState}
+            currentRealmLabel={realmLabel}
+            nextRealmLabel={atContentCap ? null : nextLiveRealm?.name ?? null}
+            stage={realm.substage}
+            stageMax={currentRealm.substages}
+            gateLine={breakthroughGateLine}
+            tokenLine={breakthroughTokenLine}
+            qiLine={breakthroughQiLine}
+            guidance={breakthroughGuidance}
+            action={breakthroughAction}
+            onAction={performRunCompassAction}
+          />
+          <CultivationDoctrineSummary
+            pathLabel={pathLabel}
+            pathSummary={pathSummary}
+            spiritRootLine={spiritRootLine}
+            spiritRootDetail={spiritRootDetail}
+            heartLawLine={heartLawVerseLabel}
+            heartLawDetail={heartLawDetail}
+            resonanceLine={resonanceLine}
+            resonanceDetail={resonanceDetail}
+            breathLabel={breathSemantics.label}
+            breathSummary={breathSemantics.summary}
+            focusLabel={focusSemantics.label}
+            focusSummary={focusSemantics.summary}
+            spiritRoot={spiritRoot}
+          />
+        </div>
+      </div>
+
       <div className="cultivationHudRail">
         <div className="cultivationHudStack">
           <div className="cultivationRealmTags">
@@ -352,7 +531,7 @@ export function CultivateScreen() {
               <span className="cultivationRealmTagIcon" aria-hidden="true">
                 →
               </span>
-              <span className="cultivationRealmTagText">Next Realm: {getNextLiveRealm(liveRealmIndex)?.name ?? 'Current content cap reached'}</span>
+              <span className="cultivationRealmTagText">Next Realm: {nextLiveRealm?.name ?? 'Current content cap reached'}</span>
             </div>
           </div>
           <QiProgressBar
@@ -362,6 +541,28 @@ export function CultivateScreen() {
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
+          <div className="cultivationVerseSlot">
+            {heartLawDef ? (
+              <VerseMiniBar
+                chapter={chapter}
+                comprehension={comprehension}
+                requirement={verseRequirement}
+                title={verseTitle}
+                className="cultivationVerseSlot__bar"
+                isComplete={verseRequirement <= 0}
+              />
+            ) : (
+              <VerseMiniBar
+                chapter={chapter}
+                comprehension={0}
+                requirement={0}
+                title={verseTitle}
+                className="cultivationVerseSlot__bar cultivationVerseSlot__bar--placeholder"
+                placeholderLabel={versePlaceholderLabel}
+                placeholderValue={versePlaceholderValue}
+              />
+            )}
+          </div>
           <div className="cultivationBuffSummary" aria-live="polite">
             <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
             {activeCultivationBuffs.length === 0 ? (
@@ -378,7 +579,6 @@ export function CultivateScreen() {
               </div>
             )}
           </div>
-          {/* VerseMiniBar hidden per request. */}
           <div className="cultivationActionStack">
             <button
               type="button"

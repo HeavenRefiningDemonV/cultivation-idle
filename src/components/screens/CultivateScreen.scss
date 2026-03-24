@@ -3,14 +3,12 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  --cultivation-anchor-y: 56%;
+  --cultivation-anchor-y: 66%;
   --cultivation-stack-gap-1: 10px;
   --cultivation-stack-gap-2: 14px;
   --qi-frame-h: 44px;
   --qi-track-h: 14px;
-  --qi-track-inset-x: 64px;
   --verse-frame-h: 30px;
-  --verse-track-h: 12px;
   --cultHudMaxW: 980px;
   --cultHudSidePad: 80px;
   --cultHudW: min(var(--cultHudMaxW), calc(100% - var(--cultHudSidePad)));
@@ -41,19 +39,215 @@
   padding: 10px 24px 0;
 }
 
+.cultivationCommandDeck {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 112px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 19;
+  width: min(1120px, calc(100% - 120px));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  pointer-events: auto;
+}
+
+.cultivationCommandDeck__runCompass,
+.cultivationInfoRow {
+  width: 100%;
+}
+
+.cultivationRunCompass--native {
+  color: #f8fafc;
+  background: linear-gradient(180deg, rgba(12, 18, 30, 0.82), rgba(8, 12, 22, 0.72));
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.cultivationRunCompass--native .runCompassSection__title,
+.cultivationRunCompass--native .runCompassMilestone__title,
+.cultivationRunCompass--native .runCompassSafetyNet__title,
+.cultivationRunCompass--native .runCompassAction__label,
+.cultivationRunCompass--native .runCompassInfoRow__label {
+  color: rgba(248, 250, 252, 0.96);
+}
+
+.cultivationRunCompass--native .runCompassMilestone__detail,
+.cultivationRunCompass--native .runCompassMilestone__context,
+.cultivationRunCompass--native .runCompassMilestone__prestige,
+.cultivationRunCompass--native .runCompassReadinessDetail,
+.cultivationRunCompass--native .runCompassReadinessHead__diagnosis,
+.cultivationRunCompass--native .runCompassInfoRow__detail,
+.cultivationRunCompass--native .runCompassAction__why,
+.cultivationRunCompass--native .runCompassSafetyNet__line,
+.cultivationRunCompass--native .runCompassSafetyNet__detail {
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.cultivationRunCompass--native .runCompassInfoRow,
+.cultivationRunCompass--native .runCompassAction {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cultivationInfoRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cultivationCommandCard {
+  min-height: 222px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(15, 18, 28, 0.82), rgba(10, 13, 20, 0.72));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(8px);
+}
+
+.cultivationCommandCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cultivationCommandCard__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.85);
+  margin-bottom: 4px;
+}
+
+.cultivationCommandCard__title {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.cultivationCommandCard__badge {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(125, 211, 252, 0.12);
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cultivationCommandList {
+  display: grid;
+  gap: 8px;
+}
+
+.cultivationCommandList__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cultivationCommandList__row:last-child {
+  border-bottom: 0;
+}
+
+.cultivationCommandList__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.84);
+}
+
+.cultivationCommandList__value {
+  text-align: right;
+  font-size: 13px;
+  color: rgba(248, 250, 252, 0.95);
+}
+
+.cultivationCommandCard__guidance,
+.cultivationDoctrinePanel__detail,
+.cultivationBreakthroughPanel__actionDetail,
+.cultivationBreakthroughPanel__actionHint {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(226, 232, 240, 0.82);
+}
+
+.cultivationCommandCard__guidance {
+  margin: 12px 0 0;
+}
+
+.cultivationBreakthroughPanel__action {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cultivationCommandLinkButton {
+  align-self: flex-start;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+}
+
+.cultivationDoctrinePanel__rows {
+  display: grid;
+  gap: 10px;
+}
+
+.cultivationDoctrinePanel__row {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cultivationDoctrinePanel__row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.cultivationDoctrinePanel__rowTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.cultivationDoctrinePanel__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.84);
+}
+
+.cultivationDoctrinePanel__value {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(248, 250, 252, 0.96);
+}
+
 .cultivationHudRail {
   position: absolute;
   inset: 0;
   z-index: 18;
   pointer-events: none;
-  /* Qi bar geometry note:
-     .progress-bar is 100px tall
-     visible frame sits at margin-top: 38px and has height: 38px
-     => dead space below visible frame: 100 - 38 - 38 = 24px
-  */
   --qiBarDeadSpace: 24px;
-
-  /* How tight Verse bar should sit under the Qi frame. */
   --qiVerseTargetGap: 6px;
 }
 
@@ -97,6 +291,7 @@
   grid-area: stack;
   place-self: center;
   width: 900px;
+  max-width: calc(100% - 42px);
   height: var(--qi-track-h);
   background: rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -116,20 +311,9 @@
 }
 
 @keyframes qiPulse {
-  0% {
-    filter: brightness(0.95);
-    opacity: 0.7;
-  }
-
-  50% {
-    filter: brightness(1.05);
-    opacity: 0.9;
-  }
-
-  100% {
-    filter: brightness(0.95);
-    opacity: 0.7;
-  }
+  0% { filter: brightness(0.95); opacity: 0.7; }
+  50% { filter: brightness(1.05); opacity: 0.9; }
+  100% { filter: brightness(0.95); opacity: 0.7; }
 }
 
 .qiProgressLabel {
@@ -173,27 +357,22 @@
   text-transform: uppercase;
   border: 1px solid rgba(92, 63, 14, 0.45);
 }
+
 /**/
 
 /*IMPORTANT DON'T TOUCH -AYŞE*/
-
 .important-class {
   background-color: red;
   width: 18.75rem;
   z-index: 11;
-
   border-style: solid;
   border-width: 5vh;
   border-image-source: url("../../assets/menus/scroll.png");
-
   border-image-slice: 18% fill;
   border-image-outset: 20px 26px;
-
   border-image-repeat: stretch;
 }
-
 /*-------------------------------------------*/
-
 
 .daoHeartSealButton {
   position: fixed;
@@ -215,9 +394,7 @@
     radial-gradient(circle at center, rgba(133, 0, 0, 0.85), rgba(78, 6, 6, 0.95));
   color: #fdf2f8;
   border: 2px solid rgba(30, 10, 10, 0.6);
-  box-shadow:
-    inset 0 0 6px rgba(255, 255, 255, 0.25),
-    0 6px 14px rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.25), 0 6px 14px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -225,9 +402,7 @@
 .daoHeartSealButton:hover,
 .daoHeartSealButton:focus-visible {
   transform: translateY(-1px);
-  box-shadow:
-    inset 0 0 10px rgba(255, 255, 255, 0.35),
-    0 8px 18px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.35), 0 8px 18px rgba(0, 0, 0, 0.45);
   border-image: none;
   outline: none;
 }
@@ -238,9 +413,7 @@
 
 .cultivationHudStack > .progress-bar {
   width: 100%;
-  margin-bottom: calc(
-    -1 * (var(--qiBarDeadSpace) + var(--cultivation-stack-gap-1) - var(--qiVerseTargetGap))
-  );
+  margin-bottom: calc(-1 * (var(--qiBarDeadSpace) + var(--cultivation-stack-gap-1) - var(--qiVerseTargetGap)));
 }
 
 .cultivationRealmTags {
@@ -283,6 +456,78 @@
 .cultivationRealmTagSub {
   font-weight: 500;
   color: rgba(226, 232, 240, 0.7);
+}
+
+.cultivationVerseSlot {
+  width: min(92%, 880px);
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -6px;
+}
+
+.cultivationVerseSlot__bar {
+  width: 100%;
+}
+
+.cultivationBuffSummary {
+  width: min(92%, 880px);
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: -6px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(15, 18, 28, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.cultivationBuffSummaryTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.74);
+}
+
+.cultivationBuffSummaryEmpty {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.cultivationBuffSummaryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cultivationBuffChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(248, 250, 252, 0.95);
+  font-size: 12px;
+}
+
+.cultivationBuffChipFamily {
+  font-weight: 700;
+  color: rgba(125, 211, 252, 0.95);
+}
+
+.cultivationBuffChipBody {
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.cultivationBuffChipTimer {
+  font-variant-numeric: tabular-nums;
+  color: rgba(253, 224, 71, 0.95);
 }
 
 .cultivationActionStack {
@@ -355,55 +600,13 @@
   transform: translate(-50%, -50%);
 }
 
-@media (max-width: 900px) {
-  .cultivationScreenRoot {
-    --cultHudSidePad: 60px;
-  }
-
-  .cultivationActionStack {
-    width: clamp(300px, 56vw, 460px);
-  }
-}
-
-@media (max-width: 480px) {
-  .cultivationScreenRoot {
-    --qi-frame-h: 40px;
-    --verse-frame-h: 26px;
-    --cultHudSidePad: 40px;
-    --qi-track-h: 12px;
-    --qi-track-inset-x: 48px;
-  }
-
-  .cultivationActionButton {
-    width: 86%;
-    font-size: 15px;
-  }
-
-  .cultivationActionButton--secondary {
-    width: 72%;
-    font-size: 13px;
-  }
-
-  .cultivationRealmTag {
-    max-width: 44%;
-  }
-}
-
 .progress-bar--ready .qiProgressReady {
   animation: qiReadyPulse 2.6s ease-in-out infinite;
 }
 
 @keyframes qiReadyPulse {
-  0%,
-  100% {
-    transform: translateY(0);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-  }
-
-  50% {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 16px rgba(234, 179, 8, 0.45);
-  }
+  0%, 100% { transform: translateY(0); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); }
+  50% { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(234, 179, 8, 0.45); }
 }
 
 .breakthrough-effects.animate::before {
@@ -413,8 +616,7 @@
   left: 50%;
   width: 150vmax;
   height: 150vmax;
-  transform: translate(-50%, -50%);
-
+  transform: translate(-50%, -50%) scale(1.5);
   background: repeating-conic-gradient(from 0deg,
       transparent 0deg,
       rgba(34, 211, 238, 0.5) 2deg,
@@ -425,10 +627,8 @@
       rgba(139, 92, 246, 0.1) 15deg,
       transparent 15deg,
       transparent 20deg);
-
   -webkit-mask-image: radial-gradient(circle, transparent 40%, black 70%);
   mask-image: radial-gradient(circle, transparent 40%, black 70%);
-
   animation: raysImplode 1s ease-in forwards;
   opacity: 0;
 }
@@ -442,139 +642,117 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-
-  box-shadow:
-    0 0 20px 10px rgba(34, 211, 238, 0.8),
-    0 0 50px 20px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 20px 10px rgba(34, 211, 238, 0.8), 0 0 50px 20px rgba(139, 92, 246, 0.6);
   background: transparent;
-
   animation: shockwaveOut 0.8s ease-out 1.3s forwards;
   opacity: 0;
 }
 
 @keyframes raysImplode {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.5);
-  }
-
-  20% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0);
-  }
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+  20% { opacity: 1; }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(0); }
 }
 
 @keyframes shockwaveOut {
-  0% {
-    opacity: 1;
-    width: 0px;
-    height: 0px;
-    border-width: 50px;
-    border-color: rgba(255, 255, 255, 0.8);
-  }
-
-  100% {
-    opacity: 0;
-    width: 150vmax;
-    height: 150vmax;
-    border-width: 0px;
-    border-color: rgba(34, 211, 238, 0);
-  }
-}
-
-
-.cultivationBuffSummary {
-  width: min(92%, 880px);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: -6px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: rgba(15, 18, 28, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-}
-
-.cultivationBuffSummaryTitle {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.74);
-}
-
-.cultivationBuffSummaryEmpty {
-  font-size: 12px;
-  color: rgba(226, 232, 240, 0.78);
-}
-
-.cultivationBuffSummaryChips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.cultivationBuffChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(248, 250, 252, 0.95);
-  font-size: 12px;
-}
-
-.cultivationBuffChipFamily {
-  font-weight: 700;
-  color: rgba(125, 211, 252, 0.95);
-}
-
-.cultivationBuffChipBody {
-  color: rgba(248, 250, 252, 0.9);
-}
-
-.cultivationBuffChipTimer {
-  font-variant-numeric: tabular-nums;
-  color: rgba(253, 224, 71, 0.95);
-}
-
-
-.cultivationRunCompassDock {
-  position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 84px);
-  right: 20px;
-  z-index: 19;
-  width: min(360px, calc(100vw - 40px));
-  max-height: min(62vh, 720px);
-  pointer-events: auto;
-}
-
-.cultivationRunCompass {
-  max-height: inherit;
-  overflow: auto;
+  0% { opacity: 1; width: 0; height: 0; border-width: 50px; border-color: rgba(255, 255, 255, 0.8); }
+  100% { opacity: 0; width: 150vmax; height: 150vmax; border-width: 0; border-color: rgba(34, 211, 238, 0); }
 }
 
 @media (max-width: 1180px) {
-  .cultivationRunCompassDock {
-    left: 92px;
-    right: 20px;
-    width: auto;
-    max-height: 220px;
+  .cultivationCommandDeck {
+    width: calc(100% - 92px);
+  }
+}
+
+@media (max-width: 1000px) {
+  .cultivationScreenRoot {
+    --cultHudSidePad: 60px;
+    --cultivation-anchor-y: 70%;
+  }
+
+  .cultivationCommandDeck {
+    top: calc(env(safe-area-inset-top, 0px) + 108px);
+    width: calc(100% - 32px);
+  }
+
+  .cultivationInfoRow {
+    grid-template-columns: 1fr;
+  }
+
+  .cultivationCommandCard {
+    min-height: 0;
+  }
+
+  .cultivationActionStack {
+    width: clamp(300px, 56vw, 460px);
   }
 }
 
 @media (max-width: 760px) {
-  .cultivationRunCompassDock {
-    left: 16px;
-    right: 16px;
-    top: calc(env(safe-area-inset-top, 0px) + 88px);
-    max-height: 180px;
+  .cultivationScreenRoot {
+    overflow-y: auto;
+    overflow-x: hidden;
+    --cultivation-anchor-y: 92%;
+    min-height: 1280px;
+  }
+
+  .cultivationHeaderRail {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cultivationCommandDeck {
+    top: calc(env(safe-area-inset-top, 0px) + 96px);
+    width: calc(100% - 20px);
+    gap: 10px;
+  }
+
+  .cultivationHudStack {
+    top: 1040px;
+    width: min(calc(100% - 28px), 720px);
+    margin-bottom: 32px;
+  }
+
+  .cultivationRealmTags {
+    flex-direction: column;
+  }
+
+  .cultivationRealmTag {
+    max-width: 100%;
+  }
+
+  .daoHeartSealButton {
+    top: calc(env(safe-area-inset-top, 0px) + 72px);
+  }
+}
+
+@media (max-width: 480px) {
+  .cultivationScreenRoot {
+    --qi-frame-h: 40px;
+    --verse-frame-h: 26px;
+    --cultHudSidePad: 24px;
+    --qi-track-h: 12px;
+  }
+
+  .cultivationActionButton {
+    width: 86%;
+    font-size: 15px;
+  }
+
+  .cultivationActionButton--secondary {
+    width: 72%;
+    font-size: 13px;
+  }
+
+  .cultivationCommandList__row,
+  .cultivationDoctrinePanel__rowTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cultivationDoctrinePanel__value,
+  .cultivationCommandList__value {
+    text-align: left;
   }
 }

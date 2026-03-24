@@ -103,3 +103,14 @@
     font-size: 10px;
   }
 }
+
+
+.verseMiniBar--placeholder {
+  --verse-fill-a: rgba(148, 163, 184, 0.28);
+  --verse-fill-b: rgba(100, 116, 139, 0.18);
+}
+
+.verseMiniBar--complete {
+  --verse-fill-a: rgba(250, 204, 21, 0.55);
+  --verse-fill-b: rgba(248, 250, 252, 0.48);
+}

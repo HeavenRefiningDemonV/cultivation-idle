@@ -10,6 +10,7 @@ export type RunCompassTone = 'paper' | 'ink';
 export interface RunCompassProps {
   surface: RunCompassSurface | null;
   tone?: RunCompassTone;
+  density?: 'regular' | 'dense';
   className?: string;
   onAction?: (action: RunCompassActionLine) => void;
 }
@@ -29,7 +30,7 @@ function renderActionButton(action: RunCompassActionLine, onAction?: (action: Ru
   );
 }
 
-export function RunCompass({ surface, tone = 'paper', className, onAction }: RunCompassProps) {
+export function RunCompass({ surface, tone = 'paper', density = 'regular', className, onAction }: RunCompassProps) {
   const content = !surface ? (
     <div className="runCompassFallback">Run Compass unavailable.</div>
   ) : (
@@ -110,7 +111,7 @@ export function RunCompass({ surface, tone = 'paper', className, onAction }: Run
     </>
   );
 
-  const classes = classNames('runCompass', `runCompass--${tone}`, className);
+  const classes = classNames('runCompass', `runCompass--${tone}`, `runCompass--${density}`, className);
   if (tone === 'ink') {
     return <InkPanel className={classes}>{content}</InkPanel>;
   }

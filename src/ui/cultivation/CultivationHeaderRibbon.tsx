@@ -28,6 +28,12 @@ function getRealmIcon(realmLabel: string, realmIndex?: number) {
   return <Mountain size={16} aria-hidden="true" />;
 }
 
+function getLotusLabel(state: QiLotusState) {
+  if (state === 'ready') return 'Ready';
+  if (state === 'active') return 'Flowing';
+  return 'Resting';
+}
+
 export function CultivationHeaderRibbon({
   realmLabel,
   substage,
@@ -55,7 +61,7 @@ export function CultivationHeaderRibbon({
       ? 'Meditating. Insight and Study are active.'
       : activityTone === 'busy'
         ? 'Foreground activity running. Meditation unavailable.'
-        : 'Qi flows passively. Meditate to gain Insight/Study.';
+        : 'Qi flows passively. Meditate to gain Insight and Study.';
   const lotusState: QiLotusState = breakthroughReady
     ? 'ready'
     : activityType === 'meditate'
@@ -67,6 +73,7 @@ export function CultivationHeaderRibbon({
       : lotusState === 'active'
         ? 'Qi is flowing — you are cultivating in the foreground.'
         : 'Qi is resting — idle cultivation.';
+  const lotusLabel = getLotusLabel(lotusState);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -94,8 +101,11 @@ export function CultivationHeaderRibbon({
                 Qi
               </div>
               <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
-                <QiLotusIcon state={lotusState} title={lotusTitle} />
-                {formatNumber(qi)}
+                <QiLotusIcon state={lotusState} title={lotusTitle} label={lotusLabel} />
+                <div className="cultivationHeaderRibbonQiText">
+                  <span>{formatNumber(qi)}</span>
+                  <span className="cultivationHeaderRibbonQiState">{lotusLabel}</span>
+                </div>
               </div>
             </div>
             <div className="cultivationHeaderRibbonItem" title={rateTooltip}>
