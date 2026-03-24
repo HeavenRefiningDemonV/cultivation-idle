@@ -6,13 +6,14 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
 import { useBountyStore } from '../../stores/bountyStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
+import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations.js';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
 import { CityMapHub } from './CityMapHub.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
-import { getCityArrivalLesson } from '../../systems/world/cityArrivalContract.js';
+import { getCityArrivalLesson, getCityArrivalQuickOpenModules } from '../../systems/world/cityArrivalContract.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import {
   getProgressionContract,
@@ -27,15 +28,19 @@ import {
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { buildModulePurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
-import { PurposeSourceCallout, PaperCard } from '../../ui/ink/index.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
+import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/economicRecommendationEngine.js';
+import { CITY_PACKAGE_REGISTRY_BY_ID } from '../../systems/world/cityPackageRegistry.js';
+import { buildWorldCommandSurface, SUPPORT_IDENTITY_LABELS } from '../../systems/ui/world/worldCommandSurface.js';
+import { WorldCommandAlert } from '../../ui/world/WorldCommandAlert.js';
+import { WorldCommandCard } from '../../ui/world/WorldCommandCard.js';
+import { WorldCommandGroup } from '../../ui/world/WorldCommandGroup.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
-
 
 export function WorldScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
@@ -54,10 +59,12 @@ export function WorldScreen() {
   const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
   const inCombat = useCombatStore((state) => state.inCombat);
   const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
+  const expeditionSlots = useExpeditionStore((state) => state.slots);
+  const expeditionActive = useExpeditionStore((state) => state.active);
   const runCompass = useRunCompassSurface();
 
   useEffect(() => {
-    setHeaderTitles('World', 'Cities & activities');
+    setHeaderTitles('World', 'Where to go right now');
   }, [setHeaderTitles]);
 
   const selectedCity = useMemo(() => {
@@ -72,8 +79,7 @@ export function WorldScreen() {
       return Object.fromEntries(
         citiesSorted.map((city) => [city.id, getCityUnlockRequirementText(contract, city.id)]),
       ) as Record<string, string | null>;
-    } catch (contractError) {
-      console.warn('[WorldScreen] Failed to read city unlock requirements', contractError);
+    } catch {
       return EMPTY_CITY_REQUIREMENT_MAP;
     }
   }, [citiesSorted, rawContent]);
@@ -103,6 +109,12 @@ export function WorldScreen() {
     return activeBounties.find((entry) => entry.instanceId === trackedId) ?? null;
   }, [activeByCityId, currentCityId, trackedByCityId]);
 
+  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
+  const worldModalKey = useUIStore((state) => state.worldBuildingModalKey);
+  const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
+  const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
+  const combatPresentation = useUIStore((state) => state.combatPresentation);
+
   const displayedModuleKey = useMemo(() => {
     if (!selectedCity) return null;
     const stored = selectedModuleByCity[selectedCity.id];
@@ -110,20 +122,11 @@ export function WorldScreen() {
     return visibleCityModules[0] ?? null;
   }, [selectedCity, selectedModuleByCity, visibleCityModules]);
 
-  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
-  const worldModalKey = useUIStore((state) => state.worldBuildingModalKey);
-  const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
-  const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
-  const combatPresentation = useUIStore((state) => state.combatPresentation);
-
   const combatModuleKey = useMemo(() => {
     if (!selectedCity) return null;
     if (combatPresentation.mode === 'hidden' || !combatPresentation.context) return null;
     if (combatPresentation.context.cityId && combatPresentation.context.cityId !== selectedCity.id) return null;
-    return (
-      combatPresentation.context.moduleKey ??
-      (combatPresentation.context.type === 'trial' ? 'gateTrial' : combatPresentation.context.type)
-    );
+    return combatPresentation.context.moduleKey ?? (combatPresentation.context.type === 'trial' ? 'gateTrial' : combatPresentation.context.type);
   }, [combatPresentation, selectedCity]);
 
   const activeModuleKey = useMemo(() => {
@@ -143,11 +146,6 @@ export function WorldScreen() {
       craftRouteSupportState: buildLiveCraftBountyRouteSupportState(selectedCity.id),
     });
   }, [selectedCity, trackedBounty]);
-
-  const isTrackedModuleActive = useMemo(() => {
-    if (!trackedDestination || !activeModuleKey) return false;
-    return trackedDestination.kind === 'module' && trackedDestination.moduleKey === activeModuleKey;
-  }, [activeModuleKey, trackedDestination]);
 
   useEffect(() => {
     if (!showWorldBuildingModal || !selectedCity) return;
@@ -193,11 +191,14 @@ export function WorldScreen() {
 
   const purposeSourceContext = useMemo(() => (rawContent ? buildPurposeSourceContext(rawContent) : null), [rawContent]);
 
-  const moduleGuidance = useMemo(() => {
-    if (!selectedCity || !rawContent || !purposeSourceContext) return [];
-    return visibleCityModules
-      .map((moduleKey) => buildModulePurposeSourceSurface(rawContent, purposeSourceContext, selectedCity.id, moduleKey as never))
-      .filter(Boolean);
+  const moduleSurfacesByKey = useMemo(() => {
+    if (!selectedCity || !rawContent || !purposeSourceContext) return {};
+    return Object.fromEntries(
+      visibleCityModules
+        .map((moduleKey) => buildModulePurposeSourceSurface(rawContent, purposeSourceContext, selectedCity.id, moduleKey as never))
+        .filter(Boolean)
+        .map((surface) => [surface.moduleKey, surface]),
+    );
   }, [purposeSourceContext, rawContent, selectedCity, visibleCityModules]);
 
   const cityLesson = useMemo(() => {
@@ -205,6 +206,82 @@ export function WorldScreen() {
     const lesson = getCityArrivalLesson(selectedCity.id);
     return lesson ? sanitizeLiveCityName(lesson) : null;
   }, [selectedCity]);
+
+  const cityQuickOpenModules = useMemo(() => getCityArrivalQuickOpenModules(visibleCityModules), [visibleCityModules]);
+
+  const citySupportIdentity = useMemo(() => {
+    if (!selectedCity) return null;
+    const entry = CITY_PACKAGE_REGISTRY_BY_ID[selectedCity.id];
+    if (!entry) return null;
+    return SUPPORT_IDENTITY_LABELS[entry.leadSupportIdentity] ?? null;
+  }, [selectedCity]);
+
+  const runCompassPrimaryAction = runCompass.full?.bestNextActions[0] ?? null;
+
+  const economicPrimary = useMemo(() => {
+    try {
+      const engine = buildLiveEconomicRecommendationEngine();
+      const top = engine.topRouteCandidates[0] ?? null;
+      if (!top) return null;
+      return {
+        moduleKey: top.destinationModuleKey,
+        cityId: top.destinationCityId,
+        reason: top.reasonSummary,
+      };
+    } catch {
+      return null;
+    }
+  }, [currentCityId, selectedCity?.id, rawContent]);
+
+  const trackedAlert = useMemo(() => {
+    if (!trackedBounty || !selectedCity) return null;
+    const ctaModuleKey = trackedDestination?.kind === 'module' && visibleCityModules.includes(trackedDestination.moduleKey)
+      ? trackedDestination.moduleKey
+      : 'bounties';
+    return {
+      id: 'tracked_bounty' as const,
+      title: `Tracked bounty: ${trackedBounty.title}`,
+      detail: `${trackedBounty.progress}/${trackedBounty.target} progress`,
+      ctaLabel: ctaModuleKey === 'bounties' ? 'View bounty board' : `Open ${getWorldModuleLabel(ctaModuleKey)}`,
+      ctaModuleKey,
+    };
+  }, [trackedBounty, selectedCity, trackedDestination, visibleCityModules]);
+
+  const expeditionIdleAlert = useMemo(() => {
+    if (!selectedCity || !visibleCityModules.includes('expeditions')) return null;
+    const runningInCity = expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length;
+    const idle = Math.max(0, expeditionSlots - runningInCity);
+    if (idle <= 0) return null;
+    return {
+      id: 'expedition_idle' as const,
+      title: 'Expedition slot idle',
+      detail: `${idle} expedition ${idle === 1 ? 'slot is' : 'slots are'} available right now.`,
+      ctaLabel: 'Open Expeditions',
+      ctaModuleKey: 'expeditions' as const,
+    };
+  }, [expeditionActive, expeditionSlots, selectedCity, visibleCityModules]);
+
+  const worldCommandSurface = useMemo(
+    () => buildWorldCommandSurface({
+      visibleModules: visibleCityModules,
+      moduleSurfacesByKey,
+      runCompassPrimaryAction,
+      economicTopModuleKey: economicPrimary?.cityId === selectedCity?.id ? economicPrimary.moduleKey : null,
+      economicReason: economicPrimary?.reason ?? null,
+      trackedBountyModuleKey: trackedDestination?.kind === 'module' ? trackedDestination.moduleKey : null,
+      trackedBountyAlert: trackedAlert,
+      expeditionIdleAlert,
+    }),
+    [economicPrimary, expeditionIdleAlert, moduleSurfacesByKey, runCompassPrimaryAction, selectedCity?.id, trackedAlert, trackedDestination, visibleCityModules],
+  );
+
+  const recommendedHereLine = useMemo(() => {
+    if (!selectedCity) return null;
+    if (worldCommandSurface.recommendation.moduleKey) {
+      return `Recommended here: ${getWorldModuleLabel(worldCommandSurface.recommendation.moduleKey)} — ${worldCommandSurface.recommendation.reason}`;
+    }
+    return worldCommandSurface.recommendation.reason;
+  }, [selectedCity, worldCommandSurface.recommendation]);
 
   const handleSelectCity = (city: CityDef) => {
     if (!city || city.id === currentCityId) return;
@@ -221,9 +298,7 @@ export function WorldScreen() {
 
     if (!travelGuard.allowed) {
       const message = getWorldTravelBlockMessage(travelGuard.reason);
-      if (message) {
-        addNotification('warning', message);
-      }
+      if (message) addNotification('warning', message);
       return;
     }
 
@@ -239,9 +314,7 @@ export function WorldScreen() {
     [selectedCity, visibleCityModules],
   );
 
-  if (isLoading) {
-    return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
-  }
+  if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
 
   if (error) {
     return (
@@ -252,17 +325,13 @@ export function WorldScreen() {
     );
   }
 
-  if (!isLoaded || citiesSorted.length === 0) {
-    return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
-  }
+  if (!isLoaded || citiesSorted.length === 0) return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
 
   return (
     <div className={'worldScreen'}>
       <div className={'worldHubTopBar'}>
         <div className={'worldHubCitySelectWrapper'}>
-          <label className={'worldHubCityLabel'} htmlFor="world-city-select">
-            City
-          </label>
+          <label className={'worldHubCityLabel'} htmlFor="world-city-select">City</label>
           <select
             id="world-city-select"
             className={'worldHubCitySelect'}
@@ -272,9 +341,7 @@ export function WorldScreen() {
               if (next) handleSelectCity(next);
             }}
           >
-            <option value="" disabled>
-              Select a city
-            </option>
+            <option value="" disabled>Select a city</option>
             {worldSelectorEntries.map(({ city, isUnlocked, requirementText }) => (
               <option key={city.id} value={city.id} disabled={!isUnlocked}>
                 {city.name}
@@ -285,53 +352,62 @@ export function WorldScreen() {
         </div>
       </div>
 
-      <div className={'worldScreenRunCompassWrapper'}>
-        <RunCompass
-          surface={runCompass.full}
-          tone="ink"
-          className="worldScreenRunCompass"
-          onAction={performRunCompassAction}
-        />
-      </div>
-
       {!selectedCity ? (
         <div className={'worldScreenMessage'}>Select a city to view its modules.</div>
       ) : (
         <div className={'worldScreenDetailWrapper'}>
-          <div className={'worldScreenPanel worldScreenCitySummary'}>
-            <div className={'worldScreenPanelHeader'}>
-              <div className={'worldScreenCitySummaryBody'}>
-                <div className={'worldScreenCitySummaryName'}>{sanitizeLiveCityName(selectedCity.name)}</div>
-                <div
-                  className={`worldScreenCitySummaryStatus ${currentCityTravelBlocked ? 'worldScreenCitySummaryStatus--blocked' : ''}`}
-                >
-                  {currentCityStatusLine}
-                </div>
-                {cityLesson ? <div className={'worldScreenCitySummaryLesson'}>Phase lesson: {cityLesson}</div> : null}
-              </div>
-              {trackedBounty && isTrackedModuleActive && (
-                <div className={'worldScreenTrackedBanner'}>
-                  <div className={'worldScreenTrackedBannerText'}>
-                    Tracked bounty: <span className={'worldScreenTrackedName'}>{trackedBounty.title}</span> —{' '}
-                    {trackedBounty.progress}/{trackedBounty.target}
-                  </div>
-                  <button
-                    className={'worldScreenTrackedLink'}
-                    onClick={() => handleOpenModule('bounties')}
-                    type="button"
-                  >
-                    View bounty board
+          <section className="worldCommandSummary worldScreenPanel">
+            <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
+            <div className={`worldScreenCitySummaryStatus ${currentCityTravelBlocked ? 'worldScreenCitySummaryStatus--blocked' : ''}`}>{currentCityStatusLine}</div>
+            {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
+            {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
+            {recommendedHereLine ? <div className="worldCommandSummaryRecommended">{recommendedHereLine}</div> : null}
+            {cityQuickOpenModules.length > 0 ? (
+              <div className="worldCommandQuickOpen">
+                {cityQuickOpenModules.map((moduleKey) => (
+                  <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
+                    {getWorldModuleLabel(moduleKey)}
                   </button>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : null}
+          </section>
+
+          <div className={'worldScreenRunCompassWrapper'}>
+            <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
           </div>
 
-          {inCombat && (
-            <div className={'worldScreenPanel'}>
-              <RecentTechniqueActivations />
+          {worldCommandSurface.alerts.length > 0 ? (
+            <div className="worldCommandAlerts">
+              {worldCommandSurface.alerts.map((alert) => (
+                <WorldCommandAlert
+                  key={alert.id}
+                  title={alert.title}
+                  detail={alert.detail}
+                  ctaLabel={alert.ctaLabel}
+                  onCta={() => handleOpenModule(alert.ctaModuleKey)}
+                />
+              ))}
             </div>
-          )}
+          ) : null}
+
+          <div className="worldCommandDeck">
+            {worldCommandSurface.groups.map((group) => (
+              <WorldCommandGroup key={group.id} title={group.label}>
+                {group.cards.map((card) => (
+                  <WorldCommandCard
+                    key={card.moduleKey}
+                    label={card.moduleLabel}
+                    roleTag={card.roleTag}
+                    bestUsedWhen={card.bestUsedWhen}
+                    outputHint={card.outputHint}
+                    recommendedNow={card.recommendedNow}
+                    cta={<button type="button" className="worldCommandCardOpen" onClick={() => handleOpenModule(card.moduleKey)}>Open</button>}
+                  />
+                ))}
+              </WorldCommandGroup>
+            ))}
+          </div>
 
           <div className={'worldScreenPanel worldScreenHubPanel'}>
             <CityMapHub
@@ -342,21 +418,11 @@ export function WorldScreen() {
             />
           </div>
 
-          <div className={'worldScreenPanel'}>
-            <PaperCard variant="tray">
-              <div className={'worldScreenPanelHeader'}>Current city module guidance</div>
-              <div className={'worldScreenCitySummaryStatus'}>Each live module now shows what it is for and when to use it.</div>
-              <div className={'worldScreenModuleGuidanceGrid'}>
-                {moduleGuidance.map((moduleSurface) => (
-                  <div key={moduleSurface.moduleKey} className="worldScreenModuleGuidanceCard">
-                    <div className="worldScreenModuleGuidanceTitle">{moduleSurface.moduleLabel}</div>
-                    <PurposeSourceCallout surface={moduleSurface} compact />
-                    {moduleSurface.outputHint ? <div className={'worldScreenCitySummaryLesson'}>{moduleSurface.outputHint}</div> : null}
-                  </div>
-                ))}
-              </div>
-            </PaperCard>
-          </div>
+          {inCombat && (
+            <div className={'worldScreenPanel'}>
+              <RecentTechniqueActivations />
+            </div>
+          )}
         </div>
       )}
     </div>

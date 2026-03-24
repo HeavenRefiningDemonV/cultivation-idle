@@ -3870,3 +3870,174 @@
 .worldScreenRunCompass {
   width: 100%;
 }
+
+.worldCommandSummary {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.worldCommandSummaryCity {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.worldCommandSummaryLine {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-top: 3px;
+}
+
+.worldCommandSummaryRecommended {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #fef08a;
+  font-weight: 700;
+}
+
+.worldCommandQuickOpen {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.worldCommandQuickOpenChip {
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(30, 41, 59, 0.6);
+  color: #f8fafc;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.worldCommandAlerts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.worldCommandAlert {
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  background: rgba(2, 132, 199, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.worldCommandAlertTitle {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.worldCommandAlertDetail {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-top: 3px;
+}
+
+.worldCommandAlertCta {
+  margin-top: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(30, 41, 59, 0.55);
+  color: #f8fafc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+
+.worldCommandDeck {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.worldCommandGroup {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.worldCommandGroupTitle {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.worldCommandGroupGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.worldCommandCard {
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 145px;
+  background: rgba(30, 41, 59, 0.42);
+}
+
+.worldCommandCard--recommended {
+  border-color: rgba(250, 204, 21, 0.7);
+  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.25);
+}
+
+.worldCommandCardHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.worldCommandCardLabel {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.worldCommandCardChip {
+  font-size: 11px;
+  border-radius: 999px;
+  padding: 2px 7px;
+  background: rgba(250, 204, 21, 0.17);
+  color: #fde68a;
+  border: 1px solid rgba(250, 204, 21, 0.4);
+}
+
+.worldCommandCardTag {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #fcd34d;
+}
+
+.worldCommandCardLine {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.worldCommandCardHint {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.worldCommandCardCta {
+  margin-top: 9px;
+}
+
+.worldCommandCardOpen {
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(2, 6, 23, 0.45);
+  color: #f8fafc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+
+@media (min-width: 1000px) {
+  .worldCommandAlerts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
