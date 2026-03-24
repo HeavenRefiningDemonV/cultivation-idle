@@ -45,6 +45,17 @@ export interface CityPackageRegistryEntry {
   lesson: string;
 }
 
+export const SUPPORT_IDENTITY_LABELS: Record<CityPackageRegistryEntry['leadSupportIdentity'], string> = {
+  'starter-loop': 'Starter Loop',
+  'forge-and-ore': 'Forge & Ore',
+  'fragments-and-build-correction': 'Fragments & Build Correction',
+  'reagents-and-survival-prep': 'Reagents & Survival Prep',
+  'final-convergence': 'Final Convergence',
+};
+
+export const getSupportIdentityLabel = (identity: CityPackageRegistryEntry['leadSupportIdentity']): string =>
+  SUPPORT_IDENTITY_LABELS[identity];
+
 const createRegistryEntry = (
   spec: Omit<CityPackageRegistryEntry, 'defaultQuickOpenOrder' | 'mustExposeModules' | 'lesson'>,
 ): CityPackageRegistryEntry => ({

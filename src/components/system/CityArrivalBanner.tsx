@@ -4,11 +4,14 @@ import { useCityStore } from '../../stores/cityStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import {
   getCityArrivalLesson,
+  getCityArrivalQuickOpenLabel,
   getCityArrivalQuickOpenModules,
 } from '../../systems/world/cityArrivalContract.js';
+import { CITY_PACKAGE_REGISTRY_BY_ID, getSupportIdentityLabel } from '../../systems/world/cityPackageRegistry.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import './CityArrivalBanner.scss';
 import { getOpenWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
+import { createCityArrivalPrompt } from '../../systems/ui/onboardingPromptRegistry.js';
 
 export function CityArrivalBanner() {
   const pendingCityArrivalId = useUIStore((state) => state.pendingCityArrivalId);
@@ -41,14 +44,24 @@ export function CityArrivalBanner() {
 
   const lesson = getCityArrivalLesson(city.id);
   const quickOpenModules = getCityArrivalQuickOpenModules(city.modules);
+  const supportIdentity = CITY_PACKAGE_REGISTRY_BY_ID[city.id]?.leadSupportIdentity ?? null;
+  const supportIdentityLabel = supportIdentity ? getSupportIdentityLabel(supportIdentity) : null;
+  const arrivalPrompt = createCityArrivalPrompt({
+    cityId: city.id,
+    cityName: sanitizeLiveCityName(city.name),
+    supportIdentityLabel: supportIdentityLabel ?? 'City Phase',
+    lesson,
+  });
 
   return (
     <div className="cityArrivalBannerShell" aria-live="polite">
       <div className="cityArrivalBannerCard">
-        <div className="cityArrivalBannerEyebrow">Entered a new city</div>
-        <div className="cityArrivalBannerTitle">{sanitizeLiveCityName(city.name)}</div>
+        <div className="cityArrivalBannerEyebrow">{arrivalPrompt.eyebrow}</div>
+        <div className="cityArrivalBannerTitle">{arrivalPrompt.title}</div>
+        {supportIdentityLabel ? <div className="cityArrivalBannerSupport">{supportIdentityLabel}</div> : null}
         {lesson ? <div className="cityArrivalBannerLesson">{sanitizeLiveCityName(lesson)}</div> : null}
         <div className="cityArrivalBannerActions">
+          <div className="cityArrivalBannerQuickOpen">
           {quickOpenModules.map((moduleKey) => (
             <button
               key={moduleKey}
@@ -59,15 +72,10 @@ export function CityArrivalBanner() {
                 openWorldModule({ cityId: city.id, moduleKey, source: 'city-arrival-banner' });
               }}
             >
-              {moduleKey === 'outskirts'
-                ? 'Open Outskirts'
-                : moduleKey === 'ruins'
-                  ? 'Open Ruins'
-                  : moduleKey === 'gateTrial'
-                    ? 'Open Gate Trial'
-                    : getOpenWorldModuleLabel(moduleKey)}
+              {getCityArrivalQuickOpenLabel(moduleKey) ?? getOpenWorldModuleLabel(moduleKey)}
             </button>
           ))}
+          </div>
           <button
             type="button"
             className="worldScreenModuleButton"

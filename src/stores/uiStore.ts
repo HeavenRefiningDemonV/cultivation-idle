@@ -13,6 +13,7 @@ import { useInventoryStore } from './inventoryStore.js';
 import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../systems/progression/runtime/index.js';
 import { pickEnemyFromPool } from '../components/screens/world/worldUtils.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import type { OnboardingPromptInstance, OnboardingPromptPriority } from '../systems/ui/onboardingPromptRegistry.js';
 
 /**
  * UI notification types
@@ -133,6 +134,10 @@ interface UIStateBase {
   worldBuildingModalIntent: WorldBuildingModalIntent;
   showCurrentChapterExhaustedModal: boolean;
   currentChapterExhaustedAcknowledgedThisLife: boolean;
+  activeOnboardingPrompt: OnboardingPromptInstance | null;
+  queuedOnboardingPrompts: OnboardingPromptInstance[];
+  dismissedOnboardingLifeKeys: string[];
+  dismissedOnboardingRuntimeKeys: string[];
   pendingCityArrivalId: string | null;
 
   // UI Settings
@@ -196,6 +201,12 @@ export interface UIState extends UIStateBase {
   closeCurrentChapterExhaustedModal: () => void;
   acknowledgeCurrentChapterExhausted: () => void;
   clearCurrentChapterExhaustedAcknowledgement: () => void;
+  queueOnboardingPrompt: (prompt: OnboardingPromptInstance) => void;
+  dismissOnboardingPrompt: (key: string) => void;
+  completeOnboardingPrompt: (key: string) => void;
+  clearActiveOnboardingPrompt: () => void;
+  activateNextOnboardingPrompt: () => void;
+  resetOnboardingLifeState: () => void;
   queueCityArrival: (cityId: string) => void;
   clearCityArrival: () => void;
   setTechniqueLibraryIntent: (intent: UIState['techniqueLibraryIntent']) => void;
@@ -240,6 +251,10 @@ const INITIAL_UI_STATE: UIStateBase = {
   worldBuildingModalIntent: null,
   showCurrentChapterExhaustedModal: false,
   currentChapterExhaustedAcknowledgedThisLife: false,
+  activeOnboardingPrompt: null,
+  queuedOnboardingPrompts: [],
+  dismissedOnboardingLifeKeys: [],
+  dismissedOnboardingRuntimeKeys: [],
   pendingCityArrivalId: null,
   settings: {
     showOfflineModal: true,
@@ -270,6 +285,12 @@ const INITIAL_UI_STATE: UIStateBase = {
 function generateNotificationId(): string {
   return `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
+
+const ONBOARDING_PRIORITY_WEIGHT: Record<OnboardingPromptPriority, number> = {
+  high: 3,
+  medium: 2,
+  low: 1,
+};
 
 /**
  * UI store for managing interface state
@@ -746,6 +767,82 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.currentChapterExhaustedAcknowledgedThisLife = false;
         state.showCurrentChapterExhaustedModal = false;
+      });
+    },
+
+    queueOnboardingPrompt: (prompt) => {
+      set((state) => {
+        const alreadyHandled =
+          state.activeOnboardingPrompt?.key === prompt.key
+          || state.queuedOnboardingPrompts.some((entry) => entry.key === prompt.key)
+          || state.dismissedOnboardingRuntimeKeys.includes(prompt.key)
+          || state.dismissedOnboardingLifeKeys.includes(prompt.key);
+
+        if (alreadyHandled) {
+          return;
+        }
+
+        if (!state.activeOnboardingPrompt) {
+          state.activeOnboardingPrompt = prompt;
+          return;
+        }
+
+        const currentWeight = ONBOARDING_PRIORITY_WEIGHT[state.activeOnboardingPrompt.priority];
+        const nextWeight = ONBOARDING_PRIORITY_WEIGHT[prompt.priority];
+
+        if (nextWeight > currentWeight) {
+          state.queuedOnboardingPrompts = [state.activeOnboardingPrompt, ...state.queuedOnboardingPrompts];
+          state.activeOnboardingPrompt = prompt;
+          return;
+        }
+
+        state.queuedOnboardingPrompts = [...state.queuedOnboardingPrompts, prompt];
+      });
+    },
+
+    dismissOnboardingPrompt: (key) => {
+      set((state) => {
+        if (state.activeOnboardingPrompt?.key === key) {
+          if (state.activeOnboardingPrompt.scope === 'life') {
+            state.dismissedOnboardingLifeKeys = [...state.dismissedOnboardingLifeKeys, key];
+          } else {
+            state.dismissedOnboardingRuntimeKeys = [...state.dismissedOnboardingRuntimeKeys, key];
+          }
+          state.activeOnboardingPrompt = null;
+        }
+
+        state.queuedOnboardingPrompts = state.queuedOnboardingPrompts.filter((prompt) => prompt.key !== key);
+      });
+    },
+
+    completeOnboardingPrompt: (key) => {
+      get().dismissOnboardingPrompt(key);
+    },
+
+    clearActiveOnboardingPrompt: () => {
+      set((state) => {
+        state.activeOnboardingPrompt = null;
+      });
+    },
+
+    activateNextOnboardingPrompt: () => {
+      set((state) => {
+        if (state.activeOnboardingPrompt || state.queuedOnboardingPrompts.length === 0) {
+          return;
+        }
+        const [nextPrompt, ...remaining] = state.queuedOnboardingPrompts;
+        state.activeOnboardingPrompt = nextPrompt;
+        state.queuedOnboardingPrompts = remaining;
+      });
+    },
+
+    resetOnboardingLifeState: () => {
+      set((state) => {
+        state.dismissedOnboardingLifeKeys = [];
+        state.queuedOnboardingPrompts = state.queuedOnboardingPrompts.filter((prompt) => prompt.scope !== 'life');
+        if (state.activeOnboardingPrompt?.scope === 'life') {
+          state.activeOnboardingPrompt = null;
+        }
       });
     },
 

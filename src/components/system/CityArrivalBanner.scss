@@ -38,9 +38,22 @@
   color: rgba(58, 41, 24, 0.84);
 }
 
+.cityArrivalBannerSupport {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(71, 52, 30, 0.78);
+}
+
 .cityArrivalBannerActions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 4px;
+  align-items: center;
+}
+
+.cityArrivalBannerQuickOpen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

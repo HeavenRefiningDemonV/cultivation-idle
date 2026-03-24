@@ -272,9 +272,7 @@ test('CityArrivalBanner source uses canonical quick-open routing and blocks on o
   const source = await fs.readFile(path.resolve(process.cwd(), 'src/components/system/CityArrivalBanner.tsx'), 'utf8');
 
   assert.match(source, /openWorldModule/);
-  assert.match(source, /Open Outskirts/);
-  assert.match(source, /Open Ruins/);
-  assert.match(source, /Open Gate Trial/);
+  assert.match(source, /getCityArrivalQuickOpenLabel/);
   assert.match(source, /showPerkSelectionModal/);
   assert.match(source, /showWorldBuildingModal/);
   assert.match(source, /combatPresentation/);

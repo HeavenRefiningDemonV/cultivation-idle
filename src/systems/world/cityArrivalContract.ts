@@ -7,6 +7,11 @@ export const CITY_ARRIVAL_LESSON_BY_ID = {
 } as const;
 
 export const CITY_ARRIVAL_QUICK_OPEN_ORDER = ['outskirts', 'ruins', 'gateTrial'] as const;
+export const CITY_ARRIVAL_QUICK_OPEN_LABELS: Record<(typeof CITY_ARRIVAL_QUICK_OPEN_ORDER)[number], string> = {
+  outskirts: 'Open Outskirts',
+  ruins: 'Open Ruins',
+  gateTrial: 'Open Gate Trial',
+};
 
 export function getCityArrivalLesson(cityId: string): string | null {
   return CITY_ARRIVAL_LESSON_BY_ID[cityId as keyof typeof CITY_ARRIVAL_LESSON_BY_ID] ?? null;
@@ -16,6 +21,10 @@ export function getCityArrivalQuickOpenModules(modules: readonly string[] | null
   if (!Array.isArray(modules) || modules.length === 0) return [];
   const available = new Set(modules.filter((moduleKey): moduleKey is string => typeof moduleKey === 'string' && moduleKey.length > 0));
   return CITY_ARRIVAL_QUICK_OPEN_ORDER.filter((moduleKey) => available.has(moduleKey));
+}
+
+export function getCityArrivalQuickOpenLabel(moduleKey: string): string | null {
+  return CITY_ARRIVAL_QUICK_OPEN_LABELS[moduleKey as keyof typeof CITY_ARRIVAL_QUICK_OPEN_LABELS] ?? null;
 }
 
 export function normalizeAcknowledgedArrivalCityIds(args: {

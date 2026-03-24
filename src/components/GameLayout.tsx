@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useUIStore } from '../stores/uiStore.js';
 import { CultivateScreen } from './screens/CultivateScreen.js';
 import { StatusScreen } from './screens/StatusScreen.js';
@@ -23,7 +23,9 @@ import { buildLiveEconomicRecommendationEngine } from '../systems/economy/econom
 import { getNextLiveRealm, isAtSemesterCap } from '../systems/progression/runtime/index.js';
 import { useGameStore } from '../stores/gameStore.js';
 import { useHeartLawStore } from '../stores/heartLawStore.js';
+import { usePrestigeStore } from '../stores/prestigeStore.js';
 import { CurrentChapterExhaustedModal } from './modals/CurrentChapterExhaustedModal.js';
+import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import './GameLayout.scss';
 
 /**
@@ -74,8 +76,18 @@ export function GameLayout() {
   const selectedPath = useGameStore((state) => state.selectedPath);
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
   const realmIndex = useGameStore((state) => state.realm.index);
+  const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
+  const resetOnboardingLifeState = useUIStore((state) => state.resetOnboardingLifeState);
   const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
+  const lastPrestigeCountRef = useRef(prestigeCount);
+
+  useEffect(() => {
+    if (prestigeCount > lastPrestigeCountRef.current) {
+      resetOnboardingLifeState();
+    }
+    lastPrestigeCountRef.current = prestigeCount;
+  }, [prestigeCount, resetOnboardingLifeState]);
 
   useEffect(() => {
     let atAuthoredCap = false;
@@ -175,6 +187,7 @@ export function GameLayout() {
       <CombatPresentationHost />
       <LifeStartWizardModal />
       <CityArrivalBanner />
+      <OnboardingPromptHost />
       <NotificationToasts />
     </div>
   );
