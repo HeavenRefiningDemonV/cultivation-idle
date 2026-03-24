@@ -25,6 +25,7 @@ import { scoreGateReadiness } from './readinessScoringEngine.js';
 import { getDiagnosisLabel, getReadinessBandLabel } from '../../ui/text/playerFacingLabels.js';
 import { buildStatusTroubleshootingSurface, type StatusTroubleshootingSurface } from '../ui/status/statusTroubleshootingSurface.js';
 import { getTrialGateItemId } from '../progression/runtime/gateResolver.js';
+import { buildPostFailureDiagnosisSurface, type PostFailureDiagnosisSurface } from '../ui/postFailure/index.js';
 
 export type GateTrialReadinessLabel = 'Blocked' | 'Preparing' | 'Risky' | 'Close' | 'Ready';
 export type GateTrialChecklistState = 'met' | 'open' | 'close';
@@ -91,6 +92,8 @@ export interface Section5StatusSurface {
   topShortfallCodes: ReadinessShortfallCode[];
   warnings: string[];
 }
+
+export type Section5PostFailureSurface = PostFailureDiagnosisSurface;
 
 export interface Section5ReadinessDisplay {
   band: ReadinessBand;
@@ -324,6 +327,38 @@ export function buildSection5StatusSurface(
 
 export function buildSection5StatusTroubleshootingSurface(): StatusTroubleshootingSurface {
   return buildStatusTroubleshootingSurface();
+}
+
+export function buildSection5PostFailureSurface(trialId: string): Section5PostFailureSurface | null {
+  const readinessSurface = buildSection5ReadinessSurface(trialId);
+  if (!readinessSurface) return null;
+
+  const trialDef = useContentStore.getState().maps.trialsById[readinessSurface.trialId] ?? null;
+  const content = useContentStore.getState().raw;
+  const game = useGameStore.getState();
+  const progress = useTrialStore.getState().getProgress(readinessSurface.trialId);
+  const requiredItemSatisfied = !trialDef?.requiredItemId || useInventoryStore.getState().getItemCount(trialDef.requiredItemId) > 0;
+  const lifecycle = getTrialLifecycleSnapshot({
+    content,
+    trial: trialDef,
+    progress,
+    realm: game.realm,
+    qi: game.qi,
+    breakthroughRequirement: game.getBreakthroughRequirement(),
+    requiredItemSatisfied,
+  });
+
+  return buildPostFailureDiagnosisSurface({
+    diagnosis: readinessSurface.diagnosis,
+    summary: readinessSurface.lastAttemptSummary,
+    lifecycleResolved: lifecycle.isResolved,
+    context: {
+      cityId: trialDef?.cityId ?? null,
+      canRetry: lifecycle.canStart,
+      canBuySafetyNet: lifecycle.failSafe.canPurchase,
+      gateLabel: trialDef?.name ?? 'Gate Trial',
+    },
+  });
 }
 
 function lifecycleStateLabel(state: TrialLifecycleSnapshot['state']): string {

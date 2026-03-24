@@ -14,9 +14,14 @@ import { formatNumber } from '../../../utils/numbers.js';
 import { GameIcon } from '../../../ui/icons/index.js';
 import './TrialProgress.scss';
 import { GATE_SUPPORT_LABELS } from '../../../ui/text/playerFacingLabels.js';
-import { buildGateTrialAttemptPresentation, buildGateTrialReadinessSurface } from '../../../systems/readiness/section5Adapters.js';
+import {
+  buildGateTrialAttemptPresentation,
+  buildGateTrialReadinessSurface,
+  buildSection5PostFailureSurface,
+} from '../../../systems/readiness/section5Adapters.js';
 import { GateTrialReadinessCard } from '../../../ui/trials/GateTrialReadinessCard.js';
 import { GateTrialChecklist } from '../../../ui/trials/GateTrialChecklist.js';
+import { PostFailureDiagnosisPanel } from '../../../ui/status/PostFailureDiagnosisPanel.js';
 
 function TrialProgressContent({ trialId }: { trialId: string }) {
   const {
@@ -85,6 +90,10 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
     () => buildGateTrialReadinessSurface(trialId),
     [trialId, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, playerRealm, requiredItemOwned],
   );
+  const postFailureSurface = useMemo(
+    () => buildSection5PostFailureSurface(trialId),
+    [trialId, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, playerRealm, requiredItemOwned],
+  );
   const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
 
   const rollingDps = useMemo(() => computeRollingDps(events, Date.now()), [events]);
@@ -130,11 +139,6 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
   const maxHitLine = lastSummary
     ? `${formatNumber(lastSummary.maxHit)} — ${lastSummary.maxHitLabel}`
     : 'Awaiting attempt data';
-
-  const suggestions = lastSummary?.suggestions ?? [
-    'Stay mobile and weave defensive casts.',
-    'Upgrade offense to shorten the fight window.',
-  ];
 
   return (
     <div className="trial-progress">
@@ -228,12 +232,7 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__summary-card">
-        <div className="trial-progress__summary-title">Defeat summary</div>
-        <ul className="trial-progress__suggestions">
-          {suggestions.slice(0, 3).map((line, idx) => (
-            <li key={`${line}-${idx}`}>{line}</li>
-          ))}
-        </ul>
+        <PostFailureDiagnosisPanel surface={postFailureSurface} />
         <div className="trial-progress__ehp">
           Effective HP (with shields):
           {` ${formatNumber(computeEffectiveHp(playerStats.maxHp, absorptionShield, combatShield?.amount ?? 0))}`}

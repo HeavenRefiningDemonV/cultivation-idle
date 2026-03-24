@@ -19,13 +19,16 @@ import cultivatorFight from '../../../../assets/onscreen/cultivator_backshots.pn
 import wildBoar from '../../../../assets/enemies/widboar.png';
 import './CombatStyles.scss';
 import { GATE_SUPPORT_LABELS } from '../../../../ui/text/playerFacingLabels.js';
-import { buildGateTrialAttemptPresentation, buildGateTrialReadinessSurface } from '../../../../systems/readiness/section5Adapters.js';
+import {
+  buildGateTrialAttemptPresentation,
+  buildGateTrialReadinessSurface,
+  buildSection5PostFailureSurface,
+} from '../../../../systems/readiness/section5Adapters.js';
 import { GateTrialReadinessCard } from '../../../../ui/trials/GateTrialReadinessCard.js';
 import { GateTrialChecklist } from '../../../../ui/trials/GateTrialChecklist.js';
 import { GateTrialSafetyNetCard } from '../../../../ui/trials/GateTrialSafetyNetCard.js';
 import { GateTrialTopFixes } from '../../../../ui/trials/GateTrialTopFixes.js';
 import { GateTrialAttemptCluster } from '../../../../ui/trials/GateTrialAttemptCluster.js';
-import { mapGateTrialFixToAction } from '../../../../systems/ui/trials/gateTrialFixActions.js';
 import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 
 interface GateTrialBuildingPanelProps {
@@ -142,6 +145,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   );
   const gateReadinessSurface = useMemo(
     () => (trialDef ? buildGateTrialReadinessSurface(trialDef.id) : null),
+    [trialDef?.id, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, merit, spiritStones],
+  );
+  const postFailureSurface = useMemo(
+    () => (trialDef ? buildSection5PostFailureSurface(trialDef.id) : null),
     [trialDef?.id, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, merit, spiritStones],
   );
   const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
@@ -264,44 +271,40 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             </div>
             <div className="ink-combat-shell__section">
               <GateTrialTopFixes
-                diagnosis={gateReadinessSurface?.rawDiagnosis ?? null}
-                isResolved={lifecycle.isResolved}
-                fixes={(gateReadinessSurface?.rawDiagnosis?.topFixes ?? []).map((fix) => {
-                  const mapped = mapGateTrialFixToAction(fix);
-                  return {
-                    id: fix.code,
-                    label: mapped.label,
-                    reason: fix.reason,
-                    onClick: () => {
-                      if (!trialDef) return;
-                      if (mapped.kind === 'open_cultivation') {
-                        useUIStore.getState().setActiveTab('cultivation');
-                        closeWorldBuildingModal();
-                      } else if (mapped.kind === 'open_techniques') {
-                        useUIStore.getState().setActiveTab('techniques');
-                        closeWorldBuildingModal();
-                      } else if (mapped.kind === 'open_module' && mapped.moduleKey) {
-                        openWorldModule({ cityId, moduleKey: mapped.moduleKey, source: 'gate-top-fix' });
-                      } else if (mapped.kind === 'open_apothecary_pouch') {
-                        openWorldModule({
-                          cityId,
-                          moduleKey: 'apothecary',
-                          source: 'gate-top-fix',
-                          intent: { apothecarySurface: 'pouch' },
-                        });
-                      } else if (mapped.kind === 'buy_safety_net') {
-                        handleFailSafePurchase();
-                      } else if (mapped.kind === 'attempt_gate') {
-                        handleChallengeTrial();
-                      } else if (mapped.kind === 'set_ai_profile_survivor') {
-                        setSettings({ combatAIProfile: 'survivor' });
-                      } else if (mapped.kind === 'enable_consumables') {
-                        setSettings({ useConsumablesInCombat: true });
-                      }
-                    },
-                    disabled: mapped.kind === 'attempt_gate' ? !lifecycle.canStart : false,
-                  };
-                })}
+                surface={postFailureSurface}
+                onAction={(fix) => {
+                  if (fix.target.kind === 'tab') {
+                    useUIStore.getState().setActiveTab(fix.target.tab);
+                    closeWorldBuildingModal();
+                    return;
+                  }
+                  if (fix.target.kind === 'world_module') {
+                    openWorldModule({
+                      cityId: fix.target.cityId ?? cityId,
+                      moduleKey: fix.target.moduleKey,
+                      source: 'gate-top-fix',
+                    });
+                    return;
+                  }
+                  if (fix.target.kind === 'apothecary_surface') {
+                    openWorldModule({
+                      cityId: fix.target.cityId ?? cityId,
+                      moduleKey: 'apothecary',
+                      source: 'gate-top-fix',
+                      intent: { apothecarySurface: fix.target.surface },
+                    });
+                    return;
+                  }
+                  if (fix.target.kind === 'trial_local') {
+                    if (fix.target.action === 'retry') {
+                      handleChallengeTrial();
+                    } else if (fix.target.action === 'buy_safety_net') {
+                      handleFailSafePurchase();
+                    } else if (fix.target.action === 'focus_combat_options') {
+                      setSettings({ combatAIProfile: 'survivor' });
+                    }
+                  }
+                }}
               />
             </div>
             <div className="ink-combat-shell__section">
