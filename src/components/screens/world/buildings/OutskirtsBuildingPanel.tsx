@@ -12,6 +12,13 @@ import { formatNumber } from '../../../../utils/numbers.js';
 import { AI_PROFILE_OPTIONS } from '../../../../systems/combat/aiProfiles.js';
 import { InkCombatShell } from '../../../../ui/combat/InkCombatShell.js';
 import { InkHealthBar } from '../../../../ui/combat/InkHealthBar.js';
+import { buildOutskirtsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
+import { useBountyStore } from '../../../../stores/bountyStore.js';
+import { evaluateCurrentCombatPostureFit } from '../../../../systems/builds/combatPostureFit.js';
+import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
+import { RunCompassCompact } from '../../../../ui/status/RunCompassCompact.js';
+import { OutskirtsSummaryCard } from '../../../../ui/world/OutskirtsSummaryCard.js';
+import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -69,6 +76,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
+  const contentRaw = useContentStore((state) => state.raw);
 
   const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
   const activity = useActivityStore((state) => state.active);
@@ -106,6 +114,8 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const setAutoContinue = useOutskirtsStore((state) => state.setAutoContinue);
   const setStopAtBoss = useOutskirtsStore((state) => state.setStopAtBoss);
   const getProgress = useOutskirtsStore((state) => state.getProgress);
+  const trackedBounty = useBountyStore((state) => state.getTrackedBounty(cityId));
+  const runCompass = useRunCompassSurface();
 
   const outskirtsRefId = useMemo(() => resolveModuleRef(city ?? null, 'outskirts'), [city]);
   const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
@@ -131,6 +141,25 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const [floatingHits, setFloatingHits] = useState<FloatingHit[]>([]);
   const floatingHitIdRef = useRef(0);
   const floatingHitTimeoutsRef = useRef<Map<string, number>>(new Map());
+  const outskirtsRewardModel = useMemo(
+    () => buildOutskirtsActivityRewardReadModel(contentRaw, cityId),
+    [cityId, contentRaw],
+  );
+  const postureFit = useMemo(() => evaluateCurrentCombatPostureFit('outskirts'), [uiSettings.profile, uiSettings.useConsumablesInCombat]);
+  const postureHint = useMemo(() => {
+    if (postureFit.warnings.length > 0) return postureFit.warnings[0];
+    if (uiSettings.profile === 'farmer' && postureFit.aiFit === 'good') {
+      return 'Farmer AI is a strong fit for repeatable low-risk farming runs.';
+    }
+    return null;
+  }, [postureFit.aiFit, postureFit.warnings, uiSettings.profile]);
+  const trackedOutskirtsBounty =
+    trackedBounty && (trackedBounty.kind === 'OUTSKIRTS_KILL' || trackedBounty.kind === 'OUTSKIRTS_BOSS_KILL')
+      ? trackedBounty
+      : null;
+  const expectedOutputsLine = outskirtsRewardModel.keyExpectedOutputs.length > 0
+    ? outskirtsRewardModel.keyExpectedOutputs.slice(0, 2).join(' • ')
+    : 'Gold • Common Mats';
 
   const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
     const container = combatMainRef.current;
@@ -312,6 +341,15 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
         onClose={closeWorldBuildingModal}
         leftSidebar={
           <>
+            <div className="ink-combat-shell__section outskirtsPanel__summary">
+              <RunCompassCompact surface={runCompass.compact} tone="ink" />
+              <OutskirtsSummaryCard
+                model={outskirtsRewardModel}
+                expectedOutputs={expectedOutputsLine}
+                trackedBountyLine={trackedOutskirtsBounty ? <TrackedBountyProgressLine bounty={trackedOutskirtsBounty} /> : undefined}
+                postureHint={postureHint}
+              />
+            </div>
             <div className="ink-combat-shell__section">
               <div className="ink-combat-shell__actions">
                 <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>

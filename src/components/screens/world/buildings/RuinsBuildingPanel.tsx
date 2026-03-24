@@ -1,10 +1,15 @@
 import { useMemo } from 'react';
-import { useActivityStore } from '../../../../stores/activityStore.js';
-import { useCombatStore } from '../../../../stores/combatStore.js';
 import { useContentStore } from '../../../../stores/contentStore.js';
 import { useRuinsStore } from '../../../../stores/ruinsStore.js';
-import { useUIStore } from '../../../../stores/uiStore.js';
 import { resolveModuleRef } from '../worldUtils.js';
+import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
+import { RunCompassCompact } from '../../../../ui/status/RunCompassCompact.js';
+import { buildRuinsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
+import { RuinsProgress } from '../../../../features/ruins/ui/RuinsProgress.js';
+import { useBountyStore } from '../../../../stores/bountyStore.js';
+import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
+import { RuinsSummaryCard } from '../../../../ui/world/RuinsSummaryCard.js';
+import './CombatStyles.scss';
 
 interface RuinsBuildingPanelProps {
   cityId: string;
@@ -13,46 +18,53 @@ interface RuinsBuildingPanelProps {
 export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const ruinsById = useContentStore((state) => state.maps.ruinsById);
-
-  const ruinsProgressById = useRuinsStore((state) => state.progressByRuinId);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
+  const contentRaw = useContentStore((state) => state.raw);
   const activeRun = useRuinsStore((state) => state.activeRun);
-  const stopRun = useRuinsStore((state) => state.stopRun);
-  const setAutoRepeat = useRuinsStore((state) => state.setAutoRepeat);
+  const progressByRuinId = useRuinsStore((state) => state.progressByRuinId);
   const autoRepeatDefault = useRuinsStore((state) => state.autoRepeatDefault);
-
-  const activeActivity = useActivityStore((state) => state.active);
-  const stopActivity = useActivityStore((state) => state.stopActivity);
-
-  const combatContext = useCombatStore((state) => state.combatContext);
-  const exitCombat = useCombatStore((state) => state.exitCombat);
-  const openCombatPreview = useUIStore((state) => state.openCombatPreview);
-  const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
+  const trackedBounty = useBountyStore((state) => state.getTrackedBounty(cityId));
+  const runCompass = useRunCompassSurface();
 
   const ruinRefId = useMemo(() => resolveModuleRef(city ?? null, 'ruins'), [city]);
   const ruinDef = ruinRefId ? ruinsById[ruinRefId] : undefined;
-  const ruinProgress = ruinRefId
-    ? ruinsProgressById[ruinRefId] ?? { totalRuns: 0, totalRoomsCleared: 0, bossKills: 0 }
-    : null;
-  const isRuinsActive = activeActivity?.type === 'ruins' && activeActivity.sourceId === ruinRefId;
-  const activeRuin = activeRun && activeRun.ruinId === ruinRefId ? activeRun : null;
+  const ruinProgress = ruinRefId ? progressByRuinId[ruinRefId] : undefined;
+  const ruinsRewardModel = useMemo(
+    () => buildRuinsActivityRewardReadModel(contentRaw, cityId),
+    [cityId, contentRaw],
+  );
 
-  const handleStartRuins = () => {
-    if (!ruinDef) return;
-    openCombatPreview({ type: 'ruins', cityId, sourceId: ruinDef.id });
-  };
+  const leadMaterialsLine = useMemo(() => {
+    const names = ruinsRewardModel.leadLocalMaterials
+      .map((id) => itemsById[id]?.name)
+      .filter((name): name is string => Boolean(name))
+      .slice(0, 2);
+    return `Lead materials: ${names.length > 0 ? names.join(' • ') : 'Local support materials'}`;
+  }, [itemsById, ruinsRewardModel.leadLocalMaterials]);
 
-  const handleStopRuins = () => {
-    stopCombatAndClose();
-    stopRun();
-    stopActivity();
-    if (combatContext.type === 'ruins') {
-      exitCombat();
-    }
-  };
+  const anchorLine = useMemo(() => {
+    if (!ruinsRewardModel.deterministicFinalAnchor) return 'Final chest anchor: deterministic support payout.';
+    const name = itemsById[ruinsRewardModel.deterministicFinalAnchor]?.name;
+    return `Final chest anchor: ${name ?? 'Deterministic support payout'}`;
+  }, [itemsById, ruinsRewardModel.deterministicFinalAnchor]);
 
-  const handleToggleRuinsAutoRepeat = () => {
-    setAutoRepeat(!autoRepeatDefault);
-  };
+  const rarePityLine = useMemo(() => {
+    const failures = ruinProgress?.bossChestRareFailures ?? 0;
+    const summary = ruinsRewardModel.rarePitySummary;
+    if (!summary) return 'Boss Chest Rare Progress: not configured.';
+    const threshold = Math.max(summary.pityCap - 1, 0);
+    const guaranteed = threshold > 0 && failures >= threshold;
+    return `Boss Chest Rare Progress: ${failures} / ${threshold || '—'}${guaranteed ? ' • Guaranteed next rare' : ''}`;
+  }, [ruinProgress?.bossChestRareFailures, ruinsRewardModel.rarePitySummary]);
+
+  const runStateLine = activeRun
+    ? `Run state: Active (Room ${activeRun.roomIndex + 1}/${activeRun.roomCount})`
+    : 'Run state: Idle';
+  const autoRepeatLine = `Auto-repeat: ${autoRepeatDefault ? 'On' : 'Off'}`;
+  const trackedRuinsBounty =
+    trackedBounty && (trackedBounty.kind === 'RUINS_ROOM_CLEAR' || trackedBounty.kind === 'RUINS_RUN_CLEAR')
+      ? trackedBounty
+      : null;
 
   if (!ruinDef) {
     return (
@@ -69,51 +81,24 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
-      <div className={'worldScreenPlaceholderHeader'}>
-        <div className={'worldScreenPlaceholderTitle'}>{ruinDef.name ?? 'Ruins'}</div>
-        <div className={'worldScreenPlaceholderKey'}>ruins</div>
+    <div className="worldScreenPlaceholder ruinsPanel">
+      <div className="ruinsPanel__summary">
+        <RunCompassCompact surface={runCompass.compact} tone="ink" />
+        <RuinsSummaryCard
+          ruinName={ruinDef.name ?? 'Ruins'}
+          roleTag={ruinsRewardModel.roleTag}
+          bestUsedWhen={ruinsRewardModel.bestUsedWhen}
+          roomCount={ruinDef.roomCount}
+          leadMaterialsLine={leadMaterialsLine}
+          anchorLine={anchorLine}
+          rarePityLine={rarePityLine}
+          goldSecondaryLine={ruinsRewardModel.goldIsSecondary ? ruinsRewardModel.boundaryLine : undefined}
+          autoRepeatLine={autoRepeatLine}
+          runStateLine={runStateLine}
+          trackedBountyLine={trackedRuinsBounty ? <TrackedBountyProgressLine bounty={trackedRuinsBounty} /> : undefined}
+        />
       </div>
-      <div className={'worldScreenPlaceholderBody'}>
-        <div className={'worldScreenPlaceholderLine'}>Rooms: {ruinDef.roomCount}</div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Activity: {isRuinsActive ? 'Active' : 'Inactive'}
-          {activeRuin && (
-            <span>
-              {' '}
-              (Room {activeRuin.roomIndex + 1}/{activeRuin.roomCount})
-            </span>
-          )}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Runs: {ruinProgress?.totalRuns ?? 0} • Boss kills: {ruinProgress?.bossKills ?? 0}
-        </div>
-        <div className={'worldScreenPlaceholderLine'}>
-          Best time: {ruinProgress?.bestRunSeconds ? `${ruinProgress.bestRunSeconds.toFixed(1)}s` : 'N/A'}
-        </div>
-        {ruinProgress?.lastRun && (
-          <div className={'worldScreenPlaceholderLine'}>
-            Last run: {ruinProgress.lastRun.victory ? 'Victory' : 'Defeat'} in {ruinProgress.lastRun.seconds.toFixed(1)}s
-            (rooms {ruinProgress.lastRun.roomsCleared})
-          </div>
-        )}
-      </div>
-      <div className={'worldScreenPlaceholderActions'}>
-        <button
-          className={'worldScreenModuleButton worldScreenModuleButton--active'}
-          onClick={handleStartRuins}
-          disabled={!ruinDef}
-          type="button"
-        >
-          Start Run
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleStopRuins} type="button">
-          Stop
-        </button>
-        <button className={'worldScreenModuleButton'} onClick={handleToggleRuinsAutoRepeat} type="button">
-          Auto-repeat: {autoRepeatDefault ? 'On' : 'Off'}
-        </button>
-      </div>
+      <RuinsProgress ruinsId={ruinDef.id} />
     </div>
   );
 }

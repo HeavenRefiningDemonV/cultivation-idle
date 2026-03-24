@@ -339,3 +339,65 @@
     align-items: start;
     margin-top: 6px;
 }
+
+.outskirtsPanel__summary,
+.ruinsPanel__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.outskirtsSummaryCard,
+.ruinsSummaryCard {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.outskirtsSummaryCard__header,
+.ruinsSummaryCard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #f8fafc;
+}
+
+.outskirtsSummaryCard__hint {
+    color: #fcd34d;
+}
+
+.ruinsSummaryCard__outputs {
+    color: #e2e8f0;
+}
+
+.trackedBountyProgressLine {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 6px;
+    padding: 6px 8px;
+    background: rgba(2, 6, 23, 0.35);
+}
+
+.trackedBountyProgressLine__label {
+    color: #e2e8f0;
+}
+
+.trackedBountyProgressLine__progress {
+    color: #93c5fd;
+}
+
+.ruinsPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
