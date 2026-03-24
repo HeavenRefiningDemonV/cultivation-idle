@@ -13,4 +13,14 @@
   --accent-ink: var(--paper-stamp, #9f3b2e);
   --ink-text-color: var(--paper-ink, #2b2116);
   --ink-muted-color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
+  --ink-panel-base: var(--paper-shell-base, rgba(247, 237, 215, 0.9));
+  --ink-panel-raised: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
+  --ink-panel-muted: var(--paper-shell-muted, rgba(236, 225, 205, 0.74));
+  --ink-panel-border: var(--paper-shell-border, rgba(65, 45, 25, 0.26));
+  --ink-panel-outline: var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
+  --ink-progress-fill: var(--paper-progress-fill, rgba(47, 143, 102, 0.75));
+  --ink-progress-danger: var(--paper-progress-fill-soft, rgba(159, 59, 46, 0.55));
+  --ink-scrollbar-track: var(--paper-scrollbar-track, rgba(59, 42, 24, 0.28));
+  --ink-scrollbar-thumb: var(--paper-scrollbar-thumb, rgba(120, 72, 33, 0.62));
+  --ink-scrollbar-thumb-hover: var(--paper-scrollbar-thumb-hover, rgba(159, 59, 46, 0.68));
 }

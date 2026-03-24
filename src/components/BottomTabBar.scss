@@ -32,9 +32,10 @@
   padding: 0.75rem 1rem;
   font-weight: 700;
   font-size: 0.95rem;
-  background: rgba(208, 208, 208, 0.92);
+  background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
+  color: var(--paper-ink, #2b2116);
   transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24));
 }
 
 .bottomTabBarButton:hover,
@@ -44,9 +45,11 @@
 }
 
 .bottomTabBarButton--active {
-  background: linear-gradient(135deg, rgba(125, 211, 252, 0.95), rgba(59, 130, 246, 0.95));
-  color: #0c1222;
-  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.45);
+  background: var(--paper-shell-active, rgba(159, 59, 46, 0.2));
+  color: var(--paper-ink, #2b2116);
+  box-shadow: var(--paper-shadow-strong, 0 14px 28px rgba(22, 12, 4, 0.32));
+  outline: 2px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
+  outline-offset: 1px;
 }
 
 @media (max-width: 640px) {

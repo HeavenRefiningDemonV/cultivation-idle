@@ -76,7 +76,7 @@
 }
 
 .worldScreenCityButton--active {
-  border-color: #a855f7;
+  border-color: var(--paper-warning, #b5852b);
   background: rgba(168, 85, 247, 0.08);
 }
 
@@ -294,9 +294,9 @@
 }
 
 .worldScreenModuleButton:focus-visible {
-  outline: 2px solid rgba(125, 211, 252, 0.8);
+  outline: 2px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
   outline-offset: 2px;
-  border-color: rgba(125, 211, 252, 0.55);
+  border-color: rgba(120, 72, 33, 0.42);
 }
 
 .worldScreenModuleButton--active {
@@ -780,7 +780,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 12px;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.04), rgba(59, 130, 246, 0.04));
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.04), rgba(120, 72, 33, 0.04));
 }
 
 .alchemyDialHeader {
@@ -810,7 +810,7 @@
 }
 
 .alchemyDialZone--roaring {
-  color: #60a5fa;
+  color: var(--paper-jade, #2f8f66);
 }
 
 .alchemyDialZone--surge {
@@ -928,7 +928,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(90deg, #22c55e, #60a5fa);
+  background: linear-gradient(90deg, #22c55e, var(--paper-jade, #2f8f66));
 }
 
 .alchemyStabilityMeter {
@@ -956,7 +956,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  background: linear-gradient(90deg, #22c55e, var(--paper-stamp, #9f3b2e));
 }
 
 .alchemyStabilityMeta {
@@ -975,8 +975,8 @@
   padding: 8px 10px;
   border-radius: 8px;
   font-size: 13px;
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: rgba(120, 72, 33, 0.08);
+  border: 1px solid rgba(120, 72, 33, 0.2);
 }
 
 .alchemyHandsOnSidebar {
@@ -1139,7 +1139,7 @@
 
 .forgeHammerProgress {
   height: 100%;
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(59, 130, 246, 0.7));
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.8), rgba(159, 59, 46, 0.64));
 }
 
 .forgeHammerActions {
@@ -1178,7 +1178,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  background: rgba(59, 130, 246, 0.4);
+  background: rgba(120, 72, 33, 0.4);
 }
 
 .forgeQuenchGood {
@@ -1232,7 +1232,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  background: linear-gradient(90deg, rgba(34, 197, 94, 0.7), rgba(59, 130, 246, 0.7));
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.7), rgba(159, 59, 46, 0.64));
   border-radius: 8px;
 }
 
@@ -1329,8 +1329,8 @@
 }
 
 .alchemyTimelineItem--active {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(120, 72, 33, 0.12);
+  border-color: rgba(120, 72, 33, 0.4);
 }
 
 .alchemyTimelineItem--pending {
@@ -1576,8 +1576,8 @@
   justify-content: center;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.6);
+  background: rgba(120, 72, 33, 0.15);
+  border: 1px solid rgba(120, 72, 33, 0.6);
   cursor: grab;
   user-select: none;
   font-weight: 600;
@@ -1741,7 +1741,7 @@
 }
 
 .alchemyRecipeRackItem--active {
-  border-color: rgba(59, 130, 246, 0.6);
+  border-color: rgba(120, 72, 33, 0.6);
   background: rgba(30, 41, 59, 0.75);
 }
 
@@ -1775,7 +1775,7 @@
 }
 
 .alchemyRecipeRackStatus--ready {
-  background: #38bdf8;
+  background: var(--paper-jade, #2f8f66);
   box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
 }
 
@@ -1908,7 +1908,7 @@
   width: 90px;
   height: 70px;
   border-radius: 0 0 40px 40px;
-  background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+  background: linear-gradient(180deg, #3b2b1d 0%, #251b12 100%);
   border: 2px solid rgba(148, 163, 184, 0.4);
   box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.45);
 }
@@ -1932,7 +1932,7 @@
   bottom: 12px;
   height: 24px;
   border-radius: 999px 999px 16px 16px;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(129, 140, 248, 0.7));
+  background: linear-gradient(90deg, rgba(159, 59, 46, 0.62), rgba(181, 133, 43, 0.62));
   opacity: 0.85;
 }
 
@@ -2116,7 +2116,7 @@
 }
 
 .alchemyLedgerRow--brewing .alchemyLedgerDot {
-  background: #38bdf8;
+  background: var(--paper-jade, #2f8f66);
 }
 
 .alchemyLedgerRow--ready .alchemyLedgerDot {
@@ -2149,7 +2149,7 @@
 
 .alchemyLedgerProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(129, 140, 248, 0.9));
+  background: linear-gradient(90deg, rgba(159, 59, 46, 0.62), rgba(120, 72, 33, 0.68));
   transition: width 0.3s ease;
 }
 
@@ -2308,7 +2308,7 @@
 
 .alchemyMasteryBarFill {
   height: 100%;
-  background: linear-gradient(90deg, #38bdf8, #c084fc);
+  background: linear-gradient(90deg, var(--paper-jade, #2f8f66), #c084fc);
   transition: width 0.2s ease;
 }
 
@@ -2978,8 +2978,8 @@
   margin: 10px 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), rgba(59, 130, 246, 0.08));
-  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.15), rgba(120, 72, 33, 0.08));
+  border: 1px solid rgba(120, 72, 33, 0.35);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2996,9 +2996,9 @@
 }
 
 .worldScreenTrackedLink {
-  border: 1px solid rgba(59, 130, 246, 0.6);
+  border: 1px solid rgba(120, 72, 33, 0.6);
   background: rgba(255, 255, 255, 0.85);
-  color: #0f172a;
+  color: #251b12;
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
@@ -3192,7 +3192,7 @@
 
 .expeditionPityFill {
   height: 100%;
-  background: linear-gradient(90deg, #22d3ee, #6366f1);
+  background: linear-gradient(90deg, var(--paper-jade, #2f8f66), var(--paper-stamp, #9f3b2e));
   transition: width 0.2s ease;
 }
 
@@ -3643,7 +3643,7 @@
 
 .expeditionProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, var(--paper-stamp, #9f3b2e), var(--paper-warning, #b5852b));
   transition: width 0.3s ease;
 }
 
@@ -3920,7 +3920,7 @@
 }
 
 .worldCommandAlert {
-  border: 1px solid rgba(125, 211, 252, 0.35);
+  border: 1px solid rgba(120, 72, 33, 0.35);
   background: rgba(2, 132, 199, 0.08);
   border-radius: 10px;
   padding: 10px;

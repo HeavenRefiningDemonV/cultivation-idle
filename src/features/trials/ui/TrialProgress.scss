@@ -1,6 +1,6 @@
 .trial-progress {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: var(--paper-shell-muted, rgba(236, 225, 205, 0.74));
+  border: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
   border-radius: 8px;
   padding: 12px;
   display: flex;
@@ -17,17 +17,17 @@
 .trial-progress__title {
   font-weight: 700;
   font-size: 16px;
-  color: #e2e8f0;
+  color: var(--paper-ink, #2b2116);
 }
 
 .trial-progress__subtitle {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .trial-progress__attempts {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .trial-progress__requirements,
@@ -35,7 +35,7 @@
 .trial-progress__intel,
 .trial-progress__summary-card {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  border: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
   border-radius: 6px;
   padding: 8px;
   display: flex;
@@ -52,27 +52,27 @@
 
 .trial-progress__badge {
   padding: 2px 6px;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: var(--paper-shell-active-subtle, rgba(120, 72, 33, 0.14));
+  border: 1px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
   border-radius: 4px;
   font-size: 12px;
-  color: #bfdbfe;
+  color: var(--paper-ink, #2b2116);
 }
 
 .trial-progress__status {
   font-size: 13px;
-  color: #e2e8f0;
+  color: var(--paper-ink, #2b2116);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .trial-progress__status--ok {
-  color: #a7f3d0;
+  color: var(--paper-success, #2f8f66);
 }
 
 .trial-progress__status--warn {
-  color: #fca5a5;
+  color: var(--paper-danger, #9f3b2e);
 }
 
 .trial-progress__metrics {
@@ -87,29 +87,29 @@
 
 .trial-progress__metric-label {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .trial-progress__bar {
   height: 8px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(120, 72, 33, 0.12);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .trial-progress__bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #60a5fa, #34d399);
+  background: var(--ink-progress-fill, rgba(47, 143, 102, 0.75));
   transition: width 0.25s ease;
 }
 
 .trial-progress__bar-fill--hp {
-  background: linear-gradient(90deg, #f87171, #fb7185);
+  background: var(--ink-progress-danger, rgba(159, 59, 46, 0.55));
 }
 
 .trial-progress__metric-text {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--paper-ink-faint, rgba(43, 33, 22, 0.55));
 }
 
 .trial-progress__intel {
@@ -126,18 +126,18 @@
 
 .trial-progress__intel-label {
   font-size: 12px;
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .trial-progress__intel-value {
   font-size: 14px;
-  color: #e2e8f0;
+  color: var(--paper-ink, #2b2116);
 }
 
 .trial-progress__dps {
   display: block;
   font-size: 12px;
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
 .trial-progress__summary-card {
@@ -146,7 +146,7 @@
 
 .trial-progress__summary-title {
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--paper-ink, #2b2116);
 }
 
 .trial-progress__suggestions {
@@ -158,19 +158,19 @@
 }
 
 .trial-progress__suggestions li {
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   font-size: 13px;
 }
 
 .trial-progress__ehp {
   font-size: 13px;
-  color: #e2e8f0;
+  color: var(--paper-ink, #2b2116);
 }
 
 .trial-progress .gateTrialReadinessCard,
 .trial-progress .gateTrialChecklist {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  border: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
   border-radius: 6px;
   padding: 8px;
 }

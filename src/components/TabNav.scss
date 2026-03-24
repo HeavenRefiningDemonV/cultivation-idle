@@ -1,7 +1,7 @@
 .tabNavNav {
-  background: #1f2937;
-  border-bottom: 1px solid #374151;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  background: var(--paper-shell-base, rgba(247, 237, 215, 0.9));
+  border-bottom: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
+  box-shadow: var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24));
 }
 
 .tabNavInner {
@@ -20,7 +20,7 @@
   padding: 12px 24px;
   font-weight: 600;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
   border: none;
   background: transparent;
   border-bottom: 2px solid transparent;
@@ -29,19 +29,24 @@
 }
 
 .tabNavTab:hover {
-  color: #e5e7eb;
-  background: rgba(55, 65, 81, 0.3);
+  color: var(--paper-ink, #2b2116);
+  background: var(--paper-shell-active-subtle, rgba(120, 72, 33, 0.14));
+}
+
+.tabNavTab:focus-visible {
+  outline: 2px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
+  outline-offset: 2px;
 }
 
 .tabNavTabActive {
-  color: #7dd3fc;
-  border-bottom-color: #7dd3fc;
-  background: rgba(55, 65, 81, 0.5);
+  color: var(--paper-stamp, #9f3b2e);
+  border-bottom-color: var(--paper-stamp, #9f3b2e);
+  background: var(--paper-shell-active, rgba(159, 59, 46, 0.2));
 }
 
 .tabNavActiveUnderline {
   position: absolute;
   inset: auto 0 0 0;
   height: 4px;
-  background: linear-gradient(90deg, #22d3ee, #3b82f6);
+  background: var(--paper-stamp, #9f3b2e);
 }
