@@ -8,7 +8,6 @@ import { adaptProgressionAuthoredContent } from '../contract/contentAdapter.js';
 import { getProgressionContract, getTransitionByTrialId } from '../contract/progressionContract.js';
 import { clampRealmIndexToSemesterSlice, getLiveRealmByIndex } from './liveRealmProjection.js';
 import { getTrialGateItemId } from './gateResolver.js';
-import { GATE_SUPPORT_LABELS } from '../../../ui/text/playerFacingLabels.js';
 
 export type TrialLifecycleState = 'locked' | 'available' | 'cleared' | 'bypassed';
 export type TrialLifecycleReasonCode =
@@ -157,7 +156,7 @@ export const getTrialLifecycleSnapshot = ({
     : canPurchase
       ? null
       : state === 'available'
-        ? `${GATE_SUPPORT_LABELS.support} unlocks after ${threshold} eligible defeats.`
+        ? `Fail-safe unlocks after ${threshold} eligible defeats.`
         : failSafeBlockedReasonCode
           ? describeReason(failSafeBlockedReasonCode, resolution)
           : null;

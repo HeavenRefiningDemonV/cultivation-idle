@@ -20,10 +20,7 @@ export type EconomicModuleActivityMode = 'foreground' | 'background';
 export interface EconomicModuleRoleEntry {
   moduleKey: LiveWorldModuleKey;
   roleTag: string;
-  displayRoleTag: string;
   bestUsedWhen: string;
-  displayBestUsedWhen: string;
-  boundaryLine?: string;
   economicCategory: EconomicModuleCategory;
   moduleKind: EconomicModuleKind;
   activityMode: EconomicModuleActivityMode;
@@ -33,10 +30,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'outskirts',
     roleTag: 'gold-and-common-mats',
-    displayRoleTag: 'Gold & Common Mats',
     bestUsedWhen: 'You need gold and broad common-material income.',
-    displayBestUsedWhen: 'Best used when you need gold and broad common-material income.',
-    boundaryLine: 'Switch away once you need targeted local mats instead of broad farming.',
     economicCategory: 'resource_source',
     moduleKind: 'primary_source',
     activityMode: 'foreground',
@@ -44,10 +38,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'ruins',
     roleTag: 'targeted-material-anchors',
-    displayRoleTag: 'Targeted Mats',
     bestUsedWhen: 'You need deterministic targeted mats or anchor drops.',
-    displayBestUsedWhen: 'Best used when you need deterministic targeted mats or anchor drops.',
-    boundaryLine: 'Gold is secondary here; treat Ruins as the targeted-material route.',
     economicCategory: 'targeted_source',
     moduleKind: 'primary_source',
     activityMode: 'foreground',
@@ -55,9 +46,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'apothecary',
     roleTag: 'immediate-readiness',
-    displayRoleTag: 'Gate Prep',
     bestUsedWhen: 'You need immediate readiness through buying, brewing, or pouch restock.',
-    displayBestUsedWhen: 'Best used when you need immediate readiness through buying, brewing, or pouch restock.',
     economicCategory: 'readiness',
     moduleKind: 'conversion_station',
     activityMode: 'background',
@@ -65,9 +54,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'forge',
     roleTag: 'permanent-floor',
-    displayRoleTag: 'Permanent Power',
     bestUsedWhen: 'You need permanent refine, temper, or rune floor progress.',
-    displayBestUsedWhen: 'Best used when you need permanent refine, temper, or rune floor progress.',
     economicCategory: 'permanent_floor',
     moduleKind: 'conversion_station',
     activityMode: 'background',
@@ -75,9 +62,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'bounties',
     roleTag: 'support-economy-routing',
-    displayRoleTag: 'Support Currency',
     bestUsedWhen: 'You need support-economy progress, refreshes, or route guidance.',
-    displayBestUsedWhen: 'Best used when you need support-currency progress, refreshes, or route guidance.',
     economicCategory: 'support_loop',
     moduleKind: 'support_loop',
     activityMode: 'background',
@@ -85,9 +70,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'expeditions',
     roleTag: 'passive-shortage-smoothing',
-    displayRoleTag: 'Passive Supply',
     bestUsedWhen: 'You need passive shortage smoothing for herbs, ore, or fragments.',
-    displayBestUsedWhen: 'Best used when you need passive shortage smoothing for herbs, ore, or fragments.',
     economicCategory: 'passive_smoothing',
     moduleKind: 'support_loop',
     activityMode: 'background',
@@ -95,9 +78,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'manualPavilion',
     roleTag: 'build-correction',
-    displayRoleTag: 'Build Correction',
     bestUsedWhen: 'You need build correction, manual options, or scout-route support.',
-    displayBestUsedWhen: 'Best used when you need build correction, manual options, or scout-route support.',
     economicCategory: 'build_correction',
     moduleKind: 'support_loop',
     activityMode: 'background',
@@ -105,9 +86,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'gateTrial',
     roleTag: 'milestone-check',
-    displayRoleTag: 'Milestone Gate',
     bestUsedWhen: 'You are ready to resolve the current milestone gate.',
-    displayBestUsedWhen: 'Best used when you are ready to resolve the current milestone gate.',
     economicCategory: 'milestone',
     moduleKind: 'milestone_step',
     activityMode: 'foreground',

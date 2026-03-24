@@ -59,7 +59,13 @@ export function CityArrivalBanner() {
                 openWorldModule({ cityId: city.id, moduleKey, source: 'city-arrival-banner' });
               }}
             >
-              {getOpenWorldModuleLabel(moduleKey)}
+              {moduleKey === 'outskirts'
+                ? 'Open Outskirts'
+                : moduleKey === 'ruins'
+                  ? 'Open Ruins'
+                  : moduleKey === 'gateTrial'
+                    ? 'Open Gate Trial'
+                    : getOpenWorldModuleLabel(moduleKey)}
             </button>
           ))}
           <button

@@ -32,7 +32,7 @@ export function openWorldModule({ cityId, moduleKey, open = true }: OpenWorldMod
   const activityStore = useActivityStore.getState();
   const combatStore = useCombatStore.getState();
 
-  const normalizedModuleKey = moduleKey === 'alchemy' ? 'apothecary' : moduleKey;
+  const normalizedModuleKey = moduleKey;
 
   const targetAudit = inspectWorldFacingModuleTarget(normalizedModuleKey);
   if (!targetAudit.ok) {

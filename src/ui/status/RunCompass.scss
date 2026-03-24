@@ -1,0 +1,175 @@
+.runCompass {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.runCompass--paper {
+  background: rgba(208, 208, 208, 0.92);
+  border: 5px solid transparent;
+  border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.runCompassSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.runCompassSection__title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.runCompassSection__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.runCompassMilestone__header,
+.runCompassAction__top,
+.runCompassReadinessHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.runCompassMilestone__title,
+.runCompassSafetyNet__title,
+.runCompassAction__label,
+.runCompassInfoRow__label,
+.runCompassCompact__title {
+  font-weight: 700;
+}
+
+.runCompassMilestone__detail,
+.runCompassMilestone__context,
+.runCompassMilestone__prestige,
+.runCompassReadinessDetail,
+.runCompassReadinessHead__diagnosis,
+.runCompassInfoRow__detail,
+.runCompassAction__why,
+.runCompassSafetyNet__line,
+.runCompassSafetyNet__detail,
+.runCompassCompact__line,
+.runCompassFallback,
+.runCompassCompact__fallback {
+  font-size: 0.92rem;
+  line-height: 1.35;
+  opacity: 0.82;
+}
+
+.runCompassInfoList,
+.runCompassActionList {
+  display: grid;
+  gap: 8px;
+}
+
+.runCompassInfoList--fixed3,
+.runCompassActionList--fixed3 {
+  grid-template-rows: repeat(3, minmax(64px, auto));
+}
+
+.runCompassInfoRow,
+.runCompassAction {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 64px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.18);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.runCompassAction.is-blocked,
+.runCompassInfoRow.is-placeholder {
+  opacity: 0.72;
+}
+
+.runCompassInfoRow__main,
+.runCompassAction__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.runCompassAction__button {
+  border: 1px solid rgba(120, 72, 33, 0.28);
+  background: rgba(255, 248, 235, 0.88);
+  color: #332012;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.runCompassSafetyNet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 132px;
+}
+
+.runCompassCompact {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(22px, auto));
+  gap: 6px;
+  min-height: 94px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.runCompassCompact--paper {
+  background: rgba(208, 208, 208, 0.92);
+  border: 1px solid rgba(120, 72, 33, 0.22);
+}
+
+.runCompassCompact--ink {
+  background: rgba(13, 17, 30, 0.64);
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  color: #f8fafc;
+}
+
+.runCompassCompact__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.runCompassCompact__line--headline {
+  font-weight: 700;
+}
+
+.runCompassCompact__line > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .runCompassMilestone__header,
+  .runCompassAction__top,
+  .runCompassReadinessHead,
+  .runCompassAction {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .runCompassAction__button {
+    align-self: flex-start;
+  }
+}

@@ -544,3 +544,37 @@
   font-variant-numeric: tabular-nums;
   color: rgba(253, 224, 71, 0.95);
 }
+
+
+.cultivationRunCompassDock {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 84px);
+  right: 20px;
+  z-index: 19;
+  width: min(360px, calc(100vw - 40px));
+  max-height: min(62vh, 720px);
+  pointer-events: auto;
+}
+
+.cultivationRunCompass {
+  max-height: inherit;
+  overflow: auto;
+}
+
+@media (max-width: 1180px) {
+  .cultivationRunCompassDock {
+    left: 92px;
+    right: 20px;
+    width: auto;
+    max-height: 220px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cultivationRunCompassDock {
+    left: 16px;
+    right: 16px;
+    top: calc(env(safe-area-inset-top, 0px) + 88px);
+    max-height: 180px;
+  }
+}

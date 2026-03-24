@@ -10,6 +10,8 @@ import { clampRealmIndexToSemesterSlice } from '../../systems/progression/runtim
 import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
 import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
+import { RunCompass } from '../../ui/status/RunCompass.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import type { IconId } from '../../ui/icons/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import {
@@ -129,6 +131,7 @@ export function StatusScreen() {
   const focusModeText = focusMode.toUpperCase();
   const totalAurasText = formatNumber(totalAuras);
   const hasQiFlow = qiPerSecond > 0;
+  const runCompass = useRunCompassSurface();
 
   useEffect(() => {
     setHeaderTitles('Status', 'View your cultivation progress and combat statistics');
@@ -138,6 +141,11 @@ export function StatusScreen() {
     <div className={'statusScreenRoot'}>
       {/* Main Content */}
       <div className={'statusScreenContent'}>
+        <RunCompass
+          surface={runCompass.full}
+          tone="paper"
+          className="statusScreenRunCompass statusScreenCardBase"
+        />
         <StatusSummaryHeader
           realmName={realmName}
           realmIndex={realm.index}

@@ -28,6 +28,9 @@ import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/seme
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { buildModulePurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
 import { PurposeSourceCallout, PaperCard } from '../../ui/ink/index.js';
+import { RunCompass } from '../../ui/status/RunCompass.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
+import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
@@ -51,6 +54,7 @@ export function WorldScreen() {
   const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
   const inCombat = useCombatStore((state) => state.inCombat);
   const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
+  const runCompass = useRunCompassSurface();
 
   useEffect(() => {
     setHeaderTitles('World', 'Cities & activities');
@@ -279,6 +283,15 @@ export function WorldScreen() {
             ))}
           </select>
         </div>
+      </div>
+
+      <div className={'worldScreenRunCompassWrapper'}>
+        <RunCompass
+          surface={runCompass.full}
+          tone="ink"
+          className="worldScreenRunCompass"
+          onAction={performRunCompassAction}
+        />
       </div>
 
       {!selectedCity ? (

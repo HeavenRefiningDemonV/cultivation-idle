@@ -231,9 +231,13 @@ export function buildModulePurposeSourceSurface(
   return {
     moduleKey,
     moduleLabel: getWorldModuleLabel(moduleKey),
-    purposeTag: role.displayRoleTag,
-    purposeLine: role.displayBestUsedWhen,
-    boundaryLine: role.boundaryLine,
+    purposeTag: role.roleTag.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+    purposeLine: `Best used when ${role.bestUsedWhen.charAt(0).toLowerCase()}${role.bestUsedWhen.slice(1)}`,
+    boundaryLine: role.moduleKey === 'outskirts'
+      ? 'Switch away once you need targeted local mats instead of broad farming.'
+      : role.moduleKey === 'ruins'
+        ? 'Gold is secondary here; treat Ruins as the targeted-material route.'
+        : undefined,
   };
 }
 

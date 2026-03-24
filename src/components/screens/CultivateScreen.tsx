@@ -25,6 +25,9 @@ import barLong from "../../assets/menus/bar_long.png";
 import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderRibbon.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { RunCompass } from '../../ui/status/RunCompass.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
+import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -93,6 +96,7 @@ export function CultivateScreen() {
   const stabilityCap = useCultivationStore((state) => state.stabilityCap);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const activeCultivationConsumables = useCultivationStore((state) => state.activeCultivationConsumables);
+  const runCompass = useRunCompassSurface();
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
 
@@ -312,6 +316,14 @@ export function CultivateScreen() {
         Dao
       </button>
       <div className="cultivationHeaderRail">
+        <div className="cultivationRunCompassDock">
+          <RunCompass
+            surface={runCompass.full}
+            tone="ink"
+            className="cultivationRunCompass"
+            onAction={performRunCompassAction}
+          />
+        </div>
         <CultivationHeaderRibbon
           realmLabel={realmLabel}
           substage={realm.substage}
