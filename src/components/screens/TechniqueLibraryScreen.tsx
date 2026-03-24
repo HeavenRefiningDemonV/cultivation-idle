@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { buildLoadoutSnapshot } from '../../systems/builds/index.js';
+import { analyzeSelectedBuild } from '../../systems/builds/buildAnalysisService.js';
+import { getBuildArchetype } from '../../systems/builds/archetypeRegistry.js';
+import { evaluateCurrentCombatPostureFit } from '../../systems/builds/combatPostureFit.js';
+import { getPathDoctrineProfile } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -26,6 +30,9 @@ import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
 import { InkPanel, PaperCard, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
+import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { BuildAltarSummary } from '../../ui/techniques/BuildAltarSummary.js';
 import './TechniqueLibraryScreen.scss';
 import { buildPurposeSourceContext, buildTechniqueFragmentPurposeSourceSurface } from '../../systems/economy/purposeSourceSurface.js';
 
@@ -107,6 +114,29 @@ const castingPolicies: CastingPolicy[] = ['aggressive', 'balanced', 'defensive']
 
 const formatRankLabel = (rank: number) => `Rank ${rank}`;
 
+function resolveBuildNextFixLine(build: ReturnType<typeof analyzeSelectedBuild>): string {
+  const topGap = build.gaps[0];
+  if (!topGap) return 'No major build gap right now.';
+  switch (topGap.code) {
+    case 'empty_slot':
+      return 'Fill an empty unlocked slot.';
+    case 'low_mastery':
+      return 'Raise mastery on your core technique.';
+    case 'low_alignment':
+      return 'Correct path alignment.';
+    case 'missing_survival_tool':
+      return 'Add a survival tool.';
+    case 'rune_gap':
+      return 'Improve rune coverage.';
+    case 'low_rank':
+      return 'Raise rank on your equipped techniques.';
+    case 'missing_setup_tool':
+      return 'Add a setup/control tool.';
+    default:
+      return topGap.reason;
+  }
+}
+
 export function TechniqueLibraryScreen() {
   const [selectedTechniqueId, setSelectedTechniqueId] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<SlotSelection>({ type: 'active', index: 0 });
@@ -137,6 +167,7 @@ export function TechniqueLibraryScreen() {
   const techniquesById = useContentStore((state) => state.maps.techniquesById);
   const isContentLoading = useContentStore((state) => state.isLoading);
   const realmIndex = useGameStore((state) => state.realm.index);
+  const selectedPath = useGameStore((state) => state.selectedPath);
   const rawContent = useContentStore((state) => state.raw);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
@@ -161,6 +192,22 @@ export function TechniqueLibraryScreen() {
     () => (selectedLoadout ? buildLoadoutSnapshot(selectedLoadout.id) : null),
     [activeSlots, loadouts, passiveSlots, realmIndex, selectedLoadout],
   );
+  const runCompass = useRunCompassSurface();
+  const buildAnalysis = useMemo(
+    () => analyzeSelectedBuild(),
+    [selectedLoadoutId, activeSlots, passiveSlots, unlockedTechs, realmIndex],
+  );
+  const postureFit = useMemo(
+    () => evaluateCurrentCombatPostureFit('trial'),
+    [selectedLoadoutId, activeSlots, passiveSlots, unlockedTechs, realmIndex, selectedCastingPolicy],
+  );
+  const archetype = useMemo(() => getBuildArchetype(buildAnalysis.archetypeId), [buildAnalysis.archetypeId]);
+  const pathLabel = getPathDoctrineProfile(selectedPath)?.label ?? 'No Path Selected';
+  const floorState = (met: boolean): 'On Floor' | 'Below Floor' => (met ? 'On Floor' : 'Below Floor');
+  const postureJudgment = postureFit.warnings[0] ?? 'Posture fit is stable for current progression.';
+  const aiProfileLine = `AI Profile: ${selectedLoadoutSnapshot?.aiProfile ?? 'balanced'} — ${postureFit.aiFit}`;
+  const castingLine = `Casting Policy: ${selectedCastingPolicy} — ${postureFit.castingFit}`;
+  const nextFixLine = resolveBuildNextFixLine(buildAnalysis);
 
   const activeCap = selectedLoadoutSnapshot?.unlocked.active ?? progression.unlocked.active;
   const passiveCap = selectedLoadoutSnapshot?.unlocked.passive ?? progression.unlocked.passive;
@@ -615,6 +662,24 @@ export function TechniqueLibraryScreen() {
           </div>
         </div>
       </header>
+
+      <div className="techniquesBuildAltarWrap">
+        <RunCompassCompact surface={runCompass.compact} tone="paper" />
+        <BuildAltarSummary
+          pathLabel={pathLabel}
+          archetypeLabel={archetype?.label ?? 'Unshaped Build'}
+          archetypeSummary={archetype?.summary ?? 'No stable archetype profile detected yet.'}
+          pathAlignmentScore={buildAnalysis.pathAlignmentScore}
+          mastery={{ label: 'Mastery', state: floorState(buildAnalysis.masteryFloorMet) }}
+          rank={{ label: 'Rank', state: floorState(buildAnalysis.rankFloorMet) }}
+          runes={{ label: 'Runes', state: floorState(buildAnalysis.runeFloorMet) }}
+          emptySlots={buildAnalysis.emptyUnlockedSlots}
+          aiProfileLine={aiProfileLine}
+          castingPolicyLine={castingLine}
+          postureJudgment={postureJudgment}
+          nextFix={nextFixLine}
+        />
+      </div>
 
       <div className="techStage">
         <section className="techLoadoutBoard">

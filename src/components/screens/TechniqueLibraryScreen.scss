@@ -57,6 +57,42 @@
   padding: 6px;
 }
 
+.techniquesBuildAltarWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.techniquesBuildAltar {
+  border: 1px solid rgba(120, 72, 33, 0.25);
+  border-radius: 10px;
+  background: rgba(248, 238, 220, 0.75);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.techniquesBuildAltar__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  font-size: 12px;
+}
+
+.techniquesBuildAltar__sectionTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
+  margin-bottom: 4px;
+}
+
+.techniquesBuildAltar__nextFix {
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .techniquesPanel--v2 .techStage {
   flex: 1;
   min-height: 0;

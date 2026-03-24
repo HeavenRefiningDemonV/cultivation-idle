@@ -70,6 +70,15 @@ export interface ManualOfferAnalysis {
   fragmentProgressValue: number;
 }
 
+export type ManualOfferTag =
+  | 'Build Fix'
+  | 'Path-Aligned'
+  | 'Support'
+  | 'New'
+  | 'Duplicate'
+  | 'Fragment Progress'
+  | 'Milestone Value';
+
 const SUPPORT_FAMILIES = new Set<TechniqueFamily>([
   "guard",
   "heal",
@@ -303,4 +312,26 @@ export function analyzeManualOffer(input: {
     manualRarity: input.manualRarity,
     buildAnalysis: input.buildAnalysis ?? null,
   });
+}
+
+export function buildManualOfferTags(input: {
+  analysis: ManualOfferAnalysis;
+  isNewTechnique: boolean;
+  includeMilestoneValue?: boolean;
+  maxTags?: number;
+}): ManualOfferTag[] {
+  const tags: ManualOfferTag[] = [];
+
+  if (input.analysis.fillsCurrentGap) tags.push('Build Fix');
+  if (input.analysis.pathAligned) tags.push('Path-Aligned');
+  if (input.analysis.supportOffer) tags.push('Support');
+  if (input.isNewTechnique) tags.push('New');
+  if (input.analysis.isDuplicate) tags.push('Duplicate');
+  if (input.analysis.fragmentProgressValue > 0) tags.push('Fragment Progress');
+  if (input.includeMilestoneValue && input.analysis.improvesCurrentMilestone) {
+    tags.push('Milestone Value');
+  }
+
+  const max = Math.max(1, input.maxTags ?? 3);
+  return Array.from(new Set(tags)).slice(0, max);
 }

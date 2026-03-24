@@ -5,10 +5,13 @@ import type { TechniqueDef } from "../../content/index.js";
 import { buildDoctrineSnapshot } from "../../systems/doctrine/index.js";
 import {
   analyzeManualOffer,
+  buildManualOfferTags,
   getDuplicateFragmentValue,
   getStudyDurationLabelByGrade,
   type ManualOfferAnalysis,
+  type ManualOfferTag,
 } from "../../systems/manuals/index.js";
+import { analyzeSelectedBuild } from "../../systems/builds/buildAnalysisService.js";
 import { useContentStore } from "../../stores/contentStore.js";
 import { useManualPavilionStore } from "../../stores/manualPavilionStore.js";
 import type { ManualPurchaseResult } from "../../stores/manualPavilionStore.js";
@@ -22,6 +25,7 @@ import { formatPrice } from "../../stores/contentStore.js";
 import { formatDurationHMS } from "../../utils/timeFormat.js";
 import { useInventoryStore } from "../../stores/inventoryStore.js";
 import { useManualSatchelStore } from "../../stores/manualSatchelStore.js";
+import { useTechCollectionStore } from "../../stores/techCollectionStore.js";
 import { useUIStore } from "../../stores/uiStore.js";
 import {
   getManualTierIcon,
@@ -35,6 +39,10 @@ import {
 } from "../modals/ManualDetailModal.js";
 import { PaperCard } from "../../ui/ink/index.js";
 import { GameIcon } from "../../ui/icons/index.js";
+import { useRunCompassSurface } from "../../ui/status/useRunCompassSurface.js";
+import { RunCompassCompact } from "../../ui/status/RunCompassCompact.js";
+import { ManualBuildGapSummary } from "../../ui/manuals/ManualBuildGapSummary.js";
+import { ManualOfferTags } from "../../ui/manuals/ManualOfferTags.js";
 
 interface ManualPavilionPanelProps {
   pavilionId: string | null;
@@ -116,6 +124,27 @@ function resolveSpineState(slot: PavilionStockSlot | null): SpineState {
   return "available";
 }
 
+function currentBuildGapLine(buildGapCode?: string): string {
+  switch (buildGapCode) {
+    case "empty_slot":
+      return "Empty unlocked slot in active loadout.";
+    case "low_mastery":
+      return "Core technique mastery floor is behind.";
+    case "low_alignment":
+      return "Path alignment is weak for this life.";
+    case "low_rank":
+      return "Core rank floor is behind.";
+    case "rune_gap":
+      return "Rune floor is behind on equipped techniques.";
+    case "missing_survival_tool":
+      return "Build lacks a survival tool.";
+    case "missing_setup_tool":
+      return "Build lacks setup/control support.";
+    default:
+      return "No major build gap right now.";
+  }
+}
+
 interface BookSpineSlotProps {
   slot: PavilionStockSlot | null;
   technique?: TechniqueDef;
@@ -126,6 +155,7 @@ interface BookSpineSlotProps {
   ) => void;
   onHover: (slotIndex: number, rect: DOMRect) => void;
   onClearHover: () => void;
+  tags: ManualOfferTag[];
 }
 
 function BookSpineSlot({
@@ -136,6 +166,7 @@ function BookSpineSlot({
   onSelect,
   onHover,
   onClearHover,
+  tags,
 }: BookSpineSlotProps) {
   const state = resolveSpineState(slot);
   const path = normalizePath(technique?.path);
@@ -229,6 +260,7 @@ function BookSpineSlot({
           </span>
         ) : null}
       </div>
+      <ManualOfferTags tags={tags} />
       {state !== "available" && (
         <div
           className={`pavilionSpineOverlay pavilionSpineOverlay--${state}`}
@@ -271,6 +303,11 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
   );
   const activeStudy = useManualSatchelStore((state) => state.activeStudy);
   const doctrineSnapshot = buildDoctrineSnapshot();
+  const runCompass = useRunCompassSurface();
+  const buildAnalysis = useMemo(
+    () => analyzeSelectedBuild(doctrineSnapshot),
+    [doctrineSnapshot.path, doctrineSnapshot.selectedLoadoutId],
+  );
 
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedManualSlotId, setSelectedManualSlotId] = useState<
@@ -412,7 +449,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           manualGrade: slot.grade,
           manualRarity: slot.rarity,
           snapshot: doctrineSnapshot,
-          buildAnalysis: null,
+          buildAnalysis,
         }),
       );
     });
@@ -422,7 +459,29 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     stock?.slots,
     doctrineSnapshot.path,
     doctrineSnapshot.selectedLoadoutId,
+    buildAnalysis,
   ]);
+  const offerTagsBySlotIndex = useMemo(() => {
+    const tags = new Map<number, ManualOfferTag[]>();
+    (stock?.slots ?? []).forEach((slot) => {
+      const analysis = offerAnalysisBySlotIndex.get(slot.slotIndex);
+      if (!analysis) {
+        tags.set(slot.slotIndex, []);
+        return;
+      }
+      const isNewTechnique = !useTechCollectionStore.getState().hasTech(slot.techniqueId);
+      tags.set(
+        slot.slotIndex,
+        buildManualOfferTags({
+          analysis,
+          isNewTechnique,
+          includeMilestoneValue: true,
+          maxTags: 3,
+        }),
+      );
+    });
+    return tags;
+  }, [offerAnalysisBySlotIndex, stock?.generatedAt, stock?.slots]);
 
   const handleSelect = (
     slot: PavilionStockSlot,
@@ -637,6 +696,7 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
                 }
                 onHover={(slotIndex, rect) => setHovered({ slotIndex, rect })}
                 onClearHover={clearHover}
+                tags={entry.slot ? offerTagsBySlotIndex.get(entry.slot.slotIndex) ?? [] : []}
               />
             ))}
           </div>
@@ -908,6 +968,14 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     studyDisabledReason,
     purchaseResult: purchaseResult ?? undefined,
   };
+  const topGapCode = buildAnalysis.gaps[0]?.code;
+  const currentGap = currentBuildGapLine(topGapCode);
+  const usefulOffersLine = topGapCode
+    ? "Useful offers now: prioritize Build Fix and Path-Aligned manuals."
+    : "Useful offers now: prioritize New or milestone-value manuals.";
+  const refreshCostLine = `Refresh cost: ${formatPrice(manualSystem?.pavilions?.refreshCost) || "Not configured"}`;
+  const pityEpicLine = `Epic pity: ${stock.pity.featuredEpic}/${pityEpicMax} (offer quality progress)`;
+  const pityLegendaryLine = `Legendary pity: ${stock.pity.featuredLegendary}/${pityLegendaryMax} (offer quality progress)`;
 
   return (
     <div className={"manualPavilionPanel manualPavilionPanel--v2"}>
@@ -932,6 +1000,16 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           </button>
         </div>
       </PaperCard>
+      <div className="manualPavilionSummaryWrap">
+        <RunCompassCompact surface={runCompass.compact} tone="paper" />
+        <ManualBuildGapSummary
+          currentGapLine={currentGap}
+          usefulOffersLine={usefulOffersLine}
+          refreshCostLine={refreshCostLine}
+          pityEpicLine={pityEpicLine}
+          pityLegendaryLine={pityLegendaryLine}
+        />
+      </div>
       <div
         className={`pavilionShelfWall${flashOn ? " pavilionShelfWall--flash" : ""}`}
       >

@@ -261,6 +261,50 @@
   z-index: 3;
 }
 
+.manualPavilionSummaryWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manualBuildGapSummary {
+  border: 1px solid rgba(120, 72, 33, 0.25);
+  border-radius: 10px;
+  background: rgba(248, 238, 220, 0.75);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--pavilion-ink-strongest);
+}
+
+.manualBuildGapSummary__line {
+  line-height: 1.35;
+}
+
+.manualBuildGapSummary__pity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--pavilion-ink-soft);
+}
+
+.manualOfferTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.manualOfferTags__tag {
+  border: 1px solid rgba(120, 72, 33, 0.3);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
 .pavilionSpine:focus-visible {
   outline: 2px solid color-mix(in oklab, var(--pavilion-ink) 60%, transparent 40%);
   outline-offset: 3px;
