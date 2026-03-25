@@ -24,8 +24,12 @@ import { InkPanel, PaperCard, PaperChip, PurposeSourceCallout } from '../../ui/i
 import { GameIcon } from '../../ui/icons/index.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
+import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import './ApothecaryPanel.scss';
 import { buildItemPurposeSourceSurface, buildPurposeSourceContext } from '../../systems/economy/purposeSourceSurface.js';
+import { buildBestSourceIndex, getBestSourceIndexEntry } from '../../systems/economy/bestSourceIndex.js';
+import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
 
 type BuyFilterKey = 'all' | 'combat' | 'cultivation' | 'rotating';
 type PrimaryTabKey = 'buy' | 'brew' | 'pouch';
@@ -63,6 +67,7 @@ function usageToChipUsage(usage?: string): 'combat' | 'cultivation' | 'both' {
 }
 
 export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPanelProps) {
+  const runCompass = useRunCompassSurface();
   const apothecary = useContentStore((state) =>
     shopId ? state.maps.apothecariesById[shopId] : undefined,
   );
@@ -149,6 +154,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
 
   const cityBundle = buyReadModel.bundleState.bundle;
   const purposeSourceContext = useMemo(() => (raw ? buildPurposeSourceContext(raw) : null), [raw]);
+  const bestSourceIndex = useMemo(() => (raw ? buildBestSourceIndex(raw) : null), [raw]);
 
   const pouchBadgeCount = prepModel.pouchSummary.filledSlots;
   const badgeDisplay = pouchBadgeCount > 9 ? '9+' : `${pouchBadgeCount}`;
@@ -527,6 +533,9 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
     const itemPurpose = raw && purposeSourceContext
       ? buildItemPurposeSourceSurface(raw, purposeSourceContext, entry.itemId, city?.id ?? apothecary.cityId)
       : null;
+    const sourceHints = entry.routeIntent.kind === 'source_missing_mats' && bestSourceIndex
+      ? getBestSourceIndexEntry(bestSourceIndex, entry.itemId)?.sourceOptions.slice(0, 2) ?? []
+      : [];
 
     return (
       <div key={entry.key} className={'apothecaryPackageEntry'}>
@@ -540,6 +549,15 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
           {itemPurpose?.purposeTag === 'Gate Prep' ? (
           <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
         ) : null}
+          {sourceHints.length > 0 ? (
+            <div className={'apothecaryPackageSourceHints'}>
+              {sourceHints.map((hint) => (
+                <div key={`${entry.key}-${hint.routeRefId}`} className={'apothecaryPackageSourceHint'}>
+                  <strong>{entry.itemName}</strong> • {getWorldModuleLabel(hint.moduleKey)} • {hint.shortReason}
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
         <button
           type="button"
@@ -660,6 +678,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
     <InkPanel variant="apothecary" watermark className={'apothecaryPanel apothecaryPanel--v2'}>
       <header className={'apothecaryTopRibbon'}>
         <div className={'apothecaryTopLeft'}>
+          <RunCompassCompact surface={runCompass.compact} tone="paper" />
           <div className={'apothecaryHeading'}>{apothecary.name ?? 'Apothecary'}</div>
           <div className={'apothecaryPurpose'}>{prepModel.purposeSentence}</div>
           <div className={'apothecarySubheading'}>

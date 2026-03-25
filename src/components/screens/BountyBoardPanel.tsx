@@ -25,6 +25,8 @@ import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerF
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
+import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const difficultyBadge: Record<string, string> = {
@@ -61,6 +63,7 @@ function formatRewards(bundle: RewardBundle, itemsById: Record<string, { name?: 
 }
 
 export function BountyBoardPanel() {
+  const runCompass = useRunCompassSurface();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [claimError, setClaimError] = useState<string | null>(null);
@@ -331,6 +334,7 @@ export function BountyBoardPanel() {
 
   return (
     <div className={'bountyStageRoot'}>
+      <RunCompassCompact surface={runCompass.compact} tone="paper" />
       <div className={'bountyStageHud'}>
         <PaperCard variant="label" className="bountyStageHudGroup">
           <div className={'bountyStageTitle'}>Bounty Board</div>

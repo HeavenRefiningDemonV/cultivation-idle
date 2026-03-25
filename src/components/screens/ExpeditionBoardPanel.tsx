@@ -13,6 +13,8 @@ import { getLiveExpeditionRoutePurpose } from '../../systems/world/expeditionRou
 import { resolveExpeditionUseMaterialsDestinations } from '../../utils/bountyRouting.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
+import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
@@ -214,6 +216,7 @@ const routePositions = ['expRouteButton--left', 'expRouteButton--center', 'expRo
 type RoutePositionClass = (typeof routePositions)[number];
 
 export function ExpeditionBoardPanel() {
+  const runCompass = useRunCompassSurface();
   const currentCityId = useCityStore((state) => state.currentCityId);
   const content = useContentStore((state) => state.raw?.expeditions);
   const economy = useContentStore((state) => state.economy);
@@ -514,12 +517,26 @@ export function ExpeditionBoardPanel() {
 
   return (
     <div className={`expStageRoot${ceremony.open ? ' expStageRoot--muted' : ''}`}>
+      <RunCompassCompact surface={runCompass.compact} tone="paper" />
       <div className={'expStageHud'}>
         <PaperCard variant="label" className="expStageHudGroup">
           <div className={'expStageTitle'}>Expeditions</div>
           <div className={'expStageSub'}>{citiesById[currentCityId]?.name ?? 'Unknown City'}</div>
         </PaperCard>
       </div>
+
+      <PaperCard variant="card" className={'expToplineSummary'}>
+        <div className={'expToplineSummaryTitle'}>Top-line command</div>
+        <div className={'expToplineSummaryBody'}>
+          {selectedRoute
+            ? `${selectedRoute.name} is selected from ${citiesById[currentCityId]?.name ?? currentCityId}. Keep slots active to feed current progression needs.`
+            : `Select a route for ${citiesById[currentCityId]?.name ?? currentCityId}. Idle slots delay Apothecary, Forge, and Manual support.`}
+        </div>
+        <div className={'expToplineSummaryMeta'}>
+          <span>Origin city: {citiesById[currentCityId]?.name ?? currentCityId}</span>
+          <span>Idle slots: {availableSlots}</span>
+        </div>
+      </PaperCard>
 
       <div className={'expStageArea'}>
         {routePapers.map(({ type, positionClass }) => {

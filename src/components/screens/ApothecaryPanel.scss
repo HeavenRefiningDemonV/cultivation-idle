@@ -799,6 +799,18 @@
   color: var(--apoth-ink);
 }
 
+.apothecaryPackageSourceHints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.apothecaryPackageSourceHint {
+  font-size: 12px;
+  color: var(--apoth-muted);
+}
+
 .apothecaryPouchSummaryState {
   font-size: 18px;
 }

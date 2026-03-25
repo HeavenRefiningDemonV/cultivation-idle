@@ -12,12 +12,15 @@ import { useProfessionStore } from '../../../stores/professionStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { isRuneBlueprint } from '../../../content/index.js';
 import { buildItemDelta } from './forgeDelta.js';
 import { resolveForgeStepScript } from './forgeScriptBuilder.js';
 import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink/index.js';
 import type { IconId } from '../../../ui/icons/index.js';
 import { GameIcon } from '../../../ui/icons/index.js';
+import { RunCompassCompact } from '../../../ui/status/RunCompassCompact.js';
+import { useRunCompassSurface } from '../../../ui/status/useRunCompassSurface.js';
 import {
   buildForgeSurfaceModel,
   getAllowedForgeModes,
@@ -27,6 +30,9 @@ import {
   type LiveForgeSurfaceTab,
 } from '../../../systems/forge/index.js';
 import { getLiveForgeFloorReadModel } from '../../../systems/forge/liveForgeFloorStore.js';
+import { buildBestSourceIndex, getBestSourceIndexEntry } from '../../../systems/economy/bestSourceIndex.js';
+import { openWorldModule } from '../../../systems/world/openWorldModule.js';
+import { getWorldModuleLabel } from '../../../ui/text/playerFacingLabels.js';
 import './ForgeWorkshop.scss';
 
 type ForgeClaimResult = {
@@ -97,6 +103,7 @@ const resolveQualityLabel = (qualityScore?: number): string => {
 };
 
 export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
+  const runCompass = useRunCompassSurface();
   const setUiActiveTab = useUIStore((state) => state.setActiveTab);
   const setCraftMode = useCraftSessionStore((state) => state.setMode);
   const modeByStation = useCraftSessionStore((state) => state.modeByStation);
@@ -107,6 +114,8 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const canStartForge = useProfessionStore((state) => state.canStartForge);
   const getForgeJobStatus = useProfessionStore((state) => state.getForgeJobStatus);
   const activeActivity = useActivityStore((state) => state.active);
+  const inventoryItems = useInventoryStore((state) => state.items);
+  const rawContent = useContentStore((state) => state.raw);
   const cityName = useContentStore((state) => (cityId ? state.maps.citiesById[cityId]?.name ?? cityId : 'Forge'));
 
   const [selectedBlueprintId, setSelectedBlueprintId] = useState<string | null>(null);
@@ -130,6 +139,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
 
   const blueprints = useMemo(() => (cityId ? listForgeBlueprintsForCity({ cityId }) : listForgeBlueprints()), [cityId]);
   const floorModel = useMemo(() => getLiveForgeFloorReadModel({ cityId }), [cityId]);
+  const bestSourceIndex = useMemo(() => (rawContent ? buildBestSourceIndex(rawContent) : null), [rawContent]);
   const surfaceModel = useMemo(
     () => buildForgeSurfaceModel({ blueprints, activeTab, query, floor: floorModel }),
     [activeTab, blueprints, floorModel, query],
@@ -255,6 +265,37 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
   const isLocked = Boolean(selectedBlueprint?.cityId && cityId && selectedBlueprint.cityId !== cityId);
   const isBlocked = Boolean(activeOtherStation || (activeActivity && activeActivity.type !== 'forge'));
 
+  const missingMaterialRows = useMemo(() => {
+    if (!selectedBlueprint || !bestSourceIndex) return [];
+    const rows = selectedBlueprint.costs.items
+      .map((entry) => {
+        const owned = inventoryItems[entry.itemId] ?? 0;
+        const missing = Math.max(0, Math.ceil(entry.qty) - owned);
+        if (missing <= 0) return null;
+        const sourceEntry = getBestSourceIndexEntry(bestSourceIndex, entry.itemId);
+        const best = sourceEntry?.primarySource ?? sourceEntry?.sourceOptions[0] ?? null;
+        const canRoute = Boolean(
+          cityId
+          && best
+          && ['outskirts', 'ruins', 'bounties', 'expeditions', 'apothecary'].includes(best.moduleKey),
+        );
+        return {
+          itemId: entry.itemId,
+          itemName: getItemDef(entry.itemId)?.name ?? entry.itemId,
+          missing,
+          sourceLabel: best ? getWorldModuleLabel(best.moduleKey) : 'No live source route',
+          sourceReason: best?.shortReason ?? 'No live source route available.',
+          routeCityId: (best?.cityId ?? cityId) ?? null,
+          routeModuleKey: best?.moduleKey ?? null,
+          canRoute,
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+      .sort((a, b) => b.missing - a.missing)
+      .slice(0, 3);
+    return rows;
+  }, [bestSourceIndex, cityId, inventoryItems, selectedBlueprint]);
+
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
     setSessionStatus(null);
@@ -274,6 +315,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
 
   return (
     <div className="forgeWorkshop">
+      <RunCompassCompact surface={runCompass.compact} tone="ink" className="forgeWorkshop__runCompassCompact" />
       <InkPanel variant="forge" className="forgeWorkshop__banner">
         <div>
           <div className="forgeWorkshop__bannerTitle">Forge Workshop</div>
@@ -320,6 +362,35 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
             </div>
           ) : (
             <div className="forgeWorkshop__summaryEmpty">No next-gate baseline is available for this city yet.</div>
+          )}
+        </PaperCard>
+        <PaperCard variant="tray" className="forgeWorkshop__summaryCard forgeWorkshop__summaryCard--materials">
+          <div className="forgeWorkshop__summaryLabel">Missing materials (top blockers)</div>
+          {missingMaterialRows.length > 0 ? (
+            <div className="forgeWorkshop__summaryRows">
+              {missingMaterialRows.map((row) => (
+                <div key={row.itemId} className="forgeWorkshop__materialRow">
+                  <div className="forgeWorkshop__materialCopy">
+                    <strong>{row.itemName}</strong>
+                    <span>Missing {row.missing} • {row.sourceLabel}</span>
+                    <span>{row.sourceReason}</span>
+                  </div>
+                  {row.canRoute && row.routeCityId && row.routeModuleKey ? (
+                    <button
+                      type="button"
+                      className="worldScreenModuleButton forgeWorkshop__materialRouteButton"
+                      onClick={() => openWorldModule({ cityId: row.routeCityId, moduleKey: row.routeModuleKey })}
+                    >
+                      Go to {row.sourceLabel}
+                    </button>
+                  ) : (
+                    <span className="forgeWorkshop__materialRouteText">Route in this city is not direct.</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="forgeWorkshop__summaryEmpty">No material blockers for the current blueprint.</div>
           )}
         </PaperCard>
       </div>
