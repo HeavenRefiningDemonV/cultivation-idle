@@ -74,6 +74,7 @@ export function GameLayout() {
   const currentChapterExhaustedAcknowledgedThisLife = useUIStore((state) => state.currentChapterExhaustedAcknowledgedThisLife);
   const openCurrentChapterExhaustedModal = useUIStore((state) => state.openCurrentChapterExhaustedModal);
   const clearCurrentChapterExhaustedAcknowledgement = useUIStore((state) => state.clearCurrentChapterExhaustedAcknowledgement);
+  const setLifeStartWizardOpenForNotifications = useUIStore((state) => state.setLifeStartWizardOpenForNotifications);
   const selectedPath = useGameStore((state) => state.selectedPath);
   const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
   const realmIndex = useGameStore((state) => state.realm.index);
@@ -103,7 +104,6 @@ export function GameLayout() {
       console.warn('[GameLayout] Cap truth fallback used', error);
     }
 
-    const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
     const blockedByOtherModal = showOfflineProgressModal || showManualSatchelModal || showTechniqueLearnedModal || showWorldBuildingModal || lifeStartWizardOpen || activeTab === 'prestige';
 
     if (!atAuthoredCap) {
@@ -161,6 +161,11 @@ export function GameLayout() {
     .join(' ');
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
+  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
+
+  useEffect(() => {
+    setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
+  }, [lifeStartWizardOpen, setLifeStartWizardOpenForNotifications]);
 
   return (
     <div className={rootClassNames}>

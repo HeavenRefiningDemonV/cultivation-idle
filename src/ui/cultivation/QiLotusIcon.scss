@@ -6,7 +6,7 @@
   flex: 0 0 auto;
   margin-right: 2px;
   overflow: visible;
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 .qiLotusIcon__img {
@@ -18,38 +18,38 @@
   opacity: 0;
   transform: scale(1);
   transition: opacity 180ms ease, transform 220ms ease, filter 220ms ease;
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 6px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 4px rgba(59, 42, 24, 0.18));
 }
 
 .qiLotusIcon[data-state="idle"] .qiLotusIcon__img--closed {
   opacity: 1;
-  transform: scale(1.02);
+  transform: scale(1);
 }
 
 .qiLotusIcon[data-state="active"] .qiLotusIcon__img--open {
   opacity: 1;
-  transform: scale(1.1);
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(120, 160, 220, 0.2));
+  transform: scale(1.06);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0 7px rgba(98, 142, 108, 0.22));
 }
 
 .qiLotusIcon[data-state="ready"] .qiLotusIcon__img--full {
   opacity: 1;
-  transform: scale(1.18);
+  transform: scale(1.1);
   filter:
     drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45))
-    drop-shadow(0 0 10px rgba(200, 160, 220, 0.28))
-    drop-shadow(0 0 18px rgba(240, 220, 255, 0.2));
+    drop-shadow(0 0 10px rgba(168, 129, 73, 0.3))
+    drop-shadow(0 0 15px rgba(236, 214, 172, 0.22));
   animation: qiLotusReadyPulse 1.25s ease-in-out infinite;
 }
 
 @keyframes qiLotusReadyPulse {
   0%,
   100% {
-    transform: scale(1.18);
+    transform: scale(1.1);
   }
 
   50% {
-    transform: scale(1.24);
+    transform: scale(1.14);
   }
 }
 

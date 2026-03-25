@@ -302,7 +302,7 @@ export function InnerPalaceEquipAltar({
               const pathIcon = getPathIcon(technique?.path ?? null);
               const tierIcon = technique?.tier
                 ? getTierIcon(gradeKey)
-                : { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
+                : { iconId: 'inkSparkles', label: 'Unranked Tier', key: 'unknown' };
               const typeIcon = getTypeIcon(resolveTechniqueType(technique));
               const isSelected = selectedSlotKey === slot.key;
               const canEquipSelected = Boolean(
@@ -351,7 +351,7 @@ export function InnerPalaceEquipAltar({
                       <div className="innerPalaceSlotSpine">
                         <div className="innerPalaceSlotIcons" aria-hidden="true">
                           <span className="innerPalaceSlotIcon" title={tierIcon.label}>
-                            {tierIcon.iconText ?? '◎'}
+                            {tierIcon.iconId ? <GameIcon icon={tierIcon.iconId} size={16} decorative /> : (tierIcon.iconText ?? '—')}
                           </span>
                           {pathIcon.iconId ? (
                             <span className="innerPalaceSlotIcon" title={pathIcon.label}>

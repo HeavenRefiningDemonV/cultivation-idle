@@ -200,7 +200,7 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           case 'FINISH':
             return { ...base, iconId: 'taskComplete' as IconId, label: 'Finish' };
           default:
-            return { ...base, iconId: 'inkWip' as IconId, label: step.type };
+            return { ...base, iconId: 'inkSparkles' as IconId, label: 'Step' };
         }
       }),
     [resolvedStepScript],

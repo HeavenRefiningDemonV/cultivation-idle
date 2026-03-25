@@ -236,7 +236,7 @@ function BookSpineSlot({
             aria-label={tierIcon.label}
             title={tierIcon.label}
           >
-            {tierIcon.iconText ?? "◎"}
+            {tierIcon.iconText ?? "—"}
           </span>
         )}
         {pathIcon.iconId ? (

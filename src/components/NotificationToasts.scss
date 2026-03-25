@@ -1,26 +1,30 @@
 .notificationToasts {
   position: fixed;
-  top: 6rem;
+  top: 10.5rem;
   right: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  z-index: 120;
+  gap: 6px;
+  width: min(360px, calc(100vw - 24px));
+  z-index: 95;
   pointer-events: none;
 }
 
+.notificationToasts--defer {
+  top: 13.75rem;
+}
+
 .notificationToast {
-  min-width: 240px;
-  max-width: 360px;
-  background: rgba(0, 0, 0, 0.78);
-  color: #f1f5f9;
+  width: 100%;
+  background: rgba(42, 29, 18, 0.88);
+  color: #f7efe1;
   border-radius: 10px;
-  padding: 10px 14px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  padding: 8px 12px;
+  box-shadow: 0 8px 16px rgba(23, 14, 8, 0.28);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(235, 212, 175, 0.24);
   pointer-events: auto;
 }
 
@@ -53,5 +57,5 @@
 }
 
 .notificationToast--info {
-  border-color: rgba(125, 211, 252, 0.6);
+  border-color: rgba(186, 141, 90, 0.5);
 }

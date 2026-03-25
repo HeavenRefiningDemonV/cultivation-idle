@@ -546,7 +546,7 @@ export function TechniqueLibraryScreen() {
   const summaryLine = selectedTechDef ? `Rank ${selectedRank} • ${summaryCooldown} • ${summaryRole}` : '';
   const selectedTierIcon = selectedTierValue
     ? getTierIcon(selectedTier)
-    : { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
+    : { iconId: 'inkSparkles', label: 'Unranked Tier', key: 'unknown' };
   const selectedPathIcon = getPathIcon(selectedTechDef?.path ?? 'unknown');
   const selectedTypeIcon = getTypeIcon(resolveTechniqueType(selectedTechDef));
 
@@ -767,7 +767,7 @@ export function TechniqueLibraryScreen() {
                 ) : filteredTechniques.length === 0 ? (
                   <PaperCard className="techniqueLibraryEmptyState" variant="tray">
                     <div className="techniqueLibraryEmptyStateIcon" aria-hidden="true">
-                      <GameIcon icon="inkWip" size={24} decorative />
+                      <GameIcon icon="inkX" size={24} decorative />
                     </div>
                     No techniques match the current filters.
                   </PaperCard>
@@ -822,7 +822,7 @@ export function TechniqueLibraryScreen() {
                           aria-label={selectedTierIcon.label}
                           title={selectedTierIcon.label}
                         >
-                          {selectedTierIcon.iconText ?? '◎'}
+                          {selectedTierIcon.iconId ? <GameIcon icon={selectedTierIcon.iconId} size={14} decorative /> : (selectedTierIcon.iconText ?? '—')}
                         </span>
                         {selectedPathIcon.iconId ? (
                           <span

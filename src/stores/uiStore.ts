@@ -14,6 +14,13 @@ import { getTrialGateRewardBundle, getTrialLifecycleSnapshot } from '../systems/
 import { pickEnemyFromPool } from '../components/screens/world/worldUtils.js';
 import { GameEvents } from '../services/events/GameEvents.js';
 import type { OnboardingPromptInstance, OnboardingPromptPriority } from '../systems/ui/onboardingPromptRegistry.js';
+import {
+  applyNotificationPolicy,
+  DEFAULT_NOTIFICATION_DURATION_MS,
+  isNotificationOverlayBlocked,
+  promotePendingNotifications,
+  type NotificationOptions,
+} from '../systems/ui/notificationPolicy.js';
 
 /**
  * UI notification types
@@ -24,6 +31,9 @@ export interface UINotification {
   message: string;
   timestamp: number;
   duration?: number; // Auto-dismiss after N milliseconds (optional)
+  dedupeKey?: string;
+  source?: string;
+  priority?: 'low' | 'normal' | 'high';
 }
 
 /**
@@ -106,6 +116,8 @@ interface UIStateBase {
 
   // Notifications
   notifications: UINotification[];
+  pendingNotifications: UINotification[];
+  lifeStartWizardOpenForNotifications: boolean;
 
   // Modals
   showPrestigeModal: boolean;
@@ -167,10 +179,12 @@ export interface UIState extends UIStateBase {
   addNotification: (
     type: UINotification['type'],
     message: string,
-    duration?: number | { durationMs?: number },
+    duration?: number | NotificationOptions,
   ) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  flushNotificationQueue: () => void;
+  setLifeStartWizardOpenForNotifications: (open: boolean) => void;
   showPrestige: () => void;
   hidePrestige: () => void;
   showPerkSelection: (realmIndex: number) => void;
@@ -235,6 +249,8 @@ const INITIAL_UI_STATE: UIStateBase = {
   layoutBackgroundOverride: null,
   showSidePanel: false,
   notifications: [],
+  pendingNotifications: [],
+  lifeStartWizardOpenForNotifications: false,
   showPrestigeModal: false,
   showPerkSelectionModal: false,
   perkSelectionRealm: null,
@@ -287,6 +303,26 @@ const INITIAL_UI_STATE: UIStateBase = {
 function generateNotificationId(): string {
   return `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
+
+const notificationTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+const notificationLastTriggeredAtByKey = new Map<string, number>();
+
+const clearNotificationTimer = (id: string) => {
+  const timeoutId = notificationTimeouts.get(id);
+  if (timeoutId !== undefined) {
+    clearTimeout(timeoutId);
+    notificationTimeouts.delete(id);
+  }
+};
+
+const scheduleNotificationTimer = (id: string, durationMs: number, removeNotification: (notificationId: string) => void) => {
+  clearNotificationTimer(id);
+  const timeoutId = setTimeout(() => {
+    notificationTimeouts.delete(id);
+    removeNotification(id);
+  }, durationMs);
+  notificationTimeouts.set(id, timeoutId);
+};
 
 const ONBOARDING_PRIORITY_WEIGHT: Record<OnboardingPromptPriority, number> = {
   high: 3,
@@ -357,26 +393,48 @@ export const useUIStore = create<UIState>()(
     /**
      * Add a notification
      */
-    addNotification: (type: UINotification['type'], message: string, duration?: number | { durationMs?: number }) => {
-      const durationMs = typeof duration === 'number' ? duration : duration?.durationMs;
-      const notification: UINotification = {
-        id: generateNotificationId(),
+    addNotification: (type: UINotification['type'], message: string, duration?: number | NotificationOptions) => {
+      const options: NotificationOptions = typeof duration === 'number'
+        ? { durationMs: duration }
+        : { ...(duration ?? {}) };
+      const now = Date.now();
+      const snapshot = get();
+      const overlayBlocked = isNotificationOverlayBlocked({
+        showPrestigeModal: snapshot.showPrestigeModal,
+        showPerkSelectionModal: snapshot.showPerkSelectionModal,
+        showOfflineProgressModal: snapshot.showOfflineProgressModal,
+        showManualSatchelModal: snapshot.showManualSatchelModal,
+        showTechniqueLearnedModal: snapshot.showTechniqueLearnedModal,
+        showWorldBuildingModal: snapshot.showWorldBuildingModal,
+        showCurrentChapterExhaustedModal: snapshot.showCurrentChapterExhaustedModal,
+        pendingCityArrivalId: snapshot.pendingCityArrivalId,
+        activeOnboardingPrompt: snapshot.activeOnboardingPrompt,
+        combatPresentationMode: snapshot.combatPresentation.mode,
+        lifeStartWizardOpen: snapshot.lifeStartWizardOpenForNotifications,
+      });
+      const result = applyNotificationPolicy({
+        now,
+        visible: snapshot.notifications,
+        pending: snapshot.pendingNotifications,
+        options,
         type,
         message,
-        timestamp: Date.now(),
-        duration: durationMs,
-      };
-
-      set((state) => {
-        state.notifications.push(notification);
+        createId: generateNotificationId,
+        overlayBlocked,
+        lastTriggeredAtByKey: notificationLastTriggeredAtByKey,
       });
 
-      // Auto-dismiss if duration is set
-      if (durationMs) {
-        setTimeout(() => {
-          get().removeNotification(notification.id);
-        }, durationMs);
-      }
+      if (!result.accepted) return;
+
+      set((state) => {
+        state.notifications = result.visible;
+        state.pendingNotifications = result.pending;
+      });
+
+      const removeNotification = get().removeNotification;
+      result.becameVisible.forEach((notification) => {
+        scheduleNotificationTimer(notification.id, notification.duration ?? DEFAULT_NOTIFICATION_DURATION_MS, removeNotification);
+      });
 
       console.log(`[UI] Notification added: ${type} - ${message}`);
     },
@@ -385,23 +443,71 @@ export const useUIStore = create<UIState>()(
      * Remove a notification by ID
      */
     removeNotification: (id: string) => {
+      clearNotificationTimer(id);
       set((state) => {
         const index = state.notifications.findIndex((n: UINotification) => n.id === id);
         if (index !== -1) {
           state.notifications.splice(index, 1);
         }
+        const pendingIndex = state.pendingNotifications.findIndex((n: UINotification) => n.id === id);
+        if (pendingIndex !== -1) {
+          state.pendingNotifications.splice(pendingIndex, 1);
+        }
       });
+      get().flushNotificationQueue();
     },
 
     /**
      * Clear all notifications
      */
     clearNotifications: () => {
+      notificationTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+      notificationTimeouts.clear();
       set((state) => {
         state.notifications = [];
+        state.pendingNotifications = [];
       });
 
       console.log('[UI] All notifications cleared');
+    },
+
+    flushNotificationQueue: () => {
+      const snapshot = get();
+      const overlayBlocked = isNotificationOverlayBlocked({
+        showPrestigeModal: snapshot.showPrestigeModal,
+        showPerkSelectionModal: snapshot.showPerkSelectionModal,
+        showOfflineProgressModal: snapshot.showOfflineProgressModal,
+        showManualSatchelModal: snapshot.showManualSatchelModal,
+        showTechniqueLearnedModal: snapshot.showTechniqueLearnedModal,
+        showWorldBuildingModal: snapshot.showWorldBuildingModal,
+        showCurrentChapterExhaustedModal: snapshot.showCurrentChapterExhaustedModal,
+        pendingCityArrivalId: snapshot.pendingCityArrivalId,
+        activeOnboardingPrompt: snapshot.activeOnboardingPrompt,
+        combatPresentationMode: snapshot.combatPresentation.mode,
+        lifeStartWizardOpen: snapshot.lifeStartWizardOpenForNotifications,
+      });
+      const promoted = promotePendingNotifications(snapshot.notifications, snapshot.pendingNotifications, overlayBlocked);
+      if (promoted.becameVisible.length === 0) return;
+
+      set((state) => {
+        state.notifications = promoted.visible;
+        state.pendingNotifications = promoted.pending;
+      });
+
+      const removeNotification = get().removeNotification;
+      promoted.becameVisible.forEach((notification) => {
+        scheduleNotificationTimer(notification.id, notification.duration ?? DEFAULT_NOTIFICATION_DURATION_MS, removeNotification);
+      });
+    },
+
+    setLifeStartWizardOpenForNotifications: (open) => {
+      if (get().lifeStartWizardOpenForNotifications === open) return;
+      set((state) => {
+        state.lifeStartWizardOpenForNotifications = open;
+      });
+      if (!open) {
+        get().flushNotificationQueue();
+      }
     },
 
     /**
@@ -942,6 +1048,9 @@ export const useUIStore = create<UIState>()(
      * Hard reset all UI state
      */
     hardResetUI: () => {
+      notificationTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
+      notificationTimeouts.clear();
+      notificationLastTriggeredAtByKey.clear();
       set((state) => {
         Object.assign(state, INITIAL_UI_STATE);
       });

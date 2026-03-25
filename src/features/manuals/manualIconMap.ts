@@ -64,7 +64,7 @@ export const getManualPathIcon = (path?: string | null) => {
   if (path === 'heaven' || path === 'earth' || path === 'martial') {
     return MANUAL_PATH_ICONS[path];
   }
-  return { iconId: 'inkWip', label: 'Unknown Path' };
+  return { iconId: 'inkSparkles', label: 'Unknown Path' };
 };
 
 export const getManualTypeIcon = (type: ManualType) => MANUAL_TYPE_ICONS[type] ?? MANUAL_TYPE_ICONS.active;
@@ -76,8 +76,8 @@ export const getManualRoleIcon = (role?: string | null) => {
   return MANUAL_ROLE_ICONS.general;
 };
 
-const unknownPathIcon = { iconId: 'inkWip', label: 'Unknown Path', key: 'unknown' };
-const unknownTypeIcon = { iconId: 'inkWip', label: 'Unknown Type', key: 'unknown' };
+const unknownPathIcon = { iconId: 'inkSparkles', label: 'Unknown Path', key: 'unknown' };
+const unknownTypeIcon = { iconId: 'inkSparkles', label: 'Unknown Type', key: 'unknown' };
 
 export const getTierIcon = (gradeOrTierValue?: string | null) => {
   const grade = normalizeGrade(gradeOrTierValue ?? undefined);

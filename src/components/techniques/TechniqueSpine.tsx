@@ -28,7 +28,7 @@ const formatRarity = (rarity?: string) => {
   return rarity.charAt(0).toUpperCase() + rarity.slice(1);
 };
 
-const unknownTierIcon = { iconText: '◎', label: 'Unknown Tier', key: 'unknown' };
+const unknownTierIcon = { iconId: 'inkSparkles', label: 'Unranked Tier', key: 'unknown' };
 
 export function TechniqueSpine({
   id,
@@ -103,7 +103,7 @@ export function TechniqueSpine({
       <span className="techSpinePress" aria-hidden="true" />
       <div className="techSpineTop">
         <span className="techSpineTierIcon" role="img" aria-label={tierIcon.label} title={tierIcon.label}>
-          {tierIcon.iconText ?? '◎'}
+          {tierIcon.iconId ? <GameIcon icon={tierIcon.iconId} size={14} decorative /> : (tierIcon.iconText ?? '—')}
         </span>
         <div className="techSpineStatus" aria-hidden={!equipped && !selected && !isLocked}>
           {selected && (
