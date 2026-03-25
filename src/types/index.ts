@@ -178,6 +178,7 @@ export interface GameState {
   performPrestigeReset: () => void;
   purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
   getBreakthroughRequirement: () => string;
+  syncProgressionAvailability: () => void;
   hardResetGameState: () => void;
 }
 

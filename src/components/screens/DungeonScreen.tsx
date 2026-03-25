@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react';
 import { useCombatStore } from '../../stores/combatStore';
 import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
+import { useZoneStore } from '../../stores/zoneStore';
 import { formatNumber } from '../../utils/numbers';
 import { CombatView } from './AdventureScreen';
+import {
+  getDungeonLockReason,
+  type ProgressionFacts,
+} from '../../features/progression/currentBranchProgression';
 
 /**
  * Dungeon definition from config
@@ -38,7 +43,6 @@ interface Dungeon {
       firstClearOnly: boolean;
     };
   };
-  unlocked: boolean;
 }
 
 /**
@@ -57,9 +61,9 @@ function getReadinessLevel(
   if (avgRatio >= 1.2) {
     return { level: 'ready', color: 'text-green-400', text: 'READY' };
   } else if (avgRatio >= 0.8) {
-    return { level: 'caution', color: 'text-yellow-400', text: 'CAUTION' };
+    return { level: 'caution', color: 'text-yellow-400', text: 'CLOSE' };
   } else {
-    return { level: 'danger', color: 'text-red-400', text: 'DANGER' };
+    return { level: 'danger', color: 'text-red-400', text: 'RISKY' };
   }
 }
 
@@ -261,7 +265,7 @@ function BossPreviewModal({
 /**
  * Dungeon Card Component
  */
-  function DungeonCard({ dungeon, playerStats }: { dungeon: Dungeon; playerStats: { atk: string; hp: string } }) {
+  function DungeonCard({ dungeon, playerStats, facts }: { dungeon: Dungeon; playerStats: { atk: string; hp: string }; facts: ProgressionFacts }) {
   const [showPreview, setShowPreview] = useState(false);
   const realm = useGameStore((state) => state.realm);
   const startDungeonCombat = useCombatStore((state) => state.startDungeonCombat);
@@ -271,7 +275,8 @@ function BossPreviewModal({
 
   if (!realm) return null;
 
-  const isLocked = realm.index < dungeon.minRealm || !isDungeonUnlocked;
+  const lockReason = getDungeonLockReason(dungeon.id, facts);
+  const isLocked = !!lockReason || !isDungeonUnlocked;
 
   const playerDPS = Number(playerStats.atk);
   const playerHP = Number(playerStats.hp);
@@ -317,9 +322,9 @@ function BossPreviewModal({
         <p className="text-sm text-slate-400 mb-4">{dungeon.description}</p>
 
         {isLocked ? (
-          <div className="text-red-400 text-sm font-semibold">
-            🔒 Requires Realm {dungeon.minRealm}
-          </div>
+        <div className="text-red-400 text-sm font-semibold">
+            🔒 {lockReason ?? 'Progress further to unlock this dungeon.'}
+        </div>
         ) : (
           <div className="space-y-3">
             {/* Readiness Indicator */}
@@ -388,8 +393,22 @@ export function DungeonScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const stats = useGameStore((state) => state.stats);
+  const realm = useGameStore((state) => state.realm);
+  const zoneProgress = useZoneStore((state) => state.zoneProgress);
+  const dungeonProgress = useDungeonStore((state) => state.dungeonProgress);
   const inCombat = useCombatStore((state) => state.inCombat);
   const currentDungeon = useCombatStore((state) => state.currentDungeon);
+
+  const facts: ProgressionFacts = {
+    realmIndex: realm.index,
+    realmSubstage: realm.substage,
+    completedZones: Object.entries(zoneProgress)
+      .filter(([, progress]) => progress.completed)
+      .map(([zoneId]) => zoneId),
+    clearedDungeons: Object.entries(dungeonProgress)
+      .filter(([, progress]) => progress.totalClears > 0)
+      .map(([dungeonId]) => dungeonId),
+  };
 
   // Load dungeons from config
   useEffect(() => {
@@ -398,6 +417,7 @@ export function DungeonScreen() {
       .then((data) => {
         setDungeons(data.dungeons || []);
         setLoading(false);
+        useGameStore.getState().syncProgressionAvailability();
       })
       .catch((err) => {
         console.error('[DungeonScreen] Error loading dungeons:', err);
@@ -507,7 +527,7 @@ export function DungeonScreen() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {dungeons.map((dungeon) => (
-              <DungeonCard key={dungeon.id} dungeon={dungeon} playerStats={stats} />
+              <DungeonCard key={dungeon.id} dungeon={dungeon} playerStats={stats} facts={facts} />
             ))}
           </div>
         )}

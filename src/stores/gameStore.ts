@@ -23,14 +23,15 @@ import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers';
 import { setGameStoreGetter } from './prestigeStore';
 import { getAvailablePerks, getPerkById } from '../data/pathPerks';
 import { GATE_ITEMS } from '../systems/loot';
-import {
-  useZoneStore,
-  ZONE_REALM_REQUIREMENTS,
-  ZONE_UNLOCK_REQUIREMENTS,
-} from './zoneStore';
+import { useZoneStore } from './zoneStore';
 import { useDungeonStore } from './dungeonStore';
 import { useTechniqueStore } from './techniqueStore';
 import { useUIStore } from './uiStore';
+import {
+  syncCurrentBranchAvailability,
+  type ProgressionFacts,
+} from '../features/progression/currentBranchProgression';
+import { usePhaseTimingStore } from '../features/progression/phaseTimingStore';
 
 interface InventoryStoreDeps {
   getEquipmentStats: () => EquipmentStats;
@@ -73,14 +74,6 @@ export function setCombatStoreGetter(getter: () => CombatStoreDeps) {
   _getCombatStore = getter;
 }
 
-const REALM_ZONE_UNLOCKS = Object.entries(ZONE_REALM_REQUIREMENTS)
-  .filter(([zoneId]) => zoneId !== 'training_forest')
-  .map(([zoneId, realmIndex]) => ({
-    realmIndex: Number(realmIndex),
-    zoneId,
-    prerequisiteZone: ZONE_UNLOCK_REQUIREMENTS[zoneId],
-  }));
-
 const createInitialGameState = () => ({
   realm: { ...INITIAL_REALM },
   qi: '0',
@@ -110,22 +103,31 @@ const createInitialGameState = () => ({
   runStartTime: Date.now(),
 });
 
-function unlockContentForRealm(realmIndex: number) {
+function unlockContentForRealm(realmIndex: number, realmSubstage: number) {
   try {
+    const dungeonStore = useDungeonStore.getState();
     const zoneStore = useZoneStore.getState();
+    const completedZones = Object.entries(zoneStore.zoneProgress)
+      .filter(([, progress]) => progress.completed)
+      .map(([zoneId]) => zoneId);
+    const clearedDungeons = Object.entries(dungeonStore.dungeonProgress)
+      .filter(([, progress]) => progress.totalClears > 0)
+      .map(([dungeonId]) => dungeonId);
 
-    for (const unlock of REALM_ZONE_UNLOCKS) {
-      const prerequisiteMet =
-        !unlock.prerequisiteZone || zoneStore.isZoneCompleted(unlock.prerequisiteZone);
-
-      if (
-        realmIndex >= unlock.realmIndex &&
-        prerequisiteMet &&
-        !zoneStore.isZoneUnlocked(unlock.zoneId)
-      ) {
-        zoneStore.unlockZone(unlock.zoneId);
-      }
-    }
+    syncCurrentBranchAvailability({
+      realmIndex,
+      realmSubstage,
+      completedZones,
+      clearedDungeons,
+      unlockedZones: zoneStore.unlockedZones,
+      unlockedDungeons: dungeonStore.unlockedDungeons,
+      unlockZone: zoneStore.unlockZone,
+      unlockDungeon: dungeonStore.unlockDungeon,
+      onZoneUnlocked: (zoneId) => usePhaseTimingStore.getState().markZoneUnlocked(zoneId),
+      onDungeonUnlocked: (dungeonId) =>
+        usePhaseTimingStore.getState().markDungeonUnlocked(dungeonId),
+      onPhaseEntered: (phaseId) => usePhaseTimingStore.getState().markPhaseEntered(phaseId),
+    });
   } catch (error) {
     console.warn('[GameStore] Failed to unlock realm progression content', error);
   }
@@ -359,8 +361,6 @@ export const useGameStore = create<GameState>()(
         }
       }
 
-      const previousRealmIndex = state.realm.index;
-
       set((state) => {
         // Deduct Qi
         state.qi = D(state.qi).minus(requiredQi).toString();
@@ -393,9 +393,7 @@ export const useGameStore = create<GameState>()(
       }
 
       const newRealmIndex = get().realm.index;
-      if (newRealmIndex > previousRealmIndex) {
-        unlockContentForRealm(newRealmIndex);
-      }
+      unlockContentForRealm(newRealmIndex, get().realm.substage);
 
       const path = get().selectedPath;
       if (path) {
@@ -822,6 +820,42 @@ export const useGameStore = create<GameState>()(
 
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+      get().syncProgressionAvailability();
+    },
+
+    syncProgressionAvailability: () => {
+      const state = get();
+      const zoneStore = useZoneStore.getState();
+      const completedZones = Object.entries(zoneStore.zoneProgress)
+        .filter(([, progress]) => progress.completed)
+        .map(([zoneId]) => zoneId);
+      const dungeonStore = useDungeonStore.getState();
+      const clearedDungeons = Object.entries(dungeonStore.dungeonProgress)
+        .filter(([, progress]) => progress.totalClears > 0)
+        .map(([dungeonId]) => dungeonId);
+
+      const facts: ProgressionFacts = {
+        realmIndex: state.realm.index,
+        realmSubstage: state.realm.substage,
+        completedZones,
+        clearedDungeons,
+      };
+
+      syncCurrentBranchAvailability({
+        ...facts,
+        unlockedZones: zoneStore.unlockedZones,
+        unlockedDungeons: dungeonStore.unlockedDungeons,
+        unlockZone: zoneStore.unlockZone,
+        unlockDungeon: dungeonStore.unlockDungeon,
+        onZoneUnlocked: (zoneId) => usePhaseTimingStore.getState().markZoneUnlocked(zoneId),
+        onDungeonUnlocked: (dungeonId) =>
+          usePhaseTimingStore.getState().markDungeonUnlocked(dungeonId),
+        onPhaseEntered: (phaseId) => usePhaseTimingStore.getState().markPhaseEntered(phaseId),
+      });
+
+      if (state.realm.index >= 2) {
+        usePhaseTimingStore.getState().markPrestigeViable();
+      }
     },
 
     /**
@@ -881,6 +915,8 @@ export const useGameStore = create<GameState>()(
       // Recalculate everything to apply prestige multipliers
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+      usePhaseTimingStore.getState().resetRunTiming();
+      get().syncProgressionAvailability();
     },
   }))
 );
@@ -893,6 +929,7 @@ export const initializeGameStore = () => {
   const store = useGameStore.getState();
   store.calculateQiPerSecond();
   store.calculatePlayerStats();
+  store.syncProgressionAvailability();
 
   // Register game store with prestige store
   setGameStoreGetter(() => useGameStore.getState());

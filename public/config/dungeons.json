@@ -6,8 +6,8 @@
       "tier": 0,
       "description": "A peaceful clearing where novice cultivators prove their worth.",
       "minRealm": 0,
-      "suggestedDPS": 50,
-      "suggestedHP": 800,
+      "suggestedDPS": 90,
+      "suggestedHP": 1400,
       "boss": {
         "id": "novice_guardian",
         "name": "Novice Guardian",
@@ -31,8 +31,7 @@
           "name": "Foundation Pill",
           "firstClearOnly": true
         }
-      },
-      "unlocked": true
+      }
     },
     {
       "id": "stone_core_sanctum",
@@ -40,8 +39,8 @@
       "tier": 1,
       "description": "Ancient stones guard the path to Core Formation.",
       "minRealm": 1,
-      "suggestedDPS": 200,
-      "suggestedHP": 3000,
+      "suggestedDPS": 260,
+      "suggestedHP": 4200,
       "boss": {
         "id": "stone_guardian",
         "name": "Stone Guardian",
@@ -77,8 +76,7 @@
           "name": "Core Catalyst",
           "firstClearOnly": true
         }
-      },
-      "unlocked": false
+      }
     },
     {
       "id": "nascent_soul_chamber",
@@ -86,8 +84,8 @@
       "tier": 2,
       "description": "Where souls are forged and tested by ancient trials.",
       "minRealm": 2,
-      "suggestedDPS": 800,
-      "suggestedHP": 10000,
+      "suggestedDPS": 1050,
+      "suggestedHP": 13500,
       "boss": {
         "id": "soul_warden",
         "name": "Soul Warden",
@@ -119,12 +117,11 @@
         "gold": 50000,
         "exp": 15000,
         "guaranteedDrop": {
-          "itemId": "soul_condensate",
-          "name": "Soul Condensate",
+          "itemId": "core_stabilizer",
+          "name": "Core Stabilizer",
           "firstClearOnly": true
         }
-      },
-      "unlocked": false
+      }
     }
   ]
 }

@@ -307,6 +307,23 @@
       "expReward": "100",
       "lootTable": [],
       "isBoss": true
+    },
+    {
+      "id": "mountain_overlord",
+      "name": "Mountain Overlord",
+      "level": 18,
+      "zone": "mystic_mountains",
+      "hp": "1800",
+      "atk": "90",
+      "def": "45",
+      "crit": 18,
+      "critDmg": 190,
+      "dodge": 12,
+      "speed": 1.1,
+      "goldReward": "320",
+      "expReward": "170",
+      "lootTable": [],
+      "isBoss": true
     }
   ]
 }

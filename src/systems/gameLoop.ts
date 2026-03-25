@@ -6,6 +6,7 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 import { useUIStore } from '../stores/uiStore';
+import { usePhaseTimingStore } from '../features/progression/phaseTimingStore';
 
 /**
  * Game loop constants
@@ -219,6 +220,7 @@ export const gameLoop = new GameLoop();
 export function initializeGame(): boolean {
   try {
     console.log('[GameLoop] Initializing game...');
+    usePhaseTimingStore.getState().resetRunTiming();
 
     // Initialize game store (calculate derived values)
     initializeGameStore();
@@ -295,6 +297,8 @@ export function initializeGame(): boolean {
     } else {
       console.log('[GameLoop] No save found, starting new game');
     }
+
+    useGameStore.getState().syncProgressionAvailability();
 
     // Start the game loop
     gameLoop.start();

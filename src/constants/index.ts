@@ -11,7 +11,7 @@ export const REALMS: RealmDefinition[] = [
     name: 'Qi Condensation',
     majorRealm: 'Mortal',
     substages: 9,
-    qiRequirement: '100',
+    qiRequirement: '80',
     qiPerSecond: '1',
     baseStats: {
       hp: '100',
@@ -29,7 +29,7 @@ export const REALMS: RealmDefinition[] = [
     name: 'Foundation Establishment',
     majorRealm: 'Mortal',
     substages: 9,
-    qiRequirement: '1000',
+    qiRequirement: '750',
     qiPerSecond: '10',
     baseStats: {
       hp: '500',
@@ -47,7 +47,7 @@ export const REALMS: RealmDefinition[] = [
     name: 'Golden Core',
     majorRealm: 'Spiritual',
     substages: 9,
-    qiRequirement: '10000',
+    qiRequirement: '7000',
     qiPerSecond: '100',
     baseStats: {
       hp: '2500',
@@ -249,7 +249,7 @@ export const UPGRADE_COSTS = {
  * Breakthrough requirements
  * Multiplier for Qi needed to advance substages
  */
-export const BREAKTHROUGH_QI_MULTIPLIER = 2.5;
+export const BREAKTHROUGH_QI_MULTIPLIER = 2.2;
 
 /**
  * Initial game state values
