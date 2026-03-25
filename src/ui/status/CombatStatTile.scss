@@ -12,7 +12,7 @@
   background: rgba(255, 255, 255, 0.45);
   border: 1px solid rgba(12, 18, 34, 0.14);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  transition: box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -31,9 +31,9 @@
 }
 
 .combatStatTile:hover {
-  transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.26);
   border-color: rgba(12, 18, 34, 0.2);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .combatStatTile.is-pulsing {
@@ -154,13 +154,12 @@
 
 @keyframes combatTilePulse {
   0% {
-    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
   }
   50% {
-    transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
   }
   100% {
-    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
   }
 }

@@ -17,6 +17,7 @@
   border-radius: 14px;
   background: rgba(245, 236, 220, 0.96);
   box-shadow: 0 12px 24px rgba(39, 27, 16, 0.12);
+  min-height: 152px;
 }
 
 .onboardingCalloutCard__eyebrow {
@@ -48,4 +49,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  min-height: 34px;
+  align-items: center;
 }

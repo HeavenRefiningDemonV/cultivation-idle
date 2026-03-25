@@ -243,6 +243,7 @@
   flex-wrap: nowrap;
   overflow: hidden;
   white-space: nowrap;
+  min-height: 20px;
 }
 
 .techniquesPanel--v2 .techBadge {
@@ -445,12 +446,12 @@
   border-radius: 8px;
   padding: 10px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .techniqueLibraryLoadout:hover {
   border-color: rgba(120, 72, 33, 0.45);
-  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(66, 45, 24, 0.16);
 }
 
 .techniqueLibraryLoadout.is-active {
@@ -855,12 +856,12 @@
   padding: 8px 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .techniqueLibraryLinkButton:hover {
-  transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(66, 45, 24, 0.2);
+  background: rgba(248, 238, 220, 1);
 }
 
 .techniqueLibraryDetail {
@@ -1143,6 +1144,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-height: 20px;
 }
 
 .techniqueLibraryTrack {

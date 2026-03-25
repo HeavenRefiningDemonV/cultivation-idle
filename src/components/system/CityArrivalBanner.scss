@@ -18,6 +18,7 @@
   border-radius: 16px;
   background: rgba(247, 239, 224, 0.96);
   box-shadow: 0 14px 28px rgba(39, 27, 16, 0.18);
+  min-height: 170px;
 }
 
 .cityArrivalBannerEyebrow {
@@ -50,10 +51,13 @@
   gap: 8px;
   margin-top: 4px;
   align-items: center;
+  min-height: 34px;
 }
 
 .cityArrivalBannerQuickOpen {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  min-height: 34px;
+  align-items: center;
 }

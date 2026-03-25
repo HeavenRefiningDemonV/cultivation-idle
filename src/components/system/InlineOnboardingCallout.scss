@@ -4,6 +4,7 @@
   padding: 12px;
   display: grid;
   gap: 8px;
+  min-height: 120px;
 }
 
 .inlineOnboardingCallout--paper {
@@ -44,4 +45,6 @@
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  min-height: 34px;
+  align-items: center;
 }
