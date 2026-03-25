@@ -8,6 +8,7 @@ import { formatNumber } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
 import { HpBar } from '../ui/Bar';
 import { getZoneLockReason, type ProgressionFacts } from '../../features/progression/currentBranchProgression';
+import { getCurrentBranchRewardProfile } from '../../features/economy/currentBranchRewardProfiles';
 
 interface ZoneConfig {
   id: string;
@@ -73,6 +74,7 @@ function ZoneCard({
 
   const lockReason = getZoneLockReason(zone.id, facts);
   const isLocked = !!lockReason || !isUnlocked;
+  const rewardProfile = getCurrentBranchRewardProfile(zone.id);
 
   const handleFightEnemies = () => {
     const enemy = generateEnemy(zone, enemies, false);
@@ -116,6 +118,13 @@ function ZoneCard({
             <div className="text-xs text-qi-blue">
               Enemies defeated: {zoneProgress?.enemiesDefeated || 0}
             </div>
+            {rewardProfile && (
+              <div className="text-xs text-slate-300 space-y-1 pt-2">
+                <div>Renewable Value: <span className="text-yellow-300">{rewardProfile.renewableValue}</span></div>
+                <div>Support: {rewardProfile.supportItems.join(', ')}</div>
+                <div>Gear Anchors: {rewardProfile.gearAnchors.join(', ')}</div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">

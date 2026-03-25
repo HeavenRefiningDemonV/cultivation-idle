@@ -35,12 +35,12 @@ interface Dungeon {
     }>;
   };
   rewards: {
-    gold: number;
+    firstClearGold: number;
+    repeatGold: number;
     exp: number;
     guaranteedDrop: {
       itemId: string;
       name: string;
-      firstClearOnly: boolean;
     };
   };
 }
@@ -225,9 +225,15 @@ function BossPreviewModal({
             <h4 className="font-bold text-gold-accent mb-3">Rewards:</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-400">Gold:</span>
+                <span className="text-slate-400">First Clear Gold:</span>
                 <span className="text-yellow-400 font-bold">
-                  {formatNumber(dungeon.rewards.gold)}
+                  {formatNumber(dungeon.rewards.firstClearGold)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Repeat Gold:</span>
+                <span className="text-yellow-300 font-bold">
+                  {formatNumber(dungeon.rewards.repeatGold)}
                 </span>
               </div>
               {dungeon.rewards.guaranteedDrop && (

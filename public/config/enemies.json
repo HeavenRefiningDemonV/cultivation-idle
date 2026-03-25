@@ -28,7 +28,7 @@
           "maxAmount": 3
         },
         {
-          "itemId": "lesser_health_potion",
+          "itemId": "health_pill",
           "dropChance": 10,
           "minAmount": 1,
           "maxAmount": 1
@@ -92,7 +92,7 @@
           "maxAmount": 1
         },
         {
-          "itemId": "lesser_spirit_stone",
+          "itemId": "spirit_stone",
           "dropChance": 12,
           "minAmount": 1,
           "maxAmount": 1
@@ -127,7 +127,7 @@
           "maxAmount": 1
         },
         {
-          "itemId": "health_potion",
+          "itemId": "greater_health_pill",
           "dropChance": 20,
           "minAmount": 1,
           "maxAmount": 1
@@ -197,7 +197,7 @@
           "maxAmount": 1
         },
         {
-          "itemId": "lesser_spirit_stone",
+          "itemId": "spirit_stone",
           "dropChance": 30,
           "minAmount": 1,
           "maxAmount": 2
@@ -232,7 +232,7 @@
           "maxAmount": 1
         },
         {
-          "itemId": "greater_spirit_stone",
+          "itemId": "qi_crystal",
           "dropChance": 18,
           "minAmount": 1,
           "maxAmount": 1
@@ -267,7 +267,7 @@
           "maxAmount": 1
         },
         {
-          "itemId": "cultivation_manual",
+          "itemId": "qi_crystal",
           "dropChance": 15,
           "minAmount": 1,
           "maxAmount": 1

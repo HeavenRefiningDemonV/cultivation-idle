@@ -24,12 +24,12 @@
         ]
       },
       "rewards": {
-        "gold": 5000,
+        "firstClearGold": 5000,
+        "repeatGold": 1200,
         "exp": 1000,
         "guaranteedDrop": {
           "itemId": "foundation_pill",
-          "name": "Foundation Pill",
-          "firstClearOnly": true
+          "name": "Foundation Pill"
         }
       }
     },
@@ -69,12 +69,12 @@
         ]
       },
       "rewards": {
-        "gold": 20000,
+        "firstClearGold": 20000,
+        "repeatGold": 4200,
         "exp": 5000,
         "guaranteedDrop": {
           "itemId": "core_catalyst",
-          "name": "Core Catalyst",
-          "firstClearOnly": true
+          "name": "Core Catalyst"
         }
       }
     },
@@ -114,12 +114,12 @@
         ]
       },
       "rewards": {
-        "gold": 50000,
+        "firstClearGold": 50000,
+        "repeatGold": 9000,
         "exp": 15000,
         "guaranteedDrop": {
           "itemId": "core_stabilizer",
-          "name": "Core Stabilizer",
-          "firstClearOnly": true
+          "name": "Core Stabilizer"
         }
       }
     }
