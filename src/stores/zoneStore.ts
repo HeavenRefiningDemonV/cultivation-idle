@@ -193,7 +193,7 @@ export const useZoneStore = create<ZoneState>()(
 
     /**
      * Check if boss is available in a zone
-     * Requires 10 enemy kills first
+     * Requires threshold enemy kills first
      */
     isBossAvailable: (zoneId: string) => {
       const state = get();
@@ -205,7 +205,7 @@ export const useZoneStore = create<ZoneState>()(
 
       // Boss is available if:
       // 1. Not already defeated
-      // 2. Enough enemies killed (10+)
+      // 2. Enough enemies killed
       return !progress.bossDefeated && progress.enemiesDefeated >= BOSS_UNLOCK_THRESHOLD;
     },
 

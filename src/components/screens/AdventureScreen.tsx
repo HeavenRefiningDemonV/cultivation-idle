@@ -134,7 +134,7 @@ function ZoneCard({
                   : 'bg-slate-700 text-slate-500 cursor-not-allowed'
               }`}
             >
-              {isBossAvailable ? 'Fight Boss' : 'Boss (10 kills needed)'}
+              {isBossAvailable ? 'Fight Boss' : 'Boss (15 kills needed)'}
             </button>
           </div>
         </div>
