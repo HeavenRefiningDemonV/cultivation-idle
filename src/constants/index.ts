@@ -3,6 +3,7 @@ import type { RealmDefinition, PathModifiers, FocusModeModifiers } from '../type
 /**
  * Realm definitions for cultivation progression
  * Each realm has substages (typically 9 for early realms, 3-6 for later ones)
+ * Live baseline values; Section 6 tuning passes can adjust pacing later.
  */
 export const REALMS: RealmDefinition[] = [
   {
@@ -11,7 +12,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Mortal',
     substages: 9,
     qiRequirement: '100',
-    qiPerSecond: '1000',        // TESTING: 1000x faster (was 1)
+    qiPerSecond: '1',
     baseStats: {
       hp: '100',
       atk: '10',
@@ -29,7 +30,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Mortal',
     substages: 9,
     qiRequirement: '1000',
-    qiPerSecond: '10000',       // TESTING: 1000x faster (was 10)
+    qiPerSecond: '10',
     baseStats: {
       hp: '500',
       atk: '50',
@@ -47,7 +48,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Spiritual',
     substages: 9,
     qiRequirement: '10000',
-    qiPerSecond: '100000',      // TESTING: 1000x faster (was 100)
+    qiPerSecond: '100',
     baseStats: {
       hp: '2500',
       atk: '250',
@@ -65,7 +66,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Spiritual',
     substages: 6,
     qiRequirement: '100000',
-    qiPerSecond: '1000000',     // TESTING: 1000x faster (was 1000)
+    qiPerSecond: '1000',
     baseStats: {
       hp: '12500',
       atk: '1250',
@@ -83,7 +84,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Spiritual',
     substages: 6,
     qiRequirement: '1000000',
-    qiPerSecond: '10000000',    // TESTING: 1000x faster (was 10000)
+    qiPerSecond: '10000',
     baseStats: {
       hp: '62500',
       atk: '6250',
@@ -101,7 +102,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Immortal',
     substages: 6,
     qiRequirement: '10000000',
-    qiPerSecond: '100000000',   // TESTING: 1000x faster (was 100000)
+    qiPerSecond: '100000',
     baseStats: {
       hp: '312500',
       atk: '31250',
@@ -119,7 +120,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Immortal',
     substages: 3,
     qiRequirement: '100000000',
-    qiPerSecond: '1000000000',  // TESTING: 1000x faster (was 1000000)
+    qiPerSecond: '1000000',
     baseStats: {
       hp: '1562500',
       atk: '156250',
@@ -137,7 +138,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Immortal',
     substages: 3,
     qiRequirement: '1000000000',
-    qiPerSecond: '10000000000', // TESTING: 1000x faster (was 10000000)
+    qiPerSecond: '10000000',
     baseStats: {
       hp: '7812500',
       atk: '781250',
@@ -155,7 +156,7 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: 'Transcendent',
     substages: 9,
     qiRequirement: '10000000000',
-    qiPerSecond: '100000000000', // TESTING: 1000x faster (was 100000000)
+    qiPerSecond: '100000000',
     baseStats: {
       hp: '39062500',
       atk: '3906250',

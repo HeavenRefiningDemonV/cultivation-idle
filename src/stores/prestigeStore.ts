@@ -73,7 +73,6 @@ interface PrestigeState {
   updateHighestRealm: (realmIndex: number) => void;
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
-  getCultivationMultiplier: () => number;
   initializeUpgrades: () => void;
 
   // Spirit root methods
@@ -130,10 +129,8 @@ export const usePrestigeStore = create<PrestigeState>()(
       const realmBonus = Math.max(0, realmIndex - 1) * 10; // Only award AP after Foundation
       const substageBonus = Math.floor(substageProgress * 5);
 
-      const runTimeHours = (Date.now() - state.runStartTime) / (1000 * 60 * 60);
-      const timeBonus = Math.max(0, Math.floor(runTimeHours));
-
-      return Math.max(0, Math.floor(realmBonus + substageBonus + timeBonus));
+      // Packet 6.1 keeps AP depth-based; AP/hour tuning happens in later balance passes.
+      return Math.max(0, Math.floor(realmBonus + substageBonus));
     },
 
     canPrestige: () => {
@@ -238,11 +235,6 @@ export const usePrestigeStore = create<PrestigeState>()(
       const damageBonus = get().getUpgradeEffect('damage_mult');
       const hpBonus = get().getUpgradeEffect('hp_mult');
       return 1 + damageBonus + hpBonus;
-    },
-
-    getCultivationMultiplier: () => {
-      const cultivationBonus = get().getUpgradeEffect('offline_mult');
-      return 1 + cultivationBonus;
     },
 
     initializeUpgrades: () => {

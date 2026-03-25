@@ -43,7 +43,6 @@ interface PrestigeStoreDeps {
   updateHighestRealm: (index: number) => void;
   getQiMultiplier: () => Decimal.Value;
   getCombatMultiplier: () => Decimal.Value;
-  getCultivationMultiplier: () => Decimal.Value;
   getSpiritRootTotalMultiplier: () => number;
   spiritRoot: { element?: string | null; purity: number } | null;
 }
@@ -791,21 +790,10 @@ export const useGameStore = create<GameState>()(
       const state = get();
       const currentRealm = REALMS[state.realm.index];
 
-      // Calculate Qi requirement for current substage
+      // Honest baseline requirement: realm base * substage multiplier.
       const baseRequirement = D(currentRealm.qiRequirement);
       const substageMultiplier = D(BREAKTHROUGH_QI_MULTIPLIER).pow(state.realm.substage - 1);
       const requiredQi = multiply(baseRequirement, substageMultiplier);
-
-      // Apply prestige cultivation multiplier (reduces cost)
-      if (_getPrestigeStore) {
-        try {
-          const prestigeStore = _getPrestigeStore();
-          const cultivationMultiplier = prestigeStore.getCultivationMultiplier();
-          return requiredQi.dividedBy(cultivationMultiplier).toString();
-          } catch {
-            // Prestige store not available, return base requirement
-          }
-        }
 
       return requiredQi.toString();
     },

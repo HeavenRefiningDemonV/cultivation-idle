@@ -504,7 +504,6 @@ export interface PrestigeState {
   setSpiritRoot: (spiritRoot: SpiritRoot) => boolean;
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
-  getCultivationMultiplier: () => number;
   getLuckBonus: () => number;
   updateHighestRealm: (realmIndex: number) => void;
   incrementBossesDefeated: () => void;
