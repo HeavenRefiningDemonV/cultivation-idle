@@ -3,6 +3,10 @@ import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
 import { D } from '../utils/numbers';
+import {
+  captureLifeSummarySnapshot,
+  type PrestigeLifeSummarySnapshot,
+} from '../features/prestige/lifeSummarySurface';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -52,6 +56,7 @@ interface PrestigeState {
   upgrades: Record<string, PrestigeUpgrade>;
   highestRealmReached: number;
   runStartTime: number;
+  lastLifeSummary: PrestigeLifeSummarySnapshot | null;
 
   // Spirit root reroll tracking
   rerollCount: number;
@@ -62,7 +67,7 @@ interface PrestigeState {
   // Methods
   calculateAPGain: () => number;
   canPrestige: () => boolean;
-  performPrestige: () => void;
+  performPrestige: (preparedSummary?: PrestigeLifeSummarySnapshot) => void;
   purchaseUpgrade: (upgradeId: string) => boolean;
   getUpgradeEffect: (upgradeId: string) => number;
   updateHighestRealm: (realmIndex: number) => void;
@@ -100,6 +105,7 @@ const createInitialPrestigeState = () => ({
   upgrades: {} as Record<string, PrestigeUpgrade>,
   highestRealmReached: 0,
   runStartTime: Date.now(),
+  lastLifeSummary: null as PrestigeLifeSummarySnapshot | null,
   rerollCount: 0,
   spiritRoot: null as SpiritRoot | null,
 });
@@ -144,12 +150,21 @@ export const usePrestigeStore = create<PrestigeState>()(
       });
     },
 
-    performPrestige: () => {
+    performPrestige: (preparedSummary) => {
       const state = get();
       if (!_getGameStore) return;
       const gameStore = _getGameStore();
 
       if (!state.canPrestige()) return;
+
+      const lifeSummary =
+        preparedSummary ??
+        captureLifeSummarySnapshot({
+          apForecast: state.calculateAPGain(),
+          canPrestige: state.canPrestige(),
+          runStartTime: state.runStartTime,
+          upgrades: state.upgrades,
+        });
 
       const trackedRealm = Math.max(state.highestRealmReached, gameStore.realm?.index || 0);
       const apGained = Math.max(0, state.calculateAPGain());
@@ -171,6 +186,7 @@ export const usePrestigeStore = create<PrestigeState>()(
         state.prestigeRuns = [...state.prestigeRuns, newRun].slice(-10); // Keep last 10 runs
         state.highestRealmReached = 0;
         state.runStartTime = Date.now();
+        state.lastLifeSummary = lifeSummary;
       });
 
       // Trigger game reset
