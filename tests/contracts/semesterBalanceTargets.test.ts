@@ -62,6 +62,7 @@ test('packet 6.1 deferred categories are explicitly present', () => {
   assert.equal(targets.activityThroughputTargets.status, 'deferred');
   assert.equal(targets.gateWinRateTargets.status, 'deferred');
   assert.equal(targets.reclaimSpeedTargets.status, 'deferred');
+  assert.equal(targets.readinessCalibrationTargets.status, 'deferred');
   assert.equal(targets.antiStallTargets.status, 'deferred');
 
   const prestigePolicy = getPrestigeBaselinePolicy();

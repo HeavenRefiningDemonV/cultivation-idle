@@ -179,6 +179,11 @@ export const SEMESTER_BALANCE_TARGETS: SemesterBalanceTargets = {
     sourcePacket: '6.5',
     notes: 'Reclaim speed numerical targets are intentionally deferred to packet 6.5.',
   },
+  readinessCalibrationTargets: {
+    status: 'deferred',
+    sourcePacket: '6.6',
+    notes: 'Readiness calibration targets are intentionally deferred to packet 6.6.',
+  },
   antiStallTargets: {
     status: 'deferred',
     sourcePacket: '6.7',

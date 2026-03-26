@@ -107,5 +107,6 @@ export interface SemesterBalanceTargets {
   activityThroughputTargets: DeferredCategoryTarget;
   gateWinRateTargets: DeferredCategoryTarget;
   reclaimSpeedTargets: DeferredCategoryTarget;
+  readinessCalibrationTargets: DeferredCategoryTarget;
   antiStallTargets: DeferredCategoryTarget;
 }
