@@ -3,6 +3,10 @@ import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types';
 import { REALMS } from '../constants';
 import { D } from '../utils/numbers';
+import {
+  captureLifeSummarySnapshot,
+  type PrestigeLifeSummarySnapshot,
+} from '../features/prestige/lifeSummarySurface';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -52,6 +56,7 @@ interface PrestigeState {
   upgrades: Record<string, PrestigeUpgrade>;
   highestRealmReached: number;
   runStartTime: number;
+  lastLifeSummary: PrestigeLifeSummarySnapshot | null;
 
   // Spirit root reroll tracking
   rerollCount: number;
@@ -62,13 +67,12 @@ interface PrestigeState {
   // Methods
   calculateAPGain: () => number;
   canPrestige: () => boolean;
-  performPrestige: () => void;
+  performPrestige: (preparedSummary?: PrestigeLifeSummarySnapshot) => void;
   purchaseUpgrade: (upgradeId: string) => boolean;
   getUpgradeEffect: (upgradeId: string) => number;
   updateHighestRealm: (realmIndex: number) => void;
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
-  getCultivationMultiplier: () => number;
   initializeUpgrades: () => void;
 
   // Spirit root methods
@@ -100,6 +104,7 @@ const createInitialPrestigeState = () => ({
   upgrades: {} as Record<string, PrestigeUpgrade>,
   highestRealmReached: 0,
   runStartTime: Date.now(),
+  lastLifeSummary: null as PrestigeLifeSummarySnapshot | null,
   rerollCount: 0,
   spiritRoot: null as SpiritRoot | null,
 });
@@ -124,10 +129,8 @@ export const usePrestigeStore = create<PrestigeState>()(
       const realmBonus = Math.max(0, realmIndex - 1) * 10; // Only award AP after Foundation
       const substageBonus = Math.floor(substageProgress * 5);
 
-      const runTimeHours = (Date.now() - state.runStartTime) / (1000 * 60 * 60);
-      const timeBonus = Math.max(0, Math.floor(runTimeHours));
-
-      return Math.max(0, Math.floor(realmBonus + substageBonus + timeBonus));
+      // Packet 6.1 keeps AP depth-based; AP/hour tuning happens in later balance passes.
+      return Math.max(0, Math.floor(realmBonus + substageBonus));
     },
 
     canPrestige: () => {
@@ -144,12 +147,21 @@ export const usePrestigeStore = create<PrestigeState>()(
       });
     },
 
-    performPrestige: () => {
+    performPrestige: (preparedSummary) => {
       const state = get();
       if (!_getGameStore) return;
       const gameStore = _getGameStore();
 
       if (!state.canPrestige()) return;
+
+      const lifeSummary =
+        preparedSummary ??
+        captureLifeSummarySnapshot({
+          apForecast: state.calculateAPGain(),
+          canPrestige: state.canPrestige(),
+          runStartTime: state.runStartTime,
+          upgrades: state.upgrades,
+        });
 
       const trackedRealm = Math.max(state.highestRealmReached, gameStore.realm?.index || 0);
       const apGained = Math.max(0, state.calculateAPGain());
@@ -171,6 +183,7 @@ export const usePrestigeStore = create<PrestigeState>()(
         state.prestigeRuns = [...state.prestigeRuns, newRun].slice(-10); // Keep last 10 runs
         state.highestRealmReached = 0;
         state.runStartTime = Date.now();
+        state.lastLifeSummary = lifeSummary;
       });
 
       // Trigger game reset
@@ -222,11 +235,6 @@ export const usePrestigeStore = create<PrestigeState>()(
       const damageBonus = get().getUpgradeEffect('damage_mult');
       const hpBonus = get().getUpgradeEffect('hp_mult');
       return 1 + damageBonus + hpBonus;
-    },
-
-    getCultivationMultiplier: () => {
-      const cultivationBonus = get().getUpgradeEffect('offline_mult');
-      return 1 + cultivationBonus;
     },
 
     initializeUpgrades: () => {

@@ -8,6 +8,8 @@ import { useDungeonStore } from './dungeonStore';
 import { D, subtract, greaterThan, lessThanOrEqualTo, add } from '../utils/numbers';
 import { BossMechanics } from '../systems/bossMechanics';
 import { generateLoot, formatLootMessage } from '../systems/loot';
+import { ITEMS_DATABASE } from '../constants/itemsDatabase';
+import { recordRewardDiagnosticEvent } from '../features/economy/rewardDiagnostics';
 
 interface DungeonBoss {
   id: string;
@@ -27,7 +29,8 @@ interface DungeonData {
   name: string;
   tier: number;
   rewards: {
-    gold?: number;
+    firstClearGold?: number;
+    repeatGold?: number;
     exp?: number;
     guaranteedDrop?: { itemId: string; name: string };
   };
@@ -439,18 +442,19 @@ export const useCombatStore = create<ExtendedCombatState>()(
             const dungeonStore = useDungeonStore.getState();
             const isFirstClear = dungeonStore.isFirstClear(currentDungeon);
 
-            // Award gold
-            if (dungeon.rewards.gold) {
-              inventoryStore.addGold(dungeon.rewards.gold.toString());
-              get().addLogEntry('loot', `💰 Received ${dungeon.rewards.gold} Gold!`, '#fbbf24');
-            }
+            const rawGold = isFirstClear
+              ? (dungeon.rewards.firstClearGold ?? 0)
+              : (dungeon.rewards.repeatGold ?? 0);
+            inventoryStore.addGold(rawGold.toString());
+            get().addLogEntry('loot', `💰 Received ${rawGold} Gold!`, '#fbbf24');
 
-            // Award guaranteed first-clear drop
+            const awardedItemIds: string[] = [];
             if (isFirstClear && dungeon.rewards.guaranteedDrop) {
               const drop = dungeon.rewards.guaranteedDrop;
               const success = inventoryStore.addItem(drop.itemId, 1);
               if (success) {
                 get().addLogEntry('loot', `✨ FIRST CLEAR REWARD: ${drop.name}!`, '#a855f7');
+                awardedItemIds.push(drop.itemId);
               } else {
                 get().addLogEntry('system', '⚠️ Inventory full! First clear reward was lost.', '#ef4444');
               }
@@ -462,6 +466,21 @@ export const useCombatStore = create<ExtendedCombatState>()(
             // Display completion stats
             const totalClears = dungeonStore.getTotalClears(currentDungeon);
             get().addLogEntry('system', `📊 Total Clears: ${totalClears} | Time: ${combatTime.toFixed(1)}s`, '#60a5fa');
+
+            const estimatedSellValue = awardedItemIds.reduce(
+              (sum, itemId) => sum.plus(ITEMS_DATABASE[itemId]?.value ?? '0'),
+              D(0)
+            );
+            recordRewardDiagnosticEvent({
+              activityType: 'dungeon',
+              activityId: currentDungeon,
+              rawGold: rawGold.toString(),
+              awardedItemIds,
+              estimatedSellValue: estimatedSellValue.toString(),
+              isFirstClear,
+              durationSec: combatTime,
+              timestamp: Date.now(),
+            });
           })
           .catch(err => {
             console.error('[CombatStore] Error loading dungeon rewards:', err);
@@ -493,6 +512,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
             break;
           }
         }
+        const estimatedSellValue = lootResult.items.reduce(
+          (sum, item) => sum.plus(D(ITEMS_DATABASE[item.itemId]?.value ?? '0').times(item.quantity)),
+          D(0)
+        );
+        recordRewardDiagnosticEvent({
+          activityType: isBoss ? 'zoneBoss' : 'zone',
+          activityId: currentZone ?? enemy.zone,
+          rawGold: lootResult.gold,
+          awardedItemIds: lootResult.items.map((item) => item.itemId),
+          estimatedSellValue: estimatedSellValue.toString(),
+          isFirstClear: isBoss ? isFirstBossKill : false,
+          durationSec: combatTime,
+          timestamp: Date.now(),
+        });
 
         // Format and display loot messages
         const lootMessages = formatLootMessage(lootResult);

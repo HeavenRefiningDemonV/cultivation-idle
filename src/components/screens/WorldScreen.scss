@@ -1,0 +1,11 @@
+.expeditionRouteCard:hover {
+  border-color: rgba(150, 119, 72, 0.65);
+  background: linear-gradient(180deg, rgba(252, 247, 232, 0.94), rgba(239, 227, 201, 0.9));
+  box-shadow: 0 14px 26px rgba(82, 55, 26, 0.24);
+}
+
+.expeditionRouteCard--selected {
+  border-color: rgba(46, 97, 74, 0.78);
+  background: linear-gradient(180deg, rgba(245, 238, 217, 0.96), rgba(229, 244, 234, 0.92));
+  box-shadow: 0 0 0 1px rgba(46, 97, 74, 0.34), 0 18px 30px rgba(57, 74, 54, 0.24);
+}

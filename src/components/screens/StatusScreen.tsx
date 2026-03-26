@@ -2,9 +2,13 @@ import { useGameStore } from '../../stores/gameStore';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
+import { useDungeonStore } from '../../stores/dungeonStore';
+import { useTechniqueStore } from '../../stores/techniqueStore';
 import { formatNumber } from '../../utils/numbers';
 import { REALMS } from '../../constants';
 import { SpiritRootDisplay } from '../SpiritRootDisplay';
+import { getDungeonLockReason } from '../../features/progression/currentBranchProgression';
+import { assessCurrentBranchGatePrep, buildCurrentBranchPrepSnapshot } from '../../features/prep/currentBranchPrepAssessment';
 
 /**
  * Stat Row Component for displaying key-value pairs
@@ -53,6 +57,8 @@ export function StatusScreen() {
   const stats = useGameStore((state) => state.stats);
   const focusMode = useGameStore((state) => state.focusMode);
   const totalAuras = useGameStore((state) => state.totalAuras);
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const runStartTime = useGameStore((state) => state.runStartTime);
 
   // Inventory Store
   const gold = useInventoryStore((state) => state.gold);
@@ -65,10 +71,45 @@ export function StatusScreen() {
 
   // Zone Store
   const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
+  const zoneProgress = useZoneStore((state) => state.zoneProgress);
+  const dungeonProgress = useDungeonStore((state) => state.dungeonProgress);
+  const techniques = useTechniqueStore((state) => state.techniques);
 
   // Calculate some derived stats
   const currentRealm = REALMS[realm.index];
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
+  const progressionFacts = {
+    realmIndex: realm.index,
+    realmSubstage: realm.substage,
+    completedZones: Object.entries(zoneProgress).filter(([, p]) => p.completed).map(([zoneId]) => zoneId),
+    clearedDungeons: Object.entries(dungeonProgress).filter(([, p]) => p.totalClears > 0).map(([dungeonId]) => dungeonId),
+  };
+  const nextGateId =
+    ['novice_clearing', 'stone_core_sanctum', 'nascent_soul_chamber'].find((gateId) =>
+      !progressionFacts.clearedDungeons.includes(gateId)
+    ) ?? 'nascent_soul_chamber';
+  const nextGateLockReason = getDungeonLockReason(nextGateId, progressionFacts);
+  const itemCounts = items.reduce<Record<string, number>>((acc, item) => {
+    acc[item.itemId] = (acc[item.itemId] ?? 0) + item.quantity;
+    return acc;
+  }, {});
+  const pathTechniques = Object.values(techniques).filter((t) => (selectedPath ? t.path === selectedPath && t.unlocked : false));
+  const prepSummary = assessCurrentBranchGatePrep(
+    buildCurrentBranchPrepSnapshot({
+      gateId: nextGateId,
+      realmIndex: realm.index,
+      realmSubstage: realm.substage,
+      isProgressionBlocked: !!nextGateLockReason,
+      progressionBlockReason: nextGateLockReason,
+      runTimeMinutes: (Date.now() - runStartTime) / 60000,
+      inventoryCounts: itemCounts,
+      equippedWeaponId: equippedWeapon?.id ?? null,
+      equippedAccessoryId: equippedAccessory?.id ?? null,
+      selectedPath,
+      unlockedPathTechniqueCount: pathTechniques.length,
+      primaryTechniqueProficiency: pathTechniques.reduce((m, t) => Math.max(m, t.proficiency), 0),
+    })
+  );
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
@@ -202,6 +243,17 @@ export function StatusScreen() {
             <StatCard title="Miscellaneous">
               <StatRow label="Combat Logs" value={combatLog.length} color="text-slate-300" />
               <StatRow label="Player Luck" value={formatNumber(useGameStore.getState().playerLuck || 0)} color="text-pink-400" />
+              <StatRow label="Next Gate" value={nextGateId.replace(/_/g, ' ')} color="text-blue-300" />
+              <StatRow
+                label="Biggest Prep Shortfall"
+                value={prepSummary.biggestShortfall ? `${prepSummary.biggestShortfall.category}: ${prepSummary.biggestShortfall.label}` : 'None'}
+                color={prepSummary.biggestShortfall ? 'text-yellow-300' : 'text-green-400'}
+              />
+              <StatRow
+                label="Best Next Action"
+                value={prepSummary.topFixes[0] ? `${prepSummary.topFixes[0].label} (${prepSummary.topFixes[0].routeToken})` : 'Gate prep stable'}
+                color="text-cyan-300"
+              />
             </StatCard>
           </div>
         </div>

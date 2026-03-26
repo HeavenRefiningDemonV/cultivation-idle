@@ -127,7 +127,7 @@ export function CultivationScreen() {
                         className="focus-button cultivation-breakthrough-button focus-button-active"
                         onClick={handleBreakthrough}
                     >
-                        ✨ Attempt Breakthrough ✨
+                        Attempt Breakthrough
                     </button>
                 </div>
             </div>
