@@ -132,7 +132,7 @@ export function applyOfflineProgressFromContext(context: OfflineContext): Offlin
       return null;
     }
 
-    const qiPart = summary.parts.find((part) => part.label === 'Qi gained');
+    const qiPart = summary.parts.find((part) => part.kind === 'qi_gained');
     const modalSummary: OfflineProgressSummary = {
       offlineDuration: summary.offlineDuration,
       qiGained: qiPart?.value ?? formatNumber(0),

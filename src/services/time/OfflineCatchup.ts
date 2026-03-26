@@ -10,8 +10,10 @@ import { formatOfflineDuration, MAX_OFFLINE_MS, resolveOfflineCultivationEfficie
 import { cultivationService } from '../cultivationService.js';
 import { buildCultivationConsumableCarryoverWindows } from '../../systems/consumables/cultivationConsumableEffects.js';
 import { getHeartLawBonuses } from '../../systems/heartLaw/heartLawLogic.js';
+import { getExpeditionReadinessDelta, getQueuedActionReadinessDelta } from '../../systems/offline/offlineSummaryReadModel.js';
 
 export interface OfflineCatchupSummaryPart {
+  kind: 'qi_gained' | 'queued_actions' | 'expeditions';
   label: string;
   value: string;
 }
@@ -73,31 +75,55 @@ export function apply(context: OfflineContext): OfflineCatchupResult {
   const startAt = context.now - seconds * 1000;
 
   const gameStore = useGameStore.getState();
+  useGameStore.setState({ lastActiveTime: context.now, lastTickTime: context.now });
   const offlineEfficiency = getLiveOfflineEfficiency();
   const qiGain = calculateOfflineQiGain(startAt, context.now, offlineEfficiency);
   if (qiGain.greaterThan(0)) {
     const nextQi = D(gameStore.qi ?? '0').plus(qiGain);
-    useGameStore.setState({ qi: nextQi.toString(), lastActiveTime: context.now, lastTickTime: context.now });
-    summaryParts.push({ label: 'Qi gained', value: formatNumber(qiGain) });
+    useGameStore.setState({ qi: nextQi.toString() });
+    summaryParts.push({ kind: 'qi_gained', label: 'Qi gained', value: formatNumber(qiGain) });
   }
 
   cultivationService.applyOfflineProgress(seconds * 1000, startAt, context.now);
 
   const professionStore = useProfessionStore.getState();
-  const beforeJobs = professionStore.alchemyQueue.length + professionStore.talismanQueue.length + professionStore.forgeQueue.length;
+  const beforeQueueSnapshot = {
+    alchemyQueue: [...professionStore.alchemyQueue],
+    talismanQueue: [...professionStore.talismanQueue],
+    forgeQueue: [...professionStore.forgeQueue],
+  } as const;
   professionStore.applyOffline(context.now);
-  const afterJobs = professionStore.alchemyQueue.length + professionStore.talismanQueue.length + professionStore.forgeQueue.length;
-  if (beforeJobs !== afterJobs) {
-    summaryParts.push({ label: 'Craft queues updated', value: `${beforeJobs} → ${afterJobs}` });
+  const afterProfessionStore = useProfessionStore.getState();
+  const queuedReadiness = getQueuedActionReadinessDelta({
+    before: beforeQueueSnapshot,
+    after: {
+      alchemyQueue: afterProfessionStore.alchemyQueue,
+      talismanQueue: afterProfessionStore.talismanQueue,
+      forgeQueue: afterProfessionStore.forgeQueue,
+    },
+    beforeAt: startAt,
+    afterAt: context.now,
+  });
+  if (queuedReadiness.newlyReady > 0) {
+    summaryParts.push({
+      kind: 'queued_actions',
+      label: 'Queued actions ready',
+      value: `${queuedReadiness.newlyReady}`,
+    });
   }
 
   const expeditionStore = useExpeditionStore.getState();
-  const beforeComplete = expeditionStore.active.filter((run) => run.status === 'complete').length;
+  const beforeExpeditionSnapshot = { active: expeditionStore.active.map((run) => ({ ...run })) } as const;
   expeditionStore.tick(context.now);
-  const afterComplete = expeditionStore.active.filter((run) => run.status === 'complete').length;
-  const newlyCompleted = afterComplete - beforeComplete;
-  if (newlyCompleted > 0) {
-    summaryParts.push({ label: 'Expeditions ready', value: `${newlyCompleted}` });
+  const afterExpeditionStore = useExpeditionStore.getState();
+  const expeditionReadiness = getExpeditionReadinessDelta({
+    before: beforeExpeditionSnapshot,
+    after: { active: afterExpeditionStore.active },
+    beforeAt: startAt,
+    afterAt: context.now,
+  });
+  if (expeditionReadiness.newlyComplete > 0) {
+    summaryParts.push({ kind: 'expeditions', label: 'Expeditions ready', value: `${expeditionReadiness.newlyComplete}` });
   }
 
   return {

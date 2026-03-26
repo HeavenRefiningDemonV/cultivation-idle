@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import type { OfflineProgressSummary } from '../systems/offline.js';
 import type { OfflineCatchupResult } from '../services/time/OfflineCatchup.js';
 import { useActivityStore } from './activityStore.js';
 import { useCombatStore } from './combatStore.js';
@@ -126,7 +125,7 @@ interface UIStateBase {
   perkSelectionRealm: number | null;
   showBreakthroughAnimation: boolean;
   showOfflineProgressModal: boolean;
-  offlineProgressSummary: OfflineProgressSummary | null;
+  offlineProgressSummary: OfflineCatchupResult['summary'];
   showManualSatchelModal: boolean;
   showTechniqueLearnedModal: boolean;
   techniqueLearnedPayload: {
@@ -193,7 +192,7 @@ export interface UIState extends UIStateBase {
   showPerkSelection: (realmIndex: number) => void;
   hidePerkSelection: () => void;
   triggerBreakthroughAnimation: () => void;
-  showOfflineProgress: (summary: OfflineProgressSummary) => void;
+  showOfflineProgress: (summary: NonNullable<OfflineCatchupResult['summary']>) => void;
   hideOfflineProgress: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
@@ -561,7 +560,7 @@ export const useUIStore = create<UIState>()(
     /**
      * Show offline progress modal
      */
-    showOfflineProgress: (summary: OfflineProgressSummary) => {
+    showOfflineProgress: (summary) => {
       set((state) => {
         state.showOfflineProgressModal = true;
         state.offlineProgressSummary = summary;

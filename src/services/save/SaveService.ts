@@ -16,6 +16,7 @@ import { GameEvents } from '../events/GameEvents.js';
 import { apply as applyOfflineCatchup } from '../time/OfflineCatchup.js';
 import { GameClock } from '../time/GameClock.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { shouldShowOfflineProgressModal } from '../../systems/balance/offlineTargets.js';
 
 function recordLastSave(timestamp: number) {
   try {
@@ -25,17 +26,23 @@ function recordLastSave(timestamp: number) {
   }
 }
 
-function recordOfflineSummary() {
+function recordOfflineSummary(now: number): boolean {
   const context = consumeOfflineContext();
-  if (!context) return;
-  const result = applyOfflineCatchup({ ...context, now: GameClock.nowWall() });
+  if (!context) return false;
+  const result = applyOfflineCatchup({ ...context, now });
   if (result.summary) {
     try {
-      useUIStore.getState().setLastOfflineSummary(result.summary);
+      const uiStore = useUIStore.getState();
+      uiStore.setLastOfflineSummary(result.summary);
+      if (shouldShowOfflineProgressModal(result.summary)) {
+        uiStore.showOfflineProgress(result.summary);
+      }
     } catch (error) {
       console.warn('[SaveService] Unable to store offline summary', error);
     }
+    return true;
   }
+  return false;
 }
 
 export const SaveService = {
@@ -57,8 +64,15 @@ export const SaveService = {
   load(): boolean {
     const ok = legacyLoadGame();
     if (ok) {
-      recordLastSave(GameClock.nowWall());
-      recordOfflineSummary();
+      const now = GameClock.nowWall();
+      recordLastSave(now);
+      const appliedOffline = recordOfflineSummary(now);
+      if (appliedOffline) {
+        const persisted = legacySaveGame();
+        if (persisted) {
+          recordLastSave(GameClock.nowWall());
+        }
+      }
     }
     return ok;
   },
