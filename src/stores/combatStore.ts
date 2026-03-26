@@ -57,6 +57,7 @@ function stampCombatEvent<TType extends CombatEvent['type']>(
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning.js';
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel.js';
+import { buildTrialAttemptId, getEligibleFailCount, getTrialGateIndex } from '../services/diagnostics/balanceTelemetryService.js';
 import { normalizeTrialBossMechanics } from '../systems/combat/trialBossMechanicCatalog.js';
 import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles.js';
 import { useUIStore } from './uiStore.js';
@@ -872,11 +873,26 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (context?.type === 'trial' && context.trialId) {
         const trialStore = useTrialStore.getState();
+        const progress = trialStore.getProgress(context.trialId);
+        const attemptNumberThisLife = progress.attempts + progress.sessionAttempts + 1;
+        const attemptId = buildTrialAttemptId(context.trialId, now);
         if (trialStore.activeTrialSessionId !== context.trialId) {
           trialStore.beginTrialSession(context.trialId, now);
         } else {
           trialStore.setAttemptStart(context.trialId, now);
         }
+        GameEvents.emit({
+          type: 'trials/attempt_started',
+          payload: {
+            timestamp: now,
+            trialId: context.trialId,
+            gateIndex: getTrialGateIndex(context.trialId),
+            attemptId,
+            attemptNumberThisLife,
+            countsTowardFailSafe: context.countsTowardFailSafe,
+            lifecycleState: 'available',
+          },
+        });
       }
 
       const enemyScaled = createEnemy(enemyTemplateId, {
@@ -1380,6 +1396,8 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
       if (combatContext.type === 'trial') {
         const { cityId, trialId, countsTowardFailSafe, rewardBundle } = combatContext;
+        const durationSec = state.combatStartTime ? Math.max(0, (Date.now() - state.combatStartTime) / 1000) : 0;
+        const attemptId = buildTrialAttemptId(trialId, state.combatStartTime ?? Date.now());
 
         useActivityStore.getState().stopActivity();
         if (useHeartLawStore.getState().selectedHeartLawId) {
@@ -1396,6 +1414,23 @@ export const useCombatStore = create<ExtendedCombatState>()(
         } else {
           console.warn('[CombatStore] Ignoring resolved or non-qualifying trial victory for gate progression', combatContext);
         }
+        GameEvents.emit({
+          type: 'trials/attempt_resolved',
+          payload: {
+            timestamp: Date.now(),
+            trialId,
+            gateIndex: getTrialGateIndex(trialId),
+            attemptId,
+            outcome: countsTowardFailSafe ? 'cleared' : 'bypassed',
+            durationSec,
+            countsTowardFailSafe,
+            eligibleFailCountAfterAttempt: getEligibleFailCount(trialId),
+          },
+        });
+        GameEvents.emit({
+          type: 'combat/resolved',
+          payload: { enemyId: enemy.id, outcome: 'victory', source: 'trial', trialId, durationSec, timestamp: Date.now() },
+        });
 
         setTimeout(() => {
           get().exitCombat();
@@ -1510,6 +1545,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
 
         return;
       }
+      GameEvents.emit({
+        type: 'combat/resolved',
+        payload: { enemyId: enemy.id, outcome: 'victory', source: combatContext.type ?? 'unknown', durationSec: state.combatStartTime ? (Date.now() - state.combatStartTime) / 1000 : undefined, timestamp: Date.now() },
+      });
 
       // Regular combat rewards (zone/enemy)
       // Generate loot
@@ -1639,6 +1678,20 @@ export const useCombatStore = create<ExtendedCombatState>()(
           );
           addNotification('info', `Eligible defeat reward: +${policy.eligibleDefeatMerit} Merit`, { durationMs: 1800 });
         }
+        GameEvents.emit({
+          type: 'trials/attempt_resolved',
+          payload: {
+            timestamp: now,
+            trialId: context.trialId,
+            gateIndex: getTrialGateIndex(context.trialId),
+            attemptId: buildTrialAttemptId(context.trialId, state.combatStartTime ?? now),
+            outcome: 'defeated',
+            durationSec: state.combatStartTime ? Math.max(0, (now - state.combatStartTime) / 1000) : 0,
+            bossHpPctRemaining: Number(summary.bossHpPct) / 100,
+            countsTowardFailSafe: context.countsTowardFailSafe,
+            eligibleFailCountAfterAttempt: getEligibleFailCount(context.trialId),
+          },
+        });
       }
 
       if (context?.type === 'ruins') {
@@ -1655,6 +1708,10 @@ export const useCombatStore = create<ExtendedCombatState>()(
       }
 
       const shouldRetryOutskirts = autoRetryOnDeath && context?.type === 'outskirts';
+      GameEvents.emit({
+        type: 'combat/resolved',
+        payload: { enemyId: enemy.id, outcome: 'defeat', source: context?.type ?? 'unknown', trialId: context?.type === 'trial' ? context.trialId : undefined, durationSec: state.combatStartTime ? Math.max(0, (now - state.combatStartTime) / 1000) : undefined, timestamp: now },
+      });
 
       // Add respawn message (no death penalty in idle games usually)
       get().addLogEntry(

@@ -1,5 +1,6 @@
 import { GameEvents } from '../events/GameEvents.js';
 import { formatGameEventSummary, useTelemetryStore } from '../../stores/telemetryStore.js';
+import { initializeBalanceTelemetry } from './balanceTelemetryService.js';
 
 let initialized = false;
 
@@ -16,4 +17,6 @@ export function initializeTelemetry(): void {
       payload: event.payload,
     });
   });
+
+  initializeBalanceTelemetry();
 }

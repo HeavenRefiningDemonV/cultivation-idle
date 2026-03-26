@@ -5,6 +5,7 @@ import { useContentStore } from './contentStore.js';
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract, getTransitionByTrialId } from '../systems/progression/contract/progressionContract.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 export type TrialResolution = 'none' | 'cleared' | 'bypassed';
 
@@ -196,6 +197,7 @@ export const useTrialStore = create<TrialState>()(
     },
 
     markBypassed: (trialId, bypassedAt = Date.now()) => {
+      let gateIndex = 0;
       set((state) => {
         if (!state.progressByTrialId[trialId]) {
           state.progressByTrialId[trialId] = createDefaultTrialProgress();
@@ -217,7 +219,7 @@ export const useTrialStore = create<TrialState>()(
         const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
         const transition = getTransitionByTrialId(contract, trialId);
         if (transition) {
-          const gateIndex = (contract.majorRealms[transition.fromRealmId]?.index ?? 0) + 1;
+          gateIndex = (contract.majorRealms[transition.fromRealmId]?.index ?? 0) + 1;
           progressionTimingTracker.emitGateResolved({
             runStartTime: progressionTimingTracker.getActiveRunStartTime(),
             timestamp: bypassedAt,
@@ -230,6 +232,19 @@ export const useTrialStore = create<TrialState>()(
           });
         }
       }
+      GameEvents.emit({
+        type: 'trials/attempt_resolved',
+        payload: {
+          timestamp: bypassedAt,
+          trialId,
+          gateIndex,
+          attemptId: `${trialId}:${bypassedAt}`,
+          outcome: 'bypassed',
+          durationSec: 0,
+          countsTowardFailSafe: true,
+          eligibleFailCountAfterAttempt: get().getProgress(trialId).eligibleFailures,
+        },
+      });
     },
 
     isResolved: (trialId) => {

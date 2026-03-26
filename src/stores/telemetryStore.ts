@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameEvent } from '../services/events/GameEvents.js';
+import type { BalanceTelemetryEvent } from '../services/diagnostics/balanceTelemetrySchema.js';
 
 export type TelemetryEventEntry = {
   id: string;
@@ -13,14 +14,24 @@ export type TelemetryEventEntry = {
 interface TelemetryState {
   events: TelemetryEventEntry[];
   maxEvents: number;
+  balanceEvents: BalanceTelemetryEventEntry[];
+  maxBalanceEvents: number;
+  balanceCaptureEnabled: boolean;
   addEvent: (entry: Omit<TelemetryEventEntry, 'id'> & { id?: string }) => void;
+  addBalanceEvent: (entry: Omit<BalanceTelemetryEventEntry, 'id'> & { id?: string }) => void;
   clear: () => void;
+  clearBalanceEvents: () => void;
   setMaxEvents: (n: number) => void;
+  setMaxBalanceEvents: (n: number) => void;
+  setBalanceCaptureEnabled: (enabled: boolean) => void;
 }
 
 const DEFAULT_MAX_EVENTS = 200;
+const DEFAULT_MAX_BALANCE_EVENTS = 5000;
 const MIN_EVENTS = 50;
 const MAX_EVENTS = 1000;
+const MIN_BALANCE_EVENTS = 100;
+const MAX_BALANCE_EVENTS = 20000;
 
 const makeId = () => `evt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 const formatElapsed = (elapsedMs: number | null | undefined): string => {
@@ -65,7 +76,8 @@ export const formatGameEventSummary = (event: GameEvent): string => {
       return `Pavilion stock refreshed: pavilionId=${pavilionId ?? 'unknown'}`;
     }
     case 'progression/life_started': {
-      return 'Life started';
+      const { lifeOrdinal, sessionKind } = event.payload;
+      return `Life started (#${lifeOrdinal ?? '?'} ${sessionKind ?? 'unknown'})`;
     }
     case 'progression/gate_available': {
       const { gateIndex, elapsedMsSinceLifeStart } = event.payload;
@@ -76,8 +88,8 @@ export const formatGameEventSummary = (event: GameEvent): string => {
       return `Gate ${gateIndex} ${resolution} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
     }
     case 'progression/breakthrough': {
-      const { resultingRealmId, major, elapsedMsSinceLifeStart } = event.payload;
-      return `${major ? 'Major' : 'Substage'} breakthrough -> ${resultingRealmId} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
+      const { toRealmId, major, elapsedMsSinceLifeStart } = event.payload;
+      return `${major ? 'Major' : 'Substage'} breakthrough -> ${toRealmId} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
     }
     case 'progression/city_entered': {
       const { cityId, elapsedMsSinceLifeStart } = event.payload;
@@ -87,15 +99,46 @@ export const formatGameEventSummary = (event: GameEvent): string => {
       const { realmId, elapsedMsSinceLifeStart } = event.payload;
       return `Content cap reached: ${realmId} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
     }
+    case 'trials/attempt_started': {
+      const { gateIndex, lifecycleState } = event.payload;
+      return `Trial started: Gate ${gateIndex} / ${lifecycleState}`;
+    }
+    case 'trials/attempt_resolved': {
+      const { gateIndex, outcome, bossHpPctRemaining } = event.payload;
+      if (outcome === 'defeated') return `Trial defeat: Gate ${gateIndex} / boss ${Math.round((bossHpPctRemaining ?? 0) * 100)}%`;
+      return `Trial ${outcome}: Gate ${gateIndex}`;
+    }
+    case 'expeditions/claimed': {
+      const { expeditionTypeId, durationId, cityId } = event.payload;
+      return `Expedition claimed: ${expeditionTypeId} / ${durationId} / ${cityId}`;
+    }
+    case 'prestige/performed': {
+      return `Prestige performed: +${event.payload.apGained} AP`;
+    }
+    case 'offline/applied': {
+      const { rawOfflineSeconds, qiGained, queuedActionsReady, expeditionsReady } = event.payload;
+      return `Offline applied: ${Math.floor(rawOfflineSeconds / 3600)}h / Qi + ${qiGained} + ${queuedActionsReady} queues + ${expeditionsReady} expedition`;
+    }
     default:
       return event.type;
   }
+};
+
+export type BalanceTelemetryEventEntry = {
+  id: string;
+  ts: number;
+  kind: BalanceTelemetryEvent['kind'];
+  summary: string;
+  payload: BalanceTelemetryEvent;
 };
 
 export const useTelemetryStore = create<TelemetryState>()(
   immer((set) => ({
     events: [],
     maxEvents: DEFAULT_MAX_EVENTS,
+    balanceEvents: [],
+    maxBalanceEvents: DEFAULT_MAX_BALANCE_EVENTS,
+    balanceCaptureEnabled: true,
 
     addEvent: (entry) => {
       set((state) => {
@@ -118,6 +161,26 @@ export const useTelemetryStore = create<TelemetryState>()(
         state.events = [];
       });
     },
+    addBalanceEvent: (entry) => {
+      set((state) => {
+        if (!state.balanceCaptureEnabled) return;
+        state.balanceEvents.unshift({
+          id: entry.id ?? makeId(),
+          ts: entry.ts ?? Date.now(),
+          kind: entry.kind,
+          summary: entry.summary,
+          payload: entry.payload,
+        });
+        if (state.balanceEvents.length > state.maxBalanceEvents) {
+          state.balanceEvents.length = state.maxBalanceEvents;
+        }
+      });
+    },
+    clearBalanceEvents: () => {
+      set((state) => {
+        state.balanceEvents = [];
+      });
+    },
 
     setMaxEvents: (n: number) => {
       set((state) => {
@@ -126,6 +189,20 @@ export const useTelemetryStore = create<TelemetryState>()(
         if (state.events.length > clamped) {
           state.events.length = clamped;
         }
+      });
+    },
+    setMaxBalanceEvents: (n: number) => {
+      set((state) => {
+        const clamped = Math.min(Math.max(n, MIN_BALANCE_EVENTS), MAX_BALANCE_EVENTS);
+        state.maxBalanceEvents = clamped;
+        if (state.balanceEvents.length > clamped) {
+          state.balanceEvents.length = clamped;
+        }
+      });
+    },
+    setBalanceCaptureEnabled: (enabled: boolean) => {
+      set((state) => {
+        state.balanceCaptureEnabled = Boolean(enabled);
       });
     },
   })),

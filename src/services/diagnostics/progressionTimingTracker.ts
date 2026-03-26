@@ -33,7 +33,11 @@ export const progressionTimingTracker = {
     }
   },
 
-  emitLifeStarted(runStartTime: number, timestamp = Date.now()) {
+  emitLifeStarted(
+    runStartTime: number,
+    timestamp = Date.now(),
+    options?: { trigger?: 'hard_reset' | 'prestige_reset' | 'fresh_start' | 'other'; lifeOrdinal?: number; sessionKind?: 'first_life' | 'reclaim' },
+  ) {
     activeRunStartTime = runStartTime;
     emitMilestoneOnce(runStartTime, PROGRESSION_MILESTONE_IDS.LIFE_START, () => {
       GameEvents.emit({
@@ -42,6 +46,9 @@ export const progressionTimingTracker = {
           timestamp,
           runStartTime,
           elapsedMsSinceLifeStart: toElapsedMs(runStartTime, timestamp),
+          trigger: options?.trigger ?? 'other',
+          lifeOrdinal: options?.lifeOrdinal,
+          sessionKind: options?.sessionKind,
         },
       });
     });
@@ -161,6 +168,7 @@ export const progressionTimingTracker = {
     major: boolean;
   }) {
     const resultingRealm = getLiveRealmByIndex(input.toRealmIndex);
+    const fromRealm = getLiveRealmByIndex(input.fromRealmIndex);
     GameEvents.emit({
       type: 'progression/breakthrough',
       payload: {
@@ -172,7 +180,8 @@ export const progressionTimingTracker = {
         fromSubstage: input.fromSubstage,
         toSubstage: input.toSubstage,
         major: input.major,
-        resultingRealmId: resultingRealm.id,
+        fromRealmId: fromRealm.id,
+        toRealmId: resultingRealm.id,
       },
     });
 

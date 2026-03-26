@@ -3,6 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { useContentStore } from './contentStore.js';
 import { RewardService, type RewardBundle } from '../services/rewards/index.js';
 import { useUIStore } from './uiStore.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 import {
   buildLiveBountyDescription,
   getCanonicalLiveBountyDifficultyOrder,
@@ -313,7 +314,21 @@ export const useBountyStore = create<BountyStoreState>()(
     claim: (cityId, instanceId) => {
       const bounty = get().activeByCityId[cityId]?.find((entry) => entry.instanceId === instanceId);
       if (!bounty || bounty.claimed || bounty.progress < bounty.target) return false;
+      const claimedAt = Date.now();
       RewardService.grantRewards(bounty.rewards, `bounty:${bounty.templateId}`);
+      GameEvents.emit({
+        type: 'bounties/claimed',
+        payload: {
+          timestamp: claimedAt,
+          cityId,
+          templateId: bounty.templateId,
+          difficulty: bounty.difficulty,
+          kind: bounty.kind,
+          claimedAt,
+          createdAt: bounty.createdAt,
+          rewards: bounty.rewards,
+        },
+      });
       set((state) => {
         const list = state.activeByCityId[cityId];
         if (!list) return;

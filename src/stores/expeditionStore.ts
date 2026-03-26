@@ -11,6 +11,7 @@ import { useBountyStore } from './bountyStore.js';
 import { rollWithPity } from '../services/economy/pity.js';
 import { useUIStore } from './uiStore.js';
 import { getExpeditionBountyCreditCityId } from '../utils/bountyRouting.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 export type ExpeditionRunStatus = 'running' | 'complete';
 
@@ -462,6 +463,17 @@ export const useExpeditionStore = create<ExpeditionState>()(
       set((state) => {
         state.active.push(run);
       });
+      GameEvents.emit({
+        type: 'expeditions/started',
+        payload: {
+          timestamp: now,
+          slotIndex,
+          expeditionTypeId: typeId,
+          durationId,
+          durationSeconds: duration.seconds,
+          cityId,
+        },
+      });
 
       return true;
     },
@@ -580,6 +592,18 @@ export const useExpeditionStore = create<ExpeditionState>()(
         if (pityCap > 1) {
           state.rareProgressByKey[progressKey] = Math.min(Math.max(0, nextFailures), Math.max(0, pityCap - 1));
         }
+      });
+      GameEvents.emit({
+        type: 'expeditions/claimed',
+        payload: {
+          timestamp: now,
+          slotIndex,
+          expeditionTypeId: run.expeditionTypeId,
+          durationId: run.durationId,
+          cityId: run.cityId,
+          rareDropItemId: rareDrop?.itemId,
+          rolled: rolledBundle,
+        },
       });
 
       return {

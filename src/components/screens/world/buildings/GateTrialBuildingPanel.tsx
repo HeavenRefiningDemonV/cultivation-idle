@@ -204,11 +204,11 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
       return;
     }
 
-    const spent = inventory.spendCurrencies({
+    const spent = RewardService.spendCurrency({
       gold: goldCost,
       spiritStones: spiritStoneCost,
       merit: meritCost,
-    });
+    }, `gate_fail_safe:${trialDef.id}`);
 
     if (!spent) {
       addNotification('warning', `Failed to deduct currencies for ${GATE_SUPPORT_LABELS.support} purchase.`);

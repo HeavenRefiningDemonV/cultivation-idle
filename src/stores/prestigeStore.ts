@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types/index.js';
 import { SaveService } from '../services/save/SaveService.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 import { useContentStore } from './contentStore.js';
 import type { PrestigeUpgradeDef } from '../content/index.js';
 import { PRESTIGE_TARGETS } from '../systems/balance/prestigeTargets.js';
@@ -316,6 +317,18 @@ export const usePrestigeStore = create<PrestigeState>()(
         state.runStartTime = Date.now();
         state.lastLifeSummary = lifeSummarySnapshot;
       });
+      GameEvents.emit({
+        type: 'prestige/performed',
+        payload: {
+          timestamp: Date.now(),
+          apGained,
+          totalAPAfter: get().totalAP,
+          realmReached: trackedRealm,
+          resolvedGateCount,
+          timeSpentSec: runTime,
+          advisorLabel: lifeSummarySnapshot.advisorLabel,
+        },
+      });
 
       // Trigger game reset
       gameStore.performPrestigeReset();
@@ -391,6 +404,16 @@ export const usePrestigeStore = create<PrestigeState>()(
       set((state) => {
         state.totalAP -= cost;
         state.purchasesById[upgradeId] = current + 1;
+      });
+      GameEvents.emit({
+        type: 'prestige/upgrade_purchased',
+        payload: {
+          timestamp: Date.now(),
+          upgradeId,
+          nextLevel: current + 1,
+          apCost: cost,
+          remainingAP: get().totalAP,
+        },
       });
 
       recomputeAndApplyPrestigeUnlocks(get().purchasesById);

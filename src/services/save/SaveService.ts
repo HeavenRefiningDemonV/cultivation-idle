@@ -31,6 +31,22 @@ function recordOfflineSummary(now: number): boolean {
   if (!context) return false;
   const result = applyOfflineCatchup({ ...context, now });
   if (result.summary) {
+    const qiPart = result.summary.parts.find((part) => part.kind === 'qi_gained');
+    const queuePart = result.summary.parts.find((part) => part.kind === 'queued_actions');
+    const expeditionPart = result.summary.parts.find((part) => part.kind === 'expeditions');
+    GameEvents.emit({
+      type: 'offline/applied',
+      payload: {
+        timestamp: now,
+        rawOfflineSeconds: result.summary.offlineSeconds,
+        effectiveOfflineSeconds: result.summary.offlineSeconds,
+        effectiveEfficiency: result.summary.efficiency,
+        wasCapped: result.summary.wasCapped,
+        qiGained: qiPart?.value ?? '0',
+        queuedActionsReady: Number(queuePart?.value ?? '0') || 0,
+        expeditionsReady: Number(expeditionPart?.value ?? '0') || 0,
+      },
+    });
     try {
       const uiStore = useUIStore.getState();
       uiStore.setLastOfflineSummary(result.summary);

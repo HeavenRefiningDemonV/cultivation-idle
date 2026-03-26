@@ -283,13 +283,19 @@ export const useProfessionStore = create<ProfessionState>()(
       }
 
       if (Object.keys(costs).length > 0) {
-        const spent = inventory.spendCurrencies(costs);
+        const spent = RewardService.spendCurrency(costs, `alchemy_queue:${recipeId}`);
         if (!spent) {
           removedItems.forEach((entry) => {
             inventory.addItem(entry.itemId, entry.qty);
           });
           return { ok: false, error: 'Missing currency' };
         }
+      }
+      if (removedItems.length > 0) {
+        GameEvents.emit({
+          type: 'economy/items_spent',
+          payload: { items: removedItems, reason: `alchemy_queue:${recipeId}`, module: 'profession.alchemyQueue' },
+        });
       }
 
       const durationMs = durationSec * amount * timeMultiplier * 1000;
@@ -394,13 +400,19 @@ export const useProfessionStore = create<ProfessionState>()(
       }
 
       if (Object.keys(costs).length > 0) {
-        const spent = inventory.spendCurrencies(costs);
+        const spent = RewardService.spendCurrency(costs, `talisman_queue:${recipeId}`);
         if (!spent) {
           removedItems.forEach((entry) => {
             inventory.addItem(entry.itemId, entry.qty);
           });
           return { ok: false, error: 'Missing currency' };
         }
+      }
+      if (removedItems.length > 0) {
+        GameEvents.emit({
+          type: 'economy/items_spent',
+          payload: { items: removedItems, reason: `talisman_queue:${recipeId}`, module: 'profession.talismanQueue' },
+        });
       }
 
       const durationMs = Math.max(0, durationSec) * amount * 1000;

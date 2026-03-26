@@ -39,6 +39,7 @@ import { useTrialStore } from './trialStore.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
+import { GameEvents } from '../services/events/GameEvents.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -407,6 +408,14 @@ export const useGameStore = create<GameState>()(
           console.warn(`[GameStore] Failed to consume breakthrough item: ${gateItemId}`);
           return false;
         }
+        GameEvents.emit({
+          type: 'economy/items_spent',
+          payload: {
+            items: [{ itemId: gateItemId, qty: 1 }],
+            reason: `breakthrough_gate_item:${gateItemId}`,
+            module: 'gameStore.breakthrough',
+          },
+        });
       }
 
       const previousRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
@@ -895,7 +904,12 @@ export const useGameStore = create<GameState>()(
       // Recalculate everything
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
-      progressionTimingTracker.emitLifeStarted(get().runStartTime);
+      const prestigeCount = (_getPrestigeStore?.() as { prestigeCount?: number } | undefined)?.prestigeCount ?? 0;
+      progressionTimingTracker.emitLifeStarted(get().runStartTime, Date.now(), {
+        trigger: 'prestige_reset',
+        lifeOrdinal: prestigeCount + 1,
+        sessionKind: prestigeCount > 0 ? 'reclaim' : 'first_life',
+      });
     },
 
     hardResetGameState: () => {
@@ -906,7 +920,11 @@ export const useGameStore = create<GameState>()(
 
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
-      progressionTimingTracker.emitLifeStarted(get().runStartTime);
+      progressionTimingTracker.emitLifeStarted(get().runStartTime, Date.now(), {
+        trigger: 'hard_reset',
+        lifeOrdinal: 1,
+        sessionKind: 'first_life',
+      });
     },
 
     /**

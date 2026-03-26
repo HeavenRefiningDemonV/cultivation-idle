@@ -21,6 +21,9 @@ export type CombatResolvedEvent = {
     enemyId?: string;
     outcome?: 'victory' | 'defeat';
     source?: string;
+    trialId?: string;
+    durationSec?: number;
+    timestamp?: number;
   };
 };
 
@@ -583,12 +586,24 @@ export type RewardsSpentEvent = {
   payload: { costs: RewardCurrencyBundle; reason?: string };
 };
 
+export type EconomyItemsSpentEvent = {
+  type: 'economy/items_spent';
+  payload: {
+    items: Array<{ itemId: string; qty: number }>;
+    reason: string;
+    module?: string;
+  };
+};
+
 export type ProgressionLifeStartedEvent = {
   type: 'progression/life_started';
   payload: {
     timestamp: number;
     runStartTime: number;
     elapsedMsSinceLifeStart: number;
+    lifeOrdinal?: number;
+    sessionKind?: 'first_life' | 'reclaim';
+    trigger?: 'hard_reset' | 'prestige_reset' | 'fresh_start' | 'other';
   };
 };
 
@@ -632,7 +647,8 @@ export type ProgressionBreakthroughEvent = {
     fromSubstage: number;
     toSubstage: number;
     major: boolean;
-    resultingRealmId: string;
+    fromRealmId: string;
+    toRealmId: string;
   };
 };
 
@@ -656,6 +672,111 @@ export type ProgressionContentCapReachedEvent = {
     elapsedMsSinceLifeStart: number;
     realmId: string;
     cityId: string | null;
+  };
+};
+
+export type TrialsAttemptStartedEvent = {
+  type: 'trials/attempt_started';
+  payload: {
+    timestamp: number;
+    trialId: string;
+    gateIndex: number;
+    attemptId: string;
+    attemptNumberThisLife: number;
+    countsTowardFailSafe: boolean;
+    lifecycleState: string;
+  };
+};
+
+export type TrialsAttemptResolvedEvent = {
+  type: 'trials/attempt_resolved';
+  payload: {
+    timestamp: number;
+    trialId: string;
+    gateIndex: number;
+    attemptId: string;
+    outcome: 'cleared' | 'defeated' | 'bypassed';
+    durationSec: number;
+    bossHpPctRemaining?: number;
+    countsTowardFailSafe: boolean;
+    eligibleFailCountAfterAttempt?: number;
+  };
+};
+
+export type BountiesClaimedEvent = {
+  type: 'bounties/claimed';
+  payload: {
+    timestamp: number;
+    cityId: string;
+    templateId: string;
+    difficulty: string;
+    kind: string;
+    claimedAt: number;
+    createdAt: number;
+    rewards: RewardBundle;
+  };
+};
+
+export type ExpeditionsStartedEvent = {
+  type: 'expeditions/started';
+  payload: {
+    timestamp: number;
+    slotIndex: number;
+    expeditionTypeId: string;
+    durationId: string;
+    durationSeconds: number;
+    cityId: string;
+  };
+};
+
+export type ExpeditionsClaimedEvent = {
+  type: 'expeditions/claimed';
+  payload: {
+    timestamp: number;
+    slotIndex: number;
+    expeditionTypeId: string;
+    durationId: string;
+    cityId: string;
+    rareDropItemId?: string;
+    rolled: RewardBundle;
+  };
+};
+
+export type PrestigePerformedEvent = {
+  type: 'prestige/performed';
+  payload: {
+    timestamp: number;
+    apGained: number;
+    totalAPAfter: number;
+    realmReached: number;
+    resolvedGateCount: number;
+    timeSpentSec: number;
+    advisorLabel?: string;
+  };
+};
+
+export type PrestigeUpgradePurchasedEvent = {
+  type: 'prestige/upgrade_purchased';
+  payload: {
+    timestamp: number;
+    upgradeId: string;
+    nextLevel: number;
+    apCost: number;
+    remainingAP: number;
+  };
+};
+
+export type OfflineAppliedEvent = {
+  type: 'offline/applied';
+  payload: {
+    timestamp: number;
+    rawOfflineSeconds: number;
+    effectiveOfflineSeconds: number;
+    effectiveEfficiency: number;
+    wasCapped: boolean;
+    qiGained: string;
+    queuedActionsReady: number;
+    expeditionsReady: number;
   };
 };
 
@@ -769,12 +890,21 @@ export type GameEvent =
   | TechniquesRuneUnsocketedEvent
   | TechniquesEquipNowClickedEvent
   | RewardsSpentEvent
+  | EconomyItemsSpentEvent
   | ProgressionLifeStartedEvent
   | ProgressionGateAvailableEvent
   | ProgressionGateResolvedEvent
   | ProgressionBreakthroughEvent
   | ProgressionCityEnteredEvent
-  | ProgressionContentCapReachedEvent;
+  | ProgressionContentCapReachedEvent
+  | TrialsAttemptStartedEvent
+  | TrialsAttemptResolvedEvent
+  | BountiesClaimedEvent
+  | ExpeditionsStartedEvent
+  | ExpeditionsClaimedEvent
+  | PrestigePerformedEvent
+  | PrestigeUpgradePurchasedEvent
+  | OfflineAppliedEvent;
 
 export type GameEventType = GameEvent['type'];
 export type GameEventForType<TType extends GameEventType> = Extract<GameEvent, { type: TType }>;

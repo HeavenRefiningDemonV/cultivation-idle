@@ -623,7 +623,7 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
 
           const spentCurrencies: Partial<Record<'gold' | 'spiritStones' | 'merit', string>> = {};
           if (payment.currencies) {
-            const success = inventory.spendCurrencies(payment.currencies);
+            const success = RewardService.spendCurrency(payment.currencies, `craftSession:${args.station}:${args.sourceId}`);
             if (!success) return { ok: false, reason: 'spend_failed' };
             Object.assign(spentCurrencies, payment.currencies);
           }
@@ -644,6 +644,16 @@ export const useCraftSessionStore = create<CraftSessionStoreState>()(
               return { ok: false, reason: 'spend_failed' };
             }
             spentItems.push(cost);
+          }
+          if (spentItems.length > 0) {
+            GameEvents.emit({
+              type: 'economy/items_spent',
+              payload: {
+                items: spentItems,
+                reason: `craftSession:${args.station}:${args.sourceId}`,
+                module: 'craftSession.startSession',
+              },
+            });
           }
         } else {
           itemCosts = [];
