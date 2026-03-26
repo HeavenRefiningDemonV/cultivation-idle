@@ -32,6 +32,8 @@ export interface UISettingsState {
   requirePrestigeConfirm: boolean;
 }
 
+export type LifeSummaryModalMode = 'current' | 'last_completed';
+
 interface UIStateBase {
   // Active tab
   activeTab: GameTab;
@@ -50,6 +52,8 @@ interface UIStateBase {
   showBreakthroughAnimation: boolean;
   showOfflineProgressModal: boolean;
   offlineProgressSummary: OfflineProgressSummary | null;
+  showLifeSummaryModal: boolean;
+  lifeSummaryMode: LifeSummaryModalMode;
 
   // UI Settings
   settings: UISettingsState;
@@ -78,6 +82,8 @@ export interface UIState extends UIStateBase {
   triggerBreakthroughAnimation: () => void;
   showOfflineProgress: (summary: OfflineProgressSummary) => void;
   hideOfflineProgress: () => void;
+  openLifeSummaryModal: (mode: LifeSummaryModalMode) => void;
+  closeLifeSummaryModal: () => void;
   showTooltip: (content: string, x: number, y: number) => void;
   hideTooltip: () => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
@@ -95,6 +101,8 @@ const INITIAL_UI_STATE: UIStateBase = {
   showBreakthroughAnimation: false,
   showOfflineProgressModal: false,
   offlineProgressSummary: null,
+  showLifeSummaryModal: false,
+  lifeSummaryMode: 'current',
   settings: {
     showOfflineModal: true,
     showCombatLog: true,
@@ -265,6 +273,19 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.showOfflineProgressModal = false;
         state.offlineProgressSummary = null;
+      });
+    },
+
+    openLifeSummaryModal: (mode) => {
+      set((state) => {
+        state.showLifeSummaryModal = true;
+        state.lifeSummaryMode = mode;
+      });
+    },
+
+    closeLifeSummaryModal: () => {
+      set((state) => {
+        state.showLifeSummaryModal = false;
       });
     },
 

@@ -6,6 +6,7 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { saveGame, loadGame, hasSave } from '../utils/saveload';
 import { applyOfflineProgress } from './offline';
 import { useUIStore } from '../stores/uiStore';
+import { usePhaseTimingStore } from '../features/progression/phaseTimingStore';
 
 /**
  * Game loop constants
@@ -219,6 +220,7 @@ export const gameLoop = new GameLoop();
 export function initializeGame(): boolean {
   try {
     console.log('[GameLoop] Initializing game...');
+    usePhaseTimingStore.getState().resetRunTiming();
 
     // Initialize game store (calculate derived values)
     initializeGameStore();
@@ -253,17 +255,6 @@ export function initializeGame(): boolean {
     if (!prestigeStore.spiritRoot) {
       prestigeStore.generateSpiritRoot();
       console.log('[GameLoop] Generated initial spirit root');
-    }
-
-    // Add starter items for testing (only if inventory is empty)
-    const inventoryStore = useInventoryStore.getState();
-    if (inventoryStore.items.length === 0) {
-      inventoryStore.addItem('rusty_sword', 1);
-      inventoryStore.addItem('worn_talisman', 1);
-      inventoryStore.addItem('health_pill', 5);
-      inventoryStore.addItem('spirit_stone', 10);
-      inventoryStore.addGold('1000');
-      console.log('[GameLoop] Added starter items to inventory');
     }
 
     // Check if save exists
@@ -306,6 +297,8 @@ export function initializeGame(): boolean {
     } else {
       console.log('[GameLoop] No save found, starting new game');
     }
+
+    useGameStore.getState().syncProgressionAvailability();
 
     // Start the game loop
     gameLoop.start();

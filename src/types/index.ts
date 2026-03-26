@@ -178,6 +178,7 @@ export interface GameState {
   performPrestigeReset: () => void;
   purchaseUpgrade: (type: 'idle' | 'damage' | 'hp') => boolean;
   getBreakthroughRequirement: () => string;
+  syncProgressionAvailability: () => void;
   hardResetGameState: () => void;
 }
 
@@ -504,7 +505,6 @@ export interface PrestigeState {
   setSpiritRoot: (spiritRoot: SpiritRoot) => boolean;
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
-  getCultivationMultiplier: () => number;
   getLuckBonus: () => number;
   updateHighestRealm: (realmIndex: number) => void;
   incrementBossesDefeated: () => void;

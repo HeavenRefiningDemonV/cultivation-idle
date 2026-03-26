@@ -1,89 +1,66 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useCombatStore } from '../../stores/combatStore';
 import { useZoneStore } from '../../stores/zoneStore';
+import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
 import { formatNumber } from '../../utils/numbers';
-import { D } from '../../utils/numbers';
 import { TechniquePanel } from '../TechniquePanel';
 import { HpBar } from '../ui/Bar';
+import { getZoneLockReason, type ProgressionFacts } from '../../features/progression/currentBranchProgression';
+import { getCurrentBranchRewardProfile } from '../../features/economy/currentBranchRewardProfiles';
 
-/**
- * Zone definitions (move to constants later if needed)
- */
-const ZONES = [
-  {
-    id: 'training_forest',
-    name: 'Training Forest',
-    description: 'A peaceful forest where cultivators begin their journey',
-    minRealm: 0,
-    goldPerHour: { min: 1000, max: 1500 },
-    enemies: ['Wild Boar', 'Forest Wolf', 'Spirit Deer'],
-    boss: 'Forest Guardian',
-    suggestedStats: { dps: 50, hp: 800 },
-  },
-  {
-    id: 'spirit_cavern',
-    name: 'Spirit Cavern',
-    description: 'Dark caves filled with crystalline spirits',
-    minRealm: 1,
-    goldPerHour: { min: 2500, max: 3500 },
-    enemies: ['Stone Elemental', 'Crystal Spider', 'Cave Bat'],
-    boss: 'Crystal Patriarch',
-    suggestedStats: { dps: 200, hp: 3000 },
-  },
-  {
-    id: 'mystic_mountains',
-    name: 'Mystic Mountains',
-    description: 'Treacherous peaks where the wind whispers secrets',
-    minRealm: 2,
-    goldPerHour: { min: 5000, max: 7000 },
-    enemies: ['Mountain Tiger', 'Sky Hawk', 'Rock Golem'],
-    boss: 'Mountain Sovereign',
-    suggestedStats: { dps: 500, hp: 8000 },
-  },
-];
+interface ZoneConfig {
+  id: string;
+  name: string;
+  description: string;
+  levelRange: { min: number; max: number };
+  realmRequirement: { index: number; substage: number };
+  enemyIds: string[];
+}
 
-/**
- * Generate an enemy for combat
- */
-function generateEnemy(zone: typeof ZONES[0], isBoss: boolean, realm: number) {
-  const baseLevel = realm * 10 + (isBoss ? 10 : Math.floor(Math.random() * 5) + 1);
-  const levelMult = 1 + baseLevel * 0.1;
-  const realmMult = Math.pow(1.5, realm);
-  const bossMult = isBoss ? 5 : 1;
+interface EnemyConfig {
+  id: string;
+  name: string;
+  level: number;
+  zone: string;
+  hp: string;
+  atk: string;
+  def: string;
+  crit: number;
+  critDmg: number;
+  dodge: number;
+  speed: number;
+  goldReward: string;
+  expReward: string;
+  isBoss?: boolean;
+}
 
-  const name = isBoss
-    ? zone.boss
-    : zone.enemies[Math.floor(Math.random() * zone.enemies.length)];
-
-  const baseHP = 500 * levelMult * realmMult * bossMult;
-  const baseAtk = 50 * levelMult * realmMult * bossMult;
-  const baseDef = 20 * levelMult * realmMult * bossMult;
-  const baseGold = 100 * levelMult * realmMult * bossMult;
-  const baseExp = 50 * levelMult * realmMult * bossMult;
+function generateEnemy(zone: ZoneConfig, enemies: EnemyConfig[], isBoss: boolean) {
+  const zoneEnemies = enemies.filter((enemy) => enemy.zone === zone.id && !!enemy.isBoss === isBoss);
+  const fallbackPool = enemies.filter((enemy) => enemy.zone === zone.id);
+  const sourcePool = zoneEnemies.length > 0 ? zoneEnemies : fallbackPool;
+  const template = sourcePool[Math.floor(Math.random() * sourcePool.length)];
+  if (!template) return null;
 
   return {
-    id: `${name}_${Date.now()}`,
-    name: `${name} (Lv ${baseLevel})`,
-    level: baseLevel,
-    zone: zone.id,
-    hp: D(baseHP).toFixed(0),
-    atk: D(baseAtk).toFixed(0),
-    def: D(baseDef).toFixed(0),
-    crit: 5,
-    critDmg: 150,
-    dodge: 5,
-    speed: 1.0,
-    goldReward: D(baseGold).toFixed(0),
-    expReward: D(baseExp).toFixed(0),
-    isBoss,
+    ...template,
+    id: `${template.id}_${Date.now()}`,
   };
 }
 
 /**
  * Zone Card Component
  */
-function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
+function ZoneCard({
+  zone,
+  enemies,
+  facts,
+}: {
+  zone: ZoneConfig;
+  enemies: EnemyConfig[];
+  facts: ProgressionFacts;
+}) {
   const realm = useGameStore((state) => state.realm);
   const isUnlocked = useZoneStore((state) => state.isZoneUnlocked(zone.id));
   const isBossAvailable = useZoneStore((state) => state.isBossAvailable(zone.id));
@@ -95,15 +72,19 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
     return null;
   }
 
-  const isLocked = realm.index < zone.minRealm || !isUnlocked;
+  const lockReason = getZoneLockReason(zone.id, facts);
+  const isLocked = !!lockReason || !isUnlocked;
+  const rewardProfile = getCurrentBranchRewardProfile(zone.id);
 
   const handleFightEnemies = () => {
-    const enemy = generateEnemy(zone, false, realm.index);
+    const enemy = generateEnemy(zone, enemies, false);
+    if (!enemy) return;
     enterCombat(zone.id, enemy);
   };
 
   const handleFightBoss = () => {
-    const enemy = generateEnemy(zone, true, realm.index);
+    const enemy = generateEnemy(zone, enemies, true);
+    if (!enemy) return;
     enterCombat(zone.id, enemy);
   };
 
@@ -120,23 +101,30 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
 
       {isLocked ? (
         <div className="text-red-400 text-sm font-semibold">
-          🔒 Requires Realm {zone.minRealm}
+          🔒 {lockReason ?? 'Progress further to unlock this zone.'}
         </div>
       ) : (
         <div className="space-y-3">
           <div className="text-sm text-slate-300 space-y-1">
-            <div>Min Realm: {zone.minRealm}</div>
             <div>
-              Gold/hr: {zone.goldPerHour.min.toLocaleString()} -{' '}
-              {zone.goldPerHour.max.toLocaleString()}
+              Suggested Levels: {zone.levelRange.min} - {zone.levelRange.max}
             </div>
-            <div className="font-semibold text-gold-accent">Boss: {zone.boss}</div>
+            <div className="font-semibold text-gold-accent">
+              Boss: {enemies.find((enemy) => enemy.zone === zone.id && enemy.isBoss)?.name ?? 'Unknown'}
+            </div>
             <div className="text-xs text-slate-400">
-              Suggested: {zone.suggestedStats.dps} DPS • {zone.suggestedStats.hp} HP
+              Realm Requirement: {zone.realmRequirement.index}-{zone.realmRequirement.substage}
             </div>
             <div className="text-xs text-qi-blue">
               Enemies defeated: {zoneProgress?.enemiesDefeated || 0}
             </div>
+            {rewardProfile && (
+              <div className="text-xs text-slate-300 space-y-1 pt-2">
+                <div>Renewable Value: <span className="text-yellow-300">{rewardProfile.renewableValue}</span></div>
+                <div>Support: {rewardProfile.supportItems.join(', ')}</div>
+                <div>Gear Anchors: {rewardProfile.gearAnchors.join(', ')}</div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
@@ -155,7 +143,7 @@ function ZoneCard({ zone }: { zone: typeof ZONES[0] }) {
                   : 'bg-slate-700 text-slate-500 cursor-not-allowed'
               }`}
             >
-              {isBossAvailable ? 'Fight Boss' : 'Boss (10 kills needed)'}
+              {isBossAvailable ? 'Fight Boss' : 'Boss (15 kills needed)'}
             </button>
           </div>
         </div>
@@ -351,6 +339,52 @@ export function CombatView() {
 export function AdventureScreen() {
   try {
     const inCombat = useCombatStore((state) => state.inCombat);
+    const realm = useGameStore((state) => state.realm);
+    const zoneProgress = useZoneStore((state) => state.zoneProgress);
+    const dungeonProgress = useDungeonStore((state) => state.dungeonProgress);
+    const [zones, setZones] = useState<ZoneConfig[]>([]);
+    const [enemies, setEnemies] = useState<EnemyConfig[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+      let mounted = true;
+
+      Promise.all([fetch('/config/zones.json'), fetch('/config/enemies.json')])
+        .then(async ([zonesRes, enemiesRes]) => {
+          const zonesData = await zonesRes.json();
+          const enemiesData = await enemiesRes.json();
+          if (!mounted) return;
+          setZones((zonesData.zones ?? []) as ZoneConfig[]);
+          setEnemies((enemiesData.enemies ?? []) as EnemyConfig[]);
+          setLoading(false);
+          useGameStore.getState().syncProgressionAvailability();
+        })
+        .catch((loadError) => {
+          console.error('[AdventureScreen] Failed to load content config', loadError);
+          if (!mounted) return;
+          setError('Failed to load zone content.');
+          setLoading(false);
+        });
+
+      return () => {
+        mounted = false;
+      };
+    }, []);
+
+    const facts = useMemo<ProgressionFacts>(
+      () => ({
+        realmIndex: realm.index,
+        realmSubstage: realm.substage,
+        completedZones: Object.entries(zoneProgress)
+          .filter(([, progress]) => progress.completed)
+          .map(([zoneId]) => zoneId),
+        clearedDungeons: Object.entries(dungeonProgress)
+          .filter(([, progress]) => progress.totalClears > 0)
+          .map(([dungeonId]) => dungeonId),
+      }),
+      [realm.index, realm.substage, zoneProgress, dungeonProgress]
+    );
 
     return (
       <div className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-lg">
@@ -380,10 +414,14 @@ export function AdventureScreen() {
           </div>
 
           {/* Zone Selection or Combat View */}
-          {!inCombat ? (
+          {loading ? (
+            <div className="text-center text-slate-400 py-12">Loading adventure content...</div>
+          ) : error ? (
+            <div className="text-center text-red-400 py-12">{error}</div>
+          ) : !inCombat ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {ZONES.map((zone) => (
-                <ZoneCard key={zone.id} zone={zone} />
+              {zones.map((zone) => (
+                <ZoneCard key={zone.id} zone={zone} enemies={enemies} facts={facts} />
               ))}
             </div>
           ) : (

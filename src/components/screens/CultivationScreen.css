@@ -138,12 +138,21 @@
     background: rgba(255, 255, 255, 0.02);
     padding: 0.6rem 0.8rem;
     cursor: pointer;
-    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+    transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
     .focus-button:hover {
-        background: rgba(255, 255, 255, 0.04);
-        transform: translateY(-1px);
+        background: rgba(255, 248, 233, 0.08);
+        border-color: rgba(173, 138, 84, 0.55);
+        box-shadow: 0 0 0 1px rgba(173, 138, 84, 0.22), 0 8px 18px rgba(67, 46, 24, 0.24);
+    }
+
+    .focus-button:focus-visible {
+        outline: 1px solid rgba(173, 138, 84, 0.62);
+        outline-offset: 1px;
+        background: rgba(255, 248, 233, 0.08);
+        border-color: rgba(173, 138, 84, 0.6);
+        box-shadow: 0 0 0 1px rgba(173, 138, 84, 0.24), 0 8px 18px rgba(67, 46, 24, 0.24);
     }
 
 .focus-button-active {
