@@ -1,6 +1,7 @@
 export type RewardActivity = 'zone' | 'zoneBoss' | 'dungeon';
 
 export interface RewardProfile {
+  totalValueRange: [number, number];
   renewableValue: string;
   supportItems: string[];
   gearAnchors: string[];
@@ -14,16 +15,19 @@ export const CURRENT_BRANCH_ACTIVITY_ROLES: Record<RewardActivity, string> = {
 
 export const CURRENT_BRANCH_ZONE_REWARD_TARGETS: Record<string, RewardProfile> = {
   training_forest: {
+    totalValueRange: [70, 110],
     renewableValue: '10-40 gold / kill + common sellables',
     supportItems: ['health_pill', 'spirit_stone'],
     gearAnchors: ['wolf_fang', 'spirit_essence'],
   },
   spirit_cavern: {
+    totalValueRange: [220, 340],
     renewableValue: '40-90 gold / kill + uncommon sellables',
     supportItems: ['greater_health_pill', 'spirit_stone'],
     gearAnchors: ['venom_sac', 'stone_core', 'spirit_essence'],
   },
   mystic_mountains: {
+    totalValueRange: [650, 950],
     renewableValue: '100-220 gold / kill + rare sellables',
     supportItems: ['supreme_health_pill', 'qi_crystal'],
     gearAnchors: ['beast_core', 'frost_scale', 'celestial_jade'],
