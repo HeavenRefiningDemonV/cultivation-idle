@@ -493,7 +493,7 @@ export function buildGateTrialReadinessSurface(trialId: string): GateTrialReadin
   let readinessDetail = lifecycle.reason;
   if (lifecycle.reasonCode === 'not_final_substage' || lifecycle.reasonCode === 'insufficient_qi') {
     readinessLabel = 'Preparing';
-  } else if (diagnosis?.primary === 'close') {
+  } else if (lifecycle.canStart && diagnosis?.primary === 'close') {
     readinessLabel = 'Close';
     readinessDetail = diagnosis.reasons[0] ?? 'This gate is close; one focused fix should clear it.';
   } else if (readiness?.overallBand === 'recommended_met' && lifecycle.state === 'available') {

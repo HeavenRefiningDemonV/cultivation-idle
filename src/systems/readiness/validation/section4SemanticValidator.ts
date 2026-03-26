@@ -132,7 +132,7 @@ export function buildDefaultSection4DiagnosisFixtures(): Section4DiagnosisFixtur
     {
       name: 'underbuilt',
       expectedPrimary: 'underbuilt',
-      expectedSecondary: null,
+      expectedSecondary: 'underforged',
       input: {
         trialId: 'trial_novices_clearing',
         summary: {
@@ -241,7 +241,7 @@ export function buildDefaultSection4DiagnosisFixtures(): Section4DiagnosisFixtur
     {
       name: 'undercultivated',
       expectedPrimary: 'undercultivated',
-      expectedSecondary: null,
+      expectedSecondary: 'underprepared',
       input: {
         trialId: 'trial_novices_clearing',
         summary: {

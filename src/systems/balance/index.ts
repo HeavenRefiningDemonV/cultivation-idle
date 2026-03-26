@@ -17,3 +17,4 @@ export {
 } from './semesterBalanceTargets.js';
 
 export * from './gateCombatTargets.js';
+export * from './readinessOutcomeTargets.js';

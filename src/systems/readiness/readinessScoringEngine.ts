@@ -443,12 +443,23 @@ export function scoreGateReadiness(
   });
   const posture = evaluatePostureReadiness(input.postureFit);
 
-  const overallBand = evaluateOverallReadinessBand({
+  const strictOverallBand = evaluateOverallReadinessBand({
     buildBand: build.band,
     forgeBand: forge.band,
     economicBand: economic.band,
     postureBand: posture.band,
   });
+
+  const postureOnlyBelowMinimum =
+    strictOverallBand === 'below_minimum' &&
+    posture.band === 'below_minimum' &&
+    build.band !== 'below_minimum' &&
+    forge.band !== 'below_minimum' &&
+    economic.band !== 'below_minimum';
+
+  const overallBand: ReadinessBand = postureOnlyBelowMinimum
+    ? 'minimum_met_below_recommended'
+    : strictOverallBand;
 
   const shortfalls = sortReadinessShortfalls([
     ...build.shortfalls,

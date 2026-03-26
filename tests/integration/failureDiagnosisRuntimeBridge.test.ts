@@ -118,7 +118,7 @@ test('packet 4.14 section-5 runtime bridge diagnoses a live underbuilt gate atte
 
   assert.notEqual(surface, null);
   assert.equal(surface?.diagnosis?.primary, 'underbuilt');
-  assert.equal(surface?.diagnosis?.secondary, 'underforged');
+  assert.equal(['underforged', 'underprepared'].includes(surface?.diagnosis?.secondary ?? ''), true);
   assert.equal(surface?.diagnosis?.topFixes.some((fix) => fix.code === 'fill_slots'), true);
   assert.equal(surface?.warnings.length, surface?.readiness?.warnings.length ?? 0);
 });

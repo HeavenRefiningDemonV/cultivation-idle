@@ -494,3 +494,43 @@ test('packet 4.13 scoreGateReadiness merges shortfalls in exact packet order and
     'Combat consumable auto-use is disabled.',
   ]);
 });
+
+test('packet 6.5 posture-only below-minimum no longer forces Blocked overall band', () => {
+  const gateBuildFloor = getGateBuildFloor('trial_novices_clearing');
+  assert.ok(gateBuildFloor);
+
+  const result = scoreGateReadiness({
+    trialId: 'trial_novices_clearing',
+    gateBuildFloor,
+    buildAnalysis: makeBuildAnalysis({
+      pathAlignmentScore: 60,
+      equippedTechniques: [
+        makeBuildEntry({ techId: 'tech_active_a', slotType: 'active', masteryLevel: 50, rank: 3, appliedRuneCount: 0 }),
+        makeBuildEntry({ techId: 'tech_active_b', slotType: 'active', masteryLevel: 25, rank: 2, appliedRuneCount: 0 }),
+        makeBuildEntry({ techId: 'tech_passive_a', slotType: 'passive', masteryLevel: 25, rank: 2, appliedRuneCount: 0 }),
+      ],
+    }),
+    forgeFloor: makeForgeFloor({
+      weaponRefineFloor: 3,
+      accessoryRefineFloor: 2,
+      temperSuccessTotal: 2,
+      runeTotalCount: 0,
+    }),
+    forgeTargets: makeForgeTargets({
+      minimum: { weaponRefine: 2, accessoryRefine: 1, temperSuccesses: 1, runeCount: 0 },
+      recommended: { weaponRefine: 3, accessoryRefine: 2, temperSuccesses: 2, runeCount: 0 },
+    }),
+    economicReadinessBand: 'recommended_met',
+    economicShortfalls: [],
+    economicMajorShortfallCount: 0,
+    postureFit: makePostureFit({
+      aiFit: 'bad',
+      castingFit: 'good',
+      pouchFit: 'good',
+      warnings: ['Farmer AI is a poor fit for gate trials.'],
+    }),
+  });
+
+  assert.equal(result.posture.band, 'below_minimum');
+  assert.equal(result.overallBand, 'minimum_met_below_recommended');
+});

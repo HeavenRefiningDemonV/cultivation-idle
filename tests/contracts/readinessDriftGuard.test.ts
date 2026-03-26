@@ -68,3 +68,14 @@ test('packet 4.13 readiness engine does not leak packet 4.14 diagnosis logic ear
     assert.equal(scoringEngineSource.includes(forbiddenToken), false, `${forbiddenToken} must not appear in readinessScoringEngine.ts`);
   });
 });
+
+test('packet 6.5 keeps close-call and outcome calibration in canonical readiness/failure layers', () => {
+  const failureSource = readFileSync(path.join(repoRoot, 'src/systems/readiness/failureDiagnosis.ts'), 'utf8');
+  const calibrationSource = readFileSync(path.join(repoRoot, 'src/systems/readiness/readinessCalibrationReadModel.ts'), 'utf8');
+  const section5Source = readFileSync(path.join(repoRoot, 'src/systems/readiness/section5Adapters.ts'), 'utf8');
+
+  assert.equal(failureSource.includes('READINESS_CLOSE_CALL_POLICY'), true);
+  assert.equal(calibrationSource.includes('getReadinessOutcomeTarget'), true);
+  assert.equal(section5Source.includes("diagnosis?.primary === 'close'"), true);
+  assert.equal(section5Source.includes('bossHpPct <= 20'), false);
+});

@@ -66,6 +66,10 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
   const suggestions: string[] = [];
   const auraPressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'aura' || m.type === 'auraDoT' || m.type === 'soulDrain'));
   const shieldPhaseSeen = Boolean(enemyMechanics?.some((m) => m.type === 'shield' || m.type === 'shieldPhase' || m.type === 'damageReduction'));
+  const ultimatePressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'ultimate'));
+  const damageReductionPressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'damageReduction'));
+  const vulnerabilityWindowSeen = Boolean(enemyMechanics?.some((m) => m.type === 'burstWindow' || m.type === 'shatterWindow'));
+  const soulDrainPressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'soulDrain'));
   const rollingPlayerDps = Number.isFinite(dpsMetrics.playerDps)
     ? clampNumber(dpsMetrics.playerDps, 0, Number.POSITIVE_INFINITY)
     : 0;
@@ -100,6 +104,10 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
     suggestions.push('Break shield phases faster with burst damage.');
   }
 
+  if (ultimatePressureSeen) {
+    suggestions.push('Ultimate pressure detected: prep shields or mitigation timing.');
+  }
+
   const requiredEhpFor10s = dpsMetrics.enemyDps * 10;
   if (requiredEhpFor10s > 0 && effectiveHp > 0) {
     const pctMore = (requiredEhpFor10s / effectiveHp - 1) * 100;
@@ -128,5 +136,9 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
     spikeRatio: clampedSpikeRatio,
     auraPressureSeen,
     shieldPhaseSeen,
+    ultimatePressureSeen,
+    damageReductionPressureSeen,
+    vulnerabilityWindowSeen,
+    soulDrainPressureSeen,
   };
 }

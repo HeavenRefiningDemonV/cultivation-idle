@@ -970,6 +970,10 @@ export interface TrialAttemptSummary {
   spikeRatio?: number;
   auraPressureSeen?: boolean;
   shieldPhaseSeen?: boolean;
+  ultimatePressureSeen?: boolean;
+  damageReductionPressureSeen?: boolean;
+  vulnerabilityWindowSeen?: boolean;
+  soulDrainPressureSeen?: boolean;
 }
 
 /**

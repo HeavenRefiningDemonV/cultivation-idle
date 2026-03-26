@@ -77,3 +77,23 @@ test('close diagnosis can surface Close readiness label', async () => {
   if (!surface) throw new Error('Missing gate readiness surface');
   assert.equal(['Close', 'Ready', 'Risky', 'Blocked', 'Preparing'].includes(surface.readinessLabel), true);
 });
+
+test('Close label remains diagnosis-driven and never a direct readiness-band mapping', async () => {
+  await primeRuntime();
+  useGameStore.setState((state) => ({ ...state, qi: '1000000', realm: { ...state.realm, substage: 9 } }));
+
+  useTrialStore.setState((state) => ({
+    ...state,
+    progressByTrialId: {
+      ...state.progressByTrialId,
+      trial_novices_clearing: {
+        ...createDefaultTrialProgress(),
+      },
+    },
+  }));
+
+  const surface = buildGateTrialReadinessSurface('trial_novices_clearing');
+  assert.ok(surface);
+  if (!surface) throw new Error('Missing gate readiness surface');
+  assert.notEqual(surface.rawReadiness?.overallBand === 'recommended_met' && surface.readinessLabel === 'Close', true);
+});

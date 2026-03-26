@@ -37,6 +37,8 @@ test('packet 4.14 failure diagnosis stays deterministic and store-free', () => {
     'buildReasonsForUnderforged',
     'buildReasonsForUnderprepared',
     'buildTopFixes',
+    'buildDominanceScores',
+    'READINESS_CLOSE_CALL_POLICY',
     'bypassAvailable',
   ].forEach((requiredToken) => {
     assert.equal(failureDiagnosisSource.includes(requiredToken), true, `${requiredToken} must appear in failureDiagnosis.ts`);

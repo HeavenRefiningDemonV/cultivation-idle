@@ -57,3 +57,39 @@ test('packet 4.14 close remains impossible until all minimum floors are met', ()
   assert.equal(isTrialFailureClose(notClose), false);
   assert.notEqual(diagnoseTrialFailure(notClose).primary, 'close');
 });
+
+test('packet 6.5 close does not appear for structurally blocked defeats even at low boss hp', () => {
+  const closeFixture = buildDefaultSection4DiagnosisFixtures().find((fixture) => fixture.name === 'close');
+  assert.ok(closeFixture);
+
+  const blocked = {
+    ...closeFixture.input,
+    summary: {
+      ...closeFixture.input.summary,
+      bossHpPct: 18,
+      durationSec: 14,
+    },
+    readiness: {
+      ...closeFixture.input.readiness,
+      forge: {
+        ...closeFixture.input.readiness.forge,
+        band: 'below_minimum' as const,
+        minimumMet: false,
+        recommendedMet: false,
+      },
+      overallBand: 'below_minimum' as const,
+      shortfalls: [{
+        code: 'forge_floor' as const,
+        severity: 'high' as const,
+        label: 'Forge floor below gate target',
+        reason: 'Forge floor below gate target',
+        currentValue: 1,
+        minimumTarget: 3,
+        recommendedTarget: 5,
+      }],
+    },
+  };
+
+  assert.equal(isTrialFailureClose(blocked), false);
+  assert.equal(diagnoseTrialFailure(blocked).primary, 'underforged');
+});
