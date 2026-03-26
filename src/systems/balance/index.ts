@@ -1,4 +1,5 @@
 export type * from './balanceTargetTypes.js';
+export * from './activityThroughputTargets.js';
 export * from './phaseTimingTargets.js';
 export {
   calculatePrestigeProgressionAp,

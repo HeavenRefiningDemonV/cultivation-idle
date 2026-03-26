@@ -40,6 +40,7 @@ export interface RuinsRewardRoleAudit {
   supportItemsInChest: string[];
   goldPosture: 'secondary' | 'missing';
   rarePityConfigured: boolean;
+  bonusBundleAdditiveToAnchor: boolean;
 }
 
 export interface CityActivityRewardAudit {
@@ -114,6 +115,7 @@ export function inspectRuinsRewardRole(ruin: RuinDef, economy: EconomyConfig | n
     supportItemsInChest: chestItems.filter((itemId) => classifyActivityRewardItem(ruin.cityId, itemId) === 'support'),
     goldPosture: roomGold > 0 || chestGold > 0 || runeDustBonus > 0 || artifactBonus > 0 ? 'secondary' : 'missing',
     rarePityConfigured: Boolean((economy?.tuning?.pityDefaults?.ruinsBossChestRare?.pityCap ?? 0) > 1),
+    bonusBundleAdditiveToAnchor: runeDustBonus > 0 || artifactBonus > 0,
   };
 }
 
@@ -142,6 +144,9 @@ export function buildActivityRewardAuditReport(
       }
       if (ruins.leadMaterialsInRooms.length === 0 && ruins.leadMaterialsInChest.length === 0) {
         riskNotes.push(`Ruins lost lead targeted material identity (${getRuinLeadMaterialIds(cityId).join(', ')})`);
+      }
+      if (!ruins.bonusBundleAdditiveToAnchor) {
+        riskNotes.push('Ruins bonus bundle is no longer additive to the deterministic anchor identity.');
       }
       if (outskirts.targetedRareSpikes.length === 0 && getTargetedCityMaterialIds(cityId).length > 0) {
         riskNotes.push('Outskirts lost all local targeted spike flavor.');

@@ -27,5 +27,6 @@ test('packet 3.2A Ruins preserve deterministic anchors, targeted local materials
     assert.ok(cityAudit.ruins.leadMaterialsInRooms.length >= 1, `${cityAudit.cityId} ruins rooms should carry local targeted materials`);
     assert.ok(cityAudit.ruins.targetedMaterialsInChest.length >= 1, `${cityAudit.cityId} ruins chest should stay targeted/anchor-first`);
     assert.equal(cityAudit.ruins.rarePityConfigured, true, `${cityAudit.cityId} ruins should retain boss chest rare pity wiring`);
+    assert.equal(cityAudit.ruins.bonusBundleAdditiveToAnchor, true, `${cityAudit.cityId} ruins bonus bundle should remain additive`);
   });
 });

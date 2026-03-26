@@ -4,6 +4,7 @@ import {
   buildAllCityActivityRewardReadModels,
   type CityActivityRewardReadModel,
 } from './activityRewardReadModel.js';
+import { buildActivityThroughputCitySnapshot } from './activityThroughputReadModel.js';
 import {
   classifyActivityRewardItem,
   getCityRewardRoleProfile,
@@ -36,7 +37,9 @@ export interface RewardParityRuleCheck {
     | 'ruins_deterministic_anchor_present'
     | 'ruins_targeted_material_strength'
     | 'ruins_gold_secondary'
-    | 'pair_distinct_lessons';
+    | 'pair_distinct_lessons'
+    | 'outskirts_gold_per_minute_dominance'
+    | 'ruins_targeted_per_minute_dominance';
   passed: boolean;
   detail: string;
 }
@@ -211,6 +214,7 @@ export function inspectCityRewardParity(
 
   const outskirtsMetrics = buildOutskirtsMetrics(outskirts, content.economy);
   const ruinsMetrics = buildRuinsMetrics(ruin, content.economy);
+  const throughput = buildActivityThroughputCitySnapshot(content, cityId);
   const targetedIds = new Set(getTargetedCityMaterialIds(cityId));
   const commonPool = new Set(outskirts.matPools?.common ?? []);
   const rarePool = new Set(outskirts.matPools?.rare ?? []);
@@ -261,6 +265,16 @@ export function inspectCityRewardParity(
         outskirtsMetrics.commonShare > ruinsMetrics.commonShare &&
         ruinsMetrics.targetedAndAnchorShare > outskirtsMetrics.targetedAndAnchorShare,
       detail: `commonShare outskirts=${outskirtsMetrics.commonShare.toFixed(3)} ruins=${ruinsMetrics.commonShare.toFixed(3)} targeted+anchor outskirts=${outskirtsMetrics.targetedAndAnchorShare.toFixed(3)} ruins=${ruinsMetrics.targetedAndAnchorShare.toFixed(3)}`,
+    },
+    {
+      ruleId: 'outskirts_gold_per_minute_dominance',
+      passed: throughput.roleChecks.outskirtsGoldDominance,
+      detail: `gold/min outskirts=${throughput.outskirts.goldPerMinute.toFixed(2)} ruins=${throughput.ruins.goldPerMinute.toFixed(2)}`,
+    },
+    {
+      ruleId: 'ruins_targeted_per_minute_dominance',
+      passed: throughput.roleChecks.ruinsTargetedDominance,
+      detail: `targeted/min outskirts=${throughput.outskirts.targetedMaterialUnitsPerMinute.toFixed(3)} ruins=${throughput.ruins.targetedMaterialUnitsPerMinute.toFixed(3)}`,
     },
   ];
 
