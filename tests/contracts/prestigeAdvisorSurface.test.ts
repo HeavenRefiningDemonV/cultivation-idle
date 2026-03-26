@@ -94,3 +94,12 @@ test('advisor reset preview buckets keep permanent, reset, and rebuilt semantics
   assert.ok(surface.resetPreview.carriesForward.includes('Ascension Points (AP)'));
   assert.ok(surface.resetPreview.rebuiltNextLife.includes('Spirit root (new roll)'));
 });
+
+
+test('advisor top recommendation favors active reclaim starter picks at core-viable budgets', () => {
+  usePrestigeStore.setState({ totalAP: 12, purchasesById: {}, highestRealmReached: 2 });
+  useGameStore.setState((state) => ({ ...state, realm: { ...state.realm, index: 2, substage: 1 } }));
+  const recommendation = getPrestigeAdvisorSurface().topRecommendedPurchase;
+  assert.notEqual(recommendation, null);
+  assert.equal(['ap_idle_qi_mult', 'ap_combat_mult'].includes(recommendation!.id), true);
+});

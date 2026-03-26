@@ -13,6 +13,11 @@ import { useEquipmentStore } from '../../src/stores/equipmentStore.js';
 import { useGameStore } from '../../src/stores/gameStore.js';
 import { useInventoryStore } from '../../src/stores/inventoryStore.js';
 import { useOutskirtsStore } from '../../src/stores/outskirtsStore.js';
+import { useManualSatchelStore } from '../../src/stores/manualSatchelStore.js';
+import { useProfessionStore } from '../../src/stores/professionStore.js';
+import { useExpeditionStore } from '../../src/stores/expeditionStore.js';
+import { useTechCollectionStore } from '../../src/stores/techCollectionStore.js';
+import { useRecipeMasteryStore } from '../../src/stores/recipeMasteryStore.js';
 import { usePrestigeStore, setGameStoreGetter } from '../../src/stores/prestigeStore.js';
 import { useRuinsStore } from '../../src/stores/ruinsStore.js';
 import { createDefaultTrialProgress, useTrialStore } from '../../src/stores/trialStore.js';
@@ -99,6 +104,11 @@ const resetRuntimeStores = () => {
   useRuinsStore.getState().hardResetRuins();
   useTrialStore.getState().hardResetTrials();
   useZoneStore.getState().hardResetZones();
+  useManualSatchelStore.getState().hardReset();
+  useTechCollectionStore.getState().hardReset();
+  useRecipeMasteryStore.getState().hardReset();
+  useProfessionStore.setState({ alchemyQueue: [], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
+  useExpeditionStore.setState((state) => ({ ...state, active: [] }));
   setGameStoreGetter(() => useGameStore.getState());
 };
 
@@ -158,6 +168,11 @@ test('prestige reset service creates a clean new life while preserving permanent
   });
   useZoneStore.setState({ unlockedZones: ['starting_plains', 'forest_trail'], zoneProgress: { forest_trail: { completed: true, currentWave: 0, enemiesDefeated: 12, bestTime: null } } as never });
   useActivityStore.getState().startActivity('trial', { trialId: 'trial_novices_clearing' }, 'test');
+  useManualSatchelStore.setState({ manuals: [{ id: 'm1', techId: 'tech_spark_strike', grade: 'mortal', rarity: 'common', acquiredAt: Date.now() }], activeStudy: null, lastLearned: null });
+  useProfessionStore.setState({ alchemyQueue: [{ id: 'a', recipeId: 'recipe_minor_healing_pill', qty: 1, startedAt: Date.now(), endsAt: Date.now() + 5000, cityId: 'city_pinewind_hamlet' }], talismanQueue: [], forgeQueue: [], lastTickAt: 0 });
+  useExpeditionStore.setState({ slots: 2, active: [{ slotIndex: 0, expeditionTypeId: 'exp_common_hunt', durationId: 'exp_short', cityId: 'city_pinewind_hamlet', cityIndex: 0, startedAt: Date.now(), endsAt: Date.now() + 5000, seed: 1, status: 'running' }], rareProgressByKey: {} });
+  useTechCollectionStore.setState({ unlockedTechs: { tech_spark_strike: { unlocked: true, masteryXp: 80, rank: 2, manualGrade: 'earth', rarity: 'rare', traits: [], runes: [] } }, fragments: {}, rngSeed: 1 });
+  useRecipeMasteryStore.setState({ alchemy: { recipe_minor_healing_pill: 60 } });
 
   const summary = performPrestigeReset({
     resetGameRun: () => useGameStore.getState().resetRun(),
@@ -174,6 +189,10 @@ test('prestige reset service creates a clean new life while preserving permanent
   assert.deepEqual(useRuinsStore.getState().progressByRuinId, {});
   assert.deepEqual(useZoneStore.getState().unlockedZones, ['training_forest']);
   assert.equal(useActivityStore.getState().active, null);
+  assert.deepEqual(useManualSatchelStore.getState().manuals, []);
+  assert.equal(useProfessionStore.getState().alchemyQueue.length, 0);
+  assert.equal(useExpeditionStore.getState().active.length, 0);
+  assert.equal(useExpeditionStore.getState().slots, 2);
   assert.deepEqual(useCityStore.getState().unlockedCityIds, ['city_pinewind_hamlet']);
   assert.equal(useCityStore.getState().currentCityId, 'city_pinewind_hamlet');
   assert.equal(summary.reset.cityBaselineId, 'city_pinewind_hamlet');
@@ -206,6 +225,7 @@ test('prestige store performs AP grant and then delegates reset orchestration to
     currentCityId: 'city_stonecrag_town',
     unlockedCityIds: ['city_pinewind_hamlet', 'city_stonecrag_town'],
   }));
+  useTechCollectionStore.setState({ unlockedTechs: { tech_spark_strike: { unlocked: true, masteryXp: 120, rank: 2, manualGrade: 'earth', rarity: 'rare', traits: [], runes: [] } }, fragments: {}, rngSeed: 1 });
 
   const beforeGain = usePrestigeStore.getState().calculateAPGain();
   assert.ok(beforeGain > 0);
@@ -224,4 +244,9 @@ test('prestige store performs AP grant and then delegates reset orchestration to
   assert.equal(useCityStore.getState().currentCityId, 'city_pinewind_hamlet');
   assert.equal(useCultivationStore.getState().selectedHeartLawId, null);
   assert.notEqual(prestigeState.spiritRoot, null);
+  const retainedTech = useTechCollectionStore.getState().unlockedTechs.tech_spark_strike;
+  if (retainedTech) {
+    assert.equal(retainedTech.unlocked, false);
+    assert.ok(retainedTech.masteryXp >= 0);
+  }
 });

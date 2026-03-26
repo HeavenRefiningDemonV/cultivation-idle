@@ -41,11 +41,71 @@ export const PRESTIGE_TARGETS = {
     soul_entry: { minAp: 42, maxAp: 56 },
     spirit_severing_entry: { minAp: 72, maxAp: 90 },
   } satisfies Record<PrestigeCheckpointId, { minAp: number; maxAp: number }>,
-  apPerHourTargets: {
-    core_viable_ap_per_hour: { min: 4, max: 6, status: 'placeholder_for_6_7_prompt_2' },
-    nascent_ap_per_hour: { min: 6, max: 8, status: 'placeholder_for_6_7_prompt_2' },
-    soul_ap_per_hour: { min: 8, max: 11, status: 'placeholder_for_6_7_prompt_2' },
-    cap_ap_per_hour: { min: 11, max: 15, status: 'placeholder_for_6_7_prompt_2' },
+  apPerHourPolicy: {
+    coreFormationApPerHourFloor: 4.4,
+    nascentVsCoreMultiplierFloor: 1.05,
+    soulVsNascentMultiplierFloor: 0.98,
+    capVsSoulMultiplierFloor: 1.05,
+  },
+  starterSpendCadencePolicy: {
+    coreStarterPair: ['ap_idle_qi_mult', 'ap_combat_mult'],
+    nascentPivotOptions: ['ap_unlock_heartlaw_t1', 'ap_idle_qi_mult', 'ap_combat_mult'],
+    soulPivotOptions: ['ap_extra_technique_slot_1', 'ap_mastery_retention_10'],
+    reclaimScoreWeightsByUpgradeId: {
+      ap_idle_qi_mult: 5.5,
+      ap_combat_mult: 5,
+      ap_unlock_heartlaw_t1: 4.2,
+      ap_extra_technique_slot_1: 4,
+      ap_mastery_retention_10: 3.6,
+      ap_mastery_retention_25: 3.2,
+      ap_mastery_retention_50: 3,
+      ap_offline_efficiency: 1.2,
+    },
+  },
+  reclaimMilestoneTargets: {
+    first_viable_core_reset_starter_spend: {
+      sourceCheckpoint: 'core_entry',
+      milestonesMinutes: {
+        gate1Available: { min: 24, max: 35 },
+        foundationEntry: { min: 35, max: 50 },
+        coreReentry: { min: 95, max: 125 },
+      },
+    },
+    deep_cap_reset_starter_spend: {
+      sourceCheckpoint: 'spirit_severing_entry',
+      milestonesMinutes: {
+        gate1Available: { min: 15, max: 25 },
+        foundationEntry: { min: 22, max: 35 },
+        coreReentry: { min: 60, max: 90 },
+        nascentReentry: { min: 150, max: 220 },
+      },
+    },
+    first_purchase_feel: {
+      sourceCheckpoint: 'core_entry',
+      minImprovementRatio: 0.15,
+      eligibleMilestones: ['gate1Available', 'foundationEntry'],
+    },
+  },
+  visibilityPromotionPolicy: {
+    masteryRetentionNodes: ['ap_mastery_retention_10', 'ap_mastery_retention_25', 'ap_mastery_retention_50'],
+    unsupportedNodesRemainHidden: [
+      'ap_fragment_gain_boost',
+      'ap_pavilion_refresh_discount',
+      'ap_unlock_alchemy_queue',
+      'ap_unlock_forge_queue',
+      'ap_unlock_talisman_queue',
+      'ap_craft_speed_boost',
+      'ap_autosell_filter',
+      'ap_autobuy_consumables',
+      'ap_loot_filter',
+      'ap_auto_retry_bosses',
+      'ap_unlock_meridian_hall',
+      'ap_unlock_spirit_garden',
+      'ap_unlock_jade_core',
+      'ap_unlock_pagoda',
+      'ap_pagoda_sweep',
+      'ap_extra_heartlaw_choice',
+    ],
   },
 } as const;
 

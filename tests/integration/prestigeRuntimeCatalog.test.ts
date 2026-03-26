@@ -51,6 +51,9 @@ test('runtime catalog exposes only the live consumed prestige nodes and hides de
     'ap_unlock_heartlaw_t3',
     'ap_extra_technique_slot_1',
     'ap_extra_technique_slot_2',
+    'ap_mastery_retention_10',
+    'ap_mastery_retention_25',
+    'ap_mastery_retention_50',
   ]);
   assert.equal(getPrestigeNodeRuntimeStatus('ap_unlock_meridian_hall', content as never), 'deferred');
   assert.equal(getPrestigeNodeRuntimeStatus('ap_fragment_gain_boost', content as never), 'hidden_unsupported');

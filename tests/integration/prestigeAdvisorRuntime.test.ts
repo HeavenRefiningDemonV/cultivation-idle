@@ -68,9 +68,11 @@ test('advisor recommendation does not leak hidden/deferred nodes even when AP is
 
   const recommendation = getPrestigeAdvisorSurface().topRecommendedPurchase;
   assert.notEqual(recommendation, null);
+
   assert.notEqual(recommendation!.id, 'ap_unlock_meridian_hall');
   assert.notEqual(recommendation!.id, 'ap_fragment_gain_boost');
   assert.notEqual(recommendation!.id, 'ap_autosell_filter');
+  assert.notEqual(recommendation!.id, 'ap_unlock_pagoda');
 });
 
 test('advisor spirit-root classification follows live spirit root state', () => {

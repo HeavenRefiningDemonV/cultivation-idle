@@ -14,7 +14,8 @@ export type PrestigeRuntimeConsumer =
   | 'combat_multiplier'
   | 'offline_efficiency'
   | 'heart_law_unlock'
-  | 'extra_technique_slot';
+  | 'extra_technique_slot'
+  | 'mastery_retention';
 
 export type PrestigeNodeRuntimeStatus =
   | 'visible_live'
@@ -47,6 +48,9 @@ export const VISIBLE_LIVE_PRESTIGE_NODE_IDS = [
   'ap_unlock_heartlaw_t3',
   'ap_extra_technique_slot_1',
   'ap_extra_technique_slot_2',
+  'ap_mastery_retention_10',
+  'ap_mastery_retention_25',
+  'ap_mastery_retention_50',
 ] as const;
 
 const PRESTIGE_UPGRADE_COSTS_BY_ID: Readonly<Record<string, readonly number[]>> = {
@@ -100,6 +104,10 @@ export const getPrestigeRuntimeConsumers = (upgrade: PrestigeUpgradeDef): Presti
 
   if (getNumericEffect(upgrade.effect, 'extraTechniqueSlots') || getNumericEffect(upgrade.effectPerLevel, 'extraTechniqueSlots')) {
     consumers.add('extra_technique_slot');
+  }
+
+  if (getNumericEffect(upgrade.effect, 'masteryRetentionPct') || getNumericEffect(upgrade.effectPerLevel, 'masteryRetentionPct')) {
+    consumers.add('mastery_retention');
   }
 
   return Array.from(consumers);
