@@ -13,6 +13,7 @@ export * from './activityRewardReadModel.js';
 export * from './activityThroughputReadModel.js';
 export * from './rewardParityAudit.js';
 export * from './supportCurrencyTargets.js';
+export * from './supportThroughputReadModel.js';
 export * from './meritRoleAudit.js';
 export * from './gateFailureMeritPolicy.js';
 export * from './supportEconomySurfaceModel.js';

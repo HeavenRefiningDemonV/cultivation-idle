@@ -25,8 +25,8 @@ test('activity throughput targets expose canonical category ids and explicit rol
 
   assert.equal(ACTIVITY_LOOP_ROLE_OWNERSHIP.outskirts.status, 'locked');
   assert.equal(ACTIVITY_LOOP_ROLE_OWNERSHIP.ruins.status, 'locked');
-  assert.equal(ACTIVITY_LOOP_ROLE_OWNERSHIP.bounties.status, 'deferred');
-  assert.equal(ACTIVITY_LOOP_ROLE_OWNERSHIP.expeditions.status, 'deferred');
+  assert.equal(ACTIVITY_LOOP_ROLE_OWNERSHIP.bounties.status, 'locked');
+  assert.equal(ACTIVITY_LOOP_ROLE_OWNERSHIP.expeditions.status, 'locked');
 });
 
 test('activity throughput targets encode locked role statements and additive ruins bonus truth', () => {
@@ -37,6 +37,11 @@ test('activity throughput targets encode locked role statements and additive rui
   const targets = getActivityThroughputTargets();
   assert.equal(targets.deferredTargets.bountyMeritSpiritStoneThroughput.status, 'deferred');
   assert.equal(targets.deferredTargets.expeditionEquivalenceRatios.status, 'deferred');
+  assert.equal(targets.bountyThroughputTargets.reserveRole.notDominantGoldRoute, true);
+  assert.equal(targets.expeditionEquivalenceTargets.shortToRuinValueRatioTarget, 0.35);
+  assert.equal(targets.expeditionEquivalenceTargets.mediumToRuinValueRatioTarget, 0.75);
+  assert.equal(targets.expeditionEquivalenceTargets.longToRuinValueRatioTarget, 1.25);
+  assert.equal(targets.expeditionEquivalenceTargets.validationTolerance.absoluteRatioTolerance, 0.1);
 });
 
 test('activity throughput target layer extends the 6.1 spine instead of creating a competing balance registry', () => {
