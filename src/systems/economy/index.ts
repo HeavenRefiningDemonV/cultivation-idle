@@ -32,3 +32,5 @@ export * from './economicSnapshot.js';
 export * from './economicShortfallEvaluator.js';
 export * from './moduleRecommendationSummaries.js';
 export * from './economicRecommendationEngine.js';
+export * from './prepPackageFitReadModel.js';
+export * from './prepRecoveryWindowReadModel.js';

@@ -68,8 +68,10 @@ import {
   buildBestSourceIndex,
   resolveMissingMaterialRoutes,
   getAllProblemDestinationPolicies,
+  buildAllPrepPackageFitReports,
 } from '../systems/economy/index.js';
 import { SEMESTER_SLICE_CONTRACT } from '../systems/progression/contract/semesterSlice.js';
+import { getPrepEconomyTargets } from '../systems/balance/prepEconomyTargets.js';
 import {
   buildForgeLadderAudit,
   buildLiveForgeCatalog,
@@ -1248,6 +1250,19 @@ function validateEconomicRecommendationRuntimeTruth(options: {
     if (!floorSnapshot.cultivationPrepItemId) {
       addErr(`economic stock-floor adapter must resolve a cultivation prep item for ${cityId}`);
     }
+  }
+
+  const prepTargets = getPrepEconomyTargets();
+  if (prepTargets.isolatedRecoveryCategories.length !== 3) {
+    addErr('prep-economy targets must expose all three isolated recovery categories');
+  }
+  if (Object.keys(prepTargets.recoveryWindowsByGate).length !== 5) {
+    addErr('prep-economy recovery windows must cover all five gates');
+  }
+
+  const prepFit = buildAllPrepPackageFitReports(content);
+  if (prepFit.some((entry) => !entry.honest)) {
+    addErr(`prep package fit audit found non-honest packages: ${prepFit.filter((entry) => !entry.honest).map((entry) => entry.transitionId).join(', ')}`);
   }
 
   const phaseSnapshot = buildEconomicPhaseSnapshotFromState({

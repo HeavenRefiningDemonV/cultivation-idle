@@ -1,6 +1,7 @@
 export type * from './balanceTargetTypes.js';
 export * from './activityThroughputTargets.js';
 export * from './phaseTimingTargets.js';
+export * from './prepEconomyTargets.js';
 export {
   calculatePrestigeProgressionAp,
   deriveRealmBaseQiPerSecond,
