@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
+import { useGameStore } from '../../stores/gameStore';
+import { useZoneStore } from '../../stores/zoneStore';
+import { useDungeonStore } from '../../stores/dungeonStore';
+import { useTechniqueStore } from '../../stores/techniqueStore';
 import { formatNumber } from '../../utils/numbers';
 import type { ItemDefinition, ItemRarity } from '../../types';
 import { RarityBadge } from '../ui/RarityBadge';
+import { getDungeonLockReason } from '../../features/progression/currentBranchProgression';
+import {
+  assessCurrentBranchGatePrep,
+  buildCurrentBranchPrepSnapshot,
+} from '../../features/prep/currentBranchPrepAssessment';
 
 /**
  * Tab type for inventory sections
@@ -262,6 +271,45 @@ export function InventoryScreen() {
     useConsumable: consumeItem,
     sellItem,
   } = useInventoryStore();
+  const realm = useGameStore((state) => state.realm);
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const runStartTime = useGameStore((state) => state.runStartTime);
+  const zoneProgress = useZoneStore((state) => state.zoneProgress);
+  const dungeonProgress = useDungeonStore((state) => state.dungeonProgress);
+  const techniques = useTechniqueStore((state) => state.techniques);
+
+  const progressionFacts = {
+    realmIndex: realm.index,
+    realmSubstage: realm.substage,
+    completedZones: Object.entries(zoneProgress).filter(([, p]) => p.completed).map(([zoneId]) => zoneId),
+    clearedDungeons: Object.entries(dungeonProgress).filter(([, p]) => p.totalClears > 0).map(([dungeonId]) => dungeonId),
+  };
+  const nextGateId =
+    ['novice_clearing', 'stone_core_sanctum', 'nascent_soul_chamber'].find(
+      (gateId) => !progressionFacts.clearedDungeons.includes(gateId)
+    ) ?? 'nascent_soul_chamber';
+  const nextGateLockReason = getDungeonLockReason(nextGateId, progressionFacts);
+  const counts = items.reduce<Record<string, number>>((acc, item) => {
+    acc[item.itemId] = (acc[item.itemId] ?? 0) + item.quantity;
+    return acc;
+  }, {});
+  const pathTechniques = Object.values(techniques).filter((t) => (selectedPath ? t.path === selectedPath && t.unlocked : false));
+  const prepSummary = assessCurrentBranchGatePrep(
+    buildCurrentBranchPrepSnapshot({
+      gateId: nextGateId,
+      realmIndex: realm.index,
+      realmSubstage: realm.substage,
+      isProgressionBlocked: !!nextGateLockReason,
+      progressionBlockReason: nextGateLockReason,
+      runTimeMinutes: (Date.now() - runStartTime) / 60000,
+      inventoryCounts: counts,
+      equippedWeaponId: equippedWeapon?.id ?? null,
+      equippedAccessoryId: equippedAccessory?.id ?? null,
+      selectedPath,
+      unlockedPathTechniqueCount: pathTechniques.length,
+      primaryTechniqueProficiency: pathTechniques.reduce((max, t) => Math.max(max, t.proficiency), 0),
+    })
+  );
 
   // Filter items based on active tab
   const filteredItems = items.filter((item) => {
@@ -337,6 +385,26 @@ export function InventoryScreen() {
             onUnequip={unequipAccessory}
           />
         </div>
+      </div>
+
+      <div className="bg-blue-900/20 border border-blue-400/40 rounded-lg p-4">
+        <h3 className="text-lg font-cinzel font-bold text-blue-300 mb-2">Next Gate Prep ({nextGateId.replace(/_/g, ' ')})</h3>
+        {prepSummary.progressionBlockReason ? (
+          <div className="text-sm text-orange-300">{prepSummary.progressionBlockReason}</div>
+        ) : (
+          <div className="space-y-1 text-sm">
+            {prepSummary.minimumChecklist.slice(0, 3).map((line, idx) => (
+              <div key={idx} className={line.met ? 'text-green-400' : 'text-red-300'}>
+                {line.met ? '✓' : '•'} {line.label.replace(/^([a-z_]+)/, (id) => getItemDefinition(id)?.name ?? id)}
+              </div>
+            ))}
+            {prepSummary.biggestShortfall && (
+              <div className="text-yellow-300">
+                Biggest shortfall: {prepSummary.biggestShortfall.category} — {prepSummary.biggestShortfall.label}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Tabs */}

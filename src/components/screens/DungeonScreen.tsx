@@ -3,12 +3,18 @@ import { useCombatStore } from '../../stores/combatStore';
 import { useDungeonStore } from '../../stores/dungeonStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useZoneStore } from '../../stores/zoneStore';
+import { useInventoryStore, getItemDefinition } from '../../stores/inventoryStore';
+import { useTechniqueStore } from '../../stores/techniqueStore';
 import { formatNumber } from '../../utils/numbers';
 import { CombatView } from './AdventureScreen';
 import {
   getDungeonLockReason,
   type ProgressionFacts,
 } from '../../features/progression/currentBranchProgression';
+import {
+  assessCurrentBranchGatePrep,
+  buildCurrentBranchPrepSnapshot,
+} from '../../features/prep/currentBranchPrepAssessment';
 
 /**
  * Dungeon definition from config
@@ -65,6 +71,17 @@ function getReadinessLevel(
   } else {
     return { level: 'danger', color: 'text-red-400', text: 'RISKY' };
   }
+}
+
+function formatRouteToken(token: 'adventure' | 'inventory' | 'cultivation' | 'status') {
+  return token.charAt(0).toUpperCase() + token.slice(1);
+}
+
+function formatChecklistLabel(label: string) {
+  if (!label.includes('_')) return label;
+  const [itemId, suffix] = label.split(' ');
+  const itemName = getItemDefinition(itemId)?.name ?? itemId;
+  return `${itemName}${suffix ? ` ${suffix}` : ''}`;
 }
 
 /**
@@ -271,13 +288,19 @@ function BossPreviewModal({
 /**
  * Dungeon Card Component
  */
-  function DungeonCard({ dungeon, playerStats, facts }: { dungeon: Dungeon; playerStats: { atk: string; hp: string }; facts: ProgressionFacts }) {
+function DungeonCard({ dungeon, playerStats, facts }: { dungeon: Dungeon; playerStats: { atk: string; hp: string }; facts: ProgressionFacts }) {
   const [showPreview, setShowPreview] = useState(false);
   const realm = useGameStore((state) => state.realm);
   const startDungeonCombat = useCombatStore((state) => state.startDungeonCombat);
   const isDungeonUnlocked = useDungeonStore((state) => state.isDungeonUnlocked(dungeon.id));
   const isFirstClear = useDungeonStore((state) => state.isFirstClear(dungeon.id));
   const totalClears = useDungeonStore((state) => state.getTotalClears(dungeon.id));
+  const inventoryItems = useInventoryStore((state) => state.items);
+  const equippedWeapon = useInventoryStore((state) => state.equippedWeapon);
+  const equippedAccessory = useInventoryStore((state) => state.equippedAccessory);
+  const techniques = useTechniqueStore((state) => state.techniques);
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const runStartTime = useGameStore((state) => state.runStartTime);
 
   if (!realm) return null;
 
@@ -287,6 +310,30 @@ function BossPreviewModal({
   const playerDPS = Number(playerStats.atk);
   const playerHP = Number(playerStats.hp);
   const readiness = getReadinessLevel(playerDPS, playerHP, dungeon.suggestedDPS, dungeon.suggestedHP);
+  const counts = inventoryItems.reduce<Record<string, number>>((acc, item) => {
+    acc[item.itemId] = (acc[item.itemId] ?? 0) + item.quantity;
+    return acc;
+  }, {});
+  const pathTechniques = Object.values(techniques).filter((technique) =>
+    selectedPath ? technique.path === selectedPath && technique.unlocked : false
+  );
+  const primaryTechniqueProficiency = pathTechniques.reduce((best, technique) => Math.max(best, technique.proficiency), 0);
+  const prepAssessment = assessCurrentBranchGatePrep(
+    buildCurrentBranchPrepSnapshot({
+      gateId: dungeon.id,
+      realmIndex: facts.realmIndex,
+      realmSubstage: facts.realmSubstage,
+      isProgressionBlocked: isLocked,
+      progressionBlockReason: lockReason,
+      runTimeMinutes: (Date.now() - runStartTime) / 60000,
+      inventoryCounts: counts,
+      equippedWeaponId: equippedWeapon?.id ?? null,
+      equippedAccessoryId: equippedAccessory?.id ?? null,
+      selectedPath,
+      unlockedPathTechniqueCount: pathTechniques.length,
+      primaryTechniqueProficiency,
+    })
+  );
 
   const handleEnterDungeon = () => {
     startDungeonCombat(dungeon.id, dungeon.boss, dungeon);
@@ -338,12 +385,70 @@ function BossPreviewModal({
               <span className="text-xs text-slate-400">Readiness:</span>
               <span className={`text-sm font-bold ${readiness.color}`}>{readiness.text}</span>
             </div>
+            <div className="text-xs">
+              <span className="text-slate-400">Prep State:</span>{' '}
+              <span className={
+                prepAssessment.status === 'ready'
+                  ? 'text-green-400 font-semibold'
+                  : prepAssessment.status === 'close'
+                  ? 'text-yellow-400 font-semibold'
+                  : prepAssessment.status === 'underprepared'
+                  ? 'text-red-400 font-semibold'
+                  : 'text-orange-400 font-semibold'
+              }>
+                {prepAssessment.status === 'progression_blocked' ? 'Blocked by progression' : prepAssessment.status}
+              </span>
+            </div>
+            {prepAssessment.progressionBlockReason && (
+              <div className="text-xs text-orange-300">
+                {prepAssessment.progressionBlockReason}
+              </div>
+            )}
 
             {/* Suggested Stats */}
             <div className="text-xs text-slate-400 space-y-1">
               <div>Suggested ATK: {formatNumber(dungeon.suggestedDPS)}</div>
               <div>Suggested HP: {formatNumber(dungeon.suggestedHP)}</div>
             </div>
+
+            <div className="grid grid-cols-1 gap-2 text-xs">
+              <div className="bg-slate-900/40 border border-slate-700 rounded p-2">
+                <div className="text-slate-300 font-semibold mb-1">Minimum checklist</div>
+                {prepAssessment.minimumChecklist.slice(0, 5).map((line, idx) => (
+                  <div key={idx} className={line.met ? 'text-green-400' : 'text-red-300'}>
+                    {line.met ? '✓' : '•'} {formatChecklistLabel(line.label)}
+                  </div>
+                ))}
+              </div>
+              <div className="bg-slate-900/40 border border-slate-700 rounded p-2">
+                <div className="text-slate-300 font-semibold mb-1">Recommended checklist</div>
+                {prepAssessment.recommendedChecklist.slice(0, 5).map((line, idx) => (
+                  <div key={idx} className={line.met ? 'text-green-400' : 'text-yellow-300'}>
+                    {line.met ? '✓' : '•'} {formatChecklistLabel(line.label)}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {prepAssessment.biggestShortfall && (
+              <div className="text-xs text-red-300">
+                Biggest shortfall: {formatChecklistLabel(prepAssessment.biggestShortfall.label)} ({prepAssessment.biggestShortfall.category})
+              </div>
+            )}
+            {prepAssessment.missingCategories.length > 0 && (
+              <div className="text-xs text-orange-300">
+                Missing categories: {prepAssessment.missingCategories.join(', ')}
+              </div>
+            )}
+            {prepAssessment.topFixes.length > 0 && (
+              <div className="bg-blue-900/15 border border-blue-500/30 rounded p-2">
+                <div className="text-xs text-blue-300 font-semibold mb-1">Best next actions</div>
+                {prepAssessment.topFixes.slice(0, 3).map((route, idx) => (
+                  <div key={idx} className="text-xs text-slate-200">
+                    • {route.label} → {formatRouteToken(route.routeToken)} ({route.reason})
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Boss Name */}
             <div className="text-sm">
