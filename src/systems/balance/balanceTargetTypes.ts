@@ -77,7 +77,7 @@ export interface PrestigeEconomyPolicy {
   sourcePacket: string;
   unlockRealmIndex: number;
   timeBonusEnabled: boolean;
-  recommendedResetRule: string;
+  recommendedResetRule: 'content_cap_only_for_now' | string;
   realmApBaselines: readonly PrestigeRealmApCoefficient[];
   substageApBonusPolicy: PrestigeSubstageApBonusPolicy;
   gateBonusPolicy?: PrestigeFutureGateBonusPolicy;

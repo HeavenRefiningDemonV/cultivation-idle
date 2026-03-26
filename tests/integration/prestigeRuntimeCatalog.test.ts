@@ -121,7 +121,8 @@ test('off-label offline-efficiency drift and spirit-root floor promises are remo
 
   assert.equal(gameStoreSource.includes('getCultivationMultiplier'), false);
   assert.equal(gameStoreSource.includes('offlineEfficiencyAdd'), false);
-  assert.equal(offlineSource.includes('getOfflineEfficiencyMultiplier'), true);
+  assert.equal(offlineSource.includes('getOfflineEfficiencyBonusAdditive'), true);
+  assert.equal(offlineSource.includes('getOfflineEfficiencyMultiplier'), false);
   assert.equal(prestigeScreenSource.includes('Keep spirit root floor level'), false);
   assert.equal(ritualModalSource.includes('Keep spirit root floor level'), false);
   assert.equal(prestigeStoreSource.includes('spiritRootFloor'), false);

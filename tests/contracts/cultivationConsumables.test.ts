@@ -196,17 +196,33 @@ test('offline catch-up honors partial buff duration and save snapshot carries cu
   const baseQps = Number(useGameStore.getState().qiPerSecond);
   useCultivationStore.getState().useCultivationConsumable('cons_qi_elixir_t1', now);
   useGameStore.getState().calculateQiPerSecond();
-  useGameStore.setState({ qi: '0' });
+  useGameStore.setState({ qi: '0', lastActiveTime: now, lastTickTime: now });
 
-  const result = applyOfflineCatchup({ dtMs: 900_000, rawMs: 900_000, now: now + 900_000, wasCapped: false, wasMeditating: true, lastActiveAtMs: now });
+  const baseContext = {
+    dtMs: 900_000,
+    rawMs: 900_000,
+    now: now + 900_000,
+    wasCapped: false,
+    lastActiveAtMs: now,
+  };
+  const resultWithoutMeditation = applyOfflineCatchup({ ...baseContext, wasMeditating: false });
+  const qiWithoutMeditation = Number(useGameStore.getState().qi);
+  useCultivationStore.getState().useCultivationConsumable('cons_qi_elixir_t1', now);
+  useGameStore.setState({ qi: '0', lastActiveTime: now, lastTickTime: now });
+  const resultWithMeditation = applyOfflineCatchup({ ...baseContext, wasMeditating: true });
   const qiAfter = Number(useGameStore.getState().qi);
-  const noBuffFloor = baseQps * 900 * 0.5;
-  const fullBuffCeil = baseQps * 1.25 * 900 * 0.5;
+
+  const appliedEfficiency = resultWithMeditation.summary?.efficiency ?? 0;
+  const noBuffFloor = baseQps * 900 * appliedEfficiency;
+  const fullBuffCeil = baseQps * 1.25 * 900 * appliedEfficiency;
   assert.ok(qiAfter > noBuffFloor);
   assert.ok(qiAfter < fullBuffCeil);
-  assert.ok(result.summary?.parts.some((part) => part.label === 'Qi gained'));
+  approxEqual(qiAfter, qiWithoutMeditation);
+  assert.ok(resultWithoutMeditation.summary?.parts.some((part) => part.label === 'Qi gained'));
+  assert.ok(resultWithMeditation.summary?.parts.some((part) => part.label === 'Qi gained'));
   assert.deepEqual(useCultivationStore.getState().getActiveCultivationConsumables(now + 900_000), []);
 
+  useCultivationStore.setState({ activeCultivationConsumables: [] });
   useCultivationStore.getState().useCultivationConsumable('cons_quiet_breath_tea_t1', now);
   const save = buildDefaultSaveState();
   assert.equal(save.heartLawState?.activeCultivationConsumables?.[0]?.itemId, 'cons_quiet_breath_tea_t1');

@@ -20,12 +20,12 @@ test.beforeEach(() => {
 test('prestige store keeps the prepared life summary snapshot captured before reset', () => {
   usePrestigeStore.setState({
     totalAP: 4,
-    highestRealmReached: 1,
+    highestRealmReached: 2,
     runStartTime: Date.now() - 90 * 60 * 1000,
   });
   useGameStore.setState((state) => ({
     ...state,
-    realm: { ...state.realm, index: 1, substage: 3 },
+    realm: { ...state.realm, index: 2, substage: 3 },
   }));
   useInventoryStore.setState((state) => ({
     ...state,

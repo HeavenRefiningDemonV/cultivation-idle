@@ -6,6 +6,12 @@ import { clampRealmIndexToSemesterSlice } from '../systems/progression/runtime/i
 import { SaveService } from '../services/save/SaveService.js';
 import { useContentStore } from './contentStore.js';
 import type { PrestigeUpgradeDef } from '../content/index.js';
+import {
+  calculatePrestigeProgressionAp,
+  getPrestigeUnlockRealmIndex,
+  getPrestigeSubstageBonusAp,
+  getRealmBaselineApByIndex,
+} from '../systems/balance/index.js';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects.js';
 import {
   canPurchasePrestigeNode,
@@ -59,18 +65,16 @@ const buildApBreakdown = (state: ApBreakdownState, gameStore: GameState | null):
   const currentRealm = gameStore.realm;
   const realmIndex = Math.max(state.highestRealmReached, currentRealm?.index ?? 0);
   const realmDefinition = REALMS[clampRealmIndexToSemesterSlice(realmIndex)] || REALMS[0];
-  const substageProgress = Math.max(
-    0,
-    ((currentRealm?.substage ?? 1) - 1) / Math.max(1, realmDefinition.substages),
+  const realmBonus = getRealmBaselineApByIndex(realmIndex);
+  const substageBonus = getPrestigeSubstageBonusAp(
+    currentRealm?.substage ?? 1,
+    realmDefinition.substages,
   );
-
-  const realmBonus = Math.max(0, realmIndex - 1) * 10; // Only award AP after Foundation
-  const substageBonus = Math.floor(substageProgress * 5);
-
-  const runTimeHours = (Date.now() - state.runStartTime) / (1000 * 60 * 60);
-  const timeBonus = Math.max(0, Math.floor(runTimeHours));
-
-  const potentialGain = Math.max(0, Math.floor(realmBonus + substageBonus + timeBonus));
+  const potentialGain = calculatePrestigeProgressionAp({
+    realmIndex,
+    substage: currentRealm?.substage ?? 1,
+    substages: realmDefinition.substages,
+  });
 
   return {
     availableNow: state.totalAP,
@@ -82,19 +86,13 @@ const buildApBreakdown = (state: ApBreakdownState, gameStore: GameState | null):
         key: 'realm',
         label: 'Realm advancement',
         value: realmBonus,
-        hint: 'Higher realms grant more AP.',
+        hint: 'Realm milestones grant Ascension Points.',
       },
       {
         key: 'substage',
         label: 'Substage progress',
         value: substageBonus,
         hint: 'Partial realm progress yields bonus AP.',
-      },
-      {
-        key: 'time',
-        label: 'Time cultivated',
-        value: timeBonus,
-        hint: 'Every hour adds potential AP.',
       },
     ],
   };
@@ -156,6 +154,7 @@ interface PrestigeState {
   getQiMultiplier: () => number;
   getCombatMultiplier: () => number;
   getOfflineEfficiencyMultiplier: () => number;
+  getOfflineEfficiencyBonusAdditive: () => number;
   initializeUpgrades: () => void;
   getUpgradeEffectByStat: (stat: string) => number;
 
@@ -258,7 +257,7 @@ export const usePrestigeStore = create<PrestigeState>()(
       const gameStore = _getGameStore();
       const currentRealm = gameStore.realm?.index || 0;
       const highestRealm = get().highestRealmReached;
-      return Math.max(currentRealm, highestRealm) >= 1; // Foundation Establishment (realm 1)
+      return Math.max(currentRealm, highestRealm) >= getPrestigeUnlockRealmIndex();
     },
 
     updateHighestRealm: (realmIndex: number) => {
@@ -436,8 +435,11 @@ export const usePrestigeStore = create<PrestigeState>()(
     },
 
     getOfflineEfficiencyMultiplier: () => {
-      const offlineEfficiencyBonus = get().getUpgradeEffectByStat('offlineEfficiencyAdd');
-      return 1 + offlineEfficiencyBonus;
+      return 1 + get().getOfflineEfficiencyBonusAdditive();
+    },
+
+    getOfflineEfficiencyBonusAdditive: () => {
+      return get().getUpgradeEffectByStat('offlineEfficiencyAdd');
     },
 
     initializeUpgrades: () => {

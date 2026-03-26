@@ -1,5 +1,7 @@
 import type { PrestigeUpgradeDef } from '../../content/types.js';
+import { isPrestigeRecommendedResetPoint } from '../../systems/balance/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
+import { useGameStore } from '../../stores/gameStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from './prestigeCategories.js';
 
@@ -37,8 +39,6 @@ export type PrestigeAdvisorSurface = {
   topRecommendedPurchase: PrestigeAdvisorRecommendedPurchase | null;
 };
 
-const RECOMMENDED_AP_THRESHOLD = 10;
-
 const RESETS_THIS_LIFE = Object.freeze([
   'Realm progress',
   'Qi and combat run state',
@@ -68,11 +68,11 @@ const PURCHASE_STAT_PRIORITY: Readonly<Record<string, number>> = {
   offlineEfficiencyAdd: 2,
 };
 
-const toStateLabel = (canPrestige: boolean, potentialGain: number): PrestigeAdvisorStateLabel => {
+const toStateLabel = (canPrestige: boolean, highestRealmReached: number): PrestigeAdvisorStateLabel => {
   if (!canPrestige) {
     return 'Too Early';
   }
-  if (potentialGain >= RECOMMENDED_AP_THRESHOLD) {
+  if (isPrestigeRecommendedResetPoint(highestRealmReached)) {
     return 'Recommended';
   }
   return 'Viable';
@@ -86,12 +86,12 @@ const getPurchaseRank = (upgrade: PrestigeUpgradeDef, nextCost: number): number 
 
 const getAdvisorDetail = (stateLabel: PrestigeAdvisorStateLabel): string => {
   if (stateLabel === 'Too Early') {
-    return 'Build your life to Foundation Establishment before beginning Reincarnation.';
+    return 'Push this life to Core Formation before beginning Reincarnation.';
   }
   if (stateLabel === 'Viable') {
-    return 'Reincarnation is unlocked. You can reset now or keep pushing this life for more AP.';
+    return 'Reincarnation is available now, but later milestones can improve long-term value.';
   }
-  return 'This life is in a strong reset window. Reincarnation is likely your best outer-loop move.';
+  return 'This life is at a strong reset point; begin a new life to reclaim earlier progress faster.';
 };
 
 const getReasonLine = (upgrade: PrestigeUpgradeDef): string => {
@@ -156,9 +156,11 @@ const buildTopRecommendedPurchase = (): PrestigeAdvisorRecommendedPurchase | nul
 
 export const getPrestigeAdvisorSurface = (): PrestigeAdvisorSurface => {
   const prestige = usePrestigeStore.getState();
+  const game = useGameStore.getState();
   const potentialGain = Math.max(0, prestige.calculateAPGain());
   const breakdown = prestige.getApBreakdown();
-  const stateLabel = toStateLabel(prestige.canPrestige(), potentialGain);
+  const highestRealm = Math.max(prestige.highestRealmReached, game.realm?.index ?? 0);
+  const stateLabel = toStateLabel(prestige.canPrestige(), highestRealm);
 
   return {
     stateLabel,

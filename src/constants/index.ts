@@ -268,12 +268,6 @@ export const NUM_BACKUP_SAVES = 3;
 export const AUTOSAVE_INTERVAL = 60000; // 60 seconds
 
 /**
- * Offline progress constants
- */
-export const MAX_OFFLINE_HOURS = 12;
-export const DEFAULT_OFFLINE_EFFICIENCY = 0.5;
-
-/**
  * Combat constants
  */
 export const DEFENSE_CONSTANT_K = 100; // For damage reduction formula
@@ -313,16 +307,6 @@ export const ELEMENT_BONUSES = {
   metal: { critRate: 0.2, atk: 0.1 },
   wood: { hpRegen: 0.1, qiPerSecond: 0.1 },
 } as const;
-
-/**
- * Prestige AP calculation constants
- */
-export const PRESTIGE_AP_BASE = 20;
-export const PRESTIGE_AP_PER_REALM = 10;
-export const PRESTIGE_AP_PER_BOSS = 5;
-export const PRESTIGE_AP_TIME_BONUS_BASE = 50;
-export const PRESTIGE_AP_TIME_BONUS_DECAY = 2; // Per hour
-export const PRESTIGE_AP_AURA_DIVISOR = 10;
 
 /**
  * Item rarity colors (for UI)

@@ -2,12 +2,14 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useProfessionStore } from '../../stores/professionStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
 import { formatNumber, D } from '../../utils/numbers.js';
 import type { OfflineContext } from '../../systems/offline.js';
-import { DEFAULT_OFFLINE_EFFICIENCY, MAX_OFFLINE_MS } from './offlineShared.js';
-import { formatOfflineDuration } from '../../systems/offline.js';
+import { formatOfflineDuration, MAX_OFFLINE_MS, resolveOfflineCultivationEfficiency } from './offlineShared.js';
 import { cultivationService } from '../cultivationService.js';
 import { buildCultivationConsumableCarryoverWindows } from '../../systems/consumables/cultivationConsumableEffects.js';
+import { getHeartLawBonuses } from '../../systems/heartLaw/heartLawLogic.js';
 
 export interface OfflineCatchupSummaryPart {
   label: string;
@@ -24,6 +26,23 @@ export interface OfflineCatchupSummary {
 
 export interface OfflineCatchupResult {
   summary: OfflineCatchupSummary | null;
+}
+
+function getLiveOfflineEfficiency(): number {
+  const prestigeStore = usePrestigeStore.getState();
+  const cultivationStore = useCultivationStore.getState();
+  const heartLawId = cultivationStore.selectedHeartLawId;
+  const heartLawDef = heartLawId ? useContentStore.getState().maps.heartLawsById[heartLawId] ?? null : null;
+  const heartLawBonus = getHeartLawBonuses({
+    heartLawDef,
+    chapter: cultivationStore.chapter,
+    spiritRoot: prestigeStore.spiritRoot,
+  }).offlineEfficiencyAdd;
+
+  return resolveOfflineCultivationEfficiency({
+    prestigeEfficiencyAdd: prestigeStore.getOfflineEfficiencyBonusAdditive(),
+    heartLawBonus,
+  });
 }
 
 function calculateOfflineQiGain(startAt: number, endAt: number, offlineEfficiency: number) {
@@ -54,7 +73,7 @@ export function apply(context: OfflineContext): OfflineCatchupResult {
   const startAt = context.now - seconds * 1000;
 
   const gameStore = useGameStore.getState();
-  const offlineEfficiency = context.wasMeditating ? DEFAULT_OFFLINE_EFFICIENCY : 0;
+  const offlineEfficiency = getLiveOfflineEfficiency();
   const qiGain = calculateOfflineQiGain(startAt, context.now, offlineEfficiency);
   if (qiGain.greaterThan(0)) {
     const nextQi = D(gameStore.qi ?? '0').plus(qiGain);

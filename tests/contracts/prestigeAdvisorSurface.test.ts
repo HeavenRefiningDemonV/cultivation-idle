@@ -52,12 +52,12 @@ test('advisor AP forecast is sourced from live prestige store truth only', () =>
   usePrestigeStore.setState({
     totalAP: 12,
     lifetimeAP: 25,
-    highestRealmReached: 1,
+    highestRealmReached: 2,
     runStartTime: Date.now() - 2 * 60 * 60 * 1000,
   });
   useGameStore.setState((state) => ({
     ...state,
-    realm: { ...state.realm, index: 1, substage: 3 },
+    realm: { ...state.realm, index: 2, substage: 3 },
   }));
 
   const surface = getPrestigeAdvisorSurface();
@@ -65,6 +65,7 @@ test('advisor AP forecast is sourced from live prestige store truth only', () =>
 
   assert.equal(surface.apForecast.potentialGain, store.calculateAPGain());
   assert.deepEqual(surface.apForecast.breakdown, store.getApBreakdown());
+  assert.equal(surface.apForecast.breakdown.rows.some((row) => row.key === 'time'), false);
 });
 
 test('advisor state label uses canonical Too Early / Viable / Recommended values', () => {
@@ -74,10 +75,14 @@ test('advisor state label uses canonical Too Early / Viable / Recommended values
 
   usePrestigeStore.setState({ highestRealmReached: 1, runStartTime: Date.now() });
   useGameStore.setState((state) => ({ ...state, realm: { ...state.realm, index: 1, substage: 1 } }));
-  assert.equal(getPrestigeAdvisorSurface().stateLabel, 'Viable');
+  assert.equal(getPrestigeAdvisorSurface().stateLabel, 'Too Early');
 
   usePrestigeStore.setState({ highestRealmReached: 2, runStartTime: Date.now() - 2 * 60 * 60 * 1000 });
   useGameStore.setState((state) => ({ ...state, realm: { ...state.realm, index: 2, substage: 5 } }));
+  assert.equal(getPrestigeAdvisorSurface().stateLabel, 'Viable');
+
+  usePrestigeStore.setState({ highestRealmReached: 5, runStartTime: Date.now() - 2 * 60 * 60 * 1000 });
+  useGameStore.setState((state) => ({ ...state, realm: { ...state.realm, index: 5, substage: 3 } }));
   assert.equal(getPrestigeAdvisorSurface().stateLabel, 'Recommended');
 });
 

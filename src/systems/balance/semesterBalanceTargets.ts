@@ -83,20 +83,21 @@ const PRESTIGE_ECONOMY_POLICY = {
   timeBonusEnabled: false,
   recommendedResetRule: 'content_cap_only_for_now',
   realmApBaselines: [
-    { realmId: 'qi_condensation', status: 'deferred' },
-    { realmId: 'foundation_establishment', status: 'deferred' },
-    { realmId: 'core_formation', status: 'deferred' },
-    { realmId: 'nascent_soul', status: 'deferred' },
-    { realmId: 'soul_formation', status: 'deferred' },
-    { realmId: 'spirit_severing', status: 'deferred' },
+    { realmId: 'qi_condensation', status: 'locked', baselineAp: 0 },
+    { realmId: 'foundation_establishment', status: 'locked', baselineAp: 0 },
+    { realmId: 'core_formation', status: 'locked', baselineAp: 6 },
+    { realmId: 'nascent_soul', status: 'locked', baselineAp: 12 },
+    { realmId: 'soul_formation', status: 'locked', baselineAp: 20 },
+    { realmId: 'spirit_severing', status: 'locked', baselineAp: 30 },
   ],
   substageApBonusPolicy: {
-    status: 'deferred',
-    model: 'packet_6_2_pending',
+    status: 'locked',
+    model: 'fractional_progress_floor',
+    maxBonusAp: 5,
   },
   gateBonusPolicy: {
     status: 'deferred',
-    sourcePacket: '6.2',
+    sourcePacket: '6.7',
     model: 'optional_future_gate_bonus_policy',
   },
 } as const satisfies PrestigeEconomyPolicy;
@@ -194,6 +195,38 @@ export function getOfflineContributionPolicy(): OfflineContributionPolicy {
 
 export function getPrestigeBaselinePolicy(): PrestigeEconomyPolicy {
   return SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy;
+}
+
+export function getPrestigeUnlockRealmIndex(): number {
+  return SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy.unlockRealmIndex;
+}
+
+export function isPrestigeRecommendedResetPoint(realmIndex: number): boolean {
+  if (SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy.recommendedResetRule !== 'content_cap_only_for_now') {
+    return false;
+  }
+  return realmIndex >= SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy.realmApBaselines.length - 1;
+}
+
+export function getRealmBaselineApByIndex(realmIndex: number): number {
+  const boundedIndex = Math.max(
+    0,
+    Math.min(SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy.realmApBaselines.length - 1, Math.floor(realmIndex)),
+  );
+  const entry = SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy.realmApBaselines[boundedIndex];
+  return entry?.baselineAp ?? 0;
+}
+
+export function getPrestigeSubstageBonusAp(substage: number, substages: number): number {
+  const maxBonusAp = SEMESTER_BALANCE_TARGETS.prestigeEconomyPolicy.substageApBonusPolicy.maxBonusAp ?? 0;
+  const substageProgress = Math.max(0, ((substage ?? 1) - 1) / Math.max(1, substages));
+  return Math.max(0, Math.floor(substageProgress * maxBonusAp));
+}
+
+export function calculatePrestigeProgressionAp(input: { realmIndex: number; substage: number; substages: number }): number {
+  const realmBaseline = getRealmBaselineApByIndex(input.realmIndex);
+  const substageBonus = getPrestigeSubstageBonusAp(input.substage, input.substages);
+  return Math.max(0, Math.floor(realmBaseline + substageBonus));
 }
 
 export function getTargetSecondsForRealmBaseline(realmIndex: number): number {

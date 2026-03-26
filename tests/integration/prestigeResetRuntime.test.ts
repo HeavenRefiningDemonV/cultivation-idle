@@ -187,11 +187,11 @@ test('prestige store performs AP grant and then delegates reset orchestration to
     prestigeCount: 1,
     purchasesById: { ap_mastery_retention_10: 1 },
     runStartTime: Date.now() - 3 * 60 * 60 * 1000,
-    highestRealmReached: 1,
+    highestRealmReached: 2,
   });
   useGameStore.setState((state) => ({
     ...state,
-    realm: { ...state.realm, index: 1, substage: 4 },
+    realm: { ...state.realm, index: 2, substage: 4 },
     qi: '1234',
   }));
   useInventoryStore.setState({

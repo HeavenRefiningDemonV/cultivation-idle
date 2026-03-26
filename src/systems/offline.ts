@@ -6,7 +6,16 @@ import { useContentStore } from '../stores/contentStore.js';
 import { getHeartLawBonuses } from './heartLaw/heartLawLogic.js';
 import { D, multiply, formatNumber } from '../utils/numbers.js';
 import { apply as applyOfflineCatchup } from '../services/time/OfflineCatchup.js';
-import { DEFAULT_OFFLINE_EFFICIENCY, MAX_OFFLINE_MS, MAX_OFFLINE_SECONDS, ONE_WEEK_SECONDS } from '../services/time/offlineShared.js';
+import {
+  DEFAULT_OFFLINE_EFFICIENCY,
+  formatOfflineDuration,
+  MAX_OFFLINE_MS,
+  MAX_OFFLINE_SECONDS,
+  ONE_WEEK_SECONDS,
+  resolveOfflineCultivationEfficiency,
+} from '../services/time/offlineShared.js';
+
+export { formatOfflineDuration };
 
 /**
  * Offline progress result
@@ -36,6 +45,7 @@ export interface OfflineContext {
   dtMs: number;
   rawMs: number;
   wasCapped: boolean;
+  // Back-compat diagnostic field; live offline cultivation is not meditating-gated.
   wasMeditating: boolean;
 }
 
@@ -148,54 +158,6 @@ export function applyOfflineProgress(): OfflineProgressSummary | null {
 }
 
 /**
- * Format offline duration into human-readable string
- *
- * @param seconds - Total seconds offline
- * @returns Human-readable duration string
- *
- * @example
- * formatOfflineDuration(65) // "1 minute, 5 seconds"
- * formatOfflineDuration(3661) // "1 hour, 1 minute"
- * formatOfflineDuration(43200) // "12 hours"
- */
-export function formatOfflineDuration(seconds: number): string {
-  if (seconds <= 0) {
-    return '0 seconds';
-  }
-
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-
-  const parts: string[] = [];
-
-  if (hours > 0) {
-    parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
-  }
-
-  if (minutes > 0) {
-    parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
-  }
-
-  // Only show seconds if less than 1 hour total
-  if (secs > 0 && hours === 0) {
-    parts.push(`${secs} second${secs !== 1 ? 's' : ''}`);
-  }
-
-  // Join parts with commas and "and" for last item
-  if (parts.length === 0) {
-    return '0 seconds';
-  } else if (parts.length === 1) {
-    return parts[0];
-  } else if (parts.length === 2) {
-    return `${parts[0]} and ${parts[1]}`;
-  } else {
-    const lastPart = parts.pop();
-    return parts.join(', ') + ', and ' + lastPart;
-  }
-}
-
-/**
  * Get offline efficiency multiplier
  * Can be upgraded or modified by player later
  *
@@ -212,9 +174,10 @@ export function getOfflineEfficiency(): number {
       chapter: cultivationStore.chapter,
       spiritRoot: prestigeStore.spiritRoot,
     }).offlineEfficiencyAdd;
-    const efficiency =
-      DEFAULT_OFFLINE_EFFICIENCY * prestigeStore.getOfflineEfficiencyMultiplier() + heartLawBonus;
-    return Math.min(efficiency, 1);
+    return resolveOfflineCultivationEfficiency({
+      prestigeEfficiencyAdd: prestigeStore.getOfflineEfficiencyBonusAdditive(),
+      heartLawBonus,
+    });
   } catch {
     return DEFAULT_OFFLINE_EFFICIENCY;
   }
