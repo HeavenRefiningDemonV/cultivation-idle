@@ -66,6 +66,7 @@ test('advisor AP forecast is sourced from live prestige store truth only', () =>
   assert.equal(surface.apForecast.potentialGain, store.calculateAPGain());
   assert.deepEqual(surface.apForecast.breakdown, store.getApBreakdown());
   assert.equal(surface.apForecast.breakdown.rows.some((row) => row.key === 'time'), false);
+  assert.equal(surface.apForecast.breakdown.rows.some((row) => row.label === 'Time cultivated'), false);
 });
 
 test('advisor state label uses canonical Too Early / Viable / Recommended values', () => {

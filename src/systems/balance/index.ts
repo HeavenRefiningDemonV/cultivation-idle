@@ -3,6 +3,7 @@ export * from './activityThroughputTargets.js';
 export * from './offlineTargets.js';
 export * from './phaseTimingTargets.js';
 export * from './prepEconomyTargets.js';
+export * from './prestigeTargets.js';
 export {
   calculatePrestigeProgressionAp,
   deriveRealmBaseQiPerSecond,

@@ -1,17 +1,10 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { GameState, InventoryState, SpiritRoot, SpiritRootElement, SpiritRootGrade } from '../types/index.js';
-import { REALMS } from '../constants/index.js';
-import { clampRealmIndexToSemesterSlice } from '../systems/progression/runtime/index.js';
 import { SaveService } from '../services/save/SaveService.js';
 import { useContentStore } from './contentStore.js';
 import type { PrestigeUpgradeDef } from '../content/index.js';
-import {
-  calculatePrestigeProgressionAp,
-  getPrestigeUnlockRealmIndex,
-  getPrestigeSubstageBonusAp,
-  getRealmBaselineApByIndex,
-} from '../systems/balance/index.js';
+import { PRESTIGE_TARGETS } from '../systems/balance/prestigeTargets.js';
 import { recomputeAndApplyPrestigeUnlocks } from '../systems/prestige/applyPrestigeEffects.js';
 import {
   canPurchasePrestigeNode,
@@ -19,6 +12,15 @@ import {
   isPrestigeNodeVisible,
 } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
 import type { PrestigeLifeSummarySnapshot } from '../features/prestige/lifeSummarySurface.js';
+import { useTrialStore } from './trialStore.js';
+import {
+  buildPrestigeApBreakdownRows,
+  buildPrestigeProgressionSnapshot,
+  calculatePrestigeApForecast,
+  countResolvedSemesterGateTrials,
+  extractLiveTrialIds,
+  resolvePrestigeAdvisorLabel,
+} from '../systems/prestige/prestigeApReadModel.js';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -62,39 +64,27 @@ const buildApBreakdown = (state: ApBreakdownState, gameStore: GameState | null):
     };
   }
 
-  const currentRealm = gameStore.realm;
-  const realmIndex = Math.max(state.highestRealmReached, currentRealm?.index ?? 0);
-  const realmDefinition = REALMS[clampRealmIndexToSemesterSlice(realmIndex)] || REALMS[0];
-  const realmBonus = getRealmBaselineApByIndex(realmIndex);
-  const substageBonus = getPrestigeSubstageBonusAp(
-    currentRealm?.substage ?? 1,
-    realmDefinition.substages,
-  );
-  const potentialGain = calculatePrestigeProgressionAp({
-    realmIndex,
-    substage: currentRealm?.substage ?? 1,
-    substages: realmDefinition.substages,
+  const trialProgressById = useTrialStore.getState().progressByTrialId;
+  const liveTrialIds = extractLiveTrialIds(useContentStore.getState().raw?.trials);
+  const resolvedGateCount = countResolvedSemesterGateTrials({
+    progressByTrialId: trialProgressById,
+    liveTrialIds,
   });
+  const snapshot = buildPrestigeProgressionSnapshot({
+    currentRealmIndex: gameStore.realm?.index ?? 0,
+    currentSubstage: gameStore.realm?.substage ?? 1,
+    highestRealmReached: state.highestRealmReached,
+    resolvedGateCount,
+  });
+  const forecast = calculatePrestigeApForecast(snapshot);
+  const potentialGain = forecast.totalAp;
 
   return {
     availableNow: state.totalAP,
     totalEarned: state.lifetimeAP,
     reincarnations: state.prestigeCount,
     potentialGain,
-    rows: [
-      {
-        key: 'realm',
-        label: 'Realm advancement',
-        value: realmBonus,
-        hint: 'Realm milestones grant Ascension Points.',
-      },
-      {
-        key: 'substage',
-        label: 'Substage progress',
-        value: substageBonus,
-        hint: 'Partial realm progress yields bonus AP.',
-      },
-    ],
+    rows: buildPrestigeApBreakdownRows(forecast),
   };
 };
 
@@ -257,7 +247,7 @@ export const usePrestigeStore = create<PrestigeState>()(
       const gameStore = _getGameStore();
       const currentRealm = gameStore.realm?.index || 0;
       const highestRealm = get().highestRealmReached;
-      return Math.max(currentRealm, highestRealm) >= getPrestigeUnlockRealmIndex();
+      return Math.max(currentRealm, highestRealm) >= PRESTIGE_TARGETS.unlock.unlockRealmIndex;
     },
 
     updateHighestRealm: (realmIndex: number) => {
@@ -273,11 +263,25 @@ export const usePrestigeStore = create<PrestigeState>()(
         return;
       }
       const gameStore = _getGameStore();
+      const trialProgressById = useTrialStore.getState().progressByTrialId;
+      const liveTrialIds = extractLiveTrialIds(useContentStore.getState().raw?.trials);
+      const resolvedGateCount = countResolvedSemesterGateTrials({
+        progressByTrialId: trialProgressById,
+        liveTrialIds,
+      });
+      const fallbackForecast = calculatePrestigeApForecast(
+        buildPrestigeProgressionSnapshot({
+          currentRealmIndex: gameStore.realm?.index ?? 0,
+          currentSubstage: gameStore.realm?.substage ?? 1,
+          highestRealmReached: state.highestRealmReached,
+          resolvedGateCount,
+        }),
+      );
       const lifeSummarySnapshot: PrestigeLifeSummarySnapshot = preparedLifeSummary ?? {
         capturedAt: Date.now(),
-        advisorLabel: state.canPrestige() ? 'Viable' : 'Too Early',
-        apForecastGain: Math.max(0, state.calculateAPGain()),
-        apAfterRitual: state.totalAP + Math.max(0, state.calculateAPGain()),
+        advisorLabel: resolvePrestigeAdvisorLabel(fallbackForecast),
+        apForecastGain: fallbackForecast.totalAp,
+        apAfterRitual: state.totalAP + fallbackForecast.totalAp,
         blocks: [
           { key: 'life_arc', title: 'Life Arc', lines: ['Life summary was captured from runtime fallback.'] },
           { key: 'doctrine_build', title: 'Doctrine & Build', lines: ['Doctrine details were not captured for this ritual call.'] },

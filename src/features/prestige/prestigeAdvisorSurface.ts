@@ -1,8 +1,15 @@
 import type { PrestigeUpgradeDef } from '../../content/types.js';
-import { isPrestigeRecommendedResetPoint } from '../../systems/balance/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useTrialStore } from '../../stores/trialStore.js';
+import {
+  buildPrestigeProgressionSnapshot,
+  calculatePrestigeApForecast,
+  countResolvedSemesterGateTrials,
+  extractLiveTrialIds,
+  resolvePrestigeAdvisorLabel,
+} from '../../systems/prestige/prestigeApReadModel.js';
 import { PRESTIGE_CATEGORIES, getPrestigeCategoryKey } from './prestigeCategories.js';
 
 export type PrestigeAdvisorStateLabel = 'Too Early' | 'Viable' | 'Recommended';
@@ -66,16 +73,6 @@ const PURCHASE_STAT_PRIORITY: Readonly<Record<string, number>> = {
   idleQiMult: 3,
   combatMult: 3,
   offlineEfficiencyAdd: 2,
-};
-
-const toStateLabel = (canPrestige: boolean, highestRealmReached: number): PrestigeAdvisorStateLabel => {
-  if (!canPrestige) {
-    return 'Too Early';
-  }
-  if (isPrestigeRecommendedResetPoint(highestRealmReached)) {
-    return 'Recommended';
-  }
-  return 'Viable';
 };
 
 const getPurchaseRank = (upgrade: PrestigeUpgradeDef, nextCost: number): number => {
@@ -157,10 +154,18 @@ const buildTopRecommendedPurchase = (): PrestigeAdvisorRecommendedPurchase | nul
 export const getPrestigeAdvisorSurface = (): PrestigeAdvisorSurface => {
   const prestige = usePrestigeStore.getState();
   const game = useGameStore.getState();
-  const potentialGain = Math.max(0, prestige.calculateAPGain());
+  const trialProgressById = useTrialStore.getState().progressByTrialId;
+  const liveTrialIds = extractLiveTrialIds(useContentStore.getState().raw?.trials);
+  const resolvedGateCount = countResolvedSemesterGateTrials({ progressByTrialId: trialProgressById, liveTrialIds });
+  const forecast = calculatePrestigeApForecast(buildPrestigeProgressionSnapshot({
+    currentRealmIndex: game.realm?.index ?? 0,
+    currentSubstage: game.realm?.substage ?? 1,
+    highestRealmReached: prestige.highestRealmReached,
+    resolvedGateCount,
+  }));
+  const potentialGain = Math.max(0, forecast.totalAp);
   const breakdown = prestige.getApBreakdown();
-  const highestRealm = Math.max(prestige.highestRealmReached, game.realm?.index ?? 0);
-  const stateLabel = toStateLabel(prestige.canPrestige(), highestRealm);
+  const stateLabel = resolvePrestigeAdvisorLabel(forecast);
 
   return {
     stateLabel,

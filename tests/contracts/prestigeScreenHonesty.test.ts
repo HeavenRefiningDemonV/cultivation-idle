@@ -21,17 +21,25 @@ test('prestige screen uses advisor vocabulary and reset contract headings', asyn
 
 test('prestige screen removes stale lock messaging and stale local keep/reset arrays', async () => {
   const source = await readSource('src/components/screens/PrestigeScreen.tsx');
+  const advisor = await readSource('src/features/prestige/prestigeAdvisorSurface.ts');
+  const store = await readSource('src/stores/prestigeStore.ts');
 
   assert.equal(source.includes('Reach Foundation Establishment to unlock Reincarnation.'), false);
   assert.equal(source.includes('Reincarnation Sealed'), false);
   assert.equal(source.includes('const keepBenefits ='), false);
   assert.equal(source.includes('const resetCosts ='), false);
+  assert.equal(advisor.includes('RECOMMENDED_AP_THRESHOLD'), false);
+  assert.equal(advisor.includes('Foundation Establishment before beginning Reincarnation'), false);
+  assert.equal(store.includes('timeBonus'), false);
 });
 
 test('prestige surfaces do not frame spirit root as literal carry-forward state', async () => {
   const screen = await readSource('src/components/screens/PrestigeScreen.tsx');
   const ritual = await readSource('src/components/modals/PrestigeRitualModal.tsx');
+  const breakdown = await readSource('src/components/modals/ApBreakdownModal.tsx');
 
   assert.equal(screen.includes('Keep all Ascension Points'), false);
   assert.equal(ritual.includes('Receive a fresh spirit root for the next life'), false);
+  assert.equal(breakdown.includes('Time cultivated'), false);
+  assert.equal(breakdown.includes('Every hour adds potential AP.'), false);
 });
