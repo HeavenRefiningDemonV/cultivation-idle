@@ -29,7 +29,9 @@ export interface SupportEconomyReadModel {
   reserveStatus: SupportReserveStatus;
   eligibleDefeatMeritReward: string;
   expectedMeritAfterThreeEligibleDefeats: string;
+  failSafeThreshold: number;
   failSafeAffordableNow: boolean;
+  failSafeAffordableAfterThreeEligibleDefeats: boolean;
 }
 
 function clampGap(current: string, target: string): string {
@@ -51,6 +53,8 @@ function getCurrentCity(content: ValidatedContent | null | undefined) {
   const unlockedCityIds = useCityStore.getState().unlockedCityIds;
   const fallbackCityId = currentCityId ?? unlockedCityIds[0] ?? content?.cities[0]?.id ?? null;
   const city = fallbackCityId ? content?.cities.find((entry) => entry.id === fallbackCityId) ?? null : null;
+
+
   return {
     cityId: city?.id ?? fallbackCityId ?? null,
     cityIndex: city?.index ?? 0,
@@ -78,7 +82,8 @@ export function buildSupportEconomyReadModelFromState(input: {
   const currentCityIndex = cityState.cityIndex;
   const targets: SupportReserveTargets = getSupportReserveTargetsByCityIndex(currentCityIndex);
   const nextGateTrial = getNextGateTrialForCity(content, currentCityId);
-  const nextGateFailSafeCost = resolveTrialFailSafeConfig(nextGateTrial).cost;
+  const failSafeConfig = resolveTrialFailSafeConfig(nextGateTrial);
+  const nextGateFailSafeCost = failSafeConfig.cost;
   const currentMerit = currencies.merit ?? '0';
   const currentSpiritStones = currencies.spiritStones ?? '0';
   const gateFailurePolicy = getGateFailureMeritPolicyByGateIndex(targets.gateIndex);
@@ -100,6 +105,8 @@ export function buildSupportEconomyReadModelFromState(input: {
     : greaterThanOrEqualTo(currentSpiritStones, spiritIdeal) && meritReserveStatus === 'at_ideal'
       ? 'at_ideal'
       : 'between_minimum_and_ideal';
+  const projectedMeritAfterThreeDefeats = projectMeritAfterEligibleDefeats(currentMerit, targets.gateIndex, 3);
+  const projectedCurrenciesAfterThreeDefeats = { ...currencies, merit: projectedMeritAfterThreeDefeats };
 
   return {
     currentCityId,
@@ -120,7 +127,9 @@ export function buildSupportEconomyReadModelFromState(input: {
     meritReserveStatus,
     reserveStatus,
     eligibleDefeatMeritReward: String(gateFailurePolicy.eligibleDefeatMerit),
-    expectedMeritAfterThreeEligibleDefeats: projectMeritAfterEligibleDefeats(currentMerit, targets.gateIndex, 3),
+    expectedMeritAfterThreeEligibleDefeats: projectedMeritAfterThreeDefeats,
+    failSafeThreshold: failSafeConfig.threshold,
     failSafeAffordableNow: canAffordCost(currencies, nextGateFailSafeCost),
+    failSafeAffordableAfterThreeEligibleDefeats: canAffordCost(projectedCurrenciesAfterThreeDefeats, nextGateFailSafeCost),
   };
 }

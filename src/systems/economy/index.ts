@@ -34,3 +34,5 @@ export * from './moduleRecommendationSummaries.js';
 export * from './economicRecommendationEngine.js';
 export * from './prepPackageFitReadModel.js';
 export * from './prepRecoveryWindowReadModel.js';
+export * from './supportReservePacingReadModel.js';
+export * from './prepVsBypassReadModel.js';

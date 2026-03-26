@@ -1,6 +1,7 @@
 import { getLockedCityPhaseTargetDurations } from './phaseTimingTargets.js';
 import { getAllPrepBudgetRegistryEntries } from '../economy/prepBudgetRegistry.js';
 import type { EconomicGateIndex } from '../economy/economicConstants.js';
+import { getAllSupportBountyClaimExpectations, getAllSupportReserveTargets } from '../economy/supportCurrencyTargets.js';
 
 export type PrepPackageFitCategory =
   | 'directCoreCoverage'
@@ -48,8 +49,47 @@ const RECOVERY_TARGET_MINUTES: Record<EconomicGateIndex, Record<PrepRecoveryScen
   },
 };
 
+const SUPPORT_PACING_TARGETS_BY_GATE = Object.freeze(
+  Object.fromEntries(getAllSupportReserveTargets().map((target) => {
+    const claimBand = getAllSupportBountyClaimExpectations().find((entry) => entry.cityIndex + 1 === target.gateIndex);
+    return [target.gateIndex, {
+      gateIndex: target.gateIndex,
+      expectedClaimBand: { minClaims: claimBand?.minClaims ?? 1, maxClaims: claimBand?.maxClaims ?? 1 },
+      meritFromZero: {
+        lowBandPlusThreeDefeatsMustReachMinimumReserveLow: true,
+        highBandPlusThreeDefeatsMustReachTargetReserveAndFailSafeCost: true,
+      },
+      spiritStoneFromZero: {
+        highBandMustReachMinimumReserve: true,
+        idealReserveApproachRatioTarget: 0.8,
+      },
+      policyFocus: {
+        minimumReserve: true,
+        idealReserveProgress: true,
+        failSafeAffordability: true,
+      },
+    }];
+  })) as Record<EconomicGateIndex, {
+    gateIndex: EconomicGateIndex;
+    expectedClaimBand: { minClaims: number; maxClaims: number };
+    meritFromZero: {
+      lowBandPlusThreeDefeatsMustReachMinimumReserveLow: boolean;
+      highBandPlusThreeDefeatsMustReachTargetReserveAndFailSafeCost: boolean;
+    };
+    spiritStoneFromZero: {
+      highBandMustReachMinimumReserve: boolean;
+      idealReserveApproachRatioTarget: number;
+    };
+    policyFocus: {
+      minimumReserve: boolean;
+      idealReserveProgress: boolean;
+      failSafeAffordability: boolean;
+    };
+  }>,
+);
+
 export const PREP_ECONOMY_TARGETS = Object.freeze({
-  ownerPacket: '6.4a_6.4b',
+  ownerPacket: '6.4a_6.4b_6.4c_6.4d',
   packageFitCategories: [
     'directCoreCoverage',
     'supplementLaneCoverage',
@@ -66,6 +106,17 @@ export const PREP_ECONOMY_TARGETS = Object.freeze({
     forbidPostGateOnlySources: true,
     backgroundExpectationsMustMapToVisibleRoutes: true,
   },
+  prepVsBypassRatioBands: {
+    minimumPrepToFailSafeGoldRatio: { min: 0.15, max: 0.25 },
+    recommendedPrepToFailSafeGoldRatio: { min: 0.35, max: 0.55 },
+  },
+  supportReservePacingTargetsByGate: SUPPORT_PACING_TARGETS_BY_GATE,
+  emergencyBypassPolicy: {
+    bypassIsEmergencyValve: true,
+    honestPrepMustRemainCheaperThanBypassGold: true,
+    reserveGapRoutesToBountiesFirst: true,
+    isolatedRecoverableDeficitsShouldNotPreferBypass: true,
+  },
   probeAssumptions: {
     apothecaryBuyMinutesPerUnit: 0.45,
     apothecaryBrewMinutesPerUnit: 1.2,
@@ -77,6 +128,7 @@ export const PREP_ECONOMY_TARGETS = Object.freeze({
   validation: {
     recoveryValidationToleranceMinutes: 6,
     recoveryValidationSlackRatio: 0.2,
+    supportReserveProgressToleranceRatio: 0.08,
   },
 });
 

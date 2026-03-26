@@ -49,4 +49,6 @@ test('support economy read model resolves current reserves against the next gate
   assert.equal(model.expectedMeritAfterThreeEligibleDefeats, '24');
   assert.equal(model.reserveStatus, 'below_minimum');
   assert.equal(model.nextGateFailSafeCost?.merit, '25');
+  assert.equal(model.failSafeThreshold, 3);
+  assert.equal(model.failSafeAffordableAfterThreeEligibleDefeats, false);
 });

@@ -69,6 +69,8 @@ import {
   resolveMissingMaterialRoutes,
   getAllProblemDestinationPolicies,
   buildAllPrepPackageFitReports,
+  buildAllSupportReservePacingReports,
+  buildAllPrepVsBypassEconomyReports,
 } from '../systems/economy/index.js';
 import { SEMESTER_SLICE_CONTRACT } from '../systems/progression/contract/semesterSlice.js';
 import { getPrepEconomyTargets } from '../systems/balance/prepEconomyTargets.js';
@@ -1263,6 +1265,22 @@ function validateEconomicRecommendationRuntimeTruth(options: {
   const prepFit = buildAllPrepPackageFitReports(content);
   if (prepFit.some((entry) => !entry.honest)) {
     addErr(`prep package fit audit found non-honest packages: ${prepFit.filter((entry) => !entry.honest).map((entry) => entry.transitionId).join(', ')}`);
+  }
+
+  const bypassRatios = buildAllPrepVsBypassEconomyReports(content);
+  if (bypassRatios.some((entry) => !entry.minimumRatioWithinBand || !entry.recommendedRatioWithinBand || !entry.emergencyOnly)) {
+    addErr('prep-vs-bypass economics drifted outside the locked ratio bands or emergency-only policy');
+  }
+
+  const reservePacing = buildAllSupportReservePacingReports(content, { merit: 0, spiritStones: 0 });
+  if (reservePacing.some((entry) => entry.failSafeThreshold !== 3)) {
+    addErr('fail-safe threshold must remain locked at 3 eligible defeats');
+  }
+  if (reservePacing.some((entry) => !entry.verdicts.reserveGapRoutesToBountiesFirst)) {
+    addErr('support reserve-gap routing must keep Bounties as the primary destination');
+  }
+  if (reservePacing.some((entry) => entry.blockers.length > 0)) {
+    addErr(`support reserve pacing blockers detected: ${reservePacing.filter((entry) => entry.blockers.length > 0).map((entry) => `gate_${entry.gateIndex}`).join(', ')}`);
   }
 
   const phaseSnapshot = buildEconomicPhaseSnapshotFromState({

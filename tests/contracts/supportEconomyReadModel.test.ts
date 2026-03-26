@@ -31,7 +31,9 @@ test('support economy read model resolves reserve targets, safe band, and fail-s
   assert.equal(model.spiritStoneMinimumGap, '1');
   assert.equal(model.meritReserveStatus, 'between_minimum_and_ideal');
   assert.equal(model.expectedMeritAfterThreeEligibleDefeats, '16');
+  assert.equal(model.failSafeThreshold, 3);
   assert.equal(model.failSafeAffordableNow, false);
+  assert.equal(model.failSafeAffordableAfterThreeEligibleDefeats, false);
 });
 
 test('support economy read model reports below-minimum and at-ideal merit states honestly', async () => {
@@ -53,4 +55,5 @@ test('support economy read model reports below-minimum and at-ideal merit states
   assert.equal(ideal.meritReserveStatus, 'at_ideal');
   assert.equal(ideal.reserveStatus, 'at_ideal');
   assert.equal(ideal.expectedMeritAfterThreeEligibleDefeats, '61');
+  assert.equal(ideal.failSafeThreshold, 3);
 });
