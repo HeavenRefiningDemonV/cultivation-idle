@@ -15,3 +15,5 @@ export {
   isPrestigeRecommendedResetPoint,
   SEMESTER_BALANCE_TARGETS,
 } from './semesterBalanceTargets.js';
+
+export * from './gateCombatTargets.js';

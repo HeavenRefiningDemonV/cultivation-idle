@@ -726,10 +726,40 @@ export interface EnemyDefinition {
   isBoss?: boolean; // Is this a boss enemy
 }
 
+export type EnemyMechanicType =
+  | "shield"
+  | "aura"
+  | "enrage"
+  | "shieldPhase"
+  | "ultimate"
+  | "damageReduction"
+  | "shatterWindow"
+  | "soulDrain"
+  | "burstWindow"
+  | "auraDoT";
+
 export interface EnemyMechanic {
-  type: "shield" | "aura" | "enrage";
-  trigger: { hpPercent: number };
-  effect: { shieldAmount?: number; auraDamagePerSec?: number };
+  type: EnemyMechanicType;
+  trigger: {
+    hpPercent?: number;
+    intervalSec?: number;
+    warnSec?: number;
+    everySec?: number;
+    durationSec?: number;
+    tickSec?: number;
+    startSec?: number;
+  };
+  effect: {
+    shieldAmount?: number;
+    auraDamagePerSec?: number;
+    shieldAmountPct?: number;
+    damageMult?: number;
+    pct?: number;
+    defReducedPct?: number;
+    maxQiPctPerTick?: number;
+    takesMoreDamagePct?: number;
+    dotMaxHpPctPerTick?: number;
+  };
   description?: string;
 }
 

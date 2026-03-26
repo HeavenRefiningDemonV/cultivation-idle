@@ -1,6 +1,7 @@
 import { D } from '../utils/numbers.js';
 import { useContentStore } from '../stores/contentStore.js';
 import type { EnemyDefinition, EnemyMechanic } from '../types/index.js';
+import { getTrialEncounterByTrialId } from './combat/trialEncounterCatalog.js';
 
 interface PlayerPowerSnapshot {
   atk: string;
@@ -15,6 +16,7 @@ interface CreateEnemyOptions {
   difficulty?: 'outskirts' | 'trial' | 'ruins' | 'generic';
   roomIndex?: number;
   roomCount?: number;
+  trialId?: string;
 }
 
 interface EnemyFactoryResult {
@@ -45,9 +47,56 @@ function clampToMinimum(value: string, min: number): string {
 }
 
 export function createEnemy(templateId: string, opts: CreateEnemyOptions): EnemyFactoryResult {
-  const { cityIndex, isBoss, playerPowerSnapshot, difficulty = 'generic', roomIndex = 0, roomCount = 1 } = opts;
+  const { cityIndex, isBoss, playerPowerSnapshot, difficulty = 'generic', roomIndex = 0, roomCount = 1, trialId } = opts;
   const { maps } = useContentStore.getState();
   const template = maps.enemiesById[templateId];
+
+
+  const trialEncounter = difficulty === 'trial' && trialId ? getTrialEncounterByTrialId(trialId) : null;
+  if (trialEncounter) {
+    const name = template?.name ?? templateId;
+    const mechanics = Array.isArray(template?.mechanics)
+      ? (template!.mechanics as unknown as EnemyMechanic[])
+      : undefined;
+
+    const enemy: EnemyDefinition & { mechanics?: EnemyMechanic[] } = {
+      id: templateId,
+      name,
+      level: Math.max(1, cityIndex + 1),
+      zone: 'trial',
+      hp: clampToMinimum(trialEncounter.hp, 1),
+      atk: clampToMinimum(trialEncounter.atk, 1),
+      def: clampToMinimum(trialEncounter.def, 0),
+      crit: trialEncounter.crit,
+      critDmg: 170,
+      dodge: trialEncounter.dodge,
+      speed: 1.0,
+      goldReward: '0',
+      expReward: '0',
+      lootTable: [],
+      isBoss,
+      mechanics,
+    };
+
+    return {
+      id: enemy.id,
+      name: enemy.name,
+      level: enemy.level,
+      hp: enemy.hp,
+      maxHp: enemy.hp,
+      atk: enemy.atk,
+      def: enemy.def,
+      speed: enemy.speed,
+      critChance: enemy.crit,
+      dodgeChance: enemy.dodge,
+      luck: 0,
+      exp: enemy.expReward,
+      goldDrop: enemy.goldReward,
+      lootTable: enemy.lootTable ?? [],
+      mechanics,
+      isBoss,
+    };
+  }
 
   const playerAtk = D(playerPowerSnapshot.atk || '0');
   const playerMaxHp = D(playerPowerSnapshot.maxHp || '0');

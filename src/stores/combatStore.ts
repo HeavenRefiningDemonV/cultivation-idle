@@ -57,6 +57,7 @@ function stampCombatEvent<TType extends CombatEvent['type']>(
 import { COMBAT_ACTIVITY_TYPES } from '../types/activity.js';
 import { COMPREHENSION_EVENT_BONUSES } from '../content/tuning/cultivationTuning.js';
 import { buildTrialDefeatSummary } from '../systems/combat/trialModel.js';
+import { normalizeTrialBossMechanics } from '../systems/combat/trialBossMechanicCatalog.js';
 import { applyAiProfileBias, getTechniqueAiTags } from '../systems/combat/aiProfiles.js';
 import { useUIStore } from './uiStore.js';
 import {
@@ -889,6 +890,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         difficulty,
         roomIndex,
         roomCount,
+        trialId: context?.type === 'trial' ? context.trialId : undefined,
       });
 
       const enemy: EnemyDefinition & { mechanics?: EnemyMechanic[] } = {
@@ -906,9 +908,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
         goldReward: enemyScaled.goldDrop ?? '0',
         expReward: enemyScaled.exp ?? '0',
         isBoss: enemyScaled.isBoss,
-        mechanics: enemyScaled.mechanics ?? (Array.isArray(template?.mechanics)
-          ? (template!.mechanics as unknown as EnemyMechanic[])
-          : []),
+        mechanics: context?.type === 'trial'
+          ? normalizeTrialBossMechanics(enemyScaled.mechanics ?? template?.mechanics)
+          : (enemyScaled.mechanics ?? (Array.isArray(template?.mechanics)
+            ? (template!.mechanics as unknown as EnemyMechanic[])
+            : [])),
       };
 
       // Initialize boss mechanics if this is a boss
@@ -1883,11 +1887,11 @@ export const useCombatStore = create<ExtendedCombatState>()(
         ? currentEnemyHP.dividedBy(currentEnemyMaxHP).times(100).toNumber()
         : 0;
 
-      const auraMechanic = state.enemyMechanics.find((mechanic) => mechanic.type === 'aura');
-      if (auraMechanic && !state.activeAura && hpPercentRemaining <= auraMechanic.trigger.hpPercent) {
+      const auraMechanic = state.enemyMechanics.find((mechanic) => mechanic.type === 'aura' || mechanic.type === 'auraDoT');
+      if (auraMechanic && !state.activeAura && hpPercentRemaining <= (auraMechanic.trigger.hpPercent ?? 100)) {
         set((state) => {
           state.activeAura = {
-            damagePerSec: auraMechanic.effect.auraDamagePerSec || 0,
+            damagePerSec: auraMechanic.effect.auraDamagePerSec ?? (auraMechanic.effect.dotMaxHpPctPerTick ? D(state.playerMaxHP).times(auraMechanic.effect.dotMaxHpPctPerTick).toNumber() : 0),
             description: auraMechanic.description,
           };
         });

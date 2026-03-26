@@ -64,8 +64,8 @@ export function buildTrialDefeatSummary(input: BuildSummaryInput): TrialAttemptS
   const spikeRatio = effectiveHp > 0 ? maxHit.amount / effectiveHp : 0;
 
   const suggestions: string[] = [];
-  const auraPressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'aura'));
-  const shieldPhaseSeen = Boolean(enemyMechanics?.some((m) => m.type === 'shield'));
+  const auraPressureSeen = Boolean(enemyMechanics?.some((m) => m.type === 'aura' || m.type === 'auraDoT' || m.type === 'soulDrain'));
+  const shieldPhaseSeen = Boolean(enemyMechanics?.some((m) => m.type === 'shield' || m.type === 'shieldPhase' || m.type === 'damageReduction'));
   const rollingPlayerDps = Number.isFinite(dpsMetrics.playerDps)
     ? clampNumber(dpsMetrics.playerDps, 0, Number.POSITIVE_INFINITY)
     : 0;
