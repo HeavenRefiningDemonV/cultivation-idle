@@ -1,4 +1,5 @@
 import { LIVE_REALM_PROJECTION } from '../systems/progression/runtime/index.js';
+import { deriveRealmBaseQiPerSecond } from '../systems/balance/index.js';
 
 type RealmDefinition = {
   index: number;
@@ -36,6 +37,12 @@ type FocusModeModifiers = {
 };
 
 /**
+ * Breakthrough requirements
+ * Multiplier for Qi needed to advance substages
+ */
+export const BREAKTHROUGH_QI_MULTIPLIER = 2.5;
+
+/**
  * Realm definitions for cultivation progression
  * Each realm has substages (typically 9 for early realms, 3-6 for later ones)
  */
@@ -46,7 +53,14 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: LIVE_REALM_PROJECTION[0].majorRealm,
     substages: 9,
     qiRequirement: '100',
-    qiPerSecond: '1',
+    qiPerSecond: deriveRealmBaseQiPerSecond({
+      realmIndex: LIVE_REALM_PROJECTION[0].index,
+      realmId: LIVE_REALM_PROJECTION[0].id,
+      qiRequirement: '100',
+      substages: 9,
+      breakthroughQiMultiplier: BREAKTHROUGH_QI_MULTIPLIER,
+      substageQiMultiplierStep: 0.2,
+    }),
     baseStats: { hp: '100', atk: '10', def: '5', crit: 5, critDmg: 150, dodge: 5, regen: '1', speed: 1.0 },
   },
   {
@@ -55,7 +69,14 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: LIVE_REALM_PROJECTION[1].majorRealm,
     substages: 9,
     qiRequirement: '1000',
-    qiPerSecond: '10000',
+    qiPerSecond: deriveRealmBaseQiPerSecond({
+      realmIndex: LIVE_REALM_PROJECTION[1].index,
+      realmId: LIVE_REALM_PROJECTION[1].id,
+      qiRequirement: '1000',
+      substages: 9,
+      breakthroughQiMultiplier: BREAKTHROUGH_QI_MULTIPLIER,
+      substageQiMultiplierStep: 0.2,
+    }),
     baseStats: { hp: '500', atk: '50', def: '25', crit: 8, critDmg: 160, dodge: 8, regen: '5', speed: 1.1 },
   },
   {
@@ -64,7 +85,14 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: LIVE_REALM_PROJECTION[2].majorRealm,
     substages: 9,
     qiRequirement: '10000',
-    qiPerSecond: '100000',
+    qiPerSecond: deriveRealmBaseQiPerSecond({
+      realmIndex: LIVE_REALM_PROJECTION[2].index,
+      realmId: LIVE_REALM_PROJECTION[2].id,
+      qiRequirement: '10000',
+      substages: 9,
+      breakthroughQiMultiplier: BREAKTHROUGH_QI_MULTIPLIER,
+      substageQiMultiplierStep: 0.2,
+    }),
     baseStats: { hp: '2500', atk: '250', def: '125', crit: 12, critDmg: 175, dodge: 12, regen: '25', speed: 1.2 },
   },
   {
@@ -73,7 +101,14 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: LIVE_REALM_PROJECTION[3].majorRealm,
     substages: 6,
     qiRequirement: '100000',
-    qiPerSecond: '1000000',
+    qiPerSecond: deriveRealmBaseQiPerSecond({
+      realmIndex: LIVE_REALM_PROJECTION[3].index,
+      realmId: LIVE_REALM_PROJECTION[3].id,
+      qiRequirement: '100000',
+      substages: 6,
+      breakthroughQiMultiplier: BREAKTHROUGH_QI_MULTIPLIER,
+      substageQiMultiplierStep: 0.2,
+    }),
     baseStats: { hp: '12500', atk: '1250', def: '625', crit: 15, critDmg: 190, dodge: 15, regen: '125', speed: 1.3 },
   },
   {
@@ -82,7 +117,14 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: LIVE_REALM_PROJECTION[4].majorRealm,
     substages: 6,
     qiRequirement: '1000000',
-    qiPerSecond: '10000000',
+    qiPerSecond: deriveRealmBaseQiPerSecond({
+      realmIndex: LIVE_REALM_PROJECTION[4].index,
+      realmId: LIVE_REALM_PROJECTION[4].id,
+      qiRequirement: '1000000',
+      substages: 6,
+      breakthroughQiMultiplier: BREAKTHROUGH_QI_MULTIPLIER,
+      substageQiMultiplierStep: 0.2,
+    }),
     baseStats: { hp: '62500', atk: '6250', def: '3125', crit: 18, critDmg: 200, dodge: 18, regen: '625', speed: 1.4 },
   },
   {
@@ -91,7 +133,14 @@ export const REALMS: RealmDefinition[] = [
     majorRealm: LIVE_REALM_PROJECTION[5].majorRealm,
     substages: 6,
     qiRequirement: '10000000',
-    qiPerSecond: '100000000',
+    qiPerSecond: deriveRealmBaseQiPerSecond({
+      realmIndex: LIVE_REALM_PROJECTION[5].index,
+      realmId: LIVE_REALM_PROJECTION[5].id,
+      qiRequirement: '10000000',
+      substages: 6,
+      breakthroughQiMultiplier: BREAKTHROUGH_QI_MULTIPLIER,
+      substageQiMultiplierStep: 0.2,
+    }),
     baseStats: { hp: '312500', atk: '31250', def: '15625', crit: 22, critDmg: 215, dodge: 22, regen: '3125', speed: 1.5 },
   },
 ];
@@ -171,12 +220,6 @@ export const UPGRADE_COSTS = {
     effectPerTier: 0.12,     // +12% HP per tier
   },
 };
-
-/**
- * Breakthrough requirements
- * Multiplier for Qi needed to advance substages
- */
-export const BREAKTHROUGH_QI_MULTIPLIER = 2.5;
 
 /**
  * Initial game state values
