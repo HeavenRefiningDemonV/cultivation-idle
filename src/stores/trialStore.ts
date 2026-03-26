@@ -180,13 +180,14 @@ export const useTrialStore = create<TrialState>()(
         const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
         const transition = getTransitionByTrialId(contract, trialId);
         if (transition) {
+          const gateIndex = (contract.majorRealms[transition.fromRealmId]?.index ?? 0) + 1;
           progressionTimingTracker.emitGateResolved({
             runStartTime: progressionTimingTracker.getActiveRunStartTime(),
             timestamp,
             trialId,
             fromRealmId: transition.fromRealmId,
             toRealmId: transition.toRealmId,
-            gateIndex: transition.fromRealmId === 'qi_condensation' ? 1 : 0,
+            gateIndex,
             cityId: transition.cityId ?? null,
             resolution: 'cleared',
           });
@@ -216,13 +217,14 @@ export const useTrialStore = create<TrialState>()(
         const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
         const transition = getTransitionByTrialId(contract, trialId);
         if (transition) {
+          const gateIndex = (contract.majorRealms[transition.fromRealmId]?.index ?? 0) + 1;
           progressionTimingTracker.emitGateResolved({
             runStartTime: progressionTimingTracker.getActiveRunStartTime(),
             timestamp: bypassedAt,
             trialId,
             fromRealmId: transition.fromRealmId,
             toRealmId: transition.toRealmId,
-            gateIndex: transition.fromRealmId === 'qi_condensation' ? 1 : 0,
+            gateIndex,
             cityId: transition.cityId ?? null,
             resolution: 'bypassed',
           });

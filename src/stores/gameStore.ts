@@ -38,8 +38,7 @@ import { performPrestigeReset as performCentralPrestigeReset } from '../services
 import { useTrialStore } from './trialStore.js';
 import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
-import { getProgressionContract, getTransitionByFromRealm } from '../systems/progression/contract/progressionContract.js';
-import { GATE_1_TRANSITION } from '../systems/balance/phaseTimingTargets.js';
+import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -186,15 +185,14 @@ export const useGameStore = create<GameState>()(
       if (content) {
         try {
           const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
-          const transition = getTransitionByFromRealm(contract, GATE_1_TRANSITION.fromRealmId);
-          if (transition) {
+          for (const transition of contract.gateTransitions) {
             const trial = useContentStore.getState().maps.trialsById[transition.trialId];
             const trialProgress = useTrialStore.getState().getProgress(transition.trialId);
             const requiredItemSatisfied = trial?.requiredItemId
               ? useInventoryStore.getState().getItemCount(trial.requiredItemId) > 0
               : true;
 
-            progressionTimingTracker.trackFirstGateAvailability({
+            progressionTimingTracker.trackGateAvailability({
               runStartTime: get().runStartTime,
               timestamp: tickTimestamp,
               content,
@@ -206,7 +204,7 @@ export const useGameStore = create<GameState>()(
               requiredItemSatisfied,
               fromRealmId: transition.fromRealmId,
               toRealmId: transition.toRealmId,
-              gateIndex: 1,
+              gateIndex: (contract.majorRealms[transition.fromRealmId]?.index ?? 0) + 1,
               cityId: transition.cityId ?? null,
             });
           }

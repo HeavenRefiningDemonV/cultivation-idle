@@ -1,15 +1,31 @@
 import { REALMS } from '../../../src/constants/index.js';
 import { GameEvents, type GameEvent } from '../../../src/services/events/GameEvents.js';
+import {
+  buildPhaseTimingReport,
+  getCumulativeMajorEntryTargetSeconds,
+  GATE_1_TRANSITION,
+  PROGRESSION_MILESTONE_IDS,
+} from '../../../src/systems/balance/phaseTimingTargets.js';
 import { getProgressionContract, getTransitionByFromRealm } from '../../../src/systems/progression/contract/progressionContract.js';
+import type { MajorRealmId } from '../../../src/systems/progression/contract/contractTypes.js';
 import { adaptProgressionAuthoredContent } from '../../../src/systems/progression/contract/contentAdapter.js';
+import { getLiveRealmByIndex } from '../../../src/systems/progression/runtime/liveRealmProjection.js';
 import { getTrialLifecycleSnapshot } from '../../../src/systems/progression/runtime/trialLifecycle.js';
+import { useCityStore } from '../../../src/stores/cityStore.js';
 import { useContentStore } from '../../../src/stores/contentStore.js';
 import { useGameStore } from '../../../src/stores/gameStore.js';
 import { useInventoryStore } from '../../../src/stores/inventoryStore.js';
 import { useTrialStore } from '../../../src/stores/trialStore.js';
-import { GATE_1_TRANSITION, PROGRESSION_MILESTONE_IDS } from '../../../src/systems/balance/phaseTimingTargets.js';
 import { createTimingProbeScenario } from './createTimingProbeScenario.js';
 import { progressionTimingTracker } from '../../../src/services/diagnostics/progressionTimingTracker.js';
+
+const MAJOR_ENTRY_MILESTONE_BY_REALM_INDEX: Record<number, string> = {
+  1: PROGRESSION_MILESTONE_IDS.FOUNDATION_ENTRY,
+  2: PROGRESSION_MILESTONE_IDS.CORE_FORMATION_ENTRY,
+  3: PROGRESSION_MILESTONE_IDS.NASCENT_SOUL_ENTRY,
+  4: PROGRESSION_MILESTONE_IDS.SOUL_FORMATION_ENTRY,
+  5: PROGRESSION_MILESTONE_IDS.SPIRIT_SEVERING_ENTRY,
+};
 
 export type PhaseTimingProbeResult = {
   representativePath: string;
@@ -17,8 +33,16 @@ export type PhaseTimingProbeResult = {
   lifeStartMs: number;
   gate1AvailableMs: number | null;
   foundationEntryMs: number | null;
-  orderedMilestones: string[];
+  cumulativeMilestoneSeconds: Partial<Record<string, number>>;
+  milestoneOrder: string[];
   progressionEvents: GameEvent[];
+  finalCityId: string | null;
+  finalRealmId: string;
+  phaseTimingReport: ReturnType<typeof buildPhaseTimingReport>;
+};
+
+const getRealmIdFromIndex = (realmIndex: number): string => {
+  return getLiveRealmByIndex(realmIndex).id;
 };
 
 export async function runPhaseTimingProbe(): Promise<PhaseTimingProbeResult> {
@@ -29,95 +53,134 @@ export async function runPhaseTimingProbe(): Promise<PhaseTimingProbeResult> {
   }
 
   const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
-  const gate1Transition = getTransitionByFromRealm(contract, GATE_1_TRANSITION.fromRealmId);
-  if (!gate1Transition) {
-    throw new Error('Unable to resolve first gate transition for timing probe.');
-  }
 
-  const gate1Trial = useContentStore.getState().maps.trialsById[gate1Transition.trialId];
-  if (!gate1Trial) {
-    throw new Error('Unable to resolve first gate trial definition for timing probe.');
-  }
-
-  useInventoryStore.getState().addItem(gate1Transition.gateItemId, 3);
-  if (gate1Trial.requiredItemId) {
-    useInventoryStore.getState().addItem(gate1Trial.requiredItemId, 3);
+  for (const transition of contract.gateTransitions) {
+    useInventoryStore.getState().addItem(transition.gateItemId, 3);
+    const trial = useContentStore.getState().maps.trialsById[transition.trialId];
+    if (trial?.requiredItemId) {
+      useInventoryStore.getState().addItem(trial.requiredItemId, 3);
+    }
   }
 
   const progressionEvents: GameEvent[] = [];
-  progressionTimingTracker.resetForRun(useGameStore.getState().runStartTime);
+  const runStartTime = useGameStore.getState().runStartTime;
+  progressionTimingTracker.resetForRun(runStartTime);
   const onAny = (event: GameEvent) => {
     if (event.type.startsWith('progression/')) {
       progressionEvents.push(event);
     }
   };
   GameEvents.onAny(onAny);
-  progressionTimingTracker.emitLifeStarted(useGameStore.getState().runStartTime);
+  progressionTimingTracker.emitLifeStarted(runStartTime);
 
-  const stepMs = 5_000;
-  const maxMs = 3 * 60 * 60 * 1000;
+  const stepMs = 1_000;
+  const maxMs = 15 * 60 * 60 * 1000;
   let elapsedMs = 0;
   let gate1AvailableMs: number | null = null;
-  let gate1Resolved = false;
   let foundationEntryMs: number | null = null;
-  const orderedMilestones: string[] = [PROGRESSION_MILESTONE_IDS.LIFE_START];
+
+  const cumulativeMilestoneSeconds: Partial<Record<string, number>> = {
+    [PROGRESSION_MILESTONE_IDS.LIFE_START]: 0,
+  };
+  const milestoneOrder: string[] = [PROGRESSION_MILESTONE_IDS.LIFE_START];
+  const seenGateAvailability = new Set<string>();
+  const resolvedGates = new Set<string>();
+  let previousRealmIndex = useGameStore.getState().realm.index;
 
   try {
-    while (elapsedMs <= maxMs && foundationEntryMs === null) {
+    while (elapsedMs <= maxMs && useGameStore.getState().realm.index < 5) {
       useGameStore.getState().tick(stepMs);
       elapsedMs += stepMs;
 
       const game = useGameStore.getState();
-      const trialProgress = useTrialStore.getState().getProgress(gate1Trial.id);
-      const requiredItemSatisfied = gate1Trial.requiredItemId
-        ? useInventoryStore.getState().getItemCount(gate1Trial.requiredItemId) > 0
-        : true;
-      const lifecycle = getTrialLifecycleSnapshot({
-        content,
-        trial: gate1Trial,
-        progress: trialProgress,
-        realm: game.realm,
-        qi: game.qi,
-        breakthroughRequirement: game.getBreakthroughRequirement(),
-        requiredItemSatisfied,
-      });
+      const fromRealmId = getRealmIdFromIndex(game.realm.index);
+      const activeTransition = getTransitionByFromRealm(contract, fromRealmId as MajorRealmId);
 
-      if (gate1AvailableMs === null && lifecycle.canStart) {
-        gate1AvailableMs = elapsedMs;
-        orderedMilestones.push(PROGRESSION_MILESTONE_IDS.GATE_1_AVAILABLE);
-      }
+      if (activeTransition) {
+        const trial = useContentStore.getState().maps.trialsById[activeTransition.trialId];
+        const trialProgress = useTrialStore.getState().getProgress(activeTransition.trialId);
+        const requiredItemSatisfied = trial?.requiredItemId
+          ? useInventoryStore.getState().getItemCount(trial.requiredItemId) > 0
+          : true;
+        const lifecycle = getTrialLifecycleSnapshot({
+          content,
+          trial,
+          progress: trialProgress,
+          realm: game.realm,
+          qi: game.qi,
+          breakthroughRequirement: game.getBreakthroughRequirement(),
+          requiredItemSatisfied,
+        });
 
-      if (!gate1Resolved && gate1AvailableMs !== null) {
-        useTrialStore.getState().markCleared(gate1Trial.id);
-        gate1Resolved = true;
-        orderedMilestones.push('gate_1_resolved');
+        if (lifecycle.canStart && !seenGateAvailability.has(activeTransition.trialId)) {
+          seenGateAvailability.add(activeTransition.trialId);
+          milestoneOrder.push(`gate_available:${activeTransition.toRealmId}`);
+          cumulativeMilestoneSeconds[`gate_available:${activeTransition.toRealmId}`] = elapsedMs / 1000;
+          if (activeTransition.fromRealmId === GATE_1_TRANSITION.fromRealmId) {
+            gate1AvailableMs = elapsedMs;
+          }
+        }
+
+        if (lifecycle.canStart && !resolvedGates.has(activeTransition.trialId)) {
+          useTrialStore.getState().markCleared(activeTransition.trialId);
+          resolvedGates.add(activeTransition.trialId);
+          milestoneOrder.push(`gate_resolved:${activeTransition.toRealmId}`);
+          cumulativeMilestoneSeconds[`gate_resolved:${activeTransition.toRealmId}`] = elapsedMs / 1000;
+        }
       }
 
       const currentRealm = REALMS[game.realm.index] ?? REALMS[0];
       const isMajorBreakthrough = game.realm.substage >= currentRealm.substages;
       const qiReady = Number(game.qi) >= Number(game.getBreakthroughRequirement());
       if (qiReady) {
-        if (!isMajorBreakthrough || gate1Resolved) {
+        if (!isMajorBreakthrough || (activeTransition ? resolvedGates.has(activeTransition.trialId) : true)) {
           useGameStore.getState().breakthrough();
         }
       }
 
-      if (useGameStore.getState().realm.index >= 1) {
-        foundationEntryMs = elapsedMs;
-        orderedMilestones.push(PROGRESSION_MILESTONE_IDS.FOUNDATION_ENTRY);
+      const nextRealmIndex = useGameStore.getState().realm.index;
+      if (nextRealmIndex > previousRealmIndex) {
+        const milestoneId = MAJOR_ENTRY_MILESTONE_BY_REALM_INDEX[nextRealmIndex];
+        if (milestoneId && cumulativeMilestoneSeconds[milestoneId] === undefined) {
+          cumulativeMilestoneSeconds[milestoneId] = elapsedMs / 1000;
+          milestoneOrder.push(milestoneId);
+          if (milestoneId === PROGRESSION_MILESTONE_IDS.FOUNDATION_ENTRY) {
+            foundationEntryMs = elapsedMs;
+          }
+          if (milestoneId === PROGRESSION_MILESTONE_IDS.SPIRIT_SEVERING_ENTRY) {
+            cumulativeMilestoneSeconds[PROGRESSION_MILESTONE_IDS.CONTENT_CAP_REACHED] = elapsedMs / 1000;
+          }
+        }
+        previousRealmIndex = nextRealmIndex;
       }
     }
   } finally {
     GameEvents.offAny(onAny);
   }
 
+  const requiredMilestones = getCumulativeMajorEntryTargetSeconds().map((entry) => entry.milestoneId);
+  for (const milestoneId of requiredMilestones) {
+    if (typeof cumulativeMilestoneSeconds[milestoneId] !== 'number') {
+      throw new Error(`Timing probe ended without milestone: ${milestoneId}`);
+    }
+  }
+
+  const phaseTimingReport = buildPhaseTimingReport({
+    milestoneOrder,
+    cumulativeMilestoneSeconds,
+  });
+
   return {
     representativePath: scenario.representativePath,
     representativePathQiMultiplier: scenario.representativePathQiMultiplier,
-    lifeStartMs: useGameStore.getState().runStartTime,
+    lifeStartMs: runStartTime,
     gate1AvailableMs,
     foundationEntryMs,
-    orderedMilestones,
+    cumulativeMilestoneSeconds,
+    milestoneOrder,
     progressionEvents,
+    finalCityId: useCityStore.getState().currentCityId,
+    finalRealmId: getRealmIdFromIndex(useGameStore.getState().realm.index),
+    phaseTimingReport,
   };
 }

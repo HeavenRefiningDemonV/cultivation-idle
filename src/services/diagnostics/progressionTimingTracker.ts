@@ -66,6 +66,28 @@ export const progressionTimingTracker = {
     gateIndex: number;
     cityId: string | null;
   }) {
+    return this.trackGateAvailability({
+      ...input,
+      milestoneId: PROGRESSION_MILESTONE_IDS.GATE_1_AVAILABLE,
+    });
+  },
+
+  trackGateAvailability(input: {
+    runStartTime: number;
+    timestamp: number;
+    content: ValidatedContent | null | undefined;
+    trial: TrialDef | null | undefined;
+    trialProgress: TrialProgress | null | undefined;
+    realm: Realm;
+    qi: string;
+    breakthroughRequirement: string;
+    requiredItemSatisfied: boolean;
+    fromRealmId: string;
+    toRealmId: string;
+    gateIndex: number;
+    cityId: string | null;
+    milestoneId?: string;
+  }) {
     // Gate availability is canonical lifecycle canStart from trialLifecycle.
     const lifecycle = getTrialLifecycleSnapshot({
       content: input.content,
@@ -82,7 +104,8 @@ export const progressionTimingTracker = {
       return false;
     }
 
-    return emitMilestoneOnce(input.runStartTime, PROGRESSION_MILESTONE_IDS.GATE_1_AVAILABLE, () => {
+    const milestoneId = input.milestoneId ?? `gate_available:${trial.id}`;
+    return emitMilestoneOnce(input.runStartTime, milestoneId, () => {
       GameEvents.emit({
         type: 'progression/gate_available',
         payload: {
