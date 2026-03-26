@@ -20,6 +20,7 @@ export function NotificationToasts() {
     || state.showTechniqueLearnedModal
     || state.showWorldBuildingModal
     || state.showCurrentChapterExhaustedModal
+    || state.showLifeSummaryModal
     || state.combatPresentation.mode !== 'hidden',
   );
 

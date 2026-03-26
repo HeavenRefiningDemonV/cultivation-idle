@@ -25,6 +25,7 @@ import { useGameStore } from '../stores/gameStore.js';
 import { useHeartLawStore } from '../stores/heartLawStore.js';
 import { usePrestigeStore } from '../stores/prestigeStore.js';
 import { CurrentChapterExhaustedModal } from './modals/CurrentChapterExhaustedModal.js';
+import { LifeSummaryModal } from './modals/LifeSummaryModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
 import './GameLayout.scss';
@@ -71,6 +72,7 @@ export function GameLayout() {
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const showCurrentChapterExhaustedModal = useUIStore((state) => state.showCurrentChapterExhaustedModal);
+  const showLifeSummaryModal = useUIStore((state) => state.showLifeSummaryModal);
   const currentChapterExhaustedAcknowledgedThisLife = useUIStore((state) => state.currentChapterExhaustedAcknowledgedThisLife);
   const openCurrentChapterExhaustedModal = useUIStore((state) => state.openCurrentChapterExhaustedModal);
   const clearCurrentChapterExhaustedAcknowledgement = useUIStore((state) => state.clearCurrentChapterExhaustedAcknowledgement);
@@ -104,7 +106,7 @@ export function GameLayout() {
       console.warn('[GameLayout] Cap truth fallback used', error);
     }
 
-    const blockedByOtherModal = showOfflineProgressModal || showManualSatchelModal || showTechniqueLearnedModal || showWorldBuildingModal || lifeStartWizardOpen || activeTab === 'prestige';
+    const blockedByOtherModal = showOfflineProgressModal || showManualSatchelModal || showTechniqueLearnedModal || showWorldBuildingModal || showLifeSummaryModal || lifeStartWizardOpen || activeTab === 'prestige';
 
     if (!atAuthoredCap) {
       clearCurrentChapterExhaustedAcknowledgement();
@@ -127,6 +129,7 @@ export function GameLayout() {
     showOfflineProgressModal,
     showTechniqueLearnedModal,
     showWorldBuildingModal,
+    showLifeSummaryModal,
   ]);
 
   // Render content based on active tab
@@ -189,6 +192,7 @@ export function GameLayout() {
       {showTechniqueLearnedModal && <TechniqueLearnedModal />}
       {showWorldBuildingModal && <WorldBuildingModal />}
       {showCurrentChapterExhaustedModal && <CurrentChapterExhaustedModal />}
+      {showLifeSummaryModal && <LifeSummaryModal />}
       {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
       <CombatPresentationHost />
       <OnboardingPromptRuntime />

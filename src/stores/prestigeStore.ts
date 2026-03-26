@@ -12,6 +12,7 @@ import {
   getPrestigeNodeRuntimeStatus,
   isPrestigeNodeVisible,
 } from '../systems/prestige/runtime/prestigeRuntimeCatalog.js';
+import type { PrestigeLifeSummarySnapshot } from '../features/prestige/lifeSummarySurface.js';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -137,12 +138,13 @@ interface PrestigeState {
 
   // Spirit root
   spiritRoot: SpiritRoot | null;
+  lastLifeSummary: PrestigeLifeSummarySnapshot | null;
 
   // Methods
   calculateAPGain: () => number;
   getApBreakdown: () => ApBreakdown;
   canPrestige: () => boolean;
-  performPrestige: () => void;
+  performPrestige: (preparedLifeSummary?: PrestigeLifeSummarySnapshot) => void;
   purchaseUpgrade: (upgradeId: string) => { ok: boolean; reason?: string };
   getUpgradeEffect: (upgradeId: string) => number;
   getUpgradeDef: (upgradeId: string) => PrestigeUpgradeDef | undefined;
@@ -204,6 +206,7 @@ const createInitialPrestigeState = () => ({
   runStartTime: Date.now(),
   rerollCount: 0,
   spiritRoot: null as SpiritRoot | null,
+  lastLifeSummary: null as PrestigeLifeSummarySnapshot | null,
 });
 
 function getUpgradesFromContent(): PrestigeUpgradeDef[] {
@@ -264,13 +267,27 @@ export const usePrestigeStore = create<PrestigeState>()(
       });
     },
 
-    performPrestige: () => {
+    performPrestige: (preparedLifeSummary) => {
       const state = get();
       if (!_getGameStore) {
         console.warn('[Prestige] Game store getter not initialized - cannot prestige');
         return;
       }
       const gameStore = _getGameStore();
+      const lifeSummarySnapshot: PrestigeLifeSummarySnapshot = preparedLifeSummary ?? {
+        capturedAt: Date.now(),
+        advisorLabel: state.canPrestige() ? 'Viable' : 'Too Early',
+        apForecastGain: Math.max(0, state.calculateAPGain()),
+        apAfterRitual: state.totalAP + Math.max(0, state.calculateAPGain()),
+        blocks: [
+          { key: 'life_arc', title: 'Life Arc', lines: ['Life summary was captured from runtime fallback.'] },
+          { key: 'doctrine_build', title: 'Doctrine & Build', lines: ['Doctrine details were not captured for this ritual call.'] },
+          { key: 'world_progress', title: 'World Progress', lines: ['World progress details were not captured for this ritual call.'] },
+          { key: 'gate_trials', title: 'Gate Trials', lines: ['Gate-trial details were not captured for this ritual call.'] },
+          { key: 'ruins_supply', title: 'Ruins & Supply', lines: ['Ruins and supply details were not captured for this ritual call.'] },
+          { key: 'next_life_focus', title: 'Next Life Focus', lines: ['Open the live Life Summary panel for full guidance.'] },
+        ],
+      };
 
       if (!state.canPrestige()) return;
 
@@ -294,6 +311,7 @@ export const usePrestigeStore = create<PrestigeState>()(
         state.prestigeRuns = [...state.prestigeRuns, newRun].slice(-10); // Keep last 10 runs
         state.highestRealmReached = 0;
         state.runStartTime = Date.now();
+        state.lastLifeSummary = lifeSummarySnapshot;
       });
 
       // Trigger game reset

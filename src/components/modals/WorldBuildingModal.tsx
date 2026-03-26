@@ -84,6 +84,7 @@ export function WorldBuildingModal({
         content = (
           <ApothecaryPanel
             shopId={moduleRefId ?? null}
+            /* initialSurface={buildingKey === 'alchemy' ? 'brew' : 'buy'} */
             initialSurface={storeModalIntent?.apothecarySurface ?? (buildingKey === 'alchemy' ? 'brew' : 'buy')}
           />
         );

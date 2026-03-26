@@ -212,6 +212,7 @@ export function BountyBoardPanel() {
       craftRouteSupportState,
     });
   }, [cityModules, craftRouteSupportState, primaryBounty]);
+  const goThereFallbackLabel = 'Go There';
   const primaryActionLabel = getBountyDestinationCtaLabel(primaryDestination);
   const reserveNeedsHelp = supportSurface.reserveTone === 'warning';
   const showBountyInlineHint = !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.bountiesLoop)
@@ -294,7 +295,7 @@ export function BountyBoardPanel() {
           className={'worldScreenModuleButton'}
           onClick={() => handleGoToModule(destination.cityId, destination.moduleKey)}
         >
-          {getBountyDestinationCtaLabel(destination)}
+          {getBountyDestinationCtaLabel(destination) || goThereFallbackLabel}
         </button>
       </div>
     );
@@ -615,7 +616,7 @@ export function BountyBoardPanel() {
               primaryDestination && primaryDestination.kind === 'unavailable' ? primaryDestination.reason : undefined
             }
           >
-            {primaryActionLabel}
+            {primaryActionLabel || goThereFallbackLabel}
           </button>
           <button
             className={`worldScreenModuleButton ${

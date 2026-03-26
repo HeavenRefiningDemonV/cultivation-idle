@@ -26,6 +26,7 @@ export function OnboardingPromptHost() {
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const showCurrentChapterExhaustedModal = useUIStore((state) => state.showCurrentChapterExhaustedModal);
+  const showLifeSummaryModal = useUIStore((state) => state.showLifeSummaryModal);
   const pendingCityArrivalId = useUIStore((state) => state.pendingCityArrivalId);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
@@ -46,6 +47,7 @@ export function OnboardingPromptHost() {
     || showManualSatchelModal
     || showTechniqueLearnedModal
     || showCurrentChapterExhaustedModal
+    || showLifeSummaryModal
     || combatPresentation.mode !== 'hidden'
     || pendingCityArrivalId !== null;
 

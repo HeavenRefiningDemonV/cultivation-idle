@@ -10,6 +10,7 @@ import { RewardService } from '../../services/rewards/index.js';
 import type { PrestigeUpgradeDef } from '../../content/index.js';
 import { PRESTIGE_CATEGORIES, buildPrestigeCategorySections, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
 import { getPrestigeAdvisorSurface } from '../../features/prestige/prestigeAdvisorSurface.js';
+import { buildPrestigeLifeSummarySnapshot } from '../../features/prestige/lifeSummarySurface.js';
 import type { PrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
 import { getPrestigeCategoryIcon } from '../../features/prestige/prestigeEdictIconMap.js';
 import { PrestigeUpgradePanelCard } from '../prestige/PrestigeUpgradePanelCard.js';
@@ -37,6 +38,7 @@ export function PrestigeScreen() {
   const getNextLevelCost = usePrestigeStore((state) => state.getNextLevelCost);
   const checkPrereqs = usePrestigeStore((state) => state.checkPrereqs);
   const getApBreakdown = usePrestigeStore((state) => state.getApBreakdown);
+  const lastLifeSummary = usePrestigeStore((state) => state.lastLifeSummary);
   const isContentLoaded = useContentStore((state) => state.isLoaded);
   const getVisiblePrestigeUpgrades = useContentStore((state) => state.getVisiblePrestigeUpgrades);
 
@@ -58,6 +60,7 @@ export function PrestigeScreen() {
   const ritualTriggerRef = useRef<HTMLButtonElement | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
+  const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
   const runCompass = useRunCompassSurface();
 
   const apGain = calculateAPGain();
@@ -98,13 +101,14 @@ export function PrestigeScreen() {
       setShowConfirmation(true);
       return;
     }
+    const preparedSummary = buildPrestigeLifeSummarySnapshot();
 
     if (shouldSellAll) {
       sellAllItems();
     }
     const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
     setLifeStartWizardContext(lastHeartLawId ?? null);
-    performPrestige();
+    performPrestige(preparedSummary);
   };
 
   const closeRitualModal = () => {
@@ -120,11 +124,18 @@ export function PrestigeScreen() {
     setRitualError(null);
     try {
       if (sellBeforePrestige) {
+        const preparedSummary = buildPrestigeLifeSummarySnapshot();
         sellAllItems();
+        const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
+        setLifeStartWizardContext(lastHeartLawId ?? null);
+        performPrestige(preparedSummary);
+        setSellBeforePrestige(false);
+        return true;
       }
+      const preparedSummary = buildPrestigeLifeSummarySnapshot();
       const lastHeartLawId = useHeartLawStore.getState().selectedHeartLawId;
       setLifeStartWizardContext(lastHeartLawId ?? null);
-      performPrestige();
+      performPrestige(preparedSummary);
       setSellBeforePrestige(false);
       return true;
     } catch (error) {
@@ -455,8 +466,20 @@ export function PrestigeScreen() {
                     Sell All &amp; Reincarnate
                   </button>
                 </div>
-                <div className={'prestigeAltarLockHint'}>{advisor.stateLabel}: {advisor.stateDetail}</div>
+              <div className={'prestigeAltarLockHint'}>{advisor.stateLabel}: {advisor.stateDetail}</div>
+            </div>
+            <div className={'prestigeAltarActionRow'}>
+              <div className={'prestigeAltarButtons'}>
+                <button type="button" className="prestigeAltarSecondaryButton is-ready" onClick={() => openLifeSummaryModal('current')}>
+                  View Current Life Summary
+                </button>
+                {lastLifeSummary ? (
+                  <button type="button" className="prestigeAltarSecondaryButton is-ready" onClick={() => openLifeSummaryModal('last_completed')}>
+                    View Last Life Summary
+                  </button>
+                ) : null}
               </div>
+            </div>
             </PaperCard>
 
             {advisor.topRecommendedPurchase ? (
