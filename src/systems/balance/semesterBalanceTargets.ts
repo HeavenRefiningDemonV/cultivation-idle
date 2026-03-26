@@ -129,17 +129,6 @@ export const SEMESTER_BALANCE_TARGETS: SemesterBalanceTargets = {
       },
     },
     {
-      gateId: 'foundation_to_core_availability',
-      status: 'locked',
-      sourcePacket: '6.1a',
-      fromRealmId: 'foundation_establishment',
-      toRealmId: 'core_formation',
-      availabilityWindowSeconds: {
-        minSeconds: 45 * MINUTE_SECONDS,
-        maxSeconds: 75 * MINUTE_SECONDS,
-      },
-    },
-    {
       gateId: 'core_to_nascent_availability',
       status: 'deferred',
       sourcePacket: '6.2',
@@ -159,6 +148,17 @@ export const SEMESTER_BALANCE_TARGETS: SemesterBalanceTargets = {
       sourcePacket: '6.2',
       fromRealmId: 'soul_formation',
       toRealmId: 'spirit_severing',
+    },
+  ],
+  earlyMilestoneWindows: [
+    {
+      milestoneId: 'foundation_entry',
+      status: 'locked',
+      sourcePacket: '6.2a',
+      windowSeconds: {
+        minSeconds: 45 * MINUTE_SECONDS,
+        maxSeconds: 75 * MINUTE_SECONDS,
+      },
     },
   ],
   offlineContributionPolicy: OFFLINE_CONTRIBUTION_POLICY,

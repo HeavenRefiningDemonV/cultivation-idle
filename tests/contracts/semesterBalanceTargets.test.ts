@@ -38,9 +38,9 @@ test('packet 6.1 semester balance registry includes locked timing and offline tr
     maxSeconds: 3_300,
   });
 
-  const foundation = targets.gateAvailabilityTargets.find((target) => target.gateId === 'foundation_to_core_availability');
+  const foundation = targets.earlyMilestoneWindows.find((target) => target.milestoneId === 'foundation_entry');
   assert.ok(foundation);
-  assert.deepEqual(foundation.availabilityWindowSeconds, {
+  assert.deepEqual(foundation.windowSeconds, {
     minSeconds: 2_700,
     maxSeconds: 4_500,
   });

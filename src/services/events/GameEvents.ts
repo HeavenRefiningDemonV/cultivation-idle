@@ -583,6 +583,82 @@ export type RewardsSpentEvent = {
   payload: { costs: RewardCurrencyBundle; reason?: string };
 };
 
+export type ProgressionLifeStartedEvent = {
+  type: 'progression/life_started';
+  payload: {
+    timestamp: number;
+    runStartTime: number;
+    elapsedMsSinceLifeStart: number;
+  };
+};
+
+export type ProgressionGateAvailableEvent = {
+  type: 'progression/gate_available';
+  payload: {
+    timestamp: number;
+    runStartTime: number;
+    elapsedMsSinceLifeStart: number;
+    trialId: string;
+    fromRealmId: string;
+    toRealmId: string;
+    gateIndex: number;
+    cityId: string | null;
+  };
+};
+
+export type ProgressionGateResolvedEvent = {
+  type: 'progression/gate_resolved';
+  payload: {
+    timestamp: number;
+    runStartTime: number;
+    elapsedMsSinceLifeStart: number;
+    trialId: string;
+    fromRealmId: string;
+    toRealmId: string;
+    gateIndex: number;
+    cityId: string | null;
+    resolution: 'cleared' | 'bypassed';
+  };
+};
+
+export type ProgressionBreakthroughEvent = {
+  type: 'progression/breakthrough';
+  payload: {
+    timestamp: number;
+    runStartTime: number;
+    elapsedMsSinceLifeStart: number;
+    fromRealmIndex: number;
+    toRealmIndex: number;
+    fromSubstage: number;
+    toSubstage: number;
+    major: boolean;
+    resultingRealmId: string;
+  };
+};
+
+export type ProgressionCityEnteredEvent = {
+  type: 'progression/city_entered';
+  payload: {
+    timestamp: number;
+    runStartTime: number;
+    elapsedMsSinceLifeStart: number;
+    cityId: string;
+    cityIndex: number | null;
+    majorRealmId: string;
+  };
+};
+
+export type ProgressionContentCapReachedEvent = {
+  type: 'progression/content_cap_reached';
+  payload: {
+    timestamp: number;
+    runStartTime: number;
+    elapsedMsSinceLifeStart: number;
+    realmId: string;
+    cityId: string | null;
+  };
+};
+
 export type GameEvent =
   | RewardsGrantedEvent
   | CombatResolvedEvent
@@ -692,7 +768,13 @@ export type GameEvent =
   | TechniquesRuneSocketedEvent
   | TechniquesRuneUnsocketedEvent
   | TechniquesEquipNowClickedEvent
-  | RewardsSpentEvent;
+  | RewardsSpentEvent
+  | ProgressionLifeStartedEvent
+  | ProgressionGateAvailableEvent
+  | ProgressionGateResolvedEvent
+  | ProgressionBreakthroughEvent
+  | ProgressionCityEnteredEvent
+  | ProgressionContentCapReachedEvent;
 
 export type GameEventType = GameEvent['type'];
 export type GameEventForType<TType extends GameEventType> = Extract<GameEvent, { type: TType }>;

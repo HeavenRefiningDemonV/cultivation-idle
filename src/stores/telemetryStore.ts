@@ -23,6 +23,12 @@ const MIN_EVENTS = 50;
 const MAX_EVENTS = 1000;
 
 const makeId = () => `evt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+const formatElapsed = (elapsedMs: number | null | undefined): string => {
+  const totalSeconds = Math.max(0, Math.floor((elapsedMs ?? 0) / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+};
 
 export const formatGameEventSummary = (event: GameEvent): string => {
   switch (event.type) {
@@ -57,6 +63,29 @@ export const formatGameEventSummary = (event: GameEvent): string => {
     case 'pavilion/stock_refreshed': {
       const { pavilionId } = event.payload;
       return `Pavilion stock refreshed: pavilionId=${pavilionId ?? 'unknown'}`;
+    }
+    case 'progression/life_started': {
+      return 'Life started';
+    }
+    case 'progression/gate_available': {
+      const { gateIndex, elapsedMsSinceLifeStart } = event.payload;
+      return `Gate ${gateIndex} available @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
+    }
+    case 'progression/gate_resolved': {
+      const { gateIndex, resolution, elapsedMsSinceLifeStart } = event.payload;
+      return `Gate ${gateIndex} ${resolution} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
+    }
+    case 'progression/breakthrough': {
+      const { resultingRealmId, major, elapsedMsSinceLifeStart } = event.payload;
+      return `${major ? 'Major' : 'Substage'} breakthrough -> ${resultingRealmId} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
+    }
+    case 'progression/city_entered': {
+      const { cityId, elapsedMsSinceLifeStart } = event.payload;
+      return `City entered: ${cityId} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
+    }
+    case 'progression/content_cap_reached': {
+      const { realmId, elapsedMsSinceLifeStart } = event.payload;
+      return `Content cap reached: ${realmId} @ ${formatElapsed(elapsedMsSinceLifeStart)}`;
     }
     default:
       return event.type;

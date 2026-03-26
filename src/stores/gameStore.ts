@@ -32,8 +32,14 @@ import { useCultivationStore } from './cultivationStore.js';
 import { getHeartLawBonuses } from '../systems/heartLaw/heartLawLogic.js';
 import { useContentStore } from './contentStore.js';
 import { useCityStore } from './cityStore.js';
+import { useInventoryStore } from './inventoryStore.js';
 import { getLiveRealmByIndex } from '../systems/progression/runtime/index.js';
 import { performPrestigeReset as performCentralPrestigeReset } from '../services/prestige/PrestigeResetService.js';
+import { useTrialStore } from './trialStore.js';
+import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
+import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
+import { getProgressionContract, getTransitionByFromRealm } from '../systems/progression/contract/progressionContract.js';
+import { GATE_1_TRANSITION } from '../systems/balance/phaseTimingTargets.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -153,6 +159,7 @@ export const useGameStore = create<GameState>()(
      * Main game tick - called regularly to update Qi and state
      */
     tick: (deltaTime: number) => {
+      const tickTimestamp = Date.now();
       get().removeExpiredBuffs();
 
       set((state) => {
@@ -171,9 +178,44 @@ export const useGameStore = create<GameState>()(
           state.stats.hp = newHp.toString();
         }
 
-        state.lastTickTime = Date.now();
+        state.lastTickTime = tickTimestamp;
         state.lastActiveTime = state.lastTickTime;
       });
+
+      const content = useContentStore.getState().raw;
+      if (content) {
+        try {
+          const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
+          const transition = getTransitionByFromRealm(contract, GATE_1_TRANSITION.fromRealmId);
+          if (transition) {
+            const trial = useContentStore.getState().maps.trialsById[transition.trialId];
+            const trialProgress = useTrialStore.getState().getProgress(transition.trialId);
+            const requiredItemSatisfied = trial?.requiredItemId
+              ? useInventoryStore.getState().getItemCount(trial.requiredItemId) > 0
+              : true;
+
+            progressionTimingTracker.trackFirstGateAvailability({
+              runStartTime: get().runStartTime,
+              timestamp: tickTimestamp,
+              content,
+              trial,
+              trialProgress,
+              realm: get().realm,
+              qi: get().qi,
+              breakthroughRequirement: get().getBreakthroughRequirement(),
+              requiredItemSatisfied,
+              fromRealmId: transition.fromRealmId,
+              toRealmId: transition.toRealmId,
+              gateIndex: 1,
+              cityId: transition.cityId ?? null,
+            });
+          }
+        } catch (error) {
+          if (import.meta.env?.DEV) {
+            console.warn('[GameStore] Failed to evaluate progression timing gate availability', error);
+          }
+        }
+      }
     },
 
     /**
@@ -328,6 +370,7 @@ export const useGameStore = create<GameState>()(
      */
     breakthrough: () => {
       const state = get();
+      const breakthroughTimestamp = Date.now();
       const currentRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
       const currentRealm = REALMS[currentRealmIndex] ?? REALMS[0];
       const isFinalSubstage = state.realm.substage >= currentRealm.substages;
@@ -369,6 +412,7 @@ export const useGameStore = create<GameState>()(
       }
 
       const previousRealmIndex = clampRealmIndexToSemesterSlice(state.realm.index);
+      const previousSubstage = state.realm.substage;
 
       set((state) => {
         // Deduct Qi
@@ -402,6 +446,16 @@ export const useGameStore = create<GameState>()(
       }
 
       const newRealmIndex = get().realm.index;
+      const nextSubstage = get().realm.substage;
+      progressionTimingTracker.emitBreakthrough({
+        runStartTime: get().runStartTime,
+        timestamp: breakthroughTimestamp,
+        fromRealmIndex: previousRealmIndex,
+        toRealmIndex: newRealmIndex,
+        fromSubstage: previousSubstage,
+        toSubstage: nextSubstage,
+        major: newRealmIndex > previousRealmIndex,
+      });
       if (newRealmIndex > previousRealmIndex) {
         unlockContentForRealm(newRealmIndex);
         useCityStore.getState().syncRealmEntry(getLiveRealmByIndex(newRealmIndex).id);
@@ -843,6 +897,7 @@ export const useGameStore = create<GameState>()(
       // Recalculate everything
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+      progressionTimingTracker.emitLifeStarted(get().runStartTime);
     },
 
     hardResetGameState: () => {
@@ -853,6 +908,7 @@ export const useGameStore = create<GameState>()(
 
       get().calculateQiPerSecond();
       get().calculatePlayerStats();
+      progressionTimingTracker.emitLifeStarted(get().runStartTime);
     },
 
     /**

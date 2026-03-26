@@ -14,6 +14,7 @@ import {
   getDefaultModuleForWorldCity,
   resolveFallbackCurrentCityId,
 } from '../systems/world/travelContract.js';
+import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 
 export type CityFlags = {
   outskirtsBossDefeated: boolean;
@@ -249,6 +250,7 @@ export const useCityStore = create<CityState>()(
     },
 
     syncRealmEntry: (majorRealmId) => {
+      const timestamp = Date.now();
       const content = useContentStore.getState().raw;
       const sync = syncRuntimeCityStateToRealmEntry(content, majorRealmId, get().unlockedCityIds);
       const newlyUnlocked: string[] = [];
@@ -274,12 +276,28 @@ export const useCityStore = create<CityState>()(
       if (focusCityId) {
         get().unlockCityAndFocus(focusCityId);
         get().ensurePendingCityArrival(focusCityId);
+        const city = useContentStore.getState().maps.citiesById[focusCityId];
+        progressionTimingTracker.emitCityEntered({
+          runStartTime: progressionTimingTracker.getActiveRunStartTime(),
+          timestamp,
+          cityId: focusCityId,
+          cityIndex: city?.index ?? null,
+          majorRealmId,
+        });
       } else {
         const currentCityId = get().currentCityId;
         if (!currentCityId || !get().unlockedCityIds.includes(currentCityId)) {
           const fallbackCityId = sync.unlockedCityIds.at(-1) ?? get().unlockedCityIds[0] ?? null;
           if (fallbackCityId) {
             get().unlockCityAndFocus(fallbackCityId);
+            const city = useContentStore.getState().maps.citiesById[fallbackCityId];
+            progressionTimingTracker.emitCityEntered({
+              runStartTime: progressionTimingTracker.getActiveRunStartTime(),
+              timestamp,
+              cityId: fallbackCityId,
+              cityIndex: city?.index ?? null,
+              majorRealmId,
+            });
           }
         }
       }

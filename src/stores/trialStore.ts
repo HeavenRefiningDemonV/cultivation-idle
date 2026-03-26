@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { TrialAttemptSummary } from '../types/index.js';
+import { useContentStore } from './contentStore.js';
+import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
+import { getProgressionContract, getTransitionByTrialId } from '../systems/progression/contract/progressionContract.js';
+import { progressionTimingTracker } from '../services/diagnostics/progressionTimingTracker.js';
 
 export type TrialResolution = 'none' | 'cleared' | 'bypassed';
 
@@ -151,6 +155,7 @@ export const useTrialStore = create<TrialState>()(
     },
 
     markCleared: (trialId) => {
+      const timestamp = Date.now();
       set((state) => {
         if (!state.progressByTrialId[trialId]) {
           state.progressByTrialId[trialId] = createDefaultTrialProgress();
@@ -161,7 +166,7 @@ export const useTrialStore = create<TrialState>()(
         progress.sessionAttempts += 1;
         progress.resolution = 'cleared';
         progress.cleared = true;
-        progress.lastAttemptAt = Date.now();
+        progress.lastAttemptAt = timestamp;
         progress.lastClearAt = progress.lastAttemptAt;
         progress.attemptStartAt = null;
         progress.lastAttemptSummary = null;
@@ -169,6 +174,24 @@ export const useTrialStore = create<TrialState>()(
           state.activeTrialSessionId = null;
         }
       });
+
+      const content = useContentStore.getState().raw;
+      if (content) {
+        const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
+        const transition = getTransitionByTrialId(contract, trialId);
+        if (transition) {
+          progressionTimingTracker.emitGateResolved({
+            runStartTime: progressionTimingTracker.getActiveRunStartTime(),
+            timestamp,
+            trialId,
+            fromRealmId: transition.fromRealmId,
+            toRealmId: transition.toRealmId,
+            gateIndex: transition.fromRealmId === 'qi_condensation' ? 1 : 0,
+            cityId: transition.cityId ?? null,
+            resolution: 'cleared',
+          });
+        }
+      }
     },
 
     markBypassed: (trialId, bypassedAt = Date.now()) => {
@@ -187,6 +210,24 @@ export const useTrialStore = create<TrialState>()(
           state.activeTrialSessionId = null;
         }
       });
+
+      const content = useContentStore.getState().raw;
+      if (content) {
+        const contract = getProgressionContract(adaptProgressionAuthoredContent(content));
+        const transition = getTransitionByTrialId(contract, trialId);
+        if (transition) {
+          progressionTimingTracker.emitGateResolved({
+            runStartTime: progressionTimingTracker.getActiveRunStartTime(),
+            timestamp: bypassedAt,
+            trialId,
+            fromRealmId: transition.fromRealmId,
+            toRealmId: transition.toRealmId,
+            gateIndex: transition.fromRealmId === 'qi_condensation' ? 1 : 0,
+            cityId: transition.cityId ?? null,
+            resolution: 'bypassed',
+          });
+        }
+      }
     },
 
     isResolved: (trialId) => {

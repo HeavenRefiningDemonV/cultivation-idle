@@ -43,6 +43,13 @@ export interface GateAvailabilityTarget {
   availabilityWindowSeconds?: Pick<NumericWindow, 'minSeconds' | 'maxSeconds'> & { targetSeconds?: number };
 }
 
+export interface EarlyMilestoneWindowTarget {
+  milestoneId: string;
+  status: TargetStatus;
+  sourcePacket: string;
+  windowSeconds?: Pick<NumericWindow, 'minSeconds' | 'maxSeconds'> & { targetSeconds?: number };
+}
+
 export interface OfflineContributionPolicy {
   status: 'locked';
   sourcePacket: string;
@@ -94,6 +101,7 @@ export interface SemesterBalanceTargets {
   firstLifeCapTiming: FirstLifeCapTimingTarget;
   cityPhaseTimingTargets: readonly CityPhaseTimingTarget[];
   gateAvailabilityTargets: readonly GateAvailabilityTarget[];
+  earlyMilestoneWindows: readonly EarlyMilestoneWindowTarget[];
   offlineContributionPolicy: OfflineContributionPolicy;
   prestigeEconomyPolicy: PrestigeEconomyPolicy;
   activityThroughputTargets: DeferredCategoryTarget;
