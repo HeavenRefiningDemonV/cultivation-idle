@@ -8,6 +8,7 @@ import { DungeonScreen } from './screens/DungeonScreen';
 import { InventoryScreen } from './screens/InventoryScreen';
 import { PrestigeScreen } from './screens/PrestigeScreen';
 import { OfflineProgressModal } from './modals/OfflineProgressModal';
+import { LifeSummaryModal } from './modals/LifeSummaryModal';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SidebarLayout } from './ui/SidebarLayout';
 
@@ -80,6 +81,7 @@ export function GameLayout() {
       </SidebarLayout>
 
       {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
+      <LifeSummaryModal />
     </div>
   );
 }

@@ -30,23 +30,31 @@ const PITY_THRESHOLDS = {
  */
 const PITY_DROP_POOLS: Record<string, { itemId: string; rarity: ItemRarity }[]> = {
   uncommon: [
-    { itemId: 'lesser_health_potion', rarity: 'uncommon' },
-    { itemId: 'lesser_spirit_stone', rarity: 'uncommon' },
+    { itemId: 'health_pill', rarity: 'uncommon' },
+    { itemId: 'spirit_stone', rarity: 'uncommon' },
   ],
   rare: [
-    { itemId: 'health_potion', rarity: 'rare' },
+    { itemId: 'greater_health_pill', rarity: 'rare' },
     { itemId: 'spirit_stone', rarity: 'rare' },
-    { itemId: 'cultivation_manual', rarity: 'rare' },
+    { itemId: 'qi_crystal', rarity: 'rare' },
   ],
   epic: [
-    { itemId: 'greater_health_potion', rarity: 'epic' },
-    { itemId: 'greater_spirit_stone', rarity: 'epic' },
-    { itemId: 'ancient_scroll', rarity: 'epic' },
+    { itemId: 'supreme_health_pill', rarity: 'epic' },
+    { itemId: 'dragon_scale', rarity: 'epic' },
+    { itemId: 'beast_core', rarity: 'epic' },
   ],
   legendary: [
-    { itemId: 'supreme_elixir', rarity: 'legendary' },
-    { itemId: 'heavenly_artifact', rarity: 'legendary' },
+    { itemId: 'immortal_essence', rarity: 'legendary' },
+    { itemId: 'soul_condensate', rarity: 'legendary' },
   ],
+};
+
+const ITEM_ID_NORMALIZATION: Record<string, string> = {
+  lesser_health_potion: 'health_pill',
+  health_potion: 'greater_health_pill',
+  greater_health_potion: 'supreme_health_pill',
+  lesser_spirit_stone: 'spirit_stone',
+  greater_spirit_stone: 'qi_crystal',
 };
 
 /**
@@ -64,7 +72,8 @@ export const GATE_ITEMS: Record<number, string> = {
 };
 
 function getItemRarity(itemId: string): ItemRarity {
-  const item = ITEMS_DATABASE[itemId];
+  const normalizedItemId = ITEM_ID_NORMALIZATION[itemId] ?? itemId;
+  const item = ITEMS_DATABASE[normalizedItemId];
   return item?.rarity || 'common';
 }
 
@@ -140,7 +149,7 @@ export function rollLoot(
     );
 
     items.push({
-      itemId: drop.itemId,
+      itemId: ITEM_ID_NORMALIZATION[drop.itemId] ?? drop.itemId,
       quantity,
       rarity: getItemRarity(drop.itemId),
     });
@@ -158,21 +167,18 @@ function generateBossLoot(
 ): { itemId: string; quantity: number; rarity: ItemRarity }[] {
   const items: { itemId: string; quantity: number; rarity: ItemRarity }[] = [];
 
-  // Gate bosses now drop the same materials required for breakthroughs so
-  // adventure progression mirrors the intended gate milestones.
-  if (isFirstKill) {
-    const gateDropsByBoss: Record<string, string> = {
-      shadow_spider_queen: GATE_ITEMS[2], // Spirit Cavern boss -> Core → Nascent gate
-    };
-
-    const gateItemId = gateDropsByBoss[enemy.id];
-    if (gateItemId) {
-      items.push({
-        itemId: gateItemId,
-        quantity: 1,
-        rarity: getItemRarity(gateItemId),
-      });
-    }
+  const firstKillAnchors: Record<string, string> = {
+    forest_guardian: 'spirit_essence',
+    shadow_spider_queen: 'beast_core',
+    mountain_overlord: 'celestial_jade',
+  };
+  if (isFirstKill && firstKillAnchors[enemy.id]) {
+    const anchor = firstKillAnchors[enemy.id];
+    items.push({
+      itemId: anchor,
+      quantity: 1,
+      rarity: getItemRarity(anchor),
+    });
   }
 
   // Bosses always drop a rare material
@@ -336,7 +342,8 @@ export function formatLootMessage(loot: LootResult): string[] {
   // Item messages
   for (const item of loot.items) {
     const rarityTag = item.rarity !== 'common' ? ` [${item.rarity.toUpperCase()}]` : '';
-    messages.push(`${item.quantity}x ${item.itemId}${rarityTag}`);
+    const itemName = ITEMS_DATABASE[item.itemId]?.name ?? item.itemId;
+    messages.push(`${item.quantity}x ${itemName}${rarityTag}`);
   }
 
   // Pity message

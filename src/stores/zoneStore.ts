@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { useGameStore } from './gameStore';
 
 /**
  * Zone progress data
@@ -55,22 +56,7 @@ const INITIAL_UNLOCKED_ZONES = ['training_forest'];
 /**
  * Enemies required to unlock boss
  */
-const BOSS_UNLOCK_THRESHOLD = 10;
-
-/**
- * Zone unlock requirements (zone ID -> previous zone that must be completed)
- */
-export const ZONE_UNLOCK_REQUIREMENTS: Record<string, string> = {
-  training_forest: '', // Always unlocked
-  spirit_cavern: 'training_forest',
-  mystic_mountains: 'spirit_cavern',
-};
-
-export const ZONE_REALM_REQUIREMENTS: Record<string, number> = {
-  training_forest: 0,
-  spirit_cavern: 1,
-  mystic_mountains: 2,
-};
+const BOSS_UNLOCK_THRESHOLD = 15;
 
 const createInitialZoneState = () => ({
   unlockedZones: [...INITIAL_UNLOCKED_ZONES],
@@ -200,28 +186,14 @@ export const useZoneStore = create<ZoneState>()(
 
       console.log(`[ZoneStore] Boss defeated in ${zoneId}! Zone completed.`);
 
-      // Unlock next zone
-      const nextZoneId = Object.keys(ZONE_UNLOCK_REQUIREMENTS).find(
-        (key) => ZONE_UNLOCK_REQUIREMENTS[key] === zoneId
-      );
-
-      if (nextZoneId) {
-        const requiredRealm = ZONE_REALM_REQUIREMENTS[nextZoneId] ?? 0;
-        const currentRealmIndex = realmIndex;
-
-        if (currentRealmIndex >= requiredRealm) {
-          get().unlockZone(nextZoneId);
-        } else {
-          console.log(
-            `[ZoneStore] ${nextZoneId} requires realm ${requiredRealm} before unlocking.`
-          );
-        }
+      if (realmIndex >= 0) {
+        useGameStore.getState().syncProgressionAvailability();
       }
     },
 
     /**
      * Check if boss is available in a zone
-     * Requires 10 enemy kills first
+     * Requires threshold enemy kills first
      */
     isBossAvailable: (zoneId: string) => {
       const state = get();
@@ -233,7 +205,7 @@ export const useZoneStore = create<ZoneState>()(
 
       // Boss is available if:
       // 1. Not already defeated
-      // 2. Enough enemies killed (10+)
+      // 2. Enough enemies killed
       return !progress.bossDefeated && progress.enemiesDefeated >= BOSS_UNLOCK_THRESHOLD;
     },
 

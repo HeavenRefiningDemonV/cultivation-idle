@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { usePrestigeStore } from '../../stores/prestigeStore';
 import { useGameStore } from '../../stores/gameStore';
 import { useUIStore } from '../../stores/uiStore';
+import { captureLifeSummarySnapshot } from '../../features/prestige/lifeSummarySurface';
 
 export function PrestigeScreen() {
   const {
@@ -14,6 +15,7 @@ export function PrestigeScreen() {
     canPrestige,
     performPrestige,
     purchaseUpgrade,
+    lastLifeSummary,
   } = usePrestigeStore();
 
   const realm = useGameStore((state) => state.realm);
@@ -22,6 +24,7 @@ export function PrestigeScreen() {
   const apGain = calculateAPGain();
   const canPrestigeNow = canPrestige();
   const requirePrestigeConfirm = useUIStore((state) => state.settings.requirePrestigeConfirm);
+  const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
 
   const handlePrestige = () => {
     if (!canPrestigeNow) return;
@@ -31,11 +34,25 @@ export function PrestigeScreen() {
       return;
     }
 
-    performPrestige();
+    performPrestige(
+      captureLifeSummarySnapshot({
+        apForecast: calculateAPGain(),
+        canPrestige: canPrestige(),
+        runStartTime: usePrestigeStore.getState().runStartTime,
+        upgrades: usePrestigeStore.getState().upgrades,
+      })
+    );
   };
 
   const confirmPrestige = () => {
-    performPrestige();
+    performPrestige(
+      captureLifeSummarySnapshot({
+        apForecast: calculateAPGain(),
+        canPrestige: canPrestige(),
+        runStartTime: usePrestigeStore.getState().runStartTime,
+        upgrades: usePrestigeStore.getState().upgrades,
+      })
+    );
     setShowConfirmation(false);
   };
 
@@ -121,7 +138,7 @@ export function PrestigeScreen() {
         </div>
 
         {/* Prestige Button */}
-        <div className="flex justify-center">
+        <div className="flex flex-wrap justify-center gap-3">
           <button
             onClick={handlePrestige}
             disabled={!canPrestigeNow}
@@ -135,6 +152,20 @@ export function PrestigeScreen() {
               ? `Reincarnate (+${apGain} AP)`
               : 'Reach Core Formation to Reincarnate'}
           </button>
+          <button
+            onClick={() => openLifeSummaryModal('current')}
+            className="rounded-lg border border-purple-400/50 bg-slate-800 px-5 py-3 font-semibold text-purple-200 hover:bg-slate-700"
+          >
+            View Current Life Summary
+          </button>
+          {lastLifeSummary && (
+            <button
+              onClick={() => openLifeSummaryModal('last_completed')}
+              className="rounded-lg border border-purple-400/50 bg-slate-800 px-5 py-3 font-semibold text-purple-200 hover:bg-slate-700"
+            >
+              View Last Life Summary
+            </button>
+          )}
         </div>
 
         {/* Ascension Shop */}

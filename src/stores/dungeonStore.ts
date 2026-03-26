@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { useGameStore } from './gameStore';
+import { usePhaseTimingStore } from '../features/progression/phaseTimingStore';
 
 export interface DungeonProgress {
   dungeonId: string;
@@ -28,9 +30,7 @@ interface DungeonState {
 const createInitialDungeonState = () => ({
   dungeonProgress: {} as Record<string, DungeonProgress>,
   currentDungeon: null as string | null,
-  unlockedDungeons: {
-    novice_clearing: true,
-  } as Record<string, boolean>,
+  unlockedDungeons: {} as Record<string, boolean>,
 });
 
 export const useDungeonStore = create<DungeonState>()(
@@ -75,6 +75,9 @@ export const useDungeonStore = create<DungeonState>()(
         // Exit dungeon after completion
         state.currentDungeon = null;
       });
+
+      usePhaseTimingStore.getState().markDungeonCleared();
+      useGameStore.getState().syncProgressionAvailability();
     },
 
     isFirstClear: (dungeonId: string) => {
