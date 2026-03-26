@@ -2308,7 +2308,7 @@
 
 .alchemyMasteryBarFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--paper-jade, #2f8f66), #c084fc);
+  background: linear-gradient(90deg, var(--paper-jade, #2f8f66), var(--paper-gold, #c59b41));
   transition: width 0.2s ease;
 }
 
@@ -3073,14 +3073,15 @@
 }
 
 .expeditionRouteCard:hover {
-  border-color: rgba(99, 102, 241, 0.45);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(120, 72, 33, 0.42);
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2);
+  background: rgba(255, 248, 234, 0.06);
 }
 
 .expeditionRouteCard--selected {
-  border-color: rgba(99, 102, 241, 0.9);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5);
+  border-color: rgba(120, 72, 33, 0.72);
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.35);
+  background: rgba(47, 143, 102, 0.1);
 }
 
 .expeditionRouteCardHeader {
@@ -3143,8 +3144,8 @@
 }
 
 .expeditionDurationChip--selected {
-  border-color: rgba(99, 102, 241, 0.9);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.5);
+  border-color: rgba(120, 72, 33, 0.72);
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.35);
 }
 
 .expeditionDurationChipHeader {
@@ -3710,7 +3711,7 @@
 .expeditionCeremonySpotlight {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(47, 143, 102, 0.12);
   padding: 12px;
   display: flex;
   align-items: center;

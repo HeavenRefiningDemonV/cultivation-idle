@@ -581,7 +581,7 @@ export function ManualDetailModal({
                   aria-label={tierIcon.label}
                   title={tierIcon.label}
                 >
-                  {tierIcon.iconText ?? "◎"}
+                  {tierIcon.iconText ?? <GameIcon icon="inkSparkles" size={14} decorative />}
                 </span>
               )}
               {pathIcon.iconId ? (
