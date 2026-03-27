@@ -34,3 +34,4 @@ Notes:
 - Existing progression milestone IDs are reused where canonical IDs already exist (`life_start`, `gate_1_available`, major realm entries, `stonecrag_entered`, `content_cap_reached`).
 - Packet 7.1 release-specific IDs are used where no existing canonical progression milestone ID exists.
 - The catalog is typed/stable for packet 7.1d report ingestion.
+- Manual worksheet rows should use these IDs exactly to avoid route/report drift.

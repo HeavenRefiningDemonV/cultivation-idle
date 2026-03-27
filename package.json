@@ -31,6 +31,8 @@
     "test:balance-regression": "npm run ensure:vendor-links && tsc --project tsconfig.tests.json && npm run build:progression-fixtures && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tmp-tests/tests/integration/phaseTimingEnvelope.test.js tmp-tests/tests/integration/cityPhaseDurationRegression.test.js tmp-tests/tests/integration/activityThroughputRegression.test.js tmp-tests/tests/integration/prepVsBypassEconomy.test.js tmp-tests/tests/integration/bountyMeritFailSafePacing.test.js tmp-tests/tests/integration/antiStallWindows.test.js tmp-tests/tests/integration/gateAttemptWinrateEnvelope.test.js tmp-tests/tests/integration/offlineContributionBounds.test.js tmp-tests/tests/integration/prestigeAPHourRegression.test.js tmp-tests/tests/integration/reclaimSpeedTargets.test.js",
     "balance:report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/balanceRegressionReport.js",
     "balance:report:json": "npm run balance:report -- --json",
+    "release:fresh-run-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/buildFreshRunAcceptanceReport.js",
+    "release:fresh-run-report:json": "npm run release:fresh-run-report -- --json",
     "validate:balance-regression": "npm run test:balance-regression && npm run balance:report -- --fail-on-drift",
     "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js"
   },

@@ -1,0 +1,34 @@
+[
+  {
+    "routeId": "normal",
+    "tester": "qa_tester_01",
+    "date": "2026-03-27",
+    "buildRef": "example-sha",
+    "overallStatus": "pass",
+    "reachedSpiritSevering": true,
+    "reachedCurrentChapterExhausted": true,
+    "prestigeAdvisorSeen": true,
+    "lifeSummarySeen": true,
+    "issues": [],
+    "notes": "Representative normal route looked coherent end-to-end."
+  },
+  {
+    "routeId": "cautious",
+    "tester": "qa_tester_02",
+    "date": "2026-03-27",
+    "overallStatus": "fail",
+    "reachedSpiritSevering": false,
+    "reachedCurrentChapterExhausted": false,
+    "prestigeAdvisorSeen": false,
+    "lifeSummarySeen": false,
+    "issues": [
+      {
+        "severity": "major",
+        "checkpointId": "gate_3_available",
+        "summary": "Readiness hints were unclear for cautious progression pacing.",
+        "notes": "No hard lock, but route intent was hard to follow without prior context."
+      }
+    ],
+    "notes": "Example failing manual entry for report merge behavior."
+  }
+]
