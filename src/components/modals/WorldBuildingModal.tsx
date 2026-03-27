@@ -16,6 +16,7 @@ import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuil
 import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel.js';
 import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel.js';
 import { Modal } from '../../ui/primitives/Modal.js';
+import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -46,7 +47,7 @@ export function WorldBuildingModal({
   const buildingKey: WorldBuildingKey | null | undefined = isStoreMode ? storeBuildingKey : undefined;
   const close = isStoreMode ? closeFromStore : controlledOnClose || (() => { });
   const title = isStoreMode
-    ? `${city?.name ?? 'City'} — ${buildingKey ?? ''}`
+    ? `${city?.name ?? 'City'} — ${formatWorldModuleLabel(buildingKey)}`
     : controlledTitle || 'World Building';
   const backgroundVariant = useMemo(() => {
     switch (buildingKey) {
@@ -115,7 +116,7 @@ export function WorldBuildingModal({
         content = isCombatModule(buildingKey)
           ? null
           : (
-            <div className="worldBuildingPlaceholder">Not implemented yet ({buildingKey})</div>
+            <div className="worldBuildingPlaceholder">{formatWorldModuleLabel(buildingKey)} is unavailable in this semester.</div>
           );
         break;
     }

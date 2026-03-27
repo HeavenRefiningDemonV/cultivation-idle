@@ -383,7 +383,7 @@ export function SettingsScreen() {
                 <div>
                   <div className={'settingsScreenOptionLabel'}>Show system status overlay (dev)</div>
                   <p className={'settingsScreenOptionDescription'}>
-                    Display runtime state for debugging: activity, combat gating, saves, and queues.
+                    Display runtime diagnostics: activity, combat gating, saves, and queues.
                   </p>
                 </div>
               </label>
@@ -447,7 +447,7 @@ export function SettingsScreen() {
 
           <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
             <h2 className={'settingsScreenPanelTitle'}>Diagnostics (Dev)</h2>
-            <p className={'settingsScreenPanelSubtitle'}>Telemetry + error capture + debug tools.</p>
+            <p className={'settingsScreenPanelSubtitle'}>Telemetry + error capture + diagnostics tools.</p>
 
             <div className={'settingsDiagnosticsActions'}>
               <button className={'button-standard settingsScreenDebugButton'} onClick={handleDownloadDiagnostics}>

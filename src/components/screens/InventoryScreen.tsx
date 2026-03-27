@@ -650,7 +650,7 @@ export default function InventoryScreen() {
                 {searchQueryTrimmed !== '' ? ` • Search: "${searchQueryTrimmed}"` : ''}
               </div>
               {isFilterActive ? <span className="inventoryFilterChip">Filter Active</span> : null}
-              {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow (debug)</div> : null}
+              {hasOverflow ? <div className="inventoryOverflowWarning">Inventory overflow</div> : null}
             </div>
             <div className="inventoryRingSubheaderRight">
               <div className="inventorySearch">

@@ -8,6 +8,15 @@ import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useRuinsStore } from '../../stores/ruinsStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { getPrestigeAdvisorSurface, type PrestigeAdvisorStateLabel } from './prestigeAdvisorSurface.js';
+import {
+  formatArchetypeLabel,
+  formatCityLabel,
+  formatDiagnosisLabel,
+  formatGateTrialLabel,
+  formatHeartLawLabel,
+  formatPathLabel,
+  formatReadinessBandLabel,
+} from '../../ui/text/playerFacingFormatters.js';
 
 export type LifeSummaryBlockKey =
   | 'life_arc'
@@ -94,22 +103,22 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
       `Reincarnations completed: ${prestige.prestigeCount}`,
     ], 'This life has only just begun.'),
     doctrine_build: clampLines([
-      game.selectedPath ? `Path: ${game.selectedPath}` : 'Path not selected yet.',
-      cultivation.selectedHeartLawId ? `Heart Law: ${cultivation.selectedHeartLawId}` : 'Heart Law not selected yet.',
-      status.archetypeId ? `Build posture: ${status.archetypeId.replace(/_/g, ' ')}` : 'Build posture has not stabilized yet.',
+      `Path: ${formatPathLabel(game.selectedPath)}`,
+      `Heart Law: ${formatHeartLawLabel(cultivation.selectedHeartLawId)}`,
+      `Build posture: ${formatArchetypeLabel(status.archetypeId)}`,
       prestige.spiritRoot ? `Spirit Root: grade ${prestige.spiritRoot.grade}, ${prestige.spiritRoot.element}, purity ${prestige.spiritRoot.purity}%` : 'Spirit Root not rolled yet.',
     ], 'Doctrine data is still sparse for this life.'),
     world_progress: clampLines([
-      `Current city: ${city.currentCityId}`,
-      status.currentGateTrialId ? `Current gate trial: ${status.currentGateTrialId}` : 'No active gate trial is in focus.',
-      status.overallBand ? `Readiness band: ${status.overallBand}` : 'Readiness band has not settled yet.',
+      `Current city: ${formatCityLabel(city.currentCityId)}`,
+      `Current gate trial: ${status.currentGateTrialId ? formatGateTrialLabel(status.currentGateTrialId) : 'No active gate trial in focus'}`,
+      `Readiness band: ${formatReadinessBandLabel(status.overallBand)}`,
       status.warnings[0] ?? '',
     ], 'World progression details are still loading.'),
     gate_trials: clampLines([
       `Gate trials cleared: ${clearedTrials}`,
       `Gate trials bypassed: ${bypassedTrials}`,
       `Total gate attempts: ${totalTrialAttempts}`,
-      status.currentDiagnosis ? `Latest diagnosis: ${status.currentDiagnosis.primary}` : 'No active gate diagnosis recorded.',
+      status.currentDiagnosis ? `Latest diagnosis: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}` : 'No active gate diagnosis recorded.',
     ], 'No gate trial progress has been recorded yet.'),
     ruins_supply: clampLines([
       `Ruins runs: ${totalRuinsRuns}`,
@@ -118,8 +127,8 @@ const buildCurrentBlocks = (): LifeSummaryBlock[] => {
       `Current gold on hand: ${inventory.currencies.gold}`,
     ], 'No ruins or supply activity has been recorded yet.'),
     next_life_focus: clampLines([
-      status.currentDiagnosis ? `Fix diagnosis first: ${status.currentDiagnosis.primary.replace(/_/g, ' ')}` : '',
-      status.currentGateTrialId ? `Center prep around gate ${status.currentGateTrialId} before your next reset.` : '',
+      status.currentDiagnosis ? `Fix diagnosis first: ${formatDiagnosisLabel(status.currentDiagnosis.primary)}` : '',
+      status.currentGateTrialId ? `Center prep around ${formatGateTrialLabel(status.currentGateTrialId)} before your next reset.` : '',
       topPurchase ? `${topPurchase.mode === 'buy_now' ? 'Buy now' : 'Save for'} ${topPurchase.name} (${topPurchase.nextCost} AP)` : '',
     ], 'Hold a steady line and gather clearer signals before your next reset.').slice(0, 3),
   };

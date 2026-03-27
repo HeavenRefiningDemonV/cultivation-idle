@@ -41,8 +41,8 @@ function PlaceholderContent({ tabName }: { tabName: string }) {
         <div className={'gameLayoutPlaceholderIcon'}>
           <GameIcon icon="inkWip" size={56} decorative />
         </div>
-        <h2 className={'gameLayoutPlaceholderTitle'}>{tabName} - Coming Soon</h2>
-        <p className={'gameLayoutPlaceholderText'}>This feature is under development</p>
+        <h2 className={'gameLayoutPlaceholderTitle'}>{tabName}</h2>
+        <p className={'gameLayoutPlaceholderText'}>This surface is not available in the current semester.</p>
       </div>
     </div>
   );
