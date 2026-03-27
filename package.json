@@ -47,6 +47,7 @@
     "release:vocab-audit:json": "npm run release:vocab-audit -- --json",
     "release:gate": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/runReleaseGate.ts --fail-on-blockers",
     "release:gate:json": "npm run release:gate -- --json",
+    "release:handoff": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildReleaseHandoffBundle.ts",
     "validate:balance-regression": "npm run test:balance-regression && npm run balance:report -- --fail-on-drift",
     "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js"
   },

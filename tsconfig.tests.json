@@ -33,11 +33,14 @@
     "scripts/release/captureBuildWarnings.ts",
     "scripts/release/runRuntimeDiagnostics.ts",
     "scripts/release/runReleaseGate.ts",
+    "scripts/release/buildReleaseHandoffBundle.ts",
     "src/services/diagnostics/release/routeComparisonReport.ts",
     "src/services/diagnostics/release/buildAuditReport.ts",
     "src/services/diagnostics/release/runtimeDiagnosticsReport.ts",
     "src/services/diagnostics/buildContentLoadFailureDiagnostics.ts",
     "src/services/diagnostics/release/releaseGate*.ts",
-    "src/services/diagnostics/release/knownIssuesLedger.ts"
+    "src/services/diagnostics/release/knownIssuesLedger.ts",
+    "src/services/diagnostics/release/releaseDecisionDocTypes.ts",
+    "src/services/diagnostics/release/releaseDecisionDocs.ts"
   ]
 }
