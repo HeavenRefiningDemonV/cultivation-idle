@@ -359,6 +359,7 @@ export const useUIStore = create<UIState>()(
      */
     setActiveTab: (tab: GameTab) => {
       const previousTab = get().activeTab;
+      if (previousTab === tab) return;
       set((state) => {
         state.activeTab = tab;
       });
@@ -545,6 +546,7 @@ export const useUIStore = create<UIState>()(
      * Hide prestige modal
      */
     hidePrestige: () => {
+      if (!get().showPrestigeModal) return;
       set((state) => {
         state.showPrestigeModal = false;
       });
@@ -831,6 +833,15 @@ export const useUIStore = create<UIState>()(
 
     openWorldBuildingModal: ({ cityId, buildingKey, intent }) => {
       const normalizedBuildingKey = normalizeWorldBuildingKey(buildingKey);
+      const snapshot = get();
+      if (
+        snapshot.showWorldBuildingModal
+        && snapshot.worldBuildingModalCityId === cityId
+        && snapshot.worldBuildingModalKey === normalizedBuildingKey
+        && (snapshot.worldBuildingModalIntent?.apothecarySurface ?? null) === ((intent ?? null)?.apothecarySurface ?? null)
+      ) {
+        return;
+      }
       set((state) => {
         state.showWorldBuildingModal = true;
         state.worldBuildingModalCityId = cityId;
@@ -852,6 +863,7 @@ export const useUIStore = create<UIState>()(
     },
 
     closeWorldBuildingModal: () => {
+      if (!get().showWorldBuildingModal) return;
       const buildingKey = get().worldBuildingModalKey;
       const cityId = get().worldBuildingModalCityId;
       set((state) => {
@@ -875,18 +887,21 @@ export const useUIStore = create<UIState>()(
     },
 
     openCurrentChapterExhaustedModal: () => {
+      if (get().showCurrentChapterExhaustedModal) return;
       set((state) => {
         state.showCurrentChapterExhaustedModal = true;
       });
     },
 
     closeCurrentChapterExhaustedModal: () => {
+      if (!get().showCurrentChapterExhaustedModal) return;
       set((state) => {
         state.showCurrentChapterExhaustedModal = false;
       });
     },
 
     openLifeSummaryModal: (mode) => {
+      if (get().showLifeSummaryModal && get().lifeSummaryMode === mode) return;
       set((state) => {
         state.showLifeSummaryModal = true;
         state.lifeSummaryMode = mode;
@@ -894,6 +909,7 @@ export const useUIStore = create<UIState>()(
     },
 
     closeLifeSummaryModal: () => {
+      if (!get().showLifeSummaryModal) return;
       set((state) => {
         state.showLifeSummaryModal = false;
       });
@@ -914,6 +930,7 @@ export const useUIStore = create<UIState>()(
     },
 
     acknowledgeCurrentChapterExhausted: () => {
+      if (get().currentChapterExhaustedAcknowledgedThisLife) return;
       set((state) => {
         state.currentChapterExhaustedAcknowledgedThisLife = true;
       });

@@ -18,6 +18,7 @@ import { useRuinsStore } from '../../stores/ruinsStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { useTrialStore } from '../../stores/trialStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
 
 export interface PrestigeResetOptions {
   resetGameRun: () => void;
@@ -124,6 +125,7 @@ export function performPrestigeReset({ resetGameRun }: PrestigeResetOptions): Pr
   useOutskirtsStore.getState().hardResetOutskirts();
   useBountyStore.getState().hardResetBounties();
   useActivityStore.getState().hardResetActivity();
+  useUIStore.getState().clearCurrentChapterExhaustedAcknowledgement();
   useManualSatchelStore.getState().hardReset();
   useManualPavilionStore.getState().hardReset();
   useTechCollectionStore.getState().hardReset();

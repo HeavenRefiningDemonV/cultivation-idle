@@ -32,6 +32,7 @@ import { assertRequiredSaveKeys, buildDefaultSaveState, migrateSave, SAVE_VERSIO
 import { getLastMigrationReport } from '../save/migrations/index.js';
 import { buildOfflineContext, type OfflineContext } from '../systems/offline.js';
 import { normalizeCitySaveState } from '../save/cityStateNormalization.js';
+import { COMBAT_ACTIVITY_TYPES, type ActiveActivity } from '../types/activity.js';
 
 /**
  * Save system constants
@@ -199,6 +200,7 @@ function gatherGameState(): SaveData {
       lastTickTime: gameState.lastTickTime,
       lastActiveTime: gameState.lastActiveTime,
       runStartTime: gameState.runStartTime,
+      currentChapterExhaustedAcknowledgedThisLife: useUIStore.getState().currentChapterExhaustedAcknowledgedThisLife,
     },
 
     prestigeState: {
@@ -408,6 +410,13 @@ function validateSaveData(data: unknown): data is SaveData {
     if ('lastTickTime' in gs && typeof gs.lastTickTime !== 'number') return false;
     if ('lastActiveTime' in gs && typeof gs.lastActiveTime !== 'number') return false;
     if ('runStartTime' in gs && typeof gs.runStartTime !== 'number') return false;
+    if (
+      'currentChapterExhaustedAcknowledgedThisLife' in gs &&
+      gs.currentChapterExhaustedAcknowledgedThisLife !== undefined &&
+      typeof gs.currentChapterExhaustedAcknowledgedThisLife !== 'boolean'
+    ) {
+      return false;
+    }
 
     if ('prestigeState' in record && record.prestigeState) {
       const ps = record.prestigeState as Record<string, unknown>;
@@ -991,6 +1000,10 @@ function applySaveData(saveData: SaveData): void {
     const collectionState =
       saveData.techCollectionState ?? defaults.techCollectionState ?? { unlockedTechs: {}, fragments: {}, rngSeed: undefined };
     const activityState = saveData.activityState ?? defaults.activityState ?? { active: null, lastChangedAt: null, history: [] };
+    const savedActivity = (activityState.active as ActiveActivity | null | undefined) ?? null;
+    const sanitizedActivity = savedActivity && COMBAT_ACTIVITY_TYPES.includes(savedActivity.type)
+      ? null
+      : savedActivity;
     const outskirtsState =
       saveData.outskirtsState ?? defaults.outskirtsState ?? { progressByOutskirtsId: {}, autoContinue: true, stopAtBoss: false };
     const heartLawState =
@@ -1069,6 +1082,10 @@ function applySaveData(saveData: SaveData): void {
       lastTickTime: saveData.gameState.lastTickTime || Date.now(),
       lastActiveTime: saveData.gameState.lastActiveTime || Date.now(),
       runStartTime: saveData.gameState.runStartTime || prestigeStore.runStartTime,
+    });
+    useUIStore.setState({
+      currentChapterExhaustedAcknowledgedThisLife: Boolean(saveData.gameState.currentChapterExhaustedAcknowledgedThisLife),
+      showCurrentChapterExhaustedModal: false,
     });
 
     // Apply to inventory store
@@ -1333,7 +1350,7 @@ function applySaveData(saveData: SaveData): void {
     useTechCollectionStore.getState().hydrate(collectionState);
 
     useActivityStore.setState({
-      active: (activityState.active as any) ?? null,
+      active: sanitizedActivity,
       lastChangedAt: activityState.lastChangedAt ?? null,
       history: Array.isArray(activityState.history) ? ([...activityState.history] as any) : [],
     });

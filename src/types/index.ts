@@ -438,6 +438,7 @@ export interface SaveData {
     lastTickTime?: number;
     lastActiveTime?: number;
     runStartTime?: number;
+    currentChapterExhaustedAcknowledgedThisLife?: boolean;
   };
 
   // Prestige state

@@ -1,0 +1,10 @@
+# Performance Smoke Checklist (Packet 7.4e)
+
+| High-risk surface | Manual action | Expected stable behavior | Failure smell | Automated coverage |
+| --- | --- | --- | --- | --- |
+| GameLayout tab switching | Switch `adventure -> techniques -> settings -> adventure` repeatedly | Same-target tab set is a no-op; no extra UI churn from repeated identical selection | Repeated same-tab writes causing unnecessary rerenders/events | `tests/integration/release/layoutInteractionStabilityMatrix.test.ts` (`tab + modal shell transitions`) |
+| World building modal routing | Open/close same city+module modal repeatedly (`outskirts`, `apothecary`, `manualPavilion`) | Re-opening same target intent is bounded; close on already-closed modal is no-op | Duplicate open/close side effects, stale modal context leakage | `tests/integration/release/layoutInteractionStabilityMatrix.test.ts` |
+| City switching | Set current city to same city repeatedly after unlock | Same-target city set does not churn state after initial valid set | Repeated state writes without semantic change | `tests/integration/release/layoutInteractionStabilityMatrix.test.ts` (`same-target city...idempotent`) |
+| Technique loadout selection | Select the same loadout repeatedly in Technique Library shell | Same-target loadout selection is no-op after first set | Repeated store writes/events when loadout id unchanged | `tests/integration/release/layoutInteractionStabilityMatrix.test.ts` |
+| Prestige/life-summary/chapter-cap modal shell | Open life summary, open current chapter exhausted, close repeatedly | Modal shell transitions are bounded; no duplicate overlay buildup | Modal stays stuck/open stack grows unexpectedly | `tests/integration/release/layoutInteractionStabilityMatrix.test.ts` |
+| Settings diagnostics / telemetry export | Trigger diagnostics bundle and telemetry export builders repeatedly | Read/export/report builders do not mutate runtime store state | Calling report builders changes live store state | `tests/integration/release/layoutInteractionStabilityMatrix.test.ts` (`diagnostics/telemetry ... side-effect free`) |

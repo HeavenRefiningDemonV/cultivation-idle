@@ -213,6 +213,7 @@ export const useTechniqueStore = create<TechniqueStoreState>()(
     },
 
     setSelectedLoadout: (id) => {
+      if (get().selectedLoadoutId === id) return;
       const exists = get().loadouts.some((l) => l.id === id);
       if (!exists) return;
       set((state) => {

@@ -33,6 +33,7 @@ import { createDefaultMedicinePouchState, useMedicinePouchStore } from '../store
 import { createDefaultCraftSessionState, useCraftSessionStore } from '../stores/craftSessionStore.js';
 import { createDefaultRecipeMasteryState, useRecipeMasteryStore } from '../stores/recipeMasteryStore.js';
 import { useContentStore } from '../stores/contentStore.js';
+import { useUIStore } from '../stores/uiStore.js';
 import type { EquipmentSlot, ForgeToolTiers, TemperAffix } from '../stores/equipmentStore.js';
 
 import { CURRENT_SAVE_VERSION, migrateIncomingSaveForHydration } from './migrations/index.js';
@@ -153,6 +154,7 @@ export function buildDefaultSaveState(): SaveData {
   const craftSessionState = useCraftSessionStore.getState();
   const medicinePouchState = useMedicinePouchStore.getState();
   const recipeMasteryState = useRecipeMasteryStore.getState();
+  const uiState = useUIStore.getState();
 
   return {
     version: SAVE_VERSION,
@@ -174,6 +176,7 @@ export function buildDefaultSaveState(): SaveData {
       lastTickTime: gameState.lastTickTime,
       lastActiveTime: gameState.lastActiveTime,
       runStartTime: gameState.runStartTime,
+      currentChapterExhaustedAcknowledgedThisLife: uiState.currentChapterExhaustedAcknowledgedThisLife,
     },
     prestigeState: {
       totalAP: prestigeState.totalAP,
