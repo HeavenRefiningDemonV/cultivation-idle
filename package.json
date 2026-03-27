@@ -33,6 +33,8 @@
     "balance:report:json": "npm run balance:report -- --json",
     "release:fresh-run-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/buildFreshRunAcceptanceReport.js",
     "release:fresh-run-report:json": "npm run release:fresh-run-report -- --json",
+    "release:migration-matrix": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/runMigrationMatrix.js",
+    "release:migration-matrix:json": "npm run release:migration-matrix -- --json",
     "validate:balance-regression": "npm run test:balance-regression && npm run balance:report -- --fail-on-drift",
     "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js"
   },

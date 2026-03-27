@@ -25,6 +25,7 @@
     "src/systems/crafting/craftingTypes.ts",
     "scripts/balanceRegressionReport.ts",
     "scripts/validateBalanceTelemetry.ts",
-    "scripts/release/buildFreshRunAcceptanceReport.ts"
+    "scripts/release/buildFreshRunAcceptanceReport.ts",
+    "scripts/release/runMigrationMatrix.ts"
   ]
 }

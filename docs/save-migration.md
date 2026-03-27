@@ -28,6 +28,7 @@ This document describes the Section 0 save migration framework and the first pop
 | `v2_0_0_plan_trial_resolution_normalization` | transform | `1.4` | detect contradictory first-gate progression state and normalize it to an honest bypassed resolution on apply |
 | `v2_0_0_plan_partial_reset_residue_cleanup` | transform | `1.7` | detect clean-life residue across per-life and hybrid stores, report the cleanup, and normalize it to a clean new-life baseline on apply |
 | `v2_0_0_plan_offline_unification` | transform | `1.8` | detect split offline metadata surfaces, choose the latest valid timestamp, and align canonical/runtime-facing offline fields on apply |
+| `v2_0_0_refund_hidden_craft_outputs` | transform | `3.1` | remove hidden/deferred craft outputs and stale craft residue, then refund canonical authored inputs/costs to live inventory/currency truth |
 
 ## Fixture catalog
 
@@ -44,6 +45,11 @@ Key fixtures:
 - `legacy-trial-mismatch`
 - `legacy-partial-reset-residue`
 - `legacy-offline-split`
+- `legacy-hidden-craft-outputs`
+
+Release fixture grouping/risk coverage and matrix expectations are formalized in:
+- `src/save/migrations/releaseMigrationFixtureCatalog.ts`
+- `docs/release/migration_fixture_catalog.md`
 
 ## How later packets should handle the remaining planned transforms
 
@@ -64,6 +70,17 @@ Key fixtures:
   - `npm run migration:report -- --fixture=legacy-gate-item-ids`
 - Arbitrary file input:
   - `npm run migration:dry-run -- --file=./my-save.json`
+
+## Release migration matrix command (packet 7.2a / 7.2b)
+
+- Human-readable matrix:
+  - `npm run release:migration-matrix`
+- JSON matrix:
+  - `npm run release:migration-matrix:json`
+- Optional single fixture:
+  - `npm run release:migration-matrix -- --fixture=legacy-hidden-craft-outputs`
+- Optional drift gate:
+  - `npm run release:migration-matrix -- --fail-on-drift`
 
 
 ## Packet 1.8 offline timestamp normalization

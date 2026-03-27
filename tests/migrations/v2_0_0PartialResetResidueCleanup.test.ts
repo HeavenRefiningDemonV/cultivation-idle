@@ -37,9 +37,9 @@ test('packet 1.7 apply normalizes legacy partial-reset residue to a clean new-li
   assert.deepEqual(equipmentState.refineLevelBySlot, { weapon: 0, accessory: 0 });
   assert.deepEqual(readRecord(inventoryState.items), {});
   assert.deepEqual(inventoryState.currencies, { gold: '0', spiritStones: '0', merit: '0' });
-  assert.equal(prestigeState.totalAP, 135);
+  assert.equal(prestigeState.totalAP, 15);
   assert.equal(prestigeState.lifetimeAP, 45);
-  assert.deepEqual(prestigeState.purchasesById, { ap_unlock_heartlaw_t1: 1 });
+  assert.deepEqual(prestigeState.purchasesById, { ap_mastery_retention_25: 1, ap_unlock_heartlaw_t1: 1 });
   const firstLoadout = readArray<Record<string, unknown>>(techniqueState.loadouts)[0] ?? {};
   const firstLoadoutSlots = readRecord(firstLoadout.slots);
   assert.equal(firstLoadoutSlots.ultimate ?? null, null);

@@ -12,3 +12,6 @@
 - `legacy-city-current-invalid.json`: intentional packet-1.5 contradiction where city progression is underspecified for a later realm and `currentCityId` points at an invalid/unlocked-mismatched city; apply-mode migration should backfill the unlocked city chain and normalize current city/module truth.
 - `legacy-partial-reset-residue.json`: obvious clean-life residue across per-life and hybrid systems; packet-1.7 apply mode should restore the Pinewind new-life baseline while preserving permanent prestige meta.
 - `legacy-offline-split.json`: multiple offline timestamp fields disagree; packet-1.8 apply-mode migration must normalize them to the latest valid canonical timestamp while preserving the raw fixture as a regression input.
+- `legacy-hidden-craft-outputs.json`: hidden/deferred craft outputs and residue surfaces (inventory, queues, active session, talisman buff, and medicine pouch) used to validate packet-3.1 cleanup (`v2_0_0_refund_hidden_craft_outputs`) as a first-class release migration matrix case.
+
+Release-facing grouping, risk classes, and expected post-apply truth now live in `src/save/migrations/releaseMigrationFixtureCatalog.ts` and `docs/release/migration_fixture_catalog.md`.
