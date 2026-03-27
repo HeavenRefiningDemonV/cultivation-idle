@@ -13,6 +13,12 @@ import { useErrorLogStore } from '../../stores/errorLogStore.js';
 import { AudioDebugPanel } from '../../ui/debug/AudioDebugPanel.js';
 import { buildDiagnosticsBundle, type DiagnosticsBundleV1 } from '../../services/diagnostics/buildDiagnosticsBundle.js';
 import {
+  buildBalanceTelemetryCsvFiles,
+  buildBalanceTelemetryExportEnvelope,
+  serializeBalanceTelemetryExport,
+  summarizeBalanceTelemetryReport,
+} from '../../services/diagnostics/balanceTelemetryExport.js';
+import {
   applySafeRepairs,
   runRuntimeValidation,
   type ValidationIssue,
@@ -60,6 +66,7 @@ function formatDiagnosticsSummary(bundle: DiagnosticsBundleV1): string {
     : 'idle';
   parts.push(`Combat: ${combatLabel}`);
   parts.push(`Telemetry: events=${bundle.telemetry.recentEvents.length} errors=${bundle.telemetry.recentErrors.length}`);
+  parts.push(`Balance telemetry: events=${bundle.telemetry.recentBalanceEvents.length} capture=${bundle.telemetry.balanceCaptureEnabled ? 'on' : 'off'}`);
   parts.push(`Validation: ${bundle.validation.errorCount} errors, ${bundle.validation.warningCount} warnings`);
   if (bundle.errors && bundle.errors.length > 0) {
     parts.push(`Bundle warnings: ${bundle.errors.join('; ')}`);
@@ -94,6 +101,11 @@ export function SettingsScreen() {
   const pavilionsCount = useContentStore((state) => Object.keys(state.maps.pavilionsById).length);
   const telemetryEvents = useTelemetryStore((state) => state.events);
   const clearTelemetry = useTelemetryStore((state) => state.clear);
+  const balanceTelemetryEvents = useTelemetryStore((state) => state.balanceEvents);
+  const clearBalanceTelemetry = useTelemetryStore((state) => state.clearBalanceEvents);
+  const balanceCaptureEnabled = useTelemetryStore((state) => state.balanceCaptureEnabled);
+  const setBalanceCaptureEnabled = useTelemetryStore((state) => state.setBalanceCaptureEnabled);
+  const maxBalanceEvents = useTelemetryStore((state) => state.maxBalanceEvents);
   const errorEntries = useErrorLogStore((state) => state.errors);
   const clearErrors = useErrorLogStore((state) => state.clear);
   const isDev = import.meta.env.DEV;
@@ -159,6 +171,65 @@ export function SettingsScreen() {
     void copyToClipboard(text).catch((error) => {
       console.warn('[Diagnostics] Failed to copy errors', error);
     });
+  };
+
+  const buildBalanceEnvelope = () => buildBalanceTelemetryExportEnvelope({
+    events: balanceTelemetryEvents.map((entry) => entry.payload),
+    balanceCaptureEnabled,
+    maxBalanceEvents,
+    app: {
+      name: 'cultivation-idle',
+      version: import.meta.env?.VITE_APP_VERSION ?? 'unknown',
+      mode: import.meta.env?.MODE ?? 'unknown',
+    },
+  });
+
+  const handleDownloadBalanceTelemetry = () => {
+    try {
+      const envelope = buildBalanceEnvelope();
+      downloadJson(`cultivation_balance_telemetry_${new Date(envelope.exportedAt).toISOString()}.json`, envelope);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to download balance telemetry: ${String(error)}`);
+    }
+  };
+
+  const handleCopyBalanceSummary = () => {
+    try {
+      const summary = summarizeBalanceTelemetryReport(buildBalanceEnvelope().summary);
+      void copyToClipboard(summary);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to copy balance summary: ${String(error)}`);
+    }
+  };
+
+  const handleCopyBalanceEventsJson = () => {
+    try {
+      const text = serializeBalanceTelemetryExport(buildBalanceEnvelope());
+      void copyToClipboard(text);
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to copy balance telemetry JSON: ${String(error)}`);
+    }
+  };
+
+  const handleDownloadBalanceCsv = () => {
+    try {
+      const csvMap = buildBalanceTelemetryCsvFiles(balanceTelemetryEvents.map((entry) => entry.payload));
+      Object.entries(csvMap).forEach(([filename, csv]) => {
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+      setDiagnosticsError(null);
+    } catch (error) {
+      setDiagnosticsError(`Failed to download balance CSV: ${String(error)}`);
+    }
   };
 
   const handleDownloadDiagnostics = () => {
@@ -442,6 +513,86 @@ export function SettingsScreen() {
                   {repairNotes.length > 0 ? ` Notes: ${repairNotes.join('; ')}` : ''}
                 </div>
               ) : null}
+            </div>
+
+            <div className={'settingsDiagnosticsList'}>
+              <div className={'settingsDiagnosticsRow'}>
+                <div>
+                  <div className={'settingsDebugLabel'}>Balance Telemetry</div>
+                  <div className={'settingsDiagnosticsMeta'}>
+                    Showing {Math.min(10, balanceTelemetryEvents.length)} of {balanceTelemetryEvents.length} events
+                  </div>
+                </div>
+                <div className={'settingsDiagnosticsActions'}>
+                  <label className={'settingsScreenOptionRow'} style={{ marginBottom: 0 }}>
+                    <input
+                      type=\"checkbox\"
+                      checked={balanceCaptureEnabled}
+                      onChange={(event) => setBalanceCaptureEnabled(event.target.checked)}
+                      className={'settingsScreenCheckbox'}
+                    />
+                    <div>
+                      <div className={'settingsScreenOptionLabel'}>Capture enabled</div>
+                    </div>
+                  </label>
+                  <button
+                    className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                    onClick={clearBalanceTelemetry}
+                    disabled={balanceTelemetryEvents.length === 0}
+                  >
+                    Clear Balance Events
+                  </button>
+                  <button
+                    className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                    onClick={handleCopyBalanceSummary}
+                    disabled={balanceTelemetryEvents.length === 0}
+                  >
+                    Copy Balance Summary
+                  </button>
+                </div>
+              </div>
+              <div className={'settingsDiagnosticsActions'}>
+                <button
+                  className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                  onClick={handleDownloadBalanceTelemetry}
+                  disabled={balanceTelemetryEvents.length === 0}
+                >
+                  Download Balance Telemetry (.json)
+                </button>
+                <button
+                  className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                  onClick={handleDownloadBalanceCsv}
+                  disabled={balanceTelemetryEvents.length === 0}
+                >
+                  Download Balance CSV
+                </button>
+                <button
+                  className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                  onClick={handleCopyBalanceEventsJson}
+                  disabled={balanceTelemetryEvents.length === 0}
+                >
+                  Copy Balance Events (JSON)
+                </button>
+              </div>
+              {balanceTelemetryEvents.length > 0 ? (
+                <div className={'settingsDiagnosticsEntries'}>
+                  {balanceTelemetryEvents.slice(0, 10).map((entry) => (
+                    <div key={entry.id} className={'settingsDiagnosticsEntry'}>
+                      <div className={'settingsDiagnosticsRow'}>
+                        <div>
+                          <div className={'settingsDebugLabel'}>{entry.kind}</div>
+                          <div className={'settingsDiagnosticsMeta'}>
+                            {new Date(entry.ts).toLocaleTimeString()}
+                          </div>
+                        </div>
+                        <div className={'settingsDiagnosticsSummary'}>{entry.summary}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={'settingsDiagnosticsEmpty'}>No balance telemetry events captured yet.</div>
+              )}
             </div>
 
             <div className={'settingsDiagnosticsList'}>

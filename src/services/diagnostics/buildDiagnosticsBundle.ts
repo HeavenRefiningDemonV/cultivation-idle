@@ -8,6 +8,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { runRuntimeValidation } from './runValidation.js';
 import type { ValidationIssue } from './runValidation.js';
 import type { SaveInfo } from '../../utils/saveload.js';
+import { buildBalanceTelemetryReport } from './balanceTelemetryExport.js';
 
 export type DiagnosticsBundleV1 = {
   schemaVersion: 1;
@@ -34,6 +35,10 @@ export type DiagnosticsBundleV1 = {
   };
   telemetry: {
     recentEvents: ReturnType<typeof useTelemetryStore.getState>['events'];
+    recentBalanceEvents: ReturnType<typeof useTelemetryStore.getState>['balanceEvents'];
+    balanceTelemetrySummary: ReturnType<typeof buildBalanceTelemetryReport>;
+    balanceCaptureEnabled: boolean;
+    maxBalanceEvents: number;
     recentErrors: ReturnType<typeof useErrorLogStore.getState>['errors'];
   };
   validation: {
@@ -125,6 +130,10 @@ export function buildDiagnosticsBundle(): DiagnosticsBundleV1 {
 
   const telemetry = {
     recentEvents: telemetryStore.events.slice(0, telemetryStore.maxEvents),
+    recentBalanceEvents: telemetryStore.balanceEvents.slice(0, telemetryStore.maxBalanceEvents),
+    balanceTelemetrySummary: buildBalanceTelemetryReport(telemetryStore.balanceEvents.map((entry) => entry.payload)),
+    balanceCaptureEnabled: telemetryStore.balanceCaptureEnabled,
+    maxBalanceEvents: telemetryStore.maxBalanceEvents,
     recentErrors: errorStore.errors.slice(0, errorStore.maxErrors),
   };
 

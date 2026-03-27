@@ -32,6 +32,9 @@ export function SystemStatusPanel() {
   const contentRaw = useContentStore((state) => state.raw);
   const economyConfig = useContentStore((state) => state.raw?.economy);
   const telemetryCount = useTelemetryStore((state) => state.events.length);
+  const balanceTelemetryCount = useTelemetryStore((state) => state.balanceEvents.length);
+  const balanceCaptureEnabled = useTelemetryStore((state) => state.balanceCaptureEnabled);
+  const lastBalanceTelemetryEvent = useTelemetryStore((state) => state.balanceEvents[0]);
   const errorCount = useErrorLogStore((state) => state.errors.length);
   const lastTelemetryEvent = useTelemetryStore((state) => state.events[0]);
 
@@ -135,6 +138,13 @@ export function SystemStatusPanel() {
         <div className={'settingsDebugLabel'}>Telemetry</div>
         <div className={'settingsDebugValue'}>
           Events: {telemetryCount} • Errors: {errorCount}
+        </div>
+      </div>
+      <div className={'settingsDebugRow'}>
+        <div className={'settingsDebugLabel'}>Balance Telemetry</div>
+        <div className={'settingsDebugValue'}>
+          Events: {balanceTelemetryCount} • Capture: {balanceCaptureEnabled ? 'On' : 'Off'}
+          {lastBalanceTelemetryEvent ? ` • Latest: ${lastBalanceTelemetryEvent.kind}` : ''}
         </div>
       </div>
 

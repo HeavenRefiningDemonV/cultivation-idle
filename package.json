@@ -26,6 +26,8 @@
     "validate:progression-fixtures": "npm run build:progression-fixtures && node tmp-progression-fixtures/scripts/validateProgressionFixtures.js",
     "progression:matrix": "npm run build:progression-fixtures && node tmp-progression-fixtures/scripts/validateProgressionFixtures.js --matrix",
     "test:progression-fixtures": "npm run build:progression-fixtures && node --test tmp-progression-fixtures/tests/contracts/*.js tmp-progression-fixtures/tests/integration/*.js tmp-progression-fixtures/tests/matrices/*.js"
+    ,"telemetry:export": "node --experimental-strip-types scripts/exportBalanceTelemetry.ts"
+    ,"telemetry:summary": "node --experimental-strip-types scripts/summarizeBalanceTelemetry.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
