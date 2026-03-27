@@ -311,6 +311,14 @@ export function initializeGame(): boolean {
         SaveService.save();
       } else {
         console.warn('[GameLoop] Failed to load save, starting fresh');
+        const loadFailure = SaveService.getLastLoadFailure();
+        if (loadFailure) {
+          useUIStore.getState().addNotification(
+            'warning',
+            `Save load failed (${loadFailure.code}). Started a fresh session.`,
+            7000,
+          );
+        }
       }
     } else {
       console.log('[GameLoop] No save found, starting new game');

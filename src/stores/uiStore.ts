@@ -63,6 +63,11 @@ export type WorldBuildingModalIntent = null | {
   apothecarySurface?: 'buy' | 'brew' | 'pouch';
 };
 export type LifeSummaryModalMode = 'current' | 'last_completed';
+export type MigrationIssueModalPayload = {
+  title: string;
+  summary: string;
+  items: string[];
+};
 
 const normalizeWorldBuildingKey = (buildingKey: WorldBuildingKey): WorldBuildingKey =>
   buildingKey === 'alchemy' ? 'apothecary' : buildingKey;
@@ -147,6 +152,8 @@ interface UIStateBase {
   showCurrentChapterExhaustedModal: boolean;
   showLifeSummaryModal: boolean;
   lifeSummaryMode: LifeSummaryModalMode;
+  showMigrationIssuesModal: boolean;
+  migrationIssuePayload: MigrationIssueModalPayload | null;
   currentChapterExhaustedAcknowledgedThisLife: boolean;
   activeOnboardingPrompt: OnboardingPromptInstance | null;
   queuedOnboardingPrompts: OnboardingPromptInstance[];
@@ -217,6 +224,8 @@ export interface UIState extends UIStateBase {
   closeCurrentChapterExhaustedModal: () => void;
   openLifeSummaryModal: (mode: LifeSummaryModalMode) => void;
   closeLifeSummaryModal: () => void;
+  openMigrationIssuesModal: (payload: MigrationIssueModalPayload) => void;
+  closeMigrationIssuesModal: () => void;
   acknowledgeCurrentChapterExhausted: () => void;
   clearCurrentChapterExhaustedAcknowledgement: () => void;
   queueOnboardingPrompt: (prompt: OnboardingPromptInstance) => void;
@@ -274,6 +283,8 @@ const INITIAL_UI_STATE: UIStateBase = {
   showCurrentChapterExhaustedModal: false,
   showLifeSummaryModal: false,
   lifeSummaryMode: 'current',
+  showMigrationIssuesModal: false,
+  migrationIssuePayload: null,
   currentChapterExhaustedAcknowledgedThisLife: false,
   activeOnboardingPrompt: null,
   queuedOnboardingPrompts: [],
@@ -414,6 +425,7 @@ export const useUIStore = create<UIState>()(
         showWorldBuildingModal: snapshot.showWorldBuildingModal,
         showCurrentChapterExhaustedModal: snapshot.showCurrentChapterExhaustedModal,
         showLifeSummaryModal: snapshot.showLifeSummaryModal,
+        showMigrationIssuesModal: snapshot.showMigrationIssuesModal,
         pendingCityArrivalId: snapshot.pendingCityArrivalId,
         activeOnboardingPrompt: snapshot.activeOnboardingPrompt,
         combatPresentationMode: snapshot.combatPresentation.mode,
@@ -489,6 +501,7 @@ export const useUIStore = create<UIState>()(
         showWorldBuildingModal: snapshot.showWorldBuildingModal,
         showCurrentChapterExhaustedModal: snapshot.showCurrentChapterExhaustedModal,
         showLifeSummaryModal: snapshot.showLifeSummaryModal,
+        showMigrationIssuesModal: snapshot.showMigrationIssuesModal,
         pendingCityArrivalId: snapshot.pendingCityArrivalId,
         activeOnboardingPrompt: snapshot.activeOnboardingPrompt,
         combatPresentationMode: snapshot.combatPresentation.mode,
@@ -883,6 +896,20 @@ export const useUIStore = create<UIState>()(
     closeLifeSummaryModal: () => {
       set((state) => {
         state.showLifeSummaryModal = false;
+      });
+    },
+
+    openMigrationIssuesModal: (payload) => {
+      set((state) => {
+        state.showMigrationIssuesModal = true;
+        state.migrationIssuePayload = payload;
+      });
+    },
+
+    closeMigrationIssuesModal: () => {
+      set((state) => {
+        state.showMigrationIssuesModal = false;
+        state.migrationIssuePayload = null;
       });
     },
 

@@ -19,6 +19,7 @@ export type NotificationHierarchyState = {
   showWorldBuildingModal: boolean;
   showCurrentChapterExhaustedModal: boolean;
   showLifeSummaryModal: boolean;
+  showMigrationIssuesModal?: boolean;
   pendingCityArrivalId: string | null;
   activeOnboardingPrompt: unknown | null;
   combatPresentationMode: 'hidden' | 'preview' | 'active' | 'docked';
@@ -91,6 +92,7 @@ export const isNotificationOverlayBlocked = (state: NotificationHierarchyState):
   || state.showWorldBuildingModal
   || state.showCurrentChapterExhaustedModal
   || state.showLifeSummaryModal
+  || state.showMigrationIssuesModal === true
   || state.pendingCityArrivalId !== null
   || state.activeOnboardingPrompt !== null
   || state.combatPresentationMode !== 'hidden';

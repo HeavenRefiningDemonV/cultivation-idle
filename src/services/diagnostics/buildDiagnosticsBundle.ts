@@ -27,6 +27,8 @@ export type DiagnosticsBundleV1 = {
     saveInfo: SaveInfo | null;
     lastSaveAt: number | null;
     lastOfflineSummary: unknown;
+    lastMigrationReport: ReturnType<typeof SaveService.getLastMigrationReport>;
+    lastLoadFailure: ReturnType<typeof SaveService.getLastLoadFailure>;
   };
   status: {
     activity: unknown;
@@ -112,6 +114,8 @@ export function buildDiagnosticsBundle(): DiagnosticsBundleV1 {
     saveInfo: saveInfo ?? null,
     lastSaveAt: uiState.lastSaveAt ?? null,
     lastOfflineSummary: uiState.lastOfflineSummary ?? null,
+    lastMigrationReport: SaveService.getLastMigrationReport(),
+    lastLoadFailure: SaveService.getLastLoadFailure(),
   };
 
   const activityState = useActivityStore.getState();

@@ -40,12 +40,41 @@ const SAVE_KEY = 'cultivation-idle-save-v3';
 const BACKUP_A_KEY = 'cultivation-idle-save-v3-backup-A';
 const BACKUP_B_KEY = 'cultivation-idle-save-v3-backup-B';
 const BACKUP_C_KEY = 'cultivation-idle-save-v3-backup-C';
+const QUARANTINE_KEY_PREFIX = 'cultivation-idle-save-v3-quarantine';
 
 type SaveRuinsState = NonNullable<SaveData['ruinsState']>;
 type SaveRuinsRunSummary = NonNullable<SaveRuinsState['runHistory']>[number];
 
 let lastLoadedSaveData: SaveData | null = null;
 let lastLoadMigrationReport: import('../save/migrations/index.js').MigrationRunReport | null = null;
+export type SaveLoadFailureCode =
+  | 'NO_VALID_SAVE_FOUND'
+  | 'DECRYPT_FAILED'
+  | 'MIGRATED_SAVE_INVALID'
+  | 'SAVE_APPLY_FAILED'
+  | 'IMPORT_DECODE_FAILED'
+  | 'IMPORT_MIGRATED_SAVE_INVALID'
+  | 'IMPORT_APPLY_FAILED';
+
+export type SaveLoadFailure = {
+  code: SaveLoadFailureCode;
+  message: string;
+  slot?: string;
+  timestamp: number;
+  detail?: string;
+};
+
+let lastLoadFailure: SaveLoadFailure | null = null;
+
+const recordLoadFailure = (failure: Omit<SaveLoadFailure, 'timestamp'>): SaveLoadFailure => {
+  const enriched: SaveLoadFailure = { ...failure, timestamp: Date.now() };
+  lastLoadFailure = enriched;
+  return enriched;
+};
+
+const clearLoadFailure = () => {
+  lastLoadFailure = null;
+};
 
 /**
  * Encryption key - in production, this could be more sophisticated
@@ -798,17 +827,21 @@ function encryptSaveData(data: SaveData): string {
   }
 }
 
+type DecryptSaveResult =
+  | { ok: true; saveData: SaveData }
+  | { ok: false; code: Extract<SaveLoadFailureCode, 'DECRYPT_FAILED' | 'MIGRATED_SAVE_INVALID'>; message: string; detail?: string };
+
 /**
- * Decrypt save data
+ * Decrypt + migrate save data
  */
-function decryptSaveData(encrypted: string): SaveData | null {
+function decryptSaveData(encrypted: string): DecryptSaveResult {
   try {
     const decrypted = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY);
     const jsonString = decrypted.toString(CryptoJS.enc.Utf8);
 
     if (!jsonString) {
       console.error('Decryption produced empty string');
-      return null;
+      return { ok: false, code: 'DECRYPT_FAILED', message: 'Decryption produced empty string.' };
     }
 
     const data = JSON.parse(jsonString);
@@ -820,8 +853,8 @@ function decryptSaveData(encrypted: string): SaveData | null {
     }
 
     if (!validateSaveData(migrated)) {
-      console.warn('[SaveLoad] Migrated save data failed validation, using defaults');
-      return buildDefaultSaveState();
+      console.warn('[SaveLoad] Migrated save data failed validation');
+      return { ok: false, code: 'MIGRATED_SAVE_INVALID', message: 'Migrated save data failed validation checks.' };
     }
     pendingOfflineContext = buildOfflineContext(
       migrated.meta?.lastActiveAtMs ??
@@ -832,10 +865,10 @@ function decryptSaveData(encrypted: string): SaveData | null {
         wasMeditating: migrated.activityState?.active?.type === 'meditate',
       },
     );
-    return migrated;
+    return { ok: true, saveData: migrated };
   } catch (error) {
     console.error('Decryption error:', error);
-    return null;
+    return { ok: false, code: 'DECRYPT_FAILED', message: 'Save decrypt or parse failed.', detail: String(error) };
   }
 }
 
@@ -853,6 +886,10 @@ export function getLastLoadedSaveSnapshot(): SaveData | null {
 
 export function getLastLoadMigrationReport(): import('../save/migrations').MigrationRunReport | null {
   return lastLoadMigrationReport;
+}
+
+export function getLastLoadFailure(): SaveLoadFailure | null {
+  return lastLoadFailure;
 }
 
 /**
@@ -878,6 +915,17 @@ function rotateBackups(): void {
   } catch (error) {
     console.error('Backup rotation error:', error);
     // Don't throw - backup rotation failing shouldn't prevent saving
+  }
+}
+
+function quarantineCorruptSlot(slotKey: string, encryptedPayload: string, reason: SaveLoadFailure): void {
+  try {
+    const quarantineKey = `${QUARANTINE_KEY_PREFIX}:${slotKey}:${reason.timestamp}`;
+    localStorage.setItem(quarantineKey, encryptedPayload);
+    localStorage.removeItem(slotKey);
+    console.warn(`[SaveLoad] Quarantined failed slot ${slotKey} -> ${quarantineKey} (${reason.code})`);
+  } catch (error) {
+    console.error(`[SaveLoad] Failed to quarantine corrupted slot ${slotKey}`, error);
   }
 }
 
@@ -1329,6 +1377,7 @@ function applySaveData(saveData: SaveData): void {
 export function loadGame(): boolean {
   try {
     console.log('[SaveLoad] Loading game...');
+    clearLoadFailure();
 
     const saveKeys = [SAVE_KEY, BACKUP_A_KEY, BACKUP_B_KEY, BACKUP_C_KEY];
     let saveData: SaveData | null = null;
@@ -1343,35 +1392,48 @@ export function loadGame(): boolean {
       }
 
       console.log(`[SaveLoad] Attempting to load from ${key}...`);
-      saveData = decryptSaveData(encrypted);
+      const decryptResult = decryptSaveData(encrypted);
 
-      if (saveData) {
+      if (decryptResult.ok) {
+        saveData = decryptResult.saveData;
         loadedFrom = key;
         break;
       } else {
-        console.warn(`[SaveLoad] Failed to decrypt save from ${key}`);
+        const failure = recordLoadFailure({
+          code: decryptResult.code,
+          message: decryptResult.message,
+          slot: key,
+          detail: decryptResult.detail,
+        });
+        quarantineCorruptSlot(key, encrypted, failure);
       }
     }
 
     if (!saveData) {
       console.log('[SaveLoad] No valid save found');
+      if (!lastLoadFailure) {
+        recordLoadFailure({
+          code: 'NO_VALID_SAVE_FOUND',
+          message: 'No valid save slots could be loaded.',
+        });
+      }
       return false;
     }
 
     lastLoadedSaveData = saveData;
 
-    pendingOfflineContext = buildOfflineContext(
-      saveData.meta?.lastActiveAtMs ??
-        saveData.gameState.lastActiveTime ??
-        saveData.gameState.lastTickTime ??
-        Date.now(),
-      {
-        wasMeditating: saveData.activityState?.active?.type === 'meditate',
-      },
-    );
-
     // Apply save data to stores
-    applySaveData(saveData);
+    try {
+      applySaveData(saveData);
+    } catch (error) {
+      recordLoadFailure({
+        code: 'SAVE_APPLY_FAILED',
+        message: 'Save was decrypted but failed during hydration apply.',
+        slot: loadedFrom ?? undefined,
+        detail: String(error),
+      });
+      return false;
+    }
 
     // If we loaded from a backup, save it to main slot
     if (loadedFrom !== SAVE_KEY) {
@@ -1619,9 +1681,14 @@ export function exportSave(): string | null {
 export function importSave(base64String: string): boolean {
   try {
     console.log('[SaveLoad] Importing save...');
+    clearLoadFailure();
 
     if (!base64String || typeof base64String !== 'string') {
       console.error('[SaveLoad] Invalid import string');
+      recordLoadFailure({
+        code: 'IMPORT_DECODE_FAILED',
+        message: 'Import string was empty or invalid.',
+      });
       return false;
     }
 
@@ -1632,16 +1699,36 @@ export function importSave(base64String: string): boolean {
 
     if (!base64Json) {
       console.error('[SaveLoad] Decryption failed');
+      recordLoadFailure({
+        code: 'IMPORT_DECODE_FAILED',
+        message: 'Import string failed decryption.',
+      });
       return false;
     }
 
     const jsonString = atob(base64Json);
     const rawSave = JSON.parse(jsonString);
     const saveData = migrateSave(rawSave);
+    if (!validateSaveData(saveData)) {
+      recordLoadFailure({
+        code: 'IMPORT_MIGRATED_SAVE_INVALID',
+        message: 'Imported save failed migrated validation checks.',
+      });
+      return false;
+    }
     pendingOfflineContext = null;
 
     // Apply the imported data
-    applySaveData(saveData);
+    try {
+      applySaveData(saveData);
+    } catch (error) {
+      recordLoadFailure({
+        code: 'IMPORT_APPLY_FAILED',
+        message: 'Imported save failed during hydration apply.',
+        detail: String(error),
+      });
+      return false;
+    }
 
     // Save to localStorage
     saveGame();
@@ -1650,6 +1737,11 @@ export function importSave(base64String: string): boolean {
     return true;
   } catch (error) {
     console.error('[SaveLoad] Import failed:', error);
+    recordLoadFailure({
+      code: 'IMPORT_DECODE_FAILED',
+      message: 'Import parsing failed.',
+      detail: String(error),
+    });
     return false;
   }
 }
@@ -1717,13 +1809,16 @@ export function hasSave(): boolean {
  * Get save information without loading it
  * Returns save metadata or null if no save exists
  */
-export function getSaveInfo(): { timestamp: number; version: string } | null {
+export type SaveInfo = { timestamp: number; version: string };
+
+export function getSaveInfo(): SaveInfo | null {
   try {
     const encrypted = localStorage.getItem(SAVE_KEY);
     if (!encrypted) return null;
 
-    const saveData = decryptSaveData(encrypted);
-    if (!saveData) return null;
+    const decryptResult = decryptSaveData(encrypted);
+    if (!decryptResult.ok) return null;
+    const saveData = decryptResult.saveData;
 
     return {
       timestamp: saveData.timestamp,

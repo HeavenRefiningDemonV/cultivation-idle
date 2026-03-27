@@ -11,6 +11,7 @@ import {
   getSaveInfo as legacyGetSaveInfo,
   consumeOfflineContext,
   getLastLoadMigrationReport,
+  getLastLoadFailure,
 } from '../../utils/saveload.js';
 import { GameEvents } from '../events/GameEvents.js';
 import { apply as applyOfflineCatchup } from '../time/OfflineCatchup.js';
@@ -79,6 +80,22 @@ export const SaveService = {
   },
   load(): boolean {
     const ok = legacyLoadGame();
+    const uiStore = useUIStore.getState();
+    const migrationReport = getLastLoadMigrationReport();
+    const loadFailure = getLastLoadFailure();
+
+    if (!ok && loadFailure) {
+      uiStore.openMigrationIssuesModal({
+        title: 'Save Load Failed',
+        summary: loadFailure.message,
+        items: [
+          `Code: ${loadFailure.code}`,
+          loadFailure.slot ? `Slot: ${loadFailure.slot}` : null,
+          loadFailure.detail ? `Detail: ${loadFailure.detail}` : null,
+        ].filter((item): item is string => Boolean(item)),
+      });
+    }
+
     if (ok) {
       const now = GameClock.nowWall();
       recordLastSave(now);
@@ -88,6 +105,18 @@ export const SaveService = {
         if (persisted) {
           recordLastSave(GameClock.nowWall());
         }
+      }
+
+      if (migrationReport && (migrationReport.warnings.length > 0 || migrationReport.errors.length > 0)) {
+        const items = [
+          ...migrationReport.errors.map((entry) => `[Error][${entry.code}] ${entry.message}`),
+          ...migrationReport.warnings.map((entry) => `[Warn][${entry.code}] ${entry.message}`),
+        ];
+        uiStore.openMigrationIssuesModal({
+          title: 'Migration Notes',
+          summary: 'Your save loaded with migration warnings. Review details below.',
+          items,
+        });
       }
     }
     return ok;
@@ -112,6 +141,9 @@ export const SaveService = {
   },
   getLastMigrationReport() {
     return getLastLoadMigrationReport();
+  },
+  getLastLoadFailure() {
+    return getLastLoadFailure();
   },
   startAutosave(): number {
     return legacyStartAutosave();
