@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {
@@ -56,25 +56,16 @@ async function run() {
     return;
   }
 
-  let combinedOutput = '';
-  let buildPassed = true;
-
-  try {
-    combinedOutput = execSync('npm run build', {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
-      maxBuffer: 10 * 1024 * 1024,
-    });
-  } catch (error) {
-    buildPassed = false;
-    if (error && typeof error === 'object' && 'stdout' in error && 'stderr' in error) {
-      const stdout = String((error as { stdout?: string }).stdout ?? '');
-      const stderr = String((error as { stderr?: string }).stderr ?? '');
-      combinedOutput = `${stdout}\n${stderr}`;
-    } else {
-      combinedOutput = String(error);
-    }
-  }
+  const buildResult = spawnSync('npm', ['run', 'build'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    maxBuffer: 20 * 1024 * 1024,
+    env: process.env,
+  });
+  const buildPassed = buildResult.status === 0;
+  const stdout = buildResult.stdout ?? '';
+  const stderr = buildResult.stderr ?? '';
+  const combinedOutput = `${stdout}\n${stderr}`;
 
   const report = buildBuildAuditReport({ output: combinedOutput, buildPassed });
 

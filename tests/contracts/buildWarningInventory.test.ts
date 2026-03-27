@@ -24,6 +24,45 @@ test('build warning parser captures blocker + warning and dedupes repeats', () =
   assert.equal(entries.filter((entry) => entry.rawExcerpt.includes('http-proxy')).length, 1);
 });
 
+test('build warning parser dedupes repeated experimental warning lines with changing node pids', () => {
+  const sample = [
+    '(node:12345) ExperimentalWarning: `--experimental-loader` may be removed in the future;',
+    '(node:67890) ExperimentalWarning: `--experimental-loader` may be removed in the future;',
+  ].join('\n');
+
+  const entries = parseBuildAuditOutput(sample);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0]?.level, 'warning');
+});
+
+test('build audit classifies launcher failures like permission denied as blockers', () => {
+  const report = buildBuildAuditReport({
+    output: 'sh: 1: vite: Permission denied',
+    buildPassed: false,
+  });
+  assert.equal(report.buildPassed, false);
+  assert.equal(report.blockerCount >= 1, true);
+  assert.equal(report.entries.some((entry) => entry.summary.toLowerCase().includes('permission denied')), true);
+});
+
+test('build audit always emits a blocker when build fails non-zero', () => {
+  const report = buildBuildAuditReport({
+    output: 'npm ERR! lifecycle script `build` failed',
+    buildPassed: false,
+  });
+  assert.equal(report.buildPassed, false);
+  assert.equal(report.blockerCount >= 1, true);
+});
+
+test('warning-only css syntax warnings stay warnings when build passed', () => {
+  const report = buildBuildAuditReport({
+    output: '▲ [WARNING] Unexpected \"$\" [css-syntax-error]',
+    buildPassed: true,
+  });
+  assert.equal(report.blockerCount, 0);
+  assert.equal(report.warningCount, 1);
+});
+
 test('build audit report + renderer keep stable release fields', () => {
   const report = buildBuildAuditReport({
     output: 'warning: sample warning\nerror: sample blocker',

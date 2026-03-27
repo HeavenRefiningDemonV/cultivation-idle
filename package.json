@@ -7,7 +7,7 @@
     "ensure:vendor-links": "node scripts/linkVendorDeps.mjs",
     "build:progression-fixtures": "tsc --project tsconfig.progression-fixtures.json",
     "dev": "vite",
-    "build": "npm run ensure:vendor-links && npm run typecheck && npm run check:icons && vite build",
+    "build": "npm run ensure:vendor-links && npm run typecheck && npm run check:icons && node ./node_modules/vite/bin/vite.js build",
     "check:icons": "node --experimental-strip-types scripts/checkNoEmojiIcons.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

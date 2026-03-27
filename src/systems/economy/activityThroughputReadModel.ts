@@ -17,7 +17,11 @@ import {
 } from './activityRewardRuntime.js';
 
 class SeededRandom implements RewardRandomSource {
-  constructor(private state: number) {}
+  private state: number;
+
+  constructor(state: number) {
+    this.state = state;
+  }
 
   next(): number {
     this.state = (this.state * 1664525 + 1013904223) >>> 0;

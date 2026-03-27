@@ -42,13 +42,37 @@ function detectSourceFamily(line: string): BuildAuditSourceFamily {
 
 function detectLevel(line: string): BuildAuditLevel | null {
   const lower = line.toLowerCase();
-  if (lower.includes('error') || lower.includes('failed') || lower.includes('unexpected token') || lower.includes('transform failed')) return 'blocker';
+  const isWarningLine = lower.includes('[warning]') || lower.startsWith('npm warn') || lower.includes(' warning ');
+  if (
+    isWarningLine
+    && !lower.includes('permission denied')
+    && !lower.includes('command not found')
+    && !lower.includes('enoent')
+    && !lower.includes('eacces')
+    && !lower.includes('spawn ')
+  ) return 'warning';
+
+  if (
+    /\berror\b/.test(lower)
+    || lower.includes('failed')
+    || lower.includes('unexpected token')
+    || lower.includes('transform failed')
+    || lower.includes('permission denied')
+    || lower.includes('eacces')
+    || lower.includes('command not found')
+    || lower.includes('enoent')
+    || lower.includes('spawn ')
+  ) return 'blocker';
   if (lower.includes('warning') || lower.startsWith('npm warn')) return 'warning';
   return null;
 }
 
 function summarize(line: string): string {
-  return line.replace(/^\s*#?\s*/, '').slice(0, 220);
+  return line
+    .replace(/^\s*#?\s*/, '')
+    .replace(/\(node:\d+\)/gi, '(node:PID)')
+    .replace(/\bpid[:=]?\s*\d+\b/gi, 'pid=PID')
+    .slice(0, 220);
 }
 
 function toDisposition(level: BuildAuditLevel): BuildAuditDisposition {
@@ -64,10 +88,11 @@ export function parseBuildAuditOutput(rawOutput: string): BuildAuditEntry[] {
     if (!trimmed) continue;
     const level = detectLevel(trimmed);
     if (!level) continue;
-    if (dedupe.has(trimmed)) continue;
-    dedupe.add(trimmed);
-
     const summary = summarize(trimmed);
+    const dedupeKey = `${level}|${summary.toLowerCase()}`;
+    if (dedupe.has(dedupeKey)) continue;
+    dedupe.add(dedupeKey);
+
     entries.push({
       id: toId(summary, entries.length),
       level,
@@ -97,6 +122,25 @@ export function buildBuildAuditReport(args: { output: string; buildPassed: boole
 
   for (const entry of entries) {
     groupedCounts[entry.sourceFamily][entry.level] += 1;
+  }
+
+  if (!args.buildPassed && !entries.some((entry) => entry.level === 'blocker')) {
+    const fallbackSummary = args.output.toLowerCase().includes('permission denied')
+      ? 'Build command failed to launch due to permission denied.'
+      : args.output.toLowerCase().includes('command not found')
+        ? 'Build command failed because a required command was not found.'
+        : 'Build command exited non-zero without a classified blocker line.';
+    entries.unshift({
+      id: 'build_command_failed_nonzero',
+      level: 'blocker',
+      sourceFamily: detectSourceFamily(args.output),
+      summary: fallbackSummary,
+      rawExcerpt: args.output.split('\n').map((line) => line.trim()).find((line) => line.length > 0)?.slice(0, 220) ?? 'build command failed',
+      disposition: 'fix_now',
+      owner: 'release_engineering',
+      fixNotes: 'Resolve build launcher/build command failure before RC sign-off.',
+    });
+    groupedCounts[entries[0].sourceFamily].blocker += 1;
   }
 
   const blockerCount = entries.filter((entry) => entry.level === 'blocker').length;
