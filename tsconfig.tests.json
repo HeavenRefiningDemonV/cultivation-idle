@@ -22,6 +22,8 @@
     "src/save/migrations/**/*.ts",
     "scripts/saveMigrationDryRun.ts",
     "src/systems/crafting/assistedPrompts.ts",
-    "src/systems/crafting/craftingTypes.ts"
+    "src/systems/crafting/craftingTypes.ts",
+    "scripts/balanceRegressionReport.ts",
+    "scripts/validateBalanceTelemetry.ts"
   ]
 }
