@@ -39,6 +39,10 @@
     "release:reclaim-route-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/reclaimRouteReport.js",
     "release:route-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/buildRouteComparisonReport.js",
     "release:route-report:json": "npm run release:route-report -- --json",
+    "release:build-audit": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/captureBuildWarnings.js --write-doc",
+    "release:build-audit:json": "npm run release:build-audit -- --json",
+    "release:runtime-diagnostics": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/runRuntimeDiagnostics.js",
+    "release:runtime-diagnostics:json": "npm run release:runtime-diagnostics -- --json",
     "validate:balance-regression": "npm run test:balance-regression && npm run balance:report -- --fail-on-drift",
     "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js"
   },

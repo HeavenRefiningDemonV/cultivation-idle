@@ -20,6 +20,24 @@ import type {
 } from './types.js';
 import { contentUrl } from './contentPaths.js';
 
+export type ContentLoadFailurePhase = 'fetch' | 'parse' | 'load';
+
+export class ContentLoadError extends Error {
+  phase: ContentLoadFailurePhase;
+  fileName: string | null;
+  url: string | null;
+  causeText?: string;
+
+  constructor(args: { message: string; phase: ContentLoadFailurePhase; fileName?: string | null; url?: string | null; causeText?: string }) {
+    super(args.message);
+    this.name = 'ContentLoadError';
+    this.phase = args.phase;
+    this.fileName = args.fileName ?? null;
+    this.url = args.url ?? null;
+    this.causeText = args.causeText;
+  }
+}
+
 export interface LoadedContentRaw {
   economy: EconomyConfig;
   cities: CitiesPayload;
@@ -47,43 +65,49 @@ export async function fetchJson<T>(url: string): Promise<T> {
   });
 
   if (!res.ok) {
-    throw new Error(`[Content] Failed to fetch ${url} (HTTP ${res.status})`);
+    throw new ContentLoadError({
+      message: `[Content] Failed to fetch ${url} (HTTP ${res.status})`,
+      phase: 'fetch',
+      url,
+    });
   }
 
   try {
     return await res.json();
   } catch (error) {
-    throw new Error(`[Content] Invalid JSON in ${url}`);
+    throw new ContentLoadError({
+      message: `[Content] Invalid JSON in ${url}`,
+      phase: 'parse',
+      url,
+      causeText: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 
 async function loadFile<T>(fileName: string): Promise<T> {
+  const url = contentUrl(fileName);
   try {
-    return await fetchJson<T>(contentUrl(fileName));
+    return await fetchJson<T>(url);
   } catch (error) {
-    if (error instanceof Error) {
-      error.message = `[Content] ${fileName}: ${error.message}`;
+    if (error instanceof ContentLoadError) {
+      throw new ContentLoadError({
+        message: `[Content] ${fileName}: ${error.message}`,
+        phase: error.phase,
+        fileName,
+        url: error.url ?? url,
+        causeText: error.causeText,
+      });
     }
-    throw error;
-  }
-}
-
-async function loadOptionalFile<T>(fileName: string, fallback: T): Promise<T> {
-  try {
-    return await loadFile(fileName);
-  } catch (error) {
-    console.warn(`[Content] Optional content missing or invalid: ${fileName}`, error);
-    return fallback;
+    throw new ContentLoadError({
+      message: `[Content] ${fileName}: ${error instanceof Error ? error.message : String(error)}`,
+      phase: 'load',
+      fileName,
+      url,
+    });
   }
 }
 
 export async function loadAllContent(): Promise<LoadedContentRaw> {
-  const emptyExpeditions: ExpeditionsConfig = {
-    durations: [],
-    types: [],
-    cityYields: [],
-  };
-
   const files = {
     economy: 'economy.json',
     cities: 'cities.json',
@@ -107,10 +131,7 @@ export async function loadAllContent(): Promise<LoadedContentRaw> {
 
   const entries = await Promise.all(
     Object.entries(files).map(async ([key, fileName]) => {
-      const data =
-        key === 'expeditions'
-          ? await loadOptionalFile(fileName as string, emptyExpeditions)
-          : await loadFile(fileName as string);
+      const data = await loadFile(fileName as string);
       return [key, data] as const;
     }),
   );

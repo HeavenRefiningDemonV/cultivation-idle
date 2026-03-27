@@ -5,14 +5,19 @@ import { useActivityStore } from '../../stores/activityStore.js';
 import { useProfessionStore } from '../../stores/professionStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { useContentStore } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
 
 export type ValidationSeverity = 'error' | 'warning';
 
 export type ValidationIssue = {
   id: string;
   severity: ValidationSeverity;
+  domain?: 'content' | 'inventory' | 'manuals' | 'techniques' | 'activity' | 'professions' | 'expeditions' | 'progression' | 'save_load' | 'diagnostics_internal';
   message: string;
   hint?: string;
+  repairable?: boolean;
+  safeRepairActionId?: 'clamp_inventory' | 'clamp_fragments' | 'remove_invalid_manual';
 };
 
 const VALID_GRADES: ManualGrade[] = ['mortal', 'earth', 'heaven', 'mystic'];
@@ -45,6 +50,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           severity: 'error',
           message: `Currency ${key} is invalid or negative`,
           hint: 'Currency strings should be finite, non-negative decimals.',
+          domain: 'inventory',
         });
       }
     });
@@ -56,6 +62,9 @@ export function runRuntimeValidation(): ValidationIssue[] {
           severity: 'error',
           message: `Item ${itemId} has invalid quantity (${String(qty)})`,
           hint: 'Quantities should be whole numbers and non-negative.',
+          domain: 'inventory',
+          repairable: true,
+          safeRepairActionId: 'clamp_inventory',
         });
       }
     });
@@ -64,6 +73,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
       id: 'inventory_validation_failed',
       severity: 'warning',
       message: `Inventory validation failed: ${String(error)}`,
+      domain: 'diagnostics_internal',
     });
   }
 
@@ -76,6 +86,9 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `manual_missing_tech_${index}`,
           severity: 'error',
           message: 'Manual entry missing technique id',
+          domain: 'manuals',
+          repairable: true,
+          safeRepairActionId: 'remove_invalid_manual',
         });
         return;
       }
@@ -85,6 +98,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           severity: 'warning',
           message: `Manual ${manual.techId} has invalid grade ${manual.grade}`,
           hint: 'Grade will be normalized on repair.',
+          domain: 'manuals',
         });
       }
       if (!VALID_RARITIES.includes(manual.rarity)) {
@@ -93,6 +107,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           severity: 'warning',
           message: `Manual ${manual.techId} has invalid rarity ${manual.rarity}`,
           hint: 'Rarity will be normalized on repair.',
+          domain: 'manuals',
         });
       }
       if (content.isLoaded && !content.maps.techniquesById[manual.techId]) {
@@ -100,6 +115,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `manual_unknown_tech_${manual.techId}`,
           severity: 'warning',
           message: `Manual references unknown technique ${manual.techId}`,
+          domain: 'manuals',
         });
       }
     });
@@ -108,6 +124,43 @@ export function runRuntimeValidation(): ValidationIssue[] {
       id: 'manual_validation_failed',
       severity: 'warning',
       message: `Manual satchel validation failed: ${String(error)}`,
+      domain: 'diagnostics_internal',
+    });
+  }
+
+  try {
+    const city = useCityStore.getState();
+    if (city.currentCityId && !city.unlockedCityIds.includes(city.currentCityId)) {
+      addIssue(issues, {
+        id: 'current_city_not_unlocked',
+        severity: 'error',
+        domain: 'progression',
+        message: `Current city ${city.currentCityId} is not unlocked.`,
+      });
+    }
+    const outOfSlice = city.unlockedCityIds.filter((id) => !SEMESTER_SLICE_CONTRACT.liveCityIds.includes(id as never));
+    if (outOfSlice.length > 0) {
+      addIssue(issues, {
+        id: 'unlocked_city_out_of_slice',
+        severity: 'error',
+        domain: 'progression',
+        message: `Unlocked city ids outside semester slice: ${outOfSlice.join(', ')}`,
+      });
+    }
+    if (city.unlockedCityIds.includes('city_six' as never)) {
+      addIssue(issues, {
+        id: 'fake_city_six_detected',
+        severity: 'error',
+        domain: 'progression',
+        message: 'Fake city 6 detected in unlocked city ids.',
+      });
+    }
+  } catch (error) {
+    addIssue(issues, {
+      id: 'progression_validation_failed',
+      severity: 'warning',
+      domain: 'diagnostics_internal',
+      message: `Progression-state validation failed: ${String(error)}`,
     });
   }
 
@@ -121,6 +174,9 @@ export function runRuntimeValidation(): ValidationIssue[] {
           severity: 'error',
           message: `Fragment count for ${techId} is invalid (${String(qty)})`,
           hint: 'Fragments should be non-negative integers.',
+          domain: 'techniques',
+          repairable: true,
+          safeRepairActionId: 'clamp_fragments',
         });
       }
     });
@@ -131,6 +187,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `tech_unknown_${techId}`,
           severity: 'warning',
           message: `Unlocked technique ${techId} missing from content`,
+          domain: 'techniques',
         });
       }
     });
@@ -139,6 +196,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
       id: 'tech_collection_validation_failed',
       severity: 'warning',
       message: `Technique collection validation failed: ${String(error)}`,
+      domain: 'diagnostics_internal',
     });
   }
 
@@ -152,12 +210,14 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: 'activity_started_at_invalid',
           severity: 'warning',
           message: 'Active activity has invalid start time',
+          domain: 'activity',
         });
       } else if (startedAt > now + 5 * 60 * 1000) {
         addIssue(issues, {
           id: 'activity_clock_skew',
           severity: 'warning',
           message: 'Active activity start time is in the future (possible clock skew)',
+          domain: 'activity',
         });
       }
     }
@@ -166,6 +226,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
       id: 'activity_validation_failed',
       severity: 'warning',
       message: `Activity validation failed: ${String(error)}`,
+      domain: 'diagnostics_internal',
     });
   }
 
@@ -178,12 +239,14 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `job_invalid_${label}`,
           severity: 'error',
           message: `${label} has invalid endsAt`,
+          domain: 'professions',
         });
       } else if (job.endsAt < now - 24 * 60 * 60 * 1000) {
         addIssue(issues, {
           id: `job_expired_${label}`,
           severity: 'warning',
           message: `${label} endsAt is far in the past`,
+          domain: 'professions',
         });
       }
       if (job.startedAt != null && !Number.isFinite(job.startedAt)) {
@@ -191,6 +254,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `job_started_invalid_${label}`,
           severity: 'warning',
           message: `${label} has invalid startedAt`,
+          domain: 'professions',
         });
       }
     };
@@ -203,6 +267,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
       id: 'profession_validation_failed',
       severity: 'warning',
       message: `Profession validation failed: ${String(error)}`,
+      domain: 'diagnostics_internal',
     });
   }
 
@@ -215,6 +280,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `expedition_invalid_${idx}`,
           severity: 'error',
           message: `Expedition slot ${run.slotIndex} has invalid endsAt`,
+          domain: 'expeditions',
         });
       }
       if (run.startedAt != null && !Number.isFinite(run.startedAt)) {
@@ -222,6 +288,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `expedition_started_invalid_${idx}`,
           severity: 'warning',
           message: `Expedition slot ${run.slotIndex} has invalid startedAt`,
+          domain: 'expeditions',
         });
       }
       if (run.endsAt < now && run.status !== 'complete') {
@@ -229,6 +296,7 @@ export function runRuntimeValidation(): ValidationIssue[] {
           id: `expedition_stuck_${idx}`,
           severity: 'warning',
           message: `Expedition slot ${run.slotIndex} should be complete but is not marked complete`,
+          domain: 'expeditions',
         });
       }
     });
@@ -237,6 +305,36 @@ export function runRuntimeValidation(): ValidationIssue[] {
       id: 'expedition_validation_failed',
       severity: 'warning',
       message: `Expedition validation failed: ${String(error)}`,
+      domain: 'diagnostics_internal',
+    });
+  }
+
+  try {
+    const content = useContentStore.getState();
+    if (!content.isLoaded) {
+      addIssue(issues, {
+        id: 'content_not_loaded',
+        severity: 'error',
+        domain: 'content',
+        message: 'Content store is not loaded.',
+        hint: content.loadFailure?.message ?? content.error ?? 'Check content startup diagnostics.',
+      });
+    }
+    if (content.loadFailure) {
+      addIssue(issues, {
+        id: `content_load_failure_${content.loadFailure.phase}`,
+        severity: 'error',
+        domain: 'content',
+        message: `Startup content failure in phase "${content.loadFailure.phase}"`,
+        hint: content.loadFailure.message,
+      });
+    }
+  } catch (error) {
+    addIssue(issues, {
+      id: 'content_validation_failed',
+      severity: 'warning',
+      domain: 'diagnostics_internal',
+      message: `Content-state validation failed: ${String(error)}`,
     });
   }
 

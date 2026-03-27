@@ -30,6 +30,11 @@
     "scripts/release/offlineRouteReport.ts",
     "scripts/release/reclaimRouteReport.ts",
     "scripts/release/buildRouteComparisonReport.ts",
-    "src/services/diagnostics/release/routeComparisonReport.ts"
+    "scripts/release/captureBuildWarnings.ts",
+    "scripts/release/runRuntimeDiagnostics.ts",
+    "src/services/diagnostics/release/routeComparisonReport.ts",
+    "src/services/diagnostics/release/buildAuditReport.ts",
+    "src/services/diagnostics/release/runtimeDiagnosticsReport.ts",
+    "src/services/diagnostics/buildContentLoadFailureDiagnostics.ts"
   ]
 }

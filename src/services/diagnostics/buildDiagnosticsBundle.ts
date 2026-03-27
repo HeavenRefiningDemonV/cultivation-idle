@@ -47,7 +47,12 @@ export type DiagnosticsBundleV1 = {
     issues: ValidationIssue[];
     errorCount: number;
     warningCount: number;
+    groupedSummary: Array<{ domain: string; errorCount: number; warningCount: number; repairableCount: number }>;
+    repairableCount: number;
+    nonRepairableCount: number;
   };
+  contentLoadFailure: ReturnType<typeof useContentStore.getState>['loadFailure'];
+  contentLoadFailureDiagnostics: ReturnType<typeof useContentStore.getState>['loadFailureDiagnostics'];
   errors?: string[];
 };
 
@@ -152,7 +157,20 @@ export function buildDiagnosticsBundle(): DiagnosticsBundleV1 {
     issues: validationIssues,
     errorCount: validationIssues.filter((issue) => issue.severity === 'error').length,
     warningCount: validationIssues.filter((issue) => issue.severity === 'warning').length,
+    groupedSummary: Object.values(validationIssues.reduce<Record<string, { domain: string; errorCount: number; warningCount: number; repairableCount: number }>>((acc, issue) => {
+      const domain = issue.domain ?? 'diagnostics_internal';
+      const row = acc[domain] ?? { domain, errorCount: 0, warningCount: 0, repairableCount: 0 };
+      if (issue.severity === 'error') row.errorCount += 1;
+      if (issue.severity === 'warning') row.warningCount += 1;
+      if (issue.repairable) row.repairableCount += 1;
+      acc[domain] = row;
+      return acc;
+    }, {})),
+    repairableCount: validationIssues.filter((issue) => issue.repairable).length,
+    nonRepairableCount: validationIssues.filter((issue) => !issue.repairable).length,
   };
+
+  const contentState = useContentStore.getState();
 
   return {
     schemaVersion: 1,
@@ -163,6 +181,8 @@ export function buildDiagnosticsBundle(): DiagnosticsBundleV1 {
     status,
     telemetry,
     validation,
+    contentLoadFailure: contentState.loadFailure,
+    contentLoadFailureDiagnostics: contentState.loadFailureDiagnostics,
     errors: errors.length > 0 ? errors : undefined,
   };
 }

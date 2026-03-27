@@ -16,12 +16,19 @@ import type {
 } from '../content/index.js';
 import {
   loadAllContent,
+  ContentLoadError,
   normalizeForgeBlueprint,
   validateLoadedContent,
   type NormalizedForgeBlueprint,
   isRefineBlueprint,
   isRuneBlueprint,
 } from '../content/index.js';
+import {
+  buildContentLoadFailureDiagnostics,
+  normalizeContentLoadFailure,
+  type ContentLoadFailureContext,
+  type ContentLoadFailureDiagnostics,
+} from '../services/diagnostics/buildContentLoadFailureDiagnostics.js';
 import {
   buildLiveEconomyCatalog,
   buildTargetedMaterialSinkAudit,
@@ -64,12 +71,17 @@ interface ContentStoreState {
   isLoading: boolean;
   isLoaded: boolean;
   error: string | null;
+  loadFailure: ContentLoadFailureContext | null;
+  loadFailureDiagnostics: ContentLoadFailureDiagnostics | null;
   raw: ValidatedContent | null;
   economy: EconomyConfig | null;
   maps: ContentMaps;
   citiesSorted: CityDef[];
   techniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef[]>;
   load: () => Promise<boolean>;
+  clearLoadedContent: () => void;
+  setLoadFailure: (context: ContentLoadFailureContext, error: unknown) => void;
+  clearLoadFailure: () => void;
   getCity: (id: string) => CityDef;
   getItem: (id: string) => ItemDef;
   getTechnique: (id: string) => TechniqueDef;
@@ -119,16 +131,61 @@ const emptyTechniquesByPath: Record<'heaven' | 'earth' | 'martial', TechniqueDef
 };
 
 let inFlight: Promise<boolean> | null = null;
+let loadAllContentOverride: typeof loadAllContent | null = null;
+let validateLoadedContentOverride: typeof validateLoadedContent | null = null;
+
+const resolveLoadAllContent = () => loadAllContentOverride ?? loadAllContent;
+const resolveValidateLoadedContent = () => validateLoadedContentOverride ?? validateLoadedContent;
+
+export function __setContentStoreLoadTestOverrides(overrides: {
+  loadAllContent?: typeof loadAllContent | null;
+  validateLoadedContent?: typeof validateLoadedContent | null;
+}) {
+  loadAllContentOverride = overrides.loadAllContent ?? null;
+  validateLoadedContentOverride = overrides.validateLoadedContent ?? null;
+}
 
 export const useContentStore = create<ContentStoreState>((set, get) => ({
   isLoading: false,
   isLoaded: false,
   error: null,
+  loadFailure: null,
+  loadFailureDiagnostics: null,
   raw: null,
   economy: null,
   maps: emptyMaps,
   citiesSorted: [],
   techniquesByPath: emptyTechniquesByPath,
+
+  clearLoadedContent: () => {
+    set({
+      raw: null,
+      economy: null,
+      maps: emptyMaps,
+      citiesSorted: [],
+      techniquesByPath: emptyTechniquesByPath,
+      isLoaded: false,
+    });
+  },
+
+  setLoadFailure: (context, error) => {
+    get().clearLoadedContent();
+    set({
+      error: context.message,
+      loadFailure: context,
+      loadFailureDiagnostics: buildContentLoadFailureDiagnostics(context, error),
+      isLoading: false,
+      isLoaded: false,
+    });
+  },
+
+  clearLoadFailure: () => {
+    set({
+      error: null,
+      loadFailure: null,
+      loadFailureDiagnostics: null,
+    });
+  },
 
   load: async () => {
     if (get().isLoaded) {
@@ -140,11 +197,12 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
     }
 
     inFlight = (async () => {
-      set({ isLoading: true, error: null });
+      get().clearLoadFailure();
+      set({ isLoading: true });
 
       try {
-        const raw = await loadAllContent();
-        const validated = validateLoadedContent(raw);
+        const raw = await resolveLoadAllContent()();
+        const validated = resolveValidateLoadedContent()(raw);
         const cities = validated.cities;
         const items = validated.items;
         const techniques = validated.techniques;
@@ -204,12 +262,19 @@ export const useContentStore = create<ContentStoreState>((set, get) => ({
           isLoaded: true,
           isLoading: false,
           error: null,
+          loadFailure: null,
+          loadFailureDiagnostics: null,
         });
 
         return true;
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        set({ error: message, isLoading: false, isLoaded: false });
+        const context = normalizeContentLoadFailure({
+          phase: error instanceof ContentLoadError ? error.phase : 'load',
+          error,
+          fileName: error instanceof ContentLoadError ? error.fileName : null,
+          attemptCount: (get().loadFailure?.attemptCount ?? 0) + 1,
+        });
+        get().setLoadFailure(context, error);
         return false;
       } finally {
         inFlight = null;
