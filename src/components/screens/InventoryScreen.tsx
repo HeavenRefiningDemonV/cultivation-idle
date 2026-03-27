@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { Backpack, Coins, Gem, Medal } from 'lucide-react';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { getItemDef, useContentStore } from '../../stores/contentStore.js';
 import { useBuffStore } from '../../stores/buffStore.js';
@@ -542,24 +541,24 @@ export default function InventoryScreen() {
         </div>
         <div className="inventoryHeaderCurrencyStrip">
           <div className="inventoryCurrencyChip">
-            <Coins size={18} aria-hidden="true" />
+            <GameIcon icon="metalChunk" size={18} decorative />
             <span className="inventoryCurrencyLabel">Gold</span>
             <span className="inventoryCurrencyValue">{currencies.gold}</span>
           </div>
           <div className="inventoryCurrencyChip">
-            <Gem size={18} aria-hidden="true" />
+            <GameIcon icon="artifactShard" size={18} decorative />
             <span className="inventoryCurrencyLabel">Spirit Stones</span>
             <span className="inventoryCurrencyValue">{currencies.spiritStones}</span>
           </div>
           <div className="inventoryCurrencyChip">
-            <Medal size={18} aria-hidden="true" />
+            <GameIcon icon="taskComplete" size={18} decorative />
             <span className="inventoryCurrencyLabel">Merit</span>
             <span className="inventoryCurrencyValue">{currencies.merit}</span>
           </div>
         </div>
         <div className="inventoryHeaderCapacity" aria-label="Inventory capacity">
           <span className="inventoryHeaderCapacityIcon" aria-hidden="true">
-            ⭕
+            <GameIcon icon="placeholderRingSmall" size={16} decorative />
           </span>
           <span className="inventoryHeaderCapacityText">
             {usedSlots}/{maxSlots}
@@ -570,16 +569,16 @@ export default function InventoryScreen() {
         </div>
         <div className="inventoryHeaderActions">
           <button
-            className="button-standard inventoryHeaderIconButton"
+            className="button-standard uiNoShift inventoryHeaderIconButton"
             type="button"
             onClick={openManualSatchel}
             aria-label="Open manual satchel"
           >
-            <Backpack size={20} aria-hidden="true" />
+            <GameIcon icon="artifactBundle" size={20} decorative />
             <span className="inventoryHeaderBadge">{satchelCount}</span>
           </button>
           <button
-            className="button-standard inventoryHeaderIconButton inventoryHeaderEquipmentButton"
+            className="button-standard uiNoShift inventoryHeaderIconButton inventoryHeaderEquipmentButton"
             type="button"
             onClick={() => setEquipmentDrawerOpen(true)}
             aria-label="Open equipment drawer"
@@ -617,7 +616,7 @@ export default function InventoryScreen() {
               return (
                 <button
                   key={pocket.id}
-                  className={`inventoryPocketButton${isActive ? ' inventoryPocketButton--active' : ''}${
+                  className={`uiNoShift inventoryPocketButton${isActive ? ' inventoryPocketButton--active' : ''}${
                     isDisabled ? ' inventoryPocketButton--disabled' : ''
                   }`}
                   type="button"

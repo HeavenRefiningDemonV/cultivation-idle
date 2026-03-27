@@ -11,7 +11,7 @@
   --inv-paper-inset: rgba(255, 255, 255, 0.45);
   --inv-ink: rgba(12, 18, 34, 0.92);
   --inv-ink-muted: rgba(12, 18, 34, 0.62);
-  --inv-qi: rgba(125, 211, 252, 0.85);
+  --inv-qi: rgba(120, 72, 33, 0.82);
   --inv-gold: rgba(245, 158, 11, 0.9);
   --inv-void-0: rgba(2, 6, 23, 0.75);
   --inv-void-1: rgba(2, 6, 23, 0.92);
@@ -125,7 +125,7 @@
 
 .inventoryHeaderCapacityFill {
   height: 100%;
-  background: rgba(125, 211, 252, 0.75);
+  background: rgba(47, 143, 102, 0.72);
   border-radius: inherit;
   transition: width 0.2s ease;
 }
@@ -177,7 +177,7 @@
 }
 
 .inventoryHeaderIconButton[data-active='true'] {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35), 0 8px 18px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.34), 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
 .inventoryHeaderBadge {
@@ -187,7 +187,7 @@
   min-width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.95);
+  background: rgba(120, 72, 33, 0.9);
   color: #0c1222;
   font-size: 11px;
   font-weight: 800;
@@ -307,9 +307,9 @@
 }
 
 .inventoryPocketButton--active {
-  background: linear-gradient(135deg, rgba(125, 211, 252, 0.82), rgba(59, 130, 246, 0.7));
+  background: linear-gradient(135deg, rgba(181, 133, 43, 0.62), rgba(120, 72, 33, 0.62));
   border-color: rgba(245, 158, 11, 0.35);
-  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.16), 0 14px 22px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 3px rgba(181, 133, 43, 0.14), 0 14px 22px rgba(0, 0, 0, 0.2);
   color: #0c1222;
 }
 
@@ -484,8 +484,8 @@
   align-items: center;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(125, 211, 252, 0.35);
-  background: rgba(125, 211, 252, 0.14);
+  border: 1px solid rgba(120, 72, 33, 0.3);
+  background: rgba(120, 72, 33, 0.12);
   font-weight: 900;
   font-size: 12px;
   color: rgba(12, 18, 34, 0.88);
@@ -537,7 +537,7 @@
 }
 
 .inventorySearch:focus-within {
-  box-shadow: 0 0 0 3px rgba(125, 211, 252, 0.18);
+  box-shadow: 0 0 0 3px rgba(120, 72, 33, 0.16);
 }
 
 .inventorySearchClear {
@@ -640,7 +640,7 @@
   opacity: 0.1;
   background: conic-gradient(
     from 0deg,
-    rgba(125, 211, 252, 0.16) 0 20deg,
+    rgba(181, 133, 43, 0.14) 0 20deg,
     transparent 20deg 60deg,
     rgba(245, 158, 11, 0.12) 60deg 72deg,
     transparent 72deg 120deg
@@ -656,7 +656,7 @@
   pointer-events: none;
   opacity: 0.18;
   background:
-    radial-gradient(circle at 12% 18%, rgba(125, 211, 252, 0.35), transparent 35%),
+    radial-gradient(circle at 12% 18%, rgba(120, 72, 33, 0.3), transparent 35%),
     radial-gradient(circle at 70% 22%, rgba(245, 158, 11, 0.22), transparent 40%),
     radial-gradient(circle at 32% 78%, rgba(255, 255, 255, 0.16), transparent 45%),
     radial-gradient(circle at 88% 72%, rgba(99, 102, 241, 0.18), transparent 42%);
@@ -711,7 +711,7 @@
 
 .inventorySlotTile:focus-visible {
   outline: none;
-  box-shadow: var(--inv-rarity-shadow), 0 0 0 3px rgba(125, 211, 252, 0.25);
+  box-shadow: var(--inv-rarity-shadow), 0 0 0 3px rgba(120, 72, 33, 0.2);
 }
 
 .inventorySlotTileEmpty {
@@ -733,8 +733,8 @@
 }
 
 .inventorySlotTileSelected {
-  border-color: rgba(125, 211, 252, 0.75);
-  box-shadow: var(--inv-rarity-shadow), 0 0 0 3px rgba(125, 211, 252, 0.18), 0 14px 22px rgba(0, 0, 0, 0.28);
+  border-color: rgba(47, 143, 102, 0.72);
+  box-shadow: var(--inv-rarity-shadow), 0 0 0 3px rgba(120, 72, 33, 0.16), 0 14px 22px rgba(0, 0, 0, 0.28);
 }
 
 .inventorySlotTileSelected::after {
@@ -742,7 +742,7 @@
   position: absolute;
   inset: -6px;
   border-radius: 18px;
-  background: radial-gradient(circle, rgba(125, 211, 252, 0.22), transparent 60%);
+  background: radial-gradient(circle, rgba(120, 72, 33, 0.18), transparent 60%);
   filter: blur(6px);
   pointer-events: none;
   opacity: 0.85;
@@ -785,7 +785,7 @@
 
 .inventorySlotTileStackGaugeFill {
   height: 100%;
-  background: rgba(125, 211, 252, 0.75);
+  background: rgba(47, 143, 102, 0.72);
   border-radius: 999px;
 }
 
@@ -816,8 +816,8 @@
 }
 
 .inventorySlotRarityRare {
-  border-color: rgba(59, 130, 246, 0.8);
-  --inv-rarity-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+  border-color: rgba(120, 72, 33, 0.74);
+  --inv-rarity-shadow: 0 0 12px rgba(120, 72, 33, 0.18);
 }
 
 .inventorySlotRarityRare::before,

@@ -33,7 +33,7 @@ export function BottomTabBar() {
               <button
                 key={tab.id}
                 type="button"
-                className={`button-standard bottomTabBarButton ${isActive ? 'bottomTabBarButton--active' : ''}`}
+                className={`button-standard uiNoShift bottomTabBarButton ${isActive ? 'bottomTabBarButton--active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
                 aria-current={isActive ? 'page' : undefined}
               >

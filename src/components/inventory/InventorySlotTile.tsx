@@ -51,7 +51,7 @@ export default function InventorySlotTile({ stack, isSelected, isNew, onSelect }
   return (
     <button
       type="button"
-      className={`inventorySlotTile inventorySlotTileOccupied ${rarityClass}${
+      className={`uiNoShift inventorySlotTile inventorySlotTileOccupied ${rarityClass}${
         isSelected ? ' inventorySlotTileSelected' : ''
       }${isNew ? ' inventorySlotTileNew' : ''}`}
       onClick={onSelect}

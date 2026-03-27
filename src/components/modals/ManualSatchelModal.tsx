@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import './ManualSatchelModal.scss';
 import { useManualSatchelStore } from '../../stores/manualSatchelStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
@@ -330,7 +329,9 @@ export function ManualSatchelModal() {
               {known && <span className={'manualBadge manualBadgeKnown'}>Known</span>}
             </div>
           </div>
-          <span className={'manualSatchelRowChevron'}>{expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
+          <span className={'manualSatchelRowChevron'}>
+            <GameIcon icon={expanded ? 'inkChevronUp' : 'inkChevronDown'} size={16} decorative />
+          </span>
         </button>
         {expanded && (
           <div className={'manualSatchelRowDetails'}>

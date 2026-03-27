@@ -36,7 +36,7 @@ export function OfflineProgressModal() {
         </div>
 
         <div className={'offlineProgressModalActions'}>
-          <button onClick={hideOfflineProgress} className={'button-standard offlineProgressModalContinueButton'}>
+          <button onClick={hideOfflineProgress} className={'button-standard uiNoShift offlineProgressModalContinueButton'}>
             Continue
           </button>
         </div>

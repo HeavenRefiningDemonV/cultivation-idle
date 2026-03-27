@@ -58,8 +58,8 @@
 }
 
 .cultivationRunCompass--native {
-  color: #f8fafc;
-  background: linear-gradient(180deg, rgba(12, 18, 30, 0.82), rgba(8, 12, 22, 0.72));
+  color: var(--paper-ink, #2b2116);
+  background: linear-gradient(180deg, rgba(247, 237, 215, 0.92), rgba(236, 225, 205, 0.8));
   border: 1px solid rgba(226, 232, 240, 0.14);
   border-radius: 18px;
   padding: 14px;
@@ -72,7 +72,7 @@
 .cultivationRunCompass--native .runCompassSafetyNet__title,
 .cultivationRunCompass--native .runCompassAction__label,
 .cultivationRunCompass--native .runCompassInfoRow__label {
-  color: rgba(248, 250, 252, 0.96);
+  color: rgba(43, 33, 22, 0.9);
 }
 
 .cultivationRunCompass--native .runCompassMilestone__detail,
@@ -84,13 +84,13 @@
 .cultivationRunCompass--native .runCompassAction__why,
 .cultivationRunCompass--native .runCompassSafetyNet__line,
 .cultivationRunCompass--native .runCompassSafetyNet__detail {
-  color: rgba(226, 232, 240, 0.8);
+  color: rgba(43, 33, 22, 0.72);
 }
 
 .cultivationRunCompass--native .runCompassInfoRow,
 .cultivationRunCompass--native .runCompassAction {
-  border-color: rgba(148, 163, 184, 0.18);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(120, 72, 33, 0.2);
+  background: rgba(255, 245, 225, 0.45);
 }
 
 .cultivationInfoRow {
@@ -103,9 +103,9 @@
   min-height: 222px;
   padding: 14px 16px;
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(15, 18, 28, 0.82), rgba(10, 13, 20, 0.72));
+  background: linear-gradient(180deg, rgba(255, 245, 225, 0.92), rgba(236, 225, 205, 0.82));
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #f8fafc;
+  color: var(--paper-ink, #2b2116);
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(8px);
 }
@@ -122,7 +122,7 @@
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(148, 163, 184, 0.85);
+  color: rgba(120, 72, 33, 0.8);
   margin-bottom: 4px;
 }
 
@@ -136,8 +136,8 @@
   align-self: flex-start;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(125, 211, 252, 0.12);
-  border: 1px solid rgba(125, 211, 252, 0.24);
+  background: rgba(47, 143, 102, 0.12);
+  border: 1px solid rgba(47, 143, 102, 0.24);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -182,7 +182,7 @@
 .cultivationBreakthroughPanel__actionHint {
   font-size: 13px;
   line-height: 1.45;
-  color: rgba(226, 232, 240, 0.82);
+  color: rgba(43, 33, 22, 0.75);
 }
 
 .cultivationCommandCard__guidance {
@@ -239,7 +239,7 @@
   text-align: right;
   font-size: 13px;
   font-weight: 700;
-  color: rgba(248, 250, 252, 0.96);
+  color: rgba(43, 33, 22, 0.9);
 }
 
 .cultivationHudRail {
@@ -306,7 +306,7 @@
   position: absolute;
   inset: 0;
   width: 0;
-  background: linear-gradient(90deg, rgba(56, 189, 248, 0.7), rgba(148, 163, 184, 0.75));
+  background: linear-gradient(90deg, rgba(47, 143, 102, 0.7), rgba(159, 59, 46, 0.58));
   transition: width 0.25s ease-out;
 }
 
@@ -523,7 +523,7 @@
 
 .cultivationBuffChipFamily {
   font-weight: 700;
-  color: rgba(125, 211, 252, 0.95);
+  color: rgba(47, 143, 102, 0.92);
 }
 
 .cultivationBuffChipBody {

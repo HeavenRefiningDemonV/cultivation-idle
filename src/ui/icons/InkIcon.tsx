@@ -116,3 +116,17 @@ export const InkXIcon: IconComponent = ({ title, ...props }: InkIconProps) => (
     <path {...strokeProps} d="m18 6-12 12" />
   </svg>
 );
+
+export const InkChevronDownIcon: IconComponent = ({ title, ...props }: InkIconProps) => (
+  <svg viewBox="0 0 24 24" aria-hidden={title ? undefined : true} {...props}>
+    {renderTitle(title)}
+    <path {...strokeProps} d="m6 9 6 6 6-6" />
+  </svg>
+);
+
+export const InkChevronUpIcon: IconComponent = ({ title, ...props }: InkIconProps) => (
+  <svg viewBox="0 0 24 24" aria-hidden={title ? undefined : true} {...props}>
+    {renderTitle(title)}
+    <path {...strokeProps} d="m6 15 6-6 6 6" />
+  </svg>
+);

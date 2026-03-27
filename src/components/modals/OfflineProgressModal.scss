@@ -10,8 +10,8 @@
 }
 
 .offlineProgressModalModal {
-  background: #dddddd;
-  border: 1px solid rgba(125, 211, 252, 0.4);
+  background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
+  border: 1px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.42));
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   max-width: 480px;
@@ -38,7 +38,7 @@
 }
 
 .offlineProgressModalSummaryCard {
-  background: #dddddd;
+  background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
   border: 1px solid #374151;
   border-radius: 10px;
   padding: 16px;
@@ -59,7 +59,7 @@
 }
 
 .offlineProgressModalEmphasis {
-  color: #7dd3fc;
+  color: var(--paper-jade, #2f8f66);
   font-weight: 600;
 }
 
@@ -71,7 +71,7 @@
 .offlineProgressModalCappedNotice {
   font-size: 12px;
   color: #facc15;
-  background: #dddddd;
+  background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
   border: 1px solid rgba(250, 204, 21, 0.4);
   border-radius: 6px;
   padding: 8px;
@@ -86,7 +86,7 @@
   padding: 8px 16px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(90deg, #0284c7, #0ea5e9);
+  background: linear-gradient(90deg, var(--paper-stamp, #9f3b2e), var(--paper-warning, #b5852b));
   color: #000000;
   font-weight: 600;
   cursor: pointer;
