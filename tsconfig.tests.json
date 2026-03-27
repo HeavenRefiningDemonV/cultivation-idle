@@ -32,9 +32,12 @@
     "scripts/release/buildRouteComparisonReport.ts",
     "scripts/release/captureBuildWarnings.ts",
     "scripts/release/runRuntimeDiagnostics.ts",
+    "scripts/release/runReleaseGate.ts",
     "src/services/diagnostics/release/routeComparisonReport.ts",
     "src/services/diagnostics/release/buildAuditReport.ts",
     "src/services/diagnostics/release/runtimeDiagnosticsReport.ts",
-    "src/services/diagnostics/buildContentLoadFailureDiagnostics.ts"
+    "src/services/diagnostics/buildContentLoadFailureDiagnostics.ts",
+    "src/services/diagnostics/release/releaseGate*.ts",
+    "src/services/diagnostics/release/knownIssuesLedger.ts"
   ]
 }
