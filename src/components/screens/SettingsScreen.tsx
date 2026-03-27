@@ -526,7 +526,7 @@ export function SettingsScreen() {
                 <div className={'settingsDiagnosticsActions'}>
                   <label className={'settingsScreenOptionRow'} style={{ marginBottom: 0 }}>
                     <input
-                      type=\"checkbox\"
+                      type="checkbox"
                       checked={balanceCaptureEnabled}
                       onChange={(event) => setBalanceCaptureEnabled(event.target.checked)}
                       className={'settingsScreenCheckbox'}
