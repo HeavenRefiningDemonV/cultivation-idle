@@ -94,7 +94,11 @@ export async function buildReleaseGateReport(options: RunReleaseGateOptions = {}
 
   const unresolvedBlockerCount = checks.reduce((sum, check) => sum + check.blockerCount, 0);
   const pendingManualCount = checks.reduce((sum, check) => sum + check.pendingManualCount, 0);
-  const acceptedWaiverCount = Array.from(matched.values()).filter((entry) => entry.classification === 'accepted_waiver' && entry.status === 'accepted').length;
+  const acceptedWaiverCount = new Set(
+    Array.from(matched.values())
+      .filter((entry) => entry.classification === 'accepted_waiver' && entry.status === 'accepted')
+      .map((entry) => entry.issueId),
+  ).size;
   const unresolvedWaiverCandidateCount = untracked.length + ledgerValidation.length;
 
   const decisionSummary = finalizeDecision({
@@ -163,13 +167,32 @@ export function renderReleaseGateReport(report: ReleaseGateReport): string {
 
 export function writeKnownIssuesDoc(report: ReleaseGateReport): string {
   const findings = report.checks.flatMap((check) => check.findings);
+  const ledgerValidation = validateKnownIssuesLedger(KNOWN_ISSUES_LEDGER);
+  const waivableFindings = findings.filter((entry) => entry.severity === 'waiver_candidate' || entry.severity === 'post_semester_debt');
+  const { matched, untracked } = matchKnownIssueEntries(waivableFindings, KNOWN_ISSUES_LEDGER);
+  const isMatchedToClassification = (finding: ReleaseGateFinding, classification: 'accepted_waiver' | 'post_semester_debt'): boolean => {
+    const match = matched.get(finding.findingId);
+    return Boolean(match && match.classification === classification && match.status !== 'resolved');
+  };
+
   const markdown = renderKnownIssuesMarkdown({
     generatedAt: report.generatedAt,
     headline: report.decisionSummary.headline,
     blockers: findings.filter((entry) => entry.severity === 'blocker'),
-    acceptedWaivers: findings.filter((entry) => entry.severity === 'waiver_candidate'),
-    postSemesterDebt: findings.filter((entry) => entry.severity === 'post_semester_debt'),
-    untracked: [],
+    acceptedWaivers: findings.filter((entry) => isMatchedToClassification(entry, 'accepted_waiver')),
+    postSemesterDebt: findings.filter((entry) => isMatchedToClassification(entry, 'post_semester_debt')),
+    untracked: [
+      ...untracked,
+      ...ledgerValidation.map((message, index) => ({
+        findingId: `known_issues_ledger_validation_${index + 1}`,
+        checkId: 'build_audit' as const,
+        title: 'KNOWN_ISSUES_LEDGER_VALIDATION',
+        message,
+        severity: 'waiver_candidate' as const,
+        waivable: false,
+        sourceKind: 'ledger' as const,
+      })),
+    ],
     ledger: KNOWN_ISSUES_LEDGER,
   });
   const outputPath = path.resolve(process.cwd(), 'docs/release/known_issues.md');
