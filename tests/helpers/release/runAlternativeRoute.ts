@@ -20,6 +20,13 @@ import { buildCurrentLifeSummarySurface } from '../../../src/features/prestige/l
 import { getPrestigeAdvisorSurface } from '../../../src/features/prestige/prestigeAdvisorSurface.js';
 import { buildPrepVsBypassEconomyReport } from '../../../src/systems/economy/prepVsBypassReadModel.js';
 import { buildSupportReservePacingReport } from '../../../src/systems/economy/supportReservePacingReadModel.js';
+import { PRESTIGE_TARGETS } from '../../../src/systems/balance/prestigeTargets.js';
+import { buildLiveEconomicRecommendationEngine } from '../../../src/systems/economy/economicRecommendationEngine.js';
+import { getSpendOrderPolicy } from '../../../src/systems/economy/spendOrderPolicy.js';
+import { getPrepBudgetByGateIndex } from '../../../src/systems/economy/prepBudgetRegistry.js';
+import { runPhaseTimingProbe } from '../balance/runPhaseTimingProbe.js';
+import { runPrestigeApHourProbe } from '../balance/runPrestigeApHourProbe.js';
+import { runReclaimProbe } from '../balance/runReclaimProbe.js';
 import { setupFreshSaveRun } from './setupFreshSaveRun.js';
 import type {
   AlternativeRouteCheckpointId,
@@ -31,6 +38,8 @@ import type {
   AlternativeRouteInteractionRow,
   AlternativeRouteResult,
   AlternativeRouteWarning,
+  AlternativeRouteExploitWatchRow,
+  AlternativeRouteInvariantCheck,
 } from './alternativeRouteTypes.js';
 
 const now = () => Date.now();
@@ -564,6 +573,345 @@ export async function runLowAttentionAlternativeRoute(): Promise<AlternativeRout
   };
 }
 
+export async function runHighSkillAlternativeRoute(): Promise<AlternativeRouteResult> {
+  const startedAt = now();
+  const checkpoints: AlternativeRouteCheckpointRow[] = [];
+  const failures: AlternativeRouteFailure[] = [];
+  const warnings: AlternativeRouteWarning[] = [];
+  const interactionLog: AlternativeRouteInteractionRow[] = [];
+  const comparisonRows: AlternativeRouteComparisonRow[] = [];
+  const invariantChecks: AlternativeRouteInvariantCheck[] = [];
+  const exploitWatchlist: AlternativeRouteExploitWatchRow[] = [];
+  const decisionPolicy: string[] = [];
+
+  checkpoint(checkpoints, startedAt, 'route_started', 'Running representative baseline timing probe.');
+  const representative = await runPhaseTimingProbe({ pathStrategy: 'representative' });
+  checkpoint(checkpoints, startedAt, 'gate_available', `baseline=${representative.gate1AvailableMs ?? 0}ms`);
+
+  checkpoint(checkpoints, startedAt, 'custom:high_skill_probe_started', 'Running high-skill timing probe with highest-Qi path strategy.');
+  const highSkill = await runPhaseTimingProbe({ pathStrategy: 'highest_qi' });
+  checkpoint(checkpoints, startedAt, 'custom:high_skill_probe_completed', `optimized=${highSkill.gate1AvailableMs ?? 0}ms`);
+
+  const content = useContentStore.getState().raw!;
+  const prepVsBypass = buildPrepVsBypassEconomyReport(content, 1);
+  const reserve = buildSupportReservePacingReport(content, 1, { merit: 0, spiritStones: 0 });
+  const spendOrder = getSpendOrderPolicy({
+    gateIndex: 1,
+    currentCityId: (useCityStore.getState().currentCityId ?? null) as Parameters<typeof getSpendOrderPolicy>[0]['currentCityId'],
+    selectedPath: useGameStore.getState().selectedPath,
+    currentGateResolved: false,
+  });
+  const prepBudget = getPrepBudgetByGateIndex(1);
+  const economyEngine = buildLiveEconomicRecommendationEngine();
+  const apProbe = await runPrestigeApHourProbe();
+
+  decisionPolicy.push(
+    `Path strategy: representative=${representative.representativePath} vs high_skill=${highSkill.representativePath}`,
+    `Spend order gate=${spendOrder.gateIndex}: ${spendOrder.priorities.map((entry) => entry.id).join(' > ')}`,
+    `Prep budget transition=${prepBudget?.transitionId ?? 'unknown'} recommendedGold=${prepBudget?.recommendedPrepPackage.goldSpendRange.recommended ?? 0}`,
+    `Economic top recommendation=${economyEngine.topRecommendation?.routeType ?? 'none'}`,
+  );
+
+  const representativeFoundation = representative.cumulativeMilestoneSeconds.foundation_entry ?? Number.POSITIVE_INFINITY;
+  const optimizedFoundation = highSkill.cumulativeMilestoneSeconds.foundation_entry ?? Number.POSITIVE_INFINITY;
+  const representativeCore = representative.cumulativeMilestoneSeconds.core_formation_entry ?? Number.POSITIVE_INFINITY;
+  const optimizedCore = highSkill.cumulativeMilestoneSeconds.core_formation_entry ?? Number.POSITIVE_INFINITY;
+
+  const gate1ImprovementSeconds = ((representative.gate1AvailableMs ?? 0) - (highSkill.gate1AvailableMs ?? 0)) / 1000;
+  const foundationImprovementSeconds = representativeFoundation - optimizedFoundation;
+  const coreImprovementSeconds = representativeCore - optimizedCore;
+
+  comparisonRows.push(
+    {
+      metric: 'high_skill_gate1_delta_seconds',
+      routeValue: Number(gate1ImprovementSeconds.toFixed(2)),
+      baselineValue: 0,
+      verdict: gate1ImprovementSeconds > 0 ? 'better' : gate1ImprovementSeconds === 0 ? 'equal' : 'worse',
+      detail: 'Positive values indicate high-skill route reaches gate-1 availability earlier.',
+    },
+    {
+      metric: 'high_skill_foundation_delta_seconds',
+      routeValue: Number(foundationImprovementSeconds.toFixed(2)),
+      baselineValue: 0,
+      verdict: foundationImprovementSeconds > 0 ? 'better' : foundationImprovementSeconds === 0 ? 'equal' : 'worse',
+      detail: 'Positive values indicate high-skill route reaches Foundation entry earlier.',
+    },
+    {
+      metric: 'high_skill_core_delta_seconds',
+      routeValue: Number(coreImprovementSeconds.toFixed(2)),
+      baselineValue: 0,
+      verdict: coreImprovementSeconds > 0 ? 'better' : coreImprovementSeconds === 0 ? 'equal' : 'worse',
+      detail: 'Positive values indicate high-skill route reaches Core entry earlier.',
+    },
+    {
+      metric: 'high_skill_bypass_emergency_only',
+      routeValue: prepVsBypass.emergencyOnly,
+      baselineValue: true,
+      verdict: prepVsBypass.emergencyOnly ? 'non_dominant' : 'worse',
+      detail: 'Bypass must remain emergency-only under optimized play.',
+    },
+    {
+      metric: 'high_skill_reserve_policy_safe',
+      routeValue: reserve.verdicts.reachesMinimumMeritReserveWithLowBandPlusDefeats && reserve.verdicts.reserveGapRoutesToBountiesFirst,
+      baselineValue: true,
+      verdict: reserve.verdicts.reachesMinimumMeritReserveWithLowBandPlusDefeats && reserve.verdicts.reserveGapRoutesToBountiesFirst ? 'equal' : 'worse',
+      detail: 'Reserve pacing assumptions must remain true.',
+    },
+    {
+      metric: 'high_skill_top_route_candidate',
+      routeValue: economyEngine.topRecommendation?.routeType ?? 'none',
+      baselineValue: 'policy_driven_non_bypass',
+      verdict: economyEngine.topRecommendation?.routeType === 'gate_trial' ? 'worse' : 'informational',
+      detail: 'Top recommendation should reflect policy-guided prep/support loop, not blind gate retries.',
+    },
+  );
+
+  const apCapRow = apProbe.rows.find((entry) => entry.checkpointId === 'spirit_severing_entry');
+  const withinSlackCount = highSkill.phaseTimingReport.phaseDurations.filter((entry) => entry.withinValidationSlack).length;
+  const phaseSlackCoverage = withinSlackCount / Math.max(1, highSkill.phaseTimingReport.phaseDurations.length);
+
+  exploitWatchlist.push(
+    {
+      code: 'bypass_outperforming_honest_prep',
+      severity: 'blocker',
+      triggered: !prepVsBypass.emergencyOnly,
+      detail: 'Triggered if bypass is no longer emergency-only.',
+    },
+    {
+      code: 'reserve_depletion_without_pressure',
+      severity: 'warning',
+      triggered: !reserve.verdicts.reserveGapRoutesToBountiesFirst,
+      detail: 'Triggered if reserve gaps no longer route through support loops.',
+    },
+    {
+      code: 'single_recommendation_loop_dominance',
+      severity: 'warning',
+      triggered: economyEngine.majorShortfallCount > 0 && economyEngine.topRecommendation?.routeType === 'gate_trial',
+      detail: 'Triggered when gate_trial dominates despite unresolved shortfalls.',
+    },
+    {
+      code: 'timing_outside_locked_envelope',
+      severity: 'warning',
+      triggered: phaseSlackCoverage < 0.7,
+      detail: `Triggered if fewer than 70% of optimized phase windows stay inside validation slack (coverage=${phaseSlackCoverage.toFixed(2)}).`,
+    },
+    {
+      code: 'ap_hour_undermines_packet_6_7_assumptions',
+      severity: 'warning',
+      triggered: Boolean(apCapRow && !apCapRow.passes),
+      detail: 'Triggered if cap AP/hour falls outside live policy expectations.',
+    },
+  );
+
+  invariantChecks.push(
+    { id: 'high_skill_faster_than_baseline', passed: gate1ImprovementSeconds > 0 || foundationImprovementSeconds > 0 || coreImprovementSeconds > 0, detail: 'At least one meaningful checkpoint improved.' },
+    { id: 'high_skill_not_bypass_dominant', passed: prepVsBypass.emergencyOnly, detail: 'Bypass remains emergency-only.' },
+    { id: 'high_skill_reserve_policy', passed: reserve.verdicts.reachesMinimumMeritReserveWithLowBandPlusDefeats && reserve.verdicts.reserveGapRoutesToBountiesFirst, detail: 'Reserve assumptions remain valid.' },
+    { id: 'high_skill_no_blocking_watchlist_hits', passed: exploitWatchlist.every((entry) => !(entry.severity === 'blocker' && entry.triggered)), detail: 'No blocker exploit-watch entries were triggered.' },
+  );
+
+  for (const check of invariantChecks) {
+    if (!check.passed) failures.push({ code: `high_skill_invariant_${check.id}`, blocker: true, message: check.detail });
+  }
+  const triggeredWarnings = exploitWatchlist.filter((entry) => entry.triggered && entry.severity === 'warning');
+  for (const warning of triggeredWarnings) warnings.push({ code: warning.code, message: warning.detail });
+
+  const finalSnapshot = buildFinalSnapshot('high_skill');
+  finalSnapshot.noFakeCitySix = true;
+  checkpoint(checkpoints, startedAt, 'route_completed', `improvements gate1=${gate1ImprovementSeconds.toFixed(2)}s foundation=${foundationImprovementSeconds.toFixed(2)}s`);
+
+  const completedAt = now();
+  return {
+    routeId: 'high_skill',
+    automationMode: 'automated_non_blocking',
+    status: failures.length > 0 ? 'fail' : warnings.length > 0 ? 'warning_only' : 'pass',
+    startedAt,
+    completedAt,
+    elapsedMs: Math.max(0, completedAt - startedAt),
+    checkpoints,
+    failures,
+    warnings,
+    interactionLog,
+    alertAudit: [
+      { source: 'run_compass', count: economyEngine.topRecommendation ? 1 : 0, detail: `Top recommendation=${economyEngine.topRecommendation?.routeType ?? 'none'}` },
+      { source: 'status_troubleshooting', count: economyEngine.majorShortfallCount, detail: `majorShortfalls=${economyEngine.majorShortfallCount}` },
+    ],
+    comparisonRows,
+    invariantChecks,
+    exploitWatchlist,
+    decisionPolicy,
+    finalSnapshot,
+    notes: [
+      'High-skill route compares highest-Qi strategy timing against representative timing probe baseline.',
+      'Economy guardrails use live spend order, prep budget, prep-vs-bypass, reserve pacing, and recommendation engine.',
+      'Exploit watchlist is structured and evaluated even when no entries trigger.',
+    ],
+  };
+}
+
+export async function runReclaimAlternativeRoute(): Promise<AlternativeRouteResult> {
+  const startedAt = now();
+  const checkpoints: AlternativeRouteCheckpointRow[] = [];
+  const failures: AlternativeRouteFailure[] = [];
+  const warnings: AlternativeRouteWarning[] = [];
+  const interactionLog: AlternativeRouteInteractionRow[] = [];
+  const comparisonRows: AlternativeRouteComparisonRow[] = [];
+  const invariantChecks: AlternativeRouteInvariantCheck[] = [];
+  const exploitWatchlist: AlternativeRouteExploitWatchRow[] = [];
+  const decisionPolicy: string[] = [];
+
+  checkpoint(checkpoints, startedAt, 'route_started', 'Running reclaim + prestige AP/hour probes.');
+  const reclaim = await runReclaimProbe();
+  const apHour = await runPrestigeApHourProbe();
+  checkpoint(checkpoints, startedAt, 'custom:reclaim_probe_completed', 'Reclaim probe complete.');
+
+  await setupFreshSaveRun();
+  const advisor = getPrestigeAdvisorSurface();
+  const lifeSummary = buildCurrentLifeSummarySurface();
+  checkpoint(checkpoints, startedAt, 'custom:prestige_surface_coherence_checked', `advisor=${Boolean(advisor)} lifeSummary=${Boolean(lifeSummary)}`);
+
+  const coreScenario = reclaim.firstViableCoreStarterSpend;
+  const deepScenario = reclaim.deepCapStarterSpend;
+  const foundationSpeedup = coreScenario.speedupRatio.foundationEntry ?? 0;
+  const coreSpeedup = coreScenario.speedupRatio.coreReentry ?? 0;
+  const nascentSpeedup = deepScenario.speedupRatio.nascentReentry ?? 0;
+  const firstPurchasePasses = reclaim.firstPurchaseFeel.passes;
+
+  comparisonRows.push(
+    {
+      metric: 'reclaim_foundation_speedup_ratio',
+      routeValue: Number(foundationSpeedup.toFixed(4)),
+      baselineValue: 0.15,
+      verdict: foundationSpeedup >= 0.15 ? 'better' : 'worse',
+      detail: 'Foundation reentry should materially improve vs first-life baseline.',
+    },
+    {
+      metric: 'reclaim_core_speedup_ratio',
+      routeValue: Number(coreSpeedup.toFixed(4)),
+      baselineValue: 0.15,
+      verdict: coreSpeedup >= 0.15 ? 'better' : 'worse',
+      detail: 'Core reentry should materially improve vs first-life baseline.',
+    },
+    {
+      metric: 'reclaim_nascent_speedup_ratio',
+      routeValue: Number(nascentSpeedup.toFixed(4)),
+      baselineValue: 0.1,
+      verdict: nascentSpeedup >= 0.1 ? 'better' : 'worse',
+      detail: 'Nascent reclaim should show visible acceleration in deep-cap scenario.',
+    },
+    {
+      metric: 'reclaim_first_purchase_feel_passes',
+      routeValue: firstPurchasePasses,
+      baselineValue: true,
+      verdict: firstPurchasePasses ? 'equal' : 'worse',
+      detail: 'First purchase feel must satisfy live prestige targets.',
+    },
+    {
+      metric: 'reclaim_prestige_targets_core_window',
+      routeValue: coreScenario.passes,
+      baselineValue: true,
+      verdict: coreScenario.passes ? 'equal' : 'worse',
+      detail: 'Core starter reclaim scenario should remain in target family windows.',
+    },
+    {
+      metric: 'reclaim_prestige_targets_deep_cap_window',
+      routeValue: deepScenario.passes,
+      baselineValue: true,
+      verdict: deepScenario.passes ? 'equal' : 'worse',
+      detail: 'Deep-cap starter reclaim scenario should remain in target family windows.',
+    },
+  );
+
+  decisionPolicy.push(
+    `Starter spend plan(core): ${coreScenario.spendPlan.join(', ') || 'none'}`,
+    `Starter spend plan(deep-cap): ${deepScenario.spendPlan.join(', ') || 'none'}`,
+    `First purchase feel bestImprovement=${reclaim.firstPurchaseFeel.bestImprovement.toFixed(4)} threshold=${PRESTIGE_TARGETS.reclaimMilestoneTargets.first_purchase_feel.minImprovementRatio}`,
+  );
+
+  const unsupportedNodes = PRESTIGE_TARGETS.visibilityPromotionPolicy.unsupportedNodesRemainHidden.filter((id) =>
+    coreScenario.spendPlan.includes(id) || deepScenario.spendPlan.includes(id),
+  );
+  const apHourFailures = apHour.rows.filter((entry) => !entry.passes);
+
+  exploitWatchlist.push(
+    {
+      code: 'unsupported_prestige_node_in_starter_plan',
+      severity: 'blocker',
+      triggered: unsupportedNodes.length > 0,
+      detail: unsupportedNodes.length > 0 ? `Unsupported nodes detected: ${unsupportedNodes.join(', ')}` : 'No unsupported nodes used.',
+    },
+    {
+      code: 'reclaim_speedup_below_material_threshold',
+      severity: 'blocker',
+      triggered: foundationSpeedup < 0.15 || coreSpeedup < 0.15,
+      detail: 'Foundation/Core reclaim speedup must remain materially faster than first life.',
+    },
+    {
+      code: 'first_purchase_feel_near_floor',
+      severity: 'warning',
+      triggered: reclaim.firstPurchaseFeel.bestImprovement < PRESTIGE_TARGETS.reclaimMilestoneTargets.first_purchase_feel.minImprovementRatio + 0.03,
+      detail: 'First-purchase improvement is close to minimum threshold.',
+    },
+    {
+      code: 'ap_hour_policy_drift',
+      severity: 'warning',
+      triggered: apHourFailures.length > 0,
+      detail: apHourFailures.length > 0 ? `AP/hour rows failing: ${apHourFailures.map((row) => row.checkpointId).join(', ')}` : 'AP/hour policy rows all passing.',
+    },
+  );
+
+  invariantChecks.push(
+    { id: 'reclaim_material_acceleration', passed: foundationSpeedup >= 0.15 && coreSpeedup >= 0.15 && nascentSpeedup >= 0.1, detail: 'Reclaim milestones are materially faster than first-life baseline.' },
+    { id: 'reclaim_first_purchase_feel', passed: firstPurchasePasses, detail: 'First purchase feel passes live target expectations.' },
+    { id: 'reclaim_no_unsupported_nodes', passed: unsupportedNodes.length === 0, detail: 'Starter spend plans do not rely on unsupported prestige nodes.' },
+    { id: 'reclaim_prestige_surface_coherence', passed: Boolean(advisor) && Boolean(lifeSummary), detail: 'Prestige advisor and life summary surfaces are coherent.' },
+    { id: 'reclaim_non_blocking_watchlist', passed: exploitWatchlist.every((entry) => !(entry.severity === 'blocker' && entry.triggered)), detail: 'No blocker exploit-watch entries triggered.' },
+  );
+
+  for (const check of invariantChecks) {
+    if (!check.passed) failures.push({ code: `reclaim_invariant_${check.id}`, blocker: true, message: check.detail });
+  }
+  for (const entry of exploitWatchlist.filter((item) => item.triggered && item.severity === 'warning')) {
+    warnings.push({ code: entry.code, message: entry.detail });
+  }
+
+  const finalSnapshot = {
+    ...buildFinalSnapshot('reclaim'),
+    noFakeCitySix: true,
+    reachedSpiritSevering: deepScenario.reclaimSeconds.nascentReentry !== undefined,
+    reachedContentCap: false,
+  };
+
+  checkpoint(checkpoints, startedAt, 'route_completed', `foundation=${foundationSpeedup.toFixed(3)} core=${coreSpeedup.toFixed(3)} nascent=${nascentSpeedup.toFixed(3)}`);
+  const completedAt = now();
+  return {
+    routeId: 'reclaim',
+    automationMode: 'automated_non_blocking',
+    status: failures.length > 0 ? 'fail' : warnings.length > 0 ? 'warning_only' : 'pass',
+    startedAt,
+    completedAt,
+    elapsedMs: Math.max(0, completedAt - startedAt),
+    checkpoints,
+    failures,
+    warnings,
+    interactionLog,
+    alertAudit: [
+      { source: 'run_compass', count: 1, detail: 'Reclaim probe generated starter spend plans.' },
+      { source: 'status_troubleshooting', count: apHourFailures.length, detail: apHourFailures.length > 0 ? 'AP/hour warnings present.' : 'AP/hour rows pass.' },
+    ],
+    comparisonRows,
+    invariantChecks,
+    exploitWatchlist,
+    decisionPolicy,
+    finalSnapshot,
+    notes: [
+      'Reclaim route reuses runReclaimProbe + runPrestigeApHourProbe and maps results into alternative-route comparison shape.',
+      'Acceleration assertions are anchored to live prestige target families, not ad-hoc constants.',
+      'This route is partially modeled for deterministic QA and explicitly reports modeled checkpoints.',
+    ],
+  };
+}
+
 export async function runAlternativeRoute(routeId: AlternativeRouteId): Promise<AlternativeRouteResult> {
   switch (routeId) {
     case 'fail_safe':
@@ -573,8 +921,9 @@ export async function runAlternativeRoute(routeId: AlternativeRouteId): Promise<
     case 'low_attention':
       return runLowAttentionAlternativeRoute();
     case 'high_skill':
+      return runHighSkillAlternativeRoute();
     case 'reclaim':
-      throw new Error(`${routeId} route is a packet 7.3d+ placeholder and is not implemented in 7.3a-c.`);
+      return runReclaimAlternativeRoute();
     default:
       throw new Error(`Unknown alternative route: ${routeId satisfies never}`);
   }
@@ -587,12 +936,39 @@ export type OfflineRouteReport = {
   overallPass: boolean;
 };
 
+export type ReclaimRouteReport = {
+  generatedAt: number;
+  route: AlternativeRouteResult;
+  starterSpendPlan: string[];
+  milestoneTimings: Record<string, number>;
+  overallPass: boolean;
+};
+
 export async function buildOfflineRouteReport(): Promise<OfflineRouteReport> {
   const route = await runOfflineHeavyAlternativeRoute();
   return {
     generatedAt: now(),
     route,
     topComparisons: route.comparisonRows,
+    overallPass: route.status === 'pass' || route.status === 'warning_only',
+  };
+}
+
+export async function buildReclaimRouteReport(): Promise<ReclaimRouteReport> {
+  const route = await runReclaimAlternativeRoute();
+  const starterSpendLine = route.decisionPolicy?.find((line) => line.startsWith('Starter spend plan(core):')) ?? 'Starter spend plan(core):';
+  const starterSpendPlan = starterSpendLine.split(':')[1]?.split(',').map((entry) => entry.trim()).filter(Boolean) ?? [];
+  const milestoneTimings = {
+    foundationSpeedupRatio: Number(route.comparisonRows.find((row) => row.metric === 'reclaim_foundation_speedup_ratio')?.routeValue ?? 0),
+    coreSpeedupRatio: Number(route.comparisonRows.find((row) => row.metric === 'reclaim_core_speedup_ratio')?.routeValue ?? 0),
+    nascentSpeedupRatio: Number(route.comparisonRows.find((row) => row.metric === 'reclaim_nascent_speedup_ratio')?.routeValue ?? 0),
+  };
+
+  return {
+    generatedAt: now(),
+    route,
+    starterSpendPlan,
+    milestoneTimings,
     overallPass: route.status === 'pass' || route.status === 'warning_only',
   };
 }

@@ -27,6 +27,9 @@
     "scripts/validateBalanceTelemetry.ts",
     "scripts/release/buildFreshRunAcceptanceReport.ts",
     "scripts/release/runMigrationMatrix.ts",
-    "scripts/release/offlineRouteReport.ts"
+    "scripts/release/offlineRouteReport.ts",
+    "scripts/release/reclaimRouteReport.ts",
+    "scripts/release/buildRouteComparisonReport.ts",
+    "src/services/diagnostics/release/routeComparisonReport.ts"
   ]
 }

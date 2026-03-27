@@ -45,8 +45,8 @@ const getRealmIdFromIndex = (realmIndex: number): string => {
   return getLiveRealmByIndex(realmIndex).id;
 };
 
-export async function runPhaseTimingProbe(): Promise<PhaseTimingProbeResult> {
-  const scenario = await createTimingProbeScenario();
+export async function runPhaseTimingProbe(options: { pathStrategy?: 'representative' | 'highest_qi' } = {}): Promise<PhaseTimingProbeResult> {
+  const scenario = await createTimingProbeScenario(options);
   const content = useContentStore.getState().raw;
   if (!content) {
     throw new Error('Timing probe requires loaded content.');

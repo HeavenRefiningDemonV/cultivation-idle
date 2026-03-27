@@ -53,6 +53,24 @@ export function assertLowAttentionBudget(result: AlternativeRouteResult, budgetM
   assert.equal(interactions <= budgetMax, true, `Low-attention interaction budget exceeded: ${interactions} > ${budgetMax}`);
 }
 
+export function assertHighSkillWatchlistIsStructured(result: AlternativeRouteResult) {
+  if (result.routeId !== 'high_skill') return;
+  assert.ok(result.exploitWatchlist && result.exploitWatchlist.length > 0, 'high_skill exploit watchlist is required');
+  result.exploitWatchlist?.forEach((entry) => {
+    assert.equal(typeof entry.code, 'string');
+    assert.equal(typeof entry.triggered, 'boolean');
+    assert.equal(typeof entry.detail, 'string');
+  });
+}
+
+export function assertReclaimAccelerationRowsPresent(result: AlternativeRouteResult) {
+  if (result.routeId !== 'reclaim') return;
+  for (const metric of ['reclaim_foundation_speedup_ratio', 'reclaim_core_speedup_ratio', 'reclaim_nascent_speedup_ratio']) {
+    const row = result.comparisonRows.find((entry) => entry.metric === metric);
+    assert.ok(row, `Missing reclaim comparison row: ${metric}`);
+  }
+}
+
 export function assertAlternativeRouteCommonInvariants(result: AlternativeRouteResult) {
   assertRouteWarningsAndFailuresAreExplicit(result);
   assertRouteStaysInSemesterSlice(result);

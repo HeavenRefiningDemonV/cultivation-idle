@@ -36,6 +36,9 @@
     "release:migration-matrix": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/runMigrationMatrix.js",
     "release:migration-matrix:json": "npm run release:migration-matrix -- --json",
     "release:offline-route-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/offlineRouteReport.js",
+    "release:reclaim-route-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/reclaimRouteReport.js",
+    "release:route-report": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/release/buildRouteComparisonReport.js",
+    "release:route-report:json": "npm run release:route-report -- --json",
     "validate:balance-regression": "npm run test:balance-regression && npm run balance:report -- --fail-on-drift",
     "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js"
   },

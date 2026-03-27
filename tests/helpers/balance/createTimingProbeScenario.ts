@@ -13,12 +13,20 @@ const chooseRepresentativePath = () => {
   return entries[Math.floor(entries.length / 2)] ?? entries[0];
 };
 
+const chooseHighestQiPath = () => {
+  const entries = Object.entries(PATH_MODIFIERS)
+    .map(([path, modifiers]) => ({ path, qiMultiplier: modifiers.qiMultiplier }))
+    .sort((a, b) => b.qiMultiplier - a.qiMultiplier || a.path.localeCompare(b.path));
+
+  return entries[0] ?? chooseRepresentativePath();
+};
+
 export type TimingProbeScenario = {
   representativePath: keyof typeof PATH_MODIFIERS;
   representativePathQiMultiplier: number;
 };
 
-export async function createTimingProbeScenario(): Promise<TimingProbeScenario> {
+export async function createTimingProbeScenario(options: { pathStrategy?: 'representative' | 'highest_qi' } = {}): Promise<TimingProbeScenario> {
   const content = await getValidatedEconomicContent();
   resetEconomicRuntimeStores();
   primeContentStore(content);
@@ -29,7 +37,9 @@ export async function createTimingProbeScenario(): Promise<TimingProbeScenario> 
   useGameStore.getState().setFocusMode('balanced');
   useTelemetryStore.getState().clear();
 
-  const representative = chooseRepresentativePath();
+  const representative = options.pathStrategy === 'highest_qi'
+    ? chooseHighestQiPath()
+    : chooseRepresentativePath();
   const selectedPath = representative.path as keyof typeof PATH_MODIFIERS;
   if (!useGameStore.getState().selectedPath) {
     useGameStore.getState().selectPath(selectedPath as never);

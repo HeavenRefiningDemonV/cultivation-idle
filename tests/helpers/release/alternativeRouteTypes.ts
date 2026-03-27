@@ -3,6 +3,7 @@ import type { CityId, MajorRealmId, TrialId } from '../../../src/systems/progres
 export type AlternativeRouteId = 'fail_safe' | 'offline_heavy' | 'low_attention' | 'high_skill' | 'reclaim';
 
 export type AlternativeRouteAutomationMode = 'automated_blocking' | 'automated_non_blocking' | 'manual_coverage';
+export type AlternativeRouteCoverageMode = 'fully_automated' | 'partially_automated' | 'hybrid';
 
 export type AlternativeRouteStatus = 'pass' | 'fail' | 'warning_only';
 
@@ -33,6 +34,12 @@ export type AlternativeRouteCheckpointRow = {
 export type AlternativeRouteWarning = {
   code: string;
   message: string;
+};
+
+export type AlternativeRouteInvariantCheck = {
+  id: string;
+  passed: boolean;
+  detail: string;
 };
 
 export type AlternativeRouteFailure = {
@@ -71,6 +78,13 @@ export type AlternativeRouteComparisonRow = {
   detail: string;
 };
 
+export type AlternativeRouteExploitWatchRow = {
+  code: string;
+  severity: 'info' | 'warning' | 'blocker';
+  triggered: boolean;
+  detail: string;
+};
+
 export type AlternativeRouteFinalSnapshot = {
   finalRealmId: MajorRealmId;
   currentCityId: CityId | null;
@@ -102,6 +116,9 @@ export type AlternativeRouteResult = {
   interactionLog: AlternativeRouteInteractionRow[];
   alertAudit: AlternativeRouteAlertAuditRow[];
   comparisonRows: AlternativeRouteComparisonRow[];
+  invariantChecks?: AlternativeRouteInvariantCheck[];
+  exploitWatchlist?: AlternativeRouteExploitWatchRow[];
+  decisionPolicy?: string[];
   finalSnapshot: AlternativeRouteFinalSnapshot;
   notes: string[];
 };
@@ -116,5 +133,9 @@ export type AlternativeRouteSpec = {
   requiredLiveSystems: string[];
   baselineComparisonTarget: string;
   keyAcceptanceChecks: string[];
+  requiredInvariants: string[];
+  routeWarningConditions: string[];
+  routeIntent: string;
+  coverageMode: AlternativeRouteCoverageMode;
   knownLimitations: string[];
 };
