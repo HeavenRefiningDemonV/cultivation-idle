@@ -6,6 +6,7 @@ import { getLiveRealmByIndex } from '../../systems/progression/runtime/index.js'
 import { bootstrapLiveWorldStores } from '../../systems/world/bootstrapLiveWorld.js';
 import { ContentLoadFailureModal } from '../modals/ContentLoadFailureModal.js';
 import { normalizeContentLoadFailure } from '../../services/diagnostics/buildContentLoadFailureDiagnostics.js';
+import { GameIcon } from '../../ui/icons/index.js';
 
 const EMPTY_RUINS = Object.freeze([]) as ReadonlyArray<
   NonNullable<ReturnType<typeof useContentStore.getState>['raw']>['ruins'][number]
