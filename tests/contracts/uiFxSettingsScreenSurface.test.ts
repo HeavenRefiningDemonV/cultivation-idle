@@ -34,10 +34,11 @@ void test('ui fx settings screen surface: settings screen is only touched screen
   assert.doesNotMatch(worldSource, /app\/fx/);
 });
 
-void test('ui fx settings screen surface: app entry/layout remain bridge-free', () => {
+void test('ui fx settings screen surface: app entry/layout keep fx usage at bridge seams only', () => {
   const appSource = read('src/App.tsx');
   const gameLayoutSource = read('src/components/GameLayout.tsx');
 
-  assert.doesNotMatch(appSource, /app\/fx/);
-  assert.doesNotMatch(gameLayoutSource, /app\/fx/);
+  assert.match(appSource, /AppFxProviderBridge/);
+  assert.match(gameLayoutSource, /GameLayoutFxSeam/);
+  assert.doesNotMatch(gameLayoutSource, /ui\/fx\//);
 });
