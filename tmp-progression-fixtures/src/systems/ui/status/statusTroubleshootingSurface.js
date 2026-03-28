@@ -1,0 +1,224 @@
+import { REALMS } from '../../../constants/index.js';
+import { useContentStore } from '../../../stores/contentStore.js';
+import { useCultivationStore } from '../../../stores/cultivationStore.js';
+import { useGameStore } from '../../../stores/gameStore.js';
+import { useInventoryStore } from '../../../stores/inventoryStore.js';
+import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
+import { usePrestigeStore } from '../../../stores/prestigeStore.js';
+import { useTrialStore } from '../../../stores/trialStore.js';
+import { useUIStore } from '../../../stores/uiStore.js';
+import { formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
+import { getAffinityStatus } from '../../heartLaw/heartLawLogic.js';
+import { analyzeSelectedBuild } from '../../builds/buildAnalysisService.js';
+import { getBuildArchetype } from '../../builds/archetypeRegistry.js';
+import { evaluateCurrentCombatPostureFit } from '../../builds/combatPostureFit.js';
+import { buildDoctrineSnapshot } from '../../doctrine/doctrineSnapshot.js';
+import { getBreathModeSemantics, getFocusModeSemantics, getPathDoctrineProfile } from '../../doctrine/index.js';
+import { buildSupportEconomyReadModelFromState } from '../../economy/supportEconomyReadModel.js';
+import { buildLiveEconomicRecommendationEngine } from '../../economy/economicRecommendationEngine.js';
+import { diagnoseTrialFailure } from '../../readiness/failureDiagnosis.js';
+import { evaluateCurrentGateReadiness, getCurrentGateTrialId } from '../../readiness/readinessRuntime.js';
+import { getReadinessBandLabel, getDiagnosisLabel } from '../../../ui/text/playerFacingLabels.js';
+import { clampRealmIndexToSemesterSlice } from '../../progression/runtime/index.js';
+import { getTrialLifecycleSnapshot } from '../../progression/runtime/trialLifecycle.js';
+const ROOT_GRADE_LABELS = {
+    1: 'Mortal',
+    2: 'Common',
+    3: 'Uncommon',
+    4: 'Rare',
+    5: 'Legendary',
+};
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+function title(input) {
+    return input ? `${input[0].toUpperCase()}${input.slice(1)}` : input;
+}
+export function resolveStatusUrgentCard(code) {
+    switch (code) {
+        case 'undercultivated': return 'readiness';
+        case 'underforged': return 'permanent_floor';
+        case 'underprepared': return 'preparation';
+        case 'underbuilt': return 'build';
+        case 'close': return 'readiness';
+        case 'bypassAvailable': return 'safety_net';
+        default: return null;
+    }
+}
+export function resolveStatusShortfallReason(code, capReached) {
+    if (capReached)
+        return 'Current chapter cap reached.';
+    switch (code) {
+        case 'undercultivated':
+            return 'You are not yet at the realm edge or do not have enough Qi for the current gate cycle.';
+        case 'underforged':
+            return 'Your permanent forge floor is below the current gate target.';
+        case 'underprepared':
+            return 'Consumable, reserve, or pouch readiness is still unstable.';
+        case 'underbuilt':
+            return 'Loadout coverage or technique floor is still missing.';
+        case 'close':
+            return 'You are near the gate floor but still missing a small correction.';
+        case 'bypassAvailable':
+            return 'Safety Net bypass is available if you want to resolve the current gate cycle.';
+        default:
+            return 'No major blocker is surfaced right now.';
+    }
+}
+function topFixLabel(diagnosis) {
+    switch (diagnosis?.topFixes[0]?.destination) {
+        case 'cultivation': return 'Return to Cultivation';
+        case 'forge': return 'Raise Forge Floor';
+        case 'techniques': return 'Tune Build Slots';
+        case 'apothecary': return 'Stabilize Preparation';
+        case 'medicine_pouch': return 'Fix Pouch Automation';
+        case 'trial': return 'Resolve Current Gate';
+        default: return null;
+    }
+}
+export function buildStatusTroubleshootingSurface() {
+    const content = useContentStore.getState().raw;
+    const game = useGameStore.getState();
+    const inventory = useInventoryStore.getState();
+    const cultivation = useCultivationStore.getState();
+    const prestige = usePrestigeStore.getState();
+    const pouch = useMedicinePouchStore.getState();
+    const ui = useUIStore.getState();
+    const snapshot = buildDoctrineSnapshot();
+    const build = analyzeSelectedBuild(snapshot);
+    const archetype = getBuildArchetype(build.archetypeId);
+    const readiness = evaluateCurrentGateReadiness(snapshot);
+    const posture = evaluateCurrentCombatPostureFit('trial');
+    const support = buildSupportEconomyReadModelFromState({ content, currencies: inventory.currencies });
+    const currentGateTrialId = getCurrentGateTrialId();
+    const gateTrial = currentGateTrialId ? content?.trials.find((trial) => trial.id === currentGateTrialId) ?? null : null;
+    const heartLaw = cultivation.selectedHeartLawId
+        ? content?.heart_laws.find((entry) => entry.id === cultivation.selectedHeartLawId) ?? null
+        : null;
+    const capReached = currentGateTrialId == null;
+    const requiredItemSatisfied = !gateTrial?.requiredItemId || inventory.getItemCount(gateTrial.requiredItemId) > 0;
+    const lifecycle = getTrialLifecycleSnapshot({
+        content,
+        trial: gateTrial,
+        progress: currentGateTrialId ? useTrialStore.getState().getProgress(currentGateTrialId) : null,
+        realm: game.realm,
+        qi: game.qi,
+        breakthroughRequirement: game.getBreakthroughRequirement(),
+        requiredItemSatisfied,
+    });
+    let diagnosis = null;
+    if (currentGateTrialId && readiness) {
+        const trialProgress = useTrialStore.getState().getProgress(currentGateTrialId);
+        if (trialProgress.lastAttemptSummary) {
+            diagnosis = diagnoseTrialFailure({
+                trialId: currentGateTrialId,
+                summary: trialProgress.lastAttemptSummary,
+                readiness,
+                build,
+                bypassAvailable: lifecycle.failSafe.canPurchase,
+            });
+        }
+    }
+    const diagnosisCode = diagnosis?.primary ?? (lifecycle.failSafe.canPurchase ? 'bypassAvailable' : null);
+    const diagnosisLabel = diagnosisCode ? getDiagnosisLabel(diagnosisCode) : 'None';
+    const reason = resolveStatusShortfallReason(diagnosisCode, capReached);
+    const economic = buildLiveEconomicRecommendationEngine();
+    const forgeFloor = economic.snapshot.forgeFloor;
+    const gateTarget = forgeFloor.nextGateRecommendation;
+    let floorJudgment = 'On floor';
+    if (diagnosisCode === 'underforged') {
+        floorJudgment = 'Behind floor';
+    }
+    else if (readiness?.forge.band === 'recommended_met') {
+        floorJudgment = 'Above floor';
+    }
+    const pouchSlots = Object.values(pouch.slots);
+    const pouchFilled = pouchSlots.filter((slot) => slot.equippedItemId != null).length;
+    const affinity = getAffinityStatus(heartLaw, snapshot.spiritRoot);
+    const realm = REALMS[clampRealmIndexToSemesterSlice(game.realm.index)] ?? REALMS[0];
+    return {
+        realmName: realm.name,
+        stageText: `Stage ${game.realm.substage}/${realm.substages}`,
+        pathLabel: getPathDoctrineProfile(snapshot.path)?.label ?? 'No Path selected',
+        archetypeLabel: archetype?.label ?? 'Unshaped Build',
+        archetypeSummary: archetype?.summary ?? 'No stable archetype profile detected yet.',
+        shortfall: {
+            diagnosisCode,
+            diagnosisLabel,
+            reason,
+            topFix: topFixLabel(diagnosis),
+        },
+        combatStrip: [
+            { label: 'HP', value: formatNumber(game.stats.hp), tone: 'hp' },
+            { label: 'ATK', value: formatNumber(game.stats.atk), tone: 'offense' },
+            { label: 'DEF', value: formatNumber(game.stats.def), tone: 'defense' },
+            { label: 'Crit Rate', value: formatPercentFromValue(game.stats.crit), tone: 'crit' },
+        ],
+        identity: {
+            heartLawName: heartLaw?.name ?? 'No Heart Law selected',
+            heartLawVerse: heartLaw
+                ? `Verse ${ROMAN[Math.max(0, cultivation.chapter - 1)] ?? cultivation.chapter} • Chapter ${cultivation.chapter}`
+                : 'No active verse',
+            resonanceLabel: affinity.status === 'match' ? 'Resonant' : affinity.status === 'mismatch' ? 'Mismatched' : 'Neutral',
+            spiritRootSummary: {
+                element: snapshot.spiritRoot ? title(snapshot.spiritRoot.element) : 'Dormant',
+                grade: snapshot.spiritRoot ? ROOT_GRADE_LABELS[snapshot.spiritRoot.grade] : 'Dormant',
+                purity: snapshot.spiritRoot ? `${Math.round(snapshot.spiritRoot.purity)}%` : '0%',
+                totalMultiplier: `${prestige.getSpiritRootTotalMultiplier().toFixed(2)}x`,
+            },
+            focusMode: getFocusModeSemantics(snapshot.focusMode).label,
+            breathMode: getBreathModeSemantics(snapshot.breathMode).label,
+        },
+        readiness: {
+            readinessLabel: readiness?.overallBand ? getReadinessBandLabel(readiness.overallBand) : capReached ? 'Cap Reached' : 'Preparing',
+            gateTrialName: gateTrial?.name ?? 'No active gate trial',
+            diagnosisLabel,
+            warnings: (readiness?.warnings ?? []).slice(0, 2),
+            shortfallLine: `${diagnosisLabel} — ${reason}`,
+        },
+        permanentFloor: {
+            weaponRefine: forgeFloor.weaponRefineFloor,
+            accessoryRefine: forgeFloor.accessoryRefineFloor,
+            temperSuccesses: forgeFloor.temperSuccessTotal,
+            runeSummary: forgeFloor.runeSummaryLabel,
+            gateTargetLine: gateTarget
+                ? `Next gate target W${gateTarget.weaponRefine} / A${gateTarget.accessoryRefine} / Temper ${gateTarget.temperSuccesses}`
+                : 'No next gate target surfaced at current cap.',
+            floorJudgment,
+        },
+        preparation: {
+            meritReserve: `Merit reserve: ${formatNumber(support.currentMerit)} (${support.meritReserveStatus.replaceAll('_', ' ')})`,
+            spiritStoneReserve: `Spirit Stones reserve: ${formatNumber(support.currentSpiritStones)} (${support.reserveStatus.replaceAll('_', ' ')})`,
+            pouchSummary: `Auto-use ${ui.settings.useConsumablesInCombat ? 'enabled' : 'disabled'} • ${pouchFilled}/3 slots filled`,
+            pouchFit: posture.pouchFit.replaceAll('_', ' '),
+            topWarning: posture.warnings[0] ?? 'No major preparation warning.',
+            gateTokenLine: gateTrial?.requiredItemId
+                ? (requiredItemSatisfied ? 'Gate token readiness: ready' : 'Gate token readiness: missing required token')
+                : null,
+        },
+        build: {
+            alignment: `${build.pathAlignmentScore}%`,
+            emptySlots: `${build.emptyUnlockedSlots}`,
+            mastery: build.masteryFloorMet ? 'Met' : 'Below floor',
+            rank: build.rankFloorMet ? 'Met' : 'Below floor',
+            runes: build.runeFloorMet ? 'Met' : 'Below floor',
+            policyFit: `AI ${posture.aiFit} • Casting ${posture.castingFit}`,
+            topGap: build.gaps[0]?.reason ?? 'No top build gap surfaced.',
+        },
+        safetyNet: {
+            state: lifecycle.failSafe.canPurchase
+                ? 'Bypass Available'
+                : lifecycle.failSafe.status === 'resolved'
+                    ? 'Resolved with current gate'
+                    : 'Locked',
+            progress: `Safety Net progress: ${lifecycle.failSafe.eligibleFailures} / ${lifecycle.failSafe.threshold} eligible defeats`,
+            threshold: `Threshold: ${lifecycle.failSafe.threshold}`,
+            cost: lifecycle.failSafe.cost
+                ? `Cost: ${lifecycle.failSafe.cost.merit ?? '0'} Merit / ${lifecycle.failSafe.cost.spiritStones ?? '0'} Spirit Stones`
+                : 'Cost unavailable',
+            affordability: lifecycle.failSafe.canPurchase ? 'Affordable now' : 'Need more Merit / Spirit Stones',
+            blockedReason: lifecycle.failSafe.status === 'resolved'
+                ? 'Resolved with current gate'
+                : lifecycle.failSafe.blockedReason ?? (capReached ? 'Not applicable at current chapter cap' : 'Not available yet'),
+        },
+        urgentCardId: resolveStatusUrgentCard(diagnosisCode),
+    };
+}

@@ -1,0 +1,94 @@
+import { getLiveExpeditionRoutePurposes } from '../world/expeditionRouteContract.js';
+import { LIVE_BOUNTY_BOARD_SLOTS } from '../world/bountyBoardContract.js';
+import { DEFERRED_WORLD_MODULES } from '../world/liveWorldSchema.js';
+import { ECONOMY_FACING_MODULE_KEYS } from './economicConstants.js';
+export const MODULE_ROLE_REGISTRY = [
+    {
+        moduleKey: 'outskirts',
+        roleTag: 'gold-and-common-mats',
+        bestUsedWhen: 'You need gold and broad common-material income.',
+        economicCategory: 'resource_source',
+        moduleKind: 'primary_source',
+        activityMode: 'foreground',
+    },
+    {
+        moduleKey: 'ruins',
+        roleTag: 'targeted-material-anchors',
+        bestUsedWhen: 'You need deterministic targeted mats or anchor drops.',
+        economicCategory: 'targeted_source',
+        moduleKind: 'primary_source',
+        activityMode: 'foreground',
+    },
+    {
+        moduleKey: 'apothecary',
+        roleTag: 'immediate-readiness',
+        bestUsedWhen: 'You need immediate readiness through buying, brewing, or pouch restock.',
+        economicCategory: 'readiness',
+        moduleKind: 'conversion_station',
+        activityMode: 'background',
+    },
+    {
+        moduleKey: 'forge',
+        roleTag: 'permanent-floor',
+        bestUsedWhen: 'You need permanent refine, temper, or rune floor progress.',
+        economicCategory: 'permanent_floor',
+        moduleKind: 'conversion_station',
+        activityMode: 'background',
+    },
+    {
+        moduleKey: 'bounties',
+        roleTag: 'support-economy-routing',
+        bestUsedWhen: 'You need support-economy progress, refreshes, or route guidance.',
+        economicCategory: 'support_loop',
+        moduleKind: 'support_loop',
+        activityMode: 'background',
+    },
+    {
+        moduleKey: 'expeditions',
+        roleTag: 'passive-shortage-smoothing',
+        bestUsedWhen: 'You need passive shortage smoothing for herbs, ore, or fragments.',
+        economicCategory: 'passive_smoothing',
+        moduleKind: 'support_loop',
+        activityMode: 'background',
+    },
+    {
+        moduleKey: 'manualPavilion',
+        roleTag: 'build-correction',
+        bestUsedWhen: 'You need build correction, manual options, or scout-route support.',
+        economicCategory: 'build_correction',
+        moduleKind: 'support_loop',
+        activityMode: 'background',
+    },
+    {
+        moduleKey: 'gateTrial',
+        roleTag: 'milestone-check',
+        bestUsedWhen: 'You are ready to resolve the current milestone gate.',
+        economicCategory: 'milestone',
+        moduleKind: 'milestone_step',
+        activityMode: 'foreground',
+    },
+];
+export const MODULE_ROLE_REGISTRY_BY_KEY = Object.fromEntries(MODULE_ROLE_REGISTRY.map((entry) => [entry.moduleKey, entry]));
+export function getEconomicModuleRole(moduleKey) {
+    return MODULE_ROLE_REGISTRY_BY_KEY[moduleKey] ?? null;
+}
+export function getEconomicModuleRoleEntries() {
+    return [...MODULE_ROLE_REGISTRY];
+}
+export function getDeferredModuleLeakKeysForModuleRoleRegistry() {
+    return MODULE_ROLE_REGISTRY.map((entry) => entry.moduleKey).filter((moduleKey) => DEFERRED_WORLD_MODULES.includes(moduleKey));
+}
+export function getEconomyFacingModuleKeys() {
+    return [...ECONOMY_FACING_MODULE_KEYS];
+}
+export function getExpeditionPurposeConsistencySummary() {
+    const purposes = getLiveExpeditionRoutePurposes();
+    return {
+        purposeCount: purposes.length,
+        referencedModuleKeys: purposes.map((purpose) => purpose.moduleKey),
+        missingModuleRoles: purposes
+            .map((purpose) => purpose.moduleKey)
+            .filter((moduleKey) => !MODULE_ROLE_REGISTRY_BY_KEY[moduleKey]),
+        bountyBoardRoles: LIVE_BOUNTY_BOARD_SLOTS.map((slot) => slot.role),
+    };
+}
