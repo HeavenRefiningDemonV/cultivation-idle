@@ -1,19 +1,22 @@
-# UI FX Foundation (Packet A.2)
+# UI FX Foundation (Packets A.2 + A.3)
 
-This directory contains the **A.2 architecture shell only** for the UI FX runtime.
+This directory contains the shared FX shell and quality contract surfaces.
 
-## Scope of this packet
-- Introduces typed FX contracts (layering + quality).
-- Adds inert stage wrappers for local and portal-hosted FX surfaces.
-- Adds a thin Pixi bridge and generic hooks for future scene state inputs.
-- Adds folder structure for future shared Pixi scenes and emitter definitions.
+## What A.2 established
+- Typed FX layer contract and semantic tiers.
+- Typed quality contract and store-agnostic provider.
+- Stage wrappers (local + portal) and thin Pixi bridge seams.
 
-## Explicitly deferred
-- **A.3:** settings wiring into `FxQualityProvider`.
-- **A.4:** final app-wide layering policy and z-band finalization.
-- **A.7:** app-shell integration/mounting in live runtime surfaces.
+## What A.3 adds
+- A richer quality resolver result (`reasons`, deterministic DPR caps).
+- Reduced-motion precedence rules (`system`, plus optional dev override support).
+- Store bridge lives **outside** this folder (`src/app/fx/**`) so `src/ui/fx/**` stays store-agnostic.
 
 ## Guardrails
 - No readable UI belongs in Pixi.
 - No full-canvas UI conversion.
-- No direct screen/store coupling inside `src/ui/fx/**`.
+- No store imports in `src/ui/fx/**`.
+
+## Handoff
+- **A.4:** final app-wide layering policy.
+- **A.7:** provider mounting/app-shell integration.

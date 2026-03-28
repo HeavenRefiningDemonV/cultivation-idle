@@ -68,3 +68,12 @@ A.2 behavior:
 - **A.3:** Feed real settings values into `FxQualityProvider` without changing its external shape.
 - **A.4:** Finalize global z-layer policy and reconcile with overlay bands.
 - **A.7:** Integrate stage/provider usage into app shell and targeted screens.
+
+
+## A.3 settings bridge update
+- `uiFx` settings now live in UI store with bounded localStorage persistence.
+- Quality resolution now includes reason flags and deterministic DPR cap policy.
+- `FxQualityProvider` remains store-agnostic; app/store coupling is isolated to `src/app/fx/useUiFxSettings.ts`.
+- Reduced motion remains authoritative and clamps continuous behavior.
+
+A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.

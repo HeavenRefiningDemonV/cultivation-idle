@@ -422,3 +422,52 @@
   color: #1f2937;
   background: rgba(0, 0, 0, 0.03);
 }
+
+.settingsScreenFxQualityGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.settingsScreenFxSegmentedControl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.settingsScreenFxSegmentButton {
+  min-height: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.75);
+  color: #111827;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settingsScreenFxSegmentButton--active {
+  border-color: rgba(37, 99, 235, 0.7);
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.settingsScreenFxSummary {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.settingsScreenFxSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 22px;
+  color: #111827;
+  font-size: 13px;
+}
+
+.settingsScreenFxActions {
+  display: flex;
+  justify-content: flex-start;
+}

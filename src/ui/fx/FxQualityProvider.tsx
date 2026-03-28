@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
   resolveFxQualityContract,
+  type FxDebugReducedMotionOverride,
   type FxRequestedQuality,
 } from './fxQualityContract.js';
 import { FxQualityContext } from './FxQualityContext.js';
@@ -12,7 +13,7 @@ export interface FxQualityProviderProps extends PropsWithChildren {
   allowAtmosphere?: boolean;
   allowHeroFx?: boolean;
   respectReducedMotion?: boolean;
-  debugReducedMotionOverride?: boolean;
+  debugReducedMotionOverride?: FxDebugReducedMotionOverride;
   devicePixelRatioCap?: number;
 }
 
@@ -52,12 +53,8 @@ export function FxQualityProvider({
       return false;
     }
 
-    if (typeof debugReducedMotionOverride === 'boolean') {
-      return debugReducedMotionOverride;
-    }
-
     return prefersReducedMotion;
-  }, [debugReducedMotionOverride, prefersReducedMotion, respectReducedMotion]);
+  }, [prefersReducedMotion, respectReducedMotion]);
 
   const value = useMemo(
     () =>
@@ -67,9 +64,10 @@ export function FxQualityProvider({
         reducedMotion,
         allowAtmosphere,
         allowHeroFx,
+        debugReducedMotionOverride,
         devicePixelRatioCap,
       }),
-    [allowAtmosphere, allowHeroFx, devicePixelRatioCap, enabled, reducedMotion, requestedQuality],
+    [allowAtmosphere, allowHeroFx, debugReducedMotionOverride, devicePixelRatioCap, enabled, reducedMotion, requestedQuality],
   );
 
   return <FxQualityContext.Provider value={value}>{children}</FxQualityContext.Provider>;
