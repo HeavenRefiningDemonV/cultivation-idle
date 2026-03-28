@@ -1,0 +1,12 @@
+.screenFxStage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.screenFxStage--backdrop,
+.screenFxStage--ambient,
+.screenFxStage--heroUnderlay,
+.screenFxStage--heroOverlay {
+  pointer-events: none;
+}

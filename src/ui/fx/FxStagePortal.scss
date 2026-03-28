@@ -1,0 +1,19 @@
+.fxStagePortalRoot {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.fxStagePortal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fxStagePortal--backdrop,
+.fxStagePortal--ambient,
+.fxStagePortal--heroUnderlay,
+.fxStagePortal--heroOverlay {
+  pointer-events: none;
+}
