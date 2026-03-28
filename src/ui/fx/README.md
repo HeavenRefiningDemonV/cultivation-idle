@@ -44,6 +44,11 @@ This directory contains the shared FX shell, quality contract surfaces, boundary
 - Later screen packets compose scenes from the shared emitter vocabulary.
 
 
+## What A.8 adds
+- Canonical screen composition slot classes in `src/styles/uiScreenComposition.scss`.
+- Slot z-index ownership mapped to `--ui-layer-local-*` tokens instead of numeric literals.
+- Decorative scenic slots remain pointer-inert while readable DOM content stays interactive.
+
 ## What A.9 adds
 - Canonical UI asset manifests/reuse map under `src/assets/ui/**` (metadata only).
 - A strict placeholder policy: missing art is tracked in manifests, not fake PNG/SVG files.

@@ -98,6 +98,13 @@ A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.
 - Later screen packets should not introduce a second provider; they can now focus on local scene composition only.
 
 
+
+## A.8 screen composition contract update
+- Added canonical screen-local composition slots in `src/styles/uiScreenComposition.scss`.
+- Slot layers are token-backed (`--ui-layer-local-*`) to prevent numeric z-index drift.
+- Decorative scenic slots are pointer-inert while readable content stays interactive.
+- Added packet contract doc: `docs/ui/screen-composition-layer-contract.md`.
+
 ## A.9 asset scaffold update
 - UI asset metadata scaffolding now lives under `src/assets/ui/` with typed manifests and a reuse map.
 - Missing art is represented in manifests (`planned-missing` / `planned-optional`) instead of placeholder image files.
