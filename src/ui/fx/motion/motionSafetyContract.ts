@@ -12,16 +12,20 @@ export interface MotionSafetyResolvedContract {
   allowMotion: boolean;
   allowScale: boolean;
   allowSharedLayout: boolean;
+  allowHoverLift: boolean;
+  allowSelectionOpacityEmphasis: boolean;
   enterDurationMs: number;
   exitDurationMs: number;
   selectionScale: number;
   hoverLiftPx: number;
+  pressShiftPx: number;
 }
 
-const EMPHASIS_DEFAULTS: Record<MotionEmphasis, { durationMs: number; selectionScale: number; hoverLiftPx: number }> = {
-  subtle: { durationMs: 140, selectionScale: 1.01, hoverLiftPx: 0.5 },
-  standard: { durationMs: 180, selectionScale: 1.015, hoverLiftPx: 1 },
-  hero: { durationMs: 220, selectionScale: 1.02, hoverLiftPx: 1.5 },
+// Keep these numeric values in sync with src/styles/uiMotionTokens.scss.
+const EMPHASIS_DEFAULTS: Record<MotionEmphasis, { durationMs: number; selectionScale: number; hoverLiftPx: number; pressShiftPx: number }> = {
+  subtle: { durationMs: 160, selectionScale: 1.005, hoverLiftPx: 0.5, pressShiftPx: 0.5 },
+  standard: { durationMs: 200, selectionScale: 1.01, hoverLiftPx: 1, pressShiftPx: 1 },
+  hero: { durationMs: 240, selectionScale: 1.012, hoverLiftPx: 1.25, pressShiftPx: 1 },
 };
 
 export function resolveMotionSafetyContract(input: ResolveMotionSafetyInput): MotionSafetyResolvedContract {
@@ -34,10 +38,13 @@ export function resolveMotionSafetyContract(input: ResolveMotionSafetyInput): Mo
       allowMotion: false,
       allowScale: false,
       allowSharedLayout: false,
+      allowHoverLift: false,
+      allowSelectionOpacityEmphasis: true,
       enterDurationMs: 0,
       exitDurationMs: 0,
       selectionScale: 1,
       hoverLiftPx: 0,
+      pressShiftPx: 0,
     };
   }
 
@@ -50,9 +57,12 @@ export function resolveMotionSafetyContract(input: ResolveMotionSafetyInput): Mo
     allowMotion: true,
     allowScale,
     allowSharedLayout: true,
+    allowHoverLift: true,
+    allowSelectionOpacityEmphasis: true,
     enterDurationMs: defaults.durationMs,
     exitDurationMs: defaults.durationMs,
     selectionScale: allowScale ? defaults.selectionScale : 1,
     hoverLiftPx: defaults.hoverLiftPx,
+    pressShiftPx: defaults.pressShiftPx,
   };
 }

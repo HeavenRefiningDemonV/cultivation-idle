@@ -5,7 +5,7 @@ import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import type { HeartLawDef } from '../../../content/index.js';
-import { OverlaySwash, SelectionHalo } from '../../chrome/index.js';
+import { OverlaySwash, SelectionHalo, useNoLayoutShiftState } from '../../chrome/index.js';
 import './HeartLawPanel.scss';
 
 import { CHANGE_HEART_LAW_COST } from '../../../systems/economy/meritRoleAudit.js';
@@ -105,11 +105,13 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
             {heartLaws.map((law) => {
               const unlocked = isUnlocked(law.id);
               const isActive = selected === law.id;
+              const noShift = useNoLayoutShiftState({ selected: isActive, active: isActive, reserveBadgeSlot: true });
               return (
                 <button
                   type="button"
                   key={law.id}
-                  className={`heartLawOption ${isActive ? 'heartLawOption--active' : ''} ${unlocked ? '' : 'heartLawOption--locked'}`}
+                  className={`heartLawOption ${noShift.guardClassName} ${isActive ? 'heartLawOption--active' : ''} ${unlocked ? '' : 'heartLawOption--locked'}`}
+                  {...noShift.dataAttrs}
                   disabled={!canChange || !unlocked}
                   onClick={() => setSelected(law.id)}
                   title={!unlocked ? renderUnlockInfo(law) : undefined}

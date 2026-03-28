@@ -1,3 +1,4 @@
+@import './layoutStabilityGuards.scss';
 @import '../../styles/uiChromeTokens.scss';
 @import '../../styles/uiMotionTokens.scss';
 
@@ -23,6 +24,7 @@
 }
 
 .bottomNavDock__frame {
+  transition: box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
   width: min(1024px, calc(100vw - 1.5rem));
   padding: 0.35rem 0.5rem;
   border-radius: 999px;

@@ -1,9 +1,9 @@
-import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import type { MotionEmphasis } from '../types.js';
 import { useMotionSafety } from './useMotionSafety.js';
 
-export interface MotionSafeSelectionSurfaceProps {
+export interface MotionSafeSelectionSurfaceProps extends HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   disabled?: boolean;
   hoverable?: boolean;
@@ -40,26 +40,35 @@ export function MotionSafeSelectionSurface({
       data-motion-safe-selection="true"
       data-selected={selected ? 'true' : 'false'}
       data-disabled={disabled ? 'true' : 'false'}
+      data-reduced-motion={safety.reducedMotion ? 'true' : 'false'}
       onClick={disabled ? undefined : onClick}
       role={role}
       tabIndex={tabIndex}
       initial={false}
       animate={{
-        opacity: selected ? 1 : 0.98,
-        y: safety.allowMotion && selected ? -0.5 : 0,
+        opacity: safety.allowSelectionOpacityEmphasis ? (selected ? 1 : 0.98) : 1,
+        y: safety.allowMotion && selected ? -safety.hoverLiftPx * 0.5 : 0,
         scale: safety.allowScale && selected ? safety.selectionScale : 1,
       }}
       whileHover={
-        hoverable && !disabled && safety.allowMotion
+        hoverable && !disabled && safety.allowMotion && safety.allowHoverLift
           ? {
               y: -safety.hoverLiftPx,
               scale: safety.allowScale ? safety.selectionScale : 1,
             }
           : undefined
       }
+      whileTap={
+        !disabled && safety.allowMotion
+          ? {
+              y: safety.pressShiftPx,
+              scale: 1,
+            }
+          : undefined
+      }
       transition={{
         duration: safety.enterDurationMs / 1000,
-        ease: 'easeOut',
+        ease: [0.2, 0, 0.2, 1],
       }}
     >
       {children}

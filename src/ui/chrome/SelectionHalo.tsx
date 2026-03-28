@@ -43,6 +43,7 @@ export function SelectionHalo({
         '--selection-halo-lift': `${safety.hoverLiftPx}px`,
       } as CSSProperties}
       data-motion-safe={safety.allowMotion ? 'true' : 'false'}
+      data-ui-no-shift="true"
     />
   );
 }

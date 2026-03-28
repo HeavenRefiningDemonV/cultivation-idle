@@ -159,7 +159,7 @@ export function LifeStartWizardModal() {
                   const isHoverFx = hoveredPath === path.id;
                   const emphasize = isHoverFx || selected;
                   return (
-                    <MotionSafeSelectionSurface key={path.id} selected={emphasize} hoverable={false} emphasis="subtle" className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
+                    <MotionSafeSelectionSurface key={path.id} selected={emphasize} hoverable={false} emphasis="subtle" className={`lifePathPanel uiNoShiftSelectionHost uiNoShiftSelectableRow lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
                       <OverlaySwash active={emphasize} variant="blockFancy" tone={selected ? 'recommendation' : 'default'} placement="fill" className="lifePathPanel__swash" />
                       <SelectionHalo active={emphasize} tone={selected ? 'success' : 'default'} variant="panel" inset="tight" className="lifePathPanel__halo" />
                       <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
@@ -258,7 +258,7 @@ export function LifeStartWizardModal() {
                     disabled={!unlocked}
                   >
                     <PaperCard
-                      className={`wizardCard${selected ? ' wizardCard--selected' : ''}${!unlocked ? ' wizardCard--locked' : ''}`}
+                      className={`wizardCard uiNoShiftSelectionHost uiNoShiftSelectableRow${selected ? ' wizardCard--selected' : ''}${!unlocked ? ' wizardCard--locked' : ''}`}
                       interactive={unlocked}
                       selected={selected}
                       disabled={!unlocked}
@@ -326,7 +326,7 @@ export function LifeStartWizardModal() {
                     className={`wizardCardButton${selected ? ' wizardCardButton--selected' : ''}`}
                     onClick={() => setBreathMode(mode.id)}
                   >
-                    <PaperCard className={`wizardCard${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
+                    <PaperCard className={`wizardCard uiNoShiftSelectionHost uiNoShiftSelectableRow${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
                       <OverlaySwash active={selected} variant="shortBar" tone="recommendation" placement="center" className="wizardCard__swash" />
                       <SelectionHalo active={selected} tone="recommendation" variant="panel" inset="tight" className="wizardCard__halo" />
                       <div className="wizardCardTitle">{mode.label}</div>

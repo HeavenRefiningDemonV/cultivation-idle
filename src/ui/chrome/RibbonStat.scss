@@ -1,6 +1,9 @@
+@import '../../styles/uiMotionTokens.scss';
+@import './layoutStabilityGuards.scss';
 @import '../../styles/uiChromeTokens.scss';
 
 .ribbonStat {
+  transition: color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
   min-width: 0;
   display: flex;
   flex-direction: column;

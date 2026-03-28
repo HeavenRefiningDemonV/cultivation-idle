@@ -1,5 +1,8 @@
+@import '../../styles/uiMotionTokens.scss';
+@import './layoutStabilityGuards.scss';
 
 .scenicLabel {
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
   position: relative;
   display: inline-flex;
   align-items: center;

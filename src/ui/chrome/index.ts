@@ -24,3 +24,5 @@ export { ScenicLabel } from './ScenicLabel.js';
 export type { ScenicLabelProps, ScenicLabelTone } from './ScenicLabel.js';
 export { OverlaySwash } from './OverlaySwash.js';
 export type { OverlaySwashPlacement, OverlaySwashProps, OverlaySwashTone, OverlaySwashVariant } from './OverlaySwash.js';
+export { useNoLayoutShiftState } from './useNoLayoutShiftState.js';
+export type { NoLayoutShiftStateResult, UseNoLayoutShiftStateOptions } from './useNoLayoutShiftState.js';

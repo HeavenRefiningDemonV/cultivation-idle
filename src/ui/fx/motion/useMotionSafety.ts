@@ -8,6 +8,7 @@ export interface UseMotionSafetyOptions {
   disableScale?: boolean;
 }
 
+// Keep resolved values aligned with src/styles/uiMotionTokens.scss.
 export function useMotionSafety(options: UseMotionSafetyOptions = {}) {
   const reducedMotionSignal = useReducedMotion();
 

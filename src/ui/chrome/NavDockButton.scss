@@ -1,3 +1,4 @@
+@import './layoutStabilityGuards.scss';
 @import '../../styles/uiChromeTokens.scss';
 @import '../../styles/uiMotionTokens.scss';
 
@@ -91,4 +92,9 @@
     padding: 0.65rem 0.75rem;
     font-size: 0.9rem;
   }
+}
+
+.navDockButton:active:not(:disabled),
+.bottomTabBarButton:active:not(:disabled) {
+  transform: translateY(var(--ui-motion-press-shift-y));
 }

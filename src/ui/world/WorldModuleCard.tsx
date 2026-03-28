@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { LiveWorldModuleKey } from '../../content/types.js';
 import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
-import { OverlaySwash, SelectionHalo } from '../chrome/index.js';
+import { OverlaySwash, SelectionHalo, useNoLayoutShiftState } from '../chrome/index.js';
 import { WorldRouteChip } from './WorldRouteChip.js';
 
 export interface WorldModuleCardChip {
@@ -40,9 +40,18 @@ export function WorldModuleCard(props: {
     cta,
   } = props;
 
+  const noShift = useNoLayoutShiftState({
+    selected: active || previewed,
+    active,
+    recommended,
+    reserveBadgeSlot: true,
+    reserveActionSlot: true,
+  });
+
   return (
     <article
-      className={`worldModuleCard ${active ? 'worldModuleCard--active' : ''} ${previewed ? 'worldModuleCard--previewed' : ''} ${recommended ? 'worldModuleCard--recommended' : ''}`}
+      className={`worldModuleCard ${noShift.guardClassName} ${active ? 'worldModuleCard--active' : ''} ${previewed ? 'worldModuleCard--previewed' : ''} ${recommended ? 'worldModuleCard--recommended' : ''}`}
+      {...noShift.dataAttrs}
       onMouseEnter={() => onPreview?.(moduleKey)}
       onMouseLeave={() => onPreview?.(null)}
       onFocus={() => onPreview?.(moduleKey)}

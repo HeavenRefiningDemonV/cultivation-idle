@@ -32,7 +32,7 @@ import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
 import { InkPanel, PaperCard, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
-import { ChromeChip, InspectorPanel, RibbonStat, TopRibbon } from '../../ui/chrome/index.js';
+import { ChromeChip, InspectorPanel, RibbonStat, TopRibbon, useNoLayoutShiftState } from '../../ui/chrome/index.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { BuildAltarSummary } from '../../ui/techniques/BuildAltarSummary.js';
@@ -709,10 +709,14 @@ export function TechniqueLibraryScreen() {
             <InkPanel variant="techniques" className="techniqueLibraryPanel">
               <div className="techniqueLibraryPanelHeader">Loadouts</div>
               <div className="techniqueLibraryLoadouts">
-                {loadouts.map((loadout) => (
+                {loadouts.map((loadout) => {
+                  const active = loadout.id === selectedLoadout?.id;
+                  const noShift = useNoLayoutShiftState({ selected: active, active, reserveActionSlot: true });
+                  return (
                   <button
                     key={loadout.id}
-                    className={`techniqueLibraryLoadout ${loadout.id === selectedLoadout?.id ? 'is-active' : ''}`}
+                    className={`techniqueLibraryLoadout ${noShift.guardClassName} ${active ? 'is-active' : ''}`}
+                    {...noShift.dataAttrs}
                     onClick={() => setSelectedLoadout(loadout.id)}
                   >
                     <div className="techniqueLibraryLoadoutName">{loadout.name}</div>
@@ -720,7 +724,8 @@ export function TechniqueLibraryScreen() {
                       Casting: {castingPolicyLabels[loadout.castingPolicy]}
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="techniqueLibraryCastingPolicy">

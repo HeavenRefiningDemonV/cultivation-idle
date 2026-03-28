@@ -16,7 +16,7 @@ export function MotionSafePresence({
   initial = true,
   emphasis = 'subtle',
 }: MotionSafePresenceProps) {
-  const safety = useMotionSafety({ emphasis });
+  const safety = useMotionSafety({ emphasis, disableScale: true });
 
   return (
     <AnimatePresence mode={mode} initial={safety.reducedMotion ? false : initial}>

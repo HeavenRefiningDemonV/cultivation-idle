@@ -1,3 +1,5 @@
+@import '../../styles/uiMotionTokens.scss';
+@import '../../ui/chrome/layoutStabilityGuards.scss';
 @import '../../styles/paperInkTokens.scss';
 
 .techniquesPanel--v2 {
@@ -193,7 +195,8 @@
   box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2);
 }
 
-.techniquesPanel--v2 .techLibraryItem {
+.techniquesPanel--v2 .techLibraryItem,
+.techniquesPanel--v2 .techLibraryItem.uiNoShiftSelectableRow {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -205,7 +208,7 @@
   text-align: left;
   color: inherit;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniquesPanel--v2 .techLibraryItem:hover {
@@ -384,7 +387,8 @@
     overflow: auto;
   }
 
-  .techniquesPanel--v2 .techLibraryItem {
+  .techniquesPanel--v2 .techLibraryItem,
+.techniquesPanel--v2 .techLibraryItem.uiNoShiftSelectableRow {
     min-height: 64px;
     padding: 10px;
   }
@@ -450,7 +454,7 @@
   border-radius: 8px;
   padding: 10px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniqueLibraryLoadout:hover {
@@ -501,7 +505,7 @@
   color: var(--paper-ink, #2b2116);
   border-radius: 6px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniqueLibraryCastingPolicyButton.is-active {
@@ -532,7 +536,8 @@
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
-.techniqueLibrarySlotRow {
+.techniqueLibrarySlotRow,
+.techniqueLibrarySlotRow.uiNoShiftSelectableRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -541,7 +546,7 @@
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniqueLibrarySlotRow:hover {
@@ -654,7 +659,8 @@
   padding-right: 4px;
 }
 
-.techniqueLibraryOwnedRow {
+.techniqueLibraryOwnedRow,
+.techniqueLibraryOwnedRow.uiNoShiftSelectableRow {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
@@ -665,7 +671,7 @@
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniqueLibraryOwnedRow:hover {
@@ -860,7 +866,7 @@
   padding: 8px 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: box-shadow 0.15s ease, background 0.15s ease;
+  transition: box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniqueLibraryLinkButton:hover {
@@ -966,7 +972,7 @@
   border-radius: 8px;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.15s ease;
+  transition: transform var(--ui-motion-duration-press) var(--ui-motion-ease-standard), opacity var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .techniqueLibraryPrimaryButton:disabled {
@@ -1072,7 +1078,7 @@
   background: rgba(248, 238, 220, 0.85);
   box-shadow: 0 2px 8px rgba(66, 45, 24, 0.2);
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--ui-motion-duration-emphasis) var(--ui-motion-ease-standard), box-shadow var(--ui-motion-duration-emphasis) var(--ui-motion-ease-standard);
 
   &:hover {
     border-color: rgba(120, 72, 33, 0.45);

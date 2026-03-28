@@ -1,4 +1,5 @@
-@use '../../styles/uiMotionTokens.scss' as motion;
+@import '../../styles/uiMotionTokens.scss';
+@import './layoutStabilityGuards.scss';
 
 .overlaySwash {
   position: absolute;
@@ -7,8 +8,8 @@
   opacity: 0;
   z-index: 0;
   transition:
-    opacity var(--ui-motion-duration-fast, motion.$ui-motion-duration-fast) ease,
-    transform var(--ui-motion-duration-fast, motion.$ui-motion-duration-fast) ease;
+    opacity var(--ui-motion-duration-emphasis) var(--ui-motion-ease-emphasis),
+    transform var(--ui-motion-duration-emphasis) var(--ui-motion-ease-emphasis);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -66,7 +67,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .overlaySwash {
-    transition: opacity 0s linear;
+    transition: opacity var(--ui-motion-reduced-duration) linear;
     transform: none;
   }
 }

@@ -38,7 +38,7 @@ import {
   type ManualPurchaseState,
 } from "../modals/ManualDetailModal.js";
 import { PaperCard } from "../../ui/ink/index.js";
-import { ChromeChip, InspectorPanel } from "../../ui/chrome/index.js";
+import { ChromeChip, InspectorPanel, useNoLayoutShiftState } from "../../ui/chrome/index.js";
 import { GameIcon } from "../../ui/icons/index.js";
 import { useRunCompassSurface } from "../../ui/status/useRunCompassSurface.js";
 import { RunCompassCompact } from "../../ui/status/RunCompassCompact.js";
@@ -174,6 +174,13 @@ function BookSpineSlot({
   const roleBadge = getRoleBadge(technique?.role);
   const roleKey = roleBadge.key;
   const tierIcon = slot ? getManualTierIcon(slot.grade) : null;
+  const noShift = useNoLayoutShiftState({
+    selected: isSelected,
+    active: isSelected,
+    disabled: state !== 'available',
+    reserveIconSlot: true,
+    reserveBadgeSlot: true,
+  });
   const pathIcon = getManualPathIcon(technique?.path);
   const typeIcon = getManualRoleIcon(technique?.role);
 
@@ -206,13 +213,14 @@ function BookSpineSlot({
   return (
     <button
       type="button"
-      className={`pavilionSpine uiNoShift ${isSelected ? "pavilionSpine--selected is-selected" : ""} ${
+      className={`pavilionSpine uiNoShift ${noShift.guardClassName} ${isSelected ? "pavilionSpine--selected is-selected" : ""} ${
         isJustPurchased ? "pavilionSpine--justPurchased" : ""
       }`}
       data-state={state}
       data-path={path}
       data-rarity={slot.rarity}
       data-role={roleKey}
+      {...noShift.dataAttrs}
       onClick={onSelect}
       onMouseEnter={handleHover}
       onMouseLeave={onClearHover}

@@ -1,13 +1,13 @@
 :root {
-  --ui-motion-duration-hover: 0.15s;
-  --ui-motion-duration-press: 0.15s;
-  --ui-motion-duration-emphasis: 0.2s;
-  --ui-motion-duration-expand: 0.25s;
-  --ui-motion-ease-standard: ease;
-  --ui-motion-ease-emphasis: ease-in-out;
-  --ui-motion-hover-lift-y: -2px;
+  --ui-motion-duration-hover: 160ms;
+  --ui-motion-duration-press: 120ms;
+  --ui-motion-duration-emphasis: 200ms;
+  --ui-motion-duration-expand: 240ms;
+  --ui-motion-ease-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --ui-motion-ease-emphasis: cubic-bezier(0.16, 0.84, 0.24, 1);
+  --ui-motion-hover-lift-y: -1px;
   --ui-motion-press-shift-y: 1px;
-  --ui-motion-selection-scale: 1;
+  --ui-motion-selection-scale: 1.01;
   --ui-motion-outline-offset: 2px;
   --ui-motion-reduced-duration: 0ms;
   --ui-motion-reduced-lift-y: 0px;

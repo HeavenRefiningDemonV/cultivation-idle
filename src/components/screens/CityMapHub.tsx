@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ScenicLabel, SelectionHalo, OverlaySwash } from '../../ui/chrome/index.js';
+import { ScenicLabel, SelectionHalo, OverlaySwash, useNoLayoutShiftState } from '../../ui/chrome/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import './CityMapHub.scss';
@@ -86,11 +86,18 @@ export function CityMapHub({
           const isPreview = previewModuleKey === moduleKey;
           const isRecommended = recommendedModuleKey === moduleKey;
           const emphasize = isActive || isPreview;
+          const noShift = useNoLayoutShiftState({
+            selected: emphasize,
+            active: isActive,
+            recommended: isRecommended,
+            reserveActionSlot: true,
+          });
           return (
             <button
               key={moduleKey}
               type="button"
-              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''} ${isPreview ? 'cityMapHubHotspot--preview' : ''} ${isRecommended ? 'cityMapHubHotspot--recommended' : ''}`}
+              className={`cityMapHubHotspot ${noShift.guardClassName} ${isActive ? 'cityMapHubHotspot--active' : ''} ${isPreview ? 'cityMapHubHotspot--preview' : ''} ${isRecommended ? 'cityMapHubHotspot--recommended' : ''}`}
+              {...noShift.dataAttrs}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
               onClick={() => onOpenModule(moduleKey)}
               onMouseEnter={() => handleHover(moduleKey)}

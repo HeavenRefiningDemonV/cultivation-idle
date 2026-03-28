@@ -1,7 +1,10 @@
+@import '../../styles/uiMotionTokens.scss';
+@import './layoutStabilityGuards.scss';
 @import '../../styles/uiChromeTokens.scss';
 
 .chromeStamp,
 .paperStamp {
+  transition: box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), filter var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
   --chrome-stamp-ink: rgba(43, 33, 22, 0.75);
   --chrome-stamp-border: rgba(43, 33, 22, 0.5);
   --chrome-stamp-bg: var(--ui-chrome-surface-stamp-base);

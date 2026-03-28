@@ -1,3 +1,5 @@
+@import '../../styles/uiMotionTokens.scss';
+@import '../../ui/chrome/layoutStabilityGuards.scss';
 .worldRouteChip {
   max-width: 100%;
 }
@@ -40,6 +42,7 @@
   gap: 6px;
   overflow: hidden;
   isolation: isolate;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .worldModuleCard--active {
@@ -79,5 +82,5 @@
 .worldModuleCard__tag { font-size: 12px; color: #94a3b8; }
 .worldModuleCard__when { margin: 0; font-size: 12px; color: #e2e8f0; }
 .worldModuleCard__outputs { margin: 0; padding-left: 16px; font-size: 12px; color: #cbd5e1; }
-.worldModuleCard__chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.worldModuleCard__cta { margin-top: auto; }
+.worldModuleCard__chips { display: flex; gap: 6px; flex-wrap: wrap; min-height: 24px; }
+.worldModuleCard__cta { margin-top: auto; min-height: 30px; }

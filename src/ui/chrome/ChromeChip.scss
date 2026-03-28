@@ -1,5 +1,6 @@
 @import '../../styles/uiChromeTokens.scss';
 @import '../../styles/uiMotionTokens.scss';
+@import './layoutStabilityGuards.scss';
 
 .chromeChip,
 .paperChip,
@@ -59,7 +60,9 @@
   align-items: center;
   justify-content: center;
   font-size: inherit;
-  flex: 0 0 auto;
+  flex: 0 0 1rem;
+  width: 1rem;
+  min-width: 1rem;
 }
 
 .chromeChip__text,
@@ -156,7 +159,7 @@
   background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, transparent 70%);
   opacity: 0.5;
   transform: translateX(-120%);
-  animation: chromeChipShimmer 4s ease-in-out infinite;
+  animation: chromeChipShimmer calc(var(--ui-motion-duration-expand) * 10) var(--ui-motion-ease-emphasis) infinite;
   pointer-events: none;
 }
 
@@ -176,6 +179,12 @@
   transform: translateY(calc(var(--ui-motion-hover-lift-y) / 2));
   border-color: rgba(120, 72, 33, 0.45);
   box-shadow: 0 8px 14px rgba(15, 23, 42, 0.15);
+}
+
+.chromeChip--clickable:active,
+.paperChip--clickable:active,
+.inkPaperChip--clickable:active {
+  transform: translateY(var(--ui-motion-press-shift-y));
 }
 
 .chromeChip--clickable:focus-visible,

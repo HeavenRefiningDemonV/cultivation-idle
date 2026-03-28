@@ -1,3 +1,4 @@
+@import '../../styles/uiMotionTokens.scss';
 .modalFrame {
   position: fixed;
   inset: 0;
@@ -89,7 +90,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.12s ease, box-shadow 0.12s ease;
+  transition: background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .modalFrame__close:hover,

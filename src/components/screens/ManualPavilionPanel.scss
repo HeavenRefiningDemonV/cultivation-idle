@@ -1,3 +1,5 @@
+@import '../../styles/uiMotionTokens.scss';
+@import '../../ui/chrome/layoutStabilityGuards.scss';
 .manualPavilionPanel--v2 {
   --pavilion-paper: rgba(250, 244, 228, 0.92);
   --pavilion-ink: rgba(43, 33, 22, 0.9);
@@ -132,7 +134,7 @@
 }
 
 .pavilionShelfWall--flash {
-  animation: pavilionShelfFlash 450ms ease-out 1;
+  animation: pavilionShelfFlash var(--ui-motion-duration-expand) var(--ui-motion-ease-emphasis) 1;
 }
 
 @keyframes pavilionShelfFlash {
@@ -222,7 +224,7 @@
   cursor: pointer;
   overflow: hidden;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
-  transition: box-shadow 160ms ease, filter 160ms ease, opacity 160ms ease;
+  transition: box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), filter var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), opacity var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
   user-select: none;
   --ui-no-shift-border: 2px;
   --ui-no-shift-outline-active: 2px solid rgba(0, 0, 0, 0.45);
@@ -338,7 +340,7 @@
 }
 
 .pavilionSpine--justPurchased {
-  animation: spinePurchasedPulse 650ms ease-out 1;
+  animation: spinePurchasedPulse calc(var(--ui-motion-duration-expand) * 2) var(--ui-motion-ease-emphasis) 1;
 }
 
 .pavilionSpine--justPurchased:hover {
@@ -868,7 +870,7 @@
   text-align: left;
   color: var(--pavilion-ink);
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color var(--ui-motion-duration-emphasis) var(--ui-motion-ease-standard), background var(--ui-motion-duration-emphasis) var(--ui-motion-ease-standard);
 }
 
 .pavilionDetailTocItem.is-active {
@@ -892,7 +894,7 @@
   height: 20px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--ui-motion-duration-emphasis) var(--ui-motion-ease-standard);
   z-index: 2;
 }
 
@@ -1208,7 +1210,7 @@
 .techniqueCardHighlight {
   outline: 2px solid #fbbf24;
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
-  transition: outline 0.3s ease;
+  transition: outline var(--ui-motion-duration-expand) var(--ui-motion-ease-standard);
 }
 
 .pavilionDetailPurpose {
