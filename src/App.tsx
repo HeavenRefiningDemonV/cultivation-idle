@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AppFxProviderBridge } from './app/fx/AppFxProviderBridge.js';
 import { GameLayout } from './components/GameLayout.js';
 import { ContentInitGate } from './components/system/ContentInitGate.js';
 import { initializeGame } from './systems/gameLoop.js';
@@ -46,49 +47,53 @@ function App() {
     };
   }, [gameInitialized]);
 
-  // Show error screen if initialization failed
-  if (initError) {
-    return (
-      <div className={'appShell'}>
-        <div className={'appMessageCard'}>
-          <div className={'appHeroIcon'}>
-            <GameIcon icon="inkWarning" size={64} decorative />
+  const appContent = (() => {
+    // Show error screen if initialization failed
+    if (initError) {
+      return (
+        <div className={'appShell'}>
+          <div className={'appMessageCard'}>
+            <div className={'appHeroIcon'}>
+              <GameIcon icon="inkWarning" size={64} decorative />
+            </div>
+            <h1 className={'appTitle'}>Initialization Error</h1>
+            <p className={'appSubtext'}>{initError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className={'button-standard appPrimaryButton'}
+            >
+              Reload Page
+            </button>
           </div>
-          <h1 className={'appTitle'}>Initialization Error</h1>
-          <p className={'appSubtext'}>{initError}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className={'button-standard appPrimaryButton'}
-          >
-            Reload Page
-          </button>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // Show loading screen while initializing
-  if (!gameInitialized) {
-    return (
-      <div className={'appShell'}>
-        <div className={'appMessageCard'}>
-          <div className={'appHeroIcon'}>
-            <GameIcon icon="inkBolt" size={64} decorative className="appLoader" />
+    // Show loading screen while initializing
+    if (!gameInitialized) {
+      return (
+        <div className={'appShell'}>
+          <div className={'appMessageCard'}>
+            <div className={'appHeroIcon'}>
+              <GameIcon icon="inkBolt" size={64} decorative className="appLoader" />
+            </div>
+            <h1 className={'appTitle'}>Cultivation Idle</h1>
+            <p className={'appSubtext'}>Loading...</p>
           </div>
-          <h1 className={'appTitle'}>Cultivation Idle</h1>
-          <p className={'appSubtext'}>Loading...</p>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  // Render game layout once initialized
-  return (
-    <ContentInitGate>
-      <img className="paper-texture" src={paperTexture}></img>
-      <GameLayout />
-    </ContentInitGate>
-  );
+    // Render game layout once initialized
+    return (
+      <ContentInitGate>
+        <img className="paper-texture" src={paperTexture}></img>
+        <GameLayout />
+      </ContentInitGate>
+    );
+  })();
+
+  return <AppFxProviderBridge>{appContent}</AppFxProviderBridge>;
 }
 
 export default App;

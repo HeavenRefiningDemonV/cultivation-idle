@@ -27,6 +27,12 @@ This directory contains the shared FX shell, quality contract surfaces, boundary
 - Later scene packets consume these families inside scene composition.
 - No screen should own raw bespoke particles by default.
 
+## What A.7 adds
+- Global provider bridge mount in `App.tsx` via `AppFxProviderBridge`.
+- Shell seam wrapper in `GameLayout` via `GameLayoutFxSeam`.
+- Lazy global portal-root policy remains (no inert portal mount added).
+- Later packets should not mount a second provider; they now only need local screen packet code.
+
 ## Guardrails
 - No readable UI belongs in Pixi.
 - No full-canvas UI conversion.

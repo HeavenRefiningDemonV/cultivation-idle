@@ -70,7 +70,8 @@ A.5 installs reusable, declarative boundaries so later screen packets can mount 
 ## Handoff
 - **A.6:** adds shared emitter vocabulary.
 - Later hero/module packets consume these primitives directly.
-- **A.7:** still owns app integration/runtime mounting.
+- **A.7:** mounted app/provider and GameLayout seam integration.
+- Later packets should not add a second provider and should only implement local screen usage.
 
 ## Rule reminder
 Do not mount raw `PixiUiStage` in screen code unless a boundary primitive truly cannot express the use case.

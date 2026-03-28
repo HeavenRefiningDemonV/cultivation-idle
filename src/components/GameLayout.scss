@@ -54,6 +54,12 @@
 
 }
 
+.gameLayoutFxSeam {
+  min-height: 0;
+  width: 100%;
+  height: calc(100vh - var(--ui-bottom-nav-total));
+}
+
 .gameLayoutContent--scrollable {
   overflow-y: auto;
   scrollbar-gutter: stable both-edges;

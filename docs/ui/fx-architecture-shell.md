@@ -90,3 +90,9 @@ A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.
 - Families (`mist`, `dust`, `sparks`, `glints`, `fireflies`) are authored as typed descriptors.
 - Later scenes should depend on the shared resolver/spec layer (`resolveEmitterSpec`) instead of bespoke inline particle constants.
 - This packet still does **not** mount any FX in app or screen runtime surfaces.
+
+## A.7 app-shell integration seam update
+- `AppFxProviderBridge` now mounts the global FX quality provider in `App.tsx`.
+- `GameLayoutFxSeam` now wraps the active screen host region in `GameLayout.tsx`.
+- Lazy portal-root policy remains in effect: `FxStagePortal` root is created on-demand by first global stage usage.
+- Later screen packets should not introduce a second provider; they can now focus on local scene composition only.
