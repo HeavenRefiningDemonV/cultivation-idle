@@ -1,6 +1,6 @@
-# UI FX Foundation (Packets A.2 → A.5)
+# UI FX Foundation (Packets A.2 → A.6)
 
-This directory contains the shared FX shell, quality contract surfaces, and A.5 boundary primitives.
+This directory contains the shared FX shell, quality contract surfaces, boundary primitives, and emitter vocabulary.
 
 ## What A.2 established
 - Typed FX layer contract and semantic tiers.
@@ -21,6 +21,12 @@ This directory contains the shared FX shell, quality contract surfaces, and A.5 
 - Motion-safety wrappers and a pure motion safety contract.
 - Refined lightweight `useScreenFxState` normalization seam.
 
+## What A.6 adds
+- Reusable shared emitter vocabulary descriptors (`mist`, `dust`, `sparks`, `glints`, `fireflies`).
+- Pure quality/reduced-motion/off/static resolver for emitter specs.
+- Later scene packets consume these families inside scene composition.
+- No screen should own raw bespoke particles by default.
+
 ## Guardrails
 - No readable UI belongs in Pixi.
 - No full-canvas UI conversion.
@@ -28,5 +34,5 @@ This directory contains the shared FX shell, quality contract surfaces, and A.5 
 - Do not mount raw `PixiUiStage` in screen code unless a boundary primitive truly cannot express the use case.
 
 ## Handoff
-- **A.6:** shared emitter vocabulary.
 - **A.7:** provider mounting/app-shell integration.
+- Later screen packets compose scenes from the shared emitter vocabulary.

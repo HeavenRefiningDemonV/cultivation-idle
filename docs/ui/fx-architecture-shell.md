@@ -84,3 +84,9 @@ A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.
 - New motion wrappers under `src/ui/fx/motion/**` centralize reduced-motion-safe selection/presence behavior.
 - `useScreenFxState` is refined to normalize lightweight scene inputs only.
 - Do not mount raw `PixiUiStage` in screen code unless a boundary primitive truly cannot express the use case.
+
+## A.6 shared emitter vocabulary update
+- Emitter vocabulary now exists in `src/ui/fx/pixi/emitters/**`.
+- Families (`mist`, `dust`, `sparks`, `glints`, `fireflies`) are authored as typed descriptors.
+- Later scenes should depend on the shared resolver/spec layer (`resolveEmitterSpec`) instead of bespoke inline particle constants.
+- This packet still does **not** mount any FX in app or screen runtime surfaces.
