@@ -1,13 +1,12 @@
 @import './uiLayerTokens.css';
+@import './uiChromeTokens.scss';
+@import './uiMotionTokens.scss';
 @import './uiScreenComposition.scss';
 
 /* App-wide layering must use semantic UI layer tokens from uiLayerTokens.css. */
 
 :root {
   --button-hover-neutral: #d9d9d9;
-  --ui-bottom-nav-height: 72px;
-  --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
-  --ui-bottom-nav-total: calc(var(--ui-bottom-nav-height) + var(--ui-safe-bottom));
 }
 
 * {
@@ -21,7 +20,7 @@
   transform: none;
   outline: var(--ui-no-shift-outline, 0 solid transparent);
   outline-offset: var(--ui-no-shift-outline-offset, 0);
-  transition: box-shadow 0.16s ease, outline-color 0.16s ease, filter 0.16s ease, background 0.16s ease;
+  transition: box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), outline-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), filter var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .uiNoShift:hover,
@@ -30,16 +29,16 @@
 .uiNoShift.is-highlighted,
 .uiNoShift:focus-visible {
   outline: var(--ui-no-shift-outline-active, 2px solid rgba(0, 0, 0, 0.45));
-  outline-offset: var(--ui-no-shift-outline-offset, 2px);
+  outline-offset: var(--ui-no-shift-outline-offset, var(--ui-motion-outline-offset));
   box-shadow: var(--ui-no-shift-shadow-active, none);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'Julee', cursive;
+  font-family: var(--ui-chrome-font-body);
   background-color: #0f172a;
-  color: #000000;
+  color: var(--ui-chrome-color-ink-primary);
   background-image: radial-gradient(ellipse at center, #2d2d2d 0%, #0a0a0a 100%);
   background-attachment: fixed;
   overflow: hidden;
@@ -62,7 +61,7 @@ option {
 }
 
 body * {
-  color: #000000;
+  color: var(--ui-chrome-color-ink-primary);
 }
 
 #root {
@@ -82,13 +81,13 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Julee', cursive;
+  font-family: var(--ui-chrome-font-title);
   margin: 0;
 }
 
 button {
-  font-family: 'Julee', cursive;
-  background: #d0d0d0;
+  font-family: var(--ui-chrome-font-button);
+  background: var(--ui-chrome-surface-shell-raised);
   border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
   color: #000000;
@@ -110,7 +109,7 @@ button:focus:not(:focus-visible) {
 }
 
 .button-standard {
-  background: #d0d0d0;
+  background: var(--ui-chrome-surface-shell-raised);
   border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
   color: #000000;

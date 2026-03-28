@@ -1,18 +1,19 @@
 @import '../../styles/paperAnimations.scss';
 @import '../../styles/paperInkTokens.scss';
+@import '../../styles/uiMotionTokens.scss';
 
 .paperCard {
-  --paper-ink: var(--paper-ink, #2b2116);
-  --paper-ink-muted: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
-  --paper-border: var(--paper-border, rgba(65, 45, 25, 0.2));
-  --paper-shadow: var(--paper-shadow, 0 12px 24px rgba(15, 23, 42, 0.16));
-  --paper-bg: rgba(247, 237, 215, 0.72);
-  --paper-bg-strong: rgba(244, 230, 200, 0.85);
-  --paper-bg-soft: rgba(251, 244, 228, 0.55);
-  --paper-outline: var(--paper-outline, rgba(120, 72, 33, 0.4));
+  --paper-ink: var(--paper-ink, var(--ui-chrome-color-ink-primary));
+  --paper-ink-muted: var(--paper-ink-muted, var(--ui-chrome-color-ink-muted));
+  --paper-border: var(--paper-border, var(--ui-chrome-border-soft));
+  --paper-shadow: var(--paper-shadow, var(--ui-chrome-shadow-soft));
+  --paper-bg: var(--ui-chrome-surface-card-base);
+  --paper-bg-strong: var(--ui-chrome-surface-card-raised);
+  --paper-bg-soft: var(--ui-chrome-surface-card-soft);
+  --paper-outline: var(--paper-outline, var(--ui-chrome-outline-shell));
   position: relative;
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: var(--ui-chrome-radius-card);
+  padding: var(--ui-chrome-space-card-pad-y) var(--ui-chrome-space-card-pad-x);
   background: var(--paper-bg);
   color: var(--paper-ink);
   border: 1px solid var(--paper-border);
@@ -28,7 +29,7 @@
   background-image: url('../../assets/texture_overlay.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.22;
+  opacity: var(--ui-chrome-texture-opacity);
   mix-blend-mode: overlay;
   pointer-events: none;
 }
@@ -45,7 +46,7 @@
 
 .paperCard > * {
   position: relative;
-  z-index: 1;
+  z-index: var(--ui-layer-local-content);
 }
 
 .paperCard--tray {
@@ -58,17 +59,20 @@
 .paperCard--label {
   background: var(--paper-bg-soft);
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: var(--ui-chrome-radius-card-compact);
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
 }
 
 .paperCard--interactive {
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .paperCard--interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(var(--ui-motion-hover-lift-y));
   border-color: rgba(120, 72, 33, 0.5);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
 }
@@ -101,16 +105,16 @@
 }
 
 .paperChip {
-  --chip-ink: var(--paper-ink, #2b2116);
+  --chip-ink: var(--paper-ink, var(--ui-chrome-color-ink-primary));
   --chip-border: rgba(87, 59, 31, 0.24);
-  --chip-bg: rgba(251, 244, 228, 0.7);
+  --chip-bg: var(--ui-chrome-surface-chip-base);
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 5px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 1.2;
+  border-radius: var(--ui-chrome-radius-pill);
+  font-size: var(--ui-chrome-text-size-chip);
+  line-height: var(--ui-chrome-line-height-meta);
   border: 1px solid var(--chip-border);
   background: var(--chip-bg);
   color: var(--chip-ink);
@@ -136,7 +140,7 @@
   align-items: center;
   justify-content: center;
   color: inherit;
-  font-size: 12px;
+  font-size: var(--ui-chrome-text-size-chip);
 }
 
 .paperChip--tone-ink {
@@ -149,9 +153,9 @@
 }
 
 .paperChip--tone-rare {
-  --chip-ink: var(--paper-rare, #b5852b);
+  --chip-ink: var(--paper-rare, var(--ui-chrome-color-rare));
   --chip-border: rgba(181, 133, 43, 0.45);
-  --chip-bg: rgba(255, 246, 220, 0.85);
+  --chip-bg: var(--ui-chrome-surface-chip-rare);
 }
 
 .paperChip--tone-danger {
@@ -164,9 +168,9 @@
 }
 
 .paperChip--tone-merit {
-  --chip-ink: var(--paper-stamp, #9f3b2e);
+  --chip-ink: var(--paper-stamp, var(--ui-chrome-color-seal-red));
   --chip-border: rgba(159, 59, 46, 0.45);
-  --chip-bg: rgba(255, 232, 224, 0.75);
+  --chip-bg: var(--ui-chrome-surface-chip-merit);
   padding-left: 18px;
 }
 
@@ -196,17 +200,19 @@
 
 .paperChip--clickable {
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .paperChip--clickable:hover {
-  transform: translateY(-1px);
+  transform: translateY(calc(var(--ui-motion-hover-lift-y) / 2));
   border-color: rgba(120, 72, 33, 0.45);
 }
 
 .paperChip--clickable:focus-visible {
   outline: 2px solid rgba(120, 72, 33, 0.5);
-  outline-offset: 2px;
+  outline-offset: var(--ui-motion-outline-offset);
 }
 
 .paperStamp {
@@ -215,14 +221,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--ui-chrome-radius-pill);
   border: 2px double var(--stamp-border);
   color: var(--stamp-ink);
   padding: 6px 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  background: rgba(255, 248, 235, 0.6);
+  background: var(--ui-chrome-surface-stamp-base);
   mix-blend-mode: multiply;
   position: relative;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -260,7 +266,7 @@
 .paperStamp--tone-seal {
   --stamp-ink: var(--paper-stamp, rgba(128, 53, 36, 0.7));
   --stamp-border: var(--paper-stamp-muted, rgba(128, 53, 36, 0.5));
-  background: rgba(255, 230, 220, 0.7);
+  background: var(--ui-chrome-surface-stamp-seal);
 }
 
 .paperStamp--tone-ink {
@@ -274,13 +280,13 @@
 
 .paperStamp--ready,
 .paperStamp--complete {
-  --stamp-ink: var(--paper-complete, #2f8f66);
+  --stamp-ink: var(--paper-complete, var(--ui-chrome-color-success));
   --stamp-border: rgba(47, 143, 102, 0.55);
   background: rgba(225, 247, 236, 0.7);
 }
 
 .paperStamp--claimed {
-  --stamp-ink: var(--paper-stamp, #9f3b2e);
+  --stamp-ink: var(--paper-stamp, var(--ui-chrome-color-seal-red));
   --stamp-border: rgba(159, 59, 46, 0.6);
 }
 
@@ -301,15 +307,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .paperCard--interactive,
-  .paperChip--clickable {
-    transition: none;
-  }
-
-  .paperCard--interactive:hover {
-    transform: none;
-  }
-
   .paperChip--tone-rare::after {
     animation: none;
   }

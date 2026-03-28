@@ -17,6 +17,10 @@
   --ui-layer-feature-modal: 1600;
   --ui-layer-emergency-modal: 1800;
 
+  --ui-layer-chrome-ribbon: var(--ui-layer-header);
+  --ui-layer-chrome-dock: var(--ui-layer-bottom-nav);
+  --ui-layer-chrome-modal: var(--ui-layer-modal-base);
+
   --ui-layer-local-backdrop: 0;
   --ui-layer-local-texture: 1;
   --ui-layer-local-fx-underlay: 2;

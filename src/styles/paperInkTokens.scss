@@ -1,47 +1,45 @@
-$paper-0: rgba(235, 230, 220, 0.92);
-$paper-1: rgba(255, 255, 255, 0.45);
-$ink-0: rgba(12, 18, 34, 0.92);
-$ink-1: rgba(12, 18, 34, 0.65);
-$seal-red: rgba(185, 28, 28, 0.75);
-$jade: rgba(34, 197, 94, 0.75);
-$gold: rgba(245, 158, 11, 0.75);
-$shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.18);
-$shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
+@import './uiChromeTokens.scss';
 
+/*
+ * B.2 compatibility bridge:
+ * - canonical source of truth is uiChromeTokens.scss
+ * - this file preserves legacy --paper-* names for existing imports
+ */
 :root {
-  --paper-0: #ece6dc;
-  --paper-1: #{$paper-1};
-  --ink-0: #{$ink-0};
-  --ink-1: #{$ink-1};
-  --seal-red: #{$seal-red};
-  --jade: #{$jade};
-  --gold: #{$gold};
-  --shadow-soft: #{$shadow-soft};
-  --shadow-strong: #{$shadow-strong};
-  --paper-parchment: #f7edd7;
-  --paper-parchment-strong: #f4e6c8;
-  --paper-parchment-soft: #fbf4e4;
-  --paper-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
-  --paper-ink: #2b2116;
-  --paper-ink-muted: rgba(43, 33, 22, 0.7);
-  --paper-ink-faint: rgba(43, 33, 22, 0.55);
-  --paper-border: rgba(65, 45, 25, 0.22);
-  --paper-outline: rgba(120, 72, 33, 0.45);
-  --paper-stamp: #9f3b2e;
+  --paper-0: var(--ui-chrome-color-parchment-base);
+  --paper-1: rgba(255, 255, 255, 0.45);
+  --ink-0: rgba(12, 18, 34, 0.92);
+  --ink-1: rgba(12, 18, 34, 0.65);
+  --seal-red: rgba(185, 28, 28, 0.75);
+  --jade: rgba(34, 197, 94, 0.75);
+  --gold: rgba(245, 158, 11, 0.75);
+  --shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.18);
+  --shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
+
+  --paper-parchment: var(--ui-chrome-color-parchment-base);
+  --paper-parchment-strong: var(--ui-chrome-color-parchment-deep);
+  --paper-parchment-soft: var(--ui-chrome-color-parchment-raised);
+  --paper-shadow: var(--ui-chrome-shadow-soft);
+  --paper-ink: var(--ui-chrome-color-ink-primary);
+  --paper-ink-muted: var(--ui-chrome-color-ink-muted);
+  --paper-ink-faint: var(--ui-chrome-color-ink-faint);
+  --paper-border: var(--ui-chrome-border-soft);
+  --paper-outline: var(--ui-chrome-outline-shell);
+  --paper-stamp: var(--ui-chrome-color-seal-red);
   --paper-stamp-muted: rgba(159, 59, 46, 0.55);
-  --paper-rare: #b5852b;
-  --paper-jade: #2f8f66;
+  --paper-rare: var(--ui-chrome-color-rare);
+  --paper-jade: var(--ui-chrome-color-jade);
   --paper-jade-muted: rgba(47, 143, 102, 0.58);
-  --paper-complete: #2f8f66;
-  --paper-warning: #b5852b;
-  --paper-danger: #9f3b2e;
+  --paper-complete: var(--ui-chrome-color-success);
+  --paper-warning: var(--ui-chrome-color-warning);
+  --paper-danger: var(--ui-chrome-color-danger);
   --paper-glow: rgba(47, 143, 102, 0.18);
-  --paper-success: #2f8f66;
-  --paper-shell-base: rgba(247, 237, 215, 0.9);
-  --paper-shell-raised: rgba(255, 245, 225, 0.92);
-  --paper-shell-muted: rgba(236, 225, 205, 0.74);
-  --paper-shell-border: rgba(65, 45, 25, 0.26);
-  --paper-shell-outline: rgba(120, 72, 33, 0.52);
+  --paper-success: var(--ui-chrome-color-success);
+  --paper-shell-base: var(--ui-chrome-surface-shell-base);
+  --paper-shell-raised: var(--ui-chrome-surface-shell-raised);
+  --paper-shell-muted: var(--ui-chrome-surface-shell-muted);
+  --paper-shell-border: var(--ui-chrome-border-shell);
+  --paper-shell-outline: var(--ui-chrome-outline-shell);
   --paper-shell-active: rgba(159, 59, 46, 0.2);
   --paper-shell-active-subtle: rgba(120, 72, 33, 0.14);
   --paper-progress-fill: rgba(47, 143, 102, 0.75);
@@ -49,6 +47,6 @@ $shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
   --paper-scrollbar-track: rgba(59, 42, 24, 0.28);
   --paper-scrollbar-thumb: rgba(120, 72, 33, 0.62);
   --paper-scrollbar-thumb-hover: rgba(159, 59, 46, 0.68);
-  --paper-shadow-soft: 0 8px 18px rgba(22, 12, 4, 0.24);
-  --paper-shadow-strong: 0 14px 28px rgba(22, 12, 4, 0.32);
+  --paper-shadow-soft: var(--ui-chrome-shadow-soft);
+  --paper-shadow-strong: var(--ui-chrome-shadow-strong);
 }

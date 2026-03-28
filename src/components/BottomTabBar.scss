@@ -5,7 +5,7 @@
   justify-content: center;
   padding: 0.75rem 0 calc(12px + var(--ui-safe-bottom));
   pointer-events: auto;
-  z-index: 200;
+  z-index: var(--ui-layer-chrome-dock, var(--ui-layer-bottom-nav));
 }
 
 .bottomTabBarInner {
@@ -29,26 +29,30 @@
 
 .bottomTabBarButton {
   min-width: 7.5rem;
+  min-height: var(--ui-chrome-size-header);
   padding: 0.75rem 1rem;
   font-weight: 700;
   font-size: 0.95rem;
-  background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
-  color: var(--paper-ink, #2b2116);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-  box-shadow: var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24));
+  background: var(--paper-shell-raised, var(--ui-chrome-surface-shell-raised));
+  color: var(--paper-ink, var(--ui-chrome-color-ink-primary));
+  transition:
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    background-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+  box-shadow: var(--paper-shadow-soft, var(--ui-chrome-shadow-soft));
 }
 
 .bottomTabBarButton:hover,
 .bottomTabBarButton:focus-visible {
-  transform: translateY(-2px);
+  transform: translateY(var(--ui-motion-hover-lift-y));
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
 }
 
 .bottomTabBarButton--active {
   background: var(--paper-shell-active, rgba(159, 59, 46, 0.2));
-  color: var(--paper-ink, #2b2116);
-  box-shadow: var(--paper-shadow-strong, 0 14px 28px rgba(22, 12, 4, 0.32));
-  outline: 2px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
+  color: var(--paper-ink, var(--ui-chrome-color-ink-primary));
+  box-shadow: var(--paper-shadow-strong, var(--ui-chrome-shadow-strong));
+  outline: 2px solid var(--paper-shell-outline, var(--ui-chrome-outline-shell));
   outline-offset: 1px;
 }
 

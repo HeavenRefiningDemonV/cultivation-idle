@@ -1,10 +1,11 @@
 @import './inkTheme.scss';
+@import '../../styles/uiMotionTokens.scss';
 
 .inkPaperCard {
   position: relative;
-  padding: 12px 14px;
+  padding: var(--ui-chrome-space-card-pad-y) var(--ui-chrome-space-card-pad-x);
   border: 1.5px solid var(--ink-border-color);
-  border-radius: 10px 8px 12px 9px;
+  border-radius: var(--ui-chrome-radius-card-compact);
   background-color: var(--paper-card-bg, var(--paper-tint));
   color: var(--ink-text-color);
   box-shadow: 0 10px 20px var(--shadow-color);
@@ -24,7 +25,7 @@
 
 .inkPaperCard > * {
   position: relative;
-  z-index: 1;
+  z-index: var(--ui-layer-local-content);
 }
 
 .inkPaperCard--tray {
@@ -45,28 +46,31 @@
 .inkPaperCard--label {
   padding: 8px 10px;
   border-radius: 9px 7px 10px 8px;
-  font-size: 12px;
+  font-size: var(--ui-chrome-text-size-chip);
   --paper-card-bg: rgba(252, 246, 235, 0.95);
 }
 
 .inkPaperCard--interactive {
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .inkPaperCard--interactive:hover {
-  transform: translateY(-2px);
+  transform: translateY(var(--ui-motion-hover-lift-y));
   border-color: rgba(120, 72, 33, 0.55);
   box-shadow: 0 16px 28px var(--shadow-color);
 }
 
 .inkPaperCard--interactive:active {
-  transform: translateY(1px);
+  transform: translateY(var(--ui-motion-press-shift-y));
   box-shadow: 0 8px 16px var(--shadow-color);
 }
 
 .inkPaperCard--selected {
-  border-color: rgba(120, 72, 33, 0.8);
+  border-color: var(--ui-chrome-outline-strong);
   border-width: 2px;
   box-shadow: 0 12px 24px var(--shadow-color);
 }
