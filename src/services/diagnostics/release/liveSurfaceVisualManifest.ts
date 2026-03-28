@@ -27,6 +27,8 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
   trackedSurfaces: [...LIVE_SURFACE_MANIFEST.trackedSurfaceIds],
   trackedStyleFiles: [
     'src/components/BottomTabBar.scss',
+    'src/ui/chrome/BottomNavDock.scss',
+    'src/ui/chrome/NavDockButton.scss',
     'src/components/modals/OfflineProgressModal.scss',
     'src/components/modals/ManualSatchelModal.scss',
     'src/components/screens/CultivateScreen.scss',
@@ -36,13 +38,15 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
   ],
   trackedIconFiles: [
     'src/components/BottomTabBar.tsx',
+    'src/ui/chrome/BottomNavDock.tsx',
+    'src/ui/chrome/NavDockButton.tsx',
     'src/components/modals/ManualSatchelModal.tsx',
     'src/components/modals/OfflineProgressModal.tsx',
     'src/components/screens/InventoryScreen.tsx',
     'src/components/inventory/InventorySlotTile.tsx',
   ],
   noShiftControlTargets: [
-    { file: 'src/components/BottomTabBar.tsx', selector: 'bottomTabBarButton', requiresUiNoShift: true },
+    { file: 'src/ui/chrome/NavDockButton.tsx', selector: 'bottomTabBarButton', requiresUiNoShift: true },
     { file: 'src/components/modals/OfflineProgressModal.tsx', selector: 'offlineProgressModalContinueButton', requiresUiNoShift: true },
     { file: 'src/components/screens/InventoryScreen.tsx', selector: 'inventoryHeaderIconButton', requiresUiNoShift: true },
     { file: 'src/components/screens/InventoryScreen.tsx', selector: 'inventoryPocketButton', requiresUiNoShift: true },
