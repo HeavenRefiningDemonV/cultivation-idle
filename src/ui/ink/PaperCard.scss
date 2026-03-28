@@ -9,6 +9,7 @@
 .inkPaperCard {
   --frame-card-bg: var(--paper-tint);
   --frame-card-border: var(--ink-border-color);
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .inkPaperCard--tray {
