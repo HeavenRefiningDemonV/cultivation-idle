@@ -67,3 +67,18 @@ export function formatHeartLawLabel(heartLawId: string | null | undefined): stri
   const heartLaw = useContentStore.getState().maps.heartLawsById[heartLawId];
   return heartLaw?.name ?? titleCase(heartLawId.replace(/^heart_law_/, ''));
 }
+
+
+type SpiritRootCompactInput = {
+  element?: string | null;
+  grade?: string | number | null;
+  purity?: number | null;
+};
+
+export function formatSpiritRootCompactLabel(input: SpiritRootCompactInput | null | undefined): string {
+  if (!input?.element || !input.grade || input.purity == null) return 'Dormant Spirit Root';
+  const element = titleCase(String(input.element));
+  const grade = typeof input.grade === 'number' ? String(input.grade) : titleCase(String(input.grade));
+  const purity = Math.max(0, Math.min(100, Math.round(input.purity)));
+  return `${element} • ${grade} • ${purity}% purity`;
+}

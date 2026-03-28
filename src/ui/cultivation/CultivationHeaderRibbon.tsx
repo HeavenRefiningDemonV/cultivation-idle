@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
+import { Activity, Gauge, Mountain, Shield, Sparkles, Target, TreePine } from 'lucide-react';
 import { formatNumber } from '../../utils/numbers.js';
-import { QiLotusIcon, type QiLotusState } from './QiLotusIcon.js';
+import { TopRibbon, RibbonStat, ChromeChip } from '../chrome/index.js';
 import './CultivationHeaderRibbon.scss';
 
 type CultivationHeaderRibbonProps = {
   realmLabel: string;
   substage: number;
-  realmIndex?: number;
   qi: string;
   qiPerSecond: string;
   rateTooltip: string;
@@ -16,28 +15,15 @@ type CultivationHeaderRibbonProps = {
   stability: number;
   stabilityCap: number;
   breakthroughReady: boolean;
+  pathLabel: string;
+  spiritRootLine: string;
+  heartLawLine: string;
+  cityLabel: string;
 };
-
-function getRealmIcon(realmLabel: string, realmIndex?: number) {
-  if (realmIndex === 0 || /condensation/i.test(realmLabel)) {
-    return <Cloud size={16} aria-hidden="true" />;
-  }
-  if (/golden core/i.test(realmLabel)) {
-    return <Sun size={16} aria-hidden="true" />;
-  }
-  return <Mountain size={16} aria-hidden="true" />;
-}
-
-function getLotusLabel(state: QiLotusState) {
-  if (state === 'ready') return 'Ready';
-  if (state === 'active') return 'Flowing';
-  return 'Resting';
-}
 
 export function CultivationHeaderRibbon({
   realmLabel,
   substage,
-  realmIndex,
   qi,
   qiPerSecond,
   rateTooltip,
@@ -46,6 +32,10 @@ export function CultivationHeaderRibbon({
   stability,
   stabilityCap,
   breakthroughReady,
+  pathLabel,
+  spiritRootLine,
+  heartLawLine,
+  cityLabel,
 }: CultivationHeaderRibbonProps) {
   const storageKey = 'ui.cultivation.headerCollapsed';
   const ribbonId = 'cultivationHeaderPanel';
@@ -53,27 +43,11 @@ export function CultivationHeaderRibbon({
     if (typeof window === 'undefined') return false;
     return window.localStorage.getItem(storageKey) === '1';
   });
+
   const stabilityPct = stabilityCap > 0 ? Math.min(100, (stability / stabilityCap) * 100) : 0;
-  const stabilityTone = stabilityPct >= 70 ? 'ok' : stabilityPct >= 30 ? 'warn' : 'danger';
-  const activityTone = activityType === 'meditate' ? 'active' : activityType ? 'busy' : 'idle';
-  const activityTooltip =
-    activityTone === 'active'
-      ? 'Meditating. Insight and Study are active.'
-      : activityTone === 'busy'
-        ? 'Foreground activity running. Meditation unavailable.'
-        : 'Qi flows passively. Meditate to gain Insight and Study.';
-  const lotusState: QiLotusState = breakthroughReady
-    ? 'ready'
-    : activityType === 'meditate'
-      ? 'active'
-      : 'idle';
-  const lotusTitle =
-    lotusState === 'ready'
-      ? 'Qi is brimming — breakthrough is ready.'
-      : lotusState === 'active'
-        ? 'Qi is flowing — you are cultivating in the foreground.'
-        : 'Qi is resting — idle cultivation.';
-  const lotusLabel = getLotusLabel(lotusState);
+  const readinessLabel = breakthroughReady ? 'Ready' : 'Preparing';
+  const readinessTone = breakthroughReady ? 'success' : 'warning';
+  const activityTone = activityType === 'meditate' ? 'success' : activityType ? 'warning' : 'neutral';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -84,85 +58,46 @@ export function CultivationHeaderRibbon({
     <div className={`cultivationHeaderRibbon ${collapsed ? 'is-collapsed' : 'is-expanded'}`}>
       <div className="cultivationHeaderRibbon__panel" id={ribbonId}>
         <div className="cultivationHeaderRibbon__inner">
-          <div className={`cultivationHeaderRibbon__grid ${collapsed ? 'is-collapsed' : 'is-expanded'}`}>
-            <div className="cultivationHeaderRibbonItem">
-              <div className="cultivationHeaderRibbonLabel">
-                <span className="cultivationHeaderRealmIcon" aria-hidden="true">
-                  {getRealmIcon(realmLabel, realmIndex)}
-                </span>
-                Realm
-              </div>
-              <div className="cultivationHeaderRibbonValue">{realmLabel}</div>
-              <div className="cultivationHeaderRibbonSub">Stage {substage}</div>
-            </div>
-            <div className="cultivationHeaderRibbonItem">
-              <div className="cultivationHeaderRibbonLabel">
-                <Sparkles size={14} aria-hidden="true" />
-                Qi
-              </div>
-              <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
-                <QiLotusIcon state={lotusState} title={lotusTitle} label={lotusLabel} />
-                <div className="cultivationHeaderRibbonQiText">
-                  <span>{formatNumber(qi)}</span>
-                  <span className="cultivationHeaderRibbonQiState">{lotusLabel}</span>
-                </div>
-              </div>
-            </div>
-            <div className="cultivationHeaderRibbonItem" title={rateTooltip}>
-              <div className="cultivationHeaderRibbonLabel">
-                <Gauge size={14} aria-hidden="true" />
-                Cultivation Rate
-              </div>
-              <div className="cultivationHeaderRibbonValue">{formatNumber(qiPerSecond)} /s</div>
-              {!collapsed ? <div className="cultivationHeaderRibbonSub">Hover for breakdown</div> : null}
-            </div>
-            {!collapsed ? (
+          <TopRibbon
+            surface="tray"
+            compact={collapsed}
+            className="cultivationHeaderRibbon__topRibbon"
+            chips={(
               <>
-                <div className="cultivationHeaderRibbonItem">
-                  <div className="cultivationHeaderRibbonLabel">
-                    <Shield size={14} aria-hidden="true" />
-                    Stability
-                  </div>
-                  <div className="cultivationHeaderRibbonValue">{Math.round(stabilityPct)}%</div>
-                  <div className="cultivationHeaderRibbonSub">
-                    {stability}/{stabilityCap}
-                  </div>
-                </div>
-                <div className="cultivationHeaderRibbonItem">
-                  <div className="cultivationHeaderRibbonLabel">
-                    <Activity size={14} aria-hidden="true" />
-                    Foreground Activity
-                  </div>
-                  <div className="cultivationHeaderRibbonValue">
-                    <span
-                      className={`cultivationHeaderActivityBadge cultivationHeaderActivityBadge--${activityTone}`}
-                      title={activityTooltip}
-                    >
-                      <span className="cultivationHeaderActivityBreath" aria-hidden="true" />
-                      {activityLabel}
-                    </span>
-                  </div>
-                </div>
+                <ChromeChip variant="tag" tone={readinessTone} text={readinessLabel} />
+                <ChromeChip variant="tag" tone={activityTone} text={activityLabel} />
               </>
-            ) : (
-              <div className="cultivationHeaderRibbonCollapsedMeta">
-                <div className="cultivationHeaderRibbonIndicator" title={`Stability ${Math.round(stabilityPct)}%`}>
-                  <span
-                    className={`cultivationHeaderStabilityDot cultivationHeaderStabilityDot--${stabilityTone}`}
-                    aria-hidden="true"
-                  />
-                  <span>{Math.round(stabilityPct)}%</span>
-                </div>
-                <div
-                  className={`cultivationHeaderActivityBadge cultivationHeaderActivityBadge--${activityTone}`}
-                  title={activityTooltip}
-                >
-                  <span className="cultivationHeaderActivityBreath" aria-hidden="true" />
-                  {activityLabel}
-                </div>
-              </div>
             )}
-          </div>
+            end={<span className="cultivationHeaderRibbon__endLine">Stage {substage}</span>}
+          >
+            <RibbonStat label="Realm" icon={<Mountain size={13} />} value={realmLabel} detail={`Stage ${substage}`} truncate />
+            <RibbonStat label="Path" icon={<Target size={13} />} value={pathLabel} truncate />
+            <RibbonStat label="Spirit Root" icon={<TreePine size={13} />} value={spiritRootLine} truncate />
+            <RibbonStat label="Heart Law" icon={<Sparkles size={13} />} value={heartLawLine} truncate />
+            <RibbonStat label="City" icon={<Activity size={13} />} value={cityLabel} truncate />
+            {!collapsed ? (
+              <RibbonStat
+                label="Qi"
+                icon={<Sparkles size={13} />}
+                value={formatNumber(qi)}
+                detail={`${formatNumber(qiPerSecond)} /s`}
+                title={rateTooltip}
+                truncate
+              />
+            ) : null}
+            {!collapsed ? (
+              <RibbonStat
+                label="Stability"
+                icon={<Shield size={13} />}
+                value={`${Math.round(stabilityPct)}%`}
+                detail={`${stability}/${stabilityCap}`}
+                tone={stabilityPct >= 70 ? 'success' : stabilityPct >= 30 ? 'default' : 'warning'}
+              />
+            ) : null}
+            {!collapsed ? (
+              <RibbonStat label="Rate" icon={<Gauge size={13} />} value={`${formatNumber(qiPerSecond)} /s`} title={rateTooltip} truncate />
+            ) : null}
+          </TopRibbon>
         </div>
       </div>
       <button

@@ -1,21 +1,23 @@
 .statusSummaryPanel {
   margin-bottom: 24px;
-  padding: 18px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+}
+
+.statusSummaryRibbon {
+  width: 100%;
+}
+
+.statusSummaryRibbon__end {
+  font-weight: 700;
 }
 
 .statusSummaryTopGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
-}
-
-.statusSummaryIdentity {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
 .statusSummaryLabelRow {
@@ -35,18 +37,6 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(12, 18, 34, 0.62);
-  font-weight: 700;
-}
-
-.statusSummaryValue {
-  font-size: 20px;
-  font-weight: 900;
-  color: rgba(12, 18, 34, 0.92);
-}
-
-.statusSummarySub {
-  font-size: 12px;
-  color: rgba(12, 18, 34, 0.58);
   font-weight: 700;
 }
 
@@ -81,10 +71,6 @@
 }
 
 @media (min-width: 900px) {
-  .statusSummaryTopGrid {
-    grid-template-columns: 1fr 1fr 1.3fr;
-  }
-
   .statusCombatStripGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

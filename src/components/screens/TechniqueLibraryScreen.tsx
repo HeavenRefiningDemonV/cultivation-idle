@@ -6,6 +6,7 @@ import { evaluateCurrentCombatPostureFit } from '../../systems/builds/combatPost
 import { getPathDoctrineProfile } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import {
   masteryLevelFromXp,
@@ -18,6 +19,7 @@ import {
 import type { CastingPolicy, EquipResult, SlotType } from '../../stores/techniqueStore.js';
 import { useTechniqueStore } from '../../stores/techniqueStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { TechniqueDetailModal } from '../modals/TechniqueDetailModal.js';
 import {
   TechniqueFilterDrawer,
@@ -35,6 +37,7 @@ import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { BuildAltarSummary } from '../../ui/techniques/BuildAltarSummary.js';
 import './TechniqueLibraryScreen.scss';
 import { buildPurposeSourceContext, buildTechniqueFragmentPurposeSourceSurface } from '../../systems/economy/purposeSourceSurface.js';
+import { formatCityLabel, formatHeartLawLabel } from '../../ui/text/playerFacingFormatters.js';
 
 type SlotSelection = { type: SlotType; index: number };
 
@@ -168,6 +171,8 @@ export function TechniqueLibraryScreen() {
   const isContentLoading = useContentStore((state) => state.isLoading);
   const realmIndex = useGameStore((state) => state.realm.index);
   const selectedPath = useGameStore((state) => state.selectedPath);
+  const currentCityId = useCityStore((state) => state.currentCityId);
+  const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const rawContent = useContentStore((state) => state.raw);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
@@ -203,6 +208,8 @@ export function TechniqueLibraryScreen() {
   );
   const archetype = useMemo(() => getBuildArchetype(buildAnalysis.archetypeId), [buildAnalysis.archetypeId]);
   const pathLabel = getPathDoctrineProfile(selectedPath)?.label ?? 'No Path Selected';
+  const cityLabel = formatCityLabel(currentCityId);
+  const heartLawLabel = formatHeartLawLabel(selectedHeartLawId);
   const floorState = (met: boolean): 'On Floor' | 'Below Floor' => (met ? 'On Floor' : 'Below Floor');
   const postureJudgment = postureFit.warnings[0] ?? 'Posture fit is stable for current progression.';
   const aiProfileLine = `AI Profile: ${selectedLoadoutSnapshot?.aiProfile ?? 'balanced'} — ${postureFit.aiFit}`;
@@ -662,6 +669,20 @@ export function TechniqueLibraryScreen() {
           </div>
         </div>
       </header>
+
+
+      <TopRibbon
+        surface="tray"
+        compact
+        className="techContextRibbon"
+        chips={<ChromeChip variant="tag" tone="ink" text={archetype?.label ?? 'Unshaped'} />}
+        end={<span>Loadout: {selectedLoadout?.name ?? '—'}</span>}
+      >
+        <RibbonStat label="Realm" value={getLiveRealmNameByIndex(realmIndex)} truncate />
+        <RibbonStat label="Path" value={pathLabel} truncate />
+        <RibbonStat label="Heart Law" value={heartLawLabel} truncate />
+        <RibbonStat label="City" value={cityLabel} truncate />
+      </TopRibbon>
 
       <div className="techniquesBuildAltarWrap">
         <RunCompassCompact surface={runCompass.compact} tone="paper" />

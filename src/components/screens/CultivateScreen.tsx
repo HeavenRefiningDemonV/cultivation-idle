@@ -12,6 +12,7 @@ import { adaptSpiritRootDoctrineToSemanticView } from '../../systems/doctrine/sp
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useContentStore, getItemDef } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
@@ -36,6 +37,7 @@ import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
+import { formatCityLabel } from '../../ui/text/playerFacingFormatters.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -127,6 +129,7 @@ export function CultivateScreen() {
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
+  const currentCityId = useCityStore((state) => state.currentCityId);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
@@ -409,6 +412,7 @@ export function CultivateScreen() {
   const spiritRootLine = spiritRootView
     ? `${SPIRIT_ROOT_ELEMENTS[spiritRootView.element]} • ${SPIRIT_ROOT_GRADES[spiritRootView.grade]} • ${Math.round(spiritRootView.purity)}% purity`
     : 'Dormant Spirit Root';
+  const cityLabel = formatCityLabel(currentCityId);
   const spiritRootDetail = spiritRootView
     ? `${spiritRootView.purityBand[0].toUpperCase()}${spiritRootView.purityBand.slice(1)} foundation • ${spiritRootView.powerBand[0].toUpperCase()}${spiritRootView.powerBand.slice(1)} potential`
     : 'Your Spirit Root has not manifested yet.';
@@ -463,7 +467,6 @@ export function CultivateScreen() {
         <CultivationHeaderRibbon
           realmLabel={realmLabel}
           substage={realm.substage}
-          realmIndex={realm.index}
           qi={qi}
           qiPerSecond={headerRate}
           rateTooltip={rateTooltip}
@@ -472,6 +475,10 @@ export function CultivateScreen() {
           stability={stability}
           stabilityCap={stabilityCap}
           breakthroughReady={canBreakthrough}
+          pathLabel={pathLabel}
+          spiritRootLine={spiritRootLine}
+          heartLawLine={heartLawVerseLabel}
+          cityLabel={cityLabel}
         />
       </div>
 
