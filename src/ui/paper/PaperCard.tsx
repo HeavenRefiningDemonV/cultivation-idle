@@ -1,10 +1,11 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
+import { FrameCard } from '../chrome/FrameCard.js';
 import './paper.scss';
 
 type PaperCardVariant = 'card' | 'tray' | 'label';
 
-export interface PaperCardProps {
+export interface PaperCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: PaperCardVariant;
   interactive?: boolean;
   selected?: boolean;
@@ -16,6 +17,12 @@ export interface PaperCardProps {
   children: ReactNode;
 }
 
+const variantToFrameVariant: Record<PaperCardVariant, 'shell' | 'tray' | 'label'> = {
+  card: 'shell',
+  tray: 'tray',
+  label: 'label',
+};
+
 export function PaperCard({
   variant = 'card',
   interactive = false,
@@ -26,9 +33,16 @@ export function PaperCard({
   className,
   style,
   children,
+  ...rest
 }: PaperCardProps) {
   return (
-    <div
+    <FrameCard
+      variant={variantToFrameVariant[variant]}
+      interactive={interactive}
+      selected={selected}
+      complete={complete}
+      claimed={claimed}
+      disabled={disabled}
       className={classNames(
         'paperCard',
         `paperCard--${variant}`,
@@ -45,8 +59,9 @@ export function PaperCard({
         className,
       )}
       style={style}
+      {...rest}
     >
       {children}
-    </div>
+    </FrameCard>
   );
 }

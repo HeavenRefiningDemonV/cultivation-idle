@@ -1,5 +1,5 @@
 export { FrameCard } from './FrameCard.js';
-export type { FrameCardProps, FrameCardVariant } from './FrameCard.js';
+export type { FrameCardProps, FrameCardSkin, FrameCardVariant } from './FrameCard.js';
 export { ChromeChip } from './ChromeChip.js';
 export type { ChromeChipProps, ChromeChipTone, ChromeChipVariant } from './ChromeChip.js';
 export { ChromeStamp } from './ChromeStamp.js';

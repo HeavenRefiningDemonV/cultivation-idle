@@ -1,107 +1,34 @@
 @import '../../styles/paperAnimations.scss';
 @import '../../styles/paperInkTokens.scss';
 @import '../../styles/uiMotionTokens.scss';
+@import '../chrome/FrameCard.scss';
+
+/*
+ * B.3 compatibility bridge:
+ * - FrameCard.scss is canonical card implementation
+ * - keep paperCard alias hooks while preserving paperChip/paperStamp ownership
+ */
 
 .paperCard {
-  --paper-ink: var(--paper-ink, var(--ui-chrome-color-ink-primary));
-  --paper-ink-muted: var(--paper-ink-muted, var(--ui-chrome-color-ink-muted));
-  --paper-border: var(--paper-border, var(--ui-chrome-border-soft));
-  --paper-shadow: var(--paper-shadow, var(--ui-chrome-shadow-soft));
-  --paper-bg: var(--ui-chrome-surface-card-base);
-  --paper-bg-strong: var(--ui-chrome-surface-card-raised);
-  --paper-bg-soft: var(--ui-chrome-surface-card-soft);
-  --paper-outline: var(--paper-outline, var(--ui-chrome-outline-shell));
-  position: relative;
-  border-radius: var(--ui-chrome-radius-card);
-  padding: var(--ui-chrome-space-card-pad-y) var(--ui-chrome-space-card-pad-x);
-  background: var(--paper-bg);
-  color: var(--paper-ink);
-  border: 1px solid var(--paper-border);
-  box-shadow: var(--paper-shadow);
-  overflow: hidden;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.paperCard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url('../../assets/texture_overlay.png');
-  background-size: cover;
-  background-position: center;
-  opacity: var(--ui-chrome-texture-opacity);
-  mix-blend-mode: overlay;
-  pointer-events: none;
-}
-
-.paperCard::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.65), transparent 55%),
-    radial-gradient(circle at bottom, rgba(43, 33, 22, 0.12), transparent 60%);
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.paperCard > * {
-  position: relative;
-  z-index: var(--ui-layer-local-content);
+  --frame-card-bg: var(--ui-chrome-surface-card-base);
+  --frame-card-border: var(--paper-border, var(--ui-chrome-border-soft));
+  --frame-card-outline: var(--paper-outline, var(--ui-chrome-outline-shell));
 }
 
 .paperCard--tray {
-  background: var(--paper-bg-strong);
-  padding: 10px 12px;
-  border-radius: 14px;
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.14);
+  --frame-card-bg: var(--ui-chrome-surface-card-raised);
 }
 
 .paperCard--label {
-  background: var(--paper-bg-soft);
-  padding: 8px 10px;
-  border-radius: var(--ui-chrome-radius-card-compact);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
-}
-
-.paperCard--interactive {
-  cursor: pointer;
-  transition:
-    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
-    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
-    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
-}
-
-.paperCard--interactive:hover {
-  transform: translateY(var(--ui-motion-hover-lift-y));
-  border-color: rgba(120, 72, 33, 0.5);
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
-}
-
-.paperCard--interactive:not(.paperCard--selected) {
-  filter: saturate(0.98);
-}
-
-.paperCard--selected,
-.paperCard.isSelected {
-  border-color: var(--paper-outline);
-  box-shadow: 0 0 0 2px rgba(120, 72, 33, 0.18), 0 0 18px var(--paper-glow),
-    0 14px 28px rgba(15, 23, 42, 0.2);
+  --frame-card-bg: var(--ui-chrome-surface-card-soft);
 }
 
 .paperCard.isComplete {
   border-color: rgba(47, 143, 102, 0.4);
-  box-shadow: 0 0 0 1px rgba(47, 143, 102, 0.2), 0 10px 22px rgba(15, 23, 42, 0.18);
 }
 
 .paperCard.isClaimed {
   border-color: rgba(159, 59, 46, 0.35);
-  box-shadow: inset 0 0 0 1px rgba(159, 59, 46, 0.08);
-}
-
-.paperCard--disabled,
-.paperCard.isDisabled {
-  opacity: 0.6;
-  cursor: default;
 }
 
 .paperChip {

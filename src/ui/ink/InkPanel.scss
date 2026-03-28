@@ -1,43 +1,21 @@
 @import './inkTheme.scss';
 @import '../../styles/uiMotionTokens.scss';
 
+/*
+ * B.3 compatibility layer:
+ * - FrameCard.scss owns shared shell implementation
+ * - this file keeps legacy .inkPanel skin semantics and header/body compatibility
+ */
+
 .inkPanel {
-  position: relative;
-  padding: var(--ui-chrome-space-shell-pad-y) var(--ui-chrome-space-shell-pad-x);
-  color: var(--ink-text-color);
-  background-color: var(--ink-panel-base, var(--ui-chrome-surface-shell-base));
-  border: var(--ink-border-width) solid var(--ink-panel-border, var(--ui-chrome-border-shell));
-  border-radius: var(--ui-chrome-radius-card);
-  box-shadow: var(--ui-chrome-shadow-strong);
-  overflow: hidden;
+  --frame-card-bg: var(--ink-panel-base, var(--ui-chrome-surface-shell-base));
+  --frame-card-border: var(--ink-panel-border, var(--ui-chrome-border-shell));
+  --frame-card-outline: var(--ink-panel-outline, var(--ui-chrome-outline-shell));
+  --frame-card-watermark-opacity: var(--watermark-opacity);
 }
 
-.inkPanel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--paper-bg-image);
-  background-size: cover;
-  background-position: center;
-  opacity: var(--paper-opacity);
-  pointer-events: none;
-}
-
-.inkPanel--watermark::after {
-  content: '';
-  position: absolute;
-  inset: 8%;
-  background-image: var(--watermark-image);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  opacity: var(--watermark-opacity);
-  pointer-events: none;
-}
-
-.inkPanel > * {
-  position: relative;
-  z-index: var(--ui-layer-local-content);
+.inkPanel--watermark {
+  --frame-card-watermark-image: var(--watermark-image);
 }
 
 .inkPanel__header {
@@ -59,45 +37,37 @@
 }
 
 .inkPanel--apothecary {
-  --paper-tint: rgba(244, 234, 214, 0.96);
-  --watermark-image: url('../../assets/menus/bar_long.png');
+  --frame-card-bg: rgba(244, 234, 214, 0.96);
+  --frame-card-watermark-image: url('../../assets/menus/bar_long.png');
 }
 
 .inkPanel--forge {
-  --paper-tint: rgba(236, 228, 216, 0.96);
-  --watermark-image: url('../../assets/menus/bar_short.png');
-  --ink-border-width: 2.5px;
+  --frame-card-bg: rgba(236, 228, 216, 0.96);
+  --frame-card-watermark-image: url('../../assets/menus/bar_short.png');
+  --frame-card-border: rgba(65, 45, 25, 0.32);
 }
 
 .inkPanel--manual {
-  --paper-tint: rgba(247, 236, 214, 0.97);
-  --watermark-image: url('../../assets/menus/block_fancy.png');
+  --frame-card-bg: rgba(247, 236, 214, 0.97);
+  --frame-card-watermark-image: url('../../assets/menus/block_fancy.png');
 }
 
 .inkPanel--techniques {
-  --paper-tint: rgba(244, 232, 210, 0.95);
-  --watermark-image: url('../../assets/menus/buttoncorners.png');
+  --frame-card-bg: rgba(244, 232, 210, 0.95);
+  --frame-card-watermark-image: url('../../assets/menus/buttoncorners.png');
 }
 
 .inkPanel--prestige {
-  --paper-tint: rgba(242, 228, 206, 0.95);
-  --watermark-image: url('../../assets/menus/bar_long.png');
-  --ink-border-width: 3px;
+  --frame-card-bg: rgba(242, 228, 206, 0.95);
+  --frame-card-watermark-image: url('../../assets/menus/bar_long.png');
 }
 
 .inkPanel--pouch {
-  --paper-tint: rgba(245, 235, 216, 0.96);
-  --watermark-image: url('../../assets/menus/bar_short.png');
-  --ink-border-width: 3px;
+  --frame-card-bg: rgba(245, 235, 216, 0.96);
+  --frame-card-watermark-image: url('../../assets/menus/bar_short.png');
 }
 
 .inkPanel--heartlaw {
-  --paper-tint: rgba(246, 232, 206, 0.95);
-  --watermark-image: url('../../assets/menus/scroll.png');
-}
-
-.inkPanel--modal {
-  width: min(900px, 94vw);
-  max-height: 88vh;
-  overflow: auto;
+  --frame-card-bg: rgba(246, 232, 206, 0.95);
+  --frame-card-watermark-image: url('../../assets/menus/scroll.png');
 }

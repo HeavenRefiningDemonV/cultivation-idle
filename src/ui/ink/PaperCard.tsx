@@ -1,5 +1,6 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
+import { FrameCard } from '../chrome/FrameCard.js';
 import './PaperCard.scss';
 
 type PaperCardVariant = 'card' | 'tray' | 'label' | 'pouch';
@@ -23,8 +24,16 @@ export function PaperCard({
   children,
   ...rest
 }: PaperCardProps) {
+  const frameVariant = variant === 'tray' ? 'tray' : variant === 'label' ? 'label' : 'shell';
+  const frameSkin = variant === 'pouch' ? 'pouch' : 'default';
+
   return (
-    <div
+    <FrameCard
+      variant={frameVariant}
+      skin={frameSkin}
+      interactive={interactive}
+      selected={selected}
+      disabled={disabled}
       className={classNames(
         'inkPaperCard',
         `inkPaperCard--${variant}`,
@@ -39,6 +48,6 @@ export function PaperCard({
       {...rest}
     >
       {children}
-    </div>
+    </FrameCard>
   );
 }

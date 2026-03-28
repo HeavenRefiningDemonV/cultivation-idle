@@ -1,0 +1,182 @@
+@import '../../styles/uiChromeTokens.scss';
+@import '../../styles/uiMotionTokens.scss';
+
+.frameCard {
+  --frame-card-bg: var(--ui-chrome-surface-card-base);
+  --frame-card-bg-strong: var(--ui-chrome-surface-card-raised);
+  --frame-card-bg-soft: var(--ui-chrome-surface-card-soft);
+  --frame-card-border: var(--ui-chrome-border-soft);
+  --frame-card-outline: var(--ui-chrome-outline-shell);
+  --frame-card-shadow: var(--ui-chrome-shadow-soft);
+  --frame-card-texture-opacity: var(--ui-chrome-texture-opacity);
+  --frame-card-watermark-opacity: var(--ui-chrome-watermark-opacity);
+  --frame-card-watermark-image: none;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-chrome-space-card-gap);
+  border-radius: var(--ui-chrome-radius-card);
+  padding: var(--ui-chrome-space-card-pad-y) var(--ui-chrome-space-card-pad-x);
+  background: var(--frame-card-bg);
+  border: 1px solid var(--frame-card-border);
+  box-shadow: var(--frame-card-shadow);
+  color: var(--ui-chrome-color-ink-primary);
+  overflow: hidden;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.frameCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../../assets/texture_overlay.png');
+  background-size: cover;
+  background-position: center;
+  opacity: var(--frame-card-texture-opacity);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.frameCard--watermark::after {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  background-image: var(--frame-card-watermark-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: var(--frame-card-watermark-opacity);
+  pointer-events: none;
+}
+
+.frameCard__header,
+.frameCard__body {
+  position: relative;
+  z-index: var(--ui-layer-local-content);
+}
+
+.frameCard__header {
+  display: inline-flex;
+  align-items: center;
+}
+
+.frameCard--shell {
+  min-height: var(--ui-chrome-size-row-min);
+}
+
+.frameCard--tray {
+  background: var(--frame-card-bg-strong);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.frameCard--label {
+  background: var(--frame-card-bg-soft);
+  border-radius: var(--ui-chrome-radius-card-compact);
+  padding: 8px 10px;
+}
+
+.frameCard--inspector {
+  background: var(--ui-chrome-surface-shell-base);
+}
+
+.frameCard--modal {
+  width: min(900px, 94vw);
+  max-height: 88vh;
+  overflow: auto;
+  background: var(--ui-chrome-surface-shell-base);
+}
+
+.frameCard--dock {
+  background: var(--ui-chrome-surface-shell-raised);
+}
+
+.frameCard--skin-default {
+  --frame-card-watermark-image: none;
+}
+
+.frameCard--skin-apothecary {
+  --frame-card-bg: rgba(244, 234, 214, 0.96);
+  --frame-card-watermark-image: url('../../assets/menus/bar_long.png');
+}
+
+.frameCard--skin-forge {
+  --frame-card-bg: rgba(236, 228, 216, 0.96);
+  --frame-card-watermark-image: url('../../assets/menus/bar_short.png');
+}
+
+.frameCard--skin-manual {
+  --frame-card-bg: rgba(247, 236, 214, 0.97);
+  --frame-card-watermark-image: url('../../assets/menus/block_fancy.png');
+}
+
+.frameCard--skin-techniques {
+  --frame-card-bg: rgba(244, 232, 210, 0.95);
+  --frame-card-watermark-image: url('../../assets/menus/buttoncorners.png');
+}
+
+.frameCard--skin-prestige {
+  --frame-card-bg: rgba(242, 228, 206, 0.95);
+  --frame-card-watermark-image: url('../../assets/menus/bar_long.png');
+}
+
+.frameCard--skin-pouch {
+  --frame-card-bg: rgba(245, 235, 216, 0.96);
+  --frame-card-watermark-image: url('../../assets/menus/bar_short.png');
+}
+
+.frameCard--skin-heartlaw {
+  --frame-card-bg: rgba(246, 232, 206, 0.95);
+  --frame-card-watermark-image: url('../../assets/menus/scroll.png');
+}
+
+.frameCard--interactive {
+  cursor: pointer;
+  transition:
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    background-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+}
+
+.frameCard--interactive:hover {
+  transform: translateY(var(--ui-motion-hover-lift-y));
+  border-color: var(--ui-chrome-outline-shell);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
+}
+
+.frameCard--interactive:active {
+  transform: translateY(var(--ui-motion-press-shift-y));
+}
+
+.frameCard--selected {
+  border-color: var(--frame-card-outline);
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 72, 33, 0.25),
+    0 0 0 2px rgba(120, 72, 33, 0.18),
+    0 14px 28px rgba(15, 23, 42, 0.2);
+}
+
+.frameCard--complete {
+  border-color: rgba(47, 143, 102, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(47, 143, 102, 0.2), 0 10px 22px rgba(15, 23, 42, 0.18);
+}
+
+.frameCard--claimed {
+  border-color: rgba(159, 59, 46, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(159, 59, 46, 0.1);
+}
+
+.frameCard--recommended {
+  box-shadow: inset 0 0 0 1px rgba(47, 143, 102, 0.22), 0 0 18px rgba(47, 143, 102, 0.18);
+}
+
+.frameCard--warning {
+  box-shadow: inset 0 0 0 1px rgba(181, 133, 43, 0.24), 0 0 16px rgba(181, 133, 43, 0.14);
+}
+
+.frameCard--disabled {
+  opacity: 0.6;
+  cursor: default;
+}

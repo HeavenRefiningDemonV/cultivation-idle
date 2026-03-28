@@ -1,46 +1,76 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
-import { PaperCard } from '../paper/PaperCard.js';
+import './FrameCard.scss';
 
-export type FrameCardVariant = 'card' | 'tray' | 'label' | 'pouch';
+export type FrameCardVariant = 'shell' | 'tray' | 'label' | 'inspector' | 'modal' | 'dock';
 
-export interface FrameCardProps {
+export type FrameCardSkin =
+  | 'default'
+  | 'apothecary'
+  | 'forge'
+  | 'manual'
+  | 'techniques'
+  | 'prestige'
+  | 'pouch'
+  | 'heartlaw';
+
+export interface FrameCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: FrameCardVariant;
+  skin?: FrameCardSkin;
   interactive?: boolean;
   selected?: boolean;
+  disabled?: boolean;
   complete?: boolean;
   claimed?: boolean;
-  disabled?: boolean;
+  recommended?: boolean;
+  warning?: boolean;
+  header?: ReactNode;
+  watermark?: boolean;
   className?: string;
   style?: CSSProperties;
   children: ReactNode;
 }
 
 export function FrameCard({
-  variant = 'card',
+  variant = 'shell',
+  skin = 'default',
   interactive = false,
   selected = false,
+  disabled = false,
   complete = false,
   claimed = false,
-  disabled = false,
+  recommended = false,
+  warning = false,
+  header,
+  watermark = false,
   className,
   style,
   children,
+  ...rest
 }: FrameCardProps) {
-  const paperVariant = variant === 'pouch' ? 'card' : variant;
-
   return (
-    <PaperCard
-      variant={paperVariant}
-      interactive={interactive}
-      selected={selected}
-      complete={complete}
-      claimed={claimed}
-      disabled={disabled}
-      className={classNames('chromeFrameCard', { 'chromeFrameCard--pouch': variant === 'pouch' }, className)}
+    <div
+      className={classNames(
+        'frameCard',
+        `frameCard--${variant}`,
+        `frameCard--skin-${skin}`,
+        {
+          'frameCard--interactive': interactive,
+          'frameCard--selected': selected,
+          'frameCard--disabled': disabled,
+          'frameCard--complete': complete,
+          'frameCard--claimed': claimed,
+          'frameCard--recommended': recommended,
+          'frameCard--warning': warning,
+          'frameCard--watermark': watermark,
+        },
+        className,
+      )}
       style={style}
+      {...rest}
     >
-      {children}
-    </PaperCard>
+      {header ? <div className="frameCard__header">{header}</div> : null}
+      <div className="frameCard__body">{children}</div>
+    </div>
   );
 }

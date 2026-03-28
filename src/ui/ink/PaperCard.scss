@@ -1,78 +1,35 @@
 @import './inkTheme.scss';
-@import '../../styles/uiMotionTokens.scss';
+
+/*
+ * B.3 compatibility layer:
+ * - FrameCard.scss owns the shared card implementation
+ * - this file keeps legacy .inkPaperCard class hooks and pouch-specific tuning
+ */
 
 .inkPaperCard {
-  position: relative;
-  padding: var(--ui-chrome-space-card-pad-y) var(--ui-chrome-space-card-pad-x);
-  border: 1.5px solid var(--ink-border-color);
-  border-radius: var(--ui-chrome-radius-card-compact);
-  background-color: var(--paper-card-bg, var(--paper-tint));
-  color: var(--ink-text-color);
-  box-shadow: 0 10px 20px var(--shadow-color);
-  overflow: hidden;
-}
-
-.inkPaperCard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--paper-bg-image);
-  background-size: cover;
-  background-position: center;
-  opacity: calc(var(--paper-opacity) * 0.75);
-  pointer-events: none;
-}
-
-.inkPaperCard > * {
-  position: relative;
-  z-index: var(--ui-layer-local-content);
+  --frame-card-bg: var(--paper-tint);
+  --frame-card-border: var(--ink-border-color);
 }
 
 .inkPaperCard--tray {
-  padding: 10px 12px;
-  border-radius: 12px 9px 13px 10px;
-  box-shadow: 0 12px 22px var(--shadow-color);
-  --paper-card-bg: rgba(247, 238, 220, 0.96);
-}
-
-.inkPaperCard--pouch {
-  padding: 12px 14px;
-  border-radius: 12px 9px 13px 10px;
-  border-width: 2px;
-  box-shadow: 0 12px 22px var(--shadow-color);
-  --paper-card-bg: rgba(242, 231, 210, 0.96);
+  --frame-card-bg: rgba(247, 238, 220, 0.96);
 }
 
 .inkPaperCard--label {
-  padding: 8px 10px;
-  border-radius: 9px 7px 10px 8px;
-  font-size: var(--ui-chrome-text-size-chip);
-  --paper-card-bg: rgba(252, 246, 235, 0.95);
+  --frame-card-bg: rgba(252, 246, 235, 0.95);
 }
 
-.inkPaperCard--interactive {
-  cursor: pointer;
-  transition:
-    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
-    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
-    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+.inkPaperCard--pouch {
+  --frame-card-bg: rgba(242, 231, 210, 0.96);
 }
 
 .inkPaperCard--interactive:hover {
-  transform: translateY(var(--ui-motion-hover-lift-y));
   border-color: rgba(120, 72, 33, 0.55);
-  box-shadow: 0 16px 28px var(--shadow-color);
-}
-
-.inkPaperCard--interactive:active {
-  transform: translateY(var(--ui-motion-press-shift-y));
-  box-shadow: 0 8px 16px var(--shadow-color);
 }
 
 .inkPaperCard--selected {
+  /* no layout-changing border-width growth; selected emphasis comes from FrameCard box-shadow */
   border-color: var(--ui-chrome-outline-strong);
-  border-width: 2px;
-  box-shadow: 0 12px 24px var(--shadow-color);
 }
 
 .inkPaperCard--selected::after {
