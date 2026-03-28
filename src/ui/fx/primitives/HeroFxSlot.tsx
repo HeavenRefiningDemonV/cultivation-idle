@@ -33,9 +33,24 @@ export function HeroFxSlot({
   style,
 }: HeroFxSlotProps) {
   const quality = useFxQuality();
+  const animatedAllowed = quality.renderMode !== 'off' && quality.allowAnimatedHeroFx;
+  const mountMode: 'animated' | 'static' | 'off' = animatedAllowed
+    ? 'animated'
+    : quality.renderMode === 'off'
+      ? 'off'
+      : 'static';
 
-  if (quality.renderMode === 'off' || !quality.allowAnimatedHeroFx) {
-    return <>{staticFallback ?? null}</>;
+  if (!animatedAllowed) {
+    return (
+      <span
+        style={{ display: 'contents' }}
+        data-fx-mount-kind="hero-slot"
+        data-fx-mount-mode={mountMode}
+        data-fx-screen-key={screenKey}
+      >
+        {staticFallback ?? null}
+      </span>
+    );
   }
 
   const wrapperClass = [
@@ -69,6 +84,8 @@ export function HeroFxSlot({
       portalTarget={portalTarget}
       containToParent={containToParent}
       disableOnReducedMotion={disableOnReducedMotion}
+      diagnosticsMountKind="hero-slot"
+      diagnosticsMountMode={mountMode}
     />
   );
 }

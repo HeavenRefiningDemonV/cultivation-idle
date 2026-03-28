@@ -15,6 +15,8 @@ export interface ScreenFxStageProps {
   screenKey?: string;
   portalTarget?: FxPortalTarget;
   containToParent?: boolean;
+  diagnosticsMountKind?: 'ambient-underlay' | 'hero-slot';
+  diagnosticsMountMode?: 'animated' | 'static' | 'off';
   /** @deprecated A.2 alias. Prefer role. */
   layer?: FxLayerTier;
 }
@@ -65,6 +67,8 @@ export function ScreenFxStage({
   screenKey = 'unknown-screen',
   portalTarget = 'local',
   containToParent = true,
+  diagnosticsMountKind,
+  diagnosticsMountMode,
   layer,
 }: ScreenFxStageProps) {
   const quality = useFxQuality();
@@ -103,6 +107,9 @@ export function ScreenFxStage({
       data-fx-screen-key={screenKey}
       data-fx-role={resolvedRole}
       data-fx-portal-target={portalTarget}
+      data-fx-stage-kind={portalTarget === 'global' ? 'global' : 'local'}
+      data-fx-mount-kind={diagnosticsMountKind}
+      data-fx-mount-mode={diagnosticsMountMode}
       data-fx-quality-floor={qualityFloor}
       style={style}
     >

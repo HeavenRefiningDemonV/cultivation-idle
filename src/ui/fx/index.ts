@@ -7,4 +7,5 @@ export * from './FxStagePortal.js';
 export * from './primitives/index.js';
 export * from './motion/index.js';
 export * from './pixi/index.js';
+export * from './diagnostics/index.js';
 export * from './useFxQualityContext.js';

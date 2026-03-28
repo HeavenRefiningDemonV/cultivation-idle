@@ -8,3 +8,8 @@ Future scene families:
 - World
 - Forge
 - Selection
+
+
+## A.10 handoff note
+- Foundation diagnostics and compliance checks now exist before broader scene rollout.
+- Later scene packets must pass the compliance checklist and smoke-test expectations before adding new mounted scene families.

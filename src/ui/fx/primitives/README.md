@@ -11,3 +11,11 @@ This folder owns reusable DOM/Pixi composition boundaries for future screen pack
 - Prefer these primitives instead of hand-composing `PixiUiStage` + `ScreenFxStage` + raw layer classes.
 - Do not mount raw `PixiUiStage` in screen code unless a boundary primitive truly cannot express the use case.
 - Keep store coupling outside this folder.
+
+
+## A.10 diagnostics instrumentation
+- `AmbientUnderlayMount` and `HeroFxSlot` now stamp stable diagnostics attributes:
+  - `data-fx-mount-kind`
+  - `data-fx-mount-mode`
+- `ScreenFxStage` now stamps `data-fx-stage-kind` (`local|global`) for runtime snapshot reads.
+- These attributes are QA-facing only and must not be replaced by screen-specific class querying in later packets.

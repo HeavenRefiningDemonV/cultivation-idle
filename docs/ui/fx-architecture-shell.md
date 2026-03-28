@@ -103,3 +103,10 @@ A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.
 - Missing art is represented in manifests (`planned-missing` / `planned-optional`) instead of placeholder image files.
 - Runtime FX code under `src/ui/fx/**` remains behavior-only and does not import from the new asset scaffold yet.
 - Later scene packets should consult `src/assets/ui/registry.ts` for consistent asset IDs and handoff planning.
+
+
+## A.10 foundation QA + diagnostics update
+- Added diagnostics surface for runtime mount snapshots, derived fallback mode, active scene count, and reduced-motion clamp status.
+- Added machine-readable compliance checklist to standardize scenic packet acceptance across ownership/quality/layering/fallback/readability rules.
+- Added smoke tests for provider and primitive mount paths (off/static safe behavior) without adding new scenes or visual rollout.
+- Later scenic packets should cite the A.10 compliance checklist and diagnostics warnings in their verification notes.

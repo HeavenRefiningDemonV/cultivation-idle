@@ -29,9 +29,20 @@ export function AmbientUnderlayMount({
   style,
 }: AmbientUnderlayMountProps) {
   const quality = useFxQuality();
+  const mountMode: 'animated' | 'static' | 'off' =
+    quality.renderMode === 'off' ? 'off' : quality.renderMode === 'static' ? 'static' : 'animated';
 
   if (quality.renderMode === 'off' || quality.renderMode === 'static') {
-    return <>{staticFallback ?? null}</>;
+    return (
+      <span
+        style={{ display: 'contents' }}
+        data-fx-mount-kind="ambient-underlay"
+        data-fx-mount-mode={mountMode}
+        data-fx-screen-key={screenKey}
+      >
+        {staticFallback ?? null}
+      </span>
+    );
   }
 
   return (
@@ -47,6 +58,8 @@ export function AmbientUnderlayMount({
       portalTarget={portalTarget}
       containToParent={containToParent}
       disableOnReducedMotion={disableOnReducedMotion}
+      diagnosticsMountKind="ambient-underlay"
+      diagnosticsMountMode={mountMode}
       className={['ambientUnderlayMount', className].filter(Boolean).join(' ')}
       style={style}
     />

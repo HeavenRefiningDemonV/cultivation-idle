@@ -48,3 +48,10 @@ This directory contains the shared FX shell, quality contract surfaces, boundary
 - Canonical UI asset manifests/reuse map under `src/assets/ui/**` (metadata only).
 - A strict placeholder policy: missing art is tracked in manifests, not fake PNG/SVG files.
 - No runtime coupling yet: `src/ui/fx/**` continues to own runtime behavior while assets stay in planning scaffolds.
+
+
+## What A.10 adds
+- Foundation diagnostics helpers (`src/ui/fx/diagnostics/**`) for runtime snapshot + quality-derived summaries.
+- Machine-readable compliance checklist for scenic packet acceptance gating.
+- Smoke-test contracts that prove provider/primitives can mount on off/static paths without visual rollout changes.
+- Later scenic packets must satisfy the A.10 compliance checklist before merge.
