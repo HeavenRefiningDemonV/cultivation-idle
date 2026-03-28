@@ -3845,6 +3845,47 @@
   overflow: hidden;
 }
 
+.worldScreenDetailGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.worldInspectorDock {
+  min-height: 0;
+}
+
+.worldInspectorPanel {
+  min-height: 280px;
+}
+
+.worldInspectorLine {
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.worldInspectorOutputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.worldInspectorOutputsLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(43, 33, 22, 0.72);
+  font-weight: 700;
+}
+
+.worldInspectorOutputs ul {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .worldScreenModuleGuidanceGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -4041,6 +4082,11 @@
 @media (min-width: 1000px) {
   .worldCommandAlerts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .worldScreenDetailGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    align-items: stretch;
   }
 }
 

@@ -38,6 +38,7 @@ import {
   type ManualPurchaseState,
 } from "../modals/ManualDetailModal.js";
 import { PaperCard } from "../../ui/ink/index.js";
+import { ChromeChip, InspectorPanel } from "../../ui/chrome/index.js";
 import { GameIcon } from "../../ui/icons/index.js";
 import { useRunCompassSurface } from "../../ui/status/useRunCompassSurface.js";
 import { RunCompassCompact } from "../../ui/status/RunCompassCompact.js";
@@ -488,7 +489,6 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     event: MouseEvent<HTMLButtonElement> | FocusEvent<HTMLButtonElement>,
   ) => {
     setSelectedSlotId(slot.slotIndex);
-    setSelectedManualSlotId(slot.slotIndex);
     if (event.type === "click") {
       (event.currentTarget as HTMLButtonElement)?.focus();
     }
@@ -919,36 +919,42 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     ? getDuplicateFragmentValue(hoveredSlot.grade, hoveredSlot.rarity)
     : 0;
 
-  const selectedTechnique = selectedManualSlot
-    ? techniquesById[selectedManualSlot.techniqueId]
+  const selectedTechnique = selectedSlot
+    ? techniquesById[selectedSlot.techniqueId]
     : undefined;
-  const selectedOfferAnalysis = selectedManualSlot
-    ? (offerAnalysisBySlotIndex.get(selectedManualSlot.slotIndex) ?? null)
+  const selectedOfferAnalysis = selectedSlot
+    ? (offerAnalysisBySlotIndex.get(selectedSlot.slotIndex) ?? null)
     : null;
-  const selectedStudyDurationLabel = selectedManualSlot
-    ? getStudyDurationLabelByGrade(selectedManualSlot.grade)
+  const selectedStudyDurationLabel = selectedSlot
+    ? getStudyDurationLabelByGrade(selectedSlot.grade)
     : undefined;
-  const selectedDuplicateFragmentValue = selectedManualSlot
+  const selectedDuplicateFragmentValue = selectedSlot
     ? getDuplicateFragmentValue(
-        selectedManualSlot.grade,
-        selectedManualSlot.rarity,
+        selectedSlot.grade,
+        selectedSlot.rarity,
       )
+    : undefined;
+  const selectedOfferTags = selectedSlot
+    ? (offerTagsBySlotIndex.get(selectedSlot.slotIndex) ?? [])
+    : [];
+  const modalTechnique = selectedManualSlot
+    ? techniquesById[selectedManualSlot.techniqueId]
     : undefined;
   const manualDetailData: ManualDetailData | null = selectedManualSlot
     ? {
         slot: selectedManualSlot,
-        technique: selectedTechnique,
+        technique: modalTechnique,
       }
     : null;
 
-  const canAfford = selectedManualSlot?.price
-    ? canAffordCurrency(selectedManualSlot.price)
+  const canAfford = selectedSlot?.price
+    ? canAffordCurrency(selectedSlot.price)
     : true;
-  const purchaseDisabledReason = selectedManualSlot?.sold
+  const purchaseDisabledReason = selectedSlot?.sold
     ? "Already purchased"
-    : selectedManualSlot?.notSold
+    : selectedSlot?.notSold
       ? "Not sold in this city"
-      : selectedManualSlot?.sealed
+      : selectedSlot?.sealed
         ? "Sealed (higher grade required)"
         : !canAfford
           ? "Not enough currency"
@@ -1010,37 +1016,94 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           pityLegendaryLine={pityLegendaryLine}
         />
       </div>
-      <div
-        className={`pavilionShelfWall${flashOn ? " pavilionShelfWall--flash" : ""}`}
-      >
-        {renderShelfRow(
-          "Common Shelf",
-          "common",
-          shelves.common,
-          14,
-          "Heaven/Earth/Martial manuals",
-        )}
-        {renderShelfRow(
-          "Advanced Shelf",
-          "advanced",
-          shelves.advanced,
-          12,
-          "Refined techniques",
-        )}
-        {renderShelfRow(
-          "Rare Shelf",
-          "rare",
-          shelves.rare,
-          10,
-          "Uncommon paths",
-        )}
-        {renderShelfRow(
-          "Featured Shelf",
-          "featured",
-          shelves.featured,
-          8,
-          "Limited highlights",
-        )}
+      <div className="manualPavilionMain">
+        <div
+          className={`pavilionShelfWall${flashOn ? " pavilionShelfWall--flash" : ""}`}
+        >
+          {renderShelfRow(
+            "Common Shelf",
+            "common",
+            shelves.common,
+            14,
+            "Heaven/Earth/Martial manuals",
+          )}
+          {renderShelfRow(
+            "Advanced Shelf",
+            "advanced",
+            shelves.advanced,
+            12,
+            "Refined techniques",
+          )}
+          {renderShelfRow(
+            "Rare Shelf",
+            "rare",
+            shelves.rare,
+            10,
+            "Uncommon paths",
+          )}
+          {renderShelfRow(
+            "Featured Shelf",
+            "featured",
+            shelves.featured,
+            8,
+            "Limited highlights",
+          )}
+        </div>
+        <aside className="manualPavilionInspectorDock">
+          <InspectorPanel
+            title={selectedTechnique?.name ?? selectedSlot?.techniqueId ?? "Selected manual"}
+            subtitle={selectedSlot ? `${gradeLabel(selectedSlot.grade)} • ${rarityLabel(selectedSlot.rarity)} • ${selectedTechnique?.path ?? "No path"} • ${selectedTechnique?.role ?? "General"}` : "Select a shelf manual to inspect buy and study context."}
+            eyebrow="Manual Inspector"
+            chips={selectedSlot ? (
+              <>
+                <ChromeChip variant="tag" tone="neutral" text={gradeLabel(selectedSlot.grade)} />
+                <ChromeChip variant="tag" tone="neutral" text={rarityLabel(selectedSlot.rarity)} />
+                <ManualOfferTags tags={selectedOfferTags} />
+              </>
+            ) : null}
+            meta={selectedSlot ? `Price: ${selectedSlot.notSold ? "Not sold here" : formatPrice(selectedSlot.price) || "Free"}` : undefined}
+            footer={(
+              <>
+                <button
+                  type="button"
+                  className="worldScreenModuleButton"
+                  onClick={() => setSelectedManualSlotId(selectedSlot?.slotIndex ?? null)}
+                  disabled={!selectedSlot}
+                >
+                  Open Details
+                </button>
+                <button
+                  type="button"
+                  className="worldScreenModuleButton worldScreenModuleButton--subtle"
+                  onClick={openManualSatchel}
+                >
+                  Open Satchel
+                </button>
+              </>
+            )}
+            scrollBody
+          >
+            {selectedSlot ? (
+              <>
+                <div>Affordability: {canAfford ? "Can afford now." : "Not enough currency right now."}</div>
+                <div>
+                  Build fit: {selectedOfferAnalysis?.fillsCurrentGap
+                    ? "Fills a current build gap."
+                    : selectedOfferAnalysis?.pathAligned
+                      ? "Path-aligned for this life."
+                      : selectedOfferAnalysis?.supportOffer
+                        ? "Support utility candidate."
+                        : "General offer for collection depth."}
+                </div>
+                <div>Study duration: {selectedStudyDurationLabel ?? "—"}</div>
+                <div>Duplicate fragments: +{selectedDuplicateFragmentValue ?? 0}</div>
+                {purchaseDisabledReason ? <div>Status: {purchaseDisabledReason}</div> : null}
+              </>
+            ) : (
+              <div>Select a manual spine to keep contextual offer details visible while browsing shelves.</div>
+            )}
+          </InspectorPanel>
+        </aside>
       </div>
       <div className={"pavilionBottomStrip"}>{renderHistoryCollapsible()}</div>
       <ManualDetailModal

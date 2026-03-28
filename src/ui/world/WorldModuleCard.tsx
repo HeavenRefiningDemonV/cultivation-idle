@@ -16,13 +16,21 @@ export function WorldModuleCard(props: {
   outputs: readonly string[];
   chips?: readonly WorldModuleCardChip[];
   active?: boolean;
+  previewed?: boolean;
+  onPreview?: (moduleKey: LiveWorldModuleKey | null) => void;
   onOpen: (moduleKey: LiveWorldModuleKey) => void;
   openLabel: string;
   cta?: ReactNode;
 }) {
-  const { moduleKey, moduleName, roleTag, bestUsedWhen, outputs, chips = [], active = false, onOpen, openLabel, cta } = props;
+  const { moduleKey, moduleName, roleTag, bestUsedWhen, outputs, chips = [], active = false, previewed = false, onPreview, onOpen, openLabel, cta } = props;
   return (
-    <article className={`worldModuleCard ${active ? 'worldModuleCard--active' : ''}`}>
+    <article
+      className={`worldModuleCard ${active ? 'worldModuleCard--active' : ''} ${previewed ? 'worldModuleCard--previewed' : ''}`}
+      onMouseEnter={() => onPreview?.(moduleKey)}
+      onMouseLeave={() => onPreview?.(null)}
+      onFocus={() => onPreview?.(moduleKey)}
+      onBlur={() => onPreview?.(null)}
+    >
       <div className="worldModuleCard__header">
         <div className="worldModuleCard__title">{moduleName}</div>
         {active ? <div className="worldModuleCard__activeBadge">Active</div> : null}

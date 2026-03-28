@@ -43,14 +43,24 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
 export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
+  previewModuleKey?: string | null;
   getModuleLabel: (moduleKey: string) => string;
   onOpenModule: (moduleKey: string) => void;
+  onPreviewModule?: (moduleKey: string | null) => void;
 }
 
-export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenModule }: CityMapHubProps) {
+export function CityMapHub({
+  modules,
+  activeModuleKey,
+  previewModuleKey = null,
+  getModuleLabel,
+  onOpenModule,
+  onPreviewModule,
+}: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
 
   const handleHover = (moduleKey: string | null) => {
+    onPreviewModule?.(moduleKey);
     if (moduleKey && MODULE_BACKGROUNDS[moduleKey]) {
       setLayoutBackgroundOverride(MODULE_BACKGROUNDS[moduleKey]);
       return;
@@ -70,15 +80,18 @@ export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenMod
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
           const isActive = activeModuleKey === moduleKey;
+          const isPreview = previewModuleKey === moduleKey;
           return (
             <button
               key={moduleKey}
               type="button"
-              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''}`}
+              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''} ${isPreview ? 'cityMapHubHotspot--preview' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
               onClick={() => onOpenModule(moduleKey)}
               onMouseEnter={() => handleHover(moduleKey)}
               onMouseLeave={() => handleHover(null)}
+              onFocus={() => handleHover(moduleKey)}
+              onBlur={() => handleHover(null)}
             >
               <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
             </button>

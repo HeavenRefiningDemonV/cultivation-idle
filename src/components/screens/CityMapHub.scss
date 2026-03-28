@@ -43,9 +43,11 @@
 }
 
 .cityMapHubHotspot--active {
-  /* background: rgba(56, 189, 248); */
-  /* background: rgb(153, 230, 176); */
   color: #e0f2fe;
+}
+
+.cityMapHubHotspot--preview {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65), 0 0 12px rgba(0, 0, 0, 0.35);
 }
 
 .cityMapHubHotspotLabel {

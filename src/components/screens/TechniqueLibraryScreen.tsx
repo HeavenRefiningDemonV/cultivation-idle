@@ -32,6 +32,7 @@ import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
 import { InkPanel, PaperCard, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { ChromeChip, InspectorPanel, RibbonStat, TopRibbon } from '../../ui/chrome/index.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { BuildAltarSummary } from '../../ui/techniques/BuildAltarSummary.js';
@@ -829,78 +830,47 @@ export function TechniqueLibraryScreen() {
                 onFeedback={setAltarFeedback}
               />
             </InkPanel>
-            <PaperCard className="techniqueLibraryPanel techniqueLibraryPanel--summary" variant="tray">
-              <div className="techniqueLibraryPanelHeader">Selected Technique</div>
-              <div className="techniqueLibrarySummary">
-                {selectedTechniqueId ? (
-                  <>
-                    <div className="techniqueLibrarySummaryHeader">
-                      <div className="techniqueLibrarySummaryTitle">{selectedTechDef?.name || selectedTechniqueId}</div>
-                      <div className="techniqueLibrarySummaryIcons" aria-label="Technique metadata">
-                        <span
-                          className="techniqueLibrarySummaryIcon"
-                          role="img"
-                          aria-label={selectedTierIcon.label}
-                          title={selectedTierIcon.label}
-                        >
-                          {selectedTierIcon.iconId ? <GameIcon icon={selectedTierIcon.iconId} size={14} decorative /> : (selectedTierIcon.iconText ?? '—')}
-                        </span>
-                        {selectedPathIcon.iconId ? (
-                          <span
-                            className="techniqueLibrarySummaryIcon"
-                            role="img"
-                            aria-label={selectedPathIcon.label}
-                            title={selectedPathIcon.label}
-                          >
-                            <GameIcon icon={selectedPathIcon.iconId} size={14} decorative />
-                          </span>
-                        ) : null}
-                        {selectedTypeIcon.iconId ? (
-                          <span
-                            className="techniqueLibrarySummaryIcon"
-                            role="img"
-                            aria-label={selectedTypeIcon.label}
-                            title={selectedTypeIcon.label}
-                          >
-                            <GameIcon icon={selectedTypeIcon.iconId} size={14} decorative />
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="techniqueLibrarySummaryChips">
-                      <span className={`techniqueLibraryTypeBadge type-${selectedType}`}>
-                        {selectedType === 'ultimate'
-                          ? 'Ultimate'
-                          : selectedType === 'passive'
-                            ? 'Passive'
-                            : 'Active'}
-                      </span>
-                      <span className={`techniqueLibraryBadge rarity-${selectedRarity}`}>{rarityLabel(selectedRarity)}</span>
-                      <span className={`techniqueLibraryBadge grade-${selectedTier}`}>{gradeLabel(selectedTier)}</span>
-                      {selectedTechDef?.path && <span className="techniqueLibraryBadge">{selectedTechDef.path}</span>}
-                      {selectedTechDef?.role && <span className="techniqueLibraryBadge">{selectedTechDef.role}</span>}
-                      <span className="techniqueLibrarySummaryRank">{formatRankLabel(selectedRank)}</span>
-                    </div>
-                    <div className="techniqueLibrarySummaryLine">{summaryLine}</div>
-                    <PurposeSourceCallout surface={fragmentPurposeSurface} compact className="techniqueLibraryFragmentPurpose" />
-                    <div className="techniqueLibrarySummaryActions">
-                      <button
-                        className="techniqueLibraryPrimaryButton"
-                        onClick={() => {
-                          setDetailIntent(null);
-                          setDetailOpen(true);
-                        }}
-                        type="button"
-                      >
-                        Open Details
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="techniqueLibraryEmptyDetail">Select a technique to view details.</div>
-                )}
-              </div>
-            </PaperCard>
+            <InspectorPanel
+              className="techniqueLibraryPanel techniqueLibraryPanel--summary"
+              title={selectedTechDef?.name || selectedTechniqueId || 'Selected Technique'}
+              subtitle={selectedTechniqueId ? summaryLine : 'Select a technique to review detail and actions.'}
+              eyebrow="Selected Technique"
+              chips={selectedTechniqueId ? (
+                <>
+                  <ChromeChip variant="tag" tone="ink" text={selectedType === 'ultimate' ? 'Ultimate' : selectedType === 'passive' ? 'Passive' : 'Active'} />
+                  <ChromeChip variant="tag" tone="neutral" text={rarityLabel(selectedRarity)} />
+                  <ChromeChip variant="tag" tone="neutral" text={gradeLabel(selectedTier)} />
+                  {selectedTechDef?.path ? <ChromeChip variant="tag" tone="neutral" text={selectedTechDef.path} /> : null}
+                  {selectedTechDef?.role ? <ChromeChip variant="tag" tone="neutral" text={selectedTechDef.role} /> : null}
+                  <ChromeChip variant="tag" tone="neutral" text={formatRankLabel(selectedRank)} />
+                </>
+              ) : null}
+              meta={selectedTechniqueId ? `${selectedTierIcon.label} • ${selectedPathIcon.label} • ${selectedTypeIcon.label}` : undefined}
+              footer={selectedTechniqueId ? (
+                <div className="techniqueLibrarySummaryActions">
+                  <button
+                    className="techniqueLibraryPrimaryButton"
+                    onClick={() => {
+                      setDetailIntent(null);
+                      setDetailOpen(true);
+                    }}
+                    type="button"
+                  >
+                    Open Details
+                  </button>
+                </div>
+              ) : undefined}
+              scrollBody
+            >
+              {selectedTechniqueId ? (
+                <div className="techniqueLibrarySummary">
+                  <div className="techniqueLibrarySummaryLine">{summaryLine}</div>
+                  <PurposeSourceCallout surface={fragmentPurposeSurface} compact className="techniqueLibraryFragmentPurpose" />
+                </div>
+              ) : (
+                <div className="techniqueLibraryEmptyDetail">Select a technique to view details.</div>
+              )}
+            </InspectorPanel>
           </div>
         </aside>
       </div>

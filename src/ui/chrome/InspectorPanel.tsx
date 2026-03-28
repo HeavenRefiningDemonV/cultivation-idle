@@ -1,33 +1,52 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import classNames from 'classnames';
-import { InkPanel, type InkPanelVariant } from '../ink/InkPanel.js';
+import { FrameCard } from './FrameCard.js';
+import './InspectorPanel.scss';
 
 export interface InspectorPanelProps {
-  variant?: InkPanelVariant;
-  header?: ReactNode;
-  watermark?: boolean;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  eyebrow?: ReactNode;
+  chips?: ReactNode;
+  meta?: ReactNode;
+  footer?: ReactNode;
+  scrollBody?: boolean;
   className?: string;
-  style?: CSSProperties;
+  bodyClassName?: string;
   children: ReactNode;
 }
 
 export function InspectorPanel({
-  variant = 'default',
-  header,
-  watermark = false,
+  title,
+  subtitle,
+  eyebrow,
+  chips,
+  meta,
+  footer,
+  scrollBody = false,
   className,
-  style,
+  bodyClassName,
   children,
 }: InspectorPanelProps) {
+  const isEmpty = !children;
   return (
-    <InkPanel
-      variant={variant}
-      header={header}
-      watermark={watermark}
-      className={classNames('inspectorPanel', className)}
-      style={style}
+    <FrameCard
+      variant="inspector"
+      className={classNames(
+        'inspectorPanel',
+        { 'inspectorPanel--scrollBody': scrollBody, 'inspectorPanel--empty': isEmpty },
+        className,
+      )}
     >
-      {children}
-    </InkPanel>
+      <header className="inspectorPanel__header">
+        {eyebrow ? <div className="inspectorPanel__eyebrow">{eyebrow}</div> : null}
+        <div className="inspectorPanel__title">{title}</div>
+        {subtitle ? <div className="inspectorPanel__subtitle">{subtitle}</div> : null}
+      </header>
+      {chips ? <div className="inspectorPanel__chips">{chips}</div> : null}
+      {meta ? <div className="inspectorPanel__meta">{meta}</div> : null}
+      <div className={classNames('inspectorPanel__body', bodyClassName)}>{children}</div>
+      {footer ? <footer className="inspectorPanel__footer">{footer}</footer> : null}
+    </FrameCard>
   );
 }
