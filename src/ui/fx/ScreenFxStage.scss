@@ -4,9 +4,22 @@
   pointer-events: none;
 }
 
-.screenFxStage--backdrop,
-.screenFxStage--ambient,
-.screenFxStage--heroUnderlay,
-.screenFxStage--heroOverlay {
-  pointer-events: none;
+.screenFxStage--underlay {
+  z-index: var(--ui-layer-local-fx-underlay);
+}
+
+.screenFxStage--hero {
+  z-index: var(--ui-layer-local-fx-hero);
+}
+
+.screenFxStage--overlay {
+  z-index: var(--ui-layer-local-content-overlay);
+}
+
+.screenFxStage--contained {
+  overflow: hidden;
+}
+
+.screenFxStage--uncontained {
+  overflow: visible;
 }

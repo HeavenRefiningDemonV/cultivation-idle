@@ -1,0 +1,12 @@
+.safeDomOverlaySlot {
+  position: absolute;
+  inset: 0;
+}
+
+.safeDomOverlaySlot--interactive {
+  pointer-events: auto;
+}
+
+.safeDomOverlaySlot--inert {
+  pointer-events: none;
+}

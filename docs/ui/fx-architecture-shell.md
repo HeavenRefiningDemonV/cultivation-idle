@@ -77,3 +77,10 @@ A.2 behavior:
 - Reduced motion remains authoritative and clamps continuous behavior.
 
 A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.
+
+## A.5 boundary primitive update
+- `ScreenFxStage` is now the canonical declarative stage API (`scene`, `role`, `qualityFloor`, `portalTarget`, `containToParent`).
+- New primitives under `src/ui/fx/primitives/**` own scenic backdrop, ambient underlay, hero slot, and safe DOM overlay mounting.
+- New motion wrappers under `src/ui/fx/motion/**` centralize reduced-motion-safe selection/presence behavior.
+- `useScreenFxState` is refined to normalize lightweight scene inputs only.
+- Do not mount raw `PixiUiStage` in screen code unless a boundary primitive truly cannot express the use case.

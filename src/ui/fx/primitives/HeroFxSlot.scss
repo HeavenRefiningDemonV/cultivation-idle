@@ -1,0 +1,48 @@
+.heroFxSlot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.heroFxSlot--align-fill {
+  inset: 0;
+}
+
+.heroFxSlot--align-center {
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(100%, 720px);
+  height: min(100%, 720px);
+}
+
+.heroFxSlot--align-top {
+  inset: 0 auto auto 50%;
+  transform: translateX(-50%);
+  width: min(100%, 720px);
+  height: min(100%, 520px);
+}
+
+.heroFxSlot--align-bottom {
+  inset: auto auto 0 50%;
+  transform: translateX(-50%);
+  width: min(100%, 720px);
+  height: min(100%, 520px);
+}
+
+.heroFxSlot--bleed-none {
+  margin: 0;
+}
+
+.heroFxSlot--bleed-sm {
+  margin: -8px;
+}
+
+.heroFxSlot--bleed-md {
+  margin: -16px;
+}
+
+.heroFxSlot--bleed-lg {
+  margin: -24px;
+}
