@@ -489,6 +489,7 @@ export function WorldScreen() {
                     chips={card.chips}
                     active={card.active}
                     previewed={previewModuleKey === card.moduleKey}
+                    recommended={worldCommandSurface.strongRecommendationModuleKey === card.moduleKey}
                     onPreview={handlePreviewModule}
                     openLabel={card.openLabel}
                     onOpen={handleOpenModule as never}
@@ -504,6 +505,7 @@ export function WorldScreen() {
                 modules={visibleCityModules}
                 activeModuleKey={activeModuleKey}
                 previewModuleKey={previewModuleKey}
+                recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
                 getModuleLabel={getWorldModuleLabel}
                 onOpenModule={handleOpenModule}
                 onPreviewModule={handlePreviewModule}

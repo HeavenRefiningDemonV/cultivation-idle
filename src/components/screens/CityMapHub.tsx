@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { ScenicLabel, SelectionHalo, OverlaySwash } from '../../ui/chrome/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import './CityMapHub.scss';
@@ -44,6 +45,7 @@ export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
   previewModuleKey?: string | null;
+  recommendedModuleKey?: string | null;
   getModuleLabel: (moduleKey: string) => string;
   onOpenModule: (moduleKey: string) => void;
   onPreviewModule?: (moduleKey: string | null) => void;
@@ -53,6 +55,7 @@ export function CityMapHub({
   modules,
   activeModuleKey,
   previewModuleKey = null,
+  recommendedModuleKey = null,
   getModuleLabel,
   onOpenModule,
   onPreviewModule,
@@ -81,11 +84,13 @@ export function CityMapHub({
           if (!position) return null;
           const isActive = activeModuleKey === moduleKey;
           const isPreview = previewModuleKey === moduleKey;
+          const isRecommended = recommendedModuleKey === moduleKey;
+          const emphasize = isActive || isPreview;
           return (
             <button
               key={moduleKey}
               type="button"
-              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''} ${isPreview ? 'cityMapHubHotspot--preview' : ''}`}
+              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''} ${isPreview ? 'cityMapHubHotspot--preview' : ''} ${isRecommended ? 'cityMapHubHotspot--recommended' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
               onClick={() => onOpenModule(moduleKey)}
               onMouseEnter={() => handleHover(moduleKey)}
@@ -93,7 +98,15 @@ export function CityMapHub({
               onFocus={() => handleHover(moduleKey)}
               onBlur={() => handleHover(null)}
             >
-              <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
+              <OverlaySwash active={isRecommended} tone="recommendation" variant="shortBar" placement="bottom" className="cityMapHubHotspotSwash" />
+              <SelectionHalo active={emphasize} tone={isPreview ? 'recommendation' : 'default'} variant="label" inset="tight" className="cityMapHubHotspotHalo" />
+              <ScenicLabel
+                title={getModuleLabel(moduleKey)}
+                active={emphasize}
+                compact
+                tone={isRecommended ? 'recommendation' : 'default'}
+                className="cityMapHubHotspotLabel"
+              />
             </button>
           );
         })}

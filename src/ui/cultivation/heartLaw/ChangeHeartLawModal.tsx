@@ -5,6 +5,7 @@ import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import type { HeartLawDef } from '../../../content/index.js';
+import { OverlaySwash, SelectionHalo } from '../../chrome/index.js';
 import './HeartLawPanel.scss';
 
 import { CHANGE_HEART_LAW_COST } from '../../../systems/economy/meritRoleAudit.js';
@@ -113,6 +114,8 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
                   onClick={() => setSelected(law.id)}
                   title={!unlocked ? renderUnlockInfo(law) : undefined}
                 >
+                  <OverlaySwash active={isActive} variant="shortBar" tone="recommendation" placement="bottom" className="heartLawOption__swash" />
+                  <SelectionHalo active={isActive} tone="recommendation" variant="panel" inset="tight" className="heartLawOption__halo" />
                   <div className="heartLawOptionName">{law.name}</div>
                   <div className="heartLawOptionMeta">
                     <span className="pill">{law.tier ?? 'unknown tier'}</span>

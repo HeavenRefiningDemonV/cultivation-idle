@@ -3843,6 +3843,7 @@
   min-height: 480px;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .worldScreenDetailGrid {

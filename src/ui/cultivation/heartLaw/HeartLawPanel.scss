@@ -299,6 +299,7 @@
 }
 
 .heartLawOption {
+  position: relative;
   text-align: left;
   padding: 10px;
   border-radius: 10px;
@@ -306,6 +307,8 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #e6f1ff;
   transition: border 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .heartLawOption:hover {
@@ -314,8 +317,20 @@
 }
 
 .heartLawOption--active {
-  border-color: rgba(255, 215, 128, 0.9);
-  box-shadow: 0 0 10px rgba(255, 215, 128, 0.45);
+  border-color: rgba(255, 215, 128, 0.66);
+}
+
+.heartLawOption__swash {
+  z-index: 0;
+}
+
+.heartLawOption__halo {
+  z-index: 1;
+}
+
+.heartLawOption > :not(.heartLawOption__swash):not(.heartLawOption__halo) {
+  position: relative;
+  z-index: 2;
 }
 
 .heartLawOption--locked {
