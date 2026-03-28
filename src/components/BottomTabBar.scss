@@ -1,3 +1,7 @@
 /* B.6 compatibility bridge: canonical bottom nav visuals are owned by src/ui/chrome/BottomNavDock.scss and NavDockButton.scss */
 @import '../ui/chrome/BottomNavDock.scss';
 @import '../ui/chrome/NavDockButton.scss';
+
+.bottomTabBar {
+  --bottom-tab-bar-layer: var(--ui-layer-nav-dock);
+}

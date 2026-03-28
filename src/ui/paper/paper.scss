@@ -16,6 +16,7 @@
   --frame-card-bg: var(--ui-chrome-surface-card-base);
   --frame-card-border: var(--paper-border, var(--ui-chrome-border-soft));
   --frame-card-outline: var(--paper-outline, var(--ui-chrome-outline-shell));
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .paperCard--tray {
