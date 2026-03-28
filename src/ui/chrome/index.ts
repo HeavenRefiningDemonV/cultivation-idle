@@ -7,7 +7,7 @@ export type { ChromeStampProps, ChromeStampSize, ChromeStampState, ChromeStampTi
 export { InspectorPanel } from './InspectorPanel.js';
 export type { InspectorPanelProps } from './InspectorPanel.js';
 export { ModalFrame } from './ModalFrame.js';
-export type { ModalFrameProps } from './ModalFrame.js';
+export type { ModalFrameKind, ModalFrameProps, ModalFrameSurface } from './ModalFrame.js';
 export { PlaqueHeader } from './PlaqueHeader.js';
 export type { PlaqueHeaderProps } from './PlaqueHeader.js';
 export { BottomNavDock } from './BottomNavDock.js';

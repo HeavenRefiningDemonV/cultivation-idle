@@ -1,45 +1,80 @@
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import { InkModalFrame, type InkModalFrameProps } from '../ink/InkModalFrame.js';
-import type { InkPanelVariant } from '../ink/InkPanel.js';
+import { Modal } from '../primitives/Modal.js';
+import { FrameCard, type FrameCardSkin } from './FrameCard.js';
+import './ModalFrame.scss';
+
+export type ModalFrameKind = 'detail' | 'feature' | 'blocking';
+export type ModalFrameSurface = 'frame' | 'none';
 
 export interface ModalFrameProps {
-  isOpen?: boolean;
-  onClose?: () => void;
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+  kind?: ModalFrameKind;
+  surface?: ModalFrameSurface;
   header?: ReactNode;
-  variant?: InkPanelVariant;
+  frameSkin?: FrameCardSkin;
   watermark?: boolean;
+  showCloseButton?: boolean;
+  closeButtonLabel?: string;
   className?: string;
+  overlayClassName?: string;
+  dialogClassName?: string;
   panelClassName?: string;
   ariaLabel?: string;
-  showCloseButton?: boolean;
-  children: ReactNode;
+  ariaLabelledby?: string;
 }
 
 export function ModalFrame({
-  isOpen = true,
+  open,
   onClose,
+  children,
+  kind = 'feature',
+  surface = 'frame',
   header,
-  variant = 'modal',
+  frameSkin = 'default',
   watermark = false,
+  showCloseButton = true,
+  closeButtonLabel = 'Close modal',
   className,
+  overlayClassName,
+  dialogClassName,
   panelClassName,
   ariaLabel,
-  showCloseButton = true,
-  children,
+  ariaLabelledby,
 }: ModalFrameProps) {
-  const props: InkModalFrameProps = {
-    isOpen,
-    onClose,
-    header,
-    variant,
-    watermark,
-    panelClassName,
-    ariaLabel,
-    showCloseButton,
-    children,
-    className: classNames('modalFrame', className),
-  };
+  if (typeof document === 'undefined') return null;
 
-  return <InkModalFrame {...props} />;
+  const modalNode = (
+    <Modal
+      open={open}
+      onClose={onClose}
+      ariaLabel={ariaLabel}
+      ariaLabelledby={ariaLabelledby}
+      overlayClassName={classNames('modalFrame', `modalFrame--${kind}`, `modalFrame--surface-${surface}`, className, overlayClassName)}
+      panelClassName={classNames('modalFrame__dialog', dialogClassName)}
+    >
+      {surface === 'frame' ? (
+        <FrameCard variant="modal" skin={frameSkin} watermark={watermark} className={classNames('modalFrame__panel', panelClassName)}>
+          {header ? <div className="modalFrame__header">{header}</div> : null}
+          {showCloseButton ? (
+            <button type="button" className="modalFrame__close" onClick={onClose} aria-label={closeButtonLabel}>×</button>
+          ) : null}
+          <div className="modalFrame__content">{children}</div>
+        </FrameCard>
+      ) : (
+        <div className={classNames('modalFrame__panel', 'modalFrame__panel--surface-none', panelClassName)}>
+          {header ? <div className="modalFrame__header">{header}</div> : null}
+          {showCloseButton ? (
+            <button type="button" className="modalFrame__close" onClick={onClose} aria-label={closeButtonLabel}>×</button>
+          ) : null}
+          <div className="modalFrame__content">{children}</div>
+        </div>
+      )}
+    </Modal>
+  );
+
+  return createPortal(modalNode, document.body);
 }

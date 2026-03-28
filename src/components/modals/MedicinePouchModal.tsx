@@ -112,6 +112,7 @@ export function MedicinePouchModal({ open, onClose, anchorRef }: MedicinePouchMo
         isOpen={open}
         onClose={onClose}
         variant="pouch"
+        modalKind="detail"
         ariaLabel="Medicine Pouch"
         className="medicinePouchFrame"
         panelClassName="medicinePouchModal"

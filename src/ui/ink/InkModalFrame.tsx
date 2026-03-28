@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
-import { InkPanel, type InkPanelVariant } from './InkPanel.js';
+import { ModalFrame, type ModalFrameKind } from '../chrome/ModalFrame.js';
+import type { InkPanelVariant } from './InkPanel.js';
 import './InkModalFrame.scss';
 
 export interface InkModalFrameProps {
@@ -13,8 +14,21 @@ export interface InkModalFrameProps {
   panelClassName?: string;
   ariaLabel?: string;
   showCloseButton?: boolean;
+  modalKind?: ModalFrameKind;
   children: ReactNode;
 }
+
+const VARIANT_TO_SKIN: Record<InkPanelVariant, 'default' | 'apothecary' | 'forge' | 'manual' | 'techniques' | 'prestige' | 'pouch' | 'heartlaw'> = {
+  default: 'default',
+  apothecary: 'apothecary',
+  forge: 'forge',
+  manual: 'manual',
+  techniques: 'techniques',
+  prestige: 'prestige',
+  pouch: 'pouch',
+  heartlaw: 'heartlaw',
+  modal: 'default',
+};
 
 export function InkModalFrame({
   isOpen = true,
@@ -26,28 +40,25 @@ export function InkModalFrame({
   panelClassName,
   ariaLabel,
   showCloseButton = true,
+  modalKind = 'feature',
   children,
 }: InkModalFrameProps) {
-  if (!isOpen) return null;
-
   return (
-    <div className={classNames('inkModalFrame', className)}>
-      <div className="inkModalFrame__backdrop" onClick={onClose} aria-hidden="true" />
-      <div className="inkModalFrame__dialog" role="dialog" aria-modal="true" aria-label={ariaLabel}>
-        <InkPanel
-          variant={variant}
-          watermark={watermark}
-          header={header}
-          className={classNames('inkModalFrame__panel', panelClassName)}
-        >
-          {onClose && showCloseButton ? (
-            <button type="button" className="inkModalFrame__close" onClick={onClose} aria-label="Close">
-              ×
-            </button>
-          ) : null}
-          {children}
-        </InkPanel>
-      </div>
-    </div>
+    <ModalFrame
+      open={isOpen}
+      onClose={onClose ?? (() => undefined)}
+      kind={modalKind}
+      surface="frame"
+      frameSkin={VARIANT_TO_SKIN[variant]}
+      watermark={watermark}
+      header={header}
+      showCloseButton={Boolean(onClose) && showCloseButton}
+      ariaLabel={ariaLabel}
+      className={classNames('inkModalFrame', className)}
+      dialogClassName="inkModalFrame__dialog"
+      panelClassName={classNames('inkModalFrame__panel', panelClassName)}
+    >
+      {children}
+    </ModalFrame>
   );
 }

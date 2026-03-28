@@ -16,6 +16,9 @@
   --ui-layer-blocking-modal: 1500;
   --ui-layer-feature-modal: 1600;
   --ui-layer-emergency-modal: 1800;
+  --ui-layer-modal-detail-shell: var(--ui-layer-detail-modal);
+  --ui-layer-modal-blocking-shell: var(--ui-layer-blocking-modal);
+  --ui-layer-modal-feature-shell: var(--ui-layer-feature-modal);
 
   --ui-layer-chrome-ribbon: var(--ui-layer-header);
   --ui-layer-chrome-dock: var(--ui-layer-bottom-nav);

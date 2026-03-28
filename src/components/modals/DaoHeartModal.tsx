@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget.js';
 import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { ModalFrame } from '../../ui/chrome/index.js';
 import './DaoHeartModal.scss';
 
 interface DaoHeartModalProps {
@@ -79,42 +80,21 @@ export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
     [element, palette],
   );
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [onClose]);
-
-  const handleOverlayClick = () => {
-    onClose();
-  };
-
-  const handleModalClick = (event: MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-  };
-
   return (
-    <div className="daoHeartModalOverlay" onClick={handleOverlayClick}>
+    <ModalFrame
+      open
+      onClose={onClose}
+      kind="blocking"
+      surface="none"
+      className="daoHeartModalOverlay"
+      panelClassName="daoHeartModalHost"
+      ariaLabel="Dao Heart"
+      showCloseButton={false}
+    >
       <div
         className="daoHeartModalModal"
         style={themeStyle}
         data-dao-element={element}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Dao Heart"
-        onClick={handleModalClick}
       >
         <div className="daoHeartModalFx" aria-hidden="true">
           <div className="daoHeartFxWash" />
@@ -181,6 +161,6 @@ export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </ModalFrame>
   );
 }

@@ -191,6 +191,7 @@ export function LifeStartWizardModal() {
       className="lifeStartWizardFrame"
       panelClassName="lifeStartWizardModal--ink"
       variant="heartlaw"
+      modalKind="blocking"
       watermark
     >
       <div className="lifeStartWizardContent">

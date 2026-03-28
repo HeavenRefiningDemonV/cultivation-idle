@@ -2,28 +2,11 @@
 @import '../../styles/uiMotionTokens.scss';
 
 .inkModalFrame {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--ui-layer-chrome-modal, var(--ui-layer-modal-base));
-}
-
-.inkModalFrame__backdrop {
-  position: absolute;
-  inset: 0;
-  background: var(--ui-chrome-backdrop-modal);
-  background-image: url('../../assets/texture_overlay.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.85;
+  display: contents;
 }
 
 .inkModalFrame__dialog {
-  position: relative;
-  z-index: var(--ui-layer-local-content);
-  padding: 20px;
+  padding: 20px 0;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -31,35 +14,4 @@
 
 .inkModalFrame__panel {
   width: min(920px, 94vw);
-}
-
-.inkModalFrame__close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--ui-chrome-radius-button);
-  border: 1.5px solid var(--ui-chrome-outline-shell);
-  background-color: var(--ui-chrome-surface-shell-raised);
-  color: var(--ui-chrome-color-ink-primary);
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: var(--ui-chrome-shadow-soft);
-  transition:
-    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
-    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
-    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
-}
-
-.inkModalFrame__close:hover {
-  transform: translateY(calc(var(--ui-motion-hover-lift-y) / 2));
-  border-color: rgba(120, 72, 33, 0.7);
-  box-shadow: 0 10px 16px rgba(15, 10, 6, 0.24);
-}
-
-.inkModalFrame__close:active {
-  transform: translateY(var(--ui-motion-press-shift-y));
-  box-shadow: 0 4px 10px rgba(15, 10, 6, 0.18);
 }
