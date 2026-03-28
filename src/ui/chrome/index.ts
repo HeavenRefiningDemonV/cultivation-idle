@@ -3,7 +3,7 @@ export type { FrameCardProps, FrameCardSkin, FrameCardVariant } from './FrameCar
 export { ChromeChip } from './ChromeChip.js';
 export type { ChromeChipProps, ChromeChipTone, ChromeChipVariant } from './ChromeChip.js';
 export { ChromeStamp } from './ChromeStamp.js';
-export type { ChromeStampProps, ChromeStampSize, ChromeStampTilt, ChromeStampTone } from './ChromeStamp.js';
+export type { ChromeStampProps, ChromeStampSize, ChromeStampState, ChromeStampTilt, ChromeStampTone } from './ChromeStamp.js';
 export { InspectorPanel } from './InspectorPanel.js';
 export type { InspectorPanelProps } from './InspectorPanel.js';
 export { ModalFrame } from './ModalFrame.js';

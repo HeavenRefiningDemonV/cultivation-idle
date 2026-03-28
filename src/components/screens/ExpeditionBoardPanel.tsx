@@ -15,7 +15,8 @@ import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
+import { PaperCard } from '../../ui/paper/index.js';
+import { ChromeChip, ChromeStamp } from '../../ui/chrome/index.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import '../../ui/world/WorldModuleCard.scss';
@@ -342,7 +343,7 @@ export function ExpeditionBoardPanel() {
     const isSelected = selectedDurationId === duration.id;
     return (
       <div key={duration.id} className="expDurationChipGroup">
-        <PaperChip
+        <ChromeChip
           variant="pill"
           text={chipText}
           tone={isSelected ? 'ink' : 'neutral'}
@@ -376,7 +377,7 @@ export function ExpeditionBoardPanel() {
       .filter(Boolean)
       .join(' · ');
     return (
-      <PaperChip
+      <ChromeChip
         key={duration.id}
         variant="pill"
         text={chipText}
@@ -574,7 +575,7 @@ export function ExpeditionBoardPanel() {
               >
                 <div className={'expRouteHeader'}>
                   <div className={'expRouteTitle'}>{type.name}</div>
-                  <PaperChip variant="tag" text="ROUTE" />
+                  <ChromeChip variant="tag" text="ROUTE" />
                 </div>
                 <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
                 <div className={'expRouteItems'}>
@@ -620,11 +621,11 @@ export function ExpeditionBoardPanel() {
             <div className={'eqsRareTag'}>
                 {selectedRoute ? (
                   <>
-                    <PaperChip variant="tag" text={`Rare ${rareChancePct}%`} tone="rare" />
+                    <ChromeChip variant="tag" text={`Rare ${rareChancePct}%`} tone="rare" />
                     {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
                       <div className="eqsRareChips">
                         {selectedRouteRareItems.slice(0, 2).map((drop) => (
-                          <PaperChip
+                          <ChromeChip
                             key={drop.itemId}
                             variant="pill"
                             text={itemsById[drop.itemId]?.name ?? drop.itemId}
@@ -635,7 +636,7 @@ export function ExpeditionBoardPanel() {
                     ) : null}
                   </>
                 ) : (
-                  <PaperChip variant="tag" text="Select a route to view rare chances" tone="neutral" />
+                  <ChromeChip variant="tag" text="Select a route to view rare chances" tone="neutral" />
                 )}
               </div>
             </div>
@@ -661,12 +662,12 @@ export function ExpeditionBoardPanel() {
           <div className={'eqsYieldChips'}>
             {queueYieldChips.length > 0 ? (
               queueYieldChips.map((entry) => (
-                <PaperChip key={entry.id} variant="pill" text={entry.text} tone="neutral" />
+                <ChromeChip key={entry.id} variant="pill" text={entry.text} tone="neutral" />
               ))
             ) : (
-              <PaperChip variant="pill" text="Yield preview unavailable" tone="neutral" />
+              <ChromeChip variant="pill" text="Yield preview unavailable" tone="neutral" />
             )}
-            {queueRareChip && <PaperChip variant="pill" text={queueRareChip} tone="rare" />}
+            {queueRareChip && <ChromeChip variant="pill" text={queueRareChip} tone="rare" />}
           </div>
         </div>
 
@@ -697,7 +698,7 @@ export function ExpeditionBoardPanel() {
                   <div className={'eqsSlotHeader'}>
                     <div className={'eqsSlotTitle'}>Slot {slotIndex + 1}</div>
                     {isComplete ? (
-                      <PaperStamp text="Ready" size="sm" tone="seal" className="paperStamp--ready" />
+                      <ChromeStamp text="Ready" size="sm" tone="seal" state="ready" />
                     ) : (
                       <span className={'eqsSlotStatus'}>In Progress</span>
                     )}
@@ -767,7 +768,7 @@ export function ExpeditionBoardPanel() {
           open={routeModalOpen}
           title={selectedRoute.name}
           subtitle={`${citiesById[currentCityId]?.name ?? 'Unknown City'} • ${selectedRoute.description ?? 'Plan a route.'}`}
-          meta={<PaperChip variant="tag" text={`Rare ${rareChancePct}%`} />}
+          meta={<ChromeChip variant="tag" text={`Rare ${rareChancePct}%`} />}
           onClose={() => setRouteModalOpen(false)}
         >
           <div className={'expDetailSection'}>
@@ -796,9 +797,9 @@ export function ExpeditionBoardPanel() {
             <div className={'expDetailHint'}>Chance: {rareChancePct}%</div>
             <div className={'expDetailRareList'}>
               {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
-                selectedRouteRareNames.map((name) => <PaperChip key={name} variant="pill" text={name} />)
+                selectedRouteRareNames.map((name) => <ChromeChip key={name} variant="pill" text={name} />)
               ) : (
-                <PaperChip variant="pill" text="No rare drops listed" tone="neutral" />
+                <ChromeChip variant="pill" text="No rare drops listed" tone="neutral" />
               )}
             </div>
             {selectedPity && selectedPity.pityCap > 1 ? (
@@ -871,7 +872,7 @@ export function ExpeditionBoardPanel() {
           } · ${citiesById[ceremony.run.cityId]?.name ?? ceremony.run.cityId}`}
           meta={
             ceremony.slotIndex != null ? (
-              <PaperChip variant="tag" text={`Slot ${ceremony.slotIndex + 1}`} className="expCeremonyMetaChip" />
+              <ChromeChip variant="tag" text={`Slot ${ceremony.slotIndex + 1}`} className="expCeremonyMetaChip" />
             ) : null
           }
           onClose={closeCeremony}
@@ -888,7 +889,7 @@ export function ExpeditionBoardPanel() {
                 : 'No items'}
             </div>
             {ceremony.rareDrop && ceremony.rareDrop.itemId === ceremony.spotlightItemId ? (
-              <PaperStamp text="Rare" size="sm" tone="seal" className="expCeremonySpotlightBadge" />
+              <ChromeStamp text="Rare" size="sm" tone="seal" state="rare" className="expCeremonySpotlightBadge" />
             ) : null}
           </div>
 
@@ -902,7 +903,7 @@ export function ExpeditionBoardPanel() {
                   className={classNames('expCeremonyRewardRow', { 'expCeremonyRewardRow--rare': isRareDrop })}
                   style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <PaperChip
+                  <ChromeChip
                     variant="pill"
                     text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
                     className={classNames('expCeremonyRewardChip', {
@@ -910,7 +911,7 @@ export function ExpeditionBoardPanel() {
                     })}
                     tone={isRareDrop ? 'rare' : 'neutral'}
                   />
-                  {isRareDrop && <PaperStamp text="Rare" size="sm" tone="seal" className="paperStamp--ready" />}
+                  {isRareDrop && <ChromeStamp text="Rare" size="sm" tone="seal" state="rare" />}
                 </div>
               );
             })}
@@ -922,7 +923,7 @@ export function ExpeditionBoardPanel() {
                     className="expCeremonyRewardRow"
                     style={{ animationDelay: `${(index + 1) * 80}ms` }}
                   >
-                    <PaperChip
+                    <ChromeChip
                       variant="pill"
                       text={`${key}: ${value}`}
                       className="expCeremonyRewardChip"

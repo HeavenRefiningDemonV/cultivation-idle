@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import type { RunCompassActionLine, RunCompassSurface } from '../../systems/ui/runCompass/index.js';
-import { PaperChip } from '../ink/PaperChip.js';
+import { ChromeChip } from '../chrome/ChromeChip.js';
 import { InkPanel } from '../ink/InkPanel.js';
 import { RunCompassSection } from './RunCompassSection.js';
 import './RunCompass.scss';
@@ -16,7 +16,7 @@ export interface RunCompassProps {
 }
 
 function toneForLine(tone: string | undefined) {
-  if (tone === 'warning') return 'danger' as const;
+  if (tone === 'warning') return 'warning' as const;
   if (tone === 'success') return 'success' as const;
   return 'neutral' as const;
 }
@@ -42,7 +42,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
               <div className="runCompassMilestone__title">{surface.milestone.title}</div>
               <div className="runCompassMilestone__detail">{surface.milestone.detail}</div>
             </div>
-            <PaperChip text={surface.milestone.readinessLabel} tone={surface.milestone.readinessLabel === 'Ready' ? 'success' : 'neutral'} />
+            <ChromeChip text={surface.milestone.readinessLabel} tone={surface.milestone.readinessLabel === 'Ready' ? 'success' : 'neutral'} />
           </div>
           <div className="runCompassMilestone__context">{surface.milestone.contextLine}</div>
           {surface.milestone.prestigeLine ? <div className="runCompassMilestone__prestige">{surface.milestone.prestigeLine}</div> : null}
@@ -51,7 +51,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
 
       <RunCompassSection title="Readiness">
         <div className="runCompassReadinessHead">
-          <PaperChip text={surface.readiness.label} tone={surface.readiness.label === 'Ready' ? 'success' : 'neutral'} />
+          <ChromeChip text={surface.readiness.label} tone={surface.readiness.label === 'Ready' ? 'success' : 'neutral'} />
           {surface.readiness.diagnosisLabel ? <div className="runCompassReadinessHead__diagnosis">{surface.readiness.diagnosisLabel}</div> : null}
         </div>
         <div className="runCompassReadinessDetail">{surface.readiness.detail}</div>
@@ -62,7 +62,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
                 <div className="runCompassInfoRow__label">{row.label}</div>
                 <div className="runCompassInfoRow__detail">{row.detail}</div>
               </div>
-              <PaperChip text={row.placeholder ? 'Hold' : row.label} tone={toneForLine(row.tone)} variant="tag" />
+              <ChromeChip text={row.placeholder ? 'Hold' : row.label} tone={toneForLine(row.tone)} variant="tag" />
             </div>
           ))}
         </div>
@@ -76,7 +76,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
                 <div className="runCompassInfoRow__label">{row.label}</div>
                 <div className="runCompassInfoRow__detail">{row.detail}</div>
               </div>
-              <PaperChip text={row.placeholder ? 'Queued' : row.tone === 'success' ? 'Clear' : 'Watch'} tone={toneForLine(row.tone)} variant="tag" />
+              <ChromeChip text={row.placeholder ? 'Queued' : row.tone === 'success' ? 'Clear' : 'Watch'} tone={toneForLine(row.tone)} variant="tag" />
             </div>
           ))}
         </div>
@@ -89,7 +89,7 @@ export function RunCompass({ surface, tone = 'paper', density = 'regular', class
               <div className="runCompassAction__main">
                 <div className="runCompassAction__top">
                   <div className="runCompassAction__label">{action.label}</div>
-                  <PaperChip text={action.destinationLabel} variant="tag" tone={action.blocked ? 'danger' : 'ink'} />
+                  <ChromeChip text={action.destinationLabel} variant="tag" tone={action.blocked ? 'danger' : 'ink'} />
                 </div>
                 <div className="runCompassAction__why">{action.why}</div>
               </div>

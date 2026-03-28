@@ -1,0 +1,204 @@
+@import '../../styles/uiChromeTokens.scss';
+@import '../../styles/uiMotionTokens.scss';
+
+.chromeChip,
+.paperChip,
+.inkPaperChip {
+  --chrome-chip-ink: rgba(43, 33, 22, 0.84);
+  --chrome-chip-border: rgba(87, 59, 31, 0.24);
+  --chrome-chip-bg: var(--ui-chrome-surface-chip-base);
+  --chrome-chip-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 24px;
+  border: 1px solid var(--chrome-chip-border);
+  border-radius: var(--ui-chrome-radius-pill);
+  background: var(--chrome-chip-bg);
+  color: var(--chrome-chip-ink);
+  font-size: var(--ui-chrome-text-size-chip);
+  line-height: var(--ui-chrome-line-height-meta);
+  box-shadow: var(--chrome-chip-shadow);
+  overflow: hidden;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  vertical-align: middle;
+}
+
+.chromeChip,
+.paperChip {
+  padding: 5px 10px;
+}
+
+.inkPaperChip {
+  padding: 5px 10px;
+}
+
+.chromeChip--tag,
+.paperChip--tag,
+.inkPaperChip--tag {
+  border-radius: 8px;
+  padding: 4px 8px;
+  min-height: 22px;
+}
+
+.chromeChip--microLabel {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 11px;
+  min-height: 18px;
+  letter-spacing: 0.01em;
+}
+
+.chromeChip__icon,
+.paperChip__icon,
+.inkPaperChip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: inherit;
+  flex: 0 0 auto;
+}
+
+.chromeChip__text,
+.paperChip__text,
+.inkPaperChip__text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chromeChip--tone-neutral,
+.paperChip--tone-neutral,
+.inkPaperChip--tone-neutral {
+  --chrome-chip-ink: rgba(43, 33, 22, 0.8);
+}
+
+.chromeChip--tone-ink,
+.paperChip--tone-ink,
+.inkPaperChip--tone-ink {
+  --chrome-chip-ink: rgba(43, 33, 22, 0.9);
+}
+
+.chromeChip--tone-success,
+.paperChip--tone-success,
+.inkPaperChip--tone-success {
+  --chrome-chip-ink: rgba(34, 116, 74, 0.94);
+  --chrome-chip-border: rgba(34, 116, 74, 0.4);
+  --chrome-chip-bg: rgba(232, 247, 238, 0.82);
+}
+
+.chromeChip--tone-danger,
+.paperChip--tone-danger,
+.inkPaperChip--tone-danger {
+  --chrome-chip-ink: rgba(145, 58, 37, 0.94);
+  --chrome-chip-border: rgba(145, 58, 37, 0.42);
+  --chrome-chip-bg: rgba(252, 236, 231, 0.8);
+}
+
+.chromeChip--tone-warning,
+.paperChip--tone-warning,
+.inkPaperChip--tone-warning {
+  --chrome-chip-ink: rgba(115, 73, 21, 0.95);
+  --chrome-chip-border: rgba(181, 133, 43, 0.5);
+  --chrome-chip-bg: rgba(250, 241, 216, 0.86);
+}
+
+.chromeChip--tone-rare,
+.paperChip--tone-rare,
+.inkPaperChip--tone-rare {
+  --chrome-chip-ink: var(--paper-rare, var(--ui-chrome-color-rare));
+  --chrome-chip-border: rgba(181, 133, 43, 0.5);
+  --chrome-chip-bg: var(--ui-chrome-surface-chip-rare);
+}
+
+.chromeChip--tone-recommendation {
+  --chrome-chip-ink: rgba(24, 86, 56, 0.95);
+  --chrome-chip-border: rgba(47, 143, 102, 0.52);
+  --chrome-chip-bg: rgba(225, 247, 236, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(47, 143, 102, 0.18), var(--chrome-chip-shadow);
+}
+
+.chromeChip--tone-merit,
+.paperChip--tone-merit,
+.inkPaperChip--tone-merit {
+  --chrome-chip-ink: var(--paper-stamp, var(--ui-chrome-color-seal-red));
+  --chrome-chip-border: rgba(159, 59, 46, 0.45);
+  --chrome-chip-bg: var(--ui-chrome-surface-chip-merit);
+  padding-left: 18px;
+}
+
+.chromeChip--tone-merit::before,
+.paperChip--tone-merit::before,
+.inkPaperChip--tone-merit::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(159, 59, 46, 0.65);
+  border-radius: 2px;
+  transform: translateY(-50%) rotate(-8deg);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.chromeChip--tone-rare::after,
+.paperChip--tone-rare::after,
+.inkPaperChip--tone-rare::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, transparent 70%);
+  opacity: 0.5;
+  transform: translateX(-120%);
+  animation: chromeChipShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.chromeChip--clickable,
+.paperChip--clickable,
+.inkPaperChip--clickable {
+  cursor: pointer;
+  transition:
+    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+}
+
+.chromeChip--clickable:hover,
+.paperChip--clickable:hover,
+.inkPaperChip--clickable:hover {
+  transform: translateY(calc(var(--ui-motion-hover-lift-y) / 2));
+  border-color: rgba(120, 72, 33, 0.45);
+  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.15);
+}
+
+.chromeChip--clickable:focus-visible,
+.paperChip--clickable:focus-visible,
+.inkPaperChip--clickable:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.5);
+  outline-offset: var(--ui-motion-outline-offset);
+}
+
+@keyframes chromeChipShimmer {
+  0%,
+  65% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chromeChip--tone-rare::after,
+  .paperChip--tone-rare::after,
+  .inkPaperChip--tone-rare::after {
+    animation: none;
+  }
+}

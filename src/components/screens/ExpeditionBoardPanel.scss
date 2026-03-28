@@ -474,3 +474,10 @@
     transform: none;
   }
 }
+
+
+/* B.5: canonical chip/stamp adoption keeps local hooks layout-only. */
+.expStageRoot .chromeChip,
+.expStageRoot .chromeStamp {
+  max-width: 100%;
+}

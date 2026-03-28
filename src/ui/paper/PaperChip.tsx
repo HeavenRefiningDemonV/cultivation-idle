@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
+import { ChromeChip, type ChromeChipTone, type ChromeChipVariant } from '../chrome/ChromeChip.js';
 import './paper.scss';
 
-type PaperChipVariant = 'pill' | 'tag';
-type PaperChipTone = 'neutral' | 'ink' | 'danger' | 'success' | 'rare' | 'merit';
+type PaperChipVariant = Exclude<ChromeChipVariant, 'microLabel'>;
+type PaperChipTone = Exclude<ChromeChipTone, 'warning' | 'recommendation'>;
 
 export interface PaperChipProps {
   variant?: PaperChipVariant;
@@ -14,38 +15,23 @@ export interface PaperChipProps {
   className?: string;
 }
 
-export function PaperChip({
-  variant = 'pill',
-  icon,
-  text,
-  tone = 'neutral',
-  onClick,
-  className,
-}: PaperChipProps) {
-  const classes = classNames(
-    'paperChip',
-    {
-      'paperChip--tag': variant === 'tag',
-      'paperChip--clickable': Boolean(onClick),
-    },
-    `paperChip--tone-${tone}`,
-    className,
+export function PaperChip({ variant = 'pill', icon, text, tone = 'neutral', onClick, className }: PaperChipProps) {
+  return (
+    <ChromeChip
+      variant={variant}
+      icon={icon}
+      text={text}
+      tone={tone}
+      onClick={onClick}
+      className={classNames(
+        'paperChip',
+        {
+          'paperChip--tag': variant === 'tag',
+          'paperChip--clickable': Boolean(onClick),
+        },
+        `paperChip--tone-${tone}`,
+        className,
+      )}
+    />
   );
-
-  const content = (
-    <>
-      {icon ? <span className="paperChip__icon">{icon}</span> : null}
-      <span className="paperChip__text">{text}</span>
-    </>
-  );
-
-  if (onClick) {
-    return (
-      <button type="button" className={classes} onClick={onClick}>
-        {content}
-      </button>
-    );
-  }
-
-  return <span className={classes}>{content}</span>;
 }
