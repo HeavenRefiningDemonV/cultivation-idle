@@ -86,6 +86,7 @@ export function GameLayout() {
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
   const resetOnboardingLifeState = useUIStore((state) => state.resetOnboardingLifeState);
   const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
+  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
   const lastPrestigeCountRef = useRef(prestigeCount);
 
@@ -169,7 +170,6 @@ export function GameLayout() {
     .join(' ');
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
-  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
