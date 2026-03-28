@@ -42,3 +42,9 @@ This directory contains the shared FX shell, quality contract surfaces, boundary
 ## Handoff
 - **A.7:** provider mounting/app-shell integration.
 - Later screen packets compose scenes from the shared emitter vocabulary.
+
+
+## What A.9 adds
+- Canonical UI asset manifests/reuse map under `src/assets/ui/**` (metadata only).
+- A strict placeholder policy: missing art is tracked in manifests, not fake PNG/SVG files.
+- No runtime coupling yet: `src/ui/fx/**` continues to own runtime behavior while assets stay in planning scaffolds.

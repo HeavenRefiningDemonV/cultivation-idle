@@ -1,5 +1,15 @@
-# UI Overlay Assets
+# UI Overlay Asset Family
 
-Reserved for overlay-specific visual assets (non-readable decorative elements used by modal and system overlays).
+Overlay assets are texture/mask layers used to shape mood and depth.
 
-Packet A.2 intentionally adds no new art assets.
+## Belongs here
+- Paper grain textures.
+- Vignette/fog/torn-edge masks.
+
+## Does not belong here
+- Readable UI text.
+- Full character hero kits.
+- One-off screenshot backgrounds.
+
+## Naming expectations
+- `paper_*`, `vignette_*`, `fog_*`, `*_mask_*`.

@@ -96,3 +96,10 @@ A.3 still does **not** mount provider/runtime stages in `App` or `GameLayout`.
 - `GameLayoutFxSeam` now wraps the active screen host region in `GameLayout.tsx`.
 - Lazy portal-root policy remains in effect: `FxStagePortal` root is created on-demand by first global stage usage.
 - Later screen packets should not introduce a second provider; they can now focus on local scene composition only.
+
+
+## A.9 asset scaffold update
+- UI asset metadata scaffolding now lives under `src/assets/ui/` with typed manifests and a reuse map.
+- Missing art is represented in manifests (`planned-missing` / `planned-optional`) instead of placeholder image files.
+- Runtime FX code under `src/ui/fx/**` remains behavior-only and does not import from the new asset scaffold yet.
+- Later scene packets should consult `src/assets/ui/registry.ts` for consistent asset IDs and handoff planning.

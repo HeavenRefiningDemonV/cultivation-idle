@@ -1,5 +1,14 @@
-# UI FX Assets
+# UI FX Asset Family
 
-Reserved for atmospheric and hero-effect media used by Pixi-backed FX scenes (textures, masks, sprite sheets, effect atlases).
+FX assets are reusable particles, halos, and swashes used by future scene composition.
 
-Packet A.2 intentionally adds no new art assets.
+## Belongs here
+- Textless, tintable FX primitives.
+- Particle/halo/swash families shared across screens.
+
+## Does not belong here
+- Scene screenshots or flattened full-screen exports.
+- Runtime-specific emitter code (belongs in `src/ui/fx/**`).
+
+## Naming expectations
+- `mist_*`, `dust_*`, `spark_*`, `halo_*`, `brush_swash_*`.

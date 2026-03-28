@@ -1,5 +1,16 @@
-# UI Chrome Assets
+# UI Chrome Asset Family
 
-Reserved for reusable non-FX chrome visuals (frames, trims, panel accents, decorative UI shell elements).
+Chrome assets are reusable non-character UI shells: frames, plaques, ribbons, and utility trims.
 
-Packet A.2 intentionally adds no new art assets.
+## Belongs here
+- Textless frame/plaque/ribbon families.
+- Tintable variants where possible.
+- Nine-slice-friendly frame assets.
+
+## Does not belong here
+- Readable text baked into textures.
+- Screen-specific one-off paintings.
+- Hero character kits.
+
+## Naming expectations
+- `frame_*_9slice`, `plaque_*`, `ribbon_*`, `stamp_*`.
