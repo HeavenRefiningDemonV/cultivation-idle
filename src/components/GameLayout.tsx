@@ -14,6 +14,7 @@ import { CombatPresentationHost } from '../app/overlays/CombatPresentationHost.j
 import { TechniqueLibraryScreen } from './screens/TechniqueLibraryScreen.js';
 import { LifeStartWizardModal } from './modals/LifeStartWizardModal.js';
 import { NotificationToasts } from './NotificationToasts.js';
+import { FxQualityProvider } from '../ui/fx/FxQualityProvider.js';
 import { CityArrivalBanner } from './system/CityArrivalBanner.js';
 import { BottomTabBar } from './BottomTabBar.js';
 import { WorldBuildingModal } from './modals/WorldBuildingModal.js';
@@ -174,7 +175,8 @@ export function GameLayout() {
   }, [lifeStartWizardOpen, setLifeStartWizardOpenForNotifications]);
 
   return (
-    <div className={rootClassNames}>
+    <FxQualityProvider>
+      <div className={rootClassNames}>
       <AudioBindings />
       {showLayoutBackgroundOverlay ? (
         <div
@@ -204,6 +206,7 @@ export function GameLayout() {
       <CityArrivalBanner />
       <OnboardingPromptHost />
       <NotificationToasts />
-    </div>
+      </div>
+    </FxQualityProvider>
   );
 }
