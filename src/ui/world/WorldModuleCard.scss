@@ -1,22 +1,15 @@
+@import '../../styles/uiMotionTokens.scss';
+@import '../../ui/chrome/layoutStabilityGuards.scss';
 .worldRouteChip {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
-  color: #e2e8f0;
+  max-width: 100%;
 }
 
 .worldRouteChip--strong {
-  border-color: rgba(250, 204, 21, 0.45);
-  color: #fef08a;
+  letter-spacing: 0.02em;
 }
 
 .worldRouteChip--support {
-  border-color: rgba(147, 197, 253, 0.45);
-  color: #bfdbfe;
+  opacity: 0.92;
 }
 
 .worldModuleGroup {
@@ -38,6 +31,7 @@
 }
 
 .worldModuleCard {
+  position: relative;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 10px;
@@ -46,10 +40,34 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  overflow: hidden;
+  isolation: isolate;
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), background-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
 .worldModuleCard--active {
   border-color: rgba(167, 139, 250, 0.5);
+}
+
+.worldModuleCard--previewed {
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.45);
+}
+
+.worldModuleCard__swash {
+  z-index: 0;
+}
+
+.worldModuleCard__halo {
+  z-index: 1;
+}
+
+.worldModuleCard > :not(.worldModuleCard__swash):not(.worldModuleCard__halo) {
+  position: relative;
+  z-index: 2;
+}
+
+.worldModuleCard--recommended {
+  border-color: rgba(153, 209, 255, 0.5);
 }
 
 .worldModuleCard__header {
@@ -64,5 +82,5 @@
 .worldModuleCard__tag { font-size: 12px; color: #94a3b8; }
 .worldModuleCard__when { margin: 0; font-size: 12px; color: #e2e8f0; }
 .worldModuleCard__outputs { margin: 0; padding-left: 16px; font-size: 12px; color: #cbd5e1; }
-.worldModuleCard__chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.worldModuleCard__cta { margin-top: auto; }
+.worldModuleCard__chips { display: flex; gap: 6px; flex-wrap: wrap; min-height: 24px; }
+.worldModuleCard__cta { margin-top: auto; min-height: 30px; }

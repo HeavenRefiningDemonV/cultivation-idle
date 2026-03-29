@@ -1,0 +1,57 @@
+.uiScenicBaseHost {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+.uiScenicBasePlane {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ui-layer-local-backdrop);
+  pointer-events: none;
+}
+
+.uiScenicBaseFxUnderlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ui-layer-local-fx-underlay);
+  pointer-events: none;
+}
+
+.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: var(--ui-chrome-overlay-alpha-local, 0.9);
+  position: relative;
+  background-color: color-mix(in oklab, var(--paper-shell-base, rgba(247, 237, 215, 0.92)) calc(var(--ui-chrome-overlay-alpha) * 100%), transparent);
+  backdrop-filter: saturate(103%);
+}
+
+.uiChromeOverlaySurface--raised {
+  --ui-chrome-overlay-alpha: var(--ui-chrome-overlay-alpha-raised, 0.95);
+  box-shadow: var(--paper-shadow-strong, 0 14px 28px rgba(22, 12, 4, 0.3));
+}
+
+.uiChromeOverlaySurface--label {
+  --ui-chrome-overlay-alpha: var(--ui-chrome-overlay-alpha-label, 0.88);
+}
+
+.uiChromeOverlaySurface--modal {
+  --ui-chrome-overlay-alpha: var(--ui-chrome-overlay-alpha-modal, 0.97);
+}
+
+.uiChromeDoNotFlatten {
+  mix-blend-mode: normal;
+}
+
+.uiChromeTextureLocal {
+  overflow: hidden;
+  background-clip: padding-box;
+}
+
+.uiPreserveBaseArt {
+  --ui-preserve-base-art: true;
+  background-blend-mode: normal;
+}
+
+.uiPreserveBaseArt[data-preserve-base-art='true'] {
+  isolation: isolate;
+}

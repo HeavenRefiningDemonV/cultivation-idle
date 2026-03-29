@@ -6,6 +6,7 @@ import { evaluateCurrentCombatPostureFit } from '../../systems/builds/combatPost
 import { getPathDoctrineProfile } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import {
   masteryLevelFromXp,
@@ -18,6 +19,7 @@ import {
 import type { CastingPolicy, EquipResult, SlotType } from '../../stores/techniqueStore.js';
 import { useTechniqueStore } from '../../stores/techniqueStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { TechniqueDetailModal } from '../modals/TechniqueDetailModal.js';
 import {
   TechniqueFilterDrawer,
@@ -30,11 +32,13 @@ import { TechniqueSpine } from '../techniques/TechniqueSpine.js';
 import { InnerPalaceEquipAltar, type InnerPalaceFeedback, type InnerPalaceSlot } from '../techniques/InnerPalaceEquipAltar.js';
 import { InkPanel, PaperCard, PurposeSourceCallout } from '../../ui/ink/index.js';
 import { GameIcon } from '../../ui/icons/index.js';
+import { ChromeChip, InspectorPanel, RibbonStat, TopRibbon, useNoLayoutShiftState } from '../../ui/chrome/index.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { BuildAltarSummary } from '../../ui/techniques/BuildAltarSummary.js';
 import './TechniqueLibraryScreen.scss';
 import { buildPurposeSourceContext, buildTechniqueFragmentPurposeSourceSurface } from '../../systems/economy/purposeSourceSurface.js';
+import { formatCityLabel, formatHeartLawLabel } from '../../ui/text/playerFacingFormatters.js';
 
 type SlotSelection = { type: SlotType; index: number };
 
@@ -168,6 +172,8 @@ export function TechniqueLibraryScreen() {
   const isContentLoading = useContentStore((state) => state.isLoading);
   const realmIndex = useGameStore((state) => state.realm.index);
   const selectedPath = useGameStore((state) => state.selectedPath);
+  const currentCityId = useCityStore((state) => state.currentCityId);
+  const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const rawContent = useContentStore((state) => state.raw);
   const techniqueLibraryIntent = useUIStore((state) => state.techniqueLibraryIntent);
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
@@ -203,6 +209,8 @@ export function TechniqueLibraryScreen() {
   );
   const archetype = useMemo(() => getBuildArchetype(buildAnalysis.archetypeId), [buildAnalysis.archetypeId]);
   const pathLabel = getPathDoctrineProfile(selectedPath)?.label ?? 'No Path Selected';
+  const cityLabel = formatCityLabel(currentCityId);
+  const heartLawLabel = formatHeartLawLabel(selectedHeartLawId);
   const floorState = (met: boolean): 'On Floor' | 'Below Floor' => (met ? 'On Floor' : 'Below Floor');
   const postureJudgment = postureFit.warnings[0] ?? 'Posture fit is stable for current progression.';
   const aiProfileLine = `AI Profile: ${selectedLoadoutSnapshot?.aiProfile ?? 'balanced'} — ${postureFit.aiFit}`;
@@ -663,6 +671,20 @@ export function TechniqueLibraryScreen() {
         </div>
       </header>
 
+
+      <TopRibbon
+        surface="tray"
+        compact
+        className="techContextRibbon"
+        chips={<ChromeChip variant="tag" tone="ink" text={archetype?.label ?? 'Unshaped'} />}
+        end={<span>Loadout: {selectedLoadout?.name ?? '—'}</span>}
+      >
+        <RibbonStat label="Realm" value={getLiveRealmNameByIndex(realmIndex)} truncate />
+        <RibbonStat label="Path" value={pathLabel} truncate />
+        <RibbonStat label="Heart Law" value={heartLawLabel} truncate />
+        <RibbonStat label="City" value={cityLabel} truncate />
+      </TopRibbon>
+
       <div className="techniquesBuildAltarWrap">
         <RunCompassCompact surface={runCompass.compact} tone="paper" />
         <BuildAltarSummary
@@ -687,10 +709,14 @@ export function TechniqueLibraryScreen() {
             <InkPanel variant="techniques" className="techniqueLibraryPanel">
               <div className="techniqueLibraryPanelHeader">Loadouts</div>
               <div className="techniqueLibraryLoadouts">
-                {loadouts.map((loadout) => (
+                {loadouts.map((loadout) => {
+                  const active = loadout.id === selectedLoadout?.id;
+                  const noShift = useNoLayoutShiftState({ selected: active, active, reserveActionSlot: true });
+                  return (
                   <button
                     key={loadout.id}
-                    className={`techniqueLibraryLoadout ${loadout.id === selectedLoadout?.id ? 'is-active' : ''}`}
+                    className={`techniqueLibraryLoadout ${noShift.guardClassName} ${active ? 'is-active' : ''}`}
+                    {...noShift.dataAttrs}
                     onClick={() => setSelectedLoadout(loadout.id)}
                   >
                     <div className="techniqueLibraryLoadoutName">{loadout.name}</div>
@@ -698,7 +724,8 @@ export function TechniqueLibraryScreen() {
                       Casting: {castingPolicyLabels[loadout.castingPolicy]}
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="techniqueLibraryCastingPolicy">
@@ -808,78 +835,47 @@ export function TechniqueLibraryScreen() {
                 onFeedback={setAltarFeedback}
               />
             </InkPanel>
-            <PaperCard className="techniqueLibraryPanel techniqueLibraryPanel--summary" variant="tray">
-              <div className="techniqueLibraryPanelHeader">Selected Technique</div>
-              <div className="techniqueLibrarySummary">
-                {selectedTechniqueId ? (
-                  <>
-                    <div className="techniqueLibrarySummaryHeader">
-                      <div className="techniqueLibrarySummaryTitle">{selectedTechDef?.name || selectedTechniqueId}</div>
-                      <div className="techniqueLibrarySummaryIcons" aria-label="Technique metadata">
-                        <span
-                          className="techniqueLibrarySummaryIcon"
-                          role="img"
-                          aria-label={selectedTierIcon.label}
-                          title={selectedTierIcon.label}
-                        >
-                          {selectedTierIcon.iconId ? <GameIcon icon={selectedTierIcon.iconId} size={14} decorative /> : (selectedTierIcon.iconText ?? '—')}
-                        </span>
-                        {selectedPathIcon.iconId ? (
-                          <span
-                            className="techniqueLibrarySummaryIcon"
-                            role="img"
-                            aria-label={selectedPathIcon.label}
-                            title={selectedPathIcon.label}
-                          >
-                            <GameIcon icon={selectedPathIcon.iconId} size={14} decorative />
-                          </span>
-                        ) : null}
-                        {selectedTypeIcon.iconId ? (
-                          <span
-                            className="techniqueLibrarySummaryIcon"
-                            role="img"
-                            aria-label={selectedTypeIcon.label}
-                            title={selectedTypeIcon.label}
-                          >
-                            <GameIcon icon={selectedTypeIcon.iconId} size={14} decorative />
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="techniqueLibrarySummaryChips">
-                      <span className={`techniqueLibraryTypeBadge type-${selectedType}`}>
-                        {selectedType === 'ultimate'
-                          ? 'Ultimate'
-                          : selectedType === 'passive'
-                            ? 'Passive'
-                            : 'Active'}
-                      </span>
-                      <span className={`techniqueLibraryBadge rarity-${selectedRarity}`}>{rarityLabel(selectedRarity)}</span>
-                      <span className={`techniqueLibraryBadge grade-${selectedTier}`}>{gradeLabel(selectedTier)}</span>
-                      {selectedTechDef?.path && <span className="techniqueLibraryBadge">{selectedTechDef.path}</span>}
-                      {selectedTechDef?.role && <span className="techniqueLibraryBadge">{selectedTechDef.role}</span>}
-                      <span className="techniqueLibrarySummaryRank">{formatRankLabel(selectedRank)}</span>
-                    </div>
-                    <div className="techniqueLibrarySummaryLine">{summaryLine}</div>
-                    <PurposeSourceCallout surface={fragmentPurposeSurface} compact className="techniqueLibraryFragmentPurpose" />
-                    <div className="techniqueLibrarySummaryActions">
-                      <button
-                        className="techniqueLibraryPrimaryButton"
-                        onClick={() => {
-                          setDetailIntent(null);
-                          setDetailOpen(true);
-                        }}
-                        type="button"
-                      >
-                        Open Details
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="techniqueLibraryEmptyDetail">Select a technique to view details.</div>
-                )}
-              </div>
-            </PaperCard>
+            <InspectorPanel
+              className="techniqueLibraryPanel techniqueLibraryPanel--summary"
+              title={selectedTechDef?.name || selectedTechniqueId || 'Selected Technique'}
+              subtitle={selectedTechniqueId ? summaryLine : 'Select a technique to review detail and actions.'}
+              eyebrow="Selected Technique"
+              chips={selectedTechniqueId ? (
+                <>
+                  <ChromeChip variant="tag" tone="ink" text={selectedType === 'ultimate' ? 'Ultimate' : selectedType === 'passive' ? 'Passive' : 'Active'} />
+                  <ChromeChip variant="tag" tone="neutral" text={rarityLabel(selectedRarity)} />
+                  <ChromeChip variant="tag" tone="neutral" text={gradeLabel(selectedTier)} />
+                  {selectedTechDef?.path ? <ChromeChip variant="tag" tone="neutral" text={selectedTechDef.path} /> : null}
+                  {selectedTechDef?.role ? <ChromeChip variant="tag" tone="neutral" text={selectedTechDef.role} /> : null}
+                  <ChromeChip variant="tag" tone="neutral" text={formatRankLabel(selectedRank)} />
+                </>
+              ) : null}
+              meta={selectedTechniqueId ? `${selectedTierIcon.label} • ${selectedPathIcon.label} • ${selectedTypeIcon.label}` : undefined}
+              footer={selectedTechniqueId ? (
+                <div className="techniqueLibrarySummaryActions">
+                  <button
+                    className="techniqueLibraryPrimaryButton"
+                    onClick={() => {
+                      setDetailIntent(null);
+                      setDetailOpen(true);
+                    }}
+                    type="button"
+                  >
+                    Open Details
+                  </button>
+                </div>
+              ) : undefined}
+              scrollBody
+            >
+              {selectedTechniqueId ? (
+                <div className="techniqueLibrarySummary">
+                  <div className="techniqueLibrarySummaryLine">{summaryLine}</div>
+                  <PurposeSourceCallout surface={fragmentPurposeSurface} compact className="techniqueLibraryFragmentPurpose" />
+                </div>
+              ) : (
+                <div className="techniqueLibraryEmptyDetail">Select a technique to view details.</div>
+              )}
+            </InspectorPanel>
           </div>
         </aside>
       </div>

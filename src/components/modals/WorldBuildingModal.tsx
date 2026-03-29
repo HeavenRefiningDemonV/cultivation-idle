@@ -15,7 +15,7 @@ import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel.js';
 import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel.js';
 import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel.js';
-import { Modal } from '../../ui/primitives/Modal.js';
+import { ModalFrame } from '../../ui/chrome/index.js';
 import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js';
 
 export interface WorldBuildingModalProps {
@@ -125,12 +125,15 @@ export function WorldBuildingModal({
   const showShellClose = buildingKey === 'outskirts' || buildingKey === 'gateTrial';
 
   return (
-    <Modal
+    <ModalFrame
       open={open}
       onClose={close}
-      overlayClassName="worldBuildingOverlay"
+      kind="feature"
+      surface="none"
+      className="worldBuildingOverlay"
       panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
       ariaLabel={title}
+      showCloseButton={false}
     >
       {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
       {!showShellClose ? (
@@ -139,6 +142,6 @@ export function WorldBuildingModal({
         </button>
       ) : null}
       <div className="worldBuildingBody">{content}</div>
-    </Modal>
+    </ModalFrame>
   );
 }

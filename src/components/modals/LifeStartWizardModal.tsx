@@ -12,6 +12,8 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
 import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import { MotionSafeSelectionSurface } from '../../ui/fx/motion/MotionSafeSelectionSurface.js';
+import { OverlaySwash, SelectionHalo } from '../../ui/chrome/index.js';
 import type { CultivationPath, HeartLawDef } from '../../types/index.js';
 
 const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [
@@ -149,16 +151,26 @@ export function LifeStartWizardModal() {
       <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
         <div className="lifeStartWizardModal lifeStartWizardModal--path">
           <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
+            <header className="lifePathRitualHeader" aria-live="polite">
+              <p className="lifePathRitualHeader__eyebrow">Life-Beginning Rite</p>
+              <h2 className="lifePathRitualHeader__title">Choose Your Life Path</h2>
+              <p className="lifePathRitualHeader__subtitle">
+                Step onto a single road. This choice shapes your run&rsquo;s flow, resonance, and combat temperament.
+              </p>
+            </header>
             <div className="lifePathTriptychFrame">
               <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
                 {LIFE_PATHS.map((path) => {
                   const selected = selectedPath === path.id;
                   const disabled = selectedPath !== null && !selected;
                   const isHoverFx = hoveredPath === path.id;
+                  const emphasize = isHoverFx || selected;
                   return (
-                    <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
-                      <span className="lifePathPanel__stamp" aria-hidden="true" />
+                    <MotionSafeSelectionSurface key={path.id} selected={emphasize} hoverable={false} emphasis="subtle" className={`lifePathPanel uiNoShiftSelectionHost uiNoShiftSelectableRow lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
+                      <OverlaySwash active={emphasize} variant="blockFancy" tone={selected ? 'recommendation' : 'default'} placement="fill" className="lifePathPanel__swash" />
+                      <SelectionHalo active={emphasize} tone={selected ? 'success' : 'default'} variant="panel" inset="tight" className="lifePathPanel__halo" />
                       <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
+                      <div className="lifePathPanel__vignette" aria-hidden />
                       <div className="lifePathPanel__title">{path.title}</div>
                       <button
                         type="button"
@@ -174,7 +186,7 @@ export function LifeStartWizardModal() {
                       >
                         Select
                       </button>
-                    </div>
+                    </MotionSafeSelectionSurface>
                   );
                 })}
               </div>
@@ -191,6 +203,7 @@ export function LifeStartWizardModal() {
       className="lifeStartWizardFrame"
       panelClassName="lifeStartWizardModal--ink"
       variant="heartlaw"
+      modalKind="blocking"
       watermark
     >
       <div className="lifeStartWizardContent">
@@ -253,11 +266,13 @@ export function LifeStartWizardModal() {
                     disabled={!unlocked}
                   >
                     <PaperCard
-                      className={`wizardCard${selected ? ' wizardCard--selected' : ''}${!unlocked ? ' wizardCard--locked' : ''}`}
+                      className={`wizardCard uiNoShiftSelectionHost uiNoShiftSelectableRow${selected ? ' wizardCard--selected' : ''}${!unlocked ? ' wizardCard--locked' : ''}`}
                       interactive={unlocked}
                       selected={selected}
                       disabled={!unlocked}
                     >
+                      <OverlaySwash active={selected} variant="shortBar" tone="recommendation" placement="center" className="wizardCard__swash" />
+                      <SelectionHalo active={selected} tone="recommendation" variant="panel" inset="tight" className="wizardCard__halo" />
                       <div className="wizardCardTitle">{law.name}</div>
                       <div className="wizardCardTags">{(law.daoTags ?? []).slice(0, 3).join(' • ') || 'No tags'}</div>
                       <div className="wizardCardDesc">{tierLabel === 'starter' ? 'Starter' : tierLabel}</div>
@@ -319,7 +334,9 @@ export function LifeStartWizardModal() {
                     className={`wizardCardButton${selected ? ' wizardCardButton--selected' : ''}`}
                     onClick={() => setBreathMode(mode.id)}
                   >
-                    <PaperCard className={`wizardCard${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
+                    <PaperCard className={`wizardCard uiNoShiftSelectionHost uiNoShiftSelectableRow${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
+                      <OverlaySwash active={selected} variant="shortBar" tone="recommendation" placement="center" className="wizardCard__swash" />
+                      <SelectionHalo active={selected} tone="recommendation" variant="panel" inset="tight" className="wizardCard__halo" />
                       <div className="wizardCardTitle">{mode.label}</div>
                       <div className="wizardCardDesc">{mode.desc}</div>
                       <div className="wizardCardMeta">{selected ? 'Selected' : 'Select'}</div>

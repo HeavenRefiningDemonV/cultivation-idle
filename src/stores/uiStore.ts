@@ -20,6 +20,10 @@ import {
   promotePendingNotifications,
   type NotificationOptions,
 } from '../systems/ui/notificationPolicy.js';
+import {
+  readPersistedUiFxSettings,
+  writePersistedUiFxSettings,
+} from '../app/fx/uiFxSettingsStorage.js';
 
 /**
  * UI notification types
@@ -86,6 +90,14 @@ export interface UISettingsState {
   autoRetryOnDeath: boolean;
   useConsumablesInCombat: boolean;
   preferredTarget: 'trash' | 'elite' | 'boss';
+  uiFx: UiFxSettingsState;
+}
+
+export interface UiFxSettingsState {
+  enabled: boolean;
+  quality: 'auto' | 'high' | 'medium' | 'low';
+  allowAtmosphere: boolean;
+  allowHeroFx: boolean;
 }
 
 export type CombatPresentationMode = 'hidden' | 'preview' | 'active' | 'docked';
@@ -206,6 +218,8 @@ export interface UIState extends UIStateBase {
   setLastSaveAt: (timestamp: number | null) => void;
   setLastOfflineSummary: (summary: OfflineCatchupResult['summary']) => void;
   setSettings: (partial: Partial<UISettingsState>) => void;
+  setUiFxSettings: (partial: Partial<UiFxSettingsState>) => void;
+  resetUiFxSettings: () => void;
   toggleCombatMinibarExpanded: () => void;
   openCombatPreview: (context: CombatPresentationContext) => void;
   startCombatFromPreview: () => void;
@@ -254,7 +268,7 @@ export interface UIState extends UIStateBase {
   hardResetUI: () => void;
 }
 
-const INITIAL_UI_STATE: UIStateBase = {
+const createInitialUIState = (): UIStateBase => ({
   activeTab: 'cultivation',
   headerTitle: '',
   headerSubtitle: '',
@@ -305,6 +319,7 @@ const INITIAL_UI_STATE: UIStateBase = {
     autoRetryOnDeath: false,
     useConsumablesInCombat: false,
     preferredTarget: 'boss',
+    uiFx: readPersistedUiFxSettings(),
   },
   lastSaveAt: null,
   lastOfflineSummary: null,
@@ -312,7 +327,7 @@ const INITIAL_UI_STATE: UIStateBase = {
   tooltipContent: '',
   tooltipPosition: { x: 0, y: 0 },
   combatPresentation: { mode: 'hidden', context: null },
-};
+});
 
 /**
  * Generate unique notification ID
@@ -352,7 +367,7 @@ const ONBOARDING_PRIORITY_WEIGHT: Record<OnboardingPromptPriority, number> = {
  */
 export const useUIStore = create<UIState>()(
   immer((set, get) => ({
-    ...INITIAL_UI_STATE,
+    ...createInitialUIState(),
 
     /**
      * Set the active tab
@@ -646,6 +661,21 @@ export const useUIStore = create<UIState>()(
       set((state) => {
         state.settings = { ...state.settings, ...partial };
       });
+    },
+
+    setUiFxSettings: (partial: Partial<UiFxSettingsState>) => {
+      set((state) => {
+        state.settings.uiFx = { ...state.settings.uiFx, ...partial };
+        writePersistedUiFxSettings(state.settings.uiFx);
+      });
+    },
+
+    resetUiFxSettings: () => {
+      const persisted = readPersistedUiFxSettings();
+      set((state) => {
+        state.settings.uiFx = persisted;
+      });
+      writePersistedUiFxSettings(persisted);
     },
 
     toggleCombatMinibarExpanded: () => {
@@ -1116,8 +1146,10 @@ export const useUIStore = create<UIState>()(
       notificationTimeouts.forEach((timeoutId) => clearTimeout(timeoutId));
       notificationTimeouts.clear();
       notificationLastTriggeredAtByKey.clear();
+      const nextInitialState = createInitialUIState();
       set((state) => {
-        Object.assign(state, INITIAL_UI_STATE);
+        Object.assign(state, nextInitialState);
+        state.settings.uiFx = readPersistedUiFxSettings();
       });
     },
   }))

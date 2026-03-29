@@ -12,6 +12,7 @@ import { adaptSpiritRootDoctrineToSemanticView } from '../../systems/doctrine/sp
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useContentStore, getItemDef } from '../../stores/contentStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
@@ -30,12 +31,14 @@ import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderR
 import { CultivationBreakthroughPanel } from '../../ui/cultivation/CultivationBreakthroughPanel.js';
 import { CultivationDoctrineSummary } from '../../ui/cultivation/CultivationDoctrineSummary.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
+import { QiLotusIcon } from '../../ui/cultivation/QiLotusIcon.js';
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
+import { formatCityLabel } from '../../ui/text/playerFacingFormatters.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -127,6 +130,7 @@ export function CultivateScreen() {
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
+  const currentCityId = useCityStore((state) => state.currentCityId);
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
 
@@ -409,6 +413,7 @@ export function CultivateScreen() {
   const spiritRootLine = spiritRootView
     ? `${SPIRIT_ROOT_ELEMENTS[spiritRootView.element]} • ${SPIRIT_ROOT_GRADES[spiritRootView.grade]} • ${Math.round(spiritRootView.purity)}% purity`
     : 'Dormant Spirit Root';
+  const cityLabel = formatCityLabel(currentCityId);
   const spiritRootDetail = spiritRootView
     ? `${spiritRootView.purityBand[0].toUpperCase()}${spiritRootView.purityBand.slice(1)} foundation • ${spiritRootView.powerBand[0].toUpperCase()}${spiritRootView.powerBand.slice(1)} potential`
     : 'Your Spirit Root has not manifested yet.';
@@ -436,18 +441,23 @@ export function CultivateScreen() {
 
   const breathSemantics = getBreathModeSemantics(breathMode);
   const focusSemantics = getFocusModeSemantics(focusMode);
+  const qiLotusState = canBreakthrough ? 'ready' : isCultivating ? 'active' : 'idle';
 
   return (
     <div className="cultivationScreenRoot">
       <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
       <div className="cultivationSceneLayer" aria-hidden="true">
+        <div className="cultivationSceneLayer__veil" />
         <img className="cultivationCultivatorArt" src={cultivator} alt="" />
-        <DantianOrb
-          heartLawTags={heartLawTags}
-          isCultivating={isCultivating}
-          isNearReady={isNearReady}
-          isReady={canBreakthrough}
-        />
+        <div className="cultivationOrbAnchor">
+          <DantianOrb
+            className="cultivationOrbAnchor__orb"
+            heartLawTags={heartLawTags}
+            isCultivating={isCultivating}
+            isNearReady={isNearReady}
+            isReady={canBreakthrough}
+          />
+        </div>
       </div>
       <button
         type="button"
@@ -463,7 +473,6 @@ export function CultivateScreen() {
         <CultivationHeaderRibbon
           realmLabel={realmLabel}
           substage={realm.substage}
-          realmIndex={realm.index}
           qi={qi}
           qiPerSecond={headerRate}
           rateTooltip={rateTooltip}
@@ -472,6 +481,10 @@ export function CultivateScreen() {
           stability={stability}
           stabilityCap={stabilityCap}
           breakthroughReady={canBreakthrough}
+          pathLabel={pathLabel}
+          spiritRootLine={spiritRootLine}
+          heartLawLine={heartLawVerseLabel}
+          cityLabel={cityLabel}
         />
       </div>
 
@@ -542,6 +555,13 @@ export function CultivateScreen() {
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
           <div className="cultivationVerseSlot">
+            <div className="cultivationVerseSlot__lotus">
+              <QiLotusIcon
+                state={qiLotusState}
+                title={canBreakthrough ? 'Qi lotus: breakthrough ready' : isCultivating ? 'Qi lotus: cultivating' : 'Qi lotus: idle'}
+                label={canBreakthrough ? 'Ready' : isCultivating ? 'Flowing' : 'Calm'}
+              />
+            </div>
             {heartLawDef ? (
               <VerseMiniBar
                 chapter={chapter}

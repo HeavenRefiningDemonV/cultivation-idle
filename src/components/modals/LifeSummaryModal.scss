@@ -1,11 +1,5 @@
 .lifeSummaryOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(21, 16, 12, 0.52);
-  z-index: 1550;
-  display: grid;
-  place-items: center;
-  padding: 20px;
+  --life-summary-overlay: rgba(21, 16, 12, 0.52);
 }
 
 .lifeSummaryModal {

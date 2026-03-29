@@ -1,15 +1,20 @@
 /* Do not add gradients or dark-blue panels here. */
 @import '../../styles/paperInkTokens.scss';
 
+/*
+ * B.2 legacy alias bridge:
+ * - canonical source is uiChromeTokens.scss/uiMotionTokens.scss
+ * - this file keeps legacy --ink-* names stable for current ink consumers
+ */
 :root {
   --paper-bg-image: url('../../assets/texture_overlay.png');
-  --paper-tint: rgba(247, 237, 215, 0.94);
-  --paper-opacity: 0.22;
-  --ink-border-color: rgba(43, 33, 22, 0.55);
+  --paper-tint: var(--paper-shell-base, rgba(247, 237, 215, 0.9));
+  --paper-opacity: var(--ui-chrome-texture-opacity, 0.22);
+  --ink-border-color: var(--paper-shell-border, rgba(65, 45, 25, 0.26));
   --ink-border-width: 2px;
   --shadow-color: rgba(0, 0, 0, 0.2);
   --watermark-image: none;
-  --watermark-opacity: 0.08;
+  --watermark-opacity: var(--ui-chrome-watermark-opacity, 0.08);
   --accent-ink: var(--paper-stamp, #9f3b2e);
   --ink-text-color: var(--paper-ink, #2b2116);
   --ink-muted-color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));

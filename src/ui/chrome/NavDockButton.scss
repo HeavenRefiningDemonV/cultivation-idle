@@ -1,0 +1,100 @@
+@import './layoutStabilityGuards.scss';
+@import '../../styles/uiChromeTokens.scss';
+@import '../../styles/uiMotionTokens.scss';
+
+.navDockButton,
+.bottomTabBarButton {
+  position: relative;
+  min-width: 7.5rem;
+  min-height: var(--ui-chrome-size-header);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(87, 59, 31, 0.26);
+  background: var(--paper-shell-raised, var(--ui-chrome-surface-shell-raised));
+  color: var(--paper-ink, var(--ui-chrome-color-ink-primary));
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: var(--paper-shadow-soft, var(--ui-chrome-shadow-soft));
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  flex: 0 0 auto;
+  transition:
+    transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
+    background-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+}
+
+.navDockButton:hover:not(:disabled),
+.navDockButton:focus-visible,
+.bottomTabBarButton:hover:not(:disabled),
+.bottomTabBarButton:focus-visible {
+  transform: translateY(var(--ui-motion-hover-lift-y));
+  border-color: rgba(120, 72, 33, 0.48);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.24);
+}
+
+.navDockButton--active,
+.bottomTabBarButton--active {
+  background: var(--paper-shell-active, rgba(159, 59, 46, 0.2));
+  border-color: rgba(120, 72, 33, 0.6);
+  box-shadow:
+    inset 0 0 0 1px rgba(120, 72, 33, 0.25),
+    var(--paper-shadow-strong, var(--ui-chrome-shadow-strong));
+}
+
+.navDockButton--disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.navDockButton--marked .navDockButton__mark {
+  opacity: 1;
+}
+
+.navDockButton__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.navDockButton__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navDockButton__mark {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.45rem;
+  width: 0.44rem;
+  height: 0.44rem;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 233, 206, 0.9);
+  background: rgba(159, 59, 46, 0.86);
+  box-shadow: 0 0 0 1px rgba(87, 59, 31, 0.3);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .navDockButton,
+  .bottomTabBarButton {
+    min-width: 6.5rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+.navDockButton:active:not(:disabled),
+.bottomTabBarButton:active:not(:disabled) {
+  transform: translateY(var(--ui-motion-press-shift-y));
+}

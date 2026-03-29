@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import type { CityDef } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
@@ -8,6 +8,7 @@ import { useBountyStore } from '../../stores/bountyStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import type { LiveWorldModuleKey } from '../../content/types.js';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations.js';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
@@ -39,6 +40,7 @@ import { WorldCommandAlert } from '../../ui/world/WorldCommandAlert.js';
 import { WorldModuleCard } from '../../ui/world/WorldModuleCard.js';
 import { WorldModuleGroup } from '../../ui/world/WorldModuleGroup.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
+import { ChromeChip, InspectorPanel } from '../../ui/chrome/index.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import '../../ui/world/WorldModuleCard.scss';
@@ -48,6 +50,7 @@ const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Obje
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 
 export function WorldScreen() {
+  const [previewModuleKey, setPreviewModuleKey] = useState<string | null>(null);
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const addNotification = useUIStore((state) => state.addNotification);
   const isLoaded = useContentStore((state) => state.isLoaded);
@@ -77,6 +80,10 @@ export function WorldScreen() {
     if (!currentCityId) return null;
     return citiesSorted.find((city) => city.id === currentCityId) ?? null;
   }, [citiesSorted, currentCityId]);
+
+  useEffect(() => {
+    setPreviewModuleKey(null);
+  }, [selectedCity?.id]);
 
   const cityRequirementById = useMemo(() => {
     if (!rawContent) return EMPTY_CITY_REQUIREMENT_MAP;
@@ -321,6 +328,28 @@ export function WorldScreen() {
     return null;
   }, [selectedCity, worldCommandSurface.strongRecommendationModuleKey]);
 
+  const worldModuleCards = useMemo(
+    () => worldCommandSurface.groups.flatMap((group) => group.cards),
+    [worldCommandSurface.groups],
+  );
+
+  const inspectorFallbackModuleKey = useMemo(() => {
+    if (activeModuleKey && visibleCityModules.includes(activeModuleKey)) return activeModuleKey;
+    if (
+      worldCommandSurface.strongRecommendationModuleKey &&
+      visibleCityModules.includes(worldCommandSurface.strongRecommendationModuleKey)
+    ) {
+      return worldCommandSurface.strongRecommendationModuleKey;
+    }
+    return worldModuleCards[0]?.moduleKey ?? visibleCityModules[0] ?? null;
+  }, [activeModuleKey, visibleCityModules, worldCommandSurface.strongRecommendationModuleKey, worldModuleCards]);
+
+  const inspectorModuleKey = previewModuleKey ?? inspectorFallbackModuleKey;
+  const inspectorModuleCard = useMemo(
+    () => worldModuleCards.find((card) => card.moduleKey === inspectorModuleKey) ?? null,
+    [inspectorModuleKey, worldModuleCards],
+  );
+
   const handleSelectCity = (city: CityDef) => {
     if (!city || city.id === currentCityId) return;
 
@@ -347,10 +376,15 @@ export function WorldScreen() {
     (moduleKey: string) => {
       if (!selectedCity) return;
       if (!visibleCityModules.includes(moduleKey)) return;
+      setPreviewModuleKey(moduleKey);
       openWorldModule({ cityId: selectedCity.id, moduleKey, source: 'world-map' });
     },
     [selectedCity, visibleCityModules],
   );
+
+  const handlePreviewModule = useCallback((moduleKey: LiveWorldModuleKey | null) => {
+    setPreviewModuleKey(moduleKey);
+  }, []);
 
   if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
 
@@ -454,6 +488,9 @@ export function WorldScreen() {
                     outputs={card.outputs}
                     chips={card.chips}
                     active={card.active}
+                    previewed={previewModuleKey === card.moduleKey}
+                    recommended={worldCommandSurface.strongRecommendationModuleKey === card.moduleKey}
+                    onPreview={handlePreviewModule}
                     openLabel={card.openLabel}
                     onOpen={handleOpenModule as never}
                   />
@@ -462,13 +499,61 @@ export function WorldScreen() {
             ))}
           </div>
 
-          <div className={'worldScreenPanel worldScreenHubPanel'}>
-            <CityMapHub
-              modules={visibleCityModules}
-              activeModuleKey={activeModuleKey}
-              getModuleLabel={getWorldModuleLabel}
-              onOpenModule={handleOpenModule}
-            />
+          <div className="worldScreenDetailGrid">
+            <div className={'worldScreenPanel worldScreenHubPanel'}>
+              <CityMapHub
+                modules={visibleCityModules}
+                activeModuleKey={activeModuleKey}
+                previewModuleKey={previewModuleKey}
+                recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
+                getModuleLabel={getWorldModuleLabel}
+                onOpenModule={handleOpenModule}
+                onPreviewModule={handlePreviewModule}
+              />
+            </div>
+
+            <aside className="worldInspectorDock">
+              <InspectorPanel
+                className="worldInspectorPanel"
+                title={inspectorModuleCard?.label ?? 'Select a module'}
+                subtitle={inspectorModuleCard?.roleTag ?? 'Preview a world module to see contextual guidance.'}
+                chips={inspectorModuleCard ? (
+                  <>
+                    {(inspectorModuleCard.chips ?? []).slice(0, 2).map((chip) => (
+                      <WorldRouteChip key={chip.kind} kind={chip.kind} tone={chip.tone} />
+                    ))}
+                    {inspectorModuleCard.active ? <ChromeChip variant="tag" tone="ink" text="Active" /> : null}
+                  </>
+                ) : null}
+                meta={selectedCity ? `City: ${sanitizeLiveCityName(selectedCity.name)}` : null}
+                footer={inspectorModuleKey ? (
+                  <button
+                    type="button"
+                    className="worldScreenModuleButton"
+                    onClick={() => handleOpenModule(inspectorModuleKey)}
+                  >
+                    {inspectorModuleCard?.openLabel ?? `Open ${getWorldModuleLabel(inspectorModuleKey)}`}
+                  </button>
+                ) : undefined}
+                scrollBody
+              >
+                {inspectorModuleCard ? (
+                  <>
+                    <div className="worldInspectorLine">
+                      <strong>Best used when:</strong> {inspectorModuleCard.bestUsedWhen}
+                    </div>
+                    <div className="worldInspectorOutputs">
+                      <div className="worldInspectorOutputsLabel">Outputs</div>
+                      <ul>
+                        {inspectorModuleCard.outputs.map((output) => <li key={output}>{output}</li>)}
+                      </ul>
+                    </div>
+                  </>
+                ) : (
+                  <div className="worldInspectorLine">Hover a hotspot or module card to preview details and open it from here.</div>
+                )}
+              </InspectorPanel>
+            </aside>
           </div>
 
           {inCombat && (

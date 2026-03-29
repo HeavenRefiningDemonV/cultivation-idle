@@ -1,13 +1,11 @@
 .daoHeartModalOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 48;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(6px);
+}
+
+.daoHeartModalHost {
+  width: min(1020px, calc(100vw - 48px));
+  max-height: min(92vh, 960px);
 }
 
 .daoHeartModalModal {

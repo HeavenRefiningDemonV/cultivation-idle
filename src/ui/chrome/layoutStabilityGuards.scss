@@ -1,0 +1,41 @@
+.uiNoShiftGuard {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.uiNoShiftSelectionHost {
+  position: relative;
+  isolation: isolate;
+}
+
+.uiNoShiftBadgeSlot {
+  --ui-no-shift-badge-slot: 1.2rem;
+  padding-inline-end: max(var(--ui-no-shift-badge-slot), 0.9rem);
+}
+
+.uiNoShiftIconSlot {
+  --ui-no-shift-icon-slot: 1rem;
+  padding-inline-start: max(var(--ui-no-shift-icon-slot), 0.8rem);
+}
+
+.uiNoShiftActionSlot {
+  --ui-no-shift-action-slot: 1.4rem;
+  padding-inline-end: max(var(--ui-no-shift-action-slot), 1rem);
+}
+
+.uiNoShiftTextClamp {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uiNoShiftSelectableRow {
+  min-height: inherit;
+  contain: layout paint;
+}
+
+.uiNoShiftHaloHost {
+  position: relative;
+  isolation: isolate;
+}

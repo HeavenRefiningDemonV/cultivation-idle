@@ -1,0 +1,73 @@
+@import '../../styles/uiMotionTokens.scss';
+@import './layoutStabilityGuards.scss';
+
+.overlaySwash {
+  position: absolute;
+  pointer-events: none;
+  inset: 0;
+  opacity: 0;
+  z-index: 0;
+  transition:
+    opacity var(--ui-motion-duration-emphasis) var(--ui-motion-ease-emphasis),
+    transform var(--ui-motion-duration-emphasis) var(--ui-motion-ease-emphasis);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  mix-blend-mode: screen;
+}
+
+.overlaySwash--active {
+  opacity: 0.2;
+}
+
+.overlaySwash--variant-shortBar {
+  --overlay-swash-image: var(--chrome-accent-bar-short);
+  background-image: var(--overlay-swash-image);
+}
+
+.overlaySwash--variant-blockFancy {
+  --overlay-swash-image: var(--chrome-accent-block-fancy);
+  background-image: var(--overlay-swash-image);
+}
+
+.overlaySwash--variant-cornerFrame {
+  --overlay-swash-image: var(--chrome-accent-corner-frame);
+  background-image: var(--overlay-swash-image);
+}
+
+.overlaySwash--placement-fill {
+  inset: 0;
+  background-size: cover;
+}
+
+.overlaySwash--placement-center {
+  inset: 18%;
+}
+
+.overlaySwash--placement-bottom {
+  left: 12%;
+  right: 12%;
+  bottom: 6%;
+  top: auto;
+  height: 42%;
+  background-position: bottom center;
+}
+
+.overlaySwash--tone-default {
+  filter: saturate(0.92);
+}
+
+.overlaySwash--tone-recommendation {
+  filter: hue-rotate(18deg) saturate(1.2);
+}
+
+.overlaySwash--tone-warning {
+  filter: hue-rotate(-22deg) saturate(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlaySwash {
+    transition: opacity var(--ui-motion-reduced-duration) linear;
+    transform: none;
+  }
+}

@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
+import { FrameCard, type FrameCardSkin, type FrameCardVariant } from '../chrome/FrameCard.js';
 import './InkPanel.scss';
 
 export type InkPanelVariant =
@@ -22,6 +23,18 @@ export interface InkPanelProps {
   children: ReactNode;
 }
 
+const variantMap: Record<InkPanelVariant, { variant: FrameCardVariant; skin: FrameCardSkin }> = {
+  default: { variant: 'shell', skin: 'default' },
+  apothecary: { variant: 'shell', skin: 'apothecary' },
+  forge: { variant: 'shell', skin: 'forge' },
+  manual: { variant: 'shell', skin: 'manual' },
+  techniques: { variant: 'shell', skin: 'techniques' },
+  prestige: { variant: 'shell', skin: 'prestige' },
+  pouch: { variant: 'shell', skin: 'pouch' },
+  heartlaw: { variant: 'shell', skin: 'heartlaw' },
+  modal: { variant: 'modal', skin: 'default' },
+};
+
 export function InkPanel({
   variant = 'default',
   header,
@@ -30,13 +43,20 @@ export function InkPanel({
   style,
   children,
 }: InkPanelProps) {
+  const mapped = variantMap[variant];
+
   return (
-    <div
-      className={classNames('inkPanel', `inkPanel--${variant}`, { 'inkPanel--watermark': watermark }, className)}
+    <FrameCard
+      variant={mapped.variant}
+      skin={mapped.skin}
+      watermark={watermark}
+      className={classNames('inkPanel', 'uiChromeOverlaySurface', 'uiChromeDoNotFlatten', `inkPanel--${variant}`, { 'inkPanel--watermark': watermark }, className)}
+      data-ui-chrome-surface="ink-panel"
+      data-preserve-base-art="true"
       style={style}
+      header={header ? <div className="inkPanel__header">{header}</div> : undefined}
     >
-      {header ? <div className="inkPanel__header">{header}</div> : null}
       <div className="inkPanel__body">{children}</div>
-    </div>
+    </FrameCard>
   );
 }

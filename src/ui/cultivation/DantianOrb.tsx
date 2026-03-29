@@ -6,17 +6,28 @@ type DantianOrbProps = {
   isCultivating: boolean;
   isNearReady: boolean;
   isReady: boolean;
+  className?: string;
+  tone?: 'cultivation' | 'status';
 };
 
 const ELEMENT_PRIORITY = ['fire', 'water', 'earth', 'metal', 'wood', 'neutral'] as const;
 
-export function DantianOrb({ heartLawTags, isCultivating, isNearReady, isReady }: DantianOrbProps) {
+export function DantianOrb({
+  heartLawTags,
+  isCultivating,
+  isNearReady,
+  isReady,
+  className,
+  tone = 'cultivation',
+}: DantianOrbProps) {
   const elementTag = ELEMENT_PRIORITY.find((tag) => heartLawTags.includes(tag)) ?? 'neutral';
   const classes = [
     'dantianOrb',
+    `dantianOrb--${tone}`,
     `dantianOrb--${elementTag}`,
     isCultivating ? 'dantianOrb--cultivating' : '',
     isReady ? 'dantianOrb--ready' : '',
+    className ?? '',
   ]
     .filter(Boolean)
     .join(' ');

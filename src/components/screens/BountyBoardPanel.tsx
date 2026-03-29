@@ -15,7 +15,8 @@ import { formatDurationHMS } from '../../utils/timeFormat.js';
 import type { RewardBundle } from '../../services/rewards/index.js';
 import './BountyBoardPanel.scss';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
+import { PaperCard } from '../../ui/paper/index.js';
+import { ChromeChip, ChromeStamp } from '../../ui/chrome/index.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import { normalizeItemList } from '../../utils/itemList.js';
 import type { BountyInstance } from '../../stores/bountyStore.js';
@@ -380,7 +381,7 @@ export function BountyBoardPanel() {
             <div className="bountySupportSummaryCard__title">Safety Net reserve</div>
             <div className="bountySupportSummaryCard__subtitle">{supportSurface.reserveHeadline}</div>
           </div>
-          <PaperStamp
+          <ChromeStamp
             text={
               supportSurface.readModel.meritReserveStatus === 'at_ideal'
                 ? 'At target'
@@ -393,17 +394,17 @@ export function BountyBoardPanel() {
           />
         </div>
         <div className="bountySupportSummaryCard__chips">
-          <PaperChip
+          <ChromeChip
             variant="pill"
             tone="merit"
             text={`Merit ${supportSurface.readModel.currentMerit} / ${supportSurface.readModel.targetMeritReserve} target`}
           />
-          <PaperChip
+          <ChromeChip
             variant="pill"
             tone="neutral"
             text={`Spirit Stones ${supportSurface.readModel.currentSpiritStones} / ${supportSurface.readModel.spiritStoneMinimumReserve} minimum`}
           />
-          <PaperChip
+          <ChromeChip
             variant="pill"
             tone={supportSurface.readModel.meritReserveGap === '0' ? 'success' : 'neutral'}
             text={
@@ -507,13 +508,13 @@ export function BountyBoardPanel() {
                 />
                 <div className={'bountyPaperHeader'}>
                   <div className={'bountyPaperTitle'}>{bounty.title}</div>
-                  <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
+                  <ChromeStamp text={difficultyLabel} size="sm" tone="ink" state="difficulty" />
                 </div>
                 {isComplete && (
-                  <PaperStamp text="Ready" size="sm" tone="seal" className="bountyPaperReadyStamp paperStamp--ready" />
+                  <ChromeStamp text="Ready" size="sm" tone="seal" state="ready" className="bountyPaperReadyStamp" />
                 )}
                 {isClaimed && (
-                  <PaperStamp text="Claimed" size="sm" tone="seal" className="bountyPaperClaimedStamp paperStamp--claimed" />
+                  <ChromeStamp text="Claimed" size="sm" tone="seal" state="claimed" className="bountyPaperClaimedStamp" />
                 )}
                 {isClaimAnimating && (
                   <span className="bountyPaperClaimBurst" aria-hidden="true">
@@ -527,10 +528,10 @@ export function BountyBoardPanel() {
                 <div className={'bountyPaperRewards'}>
                   {bountyRewards.length > 0 ? (
                     bountyRewards.map((entry) => (
-                      <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                      <ChromeChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                     ))
                   ) : (
-                    <PaperChip variant="pill" text="No rewards" tone="neutral" />
+                    <ChromeChip variant="pill" text="No rewards" tone="neutral" />
                   )}
                 </div>
                 {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
@@ -549,20 +550,20 @@ export function BountyBoardPanel() {
                   {trackedBounty ? 'Tracked' : readyCount > 0 ? `Ready (${readyCount})` : 'In Progress'}
                 </span>
                 {trackedBounty ? (
-                  <PaperStamp text="Tracked" size="sm" tone="ink" />
+                  <ChromeStamp text="Tracked" size="sm" tone="ink" />
                 ) : primaryBounty.progress >= primaryBounty.target && !primaryBounty.claimed ? (
-                  <PaperStamp text="Ready" size="sm" tone="seal" className="paperStamp--ready" />
+                  <ChromeStamp text="Ready" size="sm" tone="seal" state="ready" />
                 ) : (
-                  <PaperStamp text="Active" size="sm" tone="ink" />
+                  <ChromeStamp text="Active" size="sm" tone="ink" />
                 )}
               </div>
               <div className={'bqsHeadline'}>
                 <span className={'bqsTitle'}>{primaryBounty.title}</span>
-                <PaperStamp
+                <ChromeStamp
                   text={difficultyBadge[primaryBounty.difficulty] ?? primaryBounty.difficulty}
                   size="sm"
                   tone="ink"
-                  className="paperStamp--difficulty"
+                  state="difficulty"
                 />
               </div>
               <div className={'bqsProgress'}>
@@ -580,7 +581,7 @@ export function BountyBoardPanel() {
                 {formatRewards(primaryBounty.rewards, itemsById)
                   .slice(0, 3)
                   .map((entry) => (
-                    <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                    <ChromeChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                   ))}
               </div>
             </>
@@ -660,18 +661,18 @@ export function BountyBoardPanel() {
           subtitle={`${cityName} • ${bountyKindToLabel(selectedBounty.kind)}`}
           meta={
             <div className="bountyDetailMeta">
-              <PaperStamp
+              <ChromeStamp
                 text={difficultyBadge[selectedBounty.difficulty]}
                 size="sm"
                 tone="ink"
-                className="paperStamp--difficulty"
+                state="difficulty"
               />
               {selectedBounty.claimed ? (
-                <PaperStamp text="Claimed" size="sm" tone="seal" className="paperStamp--claimed" />
+                <ChromeStamp text="Claimed" size="sm" tone="seal" state="claimed" />
               ) : selectedBounty.progress >= selectedBounty.target ? (
-                <PaperStamp text="Complete" size="sm" tone="seal" className="paperStamp--complete" />
+                <ChromeStamp text="Complete" size="sm" tone="seal" state="complete" />
               ) : trackedId === selectedBounty.instanceId ? (
-                <PaperStamp text="Tracked" size="sm" tone="ink" />
+                <ChromeStamp text="Tracked" size="sm" tone="ink" />
               ) : null}
             </div>
           }
@@ -713,7 +714,7 @@ export function BountyBoardPanel() {
               <div className={'bountyDetailLabel'}>Rewards</div>
               <div className={'bountyRewards'}>
                 {rewardEntries.map((entry) => (
-                  <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                  <ChromeChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                 ))}
                 {rewardEntries.length === 0 && (
                   <div className={'bountyDetailValue'}>No rewards</div>

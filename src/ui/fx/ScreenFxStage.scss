@@ -1,0 +1,25 @@
+.screenFxStage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.screenFxStage--underlay {
+  z-index: var(--ui-layer-local-fx-underlay);
+}
+
+.screenFxStage--hero {
+  z-index: var(--ui-layer-local-fx-hero);
+}
+
+.screenFxStage--overlay {
+  z-index: var(--ui-layer-local-content-overlay);
+}
+
+.screenFxStage--contained {
+  overflow: hidden;
+}
+
+.screenFxStage--uncontained {
+  overflow: visible;
+}

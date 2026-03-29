@@ -1,6 +1,6 @@
 .techniqueDetailModal {
   position: relative;
-  z-index: 1200;
+  z-index: var(--ui-layer-detail-modal);
 }
 
 .techniqueDetailModalOverlay {

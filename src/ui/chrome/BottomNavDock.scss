@@ -1,0 +1,58 @@
+@import './layoutStabilityGuards.scss';
+@import '../../styles/uiChromeTokens.scss';
+@import '../../styles/uiMotionTokens.scss';
+
+.bottomNavDock,
+.bottomTabBar {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: center;
+  min-height: var(--ui-bottom-nav-total);
+  padding: 0.5rem 0 calc(10px + var(--ui-safe-bottom));
+  pointer-events: auto;
+  z-index: var(--ui-layer-chrome-dock, var(--ui-layer-bottom-nav));
+}
+
+.bottomNavDock__inner,
+.bottomTabBarInner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.bottomNavDock__frame {
+  transition: box-shadow var(--ui-motion-duration-hover) var(--ui-motion-ease-standard), border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+  width: min(1024px, calc(100vw - 1.5rem));
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  pointer-events: auto;
+  background: rgba(250, 242, 224, 0.92);
+  border-color: rgba(87, 59, 31, 0.28);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+}
+
+.bottomNavDock__list,
+.bottomTabBarList {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  justify-content: center;
+  max-width: 100%;
+  padding: 0.25rem;
+}
+
+.bottomNavDock__list::-webkit-scrollbar,
+.bottomTabBarList::-webkit-scrollbar {
+  height: 4px;
+}
+
+.bottomNavDock__list::-webkit-scrollbar-thumb,
+.bottomTabBarList::-webkit-scrollbar-thumb {
+  background: rgba(87, 59, 31, 0.28);
+  border-radius: 999px;
+}

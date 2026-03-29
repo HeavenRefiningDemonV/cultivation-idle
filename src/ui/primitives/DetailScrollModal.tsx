@@ -1,7 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
-import { createPortal } from 'react-dom';
-import { Modal } from './Modal.js';
+import { ModalFrame } from '../chrome/ModalFrame.js';
 import { PaperCard } from '../paper/index.js';
 import './DetailScrollModal.scss';
 
@@ -108,15 +107,17 @@ export function DetailScrollModal({ open, title, subtitle, meta, onClose, childr
     }
   };
 
-  if (typeof document === 'undefined') return null;
-
-  return createPortal(
-    <Modal
+  return (
+    <ModalFrame
       open={open}
       onClose={onClose}
-      overlayClassName="detailScrollModalOverlay"
-      panelClassName={`detailScrollModalPanelWrapper${prefersReducedMotion ? ' detailScrollModalPanelWrapper--static' : ''}`}
+      kind="detail"
+      surface="none"
+      className="detailScrollModalOverlay"
+      dialogClassName={`detailScrollModalPanelWrapper${prefersReducedMotion ? ' detailScrollModalPanelWrapper--static' : ''}`}
+      panelClassName="detailScrollModalPanelHost"
       ariaLabelledby={titleId}
+      showCloseButton={false}
     >
       <div className="detailScrollModalPanel" ref={panelRef} onKeyDown={handleKeyDown} tabIndex={-1}>
         <PaperCard variant="tray" className="detailScrollModalCard">
@@ -146,7 +147,6 @@ export function DetailScrollModal({ open, title, subtitle, meta, onClose, childr
           </div>
         </PaperCard>
       </div>
-    </Modal>,
-    document.body,
+    </ModalFrame>
   );
 }

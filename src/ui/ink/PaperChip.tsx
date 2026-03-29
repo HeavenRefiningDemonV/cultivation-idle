@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
+import { ChromeChip, type ChromeChipTone, type ChromeChipVariant } from '../chrome/ChromeChip.js';
 import './PaperChip.scss';
 
-type PaperChipVariant = 'pill' | 'tag';
-type PaperChipTone = 'neutral' | 'ink' | 'danger' | 'success' | 'rare' | 'merit';
+type PaperChipVariant = Exclude<ChromeChipVariant, 'microLabel'>;
+type PaperChipTone = Exclude<ChromeChipTone, 'warning' | 'recommendation'>;
 
 export interface PaperChipProps {
   variant?: PaperChipVariant;
@@ -14,38 +15,24 @@ export interface PaperChipProps {
   className?: string;
 }
 
-export function PaperChip({
-  variant = 'pill',
-  icon,
-  text,
-  tone = 'neutral',
-  onClick,
-  className,
-}: PaperChipProps) {
-  const classes = classNames(
-    'inkPaperChip',
-    {
-      'inkPaperChip--tag': variant === 'tag',
-      'inkPaperChip--clickable': Boolean(onClick),
-    },
-    `inkPaperChip--tone-${tone}`,
-    className,
+export function PaperChip({ variant = 'pill', icon, text, tone = 'neutral', onClick, className }: PaperChipProps) {
+  return (
+    <ChromeChip
+      variant={variant}
+      icon={icon}
+      text={text}
+      tone={tone}
+      onClick={onClick}
+      data-ui-chrome-surface="ink-paper-chip"
+      data-preserve-base-art="true"
+      className={classNames(
+        'inkPaperChip',
+        'uiChromeOverlaySurface',
+        'uiChromeOverlaySurface--label',
+        { 'inkPaperChip--tag': variant === 'tag', 'inkPaperChip--clickable': Boolean(onClick) },
+        `inkPaperChip--tone-${tone}`,
+        className,
+      )}
+    />
   );
-
-  const content = (
-    <>
-      {icon ? <span className="inkPaperChip__icon">{icon}</span> : null}
-      <span className="inkPaperChip__text">{text}</span>
-    </>
-  );
-
-  if (onClick) {
-    return (
-      <button type="button" className={classes} onClick={onClick}>
-        {content}
-      </button>
-    );
-  }
-
-  return <span className={classes}>{content}</span>;
 }

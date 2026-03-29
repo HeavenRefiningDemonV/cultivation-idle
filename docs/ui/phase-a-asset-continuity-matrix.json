@@ -1,0 +1,351 @@
+{
+  "packet": "A.2",
+  "version": 1,
+  "generatedFrom": {
+    "a1Docs": true,
+    "screenshots": [
+      { "path": "/mnt/data/Path selection.png", "available": false },
+      { "path": "/mnt/data/Cultivation screen.png", "available": false },
+      { "path": "/mnt/data/Status.png", "available": false },
+      { "path": "/mnt/data/World screen.png", "available": false },
+      { "path": "/mnt/data/Forge.png", "available": false },
+      { "path": "/mnt/data/Gate Trail.png", "available": false },
+      { "path": "/mnt/data/Heart Law Selection.png", "available": false }
+    ],
+    "gitHistoryUsed": false
+  },
+  "assetPolicy": {
+    "preserve": [
+      "path portraits",
+      "book spines",
+      "city / citystate overlays",
+      "forgewide backgrounds",
+      "manual pavilion / techniques backdrops",
+      "bountyboard scene element",
+      "hourglass icons",
+      "qi_lotus family"
+    ],
+    "enhance": [
+      "buttoncorners.png",
+      "scroll.png",
+      "bar_long.png",
+      "bar_short.png",
+      "block_fancy.png",
+      "Dantian / altar / orb presentation",
+      "current paper/ink cards and ribbons",
+      "current Gate Trial / Outskirts shell alignment",
+      "current workshop / apothecary scene foundations"
+    ],
+    "createNew": [
+      "frame atlas variants",
+      "plaque / ribbon / breadcrumb / title-plate family",
+      "FX sprite atlas",
+      "cultivation enhancement kit",
+      "Heart Law altar / seal kit",
+      "world labels / building plaques",
+      "overlay / mask pack",
+      "brush swashes / recommendation underlays",
+      "icon seals / medallions / custom system icons"
+    ]
+  },
+  "screenOrder": [
+    "path_life_start",
+    "cultivation",
+    "status",
+    "world",
+    "manual_pavilion",
+    "techniques",
+    "apothecary",
+    "forge",
+    "bounties_expeditions",
+    "prestige"
+  ],
+  "screens": [
+    {
+      "id": "path_life_start",
+      "title": "Path Selection / Life Start",
+      "ownerPacket": "A.4",
+      "screenType": "hero_ritual",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/modals/LifeStartWizardModal.tsx",
+        "src/components/modals/LifeStartWizardModal.scss"
+      ],
+      "baseArtToPreserve": ["path_heaven 1.png", "path_earth 1.png", "path_martial 1.png", "texture_overlay.png"],
+      "baseArtToRestore": ["full-height ritual portrait framing continuity", "legacy path banner/background framing if previously present"],
+      "sharedChromeAllowedToStay": ["InkModalFrame", "PaperCard", "PaperChip", "SelectionHalo", "OverlaySwash"],
+      "duplicateOrConflictingSystems": ["legacy life-path mode styling vs newer wizard frame layering may conflict", "possible old/new ritual header treatment overlap"],
+      "missingUiElements": ["none code-confirmed; visual missing markers need screenshot verification"],
+      "currentBreakages": ["hero ritual composition likely under-framed", "cutout-risk if portraits render without strong scenic anchoring"],
+      "noGoDestructiveMoves": ["do not remove path portrait art", "do not drop old ritual framing before screen-level cutover gate"],
+      "laterEnhancementBacklog": ["title-plate and ritual plaque pass", "hero overlay pass for path identity", "selection swash polish"],
+      "newArtNeed": { "level": "medium", "roles": ["ritual title-plate family", "path-specific overlay/seal accents"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["no screenshot-approved coherent replacement", "needs visual verification for cutout/composition risks"],
+      "summary": "Logic flow is present and stable, but visual ritual composition is treated as incomplete until screenshot-backed continuity checks are done."
+    },
+    {
+      "id": "cultivation",
+      "title": "Cultivation",
+      "ownerPacket": "A.5",
+      "screenType": "hero_core",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/CultivateScreen.tsx",
+        "src/components/screens/CultivateScreen.scss",
+        "src/ui/cultivation/CultivationHeaderRibbon.tsx",
+        "src/ui/cultivation/CultivationHeaderRibbon.scss",
+        "src/ui/cultivation/DantianOrb.tsx",
+        "src/ui/cultivation/QiLotusIcon.tsx",
+        "src/ui/cultivation/VerseMiniBar.tsx"
+      ],
+      "baseArtToPreserve": ["cbg_full.png cultivator scenic base", "bar_long.png", "bar_short.png", "scroll.png", "qi_lotus family", "qisign.png"],
+      "baseArtToRestore": ["altar/backdrop weight if flattened by neutral cards", "hero scene depth around dantian/orb cluster"],
+      "sharedChromeAllowedToStay": ["CultivationHeaderRibbon", "RunCompass integration", "tokenized no-shift interaction hooks"],
+      "duplicateOrConflictingSystems": ["header rail vs command deck layering can create split ownership if both old and new visual rails stay active"],
+      "missingUiElements": ["no direct missing button/icon found in code; screenshot needed for state-marker integrity"],
+      "currentBreakages": ["risk of generic command cards flattening hero scenic plane", "verse/lotus/readiness grouping may look disorganized without dedicated composition pass"],
+      "noGoDestructiveMoves": ["do not remove cultivator base art", "do not delete legacy altar cues until replacement is screenshot-approved"],
+      "laterEnhancementBacklog": ["cultivation enhancement kit", "altar shell harmonization", "hero FX pass (calm sacred motion only)"],
+      "newArtNeed": { "level": "medium", "roles": ["cultivation enhancement kit", "altar-specific plaque/frame variants"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["no screenshot approval", "hero-screen scenic/chrome coherence not yet verified"],
+      "summary": "Cultivation keeps important base assets in code, but remains cutover-blocked until scenic depth and command hierarchy are visually validated."
+    },
+    {
+      "id": "status",
+      "title": "Status",
+      "ownerPacket": "A.5",
+      "screenType": "dense_management",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/StatusScreen.tsx",
+        "src/components/screens/StatusScreen.scss",
+        "src/ui/status/StatusSummaryHeader.tsx",
+        "src/ui/status/StatusSummaryHeader.scss"
+      ],
+      "baseArtToPreserve": ["buttoncorners.png border treatment", "paper material depth conventions"],
+      "baseArtToRestore": ["material depth cues where neutral card gray flattens hierarchy"],
+      "sharedChromeAllowedToStay": ["StatusSummaryHeader", "RunCompass", "StatusMiniCard"],
+      "duplicateOrConflictingSystems": ["possible mixed summary metaphors between old paper surfaces and new chrome ribbons"],
+      "missingUiElements": ["none code-confirmed; visual icon/state marker gaps need screenshot"],
+      "currentBreakages": ["hierarchy flattening risk from uniform card styling", "potential old/new header tone mismatch"],
+      "noGoDestructiveMoves": ["do not remove existing status readability scaffolding until replacement preserves density clarity"],
+      "laterEnhancementBacklog": ["status-specific plaque/ribbon hierarchy", "readability spacing normalization"],
+      "newArtNeed": { "level": "low", "roles": ["minor title/ribbon variants for dense analytics"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["no screenshot-confirmed hierarchy integrity", "possible mixed old/new summary systems"],
+      "summary": "Status appears structurally sound in code but visually conservative and potentially flattened; hold cutover until hierarchy is screenshot-verified."
+    },
+    {
+      "id": "world",
+      "title": "World",
+      "ownerPacket": "A.6",
+      "screenType": "map_hub",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/WorldScreen.tsx",
+        "src/components/screens/WorldScreen.scss",
+        "src/components/screens/CityMapHub.tsx",
+        "src/components/screens/CityMapHub.scss",
+        "src/ui/world/WorldModuleCard.tsx",
+        "src/ui/world/WorldModuleCard.scss"
+      ],
+      "baseArtToPreserve": ["citystate overlay backgrounds", "city map identity", "buttoncorners tactile buttons"],
+      "baseArtToRestore": ["map scenic depth if overpowered by generic panel/cards", "cohesive citystate background transitions"],
+      "sharedChromeAllowedToStay": ["InspectorPanel", "ScenicLabel", "SelectionHalo", "WorldModuleCard", "WorldRouteChip"],
+      "duplicateOrConflictingSystems": ["city map hotspot labels vs module cards/inspector can split ownership", "old world shell cues vs new chrome labels"],
+      "missingUiElements": ["none guaranteed from code; label/icon legibility needs screenshot"],
+      "currentBreakages": ["risk of map flattening by card-heavy module layer", "possible split between old scenic hub and new inspector ownership"],
+      "noGoDestructiveMoves": ["do not remove city/citystate scenic layers", "do not replace map identity with generic card stack"],
+      "laterEnhancementBacklog": ["world label/building plaque family", "overlay/mask pack for map readability", "recommendation underlay pass"],
+      "newArtNeed": { "level": "high", "roles": ["world labels/building plaques", "overlay/mask map readability kit"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["map/coherence not screenshot-approved", "split-ownership risk between scenic map and chrome modules"],
+      "summary": "World keeps citystate assets wired, but remains cutover-blocked pending screenshot-backed validation that scenic map identity is not flattened."
+    },
+    {
+      "id": "manual_pavilion",
+      "title": "Manual Pavilion",
+      "ownerPacket": "A.6",
+      "screenType": "shelf_management",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/ManualPavilionPanel.tsx",
+        "src/components/screens/ManualPavilionPanel.scss"
+      ],
+      "baseArtToPreserve": ["manual/book spine atlas (spine_heaven/earth/martial/neutral)", "manual pavilion backdrop identity"],
+      "baseArtToRestore": ["shelf/rail scenic framing if replaced by uniform trays", "spine-first tactile browsing emphasis"],
+      "sharedChromeAllowedToStay": ["TopRibbon", "InspectorPanel", "selection/no-shift hooks"],
+      "duplicateOrConflictingSystems": ["spine rail identity vs generic cards can conflict", "legacy shelf framing vs new ribbon inspector ownership split"],
+      "missingUiElements": ["possible selection/icon anchoring issues need screenshot confirmation"],
+      "currentBreakages": ["generic card residue can dilute bookshelf identity", "likely mixed visual language between shelf and chrome dock"],
+      "noGoDestructiveMoves": ["do not remove spine visuals", "do not collapse shelf rails into generic card list"],
+      "laterEnhancementBacklog": ["bookshelf plaque/chrome harmonization", "selection affordance polish with preserved spine art"],
+      "newArtNeed": { "level": "medium", "roles": ["shelf title plates", "manual browsing plaque variants"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["bookshelf identity coherence unverified", "selection/readability anchoring not screenshot-approved"],
+      "summary": "Manual Pavilion retains core spine assets in code, but cutover remains blocked until scenic shelf identity is proven intact in visuals."
+    },
+    {
+      "id": "techniques",
+      "title": "Techniques",
+      "ownerPacket": "A.6",
+      "screenType": "altar_inspector",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/TechniqueLibraryScreen.tsx",
+        "src/components/screens/TechniqueLibraryScreen.scss",
+        "src/components/techniques/InnerPalaceEquipAltar.tsx",
+        "src/components/techniques/InnerPalaceEquipAltar.scss"
+      ],
+      "baseArtToPreserve": ["Inner Palace altar concept", "techniques backdrop continuity", "hourglass progression iconography"],
+      "baseArtToRestore": ["altar support materials if displaced by generic trays/cards", "tech ritual framing depth"],
+      "sharedChromeAllowedToStay": ["TopRibbon", "InspectorPanel", "ChromeChip", "no-shift utilities"],
+      "duplicateOrConflictingSystems": ["old top ribbon and new TopRibbon coexistence risk", "inspector/detail ownership split", "PaperCard residue on core rails"],
+      "missingUiElements": ["none explicit in code; visual state marker completeness needs screenshot"],
+      "currentBreakages": ["possible over-ownership by generic PaperCard surfaces", "half-migrated altar + inspector layering"],
+      "noGoDestructiveMoves": ["do not remove altar anchoring before final chrome integration is coherent", "do not delete old header cues until single system is complete"],
+      "laterEnhancementBacklog": ["inspector shell convergence", "ritual title-plate and recommendation underlay pass"],
+      "newArtNeed": { "level": "medium", "roles": ["altar-adjacent plaque family", "recommendation underlays"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["duplicate ownership risk not resolved", "no screenshot confirmation of final hierarchy"],
+      "summary": "Techniques appears functionally rich but visually split between altar legacy cues and new chrome ownership; treat as blocked until single coherent composition is verified."
+    },
+    {
+      "id": "apothecary",
+      "title": "Apothecary",
+      "ownerPacket": "A.7",
+      "screenType": "room_management",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/ApothecaryPanel.tsx",
+        "src/components/screens/ApothecaryPanel.scss",
+        "src/components/consumables/MedicinePouchPanel.tsx",
+        "src/components/consumables/MedicinePouchPanel.scss"
+      ],
+      "baseArtToPreserve": ["apothecary room/cabinet foundation", "pouch identity surfaces"],
+      "baseArtToRestore": ["room depth and counter identity if card grids dominate"],
+      "sharedChromeAllowedToStay": ["TopRibbon", "PaperCard/PaperChip compatibility", "PurposeSourceCallout"],
+      "duplicateOrConflictingSystems": ["old room identity vs large generic card coverage", "possible top-ribbon duality"],
+      "missingUiElements": ["none guaranteed by code; immediate-readiness cues need visual verification"],
+      "currentBreakages": ["heavy tray/card usage may flatten room identity", "pouch/readiness emphasis can get buried"],
+      "noGoDestructiveMoves": ["do not remove room scenic foundation", "do not rely on future art before preserving readability"],
+      "laterEnhancementBacklog": ["apothecary scene plaque/chrome harmonization", "counter-specific medallion/icon seals"],
+      "newArtNeed": { "level": "medium", "roles": ["counter plaques", "apothecary icon seal set"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["room-to-card balance not screenshot-approved", "readiness/pouch clarity not visually verified"],
+      "summary": "Apothecary has functional structure but likely overuses generic cards relative to room identity; keep blocked until visual continuity pass."
+    },
+    {
+      "id": "forge",
+      "title": "Forge",
+      "ownerPacket": "A.7",
+      "screenType": "room_workshop",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/features/professions/forge/ForgeWorkshop.tsx",
+        "src/features/professions/forge/ForgeWorkshop.scss",
+        "src/components/modals/WorldBuildingModal.scss"
+      ],
+      "baseArtToPreserve": ["forgewide backgrounds (empty/unshaped/shaping/shaped)", "localized forge room identity"],
+      "baseArtToRestore": ["scene plates where generic shell layers dominate"],
+      "sharedChromeAllowedToStay": ["InkPanel", "PaperCard", "PaperChip", "shared no-shift interactions"],
+      "duplicateOrConflictingSystems": ["workshop scene identity vs abstract tray/card hierarchy", "world modal shell vs forge-local shell"],
+      "missingUiElements": ["none explicit in code; workshop tactile state markers need screenshot check"],
+      "currentBreakages": ["risk of room flattening by generic cards", "forge-local scenic tone may be diluted by shared shell defaults"],
+      "noGoDestructiveMoves": ["do not remove forgewide background stages", "do not replace workshop scene with generic panel-only treatment"],
+      "laterEnhancementBacklog": ["forge plaque/frame variants", "localized forge icon medallions", "embers/heat restrained FX pass"],
+      "newArtNeed": { "level": "medium", "roles": ["forge-specific plaques", "localized icon set"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["forge scene coherence not screenshot-approved", "scenic-vs-generic balance unresolved"],
+      "summary": "Forge retains key scenic assets in code paths but remains cutover-blocked pending visual proof that room identity is not abstracted away."
+    },
+    {
+      "id": "bounties_expeditions",
+      "title": "Bounties / Expeditions",
+      "ownerPacket": "A.7",
+      "screenType": "board_route_paper",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/BountyBoardPanel.tsx",
+        "src/components/screens/BountyBoardPanel.scss",
+        "src/components/screens/ExpeditionBoardPanel.tsx",
+        "src/components/screens/ExpeditionBoardPanel.scss"
+      ],
+      "baseArtToPreserve": ["bountyboard scene element", "route-paper identity", "hourglass icons and progress cues"],
+      "baseArtToRestore": ["tactile board props if replaced by uniform cards/chips"],
+      "sharedChromeAllowedToStay": ["ChromeChip", "ChromeStamp", "WorldRouteChip", "PaperCard wrappers"],
+      "duplicateOrConflictingSystems": ["old paper board language vs new chip/stamp overlays can split ownership", "route-paper identity vs generic card shell"],
+      "missingUiElements": ["no hard missing controls seen in code; state markers need screenshot verification"],
+      "currentBreakages": ["possible flattening from generic card/chip density", "board tactility may be reduced in mixed system state"],
+      "noGoDestructiveMoves": ["do not remove board/route-paper styling before replacement is complete", "do not drop hourglass identity"],
+      "laterEnhancementBacklog": ["board plaque and strip system", "queue strip harmonization", "recommendation underlays"],
+      "newArtNeed": { "level": "medium", "roles": ["board plaque family", "queue strip overlays"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["board tactility not screenshot-confirmed", "mixed ownership between legacy paper and new chrome"],
+      "summary": "Bounties/Expeditions remain implementation-coupled and should recover together; both are blocked pending tactile board continuity verification."
+    },
+    {
+      "id": "prestige",
+      "title": "Prestige",
+      "ownerPacket": "A.7",
+      "screenType": "ritual_management",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "screenshotRefs": [],
+      "codeFiles": [
+        "src/components/screens/PrestigeScreen.tsx",
+        "src/components/screens/PrestigeScreen.scss"
+      ],
+      "baseArtToPreserve": ["decree/scroll ritual identity", "paper/ink ritual document tone"],
+      "baseArtToRestore": ["ritual framing depth if replaced by neutral trays", "single coherent ritual header language"],
+      "sharedChromeAllowedToStay": ["TopRibbon", "RibbonStat", "ChromeChip", "InkPanel"],
+      "duplicateOrConflictingSystems": ["legacy prestigeTopRibbon header plus TopRibbon usage indicates potential duplicate header systems", "paper tray-heavy sections can conflict with ritual-shell intent"],
+      "missingUiElements": ["no hard missing controls found in code; visual completeness requires screenshot"],
+      "currentBreakages": ["likely half-migrated ritual aesthetic", "readability and ritual identity may pull in different directions"],
+      "noGoDestructiveMoves": ["do not delete old ritual framing before new parchment/plaque replacement is fully coherent"],
+      "laterEnhancementBacklog": ["decree/title-plate family", "ritual seal/icon medallion pass", "subtle sacred FX layer"],
+      "newArtNeed": { "level": "high", "roles": ["ritual parchment/plaque kit", "prestige icon seals"] },
+      "cutoverStatus": "blocked",
+      "cutoverBlockingReasons": ["header ownership conflict risk", "ritual identity not screenshot-approved"],
+      "summary": "Prestige appears structurally mature but visually half-migrated; keep blocked until a single ritual visual language passes cutover checks."
+    }
+  ],
+  "supplementarySurfaces": [
+    {
+      "id": "heart_law_selection",
+      "ownerPacket": "post-phase-a-ritual-packet",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "codeFiles": [
+        "src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx",
+        "src/ui/cultivation/heartLaw/HeartLawPanel.scss"
+      ],
+      "notes": [
+        "Selection structure is present but scenic ritual kit (altar/seal) is still a create-new backlog role.",
+        "Treat as supplementary; do not displace primary A.2 order."
+      ]
+    },
+    {
+      "id": "gate_trial",
+      "ownerPacket": "post-phase-a-module-packet",
+      "evidence": ["code-confirmed", "needs-visual-verify"],
+      "codeFiles": [
+        "src/components/screens/world/buildings/GateTrialBuildingPanel.tsx",
+        "src/components/screens/world/buildings/CombatStyles.scss"
+      ],
+      "notes": [
+        "Combat shell and support economy layers are wired; scenic/composition continuity still needs screenshot verification.",
+        "Treat as supplementary; keep primary Phase A screen order unchanged."
+      ]
+    }
+  ]
+}

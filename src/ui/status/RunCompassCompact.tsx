@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import type { RunCompassActionLine, RunCompassCompactSurface } from '../../systems/ui/runCompass/index.js';
-import { PaperChip } from '../ink/PaperChip.js';
+import { ChromeChip } from '../chrome/ChromeChip.js';
 import './RunCompass.scss';
 
 export type RunCompassTone = 'paper' | 'ink';
@@ -21,7 +21,7 @@ export function RunCompassCompact({ surface, tone = 'paper', className }: RunCom
         <>
           <div className="runCompassCompact__line runCompassCompact__line--headline">
             <span className="runCompassCompact__title">{surface.milestoneLine}</span>
-            <PaperChip text={surface.readinessLabel} variant="tag" tone={surface.readinessLabel === 'Ready' ? 'success' : 'neutral'} />
+            <ChromeChip text={surface.readinessLabel} variant="tag" tone={surface.readinessLabel === 'Ready' ? 'success' : 'neutral'} />
           </div>
           <div className="runCompassCompact__line">{surface.blockerLine}</div>
           <div className="runCompassCompact__line">{surface.actionLine}</div>

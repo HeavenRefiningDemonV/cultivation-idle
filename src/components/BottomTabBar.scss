@@ -1,61 +1,7 @@
+/* B.6 compatibility bridge: canonical bottom nav visuals are owned by src/ui/chrome/BottomNavDock.scss and NavDockButton.scss */
+@import '../ui/chrome/BottomNavDock.scss';
+@import '../ui/chrome/NavDockButton.scss';
+
 .bottomTabBar {
-  position: fixed;
-  inset: auto 0 0 0;
-  display: flex;
-  justify-content: center;
-  padding: 0.75rem 0 calc(12px + var(--ui-safe-bottom));
-  pointer-events: auto;
-  z-index: 200;
-}
-
-.bottomTabBarInner {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 0 1rem;
-  pointer-events: none;
-}
-
-.bottomTabBarList {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  justify-content: center;
-  padding: 0.25rem 0.5rem;
-  max-width: 960px;
-  pointer-events: auto;
-}
-
-.bottomTabBarButton {
-  min-width: 7.5rem;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
-  color: var(--paper-ink, #2b2116);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-  box-shadow: var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24));
-}
-
-.bottomTabBarButton:hover,
-.bottomTabBarButton:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
-}
-
-.bottomTabBarButton--active {
-  background: var(--paper-shell-active, rgba(159, 59, 46, 0.2));
-  color: var(--paper-ink, #2b2116);
-  box-shadow: var(--paper-shadow-strong, 0 14px 28px rgba(22, 12, 4, 0.32));
-  outline: 2px solid var(--paper-shell-outline, rgba(120, 72, 33, 0.52));
-  outline-offset: 1px;
-}
-
-@media (max-width: 640px) {
-  .bottomTabBarButton {
-    min-width: 6.5rem;
-    padding: 0.65rem 0.75rem;
-    font-size: 0.9rem;
-  }
+  --bottom-tab-bar-layer: var(--ui-layer-nav-dock);
 }

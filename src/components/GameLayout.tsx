@@ -29,6 +29,7 @@ import { LifeSummaryModal } from './modals/LifeSummaryModal.js';
 import { MigrationIssuesModal } from './modals/MigrationIssuesModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
+import { GameLayoutFxSeam } from '../app/fx/GameLayoutFxSeam.js';
 import './GameLayout.scss';
 
 /**
@@ -85,6 +86,7 @@ export function GameLayout() {
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
   const resetOnboardingLifeState = useUIStore((state) => state.resetOnboardingLifeState);
   const layoutBackgroundOverride = useUIStore((state) => state.layoutBackgroundOverride);
+  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
   const isScrollable = activeTab === 'status' || activeTab === 'prestige';
   const lastPrestigeCountRef = useRef(prestigeCount);
 
@@ -133,6 +135,7 @@ export function GameLayout() {
     showWorldBuildingModal,
     showLifeSummaryModal,
     showMigrationIssuesModal,
+    lifeStartWizardOpen,
   ]);
 
   // Render content based on active tab
@@ -167,7 +170,6 @@ export function GameLayout() {
     .join(' ');
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
-  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
@@ -184,9 +186,11 @@ export function GameLayout() {
         />
       ) : null}
       <div className="gameLayoutTextureOverlay" aria-hidden />
-      <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
-        {renderContent()}
-      </div>
+      <GameLayoutFxSeam>
+        <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
+          {renderContent()}
+        </div>
+      </GameLayoutFxSeam>
 
       <BottomTabBar />
 

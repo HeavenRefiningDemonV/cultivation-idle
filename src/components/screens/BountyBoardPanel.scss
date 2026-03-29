@@ -716,3 +716,10 @@
     animation: none;
   }
 }
+
+
+/* B.5: canonical chip/stamp adoption keeps local hooks layout-only. */
+.bountyStageRoot .chromeChip,
+.bountyStageRoot .chromeStamp {
+  max-width: 100%;
+}

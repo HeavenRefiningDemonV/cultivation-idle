@@ -38,6 +38,10 @@
   margin: 0 auto;
 }
 
+.prestigeContextRibbon {
+  width: 100%;
+}
+
 .prestigeTopRibbon {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1817,7 +1821,11 @@
 }
 
 @media (max-width: 920px) {
-  .prestigeTopRibbon {
+  .prestigeContextRibbon {
+  width: 100%;
+}
+
+.prestigeTopRibbon {
     grid-template-columns: 1fr;
   }
 

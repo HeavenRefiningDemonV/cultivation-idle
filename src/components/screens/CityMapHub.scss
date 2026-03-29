@@ -1,3 +1,5 @@
+@import '../../styles/uiMotionTokens.scss';
+@import '../../ui/chrome/layoutStabilityGuards.scss';
 .cityMapHub {
   position: relative;
   height: 100%;
@@ -25,29 +27,45 @@
   transform: translate(-50%, -50%);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background-color: #b8e4a3;
+  justify-content: center;
+  min-width: 5.5rem;
+  max-width: min(12.5rem, 38vw);
+  min-height: 2rem;
+  padding: 0;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  box-shadow: 0 0 10px 3px #fff;
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
-  font-weight: 700;
-  font-size: 14px;
+  transition: transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
+  z-index: 1;
+  isolation: isolate;
+}
+
+.cityMapHubHotspot:hover,
+.cityMapHubHotspot:focus-visible {
+  transform: translate(-50%, -50%) scale(1.02);
+}
+
+.cityMapHubHotspot:focus-visible {
+  outline: 2px solid rgba(160, 210, 255, 0.6);
+  outline-offset: 3px;
+}
+
+.cityMapHubHotspot--preview,
+.cityMapHubHotspot--active,
+.cityMapHubHotspot--recommended {
+  z-index: 2;
+}
+
+.cityMapHubHotspotSwash {
+  z-index: 0;
+}
+
+.cityMapHubHotspotHalo {
   z-index: 1;
 }
 
-.cityMapHubHotspot:hover {
-  background-color: #90d86f;
-  transform: translate(-50%, -50%) scale(1.03);
-  box-shadow: 0 0 10px 3px #fff, 0 12px 15px rgba(0, 0, 0, 0.45);
-}
-
-.cityMapHubHotspot--active {
-  /* background: rgba(56, 189, 248); */
-  /* background: rgb(153, 230, 176); */
-  color: #e0f2fe;
-}
-
 .cityMapHubHotspotLabel {
-  white-space: nowrap;
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
 }

@@ -1,5 +1,5 @@
-import { createPortal } from 'react-dom';
 import { useUIStore } from '../../stores/uiStore.js';
+import { ModalFrame } from '../../ui/chrome/index.js';
 import './CurrentChapterExhaustedModal.scss';
 
 export function CurrentChapterExhaustedModal() {
@@ -28,9 +28,17 @@ export function CurrentChapterExhaustedModal() {
     openLifeSummaryModal('current');
   };
 
-  return createPortal(
-    <div className="currentChapterExhaustedOverlay" role="presentation" onMouseDown={handleClose}>
-      <div className="currentChapterExhaustedModal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
+  return (
+    <ModalFrame
+      open={open}
+      onClose={handleClose}
+      kind="blocking"
+      surface="frame"
+      className="currentChapterExhaustedOverlay"
+      panelClassName="currentChapterExhaustedModal"
+      ariaLabel="Current Chapter Exhausted"
+      showCloseButton={false}
+    >
         <h2>Current Chapter Exhausted</h2>
         <p>
           You have reached <strong>Spirit Severing</strong>, the end of the current authored chapter in this build.
@@ -43,8 +51,6 @@ export function CurrentChapterExhaustedModal() {
           <button type="button" onClick={handleOpenLifeSummary}>View Life Summary</button>
           <button type="button" onClick={handleClose}>Continue This Life</button>
         </div>
-      </div>
-    </div>,
-    document.body,
+    </ModalFrame>
   );
 }

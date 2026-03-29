@@ -1,0 +1,49 @@
+.uiScreenCompositionRoot {
+  position: relative;
+  isolation: isolate;
+}
+
+.uiScreenCompositionRoot.uiScenicBaseHost {
+  background: transparent;
+}
+
+.uiScreenCompositionBackdrop,
+.uiScreenCompositionTexture,
+.uiScreenCompositionFxUnderlay,
+.uiScreenCompositionHeroFx,
+.uiScreenCompositionContentOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.uiScreenCompositionBackdrop {
+  z-index: var(--ui-layer-local-backdrop);
+}
+
+.uiScreenCompositionBackdrop.uiScenicBasePlane {
+  z-index: var(--ui-layer-local-backdrop);
+}
+
+.uiScreenCompositionTexture {
+  z-index: var(--ui-layer-local-texture);
+}
+
+.uiScreenCompositionFxUnderlay,
+.uiScenicBaseFxUnderlay {
+  z-index: var(--ui-layer-local-fx-underlay);
+}
+
+.uiScreenCompositionContent {
+  position: relative;
+  z-index: var(--ui-layer-local-content);
+  pointer-events: auto;
+}
+
+.uiScreenCompositionHeroFx {
+  z-index: var(--ui-layer-local-fx-hero);
+}
+
+.uiScreenCompositionContentOverlay {
+  z-index: var(--ui-layer-local-content-overlay);
+}

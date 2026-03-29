@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SaveService } from '../../services/save/SaveService.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { getContentBaseUrl } from '../../content/index.js';
@@ -23,6 +23,8 @@ import {
   runRuntimeValidation,
   type ValidationIssue,
 } from '../../services/diagnostics/runValidation.js';
+import { useUiFxSettings } from '../../app/fx/index.js';
+import { resolveFxQualityContract, type FxDebugReducedMotionOverride } from '../../ui/fx/fxQualityContract.js';
 import './SettingsScreen.scss';
 
 function downloadJson(filename: string, data: unknown) {
@@ -109,6 +111,10 @@ export function SettingsScreen() {
   const errorEntries = useErrorLogStore((state) => state.errors);
   const clearErrors = useErrorLogStore((state) => state.clear);
   const isDev = import.meta.env.DEV;
+  const [systemReducedMotion, setSystemReducedMotion] = useState(false);
+  const [debugReducedMotionOverride, setDebugReducedMotionOverride] =
+    useState<FxDebugReducedMotionOverride>('system');
+  const { uiFxSettings, setUiFxSettings, resetUiFxSettings, providerProps } = useUiFxSettings(debugReducedMotionOverride);
 
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
   const [validationRanAt, setValidationRanAt] = useState<number | null>(null);
@@ -128,6 +134,23 @@ export function SettingsScreen() {
   const togglePrestigeConfirm = () =>
     setSettings({ requirePrestigeConfirm: !requirePrestigeConfirm });
   const toggleSystemStatus = () => setSettings({ showSystemStatusPanel: !showSystemStatusPanel });
+  const setUiFxEnabled = (enabled: boolean) => setUiFxSettings({ enabled });
+  const setUiFxQuality = (quality: typeof uiFxSettings.quality) => setUiFxSettings({ quality });
+  const setUiFxAllowAtmosphere = (allowAtmosphere: boolean) => setUiFxSettings({ allowAtmosphere });
+  const setUiFxAllowHeroFx = (allowHeroFx: boolean) => setUiFxSettings({ allowHeroFx });
+
+  const resolvedFxSummary = useMemo(
+    () =>
+      resolveFxQualityContract({
+        enabled: providerProps.enabled,
+        requestedQuality: providerProps.requestedQuality,
+        reducedMotion: systemReducedMotion,
+        allowAtmosphere: providerProps.allowAtmosphere,
+        allowHeroFx: providerProps.allowHeroFx,
+        debugReducedMotionOverride: providerProps.debugReducedMotionOverride,
+      }),
+    [providerProps, systemReducedMotion],
+  );
 
   const handleDeleteSave = () => {
     setShowDeleteModal(false);
@@ -294,6 +317,21 @@ export function SettingsScreen() {
     setHeaderTitles('Settings', 'Configure UI behavior and manage your save data.');
   }, [setHeaderTitles]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return;
+    }
+
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setSystemReducedMotion(query.matches);
+    update();
+    query.addEventListener('change', update);
+
+    return () => {
+      query.removeEventListener('change', update);
+    };
+  }, []);
+
   return (
     <div className={'settingsScreenRoot'}>
       <div className={'settingsScreenBackground'} />
@@ -387,6 +425,149 @@ export function SettingsScreen() {
                   </p>
                 </div>
               </label>
+            </div>
+          </div>
+
+          <div className={`${'settingsScreenPanel'} ${'settingsScreenPanelDefault'}`}>
+            <h2 className={'settingsScreenPanelTitle'}>Visual FX</h2>
+            <p className={'settingsScreenPanelSubtitle'}>Control atmospheric and hero visual effects.</p>
+            <div className={'settingsScreenOptionList'}>
+              <label className={'settingsScreenOptionRow'}>
+                <input
+                  type="checkbox"
+                  checked={uiFxSettings.enabled}
+                  onChange={(event) => setUiFxEnabled(event.target.checked)}
+                  className={'settingsScreenCheckbox'}
+                />
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Enable UI FX</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Toggle all atmospheric and hero-focused FX layers.
+                  </p>
+                </div>
+              </label>
+
+              <div className={'settingsScreenFxQualityGroup'}>
+                <div className={'settingsScreenOptionLabel'}>FX Quality</div>
+                <div className={'settingsScreenFxSegmentedControl'} role="radiogroup" aria-label="FX Quality">
+                  {(['auto', 'high', 'medium', 'low'] as const).map((quality) => (
+                    <button
+                      key={quality}
+                      type="button"
+                      role="radio"
+                      aria-checked={uiFxSettings.quality === quality}
+                      className={`settingsScreenFxSegmentButton ${
+                        uiFxSettings.quality === quality ? 'settingsScreenFxSegmentButton--active' : ''
+                      }`}
+                      onClick={() => setUiFxQuality(quality)}
+                    >
+                      {quality === 'auto'
+                        ? 'Auto'
+                        : quality === 'high'
+                          ? 'High'
+                          : quality === 'medium'
+                            ? 'Medium'
+                            : 'Low'}
+                    </button>
+                  ))}
+                </div>
+                <p className={'settingsScreenOptionDescription'}>
+                  Reduced motion from the operating system always clamps continuous FX.
+                </p>
+              </div>
+
+              <label className={'settingsScreenOptionRow'}>
+                <input
+                  type="checkbox"
+                  checked={uiFxSettings.allowAtmosphere}
+                  onChange={(event) => setUiFxAllowAtmosphere(event.target.checked)}
+                  className={'settingsScreenCheckbox'}
+                />
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Allow atmosphere</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Atmosphere controls ambient mist, motes, and scenic background motion.
+                  </p>
+                </div>
+              </label>
+
+              <label className={'settingsScreenOptionRow'}>
+                <input
+                  type="checkbox"
+                  checked={uiFxSettings.allowHeroFx}
+                  onChange={(event) => setUiFxAllowHeroFx(event.target.checked)}
+                  className={'settingsScreenCheckbox'}
+                />
+                <div>
+                  <div className={'settingsScreenOptionLabel'}>Allow hero FX</div>
+                  <p className={'settingsScreenOptionDescription'}>
+                    Hero FX controls focal visual effects around altar, forge, and major centerpieces.
+                  </p>
+                </div>
+              </label>
+
+              {isDev ? (
+                <div className={'settingsScreenFxQualityGroup'}>
+                  <div className={'settingsScreenOptionLabel'}>Reduced motion override</div>
+                  <div className={'settingsScreenFxSegmentedControl'} role="radiogroup" aria-label="Reduced motion override">
+                    {([
+                      ['system', 'System'],
+                      ['force-on', 'Force On'],
+                      ['force-off', 'Force Off'],
+                    ] as const).map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={debugReducedMotionOverride === value}
+                        className={`settingsScreenFxSegmentButton ${
+                          debugReducedMotionOverride === value ? 'settingsScreenFxSegmentButton--active' : ''
+                        }`}
+                        onClick={() => setDebugReducedMotionOverride(value)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className={'settingsScreenFxSummary'}>
+                <div className={'settingsScreenFxSummaryRow'}>
+                  <span>System reduced motion</span>
+                  <strong>{systemReducedMotion ? 'On' : 'Off'}</strong>
+                </div>
+                <div className={'settingsScreenFxSummaryRow'}>
+                  <span>Resolved quality</span>
+                  <strong>{resolvedFxSummary.resolvedQuality}</strong>
+                </div>
+                <div className={'settingsScreenFxSummaryRow'}>
+                  <span>Resolved render mode</span>
+                  <strong>{resolvedFxSummary.renderMode}</strong>
+                </div>
+                <div className={'settingsScreenFxSummaryRow'}>
+                  <span>Continuous atmosphere</span>
+                  <strong>{resolvedFxSummary.allowContinuousAtmosphere ? 'On' : 'Off'}</strong>
+                </div>
+                <div className={'settingsScreenFxSummaryRow'}>
+                  <span>Animated hero FX</span>
+                  <strong>{resolvedFxSummary.allowAnimatedHeroFx ? 'On' : 'Off'}</strong>
+                </div>
+                <div className={'settingsScreenFxSummaryRow'}>
+                  <span>DPR cap</span>
+                  <strong>{resolvedFxSummary.devicePixelRatioCap.toFixed(1)}</strong>
+                </div>
+              </div>
+
+              <div className={'settingsScreenFxActions'}>
+                <button
+                  type="button"
+                  onClick={resetUiFxSettings}
+                  className={'button-standard settingsScreenDebugButton settingsScreenDebugButtonSecondary'}
+                >
+                  Reset Visual FX
+                </button>
+              </div>
             </div>
           </div>
 

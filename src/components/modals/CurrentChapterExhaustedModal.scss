@@ -1,11 +1,5 @@
 .currentChapterExhaustedOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(21, 16, 12, 0.5);
-  display: grid;
-  place-items: center;
-  z-index: 1500;
-  padding: 20px;
+  --current-chapter-overlay: rgba(21, 16, 12, 0.5);
 }
 
 .currentChapterExhaustedModal {

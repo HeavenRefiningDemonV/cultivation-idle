@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { PaperCard } from './PaperCard.js';
-import { PaperChip } from './PaperChip.js';
+import { ChromeChip } from '../chrome/ChromeChip.js';
 import type { PurposeSourceSurface } from '../../systems/economy/purposeSourceSurface.js';
 import './PurposeSourceCallout.scss';
 
@@ -28,8 +28,8 @@ export function PurposeSourceCallout({ surface, className, compact = false }: Pu
       className={classNames('purposeSourceCallout', compact && 'purposeSourceCallout--compact', className)}
     >
       <div className="purposeSourceCallout__chips">
-        <PaperChip variant="tag" tone="ink" text={surface.purposeTag} />
-        {surface.primarySourceLabel ? <PaperChip variant="pill" tone="neutral" text={surface.primarySourceLabel} /> : null}
+        <ChromeChip variant="tag" tone="ink" text={surface.purposeTag} />
+        {surface.primarySourceLabel ? <ChromeChip variant="pill" tone="neutral" text={surface.primarySourceLabel} /> : null}
       </div>
       <div className="purposeSourceCallout__body">{surface.purposeLine}</div>
       {surface.primarySourceLine ? <SourceLine label="Primary source" line={surface.primarySourceLine} /> : null}

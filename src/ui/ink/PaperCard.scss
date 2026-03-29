@@ -1,74 +1,40 @@
 @import './inkTheme.scss';
 
+/*
+ * A.3 shared-chrome freeze compatibility:
+ * - keep legacy .inkPaperCard hooks
+ * - keep pouch tuning and selected marker
+ * - reduce screen-owning feel via additive local shell variables
+ */
+
 .inkPaperCard {
-  position: relative;
-  padding: 12px 14px;
-  border: 1.5px solid var(--ink-border-color);
-  border-radius: 10px 8px 12px 9px;
-  background-color: var(--paper-card-bg, var(--paper-tint));
-  color: var(--ink-text-color);
-  box-shadow: 0 10px 20px var(--shadow-color);
-  overflow: hidden;
+  --frame-card-bg: color-mix(in oklab, var(--paper-tint) 90%, transparent);
+  --frame-card-border: var(--ink-border-color);
+  transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
-.inkPaperCard::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--paper-bg-image);
-  background-size: cover;
-  background-position: center;
-  opacity: calc(var(--paper-opacity) * 0.75);
-  pointer-events: none;
-}
-
-.inkPaperCard > * {
-  position: relative;
-  z-index: 1;
+.inkPaperCard.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: 0.9;
 }
 
 .inkPaperCard--tray {
-  padding: 10px 12px;
-  border-radius: 12px 9px 13px 10px;
-  box-shadow: 0 12px 22px var(--shadow-color);
-  --paper-card-bg: rgba(247, 238, 220, 0.96);
-}
-
-.inkPaperCard--pouch {
-  padding: 12px 14px;
-  border-radius: 12px 9px 13px 10px;
-  border-width: 2px;
-  box-shadow: 0 12px 22px var(--shadow-color);
-  --paper-card-bg: rgba(242, 231, 210, 0.96);
+  --frame-card-bg: color-mix(in oklab, rgba(247, 238, 220, 0.96) 92%, transparent);
 }
 
 .inkPaperCard--label {
-  padding: 8px 10px;
-  border-radius: 9px 7px 10px 8px;
-  font-size: 12px;
-  --paper-card-bg: rgba(252, 246, 235, 0.95);
+  --frame-card-bg: color-mix(in oklab, rgba(252, 246, 235, 0.95) 88%, transparent);
 }
 
-.inkPaperCard--interactive {
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+.inkPaperCard--pouch {
+  --frame-card-bg: color-mix(in oklab, rgba(242, 231, 210, 0.96) 92%, transparent);
 }
 
 .inkPaperCard--interactive:hover {
-  transform: translateY(-2px);
   border-color: rgba(120, 72, 33, 0.55);
-  box-shadow: 0 16px 28px var(--shadow-color);
-}
-
-.inkPaperCard--interactive:active {
-  transform: translateY(1px);
-  box-shadow: 0 8px 16px var(--shadow-color);
 }
 
 .inkPaperCard--selected {
-  border-color: rgba(120, 72, 33, 0.8);
-  border-width: 2px;
-  box-shadow: 0 12px 24px var(--shadow-color);
+  border-color: var(--ui-chrome-outline-strong);
 }
 
 .inkPaperCard--selected::after {

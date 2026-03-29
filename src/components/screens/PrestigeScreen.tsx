@@ -6,6 +6,7 @@ import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
 import { RewardService } from '../../services/rewards/index.js';
 import type { PrestigeUpgradeDef } from '../../content/index.js';
 import { PRESTIGE_CATEGORIES, buildPrestigeCategorySections, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
@@ -19,8 +20,9 @@ import { ApBreakdownModal } from '../modals/ApBreakdownModal.js';
 import { PrestigeRitualModal } from '../modals/PrestigeRitualModal.js';
 import { D } from '../../utils/numbers.js';
 import { InkPanel, PaperCard } from '../../ui/ink/index.js';
-import { GameIcon } from '../../ui/icons/index.js';
+import { ChromeChip, RibbonStat, TopRibbon } from '../../ui/chrome/index.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { formatCityLabel, formatHeartLawLabel, formatPathLabel, formatSpiritRootCompactLabel } from '../../ui/text/playerFacingFormatters.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import './PrestigeScreen.scss';
 
@@ -43,6 +45,7 @@ export function PrestigeScreen() {
   const getVisiblePrestigeUpgrades = useContentStore((state) => state.getVisiblePrestigeUpgrades);
 
   const realm = useGameStore((state) => state.realm);
+  const selectedPath = useGameStore((state) => state.selectedPath);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [sellBeforePrestige, setSellBeforePrestige] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -62,6 +65,8 @@ export function PrestigeScreen() {
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
   const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
   const runCompass = useRunCompassSurface();
+  const currentCityId = useCityStore((state) => state.currentCityId);
+  const selectedHeartLawId = useHeartLawStore((state) => state.selectedHeartLawId);
 
   const apGain = calculateAPGain();
   const apBreakdown = getApBreakdown();
@@ -333,6 +338,14 @@ export function PrestigeScreen() {
   };
 
   const totalAfterRitual = totalAP + advisor.apForecast.potentialGain;
+  const pathLabel = formatPathLabel(selectedPath);
+  const heartLawLabel = formatHeartLawLabel(selectedHeartLawId);
+  const cityLabel = formatCityLabel(currentCityId);
+  const spiritRootLabel = formatSpiritRootCompactLabel(spiritRoot ? {
+    element: spiritRoot.element,
+    grade: spiritRoot.grade,
+    purity: spiritRoot.purity,
+  } : null);
 
   return (
     <div className={'prestigeScreenRoot'}>
@@ -351,6 +364,20 @@ export function PrestigeScreen() {
               <div className={'prestigeTopMetaLine'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
             </div>
           </header>
+
+          <TopRibbon
+            surface="tray"
+            compact
+            className="prestigeContextRibbon"
+            chips={<ChromeChip variant="tag" tone={advisor.stateLabel === 'Recommended' ? 'success' : advisor.stateLabel === 'Viable' ? 'ink' : 'warning'} text={advisor.stateLabel} />}
+            end={<span>Purchased: {purchasedUpgradeCount}</span>}
+          >
+            <RibbonStat label="Realm" value={getLiveRealmNameByIndex(realm.index)} truncate />
+            <RibbonStat label="Path" value={pathLabel} truncate />
+            <RibbonStat label="Spirit Root" value={spiritRootLabel} truncate />
+            <RibbonStat label="Heart Law" value={heartLawLabel} truncate />
+            <RibbonStat label="City" value={cityLabel} truncate />
+          </TopRibbon>
 
           <main className={'prestigeStage'}>
             <RunCompassCompact surface={runCompass.compact} tone="paper" className="prestigeRunCompassCompact" />

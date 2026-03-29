@@ -1,4 +1,3 @@
-import { createPortal } from 'react-dom';
 import {
   buildCurrentLifeSummarySurface,
   buildLastCompletedLifeSummarySurface,
@@ -6,6 +5,7 @@ import {
 } from '../../features/prestige/lifeSummarySurface.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { ModalFrame } from '../../ui/chrome/index.js';
 import './LifeSummaryModal.scss';
 
 function resolveSurface(mode: 'current' | 'last_completed'): LifeSummarySurface | null {
@@ -32,9 +32,17 @@ export function LifeSummaryModal() {
     setActiveTab('prestige');
   };
 
-  return createPortal(
-    <div className="lifeSummaryOverlay" role="presentation" onMouseDown={close}>
-      <div className="lifeSummaryModal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
+  return (
+    <ModalFrame
+      open={open}
+      onClose={close}
+      kind="feature"
+      surface="frame"
+      className="lifeSummaryOverlay"
+      panelClassName="lifeSummaryModal"
+      ariaLabel="Life Summary"
+      showCloseButton={false}
+    >
         <header className="lifeSummaryModal__header">
           <div>
             <h2>{mode === 'current' ? 'Current Life Summary' : 'Last Completed Life Summary'}</h2>
@@ -71,8 +79,6 @@ export function LifeSummaryModal() {
           <button type="button" onClick={handleOpenPrestige}>Open Prestige</button>
           <button type="button" onClick={close}>Close</button>
         </div>
-      </div>
-    </div>,
-    document.body,
+    </ModalFrame>
   );
 }

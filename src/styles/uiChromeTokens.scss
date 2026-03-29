@@ -1,0 +1,74 @@
+:root {
+  /* Color */
+  --ui-chrome-color-parchment-base: #f7edd7;
+  --ui-chrome-color-parchment-deep: #f4e6c8;
+  --ui-chrome-color-parchment-raised: rgba(255, 245, 225, 0.92);
+  --ui-chrome-color-parchment-muted: rgba(236, 225, 205, 0.74);
+  --ui-chrome-color-ink-primary: #2b2116;
+  --ui-chrome-color-ink-muted: rgba(43, 33, 22, 0.7);
+  --ui-chrome-color-ink-faint: rgba(43, 33, 22, 0.55);
+  --ui-chrome-color-seal-red: #9f3b2e;
+  --ui-chrome-color-bronze: #b5852b;
+  --ui-chrome-color-jade: #2f8f66;
+  --ui-chrome-color-warning: #b5852b;
+  --ui-chrome-color-danger: #9f3b2e;
+  --ui-chrome-color-success: #2f8f66;
+  --ui-chrome-color-rare: #b5852b;
+
+  /* Surfaces */
+  --ui-chrome-surface-shell-base: rgba(247, 237, 215, 0.9);
+  --ui-chrome-surface-shell-raised: rgba(255, 245, 225, 0.92);
+  --ui-chrome-surface-shell-muted: rgba(236, 225, 205, 0.74);
+  --ui-chrome-surface-card-base: rgba(247, 237, 215, 0.72);
+  --ui-chrome-surface-card-raised: rgba(244, 230, 200, 0.85);
+  --ui-chrome-surface-card-soft: rgba(251, 244, 228, 0.55);
+  --ui-chrome-surface-chip-base: rgba(251, 244, 228, 0.7);
+  --ui-chrome-surface-chip-rare: rgba(255, 246, 220, 0.85);
+  --ui-chrome-surface-chip-merit: rgba(255, 232, 224, 0.75);
+  --ui-chrome-surface-stamp-base: rgba(255, 248, 235, 0.6);
+  --ui-chrome-surface-stamp-seal: rgba(255, 230, 220, 0.7);
+  --ui-chrome-border-shell: rgba(65, 45, 25, 0.26);
+  --ui-chrome-border-soft: rgba(65, 45, 25, 0.22);
+  --ui-chrome-outline-shell: rgba(120, 72, 33, 0.52);
+  --ui-chrome-outline-strong: rgba(120, 72, 33, 0.8);
+  --ui-chrome-shadow-soft: 0 8px 18px rgba(22, 12, 4, 0.24);
+  --ui-chrome-shadow-strong: 0 14px 28px rgba(22, 12, 4, 0.32);
+  --ui-chrome-shadow-modal: 0 18px 34px rgba(0, 0, 0, 0.28);
+  --ui-chrome-texture-opacity: 0.22;
+  --ui-chrome-watermark-opacity: 0.08;
+  --ui-chrome-backdrop-modal: rgba(32, 26, 18, 0.65);
+
+  /* Shape */
+  --ui-chrome-radius-card: 12px;
+  --ui-chrome-radius-card-compact: 10px;
+  --ui-chrome-radius-pill: 999px;
+  --ui-chrome-radius-plaque: 12px;
+  --ui-chrome-radius-button: 12px;
+  --ui-chrome-radius-modal: 12px;
+
+  /* Layout */
+  --ui-chrome-space-shell-pad-x: 22px;
+  --ui-chrome-space-shell-pad-y: 20px;
+  --ui-chrome-space-card-pad-x: 14px;
+  --ui-chrome-space-card-pad-y: 12px;
+  --ui-chrome-space-section-gap: 12px;
+  --ui-chrome-space-card-gap: 8px;
+  --ui-chrome-size-row-min: 42px;
+  --ui-chrome-size-badge-slot: 16px;
+  --ui-chrome-size-header: 40px;
+  --ui-chrome-size-dock-height: 72px;
+  --ui-bottom-nav-height: var(--ui-chrome-size-dock-height);
+  --ui-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ui-bottom-nav-total: calc(var(--ui-bottom-nav-height) + var(--ui-safe-bottom));
+
+  /* Typography */
+  --ui-chrome-font-body: 'Julee', cursive;
+  --ui-chrome-font-title: 'Julee', cursive;
+  --ui-chrome-font-button: 'Julee', cursive;
+  --ui-chrome-text-size-card-title: 20px;
+  --ui-chrome-text-size-body: 14px;
+  --ui-chrome-text-size-meta: 12px;
+  --ui-chrome-text-size-chip: 12px;
+  --ui-chrome-line-height-body: 1.4;
+  --ui-chrome-line-height-meta: 1.2;
+}

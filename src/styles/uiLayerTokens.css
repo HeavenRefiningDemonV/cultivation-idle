@@ -1,0 +1,37 @@
+:root {
+  --ui-layer-page-background: 0;
+  --ui-layer-texture-overlay: 1;
+  --ui-layer-fx-portal-root: 2;
+  --ui-layer-screen-shell: 10;
+  --ui-layer-header: 40;
+  --ui-layer-combat-presentation: 45;
+  --ui-layer-system-panel: 50;
+  --ui-layer-toasts: 90;
+  --ui-layer-onboarding: 105;
+  --ui-layer-city-arrival: 110;
+  --ui-layer-bottom-nav: 200;
+  --ui-layer-drawer: 320;
+  --ui-layer-modal-base: 1000;
+  --ui-layer-detail-modal: 1200;
+  --ui-layer-blocking-modal: 1500;
+  --ui-layer-feature-modal: 1600;
+  --ui-layer-emergency-modal: 1800;
+  --ui-layer-modal-detail-shell: var(--ui-layer-detail-modal);
+  --ui-layer-modal-blocking-shell: var(--ui-layer-blocking-modal);
+  --ui-layer-modal-feature-shell: var(--ui-layer-feature-modal);
+
+  --ui-layer-chrome-ribbon: var(--ui-layer-header);
+  --ui-layer-chrome-dock: var(--ui-layer-bottom-nav);
+  --ui-layer-chrome-modal: var(--ui-layer-modal-base);
+
+  --ui-layer-local-backdrop: 0;
+  --ui-layer-local-texture: 1;
+  --ui-layer-local-fx-underlay: 2;
+  --ui-layer-local-content: 10;
+  --ui-layer-local-fx-hero: 12;
+  --ui-layer-local-content-overlay: 20;
+
+  --ui-layer-fx-portal-ambient: 0;
+  --ui-layer-fx-portal-hero: 1;
+  --ui-layer-fx-portal-overlay: 2;
+}

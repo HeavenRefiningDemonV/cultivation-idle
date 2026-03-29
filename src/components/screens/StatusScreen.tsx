@@ -4,6 +4,8 @@ import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers.js';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
 import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
@@ -11,8 +13,13 @@ import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { StatusMiniCard } from '../../ui/status/StatusMiniCard.js';
 import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
+import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
 import { buildStatusTroubleshootingSurface } from '../../systems/ui/status/statusTroubleshootingSurface.js';
+import { adaptSpiritRootDoctrineToSemanticView } from '../../systems/doctrine/spiritRootDoctrineSemanticAdapter.js';
+import { formatCityLabel, formatSpiritRootCompactLabel } from '../../ui/text/playerFacingFormatters.js';
 import { Crosshair, Droplets, Footprints, Heart, Shield, Sparkles, Sword } from 'lucide-react';
+import statusBg from '../../assets/background/cbg_bg.png';
+import statusBgBlue from '../../assets/background/cbg_bgblue.png';
 import './StatusScreen.scss';
 import '../../ui/status/StatusSummaryHeader.scss';
 import '../../ui/status/CombatStatTile.scss';
@@ -30,6 +37,8 @@ function StatusLine({ label, value }: { label: string; value: string }) {
 export function StatusScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const runCompass = useRunCompassSurface();
+  const currentCityId = useCityStore((state) => state.currentCityId);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const game = useGameStore((state) => state);
   const inventory = useInventoryStore((state) => state);
   const combatLog = useCombatStore((state) => state.combatLog);
@@ -56,9 +65,31 @@ export function StatusScreen() {
     setHeaderTitles('Status', 'Troubleshoot your current run and identify the active floor gap.');
   }, [setHeaderTitles]);
 
+  const spiritRootView = adaptSpiritRootDoctrineToSemanticView(spiritRoot);
+  const spiritRootLine = formatSpiritRootCompactLabel(spiritRootView ? {
+    element: spiritRootView.element,
+    grade: spiritRootView.grade,
+    purity: spiritRootView.purity,
+  } : null);
+  const cityLabel = formatCityLabel(currentCityId);
+
   return (
     <div className="statusScreenRoot">
+      <div className="statusScreenSceneLayer" aria-hidden="true">
+        <img className="statusScreenSceneLayer__bg statusScreenSceneLayer__bg--paper" src={statusBg} alt="" />
+        <img className="statusScreenSceneLayer__bg statusScreenSceneLayer__bg--mist" src={statusBgBlue} alt="" />
+      </div>
       <div className="statusScreenContent">
+        <div className="statusScreenCenterpiece" aria-hidden="true">
+          <DantianOrb
+            tone="status"
+            className="statusScreenCenterpiece__orb"
+            heartLawTags={[]}
+            isCultivating={false}
+            isNearReady={false}
+            isReady={false}
+          />
+        </div>
         <RunCompass surface={runCompass.full} tone="paper" className="statusScreenRunCompass statusScreenCardBase" />
 
         <StatusSummaryHeader
@@ -67,6 +98,11 @@ export function StatusScreen() {
           pathLabel={troubleshooting.pathLabel}
           archetypeLabel={troubleshooting.archetypeLabel}
           archetypeSummary={troubleshooting.archetypeSummary}
+          spiritRootLine={spiritRootLine}
+          heartLawLine={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`}
+          cityLabel={cityLabel}
+          readinessLabel={troubleshooting.readiness.readinessLabel}
+          diagnosisLabel={troubleshooting.readiness.diagnosisLabel}
           biggestShortfallLine={`${troubleshooting.shortfall.diagnosisLabel} — ${troubleshooting.shortfall.reason}`}
           topFixLine={troubleshooting.shortfall.topFix}
           combatStrip={troubleshooting.combatStrip}
