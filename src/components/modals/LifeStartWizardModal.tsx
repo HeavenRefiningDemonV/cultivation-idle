@@ -151,6 +151,13 @@ export function LifeStartWizardModal() {
       <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
         <div className="lifeStartWizardModal lifeStartWizardModal--path">
           <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
+            <header className="lifePathRitualHeader" aria-live="polite">
+              <p className="lifePathRitualHeader__eyebrow">Life-Beginning Rite</p>
+              <h2 className="lifePathRitualHeader__title">Choose Your Life Path</h2>
+              <p className="lifePathRitualHeader__subtitle">
+                Step onto a single road. This choice shapes your run&rsquo;s flow, resonance, and combat temperament.
+              </p>
+            </header>
             <div className="lifePathTriptychFrame">
               <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
                 {LIFE_PATHS.map((path) => {
@@ -163,6 +170,7 @@ export function LifeStartWizardModal() {
                       <OverlaySwash active={emphasize} variant="blockFancy" tone={selected ? 'recommendation' : 'default'} placement="fill" className="lifePathPanel__swash" />
                       <SelectionHalo active={emphasize} tone={selected ? 'success' : 'default'} variant="panel" inset="tight" className="lifePathPanel__halo" />
                       <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
+                      <div className="lifePathPanel__vignette" aria-hidden />
                       <div className="lifePathPanel__title">{path.title}</div>
                       <button
                         type="button"
