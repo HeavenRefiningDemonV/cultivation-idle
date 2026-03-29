@@ -15,7 +15,7 @@ export function FxStagePortal({ stageId, children }: FxStagePortalProps) {
     console.warn(`[fx] Missing stage host for stageId "${stageId}".`);
   }, [snapshot, stageId]);
 
-  if (!snapshot?.hostElement) return null;
+  if (!snapshot?.hostElement || !snapshot.hostReady) return null;
 
   return createPortal(children, snapshot.hostElement);
 }

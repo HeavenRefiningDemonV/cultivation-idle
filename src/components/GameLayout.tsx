@@ -37,8 +37,8 @@ import './GameLayout.scss';
  */
 function PlaceholderContent({ tabName }: { tabName: string }) {
   return (
-      <div className={'gameLayoutPlaceholder'}>
-        <div className={'gameLayoutPlaceholderCard'}>
+    <div className={'gameLayoutPlaceholder'}>
+      <div className={'gameLayoutPlaceholderCard'}>
         <div className={'gameLayoutPlaceholderIcon'}>
           <GameIcon icon="inkWip" size={56} decorative />
         </div>
@@ -177,35 +177,35 @@ export function GameLayout() {
   return (
     <FxQualityProvider>
       <div className={rootClassNames}>
-      <AudioBindings />
-      {showLayoutBackgroundOverlay ? (
+        <AudioBindings />
+        {showLayoutBackgroundOverlay ? (
         <div
           className="gameLayoutBackgroundOverlay"
           style={{ backgroundImage: `url(${layoutBackgroundOverride})` }}
           aria-hidden
         />
-      ) : null}
-      <div className="gameLayoutTextureOverlay" aria-hidden />
-      <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
-        {renderContent()}
-      </div>
+        ) : null}
+        <div className="gameLayoutTextureOverlay" aria-hidden />
+        <div className={`gameLayoutContent ${isScrollable ? 'gameLayoutContent--scrollable' : ''}`}>
+          {renderContent()}
+        </div>
 
-      <BottomTabBar />
+        <BottomTabBar />
 
-      {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
-      {showManualSatchelModal && <ManualSatchelModal />}
-      {showTechniqueLearnedModal && <TechniqueLearnedModal />}
-      {showWorldBuildingModal && <WorldBuildingModal />}
-      {showCurrentChapterExhaustedModal && <CurrentChapterExhaustedModal />}
-      {showLifeSummaryModal && <LifeSummaryModal />}
-      {showMigrationIssuesModal && <MigrationIssuesModal />}
-      {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
-      <CombatPresentationHost />
-      <OnboardingPromptRuntime />
-      <LifeStartWizardModal />
-      <CityArrivalBanner />
-      <OnboardingPromptHost />
-      <NotificationToasts />
+        {showOfflineProgressModal && showOfflineModalSetting && <OfflineProgressModal />}
+        {showManualSatchelModal && <ManualSatchelModal />}
+        {showTechniqueLearnedModal && <TechniqueLearnedModal />}
+        {showWorldBuildingModal && <WorldBuildingModal />}
+        {showCurrentChapterExhaustedModal && <CurrentChapterExhaustedModal />}
+        {showLifeSummaryModal && <LifeSummaryModal />}
+        {showMigrationIssuesModal && <MigrationIssuesModal />}
+        {showSystemStatusOverlay && <SystemStatusPanelOverlay />}
+        <CombatPresentationHost />
+        <OnboardingPromptRuntime />
+        <LifeStartWizardModal />
+        <CityArrivalBanner />
+        <OnboardingPromptHost />
+        <NotificationToasts />
       </div>
     </FxQualityProvider>
   );

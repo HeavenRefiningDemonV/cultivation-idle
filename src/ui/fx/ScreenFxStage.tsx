@@ -4,10 +4,10 @@ import classNames from 'classnames';
 import {
   FX_DEFAULT_CONTENT_Z_INDEX,
   FX_DEFAULT_STAGE_Z_INDEX,
-  FX_MAX_DPR,
   FX_MIN_STAGE_SIZE,
 } from './constants.js';
 import { useFxContext } from './FxQualityProvider.js';
+import { clampFxDpr } from './runtime.js';
 import type { FxStageBounds, FxStageRegistrationToken } from './types.js';
 import './ScreenFxStage.scss';
 
@@ -35,7 +35,7 @@ function getStageBounds(element: HTMLDivElement | null): FxStageBounds {
 
 function getStageDpr() {
   if (typeof window === 'undefined') return 1;
-  return Math.max(1, Math.min(FX_MAX_DPR, window.devicePixelRatio || 1));
+  return clampFxDpr(window.devicePixelRatio || 1);
 }
 
 export function ScreenFxStage({
