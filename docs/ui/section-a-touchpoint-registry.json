@@ -1,0 +1,348 @@
+{
+  "verifiedAgainst": {
+    "basis": "git",
+    "branch": "work",
+    "commit": "2e3b901"
+  },
+  "resolvedDrift": [
+    {
+      "label": "playerFacingLabels",
+      "canonicalPath": "src/ui/text/playerFacingLabels.ts",
+      "note": "Canonical nested text surface path is under src/ui/text/."
+    },
+    {
+      "label": "HeartLawMindView",
+      "canonicalPath": "src/ui/cultivation/heartLaw/HeartLawMindView.tsx",
+      "pairedStyle": "src/ui/cultivation/heartLaw/HeartLawMindView.scss",
+      "note": "Canonical nested heart-law location and local stylesheet verified."
+    },
+    {
+      "label": "WorldBuildingModal",
+      "canonicalPath": "src/components/modals/WorldBuildingModal.tsx",
+      "pairedStyle": "src/components/modals/WorldBuildingModal.scss",
+      "note": "Canonical path is under components/modals, not components/screens."
+    },
+    {
+      "label": "scssPairAssumption",
+      "canonicalPath": "multiple",
+      "note": "Several canonical tsx files have no local scss sibling (e.g. ForgePanel, PrestigeRitualModal, RunCompassCompact)."
+    },
+    {
+      "label": "inkVsPaperShell",
+      "canonicalPath": "src/ui/ink/*",
+      "note": "ui/paper files exist but are adjacent non-canonical for Section A defaults."
+    }
+  ],
+  "areas": {
+    "globalShell": [
+      {
+        "path": "src/ui/ink/InkPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/ink/InkPanel.scss"
+      },
+      {
+        "path": "src/ui/ink/PaperCard.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/ink/PaperCard.scss"
+      },
+      {
+        "path": "src/ui/ink/PaperChip.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/ink/PaperChip.scss"
+      },
+      {
+        "path": "src/ui/ink/InkModalFrame.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/ink/InkModalFrame.scss"
+      },
+      {
+        "path": "src/styles/paperInkTokens.scss",
+        "class": "supportTouchpoint"
+      }
+    ],
+    "truthSurfaces": [
+      {
+        "path": "src/ui/status/RunCompass.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/status/RunCompass.scss"
+      },
+      {
+        "path": "src/ui/status/RunCompassCompact.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/status/RunCompassSection.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/status/useRunCompassSurface.ts",
+        "class": "supportTouchpoint"
+      },
+      {
+        "path": "src/ui/status/PostFailureDiagnosisPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/status/PostFailureDiagnosisPanel.scss"
+      },
+      {
+        "path": "src/ui/text/playerFacingLabels.ts",
+        "class": "supportTouchpoint"
+      },
+      {
+        "path": "src/systems/ui/runCompass/performRunCompassAction.ts",
+        "class": "supportTouchpoint"
+      }
+    ],
+    "cultivation": [
+      {
+        "path": "src/components/screens/CultivateScreen.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/CultivateScreen.scss"
+      },
+      {
+        "path": "src/ui/cultivation/DantianOrb.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/cultivation/DantianOrb.scss"
+      },
+      {
+        "path": "src/ui/cultivation/VerseMiniBar.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": "src/ui/cultivation/VerseMiniBar.scss"
+      },
+      {
+        "path": "src/ui/cultivation/QiLotusIcon.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": "src/ui/cultivation/QiLotusIcon.scss"
+      },
+      {
+        "path": "src/ui/cultivation/CultivationBreakthroughPanel.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/cultivation/CultivationDoctrineSummary.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/cultivation/heartLaw/HeartLawMindView.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/ui/cultivation/heartLaw/HeartLawMindView.scss"
+      },
+      {
+        "path": "src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      }
+    ],
+    "selectionsAndRitualModals": [
+      {
+        "path": "src/components/modals/LifeStartWizardModal.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/modals/LifeStartWizardModal.scss"
+      },
+      {
+        "path": "src/components/modals/DaoHeartModal.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/modals/DaoHeartModal.scss"
+      },
+      {
+        "path": "src/components/modals/PrestigeRitualModal.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/components/modals/CurrentChapterExhaustedModal.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": "src/components/modals/CurrentChapterExhaustedModal.scss"
+      },
+      {
+        "path": "src/components/modals/LifeSummaryModal.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": "src/components/modals/LifeSummaryModal.scss"
+      }
+    ],
+    "worldShell": [
+      {
+        "path": "src/components/screens/WorldScreen.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/WorldScreen.scss"
+      },
+      {
+        "path": "src/components/screens/CityMapHub.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/CityMapHub.scss"
+      },
+      {
+        "path": "src/components/modals/WorldBuildingModal.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/modals/WorldBuildingModal.scss"
+      },
+      {
+        "path": "src/ui/world/OutskirtsSummaryCard.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/RuinsSummaryCard.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/TrackedBountyProgressLine.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/WorldCommandAlert.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/WorldCommandCard.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/WorldCommandGroup.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/WorldModuleCard.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": "src/ui/world/WorldModuleCard.scss"
+      },
+      {
+        "path": "src/ui/world/WorldModuleGroup.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/ui/world/WorldRouteChip.tsx",
+        "class": "supportTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/systems/ui/world/worldCommandSurface.ts",
+        "class": "supportTouchpoint"
+      },
+      {
+        "path": "src/systems/ui/world/worldModuleRoutingSurface.ts",
+        "class": "supportTouchpoint"
+      }
+    ],
+    "moduleScreens": [
+      {
+        "path": "src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/components/screens/world/buildings/RuinsBuildingPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/components/screens/world/buildings/GateTrialBuildingPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/components/screens/ManualPavilionPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/ManualPavilionPanel.scss"
+      },
+      {
+        "path": "src/components/screens/ApothecaryPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/ApothecaryPanel.scss"
+      },
+      {
+        "path": "src/components/screens/ForgePanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": null
+      },
+      {
+        "path": "src/components/screens/BountyBoardPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/BountyBoardPanel.scss"
+      },
+      {
+        "path": "src/components/screens/ExpeditionBoardPanel.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/ExpeditionBoardPanel.scss"
+      }
+    ],
+    "denseManagementScreens": [
+      {
+        "path": "src/components/screens/InventoryScreen.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/InventoryScreen.scss"
+      },
+      {
+        "path": "src/components/screens/TechniqueLibraryScreen.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/TechniqueLibraryScreen.scss"
+      },
+      {
+        "path": "src/components/screens/PrestigeScreen.tsx",
+        "class": "primaryTouchpoint",
+        "pairedStyle": "src/components/screens/PrestigeScreen.scss"
+      }
+    ],
+    "assetAnchorRoots": [
+      {
+        "path": "src/assets/background/",
+        "class": "assetAnchorRoot"
+      },
+      {
+        "path": "src/assets/background/citystates/",
+        "class": "assetAnchorRoot"
+      },
+      {
+        "path": "src/assets/menus/",
+        "class": "assetAnchorRoot"
+      },
+      {
+        "path": "src/assets/onscreen/",
+        "class": "assetAnchorRoot"
+      },
+      {
+        "path": "src/assets/ui/book_spines/",
+        "class": "assetAnchorRoot"
+      },
+      {
+        "path": "src/assets/items/ui/",
+        "class": "assetAnchorRoot"
+      },
+      {
+        "path": "src/assets/icons/",
+        "class": "assetAnchorRoot"
+      }
+    ]
+  },
+  "adjacentNonCanonical": [
+    {
+      "path": "src/ui/paper/PaperCard.tsx",
+      "reason": "Exists, but canonical Section A shell defaults are src/ui/ink/*."
+    },
+    {
+      "path": "src/ui/paper/PaperChip.tsx",
+      "reason": "Exists, but canonical Section A shell defaults are src/ui/ink/*."
+    },
+    {
+      "path": "tmp-progression-fixtures/src/ui/text/playerFacingLabels.js",
+      "reason": "Temporary fixture copy; not a live canonical touchpoint."
+    },
+    {
+      "path": "tmp-progression-fixtures/src/services/rewards/RewardService.js",
+      "reason": "Temporary fixture implementation; excluded from canonical UI touchpoints."
+    },
+    {
+      "path": "src/assets/icons/icons.zip",
+      "reason": "Archive artifact in asset root; not a direct code touchpoint."
+    }
+  ]
+}
