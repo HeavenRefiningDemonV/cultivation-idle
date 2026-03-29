@@ -1,5 +1,9 @@
 # Live Surface Visual Audit (Packet 7.5d)
 
+## Doctrine basis
+- This audit operationalizes Section A.9 layout stability and truth surfacing rules (`docs/ui/section-a-layout-stability-rules.md`, `docs/ui/section-a-truth-surfacing-rules.md`).
+- In doctrine conflicts, Section A doctrine files remain authority; this audit remains an enforcement hook.
+
 ## Tracked live surfaces/files
 - Source of truth: `src/services/diagnostics/release/liveSurfaceVisualManifest.ts`.
 - Reuses the packet 7.5 live surface scope from `LIVE_SURFACE_MANIFEST` and adds visual-file focus for:
