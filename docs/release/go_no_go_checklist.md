@@ -8,6 +8,10 @@
 - buildId: unknown
 - commit: unknown
 
+## UI acceptance doctrine reference
+- UI acceptance judgments should cite `docs/ui/section-a-acceptance-matrix.md` and `docs/ui/section-a-definition-of-done-registry.md` as Section A doctrine sources.
+- This checklist remains release-gate process guidance and does not replace Section A doctrine files.
+
 ## Engineering / startup integrity
 | checklist id | linked checkId(s) | question | status | evidence source(s) | waiver allowed? | owner role |
 | --- | --- | --- | --- | --- | --- | --- |
