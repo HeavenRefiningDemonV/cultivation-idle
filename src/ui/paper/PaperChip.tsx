@@ -23,8 +23,12 @@ export function PaperChip({ variant = 'pill', icon, text, tone = 'neutral', onCl
       text={text}
       tone={tone}
       onClick={onClick}
+      data-ui-chrome-surface="paper-chip"
+      data-preserve-base-art="true"
       className={classNames(
         'paperChip',
+        'uiChromeOverlaySurface',
+        'uiChromeOverlaySurface--label',
         {
           'paperChip--tag': variant === 'tag',
           'paperChip--clickable': Boolean(onClick),

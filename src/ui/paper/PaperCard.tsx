@@ -45,6 +45,8 @@ export function PaperCard({
       disabled={disabled}
       className={classNames(
         'paperCard',
+        'uiChromeOverlaySurface',
+        'uiChromeDoNotFlatten',
         `paperCard--${variant}`,
         {
           'paperCard--interactive': interactive,
@@ -55,10 +57,14 @@ export function PaperCard({
           isComplete: complete,
           isClaimed: claimed,
           isDisabled: disabled,
+          'uiChromeOverlaySurface--raised': variant === 'tray',
+          'uiChromeOverlaySurface--label': variant === 'label',
         },
         className,
       )}
       style={style}
+      data-ui-chrome-surface="paper-card"
+      data-preserve-base-art="true"
       {...rest}
     >
       {children}

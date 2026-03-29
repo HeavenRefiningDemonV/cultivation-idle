@@ -36,7 +36,9 @@ export function PaperStamp({ text, size = 'md', tone = 'ink', state, tilt = 'aut
       tone={tone}
       state={resolvedState}
       tilt={tilt}
-      className={classNames('paperStamp', `paperStamp--${size}`, `paperStamp--tone-${tone}`, `paperStamp--${resolvedState}`, className)}
+      data-ui-chrome-surface="paper-stamp"
+      data-preserve-base-art="true"
+      className={classNames('paperStamp', 'uiChromeOverlaySurface', 'uiChromeOverlaySurface--label', `paperStamp--${size}`, `paperStamp--tone-${tone}`, `paperStamp--${resolvedState}`, className)}
     />
   );
 }

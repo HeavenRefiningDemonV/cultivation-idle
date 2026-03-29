@@ -19,6 +19,7 @@ export function SafeDomOverlaySlot({
   const classNames = [
     'uiScreenCompositionContentOverlay',
     'safeDomOverlaySlot',
+    'uiChromeDoNotFlatten',
     interactive ? 'safeDomOverlaySlot--interactive' : 'safeDomOverlaySlot--inert',
     className,
   ]
@@ -30,6 +31,7 @@ export function SafeDomOverlaySlot({
       className={classNames}
       style={style}
       data-dom-overlay-slot="true"
+      data-ui-overlay-lane="safe-dom"
       data-screen-key={screenKey}
       data-interactive={interactive ? 'true' : 'false'}
     >

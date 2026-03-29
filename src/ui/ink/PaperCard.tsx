@@ -36,15 +36,21 @@ export function PaperCard({
       disabled={disabled}
       className={classNames(
         'inkPaperCard',
+        'uiChromeOverlaySurface',
+        'uiChromeDoNotFlatten',
         `inkPaperCard--${variant}`,
         {
           'inkPaperCard--interactive': interactive,
           'inkPaperCard--selected': selected,
           'inkPaperCard--disabled': disabled,
+          'uiChromeOverlaySurface--raised': variant === 'tray',
+          'uiChromeOverlaySurface--label': variant === 'label',
         },
         className,
       )}
       style={style}
+      data-ui-chrome-surface="ink-paper-card"
+      data-preserve-base-art="true"
       {...rest}
     >
       {children}

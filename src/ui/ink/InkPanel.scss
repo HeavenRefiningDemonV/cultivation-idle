@@ -2,16 +2,20 @@
 @import '../../styles/uiMotionTokens.scss';
 
 /*
- * B.3 compatibility layer:
- * - FrameCard.scss owns shared shell implementation
- * - this file keeps legacy .inkPanel skin semantics and header/body compatibility
+ * A.3 shared-chrome freeze:
+ * - keep legacy .inkPanel semantics and variant hooks
+ * - ensure panel defaults remain additive/local over scenic Layer 1
  */
 
 .inkPanel {
-  --frame-card-bg: var(--ink-panel-base, var(--ui-chrome-surface-shell-base));
+  --frame-card-bg: color-mix(in oklab, var(--ink-panel-base, var(--ui-chrome-surface-shell-base)) 90%, transparent);
   --frame-card-border: var(--ink-panel-border, var(--ui-chrome-border-shell));
   --frame-card-outline: var(--ink-panel-outline, var(--ui-chrome-outline-shell));
   --frame-card-watermark-opacity: var(--watermark-opacity);
+}
+
+.inkPanel.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: 0.92;
 }
 
 .inkPanel--watermark {
@@ -26,7 +30,7 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--ink-text-color);
-  background-color: var(--ui-chrome-surface-shell-raised);
+  background-color: color-mix(in oklab, var(--ui-chrome-surface-shell-raised) 88%, transparent);
   border: 1px solid var(--ui-chrome-outline-shell);
   border-radius: var(--ui-chrome-radius-card-compact);
   box-shadow: var(--ui-chrome-shadow-soft);
@@ -37,37 +41,37 @@
 }
 
 .inkPanel--apothecary {
-  --frame-card-bg: rgba(244, 234, 214, 0.96);
+  --frame-card-bg: color-mix(in oklab, rgba(244, 234, 214, 0.96) 92%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/bar_long.png');
 }
 
 .inkPanel--forge {
-  --frame-card-bg: rgba(236, 228, 216, 0.96);
+  --frame-card-bg: color-mix(in oklab, rgba(236, 228, 216, 0.96) 92%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/bar_short.png');
   --frame-card-border: rgba(65, 45, 25, 0.32);
 }
 
 .inkPanel--manual {
-  --frame-card-bg: rgba(247, 236, 214, 0.97);
+  --frame-card-bg: color-mix(in oklab, rgba(247, 236, 214, 0.97) 94%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/block_fancy.png');
 }
 
 .inkPanel--techniques {
-  --frame-card-bg: rgba(244, 232, 210, 0.95);
+  --frame-card-bg: color-mix(in oklab, rgba(244, 232, 210, 0.95) 92%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/buttoncorners.png');
 }
 
 .inkPanel--prestige {
-  --frame-card-bg: rgba(242, 228, 206, 0.95);
+  --frame-card-bg: color-mix(in oklab, rgba(242, 228, 206, 0.95) 92%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/bar_long.png');
 }
 
 .inkPanel--pouch {
-  --frame-card-bg: rgba(245, 235, 216, 0.96);
+  --frame-card-bg: color-mix(in oklab, rgba(245, 235, 216, 0.96) 92%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/bar_short.png');
 }
 
 .inkPanel--heartlaw {
-  --frame-card-bg: rgba(246, 232, 206, 0.95);
+  --frame-card-bg: color-mix(in oklab, rgba(246, 232, 206, 0.95) 92%, transparent);
   --frame-card-watermark-image: url('../../assets/menus/scroll.png');
 }

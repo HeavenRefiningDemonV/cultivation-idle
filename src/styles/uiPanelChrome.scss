@@ -2,18 +2,22 @@
   border: 5px solid transparent;
   border-image: url("../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
-  background: var(--panel-chrome-bg, var(--paper-shell-base, rgba(247, 237, 215, 0.9)));
+  background: var(--panel-chrome-bg, color-mix(in oklab, var(--paper-shell-base, rgba(247, 237, 215, 0.92)) 88%, transparent));
   box-shadow: var(--panel-chrome-shadow, var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24)));
   border-color: var(--paper-shell-border, rgba(65, 45, 25, 0.26));
 }
 
+.uiPanelChrome.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: var(--ui-chrome-overlay-alpha-local, 0.9);
+}
+
 .uiPanelChrome--raised {
-  --panel-chrome-bg: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
+  --panel-chrome-bg: color-mix(in oklab, var(--paper-shell-raised, rgba(255, 245, 225, 0.95)) 94%, transparent);
   --panel-chrome-shadow: var(--paper-shadow-strong, 0 14px 28px rgba(22, 12, 4, 0.32));
 }
 
 .uiPanelChrome--flat {
-  --panel-chrome-bg: var(--paper-shell-muted, rgba(236, 225, 205, 0.74));
+  --panel-chrome-bg: color-mix(in oklab, var(--paper-shell-muted, rgba(236, 225, 205, 0.78)) 82%, transparent);
   --panel-chrome-shadow: var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24));
 }
 

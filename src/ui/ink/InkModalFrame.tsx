@@ -54,9 +54,9 @@ export function InkModalFrame({
       header={header}
       showCloseButton={Boolean(onClose) && showCloseButton}
       ariaLabel={ariaLabel}
-      className={classNames('inkModalFrame', className)}
-      dialogClassName="inkModalFrame__dialog"
-      panelClassName={classNames('inkModalFrame__panel', panelClassName)}
+      className={classNames('inkModalFrame', 'uiChromeDoNotFlatten', className)}
+      dialogClassName="inkModalFrame__dialog uiChromeOverlaySurface uiChromeOverlaySurface--modal"
+      panelClassName={classNames('inkModalFrame__panel', 'uiChromeOverlaySurface', 'uiChromeOverlaySurface--modal', 'uiChromeTextureLocal', panelClassName)}
     >
       {children}
     </ModalFrame>

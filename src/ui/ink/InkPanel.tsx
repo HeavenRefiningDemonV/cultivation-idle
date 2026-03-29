@@ -50,7 +50,9 @@ export function InkPanel({
       variant={mapped.variant}
       skin={mapped.skin}
       watermark={watermark}
-      className={classNames('inkPanel', `inkPanel--${variant}`, { 'inkPanel--watermark': watermark }, className)}
+      className={classNames('inkPanel', 'uiChromeOverlaySurface', 'uiChromeDoNotFlatten', `inkPanel--${variant}`, { 'inkPanel--watermark': watermark }, className)}
+      data-ui-chrome-surface="ink-panel"
+      data-preserve-base-art="true"
       style={style}
       header={header ? <div className="inkPanel__header">{header}</div> : undefined}
     >

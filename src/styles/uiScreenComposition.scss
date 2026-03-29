@@ -3,6 +3,10 @@
   isolation: isolate;
 }
 
+.uiScreenCompositionRoot.uiScenicBaseHost {
+  background: transparent;
+}
+
 .uiScreenCompositionBackdrop,
 .uiScreenCompositionTexture,
 .uiScreenCompositionFxUnderlay,
@@ -17,11 +21,16 @@
   z-index: var(--ui-layer-local-backdrop);
 }
 
+.uiScreenCompositionBackdrop.uiScenicBasePlane {
+  z-index: var(--ui-layer-local-backdrop);
+}
+
 .uiScreenCompositionTexture {
   z-index: var(--ui-layer-local-texture);
 }
 
-.uiScreenCompositionFxUnderlay {
+.uiScreenCompositionFxUnderlay,
+.uiScenicBaseFxUnderlay {
   z-index: var(--ui-layer-local-fx-underlay);
 }
 

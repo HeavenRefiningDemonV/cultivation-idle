@@ -39,6 +39,7 @@ export function AmbientUnderlayMount({
         data-fx-mount-kind="ambient-underlay"
         data-fx-mount-mode={mountMode}
         data-fx-screen-key={screenKey}
+        data-fx-underlay="true"
       >
         {staticFallback ?? null}
       </span>
@@ -60,7 +61,7 @@ export function AmbientUnderlayMount({
       disableOnReducedMotion={disableOnReducedMotion}
       diagnosticsMountKind="ambient-underlay"
       diagnosticsMountMode={mountMode}
-      className={['ambientUnderlayMount', className].filter(Boolean).join(' ')}
+      className={['ambientUnderlayMount', 'uiScenicBaseFxUnderlay', className].filter(Boolean).join(' ')}
       style={style}
     />
   );

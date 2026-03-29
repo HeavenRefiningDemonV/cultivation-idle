@@ -16,10 +16,16 @@ export function ScreenCompositionRoot({
   style,
   children,
 }: ScreenCompositionRootProps) {
-  const classNames = ['uiScreenCompositionRoot', 'screenCompositionRoot', className].filter(Boolean).join(' ');
+  const classNames = ['uiScreenCompositionRoot', 'uiScenicBaseHost', 'screenCompositionRoot', className].filter(Boolean).join(' ');
 
   return (
-    <div className={classNames} style={style} data-screen-key={screenKey} data-screen-archetype={archetype}>
+    <div
+      className={classNames}
+      style={style}
+      data-ui-layer-root="true"
+      data-screen-key={screenKey}
+      data-screen-archetype={archetype}
+    >
       {children}
     </div>
   );

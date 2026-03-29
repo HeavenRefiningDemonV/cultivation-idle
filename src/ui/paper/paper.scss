@@ -6,25 +6,28 @@
 @import '../chrome/ChromeStamp.scss';
 
 /*
- * B.5 compatibility bridge:
- * - FrameCard.scss remains canonical card implementation.
- * - ChromeChip.scss and ChromeStamp.scss now own chip/stamp visuals.
- * - this file keeps paperCard alias hooks only.
+ * A.3 shared-chrome freeze compatibility:
+ * - preserve paper card/chip/stamp tactile identity
+ * - keep behavior local/additive over scenic Layer 1
  */
 
 .paperCard {
-  --frame-card-bg: var(--ui-chrome-surface-card-base);
+  --frame-card-bg: color-mix(in oklab, var(--ui-chrome-surface-card-base) 90%, transparent);
   --frame-card-border: var(--paper-border, var(--ui-chrome-border-soft));
   --frame-card-outline: var(--paper-outline, var(--ui-chrome-outline-shell));
   transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
+.paperCard.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: 0.9;
+}
+
 .paperCard--tray {
-  --frame-card-bg: var(--ui-chrome-surface-card-raised);
+  --frame-card-bg: color-mix(in oklab, var(--ui-chrome-surface-card-raised) 94%, transparent);
 }
 
 .paperCard--label {
-  --frame-card-bg: var(--ui-chrome-surface-card-soft);
+  --frame-card-bg: color-mix(in oklab, var(--ui-chrome-surface-card-soft) 88%, transparent);
 }
 
 .paperCard.isComplete {
@@ -33,4 +36,9 @@
 
 .paperCard.isClaimed {
   border-color: rgba(159, 59, 46, 0.35);
+}
+
+.paperChip.uiChromeOverlaySurface,
+.paperStamp.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: 0.88;
 }

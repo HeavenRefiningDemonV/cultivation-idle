@@ -1,6 +1,7 @@
 @import './uiLayerTokens.css';
 @import './uiChromeTokens.scss';
 @import './uiMotionTokens.scss';
+@import './uiAssetContinuityGuards.scss';
 @import './uiScreenComposition.scss';
 
 /* App-wide layering must use semantic UI layer tokens from uiLayerTokens.css. */

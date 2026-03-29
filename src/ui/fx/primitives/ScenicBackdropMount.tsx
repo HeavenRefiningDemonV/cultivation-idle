@@ -24,13 +24,15 @@ export function ScenicBackdropMount({
     return null;
   }
 
-  const classNames = ['uiScreenCompositionBackdrop', 'scenicBackdropMount', className].filter(Boolean).join(' ');
+  const classNames = ['uiScreenCompositionBackdrop', 'uiScenicBasePlane', 'uiPreserveBaseArt', 'scenicBackdropMount', className].filter(Boolean).join(' ');
 
   return (
     <div
       aria-hidden="true"
       className={classNames}
       data-scenic-backdrop="true"
+      data-scenic-base="true"
+      data-preserve-base-art="true"
       data-screen-key={screenKey}
       style={{ ...(backdropImage ? { backgroundImage: `url(${backdropImage})` } : null), ...style }}
     >

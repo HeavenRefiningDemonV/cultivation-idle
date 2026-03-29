@@ -15,4 +15,5 @@
 .inkModalFrame__panel {
   width: min(920px, 94vw);
   transition: transform var(--ui-motion-duration-enter) var(--ui-motion-ease-emphasized);
+  --ui-chrome-overlay-alpha-modal: 0.97;
 }

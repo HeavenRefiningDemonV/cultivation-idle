@@ -1,27 +1,32 @@
 @import './inkTheme.scss';
 
 /*
- * B.3 compatibility layer:
- * - FrameCard.scss owns the shared card implementation
- * - this file keeps legacy .inkPaperCard class hooks and pouch-specific tuning
+ * A.3 shared-chrome freeze compatibility:
+ * - keep legacy .inkPaperCard hooks
+ * - keep pouch tuning and selected marker
+ * - reduce screen-owning feel via additive local shell variables
  */
 
 .inkPaperCard {
-  --frame-card-bg: var(--paper-tint);
+  --frame-card-bg: color-mix(in oklab, var(--paper-tint) 90%, transparent);
   --frame-card-border: var(--ink-border-color);
   transition: border-color var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
 }
 
+.inkPaperCard.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: 0.9;
+}
+
 .inkPaperCard--tray {
-  --frame-card-bg: rgba(247, 238, 220, 0.96);
+  --frame-card-bg: color-mix(in oklab, rgba(247, 238, 220, 0.96) 92%, transparent);
 }
 
 .inkPaperCard--label {
-  --frame-card-bg: rgba(252, 246, 235, 0.95);
+  --frame-card-bg: color-mix(in oklab, rgba(252, 246, 235, 0.95) 88%, transparent);
 }
 
 .inkPaperCard--pouch {
-  --frame-card-bg: rgba(242, 231, 210, 0.96);
+  --frame-card-bg: color-mix(in oklab, rgba(242, 231, 210, 0.96) 92%, transparent);
 }
 
 .inkPaperCard--interactive:hover {
@@ -29,7 +34,6 @@
 }
 
 .inkPaperCard--selected {
-  /* no layout-changing border-width growth; selected emphasis comes from FrameCard box-shadow */
   border-color: var(--ui-chrome-outline-strong);
 }
 

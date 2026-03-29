@@ -1,8 +1,14 @@
-/* B.5 compatibility bridge: canonical chip visuals live in src/ui/chrome/ChromeChip.scss */
+/* A.3 compatibility bridge: chips are bounded local chrome label surfaces */
 @import '../chrome/ChromeChip.scss';
 
 .paperChip,
 .inkPaperChip,
 .chromeChip {
   transition-duration: var(--ui-motion-duration-hover);
+}
+
+.inkPaperChip.uiChromeOverlaySurface,
+.paperChip.uiChromeOverlaySurface,
+.chromeChip.uiChromeOverlaySurface {
+  --ui-chrome-overlay-alpha: 0.88;
 }
