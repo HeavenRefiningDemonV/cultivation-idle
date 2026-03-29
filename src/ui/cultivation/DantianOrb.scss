@@ -1,15 +1,16 @@
 .dantianOrb {
-  position: fixed;
+  position: relative;
   z-index: 1;
-  width: 12vh;
-  height: 12vh;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  width: var(--dantian-orb-size, 12vh);
+  height: var(--dantian-orb-size, 12vh);
   display: grid;
   place-items: center;
   --accent: rgba(148, 163, 184, 0.7);
   pointer-events: none;
+}
+
+.dantianOrb--status {
+  --dantian-orb-size: clamp(84px, 11vw, 132px);
 }
 
 .dantianOrbHalo {
@@ -59,6 +60,14 @@
 .dantianOrb--ready .dantianOrbHalo {
   opacity: 0.8;
   box-shadow: 0 0 22px var(--accent);
+}
+
+.dantianOrb--status .dantianOrbHalo {
+  opacity: 0.4;
+}
+
+.dantianOrb--status .dantianOrbImage {
+  animation-duration: 16s;
 }
 
 .dantianOrb--fire {

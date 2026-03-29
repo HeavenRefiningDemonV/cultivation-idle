@@ -31,6 +31,7 @@ import { CultivationHeaderRibbon } from '../../ui/cultivation/CultivationHeaderR
 import { CultivationBreakthroughPanel } from '../../ui/cultivation/CultivationBreakthroughPanel.js';
 import { CultivationDoctrineSummary } from '../../ui/cultivation/CultivationDoctrineSummary.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
+import { QiLotusIcon } from '../../ui/cultivation/QiLotusIcon.js';
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
@@ -440,18 +441,23 @@ export function CultivateScreen() {
 
   const breathSemantics = getBreathModeSemantics(breathMode);
   const focusSemantics = getFocusModeSemantics(focusMode);
+  const qiLotusState = canBreakthrough ? 'ready' : isCultivating ? 'active' : 'idle';
 
   return (
     <div className="cultivationScreenRoot">
       <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
       <div className="cultivationSceneLayer" aria-hidden="true">
+        <div className="cultivationSceneLayer__veil" />
         <img className="cultivationCultivatorArt" src={cultivator} alt="" />
-        <DantianOrb
-          heartLawTags={heartLawTags}
-          isCultivating={isCultivating}
-          isNearReady={isNearReady}
-          isReady={canBreakthrough}
-        />
+        <div className="cultivationOrbAnchor">
+          <DantianOrb
+            className="cultivationOrbAnchor__orb"
+            heartLawTags={heartLawTags}
+            isCultivating={isCultivating}
+            isNearReady={isNearReady}
+            isReady={canBreakthrough}
+          />
+        </div>
       </div>
       <button
         type="button"
@@ -549,6 +555,13 @@ export function CultivateScreen() {
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
           <div className="cultivationVerseSlot">
+            <div className="cultivationVerseSlot__lotus">
+              <QiLotusIcon
+                state={qiLotusState}
+                title={canBreakthrough ? 'Qi lotus: breakthrough ready' : isCultivating ? 'Qi lotus: cultivating' : 'Qi lotus: idle'}
+                label={canBreakthrough ? 'Ready' : isCultivating ? 'Flowing' : 'Calm'}
+              />
+            </div>
             {heartLawDef ? (
               <VerseMiniBar
                 chapter={chapter}

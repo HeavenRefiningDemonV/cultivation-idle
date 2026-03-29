@@ -2,6 +2,31 @@
   position: relative;
   border-radius: 14px;
   overflow-y: auto;
+  isolation: isolate;
+}
+
+.statusScreenSceneLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.statusScreenSceneLayer__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.statusScreenSceneLayer__bg--paper {
+  opacity: 0.3;
+}
+
+.statusScreenSceneLayer__bg--mist {
+  opacity: 0.2;
+  mix-blend-mode: screen;
 }
 
 .statusScreenContent {
@@ -10,6 +35,22 @@
   max-width: 1120px;
   margin: 0 auto;
   padding: 32px 16px;
+}
+
+.statusScreenCenterpiece {
+  margin: 0 auto 16px;
+  width: min(180px, 38vw);
+  height: min(180px, 38vw);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(252, 246, 232, 0.45), rgba(252, 246, 232, 0.08) 58%, transparent 88%);
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2);
+  pointer-events: none;
+}
+
+.statusScreenCenterpiece__orb {
+  opacity: 0.7;
 }
 
 .statusScreenHeader {
@@ -43,12 +84,12 @@
 }
 
 .statusScreenCardBase {
-  background: rgba(208, 208, 208, 0.92);
+  background: linear-gradient(180deg, rgba(248, 238, 220, 0.92), rgba(234, 223, 203, 0.86));
   border: 5px solid transparent;
   border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
   padding: 24px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }

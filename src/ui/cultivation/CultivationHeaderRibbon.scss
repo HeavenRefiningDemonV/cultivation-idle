@@ -1,12 +1,12 @@
 .cultivationHeaderRibbon {
-  position: fixed;
-  top: 10px;
-  left: 24px;
-  right: 24px;
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  z-index: var(--ui-layer-chrome-ribbon, var(--ui-layer-header));
+  z-index: var(--ui-layer-chrome-ribbon, var(--ui-layer-local-content-overlay));
   pointer-events: none;
 }
 
@@ -20,11 +20,12 @@
 }
 
 .cultivationHeaderRibbon__inner {
-  padding: 0;
+  padding: 0 2px;
 }
 
 .cultivationHeaderRibbon__topRibbon {
   width: 100%;
+  opacity: 0.94;
 }
 
 .cultivationHeaderRibbon__endLine {
@@ -48,14 +49,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #d0d0d0;
+  background: linear-gradient(180deg, rgba(247, 237, 215, 0.96), rgba(230, 216, 191, 0.92));
   border-radius: var(--ui-chrome-radius-pill);
-  border: 2px solid rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(120, 72, 33, 0.42);
   cursor: pointer;
   transition: transform var(--ui-motion-duration-hover) var(--ui-motion-ease-standard),
     background var(--ui-motion-duration-hover) var(--ui-motion-ease-standard);
   z-index: var(--ui-layer-local-content-overlay);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.16);
   pointer-events: auto;
   --ui-no-shift-outline-active: 2px solid rgba(0, 0, 0, 0.35);
   --ui-no-shift-outline-offset: var(--ui-motion-outline-offset);
@@ -64,7 +65,7 @@
 
 .cultivationHeaderRibbon__handle:hover,
 .cultivationHeaderRibbon__handle:focus-visible {
-  background: var(--button-hover-neutral);
+  background: linear-gradient(180deg, rgba(252, 246, 232, 0.98), rgba(236, 221, 196, 0.94));
   outline: none;
 }
 

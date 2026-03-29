@@ -4,7 +4,7 @@
   position: relative;
   display: inline-block;
   flex: 0 0 auto;
-  margin-right: 2px;
+  margin-right: 0;
   overflow: visible;
   transform: translateY(0);
 }
@@ -65,5 +65,14 @@
 
 
 .qiLotusIcon__label {
-  display: none;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(58, 42, 28, 0.82);
+  white-space: nowrap;
 }

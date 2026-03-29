@@ -56,6 +56,14 @@ export function StatusSummaryHeader({
       </TopRibbon>
 
       <div className="statusSummaryTopGrid">
+        <div className="statusIdentityBand" aria-label="Run identity">
+          <div className="statusSummaryLabelRow">
+            <TreePine className="statusSummaryIcon" aria-hidden />
+            <span className="statusSummaryLabel">Spirit Root</span>
+          </div>
+          <p className="statusIdentityBand__line">{spiritRootLine}</p>
+          <p className="statusIdentityBand__detail">{pathLabel} • {heartLawLine}</p>
+        </div>
         <div className="statusBiggestShortfall">
           <div className="statusSummaryLabelRow">
             <AlertCircle className="statusSummaryIcon" aria-hidden />
