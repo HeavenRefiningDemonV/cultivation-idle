@@ -23,3 +23,11 @@ Prompts should read like focused GitHub issues so they are easy to execute witho
 - Cleanup must never be bundled silently into unrelated work.
 - Future art or future FX must never be used to justify a broken present intermediate state.
 - If cleanup preconditions are not met, prompts must keep old layers in place and explicitly defer cleanup.
+
+## UI packet contract
+- UI Section B–I packets must follow `docs/codex/UI_PACKET_SCHEMA.md`.
+- Prompt authors should start from `docs/codex/UI_SECTION_A_PACKET_TEMPLATE.md` instead of improvising packet structure.
+- Every UI packet must declare: packet class, current phase, target visible surface(s) or `N/A`, dominant screen family or `N/A`, touched layers or `N/A`, retained old art/layer(s), exact file touchpoints, art request status, cutover statement, and fallback behavior.
+- Silent cleanup is forbidden.
+- Guessed touchpoints are forbidden.
+- If a packet is not a UI packet, this section does not apply.
