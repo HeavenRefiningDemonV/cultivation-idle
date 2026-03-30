@@ -10,5 +10,5 @@ export type {
 export { PaperChip } from './PaperChip.js';
 export type { PaperChipVariant, PaperChipTone, PaperChipProps } from './PaperChip.js';
 export { InkModalFrame } from './InkModalFrame.js';
-export type { InkModalFrameProps } from './InkModalFrame.js';
+export type { InkModalFrameProps, InkModalFrameSize, InkModalFrameTone } from './InkModalFrame.js';
 export { PurposeSourceCallout } from './PurposeSourceCallout.js';

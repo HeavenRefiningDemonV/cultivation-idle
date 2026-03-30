@@ -1,18 +1,25 @@
 @import './inkTheme.scss';
 
 .inkModalFrame {
+  --ink-modal-z-index: 1250;
+  --ink-modal-dialog-pad-inline: 20px;
+  --ink-modal-dialog-pad-block: 20px;
+  --ink-modal-panel-max-inline: min(920px, 94vw);
+  --ink-modal-backdrop-bg: rgba(30, 24, 17, 0.62);
+
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 80;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  z-index: var(--ink-modal-z-index);
 }
 
 .inkModalFrame__backdrop {
   position: absolute;
   inset: 0;
-  background: var(--ink-modal-backdrop);
+  background: var(--ink-modal-backdrop-bg, var(--ink-modal-backdrop));
 }
 
 .inkModalFrame__backdrop::before {
@@ -28,14 +35,17 @@
 .inkModalFrame__dialog {
   position: relative;
   z-index: 1;
-  padding: 20px;
+  padding: var(--ink-modal-dialog-pad-block) var(--ink-modal-dialog-pad-inline);
   width: 100%;
+  max-height: 100%;
   display: flex;
   justify-content: center;
 }
 
 .inkModalFrame__panel {
-  width: min(920px, 94vw);
+  width: var(--ink-modal-panel-max-inline);
+  max-height: calc(100vh - (2 * var(--ink-modal-dialog-pad-block)) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: auto;
 }
 
 .inkModalFrame__close {
@@ -73,4 +83,33 @@
 .inkModalFrame__close:focus-visible {
   outline: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
   outline-offset: 2px;
+}
+
+.inkModalFrame--lg {
+  --ink-modal-panel-max-inline: min(1080px, 96vw);
+}
+
+.inkModalFrame--ritual {
+  --ink-modal-backdrop-bg: rgba(30, 24, 17, 0.62);
+}
+
+.inkModalFrame--summary {
+  --ink-modal-backdrop-bg: rgba(34, 27, 20, 0.54);
+}
+
+.inkModalFrame--chapterEnd {
+  --ink-modal-backdrop-bg: rgba(26, 20, 15, 0.68);
+}
+
+@media (max-width: 700px) {
+  .inkModalFrame {
+    --ink-modal-dialog-pad-inline: 12px;
+    --ink-modal-dialog-pad-block: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inkModalFrame__close {
+    transition-duration: 80ms;
+  }
 }

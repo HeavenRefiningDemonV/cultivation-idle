@@ -53,3 +53,10 @@ export type {
 
 export { InspectorDrawer } from './InspectorDrawer.js';
 export type { InspectorDrawerProps } from './InspectorDrawer.js';
+
+export { RitualModalFrame } from './RitualModalFrame.js';
+export type {
+  RitualModalFrameProps,
+  RitualModalFrameVariant,
+  RitualModalFrameSize,
+} from './RitualModalFrame.js';
