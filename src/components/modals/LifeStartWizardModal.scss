@@ -177,41 +177,152 @@
 .lifePathFullscreen {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.25);
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(248, 241, 224, 0.52), rgba(248, 241, 224, 0) 44%),
+    radial-gradient(circle at 84% 74%, rgba(240, 228, 203, 0.42), rgba(240, 228, 203, 0) 45%),
+    linear-gradient(180deg, rgba(32, 28, 24, 0.42), rgba(24, 20, 16, 0.52));
+}
+
+.lifePathHero {
+  position: relative;
+  width: min(1560px, 96vw);
+  height: min(960px, 100vh);
+  padding: clamp(20px, 3vh, 34px) clamp(16px, 2vw, 26px) 18px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 16px;
+}
+
+.lifePathHeroBackdrop {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255, 241, 215, 0.2);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.12), rgba(247, 237, 220, 0.08)),
+    url('../../assets/texture_overlay.png');
+  background-size: auto, 440px 440px;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.lifePathHeroHeader {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.lifePathHeroEyebrow {
+  margin: 0;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: rgba(251, 242, 225, 0.88);
+}
+
+.lifePathHeroTitle {
+  margin: 0;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 1.05;
+  color: rgba(255, 246, 231, 0.96);
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.36);
+}
+
+.lifePathHeroSubline {
+  margin: 0;
+  font-size: clamp(14px, 1.4vw, 18px);
+  color: rgba(244, 229, 205, 0.88);
+}
+
+.lifePathHeroDivider {
+  width: min(520px, 60vw);
+  height: 20px;
+  opacity: 0.7;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.lifePathHeroDividerBar {
+  width: min(420px, 52vw);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(245, 232, 204, 0), rgba(245, 232, 204, 0.9), rgba(245, 232, 204, 0));
+}
+
+.lifePathPreviewPlaque {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  width: min(700px, 88%);
+  border: 1px solid rgba(244, 228, 198, 0.4);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: rgba(18, 14, 12, 0.62);
+  color: rgba(247, 239, 224, 0.95);
+  text-align: center;
+  min-height: 82px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+}
+
+.lifePathPreviewPlaque__label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.lifePathPreviewPlaque__summary {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
 }
 
 .lifePathTriptych {
+  position: relative;
+  z-index: 2;
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 1.3vw, 20px);
 }
 
 .lifePathTriptychFrame {
+  position: relative;
   height: 100%;
-  width: min(1360px, 96vw);
-  padding: 12px;
-  border: 3px solid #111;
-  background: rgba(246, 243, 236, 0.15);
+  width: 100%;
+  padding: clamp(10px, 1vw, 16px);
+  border: 1px solid rgba(254, 243, 214, 0.24);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(248, 238, 220, 0.18), rgba(243, 225, 194, 0.1));
   display: flex;
+  box-shadow: inset 0 0 0 1px rgba(25, 21, 16, 0.4);
 }
 
 .lifePathPanel {
   position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid #111;
-  border-radius: 0;
+  display: grid;
+  grid-template-rows: 1fr;
+  align-items: stretch;
+  border: 1px solid rgba(255, 233, 195, 0.24);
+  border-radius: 12px;
+  isolation: isolate;
+  transition: filter 220ms ease, opacity 220ms ease;
 }
 
 .lifePathPanel.isHoverFx {
-  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.72);
+  filter: brightness(1.04) saturate(1.05);
+}
+
+.lifePathPanel.isDimmed {
+  opacity: 0.72;
+  filter: saturate(0.78) brightness(0.86);
 }
 
 .lifePathPanel.isHoverFx::before,
@@ -226,9 +337,9 @@
   inset: -20%;
   background-image: url('../../assets/texture_overlay.png');
   background-size: 420px 420px;
-  opacity: 0.12;
+  opacity: 0.09;
   mix-blend-mode: multiply;
-  animation: lifePathMistDrift 2.8s ease-in-out infinite;
+  animation: lifePathMistDrift 8.4s ease-in-out infinite;
 }
 
 .lifePathPanel.isHoverFx::after {
@@ -238,10 +349,29 @@
   width: 45%;
   background-image: url('../../assets/texture_overlay.png');
   background-size: 160px 160px;
-  opacity: 0.2;
+  opacity: 0.15;
   mix-blend-mode: multiply;
   transform: skewX(-18deg);
-  animation: lifePathStrokeSweep 2.2s ease-in-out infinite;
+  animation: lifePathStrokeSweep 6.4s ease-in-out infinite;
+}
+
+.lifePathPanel__frame {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255, 239, 209, 0.36);
+  border-radius: 8px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.lifePathPanel__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(18, 18, 22, 0.22) 0%, rgba(18, 18, 22, 0) 20%, rgba(18, 18, 22, 0) 58%, rgba(18, 18, 22, 0.72) 100%),
+    radial-gradient(circle at 50% 86%, rgba(15, 14, 12, 0.42), rgba(15, 14, 12, 0) 48%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .lifePathPanel__stamp {
@@ -250,7 +380,7 @@
   right: 16px;
   width: 36px;
   height: 36px;
-  border: 2px solid rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 228, 187, 0.55);
   background-image: url('../../assets/texture_overlay.png');
   background-size: 120px 120px;
   opacity: 0;
@@ -318,37 +448,67 @@
 
 .lifePathPanel__title {
   position: absolute;
-  top: 18px;
+  top: 28px;
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 44px;
+  font-size: clamp(30px, 2.5vw, 42px);
   letter-spacing: 2px;
-  color: #111;
+  color: rgba(252, 247, 235, 0.96);
   font-family: var(--ink-title-font, inherit);
   font-weight: 800;
-  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.25);
+  text-shadow: 0 8px 20px rgba(0, 0, 0, 0.44);
   pointer-events: none;
   z-index: 3;
 }
 
-.lifePathPanel__select {
+.lifePathPanel__footer {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 54px;
-  height: 64px;
-  background: rgba(245, 241, 231, 0.85);
-  border: 3px solid #111;
-  border-radius: 0;
-  font-size: 28px;
-  color: #111;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 4;
+  min-height: 138px;
+  display: grid;
+  align-content: end;
+  gap: 10px;
+}
+
+.lifePathPanel__role {
+  margin: 0;
+  min-height: 20px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(247, 236, 217, 0.92);
+}
+
+.lifePathPanel__actionPlate {
+  min-height: 72px;
+  border: 1px solid rgba(255, 227, 179, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(253, 241, 215, 0.2), rgba(253, 241, 215, 0.1));
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+
+.lifePathPanel__select {
+  width: 100%;
+  max-width: 280px;
+  height: 56px;
+  background: rgba(246, 236, 218, 0.92);
+  border: 1px solid rgba(118, 72, 41, 0.7);
+  border-radius: 8px;
+  font-size: clamp(22px, 2vw, 28px);
+  color: #2a1a0f;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--ink-ui-font, inherit);
-  z-index: 3;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
+  transition: background 180ms ease, filter 180ms ease, box-shadow 180ms ease;
 }
 
 .lifePathPanel__select:disabled {
@@ -357,12 +517,17 @@
 }
 
 .lifePathPanel__select:hover {
-  background: rgba(255, 255, 255, 0.88);
-  border-color: rgba(0, 0, 0, 0.95);
+  background: rgba(255, 248, 233, 0.96);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
 }
 
 .lifePathPanel__select:active {
   filter: brightness(0.98);
+}
+
+.lifePathPanel__select:focus-visible {
+  outline: 2px solid rgba(255, 228, 170, 0.95);
+  outline-offset: 2px;
 }
 
 @keyframes lifePathMistDrift {
@@ -399,6 +564,11 @@
   .lifePathPanel.isHoverFx::before,
   .lifePathPanel.isHoverFx::after {
     animation: none;
+  }
+
+  .lifePathPanel,
+  .lifePathPanel__select {
+    transition: none;
   }
 }
 
@@ -573,18 +743,48 @@ body.lifePathMode .bottomTabBar {
   }
 
   .lifePathTriptych {
-    grid-template-columns: 1fr;
-    height: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 1100px) {
+  .lifePathHero {
+    width: min(1460px, 98vw);
+    gap: 12px;
+    padding-inline: 10px;
+  }
+
+  .lifePathPreviewPlaque {
+    width: min(640px, 92%);
+  }
+
   .lifePathTriptychFrame {
-    width: min(94vw, 1200px);
     padding: 8px;
   }
 
   .lifePathTriptych {
     gap: 8px;
+  }
+}
+
+@media (max-width: 980px) {
+  .lifePathHero {
+    height: auto;
+    min-height: 100vh;
+    grid-template-rows: auto auto 1fr;
+    padding-bottom: 14px;
+  }
+
+  .lifePathTriptych {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .lifePathPanel {
+    min-height: 380px;
+  }
+
+  .lifePathPanel__title {
+    top: 20px;
   }
 }

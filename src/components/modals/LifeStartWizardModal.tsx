@@ -3,6 +3,7 @@ import './LifeStartWizardModal.scss';
 import heavenArt from '../../assets/menus/path_heaven 1.png';
 import earthArt from '../../assets/menus/path_earth 1.png';
 import martialArt from '../../assets/menus/path_martial 1.png';
+import barLong from '../../assets/menus/bar_long.png';
 import { SaveService } from '../../services/save/SaveService.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -32,6 +33,12 @@ const BREATH_MODES = [
   { id: 'safe', label: 'Safe', desc: 'Slower, calmer cultivation; favors stability.' },
   { id: 'fast', label: 'Fast', desc: 'Aggressive cultivation; faster progress with more volatility.' },
 ] as const;
+
+const CORE_IDENTITY_ROLE_CUES: Record<NonNullable<ReturnType<typeof getPathDoctrineProfile>>['coreIdentity'], string> = {
+  precision_pressure: 'Qi and technique focused.',
+  durable_inevitability: 'Body and defense focused.',
+  tempo_kill_window: 'Power and speed focused.',
+};
 
 interface LifeStartWizardModalProps {
   debugForceOpen?: boolean;
@@ -189,40 +196,72 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   };
 
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
+  const previewedPath: CultivationPath = hoveredPath ?? 'heaven';
+  const previewProfile = getPathDoctrineProfile(previewedPath);
+  const previewSummary = getPathDoctrineSummary(previewedPath);
 
   if (wizardStep === 1) {
     return (
       <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
         <div className="lifeStartWizardModal lifeStartWizardModal--path">
           <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
-            <div className="lifePathTriptychFrame">
-              <div className="lifePathTriptych" data-ui="life-path-triptych" role="group" aria-label="Choose your Life Path">
+            <div className="lifePathHero">
+              <div className="lifePathHeroBackdrop" aria-hidden />
+              <header className="lifePathHeroHeader">
+                <p className="lifePathHeroEyebrow">New Life Ritual</p>
+                <h2 className="lifePathHeroTitle">Choose Your Path</h2>
+                <p className="lifePathHeroSubline">Select the doctrine that will shape this life.</p>
+                <img className="lifePathHeroDivider" src={barLong} alt="" aria-hidden />
+                <div className="lifePathHeroDividerBar" aria-hidden />
+              </header>
+
+              <aside className={`lifePathPreviewPlaque lifePathPreviewPlaque--${previewedPath}`} aria-live="polite">
+                <div className="lifePathPreviewPlaque__label">{previewProfile?.label ?? 'Path Preview'}</div>
+                <p className="lifePathPreviewPlaque__summary">{previewSummary}</p>
+              </aside>
+
+              <div className="lifePathTriptychFrame">
+                <div className="lifePathTriptych" data-ui="life-path-triptych" data-preview={previewedPath} role="group" aria-label="Choose your Life Path">
                 {LIFE_PATHS.map((path) => {
                   const selected = selectedPath === path.id;
                   const disabled = selectedPath !== null && !selected;
                   const isHoverFx = hoveredPath === path.id;
+                  const doctrine = getPathDoctrineProfile(path.id);
+                  const roleCue = doctrine ? CORE_IDENTITY_ROLE_CUES[doctrine.coreIdentity] : 'Choose this path to shape your life.';
+                  const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
                   return (
-                    <div key={path.id} className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}`}>
+                    <div
+                      key={path.id}
+                      className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}${isDimmed ? ' isDimmed' : ''}`}
+                    >
+                      <div className="lifePathPanel__frame" aria-hidden />
+                      <div className="lifePathPanel__veil" aria-hidden />
                       <span className="lifePathPanel__stamp" aria-hidden="true" />
                       <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
                       <div className="lifePathPanel__title">{path.title}</div>
-                      <button
-                        type="button"
-                        className="lifePathPanel__select"
-                        onClick={() => handlePickPath(path.id)}
-                        onMouseEnter={() => setHoveredPath(path.id)}
-                        onMouseLeave={() => setHoveredPath(null)}
-                        onFocus={() => setHoveredPath(path.id)}
-                        onBlur={() => setHoveredPath(null)}
-                        disabled={disabled}
-                        aria-label={`Select ${path.title.toLowerCase()} path`}
-                        aria-pressed={selected}
-                      >
-                        Select
-                      </button>
+                      <div className="lifePathPanel__footer">
+                        <p className="lifePathPanel__role">{roleCue}</p>
+                        <div className="lifePathPanel__actionPlate">
+                          <button
+                            type="button"
+                            className="lifePathPanel__select"
+                            onClick={() => handlePickPath(path.id)}
+                            onMouseEnter={() => setHoveredPath(path.id)}
+                            onMouseLeave={() => setHoveredPath(null)}
+                            onFocus={() => setHoveredPath(path.id)}
+                            onBlur={() => setHoveredPath(null)}
+                            disabled={disabled}
+                            aria-label={`Select ${path.title.toLowerCase()} path`}
+                            aria-pressed={selected}
+                          >
+                            Select
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
+                </div>
               </div>
             </div>
           </div>
