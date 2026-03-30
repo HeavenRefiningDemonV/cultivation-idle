@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
-import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
+import { usePrestigeStore } from '../../../stores/prestigeStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import type { HeartLawDef } from '../../../content/index.js';
-import './HeartLawPanel.scss';
+import { RitualModalFrame } from '../../../ui/shell/index.js';
+import { getHeartLawSelectionPresentation } from '../../../systems/doctrine/heartLawSelectionPresentation.js';
+import { resolveChangeHeartLawActionState } from './changeHeartLawModalState.js';
+import './ChangeHeartLawModal.scss';
 
 import { CHANGE_HEART_LAW_COST } from '../../../systems/economy/meritRoleAudit.js';
 
@@ -23,6 +26,7 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
   const isLoaded = useContentStore((state) => state.isLoaded);
   const isUnlocked = useCultivationStore((state) => state.isUnlocked);
   const selectHeartLaw = useCultivationStore((state) => state.selectHeartLaw);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const canAffordCurrency = useInventoryStore((state) => state.canAffordCurrency);
   const spendCurrencies = useInventoryStore((state) => state.spendCurrencies);
   const addNotification = useUIStore((state) => state.addNotification);
@@ -42,10 +46,29 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
 
   const cost = useMemo(() => ({ gold: CHANGE_COST }), []);
   const canAfford = canAffordCurrency(cost);
+  const selectedLaw = selected ? heartLaws.find((law) => law.id === selected) ?? null : null;
+  const selectedUnlocked = selected ? isUnlocked(selected) : false;
+
+  const selectedPresentation = selectedLaw
+    ? getHeartLawSelectionPresentation(selectedLaw, {
+      spiritRoot,
+      isUnlocked: selectedUnlocked,
+      isSelected: true,
+    })
+    : null;
+
+  const actionState = resolveChangeHeartLawActionState({
+    canAfford,
+    canChange,
+    selectedHeartLawId: selected,
+    currentHeartLawId,
+    selectedUnlocked,
+    selectedUnlockLine: selectedPresentation?.unlockLine ?? null,
+  });
 
   const handleConfirm = () => {
     if (!canChange) {
-      setStatus('You may only change Heart Laws at the start of a new life or special moments.');
+      setStatus('Heart Law rewriting is unavailable right now.');
       return;
     }
     if (!selected) {
@@ -53,7 +76,7 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
       return;
     }
     if (!isUnlocked(selected)) {
-      setStatus('This Heart Law is locked.');
+      setStatus(selectedPresentation?.unlockLine ?? 'This Heart Law is locked.');
       return;
     }
     if (selected === currentHeartLawId) {
@@ -71,77 +94,134 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
     onClose();
   };
 
-  const renderUnlockInfo = (law: HeartLawDef) => {
-    const unlockInfo = getHeartLawUnlockInfo(law.tier);
-    if (unlockInfo.kind === 'prestige') {
-      return `Unlock: ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP)`;
-    }
-    if (unlockInfo.kind === 'starter') return 'Starter Heart Law';
-    return 'Locked — Unlock via Prestige';
-  };
-
   return (
-    <div className="heartLawChangeOverlay" role="dialog" aria-modal="true">
-      <div className="heartLawChangeModal">
-        <div className="modalHeader">
-          <div>
-            <div className="modalTitle">Change Heart Law</div>
-            <div className="modalSub">Rewriting your foundation is perilous.</div>
-          </div>
-          <button type="button" className="ghostButton" onClick={onClose}>
-            Close
-          </button>
-        </div>
-
-        <div className="modalBody">
-          <div className="inlineMessage inlineMessage--warning">
-            Changing your Heart Law resets you to Verse I and clears comprehension.
-          </div>
-          <div className="modalCost">Cost: {CHANGE_COST} Gold</div>
-          {!canAfford ? <div className="inlineMessage inlineMessage--error">Not enough Gold to rewrite.</div> : null}
-
-          <div className="heartLawList">
-            {heartLaws.map((law) => {
-              const unlocked = isUnlocked(law.id);
-              const isActive = selected === law.id;
-              return (
-                <button
-                  type="button"
-                  key={law.id}
-                  className={`heartLawOption ${isActive ? 'heartLawOption--active' : ''} ${unlocked ? '' : 'heartLawOption--locked'}`}
-                  disabled={!canChange || !unlocked}
-                  onClick={() => setSelected(law.id)}
-                  title={!unlocked ? renderUnlockInfo(law) : undefined}
-                >
-                  <div className="heartLawOptionName">{law.name}</div>
-                  <div className="heartLawOptionMeta">
-                    <span className="pill">{law.tier ?? 'unknown tier'}</span>
-                    <span className="pill">{law.archetype ?? 'pattern'}</span>
-                  </div>
-                  <div className="heartLawOptionUnlock">{renderUnlockInfo(law)}</div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {status ? <div className="modalStatus">{status}</div> : null}
-
-        <div className="modalActions">
-          <button type="button" className="ghostButton" onClick={onClose}>
+    <RitualModalFrame
+      open
+      onClose={onClose}
+      title="Rewrite Heart Law"
+      subtitle="Rewriting your foundation is perilous."
+      variant="ritual"
+      size="md"
+      className="changeHeartLawModal"
+      bodyClassName="changeHeartLawModal__body"
+      footer={(
+        <div className="changeHeartLawModal__footerActions">
+          <button type="button" className="changeHeartLawModal__button changeHeartLawModal__button--ghost uiNoShift" onClick={onClose}>
             Cancel
           </button>
           <button
             type="button"
-            className="primaryButton"
-            disabled={!canChange || !selected || !canAfford}
+            className="changeHeartLawModal__button changeHeartLawModal__button--primary uiNoShift"
+            disabled={actionState.primaryDisabled}
             onClick={handleConfirm}
-            title={!canChange ? 'You may only change Heart Laws at the start of a new life.' : undefined}
+            aria-describedby={actionState.primaryDisabled ? 'change-heart-law-status' : undefined}
           >
-            Confirm Change
+            {actionState.primaryLabel}
           </button>
         </div>
+      )}
+      ariaLabel="Rewrite Heart Law"
+    >
+      <section className="changeHeartLawModal__warning" aria-label="Rewrite warning">
+        <p>
+          Changing your Heart Law resets you to <strong>Verse I</strong> and clears comprehension progress.
+        </p>
+      </section>
+
+      <section className="changeHeartLawModal__supportRail" aria-label="Cost and restriction">
+        <div className="changeHeartLawModal__railItem">
+          <span className="changeHeartLawModal__railLabel">Cost</span>
+          <span className="changeHeartLawModal__railValue">{CHANGE_COST} Gold</span>
+        </div>
+        <div className="changeHeartLawModal__railItem">
+          <span className="changeHeartLawModal__railLabel">Affordability</span>
+          <span className={`changeHeartLawModal__railValue ${canAfford ? 'is-ok' : 'is-warning'}`}>
+            {canAfford ? 'Ready' : 'Not enough Gold'}
+          </span>
+        </div>
+        <div className="changeHeartLawModal__railItem">
+          <span className="changeHeartLawModal__railLabel">Permission</span>
+          <span className={`changeHeartLawModal__railValue ${canChange ? 'is-ok' : 'is-warning'}`}>
+            {canChange ? 'Rewrite available' : 'Cannot rewrite now'}
+          </span>
+        </div>
+      </section>
+
+      <section className="changeHeartLawModal__summary" aria-label="Selected scripture summary">
+        {selectedPresentation ? (
+          <>
+            <div className="changeHeartLawModal__summaryHeader">
+              <h3>{selectedPresentation.label}</h3>
+              <div className="changeHeartLawModal__summaryBadges">
+                <span className="changeHeartLawModal__badge">{selectedPresentation.familyLabel}</span>
+                <span className="changeHeartLawModal__badge">{selectedPresentation.tierLabel}</span>
+                <span className={`changeHeartLawModal__badge is-resonance-${selectedPresentation.resonanceTone}`}>
+                  {selectedPresentation.resonanceLabel}
+                </span>
+              </div>
+            </div>
+            <p className="changeHeartLawModal__summaryLine">{selectedPresentation.signatureSummary}</p>
+            {selectedPresentation.isLocked ? (
+              <p className="changeHeartLawModal__summaryLock">{selectedPresentation.unlockLine}</p>
+            ) : null}
+          </>
+        ) : (
+          <p className="changeHeartLawModal__summaryPlaceholder">Select a Heart Law to review rewrite details.</p>
+        )}
+      </section>
+
+      <section className="changeHeartLawModal__list" aria-label="Heart Law selection list">
+        {heartLaws.map((law) => {
+          const unlocked = isUnlocked(law.id);
+          const isSelected = selected === law.id;
+          const isCurrent = currentHeartLawId === law.id;
+          const presentation = getHeartLawSelectionPresentation(law, {
+            spiritRoot,
+            isUnlocked: unlocked,
+            isSelected,
+          });
+
+          return (
+            <button
+              type="button"
+              key={law.id}
+              className={[
+                'changeHeartLawModal__row',
+                isSelected ? 'is-selected' : '',
+                isCurrent ? 'is-current' : '',
+                unlocked ? '' : 'is-locked',
+              ].join(' ').trim()}
+              onClick={() => {
+                setSelected(law.id);
+                setStatus(null);
+              }}
+              aria-pressed={isSelected}
+              aria-current={isCurrent ? 'true' : undefined}
+            >
+              <div className="changeHeartLawModal__rowMain">
+                <div className="changeHeartLawModal__rowTitle">{law.name}</div>
+                <div className="changeHeartLawModal__rowMeta">
+                  <span>{presentation.familyLabel}</span>
+                  <span>{presentation.tierLabel}</span>
+                  <span>{presentation.resonanceLabel}</span>
+                </div>
+                <div className="changeHeartLawModal__rowHint">
+                  {unlocked ? presentation.signatureSummary : presentation.unlockLine}
+                </div>
+              </div>
+              <div className="changeHeartLawModal__rowFlags" aria-hidden="true">
+                <span className="changeHeartLawModal__flag">{isCurrent ? 'Current' : '\u00A0'}</span>
+                <span className="changeHeartLawModal__flag">{isSelected ? 'Selected' : '\u00A0'}</span>
+                <span className="changeHeartLawModal__flag">{unlocked ? 'Unlocked' : 'Locked'}</span>
+              </div>
+            </button>
+          );
+        })}
+      </section>
+
+      <div id="change-heart-law-status" className="changeHeartLawModal__status" role="status" aria-live="polite">
+        {status ?? actionState.disabledReason ?? '\u00A0'}
       </div>
-    </div>
+    </RitualModalFrame>
   );
 }

@@ -1,0 +1,284 @@
+.changeHeartLawModal .ritualModalFrame__panel {
+  width: min(820px, 96vw);
+}
+
+.changeHeartLawModal__body {
+  display: grid;
+  gap: 12px;
+}
+
+.changeHeartLawModal__warning {
+  border: 1px solid rgba(147, 88, 40, 0.3);
+  background: rgba(250, 238, 218, 0.92);
+  color: rgba(73, 38, 14, 0.95);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.changeHeartLawModal__warning p {
+  margin: 0;
+}
+
+.changeHeartLawModal__supportRail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.changeHeartLawModal__railItem {
+  border: 1px solid rgba(120, 72, 33, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 249, 238, 0.85);
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.changeHeartLawModal__railLabel {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(72, 45, 18, 0.72);
+}
+
+.changeHeartLawModal__railValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(52, 31, 11, 0.95);
+}
+
+.changeHeartLawModal__railValue.is-warning {
+  color: rgba(137, 49, 30, 0.9);
+}
+
+.changeHeartLawModal__railValue.is-ok {
+  color: rgba(33, 95, 58, 0.9);
+}
+
+.changeHeartLawModal__summary {
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 249, 238, 0.95);
+  padding: 10px 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.changeHeartLawModal__summaryHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.changeHeartLawModal__summaryHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(52, 31, 11, 0.95);
+}
+
+.changeHeartLawModal__summaryBadges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.changeHeartLawModal__badge {
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(62, 30, 6, 0.9);
+  background: rgba(248, 236, 214, 0.95);
+}
+
+.changeHeartLawModal__badge.is-resonance-strong,
+.changeHeartLawModal__badge.is-resonance-partial {
+  border-color: rgba(34, 113, 71, 0.5);
+  color: rgba(24, 90, 54, 0.95);
+}
+
+.changeHeartLawModal__badge.is-resonance-mismatch {
+  border-color: rgba(137, 49, 30, 0.45);
+  color: rgba(137, 49, 30, 0.95);
+}
+
+.changeHeartLawModal__summaryLine,
+.changeHeartLawModal__summaryLock,
+.changeHeartLawModal__summaryPlaceholder {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.changeHeartLawModal__summaryLock {
+  color: rgba(137, 49, 30, 0.9);
+  font-weight: 600;
+}
+
+.changeHeartLawModal__list {
+  display: grid;
+  gap: 8px;
+  max-height: min(42vh, 360px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.changeHeartLawModal__row {
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 250, 241, 0.95);
+  color: rgba(52, 31, 11, 0.95);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(72, 45, 18, 0.55);
+  --ui-no-shift-outline-offset: 2px;
+}
+
+.changeHeartLawModal__row:focus-visible {
+  outline: 2px solid rgba(72, 45, 18, 0.55);
+  outline-offset: 2px;
+}
+
+.changeHeartLawModal__row:hover {
+  border-color: rgba(120, 72, 33, 0.44);
+  box-shadow: 0 4px 12px rgba(74, 49, 24, 0.12);
+}
+
+.changeHeartLawModal__row.is-selected {
+  border-color: rgba(146, 83, 31, 0.65);
+  box-shadow: 0 0 0 1px rgba(146, 83, 31, 0.28);
+  background: rgba(251, 241, 224, 0.98);
+}
+
+.changeHeartLawModal__row.is-locked {
+  background: rgba(248, 241, 231, 0.85);
+}
+
+.changeHeartLawModal__rowMain {
+  display: grid;
+  gap: 3px;
+}
+
+.changeHeartLawModal__rowTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.changeHeartLawModal__rowMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 12px;
+  color: rgba(72, 45, 18, 0.75);
+}
+
+.changeHeartLawModal__rowHint {
+  font-size: 12px;
+  color: rgba(62, 30, 6, 0.86);
+}
+
+.changeHeartLawModal__rowFlags {
+  width: 92px;
+  display: grid;
+  gap: 4px;
+}
+
+.changeHeartLawModal__flag {
+  border: 1px solid rgba(120, 72, 33, 0.28);
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 2px 8px;
+  text-align: center;
+  background: rgba(255, 245, 228, 0.95);
+  min-height: 20px;
+  color: rgba(72, 45, 18, 0.86);
+}
+
+.changeHeartLawModal__status {
+  min-height: 18px;
+  font-size: 12px;
+  color: rgba(137, 49, 30, 0.95);
+  font-weight: 600;
+}
+
+.changeHeartLawModal__footerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.changeHeartLawModal__button {
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.4);
+  font-weight: 700;
+  padding: 9px 14px;
+  cursor: pointer;
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
+  --ui-no-shift-outline-offset: 2px;
+}
+
+.changeHeartLawModal__button--ghost {
+  background: rgba(255, 244, 224, 0.8);
+  color: #2b2116;
+}
+
+.changeHeartLawModal__button--primary {
+  background: rgba(246, 230, 206, 0.95);
+  color: #2b2116;
+}
+
+.changeHeartLawModal__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 900px) {
+  .changeHeartLawModal__supportRail {
+    grid-template-columns: 1fr;
+  }
+
+  .changeHeartLawModal__list {
+    max-height: min(44vh, 340px);
+  }
+}
+
+@media (max-width: 680px) {
+  .changeHeartLawModal__row {
+    grid-template-columns: 1fr;
+  }
+
+  .changeHeartLawModal__rowFlags {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .changeHeartLawModal__footerActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .changeHeartLawModal__button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .changeHeartLawModal__row {
+    transition: none;
+  }
+}
