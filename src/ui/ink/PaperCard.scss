@@ -1,13 +1,23 @@
 @import './inkTheme.scss';
 
 .inkPaperCard {
+  --ink-card-bg: var(--ink-surface-surface-bg);
+  --ink-card-border: var(--ink-surface-surface-border);
+  --ink-card-outline: var(--ink-surface-surface-outline);
+  --ink-card-shadow: var(--ink-surface-surface-shadow);
+  --ink-card-texture-opacity: var(--paper-texture-opacity-subtle, 0.14);
+  --ink-card-pad-inline: 14px;
+  --ink-card-pad-block: 12px;
+
   position: relative;
-  padding: 12px 14px;
-  border: 1.5px solid var(--ink-border-color);
+  padding: var(--ink-card-pad-block) var(--ink-card-pad-inline);
+  border: 1.5px solid var(--ink-card-border);
+  outline: 1px solid var(--ink-card-outline);
+  outline-offset: -2px;
   border-radius: 10px 8px 12px 9px;
-  background-color: var(--paper-card-bg, var(--paper-tint));
+  background-color: var(--ink-card-bg);
   color: var(--ink-text-color);
-  box-shadow: 0 10px 20px var(--shadow-color);
+  box-shadow: var(--ink-card-shadow);
   overflow: hidden;
 }
 
@@ -18,7 +28,7 @@
   background-image: var(--paper-bg-image);
   background-size: cover;
   background-position: center;
-  opacity: calc(var(--paper-opacity) * 0.75);
+  opacity: var(--ink-card-texture-opacity);
   pointer-events: none;
 }
 
@@ -27,48 +37,101 @@
   z-index: 1;
 }
 
+.inkPaperCard--surface-surface {
+  --ink-card-bg: var(--ink-surface-surface-bg);
+  --ink-card-border: var(--ink-surface-surface-border);
+  --ink-card-outline: var(--ink-surface-surface-outline);
+  --ink-card-shadow: var(--ink-surface-surface-shadow);
+}
+
+.inkPaperCard--surface-raised {
+  --ink-card-bg: var(--ink-surface-raised-bg);
+  --ink-card-border: var(--ink-surface-raised-border);
+  --ink-card-outline: var(--ink-surface-raised-outline);
+  --ink-card-shadow: var(--ink-surface-raised-shadow);
+}
+
+.inkPaperCard--surface-inspector {
+  --ink-card-bg: var(--ink-surface-inspector-bg);
+  --ink-card-border: var(--ink-surface-inspector-border);
+  --ink-card-outline: var(--ink-surface-inspector-outline);
+  --ink-card-shadow: var(--ink-surface-inspector-shadow);
+}
+
+.inkPaperCard--surface-dense {
+  --ink-card-bg: var(--ink-surface-dense-bg);
+  --ink-card-border: var(--ink-surface-dense-border);
+  --ink-card-outline: var(--ink-surface-dense-outline);
+  --ink-card-shadow: var(--ink-surface-dense-shadow);
+}
+
+.inkPaperCard--surface-ritual {
+  --ink-card-bg: var(--ink-surface-ritual-bg);
+  --ink-card-border: var(--ink-surface-ritual-border);
+  --ink-card-outline: var(--ink-surface-ritual-outline);
+  --ink-card-shadow: var(--ink-surface-ritual-shadow);
+}
+
+.inkPaperCard--density-dense {
+  --ink-card-pad-inline: var(--paper-density-dense-inline, 12px);
+  --ink-card-pad-block: var(--paper-density-dense-block, 10px);
+}
+
+.inkPaperCard--density-default {
+  --ink-card-pad-inline: var(--paper-density-default-inline, 16px);
+  --ink-card-pad-block: var(--paper-density-default-block, 14px);
+}
+
+.inkPaperCard--density-roomy {
+  --ink-card-pad-inline: var(--paper-density-roomy-inline, 22px);
+  --ink-card-pad-block: var(--paper-density-roomy-block, 18px);
+}
+
 .inkPaperCard--tray {
-  padding: 10px 12px;
   border-radius: 12px 9px 13px 10px;
-  box-shadow: 0 12px 22px var(--shadow-color);
-  --paper-card-bg: rgba(247, 238, 220, 0.96);
 }
 
 .inkPaperCard--pouch {
-  padding: 12px 14px;
   border-radius: 12px 9px 13px 10px;
-  border-width: 2px;
-  box-shadow: 0 12px 22px var(--shadow-color);
-  --paper-card-bg: rgba(242, 231, 210, 0.96);
+  --ink-card-border: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  --ink-card-shadow: var(--paper-shadow-raised, 0 12px 24px rgba(22, 12, 4, 0.28));
 }
 
 .inkPaperCard--label {
-  padding: 8px 10px;
+  --ink-card-pad-inline: 10px;
+  --ink-card-pad-block: 8px;
   border-radius: 9px 7px 10px 8px;
   font-size: 12px;
-  --paper-card-bg: rgba(252, 246, 235, 0.95);
+  --ink-card-texture-opacity: var(--paper-texture-opacity-subtle, 0.14);
 }
 
 .inkPaperCard--interactive {
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
 }
 
 .inkPaperCard--interactive:hover {
-  transform: translateY(-2px);
-  border-color: rgba(120, 72, 33, 0.55);
-  box-shadow: 0 16px 28px var(--shadow-color);
+  border-color: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  outline-color: var(--paper-shell-outline-subtle, rgba(139, 48, 40, 0.3));
+  box-shadow: var(--paper-shadow-raised, 0 12px 24px rgba(22, 12, 4, 0.28));
+  filter: saturate(1.02);
 }
 
-.inkPaperCard--interactive:active {
-  transform: translateY(1px);
-  box-shadow: 0 8px 16px var(--shadow-color);
+.inkPaperCard--interactive:focus-visible {
+  outline: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
+  outline-offset: 2px;
 }
 
 .inkPaperCard--selected {
-  border-color: rgba(120, 72, 33, 0.8);
-  border-width: 2px;
-  box-shadow: 0 12px 24px var(--shadow-color);
+  border-color: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  box-shadow:
+    inset 0 0 0 1px var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52)),
+    var(--paper-shadow-raised, 0 12px 24px rgba(22, 12, 4, 0.28));
 }
 
 .inkPaperCard--selected::after {
@@ -76,17 +139,17 @@
   position: absolute;
   top: 10px;
   right: 12px;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 2px solid rgba(159, 59, 46, 0.55);
-  background-color: rgba(159, 59, 46, 0.15);
-  transform: rotate(-6deg);
-  opacity: 0.7;
+  border: 1.5px solid var(--paper-stamp-muted, rgba(139, 48, 40, 0.6));
+  background-color: var(--paper-chip-selected-bg, rgba(139, 48, 40, 0.18));
+  opacity: 0.8;
   pointer-events: none;
 }
 
 .inkPaperCard--disabled {
-  opacity: 0.6;
+  opacity: 0.62;
   cursor: not-allowed;
+  filter: saturate(0.9);
 }

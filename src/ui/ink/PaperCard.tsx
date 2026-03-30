@@ -2,10 +2,14 @@ import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 import './PaperCard.scss';
 
-type PaperCardVariant = 'card' | 'tray' | 'label' | 'pouch';
+export type PaperCardVariant = 'card' | 'tray' | 'label' | 'pouch';
+export type PaperCardSurface = 'surface' | 'raised' | 'inspector' | 'dense' | 'ritual';
+export type PaperCardDensity = 'dense' | 'default' | 'roomy';
 
 export interface PaperCardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: PaperCardVariant;
+  surface?: PaperCardSurface;
+  density?: PaperCardDensity;
   interactive?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -15,6 +19,8 @@ export interface PaperCardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function PaperCard({
   variant = 'card',
+  surface = 'surface',
+  density = 'default',
   interactive = false,
   selected = false,
   disabled = false,
@@ -28,6 +34,8 @@ export function PaperCard({
       className={classNames(
         'inkPaperCard',
         `inkPaperCard--${variant}`,
+        `inkPaperCard--surface-${surface}`,
+        `inkPaperCard--density-${density}`,
         {
           'inkPaperCard--interactive': interactive,
           'inkPaperCard--selected': selected,

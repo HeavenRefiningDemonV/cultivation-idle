@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
-import { InkPanel, type InkPanelVariant } from './InkPanel.js';
+import { InkPanel, type InkPanelDensity, type InkPanelSurface, type InkPanelVariant } from './InkPanel.js';
 import './InkModalFrame.scss';
 
 export interface InkModalFrameProps {
@@ -8,6 +8,8 @@ export interface InkModalFrameProps {
   onClose?: () => void;
   header?: ReactNode;
   variant?: InkPanelVariant;
+  surface?: InkPanelSurface;
+  density?: InkPanelDensity;
   watermark?: boolean;
   className?: string;
   panelClassName?: string;
@@ -21,6 +23,8 @@ export function InkModalFrame({
   onClose,
   header,
   variant = 'modal',
+  surface = 'ritual',
+  density = 'roomy',
   watermark = false,
   className,
   panelClassName,
@@ -36,6 +40,8 @@ export function InkModalFrame({
       <div className="inkModalFrame__dialog" role="dialog" aria-modal="true" aria-label={ariaLabel}>
         <InkPanel
           variant={variant}
+          surface={surface}
+          density={density}
           watermark={watermark}
           header={header}
           className={classNames('inkModalFrame__panel', panelClassName)}

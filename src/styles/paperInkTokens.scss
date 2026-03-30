@@ -1,56 +1,102 @@
-$paper-0: rgba(235, 230, 220, 0.92);
-$paper-1: rgba(255, 255, 255, 0.45);
-$ink-0: rgba(12, 18, 34, 0.92);
-$ink-1: rgba(12, 18, 34, 0.65);
-$seal-red: rgba(185, 28, 28, 0.75);
-$jade: rgba(34, 197, 94, 0.75);
-$gold: rgba(245, 158, 11, 0.75);
-$shadow-soft: 0 10px 22px rgba(0, 0, 0, 0.18);
-$shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
-
 :root {
-  --paper-0: #ece6dc;
-  --paper-1: #{$paper-1};
-  --ink-0: #{$ink-0};
-  --ink-1: #{$ink-1};
-  --seal-red: #{$seal-red};
-  --jade: #{$jade};
-  --gold: #{$gold};
-  --shadow-soft: #{$shadow-soft};
-  --shadow-strong: #{$shadow-strong};
-  --paper-parchment: #f7edd7;
-  --paper-parchment-strong: #f4e6c8;
-  --paper-parchment-soft: #fbf4e4;
-  --paper-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
-  --paper-ink: #2b2116;
-  --paper-ink-muted: rgba(43, 33, 22, 0.7);
-  --paper-ink-faint: rgba(43, 33, 22, 0.55);
-  --paper-border: rgba(65, 45, 25, 0.22);
-  --paper-outline: rgba(120, 72, 33, 0.45);
-  --paper-stamp: #9f3b2e;
-  --paper-stamp-muted: rgba(159, 59, 46, 0.55);
-  --paper-rare: #b5852b;
-  --paper-jade: #2f8f66;
-  --paper-jade-muted: rgba(47, 143, 102, 0.58);
-  --paper-complete: #2f8f66;
-  --paper-warning: #b5852b;
-  --paper-danger: #9f3b2e;
-  --paper-glow: rgba(47, 143, 102, 0.18);
-  --paper-success: #2f8f66;
-  --paper-shell-base: rgba(247, 237, 215, 0.9);
-  --paper-shell-raised: rgba(255, 245, 225, 0.92);
-  --paper-shell-muted: rgba(236, 225, 205, 0.74);
-  --paper-shell-border: rgba(65, 45, 25, 0.26);
-  --paper-shell-outline: rgba(120, 72, 33, 0.52);
-  --paper-shell-active: rgba(159, 59, 46, 0.2);
-  --paper-shell-active-subtle: rgba(120, 72, 33, 0.14);
-  --paper-progress-fill: rgba(47, 143, 102, 0.75);
-  --paper-progress-fill-soft: rgba(159, 59, 46, 0.55);
-  --paper-scrollbar-track: rgba(59, 42, 24, 0.28);
-  --paper-scrollbar-thumb: rgba(120, 72, 33, 0.62);
-  --paper-scrollbar-thumb-hover: rgba(159, 59, 46, 0.68);
-  --paper-shadow-soft: 0 8px 18px rgba(22, 12, 4, 0.24);
-  --paper-shadow-strong: 0 14px 28px rgba(22, 12, 4, 0.32);
+  /* Legacy base aliases used across older surfaces. */
+  --paper-0: #f3ead7;
+  --paper-1: rgba(255, 255, 255, 0.45);
+  --ink-0: rgba(31, 26, 23, 0.92);
+  --ink-1: rgba(31, 26, 23, 0.65);
+  --seal-red: rgba(139, 48, 40, 0.75);
+  --jade: rgba(78, 107, 94, 0.75);
+  --gold: rgba(162, 113, 42, 0.75);
+  --shadow-soft: 0 10px 22px rgba(20, 13, 6, 0.2);
+  --shadow-strong: 0 18px 34px rgba(20, 13, 6, 0.3);
+
+  /* v3 base palette / text */
+  --paper-parchment: #f3ead7;
+  --paper-parchment-strong: #e7d8bc;
+  --paper-parchment-soft: #faf2e2;
+  --paper-ink: #1f1a17;
+  --paper-ink-muted: rgba(92, 81, 70, 0.92);
+  --paper-ink-faint: rgba(92, 81, 70, 0.72);
+
+  --paper-stamp: #8b3028;
+  --paper-stamp-muted: rgba(139, 48, 40, 0.6);
+  --paper-rare: #7a5e35;
+  --paper-jade: #4e6b5e;
+  --paper-jade-muted: rgba(78, 107, 94, 0.66);
+  --paper-complete: #4e6b5e;
+  --paper-warning: #a2712a;
+  --paper-danger: #8b3028;
+  --paper-success: #4e6b5e;
+  --paper-glow: rgba(78, 107, 94, 0.16);
+
+  /* Shell backgrounds (depth model) */
+  --paper-shell-surface: rgba(243, 234, 215, 0.93);
+  --paper-shell-raised: rgba(250, 242, 226, 0.95);
+  --paper-shell-inspector: rgba(231, 216, 188, 0.86);
+  --paper-shell-dense: rgba(235, 223, 198, 0.9);
+  --paper-shell-ritual: rgba(248, 239, 223, 0.97);
+
+  /* Border / outline strengths */
+  --paper-shell-border-subtle: rgba(122, 94, 53, 0.34);
+  --paper-shell-border-strong: rgba(122, 94, 53, 0.56);
+  --paper-shell-outline-subtle: rgba(139, 48, 40, 0.3);
+  --paper-shell-outline-strong: rgba(139, 48, 40, 0.52);
+
+  /* Shadows */
+  --paper-shadow-surface: 0 8px 18px rgba(22, 12, 4, 0.22);
+  --paper-shadow-raised: 0 12px 24px rgba(22, 12, 4, 0.28);
+  --paper-shadow-inspector: 0 6px 14px rgba(22, 12, 4, 0.2);
+  --paper-shadow-dense: 0 5px 10px rgba(22, 12, 4, 0.18);
+  --paper-shadow-ritual: 0 16px 30px rgba(22, 12, 4, 0.32);
+
+  /* Density */
+  --paper-density-dense-inline: 12px;
+  --paper-density-dense-block: 10px;
+  --paper-density-default-inline: 16px;
+  --paper-density-default-block: 14px;
+  --paper-density-roomy-inline: 22px;
+  --paper-density-roomy-block: 18px;
+  --paper-density-gap-dense: 8px;
+  --paper-density-gap-default: 12px;
+  --paper-density-gap-roomy: 16px;
+
+  /* Chip state colors */
+  --paper-chip-role-bg: rgba(122, 94, 53, 0.14);
+  --paper-chip-role-border: rgba(122, 94, 53, 0.5);
+  --paper-chip-ready-bg: rgba(78, 107, 94, 0.16);
+  --paper-chip-ready-border: rgba(78, 107, 94, 0.48);
+  --paper-chip-warning-bg: rgba(162, 113, 42, 0.18);
+  --paper-chip-warning-border: rgba(162, 113, 42, 0.5);
+  --paper-chip-recommended-bg: rgba(139, 48, 40, 0.14);
+  --paper-chip-recommended-border: rgba(139, 48, 40, 0.46);
+  --paper-chip-selected-bg: rgba(139, 48, 40, 0.18);
+  --paper-chip-selected-border: rgba(139, 48, 40, 0.56);
+
+  /* Texture / watermark / ritual backdrop */
+  --paper-texture-opacity-subtle: 0.14;
+  --paper-texture-opacity-default: 0.2;
+  --paper-texture-opacity-strong: 0.26;
+  --paper-watermark-opacity-subtle: 0.05;
+  --paper-watermark-opacity-default: 0.08;
+  --paper-watermark-opacity-strong: 0.12;
+  --paper-modal-backdrop: rgba(30, 24, 17, 0.62);
+  --paper-modal-backdrop-texture-opacity: 0.28;
+
+  /* Backward-compatible shell aliases. */
+  --paper-shell-base: var(--paper-shell-surface);
+  --paper-shell-muted: var(--paper-shell-inspector);
+  --paper-shell-border: var(--paper-shell-border-subtle);
+  --paper-shell-outline: var(--paper-shell-outline-strong);
+  --paper-shell-active: var(--paper-chip-selected-bg);
+  --paper-shell-active-subtle: rgba(122, 94, 53, 0.12);
+
+  --paper-progress-fill: rgba(78, 107, 94, 0.76);
+  --paper-progress-fill-soft: rgba(139, 48, 40, 0.6);
+  --paper-scrollbar-track: rgba(122, 94, 53, 0.24);
+  --paper-scrollbar-thumb: rgba(122, 94, 53, 0.62);
+  --paper-scrollbar-thumb-hover: rgba(139, 48, 40, 0.64);
+  --paper-shadow-soft: var(--paper-shadow-surface);
+  --paper-shadow-strong: var(--paper-shadow-raised);
 
   --ui-motion-hover-duration: 140ms;
   --ui-motion-selection-duration: 180ms;

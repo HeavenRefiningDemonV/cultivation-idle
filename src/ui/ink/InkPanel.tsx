@@ -13,8 +13,13 @@ export type InkPanelVariant =
   | 'heartlaw'
   | 'modal';
 
+export type InkPanelSurface = 'surface' | 'raised' | 'inspector' | 'dense' | 'ritual';
+export type InkPanelDensity = 'dense' | 'default' | 'roomy';
+
 export interface InkPanelProps {
   variant?: InkPanelVariant;
+  surface?: InkPanelSurface;
+  density?: InkPanelDensity;
   header?: ReactNode;
   watermark?: boolean;
   className?: string;
@@ -24,6 +29,8 @@ export interface InkPanelProps {
 
 export function InkPanel({
   variant = 'default',
+  surface = 'surface',
+  density = 'default',
   header,
   watermark = false,
   className,
@@ -32,7 +39,14 @@ export function InkPanel({
 }: InkPanelProps) {
   return (
     <div
-      className={classNames('inkPanel', `inkPanel--${variant}`, { 'inkPanel--watermark': watermark }, className)}
+      className={classNames(
+        'inkPanel',
+        `inkPanel--${variant}`,
+        `inkPanel--surface-${surface}`,
+        `inkPanel--density-${density}`,
+        { 'inkPanel--watermark': watermark },
+        className,
+      )}
       style={style}
     >
       {header ? <div className="inkPanel__header">{header}</div> : null}

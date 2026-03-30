@@ -1,13 +1,25 @@
 @import './inkTheme.scss';
 
 .inkPanel {
+  --ink-panel-bg: var(--ink-shell-bg);
+  --ink-panel-border: var(--ink-shell-border);
+  --ink-panel-outline: var(--ink-shell-outline);
+  --ink-panel-shadow: var(--ink-shell-shadow);
+  --ink-panel-texture-opacity: var(--ink-shell-texture-opacity);
+  --ink-panel-watermark-opacity: var(--ink-shell-watermark-opacity);
+  --ink-panel-pad-inline: var(--paper-density-default-inline, 16px);
+  --ink-panel-pad-block: var(--paper-density-default-block, 14px);
+  --ink-panel-gap: var(--paper-density-gap-default, 12px);
+
   position: relative;
-  padding: 20px 22px;
+  padding: var(--ink-panel-pad-block) var(--ink-panel-pad-inline);
   color: var(--ink-text-color);
-  background-color: var(--paper-tint);
-  border: var(--ink-border-width) solid var(--ink-border-color);
+  background-color: var(--ink-panel-bg);
+  border: 2px solid var(--ink-panel-border);
+  outline: 1px solid var(--ink-panel-outline);
+  outline-offset: -3px;
   border-radius: 12px 10px 14px 9px;
-  box-shadow: 0 14px 28px var(--shadow-color);
+  box-shadow: var(--ink-panel-shadow);
   overflow: hidden;
 }
 
@@ -18,7 +30,7 @@
   background-image: var(--paper-bg-image);
   background-size: cover;
   background-position: center;
-  opacity: var(--paper-opacity);
+  opacity: var(--ink-panel-texture-opacity);
   pointer-events: none;
 }
 
@@ -30,7 +42,7 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  opacity: var(--watermark-opacity);
+  opacity: var(--ink-panel-watermark-opacity);
   pointer-events: none;
 }
 
@@ -42,56 +54,104 @@
 .inkPanel__header {
   display: inline-flex;
   align-items: center;
-  margin-bottom: 12px;
-  padding: 6px 12px;
+  margin-bottom: var(--ink-panel-gap);
+  padding: 5px 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--ink-text-color);
-  background-color: rgba(252, 246, 235, 0.85);
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  border-radius: 10px 8px 12px 9px;
-  box-shadow: 0 6px 12px rgba(15, 10, 6, 0.12);
+  background-color: var(--ink-header-bg);
+  border: 1px solid var(--ink-header-border);
+  border-radius: 8px 6px 9px 7px;
+  box-shadow: var(--ink-header-shadow);
 }
 
 .inkPanel__body {
   color: var(--ink-text-color);
 }
 
+.inkPanel--surface-surface {
+  --ink-panel-bg: var(--ink-surface-surface-bg);
+  --ink-panel-border: var(--ink-surface-surface-border);
+  --ink-panel-outline: var(--ink-surface-surface-outline);
+  --ink-panel-shadow: var(--ink-surface-surface-shadow);
+}
+
+.inkPanel--surface-raised {
+  --ink-panel-bg: var(--ink-surface-raised-bg);
+  --ink-panel-border: var(--ink-surface-raised-border);
+  --ink-panel-outline: var(--ink-surface-raised-outline);
+  --ink-panel-shadow: var(--ink-surface-raised-shadow);
+  --ink-panel-watermark-opacity: var(--paper-watermark-opacity-default, 0.08);
+}
+
+.inkPanel--surface-inspector {
+  --ink-panel-bg: var(--ink-surface-inspector-bg);
+  --ink-panel-border: var(--ink-surface-inspector-border);
+  --ink-panel-outline: var(--ink-surface-inspector-outline);
+  --ink-panel-shadow: var(--ink-surface-inspector-shadow);
+  --ink-panel-texture-opacity: var(--paper-texture-opacity-subtle, 0.14);
+}
+
+.inkPanel--surface-dense {
+  --ink-panel-bg: var(--ink-surface-dense-bg);
+  --ink-panel-border: var(--ink-surface-dense-border);
+  --ink-panel-outline: var(--ink-surface-dense-outline);
+  --ink-panel-shadow: var(--ink-surface-dense-shadow);
+  --ink-panel-texture-opacity: var(--paper-texture-opacity-subtle, 0.14);
+}
+
+.inkPanel--surface-ritual {
+  --ink-panel-bg: var(--ink-surface-ritual-bg);
+  --ink-panel-border: var(--ink-surface-ritual-border);
+  --ink-panel-outline: var(--ink-surface-ritual-outline);
+  --ink-panel-shadow: var(--ink-surface-ritual-shadow);
+  --ink-panel-texture-opacity: var(--paper-texture-opacity-strong, 0.26);
+  --ink-panel-watermark-opacity: var(--paper-watermark-opacity-strong, 0.12);
+}
+
+.inkPanel--density-dense {
+  --ink-panel-pad-inline: var(--paper-density-dense-inline, 12px);
+  --ink-panel-pad-block: var(--paper-density-dense-block, 10px);
+  --ink-panel-gap: var(--paper-density-gap-dense, 8px);
+}
+
+.inkPanel--density-default {
+  --ink-panel-pad-inline: var(--paper-density-default-inline, 16px);
+  --ink-panel-pad-block: var(--paper-density-default-block, 14px);
+  --ink-panel-gap: var(--paper-density-gap-default, 12px);
+}
+
+.inkPanel--density-roomy {
+  --ink-panel-pad-inline: var(--paper-density-roomy-inline, 22px);
+  --ink-panel-pad-block: var(--paper-density-roomy-block, 18px);
+  --ink-panel-gap: var(--paper-density-gap-roomy, 16px);
+}
+
 .inkPanel--apothecary {
-  --paper-tint: rgba(244, 234, 214, 0.96);
   --watermark-image: url('../../assets/menus/bar_long.png');
 }
 
 .inkPanel--forge {
-  --paper-tint: rgba(236, 228, 216, 0.96);
   --watermark-image: url('../../assets/menus/bar_short.png');
-  --ink-border-width: 2.5px;
 }
 
 .inkPanel--manual {
-  --paper-tint: rgba(247, 236, 214, 0.97);
   --watermark-image: url('../../assets/menus/block_fancy.png');
 }
 
 .inkPanel--techniques {
-  --paper-tint: rgba(244, 232, 210, 0.95);
   --watermark-image: url('../../assets/menus/buttoncorners.png');
 }
 
 .inkPanel--prestige {
-  --paper-tint: rgba(242, 228, 206, 0.95);
   --watermark-image: url('../../assets/menus/bar_long.png');
-  --ink-border-width: 3px;
 }
 
 .inkPanel--pouch {
-  --paper-tint: rgba(245, 235, 216, 0.96);
   --watermark-image: url('../../assets/menus/bar_short.png');
-  --ink-border-width: 3px;
 }
 
 .inkPanel--heartlaw {
-  --paper-tint: rgba(246, 232, 206, 0.95);
   --watermark-image: url('../../assets/menus/scroll.png');
 }
 
