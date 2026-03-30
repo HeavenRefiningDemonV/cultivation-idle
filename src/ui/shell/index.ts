@@ -29,3 +29,6 @@ export { BadgeSlot } from './BadgeSlot.js';
 export type { BadgeSlotProps } from './BadgeSlot.js';
 export type { BadgeSlotPreset, BadgeSlotStyle } from './badgeSpace.js';
 export { getBadgeSlotStyle, getBadgeSlotPresetMap } from './badgeSpace.js';
+
+export { BottomNavDock } from './BottomNavDock.js';
+export type { BottomNavDockProps, BottomNavDockItem, BottomNavDockIndicator } from './BottomNavDock.js';

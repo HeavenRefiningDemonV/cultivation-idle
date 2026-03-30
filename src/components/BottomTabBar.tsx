@@ -1,5 +1,6 @@
 import type { GameTab } from '../stores/uiStore.js';
 import { useUIStore } from '../stores/uiStore.js';
+import { BottomNavDock, type BottomNavDockItem } from '../ui/shell/BottomNavDock.js';
 import './BottomTabBar.scss';
 import { getShellTabLabel } from '../ui/text/playerFacingLabels.js';
 
@@ -22,27 +23,12 @@ export function BottomTabBar() {
   const activeTab = useUIStore((state) => state.activeTab);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
 
-  return (
-    <nav className="bottomTabBar" aria-label="Primary navigation">
-      <div className="bottomTabBarInner">
-        <div className="bottomTabBarList">
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
+  const items: BottomNavDockItem[] = TABS.map((tab) => ({
+    id: tab.id,
+    label: tab.label,
+    active: activeTab === tab.id,
+    onSelect: () => setActiveTab(tab.id),
+  }));
 
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                className={`button-standard uiNoShift bottomTabBarButton ${isActive ? 'bottomTabBarButton--active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </nav>
-  );
+  return <BottomNavDock items={items} itemClassName="button-standard uiNoShift bottomTabBarButton" preserveLegacyHooks />;
 }
