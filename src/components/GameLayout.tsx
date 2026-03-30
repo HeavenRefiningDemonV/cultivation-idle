@@ -31,6 +31,7 @@ import { MigrationIssuesModal } from './modals/MigrationIssuesModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
 import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectionCAudit/SectionCAuditHarness.js';
+import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWizardContract.js';
 import './GameLayout.scss';
 
 /**
@@ -169,7 +170,10 @@ export function GameLayout() {
     .join(' ');
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
-  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
+  const lifeStartWizardOpen = isLifeStartWizardRequired({
+    selectedPath,
+    selectedHeartLawId,
+  });
   const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import { createFirstPinewindArrivalPrompt } from '../../systems/ui/onboardingPromptRegistry.js';
+import { isLifeStartWizardRequired } from '../../systems/ui/lifeStart/lifeStartWizardContract.js';
 import { OnboardingCalloutCard } from './OnboardingCalloutCard.js';
 import './OnboardingPromptHost.scss';
 
@@ -30,17 +31,20 @@ export function OnboardingPromptHost() {
   const pendingCityArrivalId = useUIStore((state) => state.pendingCityArrivalId);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
   const prestigeCount = usePrestigeStore((state) => state.prestigeCount);
+  const lifeStartWizardOpen = isLifeStartWizardRequired({
+    selectedPath,
+    selectedHeartLawId,
+  });
 
   useEffect(() => {
-    const wizardOpen = selectedPath === null || selectedHeartLawId === null;
     const inFreshPinewind = currentCityId === 'city_pinewind_hamlet' && unlockedCityIds.length === 1 && prestigeCount === 0;
 
-    if (!wizardOpen && activeTab === 'adventure' && inFreshPinewind) {
+    if (!lifeStartWizardOpen && activeTab === 'adventure' && inFreshPinewind) {
       queueOnboardingPrompt(createFirstPinewindArrivalPrompt('city_pinewind_hamlet'));
     }
-  }, [activeTab, currentCityId, prestigeCount, queueOnboardingPrompt, selectedHeartLawId, selectedPath, unlockedCityIds.length]);
+  }, [activeTab, currentCityId, lifeStartWizardOpen, prestigeCount, queueOnboardingPrompt, unlockedCityIds.length]);
 
-  const blocked = (selectedPath === null || selectedHeartLawId === null)
+  const blocked = lifeStartWizardOpen
     || showWorldBuildingModal
     || showPerkSelectionModal
     || showOfflineProgressModal

@@ -9,10 +9,17 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.js';
+import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
+import {
+  LIFE_START_WIZARD_STEPS,
+  resolveLifeStartWizardUiStep,
+  type LifeStartWizardStep,
+} from '../../systems/ui/lifeStart/lifeStartWizardContract.js';
 import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink/index.js';
-import type { CultivationPath, HeartLawDef } from '../../types/index.js';
+import type { BreathMode, CultivationPath, HeartLawDef } from '../../types/index.js';
 
 const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [
   { id: 'heaven', title: 'HEAVEN', art: heavenArt, alt: 'Heaven path' },
@@ -26,16 +33,15 @@ const BREATH_MODES = [
   { id: 'fast', label: 'Fast', desc: 'Aggressive cultivation; faster progress with more volatility.' },
 ] as const;
 
-type WizardStep = 1 | 2 | 3 | 4;
-
 interface LifeStartWizardModalProps {
   debugForceOpen?: boolean;
-  debugForceStep?: WizardStep;
+  debugForceStep?: LifeStartWizardStep;
 }
 
 export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }: LifeStartWizardModalProps = {}) {
   const forcedOpen = import.meta.env.DEV && debugForceOpen;
   const forcedStep = import.meta.env.DEV ? debugForceStep : undefined;
+
   const selectedPath = useGameStore((state) => state.selectedPath);
   const selectPath = useGameStore((state) => state.selectPath);
 
@@ -51,72 +57,54 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const addNotification = useUIStore((state) => state.addNotification);
   const lifeStartWizardContext = useUIStore((state) => state.lifeStartWizardContext);
-  const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
   const clearLifeStartWizardContext = useUIStore((state) => state.clearLifeStartWizardContext);
 
   const contentLoaded = useContentStore((state) => state.isLoaded);
   const listHeartLaws = useContentStore((state) => state.listHeartLaws);
 
-  const [wizardStep, setWizardStep] = useState<WizardStep>(() => {
-    if (forcedStep) return forcedStep;
-    if (!selectedPath) return 1;
-    if (!selectedHeartLawId) return 2;
-    return 3;
-  });
-
+  const [requestedStep, setRequestedStep] = useState<LifeStartWizardStep | null>(null);
   const [hoveredPath, setHoveredPath] = useState<CultivationPath | null>(null);
 
+  const [draftHeartLawId, setDraftHeartLawId] = useState<string | null>(null);
+  const [draftBreathMode, setDraftBreathMode] = useState<BreathMode>(breathMode);
   const [autoPickChecked, setAutoPickChecked] = useState(false);
   const [autoPickError, setAutoPickError] = useState<string | null>(null);
 
+  const shouldShow = forcedOpen || selectedPath === null || selectedHeartLawId === null;
+
+  const wizardStep: LifeStartWizardStep = forcedStep
+    ?? resolveLifeStartWizardUiStep({
+      selectedPath,
+      selectedHeartLawId,
+      draftHeartLawId,
+      requestedStep,
+    });
+
   useEffect(() => {
-    if (forcedStep) {
-      setWizardStep(forcedStep);
+    if (selectedPath === null) {
+      setRequestedStep(null);
+      setDraftHeartLawId(null);
+      setDraftBreathMode(breathMode);
+      setAutoPickChecked(false);
+      setAutoPickError(null);
       return;
     }
-    if (!selectedPath) {
-      setWizardStep(1);
-    } else if (!selectedHeartLawId) {
-      setWizardStep(2);
-    } else {
-      setWizardStep(3);
+
+    if (selectedHeartLawId !== null) {
+      setDraftHeartLawId(selectedHeartLawId);
+      setDraftBreathMode(breathMode);
     }
-  }, [forcedStep, selectedPath, selectedHeartLawId]);
+  }, [breathMode, selectedHeartLawId, selectedPath]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
-    if (wizardStep === 1) {
-      document.body.classList.add('lifePathMode');
-      return () => {
-        document.body.classList.remove('lifePathMode');
-      };
-    }
-    document.body.classList.remove('lifePathMode');
-    return undefined;
-  }, [wizardStep]);
+    const pathModeActive = shouldShow && wizardStep === 1;
+    document.body.classList.toggle('lifePathMode', pathModeActive);
+    return () => {
+      document.body.classList.remove('lifePathMode');
+    };
+  }, [shouldShow, wizardStep]);
 
-  useEffect(() => {
-    if (!autoPickChecked) {
-      setAutoPickError(null);
-      return;
-    }
-    const lastId = lifeStartWizardContext.lastHeartLawId;
-    if (!lastId) return;
-    if (isHeartLawUnlocked(lastId)) {
-      selectHeartLaw(lastId);
-      setAutoPickError(null);
-    } else {
-      setAutoPickError('Last run Heart Law is not unlocked this life.');
-    }
-  }, [autoPickChecked, isHeartLawUnlocked, lifeStartWizardContext.lastHeartLawId, selectHeartLaw]);
-
-  useEffect(() => {
-    if (selectedHeartLawId) {
-      setLifeStartWizardContext(selectedHeartLawId);
-    }
-  }, [selectedHeartLawId, setLifeStartWizardContext]);
-
-  const shouldShow = forcedOpen || selectedPath === null || selectedHeartLawId === null;
   const heartLaws: HeartLawDef[] = useMemo(() => {
     if (!contentLoaded) return [];
     try {
@@ -128,32 +116,78 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   }, [contentLoaded, listHeartLaws]);
 
   const selectedHeartLaw = useMemo(
-    () => heartLaws.find((law) => law.id === selectedHeartLawId) ?? null,
-    [heartLaws, selectedHeartLawId],
+    () => heartLaws.find((law) => law.id === draftHeartLawId) ?? null,
+    [draftHeartLawId, heartLaws],
   );
 
   const resonance = useMemo(() => getAffinityStatus(selectedHeartLaw, spiritRoot), [selectedHeartLaw, spiritRoot]);
 
+  const pathDoctrineProfile = useMemo(() => getPathDoctrineProfile(selectedPath), [selectedPath]);
+  const pathSummary = useMemo(() => getPathDoctrineSummary(selectedPath), [selectedPath]);
+  const breathSemantics = useMemo(() => getBreathModeSemantics(draftBreathMode), [draftBreathMode]);
+
+  useEffect(() => {
+    if (!autoPickChecked) {
+      setAutoPickError(null);
+      return;
+    }
+
+    const lastId = lifeStartWizardContext.lastHeartLawId;
+    if (!lastId) {
+      setAutoPickError('No previous Heart Law is recorded yet.');
+      return;
+    }
+
+    if (!isHeartLawUnlocked(lastId)) {
+      setAutoPickError('Last run Heart Law is not unlocked this life.');
+      return;
+    }
+
+    setDraftHeartLawId(lastId);
+    setRequestedStep(3);
+    setAutoPickError(null);
+  }, [autoPickChecked, isHeartLawUnlocked, lifeStartWizardContext.lastHeartLawId]);
+
   if (!shouldShow) return null;
 
   const handleFinish = () => {
+    if (!selectedPath || !draftHeartLawId) {
+      setRequestedStep(2);
+      return;
+    }
+
+    selectHeartLaw(draftHeartLawId);
+    setBreathMode(draftBreathMode);
     setActiveTab('cultivation');
-    const pathLabel = selectedPath ? selectedPath.charAt(0).toUpperCase() + selectedPath.slice(1) : 'Path';
+
+    const pathLabel = selectedPath.charAt(0).toUpperCase() + selectedPath.slice(1);
     const heartLawLabel = selectedHeartLaw?.name ?? 'Heart Law';
-    const breathLabel = breathMode.charAt(0).toUpperCase() + breathMode.slice(1);
+    const breathLabel = draftBreathMode.charAt(0).toUpperCase() + draftBreathMode.slice(1);
     addNotification('success', `Life begins: ${pathLabel} • ${heartLawLabel} • ${breathLabel}`, 5000);
+
     clearLifeStartWizardContext();
+    setRequestedStep(null);
+    setDraftHeartLawId(null);
+    setAutoPickChecked(false);
+    setAutoPickError(null);
     SaveService.save();
   };
 
   const handlePickPath = (pathId: CultivationPath) => {
     if (selectedPath !== null) return;
     selectPath(pathId);
-    setWizardStep(2);
+    setRequestedStep(2);
   };
 
-  const hasPath = Boolean(selectedPath);
-  const hasHeartLaw = Boolean(selectedHeartLawId);
+  const handleSelectDraftLaw = (heartLawId: string) => {
+    setDraftHeartLawId(heartLawId);
+  };
+
+  const handleContinueToBreath = () => {
+    if (!draftHeartLawId) return;
+    setRequestedStep(3);
+  };
+
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
 
   if (wizardStep === 1) {
@@ -211,22 +245,26 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
           <p>Choose your path, scripture, and initial breath focus before cultivation begins.</p>
         </div>
 
-        <div className="lifeStartWizardSteps">
-          <PaperChip
-            text="1 · Life Path"
-            className={`wizardStepChip${wizardStep === 1 ? ' wizardStepChip--active' : ''}`}
-          />
-          <PaperChip
-            text="2 · Heart Law"
-            className={`wizardStepChip${wizardStep === 2 ? ' wizardStepChip--active' : ''}`}
-          />
-          <PaperChip
-            text="3 · Breath Focus"
-            className={`wizardStepChip${wizardStep === 3 ? ' wizardStepChip--active' : ''}`}
-          />
+        <div className="lifeStartWizardSteps" role="list" aria-label="Life start steps">
+          {LIFE_START_WIZARD_STEPS.map((step) => (
+            <PaperChip
+              key={step}
+              text={step === 1 ? '1 · Life Path' : step === 2 ? '2 · Heart Law' : '3 · Breath Focus'}
+              className={`wizardStepChip${wizardStep === step ? ' wizardStepChip--active' : ''}`}
+            />
+          ))}
         </div>
 
-        {wizardStep === 2 && (
+        <div className="wizardPathSummary" aria-live="polite">
+          <div className="wizardPathSummary__title">Locked Path: {pathDoctrineProfile?.label ?? 'Unknown'}</div>
+          <p className="wizardPathSummary__desc">{pathSummary}</p>
+          <div className="wizardPathSummary__chips">
+            {pathDoctrineProfile?.coreIdentity ? <span className="wizardPathSummary__chip">{pathDoctrineProfile.coreIdentity}</span> : null}
+            <span className="wizardPathSummary__chip">Breath: {breathSemantics.label}</span>
+          </div>
+        </div>
+
+        {wizardStep === 2 ? (
           <div className="wizardSection">
             <div className="wizardSectionHeader">
               <h3>Choose Your Heart Law (Xinfa)</h3>
@@ -243,25 +281,26 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 Resonance
               </span>
             </div>
+
             <div className="wizardCardGrid wizardCardGrid--heartLaws">
               {heartLaws.map((law) => {
                 const unlocked = isHeartLawUnlocked(law.id);
-                const selected = selectedHeartLawId === law.id;
+                const selected = draftHeartLawId === law.id;
                 const unlockInfo = getHeartLawUnlockInfo(law.tier);
-                const tierLabel =
-                  law.tier === 'starter' ? 'Starter' : law.tier ? law.tier.replace('tier', 'Tier ') : 'Tier ?';
+                const tierLabel = law.tier === 'starter' ? 'Starter' : law.tier ? law.tier.replace('tier', 'Tier ') : 'Tier ?';
                 const lockedText =
                   unlockInfo.kind === 'prestige'
                     ? `Unlock: ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP)`
                     : unlockInfo.kind === 'starter'
                       ? 'Starter'
                       : 'Locked — Unlock via Prestige';
+
                 return (
                   <button
                     key={law.id}
                     type="button"
                     className={`wizardCardButton${selected ? ' wizardCardButton--selected' : ''}`}
-                    onClick={() => (unlocked ? selectHeartLaw(law.id) : undefined)}
+                    onClick={() => (unlocked ? handleSelectDraftLaw(law.id) : undefined)}
                     disabled={!unlocked}
                   >
                     <PaperCard
@@ -272,14 +311,15 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                     >
                       <div className="wizardCardTitle">{law.name}</div>
                       <div className="wizardCardTags">{(law.daoTags ?? []).slice(0, 3).join(' • ') || 'No tags'}</div>
-                      <div className="wizardCardDesc">{tierLabel === 'starter' ? 'Starter' : tierLabel}</div>
+                      <div className="wizardCardDesc">{tierLabel}</div>
                       <div className="wizardCardMeta">{unlocked ? 'Select' : lockedText}</div>
                     </PaperCard>
                   </button>
                 );
               })}
-              {heartLaws.length === 0 && <div className="wizardEmpty">Heart laws are loading...</div>}
+              {heartLaws.length === 0 ? <div className="wizardEmpty">Heart laws are loading...</div> : null}
             </div>
+
             <div className="wizardResonance">
               <div>
                 Resonance:{' '}
@@ -289,33 +329,37 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                     ? `Match (+${resonance.percent}%)`
                     : `Mismatch (-${resonance.percent}%)`}
               </div>
-              {showAutoPick && (
+              {showAutoPick ? (
                 <label className="wizardCheckbox">
                   <input
                     type="checkbox"
                     checked={autoPickChecked}
-                    onChange={(e) => setAutoPickChecked(e.target.checked)}
+                    onChange={(event) => setAutoPickChecked(event.target.checked)}
                     disabled={lifeStartWizardContext.lastHeartLawId === null}
                   />
                   Auto-pick last run’s Heart Law
-                  {autoPickError && <span className="wizardError">{autoPickError}</span>}
+                  {autoPickError ? <span className="wizardError">{autoPickError}</span> : null}
                 </label>
-              )}
+              ) : null}
             </div>
-            <div className="wizardFooter">
-              <button
-                type="button"
-                className="button-primary"
-                onClick={() => setWizardStep(3)}
-                disabled={!hasHeartLaw}
-              >
-                Next
-              </button>
+
+            <div className="wizardFooter wizardFooter--stable">
+              <div className="wizardFooterLane wizardFooterLane--left" aria-hidden="true" />
+              <div className="wizardFooterLane wizardFooterLane--right">
+                <button
+                  type="button"
+                  className="button-primary uiNoShift"
+                  onClick={handleContinueToBreath}
+                  disabled={!draftHeartLawId}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
-        )}
+        ) : null}
 
-        {wizardStep === 3 && (
+        {wizardStep === 3 ? (
           <div className="wizardSection">
             <div className="wizardSectionHeader">
               <h3>Choose Breath Focus</h3>
@@ -323,13 +367,13 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
             </div>
             <div className="wizardCardGrid">
               {BREATH_MODES.map((mode) => {
-                const selected = breathMode === mode.id;
+                const selected = draftBreathMode === mode.id;
                 return (
                   <button
                     key={mode.id}
                     type="button"
                     className={`wizardCardButton${selected ? ' wizardCardButton--selected' : ''}`}
-                    onClick={() => setBreathMode(mode.id)}
+                    onClick={() => setDraftBreathMode(mode.id)}
                   >
                     <PaperCard className={`wizardCard${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
                       <div className="wizardCardTitle">{mode.label}</div>
@@ -340,21 +384,25 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 );
               })}
             </div>
-            <div className="wizardFooter">
-              <button type="button" className="button-secondary" onClick={() => setWizardStep(2)}>
-                Back
-              </button>
-              <button
-                type="button"
-                className="button-primary"
-                onClick={handleFinish}
-                disabled={!hasPath || !hasHeartLaw}
-              >
-                Finish
-              </button>
+            <div className="wizardFooter wizardFooter--stable">
+              <div className="wizardFooterLane wizardFooterLane--left">
+                <button type="button" className="button-secondary uiNoShift" onClick={() => setRequestedStep(2)}>
+                  Back
+                </button>
+              </div>
+              <div className="wizardFooterLane wizardFooterLane--right">
+                <button
+                  type="button"
+                  className="button-primary uiNoShift"
+                  onClick={handleFinish}
+                  disabled={!selectedPath || !draftHeartLawId}
+                >
+                  Finish
+                </button>
+              </div>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </InkModalFrame>
   );
