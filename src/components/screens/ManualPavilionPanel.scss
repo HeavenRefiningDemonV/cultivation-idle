@@ -159,15 +159,21 @@
 
 .pavilionShelfRowHeader {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+}
+
+.pavilionShelfRowTitlePlate {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: var(--pavilion-radius-m);
+  border: 1px solid color-mix(in oklab, var(--pavilion-earth) 28%, transparent 72%);
+  background: color-mix(in oklab, var(--pavilion-paper) 86%, rgba(255, 255, 255, 0.14) 14%);
 }
 
 .pavilionShelfRowTitle {
   font-weight: 800;
   font-size: 14px;
   color: var(--pavilion-ink-strongest);
+  letter-spacing: 0.02em;
 }
 
 .pavilionShelfRowHint {

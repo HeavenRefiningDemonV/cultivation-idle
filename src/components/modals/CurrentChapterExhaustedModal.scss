@@ -1,42 +1,27 @@
-.currentChapterExhaustedOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(21, 16, 12, 0.5);
+.currentChapterExhaustedModal .ritualModalFrame__panel {
+  width: min(700px, 96vw);
+}
+
+.currentChapterExhaustedModal__body {
   display: grid;
-  place-items: center;
-  z-index: 1500;
-  padding: 20px;
+  gap: 10px;
+  color: rgba(62, 30, 6, 0.9);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-.currentChapterExhaustedModal {
-  width: min(640px, 100%);
-  background: #f6eddc;
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  border-radius: 16px;
-  box-shadow: 0 22px 36px rgba(48, 31, 15, 0.3);
-  padding: 22px;
-  display: grid;
-  gap: 12px;
-}
-
-.currentChapterExhaustedModal h2 {
+.currentChapterExhaustedModal__body p {
   margin: 0;
-  font-size: 24px;
-}
-
-.currentChapterExhaustedModal p {
-  margin: 0;
-  color: rgba(62, 30, 6, 0.88);
 }
 
 .currentChapterExhaustedModal__actions {
-  margin-top: 8px;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-end;
 }
 
-.currentChapterExhaustedModal__actions button {
+.currentChapterExhaustedModal__action {
   border-radius: 12px;
   border: 1px solid rgba(120, 72, 33, 0.4);
   background: rgba(246, 230, 206, 0.95);
@@ -44,4 +29,18 @@
   font-weight: 700;
   padding: 9px 14px;
   cursor: pointer;
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
+  --ui-no-shift-outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .currentChapterExhaustedModal__actions {
+    justify-content: stretch;
+  }
+
+  .currentChapterExhaustedModal__action {
+    flex: 1 1 100%;
+    text-align: center;
+  }
 }

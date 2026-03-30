@@ -38,6 +38,7 @@ import {
   type ManualPurchaseState,
 } from "../modals/ManualDetailModal.js";
 import { PaperCard } from "../../ui/ink/index.js";
+import { PlaqueHeader } from "../../ui/shell/index.js";
 import { GameIcon } from "../../ui/icons/index.js";
 import { useRunCompassSurface } from "../../ui/status/useRunCompassSurface.js";
 import { RunCompassCompact } from "../../ui/status/RunCompassCompact.js";
@@ -677,10 +678,16 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
     return (
       <div className={`pavilionShelfRow pavilionShelfRow--${shelfKey}`}>
         <div className={"pavilionShelfRowHeader"}>
-          <PaperCard variant="label" className={"pavilionShelfRowTitle"}>
-            {title}
-          </PaperCard>
-          {hint && <div className={"pavilionShelfRowHint"}>{hint}</div>}
+          <PlaqueHeader
+            title={title}
+            subtitle={hint}
+            variant="section"
+            emphasis="light"
+            density="compact"
+            className={"pavilionShelfRowTitlePlate"}
+            titleClassName={"pavilionShelfRowTitle"}
+            subtitleClassName={"pavilionShelfRowHint"}
+          />
         </div>
         <PaperCard variant="tray" className={"pavilionShelfRowRail"}>
           <div className={"pavilionShelfRowSpines"} role="list">

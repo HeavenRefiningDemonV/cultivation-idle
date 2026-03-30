@@ -1,5 +1,5 @@
-import { createPortal } from 'react-dom';
 import { useUIStore } from '../../stores/uiStore.js';
+import { RitualModalFrame } from '../../ui/shell/index.js';
 import './CurrentChapterExhaustedModal.scss';
 
 export function CurrentChapterExhaustedModal() {
@@ -8,8 +8,6 @@ export function CurrentChapterExhaustedModal() {
   const acknowledge = useUIStore((state) => state.acknowledgeCurrentChapterExhausted);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
   const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
-
-  if (!open) return null;
 
   const handleClose = () => {
     acknowledge();
@@ -28,23 +26,29 @@ export function CurrentChapterExhaustedModal() {
     openLifeSummaryModal('current');
   };
 
-  return createPortal(
-    <div className="currentChapterExhaustedOverlay" role="presentation" onMouseDown={handleClose}>
-      <div className="currentChapterExhaustedModal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
-        <h2>Current Chapter Exhausted</h2>
-        <p>
-          You have reached <strong>Spirit Severing</strong>, the end of the current authored chapter in this build.
-        </p>
-        <p>
-          There is no live city 6, post-Severing gate chain, or next authored realm beyond this point right now.
-        </p>
+  return (
+    <RitualModalFrame
+      open={open}
+      onClose={handleClose}
+      title="Current Chapter Exhausted"
+      variant="chapterEnd"
+      size="md"
+      className="currentChapterExhaustedModal"
+      bodyClassName="currentChapterExhaustedModal__body"
+      footer={(
         <div className="currentChapterExhaustedModal__actions">
-          <button type="button" onClick={handleOpenPrestige}>Open Prestige</button>
-          <button type="button" onClick={handleOpenLifeSummary}>View Life Summary</button>
-          <button type="button" onClick={handleClose}>Continue This Life</button>
+          <button type="button" className="currentChapterExhaustedModal__action uiNoShift" onClick={handleOpenPrestige}>Open Prestige</button>
+          <button type="button" className="currentChapterExhaustedModal__action uiNoShift" onClick={handleOpenLifeSummary}>View Life Summary</button>
+          <button type="button" className="currentChapterExhaustedModal__action uiNoShift" onClick={handleClose}>Continue This Life</button>
         </div>
-      </div>
-    </div>,
-    document.body,
+      )}
+    >
+      <p>
+        You have reached <strong>Spirit Severing</strong>, the end of the current authored chapter in this build.
+      </p>
+      <p>
+        There is no live city 6, post-Severing gate chain, or next authored realm beyond this point right now.
+      </p>
+    </RitualModalFrame>
   );
 }
