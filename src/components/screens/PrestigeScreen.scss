@@ -38,48 +38,12 @@
   margin: 0 auto;
 }
 
-.prestigeTopRibbon {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: start;
-}
-
-.prestigeTopLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.prestigeTopRight {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
-}
-
-.prestigeTopMetaLine {
-  font-size: 13px;
-  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
-}
-
 .prestigeScreenHeader {
   text-align: center;
 }
 
-.prestigeScreenTitle {
-  margin: 0 0 8px 0;
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--paper-ink, #2b2116);
-}
-
 .prestigeScreenSubtitle {
   margin: 0;
-  color: var(--paper-ink, #2b2116);
-}
-
-.prestigeScreenDesc {
   color: var(--paper-ink, #2b2116);
 }
 
@@ -1817,14 +1781,6 @@
 }
 
 @media (max-width: 920px) {
-  .prestigeTopRibbon {
-    grid-template-columns: 1fr;
-  }
-
-  .prestigeTopRight {
-    align-items: flex-start;
-  }
-
   .prestigeRitualStage {
     display: block;
   }

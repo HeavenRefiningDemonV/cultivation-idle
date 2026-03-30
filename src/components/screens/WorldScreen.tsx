@@ -40,6 +40,7 @@ import { WorldModuleCard } from '../../ui/world/WorldModuleCard.js';
 import { WorldModuleGroup } from '../../ui/world/WorldModuleGroup.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
+import { TopRibbon } from '../../ui/shell/index.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import '../../ui/world/WorldModuleCard.scss';
 
@@ -367,28 +368,36 @@ export function WorldScreen() {
 
   return (
     <div className={'worldScreen'}>
-      <div className={'worldHubTopBar'}>
-        <div className={'worldHubCitySelectWrapper'}>
-          <label className={'worldHubCityLabel'} htmlFor="world-city-select">City</label>
-          <select
-            id="world-city-select"
-            className={'worldHubCitySelect'}
-            value={currentCityId ?? ''}
-            onChange={(e) => {
-              const next = worldSelectorEntries.find((entry) => entry.city.id === e.target.value)?.city;
-              if (next) handleSelectCity(next);
-            }}
-          >
-            <option value="" disabled>Select a city</option>
-            {worldSelectorEntries.map(({ city, isUnlocked, requirementText }) => (
-              <option key={city.id} value={city.id} disabled={!isUnlocked}>
-                {city.name}
-                {isUnlocked ? '' : requirementText ? ` — Locked (${requirementText})` : ' — Locked'}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <TopRibbon
+        className="worldTopRibbon"
+        variant="world"
+        density="compact"
+        tone="ink"
+        title="World"
+        subtitle="Choose your current city and route your loop."
+        endSlot={
+          <div className="worldTopRibbon__citySelectWrapper">
+            <label className="worldTopRibbon__cityLabel" htmlFor="world-city-select">City</label>
+            <select
+              id="world-city-select"
+              className="worldTopRibbon__citySelect"
+              value={currentCityId ?? ''}
+              onChange={(e) => {
+                const next = worldSelectorEntries.find((entry) => entry.city.id === e.target.value)?.city;
+                if (next) handleSelectCity(next);
+              }}
+            >
+              <option value="" disabled>Select a city</option>
+              {worldSelectorEntries.map(({ city, isUnlocked, requirementText }) => (
+                <option key={city.id} value={city.id} disabled={!isUnlocked}>
+                  {city.name}
+                  {isUnlocked ? '' : requirementText ? ` — Locked (${requirementText})` : ' — Locked'}
+                </option>
+              ))}
+            </select>
+          </div>
+        }
+      />
 
       {!selectedCity ? (
         <div className={'worldScreenMessage'}>Select a city to view its modules.</div>

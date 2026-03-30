@@ -32,3 +32,13 @@ export { getBadgeSlotStyle, getBadgeSlotPresetMap } from './badgeSpace.js';
 
 export { BottomNavDock } from './BottomNavDock.js';
 export type { BottomNavDockProps, BottomNavDockItem, BottomNavDockIndicator } from './BottomNavDock.js';
+
+export { TopRibbon } from './TopRibbon.js';
+export type {
+  TopRibbonProps,
+  TopRibbonVariant,
+  TopRibbonDensity,
+  TopRibbonTone,
+  TopRibbonItem,
+  TopRibbonItemTone,
+} from './TopRibbon.js';

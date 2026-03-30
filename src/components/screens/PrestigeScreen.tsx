@@ -19,8 +19,8 @@ import { ApBreakdownModal } from '../modals/ApBreakdownModal.js';
 import { PrestigeRitualModal } from '../modals/PrestigeRitualModal.js';
 import { D } from '../../utils/numbers.js';
 import { InkPanel, PaperCard } from '../../ui/ink/index.js';
-import { GameIcon } from '../../ui/icons/index.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { PaperStamp, TopRibbon } from '../../ui/shell/index.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import './PrestigeScreen.scss';
 
@@ -340,17 +340,13 @@ export function PrestigeScreen() {
 
       <div className={'prestigeScreen prestigeScreen--v2'}>
         <div className={'prestigeScreenInner prestigeScreenContent'}>
-          <header className={'prestigeTopRibbon'}>
-            <div className={'prestigeTopLeft'}>
-              <div className={'prestigeScreenTitle'}>Prestige</div>
-              <div className={'prestigeScreenDesc'}>
-                Review your next outer-loop decision before beginning Reincarnation.
-              </div>
-            </div>
-            <div className={'prestigeTopRight'}>
-              <div className={'prestigeTopMetaLine'}>Purchased Upgrades: {purchasedUpgradeCount}</div>
-            </div>
-          </header>
+          <TopRibbon
+            className="prestigeTopRibbon"
+            variant="hero"
+            title="Prestige"
+            subtitle="Review your next outer-loop decision before beginning Reincarnation."
+            endSlot={<PaperStamp text={`${purchasedUpgradeCount} decrees`} size="sm" tone="seal" variant="tracked" tilt="none" />}
+          />
 
           <main className={'prestigeStage'}>
             <RunCompassCompact surface={runCompass.compact} tone="paper" className="prestigeRunCompassCompact" />

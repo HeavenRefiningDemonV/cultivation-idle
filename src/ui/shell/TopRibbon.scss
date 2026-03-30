@@ -1,0 +1,143 @@
+@import '../../styles/paperInkTokens.scss';
+
+.topRibbon {
+  position: relative;
+  --top-ribbon-bg: rgba(243, 234, 215, 0.8);
+  --top-ribbon-border: var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
+  --top-ribbon-outline: var(--paper-shell-outline-subtle, rgba(139, 48, 40, 0.3));
+  --top-ribbon-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(22, 12, 4, 0.22));
+  --top-ribbon-inline-padding: 12px;
+  --top-ribbon-block-padding: 10px;
+  --top-ribbon-gap: 10px;
+
+  border: 1px solid var(--top-ribbon-border);
+  border-radius: 12px 10px 13px 11px;
+  outline: 1px solid var(--top-ribbon-outline);
+  outline-offset: -2px;
+  background: var(--top-ribbon-bg);
+  box-shadow: var(--top-ribbon-shadow);
+  overflow: hidden;
+}
+
+.topRibbon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../../assets/menus/bar_long.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 96% 58%;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.topRibbon__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(var(--ui-reserved-badge-inline-size-chip, 3.5rem), auto) minmax(0, 1fr) minmax(var(--ui-reserved-badge-inline-size-chip, 3.5rem), auto);
+  align-items: start;
+  gap: var(--top-ribbon-gap);
+  padding: var(--top-ribbon-block-padding) var(--top-ribbon-inline-padding);
+}
+
+.topRibbon__start,
+.topRibbon__end {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--ui-reserved-badge-block-size-chip, 1.25rem);
+}
+
+.topRibbon__center {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.topRibbon__header {
+  min-width: 0;
+}
+
+.topRibbon__plaqueHeader {
+  box-shadow: none;
+}
+
+.topRibbon__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.topRibbon__item {
+  min-width: 0;
+}
+
+.topRibbon__itemCustom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 94, 53, 0.34);
+  background: rgba(250, 242, 226, 0.9);
+  color: var(--paper-ink, #1f1a17);
+  font-size: 12px;
+}
+
+.topRibbon__itemLabel {
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+}
+
+.topRibbon__itemIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.topRibbon--hero {
+  --top-ribbon-bg: rgba(248, 239, 223, 0.9);
+  --top-ribbon-shadow: var(--paper-shadow-raised, 0 12px 24px rgba(22, 12, 4, 0.28));
+}
+
+.topRibbon--world {
+  --top-ribbon-bg: rgba(243, 234, 215, 0.65);
+  --top-ribbon-shadow: 0 6px 14px rgba(22, 12, 4, 0.2);
+}
+
+.topRibbon--dense {
+  --top-ribbon-bg: rgba(235, 223, 198, 0.84);
+  --top-ribbon-gap: 8px;
+}
+
+.topRibbon--compact {
+  --top-ribbon-inline-padding: 10px;
+  --top-ribbon-block-padding: 8px;
+  --top-ribbon-gap: 8px;
+}
+
+.topRibbon--ink {
+  --top-ribbon-bg: rgba(243, 234, 215, 0.72);
+}
+
+.topRibbon--world .topRibbon__plaqueHeader {
+  --plaque-bg: rgba(243, 234, 215, 0.52);
+}
+
+.topRibbon--dense .topRibbon__plaqueHeader .plaqueHeader__title {
+  font-size: 13px;
+}
+
+.topRibbon--dense .topRibbon__plaqueHeader .plaqueHeader__subtitle {
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .topRibbon__content {
+    grid-template-columns: minmax(var(--ui-reserved-badge-inline-size-chip, 3.5rem), auto) minmax(0, 1fr);
+  }
+
+  .topRibbon__end {
+    grid-column: 2;
+    justify-content: flex-end;
+  }
+}

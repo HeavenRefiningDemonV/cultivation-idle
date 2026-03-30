@@ -28,6 +28,7 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
   trackedStyleFiles: [
     'src/components/BottomTabBar.scss',
     'src/ui/shell/BottomNavDock.scss',
+    'src/ui/shell/TopRibbon.scss',
     'src/components/modals/OfflineProgressModal.scss',
     'src/components/modals/ManualSatchelModal.scss',
     'src/components/screens/CultivateScreen.scss',

@@ -3805,31 +3805,41 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.worldHubTopBar {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+.worldTopRibbon {
+  width: min(760px, 100%);
 }
 
-.worldHubCitySelectWrapper {
-  display: flex;
+.worldTopRibbon__citySelectWrapper {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.worldHubCitySelect {
+.worldTopRibbon__cityLabel {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper-ink-faint, rgba(92, 81, 70, 0.72));
+}
+
+.worldTopRibbon__citySelect {
   font-family: 'Julee', cursive;
-  background: #ddd;
-  color: black;
-  border-image: url("../assets/menus/buttoncorners.png") 60 / 5px;
-  padding: 8px 10px;
-  min-width: 180px;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  min-width: 200px;
+  padding: 6px 10px;
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  border-radius: 10px;
+  background: rgba(250, 242, 226, 0.92);
+  color: var(--paper-ink, #1f1a17);
+  transition:
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+}
+
+.worldTopRibbon__citySelect:focus-visible {
+  outline: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
+  outline-offset: 2px;
+  border-color: rgba(120, 72, 33, 0.52);
 }
 
 .worldScreenCitySummary {
