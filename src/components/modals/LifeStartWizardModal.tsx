@@ -226,6 +226,11 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     setDraftHeartLawId(heartLawId);
   };
 
+  const handleChoosePreviewedLaw = () => {
+    if (!previewHeartLaw || !previewUnlocked) return;
+    setDraftHeartLawId(previewHeartLaw.id);
+  };
+
   const handleContinueToBreath = () => {
     if (!draftHeartLawId) return;
     setRequestedStep(3);
@@ -449,16 +454,18 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
               </div>
             </div>
 
-            <aside className="lifeStartHeartLawShell__detail" aria-live="polite">
+            <aside className={`lifeStartHeartLawShell__detail lifeStartHeartLawShell__detail--${previewPresentationCard?.previewFamilyTone ?? 'unknown'}`} aria-live="polite">
               <div className="lifeStartHeartLawDetail">
                 <p className="lifeStartHeartLawDetail__eyebrow">Scripture Detail</p>
                 <h3 id="lifeStartHeartLawDetailTitle" className="lifeStartHeartLawDetail__title">{previewHeartLaw?.name ?? 'No Heart Law available'}</h3>
                 <p className="lifeStartHeartLawDetail__subtitle">
-                  {previewHeartLaw ? `${previewPresentationCard?.tierLabel ?? 'Tier ?'} • ${previewPresentationCard?.archetypeLabel ?? 'Doctrine'}` : 'Awaiting scripture data'}
+                  {previewHeartLaw ? `${previewPresentationCard?.familyLabel ?? 'Doctrine'} • ${previewPresentationCard?.tierLabel ?? 'Tier ?'} • ${previewPresentationCard?.archetypeLabel ?? 'Doctrine'}` : 'Awaiting scripture data'}
                 </p>
 
+                <p className="lifeStartHeartLawDetail__doctrineSubtitle">{previewPresentationCard?.doctrineSubtitle ?? 'Doctrine scripture.'}</p>
+
                 <div id="lifeStartHeartLawDetailResonance" className={`lifeStartHeartLawResonance lifeStartHeartLawResonance--${previewResonance.status}`}>
-                  {previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel}` : (
+                  {previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel} — ${previewPresentationCard.resonanceDetail}` : (
                     previewResonance.status === 'none'
                       ? 'Resonance: None'
                       : previewResonance.status === 'match'
@@ -473,7 +480,18 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                   ))}
                 </div>
 
-                <p className="lifeStartHeartLawDetail__summary">{summarizeHeartLawSignature(previewHeartLaw?.signature)}</p>
+                <p className="lifeStartHeartLawDetail__fantasy">{previewPresentationCard?.fantasyDescription ?? 'A scripture carried through quiet inner discipline.'}</p>
+                <p className="lifeStartHeartLawDetail__practical">{previewPresentationCard?.practicalDescription ?? 'Best for reliable doctrine development in early lives.'}</p>
+
+                <div className="lifeStartHeartLawDetail__signature">
+                  <p className="lifeStartHeartLawDetail__signatureTitle">Signature</p>
+                  <p className="lifeStartHeartLawDetail__summary">{previewPresentationCard?.signatureSummary ?? summarizeHeartLawSignature(previewHeartLaw?.signature)}</p>
+                  <ul className="lifeStartHeartLawDetail__benefits">
+                    {(previewPresentationCard?.keyBenefits ?? []).slice(0, 3).map((benefit) => (
+                      <li key={benefit}>{benefit}</li>
+                    ))}
+                  </ul>
+                </div>
 
                 <p className="lifeStartHeartLawDetail__unlock">
                   {previewUnlocked
@@ -485,9 +503,23 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                         : 'Locked — Unlock via Prestige progression.'}
                 </p>
 
+                <div className="lifeStartHeartLawDetail__ctaLane">
+                  <button
+                    type="button"
+                    className="button-secondary uiNoShift"
+                    onClick={handleChoosePreviewedLaw}
+                    disabled={Boolean(previewPresentationCard?.ctaDisabledReason)}
+                  >
+                    {previewPresentationCard?.ctaLabel ?? 'Choose This Heart Law'}
+                  </button>
+                  {previewPresentationCard?.ctaDisabledReason ? (
+                    <p className="lifeStartHeartLawDetail__ctaReason">{previewPresentationCard.ctaDisabledReason}</p>
+                  ) : null}
+                </div>
+
                 <div className="lifeStartHeartLawSupport">
                   <p className="lifeStartHeartLawSupport__hint" title="A verse is a section of your scripture you’ve truly understood. Comprehension comes from meditating and overcoming trials.">
-                    Verse progress grows by cultivation and trial comprehension.
+                    This is doctrine preview only; verse progress begins after life-start is confirmed.
                   </p>
 
                   {showAutoPick ? (
@@ -507,9 +539,9 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
               <div className="lifeStartHeartLawPreview" aria-hidden="true">
                 <div className="lifeStartHeartLawPreview__seal" />
-                <div className="lifeStartHeartLawPreview__label">Sacred Preview Anchor</div>
+                <div className="lifeStartHeartLawPreview__label">Sacred Scripture Altar</div>
                 <div className="lifeStartHeartLawPreview__name">{previewHeartLaw?.name ?? 'Scripture Awaiting'}</div>
-                <div className="lifeStartHeartLawPreview__line">{(previewHeartLaw?.daoTags ?? []).slice(0, 2).join(' • ') || 'Parchment stillness'}</div>
+                <div className="lifeStartHeartLawPreview__line">{previewPresentationCard?.doctrineSubtitle ?? 'Parchment stillness'}</div>
               </div>
             </aside>
 

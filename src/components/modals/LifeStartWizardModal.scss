@@ -1012,6 +1012,30 @@ body.lifePathMode .bottomTabBar {
   gap: 10px;
 }
 
+.lifeStartHeartLawShell__detail--circulation {
+  background: linear-gradient(180deg, rgba(244, 250, 255, 0.84), rgba(243, 248, 252, 0.78));
+}
+
+.lifeStartHeartLawShell__detail--stability {
+  background: linear-gradient(180deg, rgba(252, 247, 235, 0.86), rgba(247, 238, 222, 0.8));
+}
+
+.lifeStartHeartLawShell__detail--insight {
+  background: linear-gradient(180deg, rgba(245, 244, 255, 0.84), rgba(243, 240, 252, 0.78));
+}
+
+.lifeStartHeartLawShell__detail--endurance {
+  background: linear-gradient(180deg, rgba(243, 250, 243, 0.84), rgba(236, 245, 236, 0.78));
+}
+
+.lifeStartHeartLawShell__detail--burst {
+  background: linear-gradient(180deg, rgba(255, 245, 237, 0.86), rgba(252, 238, 227, 0.8));
+}
+
+.lifeStartHeartLawShell__detail--breakthrough {
+  background: linear-gradient(180deg, rgba(251, 245, 255, 0.84), rgba(246, 238, 252, 0.8));
+}
+
 .lifeStartHeartLawDetail {
   display: grid;
   gap: 7px;
@@ -1035,6 +1059,13 @@ body.lifePathMode .bottomTabBar {
   margin: 0;
   font-size: 12px;
   color: var(--ink-muted-color);
+}
+
+.lifeStartHeartLawDetail__doctrineSubtitle {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(90, 59, 32, 0.88);
+  min-height: 16px;
 }
 
 .lifeStartHeartLawResonance {
@@ -1073,12 +1104,64 @@ body.lifePathMode .bottomTabBar {
   font-size: 11px;
 }
 
+.lifeStartHeartLawDetail__fantasy,
+.lifeStartHeartLawDetail__practical,
 .lifeStartHeartLawDetail__summary,
 .lifeStartHeartLawDetail__unlock {
   margin: 0;
   font-size: 12px;
   color: rgba(63, 44, 32, 0.9);
+}
+
+.lifeStartHeartLawDetail__fantasy,
+.lifeStartHeartLawDetail__practical {
+  min-height: 34px;
+}
+
+.lifeStartHeartLawDetail__signature {
+  border: 1px solid rgba(131, 83, 43, 0.2);
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: rgba(255, 250, 242, 0.5);
+  display: grid;
+  gap: 4px;
+}
+
+.lifeStartHeartLawDetail__signatureTitle {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(98, 60, 31, 0.82);
+}
+
+.lifeStartHeartLawDetail__benefits {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 2px;
+  min-height: 46px;
+  font-size: 11px;
+  color: rgba(70, 50, 35, 0.9);
+}
+
+.lifeStartHeartLawDetail__unlock {
   min-height: 18px;
+}
+
+.lifeStartHeartLawDetail__ctaLane {
+  border-top: 1px solid rgba(121, 74, 37, 0.18);
+  padding-top: 8px;
+  min-height: 56px;
+  display: grid;
+  gap: 4px;
+}
+
+.lifeStartHeartLawDetail__ctaReason {
+  margin: 0;
+  min-height: 16px;
+  font-size: 11px;
+  color: rgba(110, 69, 36, 0.84);
 }
 
 .lifeStartHeartLawSupport {
@@ -1110,11 +1193,13 @@ body.lifePathMode .bottomTabBar {
 .lifeStartHeartLawPreview {
   border: 1px solid rgba(124, 81, 42, 0.26);
   border-radius: 10px;
-  min-height: 118px;
+  min-height: 132px;
   padding: 10px;
   background:
     radial-gradient(circle at 50% 35%, rgba(250, 232, 194, 0.26), rgba(250, 232, 194, 0) 58%),
+    url('../../assets/texture_overlay.png'),
     rgba(255, 247, 232, 0.72);
+  background-size: auto, 280px 280px, auto;
   display: grid;
   place-items: center;
   text-align: center;

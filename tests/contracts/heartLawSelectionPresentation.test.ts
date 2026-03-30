@@ -58,7 +58,7 @@ test('starter and locked prestige states resolve explicit status and unlock line
   });
 
   assert.equal(starterPresentation.tierLabel, 'Starter');
-  assert.equal(starterPresentation.unlockLine, 'Starter');
+  assert.equal(starterPresentation.unlockLine, 'Starter Heart Law');
   assert.equal(starterPresentation.statusLabel, 'Chosen');
 
   const lockedPresentation = buildHeartLawSelectionPresentation(starterLaw!, {
