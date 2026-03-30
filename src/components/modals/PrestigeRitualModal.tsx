@@ -1,9 +1,10 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { PointerEvent as ReactPointerEvent } from 'react';
 import type { ApBreakdown } from '../../stores/prestigeStore.js';
 import { GameIcon } from '../../ui/icons/index.js';
 import type { PrestigeResetPreviewBuckets } from '../../features/prestige/prestigeAdvisorSurface.js';
+import { RitualModalFrame } from '../../ui/shell/index.js';
+import './PrestigeRitualModal.scss';
 
 interface PrestigeRitualModalProps {
   open: boolean;
@@ -22,21 +23,6 @@ interface PrestigeRitualModalProps {
 
 const HOLD_DURATION_MS = 1400;
 
-const getFocusableElements = (container: HTMLElement | null) => {
-  if (!container) return [] as HTMLElement[];
-  const focusableSelectors = [
-    'a[href]',
-    'button:not([disabled])',
-    'textarea:not([disabled])',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    '[tabindex]:not([tabindex="-1"])',
-  ];
-  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelectors.join(','))).filter(
-    (element) => !element.hasAttribute('disabled') && !element.getAttribute('aria-hidden'),
-  );
-};
-
 export function PrestigeRitualModal({
   open,
   apGain,
@@ -51,8 +37,6 @@ export function PrestigeRitualModal({
   onClose,
   onConfirm,
 }: PrestigeRitualModalProps) {
-  const titleId = useId();
-  const dialogRef = useRef<HTMLDivElement | null>(null);
   const holdFrameRef = useRef<number | null>(null);
   const holdStartRef = useRef<number | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
@@ -115,23 +99,6 @@ export function PrestigeRitualModal({
   };
 
   useEffect(() => {
-    if (!open) return undefined;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const dialog = dialogRef.current;
-    const focusables = getFocusableElements(dialog);
-    const target = focusables[0] ?? dialog;
-    requestAnimationFrame(() => target?.focus());
-  }, [open]);
-
-  useEffect(() => {
     if (!open) {
       setHoldProgress(0);
       setRitualStatus(null);
@@ -139,179 +106,132 @@ export function PrestigeRitualModal({
     return () => stopHold();
   }, [open]);
 
-  if (!open) return null;
-
-  const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      event.stopPropagation();
-      handleClose();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-    const focusable = getFocusableElements(dialogRef.current);
-    if (focusable.length === 0) {
-      event.preventDefault();
-      return;
-    }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    const active = document.activeElement;
-
-    if (event.shiftKey) {
-      if (active === first || active === dialogRef.current) {
-        event.preventDefault();
-        last.focus();
-      }
-    } else if (active === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
   const handlePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (!canPrestigeNow) return;
     event.preventDefault();
     startHold();
   };
 
-  return createPortal(
-    <div className="prestigeRitualOverlay" role="presentation" onMouseDown={handleClose}>
-      <div
-        className={`prestigeRitualModal${canPrestigeNow ? '' : ' is-sealed'}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onMouseDown={(event) => event.stopPropagation()}
-        onKeyDown={handleKeyDown}
-        ref={dialogRef}
-        tabIndex={-1}
-      >
-        <header className="prestigeRitualHeader">
-          <div>
-            <h2 className="prestigeRitualTitle" id={titleId}>
-              Confirm Reincarnation Ritual
-            </h2>
-            <p className="prestigeRitualSubtitle">This ritual resets your cultivation journey, but grants Ascension Points.</p>
-          </div>
-          <button type="button" className="prestigeRitualClose" onClick={handleClose} aria-label="Close ritual">
-            <GameIcon icon="inkX" size={14} decorative />
+  return (
+    <RitualModalFrame
+      open={open}
+      onClose={handleClose}
+      title="Confirm Reincarnation Ritual"
+      subtitle="This ritual resets your cultivation journey, but grants Ascension Points."
+      variant="ritual"
+      size="lg"
+      className="prestigeRitualModalHost"
+      panelClassName={canPrestigeNow ? undefined : 'prestigeRitualModalHost__panel--sealed'}
+      bodyClassName="prestigeRitualBody"
+      footer={(
+        <div className="prestigeRitualFooter">
+          <div className="prestigeRitualFooterNote">Hold the seal to confirm the ritual.</div>
+          <button
+            type="button"
+            className={`prestigeRitualConfirmButton${canPrestigeNow ? '' : ' is-locked'} uiNoShift`}
+            onPointerDown={handlePointerDown}
+            onPointerUp={cancelHold}
+            onPointerLeave={cancelHold}
+            onPointerCancel={cancelHold}
+            disabled={!canPrestigeNow}
+            aria-disabled={!canPrestigeNow}
+          >
+            <span className="prestigeRitualHoldFill" style={{ transform: `scaleX(${holdProgress})` }} />
+            <span className="prestigeRitualHoldLabel">Hold to Reincarnate</span>
           </button>
-        </header>
-
-        <div className="prestigeRitualBody">
-          <div className="prestigeRitualScroll">
-            <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">Ritual Summary</div>
-              <div className="prestigeRitualSummaryGrid">
-                <div>
-                  <div className="prestigeRitualLabel">Current realm</div>
-                  <div className="prestigeRitualValue">{currentRealm}</div>
-                </div>
-                <div>
-                  <div className="prestigeRitualLabel">Status</div>
-                  <div className={`prestigeRitualValue${canPrestigeNow ? '' : ' is-muted'}`}>{advisorLabel}</div>
-                  <div className="prestigeRitualHint">{advisorDetail}</div>
-                </div>
-                <div>
-                  <div className="prestigeRitualLabel">Potential AP gain</div>
-                  <div className="prestigeRitualValue is-accent">+{apGain} AP</div>
-                  <div className="prestigeRitualHint">AP is used to unlock permanent decrees.</div>
-                </div>
-              </div>
-            </section>
-
-            <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">Carries Forward</div>
-              <ul className="prestigeRitualList">
-                {resetPreview.carriesForward.map((line) => (
-                  <li key={line}>
-                    <GameIcon icon="inkCheck" size={12} decorative />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">Resets This Life</div>
-              <ul className="prestigeRitualList is-warning">
-                {resetPreview.resetsThisLife.map((line) => (
-                  <li key={line}>
-                    <GameIcon icon="inkX" size={12} decorative />
-                    <span>{line}</span>
-                  </li>
-                ))}
-                {sellBeforePrestige && (
-                  <li>
-                    <GameIcon icon="inkSparkles" size={12} decorative />
-                    <span>Inventory will be sold for gold before the reset</span>
-                  </li>
-                )}
-              </ul>
-            </section>
-
-            <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">Rebuilt Next Life</div>
-              <ul className="prestigeRitualList">
-                {resetPreview.rebuiltNextLife.map((line) => (
-                  <li key={line}>
-                    <GameIcon icon="inkSparkles" size={12} decorative />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">AP Breakdown</div>
-              <div className="prestigeRitualBreakdownSummary">Total potential gain: +{breakdown.potentialGain} AP</div>
-              {breakdown.potentialGain === 0 && (
-                <div className="prestigeRitualHint">No AP gain yet — progress further in this life.</div>
-              )}
-              <div className="prestigeRitualBreakdownRows">
-                {breakdownRows.map((row) => (
-                  <div key={row.key} className="prestigeRitualBreakdownRow">
-                    <div>
-                      <div className="prestigeRitualRowLabel">{row.label}</div>
-                      {row.hint && <div className="prestigeRitualRowHint">{row.hint}</div>}
-                    </div>
-                    <div className="prestigeRitualRowValue">{row.value}</div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="prestigeRitualSection">
-              <div className="prestigeRitualSectionTitle">Final Warning</div>
-              <div className="prestigeRitualWarning">
-                This cannot be undone. You will restart from the mortal realm.
-              </div>
-            </section>
-          </div>
-
-          <footer className="prestigeRitualFooter">
-            <div className="prestigeRitualFooterNote">Hold the seal to confirm the ritual.</div>
-            <button
-              type="button"
-              className={`prestigeRitualConfirmButton${canPrestigeNow ? '' : ' is-locked'}`}
-              onPointerDown={handlePointerDown}
-              onPointerUp={cancelHold}
-              onPointerLeave={cancelHold}
-              onPointerCancel={cancelHold}
-              disabled={!canPrestigeNow}
-              aria-disabled={!canPrestigeNow}
-            >
-              <span className="prestigeRitualHoldFill" style={{ transform: `scaleX(${holdProgress})` }} />
-              <span className="prestigeRitualHoldLabel">Hold to Reincarnate</span>
-            </button>
-            {ritualStatus && <div className="prestigeRitualStatus">{ritualStatus}</div>}
-            {errorMessage && <div className="prestigeRitualError">{errorMessage}</div>}
-          </footer>
+          {ritualStatus && <div className="prestigeRitualStatus">{ritualStatus}</div>}
+          {errorMessage && <div className="prestigeRitualError">{errorMessage}</div>}
         </div>
-      </div>
-    </div>,
-    document.body,
+      )}
+      ariaLabel="Confirm Reincarnation Ritual"
+    >
+      <section className="prestigeRitualSection">
+        <div className="prestigeRitualSectionTitle">Ritual Summary</div>
+        <div className="prestigeRitualSummaryGrid">
+          <div>
+            <div className="prestigeRitualLabel">Current realm</div>
+            <div className="prestigeRitualValue">{currentRealm}</div>
+          </div>
+          <div>
+            <div className="prestigeRitualLabel">Status</div>
+            <div className={`prestigeRitualValue${canPrestigeNow ? '' : ' is-muted'}`}>{advisorLabel}</div>
+            <div className="prestigeRitualHint">{advisorDetail}</div>
+          </div>
+          <div>
+            <div className="prestigeRitualLabel">Potential AP gain</div>
+            <div className="prestigeRitualValue is-accent">+{apGain} AP</div>
+            <div className="prestigeRitualHint">AP is used to unlock permanent decrees.</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="prestigeRitualSection">
+        <div className="prestigeRitualSectionTitle">Carries Forward</div>
+        <ul className="prestigeRitualList">
+          {resetPreview.carriesForward.map((line) => (
+            <li key={line}>
+              <GameIcon icon="inkCheck" size={12} decorative />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="prestigeRitualSection">
+        <div className="prestigeRitualSectionTitle">Resets This Life</div>
+        <ul className="prestigeRitualList is-warning">
+          {resetPreview.resetsThisLife.map((line) => (
+            <li key={line}>
+              <GameIcon icon="inkX" size={12} decorative />
+              <span>{line}</span>
+            </li>
+          ))}
+          {sellBeforePrestige && (
+            <li>
+              <GameIcon icon="inkSparkles" size={12} decorative />
+              <span>Inventory will be sold for gold before the reset</span>
+            </li>
+          )}
+        </ul>
+      </section>
+
+      <section className="prestigeRitualSection">
+        <div className="prestigeRitualSectionTitle">Rebuilt Next Life</div>
+        <ul className="prestigeRitualList">
+          {resetPreview.rebuiltNextLife.map((line) => (
+            <li key={line}>
+              <GameIcon icon="inkSparkles" size={12} decorative />
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="prestigeRitualSection">
+        <div className="prestigeRitualSectionTitle">AP Breakdown</div>
+        <div className="prestigeRitualBreakdownSummary">Total potential gain: +{breakdown.potentialGain} AP</div>
+        {breakdown.potentialGain === 0 && (
+          <div className="prestigeRitualHint">No AP gain yet — progress further in this life.</div>
+        )}
+        <div className="prestigeRitualBreakdownRows">
+          {breakdownRows.map((row) => (
+            <div key={row.key} className="prestigeRitualBreakdownRow">
+              <div>
+                <div className="prestigeRitualRowLabel">{row.label}</div>
+                {row.hint && <div className="prestigeRitualRowHint">{row.hint}</div>}
+              </div>
+              <div className="prestigeRitualRowValue">{row.value}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="prestigeRitualSection">
+        <div className="prestigeRitualSectionTitle">Final Warning</div>
+        <div className="prestigeRitualWarning">
+          This cannot be undone. You will restart from the mortal realm.
+        </div>
+      </section>
+    </RitualModalFrame>
   );
 }

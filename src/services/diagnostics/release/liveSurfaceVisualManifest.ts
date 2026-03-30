@@ -35,6 +35,8 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
     'src/components/screens/CityMapHub.scss',
     'src/components/modals/OfflineProgressModal.scss',
     'src/components/modals/ManualSatchelModal.scss',
+    'src/components/modals/LifeSummaryModal.scss',
+    'src/components/modals/PrestigeRitualModal.scss',
     'src/components/screens/CultivateScreen.scss',
     'src/components/screens/InventoryScreen.scss',
     'src/components/screens/ManualPavilionPanel.scss',

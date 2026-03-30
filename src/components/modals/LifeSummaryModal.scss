@@ -1,37 +1,18 @@
-.lifeSummaryOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(21, 16, 12, 0.52);
-  z-index: 1550;
-  display: grid;
-  place-items: center;
-  padding: 20px;
+.lifeSummaryModal .ritualModalFrame__panel {
+  width: min(920px, 96vw);
 }
 
-.lifeSummaryModal {
-  width: min(920px, 100%);
-  max-height: 88vh;
-  overflow: auto;
-  background: #f6eddc;
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  border-radius: 16px;
-  box-shadow: 0 22px 36px rgba(48, 31, 15, 0.3);
-  padding: 20px;
+.lifeSummaryModal__body {
   display: grid;
   gap: 14px;
 }
 
-.lifeSummaryModal__header h2 {
-  margin: 0;
-  font-size: 24px;
-}
-
 .lifeSummaryModal__meta {
-  margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   color: rgba(62, 30, 6, 0.88);
+  font-size: 13px;
 }
 
 .lifeSummaryModal__blocks {
@@ -68,7 +49,7 @@
   gap: 10px;
 }
 
-.lifeSummaryModal__actions button {
+.lifeSummaryModal__action {
   border-radius: 12px;
   border: 1px solid rgba(120, 72, 33, 0.4);
   background: rgba(246, 230, 206, 0.95);
@@ -76,4 +57,18 @@
   font-weight: 700;
   padding: 9px 14px;
   cursor: pointer;
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
+  --ui-no-shift-outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .lifeSummaryModal__actions {
+    justify-content: stretch;
+  }
+
+  .lifeSummaryModal__action {
+    flex: 1 1 100%;
+    text-align: center;
+  }
 }
