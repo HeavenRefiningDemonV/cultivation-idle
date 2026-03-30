@@ -1,5 +1,6 @@
 @import '../../styles/paperAnimations.scss';
 @import '../../styles/paperInkTokens.scss';
+@import '../shell/PaperStamp.scss';
 
 .paperCard {
   --paper-ink: var(--paper-ink, #2b2116);
@@ -213,87 +214,6 @@
   outline: 2px solid rgba(120, 72, 33, 0.5);
   outline-offset: 2px;
   box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2), 0 6px 14px rgba(15, 23, 42, 0.16);
-}
-
-.paperStamp {
-  --stamp-ink: rgba(43, 33, 22, 0.75);
-  --stamp-border: rgba(43, 33, 22, 0.5);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 2px double var(--stamp-border);
-  color: var(--stamp-ink);
-  padding: 6px 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: rgba(255, 248, 235, 0.6);
-  mix-blend-mode: multiply;
-  position: relative;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.paperStamp::before {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border-radius: inherit;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-.paperStamp::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.3), transparent 60%);
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.paperStamp--sm {
-  font-size: 11px;
-  padding: 4px 8px;
-}
-
-.paperStamp--md {
-  font-size: 13px;
-  padding: 6px 10px;
-}
-
-.paperStamp--tone-seal {
-  --stamp-ink: var(--paper-stamp, rgba(128, 53, 36, 0.7));
-  --stamp-border: var(--paper-stamp-muted, rgba(128, 53, 36, 0.5));
-  background: rgba(255, 230, 220, 0.7);
-}
-
-.paperStamp--tone-ink {
-  --stamp-ink: rgba(43, 33, 22, 0.7);
-  --stamp-border: rgba(43, 33, 22, 0.5);
-}
-
-.paperStamp--difficulty {
-  border-style: double;
-}
-
-.paperStamp--ready,
-.paperStamp--complete {
-  --stamp-ink: var(--paper-complete, #2f8f66);
-  --stamp-border: rgba(47, 143, 102, 0.55);
-  background: rgba(225, 247, 236, 0.7);
-}
-
-.paperStamp--claimed {
-  --stamp-ink: var(--paper-stamp, #9f3b2e);
-  --stamp-border: rgba(159, 59, 46, 0.6);
-}
-
-.paperStamp--sent {
-  --stamp-ink: rgba(43, 33, 22, 0.6);
-  --stamp-border: rgba(43, 33, 22, 0.4);
-  background: rgba(243, 239, 230, 0.8);
 }
 
 @keyframes paperChipShimmer {
