@@ -34,14 +34,18 @@
   font-size: 0.95rem;
   background: var(--paper-shell-raised, rgba(255, 245, 225, 0.92));
   color: var(--paper-ink, #2b2116);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-selection-duration, 180ms) var(--ui-motion-selection-ease, ease),
+    transform var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
   box-shadow: var(--paper-shadow-soft, 0 8px 18px rgba(22, 12, 4, 0.24));
 }
 
 .bottomTabBarButton:hover,
 .bottomTabBarButton:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 9px 20px rgba(0, 0, 0, 0.35);
 }
 
 .bottomTabBarButton--active {
@@ -57,5 +61,16 @@
     min-width: 6.5rem;
     padding: 0.65rem 0.75rem;
     font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottomTabBarButton {
+    transition-duration: 80ms;
+  }
+
+  .bottomTabBarButton:hover,
+  .bottomTabBarButton:focus-visible {
+    transform: none;
   }
 }

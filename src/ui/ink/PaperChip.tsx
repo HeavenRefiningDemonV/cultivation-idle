@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
+import { buildStableInteractiveClassName } from '../motion/layoutStability.js';
 import './PaperChip.scss';
 
 type PaperChipVariant = 'pill' | 'tag';
@@ -22,14 +23,17 @@ export function PaperChip({
   onClick,
   className,
 }: PaperChipProps) {
-  const classes = classNames(
-    'inkPaperChip',
-    {
-      'inkPaperChip--tag': variant === 'tag',
-      'inkPaperChip--clickable': Boolean(onClick),
-    },
-    `inkPaperChip--tone-${tone}`,
-    className,
+  const classes = buildStableInteractiveClassName(
+    classNames(
+      'inkPaperChip',
+      {
+        'inkPaperChip--tag': variant === 'tag',
+        'inkPaperChip--clickable': Boolean(onClick),
+      },
+      `inkPaperChip--tone-${tone}`,
+      className,
+    ),
+    Boolean(onClick),
   );
 
   const content = (

@@ -51,4 +51,24 @@ $shadow-strong: 0 18px 34px rgba(0, 0, 0, 0.28);
   --paper-scrollbar-thumb-hover: rgba(159, 59, 46, 0.68);
   --paper-shadow-soft: 0 8px 18px rgba(22, 12, 4, 0.24);
   --paper-shadow-strong: 0 14px 28px rgba(22, 12, 4, 0.32);
+
+  --ui-motion-hover-duration: 140ms;
+  --ui-motion-selection-duration: 180ms;
+  --ui-motion-drawer-duration: 250ms;
+  --ui-motion-modal-duration: 210ms;
+  --ui-motion-screen-duration: 280ms;
+  --ui-motion-hover-ease: cubic-bezier(0.2, 0.75, 0.25, 1);
+  --ui-motion-selection-ease: cubic-bezier(0.2, 0.75, 0.25, 1);
+  --ui-motion-drawer-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-motion-modal-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-motion-screen-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ui-reserved-badge-inline-size-chip: 3.5rem;
+  --ui-reserved-badge-inline-size-compact-chip: 2.6rem;
+  --ui-reserved-badge-inline-size-tab-button: 3rem;
+  --ui-reserved-badge-inline-size-spine-badge: 3.25rem;
+  --ui-reserved-badge-inline-size-slot-badge: 2.7rem;
+  --ui-reserved-badge-block-size-chip: 1.25rem;
+  --ui-reserved-badge-block-size-tab-button: 1.1rem;
+  --ui-reserved-badge-block-size-spine-badge: 1.2rem;
+  --ui-reserved-badge-block-size-slot-badge: 1.1rem;
 }

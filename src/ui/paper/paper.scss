@@ -196,17 +196,23 @@
 
 .paperChip--clickable {
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    transform var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
 }
 
 .paperChip--clickable:hover {
-  transform: translateY(-1px);
+  transform: translateY(-0.5px);
   border-color: rgba(120, 72, 33, 0.45);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
 }
 
 .paperChip--clickable:focus-visible {
   outline: 2px solid rgba(120, 72, 33, 0.5);
   outline-offset: 2px;
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.2), 0 6px 14px rgba(15, 23, 42, 0.16);
 }
 
 .paperStamp {
@@ -314,3 +320,4 @@
     animation: none;
   }
 }
+

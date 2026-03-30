@@ -80,16 +80,34 @@
 
 .inkPaperChip--clickable {
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    transform var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
 }
 
 .inkPaperChip--clickable:hover {
-  transform: translateY(-1px);
+  transform: translateY(-0.5px);
   border-color: rgba(120, 72, 33, 0.55);
-  box-shadow: 0 10px 16px var(--shadow-color);
+  box-shadow: 0 8px 14px var(--shadow-color);
+  filter: saturate(1.02);
 }
 
 .inkPaperChip--clickable:focus-visible {
   outline: 2px solid rgba(120, 72, 33, 0.45);
   outline-offset: 2px;
+  box-shadow: 0 0 0 1px rgba(120, 72, 33, 0.22), 0 8px 14px var(--shadow-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inkPaperChip--clickable {
+    transition-duration: 80ms;
+  }
+
+  .inkPaperChip--clickable:hover {
+    transform: none;
+    filter: none;
+  }
 }

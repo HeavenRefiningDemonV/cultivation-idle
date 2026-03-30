@@ -16,7 +16,13 @@
   transform: none;
   outline: var(--ui-no-shift-outline, 0 solid transparent);
   outline-offset: var(--ui-no-shift-outline-offset, 0);
-  transition: box-shadow 0.16s ease, outline-color 0.16s ease, filter 0.16s ease, background 0.16s ease;
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    opacity var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    transform var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
 }
 
 .uiNoShift:hover,
@@ -161,4 +167,12 @@ button:focus:not(:focus-visible) {
 
 .white-text {
   color: white;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .uiNoShift {
+    transition-duration: 80ms;
+    transition-property: box-shadow, outline-color, background-color, opacity;
+  }
 }
