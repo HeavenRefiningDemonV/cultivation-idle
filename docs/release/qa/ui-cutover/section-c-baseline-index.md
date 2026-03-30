@@ -1,22 +1,27 @@
-# Section C Baseline Screenshot Index (Packet C.0A)
+# Section C Baseline Screenshot Index (Packet C.0)
 
-This index tracks manual screenshot evidence slots for Section C ritual-selection baseline capture.
+This file is the master tracker for Section C baseline capture.
 
-- Harness gate: dev-only and query-gated (`?uiAudit=section-c`).
-- This packet is baseline lock only and does **not** grant cleanup approval.
-- Later cleanup packets must use `docs/release/ui_screen_signoff_sheet.md` after additive implementation completes and evidence is captured.
+## Run context
+- Harness gate: `import.meta.env.DEV` + `?uiAudit=section-c`.
+- Baseline work only; no cleanup approval is granted by this file.
+- Environment status for this pass: **CAPTURE PENDING — MANUAL** (no browser/image artifact tool available in this Codex runtime).
 
-## Surface folders
-- `docs/release/qa/ui-cutover/life-start-path/`
-- `docs/release/qa/ui-cutover/life-start-heart-law/`
-- `docs/release/qa/ui-cutover/life-start-breath-focus/`
-- `docs/release/qa/ui-cutover/dao-heart-law/`
-- `docs/release/qa/ui-cutover/dao-heart-study/`
-- `docs/release/qa/ui-cutover/change-heart-law/`
-- `docs/release/qa/ui-cutover/prestige-ritual/`
-- `docs/release/qa/ui-cutover/current-chapter-exhausted/`
-- `docs/release/qa/ui-cutover/life-summary/`
+## Surface tracker
+| surface id | human label | family | harness route | capture status | reachability | most important retained old layer | likely next packet | blocker summary |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `life-start-path` | Life Start Path (Step 1) | hero ritual screen | `/?uiAudit=section-c&surface=life-start-path&fx=high` | CAPTURE PENDING — MANUAL | live | Full-height triptych + path portrait ownership (`path_heaven 1.png`, `path_earth 1.png`, `path_martial 1.png`). | C.1 | No blocker beyond capture pending. |
+| `life-start-heart-law` | Life Start Heart Law (Step 2) | ritual modal | `/?uiAudit=section-c&surface=life-start-heart-law&fx=high` | CAPTURE PENDING — MANUAL | live | `InkModalFrame` + paper card/chip material stack and live unlock truth. | C.1 | Generic card-grid treatment still present. |
+| `life-start-breath-focus` | Life Start Breath Focus (Step 3) | ritual modal | `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high` | CAPTURE PENDING — MANUAL | forced-only for audit | Existing breath mode cards and finish actions inside current life-start shell. | C.4 | Live visibility gate does not naturally keep step visible once path + heart law are set. |
+| `dao-heart-law` | Dao Heart — Heart Law tab | ritual modal | `/?uiAudit=section-c&surface=dao-heart-law&fx=high` | CAPTURE PENDING — MANUAL | live but awkward | DaoHeart modal scroll shell + dao-element wash + atmospheric FX layers + radial verse ring. | C.2 | Generic/flat remnants remain in mixed panel areas. |
+| `dao-heart-study` | Dao Heart — Study tab | ritual modal | `/?uiAudit=section-c&surface=dao-heart-study&fx=high` | CAPTURE PENDING — MANUAL | live but awkward | Current tab shell and Study widget integration inside DaoHeart modal. | C.3 | Study surface still visually uneven vs surrounding modal language. |
+| `change-heart-law` | Change Heart Law overlay | ritual modal | `/?uiAudit=section-c&surface=change-heart-law&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | Existing warning/cost/option truth and modal interaction flow. | C.5 | Shares generic `HeartLawPanel.scss` styling; no dedicated ritual treatment yet. |
+| `prestige-ritual` | Prestige Reincarnation Ritual | ritual modal | `/?uiAudit=section-c&surface=prestige-ritual&fx=high` | CAPTURE PENDING — MANUAL | live | `RitualModalFrame` + hold-to-confirm + reset/carry/rebuilt truth and AP breakdown structure. | C.6 | Visual polish debt remains, but truth structure is strong. |
+| `current-chapter-exhausted` | Current Chapter Exhausted | ritual modal | `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | `RitualModalFrame` with concise chapter-cap truth and three clear actions. | C.7 | Modal-family polish target; content truth already clear. |
+| `life-summary` | Life Summary (`current`) | ritual modal | `/?uiAudit=section-c&surface=life-summary&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | `RitualModalFrame` + current-life summary blocks + advisor/AP truth rows. | C.8 | Visual finish and density balancing remain for later packet. |
 
-## Notes
-- No fake PNGs are committed in this packet.
-- Narrow-width capture is manual (browser resize), not synthetic viewport emulation.
+## Capture discipline notes
+- Do not create placeholder PNGs.
+- Record true `N/A` slots in per-surface README files.
+- Optional narrow capture may use `07-narrow.png`.
+- Cleanup packets must use `docs/release/ui_screen_signoff_sheet.md` only after additive implementation and real screenshot evidence are complete.

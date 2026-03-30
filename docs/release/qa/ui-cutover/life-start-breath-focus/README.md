@@ -1,12 +1,22 @@
-# life-start-breath-focus baseline slots
+# life-start-breath-focus baseline capture
 
+- Surface id: `life-start-breath-focus`
+- Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high`
-- Reachability: **forced-only for audit** (dev harness shim; not naturally persistent in current live gate).
+- Reachability: **forced-only for audit**
+- Capture status (this pass): **CAPTURE PENDING — MANUAL**
 
-Required slots:
+## Required slots
 - `01-base.png` — required.
-- `02-interaction.png` — required (mode selection / finish button states).
-- `03-truth-states.png` — N/A (no distinct ready/warning/recommended family here).
+- `02-interaction.png` — required (mode selection + finish button state).
+- `03-truth-states.png` — **N/A** (no separate ready/warning/recommended state family).
 - `04-high-fx.png` — required.
 - `05-low-fx.png` — required.
 - `06-reduced-motion.png` — required.
+- Optional: `07-narrow.png`.
+
+## Manual capture steps
+1. Open harness URL (this uses dev forced view for Step 3).
+2. Capture base and interaction without changing production logic.
+3. Capture low/reduced FX variants.
+4. Resize browser for optional narrow capture.
