@@ -42,3 +42,14 @@ export type {
   TopRibbonItem,
   TopRibbonItemTone,
 } from './TopRibbon.js';
+
+export { InspectorPanel } from './InspectorPanel.js';
+export type {
+  InspectorPanelProps,
+  InspectorPanelVariant,
+  InspectorPanelDensity,
+  InspectorPanelTone,
+} from './InspectorPanel.js';
+
+export { InspectorDrawer } from './InspectorDrawer.js';
+export type { InspectorDrawerProps } from './InspectorDrawer.js';

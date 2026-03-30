@@ -29,6 +29,8 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
     'src/components/BottomTabBar.scss',
     'src/ui/shell/BottomNavDock.scss',
     'src/ui/shell/TopRibbon.scss',
+    'src/ui/shell/InspectorPanel.scss',
+    'src/ui/shell/InspectorDrawer.scss',
     'src/components/modals/OfflineProgressModal.scss',
     'src/components/modals/ManualSatchelModal.scss',
     'src/components/screens/CultivateScreen.scss',
