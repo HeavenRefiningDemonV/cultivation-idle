@@ -7,6 +7,7 @@ import './DaoHeartModal.scss';
 
 interface DaoHeartModalProps {
   onClose: () => void;
+  debugInitialTab?: 'heartLaw' | 'study';
 }
 
 type DaoElement = 'fire' | 'water' | 'wood' | 'metal' | 'earth' | 'neutral';
@@ -60,8 +61,8 @@ const DAO_PALETTES: Record<DaoElement, { accent: string; accent2: string; washA:
   },
 };
 
-export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
-  const [tab, setTab] = useState<'heartLaw' | 'study'>('heartLaw');
+export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHeartModalProps) {
+  const [tab, setTab] = useState<'heartLaw' | 'study'>(debugInitialTab);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const daoTags = selectedHeartLawId ? heartLawsById[selectedHeartLawId]?.daoTags ?? [] : [];
@@ -78,6 +79,10 @@ export function DaoHeartModal({ onClose }: DaoHeartModalProps) {
       }) satisfies CSSProperties,
     [element, palette],
   );
+
+  useEffect(() => {
+    setTab(debugInitialTab);
+  }, [debugInitialTab]);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;

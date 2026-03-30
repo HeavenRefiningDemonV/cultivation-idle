@@ -28,7 +28,14 @@ const BREATH_MODES = [
 
 type WizardStep = 1 | 2 | 3 | 4;
 
-export function LifeStartWizardModal() {
+interface LifeStartWizardModalProps {
+  debugForceOpen?: boolean;
+  debugForceStep?: WizardStep;
+}
+
+export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }: LifeStartWizardModalProps = {}) {
+  const forcedOpen = import.meta.env.DEV && debugForceOpen;
+  const forcedStep = import.meta.env.DEV ? debugForceStep : undefined;
   const selectedPath = useGameStore((state) => state.selectedPath);
   const selectPath = useGameStore((state) => state.selectPath);
 
@@ -51,6 +58,7 @@ export function LifeStartWizardModal() {
   const listHeartLaws = useContentStore((state) => state.listHeartLaws);
 
   const [wizardStep, setWizardStep] = useState<WizardStep>(() => {
+    if (forcedStep) return forcedStep;
     if (!selectedPath) return 1;
     if (!selectedHeartLawId) return 2;
     return 3;
@@ -62,6 +70,10 @@ export function LifeStartWizardModal() {
   const [autoPickError, setAutoPickError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (forcedStep) {
+      setWizardStep(forcedStep);
+      return;
+    }
     if (!selectedPath) {
       setWizardStep(1);
     } else if (!selectedHeartLawId) {
@@ -69,7 +81,7 @@ export function LifeStartWizardModal() {
     } else {
       setWizardStep(3);
     }
-  }, [selectedPath, selectedHeartLawId]);
+  }, [forcedStep, selectedPath, selectedHeartLawId]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
@@ -104,7 +116,7 @@ export function LifeStartWizardModal() {
     }
   }, [selectedHeartLawId, setLifeStartWizardContext]);
 
-  const shouldShow = selectedPath === null || selectedHeartLawId === null;
+  const shouldShow = forcedOpen || selectedPath === null || selectedHeartLawId === null;
   const heartLaws: HeartLawDef[] = useMemo(() => {
     if (!contentLoaded) return [];
     try {

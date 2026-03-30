@@ -30,6 +30,7 @@ import { LifeSummaryModal } from './modals/LifeSummaryModal.js';
 import { MigrationIssuesModal } from './modals/MigrationIssuesModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
+import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectionCAudit/SectionCAuditHarness.js';
 import './GameLayout.scss';
 
 /**
@@ -169,6 +170,7 @@ export function GameLayout() {
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
   const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
+  const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
@@ -206,6 +208,7 @@ export function GameLayout() {
         <CityArrivalBanner />
         <OnboardingPromptHost />
         <NotificationToasts />
+        {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
       </div>
     </FxQualityProvider>
   );
