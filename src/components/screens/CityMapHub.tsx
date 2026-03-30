@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
+import classNames from 'classnames';
 import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
+import { ScenicLabel, type ScenicLabelState } from '../../ui/shell/index.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -43,11 +45,18 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
 export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
+  recommendedModuleKey?: string | null;
   getModuleLabel: (moduleKey: string) => string;
   onOpenModule: (moduleKey: string) => void;
 }
 
-export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenModule }: CityMapHubProps) {
+export function CityMapHub({
+  modules,
+  activeModuleKey,
+  recommendedModuleKey = null,
+  getModuleLabel,
+  onOpenModule,
+}: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
 
   const handleHover = (moduleKey: string | null) => {
@@ -70,18 +79,33 @@ export function CityMapHub({ modules, activeModuleKey, getModuleLabel, onOpenMod
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
           const isActive = activeModuleKey === moduleKey;
+          const isRecommended = !isActive && recommendedModuleKey === moduleKey;
+          const labelState: ScenicLabelState = isActive ? 'active' : isRecommended ? 'recommended' : 'default';
+
           return (
-            <button
+            <div
               key={moduleKey}
-              type="button"
-              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''}`}
+              className={classNames('cityMapHubHotspot', `cityMapHubHotspot--${moduleKey}`, {
+                'cityMapHubHotspot--active': isActive,
+                'cityMapHubHotspot--recommended': isRecommended,
+              })}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
-              onClick={() => onOpenModule(moduleKey)}
-              onMouseEnter={() => handleHover(moduleKey)}
-              onMouseLeave={() => handleHover(null)}
             >
-              <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
-            </button>
+              <ScenicLabel
+                label={getModuleLabel(moduleKey)}
+                variant="building"
+                state={labelState}
+                reserveStateSlot
+                emphasis={isActive ? 'medium' : 'quiet'}
+                className="cityMapHubHotspotTrigger uiNoShift"
+                onClick={() => onOpenModule(moduleKey)}
+                onMouseEnter={() => handleHover(moduleKey)}
+                onMouseLeave={() => handleHover(null)}
+                onFocus={() => handleHover(moduleKey)}
+                onBlur={() => handleHover(null)}
+                title={`Open ${getModuleLabel(moduleKey)}`}
+              />
+            </div>
           );
         })}
       </div>

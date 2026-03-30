@@ -60,3 +60,11 @@ export type {
   RitualModalFrameVariant,
   RitualModalFrameSize,
 } from './RitualModalFrame.js';
+
+export { ScenicLabel } from './ScenicLabel.js';
+export type {
+  ScenicLabelProps,
+  ScenicLabelVariant,
+  ScenicLabelState,
+  ScenicLabelEmphasis,
+} from './ScenicLabel.js';

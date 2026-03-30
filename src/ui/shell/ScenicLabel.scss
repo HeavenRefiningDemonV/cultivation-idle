@@ -1,0 +1,162 @@
+@import '../ink/inkTheme.scss';
+
+.scenicLabel {
+  --scenic-label-min-inline: 112px;
+  --scenic-label-min-block: 30px;
+  --scenic-label-pad-inline: 10px;
+  --scenic-label-pad-block: 6px;
+  --scenic-label-state-inline: 38px;
+
+  min-inline-size: var(--scenic-label-min-inline);
+  min-block-size: var(--scenic-label-min-block);
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: var(--scenic-label-pad-block) var(--scenic-label-pad-inline);
+  border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  border-radius: 12px 10px 13px 9px;
+  background:
+    linear-gradient(180deg, rgba(253, 244, 225, 0.92), rgba(244, 230, 202, 0.88));
+  color: var(--paper-ink, #1f1a17);
+  box-shadow: 0 5px 14px rgba(22, 12, 4, 0.22);
+  backdrop-filter: blur(0.5px);
+  text-align: left;
+}
+
+.scenicLabel--interactive {
+  appearance: none;
+  border-image: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+  transition:
+    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
+    outline-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+}
+
+.scenicLabel--interactive.uiNoShift {
+  --ui-no-shift-border: 1px;
+  --ui-no-shift-outline-active: 2px solid rgba(82, 53, 28, 0.8);
+  --ui-no-shift-outline-offset: 2px;
+}
+
+.scenicLabel--interactive:hover,
+.scenicLabel--interactive:focus-visible {
+  background:
+    linear-gradient(180deg, rgba(255, 248, 233, 0.96), rgba(247, 235, 211, 0.92));
+  box-shadow: 0 8px 16px rgba(22, 12, 4, 0.26);
+}
+
+.scenicLabel--interactive:disabled,
+.scenicLabel--locked {
+  cursor: not-allowed;
+}
+
+.scenicLabel__textStack {
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.scenicLabel__label {
+  font-size: 13px;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 251, 241, 0.6);
+}
+
+.scenicLabel__sublabel {
+  font-size: 11px;
+  line-height: 1.1;
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+  white-space: nowrap;
+}
+
+.scenicLabel__stateSlot {
+  inline-size: var(--scenic-label-state-inline);
+  min-inline-size: var(--scenic-label-state-inline);
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.scenicLabel__statePlaceholder {
+  inline-size: 100%;
+  block-size: 1px;
+}
+
+.scenicLabel--building {
+  --scenic-label-min-inline: 118px;
+}
+
+.scenicLabel--location {
+  --scenic-label-min-inline: 140px;
+  --scenic-label-pad-inline: 12px;
+  --scenic-label-pad-block: 8px;
+  border-radius: 14px;
+}
+
+.scenicLabel--quiet {
+  opacity: 0.96;
+}
+
+.scenicLabel--medium {
+  opacity: 1;
+}
+
+.scenicLabel--active {
+  border-color: rgba(98, 64, 31, 0.8);
+}
+
+.scenicLabel--active .scenicLabel__stateSlot {
+  color: rgba(84, 48, 23, 0.95);
+  font-weight: 700;
+}
+
+.scenicLabel--recommended {
+  border-color: rgba(128, 84, 31, 0.82);
+}
+
+.scenicLabel--recommended .scenicLabel__stateSlot {
+  color: rgba(102, 63, 19, 0.96);
+  font-weight: 700;
+}
+
+.scenicLabel--locked {
+  opacity: 0.78;
+  filter: saturate(0.78);
+}
+
+.scenicLabel--locked .scenicLabel__stateSlot {
+  color: rgba(88, 76, 67, 0.92);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .scenicLabel {
+    --scenic-label-min-inline: 102px;
+    --scenic-label-pad-inline: 9px;
+    --scenic-label-pad-block: 5px;
+    --scenic-label-state-inline: 34px;
+  }
+
+  .scenicLabel__label {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scenicLabel--interactive {
+    transition-duration: 80ms;
+  }
+}

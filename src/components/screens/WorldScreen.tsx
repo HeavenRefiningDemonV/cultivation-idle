@@ -440,6 +440,7 @@ export function WorldScreen() {
                 <CityMapHub
                   modules={visibleCityModules}
                   activeModuleKey={activeModuleKey}
+                  recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
                   getModuleLabel={getWorldModuleLabel}
                   onOpenModule={handleOpenModule}
                 />
@@ -460,7 +461,7 @@ export function WorldScreen() {
                         active={card.active}
                         openLabel={card.openLabel}
                         onOpen={handleOpenModule as never}
-                      />
+                    />
                     ))}
                   </WorldModuleGroup>
                 ))}
@@ -506,7 +507,7 @@ export function WorldScreen() {
                         actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
                         onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
                         onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
-                      />
+                    />
                     ) : null}
                     {cityQuickOpenModules.length > 0 ? (
                       <div className="worldCommandQuickOpen">
@@ -532,7 +533,7 @@ export function WorldScreen() {
                             detail={alert.detail}
                             ctaLabel={alert.ctaLabel}
                             onCta={() => handleOpenModule(alert.ctaModuleKey)}
-                          />
+                        />
                           {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
                         </div>
                       ))}
@@ -570,7 +571,7 @@ export function WorldScreen() {
                     actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
                     onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
                     onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
-                  />
+                />
                 ) : null}
                 {cityQuickOpenModules.length > 0 ? (
                   <div className="worldCommandQuickOpen">
@@ -596,7 +597,7 @@ export function WorldScreen() {
                         detail={alert.detail}
                         ctaLabel={alert.ctaLabel}
                         onCta={() => handleOpenModule(alert.ctaModuleKey)}
-                      />
+                    />
                       {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
                     </div>
                   ))}

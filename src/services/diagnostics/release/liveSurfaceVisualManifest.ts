@@ -31,6 +31,8 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
     'src/ui/shell/TopRibbon.scss',
     'src/ui/shell/InspectorPanel.scss',
     'src/ui/shell/InspectorDrawer.scss',
+    'src/ui/shell/ScenicLabel.scss',
+    'src/components/screens/CityMapHub.scss',
     'src/components/modals/OfflineProgressModal.scss',
     'src/components/modals/ManualSatchelModal.scss',
     'src/components/screens/CultivateScreen.scss',
@@ -51,6 +53,7 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
     { file: 'src/components/screens/InventoryScreen.tsx', selector: 'inventoryHeaderIconButton', requiresUiNoShift: true },
     { file: 'src/components/screens/InventoryScreen.tsx', selector: 'inventoryPocketButton', requiresUiNoShift: true },
     { file: 'src/components/inventory/InventorySlotTile.tsx', selector: 'inventorySlotTile', requiresUiNoShift: true },
+    { file: 'src/components/screens/CityMapHub.tsx', selector: 'cityMapHubHotspotTrigger', requiresUiNoShift: true },
   ],
   bannedBlueRemnants: [
     { key: 'dashboard_blue_500', pattern: /#0ea5e9|#0284c7|#3b82f6|#2563eb/i },
