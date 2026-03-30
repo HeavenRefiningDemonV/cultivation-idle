@@ -30,6 +30,7 @@ import { LifeSummaryModal } from './modals/LifeSummaryModal.js';
 import { MigrationIssuesModal } from './modals/MigrationIssuesModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
+import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWizardContract.js';
 import './GameLayout.scss';
 
 /**
@@ -168,7 +169,7 @@ export function GameLayout() {
     .join(' ');
 
   const showLayoutBackgroundOverlay = activeTab === 'adventure' && !!layoutBackgroundOverride;
-  const lifeStartWizardOpen = selectedPath === null || selectedHeartLawId === null;
+  const lifeStartWizardOpen = isLifeStartWizardRequired({ selectedPath, selectedHeartLawId });
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
