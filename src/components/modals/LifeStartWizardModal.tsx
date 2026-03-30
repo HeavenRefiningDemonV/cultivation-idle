@@ -12,6 +12,7 @@ import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.js';
 import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
+import { getPathDoctrinePresentation } from '../../systems/doctrine/pathDoctrinePresentation.js';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
 import {
@@ -33,12 +34,6 @@ const BREATH_MODES = [
   { id: 'safe', label: 'Safe', desc: 'Slower, calmer cultivation; favors stability.' },
   { id: 'fast', label: 'Fast', desc: 'Aggressive cultivation; faster progress with more volatility.' },
 ] as const;
-
-const CORE_IDENTITY_ROLE_CUES: Record<NonNullable<ReturnType<typeof getPathDoctrineProfile>>['coreIdentity'], string> = {
-  precision_pressure: 'Qi and technique focused.',
-  durable_inevitability: 'Body and defense focused.',
-  tempo_kill_window: 'Power and speed focused.',
-};
 
 interface LifeStartWizardModalProps {
   debugForceOpen?: boolean;
@@ -71,6 +66,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
   const [requestedStep, setRequestedStep] = useState<LifeStartWizardStep | null>(null);
   const [hoveredPath, setHoveredPath] = useState<CultivationPath | null>(null);
+  const [committingPath, setCommittingPath] = useState<CultivationPath | null>(null);
 
   const [draftHeartLawId, setDraftHeartLawId] = useState<string | null>(null);
   const [draftBreathMode, setDraftBreathMode] = useState<BreathMode>(breathMode);
@@ -181,9 +177,24 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   };
 
   const handlePickPath = (pathId: CultivationPath) => {
-    if (selectedPath !== null) return;
-    selectPath(pathId);
-    setRequestedStep(2);
+    if (selectedPath !== null || committingPath !== null) return;
+
+    const commitPath = () => {
+      selectPath(pathId);
+      setRequestedStep(2);
+      setCommittingPath(null);
+    };
+
+    const prefersReducedMotion = typeof window !== 'undefined'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      commitPath();
+      return;
+    }
+
+    setCommittingPath(pathId);
+    window.setTimeout(commitPath, 130);
   };
 
   const handleSelectDraftLaw = (heartLawId: string) => {
@@ -197,8 +208,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
   const previewedPath: CultivationPath = hoveredPath ?? 'heaven';
-  const previewProfile = getPathDoctrineProfile(previewedPath);
-  const previewSummary = getPathDoctrineSummary(previewedPath);
+  const previewPresentation = getPathDoctrinePresentation(previewedPath);
 
   if (wizardStep === 1) {
     return (
@@ -215,9 +225,20 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 <div className="lifePathHeroDividerBar" aria-hidden />
               </header>
 
-              <aside className={`lifePathPreviewPlaque lifePathPreviewPlaque--${previewedPath}`} aria-live="polite">
-                <div className="lifePathPreviewPlaque__label">{previewProfile?.label ?? 'Path Preview'}</div>
-                <p className="lifePathPreviewPlaque__summary">{previewSummary}</p>
+              <aside id="lifePath-preview-plaque" className={`lifePathPreviewPlaque lifePathPreviewPlaque--${previewedPath}`} aria-live="polite">
+                <div className="lifePathPreviewPlaque__label">{previewPresentation?.label ?? 'Path Preview'}</div>
+                <p className="lifePathPreviewPlaque__subtitle">{previewPresentation?.doctrineSubtitle ?? 'Choose a doctrine to preview its cadence.'}</p>
+                <p className="lifePathPreviewPlaque__summary">{previewPresentation?.summary ?? 'Choose a doctrine to preview its philosophy.'}</p>
+                <div className="lifePathPreviewPlaque__highlights" aria-label="Path highlights">
+                  {(previewPresentation?.statHighlights ?? []).map((highlight) => (
+                    <span key={highlight} className="lifePathPreviewPlaque__chip">{highlight}</span>
+                  ))}
+                </div>
+                <div className="lifePathPreviewPlaque__tags" aria-label="Doctrine tags">
+                  {(previewPresentation?.tags ?? []).map((tag) => (
+                    <span key={tag} className="lifePathPreviewPlaque__tag">{tag}</span>
+                  ))}
+                </div>
               </aside>
 
               <div className="lifePathTriptychFrame">
@@ -225,14 +246,17 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 {LIFE_PATHS.map((path) => {
                   const selected = selectedPath === path.id;
                   const disabled = selectedPath !== null && !selected;
-                  const isHoverFx = hoveredPath === path.id;
-                  const doctrine = getPathDoctrineProfile(path.id);
-                  const roleCue = doctrine ? CORE_IDENTITY_ROLE_CUES[doctrine.coreIdentity] : 'Choose this path to shape your life.';
+                  const isPreviewed = hoveredPath === path.id;
                   const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
+                  const isCommitting = committingPath === path.id;
+                  const presentation = getPathDoctrinePresentation(path.id);
+                  const roleCue = presentation?.practicalRoleLine ?? 'Choose this path to shape your life.';
+                  const roleId = `lifePath-role-${path.id}`;
+                  const plaqueId = 'lifePath-preview-plaque';
                   return (
                     <div
                       key={path.id}
-                      className={`lifePathPanel lifePathPanel--${path.id}${isHoverFx ? ' isHoverFx' : ''}${isDimmed ? ' isDimmed' : ''}`}
+                      className={`lifePathPanel lifePathPanel--${path.id}${isPreviewed ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
                     >
                       <div className="lifePathPanel__frame" aria-hidden />
                       <div className="lifePathPanel__veil" aria-hidden />
@@ -240,7 +264,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                       <img className="lifePathPanel__art" src={path.art} alt={path.alt} draggable={false} />
                       <div className="lifePathPanel__title">{path.title}</div>
                       <div className="lifePathPanel__footer">
-                        <p className="lifePathPanel__role">{roleCue}</p>
+                        <p id={roleId} className="lifePathPanel__role">{roleCue}</p>
                         <div className="lifePathPanel__actionPlate">
                           <button
                             type="button"
@@ -250,9 +274,10 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                             onMouseLeave={() => setHoveredPath(null)}
                             onFocus={() => setHoveredPath(path.id)}
                             onBlur={() => setHoveredPath(null)}
-                            disabled={disabled}
+                            disabled={disabled || committingPath !== null}
                             aria-label={`Select ${path.title.toLowerCase()} path`}
                             aria-pressed={selected}
+                            aria-describedby={`${roleId} ${plaqueId}`}
                           >
                             Select
                           </button>
