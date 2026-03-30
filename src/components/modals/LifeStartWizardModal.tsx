@@ -13,6 +13,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.js';
 import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getPathDoctrinePresentation } from '../../systems/doctrine/pathDoctrinePresentation.js';
+import { getHeartLawSelectionPresentation } from '../../systems/doctrine/heartLawSelectionPresentation.js';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
 import {
@@ -44,14 +45,6 @@ const HEART_LAW_EFFECT_LABELS: Record<string, string> = {
   professionYieldMult: 'Profession yield',
   professionSpeedMult: 'Profession speed',
 };
-
-function toTierLabel(tier: string | undefined): string {
-  if (!tier || tier === 'starter') return 'Starter';
-  if (tier.startsWith('tier')) {
-    return `Tier ${tier.replace('tier', '')}`;
-  }
-  return tier;
-}
 
 function summarizeHeartLawSignature(signature: HeartLawDef['signature']): string {
   if (!signature || typeof signature !== 'object') return 'General insight bonus.';
@@ -268,6 +261,15 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   const previewUnlocked = previewHeartLaw ? isHeartLawUnlocked(previewHeartLaw.id) : false;
   const previewResonance = useMemo(() => getAffinityStatus(previewHeartLaw, spiritRoot), [previewHeartLaw, spiritRoot]);
 
+  const previewPresentationCard = useMemo(() => {
+    if (!previewHeartLaw) return null;
+    return getHeartLawSelectionPresentation(previewHeartLaw, {
+      spiritRoot,
+      isUnlocked: previewUnlocked,
+      isSelected: chosenHeartLawId === previewHeartLaw.id,
+    });
+  }, [chosenHeartLawId, previewHeartLaw, previewUnlocked, spiritRoot]);
+
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
   const previewedPath: CultivationPath = hoveredPath ?? 'heaven';
   const previewPresentation = getPathDoctrinePresentation(previewedPath);
@@ -405,13 +407,11 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                   const unlocked = isHeartLawUnlocked(law.id);
                   const selected = chosenHeartLawId === law.id;
                   const previewed = previewHeartLawId === law.id;
-                  const unlockInfo = getHeartLawUnlockInfo(law.tier);
-                  const tierLabel = toTierLabel(law.tier);
-                  const lockLine = unlockInfo.kind === 'prestige'
-                    ? `Unlock: ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP)`
-                    : unlockInfo.kind === 'starter'
-                      ? 'Starter scripture'
-                      : 'Locked — Unlock via Prestige';
+                  const presentation = getHeartLawSelectionPresentation(law, {
+                    spiritRoot,
+                    isUnlocked: unlocked,
+                    isSelected: selected,
+                  });
 
                   return (
                     <button
@@ -426,11 +426,22 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                       aria-disabled={!unlocked}
                       aria-pressed={selected}
                       aria-describedby={`lifeStartHeartLawDetailTitle lifeStartHeartLawDetailResonance`}
+                      aria-label={`${presentation.label}, ${presentation.familyLabel}, Resonance ${presentation.resonanceLabel}, ${presentation.statusLabel}`}
                     >
-                      <div className="lifeStartHeartLawChoice__stamp" aria-hidden="true">{selected ? 'Chosen' : unlocked ? 'Open' : 'Locked'}</div>
-                      <div className="lifeStartHeartLawChoice__title">{law.name}</div>
-                      <div className="lifeStartHeartLawChoice__meta">{tierLabel}</div>
-                      <div className="lifeStartHeartLawChoice__status">{unlocked ? 'Selectable scripture' : lockLine}</div>
+                      <div className={`lifeStartHeartLawChoice__stamp lifeStartHeartLawChoice__stamp--${presentation.statusTone}`} aria-hidden="true">{presentation.statusLabel}</div>
+                      <div className="lifeStartHeartLawChoice__title">{presentation.label}</div>
+                      <div className="lifeStartHeartLawChoice__family">{presentation.familyLabel}</div>
+                      <div className={`lifeStartHeartLawChoice__resonance lifeStartHeartLawChoice__resonance--${presentation.resonanceTone}`}>{presentation.resonanceLabel}</div>
+                      <div className="lifeStartHeartLawChoice__tags">
+                        {presentation.tagLabels.map((tag) => (
+                          <span key={tag} className="lifeStartHeartLawChoice__tag">{tag}</span>
+                        ))}
+                      </div>
+                      <div className="lifeStartHeartLawChoice__footer">
+                        <span className="lifeStartHeartLawChoice__tier">{presentation.tierLabel}</span>
+                        <span className="lifeStartHeartLawChoice__statusLine">{presentation.statusLabel}</span>
+                      </div>
+                      <div className="lifeStartHeartLawChoice__unlock">{presentation.isLocked ? presentation.unlockLine : 'Ready now'}</div>
                     </button>
                   );
                 })}
@@ -443,19 +454,21 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 <p className="lifeStartHeartLawDetail__eyebrow">Scripture Detail</p>
                 <h3 id="lifeStartHeartLawDetailTitle" className="lifeStartHeartLawDetail__title">{previewHeartLaw?.name ?? 'No Heart Law available'}</h3>
                 <p className="lifeStartHeartLawDetail__subtitle">
-                  {previewHeartLaw ? `${toTierLabel(previewHeartLaw.tier)} • ${previewHeartLaw.archetype ?? 'Doctrine'}` : 'Awaiting scripture data'}
+                  {previewHeartLaw ? `${previewPresentationCard?.tierLabel ?? 'Tier ?'} • ${previewPresentationCard?.archetypeLabel ?? 'Doctrine'}` : 'Awaiting scripture data'}
                 </p>
 
                 <div id="lifeStartHeartLawDetailResonance" className={`lifeStartHeartLawResonance lifeStartHeartLawResonance--${previewResonance.status}`}>
-                  {previewResonance.status === 'none'
-                    ? 'Resonance: None'
-                    : previewResonance.status === 'match'
-                      ? `Resonance: Match (+${previewResonance.percent}% signature potency)`
-                      : `Resonance: Mismatch (-${previewResonance.percent}% signature potency)`}
+                  {previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel}` : (
+                    previewResonance.status === 'none'
+                      ? 'Resonance: None'
+                      : previewResonance.status === 'match'
+                        ? `Resonance: Match (+${previewResonance.percent}% signature potency)`
+                        : `Resonance: Mismatch (-${previewResonance.percent}% signature potency)`
+                  )}
                 </div>
 
                 <div className="lifeStartHeartLawDetail__tags" aria-label="Dao tags">
-                  {(previewHeartLaw?.daoTags ?? []).slice(0, 3).map((tag) => (
+                  {(previewPresentationCard?.tagLabels ?? []).map((tag) => (
                     <span key={tag} className="lifeStartHeartLawDetail__tag">{tag}</span>
                   ))}
                 </div>

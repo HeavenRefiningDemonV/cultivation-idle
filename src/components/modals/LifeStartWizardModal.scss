@@ -884,7 +884,7 @@ body.lifePathMode .bottomTabBar {
   text-align: left;
   padding: 10px 12px;
   display: grid;
-  grid-template-rows: 18px auto auto auto;
+  grid-template-rows: 18px 40px 16px 16px 24px 18px 32px;
   gap: 4px;
   cursor: pointer;
   transition: border-color 140ms ease, box-shadow 140ms ease, filter 140ms ease, opacity 140ms ease;
@@ -920,19 +920,86 @@ body.lifePathMode .bottomTabBar {
   min-height: 18px;
 }
 
+.lifeStartHeartLawChoice__stamp--selected {
+  color: rgba(107, 53, 19, 0.95);
+}
+
+.lifeStartHeartLawChoice__stamp--locked {
+  color: rgba(113, 74, 39, 0.78);
+}
+
 .lifeStartHeartLawChoice__title {
   font-size: 16px;
   font-weight: 700;
   line-height: 1.25;
   color: rgba(36, 24, 15, 0.94);
   min-height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.lifeStartHeartLawChoice__meta,
-.lifeStartHeartLawChoice__status {
+.lifeStartHeartLawChoice__family,
+.lifeStartHeartLawChoice__resonance {
+  font-size: 12px;
+  min-height: 16px;
+}
+
+.lifeStartHeartLawChoice__family {
+  color: rgba(82, 53, 30, 0.92);
+}
+
+.lifeStartHeartLawChoice__resonance--strong {
+  color: #1f6b39;
+}
+
+.lifeStartHeartLawChoice__resonance--partial {
+  color: #1f5f84;
+}
+
+.lifeStartHeartLawChoice__resonance--neutral {
+  color: rgba(84, 72, 60, 0.92);
+}
+
+.lifeStartHeartLawChoice__resonance--mismatch {
+  color: #8a5a26;
+}
+
+.lifeStartHeartLawChoice__tags {
+  min-height: 24px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.lifeStartHeartLawChoice__tag {
+  border: 1px solid rgba(132, 78, 37, 0.26);
+  border-radius: 999px;
+  font-size: 10px;
+  padding: 1px 7px;
+  line-height: 1.2;
+}
+
+.lifeStartHeartLawChoice__footer {
+  min-height: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 12px;
   color: var(--ink-muted-color);
-  min-height: 16px;
+}
+
+.lifeStartHeartLawChoice__unlock {
+  min-height: 32px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: rgba(82, 60, 43, 0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .lifeStartHeartLawShell__detail {
