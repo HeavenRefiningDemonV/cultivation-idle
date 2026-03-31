@@ -14,11 +14,11 @@ Date: 2026-03-31
 8. `current-chapter-exhausted`
 9. `life-summary`
 
-## 2) Decision/status per screen
+## 2) Decision/status per screen (C.12R-B ingest)
 
-All nine targets are **DEFERRED** in `docs/release/ui_screen_signoff_sheet.md` for this packet.
+All nine targets remain **DEFERRED** in `docs/release/ui_screen_signoff_sheet.md`.
 
-Reason: required screenshot evidence (`01-base.png` to `06-reduced-motion.png`) is not present in repository evidence folders, so legal gate G1 fails and cleanup cannot be unlocked.
+Engineering evidence ingest result: Section C evidence audit still reports required PNG files missing for every target folder, so G1 fails for all nine screens and no cleanup is unlocked.
 
 ## 3) Cleanup actually performed
 
@@ -33,20 +33,20 @@ Reason: required screenshot evidence (`01-base.png` to `06-reduced-motion.png`) 
 ## 5) Whether C.0 baseline evidence existed
 
 - C.0 baseline index doc exists.
-- C.0 image artifacts for the nine target screens are still missing in-repo; comparison is limited to current additive worktree state.
+- C.0 image artifacts are still missing in-repo for the nine Section C target folders as of C.12R-B ingest.
 
 ## 6) Immediate art-trigger decision
 
 - **No immediate art request justified.**
 - Missing requirement is proof capture/review, not a demonstrated reusable art-role gap.
 
-## 7) C.12R-A mechanical closeout readiness
+## 7) C.12R-A / C.12R-B mechanical closeout readiness
 
-- Section C now has a single manifest-backed evidence map (`src/dev/sectionCAudit/sectionCEvidenceManifest.ts`).
-- Section C now has a machine-checkable evidence audit command (`npm run release:section-c-evidence-audit`) that fails until required PNGs are present.
+- Section C has a single manifest-backed evidence map (`src/dev/sectionCAudit/sectionCEvidenceManifest.ts`).
+- Section C has a machine-checkable evidence audit command (`npm run release:section-c-evidence-audit`) that currently fails due missing PNG artifacts.
 - Dev harness ids and evidence manifest ids are test-covered for drift.
 
-## 8) Unresolved follow-up items intentionally deferred beyond C.12R-A
+## 8) Unresolved follow-up items intentionally deferred beyond C.12R-B
 
 1. Manual screenshot capture for each target screen and each required slot.
 2. Reviewer completion of G1–G8 gate decisions using real evidence.

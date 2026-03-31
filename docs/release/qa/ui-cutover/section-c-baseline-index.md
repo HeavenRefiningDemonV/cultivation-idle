@@ -37,3 +37,9 @@ This file is the master tracker for Section C baseline capture.
 - Canonical evidence mapping now lives in `src/dev/sectionCAudit/sectionCEvidenceManifest.ts`.
 - Machine audit command is available via `npm run release:section-c-evidence-audit` (and `:json` variant).
 - Expected current result remains **FAIL** until manual PNG evidence is added to each target folder and reviewed by a human reviewer.
+
+## C.12R-B ingest note (2026-03-31)
+
+- Re-ran `npm run release:section-c-evidence-audit -- --json`.
+- Result remained `overallPass: false`; required PNG artifacts are still missing across all nine target folders.
+- Section C stays additive and deferred pending real evidence files plus human reviewer signoff.

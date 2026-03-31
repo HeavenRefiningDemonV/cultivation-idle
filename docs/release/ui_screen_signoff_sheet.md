@@ -452,3 +452,23 @@ Audit note (C.12R-A): run `npm run release:section-c-evidence-audit` for machine
 - cleanup scope unlocked if approved (exact conflicting layer(s) only): none
 - reviewer rationale summary: Deferred under strict evidence-first gate.
 - unresolved risks after decision: unresolved visual conflict/layout checks.
+
+---
+
+## C.12R-B engineering evidence ingest (2026-03-31)
+
+Reviewer remains pending human review. This section records engineering evidence ingestion only.
+
+| target screen id | evidence folder | G1 | G2 | G3 | G4 | G5 | G6 | G7 | G8 | decision | blocker summary |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `life-start-path` | `docs/release/qa/ui-cutover/life-start-path/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,04,05,06` PNG files. |
+| `life-start-heart-law` | `docs/release/qa/ui-cutover/life-start-heart-law/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,03,04,05,06` PNG files. |
+| `life-start-breath-focus` | `docs/release/qa/ui-cutover/life-start-breath-focus/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,04,05,06` PNG files. |
+| `dao-heart-law` | `docs/release/qa/ui-cutover/dao-heart-law/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,03,04,05,06` PNG files. |
+| `dao-heart-study` | `docs/release/qa/ui-cutover/dao-heart-study/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,04,05,06` PNG files. |
+| `change-heart-law` | `docs/release/qa/ui-cutover/change-heart-law/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,03,04,05,06` PNG files. |
+| `prestige-ritual` | `docs/release/qa/ui-cutover/prestige-ritual/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,03,04,05,06` PNG files. |
+| `current-chapter-exhausted` | `docs/release/qa/ui-cutover/current-chapter-exhausted/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,04,05,06` PNG files. |
+| `life-summary` | `docs/release/qa/ui-cutover/life-summary/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,03,04,05,06` PNG files. |
+
+Source of truth for missing evidence: `npm run release:section-c-evidence-audit -- --json` executed on 2026-03-31.

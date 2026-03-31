@@ -2,6 +2,16 @@
 
 Date: 2026-03-30
 
+## C.12R-B addendum (2026-03-31)
+
+Section C evidence ingest was re-run via `npm run release:section-c-evidence-audit -- --json`.
+
+Result:
+- `overallPass: false`
+- all nine Section C targets still missing required PNG evidence slots
+- no Section C target reached `APPROVED FOR CLEANUP`
+- destructive cleanup remains locked
+
 ## Gate decision
 
 No destructive cleanup was executed in this packet because screenshot-approval evidence for the target host surfaces was not found in the repository under an explicit per-screen cutover approval artifact.
