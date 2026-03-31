@@ -3,8 +3,10 @@
 - Surface id: `current-chapter-exhausted`
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=high`, `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=low`, `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=reduced`
 - Reachability: `gated by another state` (opened by harness)
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

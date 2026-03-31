@@ -84,15 +84,15 @@ This file refreshes v3 Appendix B into a current, repo-native registry. It exist
 
 | target screen id | owner files (canonical) | family | exact surface |
 | --- | --- | --- | --- |
-| `life-start-path-step` | `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss` | Hero ritual | Life Start step 1 (path selection only). |
-| `life-start-heart-law-step` | `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss` | Hero ritual | Life Start step 2 (Heart Law selection only). |
-| `life-start-breath-focus-step` | `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss` | Hero ritual / ritual selection | Life Start step 3 (Breath Focus only). |
-| `dao-heart-modal-heart-law` | `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss` | Hero ritual modal | Dao Heart modal, Heart Law tab only. |
-| `dao-heart-modal-study` | `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss` | Ritual modal / support | Dao Heart modal, Study tab only. |
-| `change-heart-law-modal` | `src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx` | Ritual modal | Full Change Heart Law modal surface. |
-| `prestige-ritual-modal` | `src/components/modals/PrestigeRitualModal.tsx` | Ritual modal | Full Prestige Reincarnation modal surface. |
-| `current-chapter-exhausted-modal` | `src/components/modals/CurrentChapterExhaustedModal.tsx`, `src/components/modals/CurrentChapterExhaustedModal.scss` | Ritual modal | Full Current Chapter Exhausted modal surface. |
-| `life-summary-modal` | `src/components/modals/LifeSummaryModal.tsx`, `src/components/modals/LifeSummaryModal.scss` | Ritual modal | Full Life Summary modal surface. |
+| `life-start-path` | `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss` | Hero ritual | Life Start step 1 (path selection only). |
+| `life-start-heart-law` | `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss` | Hero ritual | Life Start step 2 (Heart Law selection only). |
+| `life-start-breath-focus` | `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss` | Hero ritual / ritual selection | Life Start step 3 (Breath Focus only). |
+| `dao-heart-law` | `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss` | Hero ritual modal | Dao Heart modal, Heart Law tab only. |
+| `dao-heart-study` | `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss` | Ritual modal / support | Dao Heart modal, Study tab only. |
+| `change-heart-law` | `src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx` | Ritual modal | Full Change Heart Law modal surface. |
+| `prestige-ritual` | `src/components/modals/PrestigeRitualModal.tsx` | Ritual modal | Full Prestige Reincarnation modal surface. |
+| `current-chapter-exhausted` | `src/components/modals/CurrentChapterExhaustedModal.tsx`, `src/components/modals/CurrentChapterExhaustedModal.scss` | Ritual modal | Full Current Chapter Exhausted modal surface. |
+| `life-summary` | `src/components/modals/LifeSummaryModal.tsx`, `src/components/modals/LifeSummaryModal.scss` | Ritual modal | Full Life Summary modal surface. |
 
 ### E. World shell
 

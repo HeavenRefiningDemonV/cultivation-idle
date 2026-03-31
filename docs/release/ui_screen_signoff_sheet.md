@@ -82,9 +82,11 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ## C.12 Section C closeout reviews (2026-03-31)
 
+Audit note (C.12R-A): run `npm run release:section-c-evidence-audit` for machine validation of required Section C evidence slots before human review.
+
 ### Metadata
 
-- target screen id: `life-start-path-step`
+- target screen id: `life-start-path`
 - human label: Life Start — Path Step
 - dominant family: hero ritual
 - packet id: `C.12`
@@ -125,7 +127,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `life-start-heart-law-step`
+- target screen id: `life-start-heart-law`
 - human label: Life Start — Heart Law Step
 - dominant family: hero ritual
 - packet id: `C.12`
@@ -166,7 +168,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `life-start-breath-focus-step`
+- target screen id: `life-start-breath-focus`
 - human label: Life Start — Breath Focus Step
 - dominant family: hero ritual / ritual selection
 - packet id: `C.12`
@@ -207,7 +209,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `dao-heart-modal-heart-law`
+- target screen id: `dao-heart-law`
 - human label: Dao Heart Modal — Heart Law Tab
 - dominant family: hero ritual modal
 - packet id: `C.12`
@@ -248,7 +250,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `dao-heart-modal-study`
+- target screen id: `dao-heart-study`
 - human label: Dao Heart Modal — Study Tab
 - dominant family: ritual modal / support
 - packet id: `C.12`
@@ -289,7 +291,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `change-heart-law-modal`
+- target screen id: `change-heart-law`
 - human label: Change Heart Law Modal
 - dominant family: ritual modal
 - packet id: `C.12`
@@ -330,7 +332,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `prestige-ritual-modal`
+- target screen id: `prestige-ritual`
 - human label: Prestige Ritual Modal
 - dominant family: ritual modal
 - packet id: `C.12`
@@ -371,7 +373,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `current-chapter-exhausted-modal`
+- target screen id: `current-chapter-exhausted`
 - human label: Current Chapter Exhausted Modal
 - dominant family: ritual modal
 - packet id: `C.12`
@@ -412,7 +414,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ### Metadata
 
-- target screen id: `life-summary-modal`
+- target screen id: `life-summary`
 - human label: Life Summary Modal
 - dominant family: ritual modal
 - packet id: `C.12`

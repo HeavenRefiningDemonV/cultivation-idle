@@ -3,8 +3,10 @@
 - Surface id: `life-start-breath-focus`
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high`, `/?uiAudit=section-c&surface=life-start-breath-focus&fx=low`, `/?uiAudit=section-c&surface=life-start-breath-focus&fx=reduced`
 - Reachability: **forced-only for audit**
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

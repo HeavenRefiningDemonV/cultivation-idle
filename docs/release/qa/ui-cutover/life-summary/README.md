@@ -3,8 +3,10 @@
 - Surface id: `life-summary`
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=life-summary&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=life-summary&fx=high`, `/?uiAudit=section-c&surface=life-summary&fx=low`, `/?uiAudit=section-c&surface=life-summary&fx=reduced`
 - Reachability: `gated by another state` (harness uses `current` mode baseline)
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

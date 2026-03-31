@@ -3,8 +3,10 @@
 - Surface id: `prestige-ritual`
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=prestige-ritual&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=prestige-ritual&fx=high`, `/?uiAudit=section-c&surface=prestige-ritual&fx=low`, `/?uiAudit=section-c&surface=prestige-ritual&fx=reduced`
 - Reachability: `live`
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

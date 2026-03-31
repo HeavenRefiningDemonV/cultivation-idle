@@ -3,8 +3,10 @@
 - Surface id: `life-start-path`
 - Family: `hero ritual screen`
 - Harness URL: `/?uiAudit=section-c&surface=life-start-path&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=life-start-path&fx=high`, `/?uiAudit=section-c&surface=life-start-path&fx=low`, `/?uiAudit=section-c&surface=life-start-path&fx=reduced`
 - Reachability: `live`
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

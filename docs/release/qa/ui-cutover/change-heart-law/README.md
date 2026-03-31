@@ -3,8 +3,10 @@
 - Surface id: `change-heart-law`
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=change-heart-law&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=change-heart-law&fx=high`, `/?uiAudit=section-c&surface=change-heart-law&fx=low`, `/?uiAudit=section-c&surface=change-heart-law&fx=reduced`
 - Reachability: `gated by another state` (opened directly by harness)
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

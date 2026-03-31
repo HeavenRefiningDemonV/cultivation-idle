@@ -4,15 +4,15 @@ Date: 2026-03-31
 
 ## 1) Reviewed target screens
 
-1. `life-start-path-step`
-2. `life-start-heart-law-step`
-3. `life-start-breath-focus-step`
-4. `dao-heart-modal-heart-law`
-5. `dao-heart-modal-study`
-6. `change-heart-law-modal`
-7. `prestige-ritual-modal`
-8. `current-chapter-exhausted-modal`
-9. `life-summary-modal`
+1. `life-start-path`
+2. `life-start-heart-law`
+3. `life-start-breath-focus`
+4. `dao-heart-law`
+5. `dao-heart-study`
+6. `change-heart-law`
+7. `prestige-ritual`
+8. `current-chapter-exhausted`
+9. `life-summary`
 
 ## 2) Decision/status per screen
 
@@ -40,7 +40,13 @@ Reason: required screenshot evidence (`01-base.png` to `06-reduced-motion.png`) 
 - **No immediate art request justified.**
 - Missing requirement is proof capture/review, not a demonstrated reusable art-role gap.
 
-## 7) Unresolved follow-up items intentionally deferred beyond C.12
+## 7) C.12R-A mechanical closeout readiness
+
+- Section C now has a single manifest-backed evidence map (`src/dev/sectionCAudit/sectionCEvidenceManifest.ts`).
+- Section C now has a machine-checkable evidence audit command (`npm run release:section-c-evidence-audit`) that fails until required PNGs are present.
+- Dev harness ids and evidence manifest ids are test-covered for drift.
+
+## 8) Unresolved follow-up items intentionally deferred beyond C.12R-A
 
 1. Manual screenshot capture for each target screen and each required slot.
 2. Reviewer completion of G1–G8 gate decisions using real evidence.

@@ -12,21 +12,8 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { ChangeHeartLawModal } from '../../ui/cultivation/heartLaw/ChangeHeartLawModal.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import type { FxRequestedQuality } from '../../ui/fx/types.js';
+import { SECTION_C_SURFACE_IDS, type SectionCSurfaceId } from './sectionCSurfaceIds.js';
 import './SectionCAuditHarness.scss';
-
-export const SECTION_C_SURFACE_IDS = [
-  'life-start-path',
-  'life-start-heart-law',
-  'life-start-breath-focus',
-  'dao-heart-law',
-  'dao-heart-study',
-  'change-heart-law',
-  'prestige-ritual',
-  'current-chapter-exhausted',
-  'life-summary',
-] as const;
-
-type SectionCSurfaceId = (typeof SECTION_C_SURFACE_IDS)[number];
 type AuditFxMode = 'high' | 'low' | 'reduced';
 
 const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set(['life-start-breath-focus']);

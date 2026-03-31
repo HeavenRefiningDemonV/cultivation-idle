@@ -3,8 +3,10 @@
 - Surface id: `dao-heart-study`
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=dao-heart-study&fx=high`
+- Capture routes: `/?uiAudit=section-c&surface=dao-heart-study&fx=high`, `/?uiAudit=section-c&surface=dao-heart-study&fx=low`, `/?uiAudit=section-c&surface=dao-heart-study&fx=reduced`
 - Reachability: `live but awkward`
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
+- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
 ## Required slots
 - `01-base.png` — required.

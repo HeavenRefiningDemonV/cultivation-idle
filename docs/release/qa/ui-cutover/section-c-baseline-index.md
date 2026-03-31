@@ -31,3 +31,9 @@ This file is the master tracker for Section C baseline capture.
 - C.0 baseline artifacts are still **not present as image files** in-repo for the nine Section C targets.
 - C.12 therefore compares against the current additive worktree state and records this as an evidence limitation in the signoff sheet.
 - No destructive cleanup is unlocked from this index alone; explicit per-screen cutover approval is still required.
+
+## C.12R-A audit-readiness note (2026-03-31)
+
+- Canonical evidence mapping now lives in `src/dev/sectionCAudit/sectionCEvidenceManifest.ts`.
+- Machine audit command is available via `npm run release:section-c-evidence-audit` (and `:json` variant).
+- Expected current result remains **FAIL** until manual PNG evidence is added to each target folder and reviewed by a human reviewer.

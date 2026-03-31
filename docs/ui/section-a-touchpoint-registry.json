@@ -165,7 +165,7 @@
     ],
     "sectionCRitualSelectionTargets": [
       {
-        "id": "life-start-path-step",
+        "id": "life-start-path",
         "ownerFiles": [
           "src/components/modals/LifeStartWizardModal.tsx",
           "src/components/modals/LifeStartWizardModal.scss"
@@ -174,7 +174,7 @@
         "exactSurface": "Life Start step 1 (path selection only)"
       },
       {
-        "id": "life-start-heart-law-step",
+        "id": "life-start-heart-law",
         "ownerFiles": [
           "src/components/modals/LifeStartWizardModal.tsx",
           "src/components/modals/LifeStartWizardModal.scss"
@@ -183,7 +183,7 @@
         "exactSurface": "Life Start step 2 (Heart Law selection only)"
       },
       {
-        "id": "life-start-breath-focus-step",
+        "id": "life-start-breath-focus",
         "ownerFiles": [
           "src/components/modals/LifeStartWizardModal.tsx",
           "src/components/modals/LifeStartWizardModal.scss"
@@ -192,7 +192,7 @@
         "exactSurface": "Life Start step 3 (Breath Focus only)"
       },
       {
-        "id": "dao-heart-modal-heart-law",
+        "id": "dao-heart-law",
         "ownerFiles": [
           "src/components/modals/DaoHeartModal.tsx",
           "src/components/modals/DaoHeartModal.scss"
@@ -201,7 +201,7 @@
         "exactSurface": "Dao Heart modal, Heart Law tab only"
       },
       {
-        "id": "dao-heart-modal-study",
+        "id": "dao-heart-study",
         "ownerFiles": [
           "src/components/modals/DaoHeartModal.tsx",
           "src/components/modals/DaoHeartModal.scss"
@@ -210,7 +210,7 @@
         "exactSurface": "Dao Heart modal, Study tab only"
       },
       {
-        "id": "change-heart-law-modal",
+        "id": "change-heart-law",
         "ownerFiles": [
           "src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx"
         ],
@@ -218,7 +218,7 @@
         "exactSurface": "Full Change Heart Law modal"
       },
       {
-        "id": "prestige-ritual-modal",
+        "id": "prestige-ritual",
         "ownerFiles": [
           "src/components/modals/PrestigeRitualModal.tsx"
         ],
@@ -226,7 +226,7 @@
         "exactSurface": "Full Prestige Reincarnation modal"
       },
       {
-        "id": "current-chapter-exhausted-modal",
+        "id": "current-chapter-exhausted",
         "ownerFiles": [
           "src/components/modals/CurrentChapterExhaustedModal.tsx",
           "src/components/modals/CurrentChapterExhaustedModal.scss"
@@ -235,7 +235,7 @@
         "exactSurface": "Full Current Chapter Exhausted modal"
       },
       {
-        "id": "life-summary-modal",
+        "id": "life-summary",
         "ownerFiles": [
           "src/components/modals/LifeSummaryModal.tsx",
           "src/components/modals/LifeSummaryModal.scss"
