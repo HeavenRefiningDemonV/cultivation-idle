@@ -517,7 +517,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 </div>
 
                 <div className="lifeStartHeartLawSupport">
-                  <p className="lifeStartHeartLawSupport__hint" title="A verse is a section of your scripture you’ve truly understood. Comprehension comes from meditating and overcoming trials.">
+                  <p className="lifeStartHeartLawSupport__hint">
                     This is doctrine preview only; verse progress begins after life-start is confirmed.
                   </p>
 

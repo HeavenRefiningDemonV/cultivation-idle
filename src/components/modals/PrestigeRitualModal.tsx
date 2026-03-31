@@ -157,12 +157,15 @@ export function PrestigeRitualModal({
               onBlur={cancelHold}
               disabled={!canPrestigeNow}
               aria-disabled={!canPrestigeNow}
+              aria-describedby="prestige-ritual-hold-help"
             >
               <span className="prestigeRitualHoldFill" style={{ transform: `scaleX(${holdProgress})` }} />
               <span className="prestigeRitualHoldLabel">Hold to Reincarnate</span>
             </button>
-            {ritualStatus && <div className="prestigeRitualStatus">{ritualStatus}</div>}
-            {errorMessage && <div className="prestigeRitualError">{errorMessage}</div>}
+            <div id="prestige-ritual-hold-help" className="prestigeRitualStatus" role="status" aria-live="polite">
+              {ritualStatus ?? 'Press and hold Space or Enter to complete the ritual.'}
+            </div>
+            {errorMessage && <div className="prestigeRitualError" role="alert">{errorMessage}</div>}
           </div>
         </div>
       )}

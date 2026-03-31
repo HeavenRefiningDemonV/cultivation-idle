@@ -39,6 +39,8 @@ export function StudyModeWidget() {
   const masteryRateLabel = studyEnabled && studyTechniqueId
     ? `Mastery gain: +${STUDY_MASTERY_PER_MINUTE_BASE.toFixed(1)} / min (while cultivating)`
     : 'Enable Study Mode and pick a technique to begin.';
+  const techniqueHelpId = 'study-technique-help';
+  const techniqueSelectId = 'study-technique-select';
 
   return (
     <div className="cultivationPanel studyWidget">
@@ -47,8 +49,9 @@ export function StudyModeWidget() {
           <div className="panelTitle">Study Mode</div>
           <div className="panelSub">While cultivating, study one technique for slow, steady mastery.</div>
         </div>
-        <label className="studyToggle">
+        <label className="studyToggle" htmlFor="study-mode-toggle">
           <input
+            id="study-mode-toggle"
             type="checkbox"
             checked={studyEnabled}
             onChange={(e) => setStudyEnabled(e.target.checked)}
@@ -58,12 +61,14 @@ export function StudyModeWidget() {
       </div>
 
       <div className="studyControlRow">
-        <div className="studyControlLabel">Technique</div>
+        <label className="studyControlLabel" htmlFor={techniqueSelectId}>Technique</label>
         <select
+          id={techniqueSelectId}
           className="studySelect"
           value={studyTechniqueId ?? ''}
           onChange={(e) => setStudyTechniqueId(e.target.value || null)}
           disabled={!studyEnabled || options.length === 0}
+          aria-describedby={techniqueHelpId}
         >
           <option value="">None</option>
           {options.map((opt) => (
@@ -78,6 +83,9 @@ export function StudyModeWidget() {
 
       <div className="studyRate">
         {masteryRateLabel}
+      </div>
+      <div id={techniqueHelpId} className="studyHelperText">
+        {studyEnabled ? 'Select one unlocked technique for steady mastery while cultivating.' : 'Enable Study Mode to choose a technique.'}
       </div>
       {!studyEnabled && <div className="inlineMessage inlineMessage--muted">Study mode is disabled. Enable to begin.</div>}
       {studyEnabled && !studyTechniqueId && options.length > 0 && (

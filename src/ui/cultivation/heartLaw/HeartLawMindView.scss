@@ -118,6 +118,12 @@
   font-weight: 700;
 }
 
+.heartLawMindRestriction {
+  font-size: 12px;
+  color: rgba(120, 68, 32, 0.85);
+  min-height: 16px;
+}
+
 @media (max-width: 640px) {
   .heartLawMindRadial {
     height: 280px;

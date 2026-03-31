@@ -59,6 +59,12 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.resonanceBadgeHint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: rgba(219, 229, 255, 0.82);
+}
+
 .resonanceBadge--match {
   border-color: rgba(126, 231, 163, 0.5);
   background: rgba(60, 160, 100, 0.1);
@@ -178,6 +184,13 @@
 
 .verseTimeline--celebrate .verseNode--current {
   animation: versePulse 0.8s ease;
+}
+
+.heartLawVerseSummary {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #c7d4ea;
+  min-height: 18px;
 }
 
 @keyframes versePulse {

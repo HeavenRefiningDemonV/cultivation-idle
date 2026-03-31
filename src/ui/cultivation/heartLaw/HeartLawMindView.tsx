@@ -166,11 +166,16 @@ export function HeartLawMindView() {
             className="button-standard heartLawMindChangeButton"
             onClick={() => setShowModal(true)}
             disabled={!canChangeHeartLaw}
-            title={changeTooltip}
+            aria-describedby={!canChangeHeartLaw ? 'heart-law-mind-change-restriction' : undefined}
           >
             Change Heart Law
           </button>
         </div>
+        {!canChangeHeartLaw ? (
+          <div id="heart-law-mind-change-restriction" className="heartLawMindRestriction">
+            {changeTooltip}
+          </div>
+        ) : null}
       </div>
 
       {showModal ? (

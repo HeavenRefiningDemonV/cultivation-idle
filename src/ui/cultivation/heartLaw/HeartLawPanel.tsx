@@ -82,11 +82,11 @@ function ResonanceBadge({ heartLaw }: { heartLaw: HeartLawDef | null }) {
   }
 
   return (
-    <div
-      className={`resonanceBadge resonanceBadge--${status}`}
-      title="If your Spirit Root resonates with this Heart Law’s Dao tags, its signature effect is stronger. If not, the penalty is minor—your run is never ruined."
-    >
+    <div className={`resonanceBadge resonanceBadge--${status}`}>
       {text}
+      <div className="resonanceBadgeHint">
+        Resonance boosts signature effects when aligned. Mismatch is a minor penalty only.
+      </div>
     </div>
   );
 }
@@ -114,15 +114,15 @@ function VerseTimeline({
   );
 
   return (
-    <div className={`verseTimeline ${celebrate ? 'verseTimeline--celebrate' : ''}`}>
+    <div className={`verseTimeline ${celebrate ? 'verseTimeline--celebrate' : ''}`} role="list" aria-label="Verse progression timeline">
       {nodes.map((node, index) => {
         const unlocked = currentVerse > node.chapter;
         const current = currentVerse === node.chapter;
         return (
-          <div key={node.chapter} className="verseNodeWrap">
+          <div key={node.chapter} className="verseNodeWrap" role="listitem" aria-current={current ? 'step' : undefined}>
             <div
               className={`verseNode ${unlocked ? 'verseNode--unlocked' : ''} ${current ? 'verseNode--current' : ''}`}
-              title={node.summary}
+              aria-label={`Verse ${roman[index]}: ${node.summary}`}
             >
               <div className="verseNodeLabel">Verse {roman[index]}</div>
             </div>
@@ -185,6 +185,8 @@ function HeartLawScrollCard({
   const signatureSummary = summarizeEffects(heartLaw.signature);
   const nextLabel = required > 0 ? 'Next Verse at Comprehension 100' : 'All Verses comprehended';
   const etaDisplay = required > 0 ? etaText : '—';
+  const currentChapterEffects = chapters.find((entry) => entry.chapter === currentChapter)?.effects;
+  const currentVerseSummary = summarizeEffects(currentChapterEffects);
 
   return (
     <div className="cultivationPanel heartLawCard">
@@ -199,16 +201,14 @@ function HeartLawScrollCard({
       <div className="heartLawSignature">{signatureSummary}</div>
       <ResonanceBadge heartLaw={heartLaw} />
       <div className="heartLawNext">
-        <div
-          className="heartLawNextLabel"
-          title="A verse is a section of your scripture you’ve truly understood. Comprehension comes from meditating and overcoming trials."
-        >
+        <div className="heartLawNextLabel">
           {nextLabel}
         </div>
         <div className="heartLawNextEta">Estimated time: {etaDisplay}</div>
       </div>
       <ComprehensionBar comprehension={comprehension} required={required} flash={flash} />
       <VerseTimeline currentVerse={currentChapter} chapters={chapters} celebrate={flash} />
+      <div className="heartLawVerseSummary">Current verse effect: {currentVerseSummary}</div>
     </div>
   );
 }
@@ -295,11 +295,16 @@ export function HeartLawPanel() {
           className="primaryButton"
           disabled={!canChangeHeartLaw}
           onClick={() => setShowModal(true)}
-          title={changeTooltip}
+          aria-describedby={!canChangeHeartLaw ? 'heart-law-change-restriction' : undefined}
         >
           Change Heart Law
         </button>
       </div>
+      {!canChangeHeartLaw ? (
+        <div id="heart-law-change-restriction" className="panelSub">
+          {changeTooltip}
+        </div>
+      ) : null}
 
       {showModal ? (
         <ChangeHeartLawModal

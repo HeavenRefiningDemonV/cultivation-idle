@@ -70,6 +70,49 @@ export function buildRuntimeSurfaceTruthEntries(scenarioId: string): SurfaceTrut
 
   return [
     {
+      surfaceId: 'life_start_path',
+      scenarioId,
+      lines: [
+        'Choose Your Path',
+        'Select the doctrine that will shape this life.',
+      ],
+    },
+    {
+      surfaceId: 'life_start_heart_law',
+      scenarioId,
+      lines: [
+        'Resonance boosts signature effects when aligned. Mismatch is a minor penalty only.',
+        'Choose a Heart Law to define this life.',
+      ],
+    },
+    {
+      surfaceId: 'change_heart_law_modal',
+      scenarioId,
+      lines: [
+        'Changing your Heart Law resets you to Verse I and clears comprehension progress.',
+        'Not enough Gold to rewrite.',
+        'Heart Law rewriting is unavailable right now.',
+      ],
+    },
+    {
+      surfaceId: 'prestige_ritual_modal',
+      scenarioId,
+      lines: [
+        'Carries Forward',
+        'Resets This Life',
+        'Rebuilt Next Life',
+        'This cannot be undone. You will restart from the mortal realm.',
+      ],
+    },
+    {
+      surfaceId: 'current_chapter_exhausted',
+      scenarioId,
+      lines: [
+        'You have reached Spirit Severing, the end of the current authored chapter in this build.',
+        'There is no live city 6, post-Severing gate chain, or next authored realm beyond this point right now.',
+      ],
+    },
+    {
       surfaceId: 'life_summary',
       scenarioId,
       lines: lifeSummary.blocks.flatMap((block) => [block.title, ...block.lines]),

@@ -155,8 +155,9 @@ export function RadialVerseRing({
                 height: `${NODE_SIZE}px`,
               }}
               onClick={() => onSelectVerse(verse)}
-              aria-label={`Select Verse ${label}`}
+              aria-label={`Verse ${label} ${isCurrent ? 'current' : isCompleted ? 'completed' : 'locked'}`}
               aria-pressed={isSelected}
+              aria-current={isCurrent ? 'step' : undefined}
             >
               <span className="radialVerseRing__nodeLabel">{label}</span>
             </button>

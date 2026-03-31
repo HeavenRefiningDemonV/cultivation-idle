@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties, type MouseEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent } from 'react';
 import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget.js';
 import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel.js';
 import { useContentStore } from '../../stores/contentStore.js';
@@ -65,6 +65,9 @@ const DAO_PALETTES: Record<DaoElement, { accent: string; accent2: string; washA:
 export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHeartModalProps) {
   const [tab, setTab] = useState<'heartLaw' | 'study'>(debugInitialTab);
   const { effectiveQuality } = useFxQuality();
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const daoTags = selectedHeartLawId ? heartLawsById[selectedHeartLawId]?.daoTags ?? [] : [];
@@ -88,6 +91,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -97,12 +101,42 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
 
     document.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = previousOverflow;
+      previousFocusRef.current?.focus();
     };
   }, [onClose]);
+
+  const handleDialogKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Tab') return;
+    const container = modalRef.current;
+    if (!container) return;
+    const focusables = Array.from(container.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ));
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  const handleTabKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>, nextTab: 'heartLaw' | 'study') => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    setTab(nextTab);
+  };
 
   const handleOverlayClick = () => {
     onClose();
@@ -122,7 +156,9 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
         role="dialog"
         aria-modal="true"
         aria-label="Dao Heart"
+        ref={modalRef}
         onClick={handleModalClick}
+        onKeyDown={handleDialogKeyDown}
       >
         <div className="daoHeartModalFx" aria-hidden="true">
           <div className="daoHeartFxWash" />
@@ -145,18 +181,24 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
                 <button
                   type="button"
                   role="tab"
+                  id="dao-heart-tab-heart-law"
+                  aria-controls="dao-heart-panel-heart-law"
                   aria-selected={tab === 'heartLaw'}
                   className={`daoHeartModalTab ${tab === 'heartLaw' ? 'daoHeartModalTab--active' : ''}`}
                   onClick={() => setTab('heartLaw')}
+                  onKeyDown={(event) => handleTabKeyDown(event, 'study')}
                 >
                   Heart Law
                 </button>
                 <button
                   type="button"
                   role="tab"
+                  id="dao-heart-tab-study"
+                  aria-controls="dao-heart-panel-study"
                   aria-selected={tab === 'study'}
                   className={`daoHeartModalTab ${tab === 'study' ? 'daoHeartModalTab--active' : ''}`}
                   onClick={() => setTab('study')}
+                  onKeyDown={(event) => handleTabKeyDown(event, 'heartLaw')}
                 >
                   Study
                 </button>
@@ -167,6 +209,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
               className="daoHeartModalClose"
               onClick={onClose}
               aria-label="Close Dao Heart"
+              ref={closeButtonRef}
             >
               ×
             </button>
@@ -174,13 +217,23 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
 
           <div className="daoHeartModalBody">
             {tab === 'heartLaw' ? (
-              <section className="daoHeartModalSection" role="tabpanel">
+              <section
+                className="daoHeartModalSection"
+                role="tabpanel"
+                id="dao-heart-panel-heart-law"
+                aria-labelledby="dao-heart-tab-heart-law"
+              >
                 <HeartLawPanel />
               </section>
             ) : null}
 
             {tab === 'study' ? (
-              <section className="daoHeartModalSection" role="tabpanel">
+              <section
+                className="daoHeartModalSection"
+                role="tabpanel"
+                id="dao-heart-panel-study"
+                aria-labelledby="dao-heart-tab-study"
+              >
                 <div className="daoHeartModalStudyWrap">
                   <StudyModeWidget />
                 </div>
