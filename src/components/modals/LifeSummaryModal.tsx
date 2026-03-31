@@ -34,49 +34,68 @@ export function LifeSummaryModal() {
   };
 
   const title = mode === 'current' ? 'Current Life Summary' : 'Last Completed Life Summary';
+  const capturedAtLabel = surface && mode === 'last_completed'
+    ? new Date(surface.capturedAt).toLocaleString()
+    : null;
 
   return (
     <RitualModalFrame
       open={open}
       onClose={close}
       title={title}
+      subtitle={mode === 'current' ? 'Review this life before the ritual.' : 'Archive record from your previous completed life.'}
       variant="summary"
       size="lg"
       className="lifeSummaryModal"
       bodyClassName="lifeSummaryModal__body"
+      ornament={<div className="lifeSummaryModal__seal" aria-hidden="true"><span /></div>}
       footer={(
         <div className="lifeSummaryModal__actions">
-          <button type="button" className="lifeSummaryModal__action uiNoShift" onClick={handleOpenPrestige}>Open Prestige</button>
           <button type="button" className="lifeSummaryModal__action uiNoShift" onClick={close}>Close</button>
+          <button type="button" className="lifeSummaryModal__action lifeSummaryModal__action--primary uiNoShift" onClick={handleOpenPrestige}>Open Prestige</button>
         </div>
       )}
       ariaLabel={title}
     >
-      <div className="lifeSummaryModal__meta">
+      <section className="lifeSummaryModal__modeStrip">
+        <span className="lifeSummaryModal__modeBadge">{mode === 'current' ? 'Current Review' : 'Last Completed Archive'}</span>
+        {capturedAtLabel ? <span className="lifeSummaryModal__capturedAt">Captured: {capturedAtLabel}</span> : <span className="lifeSummaryModal__capturedAt">&nbsp;</span>}
+      </section>
+
+      <section className="lifeSummaryModal__meta">
         {surface ? (
           <>
-            <span>Advisor: {surface.advisorLabel}</span>
-            <span>AP forecast: +{surface.apForecastGain}</span>
-            <span>AP after ritual: {surface.apAfterRitual}</span>
+            <div className="lifeSummaryModal__metaItem">
+              <div className="lifeSummaryModal__metaLabel">Advisor</div>
+              <div className="lifeSummaryModal__metaValue">{surface.advisorLabel}</div>
+            </div>
+            <div className="lifeSummaryModal__metaItem">
+              <div className="lifeSummaryModal__metaLabel">AP Forecast</div>
+              <div className="lifeSummaryModal__metaValue">+{surface.apForecastGain}</div>
+            </div>
+            <div className="lifeSummaryModal__metaItem">
+              <div className="lifeSummaryModal__metaLabel">AP After Ritual</div>
+              <div className="lifeSummaryModal__metaValue">{surface.apAfterRitual}</div>
+            </div>
           </>
         ) : (
           <span>No completed life snapshot is available yet.</span>
         )}
-      </div>
+      </section>
 
       {surface ? (
-        <div className="lifeSummaryModal__blocks">
+        <section className="lifeSummaryModal__blocks">
           {surface.blocks.map((block) => (
-            <section key={block.key} className="lifeSummaryModal__block">
+            <article key={block.key} className="lifeSummaryModal__block">
               <h3>{block.title}</h3>
               <ul>
                 {block.lines.map((line, index) => (<li key={`${block.key}-${index}`}>{line}</li>))}
               </ul>
-            </section>
+            </article>
           ))}
-        </div>
+        </section>
       ) : (
-        <div className="lifeSummaryModal__empty">Finish one Reincarnation to unlock the last completed life summary.</div>
+        <section className="lifeSummaryModal__empty">Finish one Reincarnation to unlock the last completed life summary.</section>
       )}
     </RitualModalFrame>
   );

@@ -2,6 +2,23 @@
   width: min(700px, 96vw);
 }
 
+.currentChapterExhaustedModal__seal {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(120, 72, 33, 0.3);
+  background: radial-gradient(circle, rgba(246, 230, 206, 0.95) 0%, rgba(231, 206, 171, 0.82) 70%, rgba(212, 178, 139, 0.35) 100%);
+  display: grid;
+  place-items: center;
+}
+
+.currentChapterExhaustedModal__seal span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(120, 72, 33, 0.38);
+}
+
 .currentChapterExhaustedModal__body {
   display: grid;
   gap: 12px;
@@ -10,19 +27,12 @@
   line-height: 1.4;
 }
 
-.currentChapterExhaustedModal__body p {
+.currentChapterExhaustedModal__body p,
+.currentChapterExhaustedModal__body h3 {
   margin: 0;
 }
 
-.currentChapterExhaustedModal__summary {
-  display: grid;
-  gap: 8px;
-}
-
-.currentChapterExhaustedModal__lead {
-  font-size: 15px;
-}
-
+.currentChapterExhaustedModal__summary,
 .currentChapterExhaustedModal__truthBlock {
   border: 1px solid rgba(120, 72, 33, 0.24);
   border-radius: 12px;
@@ -32,12 +42,17 @@
   gap: 8px;
 }
 
+.currentChapterExhaustedModal__summary h3,
 .currentChapterExhaustedModal__truthBlock h3 {
-  margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  color: rgba(72, 45, 18, 0.9);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(72, 45, 18, 0.8);
+}
+
+.currentChapterExhaustedModal__lead {
+  font-size: 15px;
 }
 
 .currentChapterExhaustedModal__truthBlock ul {
@@ -48,10 +63,9 @@
 }
 
 .currentChapterExhaustedModal__actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  justify-content: flex-end;
 }
 
 .currentChapterExhaustedModal__action {
@@ -62,18 +76,22 @@
   font-weight: 700;
   padding: 9px 14px;
   cursor: pointer;
+  min-height: 42px;
   --ui-no-shift-border: 1px;
   --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
   --ui-no-shift-outline-offset: 2px;
 }
 
+.currentChapterExhaustedModal__action--primary {
+  background: rgba(236, 211, 175, 0.96);
+}
+
 @media (max-width: 720px) {
   .currentChapterExhaustedModal__actions {
-    justify-content: stretch;
+    grid-template-columns: 1fr;
   }
 
   .currentChapterExhaustedModal__action {
-    flex: 1 1 100%;
     text-align: center;
   }
 }
