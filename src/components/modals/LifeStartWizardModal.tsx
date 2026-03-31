@@ -92,6 +92,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
   const contentLoaded = useContentStore((state) => state.isLoaded);
   const listHeartLaws = useContentStore((state) => state.listHeartLaws);
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const [requestedStep, setRequestedStep] = useState<LifeStartWizardStep | null>(null);
   const [hoveredPath, setHoveredPath] = useState<CultivationPath | null>(null);
@@ -608,4 +609,3 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     </InkModalFrame>
   );
 }
-  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
