@@ -184,7 +184,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
                   id="dao-heart-tab-heart-law"
                   aria-controls="dao-heart-panel-heart-law"
                   aria-selected={tab === 'heartLaw'}
-                  className={`daoHeartModalTab ${tab === 'heartLaw' ? 'daoHeartModalTab--active' : ''}`}
+                  className={`daoHeartModalTab uiNoShift ${tab === 'heartLaw' ? 'daoHeartModalTab--active' : ''}`}
                   onClick={() => setTab('heartLaw')}
                   onKeyDown={(event) => handleTabKeyDown(event, 'study')}
                 >
@@ -196,7 +196,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
                   id="dao-heart-tab-study"
                   aria-controls="dao-heart-panel-study"
                   aria-selected={tab === 'study'}
-                  className={`daoHeartModalTab ${tab === 'study' ? 'daoHeartModalTab--active' : ''}`}
+                  className={`daoHeartModalTab uiNoShift ${tab === 'study' ? 'daoHeartModalTab--active' : ''}`}
                   onClick={() => setTab('study')}
                   onKeyDown={(event) => handleTabKeyDown(event, 'heartLaw')}
                 >

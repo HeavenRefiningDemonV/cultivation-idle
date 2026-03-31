@@ -25,3 +25,9 @@ This file is the master tracker for Section C baseline capture.
 - Record true `N/A` slots in per-surface README files.
 - Optional narrow capture may use `07-narrow.png`.
 - Cleanup packets must use `docs/release/ui_screen_signoff_sheet.md` only after additive implementation and real screenshot evidence are complete.
+
+## C.12 closeout comparison note (2026-03-31)
+
+- C.0 baseline artifacts are still **not present as image files** in-repo for the nine Section C targets.
+- C.12 therefore compares against the current additive worktree state and records this as an evidence limitation in the signoff sheet.
+- No destructive cleanup is unlocked from this index alone; explicit per-screen cutover approval is still required.
