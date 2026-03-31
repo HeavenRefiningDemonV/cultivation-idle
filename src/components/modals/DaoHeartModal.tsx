@@ -3,6 +3,7 @@ import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget.js';
 import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import './DaoHeartModal.scss';
 
 interface DaoHeartModalProps {
@@ -63,6 +64,7 @@ const DAO_PALETTES: Record<DaoElement, { accent: string; accent2: string; washA:
 
 export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHeartModalProps) {
   const [tab, setTab] = useState<'heartLaw' | 'study'>(debugInitialTab);
+  const { effectiveQuality } = useFxQuality();
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const daoTags = selectedHeartLawId ? heartLawsById[selectedHeartLawId]?.daoTags ?? [] : [];
@@ -116,6 +118,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
         className="daoHeartModalModal"
         style={themeStyle}
         data-dao-element={element}
+        data-fx-quality={effectiveQuality}
         role="dialog"
         aria-modal="true"
         aria-label="Dao Heart"

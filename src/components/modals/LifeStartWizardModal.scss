@@ -348,11 +348,12 @@
   border: 1px solid rgba(255, 233, 195, 0.24);
   border-radius: 12px;
   isolation: isolate;
-  transition: filter 220ms ease, opacity 220ms ease;
+  transition: filter 180ms ease-out, opacity 180ms ease-out, box-shadow 180ms ease-out;
 }
 
 .lifePathPanel--previewed {
   filter: brightness(1.04) saturate(1.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 225, 170, 0.25);
 }
 
 .lifePathPanel--receded {
@@ -421,6 +422,7 @@
   opacity: 0;
   pointer-events: none;
   z-index: 2;
+  transition: opacity 180ms ease-out;
 }
 
 .lifePathPanel--previewed .lifePathPanel__stamp {
@@ -553,7 +555,7 @@
   justify-content: center;
   font-family: var(--ink-ui-font, inherit);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
-  transition: background 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+  transition: background 160ms ease-out, filter 160ms ease-out, box-shadow 160ms ease-out;
 }
 
 .lifePathPanel__select:disabled {
@@ -615,6 +617,24 @@
   .lifePathPanel__select {
     transition: none;
   }
+}
+
+.lifePathFullscreen[data-fx-quality='medium'] .lifePathPanel--previewed::before {
+  animation-duration: 11s;
+  opacity: 0.06;
+}
+
+.lifePathFullscreen[data-fx-quality='medium'] .lifePathPanel--previewed::after {
+  animation-duration: 8.2s;
+  opacity: 0.1;
+}
+
+.lifePathFullscreen[data-fx-quality='low'] .lifePathPanel--previewed::before,
+.lifePathFullscreen[data-fx-quality='low'] .lifePathPanel--previewed::after,
+.lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathPanel--previewed::before,
+.lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathPanel--previewed::after {
+  animation: none;
+  opacity: 0;
 }
 
 .lifeStartWizardModal--path .lifeStartWizardHeader,

@@ -119,6 +119,31 @@
   animation: daoOrbitB 18s linear infinite reverse;
 }
 
+.daoHeartModalModal[data-fx-quality='medium'] .daoHeartFxWash {
+  animation-duration: 18s;
+  opacity: 0.42;
+}
+
+.daoHeartModalModal[data-fx-quality='medium'] .daoHeartFxMandala {
+  animation-duration: 34s;
+  opacity: 0.1;
+}
+
+.daoHeartModalModal[data-fx-quality='low'] .daoHeartFxWash,
+.daoHeartModalModal[data-fx-quality='reducedMotion'] .daoHeartFxWash {
+  animation: none;
+  opacity: 0.18;
+  filter: none;
+}
+
+.daoHeartModalModal[data-fx-quality='low'] .daoHeartFxMandala,
+.daoHeartModalModal[data-fx-quality='reducedMotion'] .daoHeartFxMandala,
+.daoHeartModalModal[data-fx-quality='low'] .daoHeartFxOrbit,
+.daoHeartModalModal[data-fx-quality='reducedMotion'] .daoHeartFxOrbit {
+  animation: none;
+  opacity: 0;
+}
+
 .daoHeartMote {
   position: absolute;
   width: 8px;
@@ -226,7 +251,7 @@
   cursor: pointer;
   color: rgba(12, 18, 34, 0.8);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, background-color 0.15s ease-out;
 }
 
 .daoHeartModalTab--active {

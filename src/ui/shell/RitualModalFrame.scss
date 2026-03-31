@@ -9,6 +9,7 @@
 
 .ritualModalFrame__panel {
   min-height: min(620px, 88vh);
+  animation: ritualPanelSettle 200ms ease-out;
 }
 
 .ritualModalFrame__inner {
@@ -17,6 +18,10 @@
   gap: var(--ritual-modal-body-gap);
   min-height: inherit;
   padding: var(--ritual-modal-pad-block) var(--ritual-modal-pad-inline);
+}
+
+.ritualModalFrame__content {
+  animation: ritualContentFadeIn 180ms ease-out;
 }
 
 .ritualModalFrame__header {
@@ -81,6 +86,31 @@
 
 .ritualModalFrame--summary {
   --ritual-modal-body-gap: 12px;
+}
+
+.ritualModalFrame--static .ritualModalFrame__panel,
+.ritualModalFrame--static .ritualModalFrame__content {
+  animation: none;
+}
+
+@keyframes ritualPanelSettle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ritualContentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (max-width: 700px) {

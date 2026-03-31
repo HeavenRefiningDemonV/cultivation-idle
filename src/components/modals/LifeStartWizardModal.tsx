@@ -22,6 +22,8 @@ import {
   type LifeStartWizardStep,
 } from '../../systems/ui/lifeStart/lifeStartWizardContract.js';
 import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
+import { getSelectionCommitDelay } from '../../ui/motion/ritualMotion.js';
 import type { BreathMode, CultivationPath, HeartLawDef } from '../../types/index.js';
 
 const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string }[] = [
@@ -210,16 +212,13 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
       setCommittingPath(null);
     };
 
-    const prefersReducedMotion = typeof window !== 'undefined'
-      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     if (prefersReducedMotion) {
       commitPath();
       return;
     }
 
     setCommittingPath(pathId);
-    window.setTimeout(commitPath, 130);
+    window.setTimeout(commitPath, getSelectionCommitDelay(prefersReducedMotion));
   };
 
   const handleSelectDraftLaw = (heartLawId: string) => {
@@ -285,7 +284,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     return (
       <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
         <div className="lifeStartWizardModal lifeStartWizardModal--path">
-          <div className="lifePathFullscreen" data-ui="life-path-fullscreen">
+          <div className="lifePathFullscreen" data-ui="life-path-fullscreen" data-fx-quality={effectiveQuality}>
             <div className="lifePathHero">
               <div className="lifePathHeroBackdrop" aria-hidden />
               <header className="lifePathHeroHeader">
@@ -609,3 +608,4 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     </InkModalFrame>
   );
 }
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();

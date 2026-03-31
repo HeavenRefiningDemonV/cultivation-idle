@@ -62,7 +62,7 @@
   color: rgba(31, 41, 55, 0.7);
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: box-shadow 0.15s ease-out, background-color 0.15s ease-out, color 0.15s ease-out;
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -81,7 +81,6 @@
 }
 
 .radialVerseRing__nodeBtn.is-selected {
-  transform: scale(1.06);
   box-shadow:
     0 0 0 2px rgba(213, 162, 76, 0.35),
     0 0 10px rgba(213, 162, 76, 0.25);

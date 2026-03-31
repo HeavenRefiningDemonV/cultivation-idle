@@ -80,6 +80,7 @@
   --ui-no-shift-border: 1px;
   --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
   --ui-no-shift-outline-offset: 2px;
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out, opacity 0.16s ease-out;
 }
 
 .currentChapterExhaustedModal__action--primary {
@@ -93,5 +94,11 @@
 
   .currentChapterExhaustedModal__action {
     text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .currentChapterExhaustedModal__action {
+    transition: none;
   }
 }

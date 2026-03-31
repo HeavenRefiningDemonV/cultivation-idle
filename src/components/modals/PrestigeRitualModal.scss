@@ -226,6 +226,7 @@
   --ui-no-shift-border: 1px;
   --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
   --ui-no-shift-outline-offset: 2px;
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out, opacity 0.16s ease-out;
 }
 
 .prestigeRitualConfirmButton {
@@ -243,6 +244,7 @@
   --ui-no-shift-border: 1px;
   --ui-no-shift-outline-active: 2px solid rgba(72, 45, 18, 0.55);
   --ui-no-shift-outline-offset: 2px;
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out, opacity 0.16s ease-out;
 }
 
 .prestigeRitualConfirmButton.is-locked {
@@ -300,5 +302,13 @@
   .prestigeRitualConfirmButton {
     width: 100%;
     text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prestigeRitualConfirmButton,
+  .prestigeRitualCancelButton,
+  .prestigeRitualHoldFill {
+    transition: none;
   }
 }
