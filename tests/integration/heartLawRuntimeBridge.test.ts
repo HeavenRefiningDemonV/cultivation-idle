@@ -166,6 +166,29 @@ test('non-live-only affinities remain neutral at runtime', () => {
   assert.equal(bonuses.affinityStatus, 'none');
 });
 
+
+test('cultivation store chapter bridge follows doctrine thresholds 80/220/500/1000', () => {
+  useCultivationStore.getState().resetForNewLife();
+  useCultivationStore.setState({ selectedHeartLawId: 'heart_quiet_breath_method', chapter: 1, comprehension: 0 });
+
+  assert.equal(useCultivationStore.getState().getComprehensionRequirementForNextChapter(), 80);
+  useCultivationStore.getState().addComprehension(80, 'meditation');
+  assert.equal(useCultivationStore.getState().chapter, 2);
+  assert.equal(useCultivationStore.getState().getComprehensionRequirementForNextChapter(), 140);
+
+  useCultivationStore.getState().addComprehension(140, 'meditation');
+  assert.equal(useCultivationStore.getState().chapter, 3);
+  assert.equal(useCultivationStore.getState().getComprehensionRequirementForNextChapter(), 280);
+
+  useCultivationStore.getState().addComprehension(280, 'meditation');
+  assert.equal(useCultivationStore.getState().chapter, 4);
+  assert.equal(useCultivationStore.getState().getComprehensionRequirementForNextChapter(), 500);
+
+  useCultivationStore.getState().addComprehension(500, 'meditation');
+  assert.equal(useCultivationStore.getState().chapter, 5);
+  assert.equal(useCultivationStore.getState().getComprehensionRequirementForNextChapter(), 0);
+});
+
 test('heartLawLogic source no longer contains archetype fallback switch cases', async () => {
   const source = await fs.readFile(path.resolve(process.cwd(), 'src/systems/heartLaw/heartLawLogic.ts'), 'utf8');
 

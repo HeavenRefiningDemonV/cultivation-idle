@@ -30,6 +30,7 @@ function createSyntheticProfile(): HeartLawProfile {
     tier: 'starter',
     family: 'circulation',
     archetype: 'steady',
+    playerFacingFamilyLabel: 'Circulation',
     daoTags: ['wood', 'growth'],
     spiritRootAffinities: [],
     liveSpiritRootAffinities: [],
@@ -43,7 +44,14 @@ function createSyntheticProfile(): HeartLawProfile {
       mismatchPenalty: 0.05,
       appliesTo: 'signatureOnly',
     },
-    chapterThresholds: [0, 100, 200, 300, 400],
+    chapterThresholds: [0, 80, 220, 500, 1000],
+    chapterValueDistribution: [
+      { chapter: 1, weightPct: 32 },
+      { chapter: 2, weightPct: 18 },
+      { chapter: 3, weightPct: 18 },
+      { chapter: 4, weightPct: 17 },
+      { chapter: 5, weightPct: 15 },
+    ],
     signatureEffects: [],
     chapterEffectsByChapter: {
       1: [],
@@ -54,6 +62,7 @@ function createSyntheticProfile(): HeartLawProfile {
     },
     normalizedEffects: [],
     notes: [],
+    spilloverBudgetPct: 0,
     combatBudgetPct: 0,
   };
 }

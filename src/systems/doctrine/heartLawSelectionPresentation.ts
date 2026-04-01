@@ -4,6 +4,7 @@ import { getHeartLawProfile } from './heartLawCatalog.js';
 import { evaluateSpiritRootResonance, type ResonanceTier } from './spiritRootResonance.js';
 import type { SpiritRoot } from '../../types/index.js';
 import type { HeartLawFamily, HeartLawProfile } from './heartLawTypes.js';
+import { getHeartLawFamilyLabel } from './heartLawFamilyRegistry.js';
 
 export type HeartLawSelectionStatusTone = 'selected' | 'available' | 'locked';
 
@@ -174,7 +175,7 @@ export function buildHeartLawSelectionPresentation(
   return {
     id: law.id,
     label: law.name,
-    familyLabel: titleCase(input.profile?.family ?? 'unknown'),
+    familyLabel: input.profile ? getHeartLawFamilyLabel(input.profile.family) : 'Unknown',
     archetypeLabel: input.profile?.archetype ? titleCase(input.profile.archetype) : null,
     tierLabel: toTierLabel(law.tier),
     statusLabel: status.label,
@@ -195,6 +196,33 @@ export function buildHeartLawSelectionPresentation(
     ctaDisabledReason: cta.reason,
     previewFamilyTone: familyTone,
   };
+}
+
+
+export function summarizeHeartLawChapterEffects(profile: HeartLawProfile | null, chapter: number): string {
+  if (!profile) {
+    return 'No recorded effects.';
+  }
+
+  const effects = profile.chapterEffectsByChapter[chapter] ?? [];
+  const summaryLines = effects
+    .filter((effect) => typeof effect.value === 'number' && effect.normalizedKey !== 'note' && !effect.normalizedKey.endsWith('.cap'))
+    .slice(0, 3)
+    .map((effect) => {
+      const label = EFFECT_LABELS[effect.normalizedKey] ?? titleCase(effect.normalizedKey);
+      const value = Math.round((effect.value as number) * 100);
+      return `${label} ${value >= 0 ? '+' : ''}${value}%`;
+    });
+
+  return summaryLines.length > 0 ? summaryLines.join(' • ') : 'No recorded effects.';
+}
+
+export function getHeartLawDoctrineSubtitle(profile: HeartLawProfile | null): string {
+  if (!profile) {
+    return 'Doctrine scripture.';
+  }
+
+  return FAMILY_COPY[profile.family].subtitle;
 }
 
 export function getHeartLawSelectionPresentation(
