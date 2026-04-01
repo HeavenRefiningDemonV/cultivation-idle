@@ -37,8 +37,8 @@ export function VerseMiniBar({
   const progressText = showPlaceholder
     ? (placeholderValue ?? 'Heart Law needed to begin verse progress.')
     : isComplete
-      ? 'All verses comprehended'
-      : `${comprehension.toFixed(1)} / ${requirement.toFixed(1)}`;
+      ? `${verseLabel} • Complete`
+      : `${verseLabel} • ${comprehension.toFixed(1)} / ${requirement.toFixed(1)}`;
 
   return (
     <div className={containerClassName} role="img" aria-label={ariaLabel} title={title} data-ui="verse-bar">
@@ -49,7 +49,7 @@ export function VerseMiniBar({
         </div>
       </div>
       <div className="verseMiniBar__label" aria-hidden="true">
-        <span className="verseMiniBar__labelText">{showPlaceholder ? placeholderLabel : `Verse ${verseLabel}`}</span>
+        <span className="verseMiniBar__labelText">{showPlaceholder ? placeholderLabel : 'Verse'}</span>
         <span className="verseMiniBar__labelValue">{progressText}</span>
       </div>
     </div>

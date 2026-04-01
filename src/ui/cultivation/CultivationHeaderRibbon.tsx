@@ -31,15 +31,13 @@ function getRealmIcon(realmLabel: string, realmIndex?: number) {
 
 function getLotusLabel(state: QiLotusState) {
   if (state === 'ready') return 'Ready';
-  if (state === 'blooming') return 'Blooming';
-  if (state === 'flowing') return 'Flowing';
-  return 'Dormant';
+  if (state === 'active') return 'Flowing';
+  return 'Idle';
 }
 
 function getLotusTitle(state: QiLotusState) {
   if (state === 'ready') return 'Fully Open';
-  if (state === 'blooming') return 'High-flow cultivation is blooming.';
-  if (state === 'flowing') return 'Cultivation flow is active.';
+  if (state === 'active') return 'Cultivation flow is active.';
   return 'Cultivation is dormant.';
 }
 

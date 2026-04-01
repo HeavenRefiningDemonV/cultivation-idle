@@ -1,4 +1,4 @@
-export type QiLotusState = 'dormant' | 'flowing' | 'blooming' | 'ready';
+export type QiLotusState = 'idle' | 'active' | 'ready';
 
 type LotusStateInput = {
   breakthroughReady: boolean;
@@ -8,8 +8,7 @@ type LotusStateInput = {
 
 export function deriveQiLotusState({ breakthroughReady, activityType, qiPerSecond }: LotusStateInput): QiLotusState {
   if (breakthroughReady) return 'ready';
-  if (activityType !== 'meditate') return 'dormant';
+  if (activityType !== 'meditate') return 'idle';
   const flowRate = Number.parseFloat(qiPerSecond);
-  if (Number.isFinite(flowRate) && flowRate >= 25) return 'blooming';
-  return 'flowing';
+  return Number.isFinite(flowRate) && flowRate > 0 ? 'active' : 'idle';
 }

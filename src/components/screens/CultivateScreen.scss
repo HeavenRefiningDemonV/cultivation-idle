@@ -721,8 +721,7 @@
   inset: 0;
   z-index: 16;
   pointer-events: none;
-  --qiBarDeadSpace: 24px;
-  --qiVerseTargetGap: 6px;
+  --qiVerseTargetGap: 8px;
 }
 
 .cultivationHudStack {
@@ -736,7 +735,7 @@
   gap: var(--cultivation-stack-gap-1);
   align-items: center;
   pointer-events: auto;
-  margin-top: calc(var(--qi-frame-h) * -0.38);
+  margin-top: calc(var(--qi-frame-h) * -0.24);
 }
 
 .progress-bar {
@@ -895,8 +894,35 @@
 
 .cultivationHudStack > .progress-bar {
   width: 100%;
-  margin-bottom: calc(-1 * (var(--qiBarDeadSpace) + var(--cultivation-stack-gap-1) - var(--qiVerseTargetGap)));
-  --cultivation-qi-track-width: min(900px, calc(100% - 42px));
+  margin-bottom: 0;
+}
+
+.cultivationVerseSlot {
+  width: min(92%, 880px);
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px 8px;
+  margin-top: calc(var(--qiVerseTargetGap) * -1);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(245, 233, 206, 0.82), rgba(229, 209, 175, 0.76));
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+}
+
+.cultivationVerseSlot__label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(120, 72, 33, 0.72);
+  padding-inline-start: 6px;
+}
+
+.cultivationVerseSlot__bar {
+  width: 100%;
+  min-height: 28px;
 }
 
 .cultivationRealmTags {
@@ -950,9 +976,9 @@
   margin-top: -6px;
   padding: 10px 14px;
   border-radius: 14px;
-  background: rgba(15, 18, 28, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(180deg, rgba(241, 227, 196, 0.84), rgba(224, 202, 167, 0.82));
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
 }
 
 .cultivationBuffSummaryTitle {
@@ -960,12 +986,12 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.74);
+  color: rgba(89, 56, 25, 0.76);
 }
 
 .cultivationBuffSummaryEmpty {
   font-size: 12px;
-  color: rgba(226, 232, 240, 0.78);
+  color: rgba(64, 44, 27, 0.8);
 }
 
 .cultivationBuffSummaryChips {
@@ -980,9 +1006,9 @@
   gap: 8px;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(248, 250, 252, 0.95);
+  background: rgba(250, 242, 224, 0.72);
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  color: rgba(43, 33, 22, 0.95);
   font-size: 12px;
 }
 
@@ -992,7 +1018,7 @@
 }
 
 .cultivationBuffChipBody {
-  color: rgba(248, 250, 252, 0.9);
+  color: rgba(64, 44, 27, 0.9);
 }
 
 .cultivationBuffChipTimer {
@@ -1063,9 +1089,9 @@
 .cultivationCompassChip__surface {
   min-height: 72px;
   border-radius: 12px;
-  background: rgba(15, 18, 28, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(248, 250, 252, 0.92);
+  background: linear-gradient(180deg, rgba(240, 226, 194, 0.86), rgba(223, 202, 166, 0.8));
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  color: rgba(43, 33, 22, 0.92);
 }
 
 .cultivationActionButton {

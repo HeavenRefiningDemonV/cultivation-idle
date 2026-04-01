@@ -7,13 +7,13 @@
   grid-template-areas: "stack";
   align-items: center;
   justify-items: center;
-  opacity: 0.92;
+  opacity: 0.96;
   --verse-frame-h: 30px;
   --verse-track-h: 12px;
   --verse-track-inset-x: 58px;
-  --verse-track-bg: rgba(86, 60, 34, 0.2);
-  --verse-fill-a: rgba(87, 139, 109, 0.68);
-  --verse-fill-b: rgba(173, 133, 72, 0.62);
+  --verse-track-bg: rgba(86, 60, 34, 0.16);
+  --verse-fill-a: rgba(92, 136, 96, 0.66);
+  --verse-fill-b: rgba(176, 132, 72, 0.64);
   --verse-emphasis: rgba(255, 255, 255, 0.95);
 }
 
@@ -32,7 +32,7 @@
   width: 100%;
   height: 100%;
   object-fit: fill;
-  opacity: 0.9;
+  opacity: 0.95;
   z-index: 3;
   pointer-events: none;
 }
@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 12px;
   font-weight: 700;
   color: rgba(43, 33, 22, 0.8);
@@ -75,6 +75,8 @@
 .verseMiniBar__labelText {
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  min-width: 52px;
+  text-align: right;
 }
 
 .verseMiniBar__labelValue {
@@ -82,6 +84,8 @@
   font-variant-numeric: tabular-nums;
   color: rgba(57, 41, 28, 0.76);
   white-space: nowrap;
+  min-width: 170px;
+  text-align: left;
 }
 
 .verseMiniBar__fill {

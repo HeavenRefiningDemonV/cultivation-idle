@@ -348,15 +348,14 @@ export function CultivateScreen() {
   const versePlaceholderValue = heartLawDef
     ? `${heartLawDef.name} • All verses comprehended`
     : 'Choose a Heart Law in Dao to begin verse progress.';
-  const doctrineVerseSlotCompact = heartLawDef ? (
+  const hudVerseSlot = heartLawDef ? (
     <VerseMiniBar
       chapter={chapter}
       comprehension={comprehension}
       requirement={verseRequirement}
       title={verseTitle}
-      className="cultivationDoctrineVerseBar"
+      className="cultivationVerseSlot__bar"
       isComplete={verseRequirement <= 0}
-      compact
     />
   ) : (
     <VerseMiniBar
@@ -364,10 +363,9 @@ export function CultivateScreen() {
       comprehension={0}
       requirement={0}
       title={verseTitle}
-      className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
+      className="cultivationVerseSlot__bar cultivationVerseSlot__bar--placeholder"
       placeholderLabel={versePlaceholderLabel}
       placeholderValue={versePlaceholderValue}
-      compact
     />
   );
   const doctrineVerseSlotDetail = heartLawDef ? (
@@ -712,11 +710,10 @@ export function CultivateScreen() {
             focusLabel={focusSemantics.label}
             focusSummary={focusSemantics.summary}
             spiritRoot={spiritRoot}
-            mode="summary"
-            onOpenDetail={() => setOpenDisclosure('doctrine')}
-            verseSlot={doctrineVerseSlotCompact}
-          />
-        </div>
+              mode="summary"
+              onOpenDetail={() => setOpenDisclosure('doctrine')}
+            />
+          </div>
         {openDisclosure === 'breakthrough' ? (
           <div className="cultivationDisclosurePopover cultivationDisclosurePopover--breakthrough" role="dialog" aria-label="Breakthrough detail">
             <CultivationBreakthroughPanel
@@ -812,6 +809,10 @@ export function CultivateScreen() {
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
+          <div className="cultivationVerseSlot" aria-live="polite">
+            <div className="cultivationVerseSlot__label">Verse</div>
+            {hudVerseSlot}
+          </div>
           <div className="cultivationBuffSummary" aria-live="polite">
             <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
             {activeCultivationBuffs.length === 0 ? (
