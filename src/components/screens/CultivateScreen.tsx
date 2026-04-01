@@ -32,7 +32,7 @@ import { CultivationDoctrineSummary } from '../../ui/cultivation/CultivationDoct
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar.js';
 import { GameIcon } from '../../ui/icons/index.js';
-import { RunCompass } from '../../ui/status/RunCompass.js';
+import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
@@ -515,15 +515,6 @@ export function CultivateScreen() {
         </div>
 
       <div className="cultivationCommandDeck" aria-label="Cultivation command deck">
-        <div className="cultivationCommandDeck__runCompass">
-          <RunCompass
-            surface={runCompass.full}
-            tone="ink"
-            density="dense"
-            className="cultivationRunCompass cultivationRunCompass--native"
-            onAction={performRunCompassAction}
-          />
-        </div>
         <div className="cultivationInfoRow">
           <CultivationBreakthroughPanel
             milestoneState={breakthroughMilestoneState}
@@ -537,6 +528,7 @@ export function CultivateScreen() {
             guidance={breakthroughGuidance}
             action={breakthroughAction}
             onAction={performRunCompassAction}
+            compact
           />
           <CultivationDoctrineSummary
             pathLabel={pathLabel}
@@ -552,6 +544,7 @@ export function CultivateScreen() {
             focusLabel={focusSemantics.label}
             focusSummary={focusSemantics.summary}
             spiritRoot={spiritRoot}
+            compact
             verseSlot={
               heartLawDef ? (
                 <VerseMiniBar
@@ -638,6 +631,9 @@ export function CultivateScreen() {
             >
               {isCultivating ? 'Stop Cultivation' : 'Start Cultivation'}
             </button>
+          </div>
+          <div className="cultivationCompassChip" aria-label="Cultivation run compass">
+            <RunCompassCompact surface={runCompass.compact} tone="ink" className="cultivationCompassChip__surface" />
           </div>
         </div>
       </div>

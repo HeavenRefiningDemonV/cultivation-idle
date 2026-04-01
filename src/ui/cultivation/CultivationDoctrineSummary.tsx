@@ -23,6 +23,7 @@ type CultivationDoctrineSummaryProps = {
   focusSummary: string;
   spiritRoot: SpiritRoot | null;
   verseSlot?: ReactNode;
+  compact?: boolean;
 };
 
 export function CultivationDoctrineSummary({
@@ -40,6 +41,7 @@ export function CultivationDoctrineSummary({
   focusSummary,
   spiritRoot,
   verseSlot,
+  compact = false,
 }: CultivationDoctrineSummaryProps) {
   const rows: DoctrineSummaryRow[] = [
     { label: 'Path', value: pathLabel, detail: pathSummary, intent: 'identity' },
@@ -49,19 +51,20 @@ export function CultivationDoctrineSummary({
     { label: 'Breath Mode', value: breathLabel, detail: breathSummary, intent: 'tuning' },
     { label: 'Focus Mode', value: focusLabel, detail: focusSummary, intent: 'tuning' },
   ];
+  const visibleRows = compact ? rows.slice(0, 4) : rows;
 
   return (
-    <section className="cultivationDoctrinePanel cultivationCommandCard" aria-label="Doctrine state">
+    <section className={`cultivationDoctrinePanel cultivationCommandCard${compact ? ' cultivationDoctrinePanel--compact' : ''}`} aria-label="Doctrine state">
       <div className="cultivationCommandCard__header">
         <div>
           <div className="cultivationCommandCard__eyebrow">Doctrine</div>
-          <h2 className="cultivationCommandCard__title">How you cultivate</h2>
+          <h2 className="cultivationCommandCard__title">{compact ? 'Doctrine summary' : 'How you cultivate'}</h2>
         </div>
         <span className="cultivationCommandCard__badge">{spiritRoot ? 'Aligned' : 'Dormant'}</span>
       </div>
 
       <div className="cultivationDoctrinePanel__rows">
-        {rows.map((row) => (
+        {visibleRows.map((row) => (
           <div key={row.label} className={`cultivationDoctrinePanel__row cultivationDoctrinePanel__row--${row.intent ?? 'tuning'}`}>
             <div className="cultivationDoctrinePanel__rowTop">
               <span className="cultivationDoctrinePanel__label">{row.label}</span>

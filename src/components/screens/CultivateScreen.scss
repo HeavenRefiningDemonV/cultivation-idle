@@ -26,7 +26,7 @@
   --cultHudMaxW: 980px;
   --cultHudSidePad: 80px;
   --cultHudW: min(var(--cultHudMaxW), calc(100% - var(--cultHudSidePad)));
-  --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 118px);
+  --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 132px);
   --cultCommandDeckW: min(980px, calc(100% - 112px));
 }
 
@@ -244,10 +244,10 @@
 .cultivationCommandDeck::before {
   content: '';
   position: absolute;
-  inset: -12px -18px -10px;
+  inset: -8px -12px -6px;
   z-index: -1;
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(18, 24, 35, 0.24), rgba(18, 24, 35, 0.08) 42%, rgba(18, 24, 35, 0));
+  background: linear-gradient(180deg, rgba(18, 24, 35, 0.16), rgba(18, 24, 35, 0.05) 42%, rgba(18, 24, 35, 0));
   pointer-events: none;
 }
 
@@ -321,6 +321,32 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  align-items: start;
+}
+
+.cultivationBreakthroughPanel--compact,
+.cultivationDoctrinePanel--compact {
+  min-height: 0;
+  padding: 12px 12px 11px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandCard__header,
+.cultivationDoctrinePanel--compact .cultivationCommandCard__header {
+  margin-bottom: 8px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandCard__title,
+.cultivationDoctrinePanel--compact .cultivationCommandCard__title {
+  font-size: 16px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandList {
+  gap: 4px;
+}
+
+.cultivationBreakthroughPanel--compact .cultivationCommandList__row,
+.cultivationDoctrinePanel--compact .cultivationDoctrinePanel__row {
+  padding-bottom: 6px;
 }
 
 .cultivationCommandCard {
@@ -807,6 +833,19 @@
   gap: 8px;
   margin-top: 6px;
   z-index: 2;
+}
+
+.cultivationCompassChip {
+  width: min(68%, 420px);
+  margin-top: 4px;
+}
+
+.cultivationCompassChip__surface {
+  min-height: 72px;
+  border-radius: 12px;
+  background: rgba(15, 18, 28, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(248, 250, 252, 0.92);
 }
 
 .cultivationActionButton {

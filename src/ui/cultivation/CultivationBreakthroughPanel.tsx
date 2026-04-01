@@ -20,6 +20,7 @@ type CultivationBreakthroughPanelProps = {
   guidance: string;
   action: BreakthroughAction | null;
   onAction: (action: RunCompassActionLine) => void;
+  compact?: boolean;
 };
 
 export function CultivationBreakthroughPanel({
@@ -34,6 +35,7 @@ export function CultivationBreakthroughPanel({
   guidance,
   action,
   onAction,
+  compact = false,
 }: CultivationBreakthroughPanelProps) {
   const stateLabel =
     milestoneState === 'content_cap'
@@ -44,45 +46,39 @@ export function CultivationBreakthroughPanel({
           ? 'Gate Trial'
           : 'Cultivation Edge';
   const keyRows = new Set(['current', 'target', 'qi']);
+  const rows = [
+    { id: 'current', label: 'Current', value: `${currentRealmLabel} • Stage ${stage}/${stageMax}` },
+    { id: 'target', label: 'Target', value: nextRealmLabel ?? 'Current semester cap reached' },
+    { id: 'gate', label: 'Gate', value: gateLine },
+    { id: 'token', label: 'Token', value: tokenLine },
+    { id: 'qi', label: 'Qi', value: qiLine },
+  ];
+  const visibleRows = compact ? rows.filter((row) => row.id === 'current' || row.id === 'target' || row.id === 'qi') : rows;
 
   return (
-    <section className="cultivationBreakthroughPanel cultivationCommandCard" aria-label="Breakthrough state">
+    <section className={`cultivationBreakthroughPanel cultivationCommandCard${compact ? ' cultivationBreakthroughPanel--compact' : ''}`} aria-label="Breakthrough state">
       <div className="cultivationCommandCard__header">
         <div>
           <div className="cultivationCommandCard__eyebrow">Breakthrough</div>
-          <h2 className="cultivationCommandCard__title">What you are becoming</h2>
+          <h2 className="cultivationCommandCard__title">{compact ? 'Breakthrough summary' : 'What you are becoming'}</h2>
         </div>
         <span className="cultivationCommandCard__badge">{stateLabel}</span>
       </div>
 
       <div className="cultivationCommandList">
-        <div className={`cultivationCommandList__row ${keyRows.has('current') ? 'cultivationCommandList__row--priority' : ''}`} data-row-id="current">
-          <span className="cultivationCommandList__label">Current</span>
-          <span className="cultivationCommandList__value">{currentRealmLabel} • Stage {stage}/{stageMax}</span>
-        </div>
-        <div className={`cultivationCommandList__row ${keyRows.has('target') ? 'cultivationCommandList__row--priority' : ''}`} data-row-id="target">
-          <span className="cultivationCommandList__label">Target</span>
-          <span className="cultivationCommandList__value">{nextRealmLabel ?? 'Current semester cap reached'}</span>
-        </div>
-        <div className="cultivationCommandList__row" data-row-id="gate">
-          <span className="cultivationCommandList__label">Gate</span>
-          <span className="cultivationCommandList__value">{gateLine}</span>
-        </div>
-        <div className="cultivationCommandList__row" data-row-id="token">
-          <span className="cultivationCommandList__label">Token</span>
-          <span className="cultivationCommandList__value">{tokenLine}</span>
-        </div>
-        <div className={`cultivationCommandList__row ${keyRows.has('qi') ? 'cultivationCommandList__row--priority' : ''}`} data-row-id="qi">
-          <span className="cultivationCommandList__label">Qi</span>
-          <span className="cultivationCommandList__value">{qiLine}</span>
-        </div>
+        {visibleRows.map((row) => (
+          <div key={row.id} className={`cultivationCommandList__row ${keyRows.has(row.id) ? 'cultivationCommandList__row--priority' : ''}`} data-row-id={row.id}>
+            <span className="cultivationCommandList__label">{row.label}</span>
+            <span className="cultivationCommandList__value">{row.value}</span>
+          </div>
+        ))}
       </div>
 
-      <p className="cultivationCommandCard__guidance">{guidance}</p>
+      {!compact ? <p className="cultivationCommandCard__guidance">{guidance}</p> : null}
 
       {action ? (
         <div className="cultivationBreakthroughPanel__action">
-          <div className="cultivationBreakthroughPanel__actionDetail">{action.detail}</div>
+          {!compact ? <div className="cultivationBreakthroughPanel__actionDetail">{action.detail}</div> : null}
           {action.action ? (
             <button type="button" className="button-standard cultivationCommandLinkButton" onClick={() => action.action && onAction(action.action)}>
               {action.label}
