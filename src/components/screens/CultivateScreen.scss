@@ -12,6 +12,8 @@
   --cultHudMaxW: 980px;
   --cultHudSidePad: 80px;
   --cultHudW: min(var(--cultHudMaxW), calc(100% - var(--cultHudSidePad)));
+  --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 118px);
+  --cultCommandDeckW: min(980px, calc(100% - 112px));
 }
 
 .cultivationSceneLayer {
@@ -42,15 +44,26 @@
 
 .cultivationCommandDeck {
   position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 124px);
+  top: var(--cultCommandDeckTop);
   left: 50%;
   transform: translateX(-50%);
   z-index: 17;
-  width: min(1040px, calc(100% - 120px));
+  width: var(--cultCommandDeckW);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   pointer-events: auto;
+  isolation: isolate;
+}
+
+.cultivationCommandDeck::before {
+  content: '';
+  position: absolute;
+  inset: -12px -18px -10px;
+  z-index: -1;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(18, 24, 35, 0.24), rgba(18, 24, 35, 0.08) 42%, rgba(18, 24, 35, 0));
+  pointer-events: none;
 }
 
 .cultivationCommandDeck__runCompass,
@@ -60,12 +73,22 @@
 
 .cultivationRunCompass--native {
   color: var(--paper-ink, #2b2116);
-  background: linear-gradient(180deg, rgba(247, 237, 215, 0.86), rgba(236, 225, 205, 0.72));
-  border: 1px solid rgba(226, 232, 240, 0.14);
+  background: linear-gradient(180deg, rgba(250, 242, 222, 0.9), rgba(237, 224, 200, 0.78));
+  border: 1px solid rgba(130, 83, 36, 0.28);
   border-radius: 18px;
-  padding: 14px;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+  padding: 15px 15px 14px;
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.cultivationRunCompass--native::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 13px;
+  border: 1px solid rgba(130, 83, 36, 0.14);
+  pointer-events: none;
 }
 
 .cultivationRunCompass--native .runCompassSection__title,
@@ -90,25 +113,50 @@
 
 .cultivationRunCompass--native .runCompassInfoRow,
 .cultivationRunCompass--native .runCompassAction {
-  border-color: rgba(120, 72, 33, 0.2);
-  background: rgba(255, 245, 225, 0.45);
+  border-color: rgba(120, 72, 33, 0.18);
+  background: rgba(255, 248, 233, 0.58);
+}
+
+.cultivationRunCompass--native .runCompassSection {
+  gap: 6px;
+}
+
+.cultivationRunCompass--native .runCompassActionList,
+.cultivationRunCompass--native .runCompassInfoList {
+  gap: 6px;
+}
+
+.cultivationRunCompass--native .runCompassAction__button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
 }
 
 .cultivationInfoRow {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .cultivationCommandCard {
-  min-height: 222px;
-  padding: 14px 16px;
+  min-height: 236px;
+  padding: 16px 16px 14px;
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255, 245, 225, 0.92), rgba(236, 225, 205, 0.82));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(255, 247, 228, 0.9), rgba(237, 225, 203, 0.78));
+  border: 1px solid rgba(130, 83, 36, 0.22);
   color: var(--paper-ink, #2b2116);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.cultivationCommandCard::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.1);
+  pointer-events: none;
 }
 
 .cultivationCommandCard__header {
@@ -146,6 +194,16 @@
   white-space: nowrap;
 }
 
+.cultivationBreakthroughPanel .cultivationCommandCard__badge {
+  background: rgba(165, 105, 42, 0.12);
+  border-color: rgba(165, 105, 42, 0.3);
+}
+
+.cultivationDoctrinePanel .cultivationCommandCard__badge {
+  background: rgba(47, 143, 102, 0.12);
+  border-color: rgba(47, 143, 102, 0.28);
+}
+
 .cultivationCommandList {
   display: grid;
   gap: 8px;
@@ -163,6 +221,12 @@
   border-bottom: 0;
 }
 
+.cultivationCommandList__row--priority {
+  background: rgba(120, 72, 33, 0.07);
+  border-radius: 10px;
+  padding: 9px 10px;
+}
+
 .cultivationCommandList__label {
   font-size: 12px;
   font-weight: 700;
@@ -174,7 +238,7 @@
 .cultivationCommandList__value {
   text-align: right;
   font-size: 13px;
-  color: rgba(248, 250, 252, 0.95);
+  color: rgba(43, 33, 22, 0.88);
 }
 
 .cultivationCommandCard__guidance,
@@ -221,6 +285,14 @@
   border-bottom: 0;
 }
 
+.cultivationDoctrinePanel__row--identity .cultivationDoctrinePanel__label {
+  color: rgba(120, 72, 33, 0.85);
+}
+
+.cultivationDoctrinePanel__row--identity .cultivationDoctrinePanel__value {
+  color: rgba(43, 33, 22, 0.95);
+}
+
 .cultivationDoctrinePanel__rowTop {
   display: flex;
   justify-content: space-between;
@@ -246,7 +318,7 @@
 .cultivationHudRail {
   position: absolute;
   inset: 0;
-  z-index: 18;
+  z-index: 16;
   pointer-events: none;
   --qiBarDeadSpace: 24px;
   --qiVerseTargetGap: 6px;
@@ -263,7 +335,7 @@
   gap: var(--cultivation-stack-gap-1);
   align-items: center;
   pointer-events: auto;
-  margin-top: calc(var(--qi-frame-h) * -0.5);
+  margin-top: calc(var(--qi-frame-h) * -0.38);
 }
 
 .progress-bar {
@@ -671,8 +743,12 @@
 }
 
 @media (max-width: 1180px) {
+  .cultivationScreenRoot {
+    --cultCommandDeckW: min(940px, calc(100% - 88px));
+  }
+
   .cultivationCommandDeck {
-    width: calc(100% - 92px);
+    width: var(--cultCommandDeckW);
   }
 }
 
@@ -680,11 +756,13 @@
   .cultivationScreenRoot {
     --cultHudSidePad: 60px;
     --cultivation-anchor-y: 70%;
+    --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 106px);
+    --cultCommandDeckW: calc(100% - 32px);
   }
 
   .cultivationCommandDeck {
-    top: calc(env(safe-area-inset-top, 0px) + 116px);
-    width: calc(100% - 32px);
+    top: var(--cultCommandDeckTop);
+    width: var(--cultCommandDeckW);
   }
 
   .cultivationInfoRow {
@@ -705,6 +783,8 @@
     overflow-y: auto;
     overflow-x: hidden;
     --cultivation-anchor-y: 92%;
+    --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 98px);
+    --cultCommandDeckW: calc(100% - 20px);
     min-height: 1280px;
   }
 
@@ -714,8 +794,8 @@
   }
 
   .cultivationCommandDeck {
-    top: calc(env(safe-area-inset-top, 0px) + 104px);
-    width: calc(100% - 20px);
+    top: var(--cultCommandDeckTop);
+    width: var(--cultCommandDeckW);
     gap: 10px;
   }
 

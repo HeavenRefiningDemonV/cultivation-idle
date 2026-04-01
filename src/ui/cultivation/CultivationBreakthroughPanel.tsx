@@ -43,6 +43,7 @@ export function CultivationBreakthroughPanel({
         : milestoneState === 'gate_trial'
           ? 'Gate Trial'
           : 'Cultivation Edge';
+  const keyRows = new Set(['current', 'target', 'qi']);
 
   return (
     <section className="cultivationBreakthroughPanel cultivationCommandCard" aria-label="Breakthrough state">
@@ -55,23 +56,23 @@ export function CultivationBreakthroughPanel({
       </div>
 
       <div className="cultivationCommandList">
-        <div className="cultivationCommandList__row">
+        <div className={`cultivationCommandList__row ${keyRows.has('current') ? 'cultivationCommandList__row--priority' : ''}`} data-row-id="current">
           <span className="cultivationCommandList__label">Current</span>
           <span className="cultivationCommandList__value">{currentRealmLabel} • Stage {stage}/{stageMax}</span>
         </div>
-        <div className="cultivationCommandList__row">
+        <div className={`cultivationCommandList__row ${keyRows.has('target') ? 'cultivationCommandList__row--priority' : ''}`} data-row-id="target">
           <span className="cultivationCommandList__label">Target</span>
-          <span className="cultivationCommandList__value">{nextRealmLabel ?? 'Current semester content cap reached'}</span>
+          <span className="cultivationCommandList__value">{nextRealmLabel ?? 'Current semester cap reached'}</span>
         </div>
-        <div className="cultivationCommandList__row">
+        <div className="cultivationCommandList__row" data-row-id="gate">
           <span className="cultivationCommandList__label">Gate</span>
           <span className="cultivationCommandList__value">{gateLine}</span>
         </div>
-        <div className="cultivationCommandList__row">
+        <div className="cultivationCommandList__row" data-row-id="token">
           <span className="cultivationCommandList__label">Token</span>
           <span className="cultivationCommandList__value">{tokenLine}</span>
         </div>
-        <div className="cultivationCommandList__row">
+        <div className={`cultivationCommandList__row ${keyRows.has('qi') ? 'cultivationCommandList__row--priority' : ''}`} data-row-id="qi">
           <span className="cultivationCommandList__label">Qi</span>
           <span className="cultivationCommandList__value">{qiLine}</span>
         </div>

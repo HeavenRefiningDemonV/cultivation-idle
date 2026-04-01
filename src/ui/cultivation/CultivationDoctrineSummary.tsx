@@ -4,6 +4,7 @@ export type DoctrineSummaryRow = {
   label: string;
   value: string;
   detail?: string;
+  intent?: 'identity' | 'tuning';
 };
 
 type CultivationDoctrineSummaryProps = {
@@ -38,12 +39,12 @@ export function CultivationDoctrineSummary({
   spiritRoot,
 }: CultivationDoctrineSummaryProps) {
   const rows: DoctrineSummaryRow[] = [
-    { label: 'Path', value: pathLabel, detail: pathSummary },
-    { label: 'Spirit Root', value: spiritRootLine, detail: spiritRootDetail },
-    { label: 'Heart Law', value: heartLawLine, detail: heartLawDetail },
-    { label: 'Resonance', value: resonanceLine, detail: resonanceDetail },
-    { label: 'Breath Mode', value: breathLabel, detail: breathSummary },
-    { label: 'Focus Mode', value: focusLabel, detail: focusSummary },
+    { label: 'Path', value: pathLabel, detail: pathSummary, intent: 'identity' },
+    { label: 'Spirit Root', value: spiritRootLine, detail: spiritRootDetail, intent: 'identity' },
+    { label: 'Heart Law', value: heartLawLine, detail: heartLawDetail, intent: 'identity' },
+    { label: 'Resonance', value: resonanceLine, detail: resonanceDetail, intent: 'identity' },
+    { label: 'Breath Mode', value: breathLabel, detail: breathSummary, intent: 'tuning' },
+    { label: 'Focus Mode', value: focusLabel, detail: focusSummary, intent: 'tuning' },
   ];
 
   return (
@@ -58,7 +59,7 @@ export function CultivationDoctrineSummary({
 
       <div className="cultivationDoctrinePanel__rows">
         {rows.map((row) => (
-          <div key={row.label} className="cultivationDoctrinePanel__row">
+          <div key={row.label} className={`cultivationDoctrinePanel__row cultivationDoctrinePanel__row--${row.intent ?? 'tuning'}`}>
             <div className="cultivationDoctrinePanel__rowTop">
               <span className="cultivationDoctrinePanel__label">{row.label}</span>
               <span className="cultivationDoctrinePanel__value">{row.value}</span>
