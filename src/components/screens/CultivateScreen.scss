@@ -365,9 +365,23 @@
 
 .cultivationInfoRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: minmax(260px, 360px) minmax(300px, 1fr) minmax(260px, 360px);
+  gap: 16px;
   align-items: start;
+}
+
+.cultivationInfoRow > .cultivationBreakthroughPanel {
+  grid-column: 1;
+}
+
+.cultivationInfoRow > .cultivationDoctrinePanel {
+  grid-column: 3;
+}
+
+.cultivationInfoRow__centerSpacer {
+  grid-column: 2;
+  min-height: 160px;
+  pointer-events: none;
 }
 
 .cultivationBreakthroughPanel--compact,
@@ -716,12 +730,15 @@
   opacity: 0.96;
 }
 
+.cultivationDoctrineVerseBar--compact {
+  max-width: min(100%, 320px);
+}
+
 .cultivationHudRail {
   position: absolute;
   inset: 0;
   z-index: 16;
   pointer-events: none;
-  --qiVerseTargetGap: 8px;
 }
 
 .cultivationHudStack {
@@ -735,7 +752,7 @@
   gap: var(--cultivation-stack-gap-1);
   align-items: center;
   pointer-events: auto;
-  margin-top: calc(var(--qi-frame-h) * -0.24);
+  margin-top: calc(var(--qi-frame-h) * -0.2);
 }
 
 .progress-bar {
@@ -897,34 +914,6 @@
   margin-bottom: 0;
 }
 
-.cultivationVerseSlot {
-  width: min(92%, 880px);
-  min-height: 44px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  padding: 6px 12px 8px;
-  margin-top: calc(var(--qiVerseTargetGap) * -1);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(245, 233, 206, 0.82), rgba(229, 209, 175, 0.76));
-  border: 1px solid rgba(120, 72, 33, 0.24);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
-}
-
-.cultivationVerseSlot__label {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(120, 72, 33, 0.72);
-  padding-inline-start: 6px;
-}
-
-.cultivationVerseSlot__bar {
-  width: 100%;
-  min-height: 28px;
-}
-
 .cultivationRealmTags {
   width: 100%;
   display: flex;
@@ -969,12 +958,12 @@
 
 .cultivationBuffSummary {
   width: min(92%, 880px);
-  min-height: 68px;
+  min-height: 36px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: -6px;
-  padding: 10px 14px;
+  margin-top: -2px;
+  padding: 8px 12px;
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(241, 227, 196, 0.84), rgba(224, 202, 167, 0.82));
   border: 1px solid rgba(120, 72, 33, 0.24);
@@ -997,7 +986,7 @@
 .cultivationBuffSummaryChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .cultivationBuffChip {
@@ -1264,6 +1253,16 @@
 
   .cultivationInfoRow {
     grid-template-columns: 1fr;
+  }
+
+  .cultivationInfoRow > .cultivationBreakthroughPanel,
+  .cultivationInfoRow > .cultivationDoctrinePanel,
+  .cultivationInfoRow__centerSpacer {
+    grid-column: 1;
+  }
+
+  .cultivationInfoRow__centerSpacer {
+    display: none;
   }
 
   .cultivationCommandCard {

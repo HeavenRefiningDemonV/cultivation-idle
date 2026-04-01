@@ -122,16 +122,24 @@
 }
 
 .verseMiniBar--compact {
-  --verse-frame-h: 26px;
-  --verse-track-h: 9px;
-  --verse-track-inset-x: 50px;
+  --verse-frame-h: 22px;
+  --verse-track-h: 7px;
+  --verse-track-inset-x: 42px;
 }
 
 .verseMiniBar--compact .verseMiniBar__label {
-  gap: 8px;
+  gap: 6px;
 }
 
 .verseMiniBar--compact .verseMiniBar__labelText,
 .verseMiniBar--compact .verseMiniBar__labelValue {
-  font-size: 10px;
+  font-size: 9px;
+}
+
+.verseMiniBar--compact .verseMiniBar__labelText {
+  min-width: 40px;
+}
+
+.verseMiniBar--compact .verseMiniBar__labelValue {
+  min-width: 126px;
 }

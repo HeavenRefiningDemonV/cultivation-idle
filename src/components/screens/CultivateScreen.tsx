@@ -348,14 +348,15 @@ export function CultivateScreen() {
   const versePlaceholderValue = heartLawDef
     ? `${heartLawDef.name} • All verses comprehended`
     : 'Choose a Heart Law in Dao to begin verse progress.';
-  const hudVerseSlot = heartLawDef ? (
+  const doctrineVerseSlotCompact = heartLawDef ? (
     <VerseMiniBar
       chapter={chapter}
       comprehension={comprehension}
       requirement={verseRequirement}
       title={verseTitle}
-      className="cultivationVerseSlot__bar"
+      className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--compact"
       isComplete={verseRequirement <= 0}
+      compact
     />
   ) : (
     <VerseMiniBar
@@ -363,9 +364,10 @@ export function CultivateScreen() {
       comprehension={0}
       requirement={0}
       title={verseTitle}
-      className="cultivationVerseSlot__bar cultivationVerseSlot__bar--placeholder"
+      className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--compact cultivationDoctrineVerseBar--placeholder"
       placeholderLabel={versePlaceholderLabel}
       placeholderValue={versePlaceholderValue}
+      compact
     />
   );
   const doctrineVerseSlotDetail = heartLawDef ? (
@@ -696,6 +698,7 @@ export function CultivateScreen() {
             mode="summary"
             onOpenDetail={() => setOpenDisclosure('breakthrough')}
           />
+          <div className="cultivationInfoRow__centerSpacer" aria-hidden="true" />
           <CultivationDoctrineSummary
             pathLabel={pathLabel}
             pathSummary={pathSummary}
@@ -710,10 +713,11 @@ export function CultivateScreen() {
             focusLabel={focusSemantics.label}
             focusSummary={focusSemantics.summary}
             spiritRoot={spiritRoot}
-              mode="summary"
-              onOpenDetail={() => setOpenDisclosure('doctrine')}
-            />
-          </div>
+            mode="summary"
+            onOpenDetail={() => setOpenDisclosure('doctrine')}
+            verseSlot={doctrineVerseSlotCompact}
+          />
+        </div>
         {openDisclosure === 'breakthrough' ? (
           <div className="cultivationDisclosurePopover cultivationDisclosurePopover--breakthrough" role="dialog" aria-label="Breakthrough detail">
             <CultivationBreakthroughPanel
@@ -809,15 +813,9 @@ export function CultivateScreen() {
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
-          <div className="cultivationVerseSlot" aria-live="polite">
-            <div className="cultivationVerseSlot__label">Verse</div>
-            {hudVerseSlot}
-          </div>
-          <div className="cultivationBuffSummary" aria-live="polite">
-            <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
-            {activeCultivationBuffs.length === 0 ? (
-              <div className="cultivationBuffSummaryEmpty">No active tonics. Families overwrite weaker effects in the same lane.</div>
-            ) : (
+          {activeCultivationBuffs.length > 0 ? (
+            <div className="cultivationBuffSummary" aria-live="polite">
+              <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
               <div className="cultivationBuffSummaryChips">
                 {activeCultivationBuffs.map((entry) => (
                   <div key={entry.family} className="cultivationBuffChip" title={entry.description}>
@@ -827,8 +825,8 @@ export function CultivateScreen() {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          ) : null}
           <div className="cultivationActionStack">
             <div className="cultivationActionStateChips" aria-live="polite">
               {primaryIntent.showCapChip ? <span className="cultivationActionStateChip cultivationActionStateChip--cap">Cap</span> : null}
