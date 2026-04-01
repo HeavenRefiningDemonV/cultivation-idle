@@ -20,7 +20,9 @@ type CultivationBreakthroughPanelProps = {
   guidance: string;
   action: BreakthroughAction | null;
   onAction: (action: RunCompassActionLine) => void;
-  compact?: boolean;
+  mode?: 'summary' | 'detail';
+  onOpenDetail?: () => void;
+  onCloseDetail?: () => void;
 };
 
 export function CultivationBreakthroughPanel({
@@ -35,8 +37,11 @@ export function CultivationBreakthroughPanel({
   guidance,
   action,
   onAction,
-  compact = false,
+  mode = 'summary',
+  onOpenDetail,
+  onCloseDetail,
 }: CultivationBreakthroughPanelProps) {
+  const isSummary = mode === 'summary';
   const stateLabel =
     milestoneState === 'content_cap'
       ? 'Content Cap'
@@ -53,14 +58,20 @@ export function CultivationBreakthroughPanel({
     { id: 'token', label: 'Token', value: tokenLine },
     { id: 'qi', label: 'Qi', value: qiLine },
   ];
-  const visibleRows = compact ? rows.filter((row) => row.id === 'current' || row.id === 'target' || row.id === 'qi') : rows;
+  const visibleRows = isSummary ? rows.filter((row) => row.id === 'target' || row.id === 'qi') : rows;
+  const checklist = [
+    { label: `Reach Stage ${stageMax}`, done: stage >= stageMax },
+    { label: 'Fill required Qi', done: qiLine === 'ready' },
+    { label: 'Clear gate', done: gateLine === 'cleared' || gateLine === 'bypassed' || gateLine === 'cap reached' },
+    { label: 'Hold gate token', done: tokenLine === 'ready' },
+  ];
 
   return (
-    <section className={`cultivationBreakthroughPanel cultivationCommandCard${compact ? ' cultivationBreakthroughPanel--compact' : ''}`} aria-label="Breakthrough state">
+    <section className={`cultivationBreakthroughPanel cultivationCommandCard${isSummary ? ' cultivationBreakthroughPanel--compact cultivationBreakthroughPanel--summary' : ' cultivationBreakthroughPanel--detail'}`} aria-label="Breakthrough state">
       <div className="cultivationCommandCard__header">
         <div>
           <div className="cultivationCommandCard__eyebrow">Breakthrough</div>
-          <h2 className="cultivationCommandCard__title">{compact ? 'Breakthrough summary' : 'What you are becoming'}</h2>
+          <h2 className="cultivationCommandCard__title">{isSummary ? 'Breakthrough seal' : 'Breakthrough detail'}</h2>
         </div>
         <span className="cultivationCommandCard__badge">{stateLabel}</span>
       </div>
@@ -74,11 +85,27 @@ export function CultivationBreakthroughPanel({
         ))}
       </div>
 
-      {!compact ? <p className="cultivationCommandCard__guidance">{guidance}</p> : null}
+      {isSummary ? <p className="cultivationCommandCard__guidance">{guidance}</p> : null}
+
+      {!isSummary ? (
+        <>
+          <p className="cultivationCommandCard__guidance">{guidance}</p>
+          <div className="cultivationBreakthroughChecklist" aria-label="Breakthrough checklist">
+            {checklist.map((item) => (
+              <div key={item.label} className="cultivationBreakthroughChecklist__row">
+                <span className={`cultivationBreakthroughChecklist__state cultivationBreakthroughChecklist__state--${item.done ? 'done' : 'pending'}`}>
+                  {item.done ? 'Done' : 'Pending'}
+                </span>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       {action ? (
         <div className="cultivationBreakthroughPanel__action">
-          {!compact ? <div className="cultivationBreakthroughPanel__actionDetail">{action.detail}</div> : null}
+          {!isSummary ? <div className="cultivationBreakthroughPanel__actionDetail">{action.detail}</div> : <div className="cultivationBreakthroughPanel__actionDetail">Top blocker: {guidance}</div>}
           {action.action ? (
             <button type="button" className="button-standard cultivationCommandLinkButton" onClick={() => action.action && onAction(action.action)}>
               {action.label}
@@ -86,6 +113,16 @@ export function CultivationBreakthroughPanel({
           ) : (
             <div className="cultivationBreakthroughPanel__actionHint">{action.label}</div>
           )}
+          {isSummary && onOpenDetail ? (
+            <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onOpenDetail}>
+              Open breakdown
+            </button>
+          ) : null}
+          {!isSummary && onCloseDetail ? (
+            <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onCloseDetail}>
+              Close
+            </button>
+          ) : null}
         </div>
       ) : null}
     </section>

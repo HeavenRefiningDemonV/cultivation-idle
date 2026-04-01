@@ -326,7 +326,7 @@
 
 .cultivationBreakthroughPanel--compact,
 .cultivationDoctrinePanel--compact {
-  min-height: 0;
+  min-height: 164px;
   padding: 12px 12px 11px;
 }
 
@@ -347,6 +347,97 @@
 .cultivationBreakthroughPanel--compact .cultivationCommandList__row,
 .cultivationDoctrinePanel--compact .cultivationDoctrinePanel__row {
   padding-bottom: 6px;
+}
+
+.cultivationBreakthroughPanel--summary .cultivationCommandCard__guidance {
+  font-size: 12px;
+  margin: 6px 0 0;
+  min-height: 32px;
+}
+
+.cultivationDoctrinePanel__actions,
+.cultivationBreakthroughPanel__action {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.cultivationCommandLinkButton--subtle {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.cultivationBreakthroughChecklist {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.cultivationBreakthroughChecklist__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(43, 33, 22, 0.88);
+}
+
+.cultivationBreakthroughChecklist__state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.cultivationBreakthroughChecklist__state--done {
+  background: rgba(47, 143, 102, 0.12);
+  border-color: rgba(47, 143, 102, 0.32);
+}
+
+.cultivationBreakthroughChecklist__state--pending {
+  background: rgba(165, 105, 42, 0.12);
+  border-color: rgba(165, 105, 42, 0.3);
+}
+
+.cultivationDisclosurePopover {
+  position: absolute;
+  top: calc(100% + 8px);
+  width: min(460px, calc(100% - 8px));
+  z-index: 25;
+  pointer-events: auto;
+}
+
+.cultivationDisclosurePopover--breakthrough {
+  left: 0;
+}
+
+.cultivationDisclosurePopover--doctrine {
+  right: 0;
+}
+
+.cultivationDisclosurePopover .cultivationCommandCard {
+  min-height: 0;
+}
+
+.cultivationPinnedDoctrineCard {
+  position: absolute;
+  right: -8px;
+  top: calc(100% + 8px);
+  width: min(460px, calc(100% - 8px));
+  z-index: 24;
+}
+
+.cultivationPinnedDoctrineCard .cultivationCommandCard {
+  min-height: 0;
 }
 
 .cultivationCommandCard {

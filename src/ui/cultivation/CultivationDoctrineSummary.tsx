@@ -23,7 +23,11 @@ type CultivationDoctrineSummaryProps = {
   focusSummary: string;
   spiritRoot: SpiritRoot | null;
   verseSlot?: ReactNode;
-  compact?: boolean;
+  mode?: 'summary' | 'detail';
+  onOpenDetail?: () => void;
+  onCloseDetail?: () => void;
+  onPinDetail?: () => void;
+  pinned?: boolean;
 };
 
 export function CultivationDoctrineSummary({
@@ -41,8 +45,13 @@ export function CultivationDoctrineSummary({
   focusSummary,
   spiritRoot,
   verseSlot,
-  compact = false,
+  mode = 'summary',
+  onOpenDetail,
+  onCloseDetail,
+  onPinDetail,
+  pinned = false,
 }: CultivationDoctrineSummaryProps) {
+  const isSummary = mode === 'summary';
   const rows: DoctrineSummaryRow[] = [
     { label: 'Path', value: pathLabel, detail: pathSummary, intent: 'identity' },
     { label: 'Spirit Root', value: spiritRootLine, detail: spiritRootDetail, intent: 'identity' },
@@ -51,14 +60,14 @@ export function CultivationDoctrineSummary({
     { label: 'Breath Mode', value: breathLabel, detail: breathSummary, intent: 'tuning' },
     { label: 'Focus Mode', value: focusLabel, detail: focusSummary, intent: 'tuning' },
   ];
-  const visibleRows = compact ? rows.slice(0, 4) : rows;
+  const visibleRows = isSummary ? rows.slice(0, 4) : rows;
 
   return (
-    <section className={`cultivationDoctrinePanel cultivationCommandCard${compact ? ' cultivationDoctrinePanel--compact' : ''}`} aria-label="Doctrine state">
+    <section className={`cultivationDoctrinePanel cultivationCommandCard${isSummary ? ' cultivationDoctrinePanel--compact cultivationDoctrinePanel--summary' : ' cultivationDoctrinePanel--detail'}`} aria-label="Doctrine state">
       <div className="cultivationCommandCard__header">
         <div>
           <div className="cultivationCommandCard__eyebrow">Doctrine</div>
-          <h2 className="cultivationCommandCard__title">{compact ? 'Doctrine summary' : 'How you cultivate'}</h2>
+          <h2 className="cultivationCommandCard__title">{isSummary ? 'Doctrine seal' : 'Doctrine detail'}</h2>
         </div>
         <span className="cultivationCommandCard__badge">{spiritRoot ? 'Aligned' : 'Dormant'}</span>
       </div>
@@ -74,7 +83,24 @@ export function CultivationDoctrineSummary({
           </div>
         ))}
       </div>
-      {verseSlot ? <div className="cultivationDoctrinePanel__verseSlot">{verseSlot}</div> : null}
+      {!isSummary && verseSlot ? <div className="cultivationDoctrinePanel__verseSlot">{verseSlot}</div> : null}
+      <div className="cultivationDoctrinePanel__actions">
+        {isSummary && onOpenDetail ? (
+          <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onOpenDetail}>
+            Open doctrine
+          </button>
+        ) : null}
+        {!isSummary && onPinDetail ? (
+          <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onPinDetail}>
+            {pinned ? 'Pinned' : 'Pin doctrine'}
+          </button>
+        ) : null}
+        {!isSummary && onCloseDetail ? (
+          <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onCloseDetail}>
+            Close
+          </button>
+        ) : null}
+      </div>
     </section>
   );
 }

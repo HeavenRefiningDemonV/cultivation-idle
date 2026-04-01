@@ -141,6 +141,9 @@ export function CultivateScreen() {
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
   const [showDaoHeart, setShowDaoHeart] = useState(false);
   const [buffNow, setBuffNow] = useState(() => Date.now());
+  const [openDisclosure, setOpenDisclosure] = useState<'none' | 'breakthrough' | 'doctrine'>('none');
+  const [doctrinePinned, setDoctrinePinned] = useState(false);
+  const disclosureRef = useRef<HTMLDivElement | null>(null);
 
   const lastInsightRef = useRef<InsightMomentState | null>(null);
   const manualInsightHandled = useRef(false);
@@ -446,6 +449,32 @@ export function CultivateScreen() {
 
   const breathSemantics = getBreathModeSemantics(breathMode);
   const focusSemantics = getFocusModeSemantics(focusMode);
+
+  useEffect(() => {
+    if (doctrinePinned && selectedPath === null) {
+      setDoctrinePinned(false);
+    }
+  }, [doctrinePinned, selectedPath]);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (openDisclosure === 'none') return;
+      const root = disclosureRef.current;
+      if (!root) return;
+      if (event.target instanceof Node && root.contains(event.target)) return;
+      setOpenDisclosure('none');
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setOpenDisclosure('none');
+    };
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [openDisclosure]);
   const cultivationFxScene = useMemo(() => {
     if (!fxStageSnapshot) return null;
     return buildFxSceneContract({
@@ -514,7 +543,7 @@ export function CultivateScreen() {
           />
         </div>
 
-      <div className="cultivationCommandDeck" aria-label="Cultivation command deck">
+      <div className="cultivationCommandDeck" aria-label="Cultivation command deck" ref={disclosureRef}>
         <div className="cultivationInfoRow">
           <CultivationBreakthroughPanel
             milestoneState={breakthroughMilestoneState}
@@ -528,7 +557,8 @@ export function CultivateScreen() {
             guidance={breakthroughGuidance}
             action={breakthroughAction}
             onAction={performRunCompassAction}
-            compact
+            mode="summary"
+            onOpenDetail={() => setOpenDisclosure('breakthrough')}
           />
           <CultivationDoctrineSummary
             pathLabel={pathLabel}
@@ -544,31 +574,121 @@ export function CultivateScreen() {
             focusLabel={focusSemantics.label}
             focusSummary={focusSemantics.summary}
             spiritRoot={spiritRoot}
-            compact
-            verseSlot={
-              heartLawDef ? (
-                <VerseMiniBar
-                  chapter={chapter}
-                  comprehension={comprehension}
-                  requirement={verseRequirement}
-                  title={verseTitle}
-                  className="cultivationDoctrineVerseBar"
-                  isComplete={verseRequirement <= 0}
-                />
-              ) : (
-                <VerseMiniBar
-                  chapter={chapter}
-                  comprehension={0}
-                  requirement={0}
-                  title={verseTitle}
-                  className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
-                  placeholderLabel={versePlaceholderLabel}
-                  placeholderValue={versePlaceholderValue}
-                />
-              )
-            }
+            mode="summary"
+            onOpenDetail={() => setOpenDisclosure('doctrine')}
           />
         </div>
+        {openDisclosure === 'breakthrough' ? (
+          <div className="cultivationDisclosurePopover cultivationDisclosurePopover--breakthrough" role="dialog" aria-label="Breakthrough detail">
+            <CultivationBreakthroughPanel
+              milestoneState={breakthroughMilestoneState}
+              currentRealmLabel={realmLabel}
+              nextRealmLabel={atContentCap ? null : nextLiveRealm?.name ?? null}
+              stage={realm.substage}
+              stageMax={currentRealm.substages}
+              gateLine={breakthroughGateLine}
+              tokenLine={breakthroughTokenLine}
+              qiLine={breakthroughQiLine}
+              guidance={breakthroughGuidance}
+              action={breakthroughAction}
+              onAction={performRunCompassAction}
+              mode="detail"
+              onCloseDetail={() => setOpenDisclosure('none')}
+            />
+          </div>
+        ) : null}
+        {openDisclosure === 'doctrine' ? (
+          <div className="cultivationDisclosurePopover cultivationDisclosurePopover--doctrine" role="dialog" aria-label="Doctrine detail">
+            <CultivationDoctrineSummary
+              pathLabel={pathLabel}
+              pathSummary={pathSummary}
+              spiritRootLine={spiritRootLine}
+              spiritRootDetail={spiritRootDetail}
+              heartLawLine={heartLawVerseLabel}
+              heartLawDetail={heartLawDetail}
+              resonanceLine={resonanceLine}
+              resonanceDetail={resonanceDetail}
+              breathLabel={breathSemantics.label}
+              breathSummary={breathSemantics.summary}
+              focusLabel={focusSemantics.label}
+              focusSummary={focusSemantics.summary}
+              spiritRoot={spiritRoot}
+              mode="detail"
+              pinned={doctrinePinned}
+              onPinDetail={() => {
+                setDoctrinePinned(true);
+                setOpenDisclosure('none');
+              }}
+              onCloseDetail={() => setOpenDisclosure('none')}
+              verseSlot={
+                heartLawDef ? (
+                  <VerseMiniBar
+                    chapter={chapter}
+                    comprehension={comprehension}
+                    requirement={verseRequirement}
+                    title={verseTitle}
+                    className="cultivationDoctrineVerseBar"
+                    isComplete={verseRequirement <= 0}
+                  />
+                ) : (
+                  <VerseMiniBar
+                    chapter={chapter}
+                    comprehension={0}
+                    requirement={0}
+                    title={verseTitle}
+                    className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
+                    placeholderLabel={versePlaceholderLabel}
+                    placeholderValue={versePlaceholderValue}
+                  />
+                )
+              }
+            />
+          </div>
+        ) : null}
+        {doctrinePinned ? (
+          <aside className="cultivationPinnedDoctrineCard" aria-label="Pinned doctrine detail">
+            <CultivationDoctrineSummary
+              pathLabel={pathLabel}
+              pathSummary={pathSummary}
+              spiritRootLine={spiritRootLine}
+              spiritRootDetail={spiritRootDetail}
+              heartLawLine={heartLawVerseLabel}
+              heartLawDetail={heartLawDetail}
+              resonanceLine={resonanceLine}
+              resonanceDetail={resonanceDetail}
+              breathLabel={breathSemantics.label}
+              breathSummary={breathSemantics.summary}
+              focusLabel={focusSemantics.label}
+              focusSummary={focusSemantics.summary}
+              spiritRoot={spiritRoot}
+              mode="detail"
+              pinned
+              onCloseDetail={() => setDoctrinePinned(false)}
+              verseSlot={
+                heartLawDef ? (
+                  <VerseMiniBar
+                    chapter={chapter}
+                    comprehension={comprehension}
+                    requirement={verseRequirement}
+                    title={verseTitle}
+                    className="cultivationDoctrineVerseBar"
+                    isComplete={verseRequirement <= 0}
+                  />
+                ) : (
+                  <VerseMiniBar
+                    chapter={chapter}
+                    comprehension={0}
+                    requirement={0}
+                    title={verseTitle}
+                    className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
+                    placeholderLabel={versePlaceholderLabel}
+                    placeholderValue={versePlaceholderValue}
+                  />
+                )
+              }
+            />
+          </aside>
+        ) : null}
       </div>
 
       <div className="cultivationHudRail">
