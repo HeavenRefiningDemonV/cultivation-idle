@@ -30,23 +30,31 @@ function StatusLine({ label, value }: { label: string; value: string }) {
 export function StatusScreen() {
   const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const runCompass = useRunCompassSurface();
-  const game = useGameStore((state) => state);
-  const inventory = useInventoryStore((state) => state);
+  const realm = useGameStore((state) => state.realm);
+  const qi = useGameStore((state) => state.qi);
+  const qiPerSecond = useGameStore((state) => state.qiPerSecond);
+  const focusMode = useGameStore((state) => state.focusMode);
+  const selectedPath = useGameStore((state) => state.selectedPath);
+  const stats = useGameStore((state) => state.stats);
+  const playerLuck = useGameStore((state) => state.playerLuck);
+  const currencies = useInventoryStore((state) => state.currencies);
+  const items = useInventoryStore((state) => state.items);
+  const gold = useInventoryStore((state) => state.gold);
   const combatLog = useCombatStore((state) => state.combatLog);
   const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
 
   const troubleshooting = useMemo(
     () => buildStatusTroubleshootingSurface(),
     [
-      game.realm,
-      game.qi,
-      game.qiPerSecond,
-      game.focusMode,
-      game.selectedPath,
-      game.stats,
-      inventory.currencies,
-      inventory.items,
-      inventory.gold,
+      realm,
+      qi,
+      qiPerSecond,
+      focusMode,
+      selectedPath,
+      stats,
+      currencies,
+      items,
+      gold,
     ],
   );
 
@@ -139,13 +147,13 @@ export function StatusScreen() {
             <div className="statusScreenStatCard statusScreenCardBase">
               <h3 className="statusScreenStatCardTitle">Combat Statistics</h3>
               <div className="combatStatTilesGrid">
-                <CombatStatTile label="Max HP" value={formatNumber(game.stats.hp)} icon={<Heart size={16} />} tone="hp" pulseKey={game.stats.hp} />
-                <CombatStatTile label="Attack Power" value={formatNumber(game.stats.atk)} icon={<Sword size={16} />} tone="offense" pulseKey={game.stats.atk} />
-                <CombatStatTile label="Defense" value={formatNumber(game.stats.def)} icon={<Shield size={16} />} tone="defense" pulseKey={game.stats.def} />
-                <CombatStatTile label="HP Regen/s" value={formatNumber(game.stats.regen)} icon={<Droplets size={16} />} tone="recovery" />
-                <CombatStatTile label="Critical Rate" value={formatPercentFromValue(game.stats.crit)} icon={<Crosshair size={16} />} tone="crit" />
-                <CombatStatTile label="Critical Damage" value={formatPercentFromValue(game.stats.critDmg, 0)} icon={<Sparkles size={16} />} tone="crit" />
-                <CombatStatTile label="Dodge Chance" value={formatPercentFromValue(game.stats.dodge)} icon={<Footprints size={16} />} tone="evasion" />
+                <CombatStatTile label="Max HP" value={formatNumber(stats.hp)} icon={<Heart size={16} />} tone="hp" pulseKey={stats.hp} />
+                <CombatStatTile label="Attack Power" value={formatNumber(stats.atk)} icon={<Sword size={16} />} tone="offense" pulseKey={stats.atk} />
+                <CombatStatTile label="Defense" value={formatNumber(stats.def)} icon={<Shield size={16} />} tone="defense" pulseKey={stats.def} />
+                <CombatStatTile label="HP Regen/s" value={formatNumber(stats.regen)} icon={<Droplets size={16} />} tone="recovery" />
+                <CombatStatTile label="Critical Rate" value={formatPercentFromValue(stats.crit)} icon={<Crosshair size={16} />} tone="crit" />
+                <CombatStatTile label="Critical Damage" value={formatPercentFromValue(stats.critDmg, 0)} icon={<Sparkles size={16} />} tone="crit" />
+                <CombatStatTile label="Dodge Chance" value={formatPercentFromValue(stats.dodge)} icon={<Footprints size={16} />} tone="evasion" />
                 <CombatStatTile label="Total Enemies Defeated" value={formatNumber(totalEnemiesDefeated)} icon={<Sword size={16} />} tone="neutral" />
               </div>
             </div>
@@ -153,10 +161,10 @@ export function StatusScreen() {
           <div className="statusScreenColumn">
             <div className="statusScreenStatCard statusScreenCardBase">
               <h3 className="statusScreenStatCardTitle">Resources</h3>
-              <StatusLine label="Gold" value={formatNumber(inventory.gold)} />
-              <StatusLine label="Inventory Items" value={`${Object.keys(inventory.items).length}`} />
+              <StatusLine label="Gold" value={formatNumber(gold)} />
+              <StatusLine label="Inventory Items" value={`${Object.keys(items).length}`} />
               <StatusLine label="Combat Logs" value={`${combatLog.length}`} />
-              <StatusLine label="Player Luck" value={formatNumber(useGameStore.getState().playerLuck || 0)} />
+              <StatusLine label="Player Luck" value={formatNumber(playerLuck || 0)} />
             </div>
           </div>
         </div>
