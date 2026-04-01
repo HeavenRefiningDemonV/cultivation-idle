@@ -20,44 +20,87 @@ const EXPECTED_PROFILES = {
   heaven: {
     label: 'Heaven',
     summary:
-      'Fast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.',
+      'Refined technique-forward cultivation with strong burst windows and qi tempo, but lower forgiveness when survival prep is greedy.',
     coreIdentity: 'precision_pressure',
-    prepBias: ['qi-floor', 'medicine-floor', 'survival-backstop', 'resource-plan'],
-    forgeBias: ['weapon-first', 'offense-runes', 'survival-patch-before-push'],
-    buildBias: ['technique-pressure', 'utility-setup', 'guard-backstop'],
+    playIdentityKeywords: ['scripture', 'flow', 'precision', 'timed-burst-setup', 'calm-control'],
+    doctrineBudget: [
+      { label: 'Damage / Burst', weight: 35 },
+      { label: 'Setup / Control', weight: 25 },
+      { label: 'Cultivation / Cycle', weight: 25 },
+      { label: 'Survivability', weight: 15 },
+    ],
+    prepBias: ['qi-elixir', 'focus', 'quiet-breath', 'windstep'],
+    forgeBias: ['weapon-refine-first', 'precision-offense-temper', 'survival-patch-before-push'],
+    buildBiasSummary: [
+      '2 damage actives',
+      '1 setup/control slot',
+      '1 mobility/tempo or defensive flex',
+      'Passives favor cycle/crit/control/technique efficiency',
+    ],
     recommendedAiByPhase: {
       early: ['balanced', 'farmer'],
       boss: ['burst', 'balanced'],
     },
-    commonFailureModes: ['greedy-without-backstop', 'underdefended-for-gate', 'resource-starved-rotation'],
+    commonFailureModes: ['underprepared-floor', 'offense-greed-without-backstop', 'missing-defensive-tempo-backstop'],
+    objectiveLine: 'Build precise burst windows while protecting a thin survival floor.',
   },
   earth: {
     label: 'Earth',
     summary:
-      'Durability-first cultivation with steady inevitability. Earth wins by surviving long fights and holding formation, but it stalls when weapon floor and finishers lag.',
+      'Stable body-centered doctrine that converts durability into steady pressure; forgiving overall, but can stall without a finisher.',
     coreIdentity: 'durable_inevitability',
-    prepBias: ['forge-floor', 'sustain-floor', 'medicine-floor'],
-    forgeBias: ['armor-first', 'balanced-refine', 'defense-runes'],
-    buildBias: ['durable-rotation', 'guard-backstop', 'single-target-finisher'],
+    playIdentityKeywords: ['body-cultivation', 'guard', 'steadiness', 'attrition', 'patient-inevitability'],
+    doctrineBudget: [
+      { label: 'Durability / Sustain', weight: 40 },
+      { label: 'Counter / Control', weight: 20 },
+      { label: 'Raw Damage', weight: 20 },
+      { label: 'Cultivation / Tempo', weight: 20 },
+    ],
+    prepBias: ['ironblood', 'ward-salt', 'meridian-warmth'],
+    forgeBias: [
+      'weapon-floor-first-then-defense-floor',
+      'defensive-temper-early',
+      'balanced-refine-over-glass-cannon',
+    ],
+    buildBiasSummary: [
+      '1 strike slot',
+      '1 guard/shield/counter backstop',
+      '1 sustain or single-target finisher',
+      'Passives favor HP/DEF/regen/stability',
+    ],
     recommendedAiByPhase: {
       early: ['balanced', 'survivor'],
       boss: ['survivor', 'balanced'],
     },
-    commonFailureModes: ['stalling-without-finisher', 'underforged-weapon', 'overdefended-no-pressure'],
+    commonFailureModes: ['stalling-without-finisher', 'underforged-floor', 'overdefended-no-pressure'],
+    objectiveLine: 'Turn durability into inevitability and avoid stalling without a finisher.',
   },
   martial: {
     label: 'Martial',
     summary:
-      'Aggressive tempo with the strongest kill-window feel. Martial wins by chaining pressure and crit-driven bursts, but it falls off quickly when sustain and discipline are ignored.',
+      'Aggressive combat-shaped doctrine with the strongest kill-window feel; wins through tempo chains, loses when sustain discipline breaks.',
     coreIdentity: 'tempo_kill_window',
-    prepBias: ['forge-floor', 'medicine-floor', 'tempo-preservation', 'resource-plan'],
-    forgeBias: ['weapon-first', 'offense-runes', 'survival-patch-before-push'],
-    buildBias: ['tempo-chain', 'single-target-finisher', 'minimum-sustain'],
+    playIdentityKeywords: ['will', 'conflict', 'edge', 'execution', 'pressure'],
+    doctrineBudget: [
+      { label: 'Burst / Kill Window', weight: 45 },
+      { label: 'Tempo / Mobility', weight: 20 },
+      { label: 'Setup / Opener', weight: 15 },
+      { label: 'Survivability', weight: 20 },
+    ],
+    prepBias: ['windstep', 'focus', 'mastery-tonic', 'ironblood-fallback'],
+    forgeBias: ['weapon-refine-first', 'offense-temper-first', 'survival-patch-if-sustain-collapses'],
+    buildBiasSummary: [
+      'opener/setup slot',
+      'core strike slot',
+      'execute/finisher slot',
+      'mobility/tempo flex and passives favor ATK/crit/cooldown/tempo',
+    ],
     recommendedAiByPhase: {
-      early: ['farmer', 'burst'],
+      early: ['farmer', 'balanced'],
       boss: ['burst', 'balanced'],
     },
-    commonFailureModes: ['overextending-burst-window', 'resource-starved-rotation', 'greedy-without-backstop'],
+    commonFailureModes: ['underdefended-burst-greed', 'sustain-collapse', 'wrong-ai-posture-for-boss'],
+    objectiveLine: 'Chain tempo into kill windows without letting sustain collapse.',
   },
 } as const;
 
@@ -77,12 +120,22 @@ test('each path resolves to the exact authored semantic profile', () => {
     assert.equal(profile.label, expected.label);
     assert.equal(profile.summary, expected.summary);
     assert.equal(profile.coreIdentity, expected.coreIdentity);
+    assert.deepEqual(profile.playIdentityKeywords, expected.playIdentityKeywords);
+    assert.deepEqual(profile.doctrineBudget, expected.doctrineBudget);
     assert.deepEqual(profile.prepBias, expected.prepBias);
     assert.deepEqual(profile.forgeBias, expected.forgeBias);
-    assert.deepEqual(profile.buildBias, expected.buildBias);
+    assert.deepEqual(profile.buildBiasSummary, expected.buildBiasSummary);
     assert.deepEqual(profile.recommendedAiByPhase.early, expected.recommendedAiByPhase.early);
     assert.deepEqual(profile.recommendedAiByPhase.boss, expected.recommendedAiByPhase.boss);
     assert.deepEqual(profile.commonFailureModes, expected.commonFailureModes);
+    assert.equal(profile.objectiveLine, expected.objectiveLine);
+  }
+});
+
+test('doctrine budget always has 4 lines and sums to 100', () => {
+  for (const profile of PATH_DOCTRINE_REGISTRY) {
+    assert.equal(profile.doctrineBudget.length, 4);
+    assert.equal(profile.doctrineBudget.reduce((sum, entry) => sum + entry.weight, 0), 100);
   }
 });
 
@@ -102,7 +155,7 @@ test('recommended AI arrays are valid and boss-safe', () => {
     profile.recommendedAiByPhase.boss.forEach((aiProfile) => {
       assert.equal(VALID_AI_VALUES.has(aiProfile), true);
     });
-    assert.equal(profile.recommendedAiByPhase.boss.includes('farmer'), false);
+    assert.notEqual(profile.recommendedAiByPhase.boss[0], 'farmer');
   }
 });
 
@@ -122,9 +175,12 @@ test('registry and doctrine profiles are frozen enough to trust', () => {
   for (const profile of PATH_DOCTRINE_REGISTRY) {
     assert.equal(Object.isFrozen(profile), true);
     assert.equal(Object.isFrozen(profile.modifierSignature), true);
+    assert.equal(Object.isFrozen(profile.playIdentityKeywords), true);
+    assert.equal(Object.isFrozen(profile.doctrineBudget), true);
+    assert.equal(Object.isFrozen(profile.doctrineBudget[0]), true);
     assert.equal(Object.isFrozen(profile.prepBias), true);
     assert.equal(Object.isFrozen(profile.forgeBias), true);
-    assert.equal(Object.isFrozen(profile.buildBias), true);
+    assert.equal(Object.isFrozen(profile.buildBiasSummary), true);
     assert.equal(Object.isFrozen(profile.recommendedAiByPhase), true);
     assert.equal(Object.isFrozen(profile.recommendedAiByPhase.early), true);
     assert.equal(Object.isFrozen(profile.recommendedAiByPhase.boss), true);

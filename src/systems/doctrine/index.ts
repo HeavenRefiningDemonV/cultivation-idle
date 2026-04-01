@@ -6,6 +6,7 @@ export * from './breathSemantics.js';
 export * from './pathDoctrineTypes.js';
 export * from './pathDoctrineRegistry.js';
 export * from './pathDoctrineSemanticAdapter.js';
+export * from './pathDoctrinePresentation.js';
 
 
 export * from './heartLawTypes.js';

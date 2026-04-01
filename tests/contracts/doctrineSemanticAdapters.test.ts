@@ -18,14 +18,20 @@ test('path doctrine semantic adapter mirrors authored semantic fields without ex
   assert.equal(semanticView.label, profile.label);
   assert.equal(semanticView.summary, profile.summary);
   assert.equal(semanticView.coreIdentity, profile.coreIdentity);
+
+  assert.deepEqual(semanticView.playIdentityKeywords, profile.playIdentityKeywords);
+  assert.deepEqual(semanticView.doctrineBudget, profile.doctrineBudget);
   assert.deepEqual(semanticView.prepBias, profile.prepBias);
   assert.deepEqual(semanticView.forgeBias, profile.forgeBias);
-  assert.deepEqual(semanticView.buildBias, profile.buildBias);
+  assert.deepEqual(semanticView.buildBiasSummary, profile.buildBiasSummary);
   assert.deepEqual(semanticView.recommendedAiByPhase, profile.recommendedAiByPhase);
   assert.deepEqual(semanticView.commonFailureModes, profile.commonFailureModes);
+  assert.equal(semanticView.objectiveLine, profile.objectiveLine);
   assert.equal('modifierSignature' in semanticView, false);
   assert.equal(Object.isFrozen(semanticView), true);
   assert.equal(Object.isFrozen(semanticView.prepBias), true);
+  assert.equal(Object.isFrozen(semanticView.playIdentityKeywords), true);
+  assert.equal(Object.isFrozen(semanticView.doctrineBudget), true);
   assert.equal(Object.isFrozen(semanticView.recommendedAiByPhase), true);
   assert.equal(Object.isFrozen(semanticView.recommendedAiByPhase.early), true);
 });

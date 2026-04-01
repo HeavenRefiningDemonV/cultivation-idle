@@ -9,72 +9,130 @@ type PathDoctrineSemanticAuthoring = {
   readonly label: string;
   readonly summary: string;
   readonly coreIdentity: PathDoctrineCoreIdentity;
+  readonly playIdentityKeywords: readonly string[];
+  readonly doctrineBudget: PathDoctrineProfile['doctrineBudget'];
   readonly prepBias: readonly string[];
   readonly forgeBias: readonly string[];
-  readonly buildBias: readonly string[];
+  readonly buildBiasSummary: readonly string[];
   readonly recommendedAiByPhase: {
     early: PathDoctrineProfile['recommendedAiByPhase']['early'];
     boss: PathDoctrineProfile['recommendedAiByPhase']['boss'];
   };
   readonly commonFailureModes: readonly string[];
+  readonly objectiveLine: string;
 };
 
 const PATH_DOCTRINE_SEMANTICS: Readonly<Record<CultivationPath, PathDoctrineSemanticAuthoring>> = Object.freeze({
   heaven: Object.freeze({
     label: 'Heaven',
     summary:
-      'Fast cultivation and technique-led pressure. Heaven converts qi tempo into precise offensive windows, but its survival floor is thinner and greed is punished.',
+      'Refined technique-forward cultivation with strong burst windows and qi tempo, but lower forgiveness when survival prep is greedy.',
     coreIdentity: 'precision_pressure',
-    prepBias: Object.freeze(['qi-floor', 'medicine-floor', 'survival-backstop', 'resource-plan']),
-    forgeBias: Object.freeze(['weapon-first', 'offense-runes', 'survival-patch-before-push']),
-    buildBias: Object.freeze(['technique-pressure', 'utility-setup', 'guard-backstop']),
+    playIdentityKeywords: Object.freeze(['scripture', 'flow', 'precision', 'timed-burst-setup', 'calm-control']),
+    doctrineBudget: Object.freeze([
+      Object.freeze({ label: 'Damage / Burst', weight: 35 }),
+      Object.freeze({ label: 'Setup / Control', weight: 25 }),
+      Object.freeze({ label: 'Cultivation / Cycle', weight: 25 }),
+      Object.freeze({ label: 'Survivability', weight: 15 }),
+    ]) as PathDoctrineProfile['doctrineBudget'],
+    prepBias: Object.freeze(['qi-elixir', 'focus', 'quiet-breath', 'windstep']),
+    forgeBias: Object.freeze(['weapon-refine-first', 'precision-offense-temper', 'survival-patch-before-push']),
+    buildBiasSummary: Object.freeze([
+      '2 damage actives',
+      '1 setup/control slot',
+      '1 mobility/tempo or defensive flex',
+      'Passives favor cycle/crit/control/technique efficiency',
+    ]),
     recommendedAiByPhase: Object.freeze({
       early: Object.freeze(['balanced', 'farmer'] as const),
       boss: Object.freeze(['burst', 'balanced'] as const),
     }),
     commonFailureModes: Object.freeze([
-      'greedy-without-backstop',
-      'underdefended-for-gate',
-      'resource-starved-rotation',
+      'underprepared-floor',
+      'offense-greed-without-backstop',
+      'missing-defensive-tempo-backstop',
     ]),
+    objectiveLine: 'Build precise burst windows while protecting a thin survival floor.',
   }),
   earth: Object.freeze({
     label: 'Earth',
     summary:
-      'Durability-first cultivation with steady inevitability. Earth wins by surviving long fights and holding formation, but it stalls when weapon floor and finishers lag.',
+      'Stable body-centered doctrine that converts durability into steady pressure; forgiving overall, but can stall without a finisher.',
     coreIdentity: 'durable_inevitability',
-    prepBias: Object.freeze(['forge-floor', 'sustain-floor', 'medicine-floor']),
-    forgeBias: Object.freeze(['armor-first', 'balanced-refine', 'defense-runes']),
-    buildBias: Object.freeze(['durable-rotation', 'guard-backstop', 'single-target-finisher']),
+    playIdentityKeywords: Object.freeze(['body-cultivation', 'guard', 'steadiness', 'attrition', 'patient-inevitability']),
+    doctrineBudget: Object.freeze([
+      Object.freeze({ label: 'Durability / Sustain', weight: 40 }),
+      Object.freeze({ label: 'Counter / Control', weight: 20 }),
+      Object.freeze({ label: 'Raw Damage', weight: 20 }),
+      Object.freeze({ label: 'Cultivation / Tempo', weight: 20 }),
+    ]) as PathDoctrineProfile['doctrineBudget'],
+    prepBias: Object.freeze(['ironblood', 'ward-salt', 'meridian-warmth']),
+    forgeBias: Object.freeze([
+      'weapon-floor-first-then-defense-floor',
+      'defensive-temper-early',
+      'balanced-refine-over-glass-cannon',
+    ]),
+    buildBiasSummary: Object.freeze([
+      '1 strike slot',
+      '1 guard/shield/counter backstop',
+      '1 sustain or single-target finisher',
+      'Passives favor HP/DEF/regen/stability',
+    ]),
     recommendedAiByPhase: Object.freeze({
       early: Object.freeze(['balanced', 'survivor'] as const),
       boss: Object.freeze(['survivor', 'balanced'] as const),
     }),
     commonFailureModes: Object.freeze([
       'stalling-without-finisher',
-      'underforged-weapon',
+      'underforged-floor',
       'overdefended-no-pressure',
     ]),
+    objectiveLine: 'Turn durability into inevitability and avoid stalling without a finisher.',
   }),
   martial: Object.freeze({
     label: 'Martial',
     summary:
-      'Aggressive tempo with the strongest kill-window feel. Martial wins by chaining pressure and crit-driven bursts, but it falls off quickly when sustain and discipline are ignored.',
+      'Aggressive combat-shaped doctrine with the strongest kill-window feel; wins through tempo chains, loses when sustain discipline breaks.',
     coreIdentity: 'tempo_kill_window',
-    prepBias: Object.freeze(['forge-floor', 'medicine-floor', 'tempo-preservation', 'resource-plan']),
-    forgeBias: Object.freeze(['weapon-first', 'offense-runes', 'survival-patch-before-push']),
-    buildBias: Object.freeze(['tempo-chain', 'single-target-finisher', 'minimum-sustain']),
+    playIdentityKeywords: Object.freeze(['will', 'conflict', 'edge', 'execution', 'pressure']),
+    doctrineBudget: Object.freeze([
+      Object.freeze({ label: 'Burst / Kill Window', weight: 45 }),
+      Object.freeze({ label: 'Tempo / Mobility', weight: 20 }),
+      Object.freeze({ label: 'Setup / Opener', weight: 15 }),
+      Object.freeze({ label: 'Survivability', weight: 20 }),
+    ]) as PathDoctrineProfile['doctrineBudget'],
+    prepBias: Object.freeze(['windstep', 'focus', 'mastery-tonic', 'ironblood-fallback']),
+    forgeBias: Object.freeze(['weapon-refine-first', 'offense-temper-first', 'survival-patch-if-sustain-collapses']),
+    buildBiasSummary: Object.freeze([
+      'opener/setup slot',
+      'core strike slot',
+      'execute/finisher slot',
+      'mobility/tempo flex and passives favor ATK/crit/cooldown/tempo',
+    ]),
     recommendedAiByPhase: Object.freeze({
-      early: Object.freeze(['farmer', 'burst'] as const),
+      early: Object.freeze(['farmer', 'balanced'] as const),
       boss: Object.freeze(['burst', 'balanced'] as const),
     }),
     commonFailureModes: Object.freeze([
-      'overextending-burst-window',
-      'resource-starved-rotation',
-      'greedy-without-backstop',
+      'underdefended-burst-greed',
+      'sustain-collapse',
+      'wrong-ai-posture-for-boss',
     ]),
+    objectiveLine: 'Chain tempo into kill windows without letting sustain collapse.',
   }),
 });
+
+
+function cloneDoctrineBudget(
+  doctrineBudget: PathDoctrineProfile['doctrineBudget'],
+): PathDoctrineProfile['doctrineBudget'] {
+  return [
+    { ...doctrineBudget[0] },
+    { ...doctrineBudget[1] },
+    { ...doctrineBudget[2] },
+    { ...doctrineBudget[3] },
+  ];
+}
 
 function clonePathModifierSignature(path: CultivationPath): PathModifiers {
   const modifierSignature = PATH_MODIFIERS[path];
@@ -91,9 +149,13 @@ function clonePathModifierSignature(path: CultivationPath): PathModifiers {
 
 function freezePathDoctrineProfile(profile: PathDoctrineProfile): PathDoctrineProfile {
   Object.freeze(profile.modifierSignature);
+  Object.freeze(profile.playIdentityKeywords);
+  profile.doctrineBudget.forEach((entry) => Object.freeze(entry));
+  Object.freeze(profile.doctrineBudget);
   Object.freeze(profile.prepBias);
   Object.freeze(profile.forgeBias);
   Object.freeze(profile.buildBias);
+  Object.freeze(profile.buildBiasSummary);
   Object.freeze(profile.recommendedAiByPhase.early);
   Object.freeze(profile.recommendedAiByPhase.boss);
   Object.freeze(profile.recommendedAiByPhase);
@@ -111,14 +173,18 @@ function buildPathDoctrineProfile(path: CultivationPath): PathDoctrineProfile {
     summary: semanticProfile.summary,
     coreIdentity: semanticProfile.coreIdentity,
     modifierSignature: clonePathModifierSignature(path),
+    playIdentityKeywords: [...semanticProfile.playIdentityKeywords],
+    doctrineBudget: cloneDoctrineBudget(semanticProfile.doctrineBudget),
     prepBias: [...semanticProfile.prepBias],
     forgeBias: [...semanticProfile.forgeBias],
-    buildBias: [...semanticProfile.buildBias],
+    buildBias: [...semanticProfile.buildBiasSummary],
+    buildBiasSummary: [...semanticProfile.buildBiasSummary],
     recommendedAiByPhase: {
       early: [...semanticProfile.recommendedAiByPhase.early],
       boss: [...semanticProfile.recommendedAiByPhase.boss],
     },
     commonFailureModes: [...semanticProfile.commonFailureModes],
+    objectiveLine: semanticProfile.objectiveLine,
   });
 }
 

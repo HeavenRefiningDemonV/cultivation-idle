@@ -9,24 +9,32 @@ export interface PathDoctrinePresentation {
   summary: string;
   statHighlights: readonly string[];
   tags: readonly string[];
+  objectiveLine?: string;
+  cautionLine?: string;
 }
 
 const PRACTICAL_ROLE_LINES: Readonly<Record<CultivationPath, string>> = Object.freeze({
-  heaven: 'Qi and technique focused.',
-  earth: 'Body and defense focused.',
-  martial: 'Power and speed focused.',
+  heaven: 'Technique-forward burst path with high qi tempo and thinner forgiveness.',
+  earth: 'Durability-first path that wins through stable pressure and discipline.',
+  martial: 'Tempo-heavy combat path that spikes hardest during kill windows.',
 });
 
 const DOCTRINE_SUBTITLES: Readonly<Record<CultivationPath, string>> = Object.freeze({
-  heaven: 'Refined, celestial, technique-forward.',
-  earth: 'Grounded, body-tempering, durable.',
-  martial: 'Decisive, aggressive, conflict-shaped.',
+  heaven: 'Refined precision with burst timing discipline.',
+  earth: 'Patient body cultivation and steady inevitability.',
+  martial: 'Aggressive pressure, execution, and kill-window control.',
 });
 
 const DOCTRINAL_TAGS: Readonly<Record<CultivationPath, readonly string[]>> = Object.freeze({
-  heaven: Object.freeze(['Qi Flow', 'Precision', 'Burst Pressure']),
-  earth: Object.freeze(['Endurance', 'Guard', 'Steady Growth']),
-  martial: Object.freeze(['Tempo', 'Kill Window', 'Pressure']),
+  heaven: Object.freeze(['Precision', 'Cycle', 'Burst Windows']),
+  earth: Object.freeze(['Durability', 'Guard', 'Inevitability']),
+  martial: Object.freeze(['Tempo', 'Execution', 'Pressure']),
+});
+
+const CAUTION_LINES: Readonly<Record<CultivationPath, string>> = Object.freeze({
+  heaven: 'Patch one real defensive or tempo backstop before greed pushes.',
+  earth: 'Do not overdefend into stall—keep one reliable finisher online.',
+  martial: 'Avoid burst greed when sustain or posture discipline is collapsing.',
 });
 
 function formatPercent(multiplier: number): string {
@@ -69,7 +77,9 @@ function buildPathDoctrinePresentation(path: CultivationPath): PathDoctrinePrese
     doctrineSubtitle: DOCTRINE_SUBTITLES[path],
     summary: getPathDoctrineSummary(path),
     statHighlights: createStatHighlights(path),
-    tags: DOCTRINAL_TAGS[path].slice(0, 3),
+    tags: Object.freeze([...DOCTRINAL_TAGS[path].slice(0, 3)]),
+    objectiveLine: profile?.objectiveLine,
+    cautionLine: CAUTION_LINES[path],
   });
 }
 

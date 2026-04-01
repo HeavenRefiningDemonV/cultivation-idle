@@ -36,7 +36,7 @@ test('path doctrine registry interops cleanly with the packet 4.1 snapshot layer
   assert.equal(profile.coreIdentity, 'durable_inevitability');
   assert.equal(
     getPathDoctrineSummary(snapshot.path),
-    'Durability-first cultivation with steady inevitability. Earth wins by surviving long fights and holding formation, but it stalls when weapon floor and finishers lag.',
+    'Stable body-centered doctrine that converts durability into steady pressure; forgiving overall, but can stall without a finisher.',
   );
 });
 
