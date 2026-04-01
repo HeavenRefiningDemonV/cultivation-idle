@@ -18,11 +18,13 @@ test('packet 4.8 techCollectionStore now depends on the contract instead of loca
 test('packet 4.8 combatStore no longer reads raw Heaven mastery-75 potency from content', async () => {
   const source = await read('src/stores/combatStore.ts');
   assert.match(source, /getTechniqueProgressionSnapshot/);
+  assert.doesNotMatch(source, /unlockedTechs\[techId\]\?\.rank/);
   assert.doesNotMatch(source, /manualSystem\.grades\.heaven\.mastery75PotencyBonus/);
 });
 
 test('packet 4.8 TechniqueDetailModal no longer reads raw Heaven mastery-75 potency from content', async () => {
   const source = await read('src/components/modals/TechniqueDetailModal.tsx');
   assert.match(source, /getTechniqueProgressionSnapshot/);
+  assert.doesNotMatch(source, /masteryLevelFromXp\(/);
   assert.doesNotMatch(source, /state\.raw\?\.economy\?\.manualSystem\?\.grades\?\.heaven\?\.mastery75PotencyBonus/);
 });

@@ -4,10 +4,8 @@ import type { TechniqueDef } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import {
-  masteryLevelFromXp,
   normalizeGrade,
   normalizeRarity,
-  rankMultiplier,
   useTechCollectionStore,
 } from '../../stores/techCollectionStore.js';
 import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js';
@@ -16,6 +14,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects.js';
 import { buildLoadoutSnapshot } from '../../systems/builds/loadoutSnapshot.js';
 import { formatProgressionFloorContextLabel } from '../../systems/builds/loadoutProgressionContract.js';
+import { rankMultiplier } from '../../systems/builds/index.js';
 import { RankUpgradeRitualModal } from './RankUpgradeRitualModal.js';
 import { TraitRerollModal } from './TraitRerollModal.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
@@ -235,7 +234,7 @@ export function TechniqueDetailModal({
     () => (techniqueId ? getTechniqueProgressionSnapshot(techniqueId) : null),
     [getTechniqueProgressionSnapshot, techniqueId],
   );
-  const masteryLevel = masteryLevelFromXp(selectedEntry?.masteryXp ?? 0);
+  const masteryLevel = progressionSnapshot?.masteryLevel ?? 1;
   const masteryCdr = techniqueId ? getMasteryCooldownReductionPct(techniqueId) : 0;
   const masteryCostReduction = techniqueId ? getMasteryCostReductionPct(techniqueId) : 0;
   const masteryMilestoneEffects = getMasteryMilestoneEffectsHelper(masteryLevel);
@@ -450,7 +449,7 @@ export function TechniqueDetailModal({
         : null;
 
   const rankPowerDeltaPct = selectedEntry && nextRankInfo
-    ? (rankMultiplier(nextRankInfo.nextRank) / rankMultiplier(selectedEntry.rank ?? 1) - 1) * 100
+    ? (rankMultiplier(nextRankInfo.nextRank) / rankMultiplier(progressionSnapshot?.rank ?? 1) - 1) * 100
     : 10;
 
   const compatibleSlotType = useMemo(() => {

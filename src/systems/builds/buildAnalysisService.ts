@@ -5,12 +5,6 @@ import {
   type BuildAnalysisInput,
   type BuildGap,
   type BuildTechniqueAnalysisEntry,
-  ACTIVE_PASSIVE_MASTERY_FLOOR,
-  ACTIVE_PASSIVE_MIN_RANK_FLOOR,
-  ACTIVE_PASSIVE_MIN_RUNE_FLOOR,
-  ULTIMATE_MASTERY_FLOOR,
-  ULTIMATE_MIN_RANK_FLOOR,
-  ULTIMATE_MIN_RUNE_FLOOR,
 } from './buildAnalysisTypes.js';
 import { detectArchetypeFromCoverage } from './archetypeDetector.js';
 import { buildLoadoutSnapshot } from './loadoutSnapshot.js';
@@ -25,6 +19,7 @@ import {
   getPathAlignmentStrengthForTechnique,
   getTechniqueTaxonomyProfile,
 } from './techniqueTaxonomy.js';
+import { evaluateTechniqueSlotTypeFloor } from './techniqueProgressionContract.js';
 
 function createEmptyFamilyCoverage(): Record<TechniqueFamily, number> {
   return Object.fromEntries(TECHNIQUE_FAMILY_ORDER.map((family) => [family, 0])) as Record<
@@ -43,22 +38,7 @@ function createEmptySupportCoverage(): Record<TechniqueSupportFlag, number> {
 function buildTechniqueEntry(snapshot: DoctrineSnapshot, techId: string, slotType: 'active' | 'passive' | 'ultimate'): BuildTechniqueAnalysisEntry {
   const taxonomy = getTechniqueTaxonomyProfile(techId);
   const progression = useTechCollectionStore.getState().getTechniqueProgressionSnapshot(techId);
-
-  const masteryFloor = slotType === 'ultimate' ? ULTIMATE_MASTERY_FLOOR : ACTIVE_PASSIVE_MASTERY_FLOOR;
-  const rankFloor = Math.min(
-    progression.rankCap,
-    slotType === 'ultimate' ? ULTIMATE_MIN_RANK_FLOOR : ACTIVE_PASSIVE_MIN_RANK_FLOOR,
-  );
-
-  let runeFloor = 0;
-  let runeFloorMet = true;
-  if (progression.runeSockets > 0) {
-    runeFloor = Math.min(
-      progression.runeSockets,
-      slotType === 'ultimate' ? ULTIMATE_MIN_RUNE_FLOOR : ACTIVE_PASSIVE_MIN_RUNE_FLOOR,
-    );
-    runeFloorMet = progression.appliedRuneCount >= runeFloor;
-  }
+  const slotFloor = evaluateTechniqueSlotTypeFloor(progression, slotType);
 
   return {
     techId,
@@ -70,16 +50,16 @@ function buildTechniqueEntry(snapshot: DoctrineSnapshot, techId: string, slotTyp
     manualGrade: progression.grade,
     rarity: progression.rarity,
     masteryLevel: progression.masteryLevel,
-    masteryFloor,
-    masteryFloorMet: progression.masteryLevel >= masteryFloor,
+    masteryFloor: slotFloor.masteryFloor,
+    masteryFloorMet: slotFloor.masteryFloorMet,
     rank: progression.rank,
-    rankFloor,
+    rankFloor: slotFloor.rankFloor,
     rankCap: progression.rankCap,
-    rankFloorMet: progression.rank >= rankFloor,
+    rankFloorMet: slotFloor.rankFloorMet,
     runeSockets: progression.runeSockets,
-    runeFloor,
+    runeFloor: slotFloor.runeFloor,
     appliedRuneCount: progression.appliedRuneCount,
-    runeFloorMet,
+    runeFloorMet: slotFloor.runeFloorMet,
   };
 }
 

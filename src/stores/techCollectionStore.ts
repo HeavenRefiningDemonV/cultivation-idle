@@ -22,6 +22,7 @@ import {
   normalizeTechniqueProgressionState,
   normalizeTechniqueRarity,
   rankMultiplier,
+  MASTERY_XP_SCALE as MASTERY_XP_SCALE_CONTRACT,
   xpNeededForLevel,
   type TechniqueProgressionSnapshot,
 } from '../systems/builds/index.js';
@@ -143,7 +144,7 @@ interface TechCollectionState {
 }
 
 export { xpNeededForLevel, masteryLevelFromXp, masteryMultiplier, rankMultiplier } from '../systems/builds/index.js';
-export const MASTERY_XP_SCALE = 3;
+export const MASTERY_XP_SCALE = MASTERY_XP_SCALE_CONTRACT;
 
 const DEFAULT_RANK_COSTS: Array<{
   toRank: number;
