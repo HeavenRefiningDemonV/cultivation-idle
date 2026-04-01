@@ -36,6 +36,12 @@ import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
+import { ScreenFxStage } from '../../ui/fx/ScreenFxStage.js';
+import { FX_STAGE_IDS } from '../../ui/fx/constants.js';
+import { FxStagePortal } from '../../ui/fx/FxStagePortal.js';
+import { useFxQuality, useFxStageSnapshot } from '../../ui/fx/FxQualityProvider.js';
+import { buildFxSceneContract } from '../../ui/fx/runtime.js';
+import { CultivationFxScene } from '../../ui/fx/scenes/CultivationFxScene.js';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -124,6 +130,8 @@ export function CultivateScreen() {
   const comprehension = useCultivationStore((state) => state.comprehension);
   const getComprehensionRequirementForNextChapter = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter);
   const runCompass = useRunCompassSurface();
+  const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.cultivation);
+  const { requestedQuality, effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
@@ -438,44 +446,73 @@ export function CultivateScreen() {
 
   const breathSemantics = getBreathModeSemantics(breathMode);
   const focusSemantics = getFocusModeSemantics(focusMode);
+  const cultivationFxScene = useMemo(() => {
+    if (!fxStageSnapshot) return null;
+    return buildFxSceneContract({
+      stageId: FX_STAGE_IDS.cultivation,
+      sceneKind: 'cultivation',
+      snapshot: fxStageSnapshot,
+      requestedQuality,
+      effectiveQuality,
+      prefersReducedMotion,
+      documentHidden: typeof document !== 'undefined' ? document.hidden : false,
+    });
+  }, [effectiveQuality, fxStageSnapshot, prefersReducedMotion, requestedQuality]);
 
   return (
-    <div className="cultivationScreenRoot">
-      <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
-      <div className="cultivationSceneLayer" aria-hidden="true">
-        <img className="cultivationCultivatorArt" src={cultivator} alt="" />
-        <DantianOrb
-          heartLawTags={heartLawTags}
-          isCultivating={isCultivating}
-          isNearReady={isNearReady}
-          isReady={canBreakthrough}
-        />
-      </div>
-      <button
-        type="button"
-        className="daoHeartSealButton uiNoShift"
-        aria-label="Open Dao Heart"
-        aria-haspopup="dialog"
-        aria-expanded={showDaoHeart}
-        onClick={() => setShowDaoHeart(true)}
-      >
-        Dao
-      </button>
-      <div className="cultivationHeaderRail">
-        <CultivationHeaderRibbon
-          realmLabel={realmLabel}
-          substage={realm.substage}
-          realmIndex={realm.index}
-          qi={qi}
-          qiPerSecond={headerRate}
-          rateTooltip={rateTooltip}
-          activityLabel={activityLabel}
-          activityType={activeActivity?.type ?? null}
-          stability={stability}
-          stabilityCap={stabilityCap}
-          breakthroughReady={canBreakthrough}
-        />
-      </div>
+    <ScreenFxStage
+      stageId={FX_STAGE_IDS.cultivation}
+      className="cultivationScreenFxStage"
+      stageClassName="cultivationScreenFxStage__layer"
+      contentClassName="cultivationScreenFxStage__content"
+      stageZIndex={0}
+      contentZIndex={1}
+    >
+      {cultivationFxScene ? (
+        <FxStagePortal stageId={FX_STAGE_IDS.cultivation}>
+          <CultivationFxScene
+            {...cultivationFxScene}
+            isCultivating={isCultivating}
+            isReady={canBreakthrough}
+          />
+        </FxStagePortal>
+      ) : null}
+      <div className="cultivationScreenRoot">
+        <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
+        <div className="cultivationSceneLayer" aria-hidden="true">
+          <img className="cultivationCultivatorArt" src={cultivator} alt="" />
+          <DantianOrb
+            heartLawTags={heartLawTags}
+            isCultivating={isCultivating}
+            isNearReady={isNearReady}
+            isReady={canBreakthrough}
+          />
+        </div>
+        <button
+          type="button"
+          className="daoHeartSealButton uiNoShift"
+          aria-label="Open Dao Heart"
+          aria-haspopup="dialog"
+          aria-expanded={showDaoHeart}
+          onClick={() => setShowDaoHeart(true)}
+        >
+          Dao
+        </button>
+        <div className="cultivationHeaderRail">
+          <CultivationHeaderRibbon
+            realmLabel={realmLabel}
+            substage={realm.substage}
+            realmIndex={realm.index}
+            qi={qi}
+            qiPerSecond={headerRate}
+            rateTooltip={rateTooltip}
+            activityLabel={activityLabel}
+            activityType={activeActivity?.type ?? null}
+            stability={stability}
+            stabilityCap={stabilityCap}
+            breakthroughReady={canBreakthrough}
+          />
+        </div>
 
       <div className="cultivationCommandDeck" aria-label="Cultivation command deck">
         <div className="cultivationCommandDeck__runCompass">
@@ -605,10 +642,11 @@ export function CultivateScreen() {
         </div>
       </div>
 
-      {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
-      {showPerkSelectionModal && perkSelectionRealm !== null && (
-        <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
-      )}
-    </div>
+        {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
+        {showPerkSelectionModal && perkSelectionRealm !== null && (
+          <PerkSelectionModal onClose={hidePerkSelection} realmIndex={perkSelectionRealm} />
+        )}
+      </div>
+    </ScreenFxStage>
   );
 }
