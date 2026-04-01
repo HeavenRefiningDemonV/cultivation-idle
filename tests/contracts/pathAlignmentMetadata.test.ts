@@ -6,6 +6,7 @@ import test from 'node:test';
 import { validateLoadedContent } from '../../src/content/index.js';
 import {
   buildTechniqueTaxonomyFromDefinitions,
+  getPathAlignmentStrengthLabel,
   getPathAlignmentScoreForTechnique,
   getPathAlignmentStrengthForTechnique,
   resolveTechniquePathAlignment,
@@ -141,4 +142,29 @@ test('single-call alignment helper returns deterministic fit and score', () => {
   });
 
   assert.deepEqual(resolved, { fit: 'neutral', score: 1 });
+});
+
+test('alignment vocabulary and score model stay exact and non-negative', () => {
+  assert.equal(getPathAlignmentStrengthLabel('strong'), 'Path-Aligned');
+  assert.equal(getPathAlignmentStrengthLabel('neutral'), 'Flex Support');
+  assert.equal(getPathAlignmentStrengthLabel('off'), 'Off-Path');
+
+  assert.deepEqual(resolveTechniquePathAlignment({
+    techPath: 'martial',
+    families: ['coreDamage'],
+    nativeAlignment: 'strong',
+    selectedPath: 'earth',
+  }), { fit: 'off', score: 0 });
+  assert.deepEqual(resolveTechniquePathAlignment({
+    techPath: 'martial',
+    families: ['guard'],
+    nativeAlignment: 'neutral',
+    selectedPath: 'earth',
+  }), { fit: 'neutral', score: 1 });
+  assert.deepEqual(resolveTechniquePathAlignment({
+    techPath: 'martial',
+    families: ['buff'],
+    nativeAlignment: 'strong',
+    selectedPath: 'martial',
+  }), { fit: 'strong', score: 2 });
 });
