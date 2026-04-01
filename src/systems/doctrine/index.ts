@@ -2,6 +2,7 @@ export * from './doctrineTypes.js';
 export * from './doctrineSnapshot.js';
 export * from './focusSemantics.js';
 export * from './breathSemantics.js';
+export * from './modePosture.js';
 
 export * from './pathDoctrineTypes.js';
 export * from './pathDoctrineRegistry.js';

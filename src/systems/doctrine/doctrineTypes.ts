@@ -37,6 +37,11 @@ export interface DoctrineSnapshotWarnings {
 export interface DoctrineSnapshot {
   path: CultivationPath | null;
   focusMode: FocusMode;
+  focusSemantics?: {
+    label: string;
+    doctrineLine: string;
+    troubleshootingLine: string;
+  };
   spiritRoot: SpiritRoot | null;
   spiritRootSummary?: SpiritRootSummary | null;
   heartLawId: string | null;
@@ -44,6 +49,16 @@ export interface DoctrineSnapshot {
   heartLawName?: string | null;
   heartLawFamily?: string | null;
   breathMode: BreathMode;
+  breathSemantics?: {
+    label: string;
+    doctrineLine: string;
+    troubleshootingLine: string;
+  };
+  modePosture?: {
+    focusRating: 'helping' | 'neutral' | 'hurting';
+    breathRating: 'helping' | 'neutral' | 'hurting';
+    overallLine: string | null;
+  };
   selectedLoadoutId: string | null;
   aiProfile: AiProfile;
   castingPolicy: CastingPolicy;

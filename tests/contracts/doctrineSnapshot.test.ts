@@ -66,11 +66,14 @@ test('safe fresh baseline snapshot is structurally complete with deterministic m
   const warnings = getDoctrineSnapshotWarnings(snapshot);
 
   assert.equal(snapshot.path, null);
+  assert.equal(snapshot.focusSemantics?.label, 'Balanced');
   assert.equal(snapshot.heartLawId, null);
   assert.equal(snapshot.heartLawName, null);
   assert.equal(snapshot.heartLawFamily, null);
   assert.equal(snapshot.spiritRoot, null);
   assert.equal(snapshot.spiritRootSummary, null);
+  assert.equal(snapshot.breathSemantics?.label, 'Balanced');
+  assert.ok(snapshot.modePosture);
   assert.equal(snapshot.selectedLoadoutId, 'loadout_1');
   assert.ok(VALID_AI_PROFILES.includes(snapshot.aiProfile));
   assert.ok(VALID_CASTING_POLICIES.includes(snapshot.castingPolicy));
@@ -245,4 +248,6 @@ test('source flags and warnings are deterministic pure derivations of snapshot',
   assert.deepEqual(warningsA, warningsB);
   assert.deepEqual(flagsA, snapshot.sourceFlags);
   assert.deepEqual(warningsA, snapshot.warnings);
+  assert.equal(snapshot.focusSemantics?.label, 'Balanced');
+  assert.equal(snapshot.breathSemantics?.label, 'Balanced');
 });

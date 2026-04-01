@@ -509,9 +509,9 @@ export function CultivateScreen() {
             resonanceLine={resonanceLine}
             resonanceDetail={resonanceDetail}
             breathLabel={breathSemantics.label}
-            breathSummary={breathSemantics.summary}
+            breathSummary={breathSemantics.doctrineLine}
             focusLabel={focusSemantics.label}
-            focusSummary={focusSemantics.summary}
+            focusSummary={focusSemantics.doctrineLine}
             spiritRoot={spiritRoot}
           />
         </div>

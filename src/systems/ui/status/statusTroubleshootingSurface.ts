@@ -14,6 +14,7 @@ import { evaluateCurrentCombatPostureFit } from '../../builds/combatPostureFit.j
 import { buildDoctrineSnapshot } from '../../doctrine/doctrineSnapshot.js';
 import {
   adaptSpiritRootDoctrineToSemanticView,
+  evaluateDoctrineModePosture,
   getBreathModeSemantics,
   getFocusModeSemantics,
   getPathDoctrineProfile,
@@ -71,6 +72,9 @@ export interface StatusTroubleshootingSurface {
     };
     focusMode: string;
     breathMode: string;
+    focusPosture: { rating: 'helping' | 'neutral' | 'hurting'; line: string };
+    breathPosture: { rating: 'helping' | 'neutral' | 'hurting'; line: string };
+    modeOverallLine: string | null;
   };
   readiness: {
     readinessLabel: string;
@@ -227,6 +231,14 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
   const affinity = getAffinityStatus(heartLaw, snapshot.spiritRoot);
   const realm = REALMS[clampRealmIndexToSemesterSlice(game.realm.index)] ?? REALMS[0];
   const spiritRootView = adaptSpiritRootDoctrineToSemanticView(snapshot.spiritRoot);
+  const modePosture = evaluateDoctrineModePosture({
+    path: snapshot.path,
+    focusMode: snapshot.focusMode,
+    breathMode: snapshot.breathMode,
+    heartLawId: snapshot.heartLawId,
+    heartLawChapter: snapshot.heartLawChapter,
+    diagnosisCode,
+  });
 
   return {
     realmName: realm.name,
@@ -260,6 +272,9 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
       },
       focusMode: getFocusModeSemantics(snapshot.focusMode).label,
       breathMode: getBreathModeSemantics(snapshot.breathMode).label,
+      focusPosture: { rating: modePosture.focus.rating, line: modePosture.focus.shortLine },
+      breathPosture: { rating: modePosture.breath.rating, line: modePosture.breath.shortLine },
+      modeOverallLine: modePosture.overallLine,
     },
     readiness: {
       readinessLabel: readiness?.overallBand ? getReadinessBandLabel(readiness.overallBand) : capReached ? 'Cap Reached' : 'Preparing',

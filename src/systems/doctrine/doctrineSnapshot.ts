@@ -12,6 +12,9 @@ import {
   getLiveRealmByIndex,
 } from '../progression/runtime/index.js';
 import { getHeartLawProfile } from './heartLawCatalog.js';
+import { getBreathModeSemantics } from './breathSemantics.js';
+import { getFocusModeSemantics } from './focusSemantics.js';
+import { evaluateDoctrineModePosture } from './modePosture.js';
 import type {
   DoctrineSnapshot,
   DoctrineSourceFlags,
@@ -168,6 +171,16 @@ export function buildDoctrineSnapshot(): DoctrineSnapshot {
     cityId: city.cityId,
   } satisfies Omit<DoctrineSnapshot, 'sourceFlags' | 'warnings'>;
 
+  const focusSemantics = getFocusModeSemantics(snapshotWithoutMeta.focusMode);
+  const breathSemantics = getBreathModeSemantics(snapshotWithoutMeta.breathMode);
+  const modePosture = evaluateDoctrineModePosture({
+    path: snapshotWithoutMeta.path,
+    focusMode: snapshotWithoutMeta.focusMode,
+    breathMode: snapshotWithoutMeta.breathMode,
+    heartLawId: snapshotWithoutMeta.heartLawId,
+    heartLawChapter: snapshotWithoutMeta.heartLawChapter,
+  });
+
   const sourceFlags: DoctrineSourceFlags = {
     hasPath: snapshotWithoutMeta.path !== null,
     hasHeartLaw: snapshotWithoutMeta.heartLawId !== null,
@@ -190,6 +203,21 @@ export function buildDoctrineSnapshot(): DoctrineSnapshot {
 
   return {
     ...snapshotWithoutMeta,
+    focusSemantics: {
+      label: focusSemantics.label,
+      doctrineLine: focusSemantics.doctrineLine,
+      troubleshootingLine: focusSemantics.troubleshootingLine,
+    },
+    breathSemantics: {
+      label: breathSemantics.label,
+      doctrineLine: breathSemantics.doctrineLine,
+      troubleshootingLine: breathSemantics.troubleshootingLine,
+    },
+    modePosture: {
+      focusRating: modePosture.focus.rating,
+      breathRating: modePosture.breath.rating,
+      overallLine: modePosture.overallLine,
+    },
     sourceFlags,
     warnings,
   };

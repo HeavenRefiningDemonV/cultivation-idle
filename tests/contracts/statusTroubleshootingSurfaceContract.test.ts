@@ -25,3 +25,15 @@ test('content-cap shortfall stays honest and does not invent future gate require
   assert.equal(resolveStatusUrgentCard(null), null);
   assert.equal(resolveStatusShortfallReason(null, true), 'Current chapter cap reached.');
 });
+
+test('status surface exports focus/breath posture contract keys', async () => {
+  const module = await import('../../src/systems/ui/status/statusTroubleshootingSurface.js');
+  const source = await import('node:fs/promises').then((fs) =>
+    fs.readFile('src/systems/ui/status/statusTroubleshootingSurface.ts', 'utf8'),
+  );
+
+  assert.equal(typeof module.buildStatusTroubleshootingSurface, 'function');
+  assert.equal(source.includes('focusPosture'), true);
+  assert.equal(source.includes('breathPosture'), true);
+  assert.equal(source.includes('modeOverallLine'), true);
+});

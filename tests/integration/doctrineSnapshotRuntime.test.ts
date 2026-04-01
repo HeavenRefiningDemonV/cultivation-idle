@@ -115,6 +115,8 @@ test('switching breath mode updates snapshot without store mutation side effects
 
   assert.equal(safeSnapshot.breathMode, 'safe');
   assert.equal(fastSnapshot.breathMode, 'fast');
+  assert.equal(safeSnapshot.modePosture?.breathRating, 'neutral');
+  assert.equal(fastSnapshot.modePosture?.breathRating, 'neutral');
   assert.equal(useCultivationStore.getState().breathMode, 'fast');
 });
 
@@ -126,6 +128,8 @@ test('switching focus mode updates snapshot without store mutation side effects'
 
   assert.equal(bodySnapshot.focusMode, 'body');
   assert.equal(spiritSnapshot.focusMode, 'spirit');
+  assert.ok(bodySnapshot.modePosture);
+  assert.ok(spiritSnapshot.modePosture);
   assert.equal(useGameStore.getState().focusMode, 'spirit');
 });
 
