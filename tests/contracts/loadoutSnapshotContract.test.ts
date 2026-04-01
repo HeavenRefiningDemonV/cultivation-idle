@@ -25,7 +25,7 @@ const cloneLoadout = (loadout: typeof sampleLoadout): LoadoutSnapshotSource => (
   },
 });
 
-test('packet 4.7 Qi Condensation snapshot distinguishes equipped-now from parked future-slot assignments', () => {
+test('packet D.7 Qi Condensation snapshot distinguishes equipped-now from parked future-slot assignments', () => {
   const snapshot = buildLoadoutSnapshotFromLoadout({
     loadout: cloneLoadout(sampleLoadout),
     realmIndex: 0,
@@ -54,7 +54,7 @@ test('packet 4.7 Qi Condensation snapshot distinguishes equipped-now from parked
   ]);
 });
 
-test('packet 4.7 Spirit Severing snapshot surfaces all stored assignments as equipped and leaves no parked entries', () => {
+test('packet D.7 Spirit Severing snapshot surfaces all stored assignments as equipped and leaves no parked entries', () => {
   const snapshot = buildLoadoutSnapshotFromLoadout({
     loadout: cloneLoadout(sampleLoadout),
     realmIndex: 5,
@@ -72,7 +72,7 @@ test('packet 4.7 Spirit Severing snapshot surfaces all stored assignments as equ
   assert.deepEqual(snapshot.parkedLockedAssignments, []);
 });
 
-test('packet 4.7 active bonus overlays remove parked active assignments honestly', () => {
+test('packet D.7 active bonus overlays remove parked active assignments honestly', () => {
   const snapshot = buildLoadoutSnapshotFromLoadout({
     loadout: cloneLoadout(sampleLoadout),
     realmIndex: 0,
@@ -90,7 +90,7 @@ test('packet 4.7 active bonus overlays remove parked active assignments honestly
   ]);
 });
 
-test('packet 4.7 pure snapshot builder normalizes short arrays safely without mutating input', () => {
+test('packet D.7 pure snapshot builder normalizes short arrays safely without mutating input', () => {
   const shortLoadout = {
     id: 'loadout_short',
     aiProfile: 'survivor',

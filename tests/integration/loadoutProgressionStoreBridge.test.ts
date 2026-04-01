@@ -61,7 +61,7 @@ const hydrateFullDisplayedLoadout = () => {
   });
 };
 
-test('packet 4.7 store reset initializes 4/3 displayed loadout arrays and semester display caps', () => {
+test('packet D.7 store reset initializes 4/3 displayed loadout arrays and semester display caps', () => {
   resetLoadoutRuntime();
   setRealmIndex(0);
 
@@ -78,7 +78,7 @@ test('packet 4.7 store reset initializes 4/3 displayed loadout arrays and semest
   assert.equal(snapshot.displayed.passive, 3);
 });
 
-test('packet 4.7 store progression follows the semester ladder across all live realms', () => {
+test('packet D.7 store progression follows the semester ladder across all live realms', () => {
   resetLoadoutRuntime();
 
   const expected = [
@@ -96,7 +96,7 @@ test('packet 4.7 store progression follows the semester ladder across all live r
   });
 });
 
-test('packet 4.7 hydrateFromSave preserves selected loadout and expands legacy arrays to semester display caps', () => {
+test('packet D.7 hydrateFromSave preserves selected loadout and expands legacy arrays to semester display caps', () => {
   resetLoadoutRuntime();
 
   useTechniqueStore.getState().hydrateFromSave({
@@ -128,7 +128,7 @@ test('packet 4.7 hydrateFromSave preserves selected loadout and expands legacy a
   assert.deepEqual(hydrated.slots.passive.slice(0, 2), ['q1', 'q2']);
 });
 
-test('packet 4.7 getCombatEquippedTechIds is honest about currently unlocked techniques while displayed arrays preserve parked assignments', () => {
+test('packet D.7 getCombatEquippedTechIds is honest about currently unlocked techniques while displayed arrays preserve parked assignments', () => {
   resetLoadoutRuntime();
   hydrateFullDisplayedLoadout();
 
@@ -152,7 +152,7 @@ test('packet 4.7 getCombatEquippedTechIds is honest about currently unlocked tec
   });
 });
 
-test('packet 4.7 store-backed loadout snapshot wrapper exposes parked locked assignments honestly', () => {
+test('packet D.7 store-backed loadout snapshot wrapper exposes parked locked assignments honestly', () => {
   resetLoadoutRuntime();
   hydrateFullDisplayedLoadout();
 
@@ -173,7 +173,7 @@ test('packet 4.7 store-backed loadout snapshot wrapper exposes parked locked ass
   ]);
 });
 
-test('packet 4.7 buildLoadoutSnapshot wrapper is safe when the store has no loadouts', () => {
+test('packet D.7 buildLoadoutSnapshot wrapper is safe when the store has no loadouts', () => {
   resetLoadoutRuntime();
   setRealmIndex(0);
   useTechniqueStore.setState((state) => ({
@@ -189,7 +189,7 @@ test('packet 4.7 buildLoadoutSnapshot wrapper is safe when the store has no load
   assert.equal(snapshot.emptyUnlockedCount, 3);
 });
 
-test('packet 4.7 setSlotCounts clamps raw store slot counts to semester caps', () => {
+test('packet D.7 setSlotCounts clamps raw store slot counts to semester caps', () => {
   resetLoadoutRuntime();
   useTechniqueStore.getState().setSlotCounts({ active: 99, passive: 99 });
 
@@ -198,7 +198,7 @@ test('packet 4.7 setSlotCounts clamps raw store slot counts to semester caps', (
   assert.equal(state.passiveSlots, 3);
 });
 
-test('packet 4.7 setSlotCounts unlock events use unlocked-slot deltas instead of raw count deltas', () => {
+test('packet D.7 setSlotCounts unlock events use unlocked-slot deltas instead of raw count deltas', () => {
   const captureUnlocks = () => {
     const seen: Array<{ slotType: string; slotIndex: number }> = [];
     const listener = (event: { type: string; payload: { slotType?: string; slotIndex?: number } }) => {
@@ -253,7 +253,7 @@ test('packet 4.7 setSlotCounts unlock events use unlocked-slot deltas instead of
   }
 });
 
-test('packet 4.7 prestige bridge remains active-only and clamps safely', () => {
+test('packet D.7 prestige bridge remains active-only and clamps safely', () => {
   resetLoadoutRuntime();
   setRealmIndex(0);
 
@@ -270,7 +270,7 @@ test('packet 4.7 prestige bridge remains active-only and clamps safely', () => {
   assert.equal(state.getSlotProgressionSnapshot(0).unlocked.passive, 1);
 });
 
-test('packet 4.7 source guard proves the old inline ladder is gone from techniqueStore', async () => {
+test('packet D.7 source guard proves the old inline ladder is gone from techniqueStore', async () => {
   const source = await fs.readFile(path.join(process.cwd(), 'src/stores/techniqueStore.ts'), 'utf8');
 
   assert.equal(source.includes('resolveLoadoutProgressionSnapshot'), true);
