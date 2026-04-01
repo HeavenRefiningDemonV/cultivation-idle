@@ -199,3 +199,27 @@ test('heartLawLogic source no longer contains archetype fallback switch cases', 
   assert.equal(source.includes("case 'mystic'"), false);
   assert.equal(source.includes("case 'risk'"), false);
 });
+
+test('no live heart law chapter loadout can brick core progression multipliers at runtime', () => {
+  const neutralRoot: SpiritRoot = { grade: 3, element: 'fire', purity: 50 };
+
+  content.heart_laws.forEach((law) => {
+    for (let chapter = 1; chapter <= 5; chapter += 1) {
+      const bonuses = getHeartLawBonuses({
+        heartLawDef: law,
+        chapter,
+        spiritRoot: neutralRoot,
+      });
+
+      assert.equal(Number.isFinite(bonuses.cultivateRateMult), true, `${law.id} chapter ${chapter} cultivateRateMult not finite`);
+      assert.equal(Number.isFinite(bonuses.stabilityCostMult), true, `${law.id} chapter ${chapter} stabilityCostMult not finite`);
+      assert.equal(Number.isFinite(bonuses.breakthroughRequirementMult), true, `${law.id} chapter ${chapter} breakthroughRequirementMult not finite`);
+      assert.equal(Number.isFinite(bonuses.maxQiMult), true, `${law.id} chapter ${chapter} maxQiMult not finite`);
+
+      assert.equal(bonuses.cultivateRateMult > 0, true, `${law.id} chapter ${chapter} cultivateRateMult <= 0`);
+      assert.equal(bonuses.stabilityCostMult > 0, true, `${law.id} chapter ${chapter} stabilityCostMult <= 0`);
+      assert.equal(bonuses.breakthroughRequirementMult > 0, true, `${law.id} chapter ${chapter} breakthroughRequirementMult <= 0`);
+      assert.equal(bonuses.maxQiMult > 0, true, `${law.id} chapter ${chapter} maxQiMult <= 0`);
+    }
+  });
+});

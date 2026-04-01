@@ -176,3 +176,17 @@ test('no live Heart Law profile is empty and every profile exposes chapters 1 th
     assert.deepEqual(Object.keys(profile.chapterEffectsByChapter), ['1', '2', '3', '4', '5']);
   });
 });
+
+test('every live Heart Law remains inner-path-first (non-combat weighted majority)', async () => {
+  const config = await readHeartLawsConfig();
+  const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);
+
+  Object.values(catalog).forEach((profile) => {
+    assert.equal(profile.spilloverBudgetPct <= 40, true);
+    assert.equal(
+      profile.normalizedEffects.some((effect) => effect.domain !== 'combat'),
+      true,
+      `${profile.id} has no non-combat effect entries`,
+    );
+  });
+});
