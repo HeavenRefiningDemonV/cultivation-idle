@@ -29,9 +29,9 @@ function getRealmIcon(realmLabel: string, realmIndex?: number) {
 }
 
 function getLotusLabel(state: QiLotusState) {
-  if (state === 'ready') return 'Ready';
-  if (state === 'active') return 'Flowing';
-  return 'Resting';
+  if (state === 'ready') return 'Fully Open';
+  if (state === 'active') return 'Open';
+  return 'Closed';
 }
 
 export function CultivationHeaderRibbon({

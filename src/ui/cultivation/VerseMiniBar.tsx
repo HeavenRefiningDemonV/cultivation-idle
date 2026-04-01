@@ -33,7 +33,7 @@ export function VerseMiniBar({
     ? `${placeholderLabel}: ${placeholderValue ?? ''}`.trim()
     : `Verse ${verseLabel} progress: ${pct.toFixed(1)} percent`;
   const progressText = showPlaceholder
-    ? (placeholderValue ?? 'Unavailable')
+    ? (placeholderValue ?? 'Heart Law needed to begin verse progress.')
     : isComplete
       ? 'All verses comprehended'
       : `${comprehension.toFixed(1)} / ${requirement.toFixed(1)}`;

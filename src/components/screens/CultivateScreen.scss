@@ -495,6 +495,7 @@
 .cultivationHudStack > .progress-bar {
   width: 100%;
   margin-bottom: calc(-1 * (var(--qiBarDeadSpace) + var(--cultivation-stack-gap-1) - var(--qiVerseTargetGap)));
+  --cultivation-qi-track-width: min(900px, calc(100% - 42px));
 }
 
 .cultivationRealmTags {
@@ -540,16 +541,19 @@
 }
 
 .cultivationVerseSlot {
-  width: min(92%, 880px);
-  min-height: 42px;
+  width: var(--cultivation-qi-track-width, min(900px, calc(100% - 42px)));
+  min-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -6px;
+  margin-top: -2px;
+  padding: 0;
 }
 
 .cultivationVerseSlot__bar {
   width: 100%;
+  min-height: 34px;
+  opacity: 0.95;
 }
 
 .cultivationBuffSummary {

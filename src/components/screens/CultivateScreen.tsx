@@ -332,11 +332,11 @@ export function CultivateScreen() {
     : 'Choose a Heart Law to unlock verse progress.';
 
   const versePlaceholderLabel = heartLawDef
-    ? 'Verse Maxed'
-    : 'Verse Unavailable';
+    ? 'Verse Complete'
+    : 'Heart Law Needed';
   const versePlaceholderValue = heartLawDef
     ? `${heartLawDef.name} • All verses comprehended`
-    : 'Choose a Heart Law in Dao to unlock scripture progress';
+    : 'Choose a Heart Law in Dao to begin verse progress.';
 
   const breakthroughMilestoneState = atContentCap
     ? 'content_cap'
@@ -414,7 +414,9 @@ export function CultivateScreen() {
     : 'Your Spirit Root has not manifested yet.';
 
   const heartLawVerseLabel = heartLawDef
-    ? `Verse ${ROMAN[Math.max(0, chapter - 1)] ?? chapter} • Chapter ${chapter}`
+    ? verseRequirement > 0
+      ? `Verse ${ROMAN[Math.max(0, chapter - 1)] ?? chapter} • Chapter ${chapter}`
+      : `Verse Complete • Chapter ${chapter}`
     : 'No Heart Law selected';
   const heartLawDetail = heartLawDef
     ? `${heartLawDef.name} • ${heartLawDef.archetype ? `${heartLawDef.archetype[0].toUpperCase()}${heartLawDef.archetype.slice(1)}` : 'Unshaped'}${heartLawDef.daoTags?.length ? ` • ${heartLawDef.daoTags.slice(0, 2).map((tag) => tag[0].toUpperCase() + tag.slice(1)).join(' / ')}` : ''}`
