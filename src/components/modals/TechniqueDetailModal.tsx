@@ -14,6 +14,7 @@ import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects.js';
+import { buildLoadoutSnapshot } from '../../systems/builds/loadoutSnapshot.js';
 import { RankUpgradeRitualModal } from './RankUpgradeRitualModal.js';
 import { TraitRerollModal } from './TraitRerollModal.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
@@ -218,6 +219,10 @@ export function TechniqueDetailModal({
     () => loadouts.find((l) => l.id === selectedLoadoutId) ?? loadouts[0],
     [loadouts, selectedLoadoutId],
   );
+  const selectedLoadoutSnapshot = useMemo(
+    () => (selectedLoadout ? buildLoadoutSnapshot(selectedLoadout.id) : null),
+    [loadouts, realmIndex, selectedLoadout?.id],
+  );
 
   const progression = useMemo(
     () => getSlotProgressionSnapshot(realmIndex),
@@ -287,14 +292,19 @@ export function TechniqueDetailModal({
         }.`;
 
   const equippedSlot = useMemo(() => {
-    if (!techniqueId || !selectedLoadout) return null;
-    const activeIndex = selectedLoadout.slots.active.findIndex((id) => id === techniqueId);
+    if (!techniqueId || !selectedLoadoutSnapshot) return null;
+    const activeIndex = selectedLoadoutSnapshot.equipped.active.findIndex((id) => id === techniqueId);
     if (activeIndex >= 0) return { type: 'active' as const, index: activeIndex };
-    const passiveIndex = selectedLoadout.slots.passive.findIndex((id) => id === techniqueId);
+    const passiveIndex = selectedLoadoutSnapshot.equipped.passive.findIndex((id) => id === techniqueId);
     if (passiveIndex >= 0) return { type: 'passive' as const, index: passiveIndex };
-    if (selectedLoadout.slots.ultimate === techniqueId) return { type: 'ultimate' as const, index: 0 };
+    if (selectedLoadoutSnapshot.equipped.ultimate === techniqueId) return { type: 'ultimate' as const, index: 0 };
     return null;
-  }, [selectedLoadout, techniqueId]);
+  }, [selectedLoadoutSnapshot, techniqueId]);
+
+  const parkedSlot = useMemo(() => {
+    if (!techniqueId || !selectedLoadoutSnapshot) return null;
+    return selectedLoadoutSnapshot.parkedLockedAssignments.find((entry) => entry.techId === techniqueId) ?? null;
+  }, [selectedLoadoutSnapshot, techniqueId]);
 
   const triggerShake = useCallback((slotKey: string) => {
     setShakeSlotKey(slotKey);
@@ -542,9 +552,16 @@ export function TechniqueDetailModal({
 
   const equipStatusLine = useMemo(() => {
     if (isMissing) return 'Technique data missing.';
-    if (equippedSlot) return `Equipped in: ${slotLabel(equippedSlot)}`;
+    if (equippedSlot) return `Equipped now in: ${slotLabel(equippedSlot)}`;
+    if (parkedSlot) {
+      const requirement = parkedSlot.slotType === 'ultimate'
+        ? progression.unlockRequirements.ultimate
+        : progression.unlockRequirements[parkedSlot.slotType][parkedSlot.slotIndex];
+      const unlockSuffix = requirement?.realmName ? ` (Unlocks at ${requirement.realmName})` : '';
+      return `Parked in locked slot: ${slotLabel({ type: parkedSlot.slotType, index: parkedSlot.slotIndex })}${unlockSuffix}.`;
+    }
     return `Not equipped in ${selectedLoadout?.name ?? 'this loadout'}.`;
-  }, [equippedSlot, isMissing, selectedLoadout?.name]);
+  }, [equippedSlot, isMissing, parkedSlot, progression.unlockRequirements, selectedLoadout?.name]);
 
   const handleSlotChipClick = useCallback(
     (slot: {

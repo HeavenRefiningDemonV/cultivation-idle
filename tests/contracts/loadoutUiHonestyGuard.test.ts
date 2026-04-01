@@ -26,3 +26,14 @@ test('packet 4.7 TechniqueLearnedModal respects progression lock state instead o
   assert.equal(source.includes('Unlocks at'), true);
   assert.equal(source.includes('const slotNames = loadout'), false);
 });
+
+test('packet 4.7 TechniqueDetailModal distinguishes equipped-now from parked locked assignments', async () => {
+  const source = await fs.readFile(path.join(process.cwd(), 'src/components/modals/TechniqueDetailModal.tsx'), 'utf8');
+
+  assert.equal(source.includes('buildLoadoutSnapshot'), true);
+  assert.equal(source.includes('parkedLockedAssignments'), true);
+  assert.equal(source.includes('Equipped now in:'), true);
+  assert.equal(source.includes('Parked in locked slot:'), true);
+  assert.equal(source.includes('selectedLoadout.slots.active.findIndex'), false);
+  assert.equal(source.includes('selectedLoadout.slots.passive.findIndex'), false);
+});
