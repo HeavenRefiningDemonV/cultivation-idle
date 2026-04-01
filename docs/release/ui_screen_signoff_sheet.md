@@ -472,3 +472,89 @@ Reviewer remains pending human review. This section records engineering evidence
 | `life-summary` | `docs/release/qa/ui-cutover/life-summary/` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | `DEFERRED` | Missing `01,02,03,04,05,06` PNG files. |
 
 Source of truth for missing evidence: `npm run release:section-c-evidence-audit -- --json` executed on 2026-03-31.
+
+---
+
+## D.10 Section D hero-screen reviews (2026-04-01)
+
+### Metadata
+
+- target screen id: `cultivation`
+- human label: Cultivation Hero Surface
+- dominant family: hero ritual
+- packet id: `D.10`
+- touched layers: docs-only gate review (no runtime layer change)
+- retained old layer(s): cultivator/dantian scenic center + existing cultivation truth shells
+- screenshot evidence folder: `docs/release/qa/ui-cutover/cultivation/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-01
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` screenshots are missing. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | D.10 is docs-only and performed no cleanup. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Cannot validate without screenshot evidence review. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` screenshots missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Interaction screenshots missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No screenshot evidence for final review. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Missing required screenshot evidence pack.
+- required follow-up packet: D.10R (capture evidence + reviewer signoff)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+- reviewer rationale summary: Deferred for evidence gap only.
+- unresolved risks after decision: duplicate-chrome and layout-shift criteria remain unproven.
+
+### Metadata
+
+- target screen id: `status`
+- human label: Status Hero Surface
+- dominant family: hero ritual
+- packet id: `D.10`
+- touched layers: docs-only gate review (no runtime layer change)
+- retained old layer(s): Run Compass + six-card diagnostic ownership + summary truth shell
+- screenshot evidence folder: `docs/release/qa/ui-cutover/status/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-01
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` screenshots are missing. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | D.10 is docs-only and performed no cleanup. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Cannot validate without screenshot evidence review. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` screenshots missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Interaction screenshots missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No screenshot evidence for final review. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Missing required screenshot evidence pack.
+- required follow-up packet: D.10R (capture evidence + reviewer signoff)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+- reviewer rationale summary: Deferred for evidence gap only.
+- unresolved risks after decision: duplicate-chrome and layout-shift criteria remain unproven.

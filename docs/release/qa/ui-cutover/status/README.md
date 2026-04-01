@@ -1,9 +1,10 @@
-# Status Baseline Capture README (Section D)
+# Status Hero Capture README (Section D.10)
 
 - **surface id:** `status`
 - **family:** `hero ritual screen`
-- **capture mechanism:** manual screenshots unless an existing approved harness route is explicitly documented later
-- **capture status (this pass):** `CAPTURE PENDING — MANUAL`
+- **packet:** `D.10`
+- **capture mechanism:** manual screenshots only (no approved automated capture pipeline found for Section D)
+- **capture status (this pass):** `BLOCKED — EVIDENCE MISSING`
 
 ## Required screenshot slots
 
@@ -15,19 +16,26 @@
 6. `06-reduced-motion.png`
 7. optional `07-narrow.png`
 
-## Manual capture steps
+## D.10 folder structure
 
-1. Launch the live app and navigate to the Status hero surface through normal gameplay navigation.
-2. Capture the required slots in order, ensuring each file uses the exact slot filename.
-3. For interaction and truth-state captures, exercise real chips/cards/expandables and diagnosis states.
-4. For FX captures, switch real quality/motion modes before each shot.
-5. Save only real captures tied to this surface and packet scope.
+- `before/`
+- `after/high/`
+- `after/low/`
+- `after/reduced-motion/`
+- `after/medium-width/`
 
-## Capture integrity rules
+Each folder contains a README for what must be captured. Add real PNGs only; do not add placeholders.
 
-- No placeholder PNGs should be added.
-- If a slot is truly not applicable, record that truth in accompanying signoff notes instead of fabricating artifacts.
+## Manual capture steps (required follow-up)
 
-## Scope note
+1. Launch the live app and navigate to Status using real gameplay route.
+2. Capture base, interaction, and truth-state shots (including biggest-shortfall clarity + diagnosis routing visibility).
+3. Capture High FX, Low FX, and Reduced Motion variants.
+4. Capture optional medium-width/narrow shot if available.
+5. Save with exact slot filenames at this folder root.
 
-The diagnostic truth-card composition (including Run Compass and six-card diagnostic role) must remain intact through later cutover.
+## Integrity rules
+
+- No synthetic/fabricated screenshots.
+- If a state cannot be reached, write exact blocker in signoff docs instead of guessing.
+- Keep status diagnostic ownership intact (Run Compass + six-card truth structure + summary context).
