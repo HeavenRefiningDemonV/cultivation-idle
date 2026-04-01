@@ -2,9 +2,14 @@ import { useEffect, useState } from 'react';
 import { Droplet, Flame, Hexagon, Info, Leaf, Mountain, Sparkles } from 'lucide-react';
 import { usePrestigeStore } from '../stores/prestigeStore.js';
 import { useInventoryStore } from '../stores/inventoryStore.js';
+import { useGameStore } from '../stores/gameStore.js';
 import { formatNumber, D } from '../utils/numbers.js';
 import type { SpiritRootElement, SpiritRootGrade } from '../types/index.js';
 import { GameIcon } from '../ui/icons/index.js';
+import {
+  adaptSpiritRootDoctrineToSemanticView,
+  evaluateRerollGuidance,
+} from '../systems/doctrine/index.js';
 import './SpiritRootDisplay.scss';
 
 /**
@@ -33,11 +38,11 @@ const ELEMENT_COLORS: Record<SpiritRootElement, string> = {
  * Element bonuses (from ELEMENT_BONUSES constant)
  */
 const ELEMENT_BONUS_DESCRIPTIONS: Record<SpiritRootElement, string> = {
-  fire: '+20% ATK, -10% DEF',
-  water: '+20% HP, +10% Dodge',
-  earth: '+30% DEF, -10% Crit Rate',
-  metal: '+20% Crit Rate, +10% ATK',
-  wood: '+10% HP Regen, +10% Qi/s',
+  fire: 'Offense-leaning resonance',
+  water: 'Survival-leaning resonance',
+  earth: 'Defense-leaning resonance',
+  metal: 'Critical-leaning resonance',
+  wood: 'Recovery-leaning resonance',
 };
 
 const ELEMENT_ICONS: Record<SpiritRootElement, React.ReactNode> = {
@@ -59,13 +64,20 @@ type SpiritRootDisplayProps = {
 export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps) {
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const rerollSpiritRoot = usePrestigeStore((state) => state.rerollSpiritRoot);
-  const getQualityMultiplier = usePrestigeStore((state) => state.getSpiritRootQualityMultiplier);
-  const getPurityMultiplier = usePrestigeStore((state) => state.getSpiritRootPurityMultiplier);
-  const getTotalMultiplier = usePrestigeStore((state) => state.getSpiritRootTotalMultiplier);
+  const rerollCount = usePrestigeStore((state) => state.rerollCount);
   const rerollCost = usePrestigeStore((state) => state.getSpiritRootRerollCost());
+  const realmIndex = useGameStore((state) => state.realm.index);
 
   const gold = useInventoryStore((state) => state.gold);
   const [justRerolled, setJustRerolled] = useState(false);
+  const spiritRootView = adaptSpiritRootDoctrineToSemanticView(spiritRoot);
+  const phaseBudget =
+    realmIndex <= 0 ? 600 : realmIndex === 1 ? 3000 : realmIndex === 2 ? 12000 : realmIndex === 3 ? 47500 : 160000;
+  const rerollGuidance = evaluateRerollGuidance({
+    rerollCount,
+    rerollCost,
+    currentPhaseGoldBudget: phaseBudget,
+  });
 
   useEffect(() => {
     if (!justRerolled) {
@@ -91,8 +103,8 @@ export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps)
           <span className="spiritRootSummaryValue">{spiritRoot ? `${Math.round(spiritRoot.purity)}%` : '0%'}</span>
         </div>
         <div className="spiritRootSummaryRow">
-          <span className="spiritRootSummaryLabel">Total Multiplier</span>
-          <span className="spiritRootSummaryValue">{getTotalMultiplier().toFixed(2)}x</span>
+          <span className="spiritRootSummaryLabel">Potency</span>
+          <span className="spiritRootSummaryValue">{spiritRootView?.potencySummary ?? 'Bounded life potency +0%'}</span>
         </div>
       </div>
     );
@@ -114,10 +126,6 @@ export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps)
     );
   }
 
-  // Calculate multipliers
-  const qualityMult = getQualityMultiplier();
-  const purityMult = getPurityMultiplier();
-  const totalMult = getTotalMultiplier();
   const ringRadius = 46;
   const ringCircumference = 2 * Math.PI * ringRadius;
   const purityPercent = Math.min(100, Math.max(0, spiritRoot.purity));
@@ -186,16 +194,16 @@ export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps)
 
       <div className="spiritAltarChips">
         <div className="spiritAltarChip">
-          <div className="spiritAltarChipLabel">Quality</div>
-          <div className="spiritAltarChipValue">{qualityMult.toFixed(2)}x</div>
+          <div className="spiritAltarChipLabel">Grade</div>
+          <div className="spiritAltarChipValue">{spiritRootView?.gradeLabel ?? QUALITY_NAMES[spiritRoot.grade]}</div>
         </div>
         <div className="spiritAltarChip">
-          <div className="spiritAltarChipLabel">Purity</div>
-          <div className="spiritAltarChipValue">{purityMult.toFixed(2)}x</div>
+          <div className="spiritAltarChipLabel">Foundation</div>
+          <div className="spiritAltarChipValue">{spiritRootView?.purityBand ?? 'stable'}</div>
         </div>
         <div className="spiritAltarChip spiritAltarChip--total">
-          <div className="spiritAltarChipLabel">Total</div>
-          <div className="spiritAltarChipValue">{totalMult.toFixed(2)}x</div>
+          <div className="spiritAltarChipLabel">Potency</div>
+          <div className="spiritAltarChipValue">{spiritRootView?.potencySummary ?? 'Bounded +0%'}</div>
         </div>
       </div>
 
@@ -212,12 +220,15 @@ export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps)
           About Spirit Roots
         </summary>
         <div className="spiritAltarAboutBody">
-          Your spirit root determines your cultivation potential. Higher quality and purity provide greater stat
-          multipliers that apply to all your stats. Each element grants unique bonuses to specific abilities.
+          Spirit Root shapes your life identity and resonance. It is intentionally bounded, so matching roots feel good
+          without deciding the whole run.
         </div>
       </details>
 
       <div className="spiritAltarFooter">
+        <div className="spiritAltarWarning">
+          {rerollGuidance.reason}
+        </div>
         <button
           onClick={handleReroll}
           disabled={!canAfford}

@@ -157,3 +157,11 @@ test('heartLawLogic source does not widen runtime spirit root application to qi 
   assert.equal(source.includes('resonance.qiMult'), false);
   assert.equal(source.includes('resonance.comprehensionMult'), false);
 });
+
+test('gameStore source no longer uses legacy spirit root purity scaling or universal 5x multiplier path', async () => {
+  const source = await fs.readFile(path.resolve(process.cwd(), 'src/stores/gameStore.ts'), 'utf8');
+
+  assert.equal(source.includes('getSpiritRootRuntimeMultiplier'), true);
+  assert.equal(source.includes('spiritRoot.purity / 100'), false);
+  assert.equal(/\.getSpiritRootTotalMultiplier\s*\(/.test(source), false);
+});

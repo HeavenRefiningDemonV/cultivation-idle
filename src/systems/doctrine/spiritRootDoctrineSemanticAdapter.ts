@@ -1,44 +1,22 @@
 import type { SpiritRoot } from '../../types/index.js';
 import { buildSpiritRootDoctrineProfile } from './spiritRootDoctrine.js';
+import { SPIRIT_ROOT_POWER_DELTA_CAP } from './spiritRootDoctrine.js';
 
 export type SpiritRootPurityBand = 'muddy' | 'stable' | 'refined' | 'immaculate';
-export type SpiritRootPowerBand = 'baseline' | 'elevated' | 'elite' | 'transcendent';
+export type SpiritRootPowerBand = 'baseline' | 'elevated' | 'elite';
 
 export interface SpiritRootDoctrineSemanticView {
   element: SpiritRoot['element'];
   grade: SpiritRoot['grade'];
   purity: number;
+  gradeLabel: string;
   purityBand: SpiritRootPurityBand;
-  qualityMultiplier: number;
-  purityMultiplier: number;
-  totalMultiplier: number;
+  totalPowerDeltaPct: number;
+  boundedRuntimeMultiplier: number;
   powerBand: SpiritRootPowerBand;
-}
-
-function resolvePurityBand(purity: number): SpiritRootPurityBand {
-  if (purity >= 95) {
-    return 'immaculate';
-  }
-  if (purity >= 75) {
-    return 'refined';
-  }
-  if (purity >= 40) {
-    return 'stable';
-  }
-  return 'muddy';
-}
-
-function resolvePowerBand(totalMultiplier: number): SpiritRootPowerBand {
-  if (totalMultiplier >= 4) {
-    return 'transcendent';
-  }
-  if (totalMultiplier >= 2.5) {
-    return 'elite';
-  }
-  if (totalMultiplier >= 1.5) {
-    return 'elevated';
-  }
-  return 'baseline';
+  summaryLine: string;
+  detailLine: string;
+  potencySummary: string;
 }
 
 export function adaptSpiritRootDoctrineToSemanticView(root: SpiritRoot | null): SpiritRootDoctrineSemanticView | null {
@@ -51,10 +29,13 @@ export function adaptSpiritRootDoctrineToSemanticView(root: SpiritRoot | null): 
     element: profile.element,
     grade: profile.grade,
     purity: profile.purity,
-    purityBand: resolvePurityBand(profile.purity),
-    qualityMultiplier: profile.qualityMultiplier,
-    purityMultiplier: profile.purityMultiplier,
-    totalMultiplier: profile.totalMultiplier,
-    powerBand: resolvePowerBand(profile.totalMultiplier),
+    gradeLabel: profile.gradeLabel,
+    purityBand: profile.purityBand,
+    totalPowerDeltaPct: profile.totalPowerDeltaPct,
+    boundedRuntimeMultiplier: profile.boundedRuntimeMultiplier,
+    powerBand: profile.powerBand,
+    summaryLine: `${profile.gradeLabel} ${profile.element} root • ${Math.round(profile.purity)}% purity`,
+    detailLine: `${profile.purityBand[0].toUpperCase()}${profile.purityBand.slice(1)} foundation • ${profile.powerBand[0].toUpperCase()}${profile.powerBand.slice(1)} potential`,
+    potencySummary: `Bounded life potency +${Math.round(profile.totalPowerDeltaPct * 100)}% (cap ${Math.round(SPIRIT_ROOT_POWER_DELTA_CAP * 100)}%)`,
   });
 }

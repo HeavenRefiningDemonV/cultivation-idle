@@ -22,6 +22,10 @@ import {
   extractLiveTrialIds,
   resolvePrestigeAdvisorLabel,
 } from '../systems/prestige/prestigeApReadModel.js';
+import {
+  clampSpiritRootPurity,
+  getSpiritRootRuntimeMultiplier,
+} from '../systems/doctrine/spiritRootDoctrine.js';
 
 /**
  * Lazy getter for game store to avoid circular dependency
@@ -170,11 +174,12 @@ const QUALITY_NAMES = ['', 'Mortal', 'Common', 'Uncommon', 'Rare', 'Legendary'];
 const ELEMENTS: SpiritRootElement[] = ['fire', 'water', 'earth', 'metal', 'wood'];
 
 export function getSpiritRootQualityMultiplierForGrade(grade: SpiritRootGrade): number {
-  return 1.0 + (grade - 1) * 0.4;
+  const normalizedGrade = Math.max(1, Math.min(5, grade));
+  return 1 + ((normalizedGrade - 1) / 4) * 0.08;
 }
 
 export function getSpiritRootPurityMultiplierForPurity(purity: number): number {
-  return 1.0 + purity / 100;
+  return 1 + (clampSpiritRootPurity(purity) / 100) * 0.04;
 }
 
 export function getSpiritRootTotalMultiplierForRoot(root: SpiritRoot | null): number {
@@ -182,7 +187,7 @@ export function getSpiritRootTotalMultiplierForRoot(root: SpiritRoot | null): nu
     return 1.0;
   }
 
-  return getSpiritRootQualityMultiplierForGrade(root.grade) * getSpiritRootPurityMultiplierForPurity(root.purity);
+  return getSpiritRootRuntimeMultiplier(root);
 }
 
 const createInitialPrestigeState = () => ({
@@ -562,8 +567,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     },
 
     /**
-     * Get quality multiplier (1.0 to 2.6)
-     * Grade 1 = 1.0x, Grade 2 = 1.4x, Grade 3 = 1.8x, Grade 4 = 2.2x, Grade 5 = 2.6x
+     * Legacy helper retained for compatibility; now bounded to packet D.4 scale.
      */
     getSpiritRootQualityMultiplier: () => {
       const state = get();
@@ -572,7 +576,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     },
 
     /**
-     * Get purity multiplier (1.0 to 2.0)
+     * Legacy helper retained for compatibility; now bounded to packet D.4 scale.
      */
     getSpiritRootPurityMultiplier: () => {
       const state = get();
@@ -581,7 +585,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     },
 
     /**
-     * Get total spirit root multiplier (quality * purity)
+     * Canonical bounded direct runtime multiplier for spirit root.
      */
     getSpiritRootTotalMultiplier: () => {
       const state = get();

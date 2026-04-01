@@ -1,7 +1,12 @@
 export interface RerollGuidance {
   state: 'safe' | 'caution' | 'overspending';
   rerollCount: number;
+  nextRerollNumber: number;
   goldCost: number;
+  currentPhaseGoldBudget: number;
+  spentSoFar: number;
+  projectedSpentAfterNext: number;
+  healthyMaxRerolls: number;
   reason: string;
 }
 
@@ -50,6 +55,7 @@ export function evaluateRerollGuidance(input: {
   const currentPhaseGoldBudget = normalizeGoldValue(input.currentPhaseGoldBudget);
   const healthyMax = getHealthyMaxRerolls(currentPhaseGoldBudget);
   const nextRerollNumber = rerollCount + 1;
+  const spendCeiling = currentPhaseGoldBudget * 0.05;
 
   const spentSoFar =
     rerollCount <= 0
@@ -57,34 +63,46 @@ export function evaluateRerollGuidance(input: {
       : (goldCost / (2 ** rerollCount)) * ((2 ** rerollCount) - 1);
   const projectedSpentAfterNext = spentSoFar + goldCost;
 
-  if (
-    projectedSpentAfterNext <= currentPhaseGoldBudget * 0.5 &&
-    nextRerollNumber <= healthyMax
-  ) {
-    return {
-      state: 'safe',
-      rerollCount,
-      goldCost,
-      reason: 'This reroll remains comfortably inside the current gate-phase Spirit Root budget.',
-    };
-  }
-
-  if (projectedSpentAfterNext > currentPhaseGoldBudget) {
+  if (projectedSpentAfterNext > spendCeiling || currentPhaseGoldBudget <= 0) {
     return {
       state: 'overspending',
       rerollCount,
+      nextRerollNumber,
       goldCost,
-      reason: 'This reroll would exceed the current gate-phase Spirit Root budget and risks cannibalizing prep.',
+      currentPhaseGoldBudget,
+      spentSoFar,
+      projectedSpentAfterNext,
+      healthyMaxRerolls: healthyMax,
+      reason: 'This reroll exceeds the 5% gate-prep Spirit Root budget ceiling and is an overspending trap right now.',
+    };
+  }
+
+  if (nextRerollNumber <= healthyMax && projectedSpentAfterNext <= spendCeiling * 0.8) {
+    return {
+      state: 'safe',
+      rerollCount,
+      nextRerollNumber,
+      goldCost,
+      currentPhaseGoldBudget,
+      spentSoFar,
+      projectedSpentAfterNext,
+      healthyMaxRerolls: healthyMax,
+      reason: 'This reroll stays within the 5% gate-prep budget ceiling and healthy phase expectation.',
     };
   }
 
   return {
     state: 'caution',
     rerollCount,
+    nextRerollNumber,
     goldCost,
+    currentPhaseGoldBudget,
+    spentSoFar,
+    projectedSpentAfterNext,
+    healthyMaxRerolls: healthyMax,
     reason:
       nextRerollNumber > healthyMax
-        ? 'This reroll stays inside budget, but it exceeds the healthy reroll expectation for this gate phase.'
-        : 'This reroll stays inside budget, but Spirit Root spending is becoming expensive relative to current prep.',
+        ? 'This reroll fits the 5% budget ceiling, but it exceeds the healthy reroll expectation for this gate phase.'
+        : 'This reroll is still under the 5% budget ceiling, but you are approaching the Spirit Root spending cap for this phase.',
   };
 }
