@@ -46,7 +46,7 @@ function resolveExplanation(input) {
         return reason;
     return `${input.gateLabel} still has one or more active readiness shortfalls.`;
 }
-function mapFixToSurface(input) {
+export function mapFailureFixToSurface(input) {
     const { fix, cityId, canRetry, canBuySafetyNet } = input;
     if (fix.code === 'continue_cultivating') {
         return {
@@ -280,7 +280,7 @@ export function buildPostFailureDiagnosisSurface(input) {
         reasons: input.diagnosis.reasons.slice(0, 3),
         fixes: input.diagnosis.topFixes
             .slice(0, 3)
-            .map((fix) => mapFixToSurface({
+            .map((fix) => mapFailureFixToSurface({
             fix,
             cityId: input.context.cityId,
             canRetry: input.context.canRetry,

@@ -18,9 +18,10 @@ import { buildSupportEconomyReadModelFromState } from '../../economy/supportEcon
 import { buildLiveEconomicRecommendationEngine } from '../../economy/economicRecommendationEngine.js';
 import { diagnoseTrialFailure } from '../../readiness/failureDiagnosis.js';
 import { evaluateCurrentGateReadiness, getCurrentGateTrialId } from '../../readiness/readinessRuntime.js';
-import { getReadinessBandLabel, getDiagnosisLabel } from '../../../ui/text/playerFacingLabels.js';
+import { getReadinessBandLabel, getDiagnosisLabel, getWorldModuleLabel } from '../../../ui/text/playerFacingLabels.js';
 import { clampRealmIndexToSemesterSlice } from '../../progression/runtime/index.js';
 import { getTrialLifecycleSnapshot } from '../../progression/runtime/trialLifecycle.js';
+import { mapFailureFixToSurface } from '../postFailure/postFailureSurface.js';
 const ROOT_GRADE_LABELS = {
     1: 'Mortal',
     2: 'Common',
@@ -48,30 +49,42 @@ export function resolveStatusShortfallReason(code, capReached) {
         return 'Current chapter cap reached.';
     switch (code) {
         case 'undercultivated':
-            return 'You are not yet at the realm edge or do not have enough Qi for the current gate cycle.';
+            return 'Gate entry threshold is not met yet.';
         case 'underforged':
-            return 'Your permanent forge floor is below the current gate target.';
+            return 'Permanent forge floor is below this gate target.';
         case 'underprepared':
-            return 'Consumable, reserve, or pouch readiness is still unstable.';
+            return 'Consumables, reserves, or pouch posture are still unstable.';
         case 'underbuilt':
             return 'Loadout coverage or technique floor is still missing.';
         case 'close':
-            return 'You are near the gate floor but still missing a small correction.';
+            return 'One focused correction should clear the next attempt.';
         case 'bypassAvailable':
-            return 'Safety Net bypass is available if you want to resolve the current gate cycle.';
+            return 'Safety Net is currently available for this gate.';
         default:
             return 'No major blocker is surfaced right now.';
     }
 }
-function topFixLabel(diagnosis) {
-    switch (diagnosis?.topFixes[0]?.destination) {
-        case 'cultivation': return 'Return to Cultivation';
-        case 'forge': return 'Raise Forge Floor';
-        case 'techniques': return 'Tune Build Slots';
-        case 'apothecary': return 'Stabilize Preparation';
-        case 'medicine_pouch': return 'Fix Pouch Automation';
-        case 'trial': return 'Resolve Current Gate';
-        default: return null;
+function toShortfallHeadline(diagnosisLabel, reason) {
+    return `${diagnosisLabel}: ${reason}`;
+}
+function toEconomicTopFixLabel(actionKind, destinationModuleKey) {
+    switch (actionKind) {
+        case 'run_ruins':
+            return `Run ${getWorldModuleLabel('ruins')} for missing materials`;
+        case 'farm_outskirts':
+            return `Farm ${getWorldModuleLabel('outskirts')} for missing materials`;
+        case 'launch_expedition':
+            return `Launch ${getWorldModuleLabel('expeditions')} for materials`;
+        case 'craft_forge':
+            return 'Raise forge floor';
+        case 'route_manual_pavilion':
+            return `Tune build via ${getWorldModuleLabel('manualPavilion')}`;
+        case 'buy':
+            return `Restock via ${getWorldModuleLabel(destinationModuleKey)}`;
+        case 'brew':
+            return `Brew support tonics at ${getWorldModuleLabel(destinationModuleKey)}`;
+        default:
+            return `Open ${getWorldModuleLabel(destinationModuleKey)}`;
     }
 }
 export function buildStatusTroubleshootingSurface() {
@@ -120,6 +133,7 @@ export function buildStatusTroubleshootingSurface() {
     const diagnosisCode = diagnosis?.primary ?? (lifecycle.failSafe.canPurchase ? 'bypassAvailable' : null);
     const diagnosisLabel = diagnosisCode ? getDiagnosisLabel(diagnosisCode) : 'None';
     const reason = resolveStatusShortfallReason(diagnosisCode, capReached);
+    const headline = toShortfallHeadline(diagnosisLabel, reason);
     const economic = buildLiveEconomicRecommendationEngine();
     const forgeFloor = economic.snapshot.forgeFloor;
     const gateTarget = forgeFloor.nextGateRecommendation;
@@ -134,6 +148,28 @@ export function buildStatusTroubleshootingSurface() {
     const pouchFilled = pouchSlots.filter((slot) => slot.equippedItemId != null).length;
     const affinity = getAffinityStatus(heartLaw, snapshot.spiritRoot);
     const realm = REALMS[clampRealmIndexToSemesterSlice(game.realm.index)] ?? REALMS[0];
+    const topFailureFix = diagnosis?.topFixes[0] ?? null;
+    const mappedTopFailureFix = topFailureFix ? mapFailureFixToSurface({
+        fix: topFailureFix,
+        cityId: economic.snapshot.currentCityId,
+        canRetry: lifecycle.canStart,
+        canBuySafetyNet: lifecycle.failSafe.canPurchase,
+    }) : null;
+    const economicTopCandidate = economic.topRouteCandidates[0] ?? null;
+    const economicTopFix = economicTopCandidate
+        ? {
+            label: toEconomicTopFixLabel(economicTopCandidate.actionKind, economicTopCandidate.destinationModuleKey),
+            destinationLabel: getWorldModuleLabel(economicTopCandidate.destinationModuleKey),
+            blockedReason: economicTopCandidate.blockedReason,
+        }
+        : null;
+    const topFixDetail = mappedTopFailureFix
+        ? {
+            label: mappedTopFailureFix.label,
+            destinationLabel: mappedTopFailureFix.destinationLabel,
+            blockedReason: mappedTopFailureFix.blockedReason,
+        }
+        : economicTopFix;
     return {
         realmName: realm.name,
         stageText: `Stage ${game.realm.substage}/${realm.substages}`,
@@ -144,7 +180,9 @@ export function buildStatusTroubleshootingSurface() {
             diagnosisCode,
             diagnosisLabel,
             reason,
-            topFix: topFixLabel(diagnosis),
+            headline,
+            topFix: topFixDetail ? `${topFixDetail.label} (${topFixDetail.destinationLabel})` : null,
+            topFixDetail,
         },
         combatStrip: [
             { label: 'HP', value: formatNumber(game.stats.hp), tone: 'hp' },

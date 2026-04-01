@@ -53,6 +53,13 @@ interface BuildPostFailureDiagnosisSurfaceInput {
   };
 }
 
+export interface MapFailureFixToSurfaceInput {
+  fix: FailureFix;
+  cityId: string | null;
+  canRetry: boolean;
+  canBuySafetyNet: boolean;
+}
+
 function buildAttemptRecap(summary: TrialAttemptSummary | null): PostFailureAttemptRecap | null {
   if (!summary) return null;
   const bossHpRemainingLine = Number.isFinite(summary.bossHpPct)
@@ -101,12 +108,7 @@ function resolveExplanation(input: { diagnosis: FailureDiagnosis; gateLabel: str
   return `${input.gateLabel} still has one or more active readiness shortfalls.`;
 }
 
-function mapFixToSurface(input: {
-  fix: FailureFix;
-  cityId: string | null;
-  canRetry: boolean;
-  canBuySafetyNet: boolean;
-}): PostFailureFixSurface {
+export function mapFailureFixToSurface(input: MapFailureFixToSurfaceInput): PostFailureFixSurface {
   const { fix, cityId, canRetry, canBuySafetyNet } = input;
 
   if (fix.code === 'continue_cultivating') {
@@ -359,7 +361,7 @@ export function buildPostFailureDiagnosisSurface(input: BuildPostFailureDiagnosi
     reasons: input.diagnosis.reasons.slice(0, 3),
     fixes: input.diagnosis.topFixes
       .slice(0, 3)
-      .map((fix) => mapFixToSurface({
+      .map((fix) => mapFailureFixToSurface({
         fix,
         cityId: input.context.cityId,
         canRetry: input.context.canRetry,

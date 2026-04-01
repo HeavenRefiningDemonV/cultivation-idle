@@ -65,7 +65,7 @@ export function StatusScreen() {
           pathLabel={troubleshooting.pathLabel}
           archetypeLabel={troubleshooting.archetypeLabel}
           archetypeSummary={troubleshooting.archetypeSummary}
-          biggestShortfallLine={`${troubleshooting.shortfall.diagnosisLabel} — ${troubleshooting.shortfall.reason}`}
+          biggestShortfallLine={troubleshooting.shortfall.headline}
           topFixLine={troubleshooting.shortfall.topFix}
           combatStrip={troubleshooting.combatStrip}
         />
