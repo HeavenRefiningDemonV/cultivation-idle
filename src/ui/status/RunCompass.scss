@@ -1,16 +1,17 @@
 .runCompass {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--hero-surface-stack-gap, 14px);
   min-height: 0;
 }
 
 .runCompass--paper {
-  background: rgba(208, 208, 208, 0.92);
-  border: 5px solid transparent;
-  border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
-  padding: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(180deg, rgba(250, 242, 222, 0.9), rgba(237, 224, 200, 0.8));
+  border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  border-radius: var(--hero-surface-radius, 18px);
+  padding: var(--hero-surface-padding, 18px);
+  box-shadow: var(--hero-surface-shadow, 0 12px 22px rgba(26, 20, 14, 0.22));
+  transition: box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
 }
 
 .runCompass--dense {
@@ -107,7 +108,7 @@
   gap: 10px;
   justify-content: space-between;
   align-items: flex-start;
-  min-height: 64px;
+  min-height: var(--hero-surface-row-min-height, 64px);
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(120, 72, 33, 0.18);
@@ -154,8 +155,8 @@
 }
 
 .runCompassCompact--paper {
-  background: rgba(208, 208, 208, 0.92);
-  border: 1px solid rgba(120, 72, 33, 0.22);
+  background: linear-gradient(180deg, rgba(250, 242, 222, 0.9), rgba(237, 224, 200, 0.8));
+  border: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
 }
 
 .runCompassCompact--ink {

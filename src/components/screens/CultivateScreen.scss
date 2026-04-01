@@ -259,10 +259,10 @@
 .cultivationRunCompass--native {
   color: var(--paper-ink, #2b2116);
   background: linear-gradient(180deg, rgba(250, 242, 222, 0.9), rgba(237, 224, 200, 0.78));
-  border: 1px solid rgba(130, 83, 36, 0.28);
-  border-radius: 18px;
-  padding: 15px 15px 14px;
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
+  border-radius: var(--hero-surface-radius, 18px);
+  padding: var(--hero-surface-padding-compact, 14px) var(--hero-surface-padding-compact, 14px) calc(var(--hero-surface-padding-compact, 14px) - 1px);
+  box-shadow: var(--hero-surface-shadow, 0 12px 22px rgba(26, 20, 14, 0.22));
   backdrop-filter: blur(8px);
   position: relative;
 }
@@ -324,13 +324,13 @@
 }
 
 .cultivationCommandCard {
-  min-height: 236px;
-  padding: 16px 16px 14px;
-  border-radius: 18px;
+  min-height: calc(var(--hero-surface-min-card-height, 210px) + 26px);
+  padding: var(--hero-surface-padding-compact, 14px) var(--hero-surface-padding-compact, 14px) calc(var(--hero-surface-padding-compact, 14px) - 1px);
+  border-radius: var(--hero-surface-radius, 18px);
   background: linear-gradient(180deg, rgba(255, 247, 228, 0.9), rgba(237, 225, 203, 0.78));
-  border: 1px solid rgba(130, 83, 36, 0.22);
+  border: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
   color: var(--paper-ink, #2b2116);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--hero-surface-shadow-soft, 0 8px 16px rgba(26, 20, 14, 0.16));
   backdrop-filter: blur(8px);
   position: relative;
 }
