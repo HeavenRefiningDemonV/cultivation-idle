@@ -208,6 +208,52 @@
   pointer-events: none;
 }
 
+.cultivationCenterpieceShell {
+  position: absolute;
+  inset: 0;
+}
+
+.cultivationCenterpieceShell__halo {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: clamp(280px, 32vw, 460px);
+  height: clamp(160px, 22vw, 300px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(238, 226, 196, 0.24), rgba(132, 97, 52, 0.06) 58%, rgba(18, 24, 35, 0) 100%);
+  animation: cultivationCenterHalo 4.2s ease-in-out infinite;
+}
+
+.cultivationCenterpieceShell__mist {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--cultivation-anchor-y) - 10px);
+  width: clamp(340px, 40vw, 620px);
+  height: clamp(90px, 12vw, 180px);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(136, 156, 142, 0.2), rgba(136, 156, 142, 0));
+  filter: blur(14px);
+  animation: cultivationCenterMist 8.5s ease-in-out infinite;
+}
+
+.cultivationCenterpieceShell__altarBase {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--cultivation-anchor-y) + 24px);
+  width: clamp(300px, 44vw, 660px);
+  height: clamp(70px, 10vw, 120px);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 25%, rgba(238, 223, 193, 0.58), rgba(110, 82, 46, 0.28) 60%, rgba(20, 18, 14, 0.06) 100%);
+  box-shadow:
+    0 16px 30px rgba(10, 8, 6, 0.3),
+    inset 0 0 0 1px rgba(148, 112, 66, 0.3);
+  opacity: 0.88;
+}
+
 .cultivationCultivatorArt {
   position: absolute;
   height: clamp(860px, 120vh, 1180px);
@@ -247,7 +293,7 @@
   inset: -8px -12px -6px;
   z-index: -1;
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(18, 24, 35, 0.16), rgba(18, 24, 35, 0.05) 42%, rgba(18, 24, 35, 0));
+  background: linear-gradient(180deg, rgba(18, 24, 35, 0.12), rgba(18, 24, 35, 0.04) 42%, rgba(18, 24, 35, 0));
   pointer-events: none;
 }
 
@@ -447,9 +493,26 @@
   background: linear-gradient(180deg, rgba(255, 247, 228, 0.9), rgba(237, 225, 203, 0.78));
   border: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
   color: var(--paper-ink, #2b2116);
-  box-shadow: var(--hero-surface-shadow-soft, 0 8px 16px rgba(26, 20, 14, 0.16));
+  box-shadow: var(--hero-surface-shadow-soft, 0 7px 14px rgba(26, 20, 14, 0.13));
   backdrop-filter: blur(8px);
   position: relative;
+}
+
+@keyframes cultivationCenterHalo {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.98); }
+  50% { opacity: 0.72; transform: translate(-50%, -50%) scale(1.02); }
+}
+
+@keyframes cultivationCenterMist {
+  0%, 100% { opacity: 0.52; transform: translateX(-50%); }
+  50% { opacity: 0.72; transform: translateX(calc(-50% + 8px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cultivationCenterpieceShell__halo,
+  .cultivationCenterpieceShell__mist {
+    animation: none;
+  }
 }
 
 .cultivationCommandCard::after {

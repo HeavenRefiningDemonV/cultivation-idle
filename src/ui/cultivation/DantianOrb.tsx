@@ -23,6 +23,9 @@ export function DantianOrb({ heartLawTags, isCultivating, isNearReady, isReady }
 
   return (
     <div className={classes} aria-hidden="true">
+      <div className="dantianOrbSeat" />
+      <div className="dantianOrbOuterRing" />
+      <div className="dantianOrbSealRing" />
       <div className="dantianOrbHalo" />
       {isNearReady ? <span className="dantianOrbRing" /> : null}
       {isReady ? <span className="dantianOrbSpark" /> : null}

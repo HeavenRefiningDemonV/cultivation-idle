@@ -551,13 +551,18 @@ export function CultivateScreen() {
       <div className="cultivationScreenRoot">
         <div className={`breakthrough-effects ${isBreakingThrough ? 'animate' : ''}`}></div>
         <div className="cultivationSceneLayer" aria-hidden="true">
-          <img className="cultivationCultivatorArt" src={cultivator} alt="" />
-          <DantianOrb
-            heartLawTags={heartLawTags}
-            isCultivating={isCultivating}
-            isNearReady={isNearReady}
-            isReady={canBreakthrough}
-          />
+          <div className="cultivationCenterpieceShell">
+            <div className="cultivationCenterpieceShell__halo" />
+            <div className="cultivationCenterpieceShell__mist" />
+            <div className="cultivationCenterpieceShell__altarBase" />
+            <img className="cultivationCultivatorArt" src={cultivator} alt="" />
+            <DantianOrb
+              heartLawTags={heartLawTags}
+              isCultivating={isCultivating}
+              isNearReady={isNearReady}
+              isReady={canBreakthrough}
+            />
+          </div>
         </div>
         <button
           type="button"
