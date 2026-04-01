@@ -681,8 +681,8 @@ export function CultivateScreen() {
           />
         </div>
 
-      <div className="cultivationCommandDeck" aria-label="Cultivation command deck" ref={disclosureRef}>
-        <div className="cultivationInfoRow">
+      <div className="cultivationSideRails" aria-label="Cultivation side seals">
+        <div className="cultivationSideRail cultivationSideRail--left">
           <CultivationBreakthroughPanel
             milestoneState={breakthroughMilestoneState}
             currentRealmLabel={realmLabel}
@@ -698,7 +698,8 @@ export function CultivateScreen() {
             mode="summary"
             onOpenDetail={() => setOpenDisclosure('breakthrough')}
           />
-          <div className="cultivationInfoRow__centerSpacer" aria-hidden="true" />
+        </div>
+        <div className="cultivationSideRail cultivationSideRail--right">
           <CultivationDoctrineSummary
             pathLabel={pathLabel}
             pathSummary={pathSummary}
@@ -718,6 +719,8 @@ export function CultivateScreen() {
             verseSlot={doctrineVerseSlotCompact}
           />
         </div>
+      </div>
+      <div className="cultivationCommandDeck" aria-label="Cultivation command deck" ref={disclosureRef}>
         {openDisclosure === 'breakthrough' ? (
           <div className="cultivationDisclosurePopover cultivationDisclosurePopover--breakthrough" role="dialog" aria-label="Breakthrough detail">
             <CultivationBreakthroughPanel

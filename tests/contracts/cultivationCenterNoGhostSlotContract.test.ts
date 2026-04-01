@@ -14,4 +14,5 @@ test('center hud removes verse dead-space compensation and empty buff slab mount
   assert.match(styles, /\.cultivationHudStack > \.progress-bar\s*\{[\s\S]*margin-bottom:\s*0/);
   assert.match(source, /\{activeCultivationBuffs\.length > 0 \? \(/);
   assert.doesNotMatch(source, /No active tonics\. Families overwrite weaker effects in the same lane\./);
+  assert.doesNotMatch(source, /cultivationInfoRow__centerSpacer/);
 });

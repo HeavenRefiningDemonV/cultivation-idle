@@ -7,12 +7,12 @@ async function readRepoFile(relativePath: string) {
   return fs.readFile(path.resolve(process.cwd(), relativePath), 'utf8');
 }
 
-test('cultivation command deck uses side-seal layout with left breakthrough and right doctrine rails', async () => {
+test('cultivation mounts breakthrough and doctrine into explicit left/right side rails', async () => {
   const source = await readRepoFile('src/components/screens/CultivateScreen.tsx');
   const styles = await readRepoFile('src/components/screens/CultivateScreen.scss');
 
-  assert.match(source, /<div className="cultivationInfoRow">[\s\S]*<CultivationBreakthroughPanel[\s\S]*cultivationInfoRow__centerSpacer[\s\S]*<CultivationDoctrineSummary/);
-  assert.match(styles, /\.cultivationInfoRow\s*\{[\s\S]*grid-template-columns:\s*minmax\(260px, 360px\) minmax\(300px, 1fr\) minmax\(260px, 360px\)/);
-  assert.match(styles, /\.cultivationInfoRow > \.cultivationBreakthroughPanel\s*\{[\s\S]*grid-column:\s*1/);
-  assert.match(styles, /\.cultivationInfoRow > \.cultivationDoctrinePanel\s*\{[\s\S]*grid-column:\s*3/);
+  assert.match(source, /<div className="cultivationSideRails"[\s\S]*cultivationSideRail--left[\s\S]*<CultivationBreakthroughPanel[\s\S]*cultivationSideRail--right[\s\S]*<CultivationDoctrineSummary/);
+  assert.doesNotMatch(source, /className="cultivationInfoRow"/);
+  assert.match(styles, /\.cultivationSideRail--left\s*\{[\s\S]*left:/);
+  assert.match(styles, /\.cultivationSideRail--right\s*\{[\s\S]*right:/);
 });

@@ -275,15 +275,15 @@
 
 .cultivationCommandDeck {
   position: absolute;
-  top: var(--cultCommandDeckTop);
+  top: calc(var(--cultCommandDeckTop) + 2px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 17;
-  width: var(--cultCommandDeckW);
+  width: min(720px, calc(100% - 160px));
   display: flex;
   flex-direction: column;
   gap: 12px;
-  pointer-events: auto;
+  pointer-events: none;
   isolation: isolate;
 }
 
@@ -298,8 +298,31 @@
 }
 
 .cultivationCommandDeck__runCompass,
-.cultivationInfoRow {
+.cultivationSideRails {
   width: 100%;
+}
+
+.cultivationSideRails {
+  position: absolute;
+  top: var(--cultCommandDeckTop);
+  left: 0;
+  right: 0;
+  z-index: 17;
+  pointer-events: none;
+}
+
+.cultivationSideRail {
+  position: absolute;
+  width: clamp(260px, 21vw, 340px);
+  pointer-events: auto;
+}
+
+.cultivationSideRail--left {
+  left: clamp(14px, 3.2vw, 58px);
+}
+
+.cultivationSideRail--right {
+  right: clamp(14px, 3.2vw, 58px);
 }
 
 .cultivationRunCompass--native {
@@ -361,27 +384,6 @@
   min-height: 30px;
   padding: 0 10px;
   border-radius: 8px;
-}
-
-.cultivationInfoRow {
-  display: grid;
-  grid-template-columns: minmax(260px, 360px) minmax(300px, 1fr) minmax(260px, 360px);
-  gap: 16px;
-  align-items: start;
-}
-
-.cultivationInfoRow > .cultivationBreakthroughPanel {
-  grid-column: 1;
-}
-
-.cultivationInfoRow > .cultivationDoctrinePanel {
-  grid-column: 3;
-}
-
-.cultivationInfoRow__centerSpacer {
-  grid-column: 2;
-  min-height: 160px;
-  pointer-events: none;
 }
 
 .cultivationBreakthroughPanel--compact,
@@ -1236,6 +1238,10 @@
   .cultivationCommandDeck {
     width: var(--cultCommandDeckW);
   }
+
+  .cultivationSideRail {
+    width: clamp(240px, 26vw, 320px);
+  }
 }
 
 @media (max-width: 1000px) {
@@ -1251,18 +1257,19 @@
     width: var(--cultCommandDeckW);
   }
 
-  .cultivationInfoRow {
+  .cultivationSideRails {
+    position: absolute;
+    top: var(--cultCommandDeckTop);
+    left: 16px;
+    right: 16px;
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
-  .cultivationInfoRow > .cultivationBreakthroughPanel,
-  .cultivationInfoRow > .cultivationDoctrinePanel,
-  .cultivationInfoRow__centerSpacer {
-    grid-column: 1;
-  }
-
-  .cultivationInfoRow__centerSpacer {
-    display: none;
+  .cultivationSideRail {
+    position: static;
+    width: 100%;
   }
 
   .cultivationCommandCard {
@@ -1293,6 +1300,12 @@
     top: var(--cultCommandDeckTop);
     width: var(--cultCommandDeckW);
     gap: 10px;
+  }
+
+  .cultivationSideRails {
+    left: 10px;
+    right: 10px;
+    gap: 8px;
   }
 
   .cultivationHudStack {
