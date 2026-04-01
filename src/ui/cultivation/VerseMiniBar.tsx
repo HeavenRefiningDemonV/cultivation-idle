@@ -12,6 +12,7 @@ type VerseMiniBarProps = {
   placeholderLabel?: string;
   placeholderValue?: string;
   isComplete?: boolean;
+  compact?: boolean;
 };
 
 export function VerseMiniBar({
@@ -23,12 +24,13 @@ export function VerseMiniBar({
   placeholderLabel,
   placeholderValue,
   isComplete = false,
+  compact = false,
 }: VerseMiniBarProps) {
   const showPlaceholder = Boolean(placeholderLabel);
   const rawPct = requirement > 0 ? (comprehension / requirement) * 100 : isComplete ? 100 : 0;
   const pct = Math.min(100, Math.max(0, rawPct));
   const verseLabel = roman[chapter - 1] ?? String(chapter);
-  const containerClassName = `verseMiniBar${className ? ` ${className}` : ''}${showPlaceholder ? ' verseMiniBar--placeholder' : ''}${isComplete ? ' verseMiniBar--complete' : ''}`;
+  const containerClassName = `verseMiniBar${className ? ` ${className}` : ''}${showPlaceholder ? ' verseMiniBar--placeholder' : ''}${isComplete ? ' verseMiniBar--complete' : ''}${compact ? ' verseMiniBar--compact' : ''}`;
   const ariaLabel = showPlaceholder
     ? `${placeholderLabel}: ${placeholderValue ?? ''}`.trim()
     : `Verse ${verseLabel} progress: ${pct.toFixed(1)} percent`;

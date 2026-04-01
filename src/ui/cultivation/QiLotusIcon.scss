@@ -21,15 +21,25 @@
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 4px rgba(59, 42, 24, 0.18));
 }
 
-.qiLotusIcon[data-state="idle"] .qiLotusIcon__img--closed {
+.qiLotusIcon[data-state="dormant"] .qiLotusIcon__img--closed {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(0.98);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35)) drop-shadow(0 0 2px rgba(59, 42, 24, 0.12));
 }
 
-.qiLotusIcon[data-state="active"] .qiLotusIcon__img--open {
+.qiLotusIcon[data-state="flowing"] .qiLotusIcon__img--open {
   opacity: 1;
-  transform: scale(1.06);
+  transform: scale(1.04);
   filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4)) drop-shadow(0 0 7px rgba(98, 142, 108, 0.22));
+}
+
+.qiLotusIcon[data-state="blooming"] .qiLotusIcon__img--open {
+  opacity: 1;
+  transform: scale(1.08);
+  filter:
+    drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4))
+    drop-shadow(0 0 10px rgba(98, 142, 108, 0.25))
+    drop-shadow(0 0 13px rgba(236, 214, 172, 0.18));
 }
 
 .qiLotusIcon[data-state="ready"] .qiLotusIcon__img--full {

@@ -74,16 +74,21 @@ export function CultivationDoctrineSummary({
 
       <div className="cultivationDoctrinePanel__rows">
         {visibleRows.map((row) => (
-          <div key={row.label} className={`cultivationDoctrinePanel__row cultivationDoctrinePanel__row--${row.intent ?? 'tuning'}`}>
+          <div key={row.label} className={`cultivationDoctrinePanel__row cultivationDoctrinePanel__row--${row.intent ?? 'tuning'}${row.label === 'Heart Law' ? ' cultivationDoctrinePanel__row--heartLaw' : ''}`}>
             <div className="cultivationDoctrinePanel__rowTop">
               <span className="cultivationDoctrinePanel__label">{row.label}</span>
               <span className="cultivationDoctrinePanel__value">{row.value}</span>
             </div>
             {row.detail ? <div className="cultivationDoctrinePanel__detail">{row.detail}</div> : null}
+            {row.label === 'Heart Law' && verseSlot ? (
+              <div className={`cultivationDoctrinePanel__verseSlot${isSummary ? ' cultivationDoctrinePanel__verseSlot--summary' : ''}`}>
+                {!isSummary ? <div className="cultivationDoctrinePanel__verseEyebrow">Verse rail</div> : null}
+                {verseSlot}
+              </div>
+            ) : null}
           </div>
         ))}
       </div>
-      {!isSummary && verseSlot ? <div className="cultivationDoctrinePanel__verseSlot">{verseSlot}</div> : null}
       <div className="cultivationDoctrinePanel__actions">
         {isSummary && onOpenDetail ? (
           <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onOpenDetail}>

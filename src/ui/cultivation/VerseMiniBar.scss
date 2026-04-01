@@ -116,3 +116,18 @@
   --verse-fill-a: rgba(179, 142, 82, 0.66);
   --verse-fill-b: rgba(231, 209, 162, 0.62);
 }
+
+.verseMiniBar--compact {
+  --verse-frame-h: 26px;
+  --verse-track-h: 9px;
+  --verse-track-inset-x: 50px;
+}
+
+.verseMiniBar--compact .verseMiniBar__label {
+  gap: 8px;
+}
+
+.verseMiniBar--compact .verseMiniBar__labelText,
+.verseMiniBar--compact .verseMiniBar__labelValue {
+  font-size: 10px;
+}

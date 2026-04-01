@@ -348,6 +348,48 @@ export function CultivateScreen() {
   const versePlaceholderValue = heartLawDef
     ? `${heartLawDef.name} • All verses comprehended`
     : 'Choose a Heart Law in Dao to begin verse progress.';
+  const doctrineVerseSlotCompact = heartLawDef ? (
+    <VerseMiniBar
+      chapter={chapter}
+      comprehension={comprehension}
+      requirement={verseRequirement}
+      title={verseTitle}
+      className="cultivationDoctrineVerseBar"
+      isComplete={verseRequirement <= 0}
+      compact
+    />
+  ) : (
+    <VerseMiniBar
+      chapter={chapter}
+      comprehension={0}
+      requirement={0}
+      title={verseTitle}
+      className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
+      placeholderLabel={versePlaceholderLabel}
+      placeholderValue={versePlaceholderValue}
+      compact
+    />
+  );
+  const doctrineVerseSlotDetail = heartLawDef ? (
+    <VerseMiniBar
+      chapter={chapter}
+      comprehension={comprehension}
+      requirement={verseRequirement}
+      title={verseTitle}
+      className="cultivationDoctrineVerseBar"
+      isComplete={verseRequirement <= 0}
+    />
+  ) : (
+    <VerseMiniBar
+      chapter={chapter}
+      comprehension={0}
+      requirement={0}
+      title={verseTitle}
+      className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
+      placeholderLabel={versePlaceholderLabel}
+      placeholderValue={versePlaceholderValue}
+    />
+  );
 
   const breakthroughMilestoneState = atContentCap
     ? 'content_cap'
@@ -576,6 +618,7 @@ export function CultivateScreen() {
             spiritRoot={spiritRoot}
             mode="summary"
             onOpenDetail={() => setOpenDisclosure('doctrine')}
+            verseSlot={doctrineVerseSlotCompact}
           />
         </div>
         {openDisclosure === 'breakthrough' ? (
@@ -620,28 +663,7 @@ export function CultivateScreen() {
                 setOpenDisclosure('none');
               }}
               onCloseDetail={() => setOpenDisclosure('none')}
-              verseSlot={
-                heartLawDef ? (
-                  <VerseMiniBar
-                    chapter={chapter}
-                    comprehension={comprehension}
-                    requirement={verseRequirement}
-                    title={verseTitle}
-                    className="cultivationDoctrineVerseBar"
-                    isComplete={verseRequirement <= 0}
-                  />
-                ) : (
-                  <VerseMiniBar
-                    chapter={chapter}
-                    comprehension={0}
-                    requirement={0}
-                    title={verseTitle}
-                    className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
-                    placeholderLabel={versePlaceholderLabel}
-                    placeholderValue={versePlaceholderValue}
-                  />
-                )
-              }
+              verseSlot={doctrineVerseSlotDetail}
             />
           </div>
         ) : null}
@@ -664,28 +686,7 @@ export function CultivateScreen() {
               mode="detail"
               pinned
               onCloseDetail={() => setDoctrinePinned(false)}
-              verseSlot={
-                heartLawDef ? (
-                  <VerseMiniBar
-                    chapter={chapter}
-                    comprehension={comprehension}
-                    requirement={verseRequirement}
-                    title={verseTitle}
-                    className="cultivationDoctrineVerseBar"
-                    isComplete={verseRequirement <= 0}
-                  />
-                ) : (
-                  <VerseMiniBar
-                    chapter={chapter}
-                    comprehension={0}
-                    requirement={0}
-                    title={verseTitle}
-                    className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
-                    placeholderLabel={versePlaceholderLabel}
-                    placeholderValue={versePlaceholderValue}
-                  />
-                )
-              }
+              verseSlot={doctrineVerseSlotDetail}
             />
           </aside>
         ) : null}

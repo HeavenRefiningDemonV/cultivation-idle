@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
 import { formatNumber } from '../../utils/numbers.js';
 import { QiLotusIcon, type QiLotusState } from './QiLotusIcon.js';
+import { deriveQiLotusState } from './lotusState.js';
 import './CultivationHeaderRibbon.scss';
 
 type CultivationHeaderRibbonProps = {
@@ -29,9 +30,17 @@ function getRealmIcon(realmLabel: string, realmIndex?: number) {
 }
 
 function getLotusLabel(state: QiLotusState) {
+  if (state === 'ready') return 'Ready';
+  if (state === 'blooming') return 'Blooming';
+  if (state === 'flowing') return 'Flowing';
+  return 'Dormant';
+}
+
+function getLotusTitle(state: QiLotusState) {
   if (state === 'ready') return 'Fully Open';
-  if (state === 'active') return 'Open';
-  return 'Closed';
+  if (state === 'blooming') return 'High-flow cultivation is blooming.';
+  if (state === 'flowing') return 'Cultivation flow is active.';
+  return 'Cultivation is dormant.';
 }
 
 export function CultivationHeaderRibbon({
@@ -63,17 +72,8 @@ export function CultivationHeaderRibbon({
       : activityTone === 'busy'
         ? 'Foreground activity running. Meditation unavailable.'
         : 'Qi flows passively. Meditate to gain Insight and Study.';
-  const lotusState: QiLotusState = breakthroughReady
-    ? 'ready'
-    : activityType === 'meditate'
-      ? 'active'
-      : 'idle';
-  const lotusTitle =
-    lotusState === 'ready'
-      ? 'Qi is brimming — breakthrough is ready.'
-      : lotusState === 'active'
-        ? 'Qi is flowing — you are cultivating in the foreground.'
-        : 'Qi is resting — idle cultivation.';
+  const lotusState: QiLotusState = deriveQiLotusState({ breakthroughReady, activityType, qiPerSecond });
+  const lotusTitle = getLotusTitle(lotusState);
   const lotusLabel = getLotusLabel(lotusState);
 
   useEffect(() => {

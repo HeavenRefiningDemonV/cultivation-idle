@@ -2,8 +2,9 @@ import './QiLotusIcon.scss';
 import lotusClosed from '../../assets/onscreen/qi_lotus_closed.png';
 import lotusOpen from '../../assets/onscreen/qi_lotus_open.png';
 import lotusFull from '../../assets/onscreen/qi_lotus_full.png';
+import type { QiLotusState } from './lotusState.js';
 
-export type QiLotusState = 'idle' | 'active' | 'ready';
+export type { QiLotusState } from './lotusState.js';
 
 type QiLotusIconProps = {
   state: QiLotusState;
