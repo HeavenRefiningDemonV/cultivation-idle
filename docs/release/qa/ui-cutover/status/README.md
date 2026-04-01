@@ -2,7 +2,7 @@
 
 - **surface id:** `status`
 - **family:** `hero ritual screen`
-- **packet:** `D.10`
+- **packet:** `D.10R`
 - **capture mechanism:** manual screenshots only (no approved automated capture pipeline found for Section D)
 - **capture status (this pass):** `BLOCKED — EVIDENCE MISSING`
 
@@ -39,3 +39,8 @@ Each folder contains a README for what must be captured. Add real PNGs only; do 
 - No synthetic/fabricated screenshots.
 - If a state cannot be reached, write exact blocker in signoff docs instead of guessing.
 - Keep status diagnostic ownership intact (Run Compass + six-card truth structure + summary context).
+
+
+## Filename convention note
+
+This repo uses Section D checklist slots (`02-interaction.png`, `03-truth-states.png`, `04-high-fx.png`, `05-low-fx.png`, `06-reduced-motion.png`) rather than the alternate `02-high-fx / 03-low-fx / 04-hover / 05-warning-recommended` naming from external prompts.

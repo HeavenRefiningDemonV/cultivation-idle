@@ -1,65 +1,40 @@
-# Section D.10 — Art Trigger Memo (Proof-Gated)
+# Section D.10R — Art Trigger Memo (Evidence-Dependent)
 
 ## 1) Header and purpose
 
-- **packet id:** `D.10`
+- **packet id:** `D.10R`
 - **date:** `2026-04-01`
-- **purpose:** decide whether additional hero-screen support art is justified by real Section D screenshot evidence, and prevent speculative or redesign-grade requests.
+- **purpose:** reassess whether any Section D hero-screen art trigger can be approved based on real Cultivation/Status screenshot evidence.
 
 ## 2) Rule summary
 
-1. Art requests are legal only after additive proof exists on the exact target surface.
-2. Screenshots are the trigger; preference/opinion is not sufficient.
-3. Requests must be reusable support roles, not one-off paintovers.
-4. Cleanup and art escalation both remain blocked when screenshot evidence is missing.
+1. Screenshot evidence is mandatory before any art-trigger approval.
+2. Missing screenshots means no new art approvals.
+3. Requests must remain reusable support roles, not full-screen repaint asks.
 
-## 3) Evidence reviewed
+## 3) Evidence reviewed in D.10R
 
-- Section D touchpoint and retained-layer doctrine docs.
-- Section D screenshot checklist and packet map.
-- Existing `docs/release/qa/ui-cutover/cultivation/` and `status/` folders.
-- D.10 evidence inventory structure in:
-  - `docs/release/qa/ui-cutover/cultivation/after/{high,low,reduced-motion,medium-width}/`
-  - `docs/release/qa/ui-cutover/status/after/{high,low,reduced-motion,medium-width}/`
-
-### Evidence status
-
-- Required hero-screen PNG evidence is currently missing for both surfaces.
-- Therefore all candidate art triggers remain proof-insufficient in this packet.
+- `docs/release/qa/ui-cutover/cultivation/` (no required PNGs present)
+- `docs/release/qa/ui-cutover/status/` (no required PNGs present)
+- `docs/ui/section-d-hero-screen-signoff.md`
+- `docs/release/ui_screen_signoff_sheet.md`
 
 ## 4) Candidate art-request matrix
 
-| candidate request | decision | evidence screenshot paths | why sufficient/insufficient now | screen coherent without this? | smallest deliverable if approved later |
-| --- | --- | --- | --- | --- | --- |
-| A. Shared support chrome refinements | `DEFER` | Required: Cultivation + Status `01/04/05/06` (all currently missing) | Potentially valid class of request, but no cross-screen screenshot proof of shared weakness exists yet. | Unknown until evidence exists; cannot certify now. | Reusable plaque/ribbon/frame support set (tintable, layered, non-screen-specific). |
-| B. Cultivation hero overlay kit | `NO` | Required: Cultivation `01/03/04/05/06` (missing) | Cannot justify while evidence is absent; request would otherwise risk speculative atmosphere escalation. | Not proven incoherent without it. | If later approved: minimal overlay role only (center framing accents, soft alpha FX layers), no scenic replacement. |
-| C. Slightly richer Status center-orb overlay | `NO` | Required: Status `01/03/04/05/06` (missing) | Cannot justify while evidence is absent; readability/speed tradeoff cannot be judged without captures. | Not proven incoherent without it. | If later approved: small additive center-orb support layer, readability-safe, no diagnostic-grid replacement. |
+| candidate request | decision | evidence screenshot paths | why sufficient/insufficient now |
+| --- | --- | --- | --- |
+| A. Shared support chrome refinements | `DEFER` | Cultivation + Status `01-06` (missing) | No screenshot proof of shared reusable weakness pattern. |
+| B. Cultivation hero overlay kit | `NO` | Cultivation `01/03/04/05/06` (missing) | No proof of missing role; approving would be speculative. |
+| C. Slightly richer Status center-orb overlay | `NO` | Status `01/03/04/05/06` (missing) | No proof of missing role; approving would be speculative. |
 
-## 5) Explicit rejects
+## 5) Explicit rejects (still in force)
 
-The following requests are explicitly rejected in D.10 unless future approved screenshots overwhelmingly prove a specific missing reusable role:
-
-1. Replacing cultivator/dantian scenic center.
-2. Repainting Cultivation from scratch.
-3. Replacing the icon family wholesale.
-4. Turning Status into a giant poster/scenic replacement.
-
-Current D.10 verdict for all four: **`NO`**.
+- Replace cultivator/dantian center: `NO`
+- Repaint Cultivation from scratch: `NO`
+- Replace path portraits/icon family wholesale: `NO`
+- Repaint Status into a giant poster: `NO`
 
 ## 6) Final recommendation
 
-- **Section D art-trigger recommendation:** `BLOCKED / DEFERRED (proof missing)`
-- Do not open production art tickets from D.10.
-- First required follow-up is real screenshot capture + reviewer signoff for both hero screens.
-- After evidence exists, re-run this memo with proof-based YES/NO decisions only.
-
-## v3 discipline note for any future YES
-
-If a future packet upgrades any row to `YES`, the request must stay:
-
-- reusable support part(s),
-- transparent PNG/SVG where appropriate,
-- tint-friendly/grayscale-friendly when useful,
-- layered for additive integration,
-- soft alpha FX components for sprite atlas use where needed,
-- explicitly not a full-screen repaint or scenic-owner replacement.
+- **Art-trigger result:** `NO NEW APPROVALS` (Section D remains blocked on missing screenshot evidence).
+- Reassess only after real Cultivation/Status evidence matrix (`01-06`) is captured and reviewed.

@@ -1,4 +1,4 @@
-# Section D Baseline Screenshot Index (Packet D.0 → D.10)
+# Section D Baseline Screenshot Index (Packet D.0 → D.10R)
 
 This file tracks baseline capture readiness for Section D hero surfaces only.
 
@@ -11,8 +11,8 @@ This file tracks baseline capture readiness for Section D hero surfaces only.
 
 | surface id | human label | family | capture route | capture status | reachability | most important retained old layer | likely next packet | blocker summary |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `cultivation` | Cultivation Hero Surface | hero ritual screen | live navigation/manual capture | BLOCKED — EVIDENCE MISSING | live | current cultivator / dantian / central scenic ownership + Qi bar / breakthrough truth | D10R | Section D signoff is blocked until required `01-06` screenshots are captured and reviewed. |
-| `status` | Status Hero Surface | hero ritual screen | live navigation/manual capture | BLOCKED — EVIDENCE MISSING | live | RunCompass + six-card diagnostic truth composition | D10R | Section D signoff is blocked until required `01-06` screenshots are captured and reviewed. |
+| `cultivation` | Cultivation Hero Surface | hero ritual screen | live navigation/manual capture | BLOCKED — EVIDENCE MISSING | live | current cultivator / dantian / central scenic ownership + Qi bar / breakthrough truth | D10R-Followup | D.10R re-check confirms required `01-06` screenshots are still missing. |
+| `status` | Status Hero Surface | hero ritual screen | live navigation/manual capture | BLOCKED — EVIDENCE MISSING | live | RunCompass + six-card diagnostic truth composition | D10R-Followup | D.10R re-check confirms required `01-06` screenshots are still missing. |
 
 ## Capture discipline notes
 - Do not create placeholder PNGs.

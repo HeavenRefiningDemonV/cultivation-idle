@@ -558,3 +558,81 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 - cleanup scope unlocked if approved (exact conflicting layer(s) only): none
 - reviewer rationale summary: Deferred for evidence gap only.
 - unresolved risks after decision: duplicate-chrome and layout-shift criteria remain unproven.
+
+---
+
+## D.10R Section D hero-screen evidence completion review (2026-04-01)
+
+### Metadata
+
+- target screen id: `cultivation`
+- human label: Cultivation Hero Surface
+- dominant family: hero ritual
+- packet id: `D.10R`
+- screenshot evidence folder: `docs/release/qa/ui-cutover/cultivation/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-01
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are still missing. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | D.10R is docs-only and does not perform cleanup. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Cannot validate without screenshot evidence. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Cannot validate without screenshot evidence. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` screenshot evidence missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Interaction/truth-state screenshot evidence missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | Cannot validate without screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup remains locked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Missing Cultivation evidence matrix (`01-06`).
+- required follow-up packet: D.10R-Followup (manual capture in browser-capable environment + reviewer signoff)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+
+### Metadata
+
+- target screen id: `status`
+- human label: Status Hero Surface
+- dominant family: hero ritual
+- packet id: `D.10R`
+- screenshot evidence folder: `docs/release/qa/ui-cutover/status/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-01
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are still missing. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | D.10R is docs-only and does not perform cleanup. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Cannot validate without screenshot evidence. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Cannot validate without screenshot evidence. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` screenshot evidence missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Interaction/truth-state screenshot evidence missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | Cannot validate without screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup remains locked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Missing Status evidence matrix (`01-06`).
+- required follow-up packet: D.10R-Followup (manual capture in browser-capable environment + reviewer signoff)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
