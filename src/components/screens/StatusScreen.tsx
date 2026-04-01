@@ -13,6 +13,12 @@ import { StatusMiniCard } from '../../ui/status/StatusMiniCard.js';
 import { SpiritRootDisplay } from '../SpiritRootDisplay.js';
 import { buildStatusTroubleshootingSurface } from '../../systems/ui/status/statusTroubleshootingSurface.js';
 import { Crosshair, Droplets, Footprints, Heart, Shield, Sparkles, Sword } from 'lucide-react';
+import { ScreenFxStage } from '../../ui/fx/ScreenFxStage.js';
+import { FX_STAGE_IDS } from '../../ui/fx/constants.js';
+import { FxStagePortal } from '../../ui/fx/FxStagePortal.js';
+import { useFxQuality, useFxStageSnapshot } from '../../ui/fx/FxQualityProvider.js';
+import { buildFxSceneContract } from '../../ui/fx/runtime.js';
+import { StatusFxScene } from '../../ui/fx/scenes/StatusFxScene.js';
 import './StatusScreen.scss';
 import '../../ui/status/StatusSummaryHeader.scss';
 import '../../ui/status/CombatStatTile.scss';
@@ -42,6 +48,8 @@ export function StatusScreen() {
   const gold = useInventoryStore((state) => state.gold);
   const combatLog = useCombatStore((state) => state.combatLog);
   const getTotalEnemiesDefeated = useZoneStore((state) => state.getTotalEnemiesDefeated);
+  const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.status);
+  const { requestedQuality, effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const troubleshooting = useMemo(
     () => buildStatusTroubleshootingSurface(),
@@ -49,14 +57,43 @@ export function StatusScreen() {
   );
 
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
+  const statusFxScene = useMemo(() => {
+    if (!fxStageSnapshot) return null;
+    return buildFxSceneContract({
+      stageId: FX_STAGE_IDS.status,
+      sceneKind: 'status',
+      snapshot: fxStageSnapshot,
+      requestedQuality,
+      effectiveQuality,
+      prefersReducedMotion,
+      documentHidden: typeof document !== 'undefined' ? document.hidden : false,
+    });
+  }, [effectiveQuality, fxStageSnapshot, prefersReducedMotion, requestedQuality]);
 
   useEffect(() => {
     setHeaderTitles('Status', 'Troubleshoot your current run and identify the active floor gap.');
   }, [setHeaderTitles]);
 
   return (
-    <div className="statusScreenRoot">
-      <div className="statusScreenContent">
+    <ScreenFxStage
+      stageId={FX_STAGE_IDS.status}
+      className="statusScreenFxStage"
+      stageClassName="statusScreenFxStage__layer"
+      contentClassName="statusScreenFxStage__content"
+      stageZIndex={0}
+      contentZIndex={1}
+    >
+      {statusFxScene ? (
+        <FxStagePortal stageId={FX_STAGE_IDS.status}>
+          <StatusFxScene
+            {...statusFxScene}
+            urgency={troubleshooting.urgentCardId}
+            resonance={troubleshooting.identity.resonanceLabel}
+          />
+        </FxStagePortal>
+      ) : null}
+      <div className="statusScreenRoot">
+        <div className="statusScreenContent">
         <RunCompass surface={runCompass.full} tone="paper" className="statusScreenRunCompass statusScreenCardBase" />
 
         <StatusSummaryHeader
@@ -73,7 +110,9 @@ export function StatusScreen() {
         <section className="statusChamberLayout" aria-label="Status troubleshooting chamber">
           <div className="statusChamberRail statusChamberRail--left">
             <StatusMiniCard title="Identity" urgent={troubleshooting.urgentCardId === 'identity'} className="statusTroubleshootingCard--identity">
-              <SpiritRootDisplay variant="summary" />
+              <div className="statusIdentityRootAura">
+                <SpiritRootDisplay variant="summary" />
+              </div>
               <StatusLine label="Path" value={troubleshooting.pathLabel} />
               <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
               <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
@@ -176,7 +215,8 @@ export function StatusScreen() {
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </ScreenFxStage>
   );
 }
