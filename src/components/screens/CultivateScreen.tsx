@@ -451,7 +451,7 @@ export function CultivateScreen() {
       </div>
       <button
         type="button"
-        className="daoHeartSealButton"
+        className="daoHeartSealButton uiNoShift"
         aria-label="Open Dao Heart"
         aria-haspopup="dialog"
         aria-expanded={showDaoHeart}
@@ -582,7 +582,7 @@ export function CultivateScreen() {
           <div className="cultivationActionStack">
             <button
               type="button"
-              className="button-standard cultivationActionButton cultivationActionButton--primary"
+              className="button-standard uiNoShift cultivationActionButton cultivationActionButton--primary"
               onClick={handleBreakthroughClick}
               disabled={!canBreakthrough || isBreakingThrough}
               title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
@@ -594,7 +594,7 @@ export function CultivateScreen() {
             ) : null}
             <button
               type="button"
-              className="button-standard cultivationActionButton cultivationActionButton--secondary"
+              className="button-standard uiNoShift cultivationActionButton cultivationActionButton--secondary"
               onClick={handleCultivationToggle}
             >
               {isCultivating ? 'Stop Cultivation' : 'Start Cultivation'}
