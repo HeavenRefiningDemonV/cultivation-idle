@@ -206,7 +206,7 @@ test('recommendation arrays are complete, valid, unique, and fresh', () => {
   assertUniqueModes(breathB, ['safe', 'balanced', 'fast']);
 });
 
-test('packet 4.5 did not rebalance focus or breath numeric truth', () => {
+test('packet D.5 did not rebalance focus or breath numeric truth', () => {
   assert.deepEqual(FOCUS_MODE_MODIFIERS, {
     balanced: {
       qiMultiplier: 1.0,
@@ -235,7 +235,7 @@ test('packet 4.5 did not rebalance focus or breath numeric truth', () => {
   });
 });
 
-test('packet 4.5 doctrine semantic modules are store-free source files', async () => {
+test('packet D.5 doctrine semantic modules are store-free source files', async () => {
   const focusSource = await fs.readFile(path.resolve(process.cwd(), 'src/systems/doctrine/focusSemantics.ts'), 'utf8');
   const breathSource = await fs.readFile(path.resolve(process.cwd(), 'src/systems/doctrine/breathSemantics.ts'), 'utf8');
   const bannedSnippets = [
@@ -256,7 +256,7 @@ test('packet 4.5 doctrine semantic modules are store-free source files', async (
   });
 });
 
-test('doctrine index re-exports the packet 4.5 focus and breath helpers', () => {
+test('doctrine index re-exports the packet D.5 focus and breath helpers', () => {
   assert.equal(typeof doctrine.getFocusModeSemantics, 'function');
   assert.equal(typeof doctrine.getRecommendedFocusModes, 'function');
   assert.equal(typeof doctrine.getBreathModeSemantics, 'function');
@@ -294,4 +294,14 @@ test('mode posture helper remains pure and honest about helping/neutral/hurting'
   }));
   assert.equal(qiPush.focus.rating, 'helping');
   assert.equal(qiPush.breath.rating, 'helping');
+});
+
+test('cultivate screen consumes canonical doctrine lines for focus and breath summaries', async () => {
+  const cultivateSource = await fs.readFile(
+    path.resolve(process.cwd(), 'src/components/screens/CultivateScreen.tsx'),
+    'utf8',
+  );
+
+  assert.equal(cultivateSource.includes('breathSummary={breathSemantics.doctrineLine}'), true);
+  assert.equal(cultivateSource.includes('focusSummary={focusSemantics.doctrineLine}'), true);
 });
