@@ -77,7 +77,8 @@ export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps)
 
   if (variant === 'summary') {
     return (
-      <div className="spiritRootSummary statusScreenCardBase">
+      <div className="spiritRootSummary">
+        <div className="spiritRootSummaryCrest">Spirit Root</div>
         <div className="spiritRootSummaryRow">
           <span className="spiritRootSummaryLabel">Element</span>
           <span className="spiritRootSummaryValue">{spiritRoot ? `${spiritRoot.element[0].toUpperCase()}${spiritRoot.element.slice(1)}` : 'Dormant'}</span>

@@ -1,240 +1,230 @@
 .statusScreenRoot {
   position: relative;
-  border-radius: 14px;
   overflow-y: auto;
 }
 
 .statusScreenContent {
   position: relative;
   z-index: 1;
-  max-width: 1120px;
+  max-width: 1220px;
   margin: 0 auto;
-  padding: 32px 16px;
-}
-
-.statusScreenHeader {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.statusScreenTitle {
-  font-family: 'Julee', cursive;
-  font-size: 36px;
-  font-weight: 700;
-  color: rgba(12, 18, 34, 0.9);
-  margin-bottom: 8px;
-}
-
-.statusScreenSubtitle {
-  color: #6b6b6b;
-  font-size: 14px;
-}
-
-.statusScreenGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-}
-
-.statusScreenColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  padding: 28px 18px 36px;
 }
 
 .statusScreenCardBase {
-  background: rgba(208, 208, 208, 0.92);
+  background: linear-gradient(180deg, rgba(229, 222, 206, 0.94), rgba(220, 211, 194, 0.9));
   border: 5px solid transparent;
   border-image: url("../../assets/menus/buttoncorners.png") 60 / 5px / 1px;
   border-radius: 0;
-  padding: 24px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(26, 20, 14, 0.24);
 }
 
-.statusScreenPanel {
+.statusScreenCardBase--subordinate {
+  background: linear-gradient(180deg, rgba(222, 214, 199, 0.9), rgba(212, 204, 188, 0.84));
+  box-shadow: 0 6px 14px rgba(26, 20, 14, 0.16);
 }
-
-.statusScreenSectionHeader {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.18);
-}
-
-.statusScreenSectionHeader::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: 32px;
-  height: 2px;
-  background: rgba(12, 18, 34, 0.2);
-}
-
-.statusScreenSectionIcon {
-  display: flex;
-  align-items: center;
-}
-
-.statusScreenSectionTitle {
-  font-family: 'Julee', cursive;
-  font-size: 20px;
-  font-weight: 700;
-  color: rgba(12, 18, 34, 0.9);
-}
-
-.statusScreenStatCard {
-}
-
-.statusScreenStatCardTitle {
-  font-family: 'Julee', cursive;
-  font-weight: 700;
-  color: rgba(12, 18, 34, 0.9);
-  margin-bottom: 16px;
-}
-
-.statusScreenStatList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.statusScreenStatRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.12);
-  font-size: 14px;
-}
-
-.statusScreenStatLabel {
-  color: rgba(12, 18, 34, 0.72);
-}
-
-.statusScreenStatValue {
-  font-weight: 700;
-  color: rgba(12, 18, 34, 0.92);
-}
-
-.statusScreenEquipmentSection {
-  @extend .statusScreenCardBase;
-}
-
-.statusScreenEquipmentBlock {
-  margin-bottom: 16px;
-}
-
-.statusScreenEquipmentLabel {
-  color: #6b6b6b;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.statusScreenEquipmentCard {
-  background: var(--paper-shell-muted, rgba(236, 225, 205, 0.74));
-  border-radius: 10px;
-  padding: 12px;
-  border: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
-}
-
-.statusScreenEquipmentCardAccessory {
-  border-color: var(--paper-jade-muted, rgba(47, 143, 102, 0.58));
-}
-
-.statusScreenEquipmentNamePurple {
-  color: var(--paper-stamp, #9f3b2e);
-  font-weight: 700;
-}
-
-.statusScreenEquipmentNameCyan {
-  color: var(--paper-jade, #2f8f66);
-  font-weight: 700;
-}
-
-.statusScreenEquipmentMeta {
-  color: #6b6b6b;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.statusScreenEquipmentStats {
-  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
-  font-size: 12px;
-  margin-top: 8px;
-}
-
-.statusScreenEquipmentEmpty {
-  background: var(--paper-shell-muted, rgba(236, 225, 205, 0.74));
-  border: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
-  color: var(--paper-ink-faint, rgba(43, 33, 22, 0.55));
-  font-size: 14px;
-  padding: 12px;
-  border-radius: 10px;
-}
-
-.statusScreenMiscPanel {
-}
-
-.statusScreenStatGold { color: #d97706; }
-.statusScreenStatQi { color: var(--paper-jade, #2f8f66); }
-.statusScreenStatGreen { color: var(--paper-success, #2f8f66); }
-.statusScreenStatRed { color: var(--paper-danger, #9f3b2e); }
-.statusScreenStatBlue { color: var(--paper-outline, rgba(120, 72, 33, 0.45)); }
-.statusScreenStatYellow { color: var(--paper-warning, #b5852b); }
-.statusScreenStatCyan { color: var(--paper-jade-muted, rgba(47, 143, 102, 0.58)); }
-.statusScreenStatPink { color: var(--paper-stamp, #9f3b2e); }
-.statusScreenStatMuted { color: rgba(12, 18, 34, 0.58); }
-
-@media (min-width: 1024px) {
-  .statusScreenGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 
 .statusScreenRunCompass {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.statusTroubleshootingGrid {
+.statusChamberLayout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.statusChamberRail {
+  display: grid;
+  gap: 14px;
+}
+
+.statusChamberCore {
+  display: grid;
+  place-items: center;
+  min-height: 172px;
+  padding: 8px 0;
+}
+
+.statusChamberCorePlate {
+  width: min(280px, 84vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(59, 41, 24, 0.24);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 250, 237, 0.7), rgba(210, 196, 174, 0.38) 58%, rgba(134, 111, 83, 0.2) 100%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.14), transparent 66%);
+  box-shadow: inset 0 0 0 7px rgba(255, 248, 232, 0.26), inset 0 0 0 14px rgba(120, 87, 54, 0.08), 0 16px 28px rgba(38, 26, 14, 0.2);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.statusChamberCorePlate::before,
+.statusChamberCorePlate::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+
+.statusChamberCorePlate::before {
+  inset: 18px;
+  border: 1px solid rgba(91, 67, 42, 0.22);
+}
+
+.statusChamberCorePlate::after {
+  inset: 32px;
+  border: 1px dashed rgba(91, 67, 42, 0.26);
+}
+
+.statusChamberCoreOrb {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.85), rgba(154, 128, 98, 0.45) 64%, rgba(77, 57, 35, 0.34));
+  border: 1px solid rgba(77, 57, 35, 0.32);
+  box-shadow: inset 0 0 0 6px rgba(255, 255, 255, 0.2), 0 10px 20px rgba(32, 20, 10, 0.24);
+}
+
+.statusChamberCoreSeal {
+  margin-top: 12px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(55, 39, 22, 0.72);
+  font-weight: 800;
+}
+
+.statusChamberSupport {
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.statusTroubleshootingCard {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statusTroubleshootingCardTitle {
+  margin: 0;
+  font-family: 'Julee', cursive;
+  font-size: 20px;
+  color: rgba(33, 24, 15, 0.92);
+}
+
+.statusTroubleshootingCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.statusTroubleshootingCard--readiness {
+  box-shadow: 0 0 0 1px rgba(122, 45, 24, 0.22), 0 14px 26px rgba(78, 33, 17, 0.22);
+}
+
+.statusTroubleshootingCard--identity {
+  box-shadow: 0 0 0 1px rgba(67, 53, 33, 0.24), 0 12px 22px rgba(49, 36, 20, 0.2);
+}
+
+.statusTroubleshootingCard--support {
+  min-height: 0;
+}
+
+.statusTroubleshootingCard--urgent {
+  box-shadow: 0 0 0 1px rgba(165, 44, 28, 0.44), 0 12px 24px rgba(104, 28, 15, 0.22);
+}
+
+.statusTroubleshootingCard--positive {
+  box-shadow: 0 0 0 1px rgba(29, 126, 68, 0.42), 0 12px 24px rgba(25, 82, 51, 0.18);
 }
 
 .statusTroubleshootingLine {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  border-bottom: 1px solid rgba(12, 18, 34, 0.12);
+  border-bottom: 1px solid rgba(59, 41, 24, 0.12);
   padding-bottom: 4px;
 }
 
 .statusTroubleshootingLineLabel {
-  font-size: 13px;
-  color: rgba(12, 18, 34, 0.66);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(66, 50, 32, 0.68);
 }
 
 .statusTroubleshootingLineValue {
   font-size: 13px;
-  color: rgba(12, 18, 34, 0.9);
+  color: rgba(25, 19, 12, 0.92);
   font-weight: 700;
   text-align: right;
 }
 
-.statusScreenRawSection {
-  margin-top: 6px;
+.statusScreenGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
-@media (min-width: 1024px) {
-  .statusTroubleshootingGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.statusScreenColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statusScreenRawSection {
+  margin-top: 4px;
+}
+
+.statusScreenStatCardTitle {
+  font-family: 'Julee', cursive;
+  font-weight: 700;
+  color: rgba(39, 29, 17, 0.9);
+  margin-bottom: 14px;
+}
+
+@media (min-width: 900px) {
+  .statusChamberLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.72fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 16px;
+  }
+
+  .statusChamberRail--right {
+    grid-template-rows: auto auto auto;
+  }
+
+  .statusChamberSupport {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1180px) {
+  .statusChamberLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.78fr) minmax(0, 1.06fr);
+    gap: 18px;
+  }
+
+  .statusScreenGrid {
+    grid-template-columns: 1.35fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .statusScreenContent {
+    padding: 18px 12px 24px;
+  }
+
+  .statusChamberCore {
+    min-height: 150px;
+  }
+
+  .statusChamberCorePlate {
+    width: min(238px, 84vw);
   }
 }

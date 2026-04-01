@@ -8,10 +8,10 @@
   position: relative;
   padding: 10px 12px 10px;
   border-radius: 12px;
-  --tile-accent: rgba(12, 18, 34, 0.22);
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(12, 18, 34, 0.14);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  --tile-accent: rgba(63, 45, 28, 0.18);
+  background: rgba(255, 252, 244, 0.56);
+  border: 1px solid rgba(66, 48, 30, 0.16);
+  box-shadow: 0 3px 7px rgba(40, 28, 16, 0.12);
   transition: box-shadow 140ms ease, border-color 140ms ease, background-color 140ms ease;
   display: flex;
   flex-direction: column;
@@ -27,13 +27,13 @@
   width: 3px;
   border-radius: 12px;
   background: var(--tile-accent);
-  opacity: 0.95;
+  opacity: 0.92;
 }
 
 .combatStatTile:hover {
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.26);
-  border-color: rgba(12, 18, 34, 0.2);
-  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 5px 10px rgba(40, 28, 16, 0.16);
+  border-color: rgba(66, 48, 30, 0.22);
+  background: rgba(255, 252, 244, 0.64);
 }
 
 .combatStatTile.is-pulsing {
@@ -51,7 +51,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(12, 18, 34, 0.72);
+  color: rgba(58, 44, 28, 0.68);
   opacity: 0.95;
 }
 
@@ -60,7 +60,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 800;
-  color: rgba(12, 18, 34, 0.62);
+  color: rgba(66, 48, 30, 0.62);
 }
 
 .combatStatTile__valueRow {
@@ -74,65 +74,31 @@
 .combatStatTile__value {
   font-size: 18px;
   font-weight: 900;
-  color: rgba(12, 18, 34, 0.92);
+  color: rgba(33, 24, 15, 0.92);
   line-height: 1.05;
 }
 
 .combatStatTile__sub {
   font-size: 12px;
   font-weight: 700;
-  color: rgba(12, 18, 34, 0.58);
+  color: rgba(66, 48, 30, 0.6);
   margin-top: 4px;
   margin-left: 8px;
 }
 
-.combatStatTile--hp {
-  --tile-accent: rgba(220, 38, 38, 0.85);
-}
+.combatStatTile--hp { --tile-accent: rgba(194, 65, 12, 0.7); }
+.combatStatTile--offense { --tile-accent: rgba(180, 83, 9, 0.72); }
+.combatStatTile--defense { --tile-accent: rgba(37, 99, 235, 0.68); }
+.combatStatTile--recovery { --tile-accent: rgba(21, 128, 61, 0.68); }
+.combatStatTile--crit { --tile-accent: rgba(168, 85, 247, 0.64); }
+.combatStatTile--evasion { --tile-accent: rgba(8, 145, 178, 0.68); }
 
-.combatStatTile--offense {
-  --tile-accent: rgba(202, 138, 4, 0.85);
-}
-
-.combatStatTile--defense {
-  --tile-accent: rgba(37, 99, 235, 0.85);
-}
-
-.combatStatTile--recovery {
-  --tile-accent: rgba(22, 163, 74, 0.85);
-}
-
-.combatStatTile--crit {
-  --tile-accent: rgba(217, 70, 239, 0.75);
-}
-
-.combatStatTile--evasion {
-  --tile-accent: rgba(8, 145, 178, 0.85);
-}
-
-.combatStatTile--hp .combatStatTile__icon {
-  color: rgba(220, 38, 38, 0.78);
-}
-
-.combatStatTile--offense .combatStatTile__icon {
-  color: rgba(202, 138, 4, 0.8);
-}
-
-.combatStatTile--defense .combatStatTile__icon {
-  color: rgba(37, 99, 235, 0.8);
-}
-
-.combatStatTile--recovery .combatStatTile__icon {
-  color: rgba(22, 163, 74, 0.78);
-}
-
-.combatStatTile--crit .combatStatTile__icon {
-  color: rgba(217, 70, 239, 0.75);
-}
-
-.combatStatTile--evasion .combatStatTile__icon {
-  color: rgba(8, 145, 178, 0.8);
-}
+.combatStatTile--hp .combatStatTile__icon { color: rgba(194, 65, 12, 0.66); }
+.combatStatTile--offense .combatStatTile__icon { color: rgba(180, 83, 9, 0.68); }
+.combatStatTile--defense .combatStatTile__icon { color: rgba(37, 99, 235, 0.72); }
+.combatStatTile--recovery .combatStatTile__icon { color: rgba(21, 128, 61, 0.7); }
+.combatStatTile--crit .combatStatTile__icon { color: rgba(168, 85, 247, 0.68); }
+.combatStatTile--evasion .combatStatTile__icon { color: rgba(8, 145, 178, 0.72); }
 
 @media (min-width: 1200px) {
   .combatStatTilesGrid {
@@ -154,12 +120,12 @@
 
 @keyframes combatTilePulse {
   0% {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 3px 7px rgba(40, 28, 16, 0.12);
   }
   50% {
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px rgba(40, 28, 16, 0.2);
   }
   100% {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 3px 7px rgba(40, 28, 16, 0.12);
   }
 }

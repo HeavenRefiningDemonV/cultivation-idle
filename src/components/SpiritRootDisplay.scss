@@ -580,8 +580,20 @@
 }
 
 .spiritRootSummary {
-  padding: 14px;
+  padding: 12px;
   margin-bottom: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(66, 48, 30, 0.18);
+  background: linear-gradient(180deg, rgba(255, 250, 238, 0.58), rgba(230, 216, 191, 0.42));
+}
+
+.spiritRootSummaryCrest {
+  margin-bottom: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: rgba(66, 48, 30, 0.72);
 }
 
 .spiritRootSummaryRow {

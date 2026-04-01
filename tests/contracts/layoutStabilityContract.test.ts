@@ -5,7 +5,7 @@ import test from 'node:test';
 
 const readRepoFile = (relativePath: string) => fs.readFile(path.resolve(process.cwd(), relativePath), 'utf8');
 
-test('status troubleshooting layout keeps six-card diagnostic composition and summary header', async () => {
+test('status troubleshooting layout keeps six-card composition with chamber hierarchy anchors', async () => {
   const statusScreen = await readRepoFile('src/components/screens/StatusScreen.tsx');
 
   const expectedCards = ['Identity', 'Readiness', 'Permanent Floor', 'Preparation', 'Build', 'Safety Net'];
@@ -15,6 +15,8 @@ test('status troubleshooting layout keeps six-card diagnostic composition and su
 
   assert.equal(statusScreen.includes('<StatusSummaryHeader'), true);
   assert.equal(statusScreen.includes('<RunCompass'), true);
+  assert.equal(statusScreen.includes('className="statusChamberLayout"'), true);
+  assert.equal(statusScreen.includes('className="statusChamberCorePlate"'), true);
 });
 
 test('status baseline styles avoid no-shift violations in hover/focus interaction states', async () => {

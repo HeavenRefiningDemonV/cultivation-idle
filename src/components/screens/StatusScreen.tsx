@@ -45,17 +45,7 @@ export function StatusScreen() {
 
   const troubleshooting = useMemo(
     () => buildStatusTroubleshootingSurface(),
-    [
-      realm,
-      qi,
-      qiPerSecond,
-      focusMode,
-      selectedPath,
-      stats,
-      currencies,
-      items,
-      gold,
-    ],
+    [realm, qi, qiPerSecond, focusMode, selectedPath, stats, currencies, items, gold],
   );
 
   const totalEnemiesDefeated = getTotalEnemiesDefeated('all');
@@ -80,71 +70,89 @@ export function StatusScreen() {
           combatStrip={troubleshooting.combatStrip}
         />
 
-        <div className="statusTroubleshootingGrid">
-          <StatusMiniCard title="Identity" urgent={troubleshooting.urgentCardId === 'identity'}>
-            <StatusLine label="Path" value={troubleshooting.pathLabel} />
-            <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
-            <StatusLine label="Summary" value={troubleshooting.archetypeSummary} />
-            <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
-            <StatusLine label="Resonance" value={troubleshooting.identity.resonanceLabel} />
-            <SpiritRootDisplay variant="summary" />
-            <StatusLine label="Focus" value={troubleshooting.identity.focusMode} />
-            <StatusLine label="Breath" value={troubleshooting.identity.breathMode} />
-          </StatusMiniCard>
+        <section className="statusChamberLayout" aria-label="Status troubleshooting chamber">
+          <div className="statusChamberRail statusChamberRail--left">
+            <StatusMiniCard title="Identity" urgent={troubleshooting.urgentCardId === 'identity'} className="statusTroubleshootingCard--identity">
+              <SpiritRootDisplay variant="summary" />
+              <StatusLine label="Path" value={troubleshooting.pathLabel} />
+              <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
+              <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
+              <StatusLine label="Resonance" value={troubleshooting.identity.resonanceLabel} />
+              <StatusLine label="Summary" value={troubleshooting.archetypeSummary} />
+              <StatusLine label="Focus" value={troubleshooting.identity.focusMode} />
+              <StatusLine label="Breath" value={troubleshooting.identity.breathMode} />
+            </StatusMiniCard>
 
-          <StatusMiniCard title="Readiness" urgent={troubleshooting.urgentCardId === 'readiness'}>
-            <StatusLine label="State" value={troubleshooting.readiness.readinessLabel} />
-            <StatusLine label="Gate" value={troubleshooting.readiness.gateTrialName} />
-            <StatusLine label="Diagnosis" value={troubleshooting.readiness.diagnosisLabel} />
-            {troubleshooting.readiness.warnings.map((warning) => <StatusLine key={warning} label="Warning" value={warning} />)}
-            <StatusLine label="Biggest Shortfall" value={troubleshooting.readiness.shortfallLine} />
-          </StatusMiniCard>
+            <StatusMiniCard title="Permanent Floor" urgent={troubleshooting.urgentCardId === 'permanent_floor'}>
+              <StatusLine label="Weapon Refine" value={`${troubleshooting.permanentFloor.weaponRefine}`} />
+              <StatusLine label="Accessory Refine" value={`${troubleshooting.permanentFloor.accessoryRefine}`} />
+              <StatusLine label="Temper Successes" value={`${troubleshooting.permanentFloor.temperSuccesses}`} />
+              <StatusLine label="Runes" value={troubleshooting.permanentFloor.runeSummary} />
+              <StatusLine label="Next Target" value={troubleshooting.permanentFloor.gateTargetLine} />
+              <StatusLine label="Judgment" value={troubleshooting.permanentFloor.floorJudgment} />
+            </StatusMiniCard>
+          </div>
 
-          <StatusMiniCard title="Permanent Floor" urgent={troubleshooting.urgentCardId === 'permanent_floor'}>
-            <StatusLine label="Weapon Refine" value={`${troubleshooting.permanentFloor.weaponRefine}`} />
-            <StatusLine label="Accessory Refine" value={`${troubleshooting.permanentFloor.accessoryRefine}`} />
-            <StatusLine label="Temper Successes" value={`${troubleshooting.permanentFloor.temperSuccesses}`} />
-            <StatusLine label="Runes" value={troubleshooting.permanentFloor.runeSummary} />
-            <StatusLine label="Next Target" value={troubleshooting.permanentFloor.gateTargetLine} />
-            <StatusLine label="Judgment" value={troubleshooting.permanentFloor.floorJudgment} />
-          </StatusMiniCard>
+          <div className="statusChamberCore" aria-hidden>
+            <div className="statusChamberCorePlate">
+              <div className="statusChamberCoreOrb" />
+              <div className="statusChamberCoreSeal">Diagnostic Chamber</div>
+            </div>
+          </div>
 
-          <StatusMiniCard title="Preparation" urgent={troubleshooting.urgentCardId === 'preparation'}>
-            <StatusLine label="Merit" value={troubleshooting.preparation.meritReserve} />
-            <StatusLine label="Spirit Stones" value={troubleshooting.preparation.spiritStoneReserve} />
-            <StatusLine label="Pouch" value={troubleshooting.preparation.pouchSummary} />
-            <StatusLine label="Pouch Fit" value={troubleshooting.preparation.pouchFit} />
-            <StatusLine label="Top Warning" value={troubleshooting.preparation.topWarning} />
-            {troubleshooting.preparation.gateTokenLine ? <StatusLine label="Gate Token" value={troubleshooting.preparation.gateTokenLine} /> : null}
-          </StatusMiniCard>
+          <div className="statusChamberRail statusChamberRail--right">
+            <StatusMiniCard
+              title="Readiness"
+              urgent={troubleshooting.urgentCardId === 'readiness'}
+              className="statusTroubleshootingCard--readiness"
+            >
+              <StatusLine label="State" value={troubleshooting.readiness.readinessLabel} />
+              <StatusLine label="Gate" value={troubleshooting.readiness.gateTrialName} />
+              <StatusLine label="Diagnosis" value={troubleshooting.readiness.diagnosisLabel} />
+              {troubleshooting.readiness.warnings.map((warning) => <StatusLine key={warning} label="Warning" value={warning} />)}
+              <StatusLine label="Biggest Shortfall" value={troubleshooting.readiness.shortfallLine} />
+            </StatusMiniCard>
 
-          <StatusMiniCard title="Build" urgent={troubleshooting.urgentCardId === 'build'}>
-            <StatusLine label="Path Alignment" value={troubleshooting.build.alignment} />
-            <StatusLine label="Empty Slots" value={troubleshooting.build.emptySlots} />
-            <StatusLine label="Mastery Floor" value={troubleshooting.build.mastery} />
-            <StatusLine label="Rank Floor" value={troubleshooting.build.rank} />
-            <StatusLine label="Rune Floor" value={troubleshooting.build.runes} />
-            <StatusLine label="Policy Fit" value={troubleshooting.build.policyFit} />
-            <StatusLine label="Top Gap" value={troubleshooting.build.topGap} />
-          </StatusMiniCard>
+            <StatusMiniCard title="Preparation" urgent={troubleshooting.urgentCardId === 'preparation'}>
+              <StatusLine label="Merit" value={troubleshooting.preparation.meritReserve} />
+              <StatusLine label="Spirit Stones" value={troubleshooting.preparation.spiritStoneReserve} />
+              <StatusLine label="Pouch" value={troubleshooting.preparation.pouchSummary} />
+              <StatusLine label="Pouch Fit" value={troubleshooting.preparation.pouchFit} />
+              <StatusLine label="Top Warning" value={troubleshooting.preparation.topWarning} />
+              {troubleshooting.preparation.gateTokenLine ? <StatusLine label="Gate Token" value={troubleshooting.preparation.gateTokenLine} /> : null}
+            </StatusMiniCard>
 
-          <StatusMiniCard
-            title="Safety Net"
-            urgent={troubleshooting.urgentCardId === 'safety_net'}
-            positive={troubleshooting.urgentCardId === 'safety_net'}
-          >
-            <StatusLine label="State" value={troubleshooting.safetyNet.state} />
-            <StatusLine label="Progress" value={troubleshooting.safetyNet.progress} />
-            <StatusLine label="Threshold" value={troubleshooting.safetyNet.threshold} />
-            <StatusLine label="Cost" value={troubleshooting.safetyNet.cost} />
-            <StatusLine label="Affordability" value={troubleshooting.safetyNet.affordability} />
-            <StatusLine label="Context" value={troubleshooting.safetyNet.blockedReason} />
-          </StatusMiniCard>
-        </div>
+            <StatusMiniCard title="Build" urgent={troubleshooting.urgentCardId === 'build'}>
+              <StatusLine label="Path Alignment" value={troubleshooting.build.alignment} />
+              <StatusLine label="Empty Slots" value={troubleshooting.build.emptySlots} />
+              <StatusLine label="Mastery Floor" value={troubleshooting.build.mastery} />
+              <StatusLine label="Rank Floor" value={troubleshooting.build.rank} />
+              <StatusLine label="Rune Floor" value={troubleshooting.build.runes} />
+              <StatusLine label="Policy Fit" value={troubleshooting.build.policyFit} />
+              <StatusLine label="Top Gap" value={troubleshooting.build.topGap} />
+            </StatusMiniCard>
+          </div>
+
+          <div className="statusChamberSupport">
+            <StatusMiniCard
+              title="Safety Net"
+              urgent={troubleshooting.urgentCardId === 'safety_net'}
+              positive={troubleshooting.urgentCardId === 'safety_net'}
+              className="statusTroubleshootingCard--support"
+            >
+              <StatusLine label="State" value={troubleshooting.safetyNet.state} />
+              <StatusLine label="Progress" value={troubleshooting.safetyNet.progress} />
+              <StatusLine label="Threshold" value={troubleshooting.safetyNet.threshold} />
+              <StatusLine label="Cost" value={troubleshooting.safetyNet.cost} />
+              <StatusLine label="Affordability" value={troubleshooting.safetyNet.affordability} />
+              <StatusLine label="Context" value={troubleshooting.safetyNet.blockedReason} />
+            </StatusMiniCard>
+          </div>
+        </section>
 
         <div className="statusScreenGrid statusScreenRawSection">
           <div className="statusScreenColumn">
-            <div className="statusScreenStatCard statusScreenCardBase">
+            <div className="statusScreenStatCard statusScreenCardBase statusScreenCardBase--subordinate">
               <h3 className="statusScreenStatCardTitle">Combat Statistics</h3>
               <div className="combatStatTilesGrid">
                 <CombatStatTile label="Max HP" value={formatNumber(stats.hp)} icon={<Heart size={16} />} tone="hp" pulseKey={stats.hp} />
@@ -159,7 +167,7 @@ export function StatusScreen() {
             </div>
           </div>
           <div className="statusScreenColumn">
-            <div className="statusScreenStatCard statusScreenCardBase">
+            <div className="statusScreenStatCard statusScreenCardBase statusScreenCardBase--subordinate">
               <h3 className="statusScreenStatCardTitle">Resources</h3>
               <StatusLine label="Gold" value={formatNumber(gold)} />
               <StatusLine label="Inventory Items" value={`${Object.keys(items).length}`} />

@@ -1,21 +1,26 @@
 .statusSummaryPanel {
-  margin-bottom: 24px;
-  padding: 18px;
+  margin-bottom: 18px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(239, 233, 220, 0.95), rgba(225, 216, 199, 0.9));
 }
 
 .statusSummaryTopGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .statusSummaryIdentity {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(66, 48, 30, 0.14);
+  background: rgba(255, 252, 244, 0.42);
 }
 
 .statusSummaryLabelRow {
@@ -25,52 +30,53 @@
 }
 
 .statusSummaryIcon {
-  width: 16px;
-  height: 16px;
-  color: rgba(12, 18, 34, 0.7);
+  width: 15px;
+  height: 15px;
+  color: rgba(66, 48, 30, 0.7);
 }
 
 .statusSummaryLabel {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(12, 18, 34, 0.62);
+  color: rgba(66, 48, 30, 0.62);
   font-weight: 700;
 }
 
 .statusSummaryValue {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 900;
-  color: rgba(12, 18, 34, 0.92);
+  color: rgba(33, 24, 15, 0.92);
 }
 
 .statusSummarySub {
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.58);
+  color: rgba(66, 48, 30, 0.68);
   font-weight: 700;
 }
 
 .statusBiggestShortfall {
-  border: 1px solid rgba(12, 18, 34, 0.14);
+  border: 1px solid rgba(117, 44, 24, 0.24);
+  border-radius: 10px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, rgba(255, 240, 224, 0.54), rgba(243, 220, 197, 0.42));
 }
 
 .statusBiggestShortfallBody {
   margin: 4px 0;
   font-size: 13px;
-  color: rgba(12, 18, 34, 0.9);
-  font-weight: 700;
+  color: rgba(50, 27, 15, 0.92);
+  font-weight: 800;
 }
 
 .statusBiggestShortfallHint {
   margin: 0;
   font-size: 12px;
-  color: rgba(12, 18, 34, 0.68);
+  color: rgba(66, 48, 30, 0.75);
 }
 
 .statusCombatStrip {
-  border-top: 1px solid rgba(12, 18, 34, 0.16);
+  border-top: 1px solid rgba(66, 48, 30, 0.2);
   padding-top: 10px;
 }
 
@@ -82,7 +88,7 @@
 
 @media (min-width: 900px) {
   .statusSummaryTopGrid {
-    grid-template-columns: 1fr 1fr 1.3fr;
+    grid-template-columns: 1fr 1fr 1.2fr;
   }
 
   .statusCombatStripGrid {

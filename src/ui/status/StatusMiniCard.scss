@@ -1,5 +1,5 @@
 .statusTroubleshootingCard {
-  min-height: 220px;
+  min-height: 210px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -8,8 +8,8 @@
 .statusTroubleshootingCardTitle {
   margin: 0;
   font-family: 'Julee', cursive;
-  font-size: 21px;
-  color: rgba(12, 18, 34, 0.9);
+  font-size: 20px;
+  color: rgba(33, 24, 15, 0.92);
 }
 
 .statusTroubleshootingCardBody {
@@ -19,9 +19,9 @@
 }
 
 .statusTroubleshootingCard--urgent {
-  box-shadow: 0 0 0 1px rgba(185, 28, 28, 0.4), 0 10px 24px rgba(127, 29, 29, 0.2);
+  box-shadow: 0 0 0 1px rgba(165, 44, 28, 0.44), 0 12px 24px rgba(104, 28, 15, 0.22);
 }
 
 .statusTroubleshootingCard--positive {
-  box-shadow: 0 0 0 1px rgba(21, 128, 61, 0.4), 0 10px 24px rgba(21, 128, 61, 0.14);
+  box-shadow: 0 0 0 1px rgba(29, 126, 68, 0.42), 0 12px 24px rgba(25, 82, 51, 0.18);
 }
