@@ -10,9 +10,12 @@ import { useGameStore } from '../../stores/gameStore.js';
 import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
-import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.js';
-import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
-import { getPathDoctrinePresentation } from '../../systems/doctrine/pathDoctrinePresentation.js';
+import {
+  getBreathModeSemantics,
+  getPathDoctrinePresentation,
+  getPathDoctrineProfile,
+  getPathDoctrineSummary,
+} from '../../systems/doctrine/index.js';
 import { getHeartLawSelectionPresentation } from '../../systems/doctrine/heartLawSelectionPresentation.js';
 import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';

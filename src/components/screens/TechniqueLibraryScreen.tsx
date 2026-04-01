@@ -3,7 +3,7 @@ import { buildLoadoutSnapshot } from '../../systems/builds/index.js';
 import { analyzeSelectedBuild } from '../../systems/builds/buildAnalysisService.js';
 import { getBuildArchetype } from '../../systems/builds/archetypeRegistry.js';
 import { evaluateCurrentCombatPostureFit } from '../../systems/builds/combatPostureFit.js';
-import { getPathDoctrineProfile } from '../../systems/doctrine/pathDoctrineRegistry.js';
+import { getPathDoctrineProfile } from '../../systems/doctrine/index.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
