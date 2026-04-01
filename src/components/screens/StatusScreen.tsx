@@ -82,6 +82,11 @@ export function StatusScreen() {
             <SpiritRootDisplay variant="summary" />
             <StatusLine label="Focus" value={troubleshooting.identity.focusMode} />
             <StatusLine label="Breath" value={troubleshooting.identity.breathMode} />
+            <StatusLine label="Focus Posture" value={`${troubleshooting.identity.focusPosture.rating} • ${troubleshooting.identity.focusPosture.line}`} />
+            <StatusLine label="Breath Posture" value={`${troubleshooting.identity.breathPosture.rating} • ${troubleshooting.identity.breathPosture.line}`} />
+            {troubleshooting.identity.modeOverallLine ? (
+              <StatusLine label="Mode Posture" value={troubleshooting.identity.modeOverallLine} />
+            ) : null}
           </StatusMiniCard>
 
           <StatusMiniCard title="Readiness" urgent={troubleshooting.urgentCardId === 'readiness'}>

@@ -1,6 +1,7 @@
 import type { CultivationPath } from '../../types/index.js';
 import type { TechniqueFamily } from './techniqueFamilies.js';
 
+export type NativePathAlignmentStrength = 'strong' | 'neutral';
 export type PathAlignmentStrength = 'strong' | 'neutral' | 'off';
 
 export const STRONG_PATH_FAMILY_BIASES: Readonly<Record<CultivationPath, readonly TechniqueFamily[]>> = Object.freeze({
@@ -34,14 +35,14 @@ function intersects(families: readonly TechniqueFamily[], candidates: readonly T
 export function getNativePathAlignment(
   path: CultivationPath,
   families: readonly TechniqueFamily[],
-): PathAlignmentStrength {
+): NativePathAlignmentStrength {
   return intersects(families, STRONG_PATH_FAMILY_BIASES[path]) ? 'strong' : 'neutral';
 }
 
 export function getTechniquePathFit(input: {
   techPath: CultivationPath;
   families: readonly TechniqueFamily[];
-  nativeAlignment: PathAlignmentStrength;
+  nativeAlignment: NativePathAlignmentStrength;
   selectedPath: CultivationPath | null;
 }): PathAlignmentStrength {
   if (input.selectedPath === null) {
@@ -66,7 +67,7 @@ export function getTechniquePathFit(input: {
 export function scoreTechniqueForPath(input: {
   techPath: CultivationPath;
   families: readonly TechniqueFamily[];
-  nativeAlignment: PathAlignmentStrength;
+  nativeAlignment: NativePathAlignmentStrength;
   selectedPath: CultivationPath | null;
 }): 0 | 1 | 2 {
   const strength = getTechniquePathFit(input);
@@ -77,4 +78,17 @@ export function scoreTechniqueForPath(input: {
     return 1;
   }
   return 0;
+}
+
+export function resolveTechniquePathAlignment(input: {
+  techPath: CultivationPath;
+  families: readonly TechniqueFamily[];
+  nativeAlignment: NativePathAlignmentStrength;
+  selectedPath: CultivationPath | null;
+}): { fit: PathAlignmentStrength; score: 0 | 1 | 2 } {
+  const fit = getTechniquePathFit(input);
+  return {
+    fit,
+    score: fit === 'strong' ? 2 : fit === 'neutral' ? 1 : 0,
+  };
 }

@@ -4,7 +4,6 @@ import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { useMedicinePouchStore } from '../../../stores/medicinePouchStore.js';
-import { usePrestigeStore } from '../../../stores/prestigeStore.js';
 import { useTrialStore } from '../../../stores/trialStore.js';
 import { useUIStore } from '../../../stores/uiStore.js';
 import { formatNumber, formatPercentFromValue } from '../../../utils/numbers.js';
@@ -13,7 +12,13 @@ import { analyzeSelectedBuild } from '../../builds/buildAnalysisService.js';
 import { getBuildArchetype } from '../../builds/archetypeRegistry.js';
 import { evaluateCurrentCombatPostureFit } from '../../builds/combatPostureFit.js';
 import { buildDoctrineSnapshot } from '../../doctrine/doctrineSnapshot.js';
-import { getBreathModeSemantics, getFocusModeSemantics, getPathDoctrineProfile } from '../../doctrine/index.js';
+import {
+  adaptSpiritRootDoctrineToSemanticView,
+  evaluateDoctrineModePosture,
+  getBreathModeSemantics,
+  getFocusModeSemantics,
+  getPathDoctrineProfile,
+} from '../../doctrine/index.js';
 import { buildSupportEconomyReadModelFromState } from '../../economy/supportEconomyReadModel.js';
 import { buildLiveEconomicRecommendationEngine } from '../../economy/economicRecommendationEngine.js';
 import { diagnoseTrialFailure } from '../../readiness/failureDiagnosis.js';
@@ -63,10 +68,13 @@ export interface StatusTroubleshootingSurface {
       element: string;
       grade: string;
       purity: string;
-      totalMultiplier: string;
+      potencySummary: string;
     };
     focusMode: string;
     breathMode: string;
+    focusPosture: { rating: 'helping' | 'neutral' | 'hurting'; line: string };
+    breathPosture: { rating: 'helping' | 'neutral' | 'hurting'; line: string };
+    modeOverallLine: string | null;
   };
   readiness: {
     readinessLabel: string;
@@ -164,7 +172,6 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
   const game = useGameStore.getState();
   const inventory = useInventoryStore.getState();
   const cultivation = useCultivationStore.getState();
-  const prestige = usePrestigeStore.getState();
   const pouch = useMedicinePouchStore.getState();
   const ui = useUIStore.getState();
   const snapshot = buildDoctrineSnapshot();
@@ -223,6 +230,15 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
   const pouchFilled = pouchSlots.filter((slot) => slot.equippedItemId != null).length;
   const affinity = getAffinityStatus(heartLaw, snapshot.spiritRoot);
   const realm = REALMS[clampRealmIndexToSemesterSlice(game.realm.index)] ?? REALMS[0];
+  const spiritRootView = adaptSpiritRootDoctrineToSemanticView(snapshot.spiritRoot);
+  const modePosture = evaluateDoctrineModePosture({
+    path: snapshot.path,
+    focusMode: snapshot.focusMode,
+    breathMode: snapshot.breathMode,
+    heartLawId: snapshot.heartLawId,
+    heartLawChapter: snapshot.heartLawChapter,
+    diagnosisCode,
+  });
 
   return {
     realmName: realm.name,
@@ -250,12 +266,15 @@ export function buildStatusTroubleshootingSurface(): StatusTroubleshootingSurfac
       resonanceLabel: affinity.status === 'match' ? 'Resonant' : affinity.status === 'mismatch' ? 'Mismatched' : 'Neutral',
       spiritRootSummary: {
         element: snapshot.spiritRoot ? title(snapshot.spiritRoot.element) : 'Dormant',
-        grade: snapshot.spiritRoot ? ROOT_GRADE_LABELS[snapshot.spiritRoot.grade] : 'Dormant',
+        grade: spiritRootView?.gradeLabel ?? (snapshot.spiritRoot ? ROOT_GRADE_LABELS[snapshot.spiritRoot.grade] : 'Dormant'),
         purity: snapshot.spiritRoot ? `${Math.round(snapshot.spiritRoot.purity)}%` : '0%',
-        totalMultiplier: `${prestige.getSpiritRootTotalMultiplier().toFixed(2)}x`,
+        potencySummary: spiritRootView?.potencySummary ?? 'Bounded life potency +0%',
       },
       focusMode: getFocusModeSemantics(snapshot.focusMode).label,
       breathMode: getBreathModeSemantics(snapshot.breathMode).label,
+      focusPosture: { rating: modePosture.focus.rating, line: modePosture.focus.shortLine },
+      breathPosture: { rating: modePosture.breath.rating, line: modePosture.breath.shortLine },
+      modeOverallLine: modePosture.overallLine,
     },
     readiness: {
       readinessLabel: readiness?.overallBand ? getReadinessBandLabel(readiness.overallBand) : capReached ? 'Cap Reached' : 'Preparing',

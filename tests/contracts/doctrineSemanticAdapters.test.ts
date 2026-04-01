@@ -18,14 +18,20 @@ test('path doctrine semantic adapter mirrors authored semantic fields without ex
   assert.equal(semanticView.label, profile.label);
   assert.equal(semanticView.summary, profile.summary);
   assert.equal(semanticView.coreIdentity, profile.coreIdentity);
+
+  assert.deepEqual(semanticView.playIdentityKeywords, profile.playIdentityKeywords);
+  assert.deepEqual(semanticView.doctrineBudget, profile.doctrineBudget);
   assert.deepEqual(semanticView.prepBias, profile.prepBias);
   assert.deepEqual(semanticView.forgeBias, profile.forgeBias);
-  assert.deepEqual(semanticView.buildBias, profile.buildBias);
+  assert.deepEqual(semanticView.buildBiasSummary, profile.buildBiasSummary);
   assert.deepEqual(semanticView.recommendedAiByPhase, profile.recommendedAiByPhase);
   assert.deepEqual(semanticView.commonFailureModes, profile.commonFailureModes);
+  assert.equal(semanticView.objectiveLine, profile.objectiveLine);
   assert.equal('modifierSignature' in semanticView, false);
   assert.equal(Object.isFrozen(semanticView), true);
   assert.equal(Object.isFrozen(semanticView.prepBias), true);
+  assert.equal(Object.isFrozen(semanticView.playIdentityKeywords), true);
+  assert.equal(Object.isFrozen(semanticView.doctrineBudget), true);
   assert.equal(Object.isFrozen(semanticView.recommendedAiByPhase), true);
   assert.equal(Object.isFrozen(semanticView.recommendedAiByPhase.early), true);
 });
@@ -34,7 +40,7 @@ test('path doctrine semantic adapter is null-safe', () => {
   assert.equal(adaptPathDoctrineToSemanticView(null), null);
 });
 
-test('spirit root semantic adapter derives stable purity and power bands from live multiplier math', () => {
+test('spirit root semantic adapter derives bounded D.4 purity/power semantics', () => {
   const lowRoot: SpiritRoot = { grade: 1, element: 'fire', purity: 15 };
   const midRoot: SpiritRoot = { grade: 3, element: 'water', purity: 65 };
   const highRoot: SpiritRoot = { grade: 5, element: 'metal', purity: 100 };
@@ -46,14 +52,16 @@ test('spirit root semantic adapter derives stable purity and power bands from li
   assert.ok(lowView);
   assert.equal(lowView.purityBand, 'muddy');
   assert.equal(lowView.powerBand, 'baseline');
+  assert.equal(lowView.totalPowerDeltaPct <= 0.12, true);
 
   assert.ok(midView);
   assert.equal(midView.purityBand, 'stable');
-  assert.equal(midView.powerBand, 'elite');
+  assert.equal(midView.powerBand, 'elevated');
 
   assert.ok(highView);
   assert.equal(highView.purityBand, 'immaculate');
-  assert.equal(highView.powerBand, 'transcendent');
+  assert.equal(highView.powerBand, 'elite');
+  assert.equal(highView.potencySummary.includes('cap 12%'), true);
   assert.equal(Object.isFrozen(highView), true);
 });
 

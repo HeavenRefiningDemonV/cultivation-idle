@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { INITIAL_REALM } from '../../../constants/index.js';
 import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
-import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
 import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo.js';
+import {
+  getHeartLawProfile,
+  getHeartLawSelectionPresentation,
+  summarizeHeartLawChapterEffects,
+} from '../../../systems/doctrine/index.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useCultivationStore } from '../../../stores/cultivationStore.js';
@@ -14,45 +18,6 @@ import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
 import './HeartLawPanel.scss';
 
 const roman = ['I', 'II', 'III', 'IV', 'V'];
-
-const archetypeLabels: Record<string, string> = {
-  steady: 'Steady',
-  burst: 'Burst',
-  risk: 'Risk',
-  artisan: 'Artisan',
-  mystic: 'Mystic',
-};
-
-function formatEffectValue(value: unknown): string | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  const pct = Math.round(value * 100);
-  if (Math.abs(value) < 5) {
-    return `${value >= 0 ? '+' : ''}${pct}%`;
-  }
-  return `${value}`;
-}
-
-const EFFECT_LABELS: Record<string, string> = {
-  cultivateQiMult: 'Cultivation rate',
-  combatDamageMult: 'Combat damage',
-  offlineEfficiencyAdd: 'Offline efficiency',
-  stabilityCostMult: 'Stability cost',
-  professionYieldMult: 'Profession yield',
-  professionSpeedMult: 'Profession speed',
-};
-
-function summarizeEffects(effects: unknown): string {
-  if (!effects || typeof effects !== 'object') return 'General insight bonus.';
-  const parts: string[] = [];
-  Object.entries(effects as Record<string, unknown>).forEach(([key, value]) => {
-    const label = EFFECT_LABELS[key] ?? key;
-    const formatted = formatEffectValue(value);
-    if (formatted) {
-      parts.push(`${label} ${formatted}`);
-    }
-  });
-  return parts.length > 0 ? parts.join(' • ') : 'General insight bonus.';
-}
 
 function DaoTagSeals({ tags }: { tags: string[] }) {
   if (!tags || tags.length === 0) return null;
@@ -67,23 +32,10 @@ function DaoTagSeals({ tags }: { tags: string[] }) {
   );
 }
 
-function ResonanceBadge({ heartLaw }: { heartLaw: HeartLawDef | null }) {
-  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
-  const { status, percent } = useMemo(
-    () => getAffinityStatus(heartLaw, spiritRoot),
-    [heartLaw, spiritRoot],
-  );
-
-  let text = 'Resonance: None';
-  if (status === 'match') {
-    text = `Resonates with your Spirit Root: Strong (+${percent}% signature potency)`;
-  } else if (status === 'mismatch') {
-    text = 'Resonates: Weak (minor penalty only)';
-  }
-
+function ResonanceBadge({ label, tone }: { label: string; tone: string }) {
   return (
-    <div className={`resonanceBadge resonanceBadge--${status}`}>
-      {text}
+    <div className={`resonanceBadge resonanceBadge--${tone}`}>
+      Resonance: {label}
       <div className="resonanceBadgeHint">
         Resonance boosts signature effects when aligned. Mismatch is a minor penalty only.
       </div>
@@ -107,7 +59,7 @@ function VerseTimeline({
         const entry = chapters.find((c) => c.chapter === chapterNumber);
         return {
           chapter: chapterNumber,
-          summary: summarizeEffects(entry?.effects),
+          summary: entry ? 'Verse effects loaded' : 'No recorded effects.',
         };
       }),
     [chapters],
@@ -159,6 +111,12 @@ function HeartLawScrollCard({
   flash,
   chapters,
   currentChapter,
+  familyLabel,
+  signatureSummary,
+  resonanceLabel,
+  resonanceTone,
+  currentVerseSummary,
+  tags,
 }: {
   heartLaw: HeartLawDef | null;
   etaText: string;
@@ -167,6 +125,12 @@ function HeartLawScrollCard({
   flash: boolean;
   chapters: HeartLawChapter[];
   currentChapter: number;
+  familyLabel: string;
+  signatureSummary: string;
+  resonanceLabel: string;
+  resonanceTone: string;
+  currentVerseSummary: string;
+  tags: string[];
 }) {
   if (!heartLaw) {
     return (
@@ -181,12 +145,8 @@ function HeartLawScrollCard({
     );
   }
 
-  const pattern = archetypeLabels[heartLaw.archetype ?? ''] ?? 'Unknown';
-  const signatureSummary = summarizeEffects(heartLaw.signature);
-  const nextLabel = required > 0 ? 'Next Verse at Comprehension 100' : 'All Verses comprehended';
+  const nextLabel = required > 0 ? `Next Verse at Comprehension ${required}` : 'All Verses comprehended';
   const etaDisplay = required > 0 ? etaText : '—';
-  const currentChapterEffects = chapters.find((entry) => entry.chapter === currentChapter)?.effects;
-  const currentVerseSummary = summarizeEffects(currentChapterEffects);
 
   return (
     <div className="cultivationPanel heartLawCard">
@@ -195,15 +155,13 @@ function HeartLawScrollCard({
           <div className="panelTitle">{heartLaw.name}</div>
           <div className="panelSub">Heart Law • Dao Heart</div>
         </div>
-        <span className="heartLawPattern">{pattern}</span>
+        <span className="heartLawPattern">{familyLabel}</span>
       </div>
-      <DaoTagSeals tags={heartLaw.daoTags ?? []} />
+      <DaoTagSeals tags={tags} />
       <div className="heartLawSignature">{signatureSummary}</div>
-      <ResonanceBadge heartLaw={heartLaw} />
+      <ResonanceBadge label={resonanceLabel} tone={resonanceTone} />
       <div className="heartLawNext">
-        <div className="heartLawNextLabel">
-          {nextLabel}
-        </div>
+        <div className="heartLawNextLabel">{nextLabel}</div>
         <div className="heartLawNextEta">Estimated time: {etaDisplay}</div>
       </div>
       <ComprehensionBar comprehension={comprehension} required={required} flash={flash} />
@@ -223,6 +181,7 @@ export function HeartLawPanel() {
   const getRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter);
   const selectHeartLaw = useCultivationStore((state) => state.selectHeartLaw);
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const realm = useGameStore((state) => state.realm);
   const addNotification = useUIStore((state) => state.addNotification);
 
@@ -231,6 +190,10 @@ export function HeartLawPanel() {
   const prevChapterRef = useRef(chapter);
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
+  const heartLawProfile = getHeartLawProfile(heartLawDef?.id ?? null);
+  const heartLawPresentation = heartLawDef
+    ? getHeartLawSelectionPresentation(heartLawDef, { spiritRoot, isUnlocked: true, isSelected: true })
+    : null;
   const chapters = heartLawDef?.chapters ?? [];
   const required = getRequirement();
   const breath = getBreathModeMultipliers(breathMode);
@@ -279,6 +242,12 @@ export function HeartLawPanel() {
         flash={celebrate}
         chapters={chapters}
         currentChapter={chapter}
+        familyLabel={heartLawPresentation?.familyLabel ?? 'Doctrine'}
+        signatureSummary={heartLawPresentation?.signatureSummary ?? 'General insight bonus.'}
+        resonanceLabel={heartLawPresentation?.resonanceLabel ?? 'Neutral'}
+        resonanceTone={heartLawPresentation?.resonanceTone ?? 'neutral'}
+        currentVerseSummary={summarizeHeartLawChapterEffects(heartLawProfile, chapter)}
+        tags={heartLawPresentation?.tagLabels ? [...heartLawPresentation.tagLabels] : []}
       />
 
       <div className="heartLawActions">

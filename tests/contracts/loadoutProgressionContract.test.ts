@@ -10,7 +10,7 @@ import {
   resolveLoadoutProgressionSnapshot,
 } from '../../src/systems/builds/index.js';
 
-test('packet 4.7 locks the exact semester ladder and slot caps', () => {
+test('packet D.7 locks the exact semester ladder and slot caps', () => {
   assert.deepEqual(LOADOUT_PROGRESSION_ORDER, [
     'qi_condensation',
     'foundation_establishment',
@@ -32,14 +32,14 @@ test('packet 4.7 locks the exact semester ladder and slot caps', () => {
   assert.deepEqual(SEMESTER_SLOT_CAPS, { active: 4, passive: 3 });
 });
 
-test('packet 4.7 realm-index progression resolution clamps to the live semester slice', () => {
+test('packet D.7 realm-index progression resolution clamps to the live semester slice', () => {
   assert.equal(getLoadoutProgressionForRealmIndex(-99).majorRealmId, 'qi_condensation');
   assert.equal(getLoadoutProgressionForRealmIndex(0).majorRealmId, 'qi_condensation');
   assert.equal(getLoadoutProgressionForRealmIndex(2).majorRealmId, 'core_formation');
   assert.equal(getLoadoutProgressionForRealmIndex(99).majorRealmId, 'spirit_severing');
 });
 
-test('packet 4.7 no-bonus progression snapshots are exact across the live semester realms', () => {
+test('packet D.7 no-bonus progression snapshots are exact across the live semester realms', () => {
   const expected = [
     { active: 2, passive: 1, ultimate: false },
     { active: 3, passive: 1, ultimate: false },
@@ -57,7 +57,7 @@ test('packet 4.7 no-bonus progression snapshots are exact across the live semest
   });
 });
 
-test('packet 4.7 no-bonus unlock requirements are exact at Qi Condensation', () => {
+test('packet D.7 no-bonus unlock requirements are exact at Qi Condensation', () => {
   const snapshot = resolveLoadoutProgressionSnapshot({ realmIndex: 0 });
 
   assert.equal(snapshot.unlockRequirements.active[0], null);
@@ -97,7 +97,7 @@ test('packet 4.7 no-bonus unlock requirements are exact at Qi Condensation', () 
   });
 });
 
-test('packet 4.7 bonus-slot acceleration is exact and bonus-aware', () => {
+test('packet D.7 bonus-slot acceleration is exact and bonus-aware', () => {
   const activePlusOne = resolveLoadoutProgressionSnapshot({ realmIndex: 0, activeBonusSlots: 1 });
   assert.equal(activePlusOne.unlocked.active, 3);
   assert.equal(activePlusOne.unlockRequirements.active[2], null);
@@ -123,7 +123,7 @@ test('packet 4.7 bonus-slot acceleration is exact and bonus-aware', () => {
   });
 });
 
-test('packet 4.7 invalid slot unlock requests safely return null', () => {
+test('packet D.7 invalid slot unlock requests safely return null', () => {
   assert.equal(getSlotUnlockRequirementForProgression({ slotType: 'active', slotIndex: -1 }), null);
   assert.equal(getSlotUnlockRequirementForProgression({ slotType: 'active', slotIndex: 99 }), null);
   assert.equal(getSlotUnlockRequirementForProgression({ slotType: 'passive', slotIndex: 99 }), null);

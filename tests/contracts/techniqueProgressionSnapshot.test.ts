@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   buildTechniqueProgressionSnapshot,
+  evaluateTechniqueSlotTypeFloor,
   normalizeTechniqueProgressionState,
   xpNeededForLevel,
   type TechniqueProgressionSource,
@@ -152,5 +153,60 @@ test('packet 4.8 missing and invalid values normalize safely', () => {
     rank: 1,
     traits: [],
     runes: [],
+  });
+});
+
+test('packet 4.8 slot-type floor evaluation is centralized and honest for active/passive vs ultimate', () => {
+  const activeSnapshot = buildTechniqueProgressionSnapshot({
+    manualGrade: 'heaven',
+    rarity: 'rare',
+    masteryXp: xpNeededForLevel(25),
+    rank: 2,
+    runes: ['rune_1'],
+  });
+  assert.deepEqual(evaluateTechniqueSlotTypeFloor(activeSnapshot, 'active'), {
+    slotType: 'active',
+    masteryFloor: 25,
+    masteryFloorMet: true,
+    rankFloor: 2,
+    rankFloorMet: true,
+    runeFloor: 1,
+    runeFloorMet: true,
+  });
+
+  const ultimateSnapshot = buildTechniqueProgressionSnapshot({
+    manualGrade: 'heaven',
+    rarity: 'rare',
+    masteryXp: xpNeededForLevel(50),
+    rank: 3,
+    runes: [null, 'rune_2'],
+  });
+  assert.deepEqual(evaluateTechniqueSlotTypeFloor(ultimateSnapshot, 'ultimate'), {
+    slotType: 'ultimate',
+    masteryFloor: 50,
+    masteryFloorMet: true,
+    rankFloor: 3,
+    rankFloorMet: true,
+    runeFloor: 2,
+    runeFloorMet: false,
+  });
+});
+
+test('packet 4.8 rune floor remains honest when rune sockets are zero', () => {
+  const mortalSnapshot = buildTechniqueProgressionSnapshot({
+    manualGrade: 'mortal',
+    rarity: 'legendary',
+    masteryXp: xpNeededForLevel(100),
+    rank: 3,
+    runes: ['ignored_rune'],
+  });
+  assert.deepEqual(evaluateTechniqueSlotTypeFloor(mortalSnapshot, 'ultimate'), {
+    slotType: 'ultimate',
+    masteryFloor: 50,
+    masteryFloorMet: true,
+    rankFloor: 3,
+    rankFloorMet: true,
+    runeFloor: 0,
+    runeFloorMet: true,
   });
 });

@@ -10,7 +10,6 @@ import {
   INITIAL_STATS,
   BREAKTHROUGH_QI_MULTIPLIER,
   UPGRADE_COSTS,
-  ELEMENT_BONUSES,
 } from '../constants/index.js';
 import { D, add, multiply, greaterThanOrEqualTo } from '../utils/numbers.js';
 import {
@@ -40,6 +39,7 @@ import { progressionTimingTracker } from '../services/diagnostics/progressionTim
 import { adaptProgressionAuthoredContent } from '../systems/progression/contract/contentAdapter.js';
 import { getProgressionContract } from '../systems/progression/contract/progressionContract.js';
 import { GameEvents } from '../services/events/GameEvents.js';
+import { getSpiritRootRuntimeMultiplier, getSpiritRootTotalPowerDeltaPct } from '../systems/doctrine/spiritRootDoctrine.js';
 
 interface InventoryStoreDeps {
   getItemCount: (itemId: string) => number;
@@ -80,6 +80,17 @@ export function getSpiritRootSnapshot(): SpiritRoot | null {
   const prestigeStore = _getPrestigeStore ? _getPrestigeStore() : null;
   const root = prestigeStore?.spiritRoot ?? null;
   return root;
+}
+
+function applyBoundedElementBonus(
+  stat: Decimal,
+  bonus: number | undefined,
+  powerDeltaPct: number,
+): Decimal {
+  if (!bonus) {
+    return stat;
+  }
+  return multiply(stat, D(1).plus(D(bonus).times(powerDeltaPct)));
 }
 
 // Kept for runtime wiring parity with the game loop even though prestige reset orchestration no longer reads it here.
@@ -536,19 +547,14 @@ export const useGameStore = create<GameState>()(
           const prestigeMultiplier = prestigeStore.getQiMultiplier();
           qiPerSec = multiply(qiPerSec, prestigeMultiplier);
 
-          // Apply spirit root multipliers to cultivation gains
-          const spiritRootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
+          const spiritRoot = prestigeStore.spiritRoot;
+          const spiritRootMultiplier = getSpiritRootRuntimeMultiplier(spiritRoot);
           qiPerSec = multiply(qiPerSec, spiritRootMultiplier);
 
-          // Apply spirit root element Qi bonus (scaled by purity)
-          const spiritRoot = prestigeStore.spiritRoot;
-          if (spiritRoot && spiritRoot.element && spiritRoot.element in ELEMENT_BONUSES) {
-            const elementBonus = ELEMENT_BONUSES[spiritRoot.element as keyof typeof ELEMENT_BONUSES];
-            if ('qiPerSecond' in elementBonus && elementBonus.qiPerSecond) {
-              const purityMultiplier = spiritRoot.purity / 100;
-              const qiBonus = D(1).plus(D(elementBonus.qiPerSecond).times(purityMultiplier));
-              qiPerSec = multiply(qiPerSec, qiBonus);
-            }
+          // Keep element flavor additive but bounded under the doctrine power cap.
+          const powerDeltaPct = getSpiritRootTotalPowerDeltaPct(spiritRoot);
+          if (spiritRoot?.element === 'wood') {
+            qiPerSec = multiply(qiPerSec, D(1).plus(powerDeltaPct * 0.25));
           }
         } catch {
           // Prestige store not available
@@ -656,8 +662,8 @@ export const useGameStore = create<GameState>()(
           atk = multiply(atk, combatMultiplier);
           def = multiply(def, combatMultiplier);
 
-          // Apply spirit root quality/purity bonuses to core stats
-          const spiritRootMultiplier = prestigeStore.getSpiritRootTotalMultiplier();
+          // Apply bounded spirit root bonuses to core stats (D.4).
+          const spiritRootMultiplier = getSpiritRootRuntimeMultiplier(prestigeStore.spiritRoot);
           hp = multiply(hp, spiritRootMultiplier);
           atk = multiply(atk, spiritRootMultiplier);
           def = multiply(def, spiritRootMultiplier);
@@ -673,31 +679,30 @@ export const useGameStore = create<GameState>()(
           const prestigeStore = _getPrestigeStore();
           const spiritRoot = prestigeStore.spiritRoot;
 
-          if (spiritRoot && spiritRoot.element && spiritRoot.element in ELEMENT_BONUSES) {
-            const elementBonus = ELEMENT_BONUSES[spiritRoot.element as keyof typeof ELEMENT_BONUSES];
-            const purityMultiplier = spiritRoot.purity / 100; // Scale by purity (0-100 -> 0-1)
-
-            if ('hp' in elementBonus && elementBonus.hp) {
-              const hpBonus = D(1).plus(D(elementBonus.hp).times(purityMultiplier));
-              hp = multiply(hp, hpBonus);
-            }
-            if ('atk' in elementBonus && elementBonus.atk) {
-              const atkBonus = D(1).plus(D(elementBonus.atk).times(purityMultiplier));
-              atk = multiply(atk, atkBonus);
-            }
-            if ('def' in elementBonus && elementBonus.def) {
-              const defBonus = D(1).plus(D(elementBonus.def).times(purityMultiplier));
-              def = multiply(def, defBonus);
-            }
-            if ('hpRegen' in elementBonus && elementBonus.hpRegen) {
-              const regenBonus = D(1).plus(D(elementBonus.hpRegen).times(purityMultiplier));
-              regen = multiply(regen, regenBonus);
-            }
-            if ('critRate' in elementBonus && elementBonus.critRate) {
-              crit += elementBonus.critRate * purityMultiplier;
-            }
-            if ('dodge' in elementBonus && elementBonus.dodge) {
-              dodge += elementBonus.dodge * purityMultiplier;
+          if (spiritRoot) {
+            const powerDeltaPct = getSpiritRootTotalPowerDeltaPct(spiritRoot);
+            switch (spiritRoot.element) {
+              case 'fire':
+                atk = applyBoundedElementBonus(atk, 0.2, powerDeltaPct);
+                def = applyBoundedElementBonus(def, -0.1, powerDeltaPct);
+                break;
+              case 'water':
+                hp = applyBoundedElementBonus(hp, 0.2, powerDeltaPct);
+                dodge += 0.1 * powerDeltaPct;
+                break;
+              case 'earth':
+                def = applyBoundedElementBonus(def, 0.3, powerDeltaPct);
+                crit += -0.1 * powerDeltaPct;
+                break;
+              case 'metal':
+                crit += 0.2 * powerDeltaPct;
+                atk = applyBoundedElementBonus(atk, 0.1, powerDeltaPct);
+                break;
+              case 'wood':
+                regen = applyBoundedElementBonus(regen, 0.1, powerDeltaPct);
+                break;
+              default:
+                break;
             }
           }
         } catch {

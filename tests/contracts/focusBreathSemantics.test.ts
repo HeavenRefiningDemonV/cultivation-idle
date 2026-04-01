@@ -9,7 +9,9 @@ import type { DoctrineSnapshot } from '../../src/systems/doctrine/doctrineTypes.
 import * as doctrine from '../../src/systems/doctrine/index.js';
 import type { BreathMode, FocusMode } from '../../src/types/index.js';
 
-function makeSnapshot(overrides: Partial<DoctrineSnapshot> = {}): DoctrineSnapshot {
+function makeSnapshot(
+  overrides: Partial<DoctrineSnapshot & { diagnosisCode?: 'undercultivated' | 'underforged' | 'underprepared' | 'underbuilt' | 'close' | null }> = {},
+): DoctrineSnapshot & { diagnosisCode?: 'undercultivated' | 'underforged' | 'underprepared' | 'underbuilt' | 'close' | null } {
   return {
     path: null,
     focusMode: 'balanced',
@@ -37,6 +39,8 @@ test('focus semantics are locked exactly for all live focus modes', () => {
     mode: 'balanced',
     label: 'Balanced',
     summary: 'Neutral posture. Keep Qi growth and combat stats on their baseline when you do not need a deliberate skew.',
+    doctrineLine: 'Neutral stance for steady cultivation when no hard skew is needed.',
+    troubleshootingLine: 'Balanced is usually neutral: it is rarely your top blocker or top fix by itself.',
     preferredFor: ['heaven', 'earth', 'martial'],
     cautions: ['It does not patch fragility or accelerate cultivation by itself.'],
   });
@@ -45,6 +49,8 @@ test('focus semantics are locked exactly for all live focus modes', () => {
     mode: 'body',
     label: 'Body',
     summary: 'Durability posture. Trade cultivation speed for a heavier body and firmer defense without changing attack.',
+    doctrineLine: 'Durability stance for safer pushes and breakthrough stability.',
+    troubleshootingLine: 'Body helps when fragility is the issue; it slows raw Qi tempo when farming is the issue.',
     preferredFor: ['earth', 'martial'],
     cautions: ['Use it to survive or stabilize; it is not the fast answer for raw Qi farming.'],
   });
@@ -53,6 +59,8 @@ test('focus semantics are locked exactly for all live focus modes', () => {
     mode: 'spirit',
     label: 'Spirit',
     summary: 'Qi-first posture. Push cultivation harder and accept a thinner body while you do it.',
+    doctrineLine: 'Qi-first stance for aggressive cultivation momentum.',
+    troubleshootingLine: 'Spirit helps undercultivation, but it can worsen fragility if survival is already failing.',
     preferredFor: ['heaven'],
     cautions: ['Greed is punished here when your real problem is surviving, not cultivating faster.'],
   });
@@ -63,6 +71,8 @@ test('breath semantics are locked exactly for all live breath modes', () => {
     mode: 'balanced',
     label: 'Balanced',
     summary: 'Neutral cycle. Steady Qi flow, steady comprehension, and steady stability.',
+    doctrineLine: 'Neutral breathing cycle for steady scripture progress and stable rhythm.',
+    troubleshootingLine: 'Balanced is a safe neutral baseline when no strong posture correction is required.',
     preferredFor: ['cultivate', 'recover'],
     cautions: ['Good default, but it will not specialize verse progress or short burst farming.'],
   });
@@ -71,6 +81,8 @@ test('breath semantics are locked exactly for all live breath modes', () => {
     mode: 'safe',
     label: 'Safe',
     summary: 'Controlled cycle. Slower Qi flow in exchange for better comprehension and better stability.',
+    doctrineLine: 'Controlled cycle for stabilizing foundation and breakthrough readiness.',
+    troubleshootingLine: 'Safe helps when instability or prep risk is the bottleneck, not raw Qi pace.',
     preferredFor: ['prepare_breakthrough', 'recover', 'cultivate'],
     cautions: ['Stay here when the foundation is shaky; leave it when raw progress is the real bottleneck.'],
   });
@@ -79,6 +91,8 @@ test('breath semantics are locked exactly for all live breath modes', () => {
     mode: 'fast',
     label: 'Fast',
     summary: 'Aggressive cycle. Faster Qi flow in exchange for worse comprehension and worse stability.',
+    doctrineLine: 'Aggressive cycle for burst cultivation when you can afford instability.',
+    troubleshootingLine: 'Fast helps qi pushes, but it hurts if your current gate failure is stability-driven.',
     preferredFor: ['push_fast', 'cultivate'],
     cautions: ['Greedy use is punished while your scripture still needs chapters or your foundation still wobbles.'],
   });
@@ -192,7 +206,7 @@ test('recommendation arrays are complete, valid, unique, and fresh', () => {
   assertUniqueModes(breathB, ['safe', 'balanced', 'fast']);
 });
 
-test('packet 4.5 did not rebalance focus or breath numeric truth', () => {
+test('packet D.5 did not rebalance focus or breath numeric truth', () => {
   assert.deepEqual(FOCUS_MODE_MODIFIERS, {
     balanced: {
       qiMultiplier: 1.0,
@@ -221,7 +235,7 @@ test('packet 4.5 did not rebalance focus or breath numeric truth', () => {
   });
 });
 
-test('packet 4.5 doctrine semantic modules are store-free source files', async () => {
+test('packet D.5 doctrine semantic modules are store-free source files', async () => {
   const focusSource = await fs.readFile(path.resolve(process.cwd(), 'src/systems/doctrine/focusSemantics.ts'), 'utf8');
   const breathSource = await fs.readFile(path.resolve(process.cwd(), 'src/systems/doctrine/breathSemantics.ts'), 'utf8');
   const bannedSnippets = [
@@ -242,9 +256,52 @@ test('packet 4.5 doctrine semantic modules are store-free source files', async (
   });
 });
 
-test('doctrine index re-exports the packet 4.5 focus and breath helpers', () => {
+test('doctrine index re-exports the packet D.5 focus and breath helpers', () => {
   assert.equal(typeof doctrine.getFocusModeSemantics, 'function');
   assert.equal(typeof doctrine.getRecommendedFocusModes, 'function');
   assert.equal(typeof doctrine.getBreathModeSemantics, 'function');
   assert.equal(typeof doctrine.getRecommendedBreathModes, 'function');
+  assert.equal(typeof doctrine.evaluateDoctrineModePosture, 'function');
+});
+
+test('mode posture helper remains pure and honest about helping/neutral/hurting', () => {
+  const neutral = doctrine.evaluateDoctrineModePosture(makeSnapshot({
+    path: null,
+    focusMode: 'balanced',
+    breathMode: 'balanced',
+  }));
+  assert.equal(neutral.focus.rating, 'helping');
+  assert.equal(neutral.breath.rating, 'helping');
+
+  const survivalMismatch = doctrine.evaluateDoctrineModePosture(makeSnapshot({
+    path: 'earth',
+    focusMode: 'spirit',
+    breathMode: 'fast',
+    heartLawId: 'heart_anything',
+    heartLawChapter: 2,
+    diagnosisCode: 'underforged',
+  }));
+  assert.equal(survivalMismatch.focus.rating, 'hurting');
+  assert.equal(survivalMismatch.breath.rating, 'hurting');
+
+  const qiPush = doctrine.evaluateDoctrineModePosture(makeSnapshot({
+    path: 'heaven',
+    focusMode: 'spirit',
+    breathMode: 'fast',
+    heartLawId: 'heart_anything',
+    heartLawChapter: 1,
+    diagnosisCode: 'undercultivated',
+  }));
+  assert.equal(qiPush.focus.rating, 'helping');
+  assert.equal(qiPush.breath.rating, 'helping');
+});
+
+test('cultivate screen consumes canonical doctrine lines for focus and breath summaries', async () => {
+  const cultivateSource = await fs.readFile(
+    path.resolve(process.cwd(), 'src/components/screens/CultivateScreen.tsx'),
+    'utf8',
+  );
+
+  assert.equal(cultivateSource.includes('breathSummary={breathSemantics.doctrineLine}'), true);
+  assert.equal(cultivateSource.includes('focusSummary={focusSemantics.doctrineLine}'), true);
 });

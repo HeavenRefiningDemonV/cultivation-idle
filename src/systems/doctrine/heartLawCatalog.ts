@@ -1,10 +1,11 @@
 import type { HeartLawAffinityRules, HeartLawDef } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import type { SpiritRootElement } from '../../types/index.js';
-import { getHeartLawFamily } from './heartLawFamilyRegistry.js';
+import { getHeartLawFamily, getHeartLawFamilyLabel } from './heartLawFamilyRegistry.js';
 import {
   LIVE_SPIRIT_ROOT_ELEMENTS,
   getHeartLawChapterThresholds,
+  getHeartLawChapterValueDistribution,
   getNormalizedHeartLawAffinityRules,
   normalizeHeartLawEffectEntries,
 } from './heartLawEffectReaders.js';
@@ -36,8 +37,48 @@ function freezeEffectList(effects: NormalizedHeartLawEffect[]): readonly Normali
   return Object.freeze([...effects]);
 }
 
-function computeCombatBudgetPct(effects: readonly NormalizedHeartLawEffect[]): number {
-  let combatWeight = 0;
+const SPILLOVER_NORMALIZED_KEYS = new Set<string>([
+  'combatDamageMult',
+  'bossDamageMult',
+  'voidDamageMult',
+  'ultimateDamageMult',
+  'burnDamageMult',
+  'poisonDamageMult',
+  'soulDamageMult',
+  'combatFireDamageMult',
+  'critDmgMult',
+  'critChanceAddPctPoints',
+  'martialDamageMult',
+  'combatOpenerAtkMultAddPer10Charge',
+  'combatOpenerBuff.atkMult',
+  'combatOpenerBuff.atkMultPer10Charge',
+  'combatOpenerBuff.burnChanceAdd',
+  'combatOpenerBuff.burnStacksOnHit',
+]);
+
+function isSpilloverEffect(effect: NormalizedHeartLawEffect): boolean {
+  return SPILLOVER_NORMALIZED_KEYS.has(effect.normalizedKey);
+}
+
+
+function getEffectMagnitude(effect: NormalizedHeartLawEffect): number {
+  const { value, normalizedKey } = effect;
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (normalizedKey.includes('PctPoints')) {
+      return Math.abs(value) / 100;
+    }
+    if (normalizedKey.endsWith('AddSec') || normalizedKey.endsWith('durationSec') || normalizedKey.endsWith('everySec')) {
+      return Math.abs(value) / 10;
+    }
+
+    return Math.abs(value);
+  }
+
+  return 1;
+}
+
+function computeSpilloverBudgetPct(effects: readonly NormalizedHeartLawEffect[]): number {
+  let spilloverWeight = 0;
   let innerWeight = 0;
 
   effects.forEach((effect) => {
@@ -45,20 +86,22 @@ function computeCombatBudgetPct(effects: readonly NormalizedHeartLawEffect[]): n
       return;
     }
 
-    if (effect.domain === 'combat') {
-      combatWeight += effect.budgetWeight;
+    const weightedMagnitude = effect.budgetWeight * getEffectMagnitude(effect);
+
+    if (isSpilloverEffect(effect)) {
+      spilloverWeight += weightedMagnitude;
       return;
     }
 
-    innerWeight += effect.budgetWeight;
+    innerWeight += weightedMagnitude;
   });
 
-  const total = combatWeight + innerWeight;
+  const total = spilloverWeight + innerWeight;
   if (total <= 0) {
     return 0;
   }
 
-  return Math.round((combatWeight / total) * 100);
+  return Math.round((spilloverWeight / total) * 100);
 }
 
 function buildHeartLawProfile(
@@ -75,6 +118,7 @@ function buildHeartLawProfile(
   const spiritRootAffinities = normalizeStringList(law.spiritRootAffinities);
   const liveSpiritRootAffinities = Object.freeze(getLiveSpiritRootAffinities(spiritRootAffinities)) as SpiritRootElement[];
   const chapterThresholds = getHeartLawChapterThresholds();
+  const chapterValueDistribution = getHeartLawChapterValueDistribution();
   const signatureEffects = freezeEffectList(normalizeHeartLawEffectEntries('signature', law.signature ?? null));
   const sortedChapters = [...(law.chapters ?? [])].sort((a, b) => a.chapter - b.chapter);
 
@@ -102,22 +146,27 @@ function buildHeartLawProfile(
       .map((effect) => effect.value as string),
   );
 
+  const spilloverBudgetPct = computeSpilloverBudgetPct(normalizedEffects);
+
   return Object.freeze({
     id: law.id,
     name: law.name,
     tier: typeof law.tier === 'string' ? law.tier : null,
     family,
     archetype: typeof law.archetype === 'string' ? law.archetype : null,
+    playerFacingFamilyLabel: getHeartLawFamilyLabel(family),
     daoTags,
     spiritRootAffinities,
     liveSpiritRootAffinities,
     affinityRules,
     chapterThresholds,
+    chapterValueDistribution,
     signatureEffects,
     chapterEffectsByChapter,
     normalizedEffects,
     notes,
-    combatBudgetPct: computeCombatBudgetPct(normalizedEffects),
+    spilloverBudgetPct,
+    combatBudgetPct: spilloverBudgetPct,
   });
 }
 

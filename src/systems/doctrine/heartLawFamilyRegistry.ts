@@ -30,10 +30,23 @@ export const HEART_LAW_FAMILY_BY_ID: Readonly<Record<string, HeartLawFamily>> = 
   heart_unbroken_will_method: 'stability',
 });
 
+const HEART_LAW_FAMILY_LABELS: Readonly<Record<HeartLawFamily, string>> = Object.freeze({
+  circulation: 'Circulation',
+  stability: 'Stability',
+  insight: 'Insight',
+  endurance: 'Body / Endurance',
+  burst: 'Burst / Conflict',
+  breakthrough: 'Purity / Breakthrough',
+});
+
 export function getHeartLawFamily(id: string | null): HeartLawFamily | null {
   if (id === null) {
     return null;
   }
 
   return HEART_LAW_FAMILY_BY_ID[id] ?? null;
+}
+
+export function getHeartLawFamilyLabel(family: HeartLawFamily): string {
+  return HEART_LAW_FAMILY_LABELS[family];
 }

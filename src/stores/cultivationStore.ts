@@ -8,13 +8,13 @@ import {
   INSIGHT_BURSTS,
   INSIGHT_DURATION_MS,
   INSIGHT_INTERVAL_RANGE_MS,
-  VERSE_COMPREHENSION_THRESHOLD,
   getBreathModeMultipliers,
 } from '../content/tuning/cultivationTuning.js';
 import type { BreathMode } from '../types/index.js';
 import { useUIStore } from './uiStore.js';
 import { D } from '../utils/numbers.js';
 import { getConsumableSpec } from '../systems/consumables/consumableCatalog.js';
+import { getHeartLawChapterThresholds } from '../systems/doctrine/heartLawEffectReaders.js';
 import {
   buildCultivationConsumableReadModel,
   filterActiveCultivationConsumables,
@@ -81,7 +81,10 @@ function getStarterHeartLawIds(defs: HeartLawDef[]): string[] {
 
 function getChapterRequirement(currentChapter: number): number {
   if (currentChapter >= 5) return 0;
-  return VERSE_COMPREHENSION_THRESHOLD;
+  const thresholds = getHeartLawChapterThresholds();
+  const currentThreshold = thresholds[Math.max(0, currentChapter - 1)] ?? 0;
+  const nextThreshold = thresholds[currentChapter] ?? currentThreshold;
+  return Math.max(0, nextThreshold - currentThreshold);
 }
 
 function clampStability(value: number, cap: number) {

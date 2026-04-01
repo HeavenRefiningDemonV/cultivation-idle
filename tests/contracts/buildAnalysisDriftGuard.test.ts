@@ -12,6 +12,7 @@ test('packet 4.11 buildAnalysisService consumes earlier packet surfaces instead 
   assert.equal(source.includes('getPathAlignmentStrengthForTechnique'), true);
   assert.equal(source.includes('getPathAlignmentScoreForTechnique'), true);
   assert.equal(source.includes('getTechniqueProgressionSnapshot'), true);
+  assert.equal(source.includes('evaluateTechniqueSlotTypeFloor'), true);
   assert.equal(source.includes('detectArchetypeFromCoverage'), true);
 
   assert.equal(source.includes('.tags?.'), false);

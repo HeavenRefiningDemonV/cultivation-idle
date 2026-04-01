@@ -11,6 +11,10 @@ import {
   clampRealmIndexToSemesterSlice,
   getLiveRealmByIndex,
 } from '../progression/runtime/index.js';
+import { getHeartLawProfile } from './heartLawCatalog.js';
+import { getBreathModeSemantics } from './breathSemantics.js';
+import { getFocusModeSemantics } from './focusSemantics.js';
+import { evaluateDoctrineModePosture } from './modePosture.js';
 import type {
   DoctrineSnapshot,
   DoctrineSourceFlags,
@@ -29,37 +33,52 @@ function normalizeHeartLawChapter(chapter: number): number {
   return Math.max(1, Math.floor(chapter));
 }
 
-function resolveDoctrineRealmIndex(realmIndex: number): number {
-  return clampRealmIndexToSemesterSlice(realmIndex);
+function clampSpiritRootPurity(purity: number): number {
+  if (!Number.isFinite(purity)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(100, Math.floor(purity)));
+}
+
+function resolveDoctrineRealmIndex(realmIndex: number): { realmIndex: number; clampedRealmIndex: boolean } {
+  const normalized = Number.isFinite(realmIndex) ? Math.floor(realmIndex) : 0;
+  const clamped = clampRealmIndexToSemesterSlice(normalized);
+
+  return {
+    realmIndex: clamped,
+    clampedRealmIndex: clamped !== normalized,
+  };
 }
 
 function resolveDoctrineMajorRealmId(realmIndex: number): MajorRealmId {
   return getLiveRealmByIndex(realmIndex).id;
 }
 
-function resolveDoctrineCityId(): string | null {
+function resolveDoctrineCityId(): { cityId: string | null; invalidCityFiltered: boolean } {
   const cityState = useCityStore.getState();
   const { currentCityId, unlockedCityIds } = cityState;
 
   if (typeof currentCityId !== 'string' || currentCityId.trim().length === 0) {
-    return null;
+    return { cityId: null, invalidCityFiltered: false };
   }
 
   if (!LIVE_CITY_IDS.has(currentCityId)) {
-    return null;
+    return { cityId: null, invalidCityFiltered: true };
   }
 
   if (unlockedCityIds.length > 0 && !unlockedCityIds.includes(currentCityId)) {
-    return null;
+    return { cityId: null, invalidCityFiltered: true };
   }
 
-  return currentCityId;
+  return { cityId: currentCityId, invalidCityFiltered: false };
 }
 
 function resolveDoctrineLoadout(): {
   selectedLoadoutId: string | null;
   aiProfile: DoctrineSnapshot['aiProfile'];
   castingPolicy: DoctrineSnapshot['castingPolicy'];
+  invalidLoadoutFallback: boolean;
 } {
   const techniqueState = useTechniqueStore.getState();
   const selectedLoadout =
@@ -71,6 +90,7 @@ function resolveDoctrineLoadout(): {
       selectedLoadoutId: null,
       aiProfile: FALLBACK_AI_PROFILE,
       castingPolicy: FALLBACK_CASTING_POLICY,
+      invalidLoadoutFallback: true,
     };
   }
 
@@ -78,30 +98,7 @@ function resolveDoctrineLoadout(): {
     selectedLoadoutId: selectedLoadout.id,
     aiProfile: selectedLoadout.aiProfile ?? FALLBACK_AI_PROFILE,
     castingPolicy: selectedLoadout.castingPolicy ?? FALLBACK_CASTING_POLICY,
-  };
-}
-
-export function buildDoctrineSnapshot(): DoctrineSnapshot {
-  const gameState = useGameStore.getState();
-  const cultivationState = useCultivationStore.getState();
-  const prestigeState = usePrestigeStore.getState();
-
-  const realmIndex = resolveDoctrineRealmIndex(gameState.realm.index);
-  const loadout = resolveDoctrineLoadout();
-
-  return {
-    path: gameState.selectedPath,
-    focusMode: gameState.focusMode,
-    spiritRoot: prestigeState.spiritRoot,
-    heartLawId: cultivationState.selectedHeartLawId,
-    heartLawChapter: normalizeHeartLawChapter(cultivationState.chapter),
-    breathMode: cultivationState.breathMode,
-    selectedLoadoutId: loadout.selectedLoadoutId,
-    aiProfile: loadout.aiProfile,
-    castingPolicy: loadout.castingPolicy,
-    realmIndex,
-    majorRealmId: resolveDoctrineMajorRealmId(realmIndex),
-    cityId: resolveDoctrineCityId(),
+    invalidLoadoutFallback: false,
   };
 }
 
@@ -116,12 +113,112 @@ export function getDoctrineSourceFlags(snapshot: DoctrineSnapshot): DoctrineSour
 }
 
 export function getDoctrineSnapshotWarnings(snapshot: DoctrineSnapshot): DoctrineSnapshotWarnings {
-  const flags = getDoctrineSourceFlags(snapshot);
+  if (snapshot.warnings) {
+    return { ...snapshot.warnings };
+  }
 
+  const flags = getDoctrineSourceFlags(snapshot);
   return {
     missingPath: !flags.hasPath,
     missingHeartLaw: !flags.hasHeartLaw,
-    missingLoadout: !flags.hasLoadout,
     missingSpiritRoot: !flags.hasSpiritRoot,
+    missingLoadout: !flags.hasLoadout,
+    missingCity: !flags.hasCity,
+    clampedRealmIndex: false,
+    invalidCityFiltered: false,
+    invalidLoadoutFallback: false,
+    invalidHeartLawProfile: false,
+  };
+}
+
+export function buildDoctrineSnapshot(): DoctrineSnapshot {
+  const gameState = useGameStore.getState();
+  const cultivationState = useCultivationStore.getState();
+  const prestigeState = usePrestigeStore.getState();
+
+  const { realmIndex, clampedRealmIndex } = resolveDoctrineRealmIndex(gameState.realm.index);
+  const loadout = resolveDoctrineLoadout();
+  const city = resolveDoctrineCityId();
+
+  const heartLawId = cultivationState.selectedHeartLawId;
+  const heartLawProfile = getHeartLawProfile(heartLawId);
+  const invalidHeartLawProfile = heartLawId !== null && heartLawProfile === null;
+
+  const spiritRoot = prestigeState.spiritRoot;
+  const spiritRootSummary = spiritRoot
+    ? {
+        element: spiritRoot.element,
+        grade: spiritRoot.grade,
+        purity: clampSpiritRootPurity(spiritRoot.purity),
+      }
+    : null;
+
+  const snapshotWithoutMeta = {
+    path: gameState.selectedPath,
+    focusMode: gameState.focusMode,
+    spiritRoot,
+    spiritRootSummary,
+    heartLawId,
+    heartLawChapter: normalizeHeartLawChapter(cultivationState.chapter),
+    heartLawName: heartLawProfile?.name ?? null,
+    heartLawFamily: heartLawProfile?.family ?? null,
+    breathMode: cultivationState.breathMode,
+    selectedLoadoutId: loadout.selectedLoadoutId,
+    aiProfile: loadout.aiProfile,
+    castingPolicy: loadout.castingPolicy,
+    realmIndex,
+    majorRealmId: resolveDoctrineMajorRealmId(realmIndex),
+    cityId: city.cityId,
+  } satisfies Omit<DoctrineSnapshot, 'sourceFlags' | 'warnings'>;
+
+  const focusSemantics = getFocusModeSemantics(snapshotWithoutMeta.focusMode);
+  const breathSemantics = getBreathModeSemantics(snapshotWithoutMeta.breathMode);
+  const modePosture = evaluateDoctrineModePosture({
+    path: snapshotWithoutMeta.path,
+    focusMode: snapshotWithoutMeta.focusMode,
+    breathMode: snapshotWithoutMeta.breathMode,
+    heartLawId: snapshotWithoutMeta.heartLawId,
+    heartLawChapter: snapshotWithoutMeta.heartLawChapter,
+  });
+
+  const sourceFlags: DoctrineSourceFlags = {
+    hasPath: snapshotWithoutMeta.path !== null,
+    hasHeartLaw: snapshotWithoutMeta.heartLawId !== null,
+    hasSpiritRoot: snapshotWithoutMeta.spiritRoot !== null,
+    hasLoadout: snapshotWithoutMeta.selectedLoadoutId !== null,
+    hasCity: snapshotWithoutMeta.cityId !== null,
+  };
+
+  const warnings: DoctrineSnapshotWarnings = {
+    missingPath: !sourceFlags.hasPath,
+    missingHeartLaw: !sourceFlags.hasHeartLaw,
+    missingSpiritRoot: !sourceFlags.hasSpiritRoot,
+    missingLoadout: !sourceFlags.hasLoadout,
+    missingCity: !sourceFlags.hasCity,
+    clampedRealmIndex,
+    invalidCityFiltered: city.invalidCityFiltered,
+    invalidLoadoutFallback: loadout.invalidLoadoutFallback,
+    invalidHeartLawProfile,
+  };
+
+  return {
+    ...snapshotWithoutMeta,
+    focusSemantics: {
+      label: focusSemantics.label,
+      doctrineLine: focusSemantics.doctrineLine,
+      troubleshootingLine: focusSemantics.troubleshootingLine,
+    },
+    breathSemantics: {
+      label: breathSemantics.label,
+      doctrineLine: breathSemantics.doctrineLine,
+      troubleshootingLine: breathSemantics.troubleshootingLine,
+    },
+    modePosture: {
+      focusRating: modePosture.focus.rating,
+      breathRating: modePosture.breath.rating,
+      overallLine: modePosture.overallLine,
+    },
+    sourceFlags,
+    warnings,
   };
 }

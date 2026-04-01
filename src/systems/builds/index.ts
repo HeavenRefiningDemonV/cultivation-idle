@@ -3,6 +3,7 @@ export * from "./techniqueTaxonomyOverrides.js";
 export * from "./pathAlignment.js";
 export * from "./techniqueTaxonomy.js";
 export * from "./techniqueTaxonomyAudit.js";
+export * from "./techniqueTaxonomyPresentation.js";
 export * from "./loadoutProgressionContract.js";
 export * from "./loadoutSnapshot.js";
 export * from "./techniqueGradePolicy.js";

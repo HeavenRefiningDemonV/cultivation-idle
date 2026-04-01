@@ -1,4 +1,3 @@
-import { VERSE_COMPREHENSION_THRESHOLD } from '../../content/tuning/cultivationTuning.js';
 import type { HeartLawAffinityRules, HeartLawEffectPayload } from '../../content/index.js';
 import type { SpiritRootElement } from '../../types/index.js';
 import type { NormalizedHeartLawEffect } from './heartLawTypes.js';
@@ -8,8 +7,8 @@ const DOMAIN_WEIGHTS = {
   profession: 1.25,
   economy: 1.0,
   breakthrough: 1.5,
-  utility: 1.0,
-  combat: 1.0,
+  utility: 0.2,
+  combat: 0.35,
 } as const;
 
 const RAW_KEY_DOMAIN: Readonly<Record<string, NormalizedHeartLawEffect['domain']>> = Object.freeze({
@@ -209,14 +208,22 @@ function pairCapKey(payload: Record<string, unknown>): string | null {
   return keys[0] ?? null;
 }
 
+const HEART_LAW_CHAPTER_THRESHOLDS: readonly number[] = Object.freeze([0, 80, 220, 500, 1000]);
+
+const HEART_LAW_CHAPTER_VALUE_DISTRIBUTION = Object.freeze([
+  Object.freeze({ chapter: 1, weightPct: 32 }),
+  Object.freeze({ chapter: 2, weightPct: 18 }),
+  Object.freeze({ chapter: 3, weightPct: 18 }),
+  Object.freeze({ chapter: 4, weightPct: 17 }),
+  Object.freeze({ chapter: 5, weightPct: 15 }),
+] as const);
+
 export function getHeartLawChapterThresholds(): readonly number[] {
-  return Object.freeze([
-    0,
-    VERSE_COMPREHENSION_THRESHOLD,
-    VERSE_COMPREHENSION_THRESHOLD * 2,
-    VERSE_COMPREHENSION_THRESHOLD * 3,
-    VERSE_COMPREHENSION_THRESHOLD * 4,
-  ]);
+  return HEART_LAW_CHAPTER_THRESHOLDS;
+}
+
+export function getHeartLawChapterValueDistribution() {
+  return HEART_LAW_CHAPTER_VALUE_DISTRIBUTION;
 }
 
 export function getNormalizedHeartLawAffinityRules(
@@ -362,8 +369,8 @@ export function normalizeHeartLawEffectEntries(
 
     if (rawKey === 'voidWindow' && isObjectLike(rawValue)) {
       const primitiveEntries: Array<[string, unknown, number]> = [
-        ['voidWindow.everySec', rawValue.everySec, 0],
-        ['voidWindow.durationSec', rawValue.durationSec, 0],
+        ['voidWindow.everySec', rawValue.everySec, 0.05],
+        ['voidWindow.durationSec', rawValue.durationSec, 0.05],
         ['voidWindow.ignoreDefPct', rawValue.ignoreDefPct, getBudgetWeight('combat')],
       ];
       primitiveEntries.forEach(([normalizedKey, value, budgetWeight]) => {

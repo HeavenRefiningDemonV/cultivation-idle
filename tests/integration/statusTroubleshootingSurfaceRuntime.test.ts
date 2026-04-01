@@ -5,6 +5,7 @@ import { buildStatusTroubleshootingSurface } from '../../src/systems/ui/status/s
 import { useCityStore } from '../../src/stores/cityStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 import { useGameStore } from '../../src/stores/gameStore.js';
+import { useCultivationStore } from '../../src/stores/cultivationStore.js';
 import { useTechCollectionStore } from '../../src/stores/techCollectionStore.js';
 import { useTechniqueStore } from '../../src/stores/techniqueStore.js';
 import { useTrialStore } from '../../src/stores/trialStore.js';
@@ -94,4 +95,25 @@ test('status troubleshooting runtime cap state keeps gate wording honest', async
     assert.equal(surface.shortfall.reason, 'Current chapter cap reached.');
   }
   assert.doesNotMatch(surface.readiness.gateTrialName, /next|future/i);
+});
+
+test('status troubleshooting posture lines react to focus and breath changes', async () => {
+  await primeRuntime();
+
+  useGameStore.getState().setFocusMode('body');
+  let surface = buildStatusTroubleshootingSurface();
+  const bodyLine = surface.identity.focusPosture.line;
+
+  useGameStore.getState().setFocusMode('spirit');
+  surface = buildStatusTroubleshootingSurface();
+  const spiritLine = surface.identity.focusPosture.line;
+  assert.notEqual(bodyLine, spiritLine);
+  assert.equal(surface.identity.focusPosture.rating, 'helping');
+
+  useCultivationStore.getState().setBreathMode('safe');
+  const safe = buildStatusTroubleshootingSurface();
+  useCultivationStore.getState().setBreathMode('fast');
+  const fast = buildStatusTroubleshootingSurface();
+  assert.notEqual(safe.identity.breathPosture.line, fast.identity.breathPosture.line);
+  assert.ok(fast.identity.modeOverallLine);
 });

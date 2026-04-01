@@ -2,56 +2,21 @@ import { useEffect, useMemo, useState } from 'react';
 import { INITIAL_REALM } from '../../../constants/index.js';
 import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
 import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
+import {
+  getHeartLawProfile,
+  getHeartLawSelectionPresentation,
+  summarizeHeartLawChapterEffects,
+} from '../../../systems/doctrine/index.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
-import type { HeartLawChapter } from '../../../content/index.js';
 import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
 import { RadialVerseRing } from './RadialVerseRing.js';
 import './HeartLawMindView.scss';
 
 const roman = ['I', 'II', 'III', 'IV', 'V'];
-
-const archetypeLabels: Record<string, string> = {
-  steady: 'Steady',
-  burst: 'Burst',
-  risk: 'Risk',
-  artisan: 'Artisan',
-  mystic: 'Mystic',
-};
-
-const EFFECT_LABELS: Record<string, string> = {
-  cultivateQiMult: 'Cultivation rate',
-  combatDamageMult: 'Combat damage',
-  offlineEfficiencyAdd: 'Offline efficiency',
-  stabilityCostMult: 'Stability cost',
-  professionYieldMult: 'Profession yield',
-  professionSpeedMult: 'Profession speed',
-};
-
-function formatEffectValue(value: unknown): string | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  const pct = Math.round(value * 100);
-  if (Math.abs(value) < 5) {
-    return `${value >= 0 ? '+' : ''}${pct}%`;
-  }
-  return `${value}`;
-}
-
-function summarizeEffects(effects: unknown): string {
-  if (!effects || typeof effects !== 'object') return 'No recorded effects.';
-  const parts: string[] = [];
-  Object.entries(effects as Record<string, unknown>).forEach(([key, value]) => {
-    const label = EFFECT_LABELS[key] ?? key;
-    const formatted = formatEffectValue(value);
-    if (formatted) {
-      parts.push(`${label} ${formatted}`);
-    }
-  });
-  return parts.length > 0 ? parts.join(' • ') : 'No recorded effects.';
-}
 
 export function HeartLawMindView() {
   const activeActivity = useActivityStore((state) => state.active);
@@ -73,7 +38,15 @@ export function HeartLawMindView() {
   }, [chapter, selectedHeartLawId]);
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
-  const heartLawTags = heartLawDef?.daoTags ?? [];
+  const heartLawProfile = getHeartLawProfile(heartLawDef?.id ?? null);
+  const heartLawPresentation = heartLawDef
+    ? getHeartLawSelectionPresentation(heartLawDef, {
+      spiritRoot,
+      isUnlocked: true,
+      isSelected: true,
+    })
+    : null;
+  const heartLawTags = heartLawPresentation?.tagLabels ?? []; 
   const chapters = heartLawDef?.chapters ?? [];
   const required = getRequirement();
   const isCultivating = activeActivity?.type === 'meditate';
@@ -91,18 +64,17 @@ export function HeartLawMindView() {
     [heartLawDef, spiritRoot],
   );
 
-  const resonanceText =
-    status === 'match'
+  const resonanceText = heartLawPresentation?.resonanceLabel
+    ? `Resonance: ${heartLawPresentation.resonanceLabel}`
+    : status === 'match'
       ? `Resonates: Strong (+${percent}% signature potency)`
       : status === 'mismatch'
         ? 'Resonates: Weak (minor penalty only)'
         : 'Resonance: None';
 
-  const selectedChapter = chapters.find((entry) => entry.chapter === selectedVerse);
-  const selectedEffectsSummary = summarizeEffects(selectedChapter?.effects);
+  const selectedEffectsSummary = summarizeHeartLawChapterEffects(heartLawProfile, selectedVerse);
 
-  const tierLabel = heartLawDef?.tier ? heartLawDef.tier.replace('tier', 'Tier ') : 'Unranked';
-  const archetypeLabel = heartLawDef?.archetype ? archetypeLabels[heartLawDef.archetype] ?? heartLawDef.archetype : '';
+  const tierLabel = heartLawPresentation?.tierLabel ?? 'Unranked';
 
   const isNewLife = realm.index === INITIAL_REALM.index && realm.substage === INITIAL_REALM.substage;
   const canChangeHeartLaw = isNewLife;
@@ -120,7 +92,7 @@ export function HeartLawMindView() {
         <div>
           <div className="heartLawMindTitle">{heartLawDef?.name ?? 'No Heart Law Selected'}</div>
           <div className="heartLawMindSubtitle">
-            {archetypeLabel ? `${archetypeLabel} • ` : ''}
+            {heartLawPresentation?.familyLabel ? `${heartLawPresentation.familyLabel} • ` : ''}
             {tierLabel}
           </div>
         </div>

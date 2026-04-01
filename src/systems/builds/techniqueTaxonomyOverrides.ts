@@ -1,12 +1,12 @@
 import type { TechniqueFamily, TechniqueSupportFlag } from './techniqueFamilies.js';
-import type { PathAlignmentStrength } from './pathAlignment.js';
+import type { NativePathAlignmentStrength } from './pathAlignment.js';
 
 export interface TechniqueTaxonomyOverride {
   addFamilies?: readonly TechniqueFamily[];
   removeFamilies?: readonly TechniqueFamily[];
   addSupportFlags?: readonly TechniqueSupportFlag[];
   removeSupportFlags?: readonly TechniqueSupportFlag[];
-  nativeAlignment?: PathAlignmentStrength;
+  nativeAlignment?: NativePathAlignmentStrength;
   addDerivedFrom?: readonly string[];
 }
 

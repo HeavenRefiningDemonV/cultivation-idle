@@ -407,10 +407,10 @@ export function CultivateScreen() {
   const pathSummary = getPathDoctrineSummary(selectedPath);
   const spiritRootView = adaptSpiritRootDoctrineToSemanticView(spiritRoot);
   const spiritRootLine = spiritRootView
-    ? `${SPIRIT_ROOT_ELEMENTS[spiritRootView.element]} • ${SPIRIT_ROOT_GRADES[spiritRootView.grade]} • ${Math.round(spiritRootView.purity)}% purity`
+    ? `${SPIRIT_ROOT_ELEMENTS[spiritRootView.element]} • ${spiritRootView.gradeLabel} • ${Math.round(spiritRootView.purity)}% purity`
     : 'Dormant Spirit Root';
   const spiritRootDetail = spiritRootView
-    ? `${spiritRootView.purityBand[0].toUpperCase()}${spiritRootView.purityBand.slice(1)} foundation • ${spiritRootView.powerBand[0].toUpperCase()}${spiritRootView.powerBand.slice(1)} potential`
+    ? `${spiritRootView.detailLine} • ${spiritRootView.potencySummary}`
     : 'Your Spirit Root has not manifested yet.';
 
   const heartLawVerseLabel = heartLawDef
@@ -509,9 +509,9 @@ export function CultivateScreen() {
             resonanceLine={resonanceLine}
             resonanceDetail={resonanceDetail}
             breathLabel={breathSemantics.label}
-            breathSummary={breathSemantics.summary}
+            breathSummary={breathSemantics.doctrineLine}
             focusLabel={focusSemantics.label}
-            focusSummary={focusSemantics.summary}
+            focusSummary={focusSemantics.doctrineLine}
             spiritRoot={spiritRoot}
           />
         </div>

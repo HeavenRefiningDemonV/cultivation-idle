@@ -37,6 +37,8 @@ test('live techniques build a complete taxonomy catalog', async () => {
     assert.equal(profile.techId, def.id);
     assert.equal(profile.path, def.path);
     assert.equal(profile.type, def.type);
+    assert.equal(profile.nativeAlignment === 'strong' || profile.nativeAlignment === 'neutral', true);
+    assert.equal(profile.alignment, profile.nativeAlignment);
     assert.ok(profile.families.length > 0);
     assert.deepEqual(profile.families, canonicalFamilies(profile.families));
     assert.deepEqual(profile.supportFlags, canonicalSupportFlags(profile.supportFlags));
@@ -49,10 +51,12 @@ test('representative taxonomy profiles are locked', async () => {
 
   assert.deepEqual(catalog.tech_heaven_starfire_bolt.families, ['coreDamage', 'setup']);
   assert.equal(catalog.tech_heaven_starfire_bolt.alignment, 'strong');
+  assert.equal(catalog.tech_heaven_starfire_bolt.nativeAlignment, 'strong');
   assert.deepEqual(catalog.tech_heaven_starfire_bolt.supportFlags, []);
 
   assert.deepEqual(catalog.tech_heaven_golden_seal.families, ['guard', 'cleanse']);
   assert.equal(catalog.tech_heaven_golden_seal.alignment, 'neutral');
+  assert.equal(catalog.tech_heaven_golden_seal.nativeAlignment, 'neutral');
   assert.deepEqual(catalog.tech_heaven_golden_seal.supportFlags, ['survival']);
 
   assert.deepEqual(catalog.tech_heaven_astral_needle.families, ['setup', 'control']);

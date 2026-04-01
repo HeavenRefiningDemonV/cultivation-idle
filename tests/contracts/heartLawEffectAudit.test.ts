@@ -78,16 +78,12 @@ test('derived keys include expected flattened object and metadata forms', () => 
   ].forEach((key) => assert.equal(audit.derivedKeys.includes(key), true));
 });
 
-test('budget violations are deterministic and sorted', () => {
+test('live semester content has deterministic green spillover budget audit', () => {
   const a = auditHeartLawEffectsFromDefinitions(config.heartLaws, config.affinityRules);
   const b = auditHeartLawEffectsFromDefinitions(config.heartLaws, config.affinityRules);
 
   assert.deepEqual(a.budgetViolations, b.budgetViolations);
-  a.budgetViolations.forEach((entry) => assert.equal(entry.combatBudgetPct > 40, true));
-  assert.deepEqual(
-    a.budgetViolations.map((entry) => entry.lawId),
-    [...a.budgetViolations.map((entry) => entry.lawId)].sort((left, right) => left.localeCompare(right)),
-  );
+  assert.deepEqual(a.budgetViolations, []);
 });
 
 test('synthetic overburst laws are caught by the deterministic audit', () => {
@@ -96,7 +92,7 @@ test('synthetic overburst laws are caught by the deterministic audit', () => {
 
   const violation = audit.budgetViolations.find((entry) => entry.lawId === syntheticLaw.id);
   assert.ok(violation);
-  assert.equal((violation?.combatBudgetPct ?? 0) > 40, true);
+  assert.equal((violation?.spilloverBudgetPct ?? 0) > 40, true);
 });
 
 test('unknown future raw keys become ignored keys instead of being silently classified', () => {

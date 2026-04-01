@@ -132,6 +132,7 @@ export function auditHeartLawEffectsFromDefinitions(
       supportedRawKeys: [...perLawSupported].sort((a, b) => a.localeCompare(b)),
       derivedNormalizedKeys: [...perLawDerived].sort((a, b) => a.localeCompare(b)),
       ignoredRawKeys: [...perLawIgnored].sort((a, b) => a.localeCompare(b)),
+      spilloverBudgetPct: catalog[law.id]?.spilloverBudgetPct ?? 0,
       combatBudgetPct: catalog[law.id]?.combatBudgetPct ?? 0,
     };
   }).sort((a, b) => a.lawId.localeCompare(b.lawId));
@@ -141,8 +142,8 @@ export function auditHeartLawEffectsFromDefinitions(
     derivedKeys: [...derivedKeys].sort((a, b) => a.localeCompare(b)),
     ignoredKeys: [...ignoredKeys].sort((a, b) => a.localeCompare(b)),
     budgetViolations: lawReports
-      .filter((report) => report.combatBudgetPct > 40)
-      .map((report) => ({ lawId: report.lawId, combatBudgetPct: report.combatBudgetPct }))
+       .filter((report) => report.spilloverBudgetPct > 40)
+      .map((report) => ({ lawId: report.lawId, spilloverBudgetPct: report.spilloverBudgetPct, combatBudgetPct: report.combatBudgetPct }))
       .sort((a, b) => a.lawId.localeCompare(b.lawId)),
     lawReports,
   };

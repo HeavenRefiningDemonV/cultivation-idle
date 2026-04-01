@@ -31,7 +31,7 @@ function buildPresentation(law: HeartLawDef) {
 test('every live heart law has family, tier, resonance labels, and <= 3 tags', () => {
   for (const law of laws) {
     const presentation = buildPresentation(law);
-    assert.ok(presentation.familyLabel.trim().length > 0);
+    assert.ok(['Circulation','Stability','Insight','Body / Endurance','Burst / Conflict','Purity / Breakthrough'].includes(presentation.familyLabel));
     assert.ok(presentation.tierLabel.trim().length > 0);
     assert.ok(presentation.resonanceLabel.trim().length > 0);
     assert.ok(presentation.tagLabels.length <= 3);

@@ -477,8 +477,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         const techDef = contentStore.maps.techniquesById[techId];
         if (!techDef) return;
 
-        const rank = techCollection.unlockedTechs[techId]?.rank ?? 1;
-        const rankMult = rankMultiplier(rank);
+        const rankMult = rankMultiplier(techCollection.getTechniqueProgressionSnapshot(techId).rank);
         const scaling = getTechniqueScaling(techId, techDef);
         const effects = applyRankMultiplier(
           normalizeTechniqueEffects(techDef),
@@ -2105,8 +2104,7 @@ export const useCombatStore = create<ExtendedCombatState>()(
         return false;
       }
 
-      const rank = useTechCollectionStore.getState().unlockedTechs[techId]?.rank ?? 1;
-      const rankMult = rankMultiplier(rank);
+      const rankMult = rankMultiplier(useTechCollectionStore.getState().getTechniqueProgressionSnapshot(techId).rank);
       const scaling = getTechniqueScaling(techId, techDef);
       const effects = applyRankMultiplier(
         normalizeTechniqueEffects(techDef, { includeSecondary: scaling.secondaryUnlocked }),

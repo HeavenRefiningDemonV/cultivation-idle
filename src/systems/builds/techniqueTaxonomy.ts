@@ -7,8 +7,8 @@ import {
   TECHNIQUE_SUPPORT_FLAG_ORDER,
   buildTechniqueFamilyDerivation,
 } from './techniqueFamilies.js';
-import type { PathAlignmentStrength } from './pathAlignment.js';
-import { getNativePathAlignment, getTechniquePathFit, scoreTechniqueForPath } from './pathAlignment.js';
+import type { NativePathAlignmentStrength, PathAlignmentStrength } from './pathAlignment.js';
+import { getNativePathAlignment, resolveTechniquePathAlignment } from './pathAlignment.js';
 import { getTechniqueTaxonomyOverride } from './techniqueTaxonomyOverrides.js';
 
 export interface TechniqueTaxonomyProfile {
@@ -16,6 +16,8 @@ export interface TechniqueTaxonomyProfile {
   path: CultivationPath;
   type: string;
   families: TechniqueFamily[];
+  nativeAlignment?: NativePathAlignmentStrength;
+  /** @deprecated Use nativeAlignment for intrinsic alignment semantics. */
   alignment: PathAlignmentStrength;
   supportFlags: TechniqueSupportFlag[];
   derivedFrom: string[];
@@ -50,7 +52,7 @@ export function buildTechniqueTaxonomyProfile(def: TechniqueDef): TechniqueTaxon
     ...derivation.supportFlags.filter((flag) => !(override?.removeSupportFlags ?? []).includes(flag)),
     ...(override?.addSupportFlags ?? []),
   ]);
-  const alignment = override?.nativeAlignment ?? getNativePathAlignment(def.path, families);
+  const nativeAlignment = override?.nativeAlignment ?? getNativePathAlignment(def.path, families);
   const derivedFrom = Array.from(new Set([
     ...derivation.derivedFrom,
     ...(override?.addDerivedFrom ?? []),
@@ -61,7 +63,8 @@ export function buildTechniqueTaxonomyProfile(def: TechniqueDef): TechniqueTaxon
     path: def.path,
     type: def.type,
     families,
-    alignment,
+    nativeAlignment,
+    alignment: nativeAlignment,
     supportFlags,
     derivedFrom,
   });
@@ -109,12 +112,13 @@ export function getPathAlignmentStrengthForTechnique(
     return 'off';
   }
 
-  return getTechniquePathFit({
+  const resolved = resolveTechniquePathAlignment({
     techPath: profile.path,
     families: profile.families,
-    nativeAlignment: profile.alignment,
+    nativeAlignment: profile.nativeAlignment ?? (profile.alignment === 'off' ? 'neutral' : profile.alignment),
     selectedPath: path,
   });
+  return resolved.fit;
 }
 
 export function getPathAlignmentScoreForTechnique(
@@ -126,10 +130,10 @@ export function getPathAlignmentScoreForTechnique(
     return 0;
   }
 
-  return scoreTechniqueForPath({
+  return resolveTechniquePathAlignment({
     techPath: profile.path,
     families: profile.families,
-    nativeAlignment: profile.alignment,
+    nativeAlignment: profile.nativeAlignment ?? (profile.alignment === 'off' ? 'neutral' : profile.alignment),
     selectedPath: path,
-  });
+  }).score;
 }

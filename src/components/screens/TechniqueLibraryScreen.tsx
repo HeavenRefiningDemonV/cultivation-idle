@@ -3,7 +3,7 @@ import { buildLoadoutSnapshot } from '../../systems/builds/index.js';
 import { analyzeSelectedBuild } from '../../systems/builds/buildAnalysisService.js';
 import { getBuildArchetype } from '../../systems/builds/archetypeRegistry.js';
 import { evaluateCurrentCombatPostureFit } from '../../systems/builds/combatPostureFit.js';
-import { getPathDoctrineProfile } from '../../systems/doctrine/pathDoctrineRegistry.js';
+import { getPathDoctrineProfile } from '../../systems/doctrine/index.js';
 import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -35,6 +35,7 @@ import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { BuildAltarSummary } from '../../ui/techniques/BuildAltarSummary.js';
 import './TechniqueLibraryScreen.scss';
 import { buildPurposeSourceContext, buildTechniqueFragmentPurposeSourceSurface } from '../../systems/economy/purposeSourceSurface.js';
+import { formatProgressionFloorContextLabel } from '../../systems/builds/loadoutProgressionContract.js';
 
 type SlotSelection = { type: SlotType; index: number };
 
@@ -395,11 +396,17 @@ export function TechniqueLibraryScreen() {
         message: `You learned an Ultimate technique, but the Ultimate slot is locked until ${realmName}.`,
       });
     } else if (preferred === 'active' && unlockedCounts.active <= 0) {
-      const realmName = progression.unlockRequirements.active[0]?.realmName || getLiveRealmNameByIndex(1);
-      setAltarFeedback({ tone: 'error', message: `No active slots are available yet. Unlocks at: ${realmName}.` });
+      const unlockLabel = formatProgressionFloorContextLabel(
+        progression.unlockRequirements.active[0],
+        { prefix: 'Unlocks at:', punctuation: '.' },
+      ) ?? `Unlocks at: ${getLiveRealmNameByIndex(1)}.`;
+      setAltarFeedback({ tone: 'error', message: `No active slots are available yet. ${unlockLabel}` });
     } else if (preferred === 'passive' && unlockedCounts.passive <= 0) {
-      const realmName = progression.unlockRequirements.passive[0]?.realmName || getLiveRealmNameByIndex(2);
-      setAltarFeedback({ tone: 'error', message: `No passive slots are available yet. Unlocks at: ${realmName}.` });
+      const unlockLabel = formatProgressionFloorContextLabel(
+        progression.unlockRequirements.passive[0],
+        { prefix: 'Unlocks at:', punctuation: '.' },
+      ) ?? `Unlocks at: ${getLiveRealmNameByIndex(2)}.`;
+      setAltarFeedback({ tone: 'error', message: `No passive slots are available yet. ${unlockLabel}` });
     } else {
       setSelectedSlot(defaultSelection);
     }

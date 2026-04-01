@@ -157,3 +157,38 @@ test('heartLawLogic source does not widen runtime spirit root application to qi 
   assert.equal(source.includes('resonance.qiMult'), false);
   assert.equal(source.includes('resonance.comprehensionMult'), false);
 });
+
+test('gameStore source no longer uses legacy spirit root purity scaling or universal 5x multiplier path', async () => {
+  const source = await fs.readFile(path.resolve(process.cwd(), 'src/stores/gameStore.ts'), 'utf8');
+
+  assert.equal(source.includes('getSpiritRootRuntimeMultiplier'), true);
+  assert.equal(source.includes('spiritRoot.purity / 100'), false);
+  assert.equal(/\.getSpiritRootTotalMultiplier\s*\(/.test(source), false);
+});
+
+test('gameStore Spirit Root runtime delta remains bounded under the D.4 12% cap intent', () => {
+  const evaluateSnapshot = (root: SpiritRoot) => {
+    usePrestigeStore.setState({ spiritRoot: root });
+    useGameStore.getState().calculateQiPerSecond();
+    useGameStore.getState().calculatePlayerStats();
+    const game = useGameStore.getState();
+    return {
+      qiPerSecond: Number(game.qiPerSecond),
+      atk: Number(game.stats.atk),
+      hp: Number(game.stats.maxHp),
+      def: Number(game.stats.def),
+      regen: Number(game.stats.regen),
+    };
+  };
+
+  const weakWood = evaluateSnapshot({ grade: 1, element: 'wood', purity: 0 });
+  const strongWood = evaluateSnapshot({ grade: 5, element: 'wood', purity: 100 });
+  assert.equal(strongWood.qiPerSecond / weakWood.qiPerSecond <= 1.12, true);
+
+  const weakFire = evaluateSnapshot({ grade: 1, element: 'fire', purity: 0 });
+  const strongFire = evaluateSnapshot({ grade: 5, element: 'fire', purity: 100 });
+  assert.equal(strongFire.atk / weakFire.atk <= 1.12, true);
+  assert.equal(strongFire.hp / weakFire.hp <= 1.12, true);
+  assert.equal(strongFire.def / weakFire.def <= 1.12, true);
+  assert.equal(strongFire.regen / weakFire.regen <= 1.12, true);
+});

@@ -1,4 +1,4 @@
-import { getPathDoctrineProfile } from '../doctrine/pathDoctrineRegistry.js';
+import { getPathDoctrineProfile } from '../doctrine/index.js';
 import type { AiProfile, CultivationPath } from '../../types/index.js';
 import type {
   AiProfileFit,

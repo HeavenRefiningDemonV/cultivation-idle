@@ -57,11 +57,23 @@ test('every profile exposes the semester chapter thresholds through the builder 
   const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);
 
   Object.values(catalog).forEach((profile) => {
-    assert.deepEqual(profile.chapterThresholds, [0, 100, 200, 300, 400]);
+    assert.deepEqual(profile.chapterThresholds, [0, 80, 220, 500, 1000]);
     assert.deepEqual(profile.chapterThresholds, getHeartLawChapterThresholds());
   });
 });
 
+
+
+test('chapter value distribution metadata exists, covers chapters 1-5, and sums to 100', async () => {
+  const config = await readHeartLawsConfig();
+  const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);
+
+  Object.values(catalog).forEach((profile) => {
+    assert.deepEqual(profile.chapterValueDistribution.map((entry) => entry.chapter), [1, 2, 3, 4, 5]);
+    assert.equal(profile.chapterValueDistribution.reduce((sum, entry) => sum + entry.weightPct, 0), 100);
+    assert.ok(profile.playerFacingFamilyLabel.trim().length > 0);
+  });
+});
 
 test('normalized catalog preserves the validated affinity rules on every profile', async () => {
   const config = await readHeartLawsConfig();
@@ -162,5 +174,19 @@ test('no live Heart Law profile is empty and every profile exposes chapters 1 th
     assert.ok(profile.family);
     assert.ok(profile.normalizedEffects.length > 0);
     assert.deepEqual(Object.keys(profile.chapterEffectsByChapter), ['1', '2', '3', '4', '5']);
+  });
+});
+
+test('every live Heart Law remains inner-path-first (non-combat weighted majority)', async () => {
+  const config = await readHeartLawsConfig();
+  const catalog = buildHeartLawCatalogFromDefinitions(config.heartLaws, config.affinityRules);
+
+  Object.values(catalog).forEach((profile) => {
+    assert.equal(profile.spilloverBudgetPct <= 40, true);
+    assert.equal(
+      profile.normalizedEffects.some((effect) => effect.domain !== 'combat'),
+      true,
+      `${profile.id} has no non-combat effect entries`,
+    );
   });
 });

@@ -1,4 +1,5 @@
 import type { ManualGrade, TechRarity } from '../../types/index.js';
+import type { TechniqueSlotType } from '../../types/index.js';
 import {
   getTechniqueGradePolicy,
   getTechniqueMaxRankForGrade,
@@ -66,6 +67,16 @@ export interface TechniqueProgressionSnapshot {
   appliedRuneCount: number;
 }
 
+export interface TechniqueSlotTypeFloorEvaluation {
+  slotType: TechniqueSlotType;
+  masteryFloor: number;
+  masteryFloorMet: boolean;
+  rankFloor: number;
+  rankFloorMet: boolean;
+  runeFloor: number;
+  runeFloorMet: boolean;
+}
+
 const DEFAULT_RARITY: TechRarity = 'common';
 
 const clamp = (value: number, minimum: number, maximum: number): number =>
@@ -104,6 +115,12 @@ export const MASTERY_XP_SCALE = 3;
 export const MAX_TECHNIQUE_MASTERY_LEVEL = 100;
 export const TECHNIQUE_MASTERY_EFFECT_MULTIPLIER_PER_LEVEL = 0.003;
 export const TECHNIQUE_RANK_MULTIPLIER_PER_RANK = 0.1;
+export const TECHNIQUE_SLOT_ACTIVE_PASSIVE_MASTERY_FLOOR = 25;
+export const TECHNIQUE_SLOT_ULTIMATE_MASTERY_FLOOR = 50;
+export const TECHNIQUE_SLOT_ACTIVE_PASSIVE_MIN_RANK_FLOOR = 2;
+export const TECHNIQUE_SLOT_ULTIMATE_MIN_RANK_FLOOR = 3;
+export const TECHNIQUE_SLOT_ACTIVE_PASSIVE_MIN_RUNE_FLOOR = 1;
+export const TECHNIQUE_SLOT_ULTIMATE_MIN_RUNE_FLOOR = 2;
 
 export function normalizeTechniqueRarity(input?: string | null): TechRarity {
   const normalized = (input ?? '').toLowerCase();
@@ -341,6 +358,34 @@ export function buildTechniqueProgressionSnapshot(
     runeSockets,
     appliedTraitCount: normalized.traits.length,
     appliedRuneCount: normalized.runes.filter((runeId) => Boolean(runeId)).length,
+  };
+}
+
+export function evaluateTechniqueSlotTypeFloor(
+  progression: Pick<TechniqueProgressionSnapshot, 'masteryLevel' | 'rank' | 'rankCap' | 'runeSockets' | 'appliedRuneCount'>,
+  slotType: TechniqueSlotType,
+): TechniqueSlotTypeFloorEvaluation {
+  const isUltimate = slotType === 'ultimate';
+  const masteryFloor = isUltimate ? TECHNIQUE_SLOT_ULTIMATE_MASTERY_FLOOR : TECHNIQUE_SLOT_ACTIVE_PASSIVE_MASTERY_FLOOR;
+  const rankFloor = Math.min(
+    progression.rankCap,
+    isUltimate ? TECHNIQUE_SLOT_ULTIMATE_MIN_RANK_FLOOR : TECHNIQUE_SLOT_ACTIVE_PASSIVE_MIN_RANK_FLOOR,
+  );
+  const runeFloor = progression.runeSockets <= 0
+    ? 0
+    : Math.min(
+      progression.runeSockets,
+      isUltimate ? TECHNIQUE_SLOT_ULTIMATE_MIN_RUNE_FLOOR : TECHNIQUE_SLOT_ACTIVE_PASSIVE_MIN_RUNE_FLOOR,
+    );
+
+  return {
+    slotType,
+    masteryFloor,
+    masteryFloorMet: progression.masteryLevel >= masteryFloor,
+    rankFloor,
+    rankFloorMet: progression.rank >= rankFloor,
+    runeFloor,
+    runeFloorMet: runeFloor === 0 ? true : progression.appliedRuneCount >= runeFloor,
   };
 }
 
