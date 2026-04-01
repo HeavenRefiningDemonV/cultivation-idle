@@ -552,6 +552,28 @@ export function CultivateScreen() {
             focusLabel={focusSemantics.label}
             focusSummary={focusSemantics.summary}
             spiritRoot={spiritRoot}
+            verseSlot={
+              heartLawDef ? (
+                <VerseMiniBar
+                  chapter={chapter}
+                  comprehension={comprehension}
+                  requirement={verseRequirement}
+                  title={verseTitle}
+                  className="cultivationDoctrineVerseBar"
+                  isComplete={verseRequirement <= 0}
+                />
+              ) : (
+                <VerseMiniBar
+                  chapter={chapter}
+                  comprehension={0}
+                  requirement={0}
+                  title={verseTitle}
+                  className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
+                  placeholderLabel={versePlaceholderLabel}
+                  placeholderValue={versePlaceholderValue}
+                />
+              )
+            }
           />
         </div>
       </div>
@@ -580,28 +602,6 @@ export function CultivateScreen() {
             isReady={canBreakthrough}
             rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
           />
-          <div className="cultivationVerseSlot">
-            {heartLawDef ? (
-              <VerseMiniBar
-                chapter={chapter}
-                comprehension={comprehension}
-                requirement={verseRequirement}
-                title={verseTitle}
-                className="cultivationVerseSlot__bar"
-                isComplete={verseRequirement <= 0}
-              />
-            ) : (
-              <VerseMiniBar
-                chapter={chapter}
-                comprehension={0}
-                requirement={0}
-                title={verseTitle}
-                className="cultivationVerseSlot__bar cultivationVerseSlot__bar--placeholder"
-                placeholderLabel={versePlaceholderLabel}
-                placeholderValue={versePlaceholderValue}
-              />
-            )}
-          </div>
           <div className="cultivationBuffSummary" aria-live="polite">
             <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
             {activeCultivationBuffs.length === 0 ? (

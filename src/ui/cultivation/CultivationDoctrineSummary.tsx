@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { SpiritRoot } from '../../types/index.js';
 
 export type DoctrineSummaryRow = {
@@ -21,6 +22,7 @@ type CultivationDoctrineSummaryProps = {
   focusLabel: string;
   focusSummary: string;
   spiritRoot: SpiritRoot | null;
+  verseSlot?: ReactNode;
 };
 
 export function CultivationDoctrineSummary({
@@ -37,6 +39,7 @@ export function CultivationDoctrineSummary({
   focusLabel,
   focusSummary,
   spiritRoot,
+  verseSlot,
 }: CultivationDoctrineSummaryProps) {
   const rows: DoctrineSummaryRow[] = [
     { label: 'Path', value: pathLabel, detail: pathSummary, intent: 'identity' },
@@ -68,6 +71,7 @@ export function CultivationDoctrineSummary({
           </div>
         ))}
       </div>
+      {verseSlot ? <div className="cultivationDoctrinePanel__verseSlot">{verseSlot}</div> : null}
     </section>
   );
 }

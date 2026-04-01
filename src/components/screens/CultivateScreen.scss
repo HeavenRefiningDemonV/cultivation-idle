@@ -458,6 +458,7 @@
 .cultivationDoctrinePanel__rows {
   display: grid;
   gap: 10px;
+  margin-bottom: 10px;
 }
 
 .cultivationDoctrinePanel__row {
@@ -498,6 +499,19 @@
   font-size: 13px;
   font-weight: 700;
   color: rgba(43, 33, 22, 0.9);
+}
+
+.cultivationDoctrinePanel__verseSlot {
+  width: 100%;
+  min-height: 36px;
+  border-top: 1px solid rgba(120, 72, 33, 0.16);
+  padding-top: 8px;
+}
+
+.cultivationDoctrineVerseBar {
+  width: 100%;
+  min-height: 34px;
+  opacity: 0.96;
 }
 
 .cultivationHudRail {
@@ -723,22 +737,6 @@
 .cultivationRealmTagSub {
   font-weight: 500;
   color: rgba(226, 232, 240, 0.7);
-}
-
-.cultivationVerseSlot {
-  width: var(--cultivation-qi-track-width, min(900px, calc(100% - 42px)));
-  min-height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: -2px;
-  padding: 0;
-}
-
-.cultivationVerseSlot__bar {
-  width: 100%;
-  min-height: 34px;
-  opacity: 0.95;
 }
 
 .cultivationBuffSummary {
