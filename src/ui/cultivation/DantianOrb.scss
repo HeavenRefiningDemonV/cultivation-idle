@@ -1,11 +1,8 @@
 .dantianOrb {
-  position: absolute;
+  position: relative;
   z-index: 1;
   width: clamp(104px, 12vh, 136px);
   height: clamp(104px, 12vh, 136px);
-  top: 56%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
   --accent: rgba(148, 163, 184, 0.7);
