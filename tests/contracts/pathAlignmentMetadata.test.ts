@@ -8,6 +8,7 @@ import {
   buildTechniqueTaxonomyFromDefinitions,
   getPathAlignmentScoreForTechnique,
   getPathAlignmentStrengthForTechnique,
+  resolveTechniquePathAlignment,
 } from '../../src/systems/builds/index.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 
@@ -129,4 +130,15 @@ test('cross-path support techniques remain neutral support', () => {
 
   assert.equal(getPathAlignmentStrengthForTechnique('tech_martial_executioner_mark', 'earth'), 'neutral');
   assert.equal(getPathAlignmentScoreForTechnique('tech_martial_executioner_mark', 'earth'), 1);
+});
+
+test('single-call alignment helper returns deterministic fit and score', () => {
+  const resolved = resolveTechniquePathAlignment({
+    techPath: 'heaven',
+    families: ['guard', 'cleanse'],
+    nativeAlignment: 'neutral',
+    selectedPath: 'earth',
+  });
+
+  assert.deepEqual(resolved, { fit: 'neutral', score: 1 });
 });
