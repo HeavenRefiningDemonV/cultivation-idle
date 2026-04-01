@@ -7,6 +7,7 @@ import { useTechniqueStore, type SlotType } from '../../stores/techniqueStore.js
 import { useGameStore } from '../../stores/gameStore.js';
 import { useTechCollectionStore } from '../../stores/techCollectionStore.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
+import { formatProgressionFloorContextLabel } from '../../systems/builds/loadoutProgressionContract.js';
 
 function recommendProfile(tags?: string[]) {
   const lowered = (tags ?? []).map((tag) => tag.toLowerCase());
@@ -89,9 +90,7 @@ export function TechniqueLearnedModal() {
     if (!loadout) return [];
 
     if (slotType === 'ultimate') {
-      const unlockLabel = progression.unlockRequirements.ultimate?.realmName
-        ? `Unlocks at ${progression.unlockRequirements.ultimate.realmName}`
-        : null;
+      const unlockLabel = formatProgressionFloorContextLabel(progression.unlockRequirements.ultimate);
       return [{
         slotType: 'ultimate',
         slotIndex: 0,
@@ -108,7 +107,7 @@ export function TechniqueLearnedModal() {
 
     return Array.from({ length: displayedCount }, (_, index) => {
       const requirement = progression.unlockRequirements[slotType][index];
-      const unlockLabel = requirement?.realmName ? `Unlocks at ${requirement.realmName}` : null;
+      const unlockLabel = formatProgressionFloorContextLabel(requirement);
       return {
         slotType,
         slotIndex: index,

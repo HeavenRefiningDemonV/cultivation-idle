@@ -16,6 +16,11 @@ export interface SlotUnlockRequirement {
   reasonText: string;
 }
 
+export interface ProgressionFloorContextLabelOptions {
+  prefix?: string;
+  punctuation?: '' | '.';
+}
+
 export interface LoadoutProgressionSnapshot {
   displayed: { active: number; passive: number };
   unlocked: { active: number; passive: number; ultimate: boolean };
@@ -44,6 +49,16 @@ const createRequirement = (realmIndex: number): SlotUnlockRequirement => {
     reasonText: `Unlocks at: ${realm.name}`,
   };
 };
+
+export function formatProgressionFloorContextLabel(
+  requirement: SlotUnlockRequirement | null | undefined,
+  options?: ProgressionFloorContextLabelOptions,
+): string | null {
+  if (!requirement?.realmName) return null;
+  const prefix = options?.prefix ?? 'Unlocks at';
+  const punctuation = options?.punctuation ?? '';
+  return `${prefix} ${requirement.realmName}${punctuation}`;
+}
 
 const findUnlockRequirement = (input: {
   slotType: TechniqueSlotType;

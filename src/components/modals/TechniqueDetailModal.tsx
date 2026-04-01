@@ -15,6 +15,7 @@ import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import { normalizeTechniqueEffects, summarizeEffects } from '../../systems/techniques/effects.js';
 import { buildLoadoutSnapshot } from '../../systems/builds/loadoutSnapshot.js';
+import { formatProgressionFloorContextLabel } from '../../systems/builds/loadoutProgressionContract.js';
 import { RankUpgradeRitualModal } from './RankUpgradeRitualModal.js';
 import { TraitRerollModal } from './TraitRerollModal.js';
 import { GameEvents } from '../../services/events/GameEvents.js';
@@ -500,7 +501,7 @@ export function TechniqueDetailModal({
           'active',
           idx,
           selectedLoadout.slots.active[idx] ?? null,
-          requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
+          formatProgressionFloorContextLabel(requirement) ?? undefined,
           isUnlocked,
         );
       }
@@ -514,7 +515,7 @@ export function TechniqueDetailModal({
           'passive',
           idx,
           selectedLoadout.slots.passive[idx] ?? null,
-          requirement?.realmName ? `Unlocks at ${requirement.realmName}` : undefined,
+          formatProgressionFloorContextLabel(requirement) ?? undefined,
           isUnlocked,
         );
       }
@@ -525,9 +526,7 @@ export function TechniqueDetailModal({
         'ultimate',
         0,
         selectedLoadout.slots.ultimate ?? null,
-        progression.unlockRequirements.ultimate?.realmName
-          ? `Unlocks at ${progression.unlockRequirements.ultimate.realmName}`
-          : undefined,
+        formatProgressionFloorContextLabel(progression.unlockRequirements.ultimate) ?? undefined,
         progression.unlocked.ultimate,
       );
     }
@@ -557,7 +556,8 @@ export function TechniqueDetailModal({
       const requirement = parkedSlot.slotType === 'ultimate'
         ? progression.unlockRequirements.ultimate
         : progression.unlockRequirements[parkedSlot.slotType][parkedSlot.slotIndex];
-      const unlockSuffix = requirement?.realmName ? ` (Unlocks at ${requirement.realmName})` : '';
+      const unlockLabel = formatProgressionFloorContextLabel(requirement);
+      const unlockSuffix = unlockLabel ? ` (${unlockLabel})` : '';
       return `Parked in locked slot: ${slotLabel({ type: parkedSlot.slotType, index: parkedSlot.slotIndex })}${unlockSuffix}.`;
     }
     return `Not equipped in ${selectedLoadout?.name ?? 'this loadout'}.`;
