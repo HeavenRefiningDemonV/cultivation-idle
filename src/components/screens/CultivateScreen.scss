@@ -1009,6 +1009,50 @@
   gap: 8px;
   margin-top: 6px;
   z-index: 2;
+  min-height: 170px;
+}
+
+.cultivationActionStateChips {
+  min-height: 22px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.cultivationActionStateChip {
+  min-width: 64px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.cultivationActionStateChip--ready {
+  background: rgba(47, 143, 102, 0.16);
+  border-color: rgba(47, 143, 102, 0.38);
+}
+
+.cultivationActionStateChip--warning {
+  background: rgba(217, 119, 6, 0.14);
+  border-color: rgba(217, 119, 6, 0.35);
+}
+
+.cultivationActionStateChip--gate {
+  background: rgba(120, 72, 33, 0.16);
+  border-color: rgba(120, 72, 33, 0.34);
+}
+
+.cultivationActionStateChip--cap {
+  background: rgba(71, 85, 105, 0.16);
+  border-color: rgba(71, 85, 105, 0.34);
 }
 
 .cultivationCompassChip {
@@ -1025,7 +1069,7 @@
 }
 
 .cultivationActionButton {
-  width: min(78%, 440px);
+  width: min(80%, 448px);
   height: 44px;
   padding: 0 18px;
   border-radius: 12px;
@@ -1035,7 +1079,8 @@
   background: rgba(208, 208, 208, 0.92);
   border: 2px solid rgba(15, 23, 42, 0.28);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  min-inline-size: 248px;
 }
 
 .cultivationActionButton:hover,
@@ -1058,13 +1103,37 @@
   height: 36px;
   font-size: 14px;
   border-radius: 10px;
+  min-inline-size: 212px;
+  opacity: 0.86;
 }
 
 .cultivationBreakthroughHint {
+  min-height: 18px;
   font-size: 12px;
   font-weight: 600;
   color: rgba(11, 16, 32, 0.7);
   text-align: center;
+  width: min(86%, 460px);
+}
+
+.cultivationActionButton--tone-cultivate {
+  background: linear-gradient(180deg, rgba(191, 220, 171, 0.96), rgba(153, 198, 129, 0.92));
+}
+
+.cultivationActionButton--tone-gate {
+  background: linear-gradient(180deg, rgba(239, 208, 170, 0.95), rgba(215, 177, 126, 0.9));
+}
+
+.cultivationActionButton--tone-ready {
+  background: linear-gradient(180deg, rgba(237, 218, 164, 0.96), rgba(226, 185, 111, 0.92));
+}
+
+.cultivationActionButton--tone-cap {
+  background: linear-gradient(180deg, rgba(203, 213, 225, 0.95), rgba(148, 163, 184, 0.9));
+}
+
+.cultivationActionButton--tone-prepare {
+  background: linear-gradient(180deg, rgba(224, 216, 199, 0.98), rgba(204, 189, 163, 0.95));
 }
 
 .breakthrough-effects {

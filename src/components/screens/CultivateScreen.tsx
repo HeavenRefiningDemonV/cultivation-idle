@@ -455,6 +455,97 @@ export function CultivateScreen() {
     return { label: 'Use the center breakthrough action', detail: 'The main breakthrough button below remains the primary action.', action: null };
   }, [breakthroughMilestoneState, isCultivating, runCompass.full?.bestNextActions]);
 
+  const primaryIntent = useMemo(() => {
+    const contentCapAction = runCompass.full?.bestNextActions?.find((action) => action.target?.kind === 'tab' && action.target.tab === 'prestige' && !action.blocked) ?? null;
+    const gateAction = runCompass.full?.bestNextActions?.find((action) => action.target?.kind === 'world_module' && action.target.moduleKey === 'gateTrial' && !action.blocked) ?? null;
+
+    if (breakthroughMilestoneState === 'content_cap') {
+      return {
+        kind: 'content_cap',
+        primaryLabel: contentCapAction ? 'Open Prestige' : 'Chapter cap reached',
+        primaryDisabled: !contentCapAction,
+        primaryWhy: contentCapAction?.why ?? 'No further breakthrough is exposed in the current chapter cap.',
+        primaryAction: contentCapAction ? () => performRunCompassAction(contentCapAction) : undefined,
+        secondaryLabel: isCultivating ? 'Stop Cultivation' : 'Continue Cultivation',
+        secondaryAction: handleCultivationToggle,
+        secondaryWhy: 'Optional support while at chapter cap.',
+        supportLine: 'Current chapter cap reached — preserve this life or prestige.',
+        stateTone: 'cap' as const,
+        showReadyChip: false,
+        showWarningChip: false,
+        showCapChip: true,
+        showGateChip: false,
+      };
+    }
+
+    if (breakthroughMilestoneState === 'cultivation_edge') {
+      return {
+        kind: 'cultivation_edge',
+        primaryLabel: isCultivating ? 'Continue Cultivation' : 'Start Cultivation',
+        primaryDisabled: false,
+        primaryWhy: 'Cultivate to reach the realm edge before gate resolution matters.',
+        primaryAction: handleCultivationToggle,
+        secondaryLabel: breakthroughButtonLabel,
+        secondaryAction: handleBreakthroughClick,
+        secondaryDisabled: !canBreakthrough || isBreakingThrough,
+        secondaryWhy: breakthroughGuidance,
+        supportLine: breakthroughRequirementLabel,
+        stateTone: 'cultivate' as const,
+        showReadyChip: false,
+        showWarningChip: true,
+        showCapChip: false,
+        showGateChip: false,
+      };
+    }
+
+    if (breakthroughMilestoneState === 'gate_trial') {
+      return {
+        kind: 'gate_trial',
+        primaryLabel: gateAction ? 'Go to Gate Trial' : 'Prepare for Gate',
+        primaryDisabled: !gateAction,
+        primaryWhy: gateAction?.why ?? 'Resolve the gate requirement before attempting breakthrough.',
+        primaryAction: gateAction ? () => performRunCompassAction(gateAction) : undefined,
+        secondaryLabel: isCultivating ? 'Continue Cultivation' : 'Start Cultivation',
+        secondaryAction: handleCultivationToggle,
+        secondaryWhy: 'Cultivation remains useful while preparing gate conditions.',
+        supportLine: breakthroughRequirementLabel,
+        stateTone: 'gate' as const,
+        showReadyChip: false,
+        showWarningChip: true,
+        showCapChip: false,
+        showGateChip: true,
+      };
+    }
+
+    return {
+      kind: 'breakthrough_pending',
+      primaryLabel: breakthroughButtonLabel,
+      primaryDisabled: !canBreakthrough || isBreakingThrough,
+      primaryWhy: canBreakthrough ? 'Gate settled — breakthrough can be attempted now.' : breakthroughRequirementLabel,
+      primaryAction: handleBreakthroughClick,
+      secondaryLabel: isCultivating ? 'Stop Cultivation' : 'Start Cultivation',
+      secondaryAction: handleCultivationToggle,
+      secondaryWhy: 'Toggle cultivation as support while breakthrough readiness shifts.',
+      supportLine: breakthroughRequirementLabel,
+      stateTone: canBreakthrough ? ('ready' as const) : ('prepare' as const),
+      showReadyChip: canBreakthrough,
+      showWarningChip: !canBreakthrough,
+      showCapChip: false,
+      showGateChip: false,
+    };
+  }, [
+    breakthroughMilestoneState,
+    runCompass.full?.bestNextActions,
+    isCultivating,
+    handleCultivationToggle,
+    breakthroughButtonLabel,
+    handleBreakthroughClick,
+    canBreakthrough,
+    isBreakingThrough,
+    breakthroughRequirementLabel,
+  ]);
+  const handlePrimaryIntentClick = primaryIntent.primaryAction ?? (() => undefined);
+
   const pathProfile = getPathDoctrineProfile(selectedPath);
   const pathLabel = pathProfile?.label ?? 'No Path selected';
   const pathSummary = getPathDoctrineSummary(selectedPath);
@@ -738,24 +829,30 @@ export function CultivateScreen() {
             )}
           </div>
           <div className="cultivationActionStack">
+            <div className="cultivationActionStateChips" aria-live="polite">
+              {primaryIntent.showCapChip ? <span className="cultivationActionStateChip cultivationActionStateChip--cap">Cap</span> : null}
+              {primaryIntent.showGateChip ? <span className="cultivationActionStateChip cultivationActionStateChip--gate">Gate</span> : null}
+              {primaryIntent.showWarningChip ? <span className="cultivationActionStateChip cultivationActionStateChip--warning">Prepare</span> : null}
+              {primaryIntent.showReadyChip ? <span className="cultivationActionStateChip cultivationActionStateChip--ready">Ready</span> : null}
+            </div>
             <button
               type="button"
-              className="button-standard uiNoShift cultivationActionButton cultivationActionButton--primary"
-              onClick={handleBreakthroughClick}
-              disabled={!canBreakthrough || isBreakingThrough}
-              title={!canBreakthrough ? 'Gather enough Qi and required items first' : undefined}
+              className={`button-standard uiNoShift cultivationActionButton cultivationActionButton--primary cultivationActionButton--tone-${primaryIntent.stateTone}`}
+              onClick={handlePrimaryIntentClick}
+              disabled={primaryIntent.primaryDisabled}
+              title={primaryIntent.primaryWhy}
             >
-              {breakthroughButtonLabel}
+              {primaryIntent.primaryLabel}
             </button>
-            {!canBreakthrough ? (
-              <div className="cultivationBreakthroughHint">{breakthroughRequirementLabel}</div>
-            ) : null}
+            <div className="cultivationBreakthroughHint">{primaryIntent.supportLine}</div>
             <button
               type="button"
               className="button-standard uiNoShift cultivationActionButton cultivationActionButton--secondary"
-              onClick={handleCultivationToggle}
+              onClick={primaryIntent.secondaryAction}
+              disabled={primaryIntent.secondaryDisabled ?? false}
+              title={primaryIntent.secondaryWhy}
             >
-              {isCultivating ? 'Stop Cultivation' : 'Start Cultivation'}
+              {primaryIntent.secondaryLabel}
             </button>
           </div>
           <div className="cultivationCompassChip" aria-label="Cultivation run compass">
