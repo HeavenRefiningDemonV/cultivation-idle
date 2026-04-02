@@ -17,7 +17,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  --cultivation-anchor-y: 66%;
+  --cultivation-hud-anchor-y: 66%;
   --cultivation-stack-gap-1: 10px;
   --cultivation-stack-gap-2: 14px;
   --qi-frame-h: 44px;
@@ -213,12 +213,6 @@
   inset: 0;
 }
 
-.cultivationHeroStage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
 .cultivationCenterpieceShell__halo {
   position: absolute;
   left: 50%;
@@ -234,7 +228,7 @@
 .cultivationCenterpieceShell__mist {
   position: absolute;
   left: 50%;
-  top: calc(var(--cultivation-anchor-y) - 10px);
+  top: calc(var(--cultivation-hud-anchor-y) - 10px);
   width: clamp(340px, 40vw, 620px);
   height: clamp(90px, 12vw, 180px);
   transform: translateX(-50%);
@@ -247,7 +241,7 @@
 .cultivationCenterpieceShell__altarBase {
   position: absolute;
   left: 50%;
-  top: calc(var(--cultivation-anchor-y) + 24px);
+  top: calc(var(--cultivation-hud-anchor-y) + 24px);
   width: clamp(300px, 44vw, 660px);
   height: clamp(70px, 10vw, 120px);
   transform: translateX(-50%);
@@ -265,39 +259,29 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  aspect-ratio: 1280/1002;
+  object-fit: contain;
 }
 
 .cultivationHeroFigure {
   position: absolute;
-  --dantian-anchor-x: 50%;
-  --dantian-anchor-y: 60%;
-  height: clamp(860px, 120vh, 1180px);
-  left: 50%;
   top: 0;
+  left: 50%;
+  height: clamp(860px, 120vh, 1180px);
   aspect-ratio: 1280/1002;
   transform: translateX(-56%);
-}
-
-.cultivationHeroFigureArt {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
+  --dantian-anchor-x: 55.75%;
+  --dantian-anchor-y: 50.9%;
 }
 
 .cultivationHeroAbdomenAnchor {
   position: absolute;
   left: var(--dantian-anchor-x);
   top: var(--dantian-anchor-y);
+  width: clamp(72px, 4.8vw, 96px);
+  height: clamp(72px, 4.8vw, 96px);
   transform: translate(-50%, -50%);
   z-index: 14;
   pointer-events: none;
-}
-
-.cultivationHeroBase {
-  position: relative;
-  z-index: 8;
 }
 
 .cultivationHeaderRail {
@@ -780,17 +764,10 @@
   pointer-events: none;
 }
 
-.cultivationQiLane {
-  position: relative;
-  z-index: 6;
-  width: 100%;
-  height: 100%;
-}
-
 .cultivationHudStack {
   position: absolute;
   left: 50%;
-  top: var(--cultivation-anchor-y);
+  top: var(--cultivation-hud-anchor-y);
   transform: translateX(-50%);
   width: var(--cultHudW);
   display: flex;
@@ -798,7 +775,7 @@
   gap: var(--cultivation-stack-gap-1);
   align-items: center;
   pointer-events: auto;
-  margin-top: calc(var(--qi-frame-h) * -0.2);
+  margin-top: calc(var(--qi-frame-h) * -0.5);
 }
 
 .progress-bar {
@@ -1284,14 +1261,13 @@
 @media (max-width: 1000px) {
   .cultivationScreenRoot {
     --cultHudSidePad: 60px;
-    --cultivation-anchor-y: 70%;
+    --cultivation-hud-anchor-y: 70%;
     --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 106px);
     --cultCommandDeckW: calc(100% - 32px);
   }
 
   .cultivationHeroFigure {
-    --dantian-anchor-x: 50%;
-    --dantian-anchor-y: 61.5%;
+    --dantian-anchor-y: 51.4%;
   }
 
   .cultivationCommandDeck {
@@ -1327,15 +1303,15 @@
   .cultivationScreenRoot {
     overflow-y: auto;
     overflow-x: hidden;
-    --cultivation-anchor-y: 92%;
+    --cultivation-hud-anchor-y: 92%;
     --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 98px);
     --cultCommandDeckW: calc(100% - 20px);
     min-height: 1280px;
   }
 
   .cultivationHeroFigure {
-    --dantian-anchor-x: 50%;
-    --dantian-anchor-y: 63%;
+    --dantian-anchor-x: 56.2%;
+    --dantian-anchor-y: 52.2%;
   }
 
   .cultivationHeaderRail {
