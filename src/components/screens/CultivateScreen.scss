@@ -28,8 +28,6 @@
   --cultHudW: min(var(--cultHudMaxW), calc(100% - var(--cultHudSidePad)));
   --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 132px);
   --cultCommandDeckW: min(980px, calc(100% - 112px));
-  --dantian-anchor-x: 52%;
-  --dantian-anchor-y: 61%;
 }
 
 .cultivationFxScene {
@@ -215,6 +213,12 @@
   inset: 0;
 }
 
+.cultivationHeroStage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .cultivationCenterpieceShell__halo {
   position: absolute;
   left: 50%;
@@ -266,6 +270,8 @@
 
 .cultivationHeroFigure {
   position: absolute;
+  --dantian-anchor-x: 50%;
+  --dantian-anchor-y: 60%;
   height: clamp(860px, 120vh, 1180px);
   left: 50%;
   top: 0;
@@ -273,12 +279,25 @@
   transform: translateX(-56%);
 }
 
-.cultivationHeroFigure__dantianAnchor {
+.cultivationHeroFigureArt {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.cultivationHeroAbdomenAnchor {
   position: absolute;
   left: var(--dantian-anchor-x);
   top: var(--dantian-anchor-y);
   transform: translate(-50%, -50%);
+  z-index: 14;
   pointer-events: none;
+}
+
+.cultivationHeroBase {
+  position: relative;
+  z-index: 8;
 }
 
 .cultivationHeaderRail {
@@ -757,8 +776,15 @@
 .cultivationHudRail {
   position: absolute;
   inset: 0;
-  z-index: 16;
+  z-index: 6;
   pointer-events: none;
+}
+
+.cultivationQiLane {
+  position: relative;
+  z-index: 6;
+  width: 100%;
+  height: 100%;
 }
 
 .cultivationHudStack {
@@ -1261,7 +1287,11 @@
     --cultivation-anchor-y: 70%;
     --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 106px);
     --cultCommandDeckW: calc(100% - 32px);
-    --dantian-anchor-y: 60.5%;
+  }
+
+  .cultivationHeroFigure {
+    --dantian-anchor-x: 50%;
+    --dantian-anchor-y: 61.5%;
   }
 
   .cultivationCommandDeck {
@@ -1300,9 +1330,12 @@
     --cultivation-anchor-y: 92%;
     --cultCommandDeckTop: calc(env(safe-area-inset-top, 0px) + 98px);
     --cultCommandDeckW: calc(100% - 20px);
-    --dantian-anchor-x: 53%;
-    --dantian-anchor-y: 59%;
     min-height: 1280px;
+  }
+
+  .cultivationHeroFigure {
+    --dantian-anchor-x: 50%;
+    --dantian-anchor-y: 63%;
   }
 
   .cultivationHeaderRail {

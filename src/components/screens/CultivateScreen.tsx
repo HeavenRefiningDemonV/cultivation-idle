@@ -645,17 +645,21 @@ export function CultivateScreen() {
           <div className="cultivationCenterpieceShell">
             <div className="cultivationCenterpieceShell__halo" />
             <div className="cultivationCenterpieceShell__mist" />
-            <div className="cultivationCenterpieceShell__altarBase" />
-            <div className="cultivationHeroFigure">
-              <img className="cultivationCultivatorArt" src={cultivator} alt="" />
-              <div className="cultivationHeroFigure__dantianAnchor">
-                <DantianOrb
-                  heartLawTags={heartLawTags}
-                  isCultivating={isCultivating}
-                  isNearReady={isNearReady}
-                  isReady={canBreakthrough}
-                />
+            <div className="cultivationHeroStage">
+              <div className="cultivationHeroFigure" data-testid="cultivation-hero-figure">
+                <div className="cultivationHeroFigureArt">
+                  <img className="cultivationCultivatorArt" src={cultivator} alt="" />
+                </div>
+                <div className="cultivationHeroAbdomenAnchor" data-testid="cultivation-dantian-anchor">
+                  <DantianOrb
+                    heartLawTags={heartLawTags}
+                    isCultivating={isCultivating}
+                    isNearReady={isNearReady}
+                    isReady={canBreakthrough}
+                  />
+                </div>
               </div>
+              <div className="cultivationHeroBase cultivationCenterpieceShell__altarBase" />
             </div>
           </div>
         </div>
@@ -797,7 +801,8 @@ export function CultivateScreen() {
       </div>
 
       <div className="cultivationHudRail">
-        <div className="cultivationHudStack">
+        <div className="cultivationQiLane" data-testid="cultivation-qi-lane">
+          <div className="cultivationHudStack">
           <div className="cultivationRealmTags">
             <div className="cultivationRealmTag cultivationRealmTag--current">
               <span className="cultivationRealmTagIcon" aria-hidden="true">
@@ -863,6 +868,7 @@ export function CultivateScreen() {
           </div>
           <div className="cultivationCompassChip" aria-label="Cultivation run compass">
             <RunCompassCompact surface={runCompass.compact} tone="ink" className="cultivationCompassChip__surface" />
+          </div>
           </div>
         </div>
       </div>
