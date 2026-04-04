@@ -165,6 +165,15 @@ This file is the short hand-off queue for Section A packets A.1–A.11. It exist
 - `A.11` classifies human-review versus repo-backed enforcement posture for objective checks.
 - When generating any later prompt, cite upstream packet ids explicitly instead of re-deriving assumptions.
 
+## Phase 0 governance entrypoints
+
+For Phase 0 UI branch-safety prompts, treat the existing Section A stack plus these files as the governance entrypoints:
+
+- `docs/ui/phase-0-source-lock.md`
+- `docs/ui/phase-0-packet-register.md`
+
+These Phase 0 files are thin entrypoints; detailed doctrine remains in the relevant `docs/ui/section-a-*.md` sources.
+
 ## Current blockers and partials
 
 All packets A.1–A.11 are currently `READY` based on verified core source doc presence.

@@ -6,6 +6,7 @@ Apply **Section A — Global Doctrine and Source Hierarchy** as mandatory law. T
 - **Current-build-is-truth:** treat the live build as the production baseline, never disposable scaffolding.
 - **Four-layer model:** gameplay truth → layout truth → scenic ownership → polish layer; upper layers must not violate lower layers.
 - **No cutover without completion:** do not remove old layers until the replacement is fully visible, wired, stable, and approved on that exact screen.
+- **Default Phase 0 cutover permission:** no destructive cleanup.
 - **Hero vs dense split:** hero zones may be richer; dense utility zones must prioritize readability and information throughput.
 - **No layout shift:** maintain structural stability during interaction/state changes unless movement is a deliberate gameplay signal.
 - **No future-art excuse:** never ship an intentionally degraded interim state with promises of later art/FX fixes.
