@@ -5,7 +5,7 @@ This register is sequencing truth, not proof of implementation. Packet completio
 | Packet ID | Title | Depends on | Intended output | Owner | Status | Evidence / notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | P0-00 | Source lock and merge-law publication | — | Publish the non-destructive operating rule set. | TBD | done | Governed by `docs/ui/phase-0-source-lock.md` and this register. |
-| P0-01 | Destructive-migration audit | P0-00 | Identify files / deltas that currently weaken screens. | TBD | not started | Awaits explicit audit packet scope/evidence. |
+| P0-01 | Destructive-migration audit | P0-00 | Identify files / deltas that currently weaken screens. | TBD | done | See `docs/ui/phase-0-destructive-migration-audit.md` and `docs/ui/phase-0-destructive-migration-ledger.json`. |
 | P0-02 | Screenshot baseline and review folder | P0-00 | Create before-state evidence for all recovery targets. | TBD | not started | Requires capture plan tied to recovery targets. |
 | P0-03 | Shared-chrome regression rollback | P0-01 | Quarantine duplicated headers / temporary shell owners. | TBD | not started | Must follow audit findings and additive-only law. |
 | P0-04 | Path / Life Start recovery | P0-01, P0-02, P0-03 | Restore first-contact scenic ownership. | TBD | not started | Recovery order tier 1. |

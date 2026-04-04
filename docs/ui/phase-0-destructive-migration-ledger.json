@@ -1,0 +1,291 @@
+{
+  "auditBasis": {
+    "branch": "work",
+    "commit": "bc9be72",
+    "p0_00_present": true,
+    "merge_base_checked": false,
+    "notes": [
+      "No usable merge-base against origin/main or main in this snapshot; audit based on current-tree inspection."
+    ]
+  },
+  "summary": {
+    "screensAudited": 10,
+    "sharedFindingCount": 2,
+    "secondaryAppendixCount": 0,
+    "severityCounts": {
+      "critical": 0,
+      "high": 2,
+      "medium": 2,
+      "low": 0,
+      "stable": 6
+    },
+    "dispositionCounts": {
+      "revert-now": 0,
+      "quarantine-now": 3,
+      "leave-in-place-pending-proof": 1,
+      "already-stable": 6
+    }
+  },
+  "screens": [
+    {
+      "screenId": "path-life-start",
+      "screenLabel": "Path / Life Start",
+      "recoveryOrder": 1,
+      "ownerAnchor": "portrait-led triptych / ritual first-contact ownership",
+      "ownerAnchorState": "intact",
+      "screenSeverity": "stable",
+      "findings": [],
+      "notes": [
+        "LifeStartWizardModal keeps portrait-led triptych and modal ownership in this snapshot."
+      ]
+    },
+    {
+      "screenId": "cultivation",
+      "screenLabel": "Cultivation",
+      "recoveryOrder": 2,
+      "ownerAnchor": "central cultivator / dantian / altar composition, Qi bar, breakthrough controls",
+      "ownerAnchorState": "intact",
+      "screenSeverity": "stable",
+      "findings": [],
+      "notes": [
+        "Cultivation screen still mounts dedicated cultivator/dantian composition and local doctrine controls."
+      ]
+    },
+    {
+      "screenId": "status",
+      "screenLabel": "Status",
+      "recoveryOrder": 3,
+      "ownerAnchor": "diagnostic summary ownership, next-action clarity, Spirit Root prominence",
+      "ownerAnchorState": "intact",
+      "screenSeverity": "stable",
+      "findings": [],
+      "notes": [
+        "Status uses dedicated summary + run compass surfaces with no shared shell takeover found in code inspection."
+      ]
+    },
+    {
+      "screenId": "world",
+      "screenLabel": "World",
+      "recoveryOrder": 4,
+      "ownerAnchor": "city/map ownership, overlays/labels, contextual inspector",
+      "ownerAnchorState": "unclear",
+      "screenSeverity": "high",
+      "findings": [
+        {
+          "id": "P0-01-F001",
+          "pattern": "mixed-old-new-framing",
+          "sharedOrLocal": "shared",
+          "severity": "high",
+          "disposition": "quarantine-now",
+          "symptom": "World uses TopRibbon/Inspector shell ownership while also writing store-level header titles tied to a legacy header channel.",
+          "whyDestructive": "Maintains half-migrated ownership channels that can reintroduce duplicate or conflicting header/ribbon ownership across core screens.",
+          "localFiles": [
+            "src/components/screens/WorldScreen.tsx",
+            "src/components/screens/WorldScreen.scss"
+          ],
+          "sharedFiles": [
+            "src/components/GameLayout.tsx",
+            "src/components/Header.tsx",
+            "src/stores/uiStore.ts",
+            "src/ui/shell/TopRibbon.tsx",
+            "src/ui/shell/InspectorPanel.tsx",
+            "src/ui/shell/InspectorDrawer.tsx"
+          ],
+          "evidenceNotes": [
+            "WorldScreen sets header titles and also renders TopRibbon + Inspector wrappers.",
+            "Header component remains in repo but is not mounted by GameLayout in current snapshot."
+          ],
+          "nextPacket": "P0-03",
+          "manualCheckNeeded": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "screenId": "manual-pavilion",
+      "screenLabel": "Manual Pavilion",
+      "recoveryOrder": 5,
+      "ownerAnchor": "shelf/spine room identity",
+      "ownerAnchorState": "intact",
+      "screenSeverity": "stable",
+      "findings": [],
+      "notes": [
+        "Shelf/spine identity remains local to ManualPavilionPanel with no shared shell ownership takeover found."
+      ]
+    },
+    {
+      "screenId": "techniques",
+      "screenLabel": "Techniques",
+      "recoveryOrder": 6,
+      "ownerAnchor": "Inner Palace / altar ownership and stable slot behavior",
+      "ownerAnchorState": "unclear",
+      "screenSeverity": "medium",
+      "findings": [
+        {
+          "id": "P0-01-F002",
+          "pattern": "duplicate-header-ribbon",
+          "sharedOrLocal": "mixed",
+          "severity": "medium",
+          "disposition": "leave-in-place-pending-proof",
+          "symptom": "Techniques uses a local top ribbon while still writing global header-title state.",
+          "whyDestructive": "This can become a duplicate ownership path if legacy/global header channel is reattached without explicit cutover discipline.",
+          "localFiles": [
+            "src/components/screens/TechniqueLibraryScreen.tsx",
+            "src/components/screens/TechniqueLibraryScreen.scss"
+          ],
+          "sharedFiles": [
+            "src/components/GameLayout.tsx",
+            "src/components/Header.tsx",
+            "src/stores/uiStore.ts"
+          ],
+          "evidenceNotes": [
+            "TechniqueLibraryScreen sets header titles and renders a local .techTopRibbon header.",
+            "No active Header mount was found in current tree; visible duplication needs manual confirmation across breakpoints."
+          ],
+          "nextPacket": "P0-03",
+          "manualCheckNeeded": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "screenId": "apothecary",
+      "screenLabel": "Apothecary",
+      "recoveryOrder": 7,
+      "ownerAnchor": "preparation-room identity and pouch clarity",
+      "ownerAnchorState": "intact",
+      "screenSeverity": "stable",
+      "findings": [],
+      "notes": [
+        "Apothecary keeps local room framing with no proven destructive owner strip in this snapshot."
+      ]
+    },
+    {
+      "screenId": "forge",
+      "screenLabel": "Forge",
+      "recoveryOrder": 8,
+      "ownerAnchor": "workshop room ownership and side/detail coherence",
+      "ownerAnchorState": "intact",
+      "screenSeverity": "stable",
+      "findings": [],
+      "notes": [
+        "ForgePanel remains a wrapper to ForgeWorkshop and does not show a direct destructive migration in this audit scope."
+      ]
+    },
+    {
+      "screenId": "bounties-expeditions",
+      "screenLabel": "Bounties / Expeditions",
+      "recoveryOrder": 9,
+      "ownerAnchor": "paper-board / route-slip support identity",
+      "ownerAnchorState": "duplicated",
+      "screenSeverity": "medium",
+      "findings": [
+        {
+          "id": "P0-01-F003",
+          "pattern": "mixed-old-new-framing",
+          "sharedOrLocal": "mixed",
+          "severity": "medium",
+          "disposition": "quarantine-now",
+          "symptom": "Bounties/Expeditions use paper primitives while adjacent shell and many screen surfaces use ink/shell primitives.",
+          "whyDestructive": "Parallel primitive families signal unresolved migration overlap that can weaken consistent board/route-slip ownership before explicit cutover.",
+          "localFiles": [
+            "src/components/screens/BountyBoardPanel.tsx",
+            "src/components/screens/BountyBoardPanel.scss",
+            "src/components/screens/ExpeditionBoardPanel.tsx",
+            "src/components/screens/ExpeditionBoardPanel.scss"
+          ],
+          "sharedFiles": [
+            "src/ui/paper/PaperCard.tsx",
+            "src/ui/paper/PaperChip.tsx",
+            "src/ui/ink/PaperCard.tsx",
+            "src/ui/ink/PaperChip.tsx",
+            "src/ui/shell/FrameCard.tsx"
+          ],
+          "evidenceNotes": [
+            "Bounty/Expedition boards import from ui/paper while world/status/cultivation stacks import ui/ink + shell wrappers.",
+            "This is recorded as migration overlap, not immediate cleanup authorization."
+          ],
+          "nextPacket": "P0-03",
+          "manualCheckNeeded": true
+        }
+      ],
+      "notes": []
+    },
+    {
+      "screenId": "prestige",
+      "screenLabel": "Prestige",
+      "recoveryOrder": 10,
+      "ownerAnchor": "decree-like reincarnation surface",
+      "ownerAnchorState": "unclear",
+      "screenSeverity": "high",
+      "findings": [
+        {
+          "id": "P0-01-F004",
+          "pattern": "shared-shell-owner-takeover",
+          "sharedOrLocal": "shared",
+          "severity": "high",
+          "disposition": "quarantine-now",
+          "symptom": "Prestige relies on TopRibbon/shared shell for surface header ownership while global header-title state is still actively written.",
+          "whyDestructive": "Shared wrapper ownership without explicit retirement of legacy header channel leaves cutover ownership ambiguous on a core ritual/decree surface.",
+          "localFiles": [
+            "src/components/screens/PrestigeScreen.tsx",
+            "src/components/screens/PrestigeScreen.scss"
+          ],
+          "sharedFiles": [
+            "src/components/GameLayout.tsx",
+            "src/components/Header.tsx",
+            "src/stores/uiStore.ts",
+            "src/ui/shell/TopRibbon.tsx"
+          ],
+          "evidenceNotes": [
+            "PrestigeScreen sets header titles and renders TopRibbon.",
+            "Header exists but is not mounted in GameLayout; ownership channel split remains unresolved."
+          ],
+          "nextPacket": "P0-03",
+          "manualCheckNeeded": true
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "sharedFindings": [
+    {
+      "id": "P0-01-S001",
+      "pattern": "mixed-old-new-framing",
+      "severity": "high",
+      "disposition": "quarantine-now",
+      "symptom": "Header/ribbon ownership split across store-level title channel and screen-level shell ribbons.",
+      "sharedFiles": [
+        "src/components/GameLayout.tsx",
+        "src/components/Header.tsx",
+        "src/stores/uiStore.ts",
+        "src/ui/shell/TopRibbon.tsx"
+      ],
+      "affectedScreens": [
+        "world",
+        "techniques",
+        "prestige"
+      ],
+      "nextPacket": "P0-03"
+    },
+    {
+      "id": "P0-01-S002",
+      "pattern": "mixed-old-new-framing",
+      "severity": "medium",
+      "disposition": "quarantine-now",
+      "symptom": "Parallel ui/paper and ui/ink primitives remain active in adjacent loop surfaces.",
+      "sharedFiles": [
+        "src/ui/paper/PaperCard.tsx",
+        "src/ui/paper/PaperChip.tsx",
+        "src/ui/ink/PaperCard.tsx",
+        "src/ui/ink/PaperChip.tsx",
+        "src/ui/shell/FrameCard.tsx"
+      ],
+      "affectedScreens": [
+        "bounties-expeditions"
+      ],
+      "nextPacket": "P0-03"
+    }
+  ],
+  "secondaryAppendixFindings": []
+}

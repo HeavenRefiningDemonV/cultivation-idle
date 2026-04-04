@@ -72,4 +72,5 @@ Future Phase 0 prompts should cite:
 
 - `docs/ui/phase-0-source-lock.md`
 - `docs/ui/phase-0-packet-register.md`
+- `docs/ui/phase-0-destructive-migration-audit.md` (P0-01 canonical destructive-migration ledger handoff)
 - the relevant Section A doctrine file(s) for detailed law.
