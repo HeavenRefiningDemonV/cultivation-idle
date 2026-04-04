@@ -1,0 +1,336 @@
+{
+  "captureBasis": {
+    "branch": "work",
+    "commit": "a8410d5",
+    "workingTreeDirty": true,
+    "viewport": "1440x900",
+    "captureMethod": "manual-documented",
+    "p0_00_present": true,
+    "p0_01_present": true,
+    "notes": [
+      "No approved automated screenshot pipeline was found for these Phase 0 targets in this snapshot.",
+      "Browser-based manual capture is unavailable in this Codex runtime.",
+      "Synthetic or fabricated images are forbidden for this baseline packet."
+    ]
+  },
+  "summary": {
+    "mandatoryTargets": 10,
+    "capturedTargets": 0,
+    "blockedTargets": 10,
+    "appendixShotCount": 0,
+    "fileCount": 0
+  },
+  "targets": [
+    {
+      "screenId": "path-life-start",
+      "screenLabel": "Path / Life Start",
+      "recoveryOrder": 1,
+      "ownerAnchor": "portrait-led triptych / ritual first-contact",
+      "required": true,
+      "fixture": "fresh-life",
+      "routeNotes": "LifeStartWizardModal entry flow",
+      "shots": [
+        {
+          "shotId": "path-life-start_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Capture blocked in this runtime; slot reserved in docs/ui/review/phase-0-baseline/01-path-life-start/README.md"]
+        },
+        {
+          "shotId": "path-life-start_selected-path",
+          "state": "selected-path",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Interaction-state capture blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Triptych owner continuity under wizard step transitions."]
+    },
+    {
+      "screenId": "cultivation",
+      "screenLabel": "Cultivation",
+      "recoveryOrder": 2,
+      "ownerAnchor": "central cultivator / dantian / altar composition",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "Cultivation active tab",
+      "shots": [
+        {
+          "shotId": "cultivation_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default shot blocked in this runtime."]
+        },
+        {
+          "shotId": "cultivation_readiness",
+          "state": "readiness-or-breakthrough",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Readiness state capture blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Center ownership and breakthrough truth visibility."]
+    },
+    {
+      "screenId": "status",
+      "screenLabel": "Status",
+      "recoveryOrder": 3,
+      "ownerAnchor": "diagnostic summary surface with symbolic center",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "Status active tab",
+      "shots": [
+        {
+          "shotId": "status_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default shot blocked in this runtime."]
+        },
+        {
+          "shotId": "status_next-action",
+          "state": "shortfall-or-next-action",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Recommendation/shortfall state blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["No-shift diagnostic state behavior."]
+    },
+    {
+      "screenId": "world",
+      "screenLabel": "World",
+      "recoveryOrder": 4,
+      "ownerAnchor": "scenic city/map ownership with contextual inspector",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "Adventure tab world map shell",
+      "shots": [
+        {
+          "shotId": "world_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default world shot blocked in this runtime."]
+        },
+        {
+          "shotId": "world_inspector-open",
+          "state": "selected-building-inspector-open",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Inspector-open state blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Map owner versus inspector/shell balance."]
+    },
+    {
+      "screenId": "manual-pavilion",
+      "screenLabel": "Manual Pavilion",
+      "recoveryOrder": 5,
+      "ownerAnchor": "bookshelf/spine room identity",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "World module modal -> Manual Pavilion",
+      "shots": [
+        {
+          "shotId": "manual-pavilion_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default pavilion shot blocked in this runtime."]
+        },
+        {
+          "shotId": "manual-pavilion_selected-spine",
+          "state": "selected-spine",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Selected-spine state blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Spine selection no-shift behavior."]
+    },
+    {
+      "screenId": "techniques",
+      "screenLabel": "Techniques",
+      "recoveryOrder": 6,
+      "ownerAnchor": "Inner Palace / altar ownership",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "Techniques active tab",
+      "shots": [
+        {
+          "shotId": "techniques_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default techniques shot blocked in this runtime."]
+        },
+        {
+          "shotId": "techniques_selected-loadout",
+          "state": "selected-slot-or-loadout",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Selection-state techniques shot blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Dense selection drift and layout stability under state changes."]
+    },
+    {
+      "screenId": "apothecary",
+      "screenLabel": "Apothecary",
+      "recoveryOrder": 7,
+      "ownerAnchor": "preparation-room / pouch identity",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "World module modal -> Apothecary",
+      "shots": [
+        {
+          "shotId": "apothecary_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default apothecary shot blocked in this runtime."]
+        },
+        {
+          "shotId": "apothecary_selected-substate",
+          "state": "selected-substate",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Substate shot blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Room identity versus list-only flattening risk."]
+    },
+    {
+      "screenId": "forge",
+      "screenLabel": "Forge",
+      "recoveryOrder": 8,
+      "ownerAnchor": "workshop ownership",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "World module modal -> Forge",
+      "shots": [
+        {
+          "shotId": "forge_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default forge shot blocked in this runtime."]
+        },
+        {
+          "shotId": "forge_selected-blueprint",
+          "state": "selected-blueprint-or-detail",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Detail state shot blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Side/detail composition coherence."]
+    },
+    {
+      "screenId": "bounties-expeditions",
+      "screenLabel": "Bounties / Expeditions",
+      "recoveryOrder": 9,
+      "ownerAnchor": "paper-board / route-paper support identity",
+      "required": true,
+      "fixture": "core-run",
+      "routeNotes": "World module modal -> Bounty board and Expedition board",
+      "shots": [
+        {
+          "shotId": "bounties-expeditions_bounties-default",
+          "state": "bounties-default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Bounties default shot blocked in this runtime."]
+        },
+        {
+          "shotId": "bounties-expeditions_expeditions-default",
+          "state": "expeditions-default-or-active-queue",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Expeditions default/queue shot blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Board identity and queue/route truth readability."]
+    },
+    {
+      "screenId": "prestige",
+      "screenLabel": "Prestige",
+      "recoveryOrder": 10,
+      "ownerAnchor": "decree-like reincarnation surface",
+      "required": true,
+      "fixture": "outer-loop",
+      "routeNotes": "Prestige active tab",
+      "shots": [
+        {
+          "shotId": "prestige_default",
+          "state": "default",
+          "qualityTier": "default",
+          "intent": "deterministic-baseline",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Default prestige shot blocked in this runtime."]
+        },
+        {
+          "shotId": "prestige_node-detail",
+          "state": "node-detail-or-confirmation-preview",
+          "qualityTier": "default",
+          "intent": "reference-review",
+          "captureStatus": "blocked",
+          "filePath": null,
+          "notes": ["Detail/confirmation shot blocked in this runtime."]
+        }
+      ],
+      "knownVisibleRisks": ["Reset/keep/rebuild truth visibility and decree identity integrity."]
+    }
+  ],
+  "appendixShots": [],
+  "reviewQuestions": [
+    "Does the screen still tell the same gameplay truth as before?",
+    "Has the scenic or room owner remained intact?",
+    "Are old/new duplicate headers gone?",
+    "Are buttons and labels fully present?",
+    "Is the archetype still correct?",
+    "Is the atmosphere supportive rather than noisy?",
+    "Is layout stable?",
+    "Do High FX, Low FX, and Reduced Motion all remain coherent?"
+  ]
+}
