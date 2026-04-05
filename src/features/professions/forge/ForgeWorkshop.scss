@@ -193,18 +193,20 @@
 }
 
 .forgeWorkshop__chips {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
 .forgeWorkshop__chip {
-  padding: 4px 10px;
-  border-radius: 999px;
+  min-height: 40px;
+  padding: 6px 10px;
+  border-radius: 8px;
   border: 1px solid var(--forge-border);
   background: rgba(251, 244, 228, 0.75);
   font-size: 12px;
   color: var(--forge-ink-muted);
+  text-align: left;
 }
 
 .forgeWorkshop__chip--active {
@@ -363,6 +365,55 @@
 }
 
 .forgeWorkshop__detailValue {
+  font-size: 12px;
+  color: var(--forge-ink);
+}
+
+.forgeWorkshop__requirementRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border);
+  background: rgba(251, 244, 228, 0.58);
+}
+
+.forgeWorkshop__requirementName {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forgeWorkshop__requirementCounts,
+.forgeWorkshop__requirementSource {
+  font-size: 11px;
+  color: var(--forge-ink-muted);
+}
+
+.forgeWorkshop__requirementRouteButton {
+  margin-top: 2px;
+  align-self: flex-start;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.forgeWorkshop__detailSection--compare {
+  border: 1px solid var(--forge-border);
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(251, 244, 228, 0.5);
+}
+
+.forgeWorkshop__compareRows {
+  display: grid;
+  gap: 6px;
+}
+
+.forgeWorkshop__compareRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 8px;
+  align-items: center;
   font-size: 12px;
   color: var(--forge-ink);
 }
@@ -653,5 +704,9 @@
   .forgeWorkshop__bannerActions {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .forgeWorkshop__chips {
+    grid-template-columns: 1fr;
   }
 }

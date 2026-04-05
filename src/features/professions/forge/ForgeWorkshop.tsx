@@ -296,6 +296,69 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     return rows;
   }, [bestSourceIndex, cityId, inventoryItems, selectedBlueprint]);
 
+  const detailRequirementRows = useMemo(() => {
+    if (!selectedBlueprint || !bestSourceIndex) return [];
+    return selectedBlueprint.costs.items.map((entry) => {
+      const owned = inventoryItems[entry.itemId] ?? 0;
+      const needed = Math.ceil(entry.qty);
+      const missing = Math.max(0, needed - owned);
+      const sourceEntry = getBestSourceIndexEntry(bestSourceIndex, entry.itemId);
+      const best = sourceEntry?.primarySource ?? sourceEntry?.sourceOptions[0] ?? null;
+      const sourceLabel = best ? getWorldModuleLabel(best.moduleKey) : 'No live source route';
+      const canRoute = Boolean(
+        cityId
+        && best
+        && ['outskirts', 'ruins', 'bounties', 'expeditions', 'apothecary'].includes(best.moduleKey),
+      );
+      return {
+        itemId: entry.itemId,
+        itemName: getItemDef(entry.itemId)?.name ?? entry.itemId,
+        owned,
+        needed,
+        missing,
+        sourceLabel,
+        sourceReason: best?.shortReason ?? 'No live source route available.',
+        routeCityId: (best?.cityId ?? cityId) ?? null,
+        routeModuleKey: best?.moduleKey ?? null,
+        canRoute,
+      };
+    });
+  }, [bestSourceIndex, cityId, inventoryItems, selectedBlueprint]);
+
+  const floorCompareRows = useMemo(() => {
+    if (!floorModel.nextGateRecommendation) return [];
+    if (activeTab === 'refine') {
+      return [
+        {
+          label: 'Weapon refine',
+          current: `+${floorModel.weaponRefineFloor}`,
+          target: `+${floorModel.nextGateRecommendation.weaponRefine}`,
+        },
+        {
+          label: 'Accessory refine',
+          current: `+${floorModel.accessoryRefineFloor}`,
+          target: `+${floorModel.nextGateRecommendation.accessoryRefine}`,
+        },
+      ];
+    }
+    if (activeTab === 'temper') {
+      return [
+        {
+          label: 'Temper successes',
+          current: `${floorModel.temperSuccessTotal}`,
+          target: `${floorModel.nextGateRecommendation.temperSuccesses}`,
+        },
+      ];
+    }
+    return [
+      {
+        label: 'Rune floor',
+        current: floorModel.runeSummaryLabel,
+        target: floorModel.nextGateRecommendation.runeCountLabel,
+      },
+    ];
+  }, [activeTab, floorModel]);
+
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
     setSessionStatus(null);
@@ -523,11 +586,27 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               </div>
               <div className="forgeWorkshop__detailGrid">
                 <div>
-                  <div className="forgeWorkshop__detailLabel">Inputs</div>
-                  {selectedBlueprint.costs.items.length === 0 && <div className="forgeWorkshop__detailValue">None</div>}
-                  {selectedBlueprint.costs.items.map((entry) => (
-                    <div key={entry.itemId} className="forgeWorkshop__detailValue">
-                      {getItemDef(entry.itemId)?.name ?? entry.itemId} ×{entry.qty}
+                  <div className="forgeWorkshop__detailLabel">Requirements</div>
+                  {detailRequirementRows.length === 0 && <div className="forgeWorkshop__detailValue">None</div>}
+                  {detailRequirementRows.map((row) => (
+                    <div key={row.itemId} className="forgeWorkshop__requirementRow">
+                      <div className="forgeWorkshop__requirementName">{row.itemName}</div>
+                      <div className="forgeWorkshop__requirementCounts">
+                        Owned {row.owned} / {row.needed}
+                        {row.missing > 0 ? ` • Missing ${row.missing}` : ' • Ready'}
+                      </div>
+                      <div className="forgeWorkshop__requirementSource">
+                        {row.sourceLabel} • {row.sourceReason}
+                      </div>
+                      {row.missing > 0 && row.canRoute && row.routeCityId && row.routeModuleKey ? (
+                        <button
+                          type="button"
+                          className="worldScreenModuleButton forgeWorkshop__requirementRouteButton"
+                          onClick={() => openWorldModule({ cityId: row.routeCityId, moduleKey: row.routeModuleKey })}
+                        >
+                          Source in {row.sourceLabel}
+                        </button>
+                      ) : null}
                     </div>
                   ))}
                 </div>
@@ -536,6 +615,21 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                   <div className="forgeWorkshop__detailValue">{getProduceSummary(selectedBlueprint.id)}</div>
                 </div>
               </div>
+              {floorCompareRows.length > 0 && (
+                <div className="forgeWorkshop__detailSection forgeWorkshop__detailSection--compare">
+                  <div className="forgeWorkshop__detailLabel">Current → next floor target</div>
+                  <div className="forgeWorkshop__compareRows">
+                    {floorCompareRows.map((row) => (
+                      <div key={row.label} className="forgeWorkshop__compareRow">
+                        <span>{row.label}</span>
+                        <strong>{row.current}</strong>
+                        <span>→</span>
+                        <strong>{row.target}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="forgeWorkshop__detailSection">
                 <div className="forgeWorkshop__detailLabel">Permanent-floor impact</div>
                 <div className="forgeWorkshop__detailValue">
