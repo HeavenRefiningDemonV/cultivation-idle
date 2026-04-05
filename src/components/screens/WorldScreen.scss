@@ -3921,9 +3921,36 @@
 
 .worldScreenHubPanel {
   flex: 0 0 auto;
-  min-height: 480px;
+  min-height: 520px;
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(120, 72, 33, 0.34);
+  background: linear-gradient(180deg, rgba(250, 242, 226, 0.08), rgba(15, 23, 42, 0.28));
+}
+
+.worldScreenHubShell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.worldScreenHubShellHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.worldScreenHubShellTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--paper-ink, #f8fafc);
+}
+
+.worldScreenHubShellSubtitle {
+  margin: 0;
+  font-size: 12px;
+  color: var(--paper-ink-faint, rgba(226, 232, 240, 0.84));
 }
 
 .worldScreenModuleGuidanceGrid {
@@ -4035,6 +4062,10 @@
   flex-direction: column;
   gap: 10px;
   min-height: 0;
+}
+
+.worldCommandDeck--subordinate {
+  opacity: 0.95;
 }
 
 .worldCommandGroup {

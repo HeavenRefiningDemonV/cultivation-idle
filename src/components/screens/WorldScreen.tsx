@@ -431,17 +431,23 @@ export function WorldScreen() {
         <div className={'worldScreenDetailWrapper'}>
           <div className="worldScreenShellLayout">
             <div className="worldScreenMainRegion">
-              <div className={'worldScreenPanel worldScreenHubPanel'}>
-                <CityMapHub
-                  modules={visibleCityModules}
-                  activeModuleKey={activeModuleKey}
-                  recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
-                  getModuleLabel={getWorldModuleLabel}
-                  onOpenModule={handleOpenModule}
-                />
+              <div className="worldScreenHubShell">
+                <div className="worldScreenHubShellHeader">
+                  <h2 className="worldScreenHubShellTitle">City Map</h2>
+                  <p className="worldScreenHubShellSubtitle">Map ownership is primary. Command cards below are support routing only.</p>
+                </div>
+                <div className={'worldScreenPanel worldScreenHubPanel'}>
+                  <CityMapHub
+                    modules={visibleCityModules}
+                    activeModuleKey={activeModuleKey}
+                    recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
+                    getModuleLabel={getWorldModuleLabel}
+                    onOpenModule={handleOpenModule}
+                  />
+                </div>
               </div>
 
-              <div className="worldCommandDeck">
+              <div className="worldCommandDeck worldCommandDeck--subordinate">
                 {worldCommandSurface.groups.map((group) => (
                   <WorldModuleGroup key={group.id} title={group.label}>
                     {group.cards.map((card) => (
