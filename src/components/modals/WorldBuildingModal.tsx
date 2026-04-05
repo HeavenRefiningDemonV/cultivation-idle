@@ -68,6 +68,11 @@ export function WorldBuildingModal({
         return 'default';
     }
   }, [buildingKey]);
+  const supportBoardVariantClass = useMemo(() => {
+    if (buildingKey === 'bounties') return 'worldBuildingModal--bounties';
+    if (buildingKey === 'expeditions') return 'worldBuildingModal--expeditions';
+    return '';
+  }, [buildingKey]);
 
   if ((isStoreMode && (!storeOpen || !storeCityId || !buildingKey)) || (!isStoreMode && !open)) {
     return null;
@@ -129,7 +134,7 @@ export function WorldBuildingModal({
       open={open}
       onClose={close}
       overlayClassName="worldBuildingOverlay"
-      panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
+      panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant} ${supportBoardVariantClass}`.trim()}
       ariaLabel={title}
     >
       {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}

@@ -27,6 +27,7 @@ import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
+import { getLiveBountyBoardSlot } from '../../systems/world/bountyBoardContract.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const difficultyBadge: Record<string, string> = {
@@ -329,6 +330,7 @@ export function BountyBoardPanel() {
   }
 
   const paperSlots = Array.from({ length: 3 }, (_, index) => ({
+    slot: getLiveBountyBoardSlot(index),
     bounty: bounties[index] ?? null,
     positionClass: paperPositions[index] as PaperPositionClass,
   }));
@@ -414,7 +416,7 @@ export function BountyBoardPanel() {
           />
         </div>
         <div className="bountySupportSummaryCard__summary">
-          Merit supports Safety Net gate access. Keep this reserve healthy.
+          Merit supports fail-safe gate access. Keep this reserve healthy.
         </div>
         {showBountyInlineHint ? (
           <InlineOnboardingCallout
@@ -435,7 +437,7 @@ export function BountyBoardPanel() {
       </PaperCard>
 
       <div className={'bountyStageArea'}>
-        {paperSlots.map(({ bounty, positionClass }) => {
+        {paperSlots.map(({ slot, bounty, positionClass }) => {
           if (!bounty) {
             return (
               <button
@@ -470,6 +472,7 @@ export function BountyBoardPanel() {
           const isPinPulse = pinPulseId === bounty.instanceId;
           const isClaimAnimating = claimAnimId === bounty.instanceId;
           const isProgressPulse = Boolean(progressPulseIds[bounty.instanceId]);
+          const slotLabel = slot ? `${slot.role[0].toUpperCase()}${slot.role.slice(1)} Order` : 'Order';
 
           return (
             <button
@@ -509,6 +512,7 @@ export function BountyBoardPanel() {
                   <div className={'bountyPaperTitle'}>{bounty.title}</div>
                   <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
                 </div>
+                <div className={'bountyPaperSlotLabel'}>{slotLabel}</div>
                 {isComplete && (
                   <PaperStamp text="Ready" size="sm" tone="seal" className="bountyPaperReadyStamp paperStamp--ready" />
                 )}
@@ -532,6 +536,11 @@ export function BountyBoardPanel() {
                   ) : (
                     <PaperChip variant="pill" text="No rewards" tone="neutral" />
                   )}
+                </div>
+                <div className={'bountyPaperRouteLabel'}>
+                  {bountyDestination.kind === 'module'
+                    ? getBountyDestinationCtaLabel(bountyDestination)
+                    : `Blocked: ${bountyDestination.reason}`}
                 </div>
                 {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
               </PaperCard>

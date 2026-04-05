@@ -16,7 +16,7 @@ import { useInventoryStore } from '../../../stores/inventoryStore.js';
 import { isRuneBlueprint } from '../../../content/index.js';
 import { buildItemDelta } from './forgeDelta.js';
 import { resolveForgeStepScript } from './forgeScriptBuilder.js';
-import { InkPanel, PaperCard, PaperChip } from '../../../ui/ink/index.js';
+import { InkPanel, PaperCard } from '../../../ui/ink/index.js';
 import type { IconId } from '../../../ui/icons/index.js';
 import { GameIcon } from '../../../ui/icons/index.js';
 import { RunCompassCompact } from '../../../ui/status/RunCompassCompact.js';
@@ -296,6 +296,47 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
     return rows;
   }, [bestSourceIndex, cityId, inventoryItems, selectedBlueprint]);
 
+  const requirementRows = useMemo(() => {
+    if (!selectedBlueprint || !bestSourceIndex) return [];
+    return selectedBlueprint.costs.items.map((entry) => {
+      const owned = inventoryItems[entry.itemId] ?? 0;
+      const needed = Math.ceil(entry.qty);
+      const missing = Math.max(0, needed - owned);
+      const sourceEntry = getBestSourceIndexEntry(bestSourceIndex, entry.itemId);
+      const best = sourceEntry?.primarySource ?? sourceEntry?.sourceOptions[0] ?? null;
+      const sourceLabel = best ? getWorldModuleLabel(best.moduleKey) : 'No live source route';
+      const canRoute = Boolean(
+        cityId
+        && best
+        && ['outskirts', 'ruins', 'bounties', 'expeditions', 'apothecary'].includes(best.moduleKey),
+      );
+      return {
+        itemId: entry.itemId,
+        itemName: getItemDef(entry.itemId)?.name ?? entry.itemId,
+        owned,
+        needed,
+        missing,
+        sourceLabel,
+        sourceReason: best?.shortReason ?? 'No live source route available.',
+        canRoute,
+        routeCityId: (best?.cityId ?? cityId) ?? null,
+        routeModuleKey: best?.moduleKey ?? null,
+      };
+    });
+  }, [bestSourceIndex, cityId, inventoryItems, selectedBlueprint]);
+
+  const floorDeltaRows = useMemo(() => {
+    const next = floorModel.nextGateRecommendation;
+    if (!next) return [];
+    return [
+      { key: 'weapon', label: 'Weapon refine', current: floorModel.weaponRefineFloor, target: next.weaponRefine },
+      { key: 'accessory', label: 'Accessory refine', current: floorModel.accessoryRefineFloor, target: next.accessoryRefine },
+      { key: 'temper', label: 'Temper successes', current: floorModel.temperSuccessTotal, target: next.temperSuccesses },
+    ].map((entry) => ({ ...entry, deficit: Math.max(0, entry.target - entry.current) }));
+  }, [floorModel.accessoryRefineFloor, floorModel.nextGateRecommendation, floorModel.temperSuccessTotal, floorModel.weaponRefineFloor]);
+
+  const topForgeShortfall = floorDeltaRows.find((entry) => entry.deficit > 0) ?? null;
+
   const handleStart = () => {
     if (!selectedBlueprint || !canStart || isLocked) return;
     setSessionStatus(null);
@@ -321,6 +362,19 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
           <div className="forgeWorkshop__bannerTitle">Forge Workshop</div>
           <div className="forgeWorkshop__bannerBody">{surfaceModel.headline}</div>
           <div className="forgeWorkshop__bannerHint">{cityName} · {surfaceModel.tabCopy}</div>
+          {topForgeShortfall ? (
+            <div className="forgeWorkshop__bannerWarning">
+              Top shortfall: {topForgeShortfall.label} ({topForgeShortfall.current}/{topForgeShortfall.target})
+            </div>
+          ) : null}
+        </div>
+        <div className="forgeWorkshop__resourceRibbon" aria-label="Forge stock snapshot">
+          {['mat_spirit_steel_ore', 'mat_quenching_oil', 'mat_artifact_shard'].map((itemId) => (
+            <div key={itemId} className="forgeWorkshop__resourceChip">
+              <span>{getItemDef(itemId)?.name ?? itemId}</span>
+              <strong>{inventoryItems[itemId] ?? 0}</strong>
+            </div>
+          ))}
         </div>
         <div className="forgeWorkshop__bannerActions">
           <button
@@ -453,14 +507,19 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
-            <div className="forgeWorkshop__chips">
+            <div className="forgeWorkshop__processRail" role="tablist" aria-label="Forge process">
               {surfaceModel.tabs.map((filter) => (
-                <PaperChip
+                <button
                   key={filter.id}
-                  text={`${filter.label} (${filter.count})`}
-                  className={classNames('forgeWorkshop__chip', { 'forgeWorkshop__chip--active': activeTab === filter.id })}
+                  type="button"
+                  className={classNames('forgeWorkshop__processTab', { 'forgeWorkshop__processTab--active': activeTab === filter.id })}
                   onClick={() => setActiveTab(filter.id)}
-                />
+                  role="tab"
+                  aria-selected={activeTab === filter.id}
+                >
+                  <span>{filter.label}</span>
+                  <strong>{filter.count}</strong>
+                </button>
               ))}
             </div>
             <div className="forgeWorkshop__tabCopy">{surfaceModel.tabCopy}</div>
@@ -523,11 +582,32 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
               </div>
               <div className="forgeWorkshop__detailGrid">
                 <div>
-                  <div className="forgeWorkshop__detailLabel">Inputs</div>
-                  {selectedBlueprint.costs.items.length === 0 && <div className="forgeWorkshop__detailValue">None</div>}
-                  {selectedBlueprint.costs.items.map((entry) => (
-                    <div key={entry.itemId} className="forgeWorkshop__detailValue">
-                      {getItemDef(entry.itemId)?.name ?? entry.itemId} ×{entry.qty}
+                  <div className="forgeWorkshop__detailLabel">Requirements</div>
+                  {requirementRows.length === 0 && <div className="forgeWorkshop__detailValue">No material requirements.</div>}
+                  {requirementRows.map((entry) => (
+                    <div
+                      key={entry.itemId}
+                      className={classNames('forgeWorkshop__requirementRow', { 'forgeWorkshop__requirementRow--missing': entry.missing > 0 })}
+                    >
+                      <div className="forgeWorkshop__requirementMain">
+                        <strong>{entry.itemName}</strong>
+                        <span>
+                          Owned {entry.owned} / Needed {entry.needed}
+                          {entry.missing > 0 ? ` • Missing ${entry.missing}` : ' • Ready'}
+                        </span>
+                        <span>{entry.sourceLabel} • {entry.sourceReason}</span>
+                      </div>
+                      {entry.canRoute && entry.routeCityId && entry.routeModuleKey ? (
+                        <button
+                          type="button"
+                          className="worldScreenModuleButton forgeWorkshop__requirementRouteButton"
+                          onClick={() => openWorldModule({ cityId: entry.routeCityId, moduleKey: entry.routeModuleKey })}
+                        >
+                          Source
+                        </button>
+                      ) : (
+                        <span className="forgeWorkshop__materialRouteText">No direct route</span>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -546,6 +626,20 @@ export function ForgeWorkshop({ cityId }: { cityId: string | null }) {
                       : `Current rune floor: ${floorModel.runeSummaryLabel}.`}
                 </div>
               </div>
+              {floorDeltaRows.length > 0 ? (
+                <div className="forgeWorkshop__detailSection">
+                  <div className="forgeWorkshop__detailLabel">Current → next baseline</div>
+                  <div className="forgeWorkshop__deltaSlab">
+                    {floorDeltaRows.map((entry) => (
+                      <div key={entry.key} className="forgeWorkshop__deltaRow">
+                        <span>{entry.label}</span>
+                        <span>{entry.current} → {entry.target}</span>
+                        <strong>{entry.deficit > 0 ? `Need +${entry.deficit}` : 'Met'}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
               {selectedBlueprint.type === 'service' &&
                 (selectedBlueprint.service === 'refine' || selectedBlueprint.service === 'temper') && (
                   <div className="forgeWorkshop__detailSection">
