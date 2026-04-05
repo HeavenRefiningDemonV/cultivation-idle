@@ -7,7 +7,7 @@ This register is sequencing truth, not proof of implementation. Packet completio
 | P0-00 | Source lock and merge-law publication | — | Publish the non-destructive operating rule set. | TBD | done | Governed by `docs/ui/phase-0-source-lock.md` and this register. |
 | P0-01 | Destructive-migration audit | P0-00 | Identify files / deltas that currently weaken screens. | TBD | done | See `docs/ui/phase-0-destructive-migration-audit.md` and `docs/ui/phase-0-destructive-migration-ledger.json`. |
 | P0-02 | Screenshot baseline and review folder | P0-00 | Create before-state evidence for all recovery targets. | TBD | in progress | Baseline docs/manifest/folder created; all mandatory screenshot slots currently blocked in this runtime (see `docs/ui/phase-0-screenshot-baseline.md`). |
-| P0-03 | Shared-chrome regression rollback | P0-01 | Quarantine duplicated headers / temporary shell owners. | TBD | not started | Must follow audit findings and additive-only law. |
+| P0-03 | Shared-chrome regression rollback | P0-01 | Quarantine duplicated headers / temporary shell owners. | TBD | in progress | Header-channel quarantine landed for World/Techniques/Prestige; screenshot witness capture blocked in runtime (see `docs/ui/phase-0-shared-chrome-regression-rollback.md`). |
 | P0-04 | Path / Life Start recovery | P0-01, P0-02, P0-03 | Restore first-contact scenic ownership. | TBD | not started | Recovery order tier 1. |
 | P0-05 | Cultivation recovery | P0-01, P0-02, P0-03 | Restore sacred center without doing later-phase hero completion work. | TBD | not started | Recovery order tier 2. |
 | P0-06 | Status recovery | P0-01, P0-02, P0-03 | Restore stable diagnostic surface. | TBD | not started | Recovery order tier 3. |

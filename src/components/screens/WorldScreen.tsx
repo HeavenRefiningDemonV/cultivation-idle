@@ -2,12 +2,12 @@ import { useEffect, useMemo, useCallback, useState } from 'react';
 import type { CityDef } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
-import { useUIStore } from '../../stores/uiStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
 import { useBountyStore } from '../../stores/bountyStore.js';
 import { useActivityStore } from '../../stores/activityStore.js';
 import { useExpeditionStore } from '../../stores/expeditionStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
 import './WorldScreen.scss';
 import { RecentTechniqueActivations } from '../combat/RecentTechniqueActivations.js';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
@@ -49,7 +49,6 @@ const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Obje
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 
 export function WorldScreen() {
-  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const addNotification = useUIStore((state) => state.addNotification);
   const isLoaded = useContentStore((state) => state.isLoaded);
   const isLoading = useContentStore((state) => state.isLoading);
@@ -71,10 +70,6 @@ export function WorldScreen() {
   const runCompass = useRunCompassSurface();
   const [inspectorDrawerOpen, setInspectorDrawerOpen] = useState(false);
   const [isNarrowInspectorLayout, setIsNarrowInspectorLayout] = useState(false);
-
-  useEffect(() => {
-    setHeaderTitles('World', 'Where to go right now');
-  }, [setHeaderTitles]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

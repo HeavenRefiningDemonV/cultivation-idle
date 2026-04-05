@@ -173,7 +173,6 @@ export function TechniqueLibraryScreen() {
   const techniqueFocusRequest = useUIStore((state) => state.techniqueFocusRequest);
   const clearTechniqueLibraryIntent = useUIStore((state) => state.clearTechniqueLibraryIntent);
   const clearTechniqueFocusRequest = useUIStore((state) => state.clearTechniqueFocusRequest);
-  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setActiveTab = useUIStore((state) => state.setActiveTab);
 
   const progression = useMemo(
@@ -367,10 +366,6 @@ export function TechniqueLibraryScreen() {
       setSelectedTechniqueId(visibleTechniques[0].id);
     }
   }, [selectedTechniqueId, visibleTechniques]);
-
-  useEffect(() => {
-    setHeaderTitles('Technique Library', 'Equip techniques, view mastery, and manage loadouts');
-  }, [setHeaderTitles]);
 
   useEffect(() => {
     if (!selectedTechniqueId && detailOpen) {

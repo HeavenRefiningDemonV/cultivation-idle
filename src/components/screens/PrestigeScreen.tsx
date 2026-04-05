@@ -4,8 +4,8 @@ import { getItemDef, useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useHeartLawStore } from '../../stores/heartLawStore.js';
 import { usePrestigeStore } from '../../stores/prestigeStore.js';
-import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { useUIStore } from '../../stores/uiStore.js';
+import { getLiveRealmNameByIndex } from '../../systems/progression/runtime/index.js';
 import { RewardService } from '../../services/rewards/index.js';
 import type { PrestigeUpgradeDef } from '../../content/index.js';
 import { PRESTIGE_CATEGORIES, buildPrestigeCategorySections, getPrestigeCategoryKey } from '../../features/prestige/prestigeCategories.js';
@@ -58,7 +58,6 @@ export function PrestigeScreen() {
   const decreesAreaRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const ritualTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const setLifeStartWizardContext = useUIStore((state) => state.setLifeStartWizardContext);
   const openLifeSummaryModal = useUIStore((state) => state.openLifeSummaryModal);
   const runCompass = useRunCompassSurface();
@@ -144,10 +143,6 @@ export function PrestigeScreen() {
       return false;
     }
   };
-
-  useEffect(() => {
-    setHeaderTitles('Prestige', 'Review AP forecast, reset boundaries, and your next reincarnation decision');
-  }, [setHeaderTitles]);
 
   const upgradeList = useMemo(() => {
     if (!isContentLoaded) return [];
