@@ -234,3 +234,33 @@ Continuity rule:
 
 - plaque/ribbon/title assets must pair with frame-family value hierarchy and material language without replacing frame ownership.
 
+## P1-02B supplement note — world labels / building plaques / city-arrival identity
+
+Canonical root for this family: `src/assets/ui/chrome/world_labels/`.
+
+Naming examples:
+
+- `ui_label_building_world_default_m.png`
+- `ui_plate_building_selected_world_default_m.png`
+- `ui_label_district_world_default_l.png`
+- `ui_plate_city_current_world_default_l.png`
+- `ui_banner_city_arrival_world_default_l.png`
+- `ui_hint_route_world_default_s.png`
+
+Diegetic placement rules:
+
+- world labels attach to buildings, districts, city identity, or route context;
+- labels must not default to floating software-tag behavior;
+- world map/city overlays remain the base visual plane.
+
+Stretch behavior:
+
+- stretch-safe: building labels, selected-building plates, current-city plates;
+- fixed/variant-led: district labels and route-hints where aggressive stretch harms readability;
+- semi-stretch with protected ends: city-arrival world banners.
+
+Continuity and scope boundaries:
+
+- this family is distinct from P1-02A generic plaque/ribbon/title roles;
+- this family is World-specific and does not authorize live World integration in P1-02B.
+

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-02B",
+  "familyId": "world_labels_building_plaques",
+  "root": "src/assets/ui/chrome/world_labels/",
+  "shared": true,
+  "styleAnchor": "world_hub_diegetic_label_family",
+  "pairsWith": [
+    "p1-02a_shared_plaque_ribbon_family",
+    "shared_frame_atlas_family"
+  ],
+  "familyMembers": [
+    {
+      "id": "ui_label_building_world_default_m",
+      "role": "building label plaque",
+      "hierarchy": "low_to_medium",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "generic_headers",
+        "state_stamps",
+        "non_world_usage"
+      ],
+      "pairsWith": [
+        "ui_ribbon_section_header_short_default_s",
+        "frame_light_default"
+      ],
+      "tintable": true,
+      "stretchMode": "semi_stretch",
+      "diegeticAttachment": "building",
+      "textSafeInsetPx": {
+        "top": 10,
+        "right": 18,
+        "bottom": 10,
+        "left": 18
+      },
+      "ornamentBudget": "low",
+      "notes": "Default building name plate."
+    },
+    {
+      "id": "ui_plate_building_selected_world_default_m",
+      "role": "selected-building emphasis plate",
+      "hierarchy": "medium",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "state_stamps",
+        "global_navigation"
+      ],
+      "pairsWith": [
+        "ui_plaque_card_header_standard_default_s",
+        "frame_standard_default"
+      ],
+      "tintable": true,
+      "stretchMode": "semi_stretch",
+      "diegeticAttachment": "selected_building",
+      "textSafeInsetPx": {
+        "top": 10,
+        "right": 20,
+        "bottom": 10,
+        "left": 20
+      },
+      "ornamentBudget": "low_to_moderate",
+      "notes": "Elevated selected target emphasis."
+    },
+    {
+      "id": "ui_label_district_world_default_l",
+      "role": "district / area label plaque",
+      "hierarchy": "medium",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "building_default_labels",
+        "arrival_banner"
+      ],
+      "pairsWith": [
+        "ui_plaque_screen_header_long_default_l",
+        "frame_standard_default"
+      ],
+      "tintable": true,
+      "stretchMode": "width_variants_m_l",
+      "diegeticAttachment": "district_or_area",
+      "textSafeInsetPx": {
+        "top": 12,
+        "right": 22,
+        "bottom": 12,
+        "left": 22
+      },
+      "ornamentBudget": "low_to_moderate",
+      "notes": "Region grouping identity."
+    },
+    {
+      "id": "ui_plate_city_current_world_default_l",
+      "role": "current-city identity plate",
+      "hierarchy": "medium_high",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "global_breadcrumb_system",
+        "state_stamp_lane"
+      ],
+      "pairsWith": [
+        "ui_breadcrumb_city_current_default_m",
+        "inspector_shell_standard_default"
+      ],
+      "tintable": true,
+      "stretchMode": "semi_stretch",
+      "diegeticAttachment": "world_shell_or_inspector_city_context",
+      "textSafeInsetPx": {
+        "top": 12,
+        "right": 24,
+        "bottom": 12,
+        "left": 24
+      },
+      "ornamentBudget": "moderate_low",
+      "notes": "Persistent current-city identity."
+    },
+    {
+      "id": "ui_banner_city_arrival_world_default_l",
+      "role": "city-arrival world banner",
+      "hierarchy": "high",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "persistent_building_labels",
+        "state_stamps"
+      ],
+      "pairsWith": [
+        "ui_banner_city_arrival_standard_default_l",
+        "frame_heavy_default"
+      ],
+      "tintable": true,
+      "stretchMode": "semi_stretch",
+      "diegeticAttachment": "city_arrival_context",
+      "textSafeInsetPx": {
+        "top": 14,
+        "right": 30,
+        "bottom": 14,
+        "left": 30
+      },
+      "ornamentBudget": "moderate_high_endcaps",
+      "notes": "Heaviest world identity title."
+    },
+    {
+      "id": "ui_hint_route_world_default_s",
+      "role": "route-hint / breadcrumb plaque (World-only)",
+      "hierarchy": "low",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "generic_app_breadcrumbs",
+        "state_recommendation_swashes"
+      ],
+      "pairsWith": [
+        "ui_breadcrumb_module_current_default_m",
+        "frame_light_default"
+      ],
+      "tintable": true,
+      "stretchMode": "nine_slice_or_s_m_variants",
+      "diegeticAttachment": "route_context",
+      "textSafeInsetPx": {
+        "top": 8,
+        "right": 14,
+        "bottom": 8,
+        "left": 14
+      },
+      "ornamentBudget": "very_low",
+      "notes": "Quiet world route context support."
+    }
+  ],
+  "notes": "Example family manifest only; not runtime registration and not generated art output."
+}

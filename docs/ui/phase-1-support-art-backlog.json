@@ -325,7 +325,7 @@
       "id": "world-building-label-plaques",
       "label": "World / building label plaques",
       "bucket": "create-later-only",
-      "wave": "wave1-shared-support",
+      "wave": "wave1",
       "shared": true,
       "screens": [
         "world",
@@ -336,10 +336,15 @@
         "apothecary"
       ],
       "missingRoleStatement": "World and routed building surfaces lack a reusable diegetic label carrier role that preserves city and room scenic ownership.",
-      "trigger": "World/building additive screenshots show unresolved label grounding role with current assets.",
+      "trigger": "Additive World screenshots prove missing diegetic label roles for buildings, district grouping, current-city identity, and arrival context.",
       "deliverableType": "reusable world/building label plaque kit",
       "blockedUntil": "Wave 0 proof and role validation",
-      "notes": "Support labels only; no city repaint or room repaint."
+      "notes": "World label family only. City map and overlays remain preserved. Distinct from generic plaque family (P1-02A). State stamps/swashes are deferred. Live World integration is deferred to later implementation packets.",
+      "root": "src/assets/ui/chrome/world_labels/",
+      "status": "planned",
+      "packetBriefPath": "docs/ui/phase-1-p1-02b-world-labels-brief.md",
+      "reviewSheetPath": "docs/ui/phase-1-p1-02b-world-labels-review-sheet.md",
+      "manifestExamplePath": "docs/ui/phase-1-p1-02b-world-labels-manifest-example.json"
     },
     {
       "id": "overlay-mask-pack",
