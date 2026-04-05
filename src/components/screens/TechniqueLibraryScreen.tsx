@@ -184,6 +184,13 @@ export function TechniqueLibraryScreen() {
     () => loadouts.find((l) => l.id === selectedLoadoutId) ?? loadouts[0],
     [loadouts, selectedLoadoutId],
   );
+  const handleSelectLoadout = useCallback(
+    (nextLoadoutId: string) => {
+      if (!nextLoadoutId || nextLoadoutId === selectedLoadoutId) return;
+      setSelectedLoadout(nextLoadoutId);
+    },
+    [selectedLoadoutId, setSelectedLoadout],
+  );
 
   const selectedCastingPolicy: CastingPolicy = selectedLoadout?.castingPolicy ?? 'balanced';
 
@@ -646,7 +653,7 @@ export function TechniqueLibraryScreen() {
             <select
               id="techLoadoutSelect"
               value={selectedLoadoutId}
-              onChange={(event) => setSelectedLoadout(event.target.value)}
+              onChange={(event) => handleSelectLoadout(event.target.value)}
             >
               {loadouts.map((loadout) => (
                 <option key={loadout.id} value={loadout.id}>
@@ -676,7 +683,7 @@ export function TechniqueLibraryScreen() {
         />
       </div>
 
-      <div className="techStage">
+      <div className="techStage techStage--altarOwned">
         <section className="techLoadoutBoard">
           <div className="techniqueLibraryColumn techniqueLibraryColumn--left">
             <InkPanel variant="techniques" className="techniqueLibraryPanel">
@@ -686,7 +693,7 @@ export function TechniqueLibraryScreen() {
                   <button
                     key={loadout.id}
                     className={`techniqueLibraryLoadout ${loadout.id === selectedLoadout?.id ? 'is-active' : ''}`}
-                    onClick={() => setSelectedLoadout(loadout.id)}
+                    onClick={() => handleSelectLoadout(loadout.id)}
                   >
                     <div className="techniqueLibraryLoadoutName">{loadout.name}</div>
                     <div className="techniqueLibraryLoadoutMeta">
