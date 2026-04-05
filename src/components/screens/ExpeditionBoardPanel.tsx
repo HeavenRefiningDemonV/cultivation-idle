@@ -213,6 +213,13 @@ type CeremonyState = {
 
 const routePositions = ['expRouteButton--left', 'expRouteButton--center', 'expRouteButton--right'] as const;
 
+
+function getRouteBestWhenText(typeId: string): string {
+  const purpose = getLiveExpeditionRoutePurpose(typeId);
+  if (!purpose) return 'Best when you need passive support materials.';
+  return `Best when ${purpose.moduleLabel} needs passive support materials.`;
+}
+
 type RoutePositionClass = (typeof routePositions)[number];
 
 export function ExpeditionBoardPanel() {
@@ -525,6 +532,41 @@ export function ExpeditionBoardPanel() {
         </PaperCard>
       </div>
 
+      <PaperCard variant="card" className="expActiveSlotStrip" aria-label="Expedition slot strip">
+        <div className="expActiveSlotStrip__header">
+          <span>Global slot board</span>
+          <PaperChip variant="tag" text={`Origin city ${citiesById[currentCityId]?.name ?? currentCityId}`} tone="neutral" />
+        </div>
+        <div className="expActiveSlotStrip__slots">
+          {Array.from({ length: slots }).map((_, slotIndex) => {
+            const run = activeRunBySlot.get(slotIndex) ?? null;
+            if (!run) {
+              return (
+                <div key={`slot-${slotIndex}`} className="expActiveSlotStrip__slot expActiveSlotStrip__slot--idle">
+                  <span>Slot {slotIndex + 1}</span>
+                  <PaperStamp text="Idle" size="sm" tone="ink" />
+                </div>
+              );
+            }
+            const remainingMs = Math.max(0, run.endsAt - now);
+            const isComplete = run.status === 'complete' || remainingMs <= 0;
+            return (
+              <div
+                key={`slot-${slotIndex}`}
+                className={classNames('expActiveSlotStrip__slot', {
+                  'expActiveSlotStrip__slot--running': !isComplete,
+                  'expActiveSlotStrip__slot--ready': isComplete,
+                })}
+              >
+                <span>Slot {slotIndex + 1}</span>
+                <PaperStamp text={isComplete ? 'Claim Ready' : 'Running'} size="sm" tone={isComplete ? 'seal' : 'ink'} />
+                <span className="expActiveSlotStrip__city">{citiesById[run.cityId]?.name ?? run.cityId}</span>
+              </div>
+            );
+          })}
+        </div>
+      </PaperCard>
+
       <PaperCard variant="card" className={'expToplineSummary'}>
         <div className={'expToplineSummaryTitle'}>Top-line command</div>
         <div className={'expToplineSummaryBody'}>
@@ -574,9 +616,10 @@ export function ExpeditionBoardPanel() {
               >
                 <div className={'expRouteHeader'}>
                   <div className={'expRouteTitle'}>{type.name}</div>
-                  <PaperChip variant="tag" text="ROUTE" />
+                  <PaperChip variant="tag" text={getLiveExpeditionRoutePurpose(type.id)?.moduleLabel ?? 'Support'} tone="neutral" />
                 </div>
                 <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
+                <div className={'expRouteBestWhen'}>{getRouteBestWhenText(type.id)}</div>
                 <div className={'expRouteItems'}>
                   {items.length === 0 && <div className={'expRouteItem'}>No yields defined</div>}
                   {items.map((item) => {
@@ -960,7 +1003,7 @@ export function ExpeditionBoardPanel() {
                   }
                   const destination = destinations[0] ?? null;
                   if (!destination) {
-                    return <div className={'expDetailHint'}>{routePurpose.moduleLabel} unavailable in the origin city.</div>;
+                    return <div className={'expDetailHint'}>{routePurpose.moduleLabel} unavailable in the origin city ({citiesById[ceremony.run.cityId]?.name ?? ceremony.run.cityId}).</div>;
                   }
                   return (
                     <button

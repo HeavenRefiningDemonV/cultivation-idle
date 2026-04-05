@@ -123,13 +123,14 @@ export function WorldBuildingModal({
   }
 
   const showShellClose = buildingKey === 'outskirts' || buildingKey === 'gateTrial';
+  const isSupportBoard = buildingKey === 'bounties' || buildingKey === 'expeditions';
 
   return (
     <Modal
       open={open}
       onClose={close}
-      overlayClassName="worldBuildingOverlay"
-      panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant}`}
+      overlayClassName={isSupportBoard ? 'worldBuildingOverlay worldBuildingOverlay--supportBoard' : 'worldBuildingOverlay'}
+      panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant}${isSupportBoard ? ' worldBuildingModal--supportBoard' : ''}`}
       ariaLabel={title}
     >
       {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}

@@ -337,6 +337,15 @@
   overflow: hidden;
 }
 
+.bountyPaperRoleRow {
+  min-height: 24px;
+}
+
+.bountyPaperRoleRow .paperChip {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 .bountyPaperObjective {
   font-size: 13px;
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.85));
@@ -438,6 +447,10 @@
   border: 1px solid rgba(65, 45, 25, 0.22);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
   position: relative;
+}
+
+.bountyQueueStrip--top {
+  margin-bottom: 2px;
 }
 
 .bountyQueueStrip::before,

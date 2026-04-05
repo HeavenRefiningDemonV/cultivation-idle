@@ -10,6 +10,11 @@
   backdrop-filter: blur(5px);
 }
 
+.worldBuildingOverlay--supportBoard {
+  background: rgba(17, 12, 8, 0.5);
+  backdrop-filter: blur(3px);
+}
+
 .worldBuildingModal {
   position: relative;
   background-image: url('../../assets/background/manualpavilion.png');
@@ -49,6 +54,10 @@
 
 .worldBuildingModal--bounty-board {
   background-image: url('../../assets/background/bountyboard.png');
+}
+
+.worldBuildingModal--supportBoard::after {
+  opacity: 0.18;
 }
 
 .worldBuildingModal--inside-dungeon {
@@ -166,4 +175,12 @@
     transform: rotate(0deg) translateY(0px);
     animation-timing-function: ease-out;
   }
+}
+
+.worldBuildingModal--supportBoard .worldBuildingClose {
+  top: 8px;
+  right: 8px;
+  border-radius: 999px;
+  background: rgba(251, 244, 228, 0.72);
+  border: 1px solid rgba(87, 59, 31, 0.28);
 }

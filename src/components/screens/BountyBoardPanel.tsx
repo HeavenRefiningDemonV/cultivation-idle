@@ -26,6 +26,7 @@ import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { getLiveBountyBoardSlot } from '../../systems/world/bountyBoardContract.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import '../../ui/world/WorldModuleCard.scss';
 
@@ -47,6 +48,12 @@ type RewardChip = {
   text: string;
   tone?: 'neutral' | 'ink' | 'success' | 'danger' | 'merit' | 'rare';
 };
+
+
+function formatBoardRoleLabel(role: string | null | undefined): string {
+  if (!role) return 'Bounty Order';
+  return `${role[0].toUpperCase()}${role.slice(1)} Order`;
+}
 
 function formatRewards(bundle: RewardBundle, itemsById: Record<string, { name?: string }>): RewardChip[] {
   const entries: RewardChip[] = [];
@@ -434,113 +441,7 @@ export function BountyBoardPanel() {
         ) : null}
       </PaperCard>
 
-      <div className={'bountyStageArea'}>
-        {paperSlots.map(({ bounty, positionClass }) => {
-          if (!bounty) {
-            return (
-              <button
-                key={`empty-${positionClass}`}
-                className={`bountyPaperButton ${positionClass} bountyPaperButton--empty`}
-                type="button"
-                disabled
-                aria-label="No bounty posted"
-              >
-                <PaperCard variant="card" className="bountyPaperCard" disabled>
-                  <div className={'bountyPaperEmptyTitle'}>No bounty posted</div>
-                  <div className={'bountyPaperEmptyBody'}>Check back after the next refresh.</div>
-                </PaperCard>
-              </button>
-            );
-          }
-
-          const difficultyLabel = difficultyBadge[bounty.difficulty] ?? bounty.difficulty;
-          const bountyRewards = formatRewards(bounty.rewards, itemsById).slice(0, 3);
-          const isTracked = trackedId === bounty.instanceId;
-          const isSelected = selectedId === bounty.instanceId;
-          const isClaimed = bounty.claimed;
-          const isComplete = bounty.progress >= bounty.target && !isClaimed;
-          const canClaim = isComplete && !isClaimed;
-          const bountyDestination = resolveBountyDestination({
-            cityId: bounty.cityId,
-            bountyKind: bounty.kind,
-            cityModules,
-            craftRouteSupportState,
-          });
-          const canGoThere = bountyDestination.kind !== 'unavailable';
-          const isPinPulse = pinPulseId === bounty.instanceId;
-          const isClaimAnimating = claimAnimId === bounty.instanceId;
-          const isProgressPulse = Boolean(progressPulseIds[bounty.instanceId]);
-
-          return (
-            <button
-              key={bounty.instanceId}
-              className={`bountyPaperButton ${positionClass}`}
-              type="button"
-              onClick={() => handleOpenDetail(bounty.instanceId)}
-              aria-pressed={isSelected}
-              aria-label={`Open bounty details: ${bounty.title}`}
-            >
-              <PaperCard
-                variant="card"
-                interactive
-                selected={isSelected}
-                complete={isComplete}
-                claimed={isClaimed}
-                className={classNames('bountyPaperCard', {
-                  isTracked,
-                  isComplete,
-                  isClaimed,
-                  isSelected,
-                  isClaimAnimating,
-                  isProgressPulse,
-                  isPinPulse,
-                  canClaim,
-                  canGoThere,
-                })}
-              >
-                <span
-                  className={classNames('bountyPaperPin', {
-                    'bountyPaperPin--visible': isTracked,
-                    'bountyPaperPin--pulse': isPinPulse,
-                  })}
-                  aria-hidden="true"
-                />
-                <div className={'bountyPaperHeader'}>
-                  <div className={'bountyPaperTitle'}>{bounty.title}</div>
-                  <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
-                </div>
-                {isComplete && (
-                  <PaperStamp text="Ready" size="sm" tone="seal" className="bountyPaperReadyStamp paperStamp--ready" />
-                )}
-                {isClaimed && (
-                  <PaperStamp text="Claimed" size="sm" tone="seal" className="bountyPaperClaimedStamp paperStamp--claimed" />
-                )}
-                {isClaimAnimating && (
-                  <span className="bountyPaperClaimBurst" aria-hidden="true">
-                    Claimed
-                  </span>
-                )}
-                <div className={'bountyPaperObjective'}>{bounty.description}</div>
-                <div className={classNames('bountyPaperProgress', { 'bountyPaperProgress--pulse': isProgressPulse })}>
-                  Progress: {bounty.progress} / {bounty.target}
-                </div>
-                <div className={'bountyPaperRewards'}>
-                  {bountyRewards.length > 0 ? (
-                    bountyRewards.map((entry) => (
-                      <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
-                    ))
-                  ) : (
-                    <PaperChip variant="pill" text="No rewards" tone="neutral" />
-                  )}
-                </div>
-                {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
-              </PaperCard>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className={'bountyQueueStrip'}>
+      <div className={'bountyQueueStrip bountyQueueStrip--top'}>
         <div className={'bqsPrimary'}>
           {primaryBounty ? (
             <>
@@ -653,11 +554,123 @@ export function BountyBoardPanel() {
         {claimError && <div className={'bqsError'}>{claimError}</div>}
       </div>
 
+      <div className={'bountyStageArea'}>
+        {paperSlots.map(({ bounty, positionClass }) => {
+          if (!bounty) {
+            return (
+              <button
+                key={`empty-${positionClass}`}
+                className={`bountyPaperButton ${positionClass} bountyPaperButton--empty`}
+                type="button"
+                disabled
+                aria-label="No bounty posted"
+              >
+                <PaperCard variant="card" className="bountyPaperCard" disabled>
+                  <div className={'bountyPaperEmptyTitle'}>No bounty posted</div>
+                  <div className={'bountyPaperEmptyBody'}>Check back after the next refresh.</div>
+                </PaperCard>
+              </button>
+            );
+          }
+
+          const difficultyLabel = difficultyBadge[bounty.difficulty] ?? bounty.difficulty;
+          const boardRole = getLiveBountyBoardSlot(paperSlots.findIndex((entry) => entry.bounty?.instanceId === bounty.instanceId));
+          const roleLabel = formatBoardRoleLabel(boardRole?.role);
+          const bountyRewards = formatRewards(bounty.rewards, itemsById).slice(0, 3);
+          const isTracked = trackedId === bounty.instanceId;
+          const isSelected = selectedId === bounty.instanceId;
+          const isClaimed = bounty.claimed;
+          const isComplete = bounty.progress >= bounty.target && !isClaimed;
+          const canClaim = isComplete && !isClaimed;
+          const bountyDestination = resolveBountyDestination({
+            cityId: bounty.cityId,
+            bountyKind: bounty.kind,
+            cityModules,
+            craftRouteSupportState,
+          });
+          const canGoThere = bountyDestination.kind !== 'unavailable';
+          const isPinPulse = pinPulseId === bounty.instanceId;
+          const isClaimAnimating = claimAnimId === bounty.instanceId;
+          const isProgressPulse = Boolean(progressPulseIds[bounty.instanceId]);
+
+          return (
+            <button
+              key={bounty.instanceId}
+              className={`bountyPaperButton ${positionClass}`}
+              type="button"
+              onClick={() => handleOpenDetail(bounty.instanceId)}
+              aria-pressed={isSelected}
+              aria-label={`Open bounty details: ${bounty.title}`}
+            >
+              <PaperCard
+                variant="card"
+                interactive
+                selected={isSelected}
+                complete={isComplete}
+                claimed={isClaimed}
+                className={classNames('bountyPaperCard', {
+                  isTracked,
+                  isComplete,
+                  isClaimed,
+                  isSelected,
+                  isClaimAnimating,
+                  isProgressPulse,
+                  isPinPulse,
+                  canClaim,
+                  canGoThere,
+                })}
+              >
+                <span
+                  className={classNames('bountyPaperPin', {
+                    'bountyPaperPin--visible': isTracked,
+                    'bountyPaperPin--pulse': isPinPulse,
+                  })}
+                  aria-hidden="true"
+                />
+                <div className={'bountyPaperHeader'}>
+                  <div className={'bountyPaperTitle'}>{bounty.title}</div>
+                  <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
+                </div>
+                <div className={'bountyPaperRoleRow'}>
+                  <PaperChip variant="tag" text={roleLabel} tone="neutral" />
+                </div>
+                {isComplete && (
+                  <PaperStamp text="Ready" size="sm" tone="seal" className="bountyPaperReadyStamp paperStamp--ready" />
+                )}
+                {isClaimed && (
+                  <PaperStamp text="Claimed" size="sm" tone="seal" className="bountyPaperClaimedStamp paperStamp--claimed" />
+                )}
+                {isClaimAnimating && (
+                  <span className="bountyPaperClaimBurst" aria-hidden="true">
+                    Claimed
+                  </span>
+                )}
+                <div className={'bountyPaperObjective'}>{bounty.description}</div>
+                <div className={classNames('bountyPaperProgress', { 'bountyPaperProgress--pulse': isProgressPulse })}>
+                  Progress: {bounty.progress} / {bounty.target}
+                </div>
+                <div className={'bountyPaperRewards'}>
+                  {bountyRewards.length > 0 ? (
+                    bountyRewards.map((entry) => (
+                      <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                    ))
+                  ) : (
+                    <PaperChip variant="pill" text="No rewards" tone="neutral" />
+                  )}
+                </div>
+                {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
+              </PaperCard>
+            </button>
+          );
+        })}
+      </div>
+
+
       {selectedBounty && (
         <DetailScrollModal
           open={detailOpen}
           title={selectedBounty.title}
-          subtitle={`${cityName} • ${bountyKindToLabel(selectedBounty.kind)}`}
+          subtitle={`${cityName} • ${bountyKindToLabel(selectedBounty.kind)} • ${formatBoardRoleLabel(getLiveBountyBoardSlot(bounties.findIndex((entry) => entry.instanceId === selectedBounty.instanceId))?.role)}`}
           meta={
             <div className="bountyDetailMeta">
               <PaperStamp
