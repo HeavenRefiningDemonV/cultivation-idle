@@ -115,6 +115,38 @@ Mandatory rule: if a slot is not applicable on that exact target screen, mark `N
    - Approved: cleanup request may remove only listed conflicting layers for that exact target screen.
    - Rejected/Deferred: no cleanup; follow-up remains additive/corrective.
 
+
+## Phase 1 Wave 0 support-art proof mode (P1-01A)
+
+This workflow remains cutover-first. A second, bounded use is now defined for Phase 1 Wave 0 support-art proof.
+
+### What Wave 0 proof is
+
+- Evidence used to justify whether a later support-art request is a real missing-role request.
+- Slot-compatible with this workflow (`01-base` through `06-reduced-motion`, optional `07-narrow`).
+- Stored in the same QA folder convention: `docs/release/qa/ui-cutover/<screen-id>/`.
+
+### What Wave 0 proof is not
+
+- Not cleanup authorization.
+- Not permission to remove or replace current scenic/thematic owners.
+- Not proof that a screen is cut over.
+
+### Citation requirements for later Phase 1 art packets
+
+Every later support-art packet must cite:
+
+1. the relevant row(s) in `docs/ui/phase-1-wave0-screenshot-matrix.md`;
+2. the screenshot folder path(s) under `docs/release/qa/ui-cutover/<screen-id>/`;
+3. exact evidence slot filename(s) used as proof;
+4. the missing-role statement tied to those slots.
+
+If the proof row is incomplete, the support-art request is not reviewable.
+
+### Harness and manual-route coexistence rule
+
+Harness-backed and manual-route surfaces may coexist in one proof system. When no deterministic harness exists, the route must be documented as manual live navigation; missing harness coverage must be reported honestly and not papered over with invented routes.
+
 ## Family-specific capture emphasis
 
 - **Hero ritual screens:** verify centerpiece coherence, retained scenic ownership, and that support cards did not flatten hero identity.
