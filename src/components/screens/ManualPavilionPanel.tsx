@@ -1007,48 +1007,50 @@ export function ManualPavilionPanel({ pavilionId }: ManualPavilionPanelProps) {
           </button>
         </div>
       </PaperCard>
-      <div className="manualPavilionSummaryWrap">
-        <RunCompassCompact surface={runCompass.compact} tone="paper" />
-        <ManualBuildGapSummary
-          currentGapLine={currentGap}
-          usefulOffersLine={usefulOffersLine}
-          refreshCostLine={refreshCostLine}
-          pityEpicLine={pityEpicLine}
-          pityLegendaryLine={pityLegendaryLine}
-        />
-      </div>
-      <div
-        className={`pavilionShelfWall${flashOn ? " pavilionShelfWall--flash" : ""}`}
-      >
-        {renderShelfRow(
-          "Common Shelf",
-          "common",
-          shelves.common,
-          14,
-          "Heaven/Earth/Martial manuals",
-        )}
-        {renderShelfRow(
-          "Advanced Shelf",
-          "advanced",
-          shelves.advanced,
-          12,
-          "Refined techniques",
-        )}
-        {renderShelfRow(
-          "Rare Shelf",
-          "rare",
-          shelves.rare,
-          10,
-          "Uncommon paths",
-        )}
-        {renderShelfRow(
-          "Featured Shelf",
-          "featured",
-          shelves.featured,
-          8,
-          "Limited highlights",
-        )}
-      </div>
+      <section className="manualPavilionOwnerFrame" aria-label="Manual shelf room">
+        <div className="manualPavilionSummaryWrap">
+          <RunCompassCompact surface={runCompass.compact} tone="paper" />
+          <ManualBuildGapSummary
+            currentGapLine={currentGap}
+            usefulOffersLine={usefulOffersLine}
+            refreshCostLine={refreshCostLine}
+            pityEpicLine={pityEpicLine}
+            pityLegendaryLine={pityLegendaryLine}
+          />
+        </div>
+        <div
+          className={`pavilionShelfWall${flashOn ? " pavilionShelfWall--flash" : ""}`}
+        >
+          {renderShelfRow(
+            "Common Shelf",
+            "common",
+            shelves.common,
+            14,
+            "Heaven/Earth/Martial manuals",
+          )}
+          {renderShelfRow(
+            "Advanced Shelf",
+            "advanced",
+            shelves.advanced,
+            12,
+            "Refined techniques",
+          )}
+          {renderShelfRow(
+            "Rare Shelf",
+            "rare",
+            shelves.rare,
+            10,
+            "Uncommon paths",
+          )}
+          {renderShelfRow(
+            "Featured Shelf",
+            "featured",
+            shelves.featured,
+            8,
+            "Limited highlights",
+          )}
+        </div>
+      </section>
       <div className={"pavilionBottomStrip"}>{renderHistoryCollapsible()}</div>
       <ManualDetailModal
         open={Boolean(selectedManualSlot)}

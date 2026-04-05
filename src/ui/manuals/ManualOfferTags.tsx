@@ -2,9 +2,8 @@ import type { ManualOfferTag } from '../../systems/manuals/manualOfferAnalysis.j
 
 export function ManualOfferTags(props: { tags: ManualOfferTag[] }) {
   const { tags } = props;
-  if (tags.length === 0) return null;
   return (
-    <div className="manualOfferTags">
+    <div className={`manualOfferTags${tags.length === 0 ? " manualOfferTags--empty" : ""}`}>
       {tags.map((tag) => (
         <span key={tag} className="manualOfferTags__tag">
           {tag}

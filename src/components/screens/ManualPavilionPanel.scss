@@ -131,6 +131,16 @@
   gap: 12px;
 }
 
+.manualPavilionOwnerFrame {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid color-mix(in oklab, var(--pavilion-earth) 36%, transparent 64%);
+  border-radius: var(--pavilion-radius-l);
+  background: color-mix(in oklab, var(--pavilion-paper) 68%, rgba(22, 16, 12, 0.22) 32%);
+}
+
 .pavilionShelfWall--flash {
   animation: pavilionShelfFlash 450ms ease-out 1;
 }
@@ -301,6 +311,12 @@
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 6px;
+  min-height: 24px;
+  align-content: flex-start;
+}
+
+.manualOfferTags--empty {
+  opacity: 0;
 }
 
 .manualOfferTags__tag {
@@ -308,6 +324,10 @@
   border-radius: 999px;
   padding: 1px 6px;
   font-size: 10px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   background: rgba(255, 255, 255, 0.35);
 }
 
