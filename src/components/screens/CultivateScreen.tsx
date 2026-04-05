@@ -101,7 +101,6 @@ export function QiProgressBar({
 }
 
 export function CultivateScreen() {
-  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const showPerkSelectionModal = useUIStore((state) => state.showPerkSelectionModal);
   const perkSelectionRealm = useUIStore((state) => state.perkSelectionRealm);
   const showPerkSelection = useUIStore((state) => state.showPerkSelection);
@@ -153,10 +152,6 @@ export function CultivateScreen() {
   const realmLabel = currentRealm?.name ?? 'Realm';
   const nextLiveRealm = getNextLiveRealm(liveRealmIndex);
   const atContentCap = isAtSemesterCap(liveRealmIndex);
-
-  useEffect(() => {
-    setHeaderTitles('Cultivation', 'Guide your qi flow and heart law.');
-  }, [setHeaderTitles]);
 
   useEffect(() => {
     const previous = lastInsightRef.current;

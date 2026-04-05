@@ -59,7 +59,7 @@ export function CultivationHeaderRibbon({
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === 'undefined') return false;
     const stored = window.localStorage.getItem(storageKey);
-    return stored === null ? true : stored === '1';
+    return stored === null ? false : stored === '1';
   });
   const stabilityPct = stabilityCap > 0 ? Math.min(100, (stability / stabilityCap) * 100) : 0;
   const stabilityTone = stabilityPct >= 70 ? 'ok' : stabilityPct >= 30 ? 'warn' : 'danger';

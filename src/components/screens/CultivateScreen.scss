@@ -871,22 +871,6 @@
   border: 1px solid rgba(92, 63, 14, 0.45);
 }
 
-/**/
-
-/*IMPORTANT DON'T TOUCH -AYŞE*/
-.important-class {
-  background-color: red;
-  width: 18.75rem;
-  z-index: 11;
-  border-style: solid;
-  border-width: 5vh;
-  border-image-source: url("../../assets/menus/scroll.png");
-  border-image-slice: 18% fill;
-  border-image-outset: 20px 26px;
-  border-image-repeat: stretch;
-}
-/*-------------------------------------------*/
-
 .daoHeartSealButton {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 84px);
