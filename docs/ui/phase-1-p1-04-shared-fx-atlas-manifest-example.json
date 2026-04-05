@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-04",
+  "familyId": "shared_fx_sprite_atlas",
+  "root": "src/assets/ui/fx/",
+  "shared": true,
+  "styleAnchor": "phase1_shared_fx_vocabulary",
+  "familyMembers": [
+    {
+      "id": "ui_fx_mist_wisp_soft_default",
+      "role": "mist wisp",
+      "hierarchy": "low",
+      "intendedScreens": ["Path", "Cultivation", "Status", "World", "Prestige"],
+      "excludedScopes": ["dense management", "text carriers", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "soft_edge_sparse_center",
+      "atlasGroup": "mist_and_haze",
+      "qualityTierPolicy": {
+        "high": "allowed",
+        "medium": "allowed_reduced_density",
+        "low": "static_or_sparse",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "static mist card or disabled",
+      "notes": "Support atmosphere only; no truth surfaces."
+    },
+    {
+      "id": "ui_fx_dust_mote_soft_default",
+      "role": "dust mote cluster",
+      "hierarchy": "low",
+      "intendedScreens": ["Cultivation", "World", "Manual Pavilion", "Techniques", "Forge"],
+      "excludedScopes": ["high-noise overlays", "text carriers", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "micro_particle_soft_alpha",
+      "atlasGroup": "dust_and_motes",
+      "qualityTierPolicy": {
+        "high": "allowed",
+        "medium": "allowed_reduced_density",
+        "low": "mostly_static",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "single static sparse mote layer",
+      "notes": "Keep density low on dense screens."
+    },
+    {
+      "id": "ui_fx_glint_sacred_soft_default",
+      "role": "sacred glint",
+      "hierarchy": "low_medium",
+      "intendedScreens": ["Heart Law", "Cultivation", "Prestige"],
+      "excludedScopes": ["reward burst spectacle", "neon bloom", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "soft_core_soft_falloff",
+      "atlasGroup": "glint_and_spark_soft",
+      "qualityTierPolicy": {
+        "high": "allowed_low_count",
+        "medium": "allowed_sparse",
+        "low": "rare_static",
+        "reducedMotion": "single_static_glint"
+      },
+      "reducedMotionFallback": "single low-opacity glint",
+      "notes": "Sacred emphasis only; no confetti behavior."
+    },
+    {
+      "id": "ui_fx_ember_drift_soft_default",
+      "role": "ember drift",
+      "hierarchy": "low_medium",
+      "intendedScreens": ["Forge", "Gate Trial", "Prestige"],
+      "excludedScopes": ["combat spectacle", "full-room fire", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "soft_ember_core_with_faint_fringe",
+      "atlasGroup": "embers_and_heat_hints",
+      "qualityTierPolicy": {
+        "high": "allowed_restrained",
+        "medium": "allowed_sparse",
+        "low": "static_or_off",
+        "reducedMotion": "off_or_static_single"
+      },
+      "reducedMotionFallback": "static ember card or disabled",
+      "notes": "Warm accents only; avoid dominant brightness."
+    },
+    {
+      "id": "ui_fx_halo_breath_soft_default",
+      "role": "halo breath",
+      "hierarchy": "medium_support",
+      "intendedScreens": ["Cultivation", "Heart Law", "Prestige"],
+      "excludedScopes": ["hard spotlight", "readability masks", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "broad_radial_soft_fade",
+      "atlasGroup": "halo_and_seal_support",
+      "qualityTierPolicy": {
+        "high": "allowed_restrained_pulse",
+        "medium": "allowed_lower_amplitude",
+        "low": "static_halo_only",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "single static halo",
+      "notes": "Support focal zones without replacing hero/scenic owners."
+    },
+    {
+      "id": "ui_fx_seal_pulse_soft_default",
+      "role": "seal pulse",
+      "hierarchy": "medium_support",
+      "intendedScreens": ["Heart Law", "Prestige", "Cultivation"],
+      "excludedScopes": ["strobing", "state stamp replacement", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "ring_pulse_soft_edge",
+      "atlasGroup": "halo_and_seal_support",
+      "qualityTierPolicy": {
+        "high": "allowed_timed",
+        "medium": "allowed_lower_frequency",
+        "low": "static_ring_or_off",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "static seal ring",
+      "notes": "Ceremonial support only; keep cadence slow."
+    },
+    {
+      "id": "ui_fx_aura_wisp_soft_default",
+      "role": "aura wisp",
+      "hierarchy": "low_medium",
+      "intendedScreens": ["Cultivation", "Heart Law", "Prestige"],
+      "excludedScopes": ["neon plasma", "aggressive trails", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "elongated_soft_wisp",
+      "atlasGroup": "aura_and_brush_accents",
+      "qualityTierPolicy": {
+        "high": "allowed_restrained",
+        "medium": "allowed_sparse",
+        "low": "static_or_off",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "single static aura wisp",
+      "notes": "Low-frequency spiritual motion only."
+    },
+    {
+      "id": "ui_fx_firefly_mote_world_default",
+      "role": "firefly / world mote",
+      "hierarchy": "low",
+      "intendedScreens": ["World", "Outskirts", "Ruins", "Path"],
+      "excludedScopes": ["dense management", "navigation obstruction", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "tiny_soft_points",
+      "atlasGroup": "dust_and_motes",
+      "qualityTierPolicy": {
+        "high": "allowed_sparse",
+        "medium": "allowed_lower_count",
+        "low": "static_or_off",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "few static points or disabled",
+      "notes": "World ambience role; avoid swarm density."
+    },
+    {
+      "id": "ui_fx_brush_shimmer_soft_default",
+      "role": "brush shimmer accent",
+      "hierarchy": "low_medium",
+      "intendedScreens": ["Cultivation", "Gate Trial", "Manual Pavilion", "Prestige"],
+      "excludedScopes": ["state underlay ownership", "continuous ribbon motion", "screen ownership"],
+      "tintable": true,
+      "alphaProfile": "brush_texture_soft_highlight",
+      "atlasGroup": "aura_and_brush_accents",
+      "qualityTierPolicy": {
+        "high": "allowed_short_accents",
+        "medium": "allowed_rare",
+        "low": "static_only",
+        "reducedMotion": "static_only"
+      },
+      "reducedMotionFallback": "static brush accent",
+      "notes": "Remain distinct from P1-03 state swash/stamp families."
+    }
+  ]
+}

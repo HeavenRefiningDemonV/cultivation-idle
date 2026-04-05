@@ -264,3 +264,37 @@ Continuity and scope boundaries:
 - this family is distinct from P1-02A generic plaque/ribbon/title roles;
 - this family is World-specific and does not authorize live World integration in P1-02B.
 
+
+## P1-04 supplement note — shared FX sprite atlas
+
+Canonical root for this family: `src/assets/ui/fx/`.
+
+Naming examples:
+
+- `ui_fx_mist_wisp_soft_default.png`
+- `ui_fx_dust_mote_soft_default.png`
+- `ui_fx_glint_sacred_soft_default.png`
+- `ui_fx_ember_drift_soft_default.png`
+- `ui_fx_halo_breath_soft_default.png`
+- `ui_fx_seal_pulse_soft_default.png`
+- `ui_fx_aura_wisp_soft_default.png`
+- `ui_fx_firefly_mote_world_default.png`
+- `ui_fx_brush_shimmer_soft_default.png`
+
+Export and compositing requirements:
+
+- transparent PNG required;
+- alpha/tint behavior must stay soft, painterly, and low-saturation;
+- atlas-friendly grouping and bounded sprite sizes are mandatory;
+- no background/checkerboard/scenic backdrops in FX exports.
+
+Quality tier and reduced-motion requirements:
+
+- High: restrained full-role availability;
+- Medium: reduced density/cadence;
+- Low: static-or-sparse behavior;
+- Reduced Motion: static-only fallback or disabled continuous motion.
+
+Scope safety requirement:
+
+- P1-04 FX parts are support atmosphere only and never UI truth surfaces, structural chrome owners, or scenic owners.
