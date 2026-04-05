@@ -2,7 +2,7 @@
   "verifiedAgainst": {
     "basis": "git",
     "branch": "work",
-    "commit": "2e3b901"
+    "commit": "683f3e0"
   },
   "resolvedDrift": [
     {
@@ -401,6 +401,16 @@
       {
         "path": "src/assets/icons/",
         "class": "assetAnchorRoot"
+      }
+    ],
+    "docsAreaGovernance": [
+      {
+        "path": "docs/ui/phase-1-p1-01-wave0-asset-audit.md",
+        "class": "governanceTouchpoint"
+      },
+      {
+        "path": "docs/ui/phase-1-support-art-backlog.json",
+        "class": "governanceTouchpoint"
       }
     ]
   },

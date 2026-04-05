@@ -1,15 +1,11 @@
 {
-  "auditBasis": {
-    "branch": "work",
-    "commit": "aadfaf5",
-    "workingTreeDirty": false,
-    "notes": [
-      "Requested alias P0-16 is mapped locally to canonical Phase 1 / P1-01 / Workstream 1.1 / Wave 0 asset audit.",
-      "Wave 0 is classification and backlog gating only; no generated art is included.",
-      "Latest implementation/redesign .docx files were not present in this repo snapshot; Section A + Phase 0 docs were used as authority."
-    ]
+  "packet": "P1-01",
+  "verifiedAgainst": {
+    "headRef": "683f3e0",
+    "dirtyWorktree": false,
+    "notes": "Wave 0 verification used direct path checks in current repo snapshot before docs refresh edits."
   },
-  "assetRoots": [
+  "rootsVerified": [
     "src/assets/background/",
     "src/assets/background/citystates/",
     "src/assets/menus/",
@@ -20,578 +16,433 @@
   ],
   "families": [
     {
-      "familyId": "core-path-portraits",
-      "humanLabel": "Path portraits",
+      "id": "path-portraits",
+      "label": "Path portraits",
       "bucket": "preserve-core",
-      "actualRoots": [
+      "repoEvidence": [
         "src/assets/menus/path_heaven 1.png",
         "src/assets/menus/path_earth 1.png",
         "src/assets/menus/path_martial 1.png"
       ],
-      "currentOwnerScreens": [
-        "path-life-start"
+      "screenOwners": [
+        "life-start-path-selection"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "No missing role for ownership; only support labeling wrappers may be needed later.",
-      "reuseFirstJustification": "Portrait triptych remains first-contact owner and should be wrapped, not replaced.",
-      "forbiddenReplacementScope": "No portrait family replacement or triptych repaint in early waves.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Any enhancement request must keep existing portrait ownership visible.",
-        "Hero overlays are wave3-only and additive."
-      ]
+      "phase1Rule": "Retain triptych ownership; no portrait replacement.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-portrait-repaint"
+      ],
+      "notes": "Enhancement requests are additive-only and cannot replace base portraits."
     },
     {
-      "familyId": "core-book-spines",
-      "humanLabel": "Book spine families",
+      "id": "bookshelf-spines",
+      "label": "Bookshelf spine family",
       "bucket": "preserve-core",
-      "actualRoots": [
-        "src/assets/ui/book_spines/"
+      "repoEvidence": [
+        "src/assets/ui/book_spines/spine_heaven.png",
+        "src/assets/ui/book_spines/spine_earth.png",
+        "src/assets/ui/book_spines/spine_martial.png",
+        "src/assets/ui/book_spines/spine_neutral.png"
       ],
-      "currentOwnerScreens": [
+      "screenOwners": [
         "manual-pavilion",
-        "techniques"
+        "techniques-library-context"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "No missing scenic owner role; only support framing consistency can be missing.",
-      "reuseFirstJustification": "Spine identity is already present and intentionally screen-defining.",
-      "forbiddenReplacementScope": "No bookshelf/spine repaint or replacement family requests in early waves.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Wave1 may add reusable support plaques near spine metadata only."
-      ]
+      "phase1Rule": "Retain shelf/spine ownership; no repaint requests.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-bookshelf-repaint"
+      ],
+      "notes": "Later support labels can be additive only."
     },
     {
-      "familyId": "core-city-overlays",
-      "humanLabel": "City + citystate overlays",
+      "id": "world-city-owners",
+      "label": "World city scenic owners",
       "bucket": "preserve-core",
-      "actualRoots": [
+      "repoEvidence": [
         "src/assets/background/city.png",
-        "src/assets/background/citystates/"
+        "src/assets/background/citystates/city.png",
+        "src/assets/background/citystates/city_alchemy.png",
+        "src/assets/background/citystates/city_apothecary.png",
+        "src/assets/background/citystates/city_bounties_expeditions.png",
+        "src/assets/background/citystates/city_forge.png",
+        "src/assets/background/citystates/city_gate.png",
+        "src/assets/background/citystates/city_manual.png",
+        "src/assets/background/citystates/city_outskirts.png",
+        "src/assets/background/citystates/city_ruins.png",
+        "src/assets/background/citystates/city_talisman.png",
+        "src/assets/background/citystates/citygreen.png"
       ],
-      "currentOwnerScreens": [
+      "screenOwners": [
         "world"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "Potential missing role is reusable diegetic labels, not scenic replacement.",
-      "reuseFirstJustification": "City map ownership remains foundational scenic layer in world flow.",
-      "forbiddenReplacementScope": "No world-map repaint or city scenic replacement.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "World/building label kit remains create-later gated by proof."
-      ]
+      "phase1Rule": "Retain city map and citystate scenic ownership.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-world-repaint"
+      ],
+      "notes": "Later world labels are support-only and cannot replace city ownership."
     },
     {
-      "familyId": "core-forgewide",
-      "humanLabel": "Forgewide background family",
+      "id": "forgewide-owners",
+      "label": "Forgewide scenic owner family",
       "bucket": "preserve-core",
-      "actualRoots": [
+      "repoEvidence": [
         "src/assets/background/forgewide_empty.png",
         "src/assets/background/forgewide_unshaped.png",
         "src/assets/background/forgewide_shaping.png",
         "src/assets/background/forgewide_shaped.png"
       ],
-      "currentOwnerScreens": [
+      "screenOwners": [
         "forge"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "Missing role may be reusable requirement plaques; base scenic role is not missing.",
-      "reuseFirstJustification": "Forgewide variants already encode forging state identity.",
-      "forbiddenReplacementScope": "No forge scenic replacement or repaint packet in wave0/1.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Support parts must stay subordinate to forgewide owner."
-      ]
+      "phase1Rule": "Retain forgewide state-aware ownership.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-forgewide-replacement"
+      ],
+      "notes": "Support masks/FX must stay additive and subordinate."
     },
     {
-      "familyId": "core-manual-tech",
-      "humanLabel": "Manual Pavilion and Techniques scenic backdrops",
+      "id": "room-backdrops",
+      "label": "Room and board backdrops",
       "bucket": "preserve-core",
-      "actualRoots": [
+      "repoEvidence": [
         "src/assets/background/manualpavilion.png",
-        "src/assets/background/tech.png"
+        "src/assets/background/tech.png",
+        "src/assets/background/bountyboard.png"
       ],
-      "currentOwnerScreens": [
+      "screenOwners": [
         "manual-pavilion",
-        "techniques"
+        "techniques",
+        "bounties"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "Potential missing role is reusable support labels/frames around preserved room owners.",
-      "reuseFirstJustification": "Both scenic backdrops are active owner anchors and remain directionally correct per Phase 0 reports.",
-      "forbiddenReplacementScope": "No scenic backdrop replacement in early waves.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Support families may be generated only as additive wrappers."
-      ]
+      "phase1Rule": "Retain backdrop ownership in Wave 0 and Wave 1.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [],
+      "notes": "Additive support chrome is allowed only around these owners."
     },
     {
-      "familyId": "core-bountyboard-hourglass",
-      "humanLabel": "Bounty board + expedition hourglass",
+      "id": "hourglass-semantic-owner",
+      "label": "Expedition hourglass icons",
       "bucket": "preserve-core",
-      "actualRoots": [
-        "src/assets/background/bountyboard.png",
+      "repoEvidence": [
         "src/assets/icons/hourglass_empty.png",
         "src/assets/icons/hourglass_progress.png"
       ],
-      "currentOwnerScreens": [
-        "bounties-expeditions"
+      "screenOwners": [
+        "expeditions"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "Missing role is shared support tags/underlays for route/readiness clarity.",
-      "reuseFirstJustification": "Board + hourglass semantics are live and recognizable already.",
-      "forbiddenReplacementScope": "No bountyboard repaint and no hourglass icon family swap as early-wave prerequisite.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Wave1 can add support-route plaques if evidence confirms gap."
-      ]
+      "phase1Rule": "Retain hourglass semantic ownership.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-full-icon-overhaul-prerequisite"
+      ],
+      "notes": "No icon-family replacement as prerequisite to support art."
     },
     {
-      "familyId": "core-qi-lotus-center",
-      "humanLabel": "Qi lotus and cultivator/dantian center",
+      "id": "lotus-semantic-owner",
+      "label": "Cultivation lotus family",
       "bucket": "preserve-core",
-      "actualRoots": [
+      "repoEvidence": [
         "src/assets/onscreen/qi_lotus_closed.png",
         "src/assets/onscreen/qi_lotus_open.png",
-        "src/assets/onscreen/qi_lotus_full.png",
-        "src/assets/onscreen/cbg_full.png",
-        "src/assets/onscreen/qisign.png"
+        "src/assets/onscreen/qi_lotus_full.png"
       ],
-      "currentOwnerScreens": [
-        "cultivation",
-        "prestige"
+      "screenOwners": [
+        "cultivation"
       ],
-      "waveEligibility": "wave0",
-      "missingRole": "Potential missing role is additive hero emphasis overlays only.",
-      "reuseFirstJustification": "Current center stack is gameplay-semantic anchor and already integrated.",
-      "forbiddenReplacementScope": "No cultivator/dantian center replacement and no lotus replacement in early waves.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Hero overlay asks are postponed to wave3 with explicit proof."
-      ]
+      "phase1Rule": "Retain lotus semantic progression states.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-cultivation-center-replacement"
+      ],
+      "notes": "Hero overlays may wrap later but cannot replace lotus states."
     },
     {
-      "familyId": "enh-legacy-material-primitives",
-      "humanLabel": "Legacy paper/ink primitives (buttoncorners/scroll/bar/block)",
+      "id": "cultivator-dantian-base",
+      "label": "Cultivator and dantian base stack",
+      "bucket": "preserve-core",
+      "repoEvidence": [
+        "src/assets/onscreen/cultivator_backshots.png",
+        "src/assets/onscreen/cbg_full.png",
+        "src/assets/onscreen/qisign.png",
+        "src/ui/cultivation/DantianOrb.tsx",
+        "src/ui/cultivation/VerseMiniBar.tsx",
+        "src/ui/cultivation/QiLotusIcon.tsx"
+      ],
+      "screenOwners": [
+        "cultivation",
+        "prestige-ritual-context"
+      ],
+      "phase1Rule": "Retain current center stack ownership and truth composition.",
+      "missingRoleStatement": null,
+      "status": "retained",
+      "blockedBy": [
+        "no-cultivator-center-replacement"
+      ],
+      "notes": "Hero enhancement overlays are wave3-only."
+    },
+    {
+      "id": "menu-primitives-enhance",
+      "label": "Menu support primitives",
       "bucket": "preserve-enhance",
-      "actualRoots": [
+      "repoEvidence": [
         "src/assets/menus/buttoncorners.png",
         "src/assets/menus/scroll.png",
         "src/assets/menus/bar_long.png",
         "src/assets/menus/bar_short.png",
         "src/assets/menus/block_fancy.png"
       ],
-      "currentOwnerScreens": [
-        "status",
-        "manual-pavilion",
-        "techniques",
-        "apothecary",
-        "forge",
-        "prestige"
+      "screenOwners": [
+        "cross-screen-shell"
       ],
-      "waveEligibility": "wave1",
-      "missingRole": "Missing role is harmonized reusable variants and sizing guidance, not primitive replacement.",
-      "reuseFirstJustification": "These primitives are already reused broadly and can be extended via compatible support art.",
-      "forbiddenReplacementScope": "No full primitive family replacement without insufficiency proof across multiple screens.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Primary candidate for P1-02 shared frame/plaque/ribbon outputs."
-      ]
+      "phase1Rule": "Keep primitives and strengthen usage before any replacement discussion.",
+      "missingRoleStatement": null,
+      "status": "enhance-with-current-assets",
+      "blockedBy": [],
+      "notes": "Wave 1 can add compatible support variants only with proof."
     },
     {
-      "familyId": "enh-paper-ink-shell-families",
-      "humanLabel": "Paper/ink shell and item-frame families",
+      "id": "paper-ink-shell-enhance",
+      "label": "Paper/ink shell components",
       "bucket": "preserve-enhance",
-      "actualRoots": [
-        "src/assets/menus/",
-        "src/assets/items/ui/"
+      "repoEvidence": [
+        "src/ui/ink/InkPanel.tsx",
+        "src/ui/ink/PaperCard.tsx",
+        "src/ui/ink/PaperChip.tsx",
+        "src/ui/ink/InkModalFrame.tsx",
+        "src/styles/paperInkTokens.scss"
       ],
-      "currentOwnerScreens": [
+      "screenOwners": [
         "status",
-        "world",
-        "manual-pavilion",
-        "techniques",
-        "apothecary",
-        "forge",
-        "bounties-expeditions",
-        "prestige"
+        "ritual-modals",
+        "module-activity-shells"
       ],
-      "waveEligibility": "wave1",
-      "missingRole": "Missing role is consistent cross-screen support chrome variants.",
-      "reuseFirstJustification": "Current shell language is functional and should be extended before new families are requested.",
-      "forbiddenReplacementScope": "No shell takeover that demotes local scenic owner or rewrites runtime layout structure.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Wave1 work must stay additive and role-scoped."
-      ]
+      "phase1Rule": "Preserve shell and strengthen hierarchy with current assets first.",
+      "missingRoleStatement": null,
+      "status": "enhance-with-current-assets",
+      "blockedBy": [],
+      "notes": "No shell replacement plan is authorized in Wave 0."
     },
     {
-      "familyId": "enh-room-foundations",
-      "humanLabel": "Workshop and apothecary room foundations",
+      "id": "gate-outskirts-shell-enhance",
+      "label": "Gate Trial / Outskirts shell alignment",
       "bucket": "preserve-enhance",
-      "actualRoots": [
+      "repoEvidence": [
+        "src/components/screens/world/buildings/GateTrialBuildingPanel.tsx",
+        "src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx"
+      ],
+      "screenOwners": [
+        "gate-trial",
+        "outskirts"
+      ],
+      "phase1Rule": "Keep current module shell ownership and tune additively.",
+      "missingRoleStatement": null,
+      "status": "enhance-with-current-assets",
+      "blockedBy": [],
+      "notes": "Future support art must not drive shell replacement."
+    },
+    {
+      "id": "workshop-apothecary-foundations",
+      "label": "Workshop and apothecary scene foundations",
+      "bucket": "preserve-enhance",
+      "repoEvidence": [
+        "src/assets/background/alchemylab_idle.png",
         "src/assets/background/forgewide_empty.png",
         "src/assets/background/forgewide_unshaped.png",
         "src/assets/background/forgewide_shaping.png",
-        "src/assets/background/forgewide_shaped.png",
-        "src/assets/background/alchemylab_idle.png"
+        "src/assets/background/forgewide_shaped.png"
       ],
-      "currentOwnerScreens": [
-        "forge",
-        "apothecary"
+      "screenOwners": [
+        "apothecary",
+        "forge"
       ],
-      "waveEligibility": "wave1",
-      "missingRole": "Missing role is shared room-adjacent support strips/chips that improve readability without replacing rooms.",
-      "reuseFirstJustification": "Room ownership is already functional and should be reinforced additively.",
-      "forbiddenReplacementScope": "No room repaint/replacement asks under support-art packets.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Wave2 restrained FX may support this family after proof."
-      ]
-    },
+      "phase1Rule": "Preserve room foundations while layering support wrappers additively.",
+      "missingRoleStatement": null,
+      "status": "enhance-with-current-assets",
+      "blockedBy": [],
+      "notes": "Later FX/masks remain blocked until missing-role proof is recorded."
+    }
+  ],
+  "supportBacklog": [
     {
-      "familyId": "later-frame-atlas",
-      "humanLabel": "Shared frame atlas variants",
-      "bucket": "create-later",
-      "actualRoots": [
-        "src/assets/ui/chrome/frames/"
-      ],
-      "currentOwnerScreens": [
+      "id": "shared-frame-atlas-variants",
+      "label": "Shared frame atlas variants",
+      "bucket": "create-later-only",
+      "wave": "wave1-shared-support",
+      "shared": true,
+      "screens": [
         "status",
         "manual-pavilion",
         "forge",
-        "bounties-expeditions",
+        "bounties",
         "prestige"
       ],
-      "waveEligibility": "wave1",
-      "missingRole": "Reusable frame variants for inconsistent support wrappers across multiple screens.",
-      "reuseFirstJustification": "Only justified where current primitive set cannot cover required support-frame roles cleanly.",
-      "forbiddenReplacementScope": "No scenic-owner replacement or bespoke per-screen repaint framing.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Planned canonical next packet output."
-      ]
+      "missingRoleStatement": "Current primitives do not provide a single reusable frame variant set for all required support panel sizes and state labels.",
+      "trigger": "At least two additive screenshot sets show unresolved frame-role mismatch after current-asset composition.",
+      "deliverableType": "atlas-ready reusable frame parts",
+      "blockedUntil": "Wave 0 additive screenshot proof and missing-role approval",
+      "notes": "Support-only output; no scenic owner transfer."
     },
     {
-      "familyId": "later-plaque-ribbon-titleplates",
-      "humanLabel": "Plaque/ribbon/title-plate family",
-      "bucket": "create-later",
-      "actualRoots": [
-        "src/assets/ui/chrome/plaques/"
-      ],
-      "currentOwnerScreens": [
-        "path-life-start",
+      "id": "plaque-ribbon-title-plates",
+      "label": "Plaque / ribbon / title-plate family",
+      "bucket": "create-later-only",
+      "wave": "wave1-shared-support",
+      "shared": true,
+      "screens": [
+        "life-start",
         "status",
         "world",
         "manual-pavilion",
         "forge",
-        "bounties-expeditions",
+        "bounties",
         "prestige"
       ],
-      "waveEligibility": "wave1",
-      "missingRole": "Consistent support labels/headers/chips where reuse of current bars/blocks is insufficient.",
-      "reuseFirstJustification": "Role is support consistency, not decorative repaint.",
-      "forbiddenReplacementScope": "No replacement of existing portraits/scenic maps/forgewide bases.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Requires per-screen additive screenshot references before generation."
-      ]
+      "missingRoleStatement": "Current bars and blocks do not cover a reusable cross-screen title and badge carrier role with consistent hierarchy.",
+      "trigger": "Cross-screen additive captures confirm unresolved header/label carrier role after preserve-enhance pass.",
+      "deliverableType": "reusable plaque and ribbon support parts",
+      "blockedUntil": "Wave 0 proof and explicit missing-role approval",
+      "notes": "No per-screen scenic repaint output."
     },
     {
-      "familyId": "later-overlay-mask-pack",
-      "humanLabel": "Overlay/mask support pack",
-      "bucket": "create-later",
-      "actualRoots": [
-        "src/assets/ui/overlays/"
+      "id": "world-building-label-plaques",
+      "label": "World / building label plaques",
+      "bucket": "create-later-only",
+      "wave": "wave1-shared-support",
+      "shared": true,
+      "screens": [
+        "world",
+        "outskirts",
+        "ruins",
+        "gate-trial",
+        "forge",
+        "apothecary"
       ],
-      "currentOwnerScreens": [
-        "cultivation",
-        "techniques",
-        "prestige"
-      ],
-      "waveEligibility": "wave2",
-      "missingRole": "Reusable alpha overlays/masks for legibility emphasis without repainting owner art.",
-      "reuseFirstJustification": "Current wrappers may be enough on some surfaces; generation is gated to proven missing-role cases.",
-      "forbiddenReplacementScope": "No masking to hide truth/layout debt; no hero/scenic replacement via overlays.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Must include reduced-motion coherent static fallback behavior."
-      ]
+      "missingRoleStatement": "World and routed building surfaces lack a reusable diegetic label carrier role that preserves city and room scenic ownership.",
+      "trigger": "World/building additive screenshots show unresolved label grounding role with current assets.",
+      "deliverableType": "reusable world/building label plaque kit",
+      "blockedUntil": "Wave 0 proof and role validation",
+      "notes": "Support labels only; no city repaint or room repaint."
     },
     {
-      "familyId": "later-shared-fx-atlas",
-      "humanLabel": "Shared restrained FX atlas",
-      "bucket": "create-later",
-      "actualRoots": [
-        "src/assets/ui/fx/"
-      ],
-      "currentOwnerScreens": [
+      "id": "overlay-mask-pack",
+      "label": "Overlay / mask pack",
+      "bucket": "create-later-only",
+      "wave": "wave1-shared-support",
+      "shared": true,
+      "screens": [
         "cultivation",
         "techniques",
         "prestige",
-        "life-start-path"
+        "ritual-modals"
       ],
-      "waveEligibility": "wave2",
-      "missingRole": "Cross-screen coherent high/low/reduced support FX vocabulary.",
-      "reuseFirstJustification": "FX should reinforce completed composition; not needed until missing support role is proven.",
-      "forbiddenReplacementScope": "No use of FX as substitute for incomplete layout/truth surfacing.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Atlas must be restrained and configurable by quality mode."
-      ]
+      "missingRoleStatement": "Current shell layers lack reusable compositing masks needed to apply legibility emphasis consistently across multiple surfaces.",
+      "trigger": "Additive compositions across multiple screens still show unresolved compositing role after preserve-enhance usage.",
+      "deliverableType": "reusable alpha overlay and mask parts",
+      "blockedUntil": "Wave 0 proof and cross-screen evidence",
+      "notes": "Cannot be used to hide unresolved layout or truth-surface issues."
     },
     {
-      "familyId": "later-hero-overlay-kit",
-      "humanLabel": "Later-wave hero enhancement overlays",
-      "bucket": "create-later",
-      "actualRoots": [
-        "src/assets/ui/heroes/"
+      "id": "state-underlays-recommendation-swashes-tracked-stamps",
+      "label": "State underlays / recommendation swashes / tracked stamps",
+      "bucket": "create-later-only",
+      "wave": "wave1-shared-support",
+      "shared": true,
+      "screens": [
+        "status",
+        "world",
+        "bounties",
+        "expeditions",
+        "inventory",
+        "techniques"
       ],
-      "currentOwnerScreens": [
+      "missingRoleStatement": "Current chips and bars do not supply a reusable state-marking substrate for recommendation and tracking states across screen families.",
+      "trigger": "At least two surfaces retain unresolved state readability gaps after additive preserve-enhance implementation.",
+      "deliverableType": "shared state underlay and stamp support kit",
+      "blockedUntil": "Wave 0 proof and missing-role acceptance",
+      "notes": "Must remain subordinate to existing semantic icons and labels."
+    },
+    {
+      "id": "shared-fx-sprite-atlas",
+      "label": "Shared FX sprite atlas",
+      "bucket": "create-later-only",
+      "wave": "wave2-shared-fx",
+      "shared": true,
+      "screens": [
+        "cultivation",
+        "heart-law",
+        "prestige",
+        "life-start"
+      ],
+      "missingRoleStatement": "Current assets do not provide a unified reusable FX vocabulary that supports high/low/reduced operation modes consistently.",
+      "trigger": "Atmosphere role remains missing after static support layers are in place and verified across quality modes.",
+      "deliverableType": "atlas-ready restrained FX sprite set",
+      "blockedUntil": "Wave 1 support completion and Wave 0 proof",
+      "notes": "FX cannot be used as substitute for unresolved structure."
+    },
+    {
+      "id": "cultivation-hero-enhancement-overlays",
+      "label": "Cultivation hero enhancement overlays",
+      "bucket": "create-later-only",
+      "wave": "wave3-hero-only",
+      "shared": false,
+      "screens": [
         "cultivation",
         "prestige"
       ],
-      "waveEligibility": "wave3",
-      "missingRole": "Optional hero emphasis layers around preserved centers after proof-complete additive state.",
-      "reuseFirstJustification": "Hero overlays are justified only after wave1/wave2 support roles still leave proven gaps.",
-      "forbiddenReplacementScope": "No replacement of cultivator/dantian center or path portrait family.",
-      "screenshotProofRequired": true,
-      "notes": [
-        "Must preserve readable truth in DOM and no-layout-shift states."
-      ]
-    }
-  ],
-  "screens": [
-    {
-      "screenId": "path-life-start",
-      "screenLabel": "Path / Life Start",
-      "primaryScenicOwnerFamilies": [
-        "core-path-portraits"
-      ],
-      "preserveNotes": [
-        "Portrait triptych remains primary owner.",
-        "Support labels may be additive only after screenshot proof."
-      ],
-      "firstAdditiveScreenshotTarget": "Path selection states with preserved portrait base, plus mode captures.",
-      "phase1Risk": "high"
+      "missingRoleStatement": "Current center stack lacks reusable additive emphasis layers for hero focus while preserving existing cultivator and dantian semantic owners.",
+      "trigger": "Approved additive cultivation/prestige screenshots still show unresolved hero-emphasis support role.",
+      "deliverableType": "hero-center overlay layers",
+      "blockedUntil": "Wave 1 and Wave 2 completion with explicit owner-preservation proof",
+      "notes": "No base center replacement is permitted."
     },
     {
-      "screenId": "cultivation",
-      "screenLabel": "Cultivation",
-      "primaryScenicOwnerFamilies": [
-        "core-qi-lotus-center"
+      "id": "heart-law-altar-seal-support-kit",
+      "label": "Heart Law altar / seal support kit",
+      "bucket": "create-later-only",
+      "wave": "wave3-hero-only",
+      "shared": false,
+      "screens": [
+        "heart-law",
+        "dao-heart"
       ],
-      "preserveNotes": [
-        "Cultivator+dantian center remains foundational.",
-        "Hero overlays are wave3-only and cannot replace base owner."
-      ],
-      "firstAdditiveScreenshotTarget": "Hero center readiness/recommended/warning states with no layout shift.",
-      "phase1Risk": "high"
+      "missingRoleStatement": "Current Heart Law compositions lack a reusable sacred-focus support kit that can frame altar/seal states without replacing doctrine shells.",
+      "trigger": "Heart Law additive captures retain unresolved sacred-focus support role after preserve-enhance pass.",
+      "deliverableType": "altar/seal support parts",
+      "blockedUntil": "Wave 1 support completion and approved role-gap evidence",
+      "notes": "Support kit only; no repaint of existing heart-law owners."
     },
     {
-      "screenId": "status",
-      "screenLabel": "Status",
-      "primaryScenicOwnerFamilies": [
-        "enh-paper-ink-shell-families"
+      "id": "optional-medallions-icon-seals",
+      "label": "Optional medallions / icon seals",
+      "bucket": "create-later-only",
+      "wave": "wave3-hero-only",
+      "shared": true,
+      "screens": [
+        "cross-screen-optional"
       ],
-      "preserveNotes": [
-        "Paper/ink shell remains authority.",
-        "Frame/plaque asks must be reusable support roles only."
-      ],
-      "firstAdditiveScreenshotTarget": "Diagnostic rows and chips in interaction + truth-state captures.",
-      "phase1Risk": "medium"
-    },
-    {
-      "screenId": "world",
-      "screenLabel": "World",
-      "primaryScenicOwnerFamilies": [
-        "core-city-overlays"
-      ],
-      "preserveNotes": [
-        "City map remains scenic owner.",
-        "World labels are support-role additions only."
-      ],
-      "firstAdditiveScreenshotTarget": "World map plus routed building panel showing label readability role.",
-      "phase1Risk": "high"
-    },
-    {
-      "screenId": "manual-pavilion",
-      "screenLabel": "Manual Pavilion",
-      "primaryScenicOwnerFamilies": [
-        "core-book-spines"
-      ],
-      "preserveNotes": [
-        "Shelf/spine art remains owner.",
-        "No bookshelf repaint requests in early waves."
-      ],
-      "firstAdditiveScreenshotTarget": "Shelf/spine cluster with metadata tags and no-shift interaction states.",
-      "phase1Risk": "medium"
-    },
-    {
-      "screenId": "techniques",
-      "screenLabel": "Techniques",
-      "primaryScenicOwnerFamilies": [
-        "core-manual-tech"
-      ],
-      "preserveNotes": [
-        "Techniques backdrop remains owner.",
-        "Overlay asks require proof of missing role first."
-      ],
-      "firstAdditiveScreenshotTarget": "Altar/loadout composition with preserved backdrop and truth-state labels.",
-      "phase1Risk": "medium"
-    },
-    {
-      "screenId": "apothecary",
-      "screenLabel": "Apothecary",
-      "primaryScenicOwnerFamilies": [
-        "enh-room-foundations"
-      ],
-      "preserveNotes": [
-        "Room foundation remains owner.",
-        "Additive chips/plaques should not dominate room identity."
-      ],
-      "firstAdditiveScreenshotTarget": "Readiness and route states in room context without shell takeover.",
-      "phase1Risk": "medium"
-    },
-    {
-      "screenId": "forge",
-      "screenLabel": "Forge",
-      "primaryScenicOwnerFamilies": [
-        "core-forgewide"
-      ],
-      "preserveNotes": [
-        "Forgewide state-aware backgrounds remain owner.",
-        "Requirement/source support strips are additive only."
-      ],
-      "firstAdditiveScreenshotTarget": "Forge state variants with additive support plaques and stable interaction states.",
-      "phase1Risk": "high"
-    },
-    {
-      "screenId": "bounties-expeditions",
-      "screenLabel": "Bounties / Expeditions",
-      "primaryScenicOwnerFamilies": [
-        "core-bountyboard-hourglass"
-      ],
-      "preserveNotes": [
-        "Bounty board and hourglass semantics remain owner anchors.",
-        "Support tags/strips can be generated only as reusable role fills."
-      ],
-      "firstAdditiveScreenshotTarget": "Queue strip + expedition slot states with preserved board and hourglass truth.",
-      "phase1Risk": "high"
-    },
-    {
-      "screenId": "prestige",
-      "screenLabel": "Prestige",
-      "primaryScenicOwnerFamilies": [
-        "enh-paper-ink-shell-families"
-      ],
-      "preserveNotes": [
-        "Ritual/decree composition remains additive-first.",
-        "Hero overlays are optional and later-wave only."
-      ],
-      "firstAdditiveScreenshotTarget": "Reset-contract and hold-progress states proving no-jitter readability.",
-      "phase1Risk": "high"
-    }
-  ],
-  "sharedFamilies": [
-    {
-      "familyId": "shared-frame-atlas",
-      "humanLabel": "Shared frame atlas",
-      "wave": "wave1",
-      "status": "planned",
-      "reusabilityScope": "Status, Manual Pavilion, Forge, Bounties/Expeditions, Prestige",
-      "triggerCondition": "At least two screens prove current frame wrappers are insufficient for support roles.",
-      "notes": [
-        "Canonical next packet target."
-      ]
-    },
-    {
-      "familyId": "shared-plaque-ribbon-titleplates",
-      "humanLabel": "Plaque/ribbon/title-plate family",
-      "wave": "wave1",
-      "status": "planned",
-      "reusabilityScope": "Cross-screen labels/headers/chips",
-      "triggerCondition": "Missing-role proof from additive screenshot sets on target screens.",
-      "notes": [
-        "Must not become scenic repaint substitute."
-      ]
-    },
-    {
-      "familyId": "shared-world-label-kit",
-      "humanLabel": "World/building label plaques",
-      "wave": "wave2",
-      "status": "planned",
-      "reusabilityScope": "World map and routed building panels",
-      "triggerCondition": "Wave1 proofs show label grounding remains inconsistent.",
-      "notes": [
-        "City scenic ownership must remain primary."
-      ]
-    },
-    {
-      "familyId": "shared-overlay-mask-pack",
-      "humanLabel": "Overlay/mask pack",
-      "wave": "wave2",
-      "status": "planned",
-      "reusabilityScope": "Cultivation, Techniques, Prestige emphasis layers",
-      "triggerCondition": "Multi-screen evidence shows reusable compositing role still missing.",
-      "notes": [
-        "No masking of unresolved truth/layout debt."
-      ]
-    },
-    {
-      "familyId": "shared-fx-atlas",
-      "humanLabel": "Shared restrained FX atlas",
-      "wave": "wave2",
-      "status": "planned",
-      "reusabilityScope": "Hero/ritual atmospheric accents",
-      "triggerCondition": "Proof-complete additive states still need coherent cross-screen FX vocabulary.",
-      "notes": [
-        "Must support high/low/reduced modes coherently."
-      ]
-    },
-    {
-      "familyId": "shared-hero-overlay-kit",
-      "humanLabel": "Later-wave hero overlays",
-      "wave": "wave3",
-      "status": "blocked",
-      "reusabilityScope": "Cultivation and Prestige hero reinforcement",
-      "triggerCondition": "Wave1/2 support layers landed and screenshot proof still shows missing hero support role.",
-      "notes": [
-        "Blocked until earlier wave proof and approvals are complete."
-      ]
-    },
-    {
-      "familyId": "shared-medallion-seals",
-      "humanLabel": "Optional medallion/icon seals",
-      "wave": "wave4",
-      "status": "unjustified-yet",
-      "reusabilityScope": "Optional ornament only",
-      "triggerCondition": "Only after core support-role backlog is complete and still leaves a verified gap.",
-      "notes": [
-        "Non-blocking optional polish, never prerequisite."
-      ]
+      "missingRoleStatement": "After functional support roles are complete, optional reusable ornament seals may still be missing for non-critical ceremonial accents.",
+      "trigger": "Only evaluated after core support backlog closure and explicit non-critical ornament gap confirmation.",
+      "deliverableType": "optional medallion and seal accents",
+      "blockedUntil": "All core support families resolved and not blocked",
+      "notes": "Never a prerequisite for Phase 1 support-art progress."
     }
   ],
   "blockedRequests": [
-    "Replace path portrait family in Phase 1 early waves.",
-    "Replace bookshelf/spine families as part of support-art kickoff.",
-    "Repaint world map or city scenic ownership.",
-    "Replace forgewide background family.",
-    "Replace cultivator/dantian center in Wave 1 or Wave 2.",
-    "Treat full scenic replacement as frame/plaque request.",
-    "Require icon-overhaul pass before shared support families can proceed."
-  ],
-  "folderPlan": [
-    "src/assets/ui/chrome/",
-    "src/assets/ui/fx/",
-    "src/assets/ui/overlays/",
-    "src/assets/ui/heroes/"
-  ],
-  "nextPacket": {
-    "canonicalId": "P1-02",
-    "humanLabel": "Shared frame atlas and plaque/ribbon family",
-    "notes": [
-      "Must cite this backlog and the wave0 screenshot matrix before requesting generated art.",
-      "Must stay support-art-only and preserve scenic owner primacy."
-    ]
-  }
+    "no portrait repaint",
+    "no bookshelf repaint",
+    "no forgewide replacement",
+    "no world repaint",
+    "no cultivator-center replacement",
+    "no full icon-overhaul prerequisite"
+  ]
 }

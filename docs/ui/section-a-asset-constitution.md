@@ -2,23 +2,36 @@
 
 ## Purpose
 
-This file turns the v3 asset policy into production doctrine so later packets and art requests cannot reinterpret current assets as replaceable by default. It inherits `docs/ui/section-a-global-doctrine.md` and `docs/ui/section-a-destructive-freeze.md`. It governs asset classification and request policy, not implementation.
+This file turns Section A asset policy into operational doctrine so later packets and art requests cannot reinterpret current assets as replaceable by default. It inherits:
+
+- `docs/ui/section-a-global-doctrine.md`
+- `docs/ui/section-a-destructive-freeze.md`
+
+It governs asset classification and request posture, not implementation.
 
 ## Scope note
 
-This file governs asset-family classification, first-wave art boundaries, later-art triggers, request quality bar, reusable-part standards, and compact repo-family verification basis.
+This file governs:
+- asset-family classification;
+- first-wave boundaries;
+- later-art triggers;
+- request quality bar;
+- reusable support-part standards.
 
-This file does **not** govern renderer/package choices, screen implementation, asset generation execution, cleanup execution, numeric tuning, gameplay balance, or full touchpoint path registry work.
+This file does **not** govern implementation, asset generation execution, cleanup execution, gameplay logic, or full touchpoint inventory.
 
 ## Core thesis
 
-**Current assets first** is mandatory. Current assets are the practical base. Strong scenic ownership is preserved. Useful support families are wrapped and strengthened before replacement is considered. New art is for missing support roles, not default replacement. Future prompts must never start with “generate new art” before preserve/enhance analysis is complete.
+**Current assets first** is mandatory. Existing scenic and semantic owners stay in place. New art is for missing support roles only, never as default repaint logic.
 
 This is not a replacement art pass.
 
 ## Bucket system
 
-All asset interaction must be classified into exactly one doctrine bucket before work starts: Preserve as core, Preserve but enhance, or Create later only if the role is still missing.
+Every asset interaction must be classified into exactly one bucket before work starts:
+- Preserve as core
+- Preserve but enhance
+- Create later only if role is missing
 
 Any packet that requests new art without this classification is non-compliant.
 
@@ -26,108 +39,99 @@ Any packet that requests new art without this classification is non-compliant.
 
 ## A. Preserve as core
 
-**Operational definition:** The family remains the visual owner by default. First-wave work may tune integration, spacing, framing support, and readability around it, but must not replace ownership.
+**Operational definition:** Family remains visual/semantic owner by default. First-wave work may tune integration and readability around it, but must not replace ownership.
 
 | Asset family | Current policy | Why | First-wave rule | Later note |
 | --- | --- | --- | --- | --- |
-| Path portraits | Preserve as core | Life-path identity anchor | Must not replace portraits in first wave | Support layers only; no portrait swap |
-| Book spines (`src/assets/ui/book_spines/*`) | Preserve as core | Existing library identity owner | Must not replace spine identity in first wave | Add support framing only |
-| `city.png` and city-state overlays (`src/assets/background/citystates/*`) | Preserve as core | Core city hub ownership | Must keep city base/overlays as scenic owner | Add overlays/labels only after missing-role proof |
-| `forgewide_*` (`forgewide_empty/unshaped/shaped/shaping`) | Preserve as core | Forge room state-aware owner | Must not replace forgewide family in first wave | Add masks/FX/plaque support only after additive proof |
-| `manualpavilion.png` | Preserve as core | Manual Pavilion scenic continuity | Must not replace with new scenic repaint | Strengthen shell/chrome only |
-| `tech.png` | Preserve as core | Techniques baseline owner | Must not replace in first wave | Overlays/FX only after approved additive gap |
-| `bountyboard.png` | Preserve as core | Bounties/Expeditions anchor | Must not replace board in first wave | Reusable plaques/ribbons only after trigger |
-| Hourglass icon family (`hourglass_empty/progress`) | Preserve as core | Recognized time/progress semantic | Must not run first-wave icon replacement | Optional ornament only if role still missing |
-| `qi_lotus` family (`qi_lotus_closed/open/full`) | Preserve as core | Cultivation progression anchor | Must not replace lotus family in first wave | Hero overlays may wrap, not replace |
-| Current cultivator / dantian base (`cultivator_backshots.png` + current center stack) | Preserve as core | Hero mechanic-semantic anchor | Must not replace cultivator/dantian base in first wave | Enhancement overlays only after approved additive gap |
+| Path portraits (`path_heaven 1.png`, `path_earth 1.png`, `path_martial 1.png`) | Preserve as core | Life Start identity anchor | Must not replace portraits in first wave | Support overlays only, never portrait swap |
+| Book spines (`src/assets/ui/book_spines/*`) | Preserve as core | Manual/library identity owner | Must not replace spine ownership in first wave | Add support framing only |
+| `city.png` + city-state overlays (`src/assets/background/citystates/*`) | Preserve as core | World scenic ownership | Must keep city base/overlays as scenic owner | Add label support only after missing-role proof |
+| `forgewide_*` (`forgewide_empty/unshaped/shaping/shaped`) | Preserve as core | Forge room state-aware owner | Must not replace forgewide family in first wave | Add masks/FX/plaque support only after additive proof |
+| `manualpavilion.png`, `tech.png`, `bountyboard.png` | Preserve as core | Room/backdrop ownership across module families | Must not replace scenic owners in first wave | Strengthen shell/chrome only |
+| Hourglass icons (`hourglass_empty/progress`) | Preserve as core | Expedition semantic owner | Must not run first-wave icon replacement | Optional support underlays only when role is proven missing |
+| `qi_lotus_*` (`closed/open/full`) | Preserve as core | Cultivation progression semantic owner | Must not replace lotus family in first wave | Hero overlays may wrap, not replace |
+| Cultivator / dantian base (`cultivator_backshots.png` + current dantian center stack) | Preserve as core | Cultivation hero center anchor | Must not replace center owner in first wave | Additive enhancement overlays only after proof |
 
 ## B. Preserve but enhance
 
-**Operational definition:** The family remains present and authoritative for function, but should be strengthened through variants/wrappers/spacing/masks/overlays for higher coherence.
+**Operational definition:** Family remains present and authoritative for function, but should be strengthened additively through wrappers, variants, spacing, masks, and composition discipline.
 
 | Asset family | Current policy | Why | First-wave rule | Later note |
 | --- | --- | --- | --- | --- |
 | `buttoncorners.png` | Preserve but enhance | Existing interaction shell primitive | Keep base and add wrappers/variants first | Replace only after explicit insufficiency proof |
 | `scroll.png` | Preserve but enhance | Reusable parchment support language | Enhance usage/composition before replacement requests | Extend with compatible support parts if needed |
-| `bar_long.png` | Preserve but enhance | Practical support strip | Keep and strengthen in first wave | New variants only after cross-screen insufficiency proof |
-| `bar_short.png` | Preserve but enhance | Compact variant of same support strip | Keep and strengthen in first wave | Same trigger as `bar_long.png` |
-| `block_fancy.png` | Preserve but enhance | Existing ornate framing shell | Wrap/align before replacement discussion | Complement with later variants only after proven gap |
-| Existing paper/ink card shells | Preserve but enhance | Legible, theme-aligned card language | Preserve shell family while improving hierarchy | Overlays/masks only after reusable gap proof |
-| Current Outskirts / Gate Trial shell alignment | Preserve but enhance | Existing practical ownership | Keep alignment ownership and tune additively | Replacement requests require missing-role proof |
-| Current apothecary room foundations | Preserve but enhance | Existing room base ownership | Preserve base and layer additively | Later support parts may enrich labels/frames |
-| Current forge room foundations | Preserve but enhance | Existing forge foundation ownership | Preserve foundations and strengthen additively | Base replacement prohibited in first wave |
+| `bar_long.png` / `bar_short.png` | Preserve but enhance | Practical support strip family | Keep and strengthen in first wave | New variants only after cross-screen insufficiency proof |
+| `block_fancy.png` | Preserve but enhance | Existing ornate support shell | Wrap/align before replacement discussion | Complement with later variants only after proven gap |
+| Existing paper/ink shell (`src/ui/ink/*`, `src/styles/paperInkTokens.scss`) | Preserve but enhance | Live legible shell language | Preserve shell family while improving hierarchy | Overlays/masks only after reusable gap proof |
+| Dantian/orb/lotus UI truth surfaces (`DantianOrb`, `VerseMiniBar`, `QiLotusIcon`) | Preserve but enhance | Live cultivation presentation stack | Keep current ownership and tune additively | Overlay requests need role-gap proof |
+| Current Outskirts / Gate Trial shell alignment | Preserve but enhance | Existing module shell ownership | Keep alignment ownership and tune additively | Replacement requests require missing-role proof |
+| Workshop/apothecary scene foundations (`alchemylab_idle.png`, forgewide family context) | Preserve but enhance | Existing room bases are valid owners | Preserve base and layer support additively | Later support parts may enrich labels/frames/FX |
 
-## C. Create later only if the role is still missing
+## C. Create later only if role is still missing
 
-**Operational definition:** These are not first-wave art requests. They are conditional support-part requests allowed only when additive screenshots prove unresolved role gaps.
+**Operational definition:** Not first-wave production. Allowed only when additive screenshots prove unresolved support-role gaps.
 
 | Asset family | Current policy | Why | First-wave rule | Trigger for later request |
 | --- | --- | --- | --- | --- |
-| Frame atlas variants | Create later only if still needed | Existing frame family should be exhausted first | Must not request in Wave 0 | Request only after shared chrome proves one frame family too narrow |
-| Plaque / ribbon family | Create later only if still needed | Label/header consistency should be proven missing before new family is commissioned | Must not request in first-wave additive stabilization | Request when multiple screens need consistent labels/titles/headers/breadcrumbs current assets cannot cover elegantly |
-| FX sprite atlas | Create later only if still needed | FX must support stable composition, not hide incompleteness | Must not request before additive atmosphere layer exists | Request only after atmosphere layer is mounted and repeatable support FX is needed across 2+ screens |
-| Cultivation enhancement overlays | Create later only if still needed | Cultivation hero center must remain current owner first | Must not replace current cultivator/dantian center | Request only after additive Cultivation is approved and still underpowered around current base |
-| Heart Law altar / seal kit | Create later only if still needed | Sacred preview anchor should be proven missing, not assumed | Must not request before composing with existing assets | Request only after Heart Law selection is composed and still lacks convincing sacred preview anchor |
-| World label plaques | Create later only if still needed | Temporary/reused labels may suffice initially | Must not request as default polish | Request only after temporary/reused plaques prove weak or inconsistent |
-| Overlay / mask pack | Create later only if still needed | Existing shells/frames should be leveraged first | Must not request without multi-screen evidence | Request only after multiple screens clearly need reusable compositing support beyond existing shells |
-| Recommendation swashes | Create later only if still needed | Current chip/plaque language should be evaluated first | Must not request for taste-only ornament | Request only after recommendation states need stronger shared grounding than current chip/plaque language provides |
-| Medallions and optional icon seals | Create later only if still needed | Shared ornament is optional and should not displace function | Must not request in first-wave stabilization | Request only if shared ornament remains missing after layout/chrome stabilization |
+| Shared frame atlas variants | Create later only if still needed | Existing frame/support family must be exhausted first | Must not request in Wave 0 | Request when 2+ screens still lack reusable frame-role coverage |
+| Plaque / ribbon / title-plate family | Create later only if still needed | Shared label/header carrier role may remain missing | Must not request in Wave 0 | Request when current bars/blocks cannot carry cross-screen label states |
+| World / building label plaques | Create later only if still needed | Diegetic labels may need reusable support parts | Must not request in Wave 0 | Request when world/building captures show unresolved label grounding role |
+| Overlay / mask pack | Create later only if still needed | Reusable compositing support may be missing | Must not request in Wave 0 | Request when multiple screens show unresolved compositing role |
+| State underlays / recommendation swashes / tracked stamps | Create later only if still needed | Shared state substrate may be missing | Must not request in Wave 0 | Request when state readability remains unresolved after preserve-enhance pass |
+| Shared FX sprite atlas | Create later only if still needed | Cross-mode support FX vocabulary may be missing | Must not request before additive atmosphere proof exists | Request after static support pass still leaves unresolved FX support role |
+| Cultivation hero enhancement overlays | Create later only if still needed | Cultivation center must remain current owner first | Must not replace current cultivator/dantian center | Request only when approved additive cultivation still lacks hero-emphasis support role |
+| Heart Law altar / seal support kit | Create later only if still needed | Heart Law sacred-focus support role may remain missing | Must not request before additive composition with current owners | Request only when Heart Law evidence still lacks sacred-focus support role |
+| Optional medallions / icon seals | Create later only if still needed | Non-critical ornament role is optional | Must not request in first-wave stabilization | Request only after all core support roles are closed |
 
 ## First-wave prohibitions (hard bans)
 
 In this wave, packets **must not request** and teams **must not perform**:
 
-- replacement of current icon families because they look older;
-- replacement of current cultivator/dantian hero center;
 - replacement of path portraits;
 - replacement of bookshelf/spine identity;
 - replacement of forgewide room family;
-- whole new scenic screen painting before current screens are compositionally stable.
+- replacement of world/city scenic ownership;
+- replacement of cultivator/dantian hero center;
+- full icon-overhaul as a prerequisite for support-art packets.
 
 ## Bucket enforcement rules
 
-- Preserve as core families must remain visual owners unless doctrine is explicitly reopened.
-- Preserve but enhance families must be strengthened before replacement discussion.
-- Create-later requests require additive proof, missing-role evidence, and reusable support-part output.
+- Preserve-core families remain owners unless doctrine is explicitly reopened.
+- Preserve-enhance families must be strengthened before any replacement discussion.
+- Create-later requests require additive proof, explicit missing-role language, and reusable outputs.
 - Screenshot facsimiles and whole-screen repaint requests are always invalid.
 
 ## Wave sequencing
 
 | Wave | Allows | Forbids | Why it exists |
 | --- | --- | --- | --- |
-| Wave 0 — Code with current assets only | Implementation and composition with current asset base | New art requests except doctrine-approved emergency restoration support | Establishes truthful baseline and prevents art-first drift |
+| Wave 0 — Code/docs with current assets only | Composition and governance using current base | New support-art production without proof | Establishes truthful baseline and blocks repaint drift |
 | Wave 1 — Shared support chrome | Additive reusable chrome around existing owners | Destructive replacement of preserved families | Builds consistency without ownership transfer |
-| Wave 2 — Shared FX vocabulary | Reusable support FX once atmosphere layer is stable | FX used to mask broken composition or missing controls | Ensures FX reinforces, not compensates |
-| Wave 3 — Hero enhancement overlays | Approved hero support overlays around preserved centers | Hero center replacement in this doctrine scope | Deepens focal quality while preserving semantic anchor |
-| Wave 4 — Optional polish requests | Optional create-later support parts with explicit triggers | Untriggered aesthetic backlog expansion | Keeps polish disciplined and role-driven |
+| Wave 2 — Shared overlays/FX support | Reusable overlay/mask and restrained FX support after evidence | FX/masks used to hide unresolved structure | Ensures support layers reinforce completed composition |
+| Wave 3 — Hero enhancement overlays | Approved additive hero support around preserved centers | Hero center replacement | Deepens focal quality without semantic owner transfer |
 
 ## Asset continuity and cutover law
 
-Even preserve-but-enhance families remain subject to additive continuity. Old scenic/base ownership must remain until approved additive replacement exists on the exact screen. New support layers are additive support parts, not automatic authority transfers.
+Support-part arrival never grants automatic old-layer deletion. Cleanup still requires cutover gate, screenshot approval, and explicit packet scope.
 
-Support-part arrival never permits automatic old-layer deletion; cleanup still requires cutover gate, screenshot approval, and explicit packet scope.
+## Repo verification basis (current snapshot)
 
-## Repo verification basis (family-level)
+Verified against branch `work`, short commit `683f3e0`, with direct checks under:
 
-This constitution was verified against the latest repo asset tree at family level. Filename drift is resolved by family naming and concrete repo examples instead of guessed exact names.
-
-Verification roots used:
-
-- `src/assets/background/` and `src/assets/background/citystates/`
+- `src/assets/background/` + `src/assets/background/citystates/`
 - `src/assets/menus/`
 - `src/assets/onscreen/`
 - `src/assets/ui/book_spines/`
 - `src/assets/items/ui/`
 - `src/assets/icons/`
 
-Examples confirming presence include `manualpavilion.png`, `tech.png`, `bountyboard.png`, `forgewide_*`, city-state overlays, `qi_lotus_*`, hourglass icons, and book spines. This is not a full touchpoint registry.
-
 ## Future packet usage rule
 
-Future UI packets must classify every asset interaction as preserve as core, preserve but enhance, or create later only if still needed before requesting work. If a packet asks for new art where preserve or enhance should apply, the packet is wrong. Create-later requests must cite a concrete missing role and additive proof, not weak taste language.
+Future packets must classify every asset interaction into one bucket before requesting work. If a packet asks for new art where preserve/enhance applies, it is non-compliant.
 
-Wave 0 bridge reference for this doctrine in the current workstream: `docs/ui/phase-1-p1-01-wave0-asset-audit.md` (requested alias mapping: `P0-16` -> canonical `Phase 1 / P1-01 / Workstream 1.1 / Wave 0 asset audit`).
+Wave 0 lock reference: `docs/ui/phase-1-p1-01-wave0-asset-audit.md`.
+Machine-readable companion: `docs/ui/phase-1-support-art-backlog.json`.
 
 ## Non-goals
 
-This file does not generate art, edit asset files, style components, change technical stack, expand path registry scope, or authorize full icon replacement passes.
+This file does not generate art, edit asset files, implement UI code, authorize cleanup, or broaden touchpoint scope.
