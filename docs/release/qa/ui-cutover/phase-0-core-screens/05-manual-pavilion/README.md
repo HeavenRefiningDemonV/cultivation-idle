@@ -2,22 +2,23 @@
 
 - Screen: Manual Pavilion
 - Signoff state: `DEFERRED`
-- Evidence status: proof gap (no `01-06` image set present in-repo)
+- Evidence status: proof gap (no complete legal `01-06` image set committed yet)
 - Existing packet evidence reference: `docs/release/qa/ui-cutover/phase-0-p0-08-manual-pavilion/README.md`
 
-## Manual capture route
-1. Run app in dev.
-2. Navigate to Manual Pavilion screen.
-3. Select at least one manual entry and open detail context.
+## Approved capture pipeline
+1. Run `npm run release:phase0-core-capture`.
+2. The harness route for this surface is `/?uiAudit=phase-0&surface=manual-pavilion&fx=<high|low|reduced>&slot=<slot>`.
+3. Files are written into this folder using legal filenames (`01-base.png` through `06-reduced-motion.png`).
+4. Run `npm run release:phase0-core-evidence-audit` to verify slot completeness.
 
 ## Fixture/save condition
-- Save with visible shelf entries and detail interactions available.
+- Harness-driven Phase 0 core audit state (`uiAudit=phase-0`) with deterministic slot routing.
 
 ## Required states to capture
-- default shelf owner view
-- interaction state (selected/hovered spine)
-- truth state (recommendation/warning/tag emphasis)
-- High FX / Low FX / Reduced Motion coherence
+- default owner view (`01-base.png`)
+- interaction state (`02-interaction.png`)
+- truth state (`03-truth-states.png`)
+- High FX / Low FX / Reduced Motion (`04`/`05`/`06`)
 
 ## Missing required files
 - `01-base.png`

@@ -15,6 +15,11 @@ Index evidence consumed by the final Phase 0 exit audit/handoff decision for the
 - Core-screen evidence sweep artifacts:
   - `docs/ui/phase-0-core-screen-evidence-sweep.md`
   - `docs/ui/phase-0-core-screen-evidence-manifest.json`
+  - `src/dev/phase0CoreAudit/phase0CoreSurfaceIds.ts`
+  - `src/dev/phase0CoreAudit/phase0CoreEvidenceManifest.ts`
+  - `src/dev/phase0CoreAudit/Phase0CoreAuditHarness.tsx`
+  - `scripts/release/validatePhase0CoreEvidence.ts`
+  - `scripts/release/capturePhase0CoreEvidence.ts`
   - `docs/release/qa/ui-cutover/phase-0-core-screens/01-path-life-start/README.md`
   - `docs/release/qa/ui-cutover/phase-0-core-screens/02-cultivation/README.md`
   - `docs/release/qa/ui-cutover/phase-0-core-screens/03-status/README.md`
@@ -39,12 +44,15 @@ Index evidence consumed by the final Phase 0 exit audit/handoff decision for the
 - `NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tests/contracts/releaseVocabularyAudit.test.ts tests/contracts/placeholderStringPurge.test.ts`
 - `npm run release:fresh-run-report`
 - `npm run release:migration-matrix`
+- `npm run release:phase0-core-evidence-audit`
+- `npm run release:phase0-core-capture`
 
 ## Final verdict
 `NOT SAFE FOR PHASE 1`
 
 ## Blocker summary
 - Core-screen evidence-completeness blocker remains across all ten mandatory targets: no complete exact-screen `01..06` screenshot packs.
+- Capture infrastructure blocker has been removed: repo now includes an approved phase-0 harness + validator + capture command.
 - Therefore legal cutover criteria cannot be fully validated and cleanup remains locked.
 
 ## Watchpoint summary

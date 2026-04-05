@@ -2,22 +2,23 @@
 
 - Screen: Techniques
 - Signoff state: `DEFERRED`
-- Evidence status: proof gap (no `01-06` image set present in-repo)
+- Evidence status: proof gap (no complete legal `01-06` image set committed yet)
 - Existing packet evidence reference: `docs/release/qa/ui-cutover/phase-0-p0-09-techniques/README.md`
 
-## Manual capture route
-1. Run app in dev.
-2. Navigate to Techniques screen.
-3. Capture with a selected slot/technique state.
+## Approved capture pipeline
+1. Run `npm run release:phase0-core-capture`.
+2. The harness route for this surface is `/?uiAudit=phase-0&surface=techniques&fx=<high|low|reduced>&slot=<slot>`.
+3. Files are written into this folder using legal filenames (`01-base.png` through `06-reduced-motion.png`).
+4. Run `npm run release:phase0-core-evidence-audit` to verify slot completeness.
 
 ## Fixture/save condition
-- Save with at least one unlocked technique and loadout interaction.
+- Harness-driven Phase 0 core audit state (`uiAudit=phase-0`) with deterministic slot routing.
 
 ## Required states to capture
-- default altar/shelf owner view
-- interaction state (slot/technique selected)
-- truth state (build gap/warning/recommendation)
-- High FX / Low FX / Reduced Motion coherence
+- default owner view (`01-base.png`)
+- interaction state (`02-interaction.png`)
+- truth state (`03-truth-states.png`)
+- High FX / Low FX / Reduced Motion (`04`/`05`/`06`)
 
 ## Missing required files
 - `01-base.png`

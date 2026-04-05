@@ -2,22 +2,23 @@
 
 - Screen: Cultivation
 - Signoff state: `DEFERRED`
-- Evidence status: proof gap (no `01-06` image set present in-repo)
+- Evidence status: proof gap (no complete legal `01-06` image set committed yet)
 - Existing packet evidence reference: `docs/release/qa/ui-cutover/phase-0-p0-05-cultivation/README.md`
 
-## Manual capture route
-1. Run app in dev.
-2. Navigate to Cultivation tab from main shell.
-3. Capture High/Low/Reduced mode variants through in-app quality toggles.
+## Approved capture pipeline
+1. Run `npm run release:phase0-core-capture`.
+2. The harness route for this surface is `/?uiAudit=phase-0&surface=cultivation&fx=<high|low|reduced>&slot=<slot>`.
+3. Files are written into this folder using legal filenames (`01-base.png` through `06-reduced-motion.png`).
+4. Run `npm run release:phase0-core-evidence-audit` to verify slot completeness.
 
 ## Fixture/save condition
-- Live save with cultivation available and readiness states reachable.
+- Harness-driven Phase 0 core audit state (`uiAudit=phase-0`) with deterministic slot routing.
 
 ## Required states to capture
-- default center owner view (cultivator+dantian+lotus)
-- interaction state (selected/hovered actionable control)
-- truth state (readiness/recommended/warning)
-- High FX / Low FX / Reduced Motion coherence
+- default owner view (`01-base.png`)
+- interaction state (`02-interaction.png`)
+- truth state (`03-truth-states.png`)
+- High FX / Low FX / Reduced Motion (`04`/`05`/`06`)
 
 ## Missing required files
 - `01-base.png`

@@ -31,6 +31,7 @@ import { MigrationIssuesModal } from './modals/MigrationIssuesModal.js';
 import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
 import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectionCAudit/SectionCAuditHarness.js';
+import { Phase0CoreAuditHarness, isPhase0CoreAuditQueryEnabled } from '../dev/phase0CoreAudit/Phase0CoreAuditHarness.js';
 import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWizardContract.js';
 import './GameLayout.scss';
 
@@ -175,6 +176,7 @@ export function GameLayout() {
     selectedHeartLawId,
   });
   const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
+  const showPhase0CoreAuditHarness = isPhase0CoreAuditQueryEnabled();
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
@@ -213,6 +215,7 @@ export function GameLayout() {
         <OnboardingPromptHost />
         <NotificationToasts />
         {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
+        {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}
       </div>
     </FxQualityProvider>
   );

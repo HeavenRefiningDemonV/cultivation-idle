@@ -8,7 +8,8 @@
     "notes": [
       "Phase 0 governance docs and packet reports are present.",
       "Core-screen evidence sweep (completion pass 02) exists and records ten deferred proof-gap folders.",
-      "No complete exact-screen `01..06` screenshot packs are present for the ten mandatory core targets."
+      "No complete exact-screen `01..06` screenshot packs are present for the ten mandatory core targets.",
+      "Repo-native Phase 0 core screenshot pipeline is available (harness + validator + capture command)."
     ]
   },
   "screens": [
@@ -254,8 +255,8 @@
     }
   ],
   "crossScreenBlockers": [
-    "Evidence-completeness gap across all ten mandatory core screens: no complete `01-base`..`06-reduced-motion` packs are present.",
-    "Signoff criteria G3-G8 remain visually unverified for the core roster due missing exact-screen evidence artifacts."
+    "Evidence-completeness gap across all ten mandatory core screens: complete `01-base`..`06-reduced-motion` packs are still missing in-repo.",
+    "Signoff criteria G3-G8 remain visually unverified for the core roster until captured artifacts are reviewed via the legal gate."
   ],
   "verification": {
     "commandsRun": [

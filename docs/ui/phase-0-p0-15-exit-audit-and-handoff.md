@@ -8,6 +8,7 @@ Finalize the Phase 0 branch-safety decision using the current signoff/evidence s
 - Core-screen evidence sweep docs are present (`phase-0-core-screen-evidence-sweep.md`, `phase-0-core-screen-evidence-manifest.json`).
 - Deterministic core-screen evidence folders (`docs/release/qa/ui-cutover/phase-0-core-screens/01..10`) are present with explicit proof-gap instructions.
 - `docs/release/ui_screen_signoff_sheet.md` contains normalized deferred states for the core-screen sweep.
+- Repo-native capture infrastructure is present (`src/dev/phase0CoreAudit/*`, `scripts/release/validatePhase0CoreEvidence.ts`, `scripts/release/capturePhase0CoreEvidence.ts`).
 
 ## Audit basis
 - Branch: `work`
@@ -51,9 +52,9 @@ Finalize the Phase 0 branch-safety decision using the current signoff/evidence s
 | 10 | Prestige | blocked | `phase-0-core-screens/10-prestige/README.md`, signoff block (`prestige`) | Missing exact-screen screenshots for legal gate | Decree-family polish after proof closure | Shared decree/plaque frame roles | Keep ritual continuity without shell flattening |
 
 ## Cross-screen blocker audit
-- **Primary blocker:** Evidence-completeness gap across all ten core targets (no full `01-base`..`06-reduced-motion` packs).
+- **Primary blocker:** Evidence-completeness gap across all ten core targets (no complete committed `01-base`..`06-reduced-motion` packs yet).
 - **Secondary blocker:** Gate criteria G3-G8 cannot be truthfully validated without exact-screen visual artifacts.
-- **Runtime blocker remediation scope in this pass:** none applied; blocker count exceeds the safe narrow-remediation stop condition and is dominated by proof gaps rather than tiny runtime defects.
+- **Runtime blocker remediation scope in this pass:** harness-only review plumbing; no broad runtime redesign.
 
 ## Fresh-save and migrated-save smoke coverage
 - Fresh-save smoke command executed: `npm run release:fresh-run-report` (pass; manual coverage warnings remain expected).

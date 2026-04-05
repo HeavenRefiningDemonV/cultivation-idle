@@ -1,7 +1,7 @@
-# Phase 0 core-screen evidence sweep (completion pass 02)
+# Phase 0 core-screen evidence sweep (completion pass 03)
 
 ## Purpose
-Publish an exact-screen evidence and signoff sweep for the mandatory 10-screen Phase 0 roster, using honest proof status (real evidence vs proof gap) without fabricating screenshot artifacts.
+Publish an exact-screen evidence and signoff sweep for the mandatory 10-screen Phase 0 roster, now paired with a repo-native harness/capture pipeline (`uiAudit=phase-0`) and evidence validator.
 
 ## Dependency state
 - `docs/ui/phase-0-source-lock.md`: present.
@@ -9,11 +9,13 @@ Publish an exact-screen evidence and signoff sweep for the mandatory 10-screen P
 - `docs/ui/phase-0-p0-14-universal-cutover-gate.md`: present.
 - `docs/release/ui_screen_signoff_sheet.md`: present and updated by this pass.
 - Existing per-packet evidence READMEs for `phase-0-p0-04` through `phase-0-p0-13`: present.
+- Phase 0 core harness + manifest + validator + capture command: present (`src/dev/phase0CoreAudit/*`, `scripts/release/validatePhase0CoreEvidence.ts`, `scripts/release/capturePhase0CoreEvidence.ts`).
 
 ## Existing evidence already present
 - Existing repository coverage includes baseline/support folders and packet-specific `README.md` capture instructions.
-- For the mandatory ten core targets, no truthful in-repo six-slot image packs (`01`..`06`) are currently present.
+- For the mandatory ten core targets, no complete six-slot image packs (`01`..`06`) are currently committed.
 - Existing ritual/modal folders are retained as supporting evidence, but they do not satisfy the ten core target requirement on their own.
+- Infrastructure blocker update: the repo now contains an approved automated capture route; remaining blockers are evidence completeness and review execution, not missing tooling.
 
 ## Fixed target roster
 1. Path / Life Start
@@ -52,7 +54,7 @@ Publish an exact-screen evidence and signoff sweep for the mandatory 10-screen P
 ## Proof gaps that still block approval
 - Primary blocker: exact-screen evidence-completeness gap (`01-base.png` through `06-reduced-motion.png`) across all ten core targets.
 - Because evidence does not exist, no `APPROVED FOR CLEANUP` state is legal in this packet.
-- This packet intentionally stops at truthful blocker publication instead of performing redesign/runtime-fix work.
+- This packet intentionally stops at truthful blocker publication plus pipeline enablement instead of performing redesign/runtime-fix work.
 
 ## Supporting modal/ritual evidence retained
 The following remain valid supporting references (not substitutes for the ten core targets):
@@ -70,6 +72,7 @@ The following remain valid supporting references (not substitutes for the ten co
 - `git diff --check`
 - `git diff --name-only`
 - `node -e "JSON.parse(require('fs').readFileSync('docs/ui/phase-0-core-screen-evidence-manifest.json','utf8')); console.log('json ok')"`
+- `npm run release:phase0-core-evidence-audit`
 - `find docs/release/qa/ui-cutover/phase-0-core-screens -maxdepth 2 -type f | sort`
 - `rg -n "DEFERRED|APPROVED FOR CLEANUP|REJECTED — REMAIN ADDITIVE|REVIEW READY" docs/release/ui_screen_signoff_sheet.md`
 

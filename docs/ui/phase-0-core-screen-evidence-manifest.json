@@ -3,11 +3,12 @@
     "branch": "work",
     "commit": "0a7a24f",
     "workingTreeDirty": false,
-    "packet": "Phase 0 completion pass 02 — exact-screen evidence completion and signoff sweep",
+    "packet": "Phase 0 completion pass 03 \u2014 core evidence harness and capture pipeline publication",
     "notes": [
       "Core-screen evidence sweep audited the mandatory 10-screen roster in recovery order.",
       "No truthful in-repo `01-06` screenshot packs exist yet for these ten Phase 0 core targets.",
-      "All ten screens remain DEFERRED due evidence-completeness proof gaps; no cleanup unlocks are granted."
+      "All ten screens remain DEFERRED due evidence-completeness proof gaps; no cleanup unlocks are granted.",
+      "Repo-native phase-0 harness/capture pipeline is now available (`uiAudit=phase-0`, validator, capture command)."
     ]
   },
   "screens": [
@@ -228,6 +229,6 @@
     "reviewReadyCount": 0,
     "rejectedRemainAdditiveCount": 0,
     "cleanupUnlocked": false,
-    "primaryBlocker": "Evidence-completeness gap: missing exact-screen six-slot screenshot artifacts across all mandatory core screens."
+    "primaryBlocker": "Evidence-completeness gap: screenshot files still missing for several core slots. Capture infrastructure is now present via the phase-0 harness and release capture command."
   }
 }
