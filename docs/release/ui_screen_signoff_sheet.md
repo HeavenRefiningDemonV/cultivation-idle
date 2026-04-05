@@ -652,3 +652,337 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 - blockers: Missing Status evidence matrix (`01-06`).
 - required follow-up packet: D.10R-Followup (manual capture in browser-capable environment + reviewer signoff)
 - cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+
+---
+
+## Phase 0 core-screen evidence sweep (completion pass 02, 2026-04-05)
+
+### Metadata
+
+- target screen id: `path-life-start`
+- human label: Path / Life Start
+- dominant family: hero ritual
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/01-path-life-start/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `cultivation`
+- human label: Cultivation
+- dominant family: hero ritual
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/02-cultivation/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `status`
+- human label: Status
+- dominant family: dense management
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/03-status/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `world`
+- human label: World
+- dominant family: scenic world
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `manual-pavilion`
+- human label: Manual Pavilion
+- dominant family: module activity
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/05-manual-pavilion/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `techniques`
+- human label: Techniques
+- dominant family: dense management
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/06-techniques/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `apothecary`
+- human label: Apothecary
+- dominant family: module activity
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/07-apothecary/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `forge`
+- human label: Forge
+- dominant family: module activity
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/08-forge/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `bounties-expeditions`
+- human label: Bounties / Expeditions
+- dominant family: module activity
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/09-bounties-expeditions/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**
+
+### Metadata
+
+- target screen id: `prestige`
+- human label: Prestige
+- dominant family: dense management / ritual-linked
+- packet id: `P0-COMP-02`
+- touched layers: evidence/signoff only (no runtime edits)
+- retained old layer(s): all existing scenic/base owners retained
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/10-prestige/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-05
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+
+### Final decision block
+
+- `REVIEW READY`:
+- `APPROVED FOR CLEANUP`:
+- `REJECTED — REMAIN ADDITIVE`:
+- `DEFERRED`: **SELECTED**

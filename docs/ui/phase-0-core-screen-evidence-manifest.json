@@ -1,0 +1,233 @@
+{
+  "auditBasis": {
+    "branch": "work",
+    "commit": "0a7a24f",
+    "workingTreeDirty": false,
+    "packet": "Phase 0 completion pass 02 — exact-screen evidence completion and signoff sweep",
+    "notes": [
+      "Core-screen evidence sweep audited the mandatory 10-screen roster in recovery order.",
+      "No truthful in-repo `01-06` screenshot packs exist yet for these ten Phase 0 core targets.",
+      "All ten screens remain DEFERRED due evidence-completeness proof gaps; no cleanup unlocks are granted."
+    ]
+  },
+  "screens": [
+    {
+      "order": 1,
+      "screenId": "path-life-start",
+      "screenLabel": "Path / Life Start",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/01-path-life-start/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing (N/A allowed with reason)",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "Missing required screenshot artifacts for cutover gate completeness."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-04-path-life-start/README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "screenId": "cultivation",
+      "screenLabel": "Cultivation",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/02-cultivation/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "No in-repo six-slot screenshot set for exact-screen approval."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-05-cultivation/README.md"
+      ]
+    },
+    {
+      "order": 3,
+      "screenId": "status",
+      "screenLabel": "Status",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/03-status/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "Evidence pack incomplete; no pass/fail visual adjudication possible."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-06-status/README.md"
+      ]
+    },
+    {
+      "order": 4,
+      "screenId": "world",
+      "screenLabel": "World",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/04-world/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "No exact-screen screenshot proof set in required naming convention."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-07-world/README.md"
+      ]
+    },
+    {
+      "order": 5,
+      "screenId": "manual-pavilion",
+      "screenLabel": "Manual Pavilion",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/05-manual-pavilion/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "Manual capture instructions exist, but canonical `01-06` artifacts are absent."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-08-manual-pavilion/README.md"
+      ]
+    },
+    {
+      "order": 6,
+      "screenId": "techniques",
+      "screenLabel": "Techniques",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/06-techniques/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "No complete six-slot screenshot set for legal gate review."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-09-techniques/README.md"
+      ]
+    },
+    {
+      "order": 7,
+      "screenId": "apothecary",
+      "screenLabel": "Apothecary",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/07-apothecary/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "Required exact-screen screenshots missing in-repo."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-10-apothecary/README.md"
+      ]
+    },
+    {
+      "order": 8,
+      "screenId": "forge",
+      "screenLabel": "Forge",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/08-forge/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "Canonical screenshot evidence set absent for cutover gate evaluation."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-11-forge/README.md"
+      ]
+    },
+    {
+      "order": 9,
+      "screenId": "bounties-expeditions",
+      "screenLabel": "Bounties / Expeditions",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/09-bounties-expeditions/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "No six-slot screenshot proof for core board pair in required naming format."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-12-bounties-expeditions/README.md"
+      ]
+    },
+    {
+      "order": 10,
+      "screenId": "prestige",
+      "screenLabel": "Prestige",
+      "evidenceFolder": "docs/release/qa/ui-cutover/phase-0-core-screens/10-prestige/",
+      "evidenceFiles": {
+        "base": "missing",
+        "interaction": "missing",
+        "truthStates": "missing",
+        "highFx": "missing",
+        "lowFx": "missing",
+        "reducedMotion": "missing"
+      },
+      "signoffStatus": "DEFERRED",
+      "proofGaps": [
+        "Exact-screen screenshot proof set remains incomplete."
+      ],
+      "notes": [
+        "Existing packet reference: docs/release/qa/ui-cutover/phase-0-p0-13-prestige/README.md"
+      ]
+    }
+  ],
+  "summary": {
+    "deferredCount": 10,
+    "approvedForCleanupCount": 0,
+    "reviewReadyCount": 0,
+    "rejectedRemainAdditiveCount": 0,
+    "cleanupUnlocked": false,
+    "primaryBlocker": "Evidence-completeness gap: missing exact-screen six-slot screenshot artifacts across all mandatory core screens."
+  }
+}
