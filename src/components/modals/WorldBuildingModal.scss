@@ -51,6 +51,23 @@
   background-image: url('../../assets/background/bountyboard.png');
 }
 
+.worldBuildingModal--bounties::before,
+.worldBuildingModal--expeditions::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.worldBuildingModal--bounties::before {
+  background: linear-gradient(180deg, rgba(120, 72, 33, 0.18), rgba(120, 72, 33, 0.05));
+}
+
+.worldBuildingModal--expeditions::before {
+  background: linear-gradient(180deg, rgba(37, 76, 105, 0.14), rgba(37, 76, 105, 0.03));
+}
+
 .worldBuildingModal--inside-dungeon {
   background-image: url('../../assets/background/InsideDungeon.png');
 }

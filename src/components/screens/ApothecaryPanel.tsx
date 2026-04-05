@@ -66,6 +66,18 @@ function usageToChipUsage(usage?: string): 'combat' | 'cultivation' | 'both' {
   }
 }
 
+function getPackageSourceStateLabel(entry: ApothecaryRecommendedPackageEntry): string {
+  switch (entry.routeIntent.kind) {
+    case 'buy':
+      return 'Shelf stock available';
+    case 'brew':
+      return 'Brew-ready from current reagents';
+    case 'source_missing_mats':
+    default:
+      return 'Missing reagents (source first)';
+  }
+}
+
 export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPanelProps) {
   const runCompass = useRunCompassSurface();
   const apothecary = useContentStore((state) =>
@@ -161,6 +173,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
   const hasReadyPouchItem = prepModel.pouchSummary.stocked;
   const showInlineApothecaryHint = !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.apothecaryLoop)
     && (prepModel.stockWarnings.length > 0 || prepModel.recommendedPackage.length > 0 || prepModel.pouchSummary.stocked);
+  const topWarning = prepModel.stockWarnings[0] ?? null;
   const inlineActionLabel = prepModel.stockWarnings.length > 0 ? 'Open Brew' : 'Open Medicine Pouch';
   const inlineAction = () => {
     if (prepModel.stockWarnings.length > 0) {
@@ -401,6 +414,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         {itemPurpose?.purposeTag === 'Gate Prep' ? (
           <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
         ) : null}
+        {blockedReason ? <div className={'apothecaryBlockedReason'}>Blocked: {blockedReason}</div> : null}
 
         <div className={'apothecaryLimitBlock'}>
           {limit != null ? (
@@ -545,6 +559,9 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
           <div className={'apothecaryPackageMeta'}>
             Owned {entry.ownedQty} / Target {entry.targetQty}
             {entry.missingQty > 0 ? ` • Missing ${entry.missingQty}` : ' • Reserve met'}
+          </div>
+          <div className={'apothecaryPackageMeta'}>
+            Source: {getPackageSourceStateLabel(entry)} • Fastest action: {entry.routeIntent.label}
           </div>
           {itemPurpose?.purposeTag === 'Gate Prep' ? (
           <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
@@ -697,6 +714,9 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
           <div className={'apothecaryDayKey'}>
             City: {city?.name ?? prepModel.cityName} • Day: {dayKey}
           </div>
+          {topWarning ? (
+            <PaperChip className="apothecaryTopWarningChip" text={`Warning: ${topWarning.title}`} tone="warning" />
+          ) : null}
           {prepModel.specialtyItemNames.length > 0 && (
             <div className={'apothecarySpecialtyLine'}>
               <strong>{prepModel.specialtyLineLabel}:</strong> {prepModel.specialtyItemNames.join(' • ')}

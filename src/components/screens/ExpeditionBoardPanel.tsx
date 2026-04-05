@@ -215,6 +215,12 @@ const routePositions = ['expRouteButton--left', 'expRouteButton--center', 'expRo
 
 type RoutePositionClass = (typeof routePositions)[number];
 
+const ROUTE_BEST_WHEN: Record<string, string> = {
+  forage: 'Best when Apothecary stock is low or pills are queued.',
+  mine: 'Best when Forge upgrades or weapon crafts are blocked by ore.',
+  scout: 'Best when Manual Pavilion fragments or manuals are lagging.',
+};
+
 export function ExpeditionBoardPanel() {
   const runCompass = useRunCompassSurface();
   const currentCityId = useCityStore((state) => state.currentCityId);
@@ -485,6 +491,8 @@ export function ExpeditionBoardPanel() {
   }));
 
   const availableSlots = Math.max(0, slots - activeRuns.length);
+  const claimReadySlots = activeRuns.filter((run) => run.status === 'complete' || run.endsAt <= now).length;
+  const runningSlots = Math.max(0, activeRuns.length - claimReadySlots);
   const showExpeditionInlineHint = !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.expeditionsLoop) && availableSlots > 0;
   const availableSlotIndices = Array.from({ length: slots })
     .map((_, index) => index)
@@ -545,6 +553,8 @@ export function ExpeditionBoardPanel() {
           const items = normalizeItemList(preview?.items).slice(0, 3);
           const variance = previewDuration.variancePct ?? 0.15;
           const rarePreviewNames = type.rareDrops?.slice(0, 2).map((drop) => itemsById[drop.itemId]?.name ?? drop.itemId);
+          const routePurpose = getLiveExpeditionRoutePurpose(type.id);
+          const bestWhenLine = ROUTE_BEST_WHEN[type.id] ?? 'Best when passive materials are the current bottleneck.';
           const isSelected = selectedRouteId === type.id;
           const isRoutePulse = sentRoutePulseId === type.id;
           return (
@@ -574,9 +584,14 @@ export function ExpeditionBoardPanel() {
               >
                 <div className={'expRouteHeader'}>
                   <div className={'expRouteTitle'}>{type.name}</div>
-                  <PaperChip variant="tag" text="ROUTE" />
+                  <PaperChip
+                    variant="tag"
+                    text={routePurpose ? `${routePurpose.moduleLabel} Support` : 'Route'}
+                    tone={routePurpose ? 'ink' : 'neutral'}
+                  />
                 </div>
                 <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
+                <div className={'expRoutePurposeLine'}>{bestWhenLine}</div>
                 <div className={'expRouteItems'}>
                   {items.length === 0 && <div className={'expRouteItem'}>No yields defined</div>}
                   {items.map((item) => {
@@ -594,6 +609,7 @@ export function ExpeditionBoardPanel() {
                 ) : (
                   <div className={'expRouteRare'}>Rare: —</div>
                 )}
+                <div className={'expRouteCtaHint'}>{routePurpose?.ctaLabel ?? 'Select route to dispatch'}</div>
               </PaperCard>
             </button>
           );
@@ -671,6 +687,11 @@ export function ExpeditionBoardPanel() {
         </div>
 
         <div className={'eqsSlots'}>
+          <div className={'eqsSlotsSummary'} aria-live="polite">
+            <PaperChip variant="pill" text={`Idle ${availableSlots}`} tone={availableSlots > 0 ? 'neutral' : 'ink'} />
+            <PaperChip variant="pill" text={`Running ${runningSlots}`} tone="neutral" />
+            <PaperChip variant="pill" text={`Claim-ready ${claimReadySlots}`} tone={claimReadySlots > 0 ? 'success' : 'neutral'} />
+          </div>
           {Array.from({ length: slots }).map((_, slotIndex) => {
             const run = activeRunBySlot.get(slotIndex) ?? null;
             if (run) {
@@ -706,6 +727,7 @@ export function ExpeditionBoardPanel() {
                     {typeDef?.name ?? run.expeditionTypeId} · {durationDef?.label ?? run.durationId} · {' '}
                     {citiesById[run.cityId]?.name ?? run.cityId}
                   </div>
+                  <div className={'eqsSlotOrigin'}>Origin city: {citiesById[run.cityId]?.name ?? run.cityId}</div>
                   <div className={'eqsSlotTimer'}>
                     {isComplete ? 'Ready to claim' : formatTimer(remainingMs)}
                   </div>
@@ -794,6 +816,9 @@ export function ExpeditionBoardPanel() {
           <div className={'expDetailSection'}>
             <div className={'expDetailLabel'}>Rare Finds</div>
             <div className={'expDetailHint'}>Chance: {rareChancePct}%</div>
+            <div className={'expDetailHint'}>
+              {getLiveExpeditionRoutePurpose(selectedRoute.id)?.ctaLabel ?? 'Route follow-up'} from origin city.
+            </div>
             <div className={'expDetailRareList'}>
               {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
                 selectedRouteRareNames.map((name) => <PaperChip key={name} variant="pill" text={name} />)

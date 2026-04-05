@@ -59,6 +59,33 @@
   font-weight: 500;
 }
 
+.expToplineSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 80px;
+}
+
+.expToplineSummaryTitle {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(87, 59, 31, 0.82);
+}
+
+.expToplineSummaryBody {
+  font-size: 13px;
+  color: rgba(43, 33, 22, 0.82);
+}
+
+.expToplineSummaryMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: rgba(87, 59, 31, 0.78);
+}
+
 .expStageArea {
   position: relative;
   flex: 1;
@@ -167,6 +194,12 @@
   overflow: hidden;
 }
 
+.expRoutePurposeLine {
+  min-height: 32px;
+  font-size: 12px;
+  color: rgba(87, 59, 31, 0.86);
+}
+
 .expRouteItems {
   display: flex;
   flex-direction: column;
@@ -182,7 +215,29 @@
 .expRouteRare {
   font-size: 12px;
   color: var(--paper-ink-faint, rgba(87, 59, 31, 0.8));
+  min-height: 18px;
   margin-top: auto;
+}
+
+.expRouteCtaHint {
+  min-height: 18px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(43, 33, 22, 0.74);
+}
+
+.eqsSlotsSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.eqsSlotOrigin {
+  min-height: 16px;
+  font-size: 11px;
+  color: rgba(87, 59, 31, 0.78);
 }
 
 .expDurationChipGroup {
