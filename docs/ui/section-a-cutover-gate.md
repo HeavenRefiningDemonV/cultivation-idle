@@ -114,6 +114,7 @@ Cutover review must reference:
 6. unlocked cleanup scope if approved.
 
 Required recording target is `docs/release/ui_screen_signoff_sheet.md`.
+Operational publication companion: `docs/ui/phase-0-p0-14-universal-cutover-gate.md`.
 
 ## Failure handling rule
 

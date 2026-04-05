@@ -58,5 +58,7 @@ Cleanup is eligible only when all checks pass on the exact target screen:
 This checklist is a companion to `docs/ui/section-a-destructive-freeze.md` and the Section A doctrine charter. It is intentionally strict: additive baseline first, cleanup last, no silent destructive migration.
 
 For operational cutover criteria and merge-proof requirements, see:
+- `docs/ui/phase-0-source-lock.md`
+- `docs/ui/phase-0-packet-register.md`
 - `docs/ui/phase-0-p0-14-universal-cutover-gate.md`
 - `docs/release/ui_cutover_merge_checklist.md`

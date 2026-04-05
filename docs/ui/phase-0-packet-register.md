@@ -20,8 +20,3 @@ This register is sequencing truth, not proof of implementation. Packet completio
 | P0-13 | Prestige recovery | P0-01, P0-02, P0-03 | Restore decree-like reincarnation surface. | TBD | in progress | Decree-owner/material hierarchy hardening landed; report + evidence folder added; screenshots manual-pending (`docs/ui/phase-0-p0-13-prestige-recovery.md`). |
 | P0-14 | Universal cutover-gate publication | P0-04..P0-13 | Turn recovery lessons into one locked checklist. | TBD | done | Operational gate publication + merge checklist landed (`docs/ui/phase-0-p0-14-universal-cutover-gate.md`, `docs/release/ui_cutover_merge_checklist.md`). |
 | P0-15 | Phase 0 exit audit and handoff | P0-14 | Prove the branch is visually safe for Phase 1. | TBD | blocked | Exit audit published with `NOT SAFE FOR PHASE 1` verdict due unresolved screenshot-proof gaps (`docs/ui/phase-0-p0-15-exit-audit-and-handoff.md`, `docs/ui/phase-0-exit-audit-manifest.json`, `docs/ui/phase-0-phase1-phase2-handoff-watchpoints.md`). |
-
-## Local continuation alias note
-
-- Requested alias `P0-16` is treated in this repository as canonical `Phase 1 / P1-01 / Workstream 1.1 / Wave 0 asset audit`.
-- Canonical packet docs live in `docs/ui/phase-1-p1-01-wave0-asset-audit.md` and `docs/ui/phase-1-support-art-backlog.json`.

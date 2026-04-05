@@ -13,6 +13,7 @@ Phase 0 keeps the vision and discards the destructive rollout logic: recovery-fi
 No old scenic/background/header/icon removal until exact-screen approval.
 
 Phase 0 default cutover permission is **no destructive cleanup**.
+Operational shorthand: **default cleanup posture = no destructive cleanup**.
 
 ## Imported laws
 
