@@ -190,3 +190,14 @@ Future packets/art briefs must satisfy all checks before import:
 - [ ] Export format contract followed (transparent PNG or justified SVG; no JPG).
 - [ ] Preserve-core owner remains in place.
 - [ ] No cleanup authority is implied by asset arrival alone.
+
+## P1-02 supplement note — shared frame atlas
+
+Frame-atlas family specifics (weight roles, sizing bands, and tint guidance) are defined in `docs/ui/phase-1-p1-02-frame-atlas-brief.md`.
+
+For frame-atlas members, apply these defaults unless a later packet explicitly overrides with evidence:
+
+- light/standard/heavy frames remain tint-compatible grayscale/sepia-friendly bases;
+- frame and button/drawer/inspector/modal members remain nine-slice candidates with explicit margins;
+- center zones stay text-safe and stretch-safe (no emblem/text bake-in).
+

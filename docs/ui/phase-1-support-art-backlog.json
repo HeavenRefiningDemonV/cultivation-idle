@@ -290,7 +290,10 @@
       "trigger": "At least two additive screenshot sets show unresolved frame-role mismatch after current-asset composition.",
       "deliverableType": "atlas-ready reusable frame parts",
       "blockedUntil": "Wave 0 additive screenshot proof and missing-role approval",
-      "notes": "Support-only output; no scenic owner transfer."
+      "notes": "Shared support family scoped by P1-02; excludes plaque/ribbon/title-plate roles reserved for P1-02A.",
+      "packetBriefPath": "docs/ui/phase-1-p1-02-frame-atlas-brief.md",
+      "reviewSheetPath": "docs/ui/phase-1-p1-02-frame-atlas-review-sheet.md",
+      "manifestExamplePath": "docs/ui/phase-1-p1-02-frame-atlas-manifest-example.json"
     },
     {
       "id": "plaque-ribbon-title-plates",

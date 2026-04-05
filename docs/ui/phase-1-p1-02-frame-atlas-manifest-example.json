@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-02",
+  "familyId": "shared_frame_atlas",
+  "root": "src/assets/ui/chrome/frame_atlas/",
+  "shared": true,
+  "familyMembers": [
+    {
+      "id": "frame_light_default",
+      "role": "dense row / quiet inspector frame",
+      "weight": "light",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 10,
+          "right": 10,
+          "bottom": 10,
+          "left": 10
+        }
+      },
+      "minSourceSizePx": {
+        "width": 128,
+        "height": 64
+      },
+      "screens": [
+        "Status",
+        "Inventory",
+        "Manual Pavilion"
+      ],
+      "notes": "Lowest-weight shared frame for dense contexts."
+    },
+    {
+      "id": "frame_standard_default",
+      "role": "ordinary support card and module panel frame",
+      "weight": "standard",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 12,
+          "right": 12,
+          "bottom": 12,
+          "left": 12
+        }
+      },
+      "minSourceSizePx": {
+        "width": 160,
+        "height": 96
+      },
+      "screens": [
+        "Forge",
+        "Bounties",
+        "Expeditions",
+        "World inspector"
+      ],
+      "notes": "Default shared frame weight for support surfaces."
+    },
+    {
+      "id": "frame_heavy_default",
+      "role": "ritual and high-consequence support frame",
+      "weight": "heavy",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 14,
+          "right": 14,
+          "bottom": 14,
+          "left": 14
+        }
+      },
+      "minSourceSizePx": {
+        "width": 192,
+        "height": 120
+      },
+      "screens": [
+        "Prestige",
+        "Current Chapter Exhausted",
+        "Life Summary"
+      ],
+      "notes": "Support-only; never scenic-owner replacement."
+    },
+    {
+      "id": "button_plate_standard_default",
+      "role": "shared button plate for primary and secondary actions",
+      "weight": "standard",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 10,
+          "right": 12,
+          "bottom": 10,
+          "left": 12
+        }
+      },
+      "minSourceSizePx": {
+        "width": 144,
+        "height": 56
+      },
+      "screens": [
+        "Gate Trial",
+        "Forge",
+        "Prestige"
+      ],
+      "notes": "Action-surface support plate in same material family."
+    },
+    {
+      "id": "drawer_edge_standard_default",
+      "role": "edge treatment for expandable and requirement drawers",
+      "weight": "standard",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 8,
+          "right": 10,
+          "bottom": 8,
+          "left": 10
+        }
+      },
+      "minSourceSizePx": {
+        "width": 128,
+        "height": 48
+      },
+      "screens": [
+        "Gate Trial",
+        "Status",
+        "Forge"
+      ],
+      "notes": "Supports drawer hierarchy; not a standalone hero card frame."
+    },
+    {
+      "id": "inspector_shell_standard_default",
+      "role": "context pane shell for world and module inspectors",
+      "weight": "standard",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 12,
+          "right": 14,
+          "bottom": 12,
+          "left": 14
+        }
+      },
+      "minSourceSizePx": {
+        "width": 224,
+        "height": 320
+      },
+      "screens": [
+        "World inspector",
+        "Forge side rail",
+        "Bounties context panel"
+      ],
+      "notes": "Designed for larger read panes with stable edge hierarchy."
+    },
+    {
+      "id": "modal_frame_heavy_default",
+      "role": "modal-compatible support frame for centered consequence panels",
+      "weight": "heavy",
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 14,
+          "right": 16,
+          "bottom": 14,
+          "left": 16
+        }
+      },
+      "minSourceSizePx": {
+        "width": 240,
+        "height": 144
+      },
+      "screens": [
+        "Prestige ritual",
+        "Current Chapter Exhausted",
+        "Life Summary"
+      ],
+      "notes": "Support frame only; does not replace modal scenic shell."
+    }
+  ],
+  "notes": "Example manifest only; not runtime registration and not generated art inventory."
+}
