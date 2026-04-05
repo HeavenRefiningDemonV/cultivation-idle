@@ -201,3 +201,36 @@ For frame-atlas members, apply these defaults unless a later packet explicitly o
 - frame and button/drawer/inspector/modal members remain nine-slice candidates with explicit margins;
 - center zones stay text-safe and stretch-safe (no emblem/text bake-in).
 
+## P1-02A supplement note — shared plaque/ribbon/title-plate family
+
+Canonical root for this family: `src/assets/ui/chrome/plaques/`.
+
+Role examples:
+
+- `ui_plaque_screen_header_long_default_l.png`
+- `ui_ribbon_section_header_long_default_m.png`
+- `ui_ribbon_section_header_short_default_s.png`
+- `ui_titleplate_inspector_standard_default_m.png`
+- `ui_breadcrumb_city_current_default_m.png`
+
+Stretch guidance:
+
+- stretch-safe roles: long section ribbons, card header plaques, breadcrumb strips;
+- semi-stretch with protected endcaps: major screen header plaques, city-arrival banners, ritual modal title plates;
+- fixed-width variants: short section ribbons where text-length variance is low.
+
+Text-safe guidance:
+
+- preserve center quiet zones;
+- keep ornament in endcaps/protected edges;
+- default one-line header semantics with controlled overflow handling.
+
+Scope exclusions:
+
+- dedicated world/building map labels are excluded from P1-02A and deferred to P1-02B;
+- state-stamp/swash families are excluded and deferred to the later state-family packet.
+
+Continuity rule:
+
+- plaque/ribbon/title assets must pair with frame-family value hierarchy and material language without replacing frame ownership.
+

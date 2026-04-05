@@ -299,7 +299,7 @@
       "id": "plaque-ribbon-title-plates",
       "label": "Plaque / ribbon / title-plate family",
       "bucket": "create-later-only",
-      "wave": "wave1-shared-support",
+      "wave": "wave1",
       "shared": true,
       "screens": [
         "life-start",
@@ -311,10 +311,15 @@
         "prestige"
       ],
       "missingRoleStatement": "Current bars and blocks do not cover a reusable cross-screen title and badge carrier role with consistent hierarchy.",
-      "trigger": "Cross-screen additive captures confirm unresolved header/label carrier role after preserve-enhance pass.",
+      "trigger": "Missing-role proof from additive screenshot sets on target screens (Wave 0 slots) confirms reusable header/title carrier gaps.",
       "deliverableType": "reusable plaque and ribbon support parts",
       "blockedUntil": "Wave 0 proof and explicit missing-role approval",
-      "notes": "No per-screen scenic repaint output."
+      "notes": "Shared plaque/ribbon/title family only; dedicated world/building labels are deferred to P1-02B and state stamps/swashes are deferred to the later state-family packet.",
+      "root": "src/assets/ui/chrome/plaques/",
+      "status": "planned",
+      "packetBriefPath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-brief.md",
+      "reviewSheetPath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-review-sheet.md",
+      "manifestExamplePath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-manifest-example.json"
     },
     {
       "id": "world-building-label-plaques",

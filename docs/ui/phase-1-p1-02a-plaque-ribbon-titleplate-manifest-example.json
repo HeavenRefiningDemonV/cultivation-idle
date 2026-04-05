@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-02A",
+  "familyId": "shared_plaque_ribbon_titleplates",
+  "root": "src/assets/ui/chrome/plaques/",
+  "shared": true,
+  "styleAnchor": "p1-02-frame-atlas-family",
+  "familyMembers": [
+    {
+      "id": "ui_plaque_screen_header_long_default_l",
+      "role": "major screen header plaque",
+      "hierarchy": "high",
+      "intendedScreens": [
+        "World",
+        "Gate Trial",
+        "Forge",
+        "Bounties",
+        "Expeditions"
+      ],
+      "excludedScopes": [
+        "world_building_label_placards",
+        "state_stamps",
+        "full_frame_ownership"
+      ],
+      "pairsWith": [
+        "frame_standard_default",
+        "frame_heavy_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "semi_stretch",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 12,
+          "right": 24,
+          "bottom": 12,
+          "left": 24
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 12,
+        "right": 28,
+        "bottom": 12,
+        "left": 28
+      },
+      "ornamentBudget": "moderate_endcaps_only",
+      "notes": "Primary shared screen header role."
+    },
+    {
+      "id": "ui_ribbon_section_header_long_default_m",
+      "role": "long section ribbon",
+      "hierarchy": "medium_high",
+      "intendedScreens": [
+        "Status",
+        "Cultivation",
+        "Forge"
+      ],
+      "excludedScopes": [
+        "city_arrival_banner",
+        "state_stamps"
+      ],
+      "pairsWith": [
+        "frame_light_default",
+        "frame_standard_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "nine_slice",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 10,
+          "right": 20,
+          "bottom": 10,
+          "left": 20
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 10,
+        "right": 24,
+        "bottom": 10,
+        "left": 24
+      },
+      "ornamentBudget": "low_to_moderate",
+      "notes": "Section hierarchy support ribbon."
+    },
+    {
+      "id": "ui_ribbon_section_header_short_default_s",
+      "role": "short section ribbon",
+      "hierarchy": "medium",
+      "intendedScreens": [
+        "Manual Pavilion",
+        "Bounties",
+        "Expeditions"
+      ],
+      "excludedScopes": [
+        "major_screen_headers",
+        "state_stamps"
+      ],
+      "pairsWith": [
+        "frame_light_default",
+        "frame_standard_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "fixed_variants_s_m_l",
+      "nineSlice": {
+        "enabled": false,
+        "marginsPx": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 10,
+        "right": 20,
+        "bottom": 10,
+        "left": 20
+      },
+      "ornamentBudget": "low",
+      "notes": "Compact section marker."
+    },
+    {
+      "id": "ui_plaque_card_header_standard_default_s",
+      "role": "card-level header plaque",
+      "hierarchy": "medium",
+      "intendedScreens": [
+        "Gate Trial",
+        "Forge",
+        "Status"
+      ],
+      "excludedScopes": [
+        "full_card_frame",
+        "state_stamp_row"
+      ],
+      "pairsWith": [
+        "frame_light_default",
+        "frame_standard_default",
+        "frame_heavy_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "nine_slice",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 8,
+          "right": 16,
+          "bottom": 8,
+          "left": 16
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 8,
+        "right": 18,
+        "bottom": 8,
+        "left": 18
+      },
+      "ornamentBudget": "low",
+      "notes": "Header role for support cards."
+    },
+    {
+      "id": "ui_titleplate_inspector_standard_default_m",
+      "role": "inspector title plate",
+      "hierarchy": "medium_high",
+      "intendedScreens": [
+        "World inspector",
+        "Forge side rail"
+      ],
+      "excludedScopes": [
+        "inspector_shell_frame",
+        "world_building_labels"
+      ],
+      "pairsWith": [
+        "inspector_shell_standard_default",
+        "frame_standard_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "semi_stretch",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 10,
+          "right": 22,
+          "bottom": 10,
+          "left": 22
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 10,
+        "right": 22,
+        "bottom": 10,
+        "left": 22
+      },
+      "ornamentBudget": "low",
+      "notes": "Inspector pane title role."
+    },
+    {
+      "id": "ui_breadcrumb_city_current_default_m",
+      "role": "breadcrumb strip — current city",
+      "hierarchy": "low_medium",
+      "intendedScreens": [
+        "World",
+        "Gate Trial",
+        "Forge"
+      ],
+      "excludedScopes": [
+        "world_building_placards",
+        "state_stamps"
+      ],
+      "pairsWith": [
+        "frame_light_default",
+        "inspector_shell_standard_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "nine_slice",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 8,
+          "right": 14,
+          "bottom": 8,
+          "left": 14
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 8,
+        "right": 16,
+        "bottom": 8,
+        "left": 16
+      },
+      "ornamentBudget": "very_low",
+      "notes": "Quiet city context strip."
+    },
+    {
+      "id": "ui_breadcrumb_module_current_default_m",
+      "role": "breadcrumb strip — current module",
+      "hierarchy": "low_medium",
+      "intendedScreens": [
+        "Gate Trial",
+        "Forge",
+        "Bounties",
+        "Expeditions"
+      ],
+      "excludedScopes": [
+        "world_building_placards",
+        "state_stamps"
+      ],
+      "pairsWith": [
+        "frame_light_default",
+        "frame_standard_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "nine_slice",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 8,
+          "right": 14,
+          "bottom": 8,
+          "left": 14
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 8,
+        "right": 16,
+        "bottom": 8,
+        "left": 16
+      },
+      "ornamentBudget": "very_low",
+      "notes": "Quiet module context strip."
+    },
+    {
+      "id": "ui_banner_city_arrival_standard_default_l",
+      "role": "city-arrival banner",
+      "hierarchy": "high",
+      "intendedScreens": [
+        "World"
+      ],
+      "excludedScopes": [
+        "persistent_world_labels",
+        "state_stamps"
+      ],
+      "pairsWith": [
+        "frame_heavy_default",
+        "modal_frame_heavy_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "semi_stretch",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 14,
+          "right": 30,
+          "bottom": 14,
+          "left": 30
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 14,
+        "right": 32,
+        "bottom": 14,
+        "left": 32
+      },
+      "ornamentBudget": "moderate_high_endcaps",
+      "notes": "Heaviest non-modal title surface; arrival context only."
+    },
+    {
+      "id": "ui_titleplate_ritual_modal_heavy_default_l",
+      "role": "ritual modal title plate",
+      "hierarchy": "high",
+      "intendedScreens": [
+        "Prestige ritual",
+        "Current Chapter Exhausted",
+        "Life Summary"
+      ],
+      "excludedScopes": [
+        "modal_body_frame",
+        "state_stamp_lane"
+      ],
+      "pairsWith": [
+        "modal_frame_heavy_default",
+        "frame_heavy_default"
+      ],
+      "tintable": true,
+      "baseColorMode": "grayscale_or_sepia_friendly",
+      "stretchMode": "semi_stretch_or_fixed_l_xl",
+      "nineSlice": {
+        "enabled": true,
+        "marginsPx": {
+          "top": 12,
+          "right": 28,
+          "bottom": 12,
+          "left": 28
+        }
+      },
+      "textSafeInsetPx": {
+        "top": 12,
+        "right": 30,
+        "bottom": 12,
+        "left": 30
+      },
+      "ornamentBudget": "moderate_high_endcaps",
+      "notes": "High-consequence title role for ritual contexts only."
+    }
+  ],
+  "notes": "Example family manifest only; not runtime registration and not generated art output."
+}

@@ -144,6 +144,7 @@ This file keeps Section A touchpoints exact and current so later UI packets do n
 | `src/assets/onscreen/` | Asset anchor root | On-screen character/lotus root. |
 | `src/assets/ui/book_spines/` | Asset anchor root | Book spine identity root. |
 | `src/assets/ui/chrome/` | Phase 1 support-art scaffold root | Locked scaffold root for shared chrome support assets. |
+| `src/assets/ui/chrome/plaques/` | Phase 1 support-art scaffold root | Shared plaque/ribbon/titleplate scaffold root (P1-02A). |
 | `src/assets/ui/overlays/` | Phase 1 support-art scaffold root | Locked scaffold root for overlay/mask support assets. |
 | `src/assets/ui/fx/` | Phase 1 support-art scaffold root | Locked scaffold root for shared FX support assets. |
 | `src/assets/ui/heroes/` | Phase 1 support-art scaffold root | Locked scaffold root for later-wave hero support kits. |

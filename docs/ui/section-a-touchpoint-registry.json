@@ -399,6 +399,10 @@
         "class": "phase1SupportArtScaffoldRoot"
       },
       {
+        "path": "src/assets/ui/chrome/plaques/",
+        "class": "phase1SupportArtScaffoldRoot"
+      },
+      {
         "path": "src/assets/ui/overlays/",
         "class": "phase1SupportArtScaffoldRoot"
       },
