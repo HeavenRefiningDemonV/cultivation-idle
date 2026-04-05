@@ -1,14 +1,18 @@
 import { AlertCircle, Compass, Mountain, Swords, Target } from 'lucide-react';
 import { CombatStatTile } from './CombatStatTile.js';
+import type { RunCompassActionLine } from '../../systems/ui/runCompass/index.js';
 
 type StatusSummaryHeaderProps = {
   realmName: string;
   stageText: string;
   pathLabel: string;
+  spiritRootLine: string;
   archetypeLabel: string;
   archetypeSummary: string;
   biggestShortfallLine: string;
   topFixLine: string | null;
+  topFixAction: RunCompassActionLine | null;
+  onRunCompassAction: (action: RunCompassActionLine) => void;
   combatStrip: Array<{ label: string; value: string; tone: 'hp' | 'offense' | 'defense' | 'crit' }>;
 };
 
@@ -16,10 +20,13 @@ export function StatusSummaryHeader({
   realmName,
   stageText,
   pathLabel,
+  spiritRootLine,
   archetypeLabel,
   archetypeSummary,
   biggestShortfallLine,
   topFixLine,
+  topFixAction,
+  onRunCompassAction,
   combatStrip,
 }: StatusSummaryHeaderProps) {
   return (
@@ -50,6 +57,9 @@ export function StatusSummaryHeader({
             <span className="statusSummarySub">Build archetype: {archetypeLabel}</span>
           </div>
           <div className="statusSummarySubRow">
+            <span className="statusSummarySub">Spirit Root: {spiritRootLine}</span>
+          </div>
+          <div className="statusSummarySubRow">
             <span className="statusSummarySub">{archetypeSummary}</span>
           </div>
         </div>
@@ -61,6 +71,11 @@ export function StatusSummaryHeader({
           </div>
           <p className="statusBiggestShortfallBody">{biggestShortfallLine}</p>
           {topFixLine ? <p className="statusBiggestShortfallHint">Top Fix: {topFixLine}</p> : null}
+          {topFixAction ? (
+            <button type="button" className="statusBiggestShortfallAction uiNoShift" onClick={() => onRunCompassAction(topFixAction)}>
+              Open best fix
+            </button>
+          ) : null}
         </div>
       </div>
 

@@ -75,6 +75,19 @@
   color: rgba(66, 48, 30, 0.75);
 }
 
+.statusBiggestShortfallAction {
+  margin-top: 8px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 72, 33, 0.34);
+  background: rgba(255, 248, 235, 0.86);
+  color: rgba(53, 34, 19, 0.94);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .statusCombatStrip {
   border-top: 1px solid rgba(66, 48, 30, 0.2);
   padding-top: 10px;

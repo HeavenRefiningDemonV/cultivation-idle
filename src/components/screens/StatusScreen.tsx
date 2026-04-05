@@ -1,9 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useGameStore } from '../../stores/gameStore.js';
 import { useInventoryStore } from '../../stores/inventoryStore.js';
 import { useCombatStore } from '../../stores/combatStore.js';
 import { useZoneStore } from '../../stores/zoneStore.js';
-import { useUIStore } from '../../stores/uiStore.js';
 import { formatNumber, formatPercentFromValue } from '../../utils/numbers.js';
 import { StatusSummaryHeader } from '../../ui/status/StatusSummaryHeader.js';
 import { CombatStatTile } from '../../ui/status/CombatStatTile.js';
@@ -19,6 +18,7 @@ import { FxStagePortal } from '../../ui/fx/FxStagePortal.js';
 import { useFxQuality, useFxStageSnapshot } from '../../ui/fx/FxQualityProvider.js';
 import { buildFxSceneContract } from '../../ui/fx/runtime.js';
 import { StatusFxScene } from '../../ui/fx/scenes/StatusFxScene.js';
+import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import './StatusScreen.scss';
 import '../../ui/status/StatusSummaryHeader.scss';
 import '../../ui/status/CombatStatTile.scss';
@@ -34,7 +34,6 @@ function StatusLine({ label, value }: { label: string; value: string }) {
 }
 
 export function StatusScreen() {
-  const setHeaderTitles = useUIStore((state) => state.setHeaderTitles);
   const runCompass = useRunCompassSurface();
   const realm = useGameStore((state) => state.realm);
   const qi = useGameStore((state) => state.qi);
@@ -70,9 +69,10 @@ export function StatusScreen() {
     });
   }, [effectiveQuality, fxStageSnapshot, prefersReducedMotion, requestedQuality]);
 
-  useEffect(() => {
-    setHeaderTitles('Status', 'Troubleshoot your current run and identify the active floor gap.');
-  }, [setHeaderTitles]);
+  const primaryStatusAction = useMemo(
+    () => runCompass.full?.bestNextActions.find((action) => !action.blocked && Boolean(action.target)) ?? null,
+    [runCompass.full?.bestNextActions],
+  );
 
   return (
     <ScreenFxStage
@@ -94,16 +94,24 @@ export function StatusScreen() {
       ) : null}
       <div className="statusScreenRoot">
         <div className="statusScreenContent">
-        <RunCompass surface={runCompass.full} tone="paper" className="statusScreenRunCompass statusScreenCardBase" />
+        <RunCompass
+          surface={runCompass.full}
+          tone="paper"
+          className="statusScreenRunCompass statusScreenCardBase"
+          onAction={performRunCompassAction}
+        />
 
         <StatusSummaryHeader
           realmName={troubleshooting.realmName}
           stageText={troubleshooting.stageText}
           pathLabel={troubleshooting.pathLabel}
+          spiritRootLine={`${troubleshooting.identity.spiritRootSummary.element} • ${troubleshooting.identity.spiritRootSummary.grade} • ${troubleshooting.identity.spiritRootSummary.purity} purity`}
           archetypeLabel={troubleshooting.archetypeLabel}
           archetypeSummary={troubleshooting.archetypeSummary}
           biggestShortfallLine={troubleshooting.shortfall.headline}
           topFixLine={troubleshooting.shortfall.topFix}
+          topFixAction={primaryStatusAction}
+          onRunCompassAction={performRunCompassAction}
           combatStrip={troubleshooting.combatStrip}
         />
 
@@ -115,6 +123,11 @@ export function StatusScreen() {
               </div>
               <StatusLine label="Path" value={troubleshooting.pathLabel} />
               <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
+              <StatusLine
+                label="Spirit Root"
+                value={`${troubleshooting.identity.spiritRootSummary.element} • ${troubleshooting.identity.spiritRootSummary.grade} • ${troubleshooting.identity.spiritRootSummary.purity}`}
+              />
+              <StatusLine label="Root Multiplier" value={troubleshooting.identity.spiritRootSummary.totalMultiplier} />
               <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
               <StatusLine label="Resonance" value={troubleshooting.identity.resonanceLabel} />
               <StatusLine label="Summary" value={troubleshooting.archetypeSummary} />
