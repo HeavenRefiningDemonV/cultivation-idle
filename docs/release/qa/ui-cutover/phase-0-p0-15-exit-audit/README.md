@@ -1,29 +1,32 @@
-# P0-15 Phase 0 exit audit — evidence index
+# P0-15 Phase 0 exit audit — evidence index (completion pass 03)
 
 ## Purpose
-This folder indexes the evidence sources used by P0-15 to determine whether the branch is visually safe for Phase 1.
+Index evidence consumed by the final Phase 0 exit audit/handoff decision for the mandatory ten core screens.
 
 ## Evidence sources reviewed
-- Phase 0 baseline docs:
-  - `docs/ui/phase-0-screenshot-baseline.md`
-  - `docs/ui/phase-0-screenshot-manifest.json`
-- Phase 0 packet reports:
-  - `docs/ui/phase-0-p0-04-path-life-start-recovery.md` … `docs/ui/phase-0-p0-13-prestige-recovery.md`
-- Phase 0 packet evidence folders:
-  - `docs/release/qa/ui-cutover/phase-0-p0-04-path-life-start/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-05-cultivation/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-06-status/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-07-world/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-08-manual-pavilion/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-09-techniques/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-10-apothecary/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-11-forge/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-12-bounties-expeditions/`
-  - `docs/release/qa/ui-cutover/phase-0-p0-13-prestige/`
-- Gate/signoff doctrine:
+- Phase 0 governance and gate docs:
+  - `docs/ui/phase-0-source-lock.md`
+  - `docs/ui/phase-0-packet-register.md`
   - `docs/ui/phase-0-p0-14-universal-cutover-gate.md`
-  - `docs/release/ui_screen_signoff_sheet.md`
+  - `docs/ui/section-a-cutover-gate.md`
+  - `docs/ui/section-a-screenshot-approval-workflow.md`
   - `docs/release/ui_cutover_red_flags.md`
+  - `docs/release/ui_screen_signoff_sheet.md`
+- Core-screen evidence sweep artifacts:
+  - `docs/ui/phase-0-core-screen-evidence-sweep.md`
+  - `docs/ui/phase-0-core-screen-evidence-manifest.json`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/01-path-life-start/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/02-cultivation/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/03-status/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/05-manual-pavilion/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/06-techniques/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/07-apothecary/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/08-forge/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/09-bounties-expeditions/README.md`
+  - `docs/release/qa/ui-cutover/phase-0-core-screens/10-prestige/README.md`
+- Prior recovery packet evidence readmes:
+  - `docs/release/qa/ui-cutover/phase-0-p0-04-*` … `phase-0-p0-13-*`
 
 ## Commands run
 - `git diff --check`
@@ -40,9 +43,14 @@ This folder indexes the evidence sources used by P0-15 to determine whether the 
 ## Final verdict
 `NOT SAFE FOR PHASE 1`
 
-## Blockers and watchpoints summary
-- Blockers: exact-screen screenshot completion gaps remain across mandatory Phase 0 roster, preventing legal gate closure.
-- Watchpoints: support-role art families and shell harmonization opportunities are documented in `docs/ui/phase-0-phase1-phase2-handoff-watchpoints.md`.
+## Blocker summary
+- Core-screen evidence-completeness blocker remains across all ten mandatory targets: no complete exact-screen `01..06` screenshot packs.
+- Therefore legal cutover criteria cannot be fully validated and cleanup remains locked.
 
-## New screenshots created in P0-15
-None. This packet is evidence-indexing and audit publication only.
+## Watchpoint summary
+- Legitimate later-phase watchpoints remain support-art-first and owner-preserving:
+  - shared frame/plaque/ribbon family
+  - overlay/mask support pack
+  - world/building label plaques
+  - restrained shared FX atlas
+- These watchpoints are not substitutes for unresolved Phase 0 blockers.
