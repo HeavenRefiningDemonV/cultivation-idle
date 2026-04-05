@@ -126,6 +126,8 @@ Examples confirming presence include `manualpavilion.png`, `tech.png`, `bountybo
 
 Future UI packets must classify every asset interaction as preserve as core, preserve but enhance, or create later only if still needed before requesting work. If a packet asks for new art where preserve or enhance should apply, the packet is wrong. Create-later requests must cite a concrete missing role and additive proof, not weak taste language.
 
+Wave 0 bridge reference for this doctrine in the current workstream: `docs/ui/phase-1-p1-01-wave0-asset-audit.md` (requested alias mapping: `P0-16` -> canonical `Phase 1 / P1-01 / Workstream 1.1 / Wave 0 asset audit`).
+
 ## Non-goals
 
 This file does not generate art, edit asset files, style components, change technical stack, expand path registry scope, or authorize full icon replacement passes.

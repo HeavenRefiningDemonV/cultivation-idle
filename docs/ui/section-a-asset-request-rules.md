@@ -113,3 +113,7 @@ If these fields are absent, reviewers must treat the packet as non-compliant.
 ## Closing usage rule
 
 Future packets must cite this file before asking for new UI art.
+
+Wave 0 bridge handoff references for later requests:
+- `docs/ui/phase-1-asset-spec-sheet.md`
+- `docs/ui/phase-1-wave0-screenshot-matrix.md`
