@@ -72,6 +72,7 @@ Future Phase 0 prompts should cite:
 
 - `docs/ui/phase-0-source-lock.md`
 - `docs/ui/phase-0-packet-register.md`
+- `docs/ui/phase-0-p0-14-universal-cutover-gate.md` (operational cutover publication)
 - `docs/ui/phase-0-destructive-migration-audit.md` (P0-01 canonical destructive-migration ledger handoff)
 - `docs/ui/phase-0-screenshot-baseline.md` (P0-02 baseline evidence path and capture status)
 - the relevant Section A doctrine file(s) for detailed law.

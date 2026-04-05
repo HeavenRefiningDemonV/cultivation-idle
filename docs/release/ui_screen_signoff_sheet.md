@@ -2,6 +2,13 @@
 
 This file is the per-screen cutover approval template used before destructive UI cleanup.
 
+## Companion docs
+
+- Operational cutover publication: `docs/ui/phase-0-p0-14-universal-cutover-gate.md`
+- Legal doctrine source: `docs/ui/section-a-cutover-gate.md`
+- Screenshot workflow: `docs/ui/section-a-screenshot-approval-workflow.md`
+- Merge evidence checklist: `docs/release/ui_cutover_merge_checklist.md`
+
 ## Usage note
 
 - Use one block per target screen.

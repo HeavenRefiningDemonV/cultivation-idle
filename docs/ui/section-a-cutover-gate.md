@@ -160,6 +160,7 @@ Result: legal cleanup only for listed layers on approved target screen.
 
 ## Relationship to adjacent A.6 files
 
+- Operational publication for packet-level citation: `docs/ui/phase-0-p0-14-universal-cutover-gate.md`.
 - Workflow execution is defined in `docs/ui/section-a-screenshot-approval-workflow.md`.
 - Screen-level recording template is defined in `docs/release/ui_screen_signoff_sheet.md`.
 - This file remains the legal doctrine source for pass/fail cutover eligibility.

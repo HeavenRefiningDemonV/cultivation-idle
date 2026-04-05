@@ -11,6 +11,8 @@ This workflow complements, and does not replace:
 - `docs/release/signoff_sheet.md`
 - `docs/release/go_no_go_checklist.md`
 - `docs/release/live_surface_visual_audit.md`
+- `docs/release/ui_cutover_merge_checklist.md` (merge evidence companion)
+- `docs/ui/phase-0-p0-14-universal-cutover-gate.md` (operational publication)
 
 Those files remain release-level governance. This file governs one screen, one cutover decision, one artifact trail.
 
