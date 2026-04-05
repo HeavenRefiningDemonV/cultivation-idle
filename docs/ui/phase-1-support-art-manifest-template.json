@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-01B",
+  "familyId": "example_family_id",
+  "class": "shared-chrome",
+  "root": "src/assets/ui/chrome/",
+  "shared": true,
+  "screenLocal": false,
+  "supportsScreens": [
+    "World",
+    "Gate Trial"
+  ],
+  "role": "world label plaque",
+  "variants": [
+    "small",
+    "medium",
+    "large"
+  ],
+  "states": [
+    "default",
+    "selected",
+    "recommended"
+  ],
+  "format": "png",
+  "alpha": true,
+  "tintable": true,
+  "baseColorMode": "grayscale",
+  "nineSlice": {
+    "enabled": true,
+    "marginsPx": {
+      "top": 12,
+      "right": 12,
+      "bottom": 12,
+      "left": 12
+    }
+  },
+  "minSourceSizePx": {
+    "width": 128,
+    "height": 64
+  },
+  "reducedMotionDependency": "none",
+  "currentBaseAssetRemains": true,
+  "notes": "Template only. Replace values per family without adding runtime import metadata in P1-01B."
+}

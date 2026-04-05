@@ -143,8 +143,14 @@ This file keeps Section A touchpoints exact and current so later UI packets do n
 | `src/assets/menus/` | Asset anchor root | Menu/chrome support root. |
 | `src/assets/onscreen/` | Asset anchor root | On-screen character/lotus root. |
 | `src/assets/ui/book_spines/` | Asset anchor root | Book spine identity root. |
+| `src/assets/ui/chrome/` | Phase 1 support-art scaffold root | Locked scaffold root for shared chrome support assets. |
+| `src/assets/ui/overlays/` | Phase 1 support-art scaffold root | Locked scaffold root for overlay/mask support assets. |
+| `src/assets/ui/fx/` | Phase 1 support-art scaffold root | Locked scaffold root for shared FX support assets. |
+| `src/assets/ui/heroes/` | Phase 1 support-art scaffold root | Locked scaffold root for later-wave hero support kits. |
 | `src/assets/items/ui/` | Asset anchor root | Item-frame/support UI root. |
 | `src/assets/icons/` | Asset anchor root | Icon root including hourglass family. |
+
+Phase 1 scaffold spec reference: `docs/ui/phase-1-asset-spec-sheet.md` is the canonical support-art root/naming/format contract.
 
 ### I. Docs-area packet governance touchpoints
 

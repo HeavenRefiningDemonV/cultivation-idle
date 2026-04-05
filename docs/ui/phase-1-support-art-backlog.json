@@ -444,5 +444,17 @@
     "no world repaint",
     "no cultivator-center replacement",
     "no full icon-overhaul prerequisite"
-  ]
+  ],
+  "phase1Scaffold": {
+    "assetSpecSheetPath": "docs/ui/phase-1-asset-spec-sheet.md",
+    "manifestTemplatePath": "docs/ui/phase-1-support-art-manifest-template.json",
+    "scaffoldRoots": [
+      "src/assets/ui/chrome/",
+      "src/assets/ui/overlays/",
+      "src/assets/ui/fx/",
+      "src/assets/ui/heroes/"
+    ],
+    "packet": "P1-01B",
+    "notes": "Scaffold metadata only; does not alter preserve/enhance/create-later semantics."
+  }
 }

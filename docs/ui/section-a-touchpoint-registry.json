@@ -395,6 +395,22 @@
         "class": "assetAnchorRoot"
       },
       {
+        "path": "src/assets/ui/chrome/",
+        "class": "phase1SupportArtScaffoldRoot"
+      },
+      {
+        "path": "src/assets/ui/overlays/",
+        "class": "phase1SupportArtScaffoldRoot"
+      },
+      {
+        "path": "src/assets/ui/fx/",
+        "class": "phase1SupportArtScaffoldRoot"
+      },
+      {
+        "path": "src/assets/ui/heroes/",
+        "class": "phase1SupportArtScaffoldRoot"
+      },
+      {
         "path": "src/assets/items/ui/",
         "class": "assetAnchorRoot"
       },
