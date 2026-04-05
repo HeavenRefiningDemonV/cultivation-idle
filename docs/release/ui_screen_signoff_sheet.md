@@ -87,6 +87,15 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ---
 
+## Phase 0 overall branch-safety summary (P0-15)
+
+- final verdict: `NOT SAFE FOR PHASE 1`
+- report path: `docs/ui/phase-0-p0-15-exit-audit-and-handoff.md`
+- blocker count: 10 blocked target screens (cross-screen evidence-completeness blocker)
+- watchpoint count: 3 grouped handoff categories (`phase1-support-art`, `phase2-shell`, `later-polish`)
+
+---
+
 ## C.12 Section C closeout reviews (2026-03-31)
 
 Audit note (C.12R-A): run `npm run release:section-c-evidence-audit` for machine validation of required Section C evidence slots before human review.

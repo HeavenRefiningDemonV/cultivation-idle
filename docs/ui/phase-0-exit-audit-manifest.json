@@ -1,0 +1,344 @@
+{
+  "auditBasis": {
+    "branch": "work",
+    "commit": "c43646f",
+    "workingTreeDirty": false,
+    "phase0DocsPresent": true,
+    "p0_14Present": true,
+    "notes": [
+      "Phase 0 packet docs P0-04..P0-14 are present.",
+      "Per-screen screenshot evidence remains manual-pending across multiple Phase 0 recovery folders."
+    ]
+  },
+  "screens": [
+    {
+      "screenId": "path-life-start",
+      "screenLabel": "Path / Life Start",
+      "recoveryOrder": 1,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-04-path-life-start-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/01-path-life-start/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-04-path-life-start/",
+        "notes": [
+          "Packet evidence README marks screenshot state manual-pending."
+        ]
+      },
+      "blockers": [
+        "Exact-screen screenshot completion gap blocks legal cutover safety proof."
+      ],
+      "watchpoints": [
+        "First-contact overlay polish only after screenshot-complete signoff."
+      ],
+      "phase1SupportArtRoles": [
+        "Reusable frame/plaque supports for hero-flow labels"
+      ],
+      "phase2ShellWatchpoints": [
+        "Keep shell overlays subordinate to local first-contact owner"
+      ]
+    },
+    {
+      "screenId": "cultivation",
+      "screenLabel": "Cultivation",
+      "recoveryOrder": 2,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-05-cultivation-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/02-cultivation/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-05-cultivation/",
+        "notes": [
+          "Manual-pending screenshot capture noted in packet report."
+        ]
+      },
+      "blockers": [
+        "Missing complete screenshot gate evidence for exact-screen approval."
+      ],
+      "watchpoints": [
+        "Hero-center polish can continue after evidence closure"
+      ],
+      "phase1SupportArtRoles": [
+        "Overlay/mask support parts for readiness emphasis"
+      ],
+      "phase2ShellWatchpoints": [
+        "Prevent shared shell from diluting hero ownership"
+      ]
+    },
+    {
+      "screenId": "status",
+      "screenLabel": "Status",
+      "recoveryOrder": 3,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-06-status-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/03-status/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-06-status/",
+        "notes": [
+          "Manual-pending screenshot state blocks strict signoff."
+        ]
+      },
+      "blockers": [
+        "Exact-screen screenshot approval not complete."
+      ],
+      "watchpoints": [
+        "Diagnostic hierarchy polish after proof completion"
+      ],
+      "phase1SupportArtRoles": [
+        "Shared plaque/chip support for diagnostics labeling"
+      ],
+      "phase2ShellWatchpoints": [
+        "No-layout-shift stability for shared status controls"
+      ]
+    },
+    {
+      "screenId": "world",
+      "screenLabel": "World",
+      "recoveryOrder": 4,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-07-world-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/04-world/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-07-world/",
+        "notes": [
+          "World packet notes manual-pending screenshot capture."
+        ]
+      },
+      "blockers": [
+        "Gate evidence incomplete for exact-screen cutover safety."
+      ],
+      "watchpoints": [
+        "Map-label and routing clarity polish after full evidence"
+      ],
+      "phase1SupportArtRoles": [
+        "Reusable world/building label plaques"
+      ],
+      "phase2ShellWatchpoints": [
+        "Routing shell ownership boundaries"
+      ]
+    },
+    {
+      "screenId": "manual-pavilion",
+      "screenLabel": "Manual Pavilion",
+      "recoveryOrder": 5,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-08-manual-pavilion-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/05-manual-pavilion/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-08-manual-pavilion/",
+        "notes": [
+          "Manual-pending screenshot capture in packet report."
+        ]
+      },
+      "blockers": [
+        "Exact-screen screenshot completion gap."
+      ],
+      "watchpoints": [
+        "Shelf/spine micro-hierarchy polish"
+      ],
+      "phase1SupportArtRoles": [
+        "Frame/plaque support roles for shelf metadata"
+      ],
+      "phase2ShellWatchpoints": [
+        "Avoid shell takeover of room-owner composition"
+      ]
+    },
+    {
+      "screenId": "techniques",
+      "screenLabel": "Techniques",
+      "recoveryOrder": 6,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-09-techniques-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/06-techniques/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-09-techniques/",
+        "notes": [
+          "Manual-pending screenshot state remains unresolved."
+        ]
+      },
+      "blockers": [
+        "No complete screenshot gate record for exact-screen approval."
+      ],
+      "watchpoints": [
+        "Altar detail rhythm polish after proof completion"
+      ],
+      "phase1SupportArtRoles": [
+        "Overlay/mask supports for altar detail emphasis"
+      ],
+      "phase2ShellWatchpoints": [
+        "Preserve altar-owned hierarchy through shell continuation"
+      ]
+    },
+    {
+      "screenId": "apothecary",
+      "screenLabel": "Apothecary",
+      "recoveryOrder": 7,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-10-apothecary-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/07-apothecary/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-10-apothecary/",
+        "notes": [
+          "Manual-pending screenshot completion blocks strict signoff."
+        ]
+      },
+      "blockers": [
+        "Exact-screen screenshot set incomplete."
+      ],
+      "watchpoints": [
+        "Queue/readiness polish after evidence closure"
+      ],
+      "phase1SupportArtRoles": [
+        "Shared route/readiness chips and framing supports"
+      ],
+      "phase2ShellWatchpoints": [
+        "Keep module-owner primacy in shell harmonization"
+      ]
+    },
+    {
+      "screenId": "forge",
+      "screenLabel": "Forge",
+      "recoveryOrder": 8,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-11-forge-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/08-forge/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-11-forge/",
+        "notes": [
+          "Manual-pending screenshot proof in packet evidence."
+        ]
+      },
+      "blockers": [
+        "Exact-screen approval evidence incomplete."
+      ],
+      "watchpoints": [
+        "Process/detail polish after full gate proof"
+      ],
+      "phase1SupportArtRoles": [
+        "Reusable requirement/source frame supports"
+      ],
+      "phase2ShellWatchpoints": [
+        "Preserve forgewide/workshop scenic ownership"
+      ]
+    },
+    {
+      "screenId": "bounties-expeditions",
+      "screenLabel": "Bounties / Expeditions",
+      "recoveryOrder": 9,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-12-bounties-expeditions-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/09-bounties-expeditions/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-12-bounties-expeditions/",
+        "notes": [
+          "Manual-pending screenshot capture blocks strict signoff."
+        ]
+      },
+      "blockers": [
+        "Incomplete screenshot gate evidence for support pair."
+      ],
+      "watchpoints": [
+        "Support-pair hierarchy polish after full evidence"
+      ],
+      "phase1SupportArtRoles": [
+        "Reusable route/order plaques and support tags"
+      ],
+      "phase2ShellWatchpoints": [
+        "Support-board shell variants must remain non-dominant"
+      ]
+    },
+    {
+      "screenId": "prestige",
+      "screenLabel": "Prestige",
+      "recoveryOrder": 10,
+      "status": "blocked",
+      "evidenceRefs": {
+        "packetDoc": "docs/ui/phase-0-p0-13-prestige-recovery.md",
+        "baselineDoc": "docs/ui/phase-0-screenshot-baseline.md",
+        "baselineFolder": "docs/ui/review/phase-0-baseline/10-prestige/",
+        "packetEvidenceFolder": "docs/release/qa/ui-cutover/phase-0-p0-13-prestige/",
+        "notes": [
+          "Manual-pending screenshot state blocks legal gate completion."
+        ]
+      },
+      "blockers": [
+        "Exact-screen screenshot completion gap prevents trustworthy safe verdict."
+      ],
+      "watchpoints": [
+        "Decree-family polish after full proof set"
+      ],
+      "phase1SupportArtRoles": [
+        "Shared decree/plaque frame support roles"
+      ],
+      "phase2ShellWatchpoints": [
+        "Maintain ritual-family continuity without shell flattening"
+      ]
+    }
+  ],
+  "crossScreenBlockers": [
+    "Manual-pending screenshot completion across multiple Phase 0 packet evidence folders prevents exact-screen gate closure.",
+    "No branch-level completed signoff evidence proving all ten screens pass legal cutover criteria."
+  ],
+  "verification": {
+    "commandsRun": [
+      "git diff --check",
+      "git diff --name-only",
+      "npm run typecheck",
+      "npm run build",
+      "npm run check:icons",
+      "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tests/integration/release/layoutInteractionStabilityMatrix.test.ts",
+      "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tests/integration/release/surfaceTruthAudit.test.ts",
+      "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --test tests/contracts/releaseVocabularyAudit.test.ts tests/contracts/placeholderStringPurge.test.ts",
+      "npm run release:fresh-run-report",
+      "npm run release:migration-matrix"
+    ],
+    "typecheck": "pass",
+    "build": "pass",
+    "checkIcons": "pass",
+    "releaseLayoutAudit": "pass",
+    "surfaceTruthAudit": "pass",
+    "notes": [
+      "Runtime verification passed in this snapshot, but visual gate proof remains incomplete due screenshot gaps."
+    ]
+  },
+  "finalVerdict": {
+    "verdict": "not-safe-for-phase-1",
+    "safeForPhase1": false,
+    "safeForPhase2": false,
+    "rationale": "Branch-level exact-screen screenshot gate evidence is incomplete across the mandatory Phase 0 roster, so visual safety cannot be proven under P0-14 legal criteria."
+  },
+  "phase1Handoff": {
+    "justifiedSupportArtRoles": [
+      "Shared frame/plaque/ribbon family",
+      "Reusable overlay/mask pack",
+      "World/building label plaque kit",
+      "Shared restrained FX atlas"
+    ],
+    "notYetJustifiedSupportArtRoles": [
+      "Whole-screen scenic repaint requests",
+      "Replacement portrait families",
+      "Replacement forgewide room paintings",
+      "Replacement bookshelf/spine art families"
+    ],
+    "notes": [
+      "Phase 1 support-art preparation may proceed only as support-role planning once exact-screen proof gaps are closed for targeted screens."
+    ]
+  },
+  "phase2Handoff": {
+    "shellWatchpoints": [
+      "Shell primitive harmonization must stay non-destructive",
+      "Maintain local owner precedence in routed modal surfaces",
+      "Preserve no-layout-shift behavior across shared state controls"
+    ],
+    "notes": [
+      "Phase 2 continuation must not assume cleanup legality from this packet; exact-screen gate pass remains required."
+    ]
+  }
+}
