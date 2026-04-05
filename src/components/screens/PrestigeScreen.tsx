@@ -346,10 +346,19 @@ export function PrestigeScreen() {
           <main className={'prestigeStage'}>
             <RunCompassCompact surface={runCompass.compact} tone="paper" className="prestigeRunCompassCompact" />
 
+            <PaperCard className="prestigeOwnerStrip" variant="tray">
+              <div className="prestigeOwnerStrip__title">Reincarnation Decree</div>
+              <div className="prestigeOwnerStrip__detail">
+                End this life intentionally: verify AP forecast, confirm reset contract, then begin the ritual.
+              </div>
+              <div className="prestigeOwnerStrip__meta">Only runtime-backed live decrees are listed on this screen.</div>
+            </PaperCard>
+
             <PaperCard className="prestigeAdvisorHeader" variant="tray">
               <div>
                 <div className="prestigeAdvisorHeader__title">Prestige Advisor</div>
                 <div className="prestigeAdvisorHeader__detail">{advisor.stateDetail}</div>
+                <div className="prestigeAdvisorHeader__context">Current realm checkpoint: {getLiveRealmNameByIndex(realm?.index || 0)}</div>
               </div>
               <div className={`prestigeAdvisorHeader__badge prestigeAdvisorHeader__badge--${advisor.stateLabel.toLowerCase().replace(/\s+/g, '-')}`}>
                 {advisor.stateLabel}
@@ -392,6 +401,7 @@ export function PrestigeScreen() {
             </PaperCard>
 
             <PaperCard className="prestigeResetContract" variant="tray">
+              <div className="prestigeResetContract__header">Reset Contract</div>
               <div className="prestigeResetContract__column">
                 <h4>Resets This Life</h4>
                 <ul>
@@ -457,10 +467,10 @@ export function PrestigeScreen() {
                     Sell All &amp; Reincarnate
                   </button>
                 </div>
-              <div className={'prestigeAltarLockHint'}>{advisor.stateLabel}: {advisor.stateDetail}</div>
-            </div>
-            <div className={'prestigeAltarActionRow'}>
-              <div className={'prestigeAltarButtons'}>
+                <div className={'prestigeAltarLockHint'}>{advisor.stateLabel}: {advisor.stateDetail}</div>
+                <div className="prestigeAltarContractHint">Ritual consequence is final: this life resets and AP carry-forward remains.</div>
+              </div>
+              <div className={'prestigeAltarButtons prestigeAltarButtons--summary'}>
                 <button type="button" className="prestigeAltarSecondaryButton is-ready" onClick={() => openLifeSummaryModal('current')}>
                   View Current Life Summary
                 </button>
@@ -468,9 +478,10 @@ export function PrestigeScreen() {
                   <button type="button" className="prestigeAltarSecondaryButton is-ready" onClick={() => openLifeSummaryModal('last_completed')}>
                     View Last Life Summary
                   </button>
-                ) : null}
+                ) : (
+                  <span className="prestigeAltarSummaryPlaceholder" aria-hidden="true" />
+                )}
               </div>
-            </div>
             </PaperCard>
 
             {advisor.topRecommendedPurchase ? (
@@ -490,7 +501,7 @@ export function PrestigeScreen() {
               </PaperCard>
             ) : null}
 
-            <section className={'prestigeDecreesPanel worldScreenPanel'}>
+            <section className={'prestigeDecreesPanel'}>
               <InkPanel variant="prestige" className="prestigeDecreesDocument" watermark>
                 <div className={'prestigeDecreesHeader'}>
                   <div className={'prestigeDecreesTitle'}>Heavenly Decrees</div>

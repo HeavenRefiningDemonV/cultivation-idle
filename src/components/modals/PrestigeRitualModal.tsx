@@ -142,7 +142,7 @@ export function PrestigeRitualModal({
         <div className="prestigeRitualFooter">
           <div className="prestigeRitualFooter__left">
             <button type="button" className="prestigeRitualCancelButton uiNoShift" onClick={handleClose}>Cancel</button>
-            <div className="prestigeRitualFooterNote">Hold the decree seal to confirm reincarnation.</div>
+            <div className="prestigeRitualFooterNote">Hold the decree seal to confirm reincarnation. Releasing early cancels the hold.</div>
           </div>
           <div className="prestigeRitualFooter__right">
             <button
@@ -257,9 +257,8 @@ export function PrestigeRitualModal({
 
       <section className="prestigeRitualSection">
         <div className="prestigeRitualSectionTitle">Final Warning</div>
-        <div className="prestigeRitualWarning">
-          This cannot be undone. You will restart from the mortal realm.
-        </div>
+        <div className="prestigeRitualWarning">This cannot be undone. You will restart from the mortal realm.</div>
+        <div className="prestigeRitualWarningHint">Use this when your current chapter push is complete and you want faster progress next life.</div>
       </section>
     </RitualModalFrame>
   );
