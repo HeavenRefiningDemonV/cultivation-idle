@@ -330,3 +330,35 @@ Contract requirements:
 - grayscale/sepia-friendly tintable bases are required for broad reuse;
 - compact scale is mandatory; recommendation states must avoid giant banner behavior;
 - this family is sibling to overlay/mask packet logic and does not transfer chrome ownership.
+
+## P1-05 supplement note — later-wave hero enhancement trigger pack (blocked spec)
+
+Covered blocked families:
+
+- Cultivation hero enhancement overlays (`src/assets/ui/heroes/cultivation/`)
+- Heart Law altar/seal support kit (`src/assets/ui/heroes/heart_law/`)
+
+Blocked-status rule:
+
+- these families are blocked for production and blocked for live integration until all P1-05 trigger conditions pass with screenshot-backed evidence.
+
+Legal later-wave parts (allowlist):
+
+- Cultivation: altar base, ring layers, glow masks, aura wisps, doctrine-side underplates, optional verse/stability companion support.
+- Heart Law: altar base, scripture stand/pedestal support, seal/medallion companions, circular doctrine overlays, preview underlays, resonance-emphasis support parts.
+
+Hard forbids:
+
+- replacement of current cultivator/dantian center ownership;
+- replacement of Heart Law core logic/truth surfaces;
+- scenic repaint and hero-poster takeover behavior;
+- using hero overlays to hide unresolved layout or truth-surface defects.
+
+Trigger prerequisites (all mandatory):
+
+1. exact target-screen Wave 0/additive screenshot set exists;
+2. shared chrome is already mounted and approved;
+3. shared overlays/masks and shared FX are already present and approved;
+4. missing-role statement is specific and screenshot-backed;
+5. Section A cutover-gate constraints remain respected;
+6. request remains additive support-only and non-destructive.

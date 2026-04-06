@@ -38,3 +38,8 @@
 
 - **Art-trigger result:** `NO NEW APPROVALS` (Section D remains blocked on missing screenshot evidence).
 - Reassess only after real Cultivation/Status evidence matrix (`01-06`) is captured and reviewed.
+
+## 7) P1-05 governance alignment
+
+- Trigger governance for later-wave Cultivation and Heart Law hero enhancement families is now codified in `docs/ui/phase-1-p1-05-hero-enhancement-trigger-pack.md`.
+- Until P1-05 trigger criteria are fully satisfied, those families remain blocked for production and blocked for live integration.

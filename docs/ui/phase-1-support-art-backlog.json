@@ -432,33 +432,73 @@
       "id": "cultivation-hero-enhancement-overlays",
       "label": "Cultivation hero enhancement overlays",
       "bucket": "create-later-only",
-      "wave": "wave3-hero-only",
+      "wave": "wave3",
       "shared": false,
       "screens": [
         "cultivation",
         "prestige"
       ],
       "missingRoleStatement": "Current center stack lacks reusable additive emphasis layers for hero focus while preserving existing cultivator and dantian semantic owners.",
-      "trigger": "Approved additive cultivation/prestige screenshots still show unresolved hero-emphasis support role.",
+      "trigger": "Blocked until P1-05 trigger pack conditions are all met: exact-screen screenshot proof, shared chrome/overlays/fx approved, and a screenshot-backed missing support role remains.",
       "deliverableType": "hero-center overlay layers",
       "blockedUntil": "Wave 1 and Wave 2 completion with explicit owner-preservation proof",
-      "notes": "No base center replacement is permitted."
+      "notes": "Later-wave support-only family. Blocked spec until all trigger evidence passes; no live integration or cleanup authority.",
+      "status": "blocked",
+      "root": "src/assets/ui/heroes/cultivation/",
+      "blockedStatus": "blocked_until_p1_05_trigger_review_pass",
+      "legalParts": [
+        "altar base",
+        "ring layers",
+        "glow masks",
+        "aura wisps",
+        "doctrine-side underplates",
+        "optional verse/stability companion support"
+      ],
+      "forbiddenParts": [
+        "cultivator-center replacement",
+        "dantian replacement",
+        "scenic repaint",
+        "hero-poster takeover"
+      ],
+      "packetBriefPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-pack.md",
+      "reviewSheetPath": "docs/ui/phase-1-p1-05-hero-enhancement-review-sheet.md",
+      "triggerMatrixPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-matrix.json"
     },
     {
       "id": "heart-law-altar-seal-support-kit",
       "label": "Heart Law altar / seal support kit",
       "bucket": "create-later-only",
-      "wave": "wave3-hero-only",
+      "wave": "wave3",
       "shared": false,
       "screens": [
         "heart-law",
         "dao-heart"
       ],
       "missingRoleStatement": "Current Heart Law compositions lack a reusable sacred-focus support kit that can frame altar/seal states without replacing doctrine shells.",
-      "trigger": "Heart Law additive captures retain unresolved sacred-focus support role after preserve-enhance pass.",
+      "trigger": "Blocked until P1-05 trigger pack conditions are all met: exact-screen screenshot proof, shared chrome/overlays/fx approved, and a screenshot-backed missing support role remains.",
       "deliverableType": "altar/seal support parts",
       "blockedUntil": "Wave 1 support completion and approved role-gap evidence",
-      "notes": "Support kit only; no repaint of existing heart-law owners."
+      "notes": "Later-wave support-only family. Blocked spec until all trigger evidence passes; no live integration or cleanup authority.",
+      "status": "blocked",
+      "root": "src/assets/ui/heroes/heart_law/",
+      "blockedStatus": "blocked_until_p1_05_trigger_review_pass",
+      "legalParts": [
+        "altar base",
+        "scripture stand / pedestal support",
+        "seal / medallion companions",
+        "circular doctrine overlays",
+        "preview underlays",
+        "resonance-emphasis support parts"
+      ],
+      "forbiddenParts": [
+        "heart-law core logic replacement",
+        "truth-surface replacement",
+        "scenic repaint",
+        "hero-poster takeover"
+      ],
+      "packetBriefPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-pack.md",
+      "reviewSheetPath": "docs/ui/phase-1-p1-05-hero-enhancement-review-sheet.md",
+      "triggerMatrixPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-matrix.json"
     },
     {
       "id": "optional-medallions-icon-seals",

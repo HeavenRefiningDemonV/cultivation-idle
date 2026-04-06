@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-05",
+  "mode": "docs_only_blocked_spec",
+  "entries": [
+    {
+      "family": "cultivation-hero-enhancement-overlays",
+      "screen": "cultivation",
+      "blockedStatus": "blocked_until_all_triggers_pass",
+      "requiredProof": [
+        "wave0_or_additive_screenshot_set_exists_for_exact_screen",
+        "shared_chrome_approved",
+        "overlay_mask_family_present_and_approved",
+        "shared_fx_family_present_and_approved",
+        "specific_screenshot_backed_missing_role_statement",
+        "cutover_gate_respected",
+        "no_layout_or_truth_problem_hiding"
+      ],
+      "legalParts": [
+        "altar base",
+        "ring layers",
+        "glow masks",
+        "aura wisps",
+        "doctrine-side underplates",
+        "optional verse/stability companion support"
+      ],
+      "forbiddenParts": [
+        "replace cultivator center",
+        "replace dantian owner",
+        "scenic repaint",
+        "full-screen hero poster takeover"
+      ],
+      "screenshotSetRequired": [
+        "01-base.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ],
+      "signoffOwnerOrPath": "docs/ui/phase-1-p1-05-hero-enhancement-review-sheet.md",
+      "notes": "Trigger-ready only starts limited art briefing; live integration remains separately gated."
+    },
+    {
+      "family": "heart-law-altar-seal-support-kit",
+      "screen": "heart-law",
+      "blockedStatus": "blocked_until_all_triggers_pass",
+      "requiredProof": [
+        "wave0_or_additive_screenshot_set_exists_for_exact_screen",
+        "shared_chrome_approved",
+        "overlay_mask_family_present_and_approved",
+        "shared_fx_family_present_and_approved",
+        "specific_screenshot_backed_missing_role_statement",
+        "cutover_gate_respected",
+        "no_layout_or_truth_problem_hiding"
+      ],
+      "legalParts": [
+        "altar base",
+        "scripture stand / pedestal support",
+        "seal / medallion companions",
+        "circular doctrine overlays",
+        "preview underlays",
+        "resonance-emphasis support parts"
+      ],
+      "forbiddenParts": [
+        "replace heart-law core logic surfaces",
+        "replace doctrine truth carriers",
+        "scenic repaint",
+        "hero-poster takeover"
+      ],
+      "screenshotSetRequired": [
+        "01-base.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ],
+      "signoffOwnerOrPath": "docs/ui/phase-1-p1-05-hero-enhancement-review-sheet.md",
+      "notes": "Applies to heart-law target surfaces; dao-heart variants require same trigger proof quality."
+    }
+  ]
+}
