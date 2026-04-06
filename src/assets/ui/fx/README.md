@@ -63,3 +63,6 @@ P1-04 provides shared atmospheric vocabulary only and does not include hero-loca
 No live imports should point to this root in this packet.
 
 P1-04 is docs/spec/scaffold only: no final art generation and no runtime integration.
+
+## P1-06 closeout note
+Current Phase 1 closeout audit marks this root as scaffold-only until real support-art binaries are packaged.

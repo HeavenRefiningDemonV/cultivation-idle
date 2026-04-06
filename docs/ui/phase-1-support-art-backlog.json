@@ -293,7 +293,8 @@
       "notes": "Shared support family scoped by P1-02; excludes plaque/ribbon/title-plate roles reserved for P1-02A.",
       "packetBriefPath": "docs/ui/phase-1-p1-02-frame-atlas-brief.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-02-frame-atlas-review-sheet.md",
-      "manifestExamplePath": "docs/ui/phase-1-p1-02-frame-atlas-manifest-example.json"
+      "manifestExamplePath": "docs/ui/phase-1-p1-02-frame-atlas-manifest-example.json",
+      "packagingStatus": "scaffold-only"
     },
     {
       "id": "plaque-ribbon-title-plates",
@@ -319,7 +320,8 @@
       "status": "planned",
       "packetBriefPath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-brief.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-review-sheet.md",
-      "manifestExamplePath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-manifest-example.json"
+      "manifestExamplePath": "docs/ui/phase-1-p1-02a-plaque-ribbon-titleplate-manifest-example.json",
+      "packagingStatus": "scaffold-only"
     },
     {
       "id": "world-building-label-plaques",
@@ -344,7 +346,8 @@
       "status": "planned",
       "packetBriefPath": "docs/ui/phase-1-p1-02b-world-labels-brief.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-02b-world-labels-review-sheet.md",
-      "manifestExamplePath": "docs/ui/phase-1-p1-02b-world-labels-manifest-example.json"
+      "manifestExamplePath": "docs/ui/phase-1-p1-02b-world-labels-manifest-example.json",
+      "packagingStatus": "scaffold-only"
     },
     {
       "id": "overlay-mask-pack",
@@ -362,7 +365,8 @@
       "trigger": "Additive compositions across multiple screens still show unresolved compositing role after preserve-enhance usage.",
       "deliverableType": "reusable alpha overlay and mask parts",
       "blockedUntil": "Wave 0 proof and cross-screen evidence",
-      "notes": "Cannot be used to hide unresolved layout or truth-surface issues."
+      "notes": "Cannot be used to hide unresolved layout or truth-surface issues.",
+      "packagingStatus": "scaffold-only"
     },
     {
       "id": "state-underlays-recommendation-swashes-tracked-stamps",
@@ -391,7 +395,8 @@
       "root": "src/assets/ui/overlays/state_ornaments/",
       "packetBriefPath": "docs/ui/phase-1-p1-03a-state-ornament-brief.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-03a-state-ornament-review-sheet.md",
-      "manifestExamplePath": "docs/ui/phase-1-p1-03a-state-ornament-manifest-example.json"
+      "manifestExamplePath": "docs/ui/phase-1-p1-03a-state-ornament-manifest-example.json",
+      "packagingStatus": "scaffold-only"
     },
     {
       "id": "shared-fx-sprite-atlas",
@@ -426,7 +431,8 @@
       "root": "src/assets/ui/fx/",
       "packetBriefPath": "docs/ui/phase-1-p1-04-shared-fx-atlas-brief.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-04-shared-fx-atlas-review-sheet.md",
-      "manifestExamplePath": "docs/ui/phase-1-p1-04-shared-fx-atlas-manifest-example.json"
+      "manifestExamplePath": "docs/ui/phase-1-p1-04-shared-fx-atlas-manifest-example.json",
+      "packagingStatus": "scaffold-only"
     },
     {
       "id": "cultivation-hero-enhancement-overlays",
@@ -462,7 +468,8 @@
       ],
       "packetBriefPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-pack.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-05-hero-enhancement-review-sheet.md",
-      "triggerMatrixPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-matrix.json"
+      "triggerMatrixPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-matrix.json",
+      "packagingStatus": "blocked"
     },
     {
       "id": "heart-law-altar-seal-support-kit",
@@ -498,7 +505,8 @@
       ],
       "packetBriefPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-pack.md",
       "reviewSheetPath": "docs/ui/phase-1-p1-05-hero-enhancement-review-sheet.md",
-      "triggerMatrixPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-matrix.json"
+      "triggerMatrixPath": "docs/ui/phase-1-p1-05-hero-enhancement-trigger-matrix.json",
+      "packagingStatus": "blocked"
     },
     {
       "id": "optional-medallions-icon-seals",
@@ -535,5 +543,13 @@
     ],
     "packet": "P1-01B",
     "notes": "Scaffold metadata only; does not alter preserve/enhance/create-later semantics."
+  },
+  "phase1Exit": {
+    "packet": "P1-06",
+    "verdict": "partial",
+    "exitAuditPath": "docs/ui/phase-1-exit-audit.md",
+    "packagingLedgerPath": "docs/ui/phase-1-asset-packaging-ledger.md",
+    "phase2HandoffPath": "docs/ui/phase-1-phase2-handoff.md",
+    "notes": "Docs/governance families are defined, but canonical support roots are still scaffold-only for non-hero families and hero families remain blocked by trigger law."
   }
 }

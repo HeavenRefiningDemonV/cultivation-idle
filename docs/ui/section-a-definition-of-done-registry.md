@@ -247,3 +247,15 @@ Packets that omit these declarations are incomplete by doctrine.
 - not a packet template;
 - not implementation code;
 - not an issue backlog.
+
+## P1 closeout clause (P1-06)
+
+Phase 1 closeout for support-art governance is complete only when all are explicit:
+
+1. exit audit verdict is published (`docs/ui/phase-1-exit-audit.md`);
+2. packaging ledger truth is published (`docs/ui/phase-1-asset-packaging-ledger.md`);
+3. phase-2 handoff scope is published (`docs/ui/phase-1-phase2-handoff.md`);
+4. every Phase 1 packet is statused (green/partial/blocked/deferred) with one-sentence reason;
+5. no packet claims packaged readiness when family roots are scaffold-only.
+
+A Phase 1 packet set may be governance-complete yet packaging-partial; both states must be reported truthfully.

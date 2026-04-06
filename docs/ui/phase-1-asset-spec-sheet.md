@@ -362,3 +362,23 @@ Trigger prerequisites (all mandatory):
 4. missing-role statement is specific and screenshot-backed;
 5. Section A cutover-gate constraints remain respected;
 6. request remains additive support-only and non-destructive.
+
+## P1-06 supplement note — Phase 1 exit audit and packaging truth
+
+Canonical closeout docs:
+
+- `docs/ui/phase-1-exit-audit.md`
+- `docs/ui/phase-1-asset-packaging-ledger.md`
+- `docs/ui/phase-1-phase2-handoff.md`
+
+Closeout truth rule:
+
+- docs/spec readiness is not equivalent to packaged-binary readiness;
+- a family may be docs-complete while still scaffold-only for asset packaging;
+- blocked families (hero kits) remain blocked even when documented.
+
+Phase-2 handoff guardrail:
+
+- handoff may clear shared shell primitives, tokenization, runtime split, and quality-tier hooks;
+- handoff does not grant support-art integration or cleanup authority by default;
+- no scenic-owner replacement authority is introduced by P1-06.

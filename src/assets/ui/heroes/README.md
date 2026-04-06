@@ -51,3 +51,6 @@ No live screen should import from this root yet.
 
 ## Preserve-core reminder
 Preserve-core assets (including `src/assets/ui/book_spines/`) remain untouched.
+
+## P1-06 closeout note
+This root remains blocked/scaffold-only in Phase 1 closeout until P1-05 trigger criteria are satisfied.
