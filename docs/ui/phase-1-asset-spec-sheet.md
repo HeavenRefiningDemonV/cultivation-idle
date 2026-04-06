@@ -298,3 +298,35 @@ Quality tier and reduced-motion requirements:
 Scope safety requirement:
 
 - P1-04 FX parts are support atmosphere only and never UI truth surfaces, structural chrome owners, or scenic owners.
+
+## P1-03A supplement note — state ornament family
+
+Canonical root for this family: `src/assets/ui/overlays/state_ornaments/`.
+
+Role set:
+
+- tracked stamp
+- claim-ready stamp
+- recommended-now swash
+- caution underplate
+- completion seal
+- selected/current underlay
+- header chip companion plate
+
+Naming examples:
+
+- `ui_state_stamp_tracked_calm_default.png`
+- `ui_state_stamp_claim_ready_affirm_default.png`
+- `ui_state_swash_recommended_now_compact_default.png`
+- `ui_state_underplate_caution_soft_default.png`
+- `ui_state_seal_completion_resolved_default.png`
+- `ui_state_underlay_selected_current_soft_default.png`
+- `ui_state_chip_companion_header_tiny_default.png`
+
+Contract requirements:
+
+- state ornaments are support-role semantics only and cannot replace chips/labels as primary truth carriers;
+- no-layout-shift compatibility is mandatory (reserved slots, fixed footprints, no geometry mutation);
+- grayscale/sepia-friendly tintable bases are required for broad reuse;
+- compact scale is mandatory; recommendation states must avoid giant banner behavior;
+- this family is sibling to overlay/mask packet logic and does not transfer chrome ownership.

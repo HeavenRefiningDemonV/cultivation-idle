@@ -366,9 +366,9 @@
     },
     {
       "id": "state-underlays-recommendation-swashes-tracked-stamps",
-      "label": "State underlays / recommendation swashes / tracked stamps",
+      "label": "State ornament family (P1-03A)",
       "bucket": "create-later-only",
-      "wave": "wave1-shared-support",
+      "wave": "wave2",
       "shared": true,
       "screens": [
         "status",
@@ -376,13 +376,22 @@
         "bounties",
         "expeditions",
         "inventory",
-        "techniques"
+        "techniques",
+        "forge",
+        "gate-trial",
+        "manual-pavilion",
+        "prestige-ritual-modals"
       ],
-      "missingRoleStatement": "Current chips and bars do not supply a reusable state-marking substrate for recommendation and tracking states across screen families.",
-      "trigger": "At least two surfaces retain unresolved state readability gaps after additive preserve-enhance implementation.",
-      "deliverableType": "shared state underlay and stamp support kit",
-      "blockedUntil": "Wave 0 proof and missing-role acceptance",
-      "notes": "Must remain subordinate to existing semantic icons and labels."
+      "missingRoleStatement": "Current shared assets do not provide one compact reusable state-ornament vocabulary for tracked, claim-ready, recommended-now, caution, completion, and selected/current states while preserving chip-first semantics.",
+      "trigger": "Shared shell and overlay foundations are stable and Wave 0/Phase 1 captures still show missing compact state-support roles after preserve-enhance composition.",
+      "deliverableType": "shared state ornament support kit (stamps/swashes/underplates/underlays/chip companion)",
+      "blockedUntil": "Wave 0 state readability proof and no-layout-shift compliance review",
+      "notes": "Standalone P1-03A sibling packet to P1-03 overlays/masks. Support-role semantics only; no scenic replacement, no chrome ownership transfer, and no live screen integration in this packet.",
+      "status": "planned",
+      "root": "src/assets/ui/overlays/state_ornaments/",
+      "packetBriefPath": "docs/ui/phase-1-p1-03a-state-ornament-brief.md",
+      "reviewSheetPath": "docs/ui/phase-1-p1-03a-state-ornament-review-sheet.md",
+      "manifestExamplePath": "docs/ui/phase-1-p1-03a-state-ornament-manifest-example.json"
     },
     {
       "id": "shared-fx-sprite-atlas",

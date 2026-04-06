@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "packet": "P1-03A",
+  "familyId": "state_ornament_family",
+  "root": "src/assets/ui/overlays/state_ornaments/",
+  "shared": true,
+  "styleAnchor": "phase1_state_semantic_support",
+  "members": [
+    {
+      "id": "ui_state_stamp_tracked_calm_default",
+      "role": "tracked stamp",
+      "category": "stamp",
+      "intendedScreens": ["Status", "World", "Bounties", "Expeditions", "Techniques"],
+      "tintable": true,
+      "alphaUsage": "soft_edge_compact_mark",
+      "structuralUsage": "attach to reserved chip/card state slot",
+      "noLayoutShiftNote": "must reuse pre-allocated slot and fixed footprint",
+      "status": "ready",
+      "notes": "Calm, attached, official. Secondary to chip text."
+    },
+    {
+      "id": "ui_state_stamp_claim_ready_affirm_default",
+      "role": "claim-ready stamp",
+      "category": "stamp",
+      "intendedScreens": ["Bounties", "Expeditions", "Status", "World"],
+      "tintable": true,
+      "alphaUsage": "compact_affirmative_alpha_mark",
+      "structuralUsage": "reserved claimability indicator slot",
+      "noLayoutShiftNote": "no baseline or row-height mutation when toggled",
+      "status": "ready",
+      "notes": "Available, tactile, affirmative; not celebratory spectacle."
+    },
+    {
+      "id": "ui_state_swash_recommended_now_compact_default",
+      "role": "recommended-now swash",
+      "category": "swash",
+      "intendedScreens": ["Status", "World", "Manual Pavilion", "Forge", "Techniques"],
+      "tintable": true,
+      "alphaUsage": "thin_directional_soft_swatch",
+      "structuralUsage": "under-chip or adjacent support accent only",
+      "noLayoutShiftNote": "must stay within reserved support lane; no banner growth",
+      "status": "conditional",
+      "notes": "Urgent but compact/elegant. Requires screenshot proof on dense screens."
+    },
+    {
+      "id": "ui_state_underplate_caution_soft_default",
+      "role": "caution underplate",
+      "category": "underplate",
+      "intendedScreens": ["Gate Trial", "Ruins", "Forge", "Status", "Inventory"],
+      "tintable": true,
+      "alphaUsage": "grounded_soft_underplate_alpha",
+      "structuralUsage": "sits beneath existing caution chip/label",
+      "noLayoutShiftNote": "fixed dimensions across caution on/off",
+      "status": "ready",
+      "notes": "Serious without alarm-strip behavior."
+    },
+    {
+      "id": "ui_state_seal_completion_resolved_default",
+      "role": "completion seal",
+      "category": "seal",
+      "intendedScreens": ["Bounties", "Expeditions", "Manual Pavilion", "Status"],
+      "tintable": true,
+      "alphaUsage": "compact_seal_with_soft_edge",
+      "structuralUsage": "completion marker slot; no trophy takeover",
+      "noLayoutShiftNote": "uses same reserved stamp slot as tracked/claim-ready",
+      "status": "ready",
+      "notes": "Resolved, stamped, final."
+    },
+    {
+      "id": "ui_state_underlay_selected_current_soft_default",
+      "role": "selected/current underlay",
+      "category": "underlay",
+      "intendedScreens": ["World", "Status", "Inventory", "Techniques", "Apothecary"],
+      "tintable": true,
+      "alphaUsage": "soft_local_grounding_underlay",
+      "structuralUsage": "selection context support beneath existing carriers",
+      "noLayoutShiftNote": "must not alter card/chip box metrics",
+      "status": "ready",
+      "notes": "Grounded ownership, never loud active-tab behavior."
+    },
+    {
+      "id": "ui_state_chip_companion_header_tiny_default",
+      "role": "header chip companion plate",
+      "category": "chip_companion",
+      "intendedScreens": ["Status", "World", "Forge", "Bounties", "Expeditions"],
+      "tintable": true,
+      "alphaUsage": "tiny_soft_plate_alpha",
+      "structuralUsage": "small companion substrate beside header state chip",
+      "noLayoutShiftNote": "must fit pre-reserved tiny header lane",
+      "status": "conditional",
+      "notes": "Tiny structural support only; not a mini plaque."
+    }
+  ]
+}

@@ -1,32 +1,36 @@
 # overlays support-art scaffold root (P1-01B)
 
 ## Folder purpose
-This root is the scaffold landing zone for shared overlay and mask support parts.
+This root is the scaffold landing zone for shared overlay, mask, and state-ornament support parts.
 
 ## What belongs here
 - paper-edge vignettes
 - hero underlays
 - inspector darken masks
 - scene-to-panel blend masks
-- recommendation swashes
-- state underlays
+- state ornament family members (tracked / claim-ready / recommended-now / caution / completion / selected-current / header chip companion)
+
+## Suggested substructure
+- `src/assets/ui/overlays/state_ornaments/` for P1-03A state family members
 
 ## What does not belong here
 - main scene paintings
 - standalone readable UI text baked into images
+- full plaque/title/header ownership assets (owned by `src/assets/ui/chrome/`)
 
 ## Naming examples
 - `paper_edge_overlay_soft_a.png`
 - `inspector_darken_mask_medium.png`
-- `state_underlay_recommended_default.png`
+- `ui_state_stamp_tracked_calm_default.png`
+- `ui_state_swash_recommended_now_compact_default.png`
 
 ## Allowed formats
 - Transparent PNG by default
-- SVG only when geometry-only masks are explicitly justified
+- SVG only when geometry-only masks/plates are explicitly justified
 - No JPG
 
 ## Packet scope note
-This is a scaffold root only in P1-01B. Do not add placeholder art files.
+This is a scaffold root only in Phase 1 docs/spec packets. Do not add placeholder art files.
 
 ## Import gate note
 No live screen should import from this root yet.

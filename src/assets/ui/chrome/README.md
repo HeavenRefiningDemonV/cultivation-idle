@@ -17,6 +17,7 @@ This root is the scaffold landing zone for shared chrome support parts.
 - `src/assets/ui/book_spines/` assets
 - world map art
 - hero center replacements
+- state ornament stamps/swashes/underlays (owned by `src/assets/ui/overlays/state_ornaments/`)
 
 ## Naming examples
 - `card_frame_light_default.png`
@@ -24,6 +25,11 @@ This root is the scaffold landing zone for shared chrome support parts.
 - `modal_frame_heavy_default.png`
 - `world_label_plaque_small_default.png`
 - `section_header_ribbon_long_default.png`
+
+## Ownership boundary note
+Chrome owns structural carriers (frame/plaque/ribbon/titleplate geometry).
+
+P1-03A state ornaments are semantic support accents and must not become mini-plaques or header ownership surfaces.
 
 ## Allowed formats
 - Transparent PNG by default

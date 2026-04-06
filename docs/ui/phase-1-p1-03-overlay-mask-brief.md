@@ -37,7 +37,7 @@ This packet precedes FX atlas and hero-overlay kits because those families depen
 ### Out of scope
 
 - tracked/claim-ready/completion stamp families
-- recommendation swash/state ornament packet
+- recommendation swash/state ornament packet (owned by P1-03A sibling packet)
 - FX atlas packet
 - Cultivation hero overlay kit
 - Heart Law altar/seal kit
