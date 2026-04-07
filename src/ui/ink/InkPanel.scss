@@ -7,9 +7,9 @@
   --ink-panel-shadow: var(--ink-shell-shadow);
   --ink-panel-texture-opacity: var(--ink-shell-texture-opacity);
   --ink-panel-watermark-opacity: var(--ink-shell-watermark-opacity);
-  --ink-panel-pad-inline: var(--paper-density-default-inline, 16px);
-  --ink-panel-pad-block: var(--paper-density-default-block, 14px);
-  --ink-panel-gap: var(--paper-density-gap-default, 12px);
+  --ink-panel-pad-inline: var(--ui-space-card-pad-default, 16px);
+  --ink-panel-pad-block: var(--ui-space-card-pad-default, 16px);
+  --ink-panel-gap: var(--ui-layout-card-gap, 12px);
 
   position: relative;
   padding: var(--ink-panel-pad-block) var(--ink-panel-pad-inline);
@@ -55,7 +55,7 @@
   display: inline-flex;
   align-items: center;
   margin-bottom: var(--ink-panel-gap);
-  padding: 5px 12px;
+  padding: 5px var(--ui-space-card-pad-compact, 12px);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--ink-text-color);
@@ -110,15 +110,15 @@
 }
 
 .inkPanel--density-dense {
-  --ink-panel-pad-inline: var(--paper-density-dense-inline, 12px);
-  --ink-panel-pad-block: var(--paper-density-dense-block, 10px);
+  --ink-panel-pad-inline: var(--ui-space-card-pad-compact, 12px);
+  --ink-panel-pad-block: var(--ui-space-card-pad-compact, 12px);
   --ink-panel-gap: var(--paper-density-gap-dense, 8px);
 }
 
 .inkPanel--density-default {
-  --ink-panel-pad-inline: var(--paper-density-default-inline, 16px);
-  --ink-panel-pad-block: var(--paper-density-default-block, 14px);
-  --ink-panel-gap: var(--paper-density-gap-default, 12px);
+  --ink-panel-pad-inline: var(--ui-space-card-pad-default, 16px);
+  --ink-panel-pad-block: var(--ui-space-card-pad-default, 16px);
+  --ink-panel-gap: var(--ui-layout-card-gap, 12px);
 }
 
 .inkPanel--density-roomy {

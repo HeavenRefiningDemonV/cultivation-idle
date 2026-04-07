@@ -2,8 +2,8 @@
 
 .inkModalFrame {
   --ink-modal-z-index: 1250;
-  --ink-modal-dialog-pad-inline: 20px;
-  --ink-modal-dialog-pad-block: 20px;
+  --ink-modal-dialog-pad-inline: var(--ui-layout-page-pad-inline, 16px);
+  --ink-modal-dialog-pad-block: var(--ui-layout-page-pad-inline, 16px);
   --ink-modal-panel-max-inline: min(920px, 94vw);
   --ink-modal-backdrop-bg: rgba(30, 24, 17, 0.62);
 
@@ -103,8 +103,8 @@
 
 @media (max-width: 700px) {
   .inkModalFrame {
-    --ink-modal-dialog-pad-inline: 12px;
-    --ink-modal-dialog-pad-block: 14px;
+    --ink-modal-dialog-pad-inline: var(--ui-space-card-pad-compact, 12px);
+    --ink-modal-dialog-pad-block: var(--ui-space-card-pad-compact, 12px);
   }
 }
 

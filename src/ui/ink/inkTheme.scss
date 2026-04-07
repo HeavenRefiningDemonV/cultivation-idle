@@ -15,11 +15,11 @@
   --ink-shell-texture-opacity: var(--paper-texture-opacity-default, 0.2);
   --ink-shell-watermark-opacity: var(--paper-watermark-opacity-default, 0.08);
 
-  --ink-header-bg: rgba(243, 234, 215, 0.75);
+  --ink-header-bg: var(--paper-header-bg, rgba(243, 234, 215, 0.75));
   --ink-header-border: var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
-  --ink-header-shadow: 0 4px 10px rgba(22, 12, 4, 0.12);
+  --ink-header-shadow: var(--paper-header-shadow, 0 4px 10px rgba(22, 12, 4, 0.12));
 
-  --ink-chip-bg: rgba(243, 234, 215, 0.92);
+  --ink-chip-bg: var(--paper-chip-bg, rgba(243, 234, 215, 0.92));
   --ink-chip-border: var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
   --ink-chip-outline: var(--paper-shell-outline-subtle, rgba(139, 48, 40, 0.3));
 

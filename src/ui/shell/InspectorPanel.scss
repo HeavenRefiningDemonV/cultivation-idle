@@ -1,7 +1,7 @@
 @import '../../styles/paperInkTokens.scss';
 
 .inspectorPanel {
-  --inspector-gap: 10px;
+  --inspector-gap: var(--ui-layout-card-gap, 12px);
   min-width: 0;
 }
 
@@ -26,7 +26,7 @@
   border-radius: 10px;
   background: rgba(250, 242, 226, 0.86);
   padding: 8px 10px;
-  min-block-size: 42px;
+  min-block-size: var(--ui-size-row-min-block, 44px);
 }
 
 .inspectorPanel__statusArea.is-empty,
@@ -48,12 +48,12 @@
 }
 
 .inspectorPanel--compact {
-  --inspector-gap: 8px;
+  --inspector-gap: var(--paper-density-gap-dense, 8px);
 }
 
 .inspectorPanel--dense .inspectorPanel__statusArea,
 .inspectorPanel--dense .inspectorPanel__recommendationArea {
-  min-block-size: 36px;
+  min-block-size: var(--ui-size-button-min-block, 36px);
   padding: 6px 8px;
 }
 

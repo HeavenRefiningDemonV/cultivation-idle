@@ -6,14 +6,14 @@
 }
 
 .frameCard {
-  --frame-card-gap: 10px;
+  --frame-card-gap: var(--ui-layout-card-gap, 12px);
   display: flex;
   flex-direction: column;
   gap: var(--frame-card-gap);
 }
 
 .frameCard--light {
-  --frame-card-gap: 8px;
+  --frame-card-gap: var(--paper-density-gap-dense, 8px);
 }
 
 .frameCard--medium {
@@ -21,7 +21,7 @@
 }
 
 .frameCard--strong {
-  --frame-card-gap: 12px;
+  --frame-card-gap: var(--ui-layout-card-gap, 12px);
 }
 
 .frameCard--strong.frameCard--panel,
@@ -33,7 +33,7 @@
 .frameCard__header {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--paper-density-gap-dense, 8px);
 }
 
 .frameCard__header--panel {
@@ -44,7 +44,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--paper-density-gap-dense, 8px);
 }
 
 .frameCard__actions {
@@ -59,7 +59,7 @@
 
 .frameCard__footer {
   border-top: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
-  padding-top: 8px;
+  padding-top: var(--paper-density-gap-dense, 8px);
 }
 
 .frameCard--tray .frameCard__header,

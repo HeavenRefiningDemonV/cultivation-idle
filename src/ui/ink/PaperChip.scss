@@ -1,7 +1,7 @@
 @import './inkTheme.scss';
 
 .inkPaperChip {
-  --ink-chip-bg: rgba(243, 234, 215, 0.92);
+  --ink-chip-bg: var(--paper-chip-bg, rgba(243, 234, 215, 0.92));
   --ink-chip-border: rgba(122, 94, 53, 0.34);
   --ink-chip-text: var(--ink-text-color);
 
@@ -9,14 +9,14 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 24px;
+  min-height: var(--ui-size-chip-min-block, 22px);
   max-width: 100%;
   padding: 5px 10px;
   border-radius: 999px;
   border: 1.5px solid var(--ink-chip-border);
   background-color: var(--ink-chip-bg);
   color: var(--ink-chip-text);
-  font-size: 12px;
+  font-size: var(--ui-type-meta, 12px);
   line-height: 1.2;
   box-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(22, 12, 4, 0.22));
   overflow: hidden;
@@ -50,7 +50,7 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 1em;
-  font-size: 12px;
+  font-size: var(--ui-type-meta, 12px);
 }
 
 .inkPaperChip__icon {

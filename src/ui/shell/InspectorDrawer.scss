@@ -11,7 +11,7 @@
 }
 
 .inspectorDrawerPanel {
-  width: min(540px, 100vw);
+  width: min(calc(var(--ui-layout-page-max-inline, 1280px) * 0.42), 100vw);
   height: 100%;
   animation: inspectorDrawerSlide var(--ui-motion-drawer-duration, 250ms) var(--ui-motion-drawer-ease, ease);
 }
@@ -29,13 +29,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: var(--ui-layout-card-gap, 12px);
+  padding: 10px var(--ui-space-card-pad-compact, 12px);
   border-bottom: 1px solid var(--paper-shell-border-subtle, rgba(122, 94, 53, 0.34));
 }
 
 .inspectorDrawerTitle {
-  font-size: 15px;
+  font-size: var(--ui-type-button, 14px);
   font-weight: 700;
   color: var(--paper-ink, #1f1a17);
 }
@@ -55,7 +55,7 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 12px;
+  padding: var(--ui-space-card-pad-compact, 12px);
 }
 
 @keyframes inspectorDrawerSlide {

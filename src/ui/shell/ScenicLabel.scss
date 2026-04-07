@@ -2,7 +2,7 @@
 
 .scenicLabel {
   --scenic-label-min-inline: 112px;
-  --scenic-label-min-block: 30px;
+  --scenic-label-min-block: var(--ui-size-button-min-block, 36px);
   --scenic-label-pad-inline: 10px;
   --scenic-label-pad-block: 6px;
   --scenic-label-state-inline: 38px;
@@ -16,10 +16,9 @@
   padding: var(--scenic-label-pad-block) var(--scenic-label-pad-inline);
   border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
   border-radius: 12px 10px 13px 9px;
-  background:
-    linear-gradient(180deg, rgba(253, 244, 225, 0.92), rgba(244, 230, 202, 0.88));
+  background: var(--paper-shell-raised, rgba(250, 242, 226, 0.95));
   color: var(--paper-ink, #1f1a17);
-  box-shadow: 0 5px 14px rgba(22, 12, 4, 0.22);
+  box-shadow: var(--paper-shadow-inspector, 0 6px 14px rgba(22, 12, 4, 0.2));
   backdrop-filter: blur(0.5px);
   text-align: left;
 }
@@ -45,9 +44,8 @@
 
 .scenicLabel--interactive:hover,
 .scenicLabel--interactive:focus-visible {
-  background:
-    linear-gradient(180deg, rgba(255, 248, 233, 0.96), rgba(247, 235, 211, 0.92));
-  box-shadow: 0 8px 16px rgba(22, 12, 4, 0.26);
+  background: var(--paper-shell-ritual, rgba(248, 239, 223, 0.97));
+  box-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(22, 12, 4, 0.22));
 }
 
 .scenicLabel--interactive:disabled,
@@ -63,7 +61,7 @@
 }
 
 .scenicLabel__label {
-  font-size: 13px;
+  font-size: var(--ui-type-meta, 12px);
   line-height: 1.15;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -115,20 +113,20 @@
 }
 
 .scenicLabel--active {
-  border-color: rgba(98, 64, 31, 0.8);
+  border-color: var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
 }
 
 .scenicLabel--active .scenicLabel__stateSlot {
-  color: rgba(84, 48, 23, 0.95);
+  color: var(--paper-rare, #7a5e35);
   font-weight: 700;
 }
 
 .scenicLabel--recommended {
-  border-color: rgba(128, 84, 31, 0.82);
+  border-color: var(--paper-warning, #a2712a);
 }
 
 .scenicLabel--recommended .scenicLabel__stateSlot {
-  color: rgba(102, 63, 19, 0.96);
+  color: var(--paper-warning, #a2712a);
   font-weight: 700;
 }
 
