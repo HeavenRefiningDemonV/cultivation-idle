@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { AriaRole, CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
 import { PlaqueHeader } from './PlaqueHeader.js';
 import { BadgeSlot } from './BadgeSlot.js';
@@ -9,6 +9,20 @@ export type TopRibbonVariant = 'hero' | 'world' | 'dense';
 export type TopRibbonDensity = 'compact' | 'default';
 export type TopRibbonTone = 'paper' | 'ink';
 export type TopRibbonItemTone = 'neutral' | 'bronze' | 'jade' | 'warning' | 'seal';
+export const TOP_RIBBON_VARIANT_OPTIONS = ['hero', 'world', 'dense'] as const satisfies readonly TopRibbonVariant[];
+export const TOP_RIBBON_DENSITY_OPTIONS = ['compact', 'default'] as const satisfies readonly TopRibbonDensity[];
+export const TOP_RIBBON_TONE_OPTIONS = ['paper', 'ink'] as const satisfies readonly TopRibbonTone[];
+export const TOP_RIBBON_ITEM_TONE_OPTIONS = ['neutral', 'bronze', 'jade', 'warning', 'seal'] as const satisfies readonly TopRibbonItemTone[];
+
+export type TopRibbonHostAttrs = {
+  id?: string;
+  role?: AriaRole;
+  style?: CSSProperties;
+} & {
+  [key in `aria-${string}`]?: string | number | boolean | undefined;
+} & {
+  [key in `data-${string}`]?: string | number | boolean | undefined;
+};
 
 export interface TopRibbonItem {
   id: string;
@@ -33,6 +47,7 @@ export interface TopRibbonProps {
   meta?: ReactNode;
   className?: string;
   contentClassName?: string;
+  hostAttrs?: TopRibbonHostAttrs;
 }
 
 function toChipTone(tone: TopRibbonItemTone | undefined): 'neutral' | 'rare' | 'ready' | 'warning' | 'recommended' {
@@ -82,7 +97,11 @@ export function TopRibbon({
   meta,
   className,
   contentClassName,
+  hostAttrs,
 }: TopRibbonProps) {
+  if (import.meta.env.DEV && header && (title !== undefined || subtitle !== undefined || eyebrow !== undefined || meta !== undefined)) {
+    console.warn('[TopRibbon] `header` takes precedence; auto-header props (title/subtitle/eyebrow/meta) are ignored.');
+  }
   const resolvedHeader = header ?? buildAutoHeader({ title, subtitle, eyebrow, variant, density, meta });
 
   return (
@@ -95,6 +114,7 @@ export function TopRibbon({
         className,
       )}
       aria-label="Top ribbon"
+      {...hostAttrs}
     >
       <div className={classNames('topRibbon__content', contentClassName)}>
         <div className="topRibbon__start">

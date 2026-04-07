@@ -43,9 +43,18 @@ export type { BadgeSlotPreset, BadgeSlotStyle } from './badgeSpace.js';
 export { getBadgeSlotStyle, getBadgeSlotPresetMap } from './badgeSpace.js';
 
 export { BottomNavDock } from './BottomNavDock.js';
-export type { BottomNavDockProps, BottomNavDockItem, BottomNavDockIndicator } from './BottomNavDock.js';
+export {
+  BOTTOM_NAV_DOCK_INDICATOR_OPTIONS,
+} from './BottomNavDock.js';
+export type { BottomNavDockProps, BottomNavDockItem, BottomNavDockIndicator, BottomNavDockHostAttrs } from './BottomNavDock.js';
 
 export { TopRibbon } from './TopRibbon.js';
+export {
+  TOP_RIBBON_VARIANT_OPTIONS,
+  TOP_RIBBON_DENSITY_OPTIONS,
+  TOP_RIBBON_TONE_OPTIONS,
+  TOP_RIBBON_ITEM_TONE_OPTIONS,
+} from './TopRibbon.js';
 export type {
   TopRibbonProps,
   TopRibbonVariant,
@@ -53,6 +62,7 @@ export type {
   TopRibbonTone,
   TopRibbonItem,
   TopRibbonItemTone,
+  TopRibbonHostAttrs,
 } from './TopRibbon.js';
 
 export { InspectorPanel } from './InspectorPanel.js';

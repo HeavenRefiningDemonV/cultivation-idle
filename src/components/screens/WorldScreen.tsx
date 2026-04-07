@@ -27,7 +27,7 @@ import {
   getWorldTravelGuard,
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
-import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
+import { getShellTabLabel, getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
@@ -399,7 +399,7 @@ export function WorldScreen() {
         variant="world"
         density="compact"
         tone="ink"
-        title="World"
+        title={getShellTabLabel('adventure')}
         subtitle="Choose your current city and route your loop."
         endSlot={
           <div className="worldTopRibbon__citySelectWrapper">

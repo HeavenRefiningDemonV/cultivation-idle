@@ -1,8 +1,19 @@
-import type { ReactNode } from 'react';
+import type { AriaRole, CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
 import './BottomNavDock.scss';
 
 export type BottomNavDockIndicator = 'none' | 'recommended' | 'attention';
+export const BOTTOM_NAV_DOCK_INDICATOR_OPTIONS = ['none', 'recommended', 'attention'] as const satisfies readonly BottomNavDockIndicator[];
+
+export type BottomNavDockHostAttrs = {
+  id?: string;
+  role?: AriaRole;
+  style?: CSSProperties;
+} & {
+  [key in `aria-${string}`]?: string | number | boolean | undefined;
+} & {
+  [key in `data-${string}`]?: string | number | boolean | undefined;
+};
 
 export interface BottomNavDockItem {
   id: string;
@@ -19,11 +30,16 @@ export interface BottomNavDockProps {
   className?: string;
   itemClassName?: string;
   preserveLegacyHooks?: boolean;
+  hostAttrs?: BottomNavDockHostAttrs;
 }
 
-export function BottomNavDock({ items, className, itemClassName, preserveLegacyHooks = false }: BottomNavDockProps) {
+export function BottomNavDock({ items, className, itemClassName, preserveLegacyHooks = false, hostAttrs }: BottomNavDockProps) {
   return (
-    <nav className={classNames('bottomNavDock', { bottomTabBar: preserveLegacyHooks }, className)} aria-label="Primary navigation">
+    <nav
+      className={classNames('bottomNavDock', { bottomTabBar: preserveLegacyHooks }, className)}
+      aria-label="Primary navigation"
+      {...hostAttrs}
+    >
       <div className={classNames('bottomNavDock__inner', { bottomTabBarInner: preserveLegacyHooks })}>
         <div className={classNames('bottomNavDock__rail', { bottomTabBarList: preserveLegacyHooks })}>
           {items.map((item) => {

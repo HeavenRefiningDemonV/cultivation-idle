@@ -22,6 +22,7 @@ import { InkPanel, PaperCard } from '../../ui/ink/index.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { PaperStamp, TopRibbon } from '../../ui/shell/index.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
+import { getShellTabLabel } from '../../ui/text/playerFacingLabels.js';
 import './PrestigeScreen.scss';
 
 export function PrestigeScreen() {
@@ -338,7 +339,7 @@ export function PrestigeScreen() {
           <TopRibbon
             className="prestigeTopRibbon"
             variant="hero"
-            title="Prestige"
+            title={getShellTabLabel('prestige')}
             subtitle="Review your next outer-loop decision before beginning Reincarnation."
             endSlot={<PaperStamp text={`${purchasedUpgradeCount} decrees`} size="sm" tone="seal" variant="tracked" tilt="none" />}
           />
