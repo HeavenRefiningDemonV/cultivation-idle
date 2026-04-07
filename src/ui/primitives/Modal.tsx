@@ -1,4 +1,14 @@
-import { useEffect, useRef, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+
+type ModalPanelAttrs = {
+  id?: string;
+  role?: string;
+  style?: CSSProperties;
+} & {
+  [key in `aria-${string}`]?: string | number | boolean | undefined;
+} & {
+  [key in `data-${string}`]?: string | number | boolean | undefined;
+};
 
 export interface ModalProps {
   open: boolean;
@@ -8,6 +18,7 @@ export interface ModalProps {
   panelClassName?: string;
   ariaLabel?: string;
   ariaLabelledby?: string;
+  panelAttrs?: ModalPanelAttrs;
 }
 
 export function Modal({
@@ -18,6 +29,7 @@ export function Modal({
   panelClassName,
   ariaLabel,
   ariaLabelledby,
+  panelAttrs,
 }: ModalProps) {
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const previousBodyOverflowRef = useRef<string>('');
@@ -67,7 +79,7 @@ export function Modal({
       onKeyDown={handleKeyDown}
       onMouseDown={handleOverlayMouseDown}
     >
-      <div className={panelClassName} onMouseDown={stopPropagation} onClick={stopPropagation}>
+      <div className={panelClassName} onMouseDown={stopPropagation} onClick={stopPropagation} {...panelAttrs}>
         {children}
       </div>
     </div>

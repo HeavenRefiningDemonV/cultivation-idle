@@ -35,6 +35,11 @@
   pointer-events: none;
 }
 
+.inspectorPanel__statusArea.is-collapsed,
+.inspectorPanel__recommendationArea.is-collapsed {
+  display: none;
+}
+
 .inspectorPanel__body {
   display: flex;
   flex-direction: column;

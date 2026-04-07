@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { AriaRole, CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
 import { FrameCard } from './FrameCard.js';
 import { PlaqueHeader } from './PlaqueHeader.js';
@@ -7,6 +7,21 @@ import './InspectorPanel.scss';
 export type InspectorPanelVariant = 'world' | 'module' | 'dense';
 export type InspectorPanelDensity = 'compact' | 'default';
 export type InspectorPanelTone = 'paper' | 'ink';
+export type InspectorPanelEmptyZoneBehavior = 'reserve' | 'collapse';
+export const INSPECTOR_PANEL_VARIANT_OPTIONS = ['world', 'module', 'dense'] as const satisfies readonly InspectorPanelVariant[];
+export const INSPECTOR_PANEL_DENSITY_OPTIONS = ['compact', 'default'] as const satisfies readonly InspectorPanelDensity[];
+export const INSPECTOR_PANEL_TONE_OPTIONS = ['paper', 'ink'] as const satisfies readonly InspectorPanelTone[];
+export const INSPECTOR_PANEL_EMPTY_ZONE_BEHAVIOR_OPTIONS = ['reserve', 'collapse'] as const satisfies readonly InspectorPanelEmptyZoneBehavior[];
+
+export type InspectorPanelHostAttrs = {
+  id?: string;
+  role?: AriaRole;
+  style?: CSSProperties;
+} & {
+  [key in `aria-${string}`]?: string | number | boolean | undefined;
+} & {
+  [key in `data-${string}`]?: string | number | boolean | undefined;
+};
 
 export interface InspectorPanelProps {
   title?: ReactNode;
@@ -25,6 +40,8 @@ export interface InspectorPanelProps {
   headerClassName?: string;
   bodyClassName?: string;
   footerClassName?: string;
+  emptyZoneBehavior?: InspectorPanelEmptyZoneBehavior;
+  hostAttrs?: InspectorPanelHostAttrs;
   children: ReactNode;
 }
 
@@ -74,9 +91,17 @@ export function InspectorPanel({
   headerClassName,
   bodyClassName,
   footerClassName,
+  emptyZoneBehavior = 'reserve',
+  hostAttrs,
   children,
 }: InspectorPanelProps) {
+  if (import.meta.env.DEV && header && (title !== undefined || eyebrow !== undefined || subtitle !== undefined || actions !== undefined)) {
+    console.warn('[InspectorPanel] `header` takes precedence; auto-header props are ignored.');
+  }
   const resolvedHeader = header ?? buildAutoHeader({ title, eyebrow, subtitle, actions, density });
+  const reserveEmptyZones = emptyZoneBehavior === 'reserve';
+  const statusEmpty = !statusArea;
+  const recommendationEmpty = !recommendationArea;
 
   return (
     <aside
@@ -86,9 +111,11 @@ export function InspectorPanel({
         `inspectorPanel--${density}`,
         `inspectorPanel--${tone}`,
         { 'inspectorPanel--sticky': sticky },
+        { 'inspectorPanel--collapse-empty-zones': !reserveEmptyZones },
         className,
       )}
       aria-label="Inspector"
+      {...hostAttrs}
     >
       <FrameCard
         frame="panel"
@@ -101,11 +128,19 @@ export function InspectorPanel({
       >
         {header && actions ? <div className="inspectorPanel__actions">{actions}</div> : null}
 
-        <section className={classNames('inspectorPanel__statusArea', { 'is-empty': !statusArea })} aria-live="polite">
+        <section
+          className={classNames('inspectorPanel__statusArea', { 'is-empty': statusEmpty, 'is-collapsed': statusEmpty && !reserveEmptyZones })}
+          aria-live="polite"
+        >
           {statusArea}
         </section>
 
-        <section className={classNames('inspectorPanel__recommendationArea', { 'is-empty': !recommendationArea })}>
+        <section
+          className={classNames(
+            'inspectorPanel__recommendationArea',
+            { 'is-empty': recommendationEmpty, 'is-collapsed': recommendationEmpty && !reserveEmptyZones },
+          )}
+        >
           {recommendationArea}
         </section>
 

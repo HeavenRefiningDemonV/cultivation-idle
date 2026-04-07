@@ -66,15 +66,24 @@ export type {
 } from './TopRibbon.js';
 
 export { InspectorPanel } from './InspectorPanel.js';
+export {
+  INSPECTOR_PANEL_VARIANT_OPTIONS,
+  INSPECTOR_PANEL_DENSITY_OPTIONS,
+  INSPECTOR_PANEL_TONE_OPTIONS,
+  INSPECTOR_PANEL_EMPTY_ZONE_BEHAVIOR_OPTIONS,
+} from './InspectorPanel.js';
 export type {
   InspectorPanelProps,
   InspectorPanelVariant,
   InspectorPanelDensity,
   InspectorPanelTone,
+  InspectorPanelEmptyZoneBehavior,
+  InspectorPanelHostAttrs,
 } from './InspectorPanel.js';
 
 export { InspectorDrawer } from './InspectorDrawer.js';
-export type { InspectorDrawerProps } from './InspectorDrawer.js';
+export { INSPECTOR_DRAWER_HEADER_MODE_OPTIONS } from './InspectorDrawer.js';
+export type { InspectorDrawerProps, InspectorDrawerHeaderMode, InspectorDrawerHostAttrs } from './InspectorDrawer.js';
 
 export { RitualModalFrame } from './RitualModalFrame.js';
 export type {

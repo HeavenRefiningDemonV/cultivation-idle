@@ -40,6 +40,11 @@
   color: var(--paper-ink, #1f1a17);
 }
 
+.inspectorDrawerTitleSpacer {
+  inline-size: 1px;
+  block-size: 1px;
+}
+
 .inspectorDrawerClose {
   width: 30px;
   height: 30px;

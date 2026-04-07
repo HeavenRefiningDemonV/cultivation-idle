@@ -47,6 +47,7 @@ import '../../ui/world/WorldModuleCard.scss';
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
+const WORLD_INSPECTOR_NARROW_QUERY = '(max-width: 1180px)';
 
 export function WorldScreen() {
   const addNotification = useUIStore((state) => state.addNotification);
@@ -73,7 +74,7 @@ export function WorldScreen() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const query = window.matchMedia('(max-width: 1180px)');
+    const query = window.matchMedia(WORLD_INSPECTOR_NARROW_QUERY);
     const handleChange = (event: MediaQueryListEvent) => {
       setIsNarrowInspectorLayout(event.matches);
       if (!event.matches) {
@@ -348,6 +349,57 @@ export function WorldScreen() {
     </div>
   );
 
+  const worldInspectorBody = selectedCity ? (
+    <>
+      <section className="worldCommandSummary worldScreenPanel">
+        <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
+        {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
+        {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
+        {showWorldInlineHint ? (
+          <InlineOnboardingCallout
+            className="worldCommandSummaryInlineHint"
+            title="Use World to route the loop"
+            body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
+            actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
+            onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
+            onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
+          />
+        ) : null}
+        {cityQuickOpenModules.length > 0 ? (
+          <div className="worldCommandQuickOpen">
+            {cityQuickOpenModules.map((moduleKey) => (
+              <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
+                {getWorldModuleLabel(moduleKey)}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </section>
+
+      <div className={'worldScreenRunCompassWrapper'}>
+        <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
+      </div>
+
+      {worldCommandSurface.alerts.length > 0 ? (
+        <div className="worldScreenAlerts">
+          {worldCommandSurface.alerts.map((alert) => (
+            <div key={alert.id} className="worldScreenAlertCard">
+              <WorldCommandAlert
+                title={alert.title}
+                detail={alert.detail}
+                ctaLabel={alert.ctaLabel}
+                onCta={() => handleOpenModule(alert.ctaModuleKey)}
+              />
+              {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="worldInspectorAlertEmpty">No urgent alerts right now.</div>
+      )}
+    </>
+  ) : null;
+
   const handleSelectCity = (city: CityDef) => {
     if (!city || city.id === currentCityId) return;
 
@@ -496,52 +548,7 @@ export function WorldScreen() {
                   recommendationArea={inspectorRecommendationArea}
                   sticky
                 >
-                  <section className="worldCommandSummary worldScreenPanel">
-                    <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
-                    {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
-                    {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
-                    {showWorldInlineHint ? (
-                      <InlineOnboardingCallout
-                        className="worldCommandSummaryInlineHint"
-                        title="Use World to route the loop"
-                        body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
-                        actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
-                        onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
-                        onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
-                    />
-                    ) : null}
-                    {cityQuickOpenModules.length > 0 ? (
-                      <div className="worldCommandQuickOpen">
-                        {cityQuickOpenModules.map((moduleKey) => (
-                          <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
-                            {getWorldModuleLabel(moduleKey)}
-                          </button>
-                        ))}
-                      </div>
-                    ) : null}
-                  </section>
-
-                  <div className={'worldScreenRunCompassWrapper'}>
-                    <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
-                  </div>
-
-                  {worldCommandSurface.alerts.length > 0 ? (
-                    <div className="worldScreenAlerts">
-                      {worldCommandSurface.alerts.map((alert) => (
-                        <div key={alert.id} className="worldScreenAlertCard">
-                          <WorldCommandAlert
-                            title={alert.title}
-                            detail={alert.detail}
-                            ctaLabel={alert.ctaLabel}
-                            onCta={() => handleOpenModule(alert.ctaModuleKey)}
-                        />
-                          {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="worldInspectorAlertEmpty">No urgent alerts right now.</div>
-                  )}
+                  {worldInspectorBody}
                 </InspectorPanel>
               </div>
             ) : null}
@@ -551,6 +558,10 @@ export function WorldScreen() {
             open={isNarrowInspectorLayout && inspectorDrawerOpen}
             onClose={() => setInspectorDrawerOpen(false)}
             title="World Details"
+            headerMode="close-only"
+            hostAttrs={{
+              'data-world-inspector-drawer': 'narrow-fallback',
+            }}
           >
             <InspectorPanel
               className="worldScreenInspector worldScreenInspector--drawer"
@@ -560,52 +571,7 @@ export function WorldScreen() {
               statusArea={inspectorStatusArea}
               recommendationArea={inspectorRecommendationArea}
             >
-              <section className="worldCommandSummary worldScreenPanel">
-                <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
-                {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
-                {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
-                {showWorldInlineHint ? (
-                  <InlineOnboardingCallout
-                    className="worldCommandSummaryInlineHint"
-                    title="Use World to route the loop"
-                    body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
-                    actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
-                    onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
-                    onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
-                />
-                ) : null}
-                {cityQuickOpenModules.length > 0 ? (
-                  <div className="worldCommandQuickOpen">
-                    {cityQuickOpenModules.map((moduleKey) => (
-                      <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
-                        {getWorldModuleLabel(moduleKey)}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </section>
-
-              <div className={'worldScreenRunCompassWrapper'}>
-                <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
-              </div>
-
-              {worldCommandSurface.alerts.length > 0 ? (
-                <div className="worldScreenAlerts">
-                  {worldCommandSurface.alerts.map((alert) => (
-                    <div key={alert.id} className="worldScreenAlertCard">
-                      <WorldCommandAlert
-                        title={alert.title}
-                        detail={alert.detail}
-                        ctaLabel={alert.ctaLabel}
-                        onCta={() => handleOpenModule(alert.ctaModuleKey)}
-                    />
-                      {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="worldInspectorAlertEmpty">No urgent alerts right now.</div>
-              )}
+              {worldInspectorBody}
             </InspectorPanel>
           </InspectorDrawer>
         </div>
