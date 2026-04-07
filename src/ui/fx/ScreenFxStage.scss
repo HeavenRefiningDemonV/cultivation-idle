@@ -10,6 +10,10 @@
   pointer-events: none;
 }
 
+.screenFxStage__layer--disabled {
+  display: none;
+}
+
 .screenFxStage__content {
   position: relative;
 }

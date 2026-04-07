@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
-import {
-  FX_DEFAULT_CONTENT_Z_INDEX,
-  FX_DEFAULT_STAGE_Z_INDEX,
-  FX_MIN_STAGE_SIZE,
-} from './constants.js';
+import { FX_MIN_STAGE_SIZE } from './constants.js';
 import { useFxContext } from './FxQualityProvider.js';
 import { clampFxDpr } from './runtime.js';
-import type { FxStageBounds, FxStageRegistrationToken } from './types.js';
+import { resolveFxLayerOrder } from './shellContract.js';
+import type { FxStageBounds, FxStageKey, FxStageRegistrationToken } from './types.js';
 import './ScreenFxStage.scss';
 
+const IS_DEV = import.meta.env.DEV;
+
 export interface ScreenFxStageProps {
-  stageId: string;
+  stageId: FxStageKey;
   children: ReactNode;
   className?: string;
   stageClassName?: string;
@@ -44,16 +43,30 @@ export function ScreenFxStage({
   className,
   stageClassName,
   contentClassName,
-  stageZIndex = FX_DEFAULT_STAGE_Z_INDEX,
-  contentZIndex = FX_DEFAULT_CONTENT_Z_INDEX,
+  stageZIndex,
+  contentZIndex,
   disabled = false,
 }: ScreenFxStageProps) {
   const stageHostRef = useRef<HTMLDivElement | null>(null);
   const registrationTokenRef = useRef<FxStageRegistrationToken | null>(null);
+  const zOrderWarnedRef = useRef(false);
   const { registerStage, unregisterStage, updateStage } = useFxContext();
 
-  const stageStyle = useMemo<CSSProperties>(() => ({ zIndex: stageZIndex }), [stageZIndex]);
-  const contentStyle = useMemo<CSSProperties>(() => ({ zIndex: contentZIndex }), [contentZIndex]);
+  const layerOrder = useMemo(
+    () => resolveFxLayerOrder(stageZIndex, contentZIndex),
+    [contentZIndex, stageZIndex],
+  );
+
+  const stageStyle = useMemo<CSSProperties>(() => ({ zIndex: layerOrder.stageZIndex }), [layerOrder.stageZIndex]);
+  const contentStyle = useMemo<CSSProperties>(() => ({ zIndex: layerOrder.contentZIndex }), [layerOrder.contentZIndex]);
+
+  useEffect(() => {
+    if (!IS_DEV || !layerOrder.corrected || zOrderWarnedRef.current) return;
+    zOrderWarnedRef.current = true;
+    console.warn(
+      `[fx] ScreenFxStage corrected invalid z-order for stageId "${String(stageId)}" (content must remain above FX layer).`,
+    );
+  }, [layerOrder.corrected, stageId]);
 
   useEffect(() => {
     if (disabled) return undefined;
@@ -121,19 +134,15 @@ export function ScreenFxStage({
     };
   }, [disabled, registerStage, stageId, unregisterStage, updateStage]);
 
-  if (disabled) {
-    return <div className={classNames('screenFxStage', className)}>{children}</div>;
-  }
-
   return (
-    <div className={classNames('screenFxStage', className)}>
+    <div className={classNames('screenFxStage', className)} data-fx-stage-disabled={disabled ? 'true' : 'false'}>
       <div
         ref={stageHostRef}
-        className={classNames('screenFxStage__layer', stageClassName)}
+        className={classNames('screenFxStage__layer', stageClassName, { 'screenFxStage__layer--disabled': disabled })}
         style={stageStyle}
         aria-hidden="true"
         tabIndex={-1}
-        data-fx-stage-id={stageId}
+        data-fx-stage-id={String(stageId)}
       />
       <div className={classNames('screenFxStage__content', contentClassName)} style={contentStyle}>
         {children}
