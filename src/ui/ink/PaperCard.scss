@@ -108,11 +108,11 @@
 .inkPaperCard--interactive {
   cursor: pointer;
   transition:
-    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
-    outline-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
-    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
-    filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
-    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+    border-color var(--ink-motion-hover-duration, var(--ui-motion-hover-duration, 140ms)) var(--ink-motion-hover-ease, var(--ui-motion-hover-ease, ease)),
+    outline-color var(--ink-motion-hover-duration, var(--ui-motion-hover-duration, 140ms)) var(--ink-motion-hover-ease, var(--ui-motion-hover-ease, ease)),
+    box-shadow var(--ink-motion-hover-duration, var(--ui-motion-hover-duration, 140ms)) var(--ink-motion-hover-ease, var(--ui-motion-hover-ease, ease)),
+    filter var(--ink-motion-hover-duration, var(--ui-motion-hover-duration, 140ms)) var(--ink-motion-hover-ease, var(--ui-motion-hover-ease, ease)),
+    background-color var(--ink-motion-hover-duration, var(--ui-motion-hover-duration, 140ms)) var(--ink-motion-hover-ease, var(--ui-motion-hover-ease, ease));
 }
 
 .inkPaperCard--interactive:hover {

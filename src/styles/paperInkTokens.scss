@@ -113,6 +113,23 @@
   --ui-motion-ritual-drift-duration: 22s;
   --ui-motion-ritual-pulse-duration: 8s;
   --ui-motion-ritual-ease: ease-in-out;
+
+  /* Ink-scoped aliases for gradual shared-consumer convergence. */
+  --ink-motion-hover-duration: var(--ui-motion-hover-duration);
+  --ink-motion-selection-duration: var(--ui-motion-selection-duration);
+  --ink-motion-drawer-duration: var(--ui-motion-drawer-duration);
+  --ink-motion-modal-duration: var(--ui-motion-modal-duration);
+  --ink-motion-screen-duration: var(--ui-motion-screen-duration);
+  --ink-motion-hover-ease: var(--ui-motion-hover-ease);
+  --ink-motion-selection-ease: var(--ui-motion-selection-ease);
+  --ink-motion-drawer-ease: var(--ui-motion-drawer-ease);
+  --ink-motion-modal-ease: var(--ui-motion-modal-ease);
+  --ink-motion-screen-ease: var(--ui-motion-screen-ease);
+  --ink-motion-ritual-breathe-duration: var(--ui-motion-ritual-breathe-duration);
+  --ink-motion-ritual-ring-duration: var(--ui-motion-ritual-ring-duration);
+  --ink-motion-ritual-drift-duration: var(--ui-motion-ritual-drift-duration);
+  --ink-motion-ritual-pulse-duration: var(--ui-motion-ritual-pulse-duration);
+  --ink-motion-ritual-ease: var(--ui-motion-ritual-ease);
   --hero-surface-radius: 18px;
   --hero-surface-padding: 18px;
   --hero-surface-padding-compact: 14px;
