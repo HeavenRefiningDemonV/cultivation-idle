@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEventHandler, ReactNode } from 'react';
 import classNames from 'classnames';
 import './InkPanel.scss';
 
@@ -24,6 +24,8 @@ export interface InkPanelProps {
   watermark?: boolean;
   className?: string;
   style?: CSSProperties;
+  hostRef?: (element: HTMLDivElement | null) => void;
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement>;
   children: ReactNode;
 }
 
@@ -35,6 +37,8 @@ export function InkPanel({
   watermark = false,
   className,
   style,
+  hostRef,
+  onKeyDown,
   children,
 }: InkPanelProps) {
   return (
@@ -48,6 +52,8 @@ export function InkPanel({
         className,
       )}
       style={style}
+      ref={hostRef}
+      onKeyDown={onKeyDown}
     >
       {header ? <div className="inkPanel__header">{header}</div> : null}
       <div className="inkPanel__body">{children}</div>

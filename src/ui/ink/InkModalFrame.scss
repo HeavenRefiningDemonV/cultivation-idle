@@ -48,6 +48,10 @@
   overflow: auto;
 }
 
+.inkModalFrame__panel--contentScrollOwner {
+  overflow: hidden;
+}
+
 .inkModalFrame__close {
   position: absolute;
   top: 14px;

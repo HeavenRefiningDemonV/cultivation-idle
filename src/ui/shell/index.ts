@@ -86,6 +86,10 @@ export { INSPECTOR_DRAWER_HEADER_MODE_OPTIONS } from './InspectorDrawer.js';
 export type { InspectorDrawerProps, InspectorDrawerHeaderMode, InspectorDrawerHostAttrs } from './InspectorDrawer.js';
 
 export { RitualModalFrame } from './RitualModalFrame.js';
+export {
+  RITUAL_MODAL_FRAME_VARIANT_OPTIONS,
+  RITUAL_MODAL_FRAME_SIZE_OPTIONS,
+} from './RitualModalFrame.js';
 export type {
   RitualModalFrameProps,
   RitualModalFrameVariant,

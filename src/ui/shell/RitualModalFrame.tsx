@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
@@ -8,6 +8,8 @@ import './RitualModalFrame.scss';
 
 export type RitualModalFrameVariant = 'ritual' | 'chapterEnd' | 'summary';
 export type RitualModalFrameSize = 'md' | 'lg';
+export const RITUAL_MODAL_FRAME_VARIANT_OPTIONS = ['ritual', 'chapterEnd', 'summary'] as const satisfies readonly RitualModalFrameVariant[];
+export const RITUAL_MODAL_FRAME_SIZE_OPTIONS = ['md', 'lg'] as const satisfies readonly RitualModalFrameSize[];
 
 export interface RitualModalFrameProps {
   open: boolean;
@@ -27,6 +29,7 @@ export interface RitualModalFrameProps {
   bodyClassName?: string;
   footerClassName?: string;
   ariaLabel?: string;
+  ariaLabelledBy?: string;
   children: ReactNode;
 }
 
@@ -64,13 +67,19 @@ export function RitualModalFrame({
   bodyClassName,
   footerClassName,
   ariaLabel,
+  ariaLabelledBy,
   children,
 }: RitualModalFrameProps) {
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const bodyPaddingRef = useRef<string>('');
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  const focusScopeRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [scrollState, setScrollState] = useState({ top: false, bottom: false });
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const headerLabelId = useId();
+  if (import.meta.env.DEV && header && (title !== undefined || subtitle !== undefined || meta !== undefined)) {
+    console.warn('[RitualModalFrame] `header` takes precedence; title/subtitle/meta auto-header inputs are ignored.');
+  }
 
   const resolvedHeader = header ?? ((title || subtitle || meta)
     ? (
@@ -86,9 +95,13 @@ export function RitualModalFrame({
     )
     : null);
 
-  const prefersReducedMotion = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setPrefersReducedMotion(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
   }, []);
 
   useEffect(() => {
@@ -107,13 +120,16 @@ export function RitualModalFrame({
     return () => {
       document.body.style.overflow = '';
       document.body.style.paddingRight = bodyPaddingRef.current;
-      previousFocusRef.current?.focus();
+      const previous = previousFocusRef.current;
+      if (previous && previous.isConnected && typeof previous.focus === 'function') {
+        previous.focus();
+      }
     };
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
-    const target = getFocusableElements(panelRef.current)[0] ?? panelRef.current;
+    const target = getFocusableElements(focusScopeRef.current)[0] ?? focusScopeRef.current;
     requestAnimationFrame(() => {
       target?.focus();
     });
@@ -140,10 +156,10 @@ export function RitualModalFrame({
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (event.key !== 'Tab') return;
 
-    const focusables = getFocusableElements(panelRef.current);
+    const focusables = getFocusableElements(focusScopeRef.current);
     if (focusables.length === 0) {
       event.preventDefault();
-      panelRef.current?.focus();
+      focusScopeRef.current?.focus();
       return;
     }
 
@@ -152,7 +168,7 @@ export function RitualModalFrame({
     const current = document.activeElement as HTMLElement | null;
 
     if (event.shiftKey) {
-      if (!current || current === first || current === panelRef.current) {
+      if (!current || current === first || current === focusScopeRef.current) {
         event.preventDefault();
         last.focus();
       }
@@ -167,6 +183,9 @@ export function RitualModalFrame({
 
   if (!open || typeof document === 'undefined') return null;
 
+  const internalHeaderId = resolvedHeader && !ariaLabelledBy ? headerLabelId : undefined;
+  const resolvedAriaLabelledBy = ariaLabelledBy ?? internalHeaderId;
+
   return createPortal(
     <InkModalFrame
       isOpen={open}
@@ -178,6 +197,7 @@ export function RitualModalFrame({
       showCloseButton={showCloseButton}
       closeButtonLabel="Close ritual modal"
       ariaLabel={ariaLabel ?? (typeof title === 'string' ? title : 'Ritual modal')}
+      ariaLabelledby={resolvedAriaLabelledBy}
       className={classNames(
         'ritualModalFrame',
         `ritualModalFrame--${variant}`,
@@ -185,9 +205,12 @@ export function RitualModalFrame({
         className,
       )}
       panelClassName={classNames('ritualModalFrame__panel', panelClassName)}
+      panelRef={(node) => { focusScopeRef.current = node; }}
+      contentScrollOwner={scrollBody}
+      panelOnKeyDown={handleKeyDown}
     >
-      <div className="ritualModalFrame__inner" ref={panelRef} onKeyDown={handleKeyDown} tabIndex={-1}>
-        {resolvedHeader ? <header className="ritualModalFrame__header">{resolvedHeader}</header> : null}
+      <div className="ritualModalFrame__inner" tabIndex={-1}>
+        {resolvedHeader ? <header className="ritualModalFrame__header" id={internalHeaderId}>{resolvedHeader}</header> : null}
         {ornament ? <div className="ritualModalFrame__ornament">{ornament}</div> : null}
 
         <div
