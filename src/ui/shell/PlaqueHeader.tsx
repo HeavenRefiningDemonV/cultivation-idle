@@ -7,6 +7,10 @@ export type PlaqueHeaderVariant = 'section' | 'inspector' | 'location';
 export type PlaqueHeaderEmphasis = 'light' | 'medium' | 'strong';
 export type PlaqueHeaderDensity = 'compact' | 'default';
 export type PlaqueHeaderAlign = 'start' | 'center';
+export const PLAQUE_HEADER_VARIANT_OPTIONS = ['section', 'inspector', 'location'] as const satisfies readonly PlaqueHeaderVariant[];
+export const PLAQUE_HEADER_EMPHASIS_OPTIONS = ['light', 'medium', 'strong'] as const satisfies readonly PlaqueHeaderEmphasis[];
+export const PLAQUE_HEADER_DENSITY_OPTIONS = ['compact', 'default'] as const satisfies readonly PlaqueHeaderDensity[];
+export const PLAQUE_HEADER_ALIGN_OPTIONS = ['start', 'center'] as const satisfies readonly PlaqueHeaderAlign[];
 
 export interface PlaqueHeaderProps {
   title: ReactNode;

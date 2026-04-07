@@ -10,6 +10,10 @@ export type FrameCardFrame = 'panel' | 'card' | 'tray';
 export type FrameCardEmphasis = 'light' | 'medium' | 'strong';
 export type FrameCardSurface = 'surface' | 'raised' | 'inspector' | 'dense' | 'ritual';
 export type FrameCardDensity = 'dense' | 'default' | 'roomy';
+export const FRAME_CARD_FRAME_OPTIONS = ['panel', 'card', 'tray'] as const satisfies readonly FrameCardFrame[];
+export const FRAME_CARD_EMPHASIS_OPTIONS = ['light', 'medium', 'strong'] as const satisfies readonly FrameCardEmphasis[];
+export const FRAME_CARD_SURFACE_OPTIONS = ['surface', 'raised', 'inspector', 'dense', 'ritual'] as const satisfies readonly FrameCardSurface[];
+export const FRAME_CARD_DENSITY_OPTIONS = ['dense', 'default', 'roomy'] as const satisfies readonly FrameCardDensity[];
 
 export interface FrameCardProps {
   as?: 'div' | 'section' | 'article';

@@ -6,6 +6,12 @@ export type {
   FrameCardSurface,
   FrameCardDensity,
 } from './FrameCard.js';
+export {
+  FRAME_CARD_FRAME_OPTIONS,
+  FRAME_CARD_EMPHASIS_OPTIONS,
+  FRAME_CARD_SURFACE_OPTIONS,
+  FRAME_CARD_DENSITY_OPTIONS,
+} from './FrameCard.js';
 
 export { PlaqueHeader } from './PlaqueHeader.js';
 export type {
@@ -14,6 +20,12 @@ export type {
   PlaqueHeaderEmphasis,
   PlaqueHeaderDensity,
   PlaqueHeaderAlign,
+} from './PlaqueHeader.js';
+export {
+  PLAQUE_HEADER_VARIANT_OPTIONS,
+  PLAQUE_HEADER_EMPHASIS_OPTIONS,
+  PLAQUE_HEADER_DENSITY_OPTIONS,
+  PLAQUE_HEADER_ALIGN_OPTIONS,
 } from './PlaqueHeader.js';
 
 export { PaperStamp } from './PaperStamp.js';
