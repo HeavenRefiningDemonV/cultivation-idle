@@ -1,4 +1,5 @@
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
+import type { FxStageId } from './constants.js';
 
 export type FxRequestedQuality = 'auto' | 'high' | 'medium' | 'low';
 
@@ -8,7 +9,18 @@ export type FxQuality = FxEffectiveQuality;
 
 export type FxSceneMode = 'full' | 'minimal' | 'static';
 
-export type FxSceneKind = 'generic' | 'selection' | 'cultivation' | 'status' | 'world' | 'forge';
+export type FxStageKey = FxStageId | (string & {});
+
+/**
+ * Scene kind allows canonical stage kinds plus a generic fallback for non-screen utilities.
+ */
+export type FxSceneKind = 'generic' | FxStageId;
+
+/**
+ * Scene owner key identifies one mounted scene claimant per stage.
+ * Keys are opaque strings chosen by each consumer (e.g. useId()).
+ */
+export type FxSceneOwnerKey = string;
 
 export interface FxSceneBudget {
   sceneMode: FxSceneMode;
@@ -30,17 +42,23 @@ export interface FxStageBounds {
 export type FxStageRegistrationToken = symbol;
 
 export interface FxStageSnapshot {
-  stageId: string;
+  stageId: FxStageKey;
   hostElement: HTMLDivElement;
   bounds: FxStageBounds;
   dpr: number;
+  /**
+   * Host is connected and above minimum stage size.
+   */
   hostReady: boolean;
+  /**
+   * Dormant means the stage is currently non-animating (hidden doc or unready host).
+   */
   dormant: boolean;
   updatedAt: number;
 }
 
 export interface FxSceneContract {
-  stageId: string;
+  stageId: FxStageKey;
   sceneKind: FxSceneKind;
   bounds: FxStageBounds;
   width: number;
@@ -61,14 +79,14 @@ export interface FxSceneContract {
 }
 
 export interface RegisterFxStageInput {
-  stageId: string;
+  stageId: FxStageKey;
   hostElement: HTMLDivElement;
   bounds: FxStageBounds;
   dpr: number;
 }
 
 export interface UpdateFxStageInput {
-  stageId: string;
+  stageId: FxStageKey;
   token: FxStageRegistrationToken;
   hostElement?: HTMLDivElement;
   bounds?: FxStageBounds;
@@ -76,23 +94,23 @@ export interface UpdateFxStageInput {
 }
 
 export interface UnregisterFxStageInput {
-  stageId: string;
+  stageId: FxStageKey;
   token: FxStageRegistrationToken;
 }
 
 export interface ClaimActiveFxSceneInput {
-  stageId: string;
-  sceneKey: string;
+  stageId: FxStageKey;
+  sceneKey: FxSceneOwnerKey;
 }
 
 export interface FxStageRegistryApi {
   registerStage: (input: RegisterFxStageInput) => FxStageRegistrationToken;
   updateStage: (input: UpdateFxStageInput) => void;
   unregisterStage: (input: UnregisterFxStageInput) => void;
-  getStageSnapshot: (stageId: string) => FxStageSnapshot | null;
+  getStageSnapshot: (stageId: FxStageKey) => FxStageSnapshot | null;
   claimActiveScene: (input: ClaimActiveFxSceneInput) => boolean;
   releaseActiveScene: (input: ClaimActiveFxSceneInput) => void;
-  getActiveSceneOwner: (stageId: string) => string | null;
+  getActiveSceneOwner: (stageId: FxStageKey) => FxSceneOwnerKey | null;
 }
 
 export interface FxQualityState {
@@ -108,20 +126,20 @@ export interface FxContextValue extends FxQualityState, FxStageRegistryApi {
 }
 
 export interface FxStagePortalProps {
-  stageId: string;
+  stageId: FxStageKey;
   children: ReactNode;
 }
 
 export type PixiUiStageRenderProp = (scene: FxSceneContract) => ReactNode;
 
 export interface PixiUiStageProps {
-  stageId: string;
+  stageId: FxStageKey;
   sceneKind?: FxSceneKind;
   children?: ReactNode | PixiUiStageRenderProp;
 }
 
 export interface BuildFxSceneContractInput {
-  stageId: string;
+  stageId: FxStageKey;
   sceneKind: FxSceneKind;
   snapshot: FxStageSnapshot;
   requestedQuality: FxRequestedQuality;

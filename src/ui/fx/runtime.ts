@@ -4,6 +4,7 @@ import {
   FX_MIN_STAGE_SIZE,
   FX_SCENE_BUDGETS,
 } from './constants.js';
+import { resolveFxStageDormant } from './stageRegistry.js';
 import type {
   BuildFxSceneContractInput,
   FxEffectiveQuality,
@@ -12,6 +13,9 @@ import type {
   FxSceneContract,
 } from './types.js';
 
+/**
+ * Single quality authority rule: reduced motion always wins.
+ */
 export function resolveFxEffectiveQuality(
   requestedQuality: FxRequestedQuality,
   prefersReducedMotion: boolean,
@@ -28,7 +32,7 @@ export function clampFxDpr(rawDpr: number | undefined, maxDpr = FX_MAX_DPR): num
 }
 
 export function buildFxSceneBudget(effectiveQuality: FxEffectiveQuality): FxSceneBudget {
-  return FX_SCENE_BUDGETS[effectiveQuality];
+  return FX_SCENE_BUDGETS[effectiveQuality] as FxSceneBudget;
 }
 
 export function buildFxSceneContract(input: BuildFxSceneContractInput): FxSceneContract {
@@ -36,7 +40,7 @@ export function buildFxSceneContract(input: BuildFxSceneContractInput): FxSceneC
   const budget = buildFxSceneBudget(effectiveQuality);
   const hostReady =
     snapshot.hostReady && snapshot.bounds.width >= FX_MIN_STAGE_SIZE && snapshot.bounds.height >= FX_MIN_STAGE_SIZE;
-  const dormant = documentHidden || snapshot.dormant || !hostReady;
+  const dormant = resolveFxStageDormant({ documentHidden, hostReady }) || snapshot.dormant;
   const dpr = clampFxDpr(snapshot.dpr, budget.maxDpr);
   const width = snapshot.bounds.width;
   const height = snapshot.bounds.height;
