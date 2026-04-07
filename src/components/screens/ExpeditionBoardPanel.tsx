@@ -15,7 +15,8 @@ import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
+import { PaperCard, PaperChip, type PaperChipProps } from '../../ui/ink/index.js';
+import { PaperStamp } from '../../ui/shell/PaperStamp.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import '../../ui/world/WorldModuleCard.scss';
@@ -222,6 +223,10 @@ function getRouteBestWhenText(typeId: string): string {
 
 type RoutePositionClass = (typeof routePositions)[number];
 
+function CompactPaperChip(props: Omit<PaperChipProps, 'reserveEndSpace'>) {
+  return <PaperChip reserveEndSpace={false} {...props} className={classNames('paperChip', props.className)} />;
+}
+
 export function ExpeditionBoardPanel() {
   const runCompass = useRunCompassSurface();
   const currentCityId = useCityStore((state) => state.currentCityId);
@@ -349,7 +354,7 @@ export function ExpeditionBoardPanel() {
     const isSelected = selectedDurationId === duration.id;
     return (
       <div key={duration.id} className="expDurationChipGroup">
-        <PaperChip
+        <CompactPaperChip
           variant="pill"
           text={chipText}
           tone={isSelected ? 'ink' : 'neutral'}
@@ -383,7 +388,7 @@ export function ExpeditionBoardPanel() {
       .filter(Boolean)
       .join(' · ');
     return (
-      <PaperChip
+      <CompactPaperChip
         key={duration.id}
         variant="pill"
         text={chipText}
@@ -535,7 +540,7 @@ export function ExpeditionBoardPanel() {
       <PaperCard variant="card" className="expActiveSlotStrip" aria-label="Expedition slot strip">
         <div className="expActiveSlotStrip__header">
           <span>Global slot board</span>
-          <PaperChip variant="tag" text={`Origin city ${citiesById[currentCityId]?.name ?? currentCityId}`} tone="neutral" />
+          <CompactPaperChip variant="tag" text={`Origin city ${citiesById[currentCityId]?.name ?? currentCityId}`} tone="neutral" />
         </div>
         <div className="expActiveSlotStrip__slots">
           {Array.from({ length: slots }).map((_, slotIndex) => {
@@ -616,7 +621,7 @@ export function ExpeditionBoardPanel() {
               >
                 <div className={'expRouteHeader'}>
                   <div className={'expRouteTitle'}>{type.name}</div>
-                  <PaperChip variant="tag" text={getLiveExpeditionRoutePurpose(type.id)?.moduleLabel ?? 'Support'} tone="neutral" />
+                  <CompactPaperChip variant="tag" text={getLiveExpeditionRoutePurpose(type.id)?.moduleLabel ?? 'Support'} tone="neutral" />
                 </div>
                 <div className={'expRouteDescription'}>{type.description ?? 'Send disciples to gather resources.'}</div>
                 <div className={'expRouteBestWhen'}>{getRouteBestWhenText(type.id)}</div>
@@ -663,11 +668,11 @@ export function ExpeditionBoardPanel() {
             <div className={'eqsRareTag'}>
                 {selectedRoute ? (
                   <>
-                    <PaperChip variant="tag" text={`Rare ${rareChancePct}%`} tone="rare" />
+                    <CompactPaperChip variant="tag" text={`Rare ${rareChancePct}%`} tone="rare" />
                     {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
                       <div className="eqsRareChips">
                         {selectedRouteRareItems.slice(0, 2).map((drop) => (
-                          <PaperChip
+                          <CompactPaperChip
                             key={drop.itemId}
                             variant="pill"
                             text={itemsById[drop.itemId]?.name ?? drop.itemId}
@@ -678,7 +683,7 @@ export function ExpeditionBoardPanel() {
                     ) : null}
                   </>
                 ) : (
-                  <PaperChip variant="tag" text="Select a route to view rare chances" tone="neutral" />
+                  <CompactPaperChip variant="tag" text="Select a route to view rare chances" tone="neutral" />
                 )}
               </div>
             </div>
@@ -704,12 +709,12 @@ export function ExpeditionBoardPanel() {
           <div className={'eqsYieldChips'}>
             {queueYieldChips.length > 0 ? (
               queueYieldChips.map((entry) => (
-                <PaperChip key={entry.id} variant="pill" text={entry.text} tone="neutral" />
+                <CompactPaperChip key={entry.id} variant="pill" text={entry.text} tone="neutral" />
               ))
             ) : (
-              <PaperChip variant="pill" text="Yield preview unavailable" tone="neutral" />
+              <CompactPaperChip variant="pill" text="Yield preview unavailable" tone="neutral" />
             )}
-            {queueRareChip && <PaperChip variant="pill" text={queueRareChip} tone="rare" />}
+            {queueRareChip && <CompactPaperChip variant="pill" text={queueRareChip} tone="rare" />}
           </div>
         </div>
 
@@ -730,7 +735,6 @@ export function ExpeditionBoardPanel() {
                 <PaperCard
                   key={slotIndex}
                   variant="card"
-                  complete={isComplete}
                   className={classNames('eqsSlotTile', {
                     'eqsSlotTile--ready': isComplete,
                     'eqsSlotTile--active': !isComplete,
@@ -810,7 +814,7 @@ export function ExpeditionBoardPanel() {
           open={routeModalOpen}
           title={selectedRoute.name}
           subtitle={`${citiesById[currentCityId]?.name ?? 'Unknown City'} • ${selectedRoute.description ?? 'Plan a route.'}`}
-          meta={<PaperChip variant="tag" text={`Rare ${rareChancePct}%`} />}
+          meta={<CompactPaperChip variant="tag" text={`Rare ${rareChancePct}%`} />}
           onClose={() => setRouteModalOpen(false)}
         >
           <div className={'expDetailSection'}>
@@ -839,9 +843,9 @@ export function ExpeditionBoardPanel() {
             <div className={'expDetailHint'}>Chance: {rareChancePct}%</div>
             <div className={'expDetailRareList'}>
               {selectedRouteRareNames && selectedRouteRareNames.length > 0 ? (
-                selectedRouteRareNames.map((name) => <PaperChip key={name} variant="pill" text={name} />)
+                selectedRouteRareNames.map((name) => <CompactPaperChip key={name} variant="pill" text={name} />)
               ) : (
-                <PaperChip variant="pill" text="No rare drops listed" tone="neutral" />
+                <CompactPaperChip variant="pill" text="No rare drops listed" tone="neutral" />
               )}
             </div>
             {selectedPity && selectedPity.pityCap > 1 ? (
@@ -914,7 +918,7 @@ export function ExpeditionBoardPanel() {
           } · ${citiesById[ceremony.run.cityId]?.name ?? ceremony.run.cityId}`}
           meta={
             ceremony.slotIndex != null ? (
-              <PaperChip variant="tag" text={`Slot ${ceremony.slotIndex + 1}`} className="expCeremonyMetaChip" />
+              <CompactPaperChip variant="tag" text={`Slot ${ceremony.slotIndex + 1}`} className="expCeremonyMetaChip" />
             ) : null
           }
           onClose={closeCeremony}
@@ -945,7 +949,7 @@ export function ExpeditionBoardPanel() {
                   className={classNames('expCeremonyRewardRow', { 'expCeremonyRewardRow--rare': isRareDrop })}
                   style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <PaperChip
+                  <CompactPaperChip
                     variant="pill"
                     text={`${itemsById[item.itemId]?.name ?? item.itemId} ×${item.qty}`}
                     className={classNames('expCeremonyRewardChip', {
@@ -965,7 +969,7 @@ export function ExpeditionBoardPanel() {
                     className="expCeremonyRewardRow"
                     style={{ animationDelay: `${(index + 1) * 80}ms` }}
                   >
-                    <PaperChip
+                    <CompactPaperChip
                       variant="pill"
                       text={`${key}: ${value}`}
                       className="expCeremonyRewardChip"

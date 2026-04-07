@@ -2,7 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Modal } from './Modal.js';
-import { PaperCard } from '../paper/index.js';
+import { PaperCard } from '../ink/index.js';
 import './DetailScrollModal.scss';
 
 export interface DetailScrollModalProps {

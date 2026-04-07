@@ -1,21 +1,23 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import classNames from 'classnames';
+import { PaperCard as InkPaperCard, type PaperCardProps as InkPaperCardProps } from '../ink/PaperCard.js';
 import './paper.scss';
 
 type PaperCardVariant = 'card' | 'tray' | 'label';
 
-export interface PaperCardProps {
+export interface PaperCardProps extends Omit<InkPaperCardProps, 'variant' | 'selected' | 'disabled' | 'children'> {
   variant?: PaperCardVariant;
-  interactive?: boolean;
   selected?: boolean;
   complete?: boolean;
   claimed?: boolean;
   disabled?: boolean;
-  className?: string;
-  style?: CSSProperties;
   children: ReactNode;
 }
 
+/**
+ * Compatibility wrapper only.
+ * Canonical primitive behavior lives in `ui/ink/PaperCard`.
+ */
 export function PaperCard({
   variant = 'card',
   interactive = false,
@@ -24,11 +26,15 @@ export function PaperCard({
   claimed = false,
   disabled = false,
   className,
-  style,
   children,
+  ...rest
 }: PaperCardProps) {
   return (
-    <div
+    <InkPaperCard
+      variant={variant}
+      interactive={interactive}
+      selected={selected}
+      disabled={disabled}
       className={classNames(
         'paperCard',
         `paperCard--${variant}`,
@@ -44,9 +50,9 @@ export function PaperCard({
         },
         className,
       )}
-      style={style}
+      {...rest}
     >
       {children}
-    </div>
+    </InkPaperCard>
   );
 }

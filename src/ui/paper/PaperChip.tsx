@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
+import { PaperChip as InkPaperChip } from '../ink/PaperChip.js';
 import { buildStableInteractiveClassName } from '../motion/layoutStability.js';
 import './paper.scss';
 
@@ -15,6 +16,10 @@ export interface PaperChipProps {
   className?: string;
 }
 
+/**
+ * Compatibility wrapper only.
+ * Canonical primitive behavior lives in `ui/ink/PaperChip`.
+ */
 export function PaperChip({
   variant = 'pill',
   icon,
@@ -36,20 +41,15 @@ export function PaperChip({
     Boolean(onClick),
   );
 
-  const content = (
-    <>
-      {icon ? <span className="paperChip__icon">{icon}</span> : null}
-      <span className="paperChip__text">{text}</span>
-    </>
+  return (
+    <InkPaperChip
+      variant={variant}
+      tone={tone}
+      reserveEndSpace={false}
+      icon={icon ? <span className="paperChip__icon">{icon}</span> : undefined}
+      text={<span className="paperChip__text">{text}</span>}
+      onClick={onClick}
+      className={classes}
+    />
   );
-
-  if (onClick) {
-    return (
-      <button type="button" className={classes} onClick={onClick}>
-        {content}
-      </button>
-    );
-  }
-
-  return <span className={classes}>{content}</span>;
 }

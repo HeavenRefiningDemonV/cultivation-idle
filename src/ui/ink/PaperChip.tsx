@@ -20,7 +20,7 @@ export type PaperChipTone =
 export interface PaperChipProps {
   variant?: PaperChipVariant;
   icon?: ReactNode;
-  text: string;
+  text: ReactNode;
   tone?: PaperChipTone;
   reserveIconSpace?: boolean;
   reserveEndSpace?: boolean;

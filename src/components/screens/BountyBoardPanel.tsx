@@ -15,7 +15,8 @@ import { formatDurationHMS } from '../../utils/timeFormat.js';
 import type { RewardBundle } from '../../services/rewards/index.js';
 import './BountyBoardPanel.scss';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
-import { PaperCard, PaperChip, PaperStamp } from '../../ui/paper/index.js';
+import { PaperCard, PaperChip, type PaperChipProps } from '../../ui/ink/index.js';
+import { PaperStamp } from '../../ui/shell/PaperStamp.js';
 import { DetailScrollModal } from '../../ui/primitives/DetailScrollModal.js';
 import { normalizeItemList } from '../../utils/itemList.js';
 import type { BountyInstance } from '../../stores/bountyStore.js';
@@ -48,6 +49,10 @@ type RewardChip = {
   text: string;
   tone?: 'neutral' | 'ink' | 'success' | 'danger' | 'merit' | 'rare';
 };
+
+function CompactPaperChip(props: Omit<PaperChipProps, 'reserveEndSpace'>) {
+  return <PaperChip reserveEndSpace={false} {...props} className={classNames('paperChip', props.className)} />;
+}
 
 
 function formatBoardRoleLabel(role: string | null | undefined): string {
@@ -400,17 +405,17 @@ export function BountyBoardPanel() {
           />
         </div>
         <div className="bountySupportSummaryCard__chips">
-          <PaperChip
+          <CompactPaperChip
             variant="pill"
             tone="merit"
             text={`Merit ${supportSurface.readModel.currentMerit} / ${supportSurface.readModel.targetMeritReserve} target`}
           />
-          <PaperChip
+          <CompactPaperChip
             variant="pill"
             tone="neutral"
             text={`Spirit Stones ${supportSurface.readModel.currentSpiritStones} / ${supportSurface.readModel.spiritStoneMinimumReserve} minimum`}
           />
-          <PaperChip
+          <CompactPaperChip
             variant="pill"
             tone={supportSurface.readModel.meritReserveGap === '0' ? 'success' : 'neutral'}
             text={
@@ -481,7 +486,7 @@ export function BountyBoardPanel() {
                 {formatRewards(primaryBounty.rewards, itemsById)
                   .slice(0, 3)
                   .map((entry) => (
-                    <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                    <CompactPaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                   ))}
               </div>
             </>
@@ -606,8 +611,6 @@ export function BountyBoardPanel() {
                 variant="card"
                 interactive
                 selected={isSelected}
-                complete={isComplete}
-                claimed={isClaimed}
                 className={classNames('bountyPaperCard', {
                   isTracked,
                   isComplete,
@@ -632,7 +635,7 @@ export function BountyBoardPanel() {
                   <PaperStamp text={difficultyLabel} size="sm" tone="ink" className="paperStamp--difficulty" />
                 </div>
                 <div className={'bountyPaperRoleRow'}>
-                  <PaperChip variant="tag" text={roleLabel} tone="neutral" />
+                  <CompactPaperChip variant="tag" text={roleLabel} tone="neutral" />
                 </div>
                 {isComplete && (
                   <PaperStamp text="Ready" size="sm" tone="seal" className="bountyPaperReadyStamp paperStamp--ready" />
@@ -652,10 +655,10 @@ export function BountyBoardPanel() {
                 <div className={'bountyPaperRewards'}>
                   {bountyRewards.length > 0 ? (
                     bountyRewards.map((entry) => (
-                      <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                      <CompactPaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                     ))
                   ) : (
-                    <PaperChip variant="pill" text="No rewards" tone="neutral" />
+                    <CompactPaperChip variant="pill" text="No rewards" tone="neutral" />
                   )}
                 </div>
                 {isTracked && <div className={'bountyPaperTracked'}>Tracked</div>}
@@ -726,7 +729,7 @@ export function BountyBoardPanel() {
               <div className={'bountyDetailLabel'}>Rewards</div>
               <div className={'bountyRewards'}>
                 {rewardEntries.map((entry) => (
-                  <PaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
+                  <CompactPaperChip key={entry.id} variant="pill" text={entry.text} tone={entry.tone ?? 'neutral'} />
                 ))}
                 {rewardEntries.length === 0 && (
                   <div className={'bountyDetailValue'}>No rewards</div>

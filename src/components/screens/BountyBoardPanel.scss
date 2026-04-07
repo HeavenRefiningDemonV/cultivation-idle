@@ -341,7 +341,8 @@
   min-height: 24px;
 }
 
-.bountyPaperRoleRow .paperChip {
+.bountyPaperRoleRow .paperChip,
+.bountyPaperRoleRow .inkPaperChip {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }

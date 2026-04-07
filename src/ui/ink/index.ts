@@ -1,3 +1,6 @@
+/**
+ * Canonical material primitive family for live and future shared-shell work.
+ */
 export { InkPanel } from './InkPanel.js';
 export type { InkPanelVariant, InkPanelSurface, InkPanelDensity, InkPanelProps } from './InkPanel.js';
 export { PaperCard } from './PaperCard.js';
