@@ -1,13 +1,25 @@
-Prompt 4 patch files
+# Cultivation Idle
 
-Apply by copying the contents of this archive over your project root (merge/replace matching paths).
+Idle-first cultivation and auto-combat prototype with a unified city hub. Players manage cultivation, professions, expeditions, and gear while automated encounters resolve from build decisions.
 
-Key additions:
-- Foreground ActivityStore (single active activity gate)
-- CombatStore: combatContext + startCombat/endCombat (template-driven)
-- Reward pipeline: grantRewards(bundle, reason) + RewardsLogStore
-- Inventory: added Spirit Stones + Merit currencies; hybrid item definitions (legacy itemsDatabase + content items.json)
-- Settings: "Rewards Debug" panel with "Test Grant Rewards" button
+## Getting started
 
-Build note:
-- If your build previously failed with missing Sass preprocessor, run `npm install` and ensure `sass` is installed (added to devDependencies).
+1. Install dependencies:
+   - `npm install`
+2. Start the development server:
+   - `npm run dev`
+
+## Core quality checks
+
+- Typecheck: `npm run typecheck`
+- Lint: `npm run lint`
+- Build: `npm run build`
+- Preview build: `npm run preview`
+
+## Architecture guardrails
+
+- Only one foreground activity runs at a time through the `ActivityStore` gate.
+- Combat simulation and resolution live in `CombatStore`.
+- Rewards are granted through `RewardService.grantRewards(bundle, reason)`.
+- Offline progress applies to cultivation, queued actions, and expeditions, but not combat.
+- Content packs are the source of truth and cross-references should be validated.
