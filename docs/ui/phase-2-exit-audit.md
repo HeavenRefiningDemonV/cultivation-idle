@@ -39,13 +39,13 @@ Fallback authorities also used:
 
 ### Git/audit basis
 - branch: `work`
-- short commit at audit start: `fd2bebc`
+- short commit at audit start: `cbcf65a`
 - HEAD detached: no
 - working tree at audit start: clean
 
 ### Phase 2 doc existence audit
 - Present: P2-01, P2-02, P2-04..P2-13 packet docs and proof matrix/register docs.
-- Absent as named in some external plans: `phase-2-p2-03-shared-motion-token-normalization.md`, `phase-2-p2-06-framecard-plaqueheader.md`, `phase-2-p2-10-scenic-label-contract.md`.
+- Alias drift in external plans: `phase-2-p2-06-framecard-plaqueheader.md` and `phase-2-p2-10-scenic-label-contract.md` are non-canonical names.
 - Inference policy used: where packet-name mismatch existed, this audit used live repo truth from implementation + tests + existing packet docs (`p2-06-shell-api-freeze`, `p2-10-secondary-consumer-containment`) instead of inventing missing history.
 
 ## B) Verdict summary
@@ -81,14 +81,14 @@ Fallback authorities also used:
 | P2-00 | Phase 2 entry/governance | No explicit `p2-00` doc; governance is inferred through packet register + existing Section A/Phase 0+1 handoff doctrine. | partial | `phase-2-packet-register.md`, `section-a-*`, phase handoff docs | Keep explicit naming in future packet plans; avoid implicit packet ids. |
 | P2-01 | Runtime split | Runtime-split doc exists and FX/runtime contracts are present in code/tests. | green | `phase-2-p2-01-runtime-split.md`, `src/ui/fx/*`, `tests/contracts/fx*` | Maintain no-bypass runtime ownership in later packets. |
 | P2-02 | Screen FX contract | Screen FX contract doc exists; `ScreenFxStage`/`FxStagePortal` adoption is present on primary FX proof screens. | green | `phase-2-p2-02-screen-fx-contract.md`, `CultivateScreen`, `StatusScreen` | Keep screen-owner primacy; no forced FX rollout to non-owned screens. |
-| P2-03 | Shared motion token normalization | No dedicated P2-03 doc found; partial inference via existing motion/no-shift utilities and docs. | partial | absence check + `src/ui/motion/*` + P2-11/P2-12 docs | Track as explicit naming/doc gap; do not invent retro history. |
+| P2-03 | Shared motion token normalization | Dedicated P2-03 doc now exists and codifies shared motion token normalization doctrine. | partial | `phase-2-p2-03-shared-motion-token-normalization.md`, `src/ui/motion/*`, P2-11/P2-12 docs | Keep motion normalization additive and preserve reduced-motion/no-shift law. |
 | P2-04 | Token sheet | Token-sheet doc exists and structural token expansion landed. | green | `phase-2-p2-04-token-sheet.md`, `src/styles/paperInkTokens.scss` | Later packets must consume, not fork, token families. |
 | P2-05 | Material primitive convergence | `ui/ink` canonicalization + `ui/paper` compatibility layer is landed and test-guarded. | green | `phase-2-p2-05-material-primitive-convergence.md`, `src/ui/ink/*`, `src/ui/paper/*`, contracts | Keep compatibility wrappers thin; no third primitive family. |
-| P2-06 | Frame/plaque/shell API freeze | Named doc differs (`shell-api-freeze`), but API freeze truth exists for shell primitives. | partial | `phase-2-p2-06-shell-api-freeze.md`, shell freeze contracts | Naming mismatch documented; freeze truth itself is present. |
+| P2-06 | Frame/plaque/shell API freeze | Canonical doc is `shell-api-freeze`; legacy alias `framecard-plaqueheader` tracked as naming drift only. | green | `phase-2-p2-06-shell-api-freeze.md`, shell freeze contracts | Naming mismatch documented; freeze truth itself is present. |
 | P2-07 | Ribbon/dock convergence | Top ribbon + bottom dock compatibility contracts are present and tested. | green | `phase-2-p2-07-ribbon-dock-convergence.md`, `BottomTabBar`, `BottomNavDock` tests | Preserve tab order/canonical labels and no-shift behavior. |
 | P2-08 | Inspector panel/drawer | Inspector contract exists and world proof-surface wiring is stable. | green | `phase-2-p2-08-inspector-panel-drawer.md`, `WorldScreen`, inspector contracts | Keep map owner dominant; inspector remains contextual. |
 | P2-09 | Ritual modal contract | Ritual modal frame contract is landed and used by proof modals. | green | `phase-2-p2-09-ritual-modal-contract.md`, modal sources, contracts | Keep ritual truth readable in DOM; no modal-local clone primitives. |
-| P2-10 | Scenic-label/secondary containment | Named doc differs (`secondary-consumer-containment`); secondary-boundary truth is present. | partial | `phase-2-p2-10-secondary-consumer-containment.md`, consumer guard tests | Naming mismatch documented; do not promote secondary screens silently. |
+| P2-10 | Scenic-label/secondary containment | Canonical doc is `secondary-consumer-containment`; scenic-label alias tracked as naming drift only. | green | `phase-2-p2-10-secondary-consumer-containment.md`, consumer guard tests | Naming mismatch documented; do not promote secondary screens silently. |
 | P2-11 | Quality tier matrix | Quality-tier doc exists with high/low/reduced contract truth in runtime/tests. | green | `phase-2-p2-11-quality-tier-matrix.md`, FX quality contracts | Medium-mode evidence routing remains an explicit watchpoint where absent. |
 | P2-12 | No-layout-shift contract | Reservation/no-shift doctrine and contracts are present. | green | `phase-2-p2-12-no-layout-shift.md`, no-layout-shift contract tests | Carry no-shift law into all new screen-phase work. |
 | P2-13 | Proof-surface normalization | Primary/secondary proof matrix + contracts exist; boundaries are explicit. | green | `phase-2-p2-13-proof-surface-normalization.md`, `phase-2-proof-surface-matrix.md`, proof-surface tests | Keep primary set fixed unless a later packet explicitly extends it. |
@@ -98,7 +98,7 @@ Fallback authorities also used:
 | Capability family | Phase 2 state | Status | Canonical source | Watchpoint |
 | --- | --- | --- | --- | --- |
 | Runtime split / FX stage contract | Frozen + canonical | green | `p2-01`, `p2-02`, `src/ui/fx/*`, FX contracts | Keep ownership boundaries; no generic scenic takeover. |
-| Motion token normalization | Partially explicit (doc gap for named P2-03) | partial | `p2-11`, `p2-12`, `src/ui/motion/*` | Add explicit packet naming/history only in future docs; do not backfill fiction. |
+| Motion token normalization | Explicit and documented | partial | `p2-11`, `p2-12`, `src/ui/motion/*` | Maintain shared token authority; avoid local motion-token forks. |
 | Token sheet / structural tokens | Frozen + canonical | green | `p2-04`, `paperInkTokens.scss` | Avoid local token forks. |
 | Material primitive convergence | Canonical `ui/ink`, `ui/paper` compatibility shim | green | `p2-05`, material contracts | Keep shim compatibility-only. |
 | FrameCard / PlaqueHeader | Frozen API family under shell freeze | green | `p2-06`, shell contracts | No ad-hoc local frame clones. |

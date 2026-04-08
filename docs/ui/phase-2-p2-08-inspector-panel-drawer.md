@@ -12,7 +12,7 @@ The World proof surface already uses both wide and narrow inspector paths, but i
 
 - `docs/ui/phase-2-p2-04-token-sheet.md`
 - `docs/ui/phase-2-p2-07-ribbon-dock-convergence.md`
-- `docs/ui/phase-2-p2-06-framecard-plaqueheader.md` when present; otherwise fallback to Section A / Phase 1 doctrine docs.
+- `docs/ui/phase-2-p2-06-shell-api-freeze.md` (canonical; `framecard-plaqueheader` treated as legacy alias).
 
 ## Current repo truth
 

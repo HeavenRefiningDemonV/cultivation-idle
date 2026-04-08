@@ -9,7 +9,7 @@ After P2-04 token hardening, the largest remaining drift risk is a dual primitiv
 ## Dependency chain
 - Uses packet guidance from:
   - `docs/ui/phase-2-p2-04-token-sheet.md`
-- `docs/ui/phase-2-p2-03-shared-motion-token-normalization.md` is not present in current repo; fallback guidance used from:
+- `docs/ui/phase-2-p2-03-shared-motion-token-normalization.md` is present in current repo; guidance is sourced from:
   - `docs/ui/renderer-stack-foundation.md`
   - `docs/ui/phase-1-phase2-handoff.md`
   - `docs/ui/phase-1-exit-audit.md`

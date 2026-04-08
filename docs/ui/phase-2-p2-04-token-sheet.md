@@ -10,7 +10,7 @@ P2-01 locked runtime split and P2-02 locked screen FX contract surfaces. The rem
 - Uses Phase 2 runtime/FX constraints from:
   - `docs/ui/phase-2-p2-01-runtime-split.md`
   - `docs/ui/phase-2-p2-02-screen-fx-contract.md`
-- P2-03 doc is not present in-repo at this time; fallback doctrine references:
+- P2-03 doc is present in-repo; canonical doctrine references:
   - `docs/ui/renderer-stack-foundation.md`
   - `docs/ui/phase-1-phase2-handoff.md`
   - `docs/ui/phase-1-exit-audit.md`

@@ -32,3 +32,9 @@ void test('handoff doc keeps secondary surfaces from silent promotion', () => {
   const source = read('docs/ui/phase-2-phase3-handoff.md');
   assert.match(source, /silently promote secondary compact consumers to primary proof surfaces/);
 });
+
+void test('handoff references canonical packet names for shell and secondary containment', () => {
+  const source = read('docs/ui/phase-2-phase3-handoff.md');
+  assert.match(source, /shell/);
+  assert.match(source, /secondary/);
+});

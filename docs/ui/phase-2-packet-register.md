@@ -7,7 +7,7 @@ Define the Phase 2 packet sequence and guardrails using **current repo truth** s
 ## Current git basis (verified from repo)
 
 - Branch: `work`
-- Short commit: `3233f63`
+- Short commit: `cbcf65a`
 - Detached HEAD: `no` (HEAD is attached)
 
 ## Why P2-00 exists
@@ -37,14 +37,14 @@ Phase 2 inherits the following from `docs/ui/phase-1-phase2-handoff.md`, `docs/u
 | P2-00 | Phase 2 start register / touchpoint / proof-surface audit | Governance | docs/audit/setup | Phase 1 handoff docs | Yes | Authoritative Phase 2 starting docs | in progress via this packet | This packet is docs-only and establishes repo-truth baseline. |
 | P2-01 | FX substrate alignment pass | Shared runtime substrate | infra/docs | P2-00 | Yes | Substrate alignment plan + acceptance checks for `src/ui/fx/*` | partially present in repo | Runtime substrate exists; packet should align and normalize, not reinvent. |
 | P2-02 | Shell primitive convergence rules | Shared shell | infra/docs | P2-00 | Yes | Convergence plan for `src/ui/shell/*` usage boundaries | partially present in repo | Shell primitives already live on key surfaces; packet should constrain expansion path. |
-| P2-03 | Ink-vs-paper material convergence plan | Material system | docs/audit | P2-00 | Yes | Canonical migration rules for `ui/ink` default with `ui/paper` adjacency handling | partially present in repo | `ui/paper` still has live consumers; no destructive retirement by default. |
+| P2-03 | Shared motion token normalization | Motion system | docs/audit | P2-00 | Yes | Canonical shared motion-token doctrine across shell/ritual/no-shift utilities | landed | Packet doc now exists; keep additive normalization only. |
 | P2-04 | Token source and alias hygiene | Tokens / styles | infra/docs | P2-00 | Yes | Token-source doctrine around `src/styles/paperInkTokens.scss` and aliases | partially present in repo | Shared token source already exists and is in active use. |
 | P2-05 | World shell proof-surface hardening | Proof surfaces | additive screen infra | P2-00, P2-02 | Yes | Bounded shell/chrome hardening for World proof surface | partially present in repo | World already uses TopRibbon + Inspector stack; preserve map ownership. |
-| P2-06 | Cultivation FX proof-surface hardening | Proof surfaces | additive screen infra | P2-00, P2-01 | Yes | Bounded FX-stage hardening for Cultivation proof surface | partially present in repo | ScreenFxStage + scene already live; preserve central altar/cultivator owner. |
+| P2-06 | Shared shell API freeze (FrameCard / PlaqueHeader) | Shared shell | docs/contract | P2-00, P2-02 | Yes | Canonical API freeze for shell primitives and aliases | landed | Canonical file is `shell-api-freeze`; alias name tracked as drift. |
 | P2-07 | Status FX proof-surface hardening | Proof surfaces | additive screen infra | P2-00, P2-01 | Yes | Bounded FX-stage hardening for Status proof surface | partially present in repo | ScreenFxStage + scene already live; preserve diagnostic center owner. |
 | P2-08 | Dock and routed shell relationship lock | Shared shell routing | infra/docs | P2-00, P2-02 | Yes | Relationship rules for `BottomTabBar` ↔ `BottomNavDock` and routed shell scope | partially present in repo | Dock exists and is wired; packet should formalize scope and no-takeover rules. |
 | P2-09 | Ritual modal shell consistency pass | Modal shell | additive infra | P2-00, P2-02 | Yes | Consistency rules and bounded normalization across `RitualModalFrame` consumers | partially present in repo | Multiple modals already consume RitualModalFrame. |
-| P2-10 | Secondary consumer classification and containment | Scope governance | docs/audit | P2-00, P2-03 | Yes | Formal secondary-consumer list with no-mass-cutover constraints | planned | Prevent packet drift into full-screen thematic rewrites. |
+| P2-10 | Secondary consumer classification and containment | Scope governance | docs/audit | P2-00, P2-03 | Yes | Formal secondary-consumer list with no-mass-cutover constraints | landed | Canonical file retained; scenic-label naming treated as legacy alias drift. |
 | P2-11 | Screenshot evidence inheritance for P2 packets | QA governance | docs/setup | P2-00 | Yes | Phase-2-specific screenshot usage guidance reusing existing workflow | already scaffolded in existing doctrine | Reuse `docs/release/qa/ui-cutover/<screen-id>/`; no parallel roots. |
 | P2-12 | Art-readiness guardrail reaffirmation | Art readiness governance | docs/audit | P2-00, Phase 1 handoff docs | Yes | Explicit phase gate preventing support-art assumptions | already scaffolded in existing doctrine | Must remain compatible with Phase 1 scaffold-only truth. |
 | P2-13 | No-cleanup-authority enforcement for infra packets | Cutover safety | docs/governance | P2-00, Section A cutover docs | Yes | Enforcement reminders and packet template clauses | already scaffolded in existing doctrine | Reinforces additive-first legal posture. |
@@ -93,3 +93,9 @@ Later Phase 2 packets must cite at least:
 - `docs/ui/phase-2-proof-surface-register.md`
 
 And must continue inheriting Phase 0/Phase 1/Section A governance docs rather than inventing replacement doctrine.
+
+## Canonical packet filename aliases (history reconciliation)
+
+- P2-03 canonical file: `docs/ui/phase-2-p2-03-shared-motion-token-normalization.md`.
+- P2-06 canonical file: `docs/ui/phase-2-p2-06-shell-api-freeze.md` (legacy alias: `phase-2-p2-06-framecard-plaqueheader.md`).
+- P2-10 canonical file: `docs/ui/phase-2-p2-10-secondary-consumer-containment.md` (legacy alias: `phase-2-p2-10-scenic-label-contract.md`).

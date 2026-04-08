@@ -13,7 +13,7 @@ Ritual shell zones existed but precedence/lifecycle ownership were partially imp
 - `docs/ui/phase-2-p2-04-token-sheet.md`
 - `docs/ui/phase-2-p2-07-ribbon-dock-convergence.md`
 - `docs/ui/phase-2-p2-08-inspector-panel-drawer.md`
-- `docs/ui/phase-2-p2-06-framecard-plaqueheader.md` / `docs/ui/phase-2-p2-03-shared-motion-token-normalization.md` where present.
+- `docs/ui/phase-2-p2-06-shell-api-freeze.md` and `docs/ui/phase-2-p2-03-shared-motion-token-normalization.md`.
 
 ## Current repo truth
 

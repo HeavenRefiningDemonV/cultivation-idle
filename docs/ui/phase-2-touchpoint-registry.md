@@ -7,7 +7,7 @@ Provide the Phase 2 canonical touchpoint map from live repo state so packet prom
 ## Current git basis (verified from repo)
 
 - Branch: `work`
-- Short commit: `3233f63`
+- Short commit: `cbcf65a`
 - Detached HEAD: `no`
 
 ## Verification basis
@@ -31,7 +31,7 @@ This registry was built from direct file-content and import-consumer inspection 
 
 ## Resolved drift / ambiguity
 
-- `docs/ui/section-a-touchpoint-registry.md` has stale git basis (`683f3e0`) relative to current HEAD (`3233f63`).
+- `docs/ui/section-a-touchpoint-registry.md` has stale git basis (`cbcf65a`) relative to current HEAD (`cbcf65a`).
 - Section A marks `src/ui/paper/*` as non-canonical for defaults, but live repo truth shows active screen consumers still importing it.
 - Phase 2 therefore records a split truth: `ui/ink` is canonical default, while `ui/paper` is adjacent legacy still live.
 

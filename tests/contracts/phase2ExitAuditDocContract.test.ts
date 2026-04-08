@@ -45,3 +45,10 @@ void test('phase 2 exit audit includes cleanup authority limits and support-art 
   assert.match(source, /does not grant mass cleanup authority/);
   assert.match(source, /scenic\/base layers remain/i);
 });
+
+void test('phase 2 exit audit documents packet naming drift and p2-03 presence', () => {
+  const source = read('docs/ui/phase-2-exit-audit.md');
+  assert.match(source, /phase-2-p2-03-shared-motion-token-normalization\.md/);
+  assert.match(source, /framecard-plaqueheader/);
+  assert.match(source, /scenic-label-contract/);
+});

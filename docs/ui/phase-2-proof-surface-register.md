@@ -7,7 +7,7 @@ Define exactly which live surfaces Phase 2 uses as bounded proof surfaces so sha
 ## Current git basis (verified from repo)
 
 - Branch: `work`
-- Short commit: `3233f63`
+- Short commit: `cbcf65a`
 - Detached HEAD: `no`
 
 ## Definitions
