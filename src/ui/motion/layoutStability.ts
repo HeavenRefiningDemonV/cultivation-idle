@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import type { CSSProperties } from 'react';
+import { getBadgeSlotGap, getBadgeSlotStyle, type BadgeSlotPreset } from '../shell/badgeSpace.js';
 
 export type ReservedBadgeSpacePreset =
   | 'chip'
@@ -8,7 +9,12 @@ export type ReservedBadgeSpacePreset =
   | 'rowEndBadge'
   | 'cardCornerBadge'
   | 'spineBadge'
-  | 'slotBadge';
+  | 'slotBadge'
+  | 'headerTrailing'
+  | 'rowEnd'
+  | 'inlineEnd'
+  | 'cardCorner'
+  | 'moduleMeta';
 
 export interface ReservedBadgeSpaceStyle extends CSSProperties {
   '--ui-reserved-badge-inline-size': string;
@@ -16,7 +22,7 @@ export interface ReservedBadgeSpaceStyle extends CSSProperties {
   '--ui-reserved-badge-gap'?: string;
 }
 
-const RESERVED_BADGE_SPACE_PRESETS: Record<ReservedBadgeSpacePreset, ReservedBadgeSpaceStyle> = {
+const LEGACY_BADGE_PRESET_MAP: Partial<Record<ReservedBadgeSpacePreset, ReservedBadgeSpaceStyle>> = {
   chip: {
     '--ui-reserved-badge-inline-size': 'var(--ui-reserved-badge-inline-size-chip, 3.5rem)',
     '--ui-reserved-badge-block-size': 'var(--ui-reserved-badge-block-size-chip, 1.25rem)',
@@ -54,8 +60,43 @@ const RESERVED_BADGE_SPACE_PRESETS: Record<ReservedBadgeSpacePreset, ReservedBad
   },
 };
 
+function mapToSemanticPreset(preset: ReservedBadgeSpacePreset): BadgeSlotPreset | null {
+  switch (preset) {
+    case 'headerTrailing':
+      return 'headerTrailing';
+    case 'rowEnd':
+    case 'rowEndBadge':
+      return 'rowEnd';
+    case 'inlineEnd':
+    case 'compactChip':
+    case 'slotBadge':
+      return 'inlineEnd';
+    case 'cardCorner':
+    case 'cardCornerBadge':
+      return 'cardCorner';
+    case 'moduleMeta':
+    case 'spineBadge':
+      return 'moduleMeta';
+    default:
+      return null;
+  }
+}
+
 export function getReservedBadgeSpaceStyle(preset: ReservedBadgeSpacePreset): ReservedBadgeSpaceStyle {
-  return RESERVED_BADGE_SPACE_PRESETS[preset];
+  const semanticPreset = mapToSemanticPreset(preset);
+  if (semanticPreset) {
+    const semanticStyle = getBadgeSlotStyle(semanticPreset);
+    return {
+      '--ui-reserved-badge-inline-size': semanticStyle['--badge-slot-inline-size'],
+      '--ui-reserved-badge-block-size': semanticStyle['--badge-slot-block-size'],
+      '--ui-reserved-badge-gap': getBadgeSlotGap(semanticPreset),
+    };
+  }
+  const fallback = LEGACY_BADGE_PRESET_MAP[preset];
+  if (!fallback) {
+    throw new Error(`Unknown reserved badge preset: ${preset}`);
+  }
+  return fallback;
 }
 
 export function buildStableInteractiveClassName(className?: string, interactive = false): string {
@@ -63,5 +104,5 @@ export function buildStableInteractiveClassName(className?: string, interactive 
 }
 
 export function getReservedBadgePresetMap() {
-  return RESERVED_BADGE_SPACE_PRESETS;
+  return LEGACY_BADGE_PRESET_MAP;
 }

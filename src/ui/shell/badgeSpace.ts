@@ -7,7 +7,7 @@ export interface BadgeSlotStyle extends CSSProperties {
   '--badge-slot-block-size': string;
 }
 
-const BADGE_SLOT_PRESET_MAP: Record<BadgeSlotPreset, BadgeSlotStyle> = {
+export const BADGE_SLOT_PRESET_MAP: Record<BadgeSlotPreset, BadgeSlotStyle> = {
   cardCorner: {
     '--badge-slot-inline-size': 'var(--ui-reserved-badge-inline-size-card-corner, 2.8rem)',
     '--badge-slot-block-size': 'var(--ui-reserved-badge-block-size-card-corner, 1.2rem)',
@@ -34,10 +34,22 @@ const BADGE_SLOT_PRESET_MAP: Record<BadgeSlotPreset, BadgeSlotStyle> = {
   },
 };
 
+export const BADGE_SLOT_GAP_MAP: Record<BadgeSlotPreset, string> = {
+  cardCorner: '0.4rem',
+  headerTrailing: '0.375rem',
+  rowEnd: '0.4rem',
+  inlineEnd: '0.25rem',
+  moduleMeta: '0.4rem',
+};
+
 export function getBadgeSlotStyle(preset: BadgeSlotPreset): BadgeSlotStyle {
   return BADGE_SLOT_PRESET_MAP[preset];
 }
 
 export function getBadgeSlotPresetMap() {
   return BADGE_SLOT_PRESET_MAP;
+}
+
+export function getBadgeSlotGap(preset: BadgeSlotPreset): string {
+  return BADGE_SLOT_GAP_MAP[preset];
 }

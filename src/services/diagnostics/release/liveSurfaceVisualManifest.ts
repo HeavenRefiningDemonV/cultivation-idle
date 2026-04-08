@@ -41,8 +41,10 @@ export const LIVE_SURFACE_VISUAL_MANIFEST: LiveSurfaceVisualManifest = {
     'src/components/modals/DaoHeartModal.scss',
     'src/ui/cultivation/heartLaw/ChangeHeartLawModal.scss',
     'src/components/screens/CultivateScreen.scss',
+    'src/ui/status/StatusSummaryHeader.scss',
     'src/components/screens/InventoryScreen.scss',
     'src/components/screens/ManualPavilionPanel.scss',
+    'src/ui/world/WorldModuleCard.scss',
     'src/components/screens/world/buildings/CombatStyles.scss',
   ],
   trackedIconFiles: [

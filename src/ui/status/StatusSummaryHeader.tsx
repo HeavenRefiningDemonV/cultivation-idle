@@ -1,6 +1,7 @@
 import { AlertCircle, Compass, Mountain, Swords, Target } from 'lucide-react';
 import { CombatStatTile } from './CombatStatTile.js';
 import type { RunCompassActionLine } from '../../systems/ui/runCompass/index.js';
+import { BadgeSlot } from '../shell/BadgeSlot.js';
 
 type StatusSummaryHeaderProps = {
   realmName: string;
@@ -70,12 +71,18 @@ export function StatusSummaryHeader({
             <span className="statusSummaryLabel">Biggest Shortfall</span>
           </div>
           <p className="statusBiggestShortfallBody">{biggestShortfallLine}</p>
-          {topFixLine ? <p className="statusBiggestShortfallHint">Top Fix: {topFixLine}</p> : null}
-          {topFixAction ? (
-            <button type="button" className="statusBiggestShortfallAction uiNoShift" onClick={() => onRunCompassAction(topFixAction)}>
-              Open best fix
-            </button>
-          ) : null}
+          <p className={`statusBiggestShortfallHint ${topFixLine ? '' : 'statusBiggestShortfallHint--empty'}`}>
+            {topFixLine ? `Top Fix: ${topFixLine}` : 'Top Fix: —'}
+          </p>
+          <div className="statusBiggestShortfallActionLane">
+            <BadgeSlot preset="rowEnd">
+              {topFixAction ? (
+                <button type="button" className="statusBiggestShortfallAction uiNoShift" onClick={() => onRunCompassAction(topFixAction)}>
+                  Open best fix
+                </button>
+              ) : null}
+            </BadgeSlot>
+          </div>
         </div>
       </div>
 

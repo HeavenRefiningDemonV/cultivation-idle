@@ -1,21 +1,17 @@
 # Go / No-Go Checklist
 
-- generatedAt: 2026-03-27T14:20:00.000Z
-- release gate status: GO (gate headline: PASS_WITH_ACCEPTED_WAIVERS)
+- generatedAt: 2026-04-08T08:02:49.719Z
+- release gate status: NO_GO (gate headline: NO_GO)
 - cleanPass: false
-- acceptedWaivers: 1
+- acceptedWaivers: 0
 - version: unknown
 - buildId: unknown
 - commit: unknown
 
-## UI acceptance doctrine reference
-- UI acceptance judgments should cite `docs/ui/section-a-acceptance-matrix.md` and `docs/ui/section-a-definition-of-done-registry.md` as Section A doctrine sources.
-- This checklist remains release-gate process guidance and does not replace Section A doctrine files.
-
 ## Engineering / startup integrity
 | checklist id | linked checkId(s) | question | status | evidence source(s) | waiver allowed? | owner role |
 | --- | --- | --- | --- | --- | --- | --- |
-| `eng_build_green` | `build_audit` | Is the build green with no unresolved build blockers? | YES | `npm run release:build-audit:json`<br/>`docs/release/build_warning_inventory.md` | NO | Engineering |
+| `eng_build_green` | `build_audit` | Is the build green with no unresolved build blockers? | NO | `npm run release:build-audit:json`<br/>`docs/release/build_warning_inventory.md` | NO | Engineering |
 | `eng_content_validation` | `content_validation` | Does content validation pass without startup-blocking content errors? | YES | `npm run validate:content`<br/>`public/cultivation_idle_content_bible_v1_config` | NO | Engineering |
 | `eng_full_test_suite` | `full_test_suite` | Does the full test suite pass? | YES | `npm run test`<br/>`tests/contracts`<br/>`tests/integration/release`<br/>`tests/migrations` | NO | Engineering |
 
@@ -45,7 +41,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | `copy_vocabulary_audit` | `vocabulary_audit` | Does the vocabulary audit pass for the live semester surfaces? | YES | `npm run release:vocab-audit:json`<br/>`docs/release/vocabulary_audit.md` | YES | Progression/Content |
 | `copy_surface_truth_coverage` | `full_test_suite` | Does surface truth coverage pass through the full test suite? | YES | `npm run test`<br/>`tests/contracts`<br/>`tests/integration/release`<br/>`tests/migrations`<br/>`docs/release/surface_truth_audit.md` | NO | QA/Release |
-| `copy_visual_icon_consistency` | `full_test_suite`, `build_audit` | Does live surface visual/icon consistency coverage pass through the full test suite and icon checks/build audit? | YES | `npm run test`<br/>`tests/contracts`<br/>`tests/integration/release`<br/>`tests/migrations`<br/>`npm run release:build-audit:json`<br/>`docs/release/build_warning_inventory.md`<br/>`docs/release/live_surface_visual_audit.md` | NO | QA/Release |
+| `copy_visual_icon_consistency` | `full_test_suite`, `build_audit` | Does live surface visual/icon consistency coverage pass through the full test suite and icon checks/build audit? | NO | `npm run test`<br/>`tests/contracts`<br/>`tests/integration/release`<br/>`tests/migrations`<br/>`npm run release:build-audit:json`<br/>`docs/release/build_warning_inventory.md`<br/>`docs/release/live_surface_visual_audit.md` | NO | QA/Release |
 
 ## Known issues / waiver discipline
 | checklist id | linked checkId(s) | question | status | evidence source(s) | waiver allowed? | owner role |

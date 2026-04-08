@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import classNames from 'classnames';
 import { getBadgeSlotStyle, type BadgeSlotPreset } from './badgeSpace.js';
+import { useReservedBadgeSpace } from '../motion/useReservedBadgeSpace.js';
 
 export interface BadgeSlotProps {
   preset: BadgeSlotPreset;
@@ -25,7 +26,12 @@ const placeholderStyle: CSSProperties = {
 
 export function BadgeSlot({ preset, reserveWhenEmpty = true, children, className }: BadgeSlotProps) {
   const hasContent = Boolean(children);
-  const style = { ...baseStyle, ...getBadgeSlotStyle(preset) } as CSSProperties;
+  const reservedStyle = useReservedBadgeSpace(preset);
+  const style = {
+    ...baseStyle,
+    ...reservedStyle,
+    ...getBadgeSlotStyle(preset),
+  } as CSSProperties;
 
   if (!hasContent && !reserveWhenEmpty) {
     return null;

@@ -60,9 +60,32 @@
 }
 
 .worldModuleCard__title { font-weight: 700; }
-.worldModuleCard__activeBadge { font-size: 11px; color: #c4b5fd; }
+.worldModuleCard__stateSlot {
+  justify-content: flex-end;
+}
+
+.worldModuleCard__activeBadge {
+  font-size: 11px;
+  color: #c4b5fd;
+  white-space: nowrap;
+}
 .worldModuleCard__tag { font-size: 12px; color: #94a3b8; }
 .worldModuleCard__when { margin: 0; font-size: 12px; color: #e2e8f0; }
 .worldModuleCard__outputs { margin: 0; padding-left: 16px; font-size: 12px; color: #cbd5e1; }
-.worldModuleCard__chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.worldModuleCard__chips {
+  display: flex;
+  gap: 6px;
+  min-block-size: 24px;
+}
+
+.worldModuleCard__chipSlot {
+  min-inline-size: 82px;
+  min-block-size: 22px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.worldModuleCard__chipSlot--empty {
+  visibility: hidden;
+}
 .worldModuleCard__cta { margin-top: auto; }

@@ -10,11 +10,11 @@
 - section 7 verification scope: fresh-run acceptance, migration matrix, balance regression, route comparison, runtime diagnostics, vocabulary/build audits, release gate aggregation.
 
 ## Current release status
-- release gate headline: PASS_WITH_ACCEPTED_WAIVERS
-- binary decision: GO
+- release gate headline: NO_GO
+- binary decision: NO_GO
 - cleanPass: false
-- acceptedWaivers: 1
-- unresolvedBlockers: 0
+- acceptedWaivers: 0
+- unresolvedBlockers: 1
 - pendingManual: 0
 
 ## Command map
@@ -56,9 +56,18 @@
 
 ## Known issues snapshot
 - open blockers: 0
-- accepted waivers: 1
+- accepted waivers: 6
   - waiver_build_npm_env_http_proxy_warning (release_engineering)
-- post-semester debt: 0
+  - waiver_build_node_experimental_loader_warning (release_engineering)
+  - waiver_build_node_trace_warning_hint (release_engineering)
+  - waiver_build_css_syntax_minifier_warning (release_engineering)
+  - waiver_build_chunk_size_warning_limit (release_engineering)
+  - waiver_build_chunk_size_guidance_line (release_engineering)
+- post-semester debt: 4
+  - debt_progression_gate_namespace_split (progression)
+  - debt_progression_offline_pipeline_split (progression)
+  - debt_progression_hidden_prestige_runtime_consumer (progression)
+  - debt_progression_partial_prestige_reset (progression)
 
 ## How to continue
 - First command: run `npm run release:gate` to refresh the canonical gate report for this branch.
