@@ -15,6 +15,8 @@ import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 
 const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
+const CITY_MAP_HUB_SCENIC_LABEL_VARIANT = 'building' as const;
+const CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT = true;
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -93,9 +95,9 @@ export function CityMapHub({
             >
               <ScenicLabel
                 label={getModuleLabel(moduleKey)}
-                variant="building"
+                variant={CITY_MAP_HUB_SCENIC_LABEL_VARIANT}
                 state={labelState}
-                reserveStateSlot
+                reserveStateSlot={CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT}
                 emphasis={isActive ? 'medium' : 'quiet'}
                 className="cityMapHubHotspotTrigger uiNoShift"
                 onClick={() => onOpenModule(moduleKey)}

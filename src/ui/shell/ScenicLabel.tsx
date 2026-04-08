@@ -2,9 +2,14 @@ import type { FocusEventHandler, MouseEventHandler, ReactNode } from 'react';
 import classNames from 'classnames';
 import './ScenicLabel.scss';
 
-export type ScenicLabelVariant = 'building' | 'location';
-export type ScenicLabelState = 'default' | 'active' | 'recommended' | 'locked';
-export type ScenicLabelEmphasis = 'quiet' | 'medium';
+export const SCENIC_LABEL_VARIANT_OPTIONS = ['building', 'location'] as const;
+export type ScenicLabelVariant = (typeof SCENIC_LABEL_VARIANT_OPTIONS)[number];
+
+export const SCENIC_LABEL_STATE_OPTIONS = ['default', 'active', 'recommended', 'locked'] as const;
+export type ScenicLabelState = (typeof SCENIC_LABEL_STATE_OPTIONS)[number];
+
+export const SCENIC_LABEL_EMPHASIS_OPTIONS = ['quiet', 'medium'] as const;
+export type ScenicLabelEmphasis = (typeof SCENIC_LABEL_EMPHASIS_OPTIONS)[number];
 
 export interface ScenicLabelProps {
   label: ReactNode;

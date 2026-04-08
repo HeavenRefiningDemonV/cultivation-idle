@@ -97,6 +97,11 @@ export type {
 } from './RitualModalFrame.js';
 
 export { ScenicLabel } from './ScenicLabel.js';
+export {
+  SCENIC_LABEL_VARIANT_OPTIONS,
+  SCENIC_LABEL_STATE_OPTIONS,
+  SCENIC_LABEL_EMPHASIS_OPTIONS,
+} from './ScenicLabel.js';
 export type {
   ScenicLabelProps,
   ScenicLabelVariant,
