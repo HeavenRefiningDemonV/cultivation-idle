@@ -8,10 +8,19 @@ import { resolveFxStageDormant } from './stageRegistry.js';
 import type {
   BuildFxSceneContractInput,
   FxEffectiveQuality,
+  FxReducedMotionOverride,
   FxRequestedQuality,
   FxSceneBudget,
   FxSceneContract,
 } from './types.js';
+
+export function resolveFxReducedMotionPreference(
+  systemPrefersReducedMotion: boolean,
+  reducedMotionOverride: FxReducedMotionOverride,
+): boolean {
+  if (reducedMotionOverride === null) return systemPrefersReducedMotion;
+  return reducedMotionOverride;
+}
 
 /**
  * Single quality authority rule: reduced motion always wins.
@@ -19,8 +28,10 @@ import type {
 export function resolveFxEffectiveQuality(
   requestedQuality: FxRequestedQuality,
   prefersReducedMotion: boolean,
+  reducedMotionOverride: FxReducedMotionOverride = null,
 ): FxEffectiveQuality {
-  if (prefersReducedMotion) return 'reducedMotion';
+  const resolvedReducedMotion = resolveFxReducedMotionPreference(prefersReducedMotion, reducedMotionOverride);
+  if (resolvedReducedMotion) return 'reducedMotion';
   if (requestedQuality === 'auto') return FX_DEFAULT_AUTO_QUALITY;
   return requestedQuality;
 }

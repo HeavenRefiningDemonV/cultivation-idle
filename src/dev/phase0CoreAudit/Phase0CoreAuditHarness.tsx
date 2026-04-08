@@ -14,7 +14,7 @@ import {
 } from './phase0CoreSurfaceIds.js';
 import './Phase0CoreAuditHarness.scss';
 
-type AuditFxMode = 'high' | 'low' | 'reduced';
+type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 type AuditSlot = (typeof PHASE0_CORE_CAPTURE_SLOT_BY_FILE)[Phase0CoreCaptureSlotFile];
 
 const DEFAULT_SURFACE: Phase0CoreSurfaceId = 'path-life-start';
@@ -31,7 +31,7 @@ function parseSurfaceFromQuery(): Phase0CoreSurfaceId {
 
 function parseFxModeFromQuery(): AuditFxMode {
   const fx = new URLSearchParams(window.location.search).get('fx');
-  return fx === 'low' || fx === 'reduced' ? fx : 'high';
+  return fx === 'medium' || fx === 'low' || fx === 'reduced' ? fx : 'high';
 }
 
 function parseSlotFromQuery(): AuditSlot {
@@ -159,7 +159,10 @@ function applySurfaceState(surface: Phase0CoreSurfaceId, slot: AuditSlot) {
 }
 
 function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
-  return fxMode === 'high' ? 'high' : 'low';
+  if (fxMode === 'high') return 'high';
+  if (fxMode === 'medium') return 'medium';
+  if (fxMode === 'low') return 'low';
+  return 'medium';
 }
 
 function toSlotFile(slot: AuditSlot): Phase0CoreCaptureSlotFile {
@@ -174,7 +177,7 @@ export function Phase0CoreAuditHarness() {
   const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
   const [slot, setSlot] = useState<AuditSlot>(() => parseSlotFromQuery());
   const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
-  const { setRequestedQuality } = useFxQuality();
+  const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
 
   useEffect(() => {
     if (!enabled) return;
@@ -188,11 +191,14 @@ export function Phase0CoreAuditHarness() {
   useEffect(() => {
     if (!enabled) return;
     setRequestedQuality(mapFxModeToRequestedQuality(fxMode));
+    setReducedMotionOverride(fxMode === 'reduced' ? true : false);
+    // Compatibility shim for CSS transitions outside provider-backed FX surfaces.
     document.body.classList.toggle('uiAuditReducedMotion', fxMode === 'reduced');
     return () => {
+      setReducedMotionOverride(null);
       document.body.classList.remove('uiAuditReducedMotion');
     };
-  }, [enabled, fxMode, setRequestedQuality]);
+  }, [enabled, fxMode, setReducedMotionOverride, setRequestedQuality]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -263,6 +269,7 @@ export function Phase0CoreAuditHarness() {
             FX
             <select value={fxMode} onChange={(event) => updateFxMode(event.target.value as AuditFxMode)}>
               <option value="high">high</option>
+              <option value="medium">medium</option>
               <option value="low">low</option>
               <option value="reduced">reduced</option>
             </select>

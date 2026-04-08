@@ -14,7 +14,7 @@ import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import type { FxRequestedQuality } from '../../ui/fx/types.js';
 import { SECTION_C_SURFACE_IDS, type SectionCSurfaceId } from './sectionCSurfaceIds.js';
 import './SectionCAuditHarness.scss';
-type AuditFxMode = 'high' | 'low' | 'reduced';
+type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 
 const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set(['life-start-breath-focus']);
 const DEFAULT_SURFACE: SectionCSurfaceId = 'life-start-path';
@@ -29,7 +29,7 @@ function parseSurfaceFromQuery(): SectionCSurfaceId {
 
 function parseFxModeFromQuery(): AuditFxMode {
   const fx = new URLSearchParams(window.location.search).get('fx');
-  return fx === 'low' || fx === 'reduced' ? fx : 'high';
+  return fx === 'medium' || fx === 'low' || fx === 'reduced' ? fx : 'high';
 }
 
 function setQuery(next: { surface?: SectionCSurfaceId; fx?: AuditFxMode; controls?: '0' | '1' }) {
@@ -108,7 +108,10 @@ function applySurfaceState(surface: SectionCSurfaceId) {
 }
 
 function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
-  return fxMode === 'high' ? 'high' : 'low';
+  if (fxMode === 'high') return 'high';
+  if (fxMode === 'medium') return 'medium';
+  if (fxMode === 'low') return 'low';
+  return 'medium';
 }
 
 export function SectionCAuditHarness() {
@@ -117,7 +120,7 @@ export function SectionCAuditHarness() {
   const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
   const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
   const [showDaoHeart, setShowDaoHeart] = useState(false);
-  const { setRequestedQuality } = useFxQuality();
+  const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
 
   useEffect(() => {
     if (!enabled) return;
@@ -127,11 +130,14 @@ export function SectionCAuditHarness() {
   useEffect(() => {
     if (!enabled) return;
     setRequestedQuality(mapFxModeToRequestedQuality(fxMode));
+    setReducedMotionOverride(fxMode === 'reduced' ? true : false);
+    // Compatibility shim for CSS transitions outside provider-backed FX surfaces.
     document.body.classList.toggle('uiAuditReducedMotion', fxMode === 'reduced');
     return () => {
+      setReducedMotionOverride(null);
       document.body.classList.remove('uiAuditReducedMotion');
     };
-  }, [enabled, fxMode, setRequestedQuality]);
+  }, [enabled, fxMode, setReducedMotionOverride, setRequestedQuality]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -201,6 +207,7 @@ export function SectionCAuditHarness() {
             FX
             <select value={fxMode} onChange={(event) => updateFxMode(event.target.value as AuditFxMode)}>
               <option value="high">high</option>
+              <option value="medium">medium</option>
               <option value="low">low</option>
               <option value="reduced">reduced</option>
             </select>

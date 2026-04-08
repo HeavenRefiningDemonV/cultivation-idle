@@ -6,6 +6,7 @@ export type FxRequestedQuality = 'auto' | 'high' | 'medium' | 'low';
 export type FxEffectiveQuality = 'high' | 'medium' | 'low' | 'reducedMotion';
 
 export type FxQuality = FxEffectiveQuality;
+export type FxReducedMotionOverride = boolean | null;
 
 export type FxSceneMode = 'full' | 'minimal' | 'static';
 
@@ -117,7 +118,9 @@ export interface FxQualityState {
   requestedQuality: FxRequestedQuality;
   effectiveQuality: FxEffectiveQuality;
   prefersReducedMotion: boolean;
+  reducedMotionOverride: FxReducedMotionOverride;
   setRequestedQuality: Dispatch<SetStateAction<FxRequestedQuality>>;
+  setReducedMotionOverride: Dispatch<SetStateAction<FxReducedMotionOverride>>;
 }
 
 export interface FxContextValue extends FxQualityState, FxStageRegistryApi {

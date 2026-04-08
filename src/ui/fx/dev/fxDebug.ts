@@ -1,12 +1,15 @@
-import type { FxEffectiveQuality, FxRequestedQuality } from '../types.js';
+import type { FxEffectiveQuality, FxReducedMotionOverride, FxRequestedQuality } from '../types.js';
 
 interface FxDebugApi {
   getState: () => {
     requestedQuality: FxRequestedQuality;
     effectiveQuality: FxEffectiveQuality;
     prefersReducedMotion: boolean;
+    reducedMotionOverride: FxReducedMotionOverride;
+    systemPrefersReducedMotion: boolean;
   };
   setRequestedQuality: (quality: FxRequestedQuality) => void;
+  setReducedMotionOverride: (override: FxReducedMotionOverride) => void;
   clearOverride: () => void;
 }
 
@@ -19,6 +22,7 @@ declare global {
 interface InstallFxDebugApiInput {
   getState: FxDebugApi['getState'];
   setRequestedQuality: FxDebugApi['setRequestedQuality'];
+  setReducedMotionOverride: FxDebugApi['setReducedMotionOverride'];
   clearOverride: FxDebugApi['clearOverride'];
 }
 
@@ -30,6 +34,7 @@ export function installFxDebugApi(input: InstallFxDebugApiInput) {
   window.__ciFxDebug = {
     getState: input.getState,
     setRequestedQuality: input.setRequestedQuality,
+    setReducedMotionOverride: input.setReducedMotionOverride,
     clearOverride: input.clearOverride,
   };
 

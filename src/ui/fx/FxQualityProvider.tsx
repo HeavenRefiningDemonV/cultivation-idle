@@ -2,11 +2,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { ReactNode } from 'react';
 import { FX_DEFAULT_REQUESTED_QUALITY, FX_REDUCED_MOTION_MEDIA_QUERY } from './constants.js';
 import { installFxDebugApi } from './dev/fxDebug.js';
-import { resolveFxEffectiveQuality } from './runtime.js';
+import { resolveFxEffectiveQuality, resolveFxReducedMotionPreference } from './runtime.js';
 import { createFxStageRegistry } from './stageRegistry.js';
 import type {
   ClaimActiveFxSceneInput,
   FxContextValue,
+  FxReducedMotionOverride,
   FxRequestedQuality,
   FxStageKey,
   FxStageSnapshot,
@@ -28,7 +29,8 @@ function getInitialReducedMotionPreference() {
 
 export function FxQualityProvider({ children }: { children: ReactNode }) {
   const [requestedQuality, setRequestedQualityState] = useState<FxRequestedQuality>(FX_DEFAULT_REQUESTED_QUALITY);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(getInitialReducedMotionPreference);
+  const [systemPrefersReducedMotion, setSystemPrefersReducedMotion] = useState<boolean>(getInitialReducedMotionPreference);
+  const [reducedMotionOverride, setReducedMotionOverrideState] = useState<FxReducedMotionOverride>(null);
   const [documentHidden, setDocumentHidden] = useState<boolean>(
     typeof document !== 'undefined' ? document.hidden : false,
   );
@@ -48,10 +50,10 @@ export function FxQualityProvider({ children }: { children: ReactNode }) {
 
     const mediaQueryList = window.matchMedia(FX_REDUCED_MOTION_MEDIA_QUERY);
     const handleChange = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
+      setSystemPrefersReducedMotion(event.matches);
     };
 
-    setPrefersReducedMotion(mediaQueryList.matches);
+    setSystemPrefersReducedMotion(mediaQueryList.matches);
     mediaQueryList.addEventListener('change', handleChange);
     return () => {
       mediaQueryList.removeEventListener('change', handleChange);
@@ -79,6 +81,15 @@ export function FxQualityProvider({ children }: { children: ReactNode }) {
 
   const setRequestedQuality = useCallback<FxContextValue['setRequestedQuality']>((value) => {
     setRequestedQualityState((current) => {
+      if (typeof value === 'function') {
+        return value(current);
+      }
+      return value;
+    });
+  }, []);
+
+  const setReducedMotionOverride = useCallback<FxContextValue['setReducedMotionOverride']>((value) => {
+    setReducedMotionOverrideState((current) => {
       if (typeof value === 'function') {
         return value(current);
       }
@@ -139,9 +150,14 @@ export function FxQualityProvider({ children }: { children: ReactNode }) {
     [stageSnapshots],
   );
 
+  const prefersReducedMotion = useMemo(
+    () => resolveFxReducedMotionPreference(systemPrefersReducedMotion, reducedMotionOverride),
+    [reducedMotionOverride, systemPrefersReducedMotion],
+  );
+
   const effectiveQuality = useMemo(
-    () => resolveFxEffectiveQuality(requestedQuality, prefersReducedMotion),
-    [prefersReducedMotion, requestedQuality],
+    () => resolveFxEffectiveQuality(requestedQuality, systemPrefersReducedMotion, reducedMotionOverride),
+    [reducedMotionOverride, requestedQuality, systemPrefersReducedMotion],
   );
 
   useEffect(() => {
@@ -150,22 +166,38 @@ export function FxQualityProvider({ children }: { children: ReactNode }) {
         requestedQuality,
         effectiveQuality,
         prefersReducedMotion,
+        reducedMotionOverride,
+        systemPrefersReducedMotion,
       }),
       setRequestedQuality: (quality) => {
         setRequestedQuality(quality);
       },
+      setReducedMotionOverride: (override) => {
+        setReducedMotionOverride(override);
+      },
       clearOverride: () => {
         setRequestedQuality(FX_DEFAULT_REQUESTED_QUALITY);
+        setReducedMotionOverride(null);
       },
     });
-  }, [effectiveQuality, prefersReducedMotion, requestedQuality, setRequestedQuality]);
+  }, [
+    effectiveQuality,
+    prefersReducedMotion,
+    reducedMotionOverride,
+    requestedQuality,
+    setReducedMotionOverride,
+    setRequestedQuality,
+    systemPrefersReducedMotion,
+  ]);
 
   const contextValue = useMemo<FxContextValue>(
     () => ({
       requestedQuality,
       effectiveQuality,
       prefersReducedMotion,
+      reducedMotionOverride,
       setRequestedQuality,
+      setReducedMotionOverride,
       stageSnapshots,
       documentHidden,
       registerStage,
@@ -183,9 +215,11 @@ export function FxQualityProvider({ children }: { children: ReactNode }) {
       getActiveSceneOwner,
       getStageSnapshot,
       prefersReducedMotion,
+      reducedMotionOverride,
       registerStage,
       releaseActiveScene,
       requestedQuality,
+      setReducedMotionOverride,
       setRequestedQuality,
       stageSnapshots,
       unregisterStage,
@@ -210,7 +244,9 @@ export function useFxQuality() {
     requestedQuality: context.requestedQuality,
     effectiveQuality: context.effectiveQuality,
     prefersReducedMotion: context.prefersReducedMotion,
+    reducedMotionOverride: context.reducedMotionOverride,
     setRequestedQuality: context.setRequestedQuality,
+    setReducedMotionOverride: context.setReducedMotionOverride,
   };
 }
 

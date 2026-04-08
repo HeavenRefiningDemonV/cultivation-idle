@@ -83,3 +83,11 @@ export const FX_SCENE_BUDGETS = {
     tickScale: 0,
   },
 } as const;
+
+export const FX_PROOF_SURFACE_POLICIES = {
+  cultivation: 'scene-backed',
+  status: 'scene-backed',
+  world: 'static-safe-null-scene',
+  forge: 'static-safe-null-scene',
+  selection: 'legal-null-scene-stub',
+} as const;

@@ -110,6 +110,17 @@
   animation: statusGlintPulse var(--ui-motion-ritual-pulse-duration, 8s) var(--ui-motion-ritual-ease, ease-in-out) infinite;
 }
 
+.statusFxScene[data-can-animate="0"] .statusFxScene__halo,
+.statusFxScene[data-can-animate="0"] .statusFxScene__ring,
+.statusFxScene[data-can-animate="0"] .statusFxScene__mist,
+.statusFxScene[data-can-animate="0"] .statusFxScene__glint,
+.statusFxScene[data-dormant="1"] .statusFxScene__halo,
+.statusFxScene[data-dormant="1"] .statusFxScene__ring,
+.statusFxScene[data-dormant="1"] .statusFxScene__mist,
+.statusFxScene[data-dormant="1"] .statusFxScene__glint {
+  animation: none;
+}
+
 .statusFxScene__glint--1 { margin-left: calc(var(--status-fx-radius) * -0.42); margin-top: calc(var(--status-fx-radius) * -0.14); }
 .statusFxScene__glint--2 { margin-left: calc(var(--status-fx-radius) * 0.3); margin-top: calc(var(--status-fx-radius) * -0.2); animation-delay: 1.1s; }
 .statusFxScene__glint--3 { margin-left: calc(var(--status-fx-radius) * -0.12); margin-top: calc(var(--status-fx-radius) * 0.34); animation-delay: 2.2s; }

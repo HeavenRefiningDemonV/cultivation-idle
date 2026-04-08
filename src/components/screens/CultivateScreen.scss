@@ -68,7 +68,7 @@
   height: calc(var(--cultivation-fx-radius) * 1.65);
   border-radius: 50%;
   background: radial-gradient(circle at 50% 52%, rgba(146, 178, 154, 0.24), rgba(146, 178, 154, 0) 70%);
-  opacity: 0.42;
+  opacity: var(--cultivation-fx-halo-opacity, 0.42);
   animation: cultivationHaloBreathe 12s ease-in-out infinite;
 }
 
@@ -100,6 +100,17 @@
   border: 1px solid rgba(173, 197, 173, 0.24);
   opacity: 0.3;
   animation: cultivationRingPulse 8s ease-in-out infinite;
+}
+
+.cultivationFxScene[data-can-animate="0"] .cultivationFxScene__halo,
+.cultivationFxScene[data-can-animate="0"] .cultivationFxScene__mist,
+.cultivationFxScene[data-can-animate="0"] .cultivationFxScene__ring,
+.cultivationFxScene[data-can-animate="0"] .cultivationFxScene__glint,
+.cultivationFxScene[data-dormant="1"] .cultivationFxScene__halo,
+.cultivationFxScene[data-dormant="1"] .cultivationFxScene__mist,
+.cultivationFxScene[data-dormant="1"] .cultivationFxScene__ring,
+.cultivationFxScene[data-dormant="1"] .cultivationFxScene__glint {
+  animation: none;
 }
 
 .cultivationFxScene__glint {

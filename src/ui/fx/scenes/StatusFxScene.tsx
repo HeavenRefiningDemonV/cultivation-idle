@@ -7,18 +7,21 @@ export interface StatusFxSceneProps extends FxSceneContract {
   resonance: string;
 }
 
-function glintCountForQuality(quality: StatusFxSceneProps['effectiveQuality']) {
-  if (quality === 'high') return 4;
-  if (quality === 'medium') return 2;
-  if (quality === 'low') return 1;
+function glintCountForBudget(props: StatusFxSceneProps) {
+  if (!props.budget.allowGlints || props.isStatic || props.dormant) return 0;
+  const glintCount = Math.round(4 * props.budget.particleDensity);
+  return Math.max(1, glintCount);
+}
+
+function mistCountForBudget(props: StatusFxSceneProps) {
+  if (!props.canAnimateContinuously || props.budget.continuousAtmosphere === 'off') return 0;
+  if (props.budget.continuousAtmosphere === 'full') return 3;
+  if (props.budget.continuousAtmosphere === 'sparse') return 2;
   return 0;
 }
 
-function mistCountForQuality(quality: StatusFxSceneProps['effectiveQuality']) {
-  if (quality === 'high') return 3;
-  if (quality === 'medium') return 2;
-  if (quality === 'low') return 1;
-  return 0;
+function shouldAnimatePulse(props: StatusFxSceneProps) {
+  return props.budget.allowHeroPulse && props.canAnimateContinuously && !props.dormant;
 }
 
 function resolveResonanceTone(resonance: string) {
@@ -31,13 +34,15 @@ export function StatusFxScene({
   centerX,
   centerY,
   shortestSide,
-  effectiveQuality,
   urgency,
   resonance,
+  ...scene
 }: StatusFxSceneProps) {
+  const props: StatusFxSceneProps = { centerX, centerY, shortestSide, urgency, resonance, ...scene };
   const auraRadius = Math.max(140, Math.round(shortestSide * 0.16));
-  const glints = glintCountForQuality(effectiveQuality);
-  const mists = mistCountForQuality(effectiveQuality);
+  const glints = glintCountForBudget(props);
+  const mists = mistCountForBudget(props);
+  const animatePulse = shouldAnimatePulse(props);
   const resonanceTone = resolveResonanceTone(resonance);
   const urgencyTone = urgency ?? 'calm';
 
@@ -50,15 +55,19 @@ export function StatusFxScene({
   return (
     <div
       className="statusFxScene"
-      data-quality={effectiveQuality}
+      data-quality={scene.effectiveQuality}
       data-urgency={urgencyTone}
       data-resonance={resonanceTone}
+      data-static={scene.isStatic ? '1' : '0'}
+      data-dormant={scene.dormant ? '1' : '0'}
+      data-can-animate={scene.canAnimateContinuously ? '1' : '0'}
+      data-hero-pulse={animatePulse ? '1' : '0'}
       style={style}
       aria-hidden="true"
     >
       <div className="statusFxScene__halo" />
       <div className="statusFxScene__ring statusFxScene__ring--outer" />
-      <div className="statusFxScene__ring statusFxScene__ring--inner" />
+      {(animatePulse || !scene.isStatic) ? <div className="statusFxScene__ring statusFxScene__ring--inner" /> : null}
       {Array.from({ length: mists }).map((_, index) => (
         <span key={index} className={`statusFxScene__mist statusFxScene__mist--${index + 1}`} />
       ))}
