@@ -39,7 +39,7 @@ Fallback authorities also used:
 
 ### Git/audit basis
 - branch: `work`
-- short commit at audit start: `cbcf65a`
+- short commit at audit start: `0b2edeb`
 - HEAD detached: no
 - working tree at audit start: clean
 
@@ -47,6 +47,12 @@ Fallback authorities also used:
 - Present: P2-01, P2-02, P2-04..P2-13 packet docs and proof matrix/register docs.
 - Alias drift in external plans: `phase-2-p2-06-framecard-plaqueheader.md` and `phase-2-p2-10-scenic-label-contract.md` are non-canonical names.
 - Inference policy used: where packet-name mismatch existed, this audit used live repo truth from implementation + tests + existing packet docs (`p2-06-shell-api-freeze`, `p2-10-secondary-consumer-containment`) instead of inventing missing history.
+
+### Evidence rerun results (2026-04-08)
+- `release:phase0-core-evidence-audit:json`: **FAIL** — required slot PNGs missing across all phase-0 core roots.
+- `release:section-c-evidence-audit:json`: **FAIL** — required slot PNGs missing across Section C roots.
+- Capture scripts are present (`capturePhase0CoreEvidence.ts`, `captureSectionCEvidence.ts`) but execution is blocked in this environment because Playwright is unavailable and registry access to install it returned `403 Forbidden`.
+- Therefore this packet records honest evidence state as README-only placeholders, not screenshot-complete proof.
 
 ## B) Verdict summary
 
@@ -61,7 +67,7 @@ Fallback authorities also used:
 
 ### Rationale
 - Shell/FX/no-shift/proof-surface contracts are materially landed and broad contract coverage exists.
-- Evidence roots are real but still mostly README + route instructions with missing committed PNG captures.
+- Evidence roots are real but still mostly README + route instructions with missing committed PNG captures, and both evidence audits fail on required-slot absence.
 - Therefore Phase 3 can inherit frozen contracts, but Phase 2 does not grant blanket cleanup authority.
 
 ### "Done enough to hand off" means
@@ -117,15 +123,15 @@ Fallback authorities also used:
 
 | Surface | Owner that must remain intact | Shell primitives in use | FX path | Canonical route / evidence path | Signoff state | Remaining watchpoints | Phase 2 proof quality |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| WorldScreen | world map + city routing owner | TopRibbon + InspectorPanel/Drawer + RunCompass | none | `/?uiAudit=phase-0&surface=world&fx=*`; `phase-0-core-screens/04-world` | deferred | root overlap with `world-main`; no committed PNG slots | partial |
-| CultivateScreen | altar/cultivator center | RunCompassCompact (support lane) | ScreenFxStage + FxStagePortal | `/?uiAudit=phase-0&surface=cultivation&fx=*`; `phase-0-core-screens/02-cultivation` | deferred | overlap with `cultivation-main`; no committed PNG slots | partial |
-| StatusScreen | diagnostic-center owner | RunCompass + StatusSummaryHeader | ScreenFxStage + FxStagePortal | `/?uiAudit=phase-0&surface=status&fx=*`; `phase-0-core-screens/03-status` | deferred | overlap with `status-main`; no committed PNG slots | partial |
-| PrestigeScreen | decree/reincarnation owner | TopRibbon + PaperStamp + RunCompassCompact | none | `/?uiAudit=phase-0&surface=prestige&fx=*`; `phase-0-core-screens/10-prestige` | deferred | no committed PNG slots | partial |
-| PrestigeRitualModal | ritual consequence truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=prestige-ritual&fx=*`; `prestige-ritual/` | deferred | no committed PNG slots | partial |
-| CurrentChapterExhaustedModal | authored-cap consequence truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=*`; `current-chapter-exhausted/` | deferred | no committed PNG slots | partial |
-| LifeSummaryModal | life-summary truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=life-summary&fx=*`; `life-summary/` | deferred | no committed PNG slots | partial |
-| ChangeHeartLawModal | rewrite consequence truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=change-heart-law&fx=*`; `change-heart-law/` | deferred | no committed PNG slots | partial |
-| BottomTabBar | dock/tab owner | BottomNavDock compatibility wrapper | none | runtime surface + `layoutInteractionStabilityMatrix` + visual manifest tracking | pending reviewer signoff | dock screenshot slots currently represented through core-screen captures, not standalone folder | partial |
+| WorldScreen | world map + city routing owner | TopRibbon + InspectorPanel/Drawer + RunCompass | none | `/?uiAudit=phase-0&surface=world&fx=*`; `phase-0-core-screens/04-world` | deferred | root overlap with `world-main`; 0/6 required slots captured | blocked |
+| CultivateScreen | altar/cultivator center | RunCompassCompact (support lane) | ScreenFxStage + FxStagePortal | `/?uiAudit=phase-0&surface=cultivation&fx=*`; `phase-0-core-screens/02-cultivation` | deferred | overlap with `cultivation-main`; 0/6 required slots captured | blocked |
+| StatusScreen | diagnostic-center owner | RunCompass + StatusSummaryHeader | ScreenFxStage + FxStagePortal | `/?uiAudit=phase-0&surface=status&fx=*`; `phase-0-core-screens/03-status` | deferred | overlap with `status-main`; 0/6 required slots captured | blocked |
+| PrestigeScreen | decree/reincarnation owner | TopRibbon + PaperStamp + RunCompassCompact | none | `/?uiAudit=phase-0&surface=prestige&fx=*`; `phase-0-core-screens/10-prestige` | deferred | 0/6 required slots captured | blocked |
+| PrestigeRitualModal | ritual consequence truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=prestige-ritual&fx=*`; `prestige-ritual/` | deferred | 0/6 required slots captured | blocked |
+| CurrentChapterExhaustedModal | authored-cap consequence truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=*`; `current-chapter-exhausted/` | deferred | 0/5 required slots captured (`03` N/A) | blocked |
+| LifeSummaryModal | life-summary truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=life-summary&fx=*`; `life-summary/` | deferred | 0/6 required slots captured | blocked |
+| ChangeHeartLawModal | rewrite consequence truth | RitualModalFrame | none | `/?uiAudit=section-c&surface=change-heart-law&fx=*`; `change-heart-law/` | deferred | 0/6 required slots captured | blocked |
+| BottomTabBar | dock/tab owner | BottomNavDock compatibility wrapper | none | runtime surface + `layoutInteractionStabilityMatrix` + visual manifest tracking | pending reviewer signoff | dock proof bound to core-screen captures; standalone slot family not yet established | partial |
 
 ### Secondary already-opted-in compact consumers
 - Classified as **secondary** only: ApothecaryPanel, BountyBoardPanel, ExpeditionBoardPanel, ManualPavilionPanel, TechniqueLibraryScreen, OutskirtsBuildingPanel, RuinsBuildingPanel, ForgeWorkshop.

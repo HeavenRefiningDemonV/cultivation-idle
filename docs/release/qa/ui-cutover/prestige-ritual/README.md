@@ -6,7 +6,7 @@
 - Capture routes: `/?uiAudit=section-c&surface=prestige-ritual&fx=high`, `/?uiAudit=section-c&surface=prestige-ritual&fx=low`, `/?uiAudit=section-c&surface=prestige-ritual&fx=reduced`
 - Reachability: `live`
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
-- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
+- Capture mechanism: manual screenshots or `node --experimental-strip-types scripts/release/captureSectionCEvidence.ts --json` (automation requires Playwright).
 
 ## Required slots
 - `01-base.png` — required.
@@ -22,3 +22,12 @@
 2. Capture base, interaction, and truth-state slots.
 3. Capture low/reduced FX variants.
 4. Resize browser for optional narrow image.
+
+
+## Missing required files
+- `01-base.png`
+- `02-interaction.png`
+- `03-truth-states.png`
+- `04-high-fx.png`
+- `05-low-fx.png`
+- `06-reduced-motion.png`

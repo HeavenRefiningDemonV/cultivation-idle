@@ -6,7 +6,7 @@
 - Capture routes: `/?uiAudit=section-c&surface=change-heart-law&fx=high`, `/?uiAudit=section-c&surface=change-heart-law&fx=low`, `/?uiAudit=section-c&surface=change-heart-law&fx=reduced`
 - Reachability: `gated by another state` (opened directly by harness)
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
-- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
+- Capture mechanism: manual screenshots or `node --experimental-strip-types scripts/release/captureSectionCEvidence.ts --json` (automation requires Playwright).
 
 ## Required slots
 - `01-base.png` — required.
@@ -22,3 +22,12 @@
 2. Capture base and interaction/toggle states.
 3. Capture low/reduced FX variants.
 4. Resize browser for optional narrow screenshot.
+
+
+## Missing required files
+- `01-base.png`
+- `02-interaction.png`
+- `03-truth-states.png`
+- `04-high-fx.png`
+- `05-low-fx.png`
+- `06-reduced-motion.png`

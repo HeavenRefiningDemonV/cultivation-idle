@@ -6,7 +6,7 @@
 - Capture routes: `/?uiAudit=section-c&surface=life-summary&fx=high`, `/?uiAudit=section-c&surface=life-summary&fx=low`, `/?uiAudit=section-c&surface=life-summary&fx=reduced`
 - Reachability: `gated by another state` (harness uses `current` mode baseline)
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
-- Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
+- Capture mechanism: manual screenshots or `node --experimental-strip-types scripts/release/captureSectionCEvidence.ts --json` (automation requires Playwright).
 
 ## Required slots
 - `01-base.png` — required.
@@ -25,3 +25,12 @@
 
 ## Scope note
 - `last_completed` is intentionally out-of-scope for this C.0 baseline family.
+
+
+## Missing required files
+- `01-base.png`
+- `02-interaction.png`
+- `03-truth-states.png`
+- `04-high-fx.png`
+- `05-low-fx.png`
+- `06-reduced-motion.png`

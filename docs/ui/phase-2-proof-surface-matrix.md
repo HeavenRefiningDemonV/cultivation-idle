@@ -35,3 +35,11 @@ This matrix is the authoritative P2-13 proof classification map for existing sur
 | inventory | `InventoryScreen` | Already live but not a P2-13 proof-owner target; kept under release visual audit scope only | Deferred / non-proof surface |
 | settings | `SettingsScreen` | Not a proof-owner normalization target in this packet | Deferred / non-proof surface |
 | world-building-modal | `WorldBuildingModal` | Existing support modal; no normalization work required for P2-13 | Deferred / non-proof surface |
+
+
+## Evidence status snapshot (P2-14 closeout rerun)
+
+- Canonical primary set remains: world, cultivation, status, prestige, prestige-ritual, current-chapter-exhausted, life-summary, change-heart-law, bottom-tab-bar.
+- Screenshot slot files for these roots are currently README-only (`0/6` captured, or `0/5` where truth-state is N/A).
+- BottomTabBar remains bound to dock-visible core-screen captures (no standalone harness surface id).
+- No secondary compact consumer was promoted to primary in this rerun.
