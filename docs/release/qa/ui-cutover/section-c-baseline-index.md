@@ -2,6 +2,10 @@
 
 This file is the master tracker for Section C baseline capture.
 
+## Current Phase 3 owner-truth pointer
+- Use `docs/ui/phase-3-repo-truth-register.md` as the current owner/reachability authority for Phase 3 prompts.
+- This index remains baseline capture tracking and does not unlock cleanup authority.
+
 ## Run context
 - Harness gate: `import.meta.env.DEV` + `?uiAudit=section-c`.
 - Baseline work only; no cleanup approval is granted by this file.
@@ -10,12 +14,12 @@ This file is the master tracker for Section C baseline capture.
 ## Surface tracker
 | surface id | human label | family | harness route | capture status | reachability | most important retained old layer | likely next packet | blocker summary |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `life-start-path` | Life Start Path (Step 1) | hero ritual screen | `/?uiAudit=section-c&surface=life-start-path&fx=high` | CAPTURE PENDING — MANUAL | live | Full-height triptych + path portrait ownership (`path_heaven 1.png`, `path_earth 1.png`, `path_martial 1.png`). | C.1 | No blocker beyond capture pending. |
+| `life-start-path` | Life Start Path (Step 1) | life-start ritual sequence | `/?uiAudit=section-c&surface=life-start-path&fx=high` | CAPTURE PENDING — MANUAL | live | Full-height triptych + path portrait ownership (`path_heaven 1.png`, `path_earth 1.png`, `path_martial 1.png`). | C.1 | No blocker beyond capture pending. |
 | `life-start-heart-law` | Life Start Heart Law (Step 2) | ritual modal | `/?uiAudit=section-c&surface=life-start-heart-law&fx=high` | CAPTURE PENDING — MANUAL | live | `InkModalFrame` + paper card/chip material stack and live unlock truth. | C.1 | Generic card-grid treatment still present. |
 | `life-start-breath-focus` | Life Start Breath Focus (Step 3) | ritual modal | `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high` | CAPTURE PENDING — MANUAL | forced-only for audit | Existing breath mode cards and finish actions inside current life-start shell. | C.4 | Live visibility gate does not naturally keep step visible once path + heart law are set. |
 | `dao-heart-law` | Dao Heart — Heart Law tab | ritual modal | `/?uiAudit=section-c&surface=dao-heart-law&fx=high` | CAPTURE PENDING — MANUAL | live but awkward | DaoHeart modal scroll shell + dao-element wash + atmospheric FX layers + radial verse ring. | C.2 | Generic/flat remnants remain in mixed panel areas. |
 | `dao-heart-study` | Dao Heart — Study tab | ritual modal | `/?uiAudit=section-c&surface=dao-heart-study&fx=high` | CAPTURE PENDING — MANUAL | live but awkward | Current tab shell and Study widget integration inside DaoHeart modal. | C.3 | Study surface still visually uneven vs surrounding modal language. |
-| `change-heart-law` | Change Heart Law overlay | ritual modal | `/?uiAudit=section-c&surface=change-heart-law&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | Existing warning/cost/option truth and modal interaction flow. | C.5 | Shares generic `HeartLawPanel.scss` styling; no dedicated ritual treatment yet. |
+| `change-heart-law` | Change Heart Law overlay | ritual modal | `/?uiAudit=section-c&surface=change-heart-law&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | Existing warning/cost/option truth and modal interaction flow. | C.5 | Uses existing `ChangeHeartLawModal.scss` treatment but still reads generic for ritual consequence emphasis. |
 | `prestige-ritual` | Prestige Reincarnation Ritual | ritual modal | `/?uiAudit=section-c&surface=prestige-ritual&fx=high` | CAPTURE PENDING — MANUAL | live | `RitualModalFrame` + hold-to-confirm + reset/carry/rebuilt truth and AP breakdown structure. | C.6 | Visual polish debt remains, but truth structure is strong. |
 | `current-chapter-exhausted` | Current Chapter Exhausted | ritual modal | `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | `RitualModalFrame` with concise chapter-cap truth and three clear actions. | C.7 | Modal-family polish target; content truth already clear. |
 | `life-summary` | Life Summary (`current`) | ritual modal | `/?uiAudit=section-c&surface=life-summary&fx=high` | CAPTURE PENDING — MANUAL | gated by another state | `RitualModalFrame` + current-life summary blocks + advisor/AP truth rows. | C.8 | Visual finish and density balancing remain for later packet. |
@@ -37,6 +41,10 @@ This file is the master tracker for Section C baseline capture.
 - Canonical evidence mapping now lives in `src/dev/sectionCAudit/sectionCEvidenceManifest.ts`.
 - Machine audit command is available via `npm run release:section-c-evidence-audit` (and `:json` variant).
 - Expected current result remains **FAIL** until manual PNG evidence is added to each target folder and reviewed by a human reviewer.
+
+## Legacy packet-name crosswalk
+- Legacy C.x naming can be used for chronology only; targeting should use canonical surface IDs (`life-start-path` ... `life-summary`) and current owner map in the Phase 3 repo-truth register.
+- Historical "Path Selection" wording maps to `life-start-path` under `LifeStartWizardModal`, not a standalone `PathSelectionModal`.
 
 ## C.12R-B ingest note (2026-03-31)
 
