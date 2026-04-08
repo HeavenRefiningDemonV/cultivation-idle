@@ -284,7 +284,12 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     return (
       <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
         <div className="lifeStartWizardModal lifeStartWizardModal--path">
-          <div className="lifePathFullscreen" data-ui="life-path-fullscreen" data-fx-quality={effectiveQuality}>
+          <div
+            className="lifePathFullscreen"
+            data-ui="life-path-fullscreen"
+            data-fx-quality={effectiveQuality}
+            data-reduced-motion={prefersReducedMotion ? 'true' : 'false'}
+          >
             <div className="lifePathHero">
               <div className="lifePathHeroBackdrop" aria-hidden />
               <header className="lifePathHeroHeader">

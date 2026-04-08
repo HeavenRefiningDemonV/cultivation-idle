@@ -324,6 +324,28 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(10px, 1.3vw, 20px);
+  --active-lane-center: 16.66%;
+}
+
+.lifePathTriptych[data-preview='earth'] {
+  --active-lane-center: 50%;
+}
+
+.lifePathTriptych[data-preview='martial'] {
+  --active-lane-center: 83.34%;
+}
+
+.lifePathTriptych::before {
+  content: '';
+  position: absolute;
+  inset: -12% -2% -4%;
+  background:
+    radial-gradient(34% 56% at var(--active-lane-center) 86%, rgba(255, 214, 152, 0.22), rgba(255, 214, 152, 0) 70%),
+    radial-gradient(50% 84% at var(--active-lane-center) 32%, rgba(250, 235, 210, 0.08), rgba(250, 235, 210, 0) 78%);
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 220ms ease-out;
 }
 
 .lifePathTriptychFrame {
@@ -350,6 +372,19 @@
   pointer-events: none;
 }
 
+.lifePathTriptychRail::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  width: min(480px, calc((100% - (2 * clamp(10px, 1.3vw, 20px))) / 3));
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 240, 209, 0.2), rgba(255, 240, 209, 0));
+  opacity: 0.55;
+  pointer-events: none;
+  transition: left 200ms ease-out, opacity 200ms ease-out;
+}
+
 .lifePathTriptychRail .lifePathPreviewPlaque {
   pointer-events: auto;
 }
@@ -358,12 +393,25 @@
   grid-column: 1;
 }
 
+.lifePathTriptychRail--heaven::before {
+  left: 0;
+}
+
 .lifePathTriptychRail--earth .lifePathPreviewPlaque {
   grid-column: 2;
 }
 
+.lifePathTriptychRail--earth::before {
+  left: calc((100% - min(480px, calc((100% - (2 * clamp(10px, 1.3vw, 20px))) / 3))) / 2);
+}
+
 .lifePathTriptychRail--martial .lifePathPreviewPlaque {
   grid-column: 3;
+}
+
+.lifePathTriptychRail--martial::before {
+  right: 0;
+  left: auto;
 }
 
 .lifePathPanel {
@@ -490,6 +538,10 @@
   box-shadow:
     inset 0 0 0 1px rgba(255, 226, 173, 0.68),
     0 0 24px rgba(255, 214, 150, 0.32);
+}
+
+.lifePathPanel--commit .lifePathPanel__frame {
+  border-color: rgba(255, 236, 202, 0.64);
 }
 
 .lifePathPanel--commit .lifePathPanel__stamp {
@@ -634,6 +686,36 @@
   }
 }
 
+@keyframes lifePathLaneBreath {
+  0% {
+    opacity: 0.66;
+  }
+  50% {
+    opacity: 0.92;
+  }
+  100% {
+    opacity: 0.66;
+  }
+}
+
+@keyframes lifePathCommitAura {
+  0% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 226, 173, 0.75),
+      0 0 18px rgba(255, 214, 150, 0.28);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 234, 194, 0.9),
+      0 0 28px rgba(255, 220, 168, 0.4);
+  }
+  100% {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 226, 173, 0.75),
+      0 0 18px rgba(255, 214, 150, 0.28);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lifePathPanel--previewed::before,
   .lifePathPanel--previewed::after {
@@ -641,7 +723,8 @@
   }
 
   .lifePathPanel,
-  .lifePathPanel__select {
+  .lifePathPanel__select,
+  .lifePathTriptych::before {
     transition: none;
   }
 }
@@ -656,12 +739,52 @@
   opacity: 0.1;
 }
 
+.lifePathFullscreen[data-fx-quality='medium'] .lifePathTriptych::before {
+  opacity: 0.62;
+}
+
+.lifePathFullscreen[data-fx-quality='high'] .lifePathTriptych::before {
+  animation: lifePathLaneBreath 7.2s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+.lifePathFullscreen[data-fx-quality='high'] .lifePathPanel--commit {
+  animation: lifePathCommitAura 560ms ease-out;
+}
+
 .lifePathFullscreen[data-fx-quality='low'] .lifePathPanel--previewed::before,
 .lifePathFullscreen[data-fx-quality='low'] .lifePathPanel--previewed::after,
 .lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathPanel--previewed::before,
 .lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathPanel--previewed::after {
   animation: none;
   opacity: 0;
+}
+
+.lifePathFullscreen[data-fx-quality='low'] .lifePathTriptych::before {
+  opacity: 0.48;
+}
+
+.lifePathFullscreen[data-fx-quality='low'] .lifePathTriptychRail::before {
+  opacity: 0.42;
+}
+
+.lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathTriptych::before,
+.lifePathFullscreen[data-reduced-motion='true'] .lifePathTriptych::before {
+  animation: none;
+  opacity: 0.42;
+}
+
+.lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathTriptychRail::before,
+.lifePathFullscreen[data-reduced-motion='true'] .lifePathTriptychRail::before {
+  opacity: 0.34;
+}
+
+.lifePathFullscreen[data-fx-quality='reducedMotion'] .lifePathPanel--commit,
+.lifePathFullscreen[data-reduced-motion='true'] .lifePathPanel--commit {
+  animation: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 226, 173, 0.62),
+    0 0 18px rgba(255, 214, 150, 0.2);
 }
 
 .lifeStartWizardModal--path .lifeStartWizardHeader,
@@ -872,6 +995,12 @@ body.lifePathMode .notificationToasts {
   .lifePathTriptychRail {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .lifePathTriptychRail::before {
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 
   .lifePathTriptychRail--heaven .lifePathPreviewPlaque,
