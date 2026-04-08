@@ -3,7 +3,6 @@ import './LifeStartWizardModal.scss';
 import heavenArt from '../../assets/menus/path_heaven 1.png';
 import earthArt from '../../assets/menus/path_earth 1.png';
 import martialArt from '../../assets/menus/path_martial 1.png';
-import barLong from '../../assets/menus/bar_long.png';
 import { SaveService } from '../../services/save/SaveService.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -276,8 +275,8 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   }, [chosenHeartLawId, previewHeartLaw, previewUnlocked, spiritRoot]);
 
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
-  const previewedPath: CultivationPath = hoveredPath ?? 'heaven';
-  const previewPresentation = getPathDoctrinePresentation(previewedPath);
+  const activePresentationPath: CultivationPath = hoveredPath ?? committingPath ?? selectedPath ?? 'heaven';
+  const activePresentation = getPathDoctrinePresentation(activePresentationPath);
 
   if (!shouldShow) return null;
 
@@ -292,42 +291,46 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 <p className="lifePathHeroEyebrow">New Life Ritual</p>
                 <h2 className="lifePathHeroTitle">Choose Your Path</h2>
                 <p className="lifePathHeroSubline">Select the doctrine that will shape this life.</p>
-                <img className="lifePathHeroDivider" src={barLong} alt="" aria-hidden />
                 <div className="lifePathHeroDividerBar" aria-hidden />
               </header>
 
-              <aside id="lifePath-preview-plaque" className={`lifePathPreviewPlaque lifePathPreviewPlaque--${previewedPath}`} aria-live="polite">
-                <div className="lifePathPreviewPlaque__label">{previewPresentation?.label ?? 'Path Preview'}</div>
-                <p className="lifePathPreviewPlaque__subtitle">{previewPresentation?.doctrineSubtitle ?? 'Choose a doctrine to preview its cadence.'}</p>
-                <p className="lifePathPreviewPlaque__summary">{previewPresentation?.summary ?? 'Choose a doctrine to preview its philosophy.'}</p>
-                <div className="lifePathPreviewPlaque__highlights" aria-label="Path highlights">
-                  {(previewPresentation?.statHighlights ?? []).map((highlight) => (
-                    <span key={highlight} className="lifePathPreviewPlaque__chip">{highlight}</span>
-                  ))}
-                </div>
-                <div className="lifePathPreviewPlaque__tags" aria-label="Doctrine tags">
-                  {(previewPresentation?.tags ?? []).map((tag) => (
-                    <span key={tag} className="lifePathPreviewPlaque__tag">{tag}</span>
-                  ))}
-                </div>
-              </aside>
-
               <div className="lifePathTriptychFrame">
-                <div className="lifePathTriptych" data-ui="life-path-triptych" data-preview={previewedPath} role="group" aria-label="Choose your Life Path">
+                <div className={`lifePathTriptychRail lifePathTriptychRail--${activePresentationPath}`} data-active-path={activePresentationPath}>
+                  <aside
+                    id="lifePath-active-plaque"
+                    className={`lifePathPreviewPlaque lifePathPreviewPlaque--${activePresentationPath}`}
+                    aria-live="polite"
+                  >
+                    <div className="lifePathPreviewPlaque__label">{activePresentation?.label ?? 'Path Preview'}</div>
+                    <p className="lifePathPreviewPlaque__subtitle">{activePresentation?.doctrineSubtitle ?? 'Choose a doctrine to preview its cadence.'}</p>
+                    <p className="lifePathPreviewPlaque__summary">{activePresentation?.summary ?? 'Choose a doctrine to preview its philosophy.'}</p>
+                    <div className="lifePathPreviewPlaque__highlights" aria-label="Path highlights">
+                      {(activePresentation?.statHighlights ?? []).map((highlight) => (
+                        <span key={highlight} className="lifePathPreviewPlaque__chip">{highlight}</span>
+                      ))}
+                    </div>
+                    <div className="lifePathPreviewPlaque__tags" aria-label="Doctrine tags">
+                      {(activePresentation?.tags ?? []).map((tag) => (
+                        <span key={tag} className="lifePathPreviewPlaque__tag">{tag}</span>
+                      ))}
+                    </div>
+                  </aside>
+                </div>
+                <div className="lifePathTriptych" data-ui="life-path-triptych" data-preview={activePresentationPath} role="group" aria-label="Choose your Life Path">
                 {LIFE_PATHS.map((path) => {
                   const selected = selectedPath === path.id;
                   const disabled = selectedPath !== null && !selected;
-                  const isPreviewed = hoveredPath === path.id;
+                  const isActivePresentation = activePresentationPath === path.id;
                   const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
                   const isCommitting = committingPath === path.id;
                   const presentation = getPathDoctrinePresentation(path.id);
                   const roleCue = presentation?.practicalRoleLine ?? 'Choose this path to shape your life.';
                   const roleId = `lifePath-role-${path.id}`;
-                  const plaqueId = 'lifePath-preview-plaque';
+                  const plaqueId = 'lifePath-active-plaque';
                   return (
                     <div
                       key={path.id}
-                      className={`lifePathPanel lifePathPanel--${path.id}${isPreviewed ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
+                      className={`lifePathPanel lifePathPanel--${path.id}${isActivePresentation ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
                     >
                       <div className="lifePathPanel__frame" aria-hidden />
                       <div className="lifePathPanel__veil" aria-hidden />
