@@ -4,7 +4,7 @@
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=life-start-breath-focus&fx=high`, `/?uiAudit=section-c&surface=life-start-breath-focus&fx=low`, `/?uiAudit=section-c&surface=life-start-breath-focus&fx=reduced`
-- Reachability: **forced-only for audit**
+- Reachability: **state-gated live flow; harness uses forced step hold for deterministic capture**
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
 - Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
@@ -18,7 +18,7 @@
 - Optional: `07-narrow.png`.
 
 ## Manual capture steps
-1. Open harness URL (this uses dev forced view for Step 3).
+1. Open harness URL (this uses dev forced step hold so Step 3 remains visible for capture).
 2. Capture base and interaction without changing production logic.
 3. Capture low/reduced FX variants.
 4. Resize browser for optional narrow capture.

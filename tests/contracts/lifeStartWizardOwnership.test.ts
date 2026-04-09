@@ -49,6 +49,57 @@ test('wizard step registry and resolver never expose a step 4', () => {
   assert.equal(LIFE_START_WIZARD_STEPS.includes(resolved), true);
 });
 
+test('requesting step transitions never resolves outside [1,2,3]', () => {
+  const transitions = [
+    resolveLifeStartWizardUiStep({
+      selectedPath: 'heaven',
+      selectedHeartLawId: null,
+      draftHeartLawId: 'law_heaven',
+      requestedStep: 2,
+    }),
+    resolveLifeStartWizardUiStep({
+      selectedPath: 'heaven',
+      selectedHeartLawId: null,
+      draftHeartLawId: 'law_heaven',
+      requestedStep: 3,
+    }),
+    resolveLifeStartWizardUiStep({
+      selectedPath: 'heaven',
+      selectedHeartLawId: 'law_heaven',
+      draftHeartLawId: 'law_heaven',
+      requestedStep: 2,
+    }),
+    resolveLifeStartWizardUiStep({
+      selectedPath: 'heaven',
+      selectedHeartLawId: 'law_heaven',
+      draftHeartLawId: 'law_heaven',
+      requestedStep: 3,
+    }),
+  ];
+
+  transitions.forEach((step) => {
+    assert.equal(LIFE_START_WIZARD_STEPS.includes(step), true);
+  });
+});
+
+test('path chosen + no committed law + draft selected remains step 3 even after back-forward request sequence', () => {
+  const afterBack = resolveLifeStartWizardUiStep({
+    selectedPath: 'earth',
+    selectedHeartLawId: null,
+    draftHeartLawId: 'law_earth_root',
+    requestedStep: 2,
+  });
+  assert.equal(afterBack, 2);
+
+  const afterForward = resolveLifeStartWizardUiStep({
+    selectedPath: 'earth',
+    selectedHeartLawId: null,
+    draftHeartLawId: 'law_earth_root',
+    requestedStep: 3,
+  });
+  assert.equal(afterForward, 3);
+});
+
 test('external ownership is false once path and committed heart law both exist', () => {
   assert.equal(isLifeStartWizardRequired({ selectedPath: 'earth', selectedHeartLawId: 'law_earth' }), false);
   assert.equal(getLifeStartWizardCommittedStep({ selectedPath: 'earth', selectedHeartLawId: 'law_earth' }), 3);

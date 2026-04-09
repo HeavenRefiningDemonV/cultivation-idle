@@ -61,13 +61,13 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 - **Human label:** Life Start Breath Focus (Step 3)
 - **Screen family:** ritual modal
 - **Owner files:** `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss`, `src/ui/ink/InkModalFrame.tsx`, `src/ui/ink/InkModalFrame.scss`
-- **Current live reachability:** `forced-only for audit`
+- **Current live reachability:** `state-gated (live but transient)`
 - **Already right:** breath mode options and finish CTA are structurally present.
-- **Still weak / generic /unfinished:** state is not naturally stable through current live visibility gate after path + heart-law selection.
+- **Still weak / generic /unfinished:** state is transient after Step 2, so harness still uses forced hold for deterministic capture timing.
 - **Retain through cutover:** existing breath cards and current life-start shell semantics.
 - **Later art not justified yet:** any flow fix/cutover logic rewrite in this packet.
 - **Desktop / narrow notes:** narrow behavior must be captured manually once forced view is open.
-- **High FX / Low FX / Reduced Motion notes:** capture all three from forced harness state.
+- **High FX / Low FX / Reduced Motion notes:** capture all three from harness forced-hold state.
 - **Layout-shift risk:** selected mode card and finish button emphasis must not resize row height.
 - **Blue/flat/generic remnants:** generic card treatment remains.
 - **Screenshot folder:** `docs/release/qa/ui-cutover/life-start-breath-focus/`
@@ -172,7 +172,7 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 ---
 
 ## Known blockers discovered in baseline
-1. `life-start-breath-focus` is forced-only in this audit harness because the current live visibility gate does not naturally preserve Step 3 after path + heart-law selection. Track as baseline blocker for C.1/C.4.
+1. `life-start-breath-focus` is live in the normal Step 1 → Step 2 → Step 3 flow, but remains transient; harness forced-hold is retained for deterministic screenshot capture timing.
 2. Dao Heart family (`dao-heart-law`, `dao-heart-study`, `change-heart-law`) shows mixed mature shell vs generic panel treatment; capture first, polish later.
 3. Screenshot evidence is pending manual capture because this execution environment does not provide browser image artifact tooling.
 

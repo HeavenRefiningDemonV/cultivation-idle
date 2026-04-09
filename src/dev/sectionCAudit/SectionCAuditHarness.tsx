@@ -16,7 +16,7 @@ import { SECTION_C_SURFACE_IDS, type SectionCSurfaceId } from './sectionCSurface
 import './SectionCAuditHarness.scss';
 type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 
-const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set(['life-start-breath-focus']);
+const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set();
 const DEFAULT_SURFACE: SectionCSurfaceId = 'life-start-path';
 
 function parseSurfaceFromQuery(): SectionCSurfaceId {

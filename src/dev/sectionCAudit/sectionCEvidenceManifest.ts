@@ -49,9 +49,9 @@ export const SECTION_C_EVIDENCE_TARGETS: readonly SectionCEvidenceTarget[] = [
     narrowWidthRequired: false,
     interactionRequired: true,
     truthStatesRequired: false,
-    reachability: 'forced-only',
+    reachability: 'state-gated',
     captureRoutes: buildCaptureRoutes('life-start-breath-focus'),
-    notes: 'Forced-only harness state for deterministic capture.',
+    notes: 'Live in normal flow but transient; harness keeps it open with forced step for deterministic capture.',
   },
   {
     id: 'dao-heart-law',

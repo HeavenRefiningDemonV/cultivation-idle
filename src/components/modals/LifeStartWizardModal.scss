@@ -1464,12 +1464,244 @@ body.lifePathMode .notificationToasts {
   margin-top: 2px;
 }
 
+.lifeStartBreathShell {
+  position: relative;
+  border: 1px solid rgba(124, 81, 42, 0.26);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(251, 245, 234, 0.86), rgba(246, 235, 217, 0.8)),
+    url('../../assets/texture_overlay.png');
+  background-size: auto, 420px 420px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+  gap: 14px;
+  box-shadow: inset 0 0 0 1px rgba(80, 48, 25, 0.16);
+}
+
+.lifeStartBreathShell__choices,
+.lifeStartBreathShell__detail {
+  min-width: 0;
+}
+
+.lifeStartBreathShell__choices {
+  display: grid;
+  gap: 10px;
+}
+
+.lifeStartBreathShell__choicesHeader h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.lifeStartBreathShell__choicesHeader p {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--ink-muted-color);
+}
+
+.lifeStartBreathChoicesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  border: 1px solid rgba(121, 76, 40, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 248, 236, 0.72), rgba(249, 238, 220, 0.6));
+  padding: 10px;
+}
+
+.lifeStartBreathChoice {
+  min-height: 172px;
+  border: 1px solid rgba(122, 76, 38, 0.3);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 251, 244, 0.95), rgba(248, 236, 214, 0.84)),
+    url('../../assets/texture_overlay.png');
+  background-size: auto, 260px 260px;
+  text-align: left;
+  padding: 10px;
+  display: grid;
+  grid-template-rows: 18px 24px minmax(54px, auto) minmax(30px, auto) 18px;
+  gap: 5px;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+
+.lifeStartBreathChoice:hover {
+  border-color: rgba(138, 86, 45, 0.52);
+}
+
+.lifeStartBreathChoice--selected {
+  border-color: rgba(144, 85, 39, 0.84);
+  box-shadow:
+    inset 0 0 0 1px rgba(174, 108, 55, 0.34),
+    0 10px 16px rgba(56, 30, 12, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(246, 228, 198, 0.9)),
+    url('../../assets/texture_overlay.png');
+  background-size: auto, 260px 260px;
+}
+
+.lifeStartBreathChoice:focus-visible {
+  outline: 2px solid rgba(130, 72, 27, 0.88);
+  outline-offset: 2px;
+}
+
+.lifeStartBreathChoice__stamp {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(111, 69, 35, 0.84);
+}
+
+.lifeStartBreathChoice__title {
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: rgba(35, 23, 14, 0.94);
+}
+
+.lifeStartBreathChoice__summary {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.32;
+  color: rgba(72, 50, 35, 0.9);
+}
+
+.lifeStartBreathChoice__preferredFor {
+  font-size: 11px;
+  line-height: 1.3;
+  color: rgba(86, 58, 33, 0.86);
+  text-transform: capitalize;
+}
+
+.lifeStartBreathChoice__meta {
+  font-size: 11px;
+  color: var(--ink-muted-color);
+}
+
+.lifeStartBreathShell__detail {
+  border: 1px solid rgba(124, 81, 42, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 250, 242, 0.86);
+  padding: 12px;
+  display: grid;
+  align-content: start;
+  box-shadow: inset 0 0 0 1px rgba(108, 68, 35, 0.14);
+}
+
+.lifeStartBreathDetail {
+  display: grid;
+  gap: 8px;
+}
+
+.lifeStartBreathDetail__eyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(119, 71, 37, 0.84);
+}
+
+.lifeStartBreathDetail__title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.lifeStartBreathDetail__summary {
+  margin: 0;
+  min-height: 36px;
+  font-size: 12px;
+  color: rgba(63, 44, 32, 0.92);
+}
+
+.lifeStartBreathDetail__continuity {
+  border: 1px solid rgba(124, 81, 42, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.62);
+  padding: 6px 8px;
+  min-height: 34px;
+  font-size: 12px;
+  color: rgba(82, 55, 32, 0.9);
+}
+
+.lifeStartBreathDetail__rail {
+  min-height: 148px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.lifeStartBreathDetail__block {
+  border: 1px solid rgba(131, 83, 43, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 249, 239, 0.54);
+  padding: 8px;
+  min-height: 68px;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+}
+
+.lifeStartBreathDetail__blockLabel {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(98, 60, 31, 0.82);
+}
+
+.lifeStartBreathDetail__list {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  color: rgba(67, 47, 33, 0.9);
+  text-transform: capitalize;
+}
+
+.lifeStartBreathDetail__caution {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(67, 47, 33, 0.9);
+}
+
+.lifeStartBreathDetail__ctaLane {
+  border-top: 1px solid rgba(121, 74, 37, 0.18);
+  padding-top: 8px;
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.lifeStartBreathDetail__ctaLane .button-secondary,
+.lifeStartBreathDetail__ctaLane .button-primary {
+  width: 100%;
+}
+
 @media (max-width: 1024px) {
   .lifeStartHeartLawShell {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .lifeStartHeartLawChoicesGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lifeStartBreathShell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lifeStartBreathChoicesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .lifeStartBreathChoicesGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 }

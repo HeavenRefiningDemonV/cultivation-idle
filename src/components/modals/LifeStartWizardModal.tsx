@@ -18,7 +18,7 @@ import {
   resolveLifeStartWizardUiStep,
   type LifeStartWizardStep,
 } from '../../systems/ui/lifeStart/lifeStartWizardContract.js';
-import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import { InkModalFrame, PaperChip } from '../../ui/ink/index.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import { getSelectionCommitDelay } from '../../ui/motion/ritualMotion.js';
 import type { BreathMode, CultivationPath, HeartLawDef } from '../../types/index.js';
@@ -29,11 +29,7 @@ const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string
   { id: 'martial', title: 'MARTIAL', art: martialArt, alt: 'Martial path' },
 ];
 
-const BREATH_MODES = [
-  { id: 'balanced', label: 'Balanced', desc: 'Steady progress with reliable insight.' },
-  { id: 'safe', label: 'Safe', desc: 'Slower, calmer cultivation; favors stability.' },
-  { id: 'fast', label: 'Fast', desc: 'Aggressive cultivation; faster progress with more volatility.' },
-] as const;
+const BREATH_MODE_IDS: readonly BreathMode[] = ['balanced', 'safe', 'fast'];
 
 interface LifeStartWizardModalProps {
   debugForceOpen?: boolean;
@@ -128,7 +124,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
   const pathDoctrineProfile = useMemo(() => getPathDoctrineProfile(selectedPath), [selectedPath]);
   const pathSummary = useMemo(() => getPathDoctrineSummary(selectedPath), [selectedPath]);
-  const breathSemantics = useMemo(() => getBreathModeSemantics(draftBreathMode), [draftBreathMode]);
+  const draftBreathSemantics = useMemo(() => getBreathModeSemantics(draftBreathMode), [draftBreathMode]);
 
   useEffect(() => {
     if (!autoPickChecked) {
@@ -369,7 +365,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
           <p className="wizardPathSummary__desc">{pathSummary}</p>
           <div className="wizardPathSummary__chips">
             {pathDoctrineProfile?.coreIdentity ? <span className="wizardPathSummary__chip">{pathDoctrineProfile.coreIdentity}</span> : null}
-            <span className="wizardPathSummary__chip">Breath: {breathSemantics.label}</span>
+            <span className="wizardPathSummary__chip">Breath: {draftBreathSemantics.label}</span>
           </div>
         </div>
 
@@ -535,47 +531,89 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
         ) : null}
 
         {wizardStep === 3 ? (
-          <div className="wizardSection">
-            <div className="wizardSectionHeader">
-              <h3>Choose Breath Focus</h3>
-              <p>Select how you will pace your cultivation breaths. You can change this later.</p>
-            </div>
-            <div className="wizardCardGrid">
-              {BREATH_MODES.map((mode) => {
-                const selected = draftBreathMode === mode.id;
-                return (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    className={`wizardCardButton${selected ? ' wizardCardButton--selected' : ''}`}
-                    onClick={() => setDraftBreathMode(mode.id)}
-                  >
-                    <PaperCard className={`wizardCard${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
-                      <div className="wizardCardTitle">{mode.label}</div>
-                      <div className="wizardCardDesc">{mode.desc}</div>
-                      <div className="wizardCardMeta">{selected ? 'Selected' : 'Select'}</div>
-                    </PaperCard>
+          <div className="wizardSection lifeStartBreathShell" data-ui="life-start-breath-focus-shell">
+            <section
+              className="lifeStartBreathShell__choices"
+              aria-label="Breath focus choices"
+              data-ui="life-start-breath-focus-selection-region"
+            >
+              <div className="lifeStartBreathShell__choicesHeader">
+                <h3>Choose Breath Focus</h3>
+                <p>Select how this life will pace cultivation breath cycles.</p>
+              </div>
+              <div className="lifeStartBreathChoicesGrid">
+                {BREATH_MODE_IDS.map((modeId) => {
+                  const semantics = getBreathModeSemantics(modeId);
+                  const selected = draftBreathMode === modeId;
+                  const modeName = semantics.label;
+                  return (
+                    <button
+                      key={modeId}
+                      type="button"
+                      className={`lifeStartBreathChoice${selected ? ' lifeStartBreathChoice--selected' : ''}`}
+                      onClick={() => setDraftBreathMode(modeId)}
+                      aria-pressed={selected}
+                      aria-describedby="lifeStartBreathDetailTitle lifeStartBreathDetailSummary"
+                    >
+                      <div className="lifeStartBreathChoice__stamp" aria-hidden="true">
+                        {selected ? 'Chosen' : 'Discipline'}
+                      </div>
+                      <div className="lifeStartBreathChoice__title">{modeName}</div>
+                      <div className="lifeStartBreathChoice__summary">{semantics.summary}</div>
+                      <div className="lifeStartBreathChoice__preferredFor">
+                        Best for: {semantics.preferredFor.slice(0, 2).join(', ').replace(/_/g, ' ')}
+                      </div>
+                      <div className="lifeStartBreathChoice__meta">{selected ? 'Selected for this life' : 'Select focus'}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            <aside
+              className="lifeStartBreathShell__detail"
+              aria-live="polite"
+              data-ui="life-start-breath-focus-detail-region"
+            >
+              <div className="lifeStartBreathDetail">
+                <p className="lifeStartBreathDetail__eyebrow">Breath Discipline</p>
+                <h3 id="lifeStartBreathDetailTitle" className="lifeStartBreathDetail__title">{draftBreathSemantics.label}</h3>
+                <p id="lifeStartBreathDetailSummary" className="lifeStartBreathDetail__summary">{draftBreathSemantics.summary}</p>
+
+                <div className="lifeStartBreathDetail__continuity">
+                  Path: {pathDoctrineProfile?.label ?? 'Unknown'} • Scripture: {selectedHeartLaw?.name ?? 'Awaiting heart law'}
+                </div>
+
+                <div className="lifeStartBreathDetail__rail">
+                  <div className="lifeStartBreathDetail__block">
+                    <p className="lifeStartBreathDetail__blockLabel">Best for</p>
+                    <ul className="lifeStartBreathDetail__list">
+                      {draftBreathSemantics.preferredFor.map((entry) => (
+                        <li key={entry}>{entry.replace(/_/g, ' ')}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="lifeStartBreathDetail__block">
+                    <p className="lifeStartBreathDetail__blockLabel">Caution</p>
+                    <p className="lifeStartBreathDetail__caution">{draftBreathSemantics.cautions[0]}</p>
+                  </div>
+                </div>
+
+                <div className="lifeStartBreathDetail__ctaLane">
+                  <button type="button" className="button-secondary uiNoShift" onClick={() => setRequestedStep(2)}>
+                    Back
                   </button>
-                );
-              })}
-            </div>
-            <div className="wizardFooter wizardFooter--stable">
-              <div className="wizardFooterLane wizardFooterLane--left">
-                <button type="button" className="button-secondary uiNoShift" onClick={() => setRequestedStep(2)}>
-                  Back
-                </button>
+                  <button
+                    type="button"
+                    className="button-primary uiNoShift"
+                    onClick={handleFinish}
+                    disabled={!selectedPath || !draftHeartLawId}
+                  >
+                    Finish
+                  </button>
+                </div>
               </div>
-              <div className="wizardFooterLane wizardFooterLane--right">
-                <button
-                  type="button"
-                  className="button-primary uiNoShift"
-                  onClick={handleFinish}
-                  disabled={!selectedPath || !draftHeartLawId}
-                >
-                  Finish
-                </button>
-              </div>
-            </div>
+            </aside>
           </div>
         ) : null}
       </div>
