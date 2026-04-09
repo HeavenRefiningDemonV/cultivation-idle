@@ -234,6 +234,10 @@
   transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out, opacity 0.16s ease-out;
 }
 
+.prestigeRitualCancelButton--tertiary {
+  background: rgba(236, 228, 214, 0.9);
+}
+
 .prestigeRitualConfirmButton {
   position: relative;
   border: 1px solid rgba(120, 72, 33, 0.4);

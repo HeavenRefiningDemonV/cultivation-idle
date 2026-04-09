@@ -50,19 +50,24 @@ export function LifeSummaryModal() {
       bodyClassName="lifeSummaryModal__body"
       ornament={<div className="lifeSummaryModal__seal" aria-hidden="true"><span /></div>}
       footer={(
-        <div className="lifeSummaryModal__actions">
-          <button type="button" className="lifeSummaryModal__action uiNoShift" onClick={close}>Close</button>
-          <button type="button" className="lifeSummaryModal__action lifeSummaryModal__action--primary uiNoShift" onClick={handleOpenPrestige}>Open Prestige</button>
+        <div className="lifeSummaryModal__actionLane" data-ui="life-summary-action-lane">
+          <p className="lifeSummaryModal__status" role="status" aria-live="polite">
+            {mode === 'current' ? 'Review complete? Open Prestige when ready to reincarnate.' : 'Archive review only — return to Prestige when ready.'}
+          </p>
+          <div className="lifeSummaryModal__actions">
+            <button type="button" className="lifeSummaryModal__action lifeSummaryModal__action--tertiary uiNoShift" onClick={close}>Close</button>
+            <button type="button" className="lifeSummaryModal__action lifeSummaryModal__action--primary uiNoShift" onClick={handleOpenPrestige}>Open Prestige</button>
+          </div>
         </div>
       )}
       ariaLabel={title}
     >
-      <section className="lifeSummaryModal__modeStrip">
+      <section className="lifeSummaryModal__modeStrip" data-ui="life-summary-mode-strip">
         <span className="lifeSummaryModal__modeBadge">{mode === 'current' ? 'Current Review' : 'Last Completed Archive'}</span>
         {capturedAtLabel ? <span className="lifeSummaryModal__capturedAt">Captured: {capturedAtLabel}</span> : <span className="lifeSummaryModal__capturedAt">&nbsp;</span>}
       </section>
 
-      <section className="lifeSummaryModal__meta">
+      <section className="lifeSummaryModal__meta" data-ui="life-summary-meta-strip">
         {surface ? (
           <>
             <div className="lifeSummaryModal__metaItem">
@@ -84,7 +89,7 @@ export function LifeSummaryModal() {
       </section>
 
       {surface ? (
-        <section className="lifeSummaryModal__blocks">
+        <section className="lifeSummaryModal__blocks" data-ui="life-summary-blocks">
           {surface.blocks.map((block) => (
             <article key={block.key} className="lifeSummaryModal__block">
               <h3>{block.title}</h3>

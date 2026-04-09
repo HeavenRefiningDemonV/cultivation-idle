@@ -135,13 +135,13 @@ export function PrestigeRitualModal({
       variant="ritual"
       size="lg"
       className="prestigeRitualModalHost"
-      panelClassName={canPrestigeNow ? undefined : 'prestigeRitualModalHost__panel--sealed'}
+      panelClassName={canPrestigeNow ? 'prestigeRitualModalHost__panel' : 'prestigeRitualModalHost__panel prestigeRitualModalHost__panel--sealed'}
       bodyClassName="prestigeRitualBody"
       ornament={<div className="prestigeRitualSeal" aria-hidden="true"><span /></div>}
       footer={(
-        <div className="prestigeRitualFooter">
+        <div className="prestigeRitualFooter" data-ui="prestige-ritual-action-lane">
           <div className="prestigeRitualFooter__left">
-            <button type="button" className="prestigeRitualCancelButton uiNoShift" onClick={handleClose}>Cancel</button>
+            <button type="button" className="prestigeRitualCancelButton prestigeRitualCancelButton--tertiary uiNoShift" onClick={handleClose}>Cancel</button>
             <div className="prestigeRitualFooterNote">Hold the decree seal to confirm reincarnation. Releasing early cancels the hold.</div>
           </div>
           <div className="prestigeRitualFooter__right">
@@ -171,7 +171,7 @@ export function PrestigeRitualModal({
       )}
       ariaLabel="Confirm Reincarnation Ritual"
     >
-      <section className="prestigeRitualSection">
+      <section className="prestigeRitualSection prestigeRitualSection--summary" data-ui="prestige-ritual-summary">
         <div className="prestigeRitualSectionTitle">Ritual Summary</div>
         <div className="prestigeRitualSummaryGrid">
           <div>
@@ -191,7 +191,7 @@ export function PrestigeRitualModal({
         </div>
       </section>
 
-      <section className="prestigeRitualSection prestigeRitualSection--decree">
+      <section className="prestigeRitualSection prestigeRitualSection--decree" data-ui="prestige-ritual-decree">
         <div className="prestigeRitualSectionTitle">Reincarnation Decree</div>
         <div className="prestigeRitualDecreeGrid">
           <article className="prestigeRitualDecreeCard">
@@ -236,7 +236,7 @@ export function PrestigeRitualModal({
         </div>
       </section>
 
-      <section className="prestigeRitualSection">
+      <section className="prestigeRitualSection prestigeRitualSection--breakdown" data-ui="prestige-ritual-breakdown">
         <div className="prestigeRitualSectionTitle">AP Breakdown</div>
         <div className="prestigeRitualBreakdownSummary">Total potential gain: +{breakdown.potentialGain} AP</div>
         {breakdown.potentialGain === 0 && (
@@ -255,7 +255,7 @@ export function PrestigeRitualModal({
         </div>
       </section>
 
-      <section className="prestigeRitualSection">
+      <section className="prestigeRitualSection prestigeRitualSection--warning" data-ui="prestige-ritual-warning">
         <div className="prestigeRitualSectionTitle">Final Warning</div>
         <div className="prestigeRitualWarning">This cannot be undone. You will restart from the mortal realm.</div>
         <div className="prestigeRitualWarningHint">Use this when your current chapter push is complete and you want faster progress next life.</div>
