@@ -4,30 +4,34 @@
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=high`, `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=low`, `/?uiAudit=section-c&surface=current-chapter-exhausted&fx=reduced`
-- Reachability: `gated by another state` (opened by harness)
-- Capture status (this pass): **CAPTURE PENDING — MANUAL**
-- Capture mechanism: manual screenshots or `node --experimental-strip-types scripts/release/captureSectionCEvidence.ts --json` (automation requires Playwright).
+- Reachability: `state-gated (harnessed)`
+- Capture status (P3-12A): **CAPTURE PENDING — NO EVIDENCE PNGS IN REPO**
+- Capture mechanism: manual capture is the approved baseline. Automation attempt in this environment failed because Playwright/Chromium is not available.
+- Scope note: Truth-state slot is intentionally N/A for this surface.
 
-## Required slots
+## Screenshot slots
 - `01-base.png` — required.
 - `02-interaction.png` — required (three action buttons).
-- `03-truth-states.png` — **N/A** (no separate ready/warning/recommended state family).
+- `03-truth-states.png` — **N/A**.
 - `04-high-fx.png` — required.
 - `05-low-fx.png` — required.
 - `06-reduced-motion.png` — required.
-- Optional: `07-narrow.png`.
+- `07-narrow.png` — optional.
 
 ## Manual capture steps
-1. Open harness URL and verify modal opens cleanly.
-2. Capture base and interaction states.
-3. Capture low/reduced FX variants.
-4. Resize browser for optional narrow screenshot.
+1. Open the harness route with `fx=high` and `&controls=0` when cleaner framing is needed.
+2. Capture `01-base.png` and `02-interaction.png` for the exact target surface.
+3. Capture truth-state slot according to the rules above (required vs explicit N/A).
+4. Capture `04-high-fx.png`, then switch to `fx=low` for `05-low-fx.png` and `fx=reduced` for `06-reduced-motion.png`.
+5. Optional: capture `07-narrow.png` via manual browser resize.
 
-
-## Missing required files
+## Missing required files (audit-truth)
 - `01-base.png`
 - `02-interaction.png`
-- `03-truth-states.png` — **N/A** for this surface
 - `04-high-fx.png`
 - `05-low-fx.png`
 - `06-reduced-motion.png`
+
+## Evidence debt status
+- No required evidence PNG files are currently present in this folder.
+- Surface remains additive/deferred until evidence + human reviewer signoff (G1–G8) are complete.

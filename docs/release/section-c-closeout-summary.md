@@ -1,9 +1,13 @@
-# Section C Closeout Summary (Packet C.12)
+# Section C Closeout Summary
 
-Date: 2026-03-31
+## Historical C.12 closeout snapshot (2026-03-31)
+- All nine Section C targets were deferred.
+- Required screenshot evidence files were missing.
+- No cleanup was unlocked.
 
-## 1) Reviewed target screens
+## P3-12A refresh (2026-04-09)
 
+### Reviewed targets
 1. `life-start-path`
 2. `life-start-heart-law`
 3. `life-start-breath-focus`
@@ -14,40 +18,25 @@ Date: 2026-03-31
 8. `current-chapter-exhausted`
 9. `life-summary`
 
-## 2) Decision/status per screen (C.12R-B ingest)
+### Evidence truth
+- `npm run release:section-c-evidence-audit:json` still fails.
+- Required PNG evidence remains missing for all nine targets.
+- Capture automation was attempted but failed in this environment due missing Playwright/Chromium.
 
-All nine targets remain **DEFERRED** in `docs/release/ui_screen_signoff_sheet.md`.
+### Cleanup status
+- **No destructive cleanup performed.**
+- **No screens approved for cleanup in P3-12A.**
+- All screens remain additive/deferred until evidence + reviewer gate completion.
 
-Engineering evidence ingest result: Section C evidence audit still reports required PNG files missing for every target folder, so G1 fails for all nine screens and no cleanup is unlocked.
+### Why Section C is not closed yet
+- G1 cannot pass for any target because required screenshot sets do not exist in-repo.
+- Without G1, G3–G8 cannot be fully reviewer-certified.
 
-## 3) Cleanup actually performed
+### Deferred follow-up carried into Phase 4
+1. Manual screenshot capture of required slots for all nine surfaces.
+2. Human reviewer completion of G1–G8 cutover checks.
+3. Per-screen cleanup decisions only after evidence-backed signoff.
 
-- **None.**
-- No destructive UI cleanup executed in C.12.
-
-## 4) Screens left additive and why
-
-- All nine Section C targets remain additive.
-- Evidence-first cutover gate criteria cannot be certified without the required screenshot set and reviewer signoff.
-
-## 5) Whether C.0 baseline evidence existed
-
-- C.0 baseline index doc exists.
-- C.0 image artifacts are still missing in-repo for the nine Section C target folders as of C.12R-B ingest.
-
-## 6) Immediate art-trigger decision
-
-- **No immediate art request justified.**
-- Missing requirement is proof capture/review, not a demonstrated reusable art-role gap.
-
-## 7) C.12R-A / C.12R-B mechanical closeout readiness
-
-- Section C has a single manifest-backed evidence map (`src/dev/sectionCAudit/sectionCEvidenceManifest.ts`).
-- Section C has a machine-checkable evidence audit command (`npm run release:section-c-evidence-audit`) that currently fails due missing PNG artifacts.
-- Dev harness ids and evidence manifest ids are test-covered for drift.
-
-## 8) Unresolved follow-up items intentionally deferred beyond C.12R-B
-
-1. Manual screenshot capture for each target screen and each required slot.
-2. Reviewer completion of G1–G8 gate decisions using real evidence.
-3. Any destructive cleanup only after explicit per-screen `APPROVED FOR CLEANUP` status.
+### Art trigger decision
+- Missing screenshots are evidence debt, not by themselves proof that new art is required.
+- No immediate art trigger is justified solely from this closeout state.

@@ -4,33 +4,35 @@
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=life-summary&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=life-summary&fx=high`, `/?uiAudit=section-c&surface=life-summary&fx=low`, `/?uiAudit=section-c&surface=life-summary&fx=reduced`
-- Reachability: `gated by another state` (harness uses `current` mode baseline)
-- Capture status (this pass): **CAPTURE PENDING — MANUAL**
-- Capture mechanism: manual screenshots or `node --experimental-strip-types scripts/release/captureSectionCEvidence.ts --json` (automation requires Playwright).
+- Reachability: `state-gated (harnessed current mode only)`
+- Capture status (P3-12A): **CAPTURE PENDING — NO EVIDENCE PNGS IN REPO**
+- Capture mechanism: manual capture is the approved baseline. Automation attempt in this environment failed because Playwright/Chromium is not available.
+- Scope note: Section C scope is current mode only; do not widen to last_completed in this packet.
 
-## Required slots
+## Screenshot slots
 - `01-base.png` — required.
-- `02-interaction.png` — required (footer actions and scroll interactions if present).
-- `03-truth-states.png` — required (advisor/AP/meta + summary blocks).
+- `02-interaction.png` — required (footer actions and scrolling if present).
+- `03-truth-states.png` — required.
 - `04-high-fx.png` — required.
 - `05-low-fx.png` — required.
 - `06-reduced-motion.png` — required.
-- Optional: `07-narrow.png`.
+- `07-narrow.png` — optional.
 
 ## Manual capture steps
-1. Open harness URL and confirm `current` mode surface.
-2. Capture base, interaction, and truth-state slots.
-3. Capture low/reduced FX variants.
-4. Resize browser for optional narrow screenshot.
+1. Open the harness route with `fx=high` and `&controls=0` when cleaner framing is needed.
+2. Capture `01-base.png` and `02-interaction.png` for the exact target surface.
+3. Capture truth-state slot according to the rules above (required vs explicit N/A).
+4. Capture `04-high-fx.png`, then switch to `fx=low` for `05-low-fx.png` and `fx=reduced` for `06-reduced-motion.png`.
+5. Optional: capture `07-narrow.png` via manual browser resize.
 
-## Scope note
-- `last_completed` is intentionally out-of-scope for this C.0 baseline family.
-
-
-## Missing required files
+## Missing required files (audit-truth)
 - `01-base.png`
 - `02-interaction.png`
 - `03-truth-states.png`
 - `04-high-fx.png`
 - `05-low-fx.png`
 - `06-reduced-motion.png`
+
+## Evidence debt status
+- No required evidence PNG files are currently present in this folder.
+- Surface remains additive/deferred until evidence + human reviewer signoff (G1–G8) are complete.

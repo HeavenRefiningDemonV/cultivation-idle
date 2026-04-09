@@ -986,3 +986,30 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 - `APPROVED FOR CLEANUP`:
 - `REJECTED — REMAIN ADDITIVE`:
 - `DEFERRED`: **SELECTED**
+
+---
+
+## P3-12A Section C refresh (2026-04-09)
+
+Evidence audit source: `npm run release:section-c-evidence-audit:json` (failed: required PNG slots missing for all nine surfaces).
+
+Capture automation attempt source: `NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/captureSectionCEvidence.ts --json` (failed: Playwright/Chromium unavailable in this environment).
+
+### P3-12A gate status matrix (all Section C targets)
+
+| surface id | G1 | G2 | G3 | G4 | G5 | G6 | G7 | G8 | final decision | rationale |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `life-start-path` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | No required evidence set; additive state retained. |
+| `life-start-heart-law` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | No required evidence set; additive state retained. |
+| `life-start-breath-focus` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | Forced-only harness capture still needed; no evidence set. |
+| `dao-heart-law` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | No required evidence set; additive state retained. |
+| `dao-heart-study` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | No required evidence set; additive state retained. |
+| `change-heart-law` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | State-gated truth-state captures absent. |
+| `prestige-ritual` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | No required evidence set; additive state retained. |
+| `current-chapter-exhausted` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | State-gated evidence absent; truth-state slot N/A does not remove other required slots. |
+| `life-summary` | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | DEFERRED | Current-mode evidence set absent. |
+
+### P3-12A cleanup verdict
+- `APPROVED FOR CLEANUP`: **none**
+- `REJECTED — REMAIN ADDITIVE`: none selected in this pass
+- `DEFERRED`: **all nine Section C surfaces**
