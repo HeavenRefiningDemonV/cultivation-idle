@@ -198,6 +198,9 @@ export function StatusScreen() {
                 <StatusLine label="State" value={troubleshooting.readiness.readinessLabel} />
                 <StatusLine label="Gate" value={troubleshooting.readiness.gateTrialName} />
                 <StatusLine label="Diagnosis" value={troubleshooting.readiness.diagnosisLabel} />
+                {troubleshooting.readiness.reasons.map((reason, index) => (
+                  <StatusLine key={`${reason}-${index}`} label={`Reason ${index + 1}`} value={reason} />
+                ))}
                 {troubleshooting.readiness.warnings.map((warning) => <StatusLine key={warning} label="Warning" value={warning} />)}
                 <StatusLine label="Biggest Shortfall" value={troubleshooting.readiness.shortfallLine} />
               </StatusMiniCard>
@@ -247,6 +250,28 @@ export function StatusScreen() {
                 <StatusLine label="Affordability" value={troubleshooting.safetyNet.affordability} />
                 <StatusLine label="Context" value={troubleshooting.safetyNet.blockedReason} />
               </StatusMiniCard>
+            </div>
+          </section>
+
+          <section className="statusActionStrip statusScreenCardBase statusScreenCardBase--subordinate" aria-label="Status primary next fix">
+            <div className="statusActionStrip__main">
+              <div className="statusActionStrip__title">Best Next Action</div>
+              <div className="statusActionStrip__reason">{troubleshooting.shortfall.headline}</div>
+            </div>
+            <div className="statusActionStrip__ctaLane">
+              {primaryStatusAction ? (
+                <button
+                  type="button"
+                  className="statusActionStrip__cta uiNoShift"
+                  onClick={() => performRunCompassAction(primaryStatusAction)}
+                  disabled={primaryStatusAction.blocked}
+                  title={primaryStatusAction.blockedReason ?? primaryStatusAction.why}
+                >
+                  {primaryStatusAction.label}
+                </button>
+              ) : (
+                <span className="statusActionStrip__quiet">No stronger action is surfaced right now.</span>
+              )}
             </div>
           </section>
 

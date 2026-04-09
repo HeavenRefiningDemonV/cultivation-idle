@@ -25,7 +25,7 @@ function renderActionButton(action: RunCompassActionLine, onAction?: (action: Ru
   if (!onAction || action.blocked || !action.target) return null;
   return (
     <button type="button" className="runCompassAction__button" onClick={() => onAction(action)}>
-      Open
+      Open {action.destinationLabel}
     </button>
   );
 }

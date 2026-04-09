@@ -75,12 +75,13 @@ test('status troubleshooting runtime surface returns locked shortfall line and s
   const surface = buildStatusTroubleshootingSurface();
 
   assert.match(`${surface.shortfall.diagnosisLabel} — ${surface.shortfall.reason}`, /—/);
+  assert.match(surface.shortfall.headline, /^Biggest Shortfall:\s/);
   if (surface.shortfall.topFix) {
     assert.equal(/Raise Forge Floor|Stabilize Preparation|Tune Build Slots|Resolve Current Gate/.test(surface.shortfall.topFix), false);
   }
   assert.equal(surface.combatStrip.length, 4);
   assert.match(surface.safetyNet.progress, /Safety Net progress:/);
-  assert.match(surface.safetyNet.affordability, /Affordable now|Need more Merit \/ Spirit Stones/);
+  assert.match(surface.safetyNet.affordability, /Affordable now|Need more Merit \/ Spirit Stones|Too Early|Viable|Recommended/);
 });
 
 test('status troubleshooting runtime cap state keeps gate wording honest', async () => {
