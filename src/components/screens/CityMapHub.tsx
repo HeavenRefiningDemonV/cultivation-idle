@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import { ScenicLabel, type ScenicLabelState } from '../../ui/shell/index.js';
+import { getWorldRoutingChipLabel, type WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -48,6 +49,12 @@ export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
   recommendedModuleKey?: string | null;
+  moduleMetadataByKey?: Readonly<Record<string, {
+    roleTag: string;
+    bestUsedWhen: string;
+    outputs: readonly string[];
+    chipKind: WorldRoutingChipKind | null;
+  }>>;
   getModuleLabel: (moduleKey: string) => string;
   onOpenModule: (moduleKey: string) => void;
 }
@@ -56,6 +63,7 @@ export function CityMapHub({
   modules,
   activeModuleKey,
   recommendedModuleKey = null,
+  moduleMetadataByKey = {},
   getModuleLabel,
   onOpenModule,
 }: CityMapHubProps) {
@@ -83,6 +91,19 @@ export function CityMapHub({
           const isActive = activeModuleKey === moduleKey;
           const isRecommended = !isActive && recommendedModuleKey === moduleKey;
           const labelState: ScenicLabelState = isActive ? 'active' : isRecommended ? 'recommended' : 'default';
+          const moduleMetadata = moduleMetadataByKey[moduleKey];
+          const moduleOutputs = moduleMetadata?.outputs?.slice(0, 2) ?? [];
+          const outputsLine = moduleOutputs.length > 0 ? `Outputs: ${moduleOutputs.join(' • ')}` : null;
+          const roleLine = moduleMetadata?.roleTag ?? null;
+          const guidanceLine = moduleMetadata?.bestUsedWhen ?? null;
+          const chipLabel = moduleMetadata?.chipKind ? getWorldRoutingChipLabel(moduleMetadata.chipKind) : null;
+          const labelTitle = [
+            getModuleLabel(moduleKey),
+            roleLine,
+            guidanceLine,
+            outputsLine,
+          ].filter((line): line is string => Boolean(line)).join('\n');
+          const sublabel = roleLine && outputsLine ? `${roleLine} • ${outputsLine}` : roleLine ?? outputsLine ?? undefined;
 
           return (
             <div
@@ -94,10 +115,18 @@ export function CityMapHub({
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
               <ScenicLabel
-                label={getModuleLabel(moduleKey)}
+                label={
+                  <span className="cityMapHubHotspotLabel">
+                    <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
+                    {guidanceLine ? <span className="cityMapHubHotspotLabelGuidance">{guidanceLine}</span> : null}
+                  </span>
+                }
                 variant={CITY_MAP_HUB_SCENIC_LABEL_VARIANT}
                 state={labelState}
                 reserveStateSlot={CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT}
+                stateSlot={chipLabel ?? undefined}
+                sublabel={sublabel}
+                sublabelClassName="cityMapHubHotspotSubLabel"
                 emphasis={isActive ? 'medium' : 'quiet'}
                 className="cityMapHubHotspotTrigger uiNoShift"
                 onClick={() => onOpenModule(moduleKey)}
@@ -105,7 +134,7 @@ export function CityMapHub({
                 onMouseLeave={() => handleHover(null)}
                 onFocus={() => handleHover(moduleKey)}
                 onBlur={() => handleHover(null)}
-                title={`Open ${getModuleLabel(moduleKey)}`}
+                title={labelTitle}
               />
             </div>
           );

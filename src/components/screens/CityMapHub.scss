@@ -27,11 +27,40 @@
 }
 
 .cityMapHubHotspotTrigger {
-  max-inline-size: min(26vw, 170px);
+  max-inline-size: min(34vw, 282px);
+  align-items: flex-start;
 }
 
 .cityMapHubHotspot--manualPavilion .cityMapHubHotspotTrigger {
-  max-inline-size: min(30vw, 210px);
+  max-inline-size: min(36vw, 320px);
+}
+
+.cityMapHubHotspotLabel {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cityMapHubHotspotLabelName {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.cityMapHubHotspotLabelGuidance {
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+  text-transform: none;
+  white-space: normal;
+  max-inline-size: min(28vw, 190px);
+}
+
+.cityMapHubHotspotSubLabel {
+  white-space: normal;
+  line-height: 1.15;
+  max-inline-size: min(28vw, 190px);
 }
 
 .cityMapHubHotspot--active {
@@ -44,7 +73,12 @@
 
 @media (max-width: 980px) {
   .cityMapHubHotspotTrigger {
-    max-inline-size: min(38vw, 148px);
+    max-inline-size: min(56vw, 240px);
+  }
+
+  .cityMapHubHotspotLabelGuidance,
+  .cityMapHubHotspotSubLabel {
+    max-inline-size: min(50vw, 190px);
   }
 }
 

@@ -35,6 +35,7 @@ import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/eco
 import { CITY_PACKAGE_REGISTRY_BY_ID } from '../../systems/world/cityPackageRegistry.js';
 import { SUPPORT_IDENTITY_LABELS } from '../../systems/ui/world/worldCommandSurface.js';
 import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModuleRoutingSurface.js';
+import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import { WorldCommandAlert } from '../../ui/world/WorldCommandAlert.js';
 import { WorldModuleCard } from '../../ui/world/WorldModuleCard.js';
 import { WorldModuleGroup } from '../../ui/world/WorldModuleGroup.js';
@@ -334,6 +335,26 @@ export function WorldScreen() {
     return null;
   }, [selectedCity, worldCommandSurface.strongRecommendationModuleKey]);
 
+  const moduleMetadataByKey = useMemo(() => {
+    const byModuleKey: Record<string, {
+      roleTag: string;
+      bestUsedWhen: string;
+      outputs: readonly string[];
+      chipKind: WorldRoutingChipKind | null;
+    }> = {};
+    for (const group of worldCommandSurface.groups) {
+      for (const card of group.cards) {
+        byModuleKey[card.moduleKey] = {
+          roleTag: card.roleTag,
+          bestUsedWhen: card.bestUsedWhen,
+          outputs: card.outputs,
+          chipKind: card.chips[0]?.kind ?? null,
+        };
+      }
+    }
+    return byModuleKey;
+  }, [worldCommandSurface.groups]);
+
   const inspectorStatusArea = (
     <div className="worldInspectorStatusLine">
       <strong>{sanitizeLiveCityName(selectedCity?.name ?? 'City')}</strong>
@@ -351,7 +372,7 @@ export function WorldScreen() {
 
   const worldInspectorBody = selectedCity ? (
     <>
-      <section className="worldCommandSummary worldScreenPanel">
+      <section className="worldCommandSummary worldScreenPanel worldScreenCitySummary">
         <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
         {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
         {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
@@ -444,6 +465,10 @@ export function WorldScreen() {
 
   if (!isLoaded || citiesSorted.length === 0) return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
 
+  const selectedCitySelectorEntry = selectedCity
+    ? worldSelectorEntries.find((entry) => entry.city.id === selectedCity.id) ?? null
+    : null;
+
   return (
     <div className={'worldScreen'}>
       <TopRibbon
@@ -454,25 +479,30 @@ export function WorldScreen() {
         title={getShellTabLabel('adventure')}
         subtitle="Choose your current city and route your loop."
         endSlot={
-          <div className="worldTopRibbon__citySelectWrapper">
-            <label className="worldTopRibbon__cityLabel" htmlFor="world-city-select">City</label>
-            <select
-              id="world-city-select"
-              className="worldTopRibbon__citySelect"
-              value={currentCityId ?? ''}
-              onChange={(e) => {
-                const next = worldSelectorEntries.find((entry) => entry.city.id === e.target.value)?.city;
-                if (next) handleSelectCity(next);
-              }}
-            >
-              <option value="" disabled>Select a city</option>
-              {worldSelectorEntries.map(({ city, isUnlocked, requirementText }) => (
-                <option key={city.id} value={city.id} disabled={!isUnlocked}>
-                  {city.name}
-                  {isUnlocked ? '' : requirementText ? ` — Locked (${requirementText})` : ' — Locked'}
-                </option>
+          <div className="worldTopRibbon__citySelectWrapper" role="group" aria-label="City selector">
+            <div className="worldTopRibbon__cityLabel">Current semester cities</div>
+            <div className="worldTopRibbon__cityList">
+              {worldSelectorEntries.map(({ city, isUnlocked, isCurrent, requirementText }) => (
+                <button
+                  key={city.id}
+                  type="button"
+                  className={`worldTopRibbon__cityChip uiNoShift ${isCurrent ? 'worldTopRibbon__cityChip--current' : ''} ${!isUnlocked ? 'worldTopRibbon__cityChip--locked' : ''}`}
+                  onClick={() => handleSelectCity(city)}
+                  disabled={!isUnlocked}
+                  aria-current={isCurrent ? 'true' : undefined}
+                  title={isUnlocked ? `Travel to ${sanitizeLiveCityName(city.name)}` : `${sanitizeLiveCityName(city.name)} locked: ${requirementText ?? 'Progress required'}`}
+                >
+                  <span className="worldTopRibbon__cityChipName">{sanitizeLiveCityName(city.name)}</span>
+                  {isCurrent ? (
+                    <span className="worldTopRibbon__cityChipMeta">Current city</span>
+                  ) : isUnlocked ? (
+                    <span className="worldTopRibbon__cityChipMeta">Unlocked</span>
+                  ) : (
+                    <span className="worldTopRibbon__cityChipMeta">Locked ({requirementText ?? 'Progress required'})</span>
+                  )}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         }
       />
@@ -486,13 +516,18 @@ export function WorldScreen() {
               <div className="worldScreenHubShell">
                 <div className="worldScreenHubShellHeader">
                   <h2 className="worldScreenHubShellTitle">City Map</h2>
-                  <p className="worldScreenHubShellSubtitle">Map ownership is primary. Command cards below are support routing only.</p>
+                  <p className="worldScreenHubShellSubtitle">
+                    {selectedCitySelectorEntry?.isCurrent
+                      ? `${sanitizeLiveCityName(selectedCity.name)} is your pinned city. Map ownership stays primary.`
+                      : 'Map ownership is primary. Command cards below are support routing only.'}
+                  </p>
                 </div>
                 <div className={'worldScreenPanel worldScreenHubPanel'}>
                   <CityMapHub
                     modules={visibleCityModules}
                     activeModuleKey={activeModuleKey}
                     recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
+                    moduleMetadataByKey={moduleMetadataByKey}
                     getModuleLabel={getWorldModuleLabel}
                     onOpenModule={handleOpenModule}
                   />

@@ -3882,8 +3882,9 @@
 
 .worldTopRibbon__citySelectWrapper {
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .worldTopRibbon__cityLabel {
@@ -3893,24 +3894,52 @@
   color: var(--paper-ink-faint, rgba(92, 81, 70, 0.72));
 }
 
-.worldTopRibbon__citySelect {
-  font-family: 'Julee', cursive;
-  min-width: 200px;
-  padding: 6px 10px;
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  border-radius: 10px;
-  background: rgba(250, 242, 226, 0.92);
-  color: var(--paper-ink, #1f1a17);
-  transition:
-    border-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
-    box-shadow var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease),
-    background-color var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+.worldTopRibbon__cityList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: min(72vw, 560px);
 }
 
-.worldTopRibbon__citySelect:focus-visible {
-  outline: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
-  outline-offset: 2px;
-  border-color: rgba(120, 72, 33, 0.52);
+.worldTopRibbon__cityChip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 134px;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 72, 33, 0.35);
+  background: rgba(250, 242, 226, 0.92);
+  color: var(--paper-ink, #1f1a17);
+  font-family: inherit;
+  --ui-no-shift-outline-active: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
+  --ui-no-shift-outline-offset: 2px;
+}
+
+.worldTopRibbon__cityChipName {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.worldTopRibbon__cityChipMeta {
+  font-size: 11px;
+  line-height: 1.1;
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+}
+
+.worldTopRibbon__cityChip--current {
+  border-color: rgba(120, 72, 33, 0.62);
+  background: rgba(251, 244, 228, 0.98);
+}
+
+.worldTopRibbon__cityChip--locked,
+.worldTopRibbon__cityChip:disabled {
+  opacity: 0.78;
+  filter: saturate(0.76);
+  cursor: not-allowed;
 }
 
 .worldScreenCitySummary {
