@@ -16,7 +16,6 @@ import { SECTION_C_SURFACE_IDS, type SectionCSurfaceId } from './sectionCSurface
 import './SectionCAuditHarness.scss';
 type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
 
-const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set(['life-start-breath-focus']);
 const DEFAULT_SURFACE: SectionCSurfaceId = 'life-start-path';
 
 function parseSurfaceFromQuery(): SectionCSurfaceId {
@@ -214,7 +213,7 @@ export function SectionCAuditHarness() {
           </label>
           <button type="button" className="button-standard" onClick={toggleControls}>Hide Controls</button>
           <div className="sectionCAuditPanel__meta">
-            Reachability: {FORCED_ONLY_SURFACES.has(surface) ? 'forced-only for audit' : 'live / state-gated'}
+            Reachability: {surface === 'life-start-breath-focus' ? 'state-gated live flow (forced pin for capture)' : 'live / state-gated'}
           </div>
           <div className="sectionCAuditPanel__meta">Narrow-width pass uses manual browser resize.</div>
         </aside>

@@ -14,12 +14,14 @@
 - That shell primitives can replace local screen owners.
 
 ## B) Immediate next-phase target
-Immediate next screen-phase family after Phase 2 exit:
-1. Life Start
-2. Path Selection
-3. Heart Law selection
+Immediate next screen-phase family after Phase 2 exit (legacy wording normalized to current repo truth):
+1. Life Start ritual sequence (Step 1 path, Step 2 heart-law, Step 3 breath-focus)
+2. Dao Heart ritual family (heart-law tab + study tab + change-heart-law overlay)
+3. Prestige-linked ritual modals (`prestige-ritual`, `current-chapter-exhausted`, `life-summary`)
 
 These are the next legal targets for deep screen-phase ownership work under the inherited contracts listed below.
+
+> Legacy note: older packet language sometimes split "Path Selection" and "Heart Law selection" as standalone owners. Current repo truth is integrated under `LifeStartWizardModal`; see `docs/ui/phase-3-repo-truth-register.md`.
 
 ## C) Carry-forward rules later packets must cite
 1. Preserve-first doctrine remains mandatory.
@@ -61,3 +63,8 @@ Later packets may **not**:
 - Medium-mode capture parity is still uneven in practical screenshot workflows.
 - Visual debt remains explicitly deferred (verse bar placement, lotus icon tuning, blue residue, layout-shift hotspots, icon pass debt, bespoke Dao Heart/Heart Law treatment).
 - Cleanup authority remains locked behind per-screen signoff, not this handoff.
+
+
+## H) Phase 3 repo-truth pointer
+- Canonical Phase 3 ritual surface ownership now lives in `docs/ui/phase-3-repo-truth-register.md`.
+- This handoff remains the inherited contract source; it does not grant cleanup authority.

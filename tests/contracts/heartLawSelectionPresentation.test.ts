@@ -34,6 +34,7 @@ test('every live heart law has family, tier, resonance labels, and <= 3 tags', (
     assert.ok(presentation.familyLabel.trim().length > 0);
     assert.ok(presentation.tierLabel.trim().length > 0);
     assert.ok(presentation.resonanceLabel.trim().length > 0);
+    assert.ok(presentation.roleLine.trim().length > 0);
     assert.ok(presentation.tagLabels.length <= 3);
   }
 });

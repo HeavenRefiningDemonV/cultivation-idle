@@ -3,7 +3,6 @@ import './LifeStartWizardModal.scss';
 import heavenArt from '../../assets/menus/path_heaven 1.png';
 import earthArt from '../../assets/menus/path_earth 1.png';
 import martialArt from '../../assets/menus/path_martial 1.png';
-import barLong from '../../assets/menus/bar_long.png';
 import { SaveService } from '../../services/save/SaveService.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useGameStore } from '../../stores/gameStore.js';
@@ -14,14 +13,12 @@ import { getBreathModeSemantics } from '../../systems/doctrine/breathSemantics.j
 import { getPathDoctrineProfile, getPathDoctrineSummary } from '../../systems/doctrine/pathDoctrineRegistry.js';
 import { getPathDoctrinePresentation } from '../../systems/doctrine/pathDoctrinePresentation.js';
 import { getHeartLawSelectionPresentation } from '../../systems/doctrine/heartLawSelectionPresentation.js';
-import { getAffinityStatus } from '../../systems/heartLaw/heartLawLogic.js';
-import { getHeartLawUnlockInfo } from '../../systems/heartLaw/heartLawUnlockInfo.js';
 import {
   LIFE_START_WIZARD_STEPS,
   resolveLifeStartWizardUiStep,
   type LifeStartWizardStep,
 } from '../../systems/ui/lifeStart/lifeStartWizardContract.js';
-import { InkModalFrame, PaperCard, PaperChip } from '../../ui/ink/index.js';
+import { InkModalFrame, PaperChip } from '../../ui/ink/index.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import { getSelectionCommitDelay } from '../../ui/motion/ritualMotion.js';
 import type { BreathMode, CultivationPath, HeartLawDef } from '../../types/index.js';
@@ -32,11 +29,7 @@ const LIFE_PATHS: { id: CultivationPath; title: string; art: string; alt: string
   { id: 'martial', title: 'MARTIAL', art: martialArt, alt: 'Martial path' },
 ];
 
-const BREATH_MODES = [
-  { id: 'balanced', label: 'Balanced', desc: 'Steady progress with reliable insight.' },
-  { id: 'safe', label: 'Safe', desc: 'Slower, calmer cultivation; favors stability.' },
-  { id: 'fast', label: 'Fast', desc: 'Aggressive cultivation; faster progress with more volatility.' },
-] as const;
+const BREATH_MODES: readonly BreathMode[] = ['balanced', 'safe', 'fast'];
 
 
 const HEART_LAW_EFFECT_LABELS: Record<string, string> = {
@@ -158,6 +151,8 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   const pathDoctrineProfile = useMemo(() => getPathDoctrineProfile(selectedPath), [selectedPath]);
   const pathSummary = useMemo(() => getPathDoctrineSummary(selectedPath), [selectedPath]);
   const breathSemantics = useMemo(() => getBreathModeSemantics(draftBreathMode), [draftBreathMode]);
+  const selectedPathLabel = pathDoctrineProfile?.label ?? 'Unknown Path';
+  const selectedHeartLawLabel = selectedHeartLaw?.name ?? 'Awaiting scripture';
 
   useEffect(() => {
     if (!autoPickChecked) {
@@ -258,13 +253,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     [heartLaws, previewHeartLawId],
   );
 
-  const previewUnlockInfo = useMemo(
-    () => getHeartLawUnlockInfo(previewHeartLaw?.tier),
-    [previewHeartLaw?.tier],
-  );
-
   const previewUnlocked = previewHeartLaw ? isHeartLawUnlocked(previewHeartLaw.id) : false;
-  const previewResonance = useMemo(() => getAffinityStatus(previewHeartLaw, spiritRoot), [previewHeartLaw, spiritRoot]);
 
   const previewPresentationCard = useMemo(() => {
     if (!previewHeartLaw) return null;
@@ -276,8 +265,8 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
   }, [chosenHeartLawId, previewHeartLaw, previewUnlocked, spiritRoot]);
 
   const showAutoPick = prestigeCount > 0 && Boolean(lifeStartWizardContext.lastHeartLawId);
-  const previewedPath: CultivationPath = hoveredPath ?? 'heaven';
-  const previewPresentation = getPathDoctrinePresentation(previewedPath);
+  const activePresentationPath: CultivationPath = hoveredPath ?? committingPath ?? selectedPath ?? 'heaven';
+  const activePresentation = getPathDoctrinePresentation(activePresentationPath);
 
   if (!shouldShow) return null;
 
@@ -285,49 +274,58 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
     return (
       <div className="lifeStartWizardOverlay lifeStartWizardOverlay--path">
         <div className="lifeStartWizardModal lifeStartWizardModal--path">
-          <div className="lifePathFullscreen" data-ui="life-path-fullscreen" data-fx-quality={effectiveQuality}>
+          <div
+            className="lifePathFullscreen"
+            data-ui="life-path-fullscreen"
+            data-fx-quality={effectiveQuality}
+            data-reduced-motion={prefersReducedMotion ? 'true' : 'false'}
+          >
             <div className="lifePathHero">
               <div className="lifePathHeroBackdrop" aria-hidden />
               <header className="lifePathHeroHeader">
                 <p className="lifePathHeroEyebrow">New Life Ritual</p>
                 <h2 className="lifePathHeroTitle">Choose Your Path</h2>
                 <p className="lifePathHeroSubline">Select the doctrine that will shape this life.</p>
-                <img className="lifePathHeroDivider" src={barLong} alt="" aria-hidden />
                 <div className="lifePathHeroDividerBar" aria-hidden />
               </header>
 
-              <aside id="lifePath-preview-plaque" className={`lifePathPreviewPlaque lifePathPreviewPlaque--${previewedPath}`} aria-live="polite">
-                <div className="lifePathPreviewPlaque__label">{previewPresentation?.label ?? 'Path Preview'}</div>
-                <p className="lifePathPreviewPlaque__subtitle">{previewPresentation?.doctrineSubtitle ?? 'Choose a doctrine to preview its cadence.'}</p>
-                <p className="lifePathPreviewPlaque__summary">{previewPresentation?.summary ?? 'Choose a doctrine to preview its philosophy.'}</p>
-                <div className="lifePathPreviewPlaque__highlights" aria-label="Path highlights">
-                  {(previewPresentation?.statHighlights ?? []).map((highlight) => (
-                    <span key={highlight} className="lifePathPreviewPlaque__chip">{highlight}</span>
-                  ))}
-                </div>
-                <div className="lifePathPreviewPlaque__tags" aria-label="Doctrine tags">
-                  {(previewPresentation?.tags ?? []).map((tag) => (
-                    <span key={tag} className="lifePathPreviewPlaque__tag">{tag}</span>
-                  ))}
-                </div>
-              </aside>
-
               <div className="lifePathTriptychFrame">
-                <div className="lifePathTriptych" data-ui="life-path-triptych" data-preview={previewedPath} role="group" aria-label="Choose your Life Path">
+                <div className={`lifePathTriptychRail lifePathTriptychRail--${activePresentationPath}`} data-active-path={activePresentationPath}>
+                  <aside
+                    id="lifePath-active-plaque"
+                    className={`lifePathPreviewPlaque lifePathPreviewPlaque--${activePresentationPath}`}
+                    aria-live="polite"
+                  >
+                    <div className="lifePathPreviewPlaque__label">{activePresentation?.label ?? 'Path Preview'}</div>
+                    <p className="lifePathPreviewPlaque__subtitle">{activePresentation?.doctrineSubtitle ?? 'Choose a doctrine to preview its cadence.'}</p>
+                    <p className="lifePathPreviewPlaque__summary">{activePresentation?.summary ?? 'Choose a doctrine to preview its philosophy.'}</p>
+                    <div className="lifePathPreviewPlaque__highlights" aria-label="Path highlights">
+                      {(activePresentation?.statHighlights ?? []).map((highlight) => (
+                        <span key={highlight} className="lifePathPreviewPlaque__chip">{highlight}</span>
+                      ))}
+                    </div>
+                    <div className="lifePathPreviewPlaque__tags" aria-label="Doctrine tags">
+                      {(activePresentation?.tags ?? []).map((tag) => (
+                        <span key={tag} className="lifePathPreviewPlaque__tag">{tag}</span>
+                      ))}
+                    </div>
+                  </aside>
+                </div>
+                <div className="lifePathTriptych" data-ui="life-path-triptych" data-preview={activePresentationPath} role="group" aria-label="Choose your Life Path">
                 {LIFE_PATHS.map((path) => {
                   const selected = selectedPath === path.id;
                   const disabled = selectedPath !== null && !selected;
-                  const isPreviewed = hoveredPath === path.id;
+                  const isActivePresentation = activePresentationPath === path.id;
                   const isDimmed = hoveredPath !== null && hoveredPath !== path.id;
                   const isCommitting = committingPath === path.id;
                   const presentation = getPathDoctrinePresentation(path.id);
                   const roleCue = presentation?.practicalRoleLine ?? 'Choose this path to shape your life.';
                   const roleId = `lifePath-role-${path.id}`;
-                  const plaqueId = 'lifePath-preview-plaque';
+                  const plaqueId = 'lifePath-active-plaque';
                   return (
                     <div
                       key={path.id}
-                      className={`lifePathPanel lifePathPanel--${path.id}${isPreviewed ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
+                      className={`lifePathPanel lifePathPanel--${path.id}${isActivePresentation ? ' lifePathPanel--previewed' : ''}${isDimmed ? ' lifePathPanel--receded' : ''}${isCommitting ? ' lifePathPanel--commit' : ''}`}
                     >
                       <div className="lifePathPanel__frame" aria-hidden />
                       <div className="lifePathPanel__veil" aria-hidden />
@@ -401,7 +399,12 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
         {wizardStep === 2 ? (
           <div className="wizardSection lifeStartHeartLawShell" data-ui="life-start-heart-law-shell">
-            <div className="lifeStartHeartLawShell__choices" role="group" aria-label="Heart Law choices">
+            <div
+              className="lifeStartHeartLawShell__choices"
+              role="group"
+              aria-label="Heart Law choices"
+              data-ui="life-start-heart-law-selection-region"
+            >
               <div className="lifeStartHeartLawShell__choicesHeader">
                 <h3>Choose Your Heart Law (Xinfa)</h3>
                 <p>Select the scripture that governs your verses, resonance, and cultivation cadence.</p>
@@ -437,6 +440,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                       <div className="lifeStartHeartLawChoice__title">{presentation.label}</div>
                       <div className="lifeStartHeartLawChoice__family">{presentation.familyLabel}</div>
                       <div className={`lifeStartHeartLawChoice__resonance lifeStartHeartLawChoice__resonance--${presentation.resonanceTone}`}>{presentation.resonanceLabel}</div>
+                      <div className="lifeStartHeartLawChoice__role">{presentation.roleLine}</div>
                       <div className="lifeStartHeartLawChoice__tags">
                         {presentation.tagLabels.map((tag) => (
                           <span key={tag} className="lifeStartHeartLawChoice__tag">{tag}</span>
@@ -454,7 +458,11 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
               </div>
             </div>
 
-            <aside className={`lifeStartHeartLawShell__detail lifeStartHeartLawShell__detail--${previewPresentationCard?.previewFamilyTone ?? 'unknown'}`} aria-live="polite">
+            <aside
+              className={`lifeStartHeartLawShell__detail lifeStartHeartLawShell__detail--${previewPresentationCard?.previewFamilyTone ?? 'unknown'}`}
+              aria-live="polite"
+              data-ui="life-start-heart-law-detail-region"
+            >
               <div className="lifeStartHeartLawDetail">
                 <p className="lifeStartHeartLawDetail__eyebrow">Scripture Detail</p>
                 <h3 id="lifeStartHeartLawDetailTitle" className="lifeStartHeartLawDetail__title">{previewHeartLaw?.name ?? 'No Heart Law available'}</h3>
@@ -463,15 +471,17 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 </p>
 
                 <p className="lifeStartHeartLawDetail__doctrineSubtitle">{previewPresentationCard?.doctrineSubtitle ?? 'Doctrine scripture.'}</p>
+                <p className="lifeStartHeartLawDetail__roleLine">{previewPresentationCard?.roleLine ?? 'Role: Foundational doctrine support.'}</p>
 
-                <div id="lifeStartHeartLawDetailResonance" className={`lifeStartHeartLawResonance lifeStartHeartLawResonance--${previewResonance.status}`}>
-                  {previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel} — ${previewPresentationCard.resonanceDetail}` : (
-                    previewResonance.status === 'none'
-                      ? 'Resonance: None'
-                      : previewResonance.status === 'match'
-                        ? `Resonance: Match (+${previewResonance.percent}% signature potency)`
-                        : `Resonance: Mismatch (-${previewResonance.percent}% signature potency)`
-                  )}
+                <div id="lifeStartHeartLawDetailResonance" className={`lifeStartHeartLawResonance lifeStartHeartLawResonance--${previewPresentationCard?.resonanceTone ?? 'neutral'}`}>
+                  {previewPresentationCard ? `Resonance: ${previewPresentationCard.resonanceLabel} — ${previewPresentationCard.resonanceDetail}` : 'Resonance: Neutral — No resonance bonus needed.'}
+                </div>
+
+                <div className="lifeStartHeartLawDetail__anchor" aria-hidden="true" data-ui="life-start-heart-law-sacred-anchor">
+                  <div className="lifeStartHeartLawDetail__anchorSeal" />
+                  <div className="lifeStartHeartLawDetail__anchorLabel">Inner Scripture Altar</div>
+                  <div className="lifeStartHeartLawDetail__anchorName">{previewHeartLaw?.name ?? 'Scripture Awaiting'}</div>
+                  <div className="lifeStartHeartLawDetail__anchorLine">{previewPresentationCard?.doctrineSubtitle ?? 'Parchment stillness'}</div>
                 </div>
 
                 <div className="lifeStartHeartLawDetail__tags" aria-label="Dao tags">
@@ -494,13 +504,11 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 </div>
 
                 <p className="lifeStartHeartLawDetail__unlock">
-                  {previewUnlocked
-                    ? 'Unlocked: Ready to cultivate this scripture now.'
-                    : previewUnlockInfo.kind === 'prestige'
-                      ? `Locked until ${previewUnlockInfo.upgradeName} (${previewUnlockInfo.apCost} AP).`
-                      : previewUnlockInfo.kind === 'starter'
-                        ? 'Starter scripture available immediately.'
-                        : 'Locked — Unlock via Prestige progression.'}
+                  {previewPresentationCard?.isLocked
+                    ? `Locked: ${previewPresentationCard.unlockLine}.`
+                    : previewPresentationCard?.isStarter
+                      ? 'Starter scripture available immediately.'
+                      : 'Available now: ready to cultivate this scripture in this life.'}
                 </p>
 
                 <div className="lifeStartHeartLawDetail__ctaLane">
@@ -536,13 +544,6 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                   {autoPickError ? <div className="lifeStartHeartLawMemory__error">{autoPickError}</div> : null}
                 </div>
               </div>
-
-              <div className="lifeStartHeartLawPreview" aria-hidden="true">
-                <div className="lifeStartHeartLawPreview__seal" />
-                <div className="lifeStartHeartLawPreview__label">Sacred Scripture Altar</div>
-                <div className="lifeStartHeartLawPreview__name">{previewHeartLaw?.name ?? 'Scripture Awaiting'}</div>
-                <div className="lifeStartHeartLawPreview__line">{previewPresentationCard?.doctrineSubtitle ?? 'Parchment stillness'}</div>
-              </div>
             </aside>
 
             <div className="wizardFooter wizardFooter--stable">
@@ -562,47 +563,82 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
         ) : null}
 
         {wizardStep === 3 ? (
-          <div className="wizardSection">
-            <div className="wizardSectionHeader">
-              <h3>Choose Breath Focus</h3>
-              <p>Select how you will pace your cultivation breaths. You can change this later.</p>
+          <div className="wizardSection lifeStartBreathShell" data-ui="life-start-breath-focus-shell">
+            <div
+              className="lifeStartBreathShell__choices"
+              role="group"
+              aria-label="Breath Focus choices"
+              data-ui="life-start-breath-focus-selection-region"
+            >
+              <div className="lifeStartBreathShell__choicesHeader">
+                <h3>Choose Breath Focus</h3>
+                <p>Select how you will pace your cultivation breaths. You can change this later.</p>
+              </div>
+
+              <div className="lifeStartBreathChoicesGrid">
+                {BREATH_MODES.map((mode) => {
+                  const selected = draftBreathMode === mode;
+                  const semantics = getBreathModeSemantics(mode);
+                  return (
+                    <button
+                      key={mode}
+                      type="button"
+                      className={`lifeStartBreathChoice${selected ? ' lifeStartBreathChoice--selected' : ''}`}
+                      onClick={() => setDraftBreathMode(mode)}
+                      aria-pressed={selected}
+                      aria-describedby="lifeStartBreathDetailTitle lifeStartBreathDetailSummary"
+                    >
+                      <div className="lifeStartBreathChoice__stamp">{selected ? 'Selected' : 'Available'}</div>
+                      <div className="lifeStartBreathChoice__title">{semantics.label}</div>
+                      <p className="lifeStartBreathChoice__summary">{semantics.summary}</p>
+                      <div className="lifeStartBreathChoice__role">
+                        Best for {semantics.preferredFor.slice(0, 2).join(' • ')}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="wizardCardGrid">
-              {BREATH_MODES.map((mode) => {
-                const selected = draftBreathMode === mode.id;
-                return (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    className={`wizardCardButton${selected ? ' wizardCardButton--selected' : ''}`}
-                    onClick={() => setDraftBreathMode(mode.id)}
-                  >
-                    <PaperCard className={`wizardCard${selected ? ' wizardCard--selected' : ''}`} selected={selected} interactive>
-                      <div className="wizardCardTitle">{mode.label}</div>
-                      <div className="wizardCardDesc">{mode.desc}</div>
-                      <div className="wizardCardMeta">{selected ? 'Selected' : 'Select'}</div>
-                    </PaperCard>
+
+            <aside
+              className="lifeStartBreathShell__detail"
+              aria-live="polite"
+              data-ui="life-start-breath-focus-detail-region"
+            >
+              <div className="lifeStartBreathDetail">
+                <p className="lifeStartBreathDetail__eyebrow">Breath Discipline</p>
+                <h3 id="lifeStartBreathDetailTitle" className="lifeStartBreathDetail__title">{breathSemantics.label}</h3>
+                <p id="lifeStartBreathDetailSummary" className="lifeStartBreathDetail__summary">{breathSemantics.summary}</p>
+
+                <div className="lifeStartBreathDetail__support">
+                  <p className="lifeStartBreathDetail__supportTitle">Best For</p>
+                  <p className="lifeStartBreathDetail__supportBody">{breathSemantics.preferredFor.join(' • ')}</p>
+                </div>
+
+                <div className="lifeStartBreathDetail__caution">
+                  <p className="lifeStartBreathDetail__supportTitle">Caution</p>
+                  <p className="lifeStartBreathDetail__supportBody">{breathSemantics.cautions[0]}</p>
+                </div>
+
+                <p className="lifeStartBreathDetail__continuity">
+                  Current draft: {selectedPathLabel} • {selectedHeartLawLabel} • {breathSemantics.label}
+                </p>
+
+                <div className="lifeStartBreathDetail__ctaLane">
+                  <button type="button" className="button-secondary uiNoShift" onClick={() => setRequestedStep(2)}>
+                    Back
                   </button>
-                );
-              })}
-            </div>
-            <div className="wizardFooter wizardFooter--stable">
-              <div className="wizardFooterLane wizardFooterLane--left">
-                <button type="button" className="button-secondary uiNoShift" onClick={() => setRequestedStep(2)}>
-                  Back
-                </button>
+                  <button
+                    type="button"
+                    className="button-primary uiNoShift"
+                    onClick={handleFinish}
+                    disabled={!selectedPath || !draftHeartLawId}
+                  >
+                    Finish with {breathSemantics.label}
+                  </button>
+                </div>
               </div>
-              <div className="wizardFooterLane wizardFooterLane--right">
-                <button
-                  type="button"
-                  className="button-primary uiNoShift"
-                  onClick={handleFinish}
-                  disabled={!selectedPath || !draftHeartLawId}
-                >
-                  Finish
-                </button>
-              </div>
-            </div>
+            </aside>
           </div>
         ) : null}
       </div>

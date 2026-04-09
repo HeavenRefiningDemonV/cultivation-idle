@@ -3,6 +3,10 @@
 ## Purpose and scope
 Lock current Section C ritual-selection truth before any C.1+ visual packet work. This artifact is baseline-only and does not authorize cleanup.
 
+## Phase 3 repo-truth authority note
+- For current owner targeting and stale-reference resolution, use `docs/ui/phase-3-repo-truth-register.md` as the authoritative P3 source.
+- This C.0 baseline remains historical context and capture-debt tracking, not cleanup approval.
+
 ## Audit method used in this pass
 - Verified owner/reachability behavior against the current working tree.
 - Verified harness route coverage for all nine surface ids.
@@ -57,13 +61,13 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 - **Human label:** Life Start Breath Focus (Step 3)
 - **Screen family:** ritual modal
 - **Owner files:** `src/components/modals/LifeStartWizardModal.tsx`, `src/components/modals/LifeStartWizardModal.scss`, `src/ui/ink/InkModalFrame.tsx`, `src/ui/ink/InkModalFrame.scss`
-- **Current live reachability:** `forced-only for audit`
+- **Current live reachability:** `state-gated live flow` (harness pins Step 3 for deterministic captures)
 - **Already right:** breath mode options and finish CTA are structurally present.
-- **Still weak / generic /unfinished:** state is not naturally stable through current live visibility gate after path + heart-law selection.
+- **Still weak / generic /unfinished:** card-grid treatment reads generic relative to Step 2 ritual shell; detail semantics were previously under-surfaced.
 - **Retain through cutover:** existing breath cards and current life-start shell semantics.
 - **Later art not justified yet:** any flow fix/cutover logic rewrite in this packet.
 - **Desktop / narrow notes:** narrow behavior must be captured manually once forced view is open.
-- **High FX / Low FX / Reduced Motion notes:** capture all three from forced harness state.
+- **High FX / Low FX / Reduced Motion notes:** capture all three via harness Step 3 pinning.
 - **Layout-shift risk:** selected mode card and finish button emphasis must not resize row height.
 - **Blue/flat/generic remnants:** generic card treatment remains.
 - **Screenshot folder:** `docs/release/qa/ui-cutover/life-start-breath-focus/`
@@ -88,8 +92,8 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 ## 5) `dao-heart-study`
 - **Human label:** Dao Heart — Study tab
 - **Screen family:** ritual modal
-- **Owner files:** `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss`, `src/ui/cultivation/StudyModeWidget.tsx`
-- **Current live reachability:** `live but awkward`
+- **Owner files:** `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss`, `src/ui/cultivation/StudyModeWidget.tsx`, `src/ui/cultivation/StudyModeWidget.scss`
+- **Current live reachability:** `live`
 - **Already right:** study tab is integrated in the same DaoHeart shell and uses real widget data.
 - **Still weak / generic / unfinished:** visual integration between Study widget and modal shell remains uneven.
 - **Retain through cutover:** current tab shell and study-widget-in-modal ownership.
@@ -104,7 +108,7 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 ## 6) `change-heart-law`
 - **Human label:** Change Heart Law overlay
 - **Screen family:** ritual modal
-- **Owner files:** `src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx`, `src/ui/cultivation/heartLaw/HeartLawPanel.scss`
+- **Owner files:** `src/ui/cultivation/heartLaw/ChangeHeartLawModal.tsx`, `src/ui/cultivation/heartLaw/ChangeHeartLawModal.scss`
 - **Current live reachability:** `gated by another state`
 - **Already right:** functionally clear warning, cost, lock-state and confirm/cancel flow.
 - **Still weak / generic / unfinished:** visually generic and still inherits `HeartLawPanel.scss` language.
@@ -168,6 +172,12 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 ---
 
 ## Known blockers discovered in baseline
-1. `life-start-breath-focus` is forced-only in this audit harness because the current live visibility gate does not naturally preserve Step 3 after path + heart-law selection. Track as baseline blocker for C.1/C.4.
+1. `life-start-breath-focus` is live in the natural Step 1→2→3 route, but audit capture still uses forced pinning to hold the transient pre-finish step deterministically.
 2. Dao Heart family (`dao-heart-law`, `dao-heart-study`, `change-heart-law`) shows mixed mature shell vs generic panel treatment; capture first, polish later.
 3. Screenshot evidence is pending manual capture because this execution environment does not provide browser image artifact tooling.
+
+
+## Legacy packet-name crosswalk
+- Legacy C.x language can remain as chronology, but current targeting should use canonical surface IDs from `src/dev/sectionCAudit/sectionCSurfaceIds.ts`.
+- Historical "Path Selection" references map to `life-start-path` under `LifeStartWizardModal` ownership; do not target a standalone `PathSelectionModal`.
+- Historical references to missing selection FX are stale: `src/ui/fx/scenes/SelectionFxScene.tsx` exists and is intentionally stubbed/null in current repo truth.

@@ -23,6 +23,7 @@ export interface HeartLawSelectionPresentation {
   isLocked: boolean;
   isStarter: boolean;
   doctrineSubtitle: string;
+  roleLine: string;
   fantasyDescription: string;
   practicalDescription: string;
   signatureSummary: string;
@@ -39,34 +40,40 @@ const RESONANCE_LABELS: Readonly<Record<ResonanceTier, { label: string; detail: 
   mismatch: Object.freeze({ label: 'Weak (minor penalty)', detail: 'Usable, but less aligned.' }),
 });
 
-const FAMILY_COPY: Readonly<Record<HeartLawFamily, { subtitle: string; fantasy: string; practical: string }>> = Object.freeze({
+const FAMILY_COPY: Readonly<Record<HeartLawFamily, { subtitle: string; roleLine: string; fantasy: string; practical: string }>> = Object.freeze({
   circulation: Object.freeze({
     subtitle: 'Breath-circulation scripture.',
+    roleLine: 'Role: Smooth cadence and flow control.',
     fantasy: 'A doctrine of turning tides and unbroken inner rhythm.',
     practical: 'Best when you want smooth cultivation flow and consistent momentum.',
   }),
   stability: Object.freeze({
     subtitle: 'Stability scripture.',
+    roleLine: 'Role: Defensive discipline and risk control.',
     fantasy: 'A grounded codex that tempers the heart into still stone.',
     practical: 'Best for steady, durable lives that avoid collapse under pressure.',
   }),
   insight: Object.freeze({
     subtitle: 'Insight scripture.',
+    roleLine: 'Role: Precision setup and timing clarity.',
     fantasy: 'A lantern doctrine that sharpens perception through quiet focus.',
     practical: 'Best for knowledge-forward lives that value precision and timing.',
   }),
   endurance: Object.freeze({
     subtitle: 'Endurance scripture.',
+    roleLine: 'Role: Long-fight composure and sustain.',
     fantasy: 'A deep reservoir path that survives the long trial.',
     practical: 'Best when you favor survivability, composure, and long engagements.',
   }),
   burst: Object.freeze({
     subtitle: 'Burst scripture.',
+    roleLine: 'Role: Decisive windows and pressure spikes.',
     fantasy: 'A fierce manual that condenses intent into sudden decisive release.',
     practical: 'Best for aggressive lives that seek sharp windows of advantage.',
   }),
   breakthrough: Object.freeze({
     subtitle: 'Breakthrough scripture.',
+    roleLine: 'Role: Milestone pushes and peak transitions.',
     fantasy: 'A threshold doctrine that gathers force for realm-defining leaps.',
     practical: 'Best when you want peak pushes and strong milestone transitions.',
   }),
@@ -187,6 +194,7 @@ export function buildHeartLawSelectionPresentation(
     isLocked: !input.isUnlocked,
     isStarter: input.unlockInfo.kind === 'starter',
     doctrineSubtitle: familyCopy?.subtitle ?? 'Doctrine scripture.',
+    roleLine: familyCopy?.roleLine ?? 'Role: Foundational doctrine support.',
     fantasyDescription: familyCopy?.fantasy ?? 'A scripture carried through quiet inner discipline.',
     practicalDescription: familyCopy?.practical ?? 'Best for reliable doctrine development in early lives.',
     signatureSummary: signature.signatureSummary,
