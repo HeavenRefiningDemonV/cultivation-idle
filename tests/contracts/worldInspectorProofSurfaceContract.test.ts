@@ -21,6 +21,13 @@ test('WorldScreen uses a shared world inspector body for both wide and narrow pa
   assert.equal(occurrences, 2, 'worldInspectorBody should be rendered in wide and narrow inspector paths');
 });
 
+test('WorldScreen preserves map-owns-page composition with subordinate command deck and shared inspector architecture', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  assert.match(file, /worldScreenHubPanel/);
+  assert.match(file, /worldCommandDeck worldCommandDeck--subordinate/);
+  assert.match(file, /worldScreenInspectorRegion/);
+});
+
 test('Narrow world drawer removes duplicate visible title ownership while keeping InspectorPanel hierarchy', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
   assert.match(file, /title="World Details"/);

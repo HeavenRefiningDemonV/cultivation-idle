@@ -147,8 +147,8 @@
 
 .worldScreenShellLayout {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 420px);
-  gap: 12px;
+  grid-template-columns: minmax(0, 1.68fr) minmax(312px, 392px);
+  gap: 14px;
   min-height: 0;
   flex: 1;
 }
@@ -158,14 +158,17 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .worldScreenInspectorRegion {
   min-width: 0;
+  min-height: 0;
+  align-self: stretch;
 }
 
 .worldScreenInspector {
+  height: 100%;
   max-height: 100%;
 }
 
@@ -3867,8 +3870,9 @@
 }
 
 .worldScreenModuleButton--subtle {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(250, 242, 226, 0.9);
+  border-color: rgba(122, 94, 53, 0.4);
+  color: var(--paper-ink, #1f1a17);
 }
 
 .worldScreenModuleButton--ghost {
@@ -3950,36 +3954,69 @@
 
 .worldScreenHubPanel {
   flex: 0 0 auto;
-  min-height: 520px;
+  min-height: 560px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(120, 72, 33, 0.34);
-  background: linear-gradient(180deg, rgba(250, 242, 226, 0.08), rgba(15, 23, 42, 0.28));
+  isolation: isolate;
+  border: 1px solid rgba(120, 72, 33, 0.26);
+  background:
+    linear-gradient(180deg, rgba(254, 247, 233, 0.2), rgba(23, 27, 36, 0.18)),
+    radial-gradient(circle at 22% 16%, rgba(250, 242, 226, 0.18), rgba(250, 242, 226, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 244, 225, 0.24),
+    0 10px 30px rgba(11, 8, 6, 0.24);
+}
+
+.worldScreenHubPanel::before,
+.worldScreenHubPanel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.worldScreenHubPanel::before {
+  z-index: 1;
+  background:
+    radial-gradient(circle at 9% 14%, rgba(255, 247, 232, 0.22), rgba(255, 247, 232, 0) 42%),
+    radial-gradient(circle at 86% 84%, rgba(14, 20, 30, 0.26), rgba(14, 20, 30, 0) 44%);
+}
+
+.worldScreenHubPanel::after {
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(255, 251, 241, 0.08), rgba(21, 17, 13, 0.18));
+}
+
+.worldScreenHubPanel > * {
+  position: relative;
+  z-index: 2;
 }
 
 .worldScreenHubShell {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .worldScreenHubShellHeader {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  padding: 2px 4px 0;
 }
 
 .worldScreenHubShellTitle {
   margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--paper-ink, #f8fafc);
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  color: rgba(245, 235, 217, 0.92);
 }
 
 .worldScreenHubShellSubtitle {
   margin: 0;
   font-size: 12px;
-  color: var(--paper-ink-faint, rgba(226, 232, 240, 0.84));
+  color: rgba(232, 222, 208, 0.74);
 }
 
 .worldScreenModuleGuidanceGrid {
@@ -4004,6 +4041,11 @@
 
 .worldScreenRunCompassWrapper {
   width: 100%;
+  border: 1px solid rgba(122, 94, 53, 0.28);
+  border-radius: 12px;
+  background: rgba(251, 246, 237, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 249, 240, 0.44);
+  padding: 8px;
 }
 
 .worldScreenRunCompass {
@@ -4012,20 +4054,23 @@
 
 .worldCommandSummary {
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(122, 94, 53, 0.3);
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(248, 240, 224, 0.86);
+  color: var(--paper-ink, #1f1a17);
+  box-shadow: 0 4px 14px rgba(16, 10, 4, 0.14);
 }
 
 .worldCommandSummaryCity {
   font-size: 18px;
   font-weight: 800;
   margin-bottom: 4px;
+  color: var(--paper-ink, #1f1a17);
 }
 
 .worldCommandSummaryLine {
   font-size: 13px;
-  color: #cbd5e1;
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
   margin-top: 3px;
 }
 
@@ -4044,9 +4089,9 @@
 }
 
 .worldCommandQuickOpenChip {
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  background: rgba(30, 41, 59, 0.6);
-  color: #f8fafc;
+  border: 1px solid rgba(122, 94, 53, 0.38);
+  background: rgba(252, 245, 232, 0.92);
+  color: var(--paper-ink, #1f1a17);
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 999px;
@@ -4094,7 +4139,11 @@
 }
 
 .worldCommandDeck--subordinate {
-  opacity: 0.95;
+  opacity: 0.89;
+  border-radius: 14px;
+  border: 1px solid rgba(122, 94, 53, 0.2);
+  background: linear-gradient(180deg, rgba(246, 237, 219, 0.24), rgba(246, 237, 219, 0.08));
+  padding: 10px;
 }
 
 .worldCommandGroup {
@@ -4196,4 +4245,36 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.worldScreenInspector .inspectorPanel__frame {
+  border-color: rgba(122, 94, 53, 0.28);
+  background:
+    linear-gradient(180deg, rgba(250, 242, 226, 0.94), rgba(243, 233, 214, 0.9)),
+    radial-gradient(circle at 94% 8%, rgba(255, 247, 231, 0.28), rgba(255, 247, 231, 0));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 249, 240, 0.42),
+    0 10px 24px rgba(16, 11, 6, 0.16);
+}
+
+.worldScreenInspector .inspectorPanel__statusArea,
+.worldScreenInspector .inspectorPanel__recommendationArea {
+  background: rgba(252, 246, 235, 0.92);
+}
+
+@media (max-width: 1360px) {
+  .worldScreenShellLayout {
+    grid-template-columns: minmax(0, 1.58fr) minmax(300px, 360px);
+  }
+
+  .worldScreenHubPanel {
+    min-height: 540px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .worldScreenHubPanel::before,
+  .worldScreenHubPanel::after {
+    opacity: 0.82;
+  }
 }

@@ -25,9 +25,13 @@ test('ui/shell barrel re-exports ScenicLabel option registries', () => {
 
 test('CityMapHub keeps ScenicLabel diegetic wiring frozen for world map hotspots', () => {
   const file = read('src/components/screens/CityMapHub.tsx');
+  const styles = read('src/components/screens/CityMapHub.scss');
 
   assert.match(file, /CITY_MAP_HUB_SCENIC_LABEL_VARIANT = 'building' as const/);
   assert.match(file, /CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT = true/);
   assert.match(file, /variant=\{CITY_MAP_HUB_SCENIC_LABEL_VARIANT\}/);
   assert.match(file, /reserveStateSlot=\{CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT\}/);
+  assert.match(file, /className="cityMapHubHotspotTrigger uiNoShift"/);
+  assert.match(styles, /cityMapHubHotspotTrigger\.scenicLabel--recommended/);
+  assert.match(styles, /cityMapHubHotspotTrigger\.scenicLabel--active/);
 });
