@@ -41,6 +41,12 @@ test('WorldScreen resolves city support identity labels from the city package re
   assert.doesNotMatch(file, /systems\/ui\/world\/worldCommandSurface\.js/);
 });
 
+test('World city selector exposes locked requirements in-chip and keeps locked entries keyboard-reviewable', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  assert.match(file, /aria-disabled=\{!isUnlocked \? 'true' : undefined\}/);
+  assert.doesNotMatch(file, /Progress required/);
+});
+
 test('No new inspector consumers were added outside the world proof surface', () => {
   const liveLayout = read('src/components/GameLayout.tsx');
   assert.doesNotMatch(liveLayout, /InspectorPanel/);

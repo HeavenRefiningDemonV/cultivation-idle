@@ -27,6 +27,7 @@ import {
   getWorldTravelGuard,
 } from '../../systems/world/travelContract.js';
 import { SEMESTER_SLICE_CONTRACT } from '../../systems/progression/contract/semesterSlice.js';
+import { getLiveRealmNameById } from '../../systems/progression/runtime/liveRealmProjection.js';
 import { getShellTabLabel, getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
@@ -45,9 +46,16 @@ import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRe
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
-const EMPTY_CITY_REQUIREMENT_MAP: Readonly<Record<string, string | null>> = Object.freeze({});
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 const WORLD_INSPECTOR_NARROW_QUERY = '(max-width: 1180px)';
+const LOCK_REQUIREMENT_UNAVAILABLE = 'Requirement unavailable';
+
+function deriveCityRequirementText(city: CityDef): string | null {
+  if ((city.index ?? 0) <= 0) return null;
+  if (!city.unlockMajorRealm) return null;
+  const realmName = getLiveRealmNameById(city.unlockMajorRealm as never);
+  return realmName ? `Reach ${realmName}` : null;
+}
 
 export function WorldScreen() {
   const addNotification = useUIStore((state) => state.addNotification);
@@ -92,14 +100,16 @@ export function WorldScreen() {
   }, [citiesSorted, currentCityId]);
 
   const cityRequirementById = useMemo(() => {
-    if (!rawContent) return EMPTY_CITY_REQUIREMENT_MAP;
+    if (!rawContent) {
+      return Object.fromEntries(citiesSorted.map((city) => [city.id, deriveCityRequirementText(city)])) as Record<string, string | null>;
+    }
     try {
       const contract = getProgressionContract(adaptProgressionAuthoredContent(rawContent));
       return Object.fromEntries(
-        citiesSorted.map((city) => [city.id, getCityUnlockRequirementText(contract, city.id)]),
+        citiesSorted.map((city) => [city.id, getCityUnlockRequirementText(contract, city.id) ?? deriveCityRequirementText(city)]),
       ) as Record<string, string | null>;
     } catch {
-      return EMPTY_CITY_REQUIREMENT_MAP;
+      return Object.fromEntries(citiesSorted.map((city) => [city.id, deriveCityRequirementText(city)])) as Record<string, string | null>;
     }
   }, [citiesSorted, rawContent]);
 
@@ -434,6 +444,11 @@ export function WorldScreen() {
     });
 
     if (!travelGuard.allowed) {
+      if (travelGuard.reason === 'city-locked') {
+        const requirement = cityRequirementById[city.id] ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE;
+        addNotification('warning', `${sanitizeLiveCityName(city.name)} is locked (${requirement}).`);
+        return;
+      }
       const message = getWorldTravelBlockMessage(travelGuard.reason);
       if (message) addNotification('warning', message);
       return;
@@ -487,9 +502,9 @@ export function WorldScreen() {
                   type="button"
                   className={`worldTopRibbon__cityChip uiNoShift ${isCurrent ? 'worldTopRibbon__cityChip--current' : ''} ${!isUnlocked ? 'worldTopRibbon__cityChip--locked' : ''}`}
                   onClick={() => handleSelectCity(city)}
-                  disabled={!isUnlocked}
                   aria-current={isCurrent ? 'true' : undefined}
-                  title={isUnlocked ? `Travel to ${sanitizeLiveCityName(city.name)}` : `${sanitizeLiveCityName(city.name)} locked: ${requirementText ?? 'Progress required'}`}
+                  aria-disabled={!isUnlocked ? 'true' : undefined}
+                  title={isUnlocked ? `Travel to ${sanitizeLiveCityName(city.name)}` : `${sanitizeLiveCityName(city.name)} locked: ${requirementText ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE}`}
                 >
                   <span className="worldTopRibbon__cityChipName">{sanitizeLiveCityName(city.name)}</span>
                   {isCurrent ? (
@@ -497,7 +512,7 @@ export function WorldScreen() {
                   ) : isUnlocked ? (
                     <span className="worldTopRibbon__cityChipMeta">Unlocked</span>
                   ) : (
-                    <span className="worldTopRibbon__cityChipMeta">Locked ({requirementText ?? 'Progress required'})</span>
+                    <span className="worldTopRibbon__cityChipMeta">Locked ({requirementText ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE})</span>
                   )}
                 </button>
               ))}

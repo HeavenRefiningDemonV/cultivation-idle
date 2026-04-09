@@ -457,6 +457,14 @@
   .worldScreenColumnList {
     max-height: 240px;
   }
+
+  .worldTopRibbon__cityList {
+    justify-content: flex-start;
+  }
+
+  .worldTopRibbon__cityChip {
+    min-width: 154px;
+  }
 }
 
 @media (max-width: 1180px) {
@@ -3910,7 +3918,9 @@
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
-  min-width: 134px;
+  justify-content: flex-start;
+  min-width: 172px;
+  min-block-size: 56px;
   gap: 2px;
   padding: 6px 10px;
   border-radius: 10px;
@@ -3926,11 +3936,13 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1.1;
+  min-block-size: 1.35em;
 }
 
 .worldTopRibbon__cityChipMeta {
   font-size: 11px;
-  line-height: 1.1;
+  line-height: 1.2;
+  min-block-size: 2.6em;
   color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
 }
 
@@ -3940,9 +3952,13 @@
 }
 
 .worldTopRibbon__cityChip--locked,
+.worldTopRibbon__cityChip[aria-disabled='true'],
 .worldTopRibbon__cityChip:disabled {
   opacity: 0.78;
   filter: saturate(0.76);
+}
+
+.worldTopRibbon__cityChip[aria-disabled='true'] {
   cursor: not-allowed;
 }
 

@@ -8,6 +8,7 @@ import { useCombatStore } from '../../src/stores/combatStore.js';
 import { useContentStore } from '../../src/stores/contentStore.js';
 import { useUIStore } from '../../src/stores/uiStore.js';
 import { openWorldModule } from '../../src/systems/world/openWorldModule.js';
+import { getWorldTravelBlockMessage } from '../../src/systems/world/travelContract.js';
 import { loadRawProgressionContent } from '../fixtures/progression/loadFixtureContext.js';
 
 const PINEWIND_CITY_ID = 'city_pinewind_hamlet';
@@ -181,4 +182,11 @@ test('same-city open still works while combat is active because packet 2.2 block
   assert.equal(useUIStore.getState().showWorldBuildingModal, true);
   assert.equal(useUIStore.getState().worldBuildingModalCityId, PINEWIND_CITY_ID);
   assert.equal(useUIStore.getState().worldBuildingModalKey, 'forge');
+});
+
+test('travel block messages stay plain-language and never imply unsupported travel friction', () => {
+  const reasons = ['active-combat', 'combat-activity', 'combat-presentation', 'city-locked', 'invalid-city', 'not-in-live-slice'] as const;
+  const blockedCopy = reasons.map((reason) => getWorldTravelBlockMessage(reason)).join(' | ').toLowerCase();
+
+  assert.doesNotMatch(blockedCopy, /cooldown|timer|energy|cost|ticket|fee|fuel|backtrack penalty/);
 });

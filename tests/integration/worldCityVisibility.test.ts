@@ -59,7 +59,13 @@ test('fresh-save semester selector visibility shows the five live cities with Pi
     assert.equal(entry.disabled, true);
     assert.equal(typeof entry.requirementText, 'string');
     assert.equal((entry.requirementText ?? '').length > 0, true);
+    assert.match(entry.requirementText ?? '', /^Reach /);
   });
+
+  assert.equal(
+    selectorEntries.find((entry) => entry.city.id === 'city_stonecrag_town')?.requirementText,
+    'Reach Foundation Establishment',
+  );
 });
 
 test('selector ordering keeps current city pinned first, then other unlocked, then locked live cities', async () => {
