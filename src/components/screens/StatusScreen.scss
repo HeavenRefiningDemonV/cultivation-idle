@@ -200,19 +200,19 @@
 }
 
 .statusScreenRunCompass {
-  margin-bottom: 14px;
+  margin-bottom: var(--ui-layout-card-gap, 12px);
 }
 
 .statusChamberLayout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: var(--ui-layout-card-gap, 12px);
   margin-bottom: 22px;
 }
 
 .statusChamberRail {
   display: grid;
-  gap: 14px;
+  gap: var(--hero-surface-stack-gap, 14px);
 }
 
 .statusChamberCore {

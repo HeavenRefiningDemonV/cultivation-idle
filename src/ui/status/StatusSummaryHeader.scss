@@ -1,9 +1,9 @@
 .statusSummaryRibbon {
   margin-bottom: 12px;
-  padding: 12px 14px;
+  padding: var(--hero-ribbon-padding-block, 12px) var(--hero-ribbon-padding-inline, 14px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--hero-ribbon-gap, 10px);
   min-height: 0;
   background: linear-gradient(180deg, rgba(239, 233, 220, 0.84), rgba(225, 216, 199, 0.8));
 }
@@ -11,7 +11,7 @@
 .statusSummaryRibbonGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: var(--hero-ribbon-cell-gap, 8px);
 }
 
 .statusSummaryRibbonCell {
@@ -22,7 +22,7 @@
   border-radius: 10px;
   border: 1px solid rgba(66, 48, 30, 0.14);
   background: rgba(255, 252, 244, 0.36);
-  min-height: 88px;
+  min-height: var(--hero-ribbon-cell-min-height, 88px);
 }
 
 .statusSummaryLabelRow {
@@ -32,13 +32,13 @@
 }
 
 .statusSummaryIcon {
-  width: 15px;
-  height: 15px;
+  width: var(--hero-ribbon-icon-size, 14px);
+  height: var(--hero-ribbon-icon-size, 14px);
   color: rgba(66, 48, 30, 0.7);
 }
 
 .statusSummaryLabel {
-  font-size: 11px;
+  font-size: var(--hero-ribbon-label-size, 11px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(66, 48, 30, 0.62);
@@ -46,7 +46,7 @@
 }
 
 .statusSummaryValue {
-  font-size: 18px;
+  font-size: var(--hero-ribbon-value-size, 18px);
   font-weight: 900;
   color: rgba(33, 24, 15, 0.92);
 }
@@ -88,9 +88,9 @@
 }
 
 .statusBiggestShortfallAction {
-  min-height: 30px;
+  min-height: var(--hero-action-min-height, 30px);
   padding: 0 12px;
-  border-radius: 999px;
+  border-radius: var(--hero-action-pill-radius, 999px);
   border: 1px solid rgba(120, 72, 33, 0.34);
   background: rgba(255, 248, 235, 0.86);
   color: rgba(53, 34, 19, 0.94);
