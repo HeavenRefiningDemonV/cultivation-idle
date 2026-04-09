@@ -612,3 +612,100 @@
   color: rgba(12, 18, 34, 0.9);
   font-weight: 700;
 }
+
+.spiritRootStatus {
+  margin-bottom: 2px;
+  border-radius: 12px;
+  border: 1px solid rgba(93, 67, 39, 0.24);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(241, 220, 177, 0.24), transparent 66%),
+    linear-gradient(180deg, rgba(255, 251, 243, 0.82), rgba(229, 215, 187, 0.62));
+  box-shadow: inset 0 0 0 1px rgba(255, 247, 230, 0.58), 0 8px 16px rgba(44, 28, 15, 0.12);
+  padding: 10px;
+}
+
+.spiritRootStatus__crest {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.spiritRootStatus__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(66, 48, 30, 0.78);
+  font-weight: 800;
+}
+
+.spiritRootStatus__title svg {
+  width: 14px;
+  height: 14px;
+}
+
+.spiritRootStatus__seal {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: rgba(59, 43, 26, 0.86);
+  border: 1px solid rgba(93, 67, 39, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 249, 237, 0.72);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.spiritRootStatus__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.spiritRootStatus__cell {
+  border: 1px solid rgba(93, 67, 39, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.62);
+  min-height: 42px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+
+.spiritRootStatus__cell--total {
+  grid-column: 1 / -1;
+}
+
+.spiritRootStatus__label {
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(70, 51, 32, 0.64);
+  font-weight: 700;
+}
+
+.spiritRootStatus__value {
+  font-size: 13px;
+  color: rgba(28, 20, 12, 0.92);
+  font-weight: 800;
+}
+
+.spiritRootStatus__accent {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(67, 50, 31, 0.7);
+  font-weight: 700;
+}
+
+.spiritRootStatus[data-element="fire"] .spiritRootStatus__value { color: rgba(140, 63, 25, 0.96); }
+.spiritRootStatus[data-element="water"] .spiritRootStatus__value { color: rgba(33, 82, 123, 0.96); }
+.spiritRootStatus[data-element="wood"] .spiritRootStatus__value { color: rgba(36, 102, 53, 0.96); }
+.spiritRootStatus[data-element="metal"] .spiritRootStatus__value { color: rgba(74, 85, 99, 0.96); }
+.spiritRootStatus[data-element="earth"] .spiritRootStatus__value { color: rgba(124, 81, 24, 0.96); }

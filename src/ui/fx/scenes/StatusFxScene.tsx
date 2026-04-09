@@ -9,19 +9,30 @@ export interface StatusFxSceneProps extends FxSceneContract {
 
 function glintCountForBudget(props: StatusFxSceneProps) {
   if (!props.budget.allowGlints || props.isStatic || props.dormant) return 0;
-  const glintCount = Math.round(4 * props.budget.particleDensity);
-  return Math.max(1, glintCount);
+  const resonanceTone = resolveResonanceTone(props.resonance);
+  const urgencyBoost = props.urgency === 'readiness' ? 1 : 0;
+  if (props.effectiveQuality === 'high') {
+    const glintCount = Math.round(2 + props.budget.particleDensity + urgencyBoost);
+    return resonanceTone === 'resonant' ? Math.min(4, glintCount + 1) : Math.min(3, glintCount);
+  }
+  if (props.effectiveQuality === 'medium') {
+    return resonanceTone === 'resonant' ? 2 : 1;
+  }
+  return 0;
 }
 
 function mistCountForBudget(props: StatusFxSceneProps) {
   if (!props.canAnimateContinuously || props.budget.continuousAtmosphere === 'off') return 0;
-  if (props.budget.continuousAtmosphere === 'full') return 3;
-  if (props.budget.continuousAtmosphere === 'sparse') return 2;
+  if (props.effectiveQuality === 'high') {
+    if (props.budget.continuousAtmosphere === 'full') return 2;
+    if (props.budget.continuousAtmosphere === 'sparse') return 1;
+  }
+  if (props.effectiveQuality === 'medium') return 1;
   return 0;
 }
 
 function shouldAnimatePulse(props: StatusFxSceneProps) {
-  return props.budget.allowHeroPulse && props.canAnimateContinuously && !props.dormant;
+  return props.effectiveQuality !== 'low' && props.budget.allowHeroPulse && props.canAnimateContinuously && !props.dormant;
 }
 
 function resolveResonanceTone(resonance: string) {
@@ -62,6 +73,8 @@ export function StatusFxScene({
       data-dormant={scene.dormant ? '1' : '0'}
       data-can-animate={scene.canAnimateContinuously ? '1' : '0'}
       data-hero-pulse={animatePulse ? '1' : '0'}
+      data-glints={glints}
+      data-mists={mists}
       style={style}
       aria-hidden="true"
     >

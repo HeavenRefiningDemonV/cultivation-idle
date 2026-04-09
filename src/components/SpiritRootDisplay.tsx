@@ -53,7 +53,7 @@ const ELEMENT_ICONS: Record<SpiritRootElement, React.ReactNode> = {
  * Shows the player's spirit root quality, element, purity, and bonuses
  */
 type SpiritRootDisplayProps = {
-  variant?: 'altar' | 'summary';
+  variant?: 'altar' | 'summary' | 'status';
 };
 
 export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps) {
@@ -95,6 +95,41 @@ export function SpiritRootDisplay({ variant = 'altar' }: SpiritRootDisplayProps)
           <span className="spiritRootSummaryLabel">Total Multiplier</span>
           <span className="spiritRootSummaryValue">{getTotalMultiplier().toFixed(2)}x</span>
         </div>
+      </div>
+    );
+  }
+
+  if (variant === 'status') {
+    const elementLabel = spiritRoot ? `${spiritRoot.element[0].toUpperCase()}${spiritRoot.element.slice(1)}` : 'Dormant';
+    const gradeLabel = spiritRoot ? QUALITY_NAMES[spiritRoot.grade] : 'Dormant';
+    const purityLabel = spiritRoot ? `${Math.round(spiritRoot.purity)}%` : '0%';
+    const doctrineAccent = spiritRoot ? `Attuned to ${spiritRoot.element} flow` : 'Awaiting first awakening';
+    const totalMultiplier = `${getTotalMultiplier().toFixed(2)}x`;
+
+    return (
+      <div className="spiritRootStatus" data-element={spiritRoot?.element ?? 'none'} data-grade={spiritRoot?.grade ?? 0}>
+        <div className="spiritRootStatus__crest">
+          <div className="spiritRootStatus__title">
+            <Sparkles aria-hidden />
+            <span>Spirit Root Crest</span>
+          </div>
+          <div className="spiritRootStatus__seal">{gradeLabel}</div>
+        </div>
+        <div className="spiritRootStatus__grid">
+          <div className="spiritRootStatus__cell">
+            <span className="spiritRootStatus__label">Element</span>
+            <span className="spiritRootStatus__value">{elementLabel}</span>
+          </div>
+          <div className="spiritRootStatus__cell">
+            <span className="spiritRootStatus__label">Purity</span>
+            <span className="spiritRootStatus__value">{purityLabel}</span>
+          </div>
+          <div className="spiritRootStatus__cell spiritRootStatus__cell--total">
+            <span className="spiritRootStatus__label">Total Multiplier</span>
+            <span className="spiritRootStatus__value">{totalMultiplier}</span>
+          </div>
+        </div>
+        <div className="spiritRootStatus__accent">{doctrineAccent}</div>
       </div>
     );
   }

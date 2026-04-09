@@ -143,7 +143,7 @@ export function StatusScreen() {
             realmName={troubleshooting.realmName}
             stageText={troubleshooting.stageText}
             pathLabel={troubleshooting.pathLabel}
-            spiritRootLine={`${troubleshooting.identity.spiritRootSummary.element} • ${troubleshooting.identity.spiritRootSummary.grade} • ${troubleshooting.identity.spiritRootSummary.purity} purity`}
+            spiritRootLine={`${troubleshooting.identity.spiritRootSummary.element} • ${troubleshooting.identity.spiritRootSummary.grade}`}
             archetypeLabel={troubleshooting.archetypeLabel}
             archetypeSummary={troubleshooting.archetypeSummary}
             biggestShortfallLine={troubleshooting.shortfall.headline}
@@ -163,15 +163,10 @@ export function StatusScreen() {
             <div className="statusChamberRail statusChamberRail--left">
               <StatusMiniCard title="Identity" urgent={troubleshooting.urgentCardId === 'identity'} className="statusTroubleshootingCard--identity">
                 <div className="statusIdentityRootAura">
-                  <SpiritRootDisplay variant="summary" />
+                  <SpiritRootDisplay variant="status" />
                 </div>
                 <StatusLine label="Path" value={troubleshooting.pathLabel} />
                 <StatusLine label="Archetype" value={troubleshooting.archetypeLabel} />
-                <StatusLine
-                  label="Spirit Root"
-                  value={`${troubleshooting.identity.spiritRootSummary.element} • ${troubleshooting.identity.spiritRootSummary.grade} • ${troubleshooting.identity.spiritRootSummary.purity}`}
-                />
-                <StatusLine label="Root Multiplier" value={troubleshooting.identity.spiritRootSummary.totalMultiplier} />
                 <StatusLine label="Heart Law" value={`${troubleshooting.identity.heartLawName} • ${troubleshooting.identity.heartLawVerse}`} />
                 <StatusLine label="Resonance" value={troubleshooting.identity.resonanceLabel} />
                 <StatusLine label="Summary" value={troubleshooting.archetypeSummary} />

@@ -46,18 +46,18 @@
 }
 
 .statusFxScene__halo {
-  width: calc(var(--status-fx-radius) * 2.6);
-  height: calc(var(--status-fx-radius) * 1.85);
+  width: calc(var(--status-fx-radius) * 2.28);
+  height: calc(var(--status-fx-radius) * 1.62);
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(214, 197, 165, 0.3), rgba(214, 197, 165, 0) 70%);
-  opacity: 0.34;
+  background: radial-gradient(circle at 50% 50%, rgba(214, 197, 165, 0.26), rgba(214, 197, 165, 0) 72%);
+  opacity: 0.26;
   animation: statusHaloBreathe var(--ui-motion-ritual-breathe-duration, 12s) var(--ui-motion-ritual-ease, ease-in-out) infinite;
 }
 
 .statusFxScene__ring {
   border-radius: 50%;
-  border: 1px solid rgba(133, 98, 61, 0.2);
-  opacity: 0.25;
+  border: 1px solid rgba(133, 98, 61, 0.16);
+  opacity: 0.2;
 }
 
 .statusFxScene__ring--outer {
@@ -70,15 +70,15 @@
   width: calc(var(--status-fx-radius) * 1.22);
   height: calc(var(--status-fx-radius) * 1.22);
   border-style: dashed;
-  opacity: 0.18;
+  opacity: 0.14;
   animation: statusRingPulse var(--ui-motion-ritual-ring-duration, 10s) var(--ui-motion-ritual-ease, ease-in-out) infinite reverse;
 }
 
 .statusFxScene__mist {
   border-radius: 50%;
-  filter: blur(24px);
-  opacity: 0.18;
-  background: radial-gradient(circle, rgba(184, 165, 131, 0.42) 0%, rgba(184, 165, 131, 0) 72%);
+  filter: blur(26px);
+  opacity: 0.12;
+  background: radial-gradient(circle, rgba(184, 165, 131, 0.28) 0%, rgba(184, 165, 131, 0) 72%);
 }
 
 .statusFxScene__mist--1 {
@@ -102,11 +102,11 @@
 }
 
 .statusFxScene__glint {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
-  background: rgba(251, 235, 198, 0.74);
-  box-shadow: 0 0 7px rgba(251, 235, 198, 0.46);
+  background: rgba(251, 235, 198, 0.55);
+  box-shadow: 0 0 5px rgba(251, 235, 198, 0.35);
   animation: statusGlintPulse var(--ui-motion-ritual-pulse-duration, 8s) var(--ui-motion-ritual-ease, ease-in-out) infinite;
 }
 
@@ -127,11 +127,11 @@
 .statusFxScene__glint--4 { margin-left: calc(var(--status-fx-radius) * 0.4); margin-top: calc(var(--status-fx-radius) * 0.18); animation-delay: 3.1s; }
 
 .statusFxScene[data-quality="medium"] .statusFxScene__halo {
-  opacity: 0.26;
+  opacity: 0.2;
 }
 
 .statusFxScene[data-quality="medium"] .statusFxScene__mist {
-  opacity: 0.13;
+  opacity: 0.09;
 }
 
 .statusFxScene[data-quality="low"] .statusFxScene__halo {
@@ -142,7 +142,12 @@
 .statusFxScene[data-quality="low"] .statusFxScene__ring,
 .statusFxScene[data-quality="low"] .statusFxScene__mist {
   animation: none;
-  opacity: 0.1;
+  opacity: 0.08;
+}
+
+.statusFxScene[data-quality="low"] .statusFxScene__mist,
+.statusFxScene[data-quality="low"] .statusFxScene__glint {
+  display: none;
 }
 
 .statusFxScene[data-quality="reducedMotion"] .statusFxScene__halo,
@@ -158,11 +163,20 @@
 }
 
 .statusFxScene[data-resonance="resonant"] .statusFxScene__halo {
-  opacity: 0.4;
+  opacity: 0.32;
+}
+
+.statusFxScene[data-resonance="resonant"] .statusFxScene__glint {
+  background: rgba(243, 221, 169, 0.72);
+  box-shadow: 0 0 6px rgba(243, 221, 169, 0.4);
 }
 
 .statusFxScene[data-resonance="mismatch"] .statusFxScene__halo {
-  opacity: 0.22;
+  opacity: 0.17;
+}
+
+.statusFxScene[data-resonance="mismatch"] .statusFxScene__glint {
+  opacity: 0.35;
 }
 
 .statusFxScene[data-urgency="readiness"] .statusFxScene__ring--outer,
@@ -322,17 +336,20 @@
 
 .statusIdentityRootAura {
   position: relative;
-  padding: 2px;
-  border-radius: 12px;
+  padding: 3px;
+  border-radius: 14px;
+  border: 1px solid rgba(98, 73, 45, 0.18);
+  background: linear-gradient(180deg, rgba(255, 250, 238, 0.64), rgba(236, 224, 198, 0.44));
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 232, 0.55);
 }
 
 .statusIdentityRootAura::before {
   content: '';
   position: absolute;
-  inset: -6px;
-  border-radius: 12px;
-  background: radial-gradient(circle at 50% 40%, rgba(226, 202, 156, 0.22), rgba(226, 202, 156, 0) 72%);
-  opacity: 0.7;
+  inset: -8px;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 42%, rgba(226, 202, 156, 0.16), rgba(226, 202, 156, 0) 72%);
+  opacity: 0.62;
   pointer-events: none;
 }
 
@@ -513,8 +530,8 @@
 }
 
 @keyframes statusHaloBreathe {
-  0%, 100% { opacity: 0.28; transform: translate(-50%, -50%) scale(0.995); }
-  50% { opacity: 0.34; transform: translate(-50%, -50%) scale(1.015); }
+  0%, 100% { opacity: 0.2; transform: translate(-50%, -50%) scale(0.997); }
+  50% { opacity: 0.27; transform: translate(-50%, -50%) scale(1.01); }
 }
 
 @keyframes statusRingPulse {
@@ -524,10 +541,10 @@
 
 @keyframes statusMistDrift {
   0%, 100% { transform: translate(-50%, -50%); }
-  50% { transform: translate(calc(-50% + 7px), calc(-50% - 4px)); }
+  50% { transform: translate(calc(-50% + 4px), calc(-50% - 2px)); }
 }
 
 @keyframes statusGlintPulse {
-  0%, 100% { opacity: 0.1; }
-  45% { opacity: 0.6; }
+  0%, 100% { opacity: 0.05; }
+  45% { opacity: 0.42; }
 }
