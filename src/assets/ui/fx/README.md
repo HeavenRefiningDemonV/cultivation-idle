@@ -60,9 +60,11 @@ P1-04 provides shared atmospheric vocabulary only and does not include hero-loca
 
 ## Import gate and packet scope
 
-No live imports should point to this root in this packet.
+P1-04 originally treated this root as scaffold-only. This root now also carries optional low-opacity P3-11A brushwash supports for selected-path emphasis:
+- `path_selected_brushwash_soft_a.svg`
+- `path_selected_brushwash_soft_b.svg`
 
-P1-04 is docs/spec/scaffold only: no final art generation and no runtime integration.
+These are additive carriers and should remain secondary to portrait ownership.
 
 ## P1-06 closeout note
 Current Phase 1 closeout audit marks this root as scaffold-only until real support-art binaries are packaged.

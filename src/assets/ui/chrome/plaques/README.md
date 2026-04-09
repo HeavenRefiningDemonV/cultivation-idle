@@ -34,4 +34,8 @@ Dedicated map/building label plaques are excluded from this root’s role scope 
 No live screen imports should target this folder yet.
 
 ## Packet scope note
-P1-02A is docs/spec/scaffold only; no final art files are generated here.
+P1-02A began as scaffold-only, but this root now includes P3-11A additive Life Start selected-path plaque carriers:
+- `path_summary_plaque_long.svg`
+- `path_summary_plaque_compact.svg`
+- `path_confirm_strip_companion.svg`
+- `path_summary_plaque_side_tab.svg`

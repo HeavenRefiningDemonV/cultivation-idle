@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 512" fill="none">
+  <defs>
+    <linearGradient id="crown" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D5C2A3" stop-opacity="0.5"/><stop offset="1" stop-color="#8E7252" stop-opacity="0.22"/></linearGradient>
+  </defs>
+  <rect width="1536" height="512" fill="transparent"/>
+  <path d="M166 398C364 210 1172 210 1370 398V480H166V398Z" fill="url(#crown)"/>
+  <path d="M216 330C408 176 1128 176 1320 330" stroke="#E7D6BA" stroke-opacity="0.55" stroke-width="5" stroke-linecap="round"/>
+  <path d="M274 376C448 258 1088 258 1262 376" stroke="#BEA17B" stroke-opacity="0.38" stroke-width="3" stroke-linecap="round"/>
+</svg>

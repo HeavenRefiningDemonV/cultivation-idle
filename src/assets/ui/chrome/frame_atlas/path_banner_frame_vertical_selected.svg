@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 3072" fill="none">
+  <defs>
+    <linearGradient id="railSelected" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A38359" stop-opacity="0.68"/>
+      <stop offset="0.18" stop-color="#B09163" stop-opacity="0.56"/>
+      <stop offset="0.82" stop-color="#826746" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#70593E" stop-opacity="0.3"/>
+    </linearGradient>
+    <radialGradient id="sealGlow" cx="0.5" cy="0.09" r="0.58">
+      <stop offset="0" stop-color="#EADBBA" stop-opacity="0.54"/>
+      <stop offset="1" stop-color="#EADBBA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="1024" height="3072" fill="transparent"/>
+  <rect x="36" y="96" width="88" height="2800" rx="44" fill="url(#railSelected)"/>
+  <rect x="900" y="96" width="88" height="2800" rx="44" fill="url(#railSelected)"/>
+  <path d="M160 88C314 8 710 8 864 88V292C708 220 316 220 160 292V88Z" fill="#D6C09B" fill-opacity="0.28"/>
+  <path d="M196 2804C348 2868 676 2868 828 2804V2954C674 3016 350 3016 196 2954V2804Z" fill="#CFB188" fill-opacity="0.24"/>
+  <ellipse cx="512" cy="238" rx="340" ry="176" fill="url(#sealGlow)"/>
+  <path d="M230 138C338 82 686 82 794 138" stroke="#F4E6CA" stroke-opacity="0.52" stroke-width="5" stroke-linecap="round"/>
+  <path d="M248 184C352 136 672 136 776 184" stroke="#DEC39C" stroke-opacity="0.42" stroke-width="3" stroke-linecap="round"/>
+</svg>

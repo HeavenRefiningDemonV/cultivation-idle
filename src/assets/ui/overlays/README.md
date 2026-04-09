@@ -30,7 +30,10 @@ This root is the scaffold landing zone for shared overlay, mask, and state-ornam
 - No JPG
 
 ## Packet scope note
-This is a scaffold root only in Phase 1 docs/spec packets. Do not add placeholder art files.
+This root started as scaffold-only in Phase 1. It now includes P3-11A Path Selection support overlays:
+- path-top ornaments (`path_banner_top_ornament_*`)
+- selected-lane halos (`path_selection_halo_*`)
+- low-opacity mist carriers (`path_mist_underlay_*`)
 
 ## Import gate note
 No live screen should import from this root yet.

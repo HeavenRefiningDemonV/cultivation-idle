@@ -4,7 +4,15 @@
 This folder is the landing scaffold for the shared frame atlas family (`light`, `standard`, `heavy`, `button_plate`, `drawer_edge`, `inspector_shell`, `modal_frame`).
 
 ## Packet scope
-No real frame atlas image assets are generated in P1-02.
+Legacy P1-02 scaffold guidance remains valid for the general atlas family, but this root now also contains real additive support-art parts for the P3-11A Life Start Path triptych kit.
+
+### P3-11A support-art files
+- `path_banner_frame_vertical_neutral.svg`
+- `path_banner_frame_vertical_selected.svg`
+- `path_banner_frame_edge_left_neutral.svg`
+- `path_banner_frame_edge_right_neutral.svg`
+- `path_banner_frame_topcap_neutral.svg`
+- `path_banner_frame_bottom_finish_neutral.svg`
 
 ## Naming expectations
 Use role-first `lower_snake_case` names such as:
