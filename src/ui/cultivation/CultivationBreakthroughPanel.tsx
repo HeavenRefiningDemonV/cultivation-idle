@@ -58,7 +58,9 @@ export function CultivationBreakthroughPanel({
     { id: 'token', label: 'Token', value: tokenLine },
     { id: 'qi', label: 'Qi', value: qiLine },
   ];
-  const visibleRows = isSummary ? rows.filter((row) => row.id === 'target' || row.id === 'qi') : rows;
+  const visibleRows = isSummary
+    ? rows.filter((row) => row.id === 'target' || row.id === 'gate' || row.id === 'token' || row.id === 'qi')
+    : rows;
   const checklist = [
     { label: `Reach Stage ${stageMax}`, done: stage >= stageMax },
     { label: 'Fill required Qi', done: qiLine === 'ready' },

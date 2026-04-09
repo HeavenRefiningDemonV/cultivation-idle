@@ -31,8 +31,7 @@ import { CultivationBreakthroughPanel } from '../../ui/cultivation/CultivationBr
 import { CultivationDoctrineSummary } from '../../ui/cultivation/CultivationDoctrineSummary.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar.js';
-import { GameIcon } from '../../ui/icons/index.js';
-import { RunCompassCompact } from '../../ui/status/RunCompassCompact.js';
+import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
@@ -182,7 +181,6 @@ export function CultivateScreen() {
   const [showDaoHeart, setShowDaoHeart] = useState(false);
   const [buffNow, setBuffNow] = useState(() => Date.now());
   const [openDisclosure, setOpenDisclosure] = useState<'none' | 'breakthrough' | 'doctrine'>('none');
-  const [doctrinePinned, setDoctrinePinned] = useState(false);
   const disclosureRef = useRef<HTMLDivElement | null>(null);
 
   const lastInsightRef = useRef<InsightMomentState | null>(null);
@@ -352,7 +350,7 @@ export function CultivateScreen() {
       ? 'Gathering Qi...'
       : breakthroughLabel === 'success'
         ? 'Breakthrough!'
-        : 'Attempt Breakthrough';
+        : 'Break Through';
 
   useEffect(() => {
     if (!selectedPath || realm.index < 1) return;
@@ -480,7 +478,7 @@ export function CultivateScreen() {
     if (breakthroughMilestoneState === 'gate_trial') {
       const gateAction = actions.find((action) => action.target?.kind === 'world_module' && action.target.moduleKey === 'gateTrial' && !action.blocked);
       return gateAction
-        ? { label: 'Go to Gate Trial', detail: gateAction.why, action: gateAction }
+        ? { label: 'Open Gate Trial', detail: gateAction.why, action: gateAction }
         : { label: 'Resolve the current gate', detail: 'The gate is the blocker before breakthrough can happen.', action: null };
     }
     if (breakthroughMilestoneState === 'cultivation_edge') {
@@ -507,10 +505,6 @@ export function CultivateScreen() {
         secondaryWhy: 'Optional support while at chapter cap.',
         supportLine: 'Current chapter cap reached — preserve this life or prestige.',
         stateTone: 'cap' as const,
-        showReadyChip: false,
-        showWarningChip: false,
-        showCapChip: true,
-        showGateChip: false,
       };
     }
 
@@ -527,17 +521,13 @@ export function CultivateScreen() {
         secondaryWhy: breakthroughGuidance,
         supportLine: breakthroughRequirementLabel,
         stateTone: 'cultivate' as const,
-        showReadyChip: false,
-        showWarningChip: true,
-        showCapChip: false,
-        showGateChip: false,
       };
     }
 
     if (breakthroughMilestoneState === 'gate_trial') {
       return {
         kind: 'gate_trial',
-        primaryLabel: gateAction ? 'Go to Gate Trial' : 'Prepare for Gate',
+        primaryLabel: gateAction ? 'Open Gate Trial' : 'Prepare for Gate',
         primaryDisabled: !gateAction,
         primaryWhy: gateAction?.why ?? 'Resolve the gate requirement before attempting breakthrough.',
         primaryAction: gateAction ? () => performRunCompassAction(gateAction) : undefined,
@@ -546,10 +536,6 @@ export function CultivateScreen() {
         secondaryWhy: 'Cultivation remains useful while preparing gate conditions.',
         supportLine: breakthroughRequirementLabel,
         stateTone: 'gate' as const,
-        showReadyChip: false,
-        showWarningChip: true,
-        showCapChip: false,
-        showGateChip: true,
       };
     }
 
@@ -564,10 +550,6 @@ export function CultivateScreen() {
       secondaryWhy: 'Toggle cultivation as support while breakthrough readiness shifts.',
       supportLine: breakthroughRequirementLabel,
       stateTone: canBreakthrough ? ('ready' as const) : ('prepare' as const),
-      showReadyChip: canBreakthrough,
-      showWarningChip: !canBreakthrough,
-      showCapChip: false,
-      showGateChip: false,
     };
   }, [
     breakthroughMilestoneState,
@@ -618,12 +600,9 @@ export function CultivateScreen() {
 
   const breathSemantics = getBreathModeSemantics(breathMode);
   const focusSemantics = getFocusModeSemantics(focusMode);
-
-  useEffect(() => {
-    if (doctrinePinned && selectedPath === null) {
-      setDoctrinePinned(false);
-    }
-  }, [doctrinePinned, selectedPath]);
+  const doctrineSentence = heartLawDef
+    ? `This life follows ${heartLawDef.name} on the ${pathLabel} path with ${breathSemantics.label.toLowerCase()} breath and ${focusSemantics.label.toLowerCase()} focus.`
+    : `This life has no active Heart Law yet; choose one to align your ${pathLabel} path and resonance.`;
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -721,187 +700,157 @@ export function CultivateScreen() {
           />
         </div>
 
-      <div className="cultivationSideRails" aria-label="Cultivation side seals">
-        <div className="cultivationSideRail cultivationSideRail--left">
-          <CultivationBreakthroughPanel
-            milestoneState={breakthroughMilestoneState}
-            currentRealmLabel={realmLabel}
-            nextRealmLabel={atContentCap ? null : nextLiveRealm?.name ?? null}
-            stage={realm.substage}
-            stageMax={currentRealm.substages}
-            gateLine={breakthroughGateLine}
-            tokenLine={breakthroughTokenLine}
-            qiLine={breakthroughQiLine}
-            guidance={breakthroughGuidance}
-            action={breakthroughAction}
-            onAction={performRunCompassAction}
-            mode="summary"
-            onOpenDetail={() => setOpenDisclosure('breakthrough')}
-          />
-        </div>
-        <div className="cultivationSideRail cultivationSideRail--right">
-          <CultivationDoctrineSummary
-            pathLabel={pathLabel}
-            pathSummary={pathSummary}
-            spiritRootLine={spiritRootLine}
-            spiritRootDetail={spiritRootDetail}
-            heartLawLine={heartLawVerseLabel}
-            heartLawDetail={heartLawDetail}
-            resonanceLine={resonanceLine}
-            resonanceDetail={resonanceDetail}
-            breathLabel={breathSemantics.label}
-            breathSummary={breathSemantics.summary}
-            focusLabel={focusSemantics.label}
-            focusSummary={focusSemantics.summary}
-            spiritRoot={spiritRoot}
-            mode="summary"
-            onOpenDetail={() => setOpenDisclosure('doctrine')}
-            verseSlot={doctrineVerseSlotCompact}
-          />
-        </div>
-      </div>
-      <div className="cultivationCommandDeck" aria-label="Cultivation command deck" ref={disclosureRef}>
-        {openDisclosure === 'breakthrough' ? (
-          <div className="cultivationDisclosurePopover cultivationDisclosurePopover--breakthrough" role="dialog" aria-label="Breakthrough detail">
-            <CultivationBreakthroughPanel
-              milestoneState={breakthroughMilestoneState}
-              currentRealmLabel={realmLabel}
-              nextRealmLabel={atContentCap ? null : nextLiveRealm?.name ?? null}
-              stage={realm.substage}
-              stageMax={currentRealm.substages}
-              gateLine={breakthroughGateLine}
-              tokenLine={breakthroughTokenLine}
-              qiLine={breakthroughQiLine}
-              guidance={breakthroughGuidance}
-              action={breakthroughAction}
+        <div className="cultivationSideRails" aria-label="Cultivation side seals">
+          <div className="cultivationSideRail cultivationSideRail--left">
+            <RunCompass
+              surface={runCompass.full}
+              tone="paper"
+              density="dense"
+              className="cultivationRunCompass cultivationRunCompass--native"
               onAction={performRunCompassAction}
-              mode="detail"
-              onCloseDetail={() => setOpenDisclosure('none')}
             />
           </div>
-        ) : null}
-        {openDisclosure === 'doctrine' ? (
-          <div className="cultivationDisclosurePopover cultivationDisclosurePopover--doctrine" role="dialog" aria-label="Doctrine detail">
-            <CultivationDoctrineSummary
-              pathLabel={pathLabel}
-              pathSummary={pathSummary}
-              spiritRootLine={spiritRootLine}
-              spiritRootDetail={spiritRootDetail}
-              heartLawLine={heartLawVerseLabel}
-              heartLawDetail={heartLawDetail}
-              resonanceLine={resonanceLine}
-              resonanceDetail={resonanceDetail}
-              breathLabel={breathSemantics.label}
-              breathSummary={breathSemantics.summary}
-              focusLabel={focusSemantics.label}
-              focusSummary={focusSemantics.summary}
-              spiritRoot={spiritRoot}
-              mode="detail"
-              pinned={doctrinePinned}
-              onPinDetail={() => {
-                setDoctrinePinned(true);
-                setOpenDisclosure('none');
-              }}
-              onCloseDetail={() => setOpenDisclosure('none')}
-              verseSlot={doctrineVerseSlotDetail}
-            />
-          </div>
-        ) : null}
-        {doctrinePinned ? (
-          <aside className="cultivationPinnedDoctrineCard" aria-label="Pinned doctrine detail">
-            <CultivationDoctrineSummary
-              pathLabel={pathLabel}
-              pathSummary={pathSummary}
-              spiritRootLine={spiritRootLine}
-              spiritRootDetail={spiritRootDetail}
-              heartLawLine={heartLawVerseLabel}
-              heartLawDetail={heartLawDetail}
-              resonanceLine={resonanceLine}
-              resonanceDetail={resonanceDetail}
-              breathLabel={breathSemantics.label}
-              breathSummary={breathSemantics.summary}
-              focusLabel={focusSemantics.label}
-              focusSummary={focusSemantics.summary}
-              spiritRoot={spiritRoot}
-              mode="detail"
-              pinned
-              onCloseDetail={() => setDoctrinePinned(false)}
-              verseSlot={doctrineVerseSlotDetail}
-            />
-          </aside>
-        ) : null}
-      </div>
-
-      <div className="cultivationHudRail">
-        <div className="cultivationHudStack">
-          <div className="cultivationRealmTags">
-            <div className="cultivationRealmTag cultivationRealmTag--current">
-              <span className="cultivationRealmTagIcon" aria-hidden="true">
-                <GameIcon icon="bookEarth" size={16} decorative />
-              </span>
-              <span className="cultivationRealmTagText">{realmLabel}</span>
-              <span className="cultivationRealmTagSub">Stage {realm.substage}</span>
-            </div>
-            <div className="cultivationRealmTag cultivationRealmTag--next">
-              <span className="cultivationRealmTagIcon" aria-hidden="true">
-                →
-              </span>
-              <span className="cultivationRealmTagText">Next Realm: {nextLiveRealm?.name ?? 'Current content cap reached'}</span>
-            </div>
-          </div>
-          <QiProgressBar
-            current={qi}
-            required={breakthroughCost || '0'}
-            pulse={isCultivating}
-            isReady={canBreakthrough}
-            rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
-          />
-          {activeCultivationBuffs.length > 0 ? (
-            <div className="cultivationBuffSummary" aria-live="polite">
-              <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
-              <div className="cultivationBuffSummaryChips">
-                {activeCultivationBuffs.map((entry) => (
-                  <div key={entry.family} className="cultivationBuffChip" title={entry.description}>
-                    <span className="cultivationBuffChipFamily">{entry.familyMeta.label}</span>
-                    <span className="cultivationBuffChipBody">{entry.shortLabel}</span>
-                    <span className="cultivationBuffChipTimer">{entry.remainingSeconds}s</span>
+          <div className="cultivationSideRail cultivationSideRail--right">
+            <div className="cultivationTruthStack">
+              <CultivationBreakthroughPanel
+                milestoneState={breakthroughMilestoneState}
+                currentRealmLabel={realmLabel}
+                nextRealmLabel={atContentCap ? null : nextLiveRealm?.name ?? null}
+                stage={realm.substage}
+                stageMax={currentRealm.substages}
+                gateLine={breakthroughGateLine}
+                tokenLine={breakthroughTokenLine}
+                qiLine={breakthroughQiLine}
+                guidance={breakthroughGuidance}
+                action={breakthroughAction}
+                onAction={performRunCompassAction}
+                mode="summary"
+                onOpenDetail={() => setOpenDisclosure('breakthrough')}
+              />
+              <CultivationDoctrineSummary
+                pathLabel={pathLabel}
+                pathSummary={pathSummary}
+                spiritRootLine={spiritRootLine}
+                spiritRootDetail={spiritRootDetail}
+                heartLawLine={heartLawVerseLabel}
+                heartLawDetail={heartLawDetail}
+                resonanceLine={resonanceLine}
+                resonanceDetail={resonanceDetail}
+                breathLabel={breathSemantics.label}
+                breathSummary={breathSemantics.summary}
+                focusLabel={focusSemantics.label}
+                focusSummary={focusSemantics.summary}
+                doctrineSentence={doctrineSentence}
+                spiritRoot={spiritRoot}
+                mode="summary"
+                onOpenDetail={() => setOpenDisclosure('doctrine')}
+                verseSlot={doctrineVerseSlotCompact}
+              />
+              <section className="cultivationHeartLawBrief cultivationCommandCard" aria-label="Heart Law detail">
+                <div className="cultivationCommandCard__header">
+                  <div>
+                    <div className="cultivationCommandCard__eyebrow">Heart Law</div>
+                    <h2 className="cultivationCommandCard__title">Current shaping law</h2>
                   </div>
-                ))}
-              </div>
+                  <span className="cultivationCommandCard__badge">{resonanceLine}</span>
+                </div>
+                <div className="cultivationHeartLawBrief__line">{heartLawVerseLabel}</div>
+                <p className="cultivationHeartLawBrief__detail">{heartLawDetail}</p>
+              </section>
+            </div>
+          </div>
+        </div>
+        <div className="cultivationCommandDeck" aria-label="Cultivation command deck" ref={disclosureRef}>
+          {openDisclosure === 'breakthrough' ? (
+            <div className="cultivationDisclosurePopover cultivationDisclosurePopover--breakthrough" role="dialog" aria-label="Breakthrough detail">
+              <CultivationBreakthroughPanel
+                milestoneState={breakthroughMilestoneState}
+                currentRealmLabel={realmLabel}
+                nextRealmLabel={atContentCap ? null : nextLiveRealm?.name ?? null}
+                stage={realm.substage}
+                stageMax={currentRealm.substages}
+                gateLine={breakthroughGateLine}
+                tokenLine={breakthroughTokenLine}
+                qiLine={breakthroughQiLine}
+                guidance={breakthroughGuidance}
+                action={breakthroughAction}
+                onAction={performRunCompassAction}
+                mode="detail"
+                onCloseDetail={() => setOpenDisclosure('none')}
+              />
             </div>
           ) : null}
-          <div className="cultivationActionStack">
-            <div className="cultivationActionStateChips" aria-live="polite">
-              {primaryIntent.showCapChip ? <span className="cultivationActionStateChip cultivationActionStateChip--cap">Cap</span> : null}
-              {primaryIntent.showGateChip ? <span className="cultivationActionStateChip cultivationActionStateChip--gate">Gate</span> : null}
-              {primaryIntent.showWarningChip ? <span className="cultivationActionStateChip cultivationActionStateChip--warning">Prepare</span> : null}
-              {primaryIntent.showReadyChip ? <span className="cultivationActionStateChip cultivationActionStateChip--ready">Ready</span> : null}
+          {openDisclosure === 'doctrine' ? (
+            <div className="cultivationDisclosurePopover cultivationDisclosurePopover--doctrine" role="dialog" aria-label="Doctrine detail">
+              <CultivationDoctrineSummary
+                pathLabel={pathLabel}
+                pathSummary={pathSummary}
+                spiritRootLine={spiritRootLine}
+                spiritRootDetail={spiritRootDetail}
+                heartLawLine={heartLawVerseLabel}
+                heartLawDetail={heartLawDetail}
+                resonanceLine={resonanceLine}
+                resonanceDetail={resonanceDetail}
+                breathLabel={breathSemantics.label}
+                breathSummary={breathSemantics.summary}
+                focusLabel={focusSemantics.label}
+                focusSummary={focusSemantics.summary}
+                doctrineSentence={doctrineSentence}
+                spiritRoot={spiritRoot}
+                mode="detail"
+                onCloseDetail={() => setOpenDisclosure('none')}
+                verseSlot={doctrineVerseSlotDetail}
+              />
             </div>
-            <button
-              type="button"
-              className={`button-standard uiNoShift cultivationActionButton cultivationActionButton--primary cultivationActionButton--tone-${primaryIntent.stateTone}`}
-              onClick={handlePrimaryIntentClick}
-              disabled={primaryIntent.primaryDisabled}
-              title={primaryIntent.primaryWhy}
-            >
-              {primaryIntent.primaryLabel}
-            </button>
-            <div className="cultivationBreakthroughHint">{primaryIntent.supportLine}</div>
-            <button
-              type="button"
-              className="button-standard uiNoShift cultivationActionButton cultivationActionButton--secondary"
-              onClick={primaryIntent.secondaryAction}
-              disabled={primaryIntent.secondaryDisabled ?? false}
-              title={primaryIntent.secondaryWhy}
-            >
-              {primaryIntent.secondaryLabel}
-            </button>
-          </div>
-          <div className="cultivationCompassChip" aria-label="Cultivation run compass">
-            <RunCompassCompact surface={runCompass.compact} tone="ink" className="cultivationCompassChip__surface" />
+          ) : null}
+        </div>
+
+        <div className="cultivationHudRail">
+          <div className="cultivationHudStack">
+            <QiProgressBar
+              current={qi}
+              required={breakthroughCost || '0'}
+              pulse={isCultivating}
+              isReady={canBreakthrough}
+              rateLabel={isCultivating ? formatNumber(headerRate) : undefined}
+            />
+            {activeCultivationBuffs.length > 0 ? (
+              <div className="cultivationBuffSummary" aria-live="polite">
+                <div className="cultivationBuffSummaryTitle">Cultivation buffs</div>
+                <div className="cultivationBuffSummaryChips">
+                  {activeCultivationBuffs.map((entry) => (
+                    <div key={entry.family} className="cultivationBuffChip" title={entry.description}>
+                      <span className="cultivationBuffChipFamily">{entry.familyMeta.label}</span>
+                      <span className="cultivationBuffChipBody">{entry.shortLabel}</span>
+                      <span className="cultivationBuffChipTimer">{entry.remainingSeconds}s</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            <div className="cultivationActionStack">
+              <button
+                type="button"
+                className={`button-standard uiNoShift cultivationActionButton cultivationActionButton--primary cultivationActionButton--tone-${primaryIntent.stateTone}`}
+                onClick={handlePrimaryIntentClick}
+                disabled={primaryIntent.primaryDisabled}
+                title={primaryIntent.primaryWhy}
+              >
+                {primaryIntent.primaryLabel}
+              </button>
+              <div className="cultivationBreakthroughHint">{primaryIntent.supportLine}</div>
+              <button
+                type="button"
+                className="button-standard uiNoShift cultivationActionButton cultivationActionButton--secondary"
+                onClick={primaryIntent.secondaryAction}
+                disabled={primaryIntent.secondaryDisabled ?? false}
+                title={primaryIntent.secondaryWhy}
+              >
+                {primaryIntent.secondaryLabel}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
         {showDaoHeart && <DaoHeartModal onClose={() => setShowDaoHeart(false)} />}
         {showPerkSelectionModal && perkSelectionRealm !== null && (

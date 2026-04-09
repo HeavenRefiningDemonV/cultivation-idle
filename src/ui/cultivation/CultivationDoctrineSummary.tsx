@@ -21,6 +21,7 @@ type CultivationDoctrineSummaryProps = {
   breathSummary: string;
   focusLabel: string;
   focusSummary: string;
+  doctrineSentence: string;
   spiritRoot: SpiritRoot | null;
   verseSlot?: ReactNode;
   mode?: 'summary' | 'detail';
@@ -43,6 +44,7 @@ export function CultivationDoctrineSummary({
   breathSummary,
   focusLabel,
   focusSummary,
+  doctrineSentence,
   spiritRoot,
   verseSlot,
   mode = 'summary',
@@ -89,6 +91,7 @@ export function CultivationDoctrineSummary({
           </div>
         ))}
       </div>
+      <p className="cultivationDoctrinePanel__sentence">{doctrineSentence}</p>
       <div className="cultivationDoctrinePanel__actions">
         {isSummary && onOpenDetail ? (
           <button type="button" className="button-standard cultivationCommandLinkButton cultivationCommandLinkButton--subtle" onClick={onOpenDetail}>

@@ -311,7 +311,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 17;
-  width: min(720px, calc(100% - 160px));
+  width: min(640px, calc(100% - 180px));
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -329,7 +329,6 @@
   pointer-events: none;
 }
 
-.cultivationCommandDeck__runCompass,
 .cultivationSideRails {
   width: 100%;
 }
@@ -345,16 +344,23 @@
 
 .cultivationSideRail {
   position: absolute;
-  width: clamp(260px, 21vw, 340px);
+  width: clamp(280px, 24vw, 420px);
   pointer-events: auto;
 }
 
 .cultivationSideRail--left {
-  left: clamp(14px, 3.2vw, 58px);
+  left: clamp(14px, 2.8vw, 44px);
 }
 
 .cultivationSideRail--right {
-  right: clamp(14px, 3.2vw, 58px);
+  width: clamp(280px, 21vw, 352px);
+  right: clamp(14px, 2.8vw, 44px);
+}
+
+.cultivationTruthStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .cultivationRunCompass--native {
@@ -418,6 +424,12 @@
   border-radius: 8px;
 }
 
+.cultivationRunCompass {
+  max-height: min(66vh, 620px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
 .cultivationBreakthroughPanel--compact,
 .cultivationDoctrinePanel--compact {
   min-height: 164px;
@@ -455,6 +467,24 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 10px;
+}
+
+.cultivationHeartLawBrief {
+  min-height: 122px;
+  padding: 12px 12px 11px;
+}
+
+.cultivationHeartLawBrief__line {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(43, 33, 22, 0.92);
+}
+
+.cultivationHeartLawBrief__detail {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: rgba(43, 33, 22, 0.8);
 }
 
 .cultivationCommandLinkButton--subtle {
@@ -687,6 +717,17 @@
   display: grid;
   gap: 10px;
   margin-bottom: 10px;
+}
+
+.cultivationDoctrinePanel__sentence {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(120, 72, 33, 0.22);
+  background: rgba(255, 248, 233, 0.5);
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(43, 33, 22, 0.84);
 }
 
 .cultivationDoctrinePanel__row {
@@ -932,48 +973,6 @@
   margin-bottom: 0;
 }
 
-.cultivationRealmTags {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 8px;
-  pointer-events: none;
-}
-
-.cultivationRealmTag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(15, 18, 28, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 12px;
-  font-weight: 600;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  max-width: 46%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cultivationRealmTag--next {
-  justify-content: flex-end;
-  text-align: right;
-}
-
-.cultivationRealmTagIcon {
-  font-size: 14px;
-}
-
-.cultivationRealmTagSub {
-  font-weight: 500;
-  color: rgba(226, 232, 240, 0.7);
-}
-
 .cultivationBuffSummary {
   width: min(92%, 880px);
   min-height: 36px;
@@ -1043,62 +1042,6 @@
   margin-top: 6px;
   z-index: 2;
   min-height: 170px;
-}
-
-.cultivationActionStateChips {
-  min-height: 22px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.cultivationActionStateChip {
-  min-width: 64px;
-  height: 20px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border: 1px solid transparent;
-  color: rgba(15, 23, 42, 0.86);
-}
-
-.cultivationActionStateChip--ready {
-  background: rgba(47, 143, 102, 0.16);
-  border-color: rgba(47, 143, 102, 0.38);
-}
-
-.cultivationActionStateChip--warning {
-  background: rgba(217, 119, 6, 0.14);
-  border-color: rgba(217, 119, 6, 0.35);
-}
-
-.cultivationActionStateChip--gate {
-  background: rgba(120, 72, 33, 0.16);
-  border-color: rgba(120, 72, 33, 0.34);
-}
-
-.cultivationActionStateChip--cap {
-  background: rgba(71, 85, 105, 0.16);
-  border-color: rgba(71, 85, 105, 0.34);
-}
-
-.cultivationCompassChip {
-  width: min(68%, 420px);
-  margin-top: 4px;
-}
-
-.cultivationCompassChip__surface {
-  min-height: 72px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(240, 226, 194, 0.86), rgba(223, 202, 166, 0.8));
-  border: 1px solid rgba(120, 72, 33, 0.24);
-  color: rgba(43, 33, 22, 0.92);
 }
 
 .cultivationActionButton {
@@ -1251,6 +1194,10 @@
   .cultivationSideRail {
     width: clamp(240px, 26vw, 320px);
   }
+
+  .cultivationRunCompass {
+    max-height: min(62vh, 540px);
+  }
 }
 
 @media (max-width: 1000px) {
@@ -1292,6 +1239,10 @@
   .cultivationActionStack {
     width: clamp(300px, 56vw, 460px);
   }
+
+  .cultivationRunCompass {
+    max-height: 360px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -1330,14 +1281,6 @@
     top: 1040px;
     width: min(calc(100% - 28px), 720px);
     margin-bottom: 32px;
-  }
-
-  .cultivationRealmTags {
-    flex-direction: column;
-  }
-
-  .cultivationRealmTag {
-    max-width: 100%;
   }
 
   .daoHeartSealButton {
