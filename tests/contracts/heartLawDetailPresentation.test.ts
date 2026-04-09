@@ -26,6 +26,8 @@ test('detail presentation provides non-empty title/family/resonance/fantasy/prac
     assert.ok(presentation.label.trim().length > 0);
     assert.ok(presentation.familyLabel.trim().length > 0);
     assert.ok(presentation.resonanceLabel.trim().length > 0);
+    assert.ok(presentation.resonanceDetail.trim().length > 0);
+    assert.ok(presentation.roleLine.trim().length > 0);
     assert.ok(presentation.fantasyDescription.trim().length > 0);
     assert.ok(presentation.practicalDescription.trim().length > 0);
     assert.ok(presentation.keyBenefits.length <= 3);

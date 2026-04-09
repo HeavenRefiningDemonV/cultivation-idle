@@ -10,6 +10,7 @@ test('path doctrine presentation contains all three paths', () => {
 test('path doctrine presentation includes non-empty role lines and summaries', () => {
   for (const presentation of Object.values(PATH_DOCTRINE_PRESENTATION_BY_ID)) {
     assert.ok(presentation.practicalRoleLine.trim().length > 0);
+    assert.ok(presentation.doctrineSubtitle.trim().length > 0);
     assert.ok(presentation.summary.trim().length > 0);
   }
 });

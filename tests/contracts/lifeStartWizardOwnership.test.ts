@@ -27,6 +27,17 @@ test('ui state resolves to step 3 when path exists, no committed law, and draft 
   }), 3);
 });
 
+test('ui state reaches step 3 when path exists, committed law is absent, and draft law is selected', () => {
+  const resolved = resolveLifeStartWizardUiStep({
+    selectedPath: 'heaven',
+    selectedHeartLawId: null,
+    draftHeartLawId: 'law_heaven_root',
+    requestedStep: 3,
+  });
+
+  assert.equal(resolved, 3);
+});
+
 test('ui state resolves to step 2 when path exists, no committed law, and no draft law exists', () => {
   assert.equal(resolveLifeStartWizardUiStep({
     selectedPath: 'martial',
@@ -47,6 +58,41 @@ test('wizard step registry and resolver never expose a step 4', () => {
   });
 
   assert.equal(LIFE_START_WIZARD_STEPS.includes(resolved), true);
+});
+
+test('back and forward step requests stay inside [1,2,3] and preserve resolver truth', () => {
+  const fromStep2 = resolveLifeStartWizardUiStep({
+    selectedPath: 'earth',
+    selectedHeartLawId: null,
+    draftHeartLawId: 'law_earth_root',
+    requestedStep: 2,
+  });
+  const toStep3 = resolveLifeStartWizardUiStep({
+    selectedPath: 'earth',
+    selectedHeartLawId: null,
+    draftHeartLawId: 'law_earth_root',
+    requestedStep: 3,
+  });
+  const committedBackTo2 = resolveLifeStartWizardUiStep({
+    selectedPath: 'earth',
+    selectedHeartLawId: 'law_earth_root',
+    draftHeartLawId: 'law_earth_root',
+    requestedStep: 2,
+  });
+  const committedForward = resolveLifeStartWizardUiStep({
+    selectedPath: 'earth',
+    selectedHeartLawId: 'law_earth_root',
+    draftHeartLawId: 'law_earth_root',
+    requestedStep: 3,
+  });
+
+  [fromStep2, toStep3, committedBackTo2, committedForward].forEach((step) => {
+    assert.equal(LIFE_START_WIZARD_STEPS.includes(step), true);
+  });
+  assert.equal(fromStep2, 2);
+  assert.equal(toStep3, 3);
+  assert.equal(committedBackTo2, 2);
+  assert.equal(committedForward, 3);
 });
 
 test('external ownership is false once path and committed heart law both exist', () => {
