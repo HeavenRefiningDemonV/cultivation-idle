@@ -45,3 +45,8 @@ This root also includes P3-11B Heart Law / Dao Heart doctrine plaques:
 - `heartlaw_plaque_title_medium.svg`
 - `heartlaw_plaque_detail_long.svg`
 - `heartlaw_plaque_subline_compact.svg`
+
+And it includes P3-11C ritual modal companion plaques:
+- `ritual_modal_titleplate_*`
+- `ritual_modal_underplate_*`
+- `ritual_modal_actionlane_*`

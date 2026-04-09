@@ -41,6 +41,7 @@ This root started as scaffold-only, but now includes additive support-art carrie
 - frame atlas kit parts (P3-11A)
 - selected-path plaques (P3-11A)
 - Heart Law medallion family (`src/assets/ui/chrome/medallions/`, P3-11B)
+- ritual modal seal accents (`src/assets/ui/chrome/seals/`, P3-11C)
 
 ## Import gate note
 No live screen should import from this root yet.

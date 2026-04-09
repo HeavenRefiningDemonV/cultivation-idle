@@ -40,6 +40,9 @@ It also includes P3-11B Heart Law / Dao Heart support overlays:
 - resonance underlays (`heartlaw_resonance_underlay_*`)
 - selected-preview underlays (`heartlaw_preview_underlay_*`)
 
+And optional P3-11C ritual modal divider rules:
+- `ritual_modal_divider_rule_soft_*`
+
 ## Import gate note
 No live screen should import from this root yet.
 
