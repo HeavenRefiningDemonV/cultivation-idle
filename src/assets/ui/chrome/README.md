@@ -37,7 +37,10 @@ P1-03A state ornaments are semantic support accents and must not become mini-pla
 - No JPG
 
 ## Packet scope note
-This is a scaffold root only in P1-01B. Do not add placeholder art files.
+This root started as scaffold-only, but now includes additive support-art carriers in subfolders:
+- frame atlas kit parts (P3-11A)
+- selected-path plaques (P3-11A)
+- Heart Law medallion family (`src/assets/ui/chrome/medallions/`, P3-11B)
 
 ## Import gate note
 No live screen should import from this root yet.

@@ -44,7 +44,8 @@ No live screen integration is allowed from this root in the blocked state.
 - No JPG
 
 ## Packet scope note
-This is a scaffold root only in Phase 1 docs/spec packets. Do not add placeholder art files.
+This root started as scaffold-only, but it now contains additive support-art carriers for:
+- P3-11B Heart Law / Dao Heart (`heartlaw_altar_base_*`, `heartlaw_scripture_stand_*`, `heartlaw_preview_anchor_*`)
 
 ## Import gate note
 No live screen should import from this root yet.

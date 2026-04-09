@@ -39,3 +39,9 @@ P1-02A began as scaffold-only, but this root now includes P3-11A additive Life S
 - `path_summary_plaque_compact.svg`
 - `path_confirm_strip_companion.svg`
 - `path_summary_plaque_side_tab.svg`
+
+This root also includes P3-11B Heart Law / Dao Heart doctrine plaques:
+- `heartlaw_plaque_header_small.svg`
+- `heartlaw_plaque_title_medium.svg`
+- `heartlaw_plaque_detail_long.svg`
+- `heartlaw_plaque_subline_compact.svg`

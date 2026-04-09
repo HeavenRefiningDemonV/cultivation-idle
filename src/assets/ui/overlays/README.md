@@ -35,6 +35,11 @@ This root started as scaffold-only in Phase 1. It now includes P3-11A Path Selec
 - selected-lane halos (`path_selection_halo_*`)
 - low-opacity mist carriers (`path_mist_underlay_*`)
 
+It also includes P3-11B Heart Law / Dao Heart support overlays:
+- circular doctrine overlays (`heartlaw_circular_overlay_*`)
+- resonance underlays (`heartlaw_resonance_underlay_*`)
+- selected-preview underlays (`heartlaw_preview_underlay_*`)
+
 ## Import gate note
 No live screen should import from this root yet.
 
