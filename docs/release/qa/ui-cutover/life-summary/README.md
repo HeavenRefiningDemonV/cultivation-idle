@@ -5,7 +5,7 @@
 - Harness URL: `/?uiAudit=section-c&surface=life-summary&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=life-summary&fx=high`, `/?uiAudit=section-c&surface=life-summary&fx=low`, `/?uiAudit=section-c&surface=life-summary&fx=reduced`
 - Reachability: `state-gated (harnessed current mode only)`
-- Capture status (P3-12A): **CAPTURE PENDING — NO EVIDENCE PNGS IN REPO**
+- Capture status (P3-12B): **FINAL INGEST BLOCKED — REQUIRED PNG EVIDENCE MISSING**
 - Capture mechanism: manual capture is the approved baseline. Automation attempt in this environment failed because Playwright/Chromium is not available.
 - Scope note: Section C scope is current mode only; do not widen to last_completed in this packet.
 

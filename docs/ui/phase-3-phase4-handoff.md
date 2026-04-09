@@ -1,26 +1,24 @@
-# Phase 3 → Phase 4 Handoff (P3-12A)
+# Phase 3 → Phase 4 Handoff (P3-12B final ingest)
 
-## 1) What Phase 3 now proves
-- Canonical Section C ids, manifest, and harness routes are in place for nine target surfaces.
-- Evidence audit tooling is active and consistently reports current debt.
-- Documentation now explicitly reflects the real capture/signoff state.
+## What Phase 3 now proves
+- Manifest/harness/doc truth are aligned on the same Section C evidence debt.
+- Per-surface capture requirements and N/A rules are explicit and normalized.
+- No false cleanup approvals were granted.
 
-## 2) What Phase 4 may safely inherit
-- Existing manifest/harness route structure for Section C capture.
-- Updated per-surface README requirements and N/A rules.
-- Updated baseline index, baseline audit, closeout summary, and signoff truth matrix.
+## What Phase 4 inherits safely
+- Canonical Section C ids/routes and audit tooling.
+- Updated closeout/signoff docs with explicit deferred decisions.
+- Explicit surface-specific truth constraints (forced-only/state-gated/N/A rules/current-mode scope).
 
-## 3) What remains deferred
-- Complete required screenshot sets (`01-06`, with truth-slot rules per surface).
-- Reviewer validation and final G1–G8 decisions.
-- Any cleanup/removal work tied to cutover approvals.
+## What remains deferred
+- Required PNG screenshot evidence for all nine Section C surfaces.
+- Final human G1–G8 gate judgments.
+- Any destructive cleanup work.
 
-## 4) What still needs screenshot/manual reviewer attention
-- All nine Section C surfaces still need required evidence PNGs.
-- Manual reviewer must evaluate owner truth, duplicate systems, missing UI elements, FX coherence, layout stability, and gameplay-truth continuity once captures exist.
+## Attention required in Phase 4
+- Perform capture in a browser-capable environment.
+- Re-run evidence audit after evidence ingest.
+- Only approve cleanup when each surface genuinely passes G1–G8.
 
-## 5) Whether any art trigger is justified from P3 evidence
-- No. Evidence debt alone does not justify new art work.
-
-## 6) Phase 4 warning
-Phase 4 must **not** assume Section C is closed. Section C remains open until evidence is complete and signoff explicitly records per-surface approval.
+## Warning
+Phase 4 must not treat Section C as closed until evidence and signoff docs explicitly record per-surface approval.

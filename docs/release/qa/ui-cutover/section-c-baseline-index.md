@@ -1,31 +1,31 @@
-# Section C Baseline Screenshot Index (P3-12A refresh)
+# Section C Baseline Screenshot Index (P3-12B final ingest)
 
-This index tracks screenshot evidence truth for the nine canonical Section C surfaces. It does **not** grant cleanup authority.
+This index records final ingest truth for the nine canonical Section C surfaces. It does **not** grant cleanup by itself.
 
-## Run context (P3-12A)
+## Final ingest run context (P3-12B)
 - Audit command: `npm run release:section-c-evidence-audit:json`
-- Audit result: **FAIL** (required evidence PNG files missing across all nine targets)
-- Capture automation attempt: **FAILED** in this environment (Playwright/Chromium unavailable)
-- Capture baseline remains: **manual screenshots + human reviewer signoff**
+- Result: **FAIL** (`overallPass: false`)
+- Evidence reality: required PNG screenshot slots are still missing across all nine surfaces.
 
-## Surface tracker
-| surface id | capture status | reachability truth | truth-slot rule | required evidence present? | cleanup status |
-| --- | --- | --- | --- | --- | --- |
-| `life-start-path` | pending | live | `03-truth-states.png` = N/A | no | deferred |
-| `life-start-heart-law` | pending | live | `03-truth-states.png` required | no | deferred |
-| `life-start-breath-focus` | pending | forced-only harness hold (transient in live flow) | `03-truth-states.png` = N/A | no | deferred |
-| `dao-heart-law` | pending | live | `03-truth-states.png` required | no | deferred |
-| `dao-heart-study` | pending | live | `03-truth-states.png` optional; explicit N/A when omitted | no | deferred |
-| `change-heart-law` | pending | state-gated/harnessed | `03-truth-states.png` required | no | deferred |
-| `prestige-ritual` | pending | live | `03-truth-states.png` required | no | deferred |
-| `current-chapter-exhausted` | pending | state-gated/harnessed | `03-truth-states.png` = N/A | no | deferred |
-| `life-summary` | pending | state-gated/harnessed (`current` mode only) | `03-truth-states.png` required | no | deferred |
+## Surface final-state tracker
+| surface id | evidence completeness | final state | cleanup decision |
+| --- | --- | --- | --- |
+| `life-start-path` | incomplete | DEFERRED | not approved |
+| `life-start-heart-law` | incomplete | DEFERRED | not approved |
+| `life-start-breath-focus` | incomplete | DEFERRED | not approved |
+| `dao-heart-law` | incomplete | DEFERRED | not approved |
+| `dao-heart-study` | incomplete | DEFERRED | not approved |
+| `change-heart-law` | incomplete | DEFERRED | not approved |
+| `prestige-ritual` | incomplete | DEFERRED | not approved |
+| `current-chapter-exhausted` | incomplete | DEFERRED | not approved |
+| `life-summary` | incomplete | DEFERRED | not approved |
 
-## Evidence debt summary
-- Missing required PNG slots: all required files for all nine surfaces.
-- No optional narrow captures are present.
-- No surface can pass G1 in the signoff sheet yet.
+## Surface-specific rule confirmations
+- `life-start-breath-focus` remains forced-only for deterministic capture hold.
+- `dao-heart-study` keeps `03-truth-states.png` as explicit N/A unless a distinct truth-state family is present.
+- `current-chapter-exhausted` keeps `03-truth-states.png` as N/A.
+- `life-summary` remains `current` mode only for Section C.
 
-## Historical traceability
-- Keep prior C.12 closeout notes as historical evidence-limited context.
-- P3-12A is an evidence audit/refresh packet and does not retroactively claim screenshot proof.
+## Final ingest verdict
+- Phase 3 Section C is **not fully closed**.
+- Remaining blocker is evidence debt + pending human gate review.

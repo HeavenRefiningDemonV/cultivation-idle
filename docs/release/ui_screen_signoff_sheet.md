@@ -1013,3 +1013,25 @@ Capture automation attempt source: `NODE_OPTIONS='--loader=./scripts/relativeJsL
 - `APPROVED FOR CLEANUP`: **none**
 - `REJECTED — REMAIN ADDITIVE`: none selected in this pass
 - `DEFERRED`: **all nine Section C surfaces**
+
+---
+
+## P3-12B final ingest refresh (2026-04-09)
+
+Evidence ingest command source: `npm run release:section-c-evidence-audit:json` → failed (`overallPass: false`, required PNG slots missing).
+
+| surface id | final state | approved for cleanup | rationale |
+| --- | --- | --- | --- |
+| `life-start-path` | DEFERRED | no | G1 fails (required evidence missing). |
+| `life-start-heart-law` | DEFERRED | no | G1 fails (required evidence missing). |
+| `life-start-breath-focus` | DEFERRED | no | G1 fails; forced-only harness capture still required. |
+| `dao-heart-law` | DEFERRED | no | G1 fails (required evidence missing). |
+| `dao-heart-study` | DEFERRED | no | G1 fails (required evidence missing); truth-slot remains explicit N/A unless distinct family appears. |
+| `change-heart-law` | DEFERRED | no | G1 fails (required evidence missing). |
+| `prestige-ritual` | DEFERRED | no | G1 fails (required evidence missing). |
+| `current-chapter-exhausted` | DEFERRED | no | G1 fails (required evidence missing); truth-slot remains N/A. |
+| `life-summary` | DEFERRED | no | G1 fails (required evidence missing, current-mode scope only). |
+
+### P3-12B cleanup verdict
+- `APPROVED FOR CLEANUP`: **none**
+- `DEFERRED`: **all nine Section C surfaces**

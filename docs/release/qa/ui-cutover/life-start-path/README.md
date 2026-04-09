@@ -5,7 +5,7 @@
 - Harness URL: `/?uiAudit=section-c&surface=life-start-path&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=life-start-path&fx=high`, `/?uiAudit=section-c&surface=life-start-path&fx=low`, `/?uiAudit=section-c&surface=life-start-path&fx=reduced`
 - Reachability: `live`
-- Capture status (P3-12A): **CAPTURE PENDING — NO EVIDENCE PNGS IN REPO**
+- Capture status (P3-12B): **FINAL INGEST BLOCKED — REQUIRED PNG EVIDENCE MISSING**
 - Capture mechanism: manual capture is the approved baseline. Automation attempt in this environment failed because Playwright/Chromium is not available.
 - Scope note: Truth-state slot is intentionally N/A for this surface.
 

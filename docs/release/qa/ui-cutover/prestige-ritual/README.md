@@ -5,7 +5,7 @@
 - Harness URL: `/?uiAudit=section-c&surface=prestige-ritual&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=prestige-ritual&fx=high`, `/?uiAudit=section-c&surface=prestige-ritual&fx=low`, `/?uiAudit=section-c&surface=prestige-ritual&fx=reduced`
 - Reachability: `live`
-- Capture status (P3-12A): **CAPTURE PENDING — NO EVIDENCE PNGS IN REPO**
+- Capture status (P3-12B): **FINAL INGEST BLOCKED — REQUIRED PNG EVIDENCE MISSING**
 - Capture mechanism: manual capture is the approved baseline. Automation attempt in this environment failed because Playwright/Chromium is not available.
 
 ## Screenshot slots
