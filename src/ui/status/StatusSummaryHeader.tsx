@@ -1,5 +1,4 @@
 import { AlertCircle, Compass, Mountain, Swords, Target } from 'lucide-react';
-import { CombatStatTile } from './CombatStatTile.js';
 import type { RunCompassActionLine } from '../../systems/ui/runCompass/index.js';
 import { BadgeSlot } from '../shell/BadgeSlot.js';
 
@@ -31,9 +30,9 @@ export function StatusSummaryHeader({
   combatStrip,
 }: StatusSummaryHeaderProps) {
   return (
-    <div className="statusSummaryPanel statusScreenCardBase">
-      <div className="statusSummaryTopGrid">
-        <div className="statusSummaryIdentity">
+    <header className="statusSummaryRibbon statusScreenCardBase" aria-label="Status quick diagnosis ribbon">
+      <div className="statusSummaryRibbonGrid">
+        <div className="statusSummaryRibbonCell statusSummaryRibbonCell--identity">
           <div className="statusSummaryLabelRow">
             <Mountain className="statusSummaryIcon" aria-hidden />
             <span className="statusSummaryLabel">Realm</span>
@@ -46,7 +45,7 @@ export function StatusSummaryHeader({
           </div>
         </div>
 
-        <div className="statusSummaryIdentity">
+        <div className="statusSummaryRibbonCell statusSummaryRibbonCell--path">
           <div className="statusSummaryLabelRow">
             <Target className="statusSummaryIcon" aria-hidden />
             <span className="statusSummaryLabel">Path</span>
@@ -65,7 +64,7 @@ export function StatusSummaryHeader({
           </div>
         </div>
 
-        <div className="statusBiggestShortfall">
+        <div className="statusSummaryRibbonCell statusSummaryRibbonCell--shortfall">
           <div className="statusSummaryLabelRow">
             <AlertCircle className="statusSummaryIcon" aria-hidden />
             <span className="statusSummaryLabel">Biggest Shortfall</span>
@@ -86,23 +85,21 @@ export function StatusSummaryHeader({
         </div>
       </div>
 
-      <div className="statusCombatStrip" aria-label="Combat strength strip">
+      <div className="statusSummaryCombatStrip" aria-label="Combat strength strip">
         <div className="statusSummaryLabelRow">
           <Swords className="statusSummaryIcon" aria-hidden />
           <span className="statusSummaryLabel">Combat Strength</span>
         </div>
-        <div className="statusCombatStripGrid">
+        <div className="statusSummaryCombatPills">
           {combatStrip.slice(0, 4).map((entry) => (
-            <CombatStatTile
-              key={entry.label}
-              label={entry.label}
-              value={entry.value}
-              tone={entry.tone}
-              icon={<Compass size={14} />}
-            />
+            <div key={entry.label} className={`statusSummaryCombatPill statusSummaryCombatPill--${entry.tone}`}>
+              <Compass className="statusSummaryCombatPillIcon" aria-hidden />
+              <span className="statusSummaryCombatPillLabel">{entry.label}</span>
+              <span className="statusSummaryCombatPillValue">{entry.value}</span>
+            </div>
           ))}
         </div>
       </div>
-    </div>
+    </header>
   );
 }

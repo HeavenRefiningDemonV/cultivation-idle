@@ -139,13 +139,6 @@ export function StatusScreen() {
       ) : null}
       <div className="statusScreenRoot">
         <div className="statusScreenContent">
-          <RunCompass
-            surface={runCompass.full}
-            tone="paper"
-            className="statusScreenRunCompass statusScreenCardBase"
-            onAction={performRunCompassAction}
-          />
-
           <StatusSummaryHeader
             realmName={troubleshooting.realmName}
             stageText={troubleshooting.stageText}
@@ -158,6 +151,12 @@ export function StatusScreen() {
             topFixAction={primaryStatusAction}
             onRunCompassAction={performRunCompassAction}
             combatStrip={troubleshooting.combatStrip}
+          />
+          <RunCompass
+            surface={runCompass.full}
+            tone="paper"
+            className="statusScreenRunCompass statusScreenCardBase"
+            onAction={performRunCompassAction}
           />
 
           <section className="statusChamberLayout" aria-label="Status troubleshooting chamber">
@@ -190,18 +189,11 @@ export function StatusScreen() {
               </StatusMiniCard>
             </div>
 
-            <div className="statusChamberCore" aria-hidden>
-              <div className="statusChamberCorePlate">
-                <div className="statusChamberCoreOrb" />
-                <div className="statusChamberCoreSeal">Diagnostic Chamber</div>
-              </div>
-            </div>
-
-            <div className="statusChamberRail statusChamberRail--right">
+            <div className="statusChamberCoreStack">
               <StatusMiniCard
                 title="Readiness"
                 urgent={troubleshooting.urgentCardId === 'readiness'}
-                className="statusTroubleshootingCard--readiness"
+                className="statusTroubleshootingCard--readiness statusTroubleshootingCard--crown"
               >
                 <StatusLine label="State" value={troubleshooting.readiness.readinessLabel} />
                 <StatusLine label="Gate" value={troubleshooting.readiness.gateTrialName} />
@@ -209,7 +201,18 @@ export function StatusScreen() {
                 {troubleshooting.readiness.warnings.map((warning) => <StatusLine key={warning} label="Warning" value={warning} />)}
                 <StatusLine label="Biggest Shortfall" value={troubleshooting.readiness.shortfallLine} />
               </StatusMiniCard>
+              <div className="statusChamberCore" aria-hidden>
+                <div className="statusChamberCorePlate">
+                  <div className="statusChamberCoreOrb">
+                    <div className="statusChamberCoreReadinessValue">{troubleshooting.readiness.readinessLabel}</div>
+                    <div className="statusChamberCoreReadinessSub">{troubleshooting.readiness.diagnosisLabel}</div>
+                  </div>
+                  <div className="statusChamberCoreSeal">Diagnostic Chamber</div>
+                </div>
+              </div>
+            </div>
 
+            <div className="statusChamberRail statusChamberRail--right">
               <StatusMiniCard title="Preparation" urgent={troubleshooting.urgentCardId === 'preparation'}>
                 <StatusLine label="Merit" value={troubleshooting.preparation.meritReserve} />
                 <StatusLine label="Spirit Stones" value={troubleshooting.preparation.spiritStoneReserve} />
