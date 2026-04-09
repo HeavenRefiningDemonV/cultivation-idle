@@ -469,24 +469,6 @@
   margin-top: 10px;
 }
 
-.cultivationHeartLawBrief {
-  min-height: 122px;
-  padding: 12px 12px 11px;
-}
-
-.cultivationHeartLawBrief__line {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(43, 33, 22, 0.92);
-}
-
-.cultivationHeartLawBrief__detail {
-  margin: 6px 0 0;
-  font-size: 12px;
-  line-height: 1.35;
-  color: rgba(43, 33, 22, 0.8);
-}
-
 .cultivationCommandLinkButton--subtle {
   min-height: 30px;
   padding: 0 10px;
@@ -806,7 +788,7 @@
 }
 
 .cultivationDoctrineVerseBar--compact {
-  max-width: min(100%, 320px);
+  max-width: 100%;
 }
 
 .cultivationHudRail {

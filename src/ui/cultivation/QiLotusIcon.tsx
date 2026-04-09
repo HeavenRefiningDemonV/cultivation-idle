@@ -11,11 +11,12 @@ type QiLotusIconProps = {
   className?: string;
   title?: string;
   label?: string;
+  fixed?: boolean;
 };
 
-export function QiLotusIcon({ state, className = '', title, label }: QiLotusIconProps) {
+export function QiLotusIcon({ state, className = '', title, label, fixed = false }: QiLotusIconProps) {
   return (
-    <span className={`qiLotusIcon ${className}`.trim()} data-state={state} title={title} aria-hidden="true">
+    <span className={`qiLotusIcon ${className}`.trim()} data-state={state} data-fixed={fixed ? '1' : '0'} title={title} aria-hidden="true">
       <img
         className="qiLotusIcon__img qiLotusIcon__img--closed"
         src={lotusClosed}

@@ -62,7 +62,7 @@ export function CultivationDoctrineSummary({
     { label: 'Breath Mode', value: breathLabel, detail: breathSummary, intent: 'tuning' },
     { label: 'Focus Mode', value: focusLabel, detail: focusSummary, intent: 'tuning' },
   ];
-  const visibleRows = isSummary ? rows.slice(0, 4) : rows;
+  const visibleRows = rows;
 
   return (
     <section className={`cultivationDoctrinePanel cultivationCommandCard${isSummary ? ' cultivationDoctrinePanel--compact cultivationDoctrinePanel--summary' : ' cultivationDoctrinePanel--detail'}`} aria-label="Doctrine state">

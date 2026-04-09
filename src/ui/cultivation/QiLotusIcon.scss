@@ -43,6 +43,23 @@
   animation: qiLotusReadyPulse 1.25s ease-in-out infinite;
 }
 
+.qiLotusIcon[data-fixed="1"] {
+  width: 20px;
+  height: 20px;
+}
+
+.qiLotusIcon[data-fixed="1"] .qiLotusIcon__img {
+  transition: opacity 180ms ease, filter 220ms ease;
+  transform: scale(1);
+}
+
+.qiLotusIcon[data-fixed="1"][data-state="idle"] .qiLotusIcon__img--closed,
+.qiLotusIcon[data-fixed="1"][data-state="active"] .qiLotusIcon__img--open,
+.qiLotusIcon[data-fixed="1"][data-state="ready"] .qiLotusIcon__img--full {
+  transform: scale(1);
+  animation: none;
+}
+
 @keyframes qiLotusReadyPulse {
   0%,
   100% {

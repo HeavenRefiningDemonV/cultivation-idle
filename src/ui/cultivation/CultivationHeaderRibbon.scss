@@ -5,7 +5,6 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  --qi-lotus-size: 44px;
   color: #0b1020;
   transition: max-height 0.25s ease, padding 0.25s ease;
   overflow: visible;
@@ -68,8 +67,8 @@
 .cultivationHeaderRibbonValue--qi {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 46px;
+  gap: 6px;
+  min-height: 38px;
   color: rgba(58, 41, 24, 0.9);
 }
 
@@ -77,24 +76,24 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 40px;
+  min-height: 32px;
   min-width: 124px;
   line-height: 1.1;
   flex-wrap: nowrap;
 }
 
 .cultivationHeaderRibbonQiState {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  min-width: 70px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  min-width: 98px;
   text-align: center;
-  color: rgba(89, 56, 25, 0.84);
-  background: rgba(188, 153, 98, 0.16);
-  border: 1px solid rgba(120, 72, 33, 0.24);
+  color: rgba(89, 56, 25, 0.78);
+  background: rgba(188, 153, 98, 0.1);
+  border: 1px solid rgba(120, 72, 33, 0.18);
   border-radius: 999px;
-  padding: 4px 8px;
+  padding: 3px 8px;
 }
 
 .cultivationHeaderRealmIcon {
@@ -247,10 +246,6 @@
   border-image: none;
   box-shadow: none;
   background: transparent;
-}
-
-.cultivationHeaderRibbon.is-collapsed {
-  --qi-lotus-size: 40px;
 }
 
 .cultivationHeaderRibbon.is-collapsed .cultivationHeaderRibbon__inner {

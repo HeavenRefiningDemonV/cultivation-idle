@@ -31,6 +31,7 @@ import { CultivationBreakthroughPanel } from '../../ui/cultivation/CultivationBr
 import { CultivationDoctrineSummary } from '../../ui/cultivation/CultivationDoctrineSummary.js';
 import { DantianOrb } from '../../ui/cultivation/DantianOrb.js';
 import { VerseMiniBar } from '../../ui/cultivation/VerseMiniBar.js';
+import { deriveQiLotusState } from '../../ui/cultivation/lotusState.js';
 import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
@@ -255,6 +256,16 @@ export function CultivateScreen() {
   const activityLabel = activeActivity ? ACTIVITY_LABELS[activeActivity.type] ?? 'Busy' : 'Idle';
   const isCultivating = activeActivity?.type === 'meditate';
   const headerRate = effectiveRate.toString();
+  const lotusState = deriveQiLotusState({
+    breakthroughReady: canBreakthrough,
+    activityType: activeActivity?.type ?? null,
+    qiPerSecond: headerRate,
+  });
+  const lotusStateLabel = lotusState === 'ready'
+    ? 'Breakthrough Ready'
+    : lotusState === 'active'
+      ? 'Cultivating'
+      : 'Idle';
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
   const heartLawTags = (heartLawDef?.daoTags ?? []).map((tag) => tag.toLowerCase());
@@ -390,6 +401,8 @@ export function CultivateScreen() {
       title={verseTitle}
       className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--compact"
       isComplete={verseRequirement <= 0}
+      lotusState={lotusState}
+      lotusLabel={lotusStateLabel}
       compact
     />
   ) : (
@@ -401,6 +414,8 @@ export function CultivateScreen() {
       className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--compact cultivationDoctrineVerseBar--placeholder"
       placeholderLabel={versePlaceholderLabel}
       placeholderValue={versePlaceholderValue}
+      lotusState={lotusState}
+      lotusLabel={lotusStateLabel}
       compact
     />
   );
@@ -412,6 +427,8 @@ export function CultivateScreen() {
       title={verseTitle}
       className="cultivationDoctrineVerseBar"
       isComplete={verseRequirement <= 0}
+      lotusState={lotusState}
+      lotusLabel={lotusStateLabel}
     />
   ) : (
     <VerseMiniBar
@@ -422,6 +439,8 @@ export function CultivateScreen() {
       className="cultivationDoctrineVerseBar cultivationDoctrineVerseBar--placeholder"
       placeholderLabel={versePlaceholderLabel}
       placeholderValue={versePlaceholderValue}
+      lotusState={lotusState}
+      lotusLabel={lotusStateLabel}
     />
   );
 
@@ -696,7 +715,6 @@ export function CultivateScreen() {
             activityType={activeActivity?.type ?? null}
             stability={stability}
             stabilityCap={stabilityCap}
-            breakthroughReady={canBreakthrough}
           />
         </div>
 
@@ -746,17 +764,6 @@ export function CultivateScreen() {
                 onOpenDetail={() => setOpenDisclosure('doctrine')}
                 verseSlot={doctrineVerseSlotCompact}
               />
-              <section className="cultivationHeartLawBrief cultivationCommandCard" aria-label="Heart Law detail">
-                <div className="cultivationCommandCard__header">
-                  <div>
-                    <div className="cultivationCommandCard__eyebrow">Heart Law</div>
-                    <h2 className="cultivationCommandCard__title">Current shaping law</h2>
-                  </div>
-                  <span className="cultivationCommandCard__badge">{resonanceLine}</span>
-                </div>
-                <div className="cultivationHeartLawBrief__line">{heartLawVerseLabel}</div>
-                <p className="cultivationHeartLawBrief__detail">{heartLawDetail}</p>
-              </section>
             </div>
           </div>
         </div>

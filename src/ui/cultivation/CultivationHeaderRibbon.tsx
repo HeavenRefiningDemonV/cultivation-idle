@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Activity, Cloud, Gauge, Mountain, Shield, Sparkles, Sun } from 'lucide-react';
 import { formatNumber } from '../../utils/numbers.js';
-import { QiLotusIcon, type QiLotusState } from './QiLotusIcon.js';
-import { deriveQiLotusState } from './lotusState.js';
 import './CultivationHeaderRibbon.scss';
 
 type CultivationHeaderRibbonProps = {
@@ -16,7 +14,6 @@ type CultivationHeaderRibbonProps = {
   activityType: string | null;
   stability: number;
   stabilityCap: number;
-  breakthroughReady: boolean;
 };
 
 function getRealmIcon(realmLabel: string, realmIndex?: number) {
@@ -27,18 +24,6 @@ function getRealmIcon(realmLabel: string, realmIndex?: number) {
     return <Sun size={16} aria-hidden="true" />;
   }
   return <Mountain size={16} aria-hidden="true" />;
-}
-
-function getLotusLabel(state: QiLotusState) {
-  if (state === 'ready') return 'Ready';
-  if (state === 'active') return 'Flowing';
-  return 'Idle';
-}
-
-function getLotusTitle(state: QiLotusState) {
-  if (state === 'ready') return 'Fully Open';
-  if (state === 'active') return 'Cultivation flow is active.';
-  return 'Cultivation is dormant.';
 }
 
 export function CultivationHeaderRibbon({
@@ -52,7 +37,6 @@ export function CultivationHeaderRibbon({
   activityType,
   stability,
   stabilityCap,
-  breakthroughReady,
 }: CultivationHeaderRibbonProps) {
   const storageKey = 'ui.cultivation.headerCollapsed';
   const ribbonId = 'cultivationHeaderPanel';
@@ -70,10 +54,6 @@ export function CultivationHeaderRibbon({
       : activityTone === 'busy'
         ? 'Foreground activity running. Meditation unavailable.'
         : 'Qi flows passively. Meditate to gain Insight and Study.';
-  const lotusState: QiLotusState = deriveQiLotusState({ breakthroughReady, activityType, qiPerSecond });
-  const lotusTitle = getLotusTitle(lotusState);
-  const lotusLabel = getLotusLabel(lotusState);
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(storageKey, collapsed ? '1' : '0');
@@ -100,10 +80,9 @@ export function CultivationHeaderRibbon({
                 Qi
               </div>
               <div className="cultivationHeaderRibbonValue cultivationHeaderRibbonValue--qi">
-                <QiLotusIcon state={lotusState} title={lotusTitle} label={lotusLabel} />
                 <div className="cultivationHeaderRibbonQiText">
                   <span>{formatNumber(qi)}</span>
-                  <span className="cultivationHeaderRibbonQiState">{lotusLabel}</span>
+                  <span className="cultivationHeaderRibbonQiState">Tracked in doctrine</span>
                 </div>
               </div>
             </div>
