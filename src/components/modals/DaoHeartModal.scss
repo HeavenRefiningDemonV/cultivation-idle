@@ -274,64 +274,9 @@
   box-shadow: inset 0 0 18px rgba(120, 94, 54, 0.08);
 }
 
-.daoHeartModalModal .cultivationPanel,
-.daoHeartModalModal .heartLawCard,
-.daoHeartModalModal .heartLawActions,
-.daoHeartModalModal .studySelect,
-.daoHeartModalModal .studyToggle {
-  background: rgba(250, 245, 235, 0.94);
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  box-shadow: inset 0 0 12px rgba(120, 94, 54, 0.08);
-  color: rgba(12, 18, 34, 0.85);
-}
-
-.daoHeartModalModal .panelTitle,
-.daoHeartModalModal .panelSub,
-.daoHeartModalModal .inlineMessage,
-.daoHeartModalModal .heartLawSignature,
-.daoHeartModalModal .heartLawNextLabel,
-.daoHeartModalModal .heartLawNextEta,
-.daoHeartModalModal .heartLawChangeCopy {
-  color: rgba(12, 18, 34, 0.75);
-}
-
-.daoHeartModalModal .progressLabel,
-.daoHeartModalModal .progressValue,
-.daoHeartModalModal .panelTitle {
-  color: rgba(12, 18, 34, 0.85);
-}
-
-.daoHeartModalModal .daoSeal,
-.daoHeartModalModal .resonanceBadge,
-.daoHeartModalModal .heartLawPattern {
-  border-color: rgba(0, 0, 0, 0.18);
-  color: rgba(12, 18, 34, 0.8);
-  background: rgba(255, 255, 255, 0.75);
-}
-
-.daoHeartModalModal .comprehensionBar {
-  background: rgba(0, 0, 0, 0.08);
-  border-color: rgba(0, 0, 0, 0.16);
-}
-
-.daoHeartModalModal .comprehensionBarFill {
-  background: linear-gradient(90deg, var(--dao-accent), var(--dao-accent-2));
-}
-
-.daoHeartModalModal .verseNode {
-  border-color: rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.75);
-  color: rgba(12, 18, 34, 0.8);
-}
-
-.daoHeartModalModal .verseNode--unlocked {
-  border-color: rgba(34, 197, 94, 0.5);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
-}
-
-.daoHeartModalModal .verseNode--current {
-  border-color: rgba(245, 158, 11, 0.6);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+.daoHeartModalSection--heartLaw,
+.daoHeartModalSection--study {
+  min-height: 620px;
 }
 
 [data-dao-element='fire'] .daoHeartMote {
@@ -401,5 +346,12 @@
   .daoHeartFxMandala,
   .daoHeartFxOrbit {
     animation: none !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .daoHeartModalSection--heartLaw,
+  .daoHeartModalSection--study {
+    min-height: 0;
   }
 }

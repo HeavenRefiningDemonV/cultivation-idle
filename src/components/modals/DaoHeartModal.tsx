@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent } from 'react';
 import { StudyModeWidget } from '../../ui/cultivation/StudyModeWidget.js';
-import { HeartLawPanel } from '../../ui/cultivation/heartLaw/HeartLawPanel.js';
+import { HeartLawMindView } from '../../ui/cultivation/heartLaw/HeartLawMindView.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCultivationStore } from '../../stores/cultivationStore.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
@@ -218,18 +218,18 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
           <div className="daoHeartModalBody">
             {tab === 'heartLaw' ? (
               <section
-                className="daoHeartModalSection"
+                className="daoHeartModalSection daoHeartModalSection--heartLaw"
                 role="tabpanel"
                 id="dao-heart-panel-heart-law"
                 aria-labelledby="dao-heart-tab-heart-law"
               >
-                <HeartLawPanel />
+                <HeartLawMindView />
               </section>
             ) : null}
 
             {tab === 'study' ? (
               <section
-                className="daoHeartModalSection"
+                className="daoHeartModalSection daoHeartModalSection--study"
                 role="tabpanel"
                 id="dao-heart-panel-study"
                 aria-labelledby="dao-heart-tab-study"

@@ -1,56 +1,47 @@
 import { useEffect, useMemo, useState } from 'react';
 import { INITIAL_REALM } from '../../../constants/index.js';
 import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
-import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
+import { getHeartLawProfile } from '../../../systems/doctrine/heartLawCatalog.js';
+import { getHeartLawSelectionPresentation } from '../../../systems/doctrine/heartLawSelectionPresentation.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
 import { useCultivationStore } from '../../../stores/cultivationStore.js';
 import { useGameStore } from '../../../stores/gameStore.js';
 import { usePrestigeStore } from '../../../stores/prestigeStore.js';
-import type { HeartLawChapter } from '../../../content/index.js';
 import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
 import { RadialVerseRing } from './RadialVerseRing.js';
 import './HeartLawMindView.scss';
 
-const roman = ['I', 'II', 'III', 'IV', 'V'];
-
-const archetypeLabels: Record<string, string> = {
-  steady: 'Steady',
-  burst: 'Burst',
-  risk: 'Risk',
-  artisan: 'Artisan',
-  mystic: 'Mystic',
-};
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 
 const EFFECT_LABELS: Record<string, string> = {
-  cultivateQiMult: 'Cultivation rate',
-  combatDamageMult: 'Combat damage',
-  offlineEfficiencyAdd: 'Offline efficiency',
-  stabilityCostMult: 'Stability cost',
-  professionYieldMult: 'Profession yield',
-  professionSpeedMult: 'Profession speed',
+  cultivation_rate: 'Cultivation rhythm',
+  combat_damage: 'Combat pressure',
+  offline_efficiency: 'Offline gain',
+  stability_cost: 'Stability control',
+  profession_yield: 'Profession yield',
+  profession_speed: 'Profession speed',
 };
 
-function formatEffectValue(value: unknown): string | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-  const pct = Math.round(value * 100);
-  if (Math.abs(value) < 5) {
-    return `${value >= 0 ? '+' : ''}${pct}%`;
-  }
-  return `${value}`;
-}
+function summarizeNormalizedEffects(heartLawId: string | null, verse: number): string {
+  const profile = getHeartLawProfile(heartLawId);
+  if (!profile) return 'No scripture is active yet.';
 
-function summarizeEffects(effects: unknown): string {
-  if (!effects || typeof effects !== 'object') return 'No recorded effects.';
-  const parts: string[] = [];
-  Object.entries(effects as Record<string, unknown>).forEach(([key, value]) => {
-    const label = EFFECT_LABELS[key] ?? key;
-    const formatted = formatEffectValue(value);
-    if (formatted) {
-      parts.push(`${label} ${formatted}`);
-    }
-  });
-  return parts.length > 0 ? parts.join(' • ') : 'No recorded effects.';
+  const effects = profile.chapterEffectsByChapter[verse] ?? [];
+  const lines = effects
+    .filter((effect) => typeof effect.value === 'number')
+    .slice(0, 3)
+    .map((effect) => {
+      const label = EFFECT_LABELS[effect.normalizedKey] ?? effect.normalizedKey.replace(/_/g, ' ');
+      const value = Math.round(effect.value * 100);
+      return `${label} ${value >= 0 ? '+' : ''}${value}%`;
+    });
+
+  if (lines.length === 0) {
+    return 'Verse doctrine remains stable and foundational.';
+  }
+
+  return lines.join(' • ');
 }
 
 export function HeartLawMindView() {
@@ -61,6 +52,7 @@ export function HeartLawMindView() {
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const getRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter);
   const selectHeartLaw = useCultivationStore((state) => state.selectHeartLaw);
+  const isUnlocked = useCultivationStore((state) => state.isUnlocked);
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
   const realm = useGameStore((state) => state.realm);
@@ -73,8 +65,6 @@ export function HeartLawMindView() {
   }, [chapter, selectedHeartLawId]);
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
-  const heartLawTags = heartLawDef?.daoTags ?? [];
-  const chapters = heartLawDef?.chapters ?? [];
   const required = getRequirement();
   const isCultivating = activeActivity?.type === 'meditate';
   const breath = getBreathModeMultipliers(breathMode);
@@ -86,23 +76,21 @@ export function HeartLawMindView() {
   const etaText = etaMinutes === null ? '—' : `~${Math.max(1, Math.ceil(etaMinutes))}m`;
   const progressPct = required > 0 ? Math.min(100, (comprehension / required) * 100) : 0;
 
-  const { status, percent } = useMemo(
-    () => getAffinityStatus(heartLawDef, spiritRoot),
-    [heartLawDef, spiritRoot],
+  const presentation = useMemo(
+    () => (heartLawDef
+      ? getHeartLawSelectionPresentation(heartLawDef, {
+        spiritRoot,
+        isUnlocked: isUnlocked(heartLawDef.id),
+        isSelected: true,
+      })
+      : null),
+    [heartLawDef, isUnlocked, spiritRoot],
   );
 
-  const resonanceText =
-    status === 'match'
-      ? `Resonates: Strong (+${percent}% signature potency)`
-      : status === 'mismatch'
-        ? 'Resonates: Weak (minor penalty only)'
-        : 'Resonance: None';
-
-  const selectedChapter = chapters.find((entry) => entry.chapter === selectedVerse);
-  const selectedEffectsSummary = summarizeEffects(selectedChapter?.effects);
-
-  const tierLabel = heartLawDef?.tier ? heartLawDef.tier.replace('tier', 'Tier ') : 'Unranked';
-  const archetypeLabel = heartLawDef?.archetype ? archetypeLabels[heartLawDef.archetype] ?? heartLawDef.archetype : '';
+  const selectedVerseSummary = useMemo(
+    () => summarizeNormalizedEffects(selectedHeartLawId, selectedVerse),
+    [selectedHeartLawId, selectedVerse],
+  );
 
   const isNewLife = realm.index === INITIAL_REALM.index && realm.substage === INITIAL_REALM.substage;
   const canChangeHeartLaw = isNewLife;
@@ -115,68 +103,76 @@ export function HeartLawMindView() {
   };
 
   return (
-    <div className="heartLawMindView">
-      <div className="heartLawMindHeader">
-        <div>
-          <div className="heartLawMindTitle">{heartLawDef?.name ?? 'No Heart Law Selected'}</div>
-          <div className="heartLawMindSubtitle">
-            {archetypeLabel ? `${archetypeLabel} • ` : ''}
-            {tierLabel}
-          </div>
+    <div className="heartLawMindView" data-ui="dao-heart-law-ritual-view">
+      <header className="heartLawMindHeader" aria-label="Active heart law identity">
+        <div className="heartLawMindIdentity">
+          <p className="heartLawMindEyebrow">Current Scripture</p>
+          <h3 className="heartLawMindTitle">{presentation?.label ?? 'No Heart Law Selected'}</h3>
+          <p className="heartLawMindSubtitle">
+            {presentation
+              ? `${presentation.familyLabel} • ${presentation.tierLabel}${presentation.archetypeLabel ? ` • ${presentation.archetypeLabel}` : ''}`
+              : 'Choose a Heart Law to activate doctrinal reading.'}
+          </p>
+          <p className="heartLawMindDoctrine">{presentation?.doctrineSubtitle ?? 'Doctrine scripture.'}</p>
         </div>
-        {heartLawTags.length > 0 ? (
-          <div className="heartLawMindSeals">
-            {heartLawTags.map((tag) => (
-              <span key={tag} className="heartLawMindSeal">
-                {tag}
-              </span>
-            ))}
+        <div className="heartLawMindResonance" role="status" aria-live="polite">
+          <div className={`heartLawMindResonanceBadge heartLawMindResonanceBadge--${presentation?.resonanceTone ?? 'neutral'}`}>
+            {presentation ? `Resonance: ${presentation.resonanceLabel}` : 'Resonance: Neutral'}
           </div>
-        ) : null}
-      </div>
+          <p className="heartLawMindResonanceDetail">{presentation?.resonanceDetail ?? 'No resonance bonus needed.'}</p>
+          <p className="heartLawMindStatus">{presentation?.availabilityLine ?? 'Starter scripture available immediately.'}</p>
+        </div>
+      </header>
 
-      <div className="heartLawMindRadial">
-        <RadialVerseRing
-          currentVerse={chapter}
-          selectedVerse={selectedVerse}
-          progressToNextPct={progressPct}
-          onSelectVerse={setSelectedVerse}
-        />
-        <div className="heartLawMindOrb" />
-      </div>
+      <section className="heartLawMindCenter" aria-label="Verse mandala and selected verse reading">
+        <div className="heartLawMindRadial">
+          <RadialVerseRing
+            currentVerse={chapter}
+            selectedVerse={selectedVerse}
+            progressToNextPct={progressPct}
+            onSelectVerse={setSelectedVerse}
+          />
+          <div className="heartLawMindOrb" aria-hidden="true" />
+        </div>
 
-      <div className="heartLawMindPanel">
-        <div className="heartLawMindRow">
-          <div className="heartLawMindResonance">{resonanceText}</div>
-          <div className="heartLawMindProgress">
-            Verse {roman[chapter - 1] ?? chapter} • {progressPct.toFixed(1)}% to next
+        <aside className="heartLawMindVersePane" aria-live="polite">
+          <p className="heartLawMindVerseEyebrow">Verse Reading</p>
+          <h4 className="heartLawMindVerseTitle">Verse {ROMAN[selectedVerse - 1] ?? selectedVerse}</h4>
+          <p className="heartLawMindVerseText">{selectedVerseSummary}</p>
+          <p className="heartLawMindVerseHint">Current verse: {ROMAN[chapter - 1] ?? chapter}</p>
+        </aside>
+      </section>
+
+      <section className="heartLawMindProgress" aria-label="Progression and change state">
+        <div className="heartLawMindProgressBlock">
+          <p className="heartLawMindProgressLabel">Comprehension</p>
+          <div className="heartLawMindProgressBar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progressPct)}>
+            <div className="heartLawMindProgressFill" style={{ width: `${progressPct}%` }} />
           </div>
+          <p className="heartLawMindProgressMeta">{progressPct.toFixed(1)}% to Verse {chapter < 5 ? ROMAN[chapter] ?? chapter + 1 : 'Peak'}</p>
         </div>
-        <div className="heartLawMindVerseSummary">
-          <div className="heartLawMindVerseTitle">Verse {roman[selectedVerse - 1] ?? selectedVerse}</div>
-          <div className="heartLawMindVerseText">{selectedEffectsSummary}</div>
+
+        <div className="heartLawMindProgressBlock">
+          <p className="heartLawMindProgressLabel">Next threshold</p>
+          <p className="heartLawMindProgressMeta">Requirement: {required > 0 ? `${required} comprehension` : 'All verses completed'}</p>
+          <p className="heartLawMindProgressMeta">Estimated time: {required > 0 ? etaText : '—'}</p>
         </div>
-        <div className="heartLawMindFooter">
-          <div>
-            <div className="heartLawMindRequirement">Next verse requirement: {required} comprehension</div>
-            <div className="heartLawMindEta">Estimated time: {etaText}</div>
-          </div>
+
+        <div className="heartLawMindActionBlock">
           <button
             type="button"
             className="button-standard heartLawMindChangeButton"
             onClick={() => setShowModal(true)}
             disabled={!canChangeHeartLaw}
-            aria-describedby={!canChangeHeartLaw ? 'heart-law-mind-change-restriction' : undefined}
+            aria-describedby={!canChangeHeartLaw ? 'dao-heart-law-change-restriction' : undefined}
           >
             Change Heart Law
           </button>
+          <p id="dao-heart-law-change-restriction" className="heartLawMindRestriction" role="status" aria-live="polite">
+            {canChangeHeartLaw ? 'Rewrite available in this life state.' : changeTooltip}
+          </p>
         </div>
-        {!canChangeHeartLaw ? (
-          <div id="heart-law-mind-change-restriction" className="heartLawMindRestriction">
-            {changeTooltip}
-          </div>
-        ) : null}
-      </div>
+      </section>
 
       {showModal ? (
         <ChangeHeartLawModal

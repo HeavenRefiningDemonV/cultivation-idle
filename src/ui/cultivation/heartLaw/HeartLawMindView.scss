@@ -1,131 +1,216 @@
 .heartLawMindView {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  color: #1f2937;
+  display: grid;
+  gap: 14px;
+  color: rgba(20, 24, 34, 0.9);
 }
 
 .heartLawMindHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  border: 1px solid rgba(120, 88, 48, 0.28);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.82), rgba(249, 240, 223, 0.72));
+  padding: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.heartLawMindIdentity {
+  display: grid;
+  gap: 4px;
+}
+
+.heartLawMindEyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(93, 60, 34, 0.84);
 }
 
 .heartLawMindTitle {
-  font-size: 22px;
-  font-weight: 700;
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
 }
 
-.heartLawMindSubtitle {
-  font-size: 13px;
-  color: rgba(31, 41, 55, 0.7);
+.heartLawMindSubtitle,
+.heartLawMindDoctrine,
+.heartLawMindResonanceDetail,
+.heartLawMindStatus {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(53, 41, 30, 0.84);
 }
 
-.heartLawMindSeals {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
+.heartLawMindResonance {
+  border: 1px solid rgba(120, 88, 48, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 252, 244, 0.7);
+  padding: 10px;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-height: 110px;
 }
 
-.heartLawMindSeal {
-  padding: 4px 8px;
+.heartLawMindResonanceBadge {
   border-radius: 999px;
-  background: rgba(185, 28, 28, 0.12);
-  color: rgba(185, 28, 28, 0.8);
-  border: 1px solid rgba(185, 28, 28, 0.25);
-  font-size: 11px;
+  border: 1px solid rgba(120, 88, 48, 0.35);
+  padding: 4px 10px;
+  font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.heartLawMindResonanceBadge--strong {
+  color: #1f6b39;
+}
+
+.heartLawMindResonanceBadge--partial {
+  color: #1f5f84;
+}
+
+.heartLawMindResonanceBadge--neutral {
+  color: rgba(73, 63, 52, 0.92);
+}
+
+.heartLawMindResonanceBadge--mismatch {
+  color: #8a5a26;
+}
+
+.heartLawMindCenter {
+  border: 1px solid rgba(120, 88, 48, 0.24);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.8), rgba(245, 235, 215, 0.72));
+  padding: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  min-height: 340px;
 }
 
 .heartLawMindRadial {
   position: relative;
-  height: 320px;
+  min-height: 300px;
   display: grid;
   place-items: center;
 }
 
 .heartLawMindOrb {
-  width: 120px;
-  height: 120px;
+  position: absolute;
+  width: 122px;
+  height: 122px;
   border-radius: 50%;
   background: radial-gradient(circle at center, rgba(248, 250, 252, 0.9), rgba(203, 213, 225, 0.65));
-  border: 1px solid rgba(148, 131, 99, 0.4);
-  box-shadow: inset 0 0 18px rgba(120, 94, 54, 0.1);
+  border: 1px solid rgba(148, 131, 99, 0.42);
+  box-shadow: inset 0 0 18px rgba(120, 94, 54, 0.12);
+  pointer-events: none;
 }
 
-.heartLawMindPanel {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(148, 131, 99, 0.35);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: inset 0 0 14px rgba(120, 94, 54, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.heartLawMindRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-.heartLawMindResonance {
-  font-weight: 600;
-}
-
-.heartLawMindProgress {
-  color: rgba(31, 41, 55, 0.65);
-}
-
-.heartLawMindVerseSummary {
-  display: flex;
-  flex-direction: column;
+.heartLawMindVersePane {
+  border: 1px solid rgba(120, 88, 48, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 250, 242, 0.82);
+  padding: 10px;
+  display: grid;
+  align-content: start;
   gap: 6px;
 }
 
+.heartLawMindVerseEyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(93, 60, 34, 0.84);
+}
+
 .heartLawMindVerseTitle {
-  font-weight: 700;
+  margin: 0;
+  font-size: 18px;
+}
+
+.heartLawMindVerseText,
+.heartLawMindVerseHint,
+.heartLawMindProgressMeta,
+.heartLawMindRestriction {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(53, 41, 30, 0.84);
 }
 
 .heartLawMindVerseText {
-  color: rgba(31, 41, 55, 0.8);
-  font-size: 13px;
+  min-height: 58px;
 }
 
-.heartLawMindFooter {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  font-size: 13px;
+.heartLawMindProgress {
+  border: 1px solid rgba(120, 88, 48, 0.24);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.76), rgba(247, 238, 221, 0.7));
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.heartLawMindRequirement,
-.heartLawMindEta {
-  color: rgba(31, 41, 55, 0.65);
+.heartLawMindProgressBlock,
+.heartLawMindActionBlock {
+  border: 1px solid rgba(120, 88, 48, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 252, 245, 0.72);
+  padding: 9px;
+  min-height: 92px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.heartLawMindProgressLabel {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(93, 60, 34, 0.82);
+}
+
+.heartLawMindProgressBar {
+  position: relative;
+  height: 14px;
+  border: 1px solid rgba(120, 88, 48, 0.24);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.heartLawMindProgressFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--dao-accent), var(--dao-accent-2));
 }
 
 .heartLawMindChangeButton {
-  padding: 8px 14px;
+  width: 100%;
+  min-height: 34px;
   font-weight: 700;
 }
 
 .heartLawMindRestriction {
-  font-size: 12px;
-  color: rgba(120, 68, 32, 0.85);
-  min-height: 16px;
+  min-height: 30px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 960px) {
+  .heartLawMindHeader,
+  .heartLawMindCenter,
+  .heartLawMindProgress {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .heartLawMindCenter {
+    min-height: 0;
+  }
+
   .heartLawMindRadial {
-    height: 280px;
+    min-height: 280px;
   }
 }

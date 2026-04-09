@@ -77,15 +77,15 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 - **Human label:** Dao Heart — Heart Law tab
 - **Screen family:** ritual modal
 - **Owner files:** `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss`, `src/ui/cultivation/heartLaw/HeartLawPanel.tsx`, `src/ui/cultivation/heartLaw/HeartLawMindView.tsx`, `src/ui/cultivation/heartLaw/HeartLawMindView.scss`, `src/ui/cultivation/heartLaw/RadialVerseRing.tsx`, `src/ui/cultivation/heartLaw/RadialVerseRing.scss`
-- **Current live reachability:** `live but awkward`
+- **Current live reachability:** `live`
 - **Already right:** tab shell, dao-element tinting, atmospheric FX layers, radial ring, resonance/chapter/comprehension/ETA truth are all present.
-- **Still weak / generic / unfinished:** mixed visual language between rich shell and generic panel regions remains obvious.
+- **Still weak / generic / unfinished:** evidence capture is still pending manual PNG slots in this repo.
 - **Retain through cutover:** current DaoHeart scroll shell, dao-element wash, atmosphere layer stack, radial ring and truth text rows.
 - **Later art not justified yet:** replacing modal family or rewriting tab information architecture.
 - **Desktop / narrow notes:** narrow capture should confirm tab/header/body do not collapse unpredictably.
 - **High FX / Low FX / Reduced Motion notes:** capture same tab under all FX modes to compare coherence.
 - **Layout-shift risk:** tab switch and ring selection states are key no-shift checks.
-- **Blue/flat/generic remnants:** known blue/generic remnants likely persist in sub-panels and should be captured, not fixed here.
+- **Blue/flat/generic remnants:** ritual center/ring language now anchors first-read grouping; remaining debt is capture coverage, not owner ambiguity.
 - **Screenshot folder:** `docs/release/qa/ui-cutover/dao-heart-law/`
 - **Likely next packet:** C.2
 
@@ -173,7 +173,7 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 
 ## Known blockers discovered in baseline
 1. `life-start-breath-focus` is live in the normal Step 1 → Step 2 → Step 3 flow, but remains transient; harness forced-hold is retained for deterministic screenshot capture timing.
-2. Dao Heart family (`dao-heart-law`, `dao-heart-study`, `change-heart-law`) shows mixed mature shell vs generic panel treatment; capture first, polish later.
+2. Dao Heart family still needs manual evidence capture across `dao-heart-law`, `dao-heart-study`, and `change-heart-law` before full QA signoff.
 3. Screenshot evidence is pending manual capture because this execution environment does not provide browser image artifact tooling.
 
 
