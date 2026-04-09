@@ -209,13 +209,14 @@ export function RitualModalFrame({
       contentScrollOwner={scrollBody}
       panelOnKeyDown={handleKeyDown}
     >
-      <div className="ritualModalFrame__inner" tabIndex={-1}>
-        {resolvedHeader ? <header className="ritualModalFrame__header" id={internalHeaderId}>{resolvedHeader}</header> : null}
-        {ornament ? <div className="ritualModalFrame__ornament">{ornament}</div> : null}
+      <div className="ritualModalFrame__inner" tabIndex={-1} data-ritual-zone="frame">
+        {resolvedHeader ? <header className="ritualModalFrame__header" data-ritual-zone="header" id={internalHeaderId}>{resolvedHeader}</header> : null}
+        {ornament ? <div className="ritualModalFrame__ornament" data-ritual-zone="ornament">{ornament}</div> : null}
 
         <div
           className={classNames(
             'ritualModalFrame__body',
+            'ritualModalFrame__readingZone',
             { 'ritualModalFrame__body--scroll': scrollBody },
             {
               'ritualModalFrame__body--shadowTop': scrollBody && scrollState.top,
@@ -226,11 +227,11 @@ export function RitualModalFrame({
           ref={scrollBody ? scrollRef : undefined}
         >
           {scrollBody ? <div className="ritualModalFrame__scrollShadow ritualModalFrame__scrollShadow--top" aria-hidden="true" /> : null}
-          <div className="ritualModalFrame__content">{children}</div>
+          <div className="ritualModalFrame__content" data-ritual-zone="reading">{children}</div>
           {scrollBody ? <div className="ritualModalFrame__scrollShadow ritualModalFrame__scrollShadow--bottom" aria-hidden="true" /> : null}
         </div>
 
-        {footer ? <footer className={classNames('ritualModalFrame__footer', footerClassName)}>{footer}</footer> : null}
+        {footer ? <footer className={classNames('ritualModalFrame__footer', 'ritualModalFrame__actionBand', footerClassName)} data-ritual-zone="action-band">{footer}</footer> : null}
       </div>
     </InkModalFrame>,
     document.body,

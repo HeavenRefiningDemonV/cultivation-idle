@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { getRitualMotionProfile, getSelectionCommitDelay } from '../../src/ui/motion/ritualMotion.js';
+import {
+  RITUAL_MOTION_PROFILE_DEFAULT,
+  RITUAL_MOTION_PROFILE_REDUCED,
+  getRitualMotionProfile,
+  getSelectionCommitDelay,
+} from '../../src/ui/motion/ritualMotion.js';
 
 test('reduced motion profile resolves to zero-duration interaction timings', () => {
   const profile = getRitualMotionProfile(true);
@@ -9,6 +14,7 @@ test('reduced motion profile resolves to zero-duration interaction timings', () 
   assert.equal(profile.selectMs, 0);
   assert.equal(profile.modalMs, 0);
   assert.equal(profile.commitMs, 0);
+  assert.equal(profile, RITUAL_MOTION_PROFILE_REDUCED);
 });
 
 test('default ritual profile stays within section-c calm timing envelope', () => {
@@ -18,4 +24,5 @@ test('default ritual profile stays within section-c calm timing envelope', () =>
   assert.equal(profile.modalMs >= 180 && profile.modalMs <= 220, true);
   assert.equal(profile.commitMs <= 180, true);
   assert.equal(getSelectionCommitDelay(false), profile.commitMs);
+  assert.equal(profile, RITUAL_MOTION_PROFILE_DEFAULT);
 });

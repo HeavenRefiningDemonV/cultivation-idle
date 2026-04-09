@@ -36,3 +36,12 @@ test('P2-09 packet doc records lifecycle ownership and existing Section C proof 
   assert.match(doc, /ChangeHeartLawModal/);
   assert.match(doc, /Section C/);
 });
+
+
+test('P3-09 contract doc extends ritual family semantics on top of P2-09', () => {
+  const doc = read('docs/ui/phase-3-ritual-modal-contract.md');
+  assert.match(doc, /phase-2-p2-09-ritual-modal-contract\.md/);
+  assert.match(doc, /Choice \/ consequence ritual/);
+  assert.match(doc, /Warning \/ chapter-end ritual/);
+  assert.match(doc, /Summary \/ review ritual/);
+});

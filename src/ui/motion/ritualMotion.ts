@@ -5,14 +5,14 @@ export interface RitualMotionProfile {
   commitMs: number;
 }
 
-const DEFAULT_PROFILE: RitualMotionProfile = Object.freeze({
+export const RITUAL_MOTION_PROFILE_DEFAULT: RitualMotionProfile = Object.freeze({
   hoverMs: 150,
   selectMs: 190,
   modalMs: 200,
   commitMs: 130,
 });
 
-const REDUCED_PROFILE: RitualMotionProfile = Object.freeze({
+export const RITUAL_MOTION_PROFILE_REDUCED: RitualMotionProfile = Object.freeze({
   hoverMs: 0,
   selectMs: 0,
   modalMs: 0,
@@ -20,7 +20,7 @@ const REDUCED_PROFILE: RitualMotionProfile = Object.freeze({
 });
 
 export function getRitualMotionProfile(prefersReducedMotion: boolean): RitualMotionProfile {
-  return prefersReducedMotion ? REDUCED_PROFILE : DEFAULT_PROFILE;
+  return prefersReducedMotion ? RITUAL_MOTION_PROFILE_REDUCED : RITUAL_MOTION_PROFILE_DEFAULT;
 }
 
 export function getSelectionCommitDelay(prefersReducedMotion: boolean): number {

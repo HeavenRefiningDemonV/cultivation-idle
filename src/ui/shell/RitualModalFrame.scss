@@ -80,12 +80,25 @@
   border-top: 1px solid rgba(120, 72, 33, 0.2);
 }
 
+
+.ritualModalFrame__readingZone {
+  min-height: 0;
+}
+
+.ritualModalFrame__actionBand {
+  min-height: 56px;
+  display: grid;
+  align-content: end;
+}
+
 .ritualModalFrame--chapterEnd {
   --ritual-modal-body-gap: 16px;
+  --ritual-modal-header-gap: 16px;
 }
 
 .ritualModalFrame--summary {
   --ritual-modal-body-gap: 12px;
+  --ritual-modal-header-gap: 10px;
 }
 
 .ritualModalFrame--static .ritualModalFrame__panel,
