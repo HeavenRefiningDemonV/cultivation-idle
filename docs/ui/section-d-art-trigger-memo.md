@@ -1,4 +1,4 @@
-# Section D.10R — Art Trigger Memo (Evidence-Dependent)
+# Section D.10R / D10R-Followup — Art Trigger Memo (Evidence-Dependent)
 
 ## 1) Header and purpose
 
@@ -16,6 +16,7 @@
 
 - `docs/release/qa/ui-cutover/cultivation/` (no required PNGs present)
 - `docs/release/qa/ui-cutover/status/` (no required PNGs present)
+- D10R-Followup file inventory recheck confirms root-slot evidence remains absent and subfolders still contain README scaffolding only.
 - `docs/ui/section-d-hero-screen-signoff.md`
 - `docs/release/ui_screen_signoff_sheet.md`
 

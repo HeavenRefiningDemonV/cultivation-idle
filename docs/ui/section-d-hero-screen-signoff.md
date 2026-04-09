@@ -1,8 +1,9 @@
-# Section D.10R — Hero-Screen Signoff Gate (Cultivation + Status)
+# Section D.10R / D10R-Followup — Hero-Screen Signoff Gate (Cultivation + Status)
 
 ## 1) Header
 
 - **packet id:** `D.10R`
+- **follow-up packet id:** `D10R-Followup`
 - **packet title:** `Section D hero-screen evidence and signoff completion`
 - **packet class:** `docs-only / cleanup-after-review gate packet`
 - **current phase:** `Phase 4 closure gate`
@@ -34,12 +35,14 @@
 ### Workflow discovery
 
 - Repo search found no approved automated Section D screenshot pipeline (no Playwright/Cypress/visual-regression capture command for Cultivation/Status).
+- `package.json` contains `release:phase0-core-capture`, but docs tie that flow to Phase 0 core-screen evidence, not Section D hero closure approval for `docs/release/qa/ui-cutover/{cultivation,status}`.
 - Existing repo convention remains manual-capture evidence folders under `docs/release/qa/ui-cutover/<surface-id>/`.
 
 ### Capture execution in this environment
 
 - Verified evidence folders and checked for real PNG artifacts.
 - Result: no required PNG files were present for Cultivation or Status.
+- Environment for this execution does not provide an approved browser capture tool for generating fresh manual screenshots within this packet.
 
 ### Filename convention drift note
 
@@ -135,3 +138,4 @@ Reason: required Cultivation/Status screenshot evidence matrix remains absent in
 2. No approved automated Section D screenshot command exists in repo for these screens.
 3. Manual capture requires an environment with interactive browser capture capability and human route execution.
 4. D1–D9 packet-level runtime green state was not re-verified inside this docs-only D.10R pass and remains dependent on prior packet evidence logs.
+5. D10R-Followup remains blocked on manual screenshot capture execution in a browser-capable review environment.

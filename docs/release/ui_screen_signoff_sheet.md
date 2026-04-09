@@ -94,7 +94,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 - target screen id: `cultivation`
 - human label: Cultivation Hero Surface
 - dominant family: hero ritual screen
-- packet id: `D.10R`
+- packet id: `D10R-Followup`
 - touched layers: docs-only evidence/signoff verification
 - retained old layer(s): cultivator/dantian center, Qi bar, breakthrough truth surfaces
 - screenshot evidence folder: `docs/release/qa/ui-cutover/cultivation/`
@@ -106,7 +106,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 | criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
 | --- | --- | --- | --- |
-| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are missing at folder root. |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are missing at folder root; only README scaffolding exists in documented subfolders. |
 | G2 | The old scenic/base layer is still present until approval. | PASS | No cleanup was executed in D.10R. |
 | G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Not certifiable without screenshot evidence. |
 | G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Not certifiable without interaction/truth-state screenshots. |
@@ -119,12 +119,12 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 | evidence slot | required? | file/path | status | notes |
 | --- | --- | --- | --- | --- |
-| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/01-base.png` | MISSING | folder contains README files only |
-| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/cultivation/02-interaction.png` | MISSING | folder contains README files only |
-| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/cultivation/03-truth-states.png` | MISSING | folder contains README files only |
-| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/04-high-fx.png` | MISSING | folder contains README files only |
-| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/05-low-fx.png` | MISSING | folder contains README files only |
-| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/06-reduced-motion.png` | MISSING | folder contains README files only |
+| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/01-base.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/cultivation/02-interaction.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/cultivation/03-truth-states.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/04-high-fx.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/05-low-fx.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/06-reduced-motion.png` | MISSING | root missing; subfolders contain README scaffolding only |
 
 ### Final decision block
 
@@ -136,7 +136,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 ### Blockers / follow-up
 
 - blockers: Required screenshot set missing (`01-06`).
-- required follow-up packet: D.10R-Followup (manual captures + reviewer decision)
+- required follow-up packet: D10R-Followup (manual captures + reviewer decision)
 - cleanup scope unlocked if approved (exact conflicting layer(s) only): none
 - reviewer rationale summary: Evidence gate not satisfied; remain additive.
 - unresolved risks after decision: duplicate/routing/truth-readability claims remain unverified visually.
@@ -148,7 +148,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 - target screen id: `status`
 - human label: Status Hero Surface
 - dominant family: hero ritual screen
-- packet id: `D.10R`
+- packet id: `D10R-Followup`
 - touched layers: docs-only evidence/signoff verification
 - retained old layer(s): RunCompass + six-card diagnostic chamber + summary header truth
 - screenshot evidence folder: `docs/release/qa/ui-cutover/status/`
@@ -160,7 +160,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 | criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
 | --- | --- | --- | --- |
-| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are missing at folder root. |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are missing at folder root; only README scaffolding exists in documented subfolders. |
 | G2 | The old scenic/base layer is still present until approval. | PASS | No cleanup was executed in D.10R. |
 | G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Not certifiable without screenshot evidence. |
 | G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Not certifiable without interaction/truth-state screenshots. |
@@ -173,12 +173,12 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 | evidence slot | required? | file/path | status | notes |
 | --- | --- | --- | --- | --- |
-| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/status/01-base.png` | MISSING | folder contains README files only |
-| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/status/02-interaction.png` | MISSING | folder contains README files only |
-| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/status/03-truth-states.png` | MISSING | folder contains README files only |
-| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/status/04-high-fx.png` | MISSING | folder contains README files only |
-| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/status/05-low-fx.png` | MISSING | folder contains README files only |
-| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/status/06-reduced-motion.png` | MISSING | folder contains README files only |
+| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/status/01-base.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/status/02-interaction.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/status/03-truth-states.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/status/04-high-fx.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/status/05-low-fx.png` | MISSING | root missing; subfolders contain README scaffolding only |
+| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/status/06-reduced-motion.png` | MISSING | root missing; subfolders contain README scaffolding only |
 
 ### Final decision block
 
@@ -190,7 +190,7 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 ### Blockers / follow-up
 
 - blockers: Required screenshot set missing (`01-06`).
-- required follow-up packet: D.10R-Followup (manual captures + reviewer decision)
+- required follow-up packet: D10R-Followup (manual captures + reviewer decision)
 - cleanup scope unlocked if approved (exact conflicting layer(s) only): none
 - reviewer rationale summary: Evidence gate not satisfied; remain additive.
 - unresolved risks after decision: diagnostic readability/motion-mode coherence remain unverified visually.
