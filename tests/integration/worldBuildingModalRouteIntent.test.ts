@@ -13,3 +13,12 @@ test('world module opener and modal support apothecary pouch intent wiring', asy
   assert.match(uiStoreSource, /worldBuildingModalIntent/);
   assert.match(uiStoreSource, /apothecarySurface\?: 'buy' \| 'brew' \| 'pouch'/);
 });
+
+test('world building modal hard-gates to live world modules and city-supported targets', async () => {
+  const worldBuildingModalSource = await fs.readFile('src/components/modals/WorldBuildingModal.tsx', 'utf8');
+
+  assert.match(worldBuildingModalSource, /inspectWorldFacingModuleTarget/);
+  assert.match(worldBuildingModalSource, /!buildingAudit\.ok \|\| !citySupportsBuilding/);
+  assert.doesNotMatch(worldBuildingModalSource, /case 'alchemy'/);
+  assert.doesNotMatch(worldBuildingModalSource, /case 'talismanStudio'/);
+});

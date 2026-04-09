@@ -28,6 +28,12 @@ test('Narrow world drawer removes duplicate visible title ownership while keepin
   assert.match(file, /title="World Details"/);
 });
 
+test('WorldScreen resolves city support identity labels from the city package registry source of truth', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  assert.match(file, /getSupportIdentityLabel/);
+  assert.doesNotMatch(file, /systems\/ui\/world\/worldCommandSurface\.js/);
+});
+
 test('No new inspector consumers were added outside the world proof surface', () => {
   const liveLayout = read('src/components/GameLayout.tsx');
   assert.doesNotMatch(liveLayout, /InspectorPanel/);

@@ -32,8 +32,7 @@ import { RunCompass } from '../../ui/status/RunCompass.js';
 import { useRunCompassSurface } from '../../ui/status/useRunCompassSurface.js';
 import { performRunCompassAction } from '../../systems/ui/runCompass/performRunCompassAction.js';
 import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/economicRecommendationEngine.js';
-import { CITY_PACKAGE_REGISTRY_BY_ID } from '../../systems/world/cityPackageRegistry.js';
-import { SUPPORT_IDENTITY_LABELS } from '../../systems/ui/world/worldCommandSurface.js';
+import { CITY_PACKAGE_REGISTRY_BY_ID, getSupportIdentityLabel } from '../../systems/world/cityPackageRegistry.js';
 import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModuleRoutingSurface.js';
 import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import { WorldCommandAlert } from '../../ui/world/WorldCommandAlert.js';
@@ -226,7 +225,7 @@ export function WorldScreen() {
     if (!selectedCity) return null;
     const entry = CITY_PACKAGE_REGISTRY_BY_ID[selectedCity.id];
     if (!entry) return null;
-    return SUPPORT_IDENTITY_LABELS[entry.leadSupportIdentity] ?? null;
+    return getSupportIdentityLabel(entry.leadSupportIdentity);
   }, [selectedCity]);
 
   const runCompassPrimaryAction = runCompass.full?.bestNextActions[0] ?? null;

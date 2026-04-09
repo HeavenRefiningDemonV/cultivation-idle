@@ -60,14 +60,6 @@ const GROUP_MEMBERS: Record<WorldCommandGroupId, readonly LiveWorldModuleKey[]> 
   support: ['bounties', 'expeditions'],
 };
 
-export const SUPPORT_IDENTITY_LABELS = {
-  'starter-loop': 'Starter Loop',
-  'forge-and-ore': 'Forge & Ore',
-  'fragments-and-build-correction': 'Fragments & Build Correction',
-  'reagents-and-survival-prep': 'Reagents & Survival Prep',
-  'final-convergence': 'Final Convergence',
-} as const;
-
 function isVisibleModule(visibleModules: readonly string[], moduleKey: string): moduleKey is LiveWorldModuleKey {
   return visibleModules.includes(moduleKey);
 }

@@ -1,11 +1,10 @@
-import { useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
 import { ApothecaryPanel } from '../screens/ApothecaryPanel.js';
 import { ForgeWorkshop } from '../../features/professions/forge/ForgeWorkshop.js';
-import { TalismanPanel } from '../screens/TalismanPanel.js';
 import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
 import { isCombatModule } from '../../systems/world/openWorldModule.js';
@@ -17,6 +16,7 @@ import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuil
 import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPanel.js';
 import { Modal } from '../../ui/primitives/Modal.js';
 import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js';
+import { inspectWorldFacingModuleTarget } from '../../systems/world/liveWorldLeakAudit.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -46,13 +46,27 @@ export function WorldBuildingModal({
   const open = isStoreMode ? storeOpen : Boolean(controlledOpen);
   const buildingKey: WorldBuildingKey | null | undefined = isStoreMode ? storeBuildingKey : undefined;
   const close = isStoreMode ? closeFromStore : controlledOnClose || (() => { });
+  const buildingAudit = useMemo(
+    () => (isStoreMode ? inspectWorldFacingModuleTarget(buildingKey ?? null) : { ok: true, moduleKey: buildingKey ?? null, reason: 'ok' }),
+    [buildingKey, isStoreMode],
+  );
+  const citySupportsBuilding = useMemo(
+    () => (isStoreMode ? Boolean(city && buildingKey && city.modules.includes(buildingKey)) : true),
+    [buildingKey, city, isStoreMode],
+  );
+
+  useEffect(() => {
+    if (!isStoreMode || !storeOpen) return;
+    if (!buildingAudit.ok || !citySupportsBuilding) {
+      closeFromStore();
+    }
+  }, [buildingAudit.ok, citySupportsBuilding, closeFromStore, isStoreMode, storeOpen]);
+
   const title = isStoreMode
     ? `${city?.name ?? 'City'} — ${formatWorldModuleLabel(buildingKey)}`
     : controlledTitle || 'World Building';
   const backgroundVariant = useMemo(() => {
     switch (buildingKey) {
-      case 'alchemy':
-        return 'alchemy';
       case 'apothecary':
         return 'apothecary';
       case 'bounties':
@@ -69,7 +83,10 @@ export function WorldBuildingModal({
     }
   }, [buildingKey]);
 
-  if ((isStoreMode && (!storeOpen || !storeCityId || !buildingKey)) || (!isStoreMode && !open)) {
+  if (
+    (isStoreMode && (!storeOpen || !storeCityId || !buildingKey || !buildingAudit.ok || !citySupportsBuilding))
+    || (!isStoreMode && !open)
+  ) {
     return null;
   }
 
@@ -81,20 +98,15 @@ export function WorldBuildingModal({
         content = <ManualPavilionPanel pavilionId={moduleRefId ?? null} />;
         break;
       case 'apothecary':
-      case 'alchemy':
         content = (
           <ApothecaryPanel
             shopId={moduleRefId ?? null}
-            /* initialSurface={buildingKey === 'alchemy' ? 'brew' : 'buy'} */
-            initialSurface={storeModalIntent?.apothecarySurface ?? (buildingKey === 'alchemy' ? 'brew' : 'buy')}
+            initialSurface={storeModalIntent?.apothecarySurface ?? 'buy'}
           />
         );
         break;
       case 'forge':
         content = <ForgeWorkshop cityId={storeCityId} />;
-        break;
-      case 'talismanStudio':
-        content = <TalismanPanel cityId={storeCityId} />;
         break;
       case 'bounties':
         content = <BountyBoardPanel />;
@@ -113,11 +125,7 @@ export function WorldBuildingModal({
         break;
 
       default:
-        content = isCombatModule(buildingKey)
-          ? null
-          : (
-            <div className="worldBuildingPlaceholder">{formatWorldModuleLabel(buildingKey)} is unavailable in this semester.</div>
-          );
+        content = isCombatModule(buildingKey) ? null : <div className="worldBuildingPlaceholder">{formatWorldModuleLabel(buildingKey)} is unavailable in this semester.</div>;
         break;
     }
   }
