@@ -59,8 +59,9 @@ test('starter and locked prestige states resolve explicit status and unlock line
   });
 
   assert.equal(starterPresentation.tierLabel, 'Starter');
-  assert.equal(starterPresentation.unlockLine, 'Starter Heart Law');
-  assert.equal(starterPresentation.statusLabel, 'Chosen');
+  assert.equal(starterPresentation.unlockLine, 'Starter scripture available immediately.');
+  assert.equal(starterPresentation.statusLabel, 'Chosen for This Life');
+  assert.equal(starterPresentation.availabilityLine, 'Chosen for this life.');
 
   const lockedPresentation = buildHeartLawSelectionPresentation(starterLaw!, {
     profile: catalog[starterLaw!.id] ?? null,
@@ -70,6 +71,42 @@ test('starter and locked prestige states resolve explicit status and unlock line
     isSelected: false,
   });
 
-  assert.equal(lockedPresentation.statusLabel, 'Locked');
-  assert.equal(lockedPresentation.unlockLine, 'Unlock: Seal Breakthrough (12 AP)');
+  assert.equal(lockedPresentation.statusLabel, 'Locked Scripture');
+  assert.equal(lockedPresentation.unlockLine, 'Locked until Seal Breakthrough (12 AP).');
+  assert.equal(lockedPresentation.availabilityLine, 'Locked until Seal Breakthrough (12 AP).');
+});
+
+test('selected, available, and locked states keep canonical availability grammar', () => {
+  const law = laws[0];
+  const profile = catalog[law.id] ?? null;
+
+  const selected = buildHeartLawSelectionPresentation(law, {
+    profile,
+    unlockInfo: { kind: 'starter' },
+    resonanceTier: 'strong',
+    isUnlocked: true,
+    isSelected: true,
+  });
+  assert.equal(selected.statusLabel, 'Chosen for This Life');
+  assert.equal(selected.availabilityLine, 'Chosen for this life.');
+
+  const available = buildHeartLawSelectionPresentation(law, {
+    profile,
+    unlockInfo: { kind: 'prestige', upgradeId: 'u', upgradeName: 'Sky Ledger', apCost: 10 },
+    resonanceTier: 'partial',
+    isUnlocked: true,
+    isSelected: false,
+  });
+  assert.equal(available.statusLabel, 'Available');
+  assert.equal(available.availabilityLine, 'Unlocked and ready now.');
+
+  const locked = buildHeartLawSelectionPresentation(law, {
+    profile,
+    unlockInfo: { kind: 'prestige', upgradeId: 'u', upgradeName: 'Sky Ledger', apCost: 10 },
+    resonanceTier: 'mismatch',
+    isUnlocked: false,
+    isSelected: false,
+  });
+  assert.equal(locked.statusLabel, 'Locked Scripture');
+  assert.equal(locked.availabilityLine, 'Locked until Sky Ledger (10 AP).');
 });

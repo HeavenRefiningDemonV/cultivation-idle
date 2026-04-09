@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { INITIAL_REALM } from '../../../constants/index.js';
 import { COMPREHENSION_PER_MINUTE_BASE, getBreathModeMultipliers } from '../../../content/tuning/cultivationTuning.js';
-import { getAffinityStatus } from '../../../systems/heartLaw/heartLawLogic.js';
+import { getHeartLawSelectionPresentation } from '../../../systems/doctrine/heartLawSelectionPresentation.js';
 import { getHeartLawUnlockInfo } from '../../../systems/heartLaw/heartLawUnlockInfo.js';
 import { useActivityStore } from '../../../stores/activityStore.js';
 import { useContentStore } from '../../../stores/contentStore.js';
@@ -14,14 +14,6 @@ import { ChangeHeartLawModal } from './ChangeHeartLawModal.js';
 import './HeartLawPanel.scss';
 
 const roman = ['I', 'II', 'III', 'IV', 'V'];
-
-const archetypeLabels: Record<string, string> = {
-  steady: 'Steady',
-  burst: 'Burst',
-  risk: 'Risk',
-  artisan: 'Artisan',
-  mystic: 'Mystic',
-};
 
 function formatEffectValue(value: unknown): string | null {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
@@ -67,25 +59,22 @@ function DaoTagSeals({ tags }: { tags: string[] }) {
   );
 }
 
-function ResonanceBadge({ heartLaw }: { heartLaw: HeartLawDef | null }) {
-  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
-  const { status, percent } = useMemo(
-    () => getAffinityStatus(heartLaw, spiritRoot),
-    [heartLaw, spiritRoot],
-  );
-
-  let text = 'Resonance: None';
-  if (status === 'match') {
-    text = `Resonates with your Spirit Root: Strong (+${percent}% signature potency)`;
-  } else if (status === 'mismatch') {
-    text = 'Resonates: Weak (minor penalty only)';
-  }
+function ResonanceBadge({
+  resonanceTone,
+  resonanceLabel,
+  resonanceDetail,
+}: {
+  resonanceTone: 'strong' | 'partial' | 'neutral' | 'mismatch';
+  resonanceLabel: string;
+  resonanceDetail: string;
+}) {
+  const text = `Resonance: ${resonanceLabel}`;
 
   return (
-    <div className={`resonanceBadge resonanceBadge--${status}`}>
+    <div className={`resonanceBadge resonanceBadge--${resonanceTone}`}>
       {text}
       <div className="resonanceBadgeHint">
-        Resonance boosts signature effects when aligned. Mismatch is a minor penalty only.
+        {resonanceDetail}
       </div>
     </div>
   );
@@ -159,6 +148,7 @@ function HeartLawScrollCard({
   flash,
   chapters,
   currentChapter,
+  presentation,
 }: {
   heartLaw: HeartLawDef | null;
   etaText: string;
@@ -167,6 +157,7 @@ function HeartLawScrollCard({
   flash: boolean;
   chapters: HeartLawChapter[];
   currentChapter: number;
+  presentation: ReturnType<typeof getHeartLawSelectionPresentation> | null;
 }) {
   if (!heartLaw) {
     return (
@@ -181,8 +172,9 @@ function HeartLawScrollCard({
     );
   }
 
-  const pattern = archetypeLabels[heartLaw.archetype ?? ''] ?? 'Unknown';
-  const signatureSummary = summarizeEffects(heartLaw.signature);
+  const familyLine = presentation
+    ? `${presentation.familyLabel} • ${presentation.tierLabel}${presentation.archetypeLabel ? ` • ${presentation.archetypeLabel}` : ''}`
+    : 'Heart Law • Dao Heart';
   const nextLabel = required > 0 ? 'Next Verse at Comprehension 100' : 'All Verses comprehended';
   const etaDisplay = required > 0 ? etaText : '—';
   const currentChapterEffects = chapters.find((entry) => entry.chapter === currentChapter)?.effects;
@@ -193,13 +185,17 @@ function HeartLawScrollCard({
       <div className="panelHeader">
         <div>
           <div className="panelTitle">{heartLaw.name}</div>
-          <div className="panelSub">Heart Law • Dao Heart</div>
+          <div className="panelSub">{familyLine}</div>
         </div>
-        <span className="heartLawPattern">{pattern}</span>
+        <span className="heartLawPattern">{presentation?.archetypeLabel ?? 'Doctrine'}</span>
       </div>
       <DaoTagSeals tags={heartLaw.daoTags ?? []} />
-      <div className="heartLawSignature">{signatureSummary}</div>
-      <ResonanceBadge heartLaw={heartLaw} />
+      <div className="heartLawSignature">{presentation?.signatureSummary ?? 'Doctrine-focused signature.'}</div>
+      <ResonanceBadge
+        resonanceTone={presentation?.resonanceTone ?? 'neutral'}
+        resonanceLabel={presentation?.resonanceLabel ?? 'Neutral'}
+        resonanceDetail={presentation?.resonanceDetail ?? 'No resonance bonus needed.'}
+      />
       <div className="heartLawNext">
         <div className="heartLawNextLabel">
           {nextLabel}
@@ -222,15 +218,27 @@ export function HeartLawPanel() {
   const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
   const getRequirement = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter);
   const selectHeartLaw = useCultivationStore((state) => state.selectHeartLaw);
+  const isUnlocked = useCultivationStore((state) => state.isUnlocked);
   const heartLawsById = useContentStore((state) => state.maps.heartLawsById);
   const realm = useGameStore((state) => state.realm);
   const addNotification = useUIStore((state) => state.addNotification);
+  const spiritRoot = usePrestigeStore((state) => state.spiritRoot);
 
   const [showModal, setShowModal] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
   const prevChapterRef = useRef(chapter);
 
   const heartLawDef = selectedHeartLawId ? heartLawsById[selectedHeartLawId] ?? null : null;
+  const selectedPresentation = useMemo(
+    () => (heartLawDef
+      ? getHeartLawSelectionPresentation(heartLawDef, {
+        spiritRoot,
+        isUnlocked: isUnlocked(heartLawDef.id),
+        isSelected: true,
+      })
+      : null),
+    [heartLawDef, isUnlocked, spiritRoot],
+  );
   const chapters = heartLawDef?.chapters ?? [];
   const required = getRequirement();
   const breath = getBreathModeMultipliers(breathMode);
@@ -279,15 +287,18 @@ export function HeartLawPanel() {
         flash={celebrate}
         chapters={chapters}
         currentChapter={chapter}
+        presentation={selectedPresentation}
       />
 
       <div className="heartLawActions">
         <div className="heartLawChangeCopy">
           <div className="panelSub">Resonance explains how well your Spirit Root aligns with this scripture.</div>
-          {currentHeartLawUnlockInfo.kind === 'prestige' ? (
+          {selectedPresentation ? (
             <div className="panelSub">
-              Unlock info: {currentHeartLawUnlockInfo.upgradeName} ({currentHeartLawUnlockInfo.apCost} AP)
+              {selectedPresentation.availabilityLine}
             </div>
+          ) : currentHeartLawUnlockInfo.kind === 'prestige' ? (
+            <div className="panelSub">Locked until {currentHeartLawUnlockInfo.upgradeName} ({currentHeartLawUnlockInfo.apCost} AP).</div>
           ) : null}
         </div>
         <button

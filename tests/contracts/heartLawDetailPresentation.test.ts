@@ -30,6 +30,8 @@ test('detail presentation provides non-empty title/family/resonance/fantasy/prac
     assert.ok(presentation.roleLine.trim().length > 0);
     assert.ok(presentation.fantasyDescription.trim().length > 0);
     assert.ok(presentation.practicalDescription.trim().length > 0);
+    assert.ok(presentation.availabilityLine.trim().length > 0);
+    assert.ok(presentation.ctaLabel.trim().length > 0);
     assert.ok(presentation.keyBenefits.length <= 3);
   }
 });
@@ -45,7 +47,8 @@ test('locked and starter detail states provide explicit unlock lines and cta sta
     isSelected: true,
   });
 
-  assert.equal(starter.unlockLine, 'Starter Heart Law');
+  assert.equal(starter.unlockLine, 'Starter scripture available immediately.');
+  assert.equal(starter.availabilityLine, 'Chosen for this life.');
   assert.equal(starter.ctaLabel, 'Chosen for This Life');
   assert.equal(starter.ctaDisabledReason, null);
 
@@ -57,9 +60,10 @@ test('locked and starter detail states provide explicit unlock lines and cta sta
     isSelected: false,
   });
 
-  assert.equal(locked.unlockLine, 'Unlock: Astral Threshold (18 AP)');
+  assert.equal(locked.unlockLine, 'Locked until Astral Threshold (18 AP).');
+  assert.equal(locked.availabilityLine, 'Locked until Astral Threshold (18 AP).');
   assert.equal(locked.ctaLabel, 'Locked Scripture');
-  assert.equal(locked.ctaDisabledReason, 'Unlock: Astral Threshold (18 AP)');
+  assert.equal(locked.ctaDisabledReason, 'Locked until Astral Threshold (18 AP).');
 });
 
 test('detail presentation does not require fake progress fields', () => {

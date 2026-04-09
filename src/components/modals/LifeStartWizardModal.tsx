@@ -35,32 +35,6 @@ const BREATH_MODES = [
   { id: 'fast', label: 'Fast', desc: 'Aggressive cultivation; faster progress with more volatility.' },
 ] as const;
 
-
-const HEART_LAW_EFFECT_LABELS: Record<string, string> = {
-  cultivateQiMult: 'Cultivation rate',
-  combatDamageMult: 'Combat damage',
-  offlineEfficiencyAdd: 'Offline efficiency',
-  stabilityCostMult: 'Stability cost',
-  professionYieldMult: 'Profession yield',
-  professionSpeedMult: 'Profession speed',
-};
-
-function summarizeHeartLawSignature(signature: HeartLawDef['signature']): string {
-  if (!signature || typeof signature !== 'object') return 'General insight bonus.';
-
-  const entries = Object.entries(signature)
-    .slice(0, 2)
-    .map(([key, value]) => {
-      if (typeof value !== 'number' || !Number.isFinite(value)) return null;
-      const label = HEART_LAW_EFFECT_LABELS[key] ?? key;
-      const percent = Math.round(value * 100);
-      return `${label} ${percent >= 0 ? '+' : ''}${percent}%`;
-    })
-    .filter((entry): entry is string => entry !== null);
-
-  return entries.length > 0 ? entries.join(' • ') : 'General insight bonus.';
-}
-
 interface LifeStartWizardModalProps {
   debugForceOpen?: boolean;
   debugForceStep?: LifeStartWizardStep;
@@ -452,7 +426,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                         <span className="lifeStartHeartLawChoice__tier">{presentation.tierLabel}</span>
                         <span className="lifeStartHeartLawChoice__statusLine">{presentation.statusLabel}</span>
                       </div>
-                      <div className="lifeStartHeartLawChoice__unlock">{presentation.isLocked ? presentation.unlockLine : 'Ready now'}</div>
+                      <div className="lifeStartHeartLawChoice__unlock">{presentation.availabilityLine}</div>
                     </button>
                   );
                 })}
@@ -497,7 +471,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
 
                 <div className="lifeStartHeartLawDetail__signature">
                   <p className="lifeStartHeartLawDetail__signatureTitle">Signature</p>
-                  <p className="lifeStartHeartLawDetail__summary">{previewPresentationCard?.signatureSummary ?? summarizeHeartLawSignature(previewHeartLaw?.signature)}</p>
+                  <p className="lifeStartHeartLawDetail__summary">{previewPresentationCard?.signatureSummary ?? 'Doctrine-focused signature.'}</p>
                   <ul className="lifeStartHeartLawDetail__benefits">
                     {(previewPresentationCard?.keyBenefits ?? []).slice(0, 3).map((benefit) => (
                       <li key={benefit}>{benefit}</li>
@@ -506,11 +480,7 @@ export function LifeStartWizardModal({ debugForceOpen = false, debugForceStep }:
                 </div>
 
                 <p className="lifeStartHeartLawDetail__unlock">
-                  {previewPresentationCard?.isLocked
-                    ? `Locked: ${previewPresentationCard.unlockLine}.`
-                    : previewPresentationCard?.isStarter
-                      ? 'Starter scripture available immediately.'
-                      : 'Available now: ready to cultivate this scripture in this life.'}
+                  {previewPresentationCard?.availabilityLine ?? 'Starter scripture available immediately.'}
                 </p>
 
                 <div className="lifeStartHeartLawDetail__ctaLane">

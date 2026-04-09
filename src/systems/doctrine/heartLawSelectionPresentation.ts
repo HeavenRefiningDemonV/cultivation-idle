@@ -15,6 +15,7 @@ export interface HeartLawSelectionPresentation {
   tierLabel: string;
   statusLabel: string;
   statusTone: HeartLawSelectionStatusTone;
+  availabilityLine: string;
   unlockLine: string;
   resonanceLabel: string;
   resonanceTone: ResonanceTier;
@@ -103,15 +104,33 @@ function toTierLabel(tier: string | undefined): string {
 }
 
 function toUnlockLine(unlockInfo: HeartLawUnlockInfo): string {
-  if (unlockInfo.kind === 'starter') return 'Starter Heart Law';
-  if (unlockInfo.kind === 'prestige') return `Unlock: ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP)`;
-  return 'Unlock via Prestige';
+  if (unlockInfo.kind === 'starter') return 'Starter scripture available immediately.';
+  if (unlockInfo.kind === 'prestige') return `Locked until ${unlockInfo.upgradeName} (${unlockInfo.apCost} AP).`;
+  return 'Locked scripture. Unlock via Prestige.';
 }
 
 function resolveStatus(isSelected: boolean, isLocked: boolean): { label: string; tone: HeartLawSelectionStatusTone } {
-  if (isLocked) return { label: 'Locked', tone: 'locked' };
-  if (isSelected) return { label: 'Chosen', tone: 'selected' };
+  if (isLocked) return { label: 'Locked Scripture', tone: 'locked' };
+  if (isSelected) return { label: 'Chosen for This Life', tone: 'selected' };
   return { label: 'Available', tone: 'available' };
+}
+
+function resolveAvailabilityLine(params: {
+  isLocked: boolean;
+  isSelected: boolean;
+  unlockInfo: HeartLawUnlockInfo;
+  unlockLine: string;
+}): string {
+  if (params.isLocked) {
+    return params.unlockLine;
+  }
+  if (params.isSelected) {
+    return 'Chosen for this life.';
+  }
+  if (params.unlockInfo.kind === 'starter') {
+    return 'Starter scripture available immediately.';
+  }
+  return 'Unlocked and ready now.';
 }
 
 function resolveTagLabels(law: HeartLawDef, profile: HeartLawProfile | null): readonly string[] {
@@ -175,6 +194,12 @@ export function buildHeartLawSelectionPresentation(
   const familyTone = input.profile?.family ?? 'unknown';
   const familyCopy = input.profile ? FAMILY_COPY[input.profile.family] : null;
   const unlockLine = toUnlockLine(input.unlockInfo);
+  const availabilityLine = resolveAvailabilityLine({
+    isLocked: !input.isUnlocked,
+    isSelected: input.isSelected,
+    unlockInfo: input.unlockInfo,
+    unlockLine,
+  });
   const signature = summarizeSignature(input.profile);
   const cta = resolveCta({ isLocked: !input.isUnlocked, isSelected: input.isSelected, label: law.name, unlockLine });
 
@@ -186,6 +211,7 @@ export function buildHeartLawSelectionPresentation(
     tierLabel: toTierLabel(law.tier),
     statusLabel: status.label,
     statusTone: status.tone,
+    availabilityLine,
     unlockLine,
     resonanceLabel: RESONANCE_LABELS[input.resonanceTier].label,
     resonanceTone: input.resonanceTier,

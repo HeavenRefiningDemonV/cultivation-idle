@@ -162,7 +162,7 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
             </div>
             <p className="changeHeartLawModal__summaryLine">{selectedPresentation.signatureSummary}</p>
             {selectedPresentation.isLocked ? (
-              <p className="changeHeartLawModal__summaryLock">{selectedPresentation.unlockLine}</p>
+              <p className="changeHeartLawModal__summaryLock">{selectedPresentation.availabilityLine}</p>
             ) : null}
           </>
         ) : (
@@ -199,14 +199,14 @@ export function ChangeHeartLawModal({ currentHeartLawId, canChange, onClose, onC
               aria-current={isCurrent ? 'true' : undefined}
             >
               <div className="changeHeartLawModal__rowMain">
-                <div className="changeHeartLawModal__rowTitle">{law.name}</div>
+                <div className="changeHeartLawModal__rowTitle">{presentation.label}</div>
                 <div className="changeHeartLawModal__rowMeta">
                   <span>{presentation.familyLabel}</span>
                   <span>{presentation.tierLabel}</span>
                   <span>{presentation.resonanceLabel}</span>
                 </div>
                 <div className="changeHeartLawModal__rowHint">
-                  {unlocked ? presentation.signatureSummary : presentation.unlockLine}
+                  {unlocked ? presentation.signatureSummary : presentation.availabilityLine}
                 </div>
               </div>
               <div className="changeHeartLawModal__rowFlags" aria-hidden="true">
