@@ -42,6 +42,7 @@ import { FxStagePortal } from '../../ui/fx/FxStagePortal.js';
 import { useFxQuality, useFxStageSnapshot } from '../../ui/fx/FxQualityProvider.js';
 import { buildFxSceneContract } from '../../ui/fx/runtime.js';
 import { CultivationFxScene } from '../../ui/fx/scenes/CultivationFxScene.js';
+import { useShallow } from 'zustand/shallow';
 import './CultivateScreen.scss';
 
 const ACTIVITY_LABELS: Record<string, string> = {
@@ -101,33 +102,73 @@ export function QiProgressBar({
 }
 
 export function CultivateScreen() {
-  const showPerkSelectionModal = useUIStore((state) => state.showPerkSelectionModal);
-  const perkSelectionRealm = useUIStore((state) => state.perkSelectionRealm);
-  const showPerkSelection = useUIStore((state) => state.showPerkSelection);
-  const hidePerkSelection = useUIStore((state) => state.hidePerkSelection);
-  const addNotification = useUIStore((state) => state.addNotification);
+  const {
+    showPerkSelectionModal,
+    perkSelectionRealm,
+    showPerkSelection,
+    hidePerkSelection,
+    addNotification,
+  } = useUIStore(
+    useShallow((state) => ({
+      showPerkSelectionModal: state.showPerkSelectionModal,
+      perkSelectionRealm: state.perkSelectionRealm,
+      showPerkSelection: state.showPerkSelection,
+      hidePerkSelection: state.hidePerkSelection,
+      addNotification: state.addNotification,
+    })),
+  );
 
-  const realm = useGameStore((state) => state.realm);
-  const qi = useGameStore((state) => state.qi);
-  const qiPerSecond = useGameStore((state) => state.qiPerSecond);
-  const breakthroughCost = useGameStore((state) => state.getBreakthroughRequirement());
-  const breakthrough = useGameStore((state) => state.breakthrough);
-  const selectedPath = useGameStore((state) => state.selectedPath);
-  const pathPerks = useGameStore((state) => state.pathPerks);
-  const focusMode = useGameStore((state) => state.focusMode);
+  const {
+    realm,
+    qi,
+    qiPerSecond,
+    breakthroughCost,
+    breakthrough,
+    selectedPath,
+    pathPerks,
+    focusMode,
+  } = useGameStore(
+    useShallow((state) => ({
+      realm: state.realm,
+      qi: state.qi,
+      qiPerSecond: state.qiPerSecond,
+      breakthroughCost: state.getBreakthroughRequirement(),
+      breakthrough: state.breakthrough,
+      selectedPath: state.selectedPath,
+      pathPerks: state.pathPerks,
+      focusMode: state.focusMode,
+    })),
+  );
 
-  const activeActivity = useActivityStore((state) => state.active);
-  const startActivity = useActivityStore((state) => state.startActivity);
-  const stopActivity = useActivityStore((state) => state.stopActivity);
-  const breathMode = useCultivationStore((state) => state.breathMode);
-  const insight = useCultivationStore((state) => state.insight);
-  const stability = useCultivationStore((state) => state.stability);
-  const stabilityCap = useCultivationStore((state) => state.stabilityCap);
-  const selectedHeartLawId = useCultivationStore((state) => state.selectedHeartLawId);
+  const { activeActivity, startActivity, stopActivity } = useActivityStore(
+    useShallow((state) => ({
+      activeActivity: state.active,
+      startActivity: state.startActivity,
+      stopActivity: state.stopActivity,
+    })),
+  );
+  const {
+    breathMode,
+    insight,
+    stability,
+    stabilityCap,
+    selectedHeartLawId,
+    chapter,
+    comprehension,
+    getComprehensionRequirementForNextChapter,
+  } = useCultivationStore(
+    useShallow((state) => ({
+      breathMode: state.breathMode,
+      insight: state.insight,
+      stability: state.stability,
+      stabilityCap: state.stabilityCap,
+      selectedHeartLawId: state.selectedHeartLawId,
+      chapter: state.chapter,
+      comprehension: state.comprehension,
+      getComprehensionRequirementForNextChapter: state.getComprehensionRequirementForNextChapter,
+    })),
+  );
   const activeCultivationConsumables = useCultivationStore((state) => state.activeCultivationConsumables);
-  const chapter = useCultivationStore((state) => state.chapter);
-  const comprehension = useCultivationStore((state) => state.comprehension);
-  const getComprehensionRequirementForNextChapter = useCultivationStore((state) => state.getComprehensionRequirementForNextChapter);
   const runCompass = useRunCompassSurface();
   const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.cultivation);
   const { requestedQuality, effectiveQuality, prefersReducedMotion } = useFxQuality();
