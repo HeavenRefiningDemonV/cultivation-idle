@@ -14,10 +14,13 @@ import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import type { FxRequestedQuality } from '../../ui/fx/types.js';
 import { SECTION_C_SURFACE_IDS, type SectionCSurfaceId } from './sectionCSurfaceIds.js';
 import './SectionCAuditHarness.scss';
+
 type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
+type ChangeHeartLawAuditState = 'current' | 'affordable' | 'unaffordable' | 'locked' | 'restricted';
 
 const FORCED_ONLY_SURFACES: ReadonlySet<SectionCSurfaceId> = new Set();
 const DEFAULT_SURFACE: SectionCSurfaceId = 'life-start-path';
+const CHANGE_HEART_LAW_AUDIT_STATES: readonly ChangeHeartLawAuditState[] = ['current', 'affordable', 'unaffordable', 'locked', 'restricted'];
 
 function parseSurfaceFromQuery(): SectionCSurfaceId {
   const surface = new URLSearchParams(window.location.search).get('surface');
@@ -32,12 +35,20 @@ function parseFxModeFromQuery(): AuditFxMode {
   return fx === 'medium' || fx === 'low' || fx === 'reduced' ? fx : 'high';
 }
 
-function setQuery(next: { surface?: SectionCSurfaceId; fx?: AuditFxMode; controls?: '0' | '1' }) {
+function parseChangeHeartLawAuditStateFromQuery(): ChangeHeartLawAuditState {
+  const state = new URLSearchParams(window.location.search).get('changeState');
+  return CHANGE_HEART_LAW_AUDIT_STATES.includes(state as ChangeHeartLawAuditState)
+    ? (state as ChangeHeartLawAuditState)
+    : 'current';
+}
+
+function setQuery(next: { surface?: SectionCSurfaceId; fx?: AuditFxMode; controls?: '0' | '1'; changeState?: ChangeHeartLawAuditState }) {
   const params = new URLSearchParams(window.location.search);
   params.set('uiAudit', 'section-c');
   if (next.surface) params.set('surface', next.surface);
   if (next.fx) params.set('fx', next.fx);
   if (next.controls) params.set('controls', next.controls);
+  if (next.changeState) params.set('changeState', next.changeState);
   window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
 }
 
@@ -114,12 +125,76 @@ function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
   return 'medium';
 }
 
+function resolveChangeHeartLawAuditScenario(mode: ChangeHeartLawAuditState): {
+  currentHeartLawId: string | null;
+  selectedHeartLawId: string | null;
+  canChange: boolean;
+  canAffordOverride?: boolean;
+} {
+  const content = useContentStore.getState();
+  if (!content.isLoaded) {
+    return {
+      currentHeartLawId: null,
+      selectedHeartLawId: null,
+      canChange: mode !== 'restricted',
+      canAffordOverride: mode === 'unaffordable' ? false : undefined,
+    };
+  }
+
+  const laws = content.listHeartLaws();
+  const unlocked = laws.filter((law) => useCultivationStore.getState().isUnlocked(law.id));
+  const locked = laws.filter((law) => !useCultivationStore.getState().isUnlocked(law.id));
+
+  const current = unlocked[0]?.id ?? laws[0]?.id ?? null;
+  const altUnlocked = unlocked.find((law) => law.id !== current)?.id ?? current;
+  const altLocked = locked[0]?.id ?? altUnlocked;
+
+  if (mode === 'current') {
+    return { currentHeartLawId: current, selectedHeartLawId: current, canChange: true };
+  }
+
+  if (mode === 'affordable') {
+    return {
+      currentHeartLawId: current,
+      selectedHeartLawId: altUnlocked,
+      canChange: true,
+      canAffordOverride: true,
+    };
+  }
+
+  if (mode === 'unaffordable') {
+    return {
+      currentHeartLawId: current,
+      selectedHeartLawId: altUnlocked,
+      canChange: true,
+      canAffordOverride: false,
+    };
+  }
+
+  if (mode === 'locked') {
+    return {
+      currentHeartLawId: current,
+      selectedHeartLawId: altLocked,
+      canChange: true,
+      canAffordOverride: true,
+    };
+  }
+
+  return {
+    currentHeartLawId: current,
+    selectedHeartLawId: altUnlocked,
+    canChange: false,
+    canAffordOverride: true,
+  };
+}
+
 export function SectionCAuditHarness() {
   const enabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get('uiAudit') === 'section-c';
   const [surface, setSurface] = useState<SectionCSurfaceId>(() => parseSurfaceFromQuery());
   const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
   const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
   const [showDaoHeart, setShowDaoHeart] = useState(false);
+  const [changeHeartLawAuditState, setChangeHeartLawAuditState] = useState<ChangeHeartLawAuditState>(() => parseChangeHeartLawAuditStateFromQuery());
   const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
 
   useEffect(() => {
@@ -149,6 +224,7 @@ export function SectionCAuditHarness() {
     const onPopState = () => {
       setSurface(parseSurfaceFromQuery());
       setFxMode(parseFxModeFromQuery());
+      setChangeHeartLawAuditState(parseChangeHeartLawAuditStateFromQuery());
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
@@ -170,6 +246,11 @@ export function SectionCAuditHarness() {
     };
   }, [surface]);
 
+  const changeHeartLawScenario = useMemo(
+    () => resolveChangeHeartLawAuditScenario(changeHeartLawAuditState),
+    [changeHeartLawAuditState],
+  );
+
   if (!enabled) return null;
 
   const updateSurface = (next: SectionCSurfaceId) => {
@@ -182,13 +263,16 @@ export function SectionCAuditHarness() {
     setQuery({ fx: next });
   };
 
+  const updateChangeHeartLawState = (next: ChangeHeartLawAuditState) => {
+    setChangeHeartLawAuditState(next);
+    setQuery({ changeState: next });
+  };
+
   const toggleControls = () => {
     const next = !showControls;
     setShowControls(next);
     setQuery({ controls: next ? '1' : '0' });
   };
-
-  const heartLawId = useCultivationStore((state) => state.selectedHeartLawId);
 
   return (
     <>
@@ -212,6 +296,18 @@ export function SectionCAuditHarness() {
               <option value="reduced">reduced</option>
             </select>
           </label>
+          {surface === 'change-heart-law' ? (
+            <label>
+              Change-law truth state
+              <select value={changeHeartLawAuditState} onChange={(event) => updateChangeHeartLawState(event.target.value as ChangeHeartLawAuditState)}>
+                <option value="current">current law selected</option>
+                <option value="affordable">alt unlocked + affordable</option>
+                <option value="unaffordable">alt unlocked + unaffordable</option>
+                <option value="locked">locked alternative selected</option>
+                <option value="restricted">canChange false restriction</option>
+              </select>
+            </label>
+          ) : null}
           <button type="button" className="button-standard" onClick={toggleControls}>Hide Controls</button>
           <div className="sectionCAuditPanel__meta">
             Reachability: {FORCED_ONLY_SURFACES.has(surface) ? 'forced-only for audit' : 'live / state-gated'}
@@ -230,8 +326,10 @@ export function SectionCAuditHarness() {
 
       {surface === 'change-heart-law' ? (
         <ChangeHeartLawModal
-          currentHeartLawId={heartLawId}
-          canChange
+          currentHeartLawId={changeHeartLawScenario.currentHeartLawId}
+          canChange={changeHeartLawScenario.canChange}
+          debugCanAffordOverride={changeHeartLawScenario.canAffordOverride}
+          debugInitialSelectedHeartLawId={changeHeartLawScenario.selectedHeartLawId}
           onClose={() => undefined}
         />
       ) : null}

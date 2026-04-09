@@ -1,5 +1,5 @@
 .changeHeartLawModal .ritualModalFrame__panel {
-  width: min(820px, 96vw);
+  width: min(860px, 96vw);
 }
 
 .changeHeartLawModal__body {
@@ -7,123 +7,108 @@
   gap: 12px;
 }
 
-.changeHeartLawModal__warning {
-  border: 1px solid rgba(147, 88, 40, 0.3);
-  background: rgba(250, 238, 218, 0.92);
-  color: rgba(73, 38, 14, 0.95);
+.changeHeartLawModal__decree {
+  border: 1px solid rgba(147, 88, 40, 0.34);
   border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.changeHeartLawModal__warning p {
-  margin: 0;
-}
-
-.changeHeartLawModal__supportRail {
+  background: linear-gradient(180deg, rgba(251, 240, 223, 0.97), rgba(247, 229, 204, 0.93));
+  box-shadow: inset 0 0 14px rgba(128, 80, 39, 0.12);
+  padding: 12px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.changeHeartLawModal__decreeEyebrow {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: rgba(97, 59, 20, 0.84);
+}
+
+.changeHeartLawModal__decreeLead {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(73, 38, 14, 0.95);
+}
+
+.changeHeartLawModal__decreeFacts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.changeHeartLawModal__decreeFact {
+  margin: 0;
+  border: 1px solid rgba(120, 72, 33, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 249, 238, 0.84);
+  min-height: 34px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: rgba(62, 30, 6, 0.9);
+}
+
+.changeHeartLawModal__readingPlane {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
-.changeHeartLawModal__railItem {
-  border: 1px solid rgba(120, 72, 33, 0.22);
-  border-radius: 10px;
-  background: rgba(255, 249, 238, 0.85);
-  padding: 8px 10px;
+.changeHeartLawModal__readingCard {
+  border: 1px solid rgba(120, 72, 33, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 250, 241, 0.95);
+  box-shadow: inset 0 0 12px rgba(120, 94, 54, 0.08);
+  padding: 10px;
   display: grid;
   gap: 4px;
+  min-height: 132px;
 }
 
-.changeHeartLawModal__railLabel {
+.changeHeartLawModal__readingLabel {
+  margin: 0;
   font-size: 11px;
-  letter-spacing: 0.06em;
   text-transform: uppercase;
+  letter-spacing: 0.09em;
   color: rgba(72, 45, 18, 0.72);
 }
 
-.changeHeartLawModal__railValue {
-  font-size: 13px;
-  font-weight: 700;
+.changeHeartLawModal__readingTitle {
+  margin: 0;
+  font-size: 15px;
   color: rgba(52, 31, 11, 0.95);
 }
 
-.changeHeartLawModal__railValue.is-warning {
-  color: rgba(137, 49, 30, 0.9);
-}
-
-.changeHeartLawModal__railValue.is-ok {
-  color: rgba(33, 95, 58, 0.9);
-}
-
-.changeHeartLawModal__summary {
-  border: 1px solid rgba(120, 72, 33, 0.24);
-  border-radius: 12px;
-  background: rgba(255, 249, 238, 0.95);
-  padding: 10px 12px;
-  display: grid;
-  gap: 8px;
-}
-
-.changeHeartLawModal__summaryHeader {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px;
-  align-items: baseline;
-}
-
-.changeHeartLawModal__summaryHeader h3 {
+.changeHeartLawModal__readingMeta,
+.changeHeartLawModal__readingLine,
+.changeHeartLawModal__readingStatus {
   margin: 0;
-  font-size: 16px;
-  color: rgba(52, 31, 11, 0.95);
+  font-size: 12px;
+  color: rgba(62, 30, 6, 0.86);
 }
 
-.changeHeartLawModal__summaryBadges {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+.changeHeartLawModal__readingMeta {
+  color: rgba(72, 45, 18, 0.74);
 }
 
-.changeHeartLawModal__badge {
-  border: 1px solid rgba(120, 72, 33, 0.35);
-  border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(62, 30, 6, 0.9);
-  background: rgba(248, 236, 214, 0.95);
-}
-
-.changeHeartLawModal__badge.is-resonance-strong,
-.changeHeartLawModal__badge.is-resonance-partial {
-  border-color: rgba(34, 113, 71, 0.5);
-  color: rgba(24, 90, 54, 0.95);
-}
-
-.changeHeartLawModal__badge.is-resonance-mismatch {
-  border-color: rgba(137, 49, 30, 0.45);
-  color: rgba(137, 49, 30, 0.95);
-}
-
-.changeHeartLawModal__summaryLine,
-.changeHeartLawModal__summaryLock,
-.changeHeartLawModal__summaryPlaceholder {
-  margin: 0;
-  font-size: 13px;
-  color: rgba(62, 30, 6, 0.9);
-}
-
-.changeHeartLawModal__summaryLock {
-  color: rgba(137, 49, 30, 0.9);
+.changeHeartLawModal__readingStatus {
+  min-height: 16px;
   font-weight: 600;
+}
+
+.changeHeartLawModal__readingStatus.is-ok {
+  color: rgba(33, 95, 58, 0.92);
+}
+
+.changeHeartLawModal__readingStatus.is-warning {
+  color: rgba(137, 49, 30, 0.92);
 }
 
 .changeHeartLawModal__list {
   display: grid;
   gap: 8px;
-  max-height: min(42vh, 360px);
+  max-height: min(38vh, 320px);
   overflow: auto;
   padding-right: 2px;
 }
@@ -138,6 +123,7 @@
   gap: 8px;
   text-align: left;
   padding: 10px;
+  min-height: 86px;
   cursor: pointer;
   transition: border-color 0.16s ease-out, box-shadow 0.16s ease-out, background-color 0.16s ease-out;
   --ui-no-shift-border: 1px;
@@ -159,6 +145,10 @@
   border-color: rgba(146, 83, 31, 0.65);
   box-shadow: 0 0 0 1px rgba(146, 83, 31, 0.28);
   background: rgba(251, 241, 224, 0.98);
+}
+
+.changeHeartLawModal__row.is-current {
+  box-shadow: inset 0 0 0 1px rgba(33, 95, 58, 0.22);
 }
 
 .changeHeartLawModal__row.is-locked {
@@ -186,12 +176,14 @@
 .changeHeartLawModal__rowHint {
   font-size: 12px;
   color: rgba(62, 30, 6, 0.86);
+  min-height: 16px;
 }
 
 .changeHeartLawModal__rowFlags {
-  width: 92px;
+  width: 96px;
   display: grid;
   gap: 4px;
+  align-content: start;
 }
 
 .changeHeartLawModal__flag {
@@ -204,6 +196,11 @@
   background: rgba(255, 245, 228, 0.95);
   min-height: 20px;
   color: rgba(72, 45, 18, 0.86);
+}
+
+.changeHeartLawModal__actionLane {
+  display: grid;
+  gap: 8px;
 }
 
 .changeHeartLawModal__status {
@@ -224,7 +221,8 @@
   border-radius: 12px;
   border: 1px solid rgba(120, 72, 33, 0.4);
   font-weight: 700;
-  padding: 9px 14px;
+  padding: 10px 15px;
+  min-height: 40px;
   cursor: pointer;
   --ui-no-shift-border: 1px;
   --ui-no-shift-outline-active: 2px solid rgba(62, 30, 6, 0.5);
@@ -238,8 +236,14 @@
 }
 
 .changeHeartLawModal__button--primary {
-  background: rgba(246, 230, 206, 0.95);
+  background: linear-gradient(180deg, rgba(247, 227, 193, 0.98), rgba(231, 198, 149, 0.98));
   color: #2b2116;
+  box-shadow: 0 2px 8px rgba(84, 54, 22, 0.2);
+}
+
+.changeHeartLawModal__button--settled {
+  background: rgba(234, 227, 214, 0.98);
+  box-shadow: none;
 }
 
 .changeHeartLawModal__button:disabled {
@@ -248,12 +252,13 @@
 }
 
 @media (max-width: 900px) {
-  .changeHeartLawModal__supportRail {
+  .changeHeartLawModal__decreeFacts,
+  .changeHeartLawModal__readingPlane {
     grid-template-columns: 1fr;
   }
 
   .changeHeartLawModal__list {
-    max-height: min(44vh, 340px);
+    max-height: min(42vh, 320px);
   }
 }
 
@@ -279,7 +284,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .changeHeartLawModal__row {
+  .changeHeartLawModal__row,
+  .changeHeartLawModal__button {
     transition: none;
   }
 }

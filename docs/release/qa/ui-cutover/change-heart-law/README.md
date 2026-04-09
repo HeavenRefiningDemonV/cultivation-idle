@@ -19,9 +19,9 @@
 
 ## Manual capture steps
 1. Open harness URL and verify the overlay is visible.
-2. Capture base and interaction/toggle states.
-3. Capture low/reduced FX variants.
-4. Resize browser for optional narrow screenshot.
+2. Use the harness "Change-law truth state" control to capture current, affordable, unaffordable, locked, and restricted states.
+3. Capture base + interaction and ensure `03-truth-states.png` includes the five required truth states.
+4. Capture low/reduced FX variants, then resize browser for optional narrow screenshot.
 
 
 ## Missing required files
