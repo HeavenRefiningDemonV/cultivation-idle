@@ -87,6 +87,116 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ---
 
+## D.10R Hero-screen signoff review (2026-04-09)
+
+### Metadata
+
+- target screen id: `cultivation`
+- human label: Cultivation Hero Surface
+- dominant family: hero ritual screen
+- packet id: `D.10R`
+- touched layers: docs-only evidence/signoff verification
+- retained old layer(s): cultivator/dantian center, Qi bar, breakthrough truth surfaces
+- screenshot evidence folder: `docs/release/qa/ui-cutover/cultivation/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-09
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are missing at folder root. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No cleanup was executed in D.10R. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Not certifiable without screenshot evidence. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Not certifiable without interaction/truth-state screenshots. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` screenshots missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Interaction/truth-state screenshots missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | Evidence matrix absent. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup remains locked. |
+
+### Screenshot evidence table
+
+| evidence slot | required? | file/path | status | notes |
+| --- | --- | --- | --- | --- |
+| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/01-base.png` | MISSING | folder contains README files only |
+| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/cultivation/02-interaction.png` | MISSING | folder contains README files only |
+| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/cultivation/03-truth-states.png` | MISSING | folder contains README files only |
+| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/04-high-fx.png` | MISSING | folder contains README files only |
+| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/05-low-fx.png` | MISSING | folder contains README files only |
+| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/cultivation/06-reduced-motion.png` | MISSING | folder contains README files only |
+
+### Final decision block
+
+- `REVIEW READY`: 
+- `APPROVED FOR CLEANUP`: 
+- `REJECTED — REMAIN ADDITIVE`: 
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Required screenshot set missing (`01-06`).
+- required follow-up packet: D.10R-Followup (manual captures + reviewer decision)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+- reviewer rationale summary: Evidence gate not satisfied; remain additive.
+- unresolved risks after decision: duplicate/routing/truth-readability claims remain unverified visually.
+
+---
+
+### Metadata
+
+- target screen id: `status`
+- human label: Status Hero Surface
+- dominant family: hero ritual screen
+- packet id: `D.10R`
+- touched layers: docs-only evidence/signoff verification
+- retained old layer(s): RunCompass + six-card diagnostic chamber + summary header truth
+- screenshot evidence folder: `docs/release/qa/ui-cutover/status/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-09
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Required `01-06` PNG files are missing at folder root. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | No cleanup was executed in D.10R. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Not certifiable without screenshot evidence. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Not certifiable without interaction/truth-state screenshots. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` screenshots missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Interaction/truth-state screenshots missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | Evidence matrix absent. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup remains locked. |
+
+### Screenshot evidence table
+
+| evidence slot | required? | file/path | status | notes |
+| --- | --- | --- | --- | --- |
+| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/status/01-base.png` | MISSING | folder contains README files only |
+| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/status/02-interaction.png` | MISSING | folder contains README files only |
+| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/status/03-truth-states.png` | MISSING | folder contains README files only |
+| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/status/04-high-fx.png` | MISSING | folder contains README files only |
+| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/status/05-low-fx.png` | MISSING | folder contains README files only |
+| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/status/06-reduced-motion.png` | MISSING | folder contains README files only |
+
+### Final decision block
+
+- `REVIEW READY`: 
+- `APPROVED FOR CLEANUP`: 
+- `REJECTED — REMAIN ADDITIVE`: 
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Required screenshot set missing (`01-06`).
+- required follow-up packet: D.10R-Followup (manual captures + reviewer decision)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+- reviewer rationale summary: Evidence gate not satisfied; remain additive.
+- unresolved risks after decision: diagnostic readability/motion-mode coherence remain unverified visually.
+
+---
+
 ## Phase 0 overall branch-safety summary (P0-15)
 
 - final verdict: `NOT SAFE FOR PHASE 1`

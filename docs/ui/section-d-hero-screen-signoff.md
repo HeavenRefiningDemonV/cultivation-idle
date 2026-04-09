@@ -5,9 +5,9 @@
 - **packet id:** `D.10R`
 - **packet title:** `Section D hero-screen evidence and signoff completion`
 - **packet class:** `docs-only / cleanup-after-review gate packet`
-- **current phase:** `I8 / I9 boundary`
-- **date:** `2026-04-01`
-- **repo ref (head at authoring time):** `816f765`
+- **current phase:** `Phase 4 closure gate`
+- **date:** `2026-04-09`
+- **repo ref (head at authoring time):** `169477b`
 - **author/source note:** Codex execution against current repo snapshot; no product UI/runtime code touched in this packet.
 
 ## 2) Scope covered
@@ -23,6 +23,8 @@
 - `docs/ui/section-d-screenshot-signoff-checklist.md`
 - `docs/ui/section-d-packet-to-test-map.md`
 - `docs/ui/section-d-hero-screen-signoff.md` (prior revision)
+- `docs/ui/section-d-art-trigger-memo.md`
+- `docs/release/qa/ui-cutover/section-d-baseline-index.md`
 - `docs/release/ui_screen_signoff_sheet.md`
 - `docs/ui/section-a-screenshot-approval-workflow.md`
 - `docs/ui/section-a-cutover-gate.md`
@@ -47,15 +49,35 @@ Prompt requested `02-high-fx/03-low-fx/04-hover/05-warning/06-reduced-motion`; c
 
 ### Cultivation
 
-- `docs/release/qa/ui-cutover/cultivation/README.md`
-- required slots expected at folder root: `01-base.png`, `02-interaction.png`, `03-truth-states.png`, `04-high-fx.png`, `05-low-fx.png`, `06-reduced-motion.png`
+- scanned files: `README.md`, `before/README.md`
+- required slot files expected at root: `01-base.png`, `02-interaction.png`, `03-truth-states.png`, `04-high-fx.png`, `05-low-fx.png`, `06-reduced-motion.png` (+ optional `07-narrow.png`)
 - present PNG count: `0`
+
+| slot | expected path | present? |
+| --- | --- | --- |
+| 01 base | `docs/release/qa/ui-cutover/cultivation/01-base.png` | no |
+| 02 interaction | `docs/release/qa/ui-cutover/cultivation/02-interaction.png` | no |
+| 03 truth states | `docs/release/qa/ui-cutover/cultivation/03-truth-states.png` | no |
+| 04 high fx | `docs/release/qa/ui-cutover/cultivation/04-high-fx.png` | no |
+| 05 low fx | `docs/release/qa/ui-cutover/cultivation/05-low-fx.png` | no |
+| 06 reduced motion | `docs/release/qa/ui-cutover/cultivation/06-reduced-motion.png` | no |
+| 07 narrow (optional) | `docs/release/qa/ui-cutover/cultivation/07-narrow.png` | no |
 
 ### Status
 
-- `docs/release/qa/ui-cutover/status/README.md`
-- required slots expected at folder root: `01-base.png`, `02-interaction.png`, `03-truth-states.png`, `04-high-fx.png`, `05-low-fx.png`, `06-reduced-motion.png`
+- scanned files: `README.md`, `before/README.md`
+- required slot files expected at root: `01-base.png`, `02-interaction.png`, `03-truth-states.png`, `04-high-fx.png`, `05-low-fx.png`, `06-reduced-motion.png` (+ optional `07-narrow.png`)
 - present PNG count: `0`
+
+| slot | expected path | present? |
+| --- | --- | --- |
+| 01 base | `docs/release/qa/ui-cutover/status/01-base.png` | no |
+| 02 interaction | `docs/release/qa/ui-cutover/status/02-interaction.png` | no |
+| 03 truth states | `docs/release/qa/ui-cutover/status/03-truth-states.png` | no |
+| 04 high fx | `docs/release/qa/ui-cutover/status/04-high-fx.png` | no |
+| 05 low fx | `docs/release/qa/ui-cutover/status/05-low-fx.png` | no |
+| 06 reduced motion | `docs/release/qa/ui-cutover/status/06-reduced-motion.png` | no |
+| 07 narrow (optional) | `docs/release/qa/ui-cutover/status/07-narrow.png` | no |
 
 ## 6) Cultivation signoff table
 
@@ -112,3 +134,4 @@ Reason: required Cultivation/Status screenshot evidence matrix remains absent in
 1. Required Cultivation and Status `01-06` PNG evidence files are missing.
 2. No approved automated Section D screenshot command exists in repo for these screens.
 3. Manual capture requires an environment with interactive browser capture capability and human route execution.
+4. D1–D9 packet-level runtime green state was not re-verified inside this docs-only D.10R pass and remains dependent on prior packet evidence logs.

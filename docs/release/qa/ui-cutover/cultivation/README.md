@@ -5,6 +5,7 @@
 - **packet:** `D.10R`
 - **capture mechanism:** manual screenshots only (no approved automated capture pipeline found for Section D)
 - **capture status (this pass):** `BLOCKED — EVIDENCE MISSING`
+- **current on-disk inventory:** `README.md`, `before/README.md` (no root-slot PNG evidence yet)
 
 ## Required screenshot slots
 
