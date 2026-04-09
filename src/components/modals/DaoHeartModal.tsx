@@ -230,6 +230,7 @@ export function DaoHeartModal({ onClose, debugInitialTab = 'heartLaw' }: DaoHear
             {tab === 'study' ? (
               <section
                 className="daoHeartModalSection daoHeartModalSection--study"
+                data-ui="dao-heart-study-panel"
                 role="tabpanel"
                 id="dao-heart-panel-study"
                 aria-labelledby="dao-heart-tab-study"

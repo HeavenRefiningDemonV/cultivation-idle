@@ -94,9 +94,9 @@ Lock current Section C ritual-selection truth before any C.1+ visual packet work
 - **Screen family:** ritual modal
 - **Owner files:** `src/components/modals/DaoHeartModal.tsx`, `src/components/modals/DaoHeartModal.scss`, `src/ui/cultivation/StudyModeWidget.tsx`, `src/ui/cultivation/StudyModeWidget.scss`
 - **Current live reachability:** `live`
-- **Already right:** study tab is integrated in the same DaoHeart shell and uses real widget data.
-- **Still weak / generic / unfinished:** visual integration between Study widget and modal shell remains uneven.
-- **Retain through cutover:** current tab shell and study-widget-in-modal ownership.
+- **Already right:** study tab is integrated in the same DaoHeart shell, now with a dedicated study-surface hierarchy and real widget data semantics.
+- **Still weak / generic / unfinished:** only manual evidence capture remains; owner truth is now converged.
+- **Retain through cutover:** current tab shell + dedicated Dao Heart study surface + study-widget-in-modal ownership.
 - **Later art not justified yet:** new shell family or standalone replacement modal.
 - **Desktop / narrow notes:** verify narrow scroll containment manually.
 - **High FX / Low FX / Reduced Motion notes:** capture all three with study tab active.

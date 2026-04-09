@@ -4,7 +4,7 @@
 - Family: `ritual modal`
 - Harness URL: `/?uiAudit=section-c&surface=dao-heart-study&fx=high`
 - Capture routes: `/?uiAudit=section-c&surface=dao-heart-study&fx=high`, `/?uiAudit=section-c&surface=dao-heart-study&fx=low`, `/?uiAudit=section-c&surface=dao-heart-study&fx=reduced`
-- Reachability: `live but awkward`
+- Reachability: `live`
 - Capture status (this pass): **CAPTURE PENDING — MANUAL**
 - Capture mechanism: manual screenshots only (no approved automated capture pipeline in this repo).
 
@@ -19,6 +19,6 @@
 
 ## Manual capture steps
 1. Open harness URL with study tab active.
-2. Capture base and interaction.
+2. Capture base and interaction, including the dedicated study state + technique summary planes.
 3. Capture truth-state slot only if a distinct state family appears; otherwise mark N/A.
 4. Capture low/reduced FX variants and optional narrow shot.
