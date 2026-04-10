@@ -18,14 +18,28 @@ test('runtime module card surfaces stay player-facing and preserve locked outski
   const expeditions = buildWorldModuleCardSurface({ content, cityId, moduleKey: 'expeditions' });
   const manual = buildWorldModuleCardSurface({ content, cityId, moduleKey: 'manualPavilion' });
   const gate = buildWorldModuleCardSurface({ content, cityId, moduleKey: 'gateTrial' });
+  const apothecary = buildWorldModuleCardSurface({ content, cityId, moduleKey: 'apothecary' });
+  const forge = buildWorldModuleCardSurface({ content, cityId, moduleKey: 'forge' });
 
   assert.equal(outskirts.roleTag, 'Gold & Common Mats');
   assert.equal(outskirts.bestUsedWhen, 'Best used when you need gold, common materials, or low-risk combat reps.');
   assert.equal(ruins.roleTag, 'Targeted Mats');
   assert.equal(ruins.bestUsedWhen, 'Best used when you need targeted local materials and deterministic support rewards.');
+  assert.equal(gate.roleTag, 'Gate Progress');
+  assert.equal(gate.bestUsedWhen, 'Best used when you are ready to resolve the current milestone gate.');
+  assert.equal(manual.roleTag, 'Build Correction');
+  assert.equal(manual.bestUsedWhen, 'Best used when you need build correction, manuals, or technique growth.');
+  assert.equal(apothecary.roleTag, 'Immediate Readiness');
+  assert.equal(apothecary.bestUsedWhen, 'Best used when you need immediate readiness through healing stock, remedies, or pouch prep.');
+  assert.equal(forge.roleTag, 'Permanent Floor');
+  assert.equal(forge.bestUsedWhen, 'Best used when you need permanent floor through refine, temper, or rune work.');
+  assert.equal(bounties.roleTag, 'Merit & Routing');
+  assert.equal(expeditions.roleTag, 'Passive Support');
 
   assert.deepEqual(bounties.outputs.map((entry) => entry.label), ['Merit', 'Spirit Stones']);
   assert.deepEqual(manual.outputs.map((entry) => entry.label), ['Manuals', 'Technique Fragments']);
+  assert.deepEqual(apothecary.outputs.map((entry) => entry.label), ['Healing Stock', 'Preparation Remedies']);
+  assert.deepEqual(forge.outputs.map((entry) => entry.label), ['Refines', 'Temper / Runes']);
   assert.equal(expeditions.outputs.some((entry) => ['Herbs', 'Ore', 'Fragments'].includes(entry.label)), true);
   assert.equal(gate.outputs.length <= 2, true);
 
