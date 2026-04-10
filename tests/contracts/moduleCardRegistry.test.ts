@@ -15,7 +15,6 @@ const expectedChipLabels = [
   'Build Fix',
   'Gate Critical',
   'Stock Low',
-  'New City',
 ];
 
 test('module card registry covers exactly live modules and excludes deferred modules', () => {

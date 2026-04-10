@@ -3899,9 +3899,47 @@
 
 .worldTopRibbon__citySelectWrapper {
   display: inline-flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-end;
   gap: 4px;
+}
+
+.worldTopRibbon__currentCityStrip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+  border: 1px solid rgba(120, 72, 33, 0.3);
+  border-radius: 999px;
+  background: rgba(250, 242, 226, 0.82);
+}
+
+.worldTopRibbon__currentCityLabel {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-ink-faint, rgba(92, 81, 70, 0.72));
+  font-weight: 700;
+}
+
+.worldTopRibbon__currentCityName {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--paper-ink, #1f1a17);
+}
+
+.worldTopRibbon__currentCityStatus {
+  font-size: 11px;
+  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+}
+
+.worldTopRibbon__citySelectorLabel {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-ink-faint, rgba(92, 81, 70, 0.72));
+  font-weight: 700;
+  padding-inline: 8px;
 }
 
 .worldTopRibbon__cityList {

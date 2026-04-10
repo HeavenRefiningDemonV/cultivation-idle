@@ -55,16 +55,22 @@ export function buildCityPhaseTeachingSurface(input: {
   expeditionEmphasis: string | null;
   ruinName: string | null;
   gateTrialName: string | null;
+  leadRuinLabel: string;
+  gateTrialLabel: string;
   supportIdentityLabel: string | null;
   quickOpenModules: string[];
 } {
+  const ruinName = input.ruinName ?? null;
+  const gateTrialName = input.gateTrialName ?? null;
   return {
     cityName: input.cityName,
     lessonShort: getCityArrivalLesson(input.cityId),
     roleStatement: getCityPhaseRoleStatement(input.cityId),
     expeditionEmphasis: getCityExpeditionEmphasis(input.cityId),
-    ruinName: input.ruinName ?? null,
-    gateTrialName: input.gateTrialName ?? null,
+    ruinName,
+    gateTrialName,
+    leadRuinLabel: ruinName ?? 'Available now',
+    gateTrialLabel: gateTrialName ?? 'Current city trial',
     supportIdentityLabel: input.supportIdentityLabel ?? null,
     quickOpenModules: getCityArrivalQuickOpenModules(input.modules),
   };

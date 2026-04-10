@@ -22,8 +22,7 @@ export type WorldRoutingChipKind =
   | 'idle_slot'
   | 'build_fix'
   | 'gate_critical'
-  | 'stock_low'
-  | 'new_city';
+  | 'stock_low';
 
 export type WorldRoutingChipFamily = 'recommendation' | 'alert' | 'progress';
 
@@ -86,7 +85,6 @@ export const WORLD_ROUTING_CHIP_DEFINITIONS: Record<WorldRoutingChipKind, WorldR
   build_fix: { kind: 'build_fix', label: 'Build Fix', family: 'alert' },
   gate_critical: { kind: 'gate_critical', label: 'Gate Critical', family: 'alert' },
   stock_low: { kind: 'stock_low', label: 'Stock Low', family: 'alert' },
-  new_city: { kind: 'new_city', label: 'New City', family: 'progress' },
 };
 
 const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [

@@ -26,7 +26,6 @@ const WORLD_MAP_CHIP_ABBREVIATIONS = {
   build_fix: 'FIX',
   gate_critical: 'GATE',
   stock_low: 'LOW',
-  new_city: 'NEW',
 } as const satisfies Record<WorldRoutingChipKind, string>;
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {

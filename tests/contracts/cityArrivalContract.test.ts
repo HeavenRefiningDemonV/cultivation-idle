@@ -48,6 +48,8 @@ test('city phase teaching surface carries compact lesson + role + phase detail f
   assert.equal(surface.roleStatement, 'Forge and ore matter.');
   assert.equal(surface.ruinName, 'Broken Kiln');
   assert.equal(surface.gateTrialName, 'Stone Core Sanctum');
+  assert.equal(surface.leadRuinLabel, 'Broken Kiln');
+  assert.equal(surface.gateTrialLabel, 'Stone Core Sanctum');
   assert.equal(surface.expeditionEmphasis, getCityExpeditionEmphasis('city_stonecrag_town'));
   assert.deepEqual(surface.quickOpenModules, ['outskirts', 'ruins', 'gateTrial']);
 });

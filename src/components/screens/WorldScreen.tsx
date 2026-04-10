@@ -418,6 +418,9 @@ export function WorldScreen() {
       <div className="worldCommandSummaryCity">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity.name)}</div>
       {currentCityPhaseTeaching?.roleStatement ? <div className="worldCommandSummaryLine">City role: {currentCityPhaseTeaching.roleStatement}</div> : null}
       {currentCityPhaseTeaching?.lessonShort ? <div className="worldCommandSummaryLine">Phase lesson: {currentCityPhaseTeaching.lessonShort}</div> : null}
+      <div className="worldCommandSummaryLine">Lead Ruin: {currentCityPhaseTeaching?.leadRuinLabel ?? 'Available now'}</div>
+      <div className="worldCommandSummaryLine">Gate Trial: {currentCityPhaseTeaching?.gateTrialLabel ?? 'Current city trial'}</div>
+      {currentCityPhaseTeaching?.expeditionEmphasis ? <div className="worldCommandSummaryLine">Expeditions: {currentCityPhaseTeaching.expeditionEmphasis}</div> : null}
       <div className="worldCommandSummaryLine">Status: {currentCityStatusLine}</div>
       {cityQuickOpenModules.length > 0 ? (
         <div className="worldCommandQuickOpen" aria-label="City quick open">
@@ -552,8 +555,14 @@ export function WorldScreen() {
         tone="ink"
         title={getShellTabLabel('adventure')}
         endSlot={
-          <div className="worldTopRibbon__citySelectWrapper" role="group" aria-label="City selector">
-            <div className="worldTopRibbon__cityList">
+          <div className="worldTopRibbon__citySelectWrapper">
+            <div className="worldTopRibbon__currentCityStrip" aria-live="polite">
+              <span className="worldTopRibbon__currentCityLabel">Current city</span>
+              <span className="worldTopRibbon__currentCityName">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity?.name ?? 'Unavailable')}</span>
+              <span className="worldTopRibbon__currentCityStatus">{currentCityStatusLine}</span>
+            </div>
+            <div className="worldTopRibbon__citySelectorLabel">City selector</div>
+            <div className="worldTopRibbon__cityList" role="group" aria-label="City selector">
               {worldSelectorEntries.map(({ city, isUnlocked, isCurrent, requirementText }) => (
                 <button
                   key={city.id}

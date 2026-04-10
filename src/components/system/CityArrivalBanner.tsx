@@ -74,10 +74,10 @@ export function CityArrivalBanner() {
         {phaseTeaching.lessonShort ? <div className="cityArrivalBannerLesson">{sanitizeLiveCityName(phaseTeaching.lessonShort)}</div> : null}
         <div className="cityArrivalBannerPhaseDetails">
           <div className="cityArrivalBannerPhaseDetail">
-            <strong>Ruin:</strong> {phaseTeaching.ruinName ?? 'Available now'}
+            <strong>Ruin:</strong> {phaseTeaching.leadRuinLabel}
           </div>
           <div className="cityArrivalBannerPhaseDetail">
-            <strong>Gate Trial:</strong> {phaseTeaching.gateTrialName ?? 'Current city trial'}
+            <strong>Gate Trial:</strong> {phaseTeaching.gateTrialLabel}
           </div>
           {phaseTeaching.expeditionEmphasis ? (
             <div className="cityArrivalBannerPhaseDetail">
