@@ -4,7 +4,6 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import { ScenicLabel, type ScenicLabelState } from '../../ui/shell/index.js';
 import { getWorldRoutingChipLabel, type WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
-import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -50,8 +49,6 @@ export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
   recommendedModuleKey?: string | null;
-  atmosphereQuality?: FxEffectiveQuality;
-  prefersReducedMotion?: boolean;
   moduleMetadataByKey?: Readonly<Record<string, {
     roleTag: string;
     bestUsedWhen: string;
@@ -66,8 +63,6 @@ export function CityMapHub({
   modules,
   activeModuleKey,
   recommendedModuleKey = null,
-  atmosphereQuality = 'medium',
-  prefersReducedMotion = false,
   moduleMetadataByKey = {},
   getModuleLabel,
   onOpenModule,
@@ -91,8 +86,6 @@ export function CityMapHub({
       <div
         className="cityMapHubMap"
         aria-label="City map"
-        data-atmosphere-quality={atmosphereQuality}
-        data-reduced-motion={prefersReducedMotion ? '1' : '0'}
       >
         {modules.map((moduleKey) => {
           if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
@@ -102,18 +95,8 @@ export function CityMapHub({
           const isRecommended = !isActive && recommendedModuleKey === moduleKey;
           const labelState: ScenicLabelState = isActive ? 'active' : isRecommended ? 'recommended' : 'default';
           const moduleMetadata = moduleMetadataByKey[moduleKey];
-          const moduleOutputs = moduleMetadata?.outputs?.slice(0, 2) ?? [];
-          const outputsLine = moduleOutputs.length > 0 ? `Outputs: ${moduleOutputs.join(' • ')}` : null;
-          const roleLine = moduleMetadata?.roleTag ?? null;
-          const guidanceLine = moduleMetadata?.bestUsedWhen ?? null;
           const chipLabel = moduleMetadata?.chipKind ? getWorldRoutingChipLabel(moduleMetadata.chipKind) : null;
-          const labelTitle = [
-            getModuleLabel(moduleKey),
-            roleLine,
-            guidanceLine,
-            outputsLine,
-          ].filter((line): line is string => Boolean(line)).join('\n');
-          const sublabel = roleLine && outputsLine ? `${roleLine} • ${outputsLine}` : roleLine ?? outputsLine ?? undefined;
+          const labelTitle = getModuleLabel(moduleKey);
 
           return (
             <div
@@ -124,20 +107,16 @@ export function CityMapHub({
               })}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
-              {isActive ? <span className="cityMapHubHotspotGlint cityMapHubHotspotGlint--active" aria-hidden="true" /> : null}
-              {isRecommended ? <span className="cityMapHubHotspotGlint cityMapHubHotspotGlint--recommended" aria-hidden="true" /> : null}
               <ScenicLabel
                 label={
                   <span className="cityMapHubHotspotLabel">
                     <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
-                    {guidanceLine ? <span className="cityMapHubHotspotLabelGuidance">{guidanceLine}</span> : null}
                   </span>
                 }
                 variant={CITY_MAP_HUB_SCENIC_LABEL_VARIANT}
                 state={labelState}
                 reserveStateSlot={CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT}
                 stateSlot={chipLabel ?? undefined}
-                sublabel={sublabel}
                 sublabelClassName="cityMapHubHotspotSubLabel"
                 emphasis={isActive ? 'medium' : 'quiet'}
                 className="cityMapHubHotspotTrigger uiNoShift"

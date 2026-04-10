@@ -3889,21 +3889,14 @@
 }
 
 .worldTopRibbon {
-  width: min(760px, 100%);
+  width: min(680px, 100%);
 }
 
 .worldTopRibbon__citySelectWrapper {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-end;
-  gap: 6px;
-}
-
-.worldTopRibbon__cityLabel {
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--paper-ink-faint, rgba(92, 81, 70, 0.72));
+  gap: 4px;
 }
 
 .worldTopRibbon__cityList {
@@ -3919,10 +3912,10 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  min-width: 172px;
-  min-block-size: 56px;
+  min-width: 158px;
+  min-block-size: 42px;
   gap: 2px;
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 10px;
   border: 1px solid rgba(120, 72, 33, 0.35);
   background: rgba(250, 242, 226, 0.92);
@@ -3933,16 +3926,15 @@
 }
 
 .worldTopRibbon__cityChipName {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1.1;
-  min-block-size: 1.35em;
 }
 
 .worldTopRibbon__cityChipMeta {
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.2;
-  min-block-size: 2.6em;
+  min-block-size: 1.2em;
   color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
 }
 
@@ -3974,13 +3966,9 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  border: 1px solid rgba(120, 72, 33, 0.26);
-  background:
-    linear-gradient(180deg, rgba(254, 247, 233, 0.2), rgba(23, 27, 36, 0.18)),
-    radial-gradient(circle at 22% 16%, rgba(250, 242, 226, 0.18), rgba(250, 242, 226, 0));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 244, 225, 0.24),
-    0 10px 30px rgba(11, 8, 6, 0.24);
+  border: 1px solid rgba(120, 72, 33, 0.14);
+  background: transparent;
+  box-shadow: none;
 }
 
 .worldScreenHubPanel::before,
@@ -3992,15 +3980,11 @@
 }
 
 .worldScreenHubPanel::before {
-  z-index: 1;
-  background:
-    radial-gradient(circle at 9% 14%, rgba(255, 247, 232, 0.22), rgba(255, 247, 232, 0) 42%),
-    radial-gradient(circle at 86% 84%, rgba(14, 20, 30, 0.26), rgba(14, 20, 30, 0) 44%);
+  background: none;
 }
 
 .worldScreenHubPanel::after {
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(255, 251, 241, 0.08), rgba(21, 17, 13, 0.18));
+  background: none;
 }
 
 .worldScreenHubPanel > * {
@@ -4008,110 +3992,10 @@
   z-index: 2;
 }
 
-.worldScreenHubAtmosphere {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.worldFxScene {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.worldFxScene__fog {
-  position: absolute;
-  inset: 0;
-  opacity: 0.2;
-  background:
-    radial-gradient(circle at 16% 24%, rgba(250, 242, 226, 0.22), rgba(250, 242, 226, 0) 42%),
-    radial-gradient(circle at 86% 18%, rgba(255, 249, 237, 0.13), rgba(255, 249, 237, 0) 36%),
-    radial-gradient(circle at 50% 90%, rgba(17, 24, 37, 0.18), rgba(17, 24, 37, 0) 46%);
-}
-
-.worldFxScene__mote {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(252, 234, 187, 0.55);
-  box-shadow: 0 0 12px rgba(245, 220, 154, 0.5);
-  opacity: 0.45;
-}
-
-.worldFxScene__mote--1 {
-  left: 18%;
-  top: 24%;
-}
-
-.worldFxScene__mote--2 {
-  left: 36%;
-  top: 58%;
-}
-
-.worldFxScene__mote--3 {
-  left: 63%;
-  top: 36%;
-}
-
-.worldFxScene__mote--4 {
-  left: 78%;
-  top: 68%;
-}
-
-.worldFxScene[data-quality='high'][data-reduced-motion='0'] .worldFxScene__fog {
-  animation: worldFxFogDrift 18s ease-in-out infinite;
-}
-
-.worldFxScene[data-quality='medium'][data-reduced-motion='0'] .worldFxScene__fog {
-  animation: worldFxFogDrift 28s ease-in-out infinite;
-}
-
-.worldFxScene[data-quality='high'][data-reduced-motion='0'] .worldFxScene__mote {
-  animation: worldFxMoteDrift 12s ease-in-out infinite;
-}
-
-.worldFxScene[data-quality='medium'][data-reduced-motion='0'] .worldFxScene__mote {
-  animation: worldFxMoteDrift 18s ease-in-out infinite;
-}
-
-.worldFxScene[data-quality='low'] .worldFxScene__mote,
-.worldFxScene[data-quality='reducedMotion'] .worldFxScene__mote {
-  opacity: 0.28;
-}
-
-.worldFxScene[data-quality='low'] .worldFxScene__fog,
-.worldFxScene[data-quality='reducedMotion'] .worldFxScene__fog {
-  opacity: 0.16;
-}
-
 .worldScreenHubShell {
   display: flex;
   flex-direction: column;
   gap: 9px;
-}
-
-.worldScreenHubShellHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 2px 4px 0;
-}
-
-.worldScreenHubShellTitle {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 750;
-  letter-spacing: 0.02em;
-  color: rgba(245, 235, 217, 0.92);
-}
-
-.worldScreenHubShellSubtitle {
-  margin: 0;
-  font-size: 12px;
-  color: rgba(232, 222, 208, 0.74);
 }
 
 .worldScreenModuleGuidanceGrid {
@@ -4322,11 +4206,29 @@
 }
 
 .worldCommandDeck--subordinate {
-  opacity: 0.89;
+  opacity: 0.82;
   border-radius: 14px;
-  border: 1px solid rgba(122, 94, 53, 0.2);
-  background: linear-gradient(180deg, rgba(246, 237, 219, 0.24), rgba(246, 237, 219, 0.08));
-  padding: 10px;
+  border: 1px solid rgba(122, 94, 53, 0.16);
+  background: linear-gradient(180deg, rgba(246, 237, 219, 0.16), rgba(246, 237, 219, 0.04));
+  padding: 8px;
+}
+
+.worldCommandDeckDisclosure {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.worldCommandDeckDisclosureButton {
+  align-self: flex-start;
+  border: 1px solid rgba(122, 94, 53, 0.28);
+  border-radius: 999px;
+  background: rgba(251, 244, 228, 0.82);
+  color: var(--paper-ink, #1f1a17);
+  padding: 4px 10px;
+  font-size: 12px;
+  --ui-no-shift-outline-active: 2px solid var(--paper-shell-outline-strong, rgba(139, 48, 40, 0.52));
+  --ui-no-shift-outline-offset: 2px;
 }
 
 .worldCommandGroup {
@@ -4435,13 +4337,9 @@
 }
 
 .worldScreenInspector .inspectorPanel__frame {
-  border-color: rgba(122, 94, 53, 0.28);
-  background:
-    linear-gradient(180deg, rgba(250, 242, 226, 0.94), rgba(243, 233, 214, 0.9)),
-    radial-gradient(circle at 94% 8%, rgba(255, 247, 231, 0.28), rgba(255, 247, 231, 0));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 249, 240, 0.42),
-    0 10px 24px rgba(16, 11, 6, 0.16);
+  border-color: rgba(122, 94, 53, 0.2);
+  background: linear-gradient(180deg, rgba(250, 242, 226, 0.86), rgba(243, 233, 214, 0.8));
+  box-shadow: 0 6px 16px rgba(16, 11, 6, 0.12);
 }
 
 .worldScreenInspector .inspectorPanel__statusArea,
@@ -4456,43 +4354,5 @@
 
   .worldScreenHubPanel {
     min-height: 540px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .worldFxScene__fog,
-  .worldFxScene__mote {
-    animation: none !important;
-  }
-
-  .worldScreenHubPanel::before,
-  .worldScreenHubPanel::after {
-    opacity: 0.82;
-  }
-}
-
-@keyframes worldFxFogDrift {
-  0%,
-  100% {
-    opacity: 0.18;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.23;
-    transform: scale(1.01);
-  }
-}
-
-@keyframes worldFxMoteDrift {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.32;
-  }
-
-  50% {
-    transform: translateY(-6px);
-    opacity: 0.52;
   }
 }

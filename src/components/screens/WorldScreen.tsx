@@ -43,8 +43,6 @@ import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { InspectorDrawer, InspectorPanel, TopRibbon } from '../../ui/shell/index.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
-import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
-import { WorldFxScene } from '../../ui/fx/scenes/WorldFxScene.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -78,9 +76,9 @@ export function WorldScreen() {
   const expeditionSlots = useExpeditionStore((state) => state.slots);
   const expeditionActive = useExpeditionStore((state) => state.active);
   const runCompass = useRunCompassSurface();
-  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
   const [inspectorDrawerOpen, setInspectorDrawerOpen] = useState(false);
   const [isNarrowInspectorLayout, setIsNarrowInspectorLayout] = useState(false);
+  const [isCommandDeckExpanded, setIsCommandDeckExpanded] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -538,10 +536,6 @@ export function WorldScreen() {
 
   if (!isLoaded || citiesSorted.length === 0) return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
 
-  const selectedCitySelectorEntry = selectedCity
-    ? worldSelectorEntries.find((entry) => entry.city.id === selectedCity.id) ?? null
-    : null;
-
   return (
     <div className={'worldScreen'}>
       <TopRibbon
@@ -550,10 +544,8 @@ export function WorldScreen() {
         density="compact"
         tone="ink"
         title={getShellTabLabel('adventure')}
-        subtitle="Choose your current city and route your loop."
         endSlot={
           <div className="worldTopRibbon__citySelectWrapper" role="group" aria-label="City selector">
-            <div className="worldTopRibbon__cityLabel">Current semester cities</div>
             <div className="worldTopRibbon__cityList">
               {worldSelectorEntries.map(({ city, isUnlocked, isCurrent, requirementText }) => (
                 <button
@@ -571,7 +563,7 @@ export function WorldScreen() {
                   ) : isUnlocked ? (
                     <span className="worldTopRibbon__cityChipMeta">Unlocked</span>
                   ) : (
-                    <span className="worldTopRibbon__cityChipMeta">Locked ({requirementText ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE})</span>
+                    <span className="worldTopRibbon__cityChipMeta">Locked · {requirementText ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE}</span>
                   )}
                 </button>
               ))}
@@ -587,32 +579,11 @@ export function WorldScreen() {
           <div className="worldScreenShellLayout">
             <div className="worldScreenMainRegion">
               <div className="worldScreenHubShell">
-                <div className="worldScreenHubShellHeader">
-                  <h2 className="worldScreenHubShellTitle">City Map</h2>
-                  <p className="worldScreenHubShellSubtitle">
-                    {selectedCitySelectorEntry?.isCurrent
-                      ? `${sanitizeLiveCityName(selectedCity.name)} is your pinned city. Map ownership stays primary.`
-                      : 'Map ownership is primary. Command cards below are support routing only.'}
-                  </p>
-                </div>
                 <div className={'worldScreenPanel worldScreenHubPanel'}>
-                  <div className="worldScreenHubAtmosphere" aria-hidden="true">
-                    <WorldFxScene
-                      effectiveQuality={effectiveQuality}
-                      prefersReducedMotion={prefersReducedMotion}
-                      hasSelectedBuilding={Boolean(activeModuleKey)}
-                      hasRecommendedBuilding={Boolean(
-                        worldCommandSurface.strongRecommendationModuleKey
-                        && worldCommandSurface.strongRecommendationModuleKey !== activeModuleKey,
-                      )}
-                    />
-                  </div>
                   <CityMapHub
                     modules={visibleCityModules}
                     activeModuleKey={activeModuleKey}
                     recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
-                    atmosphereQuality={effectiveQuality}
-                    prefersReducedMotion={prefersReducedMotion}
                     moduleMetadataByKey={moduleMetadataByKey}
                     getModuleLabel={getWorldModuleLabel}
                     onOpenModule={handleRouteToModule}
@@ -643,26 +614,38 @@ export function WorldScreen() {
                 )}
               </section>
 
-              <div className="worldCommandDeck worldCommandDeck--subordinate">
-                {worldCommandSurface.groups.map((group) => (
-                  <WorldModuleGroup key={group.id} title={group.label}>
-                    {group.cards.map((card) => (
-                      <WorldModuleCard
-                        key={card.moduleKey}
-                        moduleKey={card.moduleKey}
-                        moduleName={card.label}
-                        roleTag={card.roleTag}
-                        bestUsedWhen={card.bestUsedWhen}
-                        outputs={card.outputs}
-                        chips={card.chips}
-                        active={card.active}
-                        openLabel={card.openLabel}
-                        onOpen={handleRouteToModule as never}
-                    />
+              <section className="worldCommandDeckDisclosure" aria-label="World module routing deck">
+                <button
+                  type="button"
+                  className="worldCommandDeckDisclosureButton uiNoShift"
+                  aria-expanded={isCommandDeckExpanded}
+                  onClick={() => setIsCommandDeckExpanded((current) => !current)}
+                >
+                  {isCommandDeckExpanded ? 'Hide module routing deck' : 'Show module routing deck'}
+                </button>
+                {isCommandDeckExpanded ? (
+                  <div className="worldCommandDeck worldCommandDeck--subordinate">
+                    {worldCommandSurface.groups.map((group) => (
+                      <WorldModuleGroup key={group.id} title={group.label}>
+                        {group.cards.map((card) => (
+                          <WorldModuleCard
+                            key={card.moduleKey}
+                            moduleKey={card.moduleKey}
+                            moduleName={card.label}
+                            roleTag={card.roleTag}
+                            bestUsedWhen={card.bestUsedWhen}
+                            outputs={card.outputs}
+                            chips={card.chips}
+                            active={card.active}
+                            openLabel={card.openLabel}
+                            onOpen={handleRouteToModule as never}
+                          />
+                        ))}
+                      </WorldModuleGroup>
                     ))}
-                  </WorldModuleGroup>
-                ))}
-              </div>
+                  </div>
+                ) : null}
+              </section>
 
               {isNarrowInspectorLayout ? (
                 <button
@@ -687,7 +670,7 @@ export function WorldScreen() {
                   className="worldScreenInspector"
                   variant="world"
                   title="World Details"
-                  subtitle="Selected building guidance with city support context."
+                  subtitle="Selected building and city context."
                   statusArea={inspectorStatusArea}
                   recommendationArea={inspectorRecommendationArea}
                   sticky
@@ -711,7 +694,7 @@ export function WorldScreen() {
               className="worldScreenInspector worldScreenInspector--drawer"
               variant="world"
               title="World Details"
-              subtitle="Selected building guidance with city support context."
+              subtitle="Selected building and city context."
               statusArea={inspectorStatusArea}
               recommendationArea={inspectorRecommendationArea}
             >
