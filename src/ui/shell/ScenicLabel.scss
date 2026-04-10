@@ -1,24 +1,24 @@
 @import '../ink/inkTheme.scss';
 
 .scenicLabel {
-  --scenic-label-min-inline: 112px;
-  --scenic-label-min-block: var(--ui-size-button-min-block, 36px);
-  --scenic-label-pad-inline: 10px;
-  --scenic-label-pad-block: 6px;
-  --scenic-label-state-inline: 38px;
+  --scenic-label-min-inline: 106px;
+  --scenic-label-min-block: 30px;
+  --scenic-label-pad-inline: 9px;
+  --scenic-label-pad-block: 4px;
+  --scenic-label-state-inline: 34px;
 
   min-inline-size: var(--scenic-label-min-inline);
   min-block-size: var(--scenic-label-min-block);
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   padding: var(--scenic-label-pad-block) var(--scenic-label-pad-inline);
   border: 1px solid var(--paper-shell-border-strong, rgba(122, 94, 53, 0.56));
-  border-radius: 12px 10px 13px 9px;
+  border-radius: 10px 9px 11px 8px;
   background: var(--paper-shell-raised, rgba(250, 242, 226, 0.95));
   color: var(--paper-ink, #1f1a17);
-  box-shadow: var(--paper-shadow-inspector, 0 6px 14px rgba(22, 12, 4, 0.2));
+  box-shadow: 0 4px 10px rgba(22, 12, 4, 0.2);
   backdrop-filter: blur(0.5px);
   text-align: left;
 }
@@ -44,8 +44,8 @@
 
 .scenicLabel--interactive:hover,
 .scenicLabel--interactive:focus-visible {
-  background: var(--paper-shell-ritual, rgba(248, 239, 223, 0.97));
-  box-shadow: var(--paper-shadow-surface, 0 8px 18px rgba(22, 12, 4, 0.22));
+  background: var(--paper-shell-ritual, rgba(248, 239, 223, 0.95));
+  box-shadow: 0 6px 12px rgba(22, 12, 4, 0.22);
 }
 
 .scenicLabel--interactive:disabled,
@@ -61,9 +61,9 @@
 }
 
 .scenicLabel__label {
-  font-size: var(--ui-type-meta, 12px);
-  line-height: 1.15;
-  letter-spacing: 0.03em;
+  font-size: 10px;
+  line-height: 1.12;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
   text-shadow: 0 1px 0 rgba(255, 251, 241, 0.6);
@@ -82,10 +82,11 @@
   display: inline-flex;
   justify-content: flex-end;
   align-items: center;
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: 9px;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   white-space: nowrap;
+  color: rgba(98, 76, 53, 0.86);
 }
 
 .scenicLabel__statePlaceholder {
@@ -94,7 +95,7 @@
 }
 
 .scenicLabel--building {
-  --scenic-label-min-inline: 118px;
+  --scenic-label-min-inline: 110px;
 }
 
 .scenicLabel--location {
@@ -142,14 +143,14 @@
 
 @media (max-width: 900px) {
   .scenicLabel {
-    --scenic-label-min-inline: 102px;
-    --scenic-label-pad-inline: 9px;
-    --scenic-label-pad-block: 5px;
-    --scenic-label-state-inline: 34px;
+    --scenic-label-min-inline: 96px;
+    --scenic-label-pad-inline: 8px;
+    --scenic-label-pad-block: 4px;
+    --scenic-label-state-inline: 30px;
   }
 
   .scenicLabel__label {
-    font-size: 12px;
+    font-size: 9.5px;
   }
 }
 

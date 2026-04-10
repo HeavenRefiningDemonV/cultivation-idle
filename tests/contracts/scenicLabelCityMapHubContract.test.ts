@@ -32,6 +32,8 @@ test('CityMapHub keeps ScenicLabel diegetic wiring frozen for world map hotspots
   assert.match(file, /variant=\{CITY_MAP_HUB_SCENIC_LABEL_VARIANT\}/);
   assert.match(file, /reserveStateSlot=\{CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT\}/);
   assert.match(file, /className="cityMapHubHotspotTrigger uiNoShift"/);
+  assert.match(file, /WORLD_MAP_CHIP_ABBREVIATIONS/);
+  assert.doesNotMatch(file, /sublabelClassName=/);
   assert.match(styles, /cityMapHubHotspotTrigger\.scenicLabel--recommended/);
   assert.match(styles, /cityMapHubHotspotTrigger\.scenicLabel--active/);
 });

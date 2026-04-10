@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import { ScenicLabel, type ScenicLabelState } from '../../ui/shell/index.js';
-import { getWorldRoutingChipLabel, type WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
+import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -18,6 +18,16 @@ import cityTalismanBg from '../../assets/background/citystates/city_talisman.png
 const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const CITY_MAP_HUB_SCENIC_LABEL_VARIANT = 'building' as const;
 const CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT = true;
+const WORLD_MAP_CHIP_ABBREVIATIONS = {
+  recommended_now: 'NOW',
+  useful_soon: 'SOON',
+  claim_ready: 'CLAIM',
+  idle_slot: 'IDLE',
+  build_fix: 'FIX',
+  gate_critical: 'GATE',
+  stock_low: 'LOW',
+  new_city: 'NEW',
+} as const satisfies Record<WorldRoutingChipKind, string>;
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -95,8 +105,8 @@ export function CityMapHub({
           const isRecommended = !isActive && recommendedModuleKey === moduleKey;
           const labelState: ScenicLabelState = isActive ? 'active' : isRecommended ? 'recommended' : 'default';
           const moduleMetadata = moduleMetadataByKey[moduleKey];
-          const chipLabel = moduleMetadata?.chipKind ? getWorldRoutingChipLabel(moduleMetadata.chipKind) : null;
-          const labelTitle = getModuleLabel(moduleKey);
+          const chipLabel = moduleMetadata?.chipKind ? WORLD_MAP_CHIP_ABBREVIATIONS[moduleMetadata.chipKind] : null;
+          const labelTitle = `Open ${getModuleLabel(moduleKey)}`;
 
           return (
             <div
@@ -117,7 +127,6 @@ export function CityMapHub({
                 state={labelState}
                 reserveStateSlot={CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT}
                 stateSlot={chipLabel ?? undefined}
-                sublabelClassName="cityMapHubHotspotSubLabel"
                 emphasis={isActive ? 'medium' : 'quiet'}
                 className="cityMapHubHotspotTrigger uiNoShift"
                 onClick={() => onOpenModule(moduleKey)}

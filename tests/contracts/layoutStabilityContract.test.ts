@@ -29,3 +29,14 @@ test('status baseline styles avoid no-shift violations in hover/focus interactio
   assert.equal(riskyStatePattern.test(statusStyles), false);
   assert.equal(riskyStatePattern.test(runCompassStyles), false);
 });
+
+test('world map label styles avoid no-shift violations in hover/focus interaction states', async () => {
+  const [cityMapHubStyles, scenicLabelStyles] = await Promise.all([
+    readRepoFile('src/components/screens/CityMapHub.scss'),
+    readRepoFile('src/ui/shell/ScenicLabel.scss'),
+  ]);
+
+  const riskyStatePattern = /(:hover|:focus-visible)\s*\{[^}]*\b(width|height|padding|margin|top|left|right|bottom|font-size|min-inline-size|min-block-size)\b/;
+  assert.equal(riskyStatePattern.test(cityMapHubStyles), false);
+  assert.equal(riskyStatePattern.test(scenicLabelStyles), false);
+});
