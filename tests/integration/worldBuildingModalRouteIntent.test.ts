@@ -10,6 +10,8 @@ test('world module opener and modal support apothecary pouch intent wiring', asy
   assert.match(openWorldModuleSource, /intent\?: WorldBuildingModalIntent/);
   assert.match(openWorldModuleSource, /openWorldBuildingModal\(\{ cityId, buildingKey: normalizedModuleKey as WorldBuildingKey, intent \}\)/);
   assert.match(worldBuildingModalSource, /storeModalIntent\?\.apothecarySurface/);
+  assert.match(worldBuildingModalSource, /Opened to Brew/);
+  assert.match(worldBuildingModalSource, /Opened for Medicine Pouch/);
   assert.match(uiStoreSource, /worldBuildingModalIntent/);
   assert.match(uiStoreSource, /apothecarySurface\?: 'buy' \| 'brew' \| 'pouch'/);
 });
@@ -19,6 +21,6 @@ test('world building modal hard-gates to live world modules and city-supported t
 
   assert.match(worldBuildingModalSource, /inspectWorldFacingModuleTarget/);
   assert.match(worldBuildingModalSource, /!buildingAudit\.ok \|\| !citySupportsBuilding/);
-  assert.doesNotMatch(worldBuildingModalSource, /case 'alchemy'/);
-  assert.doesNotMatch(worldBuildingModalSource, /case 'talismanStudio'/);
+  assert.match(worldBuildingModalSource, /WORLD_MODAL_LIVE_KEYS/);
+  assert.match(worldBuildingModalSource, /case 'alchemy':\s+content = <ApothecaryPanel shopId=\{moduleRefId \?\? null\} initialSurface="brew" \/>/);
 });

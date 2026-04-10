@@ -18,5 +18,5 @@ test('player-facing live prep surfaces no longer advertise a separate Alchemy ro
   assert.match(brewPanel, /Convert reagents into cheaper readiness\./);
   assert.doesNotMatch(statusPanel, /Alchemy:/);
   assert.match(statusPanel, /Brew:/);
-  assert.match(modalSource, /initialSurface=\{buildingKey === 'alchemy' \? 'brew' : 'buy'\}/);
+  assert.match(modalSource, /case 'alchemy':\s+content = <ApothecaryPanel shopId=\{moduleRefId \?\? null\} initialSurface="brew" \/>/);
 });

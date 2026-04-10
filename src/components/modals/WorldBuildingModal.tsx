@@ -1,6 +1,6 @@
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { useContentStore } from '../../stores/contentStore.js';
-import { useUIStore, type WorldBuildingKey } from '../../stores/uiStore.js';
+import { useUIStore, type WorldBuildingKey, type WorldBuildingModalIntent } from '../../stores/uiStore.js';
 import { resolveModuleRef } from '../screens/world/worldUtils.js';
 import { ManualPavilionPanel } from '../screens/ManualPavilionPanel.js';
 import { ApothecaryPanel } from '../screens/ApothecaryPanel.js';
@@ -9,7 +9,7 @@ import { BountyBoardPanel } from '../screens/BountyBoardPanel.js';
 import { ExpeditionBoardPanel } from '../screens/ExpeditionBoardPanel.js';
 import { isCombatModule } from '../../systems/world/openWorldModule.js';
 import { GameIcon } from '../../ui/icons/index.js';
-import hammer from "../../assets/onscreen/hammer.png";
+import hammer from '../../assets/onscreen/hammer.png';
 import './WorldBuildingModal.scss';
 import { OutskirtsBuildingPanel } from '../screens/world/buildings/OutskirtsBuildingPanel.js';
 import { GateTrialBuildingPanel } from '../screens/world/buildings/GateTrialBuildingPanel.js';
@@ -25,6 +25,108 @@ export interface WorldBuildingModalProps {
   onClose?: () => void;
   children?: ReactNode;
   useStore?: boolean;
+}
+
+type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge';
+type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path';
+type WorldModalShellMode = 'context-strip' | 'close-only';
+
+type WorldModalEntrySurface = {
+  title: string;
+  cityLabel: string;
+  moduleLabel: string;
+  contextReason: string | null;
+  backgroundVariant: BackgroundVariant;
+  shellFamily: WorldModalShellFamily;
+  shellMode: WorldModalShellMode;
+  showShellClose: boolean;
+  showContextStrip: boolean;
+};
+
+export const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
+  'manualPavilion',
+  'apothecary',
+  'forge',
+  'bounties',
+  'expeditions',
+  'outskirts',
+  'gateTrial',
+  'ruins',
+];
+
+function formatIntentReason(
+  buildingKey: WorldBuildingKey | null | undefined,
+  intent: WorldBuildingModalIntent,
+): string | null {
+  if (buildingKey !== 'apothecary' && buildingKey !== 'alchemy') {
+    return null;
+  }
+
+  switch (intent?.apothecarySurface) {
+    case 'brew':
+      return 'Opened to Brew';
+    case 'pouch':
+      return 'Opened for Medicine Pouch';
+    default:
+      return null;
+  }
+}
+
+function resolveWorldModalEntrySurface(args: {
+  buildingKey: WorldBuildingKey | null | undefined;
+  cityName: string | null | undefined;
+  intent: WorldBuildingModalIntent;
+  controlledTitle?: string;
+  isStoreMode: boolean;
+}): WorldModalEntrySurface {
+  const { buildingKey, cityName, intent, controlledTitle, isStoreMode } = args;
+  const cityLabel = cityName ?? 'City';
+  const moduleLabel = formatWorldModuleLabel(buildingKey);
+  const title = isStoreMode ? `${cityLabel} — ${moduleLabel}` : controlledTitle || 'World Building';
+
+  let backgroundVariant: BackgroundVariant = 'manual-pavilion';
+  let shellFamily: WorldModalShellFamily = 'prep-room';
+  let shellMode: WorldModalShellMode = 'context-strip';
+  let showShellClose = true;
+
+  switch (buildingKey) {
+    case 'apothecary':
+    case 'alchemy':
+      backgroundVariant = 'apothecary';
+      break;
+    case 'bounties':
+    case 'expeditions':
+      backgroundVariant = 'bounty-board';
+      shellFamily = 'support-board';
+      break;
+    case 'forge':
+      backgroundVariant = 'forge';
+      break;
+    case 'outskirts':
+    case 'gateTrial':
+    case 'ruins':
+      backgroundVariant = 'inside-dungeon';
+      shellFamily = 'combat-path';
+      shellMode = 'close-only';
+      showShellClose = buildingKey === 'ruins';
+      break;
+    case 'manualPavilion':
+    default:
+      backgroundVariant = 'manual-pavilion';
+      break;
+  }
+
+  return {
+    title,
+    cityLabel,
+    moduleLabel,
+    contextReason: formatIntentReason(buildingKey, intent),
+    backgroundVariant,
+    shellFamily,
+    shellMode,
+    showShellClose,
+    showContextStrip: shellMode === 'context-strip',
+  };
 }
 
 export function WorldBuildingModal({
@@ -62,26 +164,16 @@ export function WorldBuildingModal({
     }
   }, [buildingAudit.ok, citySupportsBuilding, closeFromStore, isStoreMode, storeOpen]);
 
-  const title = isStoreMode
-    ? `${city?.name ?? 'City'} — ${formatWorldModuleLabel(buildingKey)}`
-    : controlledTitle || 'World Building';
-  const backgroundVariant = useMemo(() => {
-    switch (buildingKey) {
-      case 'apothecary':
-        return 'apothecary';
-      case 'bounties':
-      case 'expeditions':
-        return 'bounty-board';
-      case 'gateTrial':
-      case 'ruins':
-      case 'outskirts':
-        return 'inside-dungeon';
-      case 'forge':
-        return 'forge';
-      default:
-        return 'default';
-    }
-  }, [buildingKey]);
+  const entrySurface = useMemo(
+    () => resolveWorldModalEntrySurface({
+      buildingKey,
+      cityName: city?.name,
+      intent: storeModalIntent,
+      controlledTitle,
+      isStoreMode,
+    }),
+    [buildingKey, city?.name, controlledTitle, isStoreMode, storeModalIntent],
+  );
 
   if (
     (isStoreMode && (!storeOpen || !storeCityId || !buildingKey || !buildingAudit.ok || !citySupportsBuilding))
@@ -105,6 +197,9 @@ export function WorldBuildingModal({
           />
         );
         break;
+      case 'alchemy':
+        content = <ApothecaryPanel shopId={moduleRefId ?? null} initialSurface="brew" />;
+        break;
       case 'forge':
         content = <ForgeWorkshop cityId={storeCityId} />;
         break;
@@ -123,29 +218,33 @@ export function WorldBuildingModal({
       case 'ruins':
         content = <RuinsBuildingPanel cityId={storeCityId} />;
         break;
-
       default:
-        content = isCombatModule(buildingKey) ? null : <div className="worldBuildingPlaceholder">{formatWorldModuleLabel(buildingKey)} is unavailable in this semester.</div>;
+        content = isCombatModule(buildingKey)
+          ? null
+          : <div className="worldBuildingPlaceholder">{formatWorldModuleLabel(buildingKey)} is unavailable in this semester.</div>;
         break;
     }
   }
-
-  const showShellClose = buildingKey === 'outskirts' || buildingKey === 'gateTrial';
-  const isSupportBoard = buildingKey === 'bounties' || buildingKey === 'expeditions';
 
   return (
     <Modal
       open={open}
       onClose={close}
-      overlayClassName={isSupportBoard ? 'worldBuildingOverlay worldBuildingOverlay--supportBoard' : 'worldBuildingOverlay'}
-      panelClassName={`worldBuildingModal worldBuildingModal--${backgroundVariant}${isSupportBoard ? ' worldBuildingModal--supportBoard' : ''}`}
-      ariaLabel={title}
+      overlayClassName={`worldBuildingOverlay worldBuildingOverlay--${entrySurface.shellFamily}`}
+      panelClassName={`worldBuildingModal worldBuildingModal--${entrySurface.backgroundVariant} worldBuildingModal--${entrySurface.shellFamily}`}
+      ariaLabel={entrySurface.title}
     >
-      {backgroundVariant === "forge" && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
-      {!showShellClose ? (
+      {entrySurface.backgroundVariant === 'forge' && <img className="hammer" src={hammer} alt="" aria-hidden="true" />}
+      {entrySurface.showShellClose ? (
         <button type="button" className="worldBuildingClose" onClick={close} aria-label="Close">
           <GameIcon icon="inkX" size={14} decorative />
         </button>
+      ) : null}
+      {entrySurface.showContextStrip ? (
+        <div className="worldBuildingContext" role="presentation">
+          <p className="worldBuildingTitle">{entrySurface.cityLabel} — {entrySurface.moduleLabel}</p>
+          {entrySurface.contextReason ? <p className="worldBuildingSubtitle">{entrySurface.contextReason}</p> : null}
+        </div>
       ) : null}
       <div className="worldBuildingBody">{content}</div>
     </Modal>
