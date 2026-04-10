@@ -871,8 +871,8 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 - target screen id: `world`
 - human label: World
 - dominant family: scenic world
-- packet id: `P5-11`
-- touched layers: world acceptance docs/tooling + stale-copy blocker fix
+- packet id: `WR-00`
+- touched layers: recovery governance docs + evidence/signoff hardening only
 - retained old layer(s): all existing scenic/base owners retained
 - screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`
 - implementer: Codex (GPT-5.3-Codex)
@@ -883,7 +883,7 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 
 | criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
 | --- | --- | --- | --- |
-| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are still missing in-repo for the canonical world root. |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Canonical world `01-06` legal approval files are still missing in-repo. |
 | G2 | The old scenic/base layer is still present until approval. | PASS | Preserve-first/additive world ownership remains intact; no destructive cleanup was done. |
 | G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Could not be certified without the required screenshot set. |
 | G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Could not be certified without the required screenshot set. |
@@ -901,11 +901,11 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 
 ### Blockers / follow-up
 
-- blockers: Canonical world screenshot set (`01-06`) is missing; `npm run release:phase0-core-capture:world` is currently blocked here by missing Playwright runtime.
-- required follow-up packet: P5-11R (capture-enabled environment run + reviewer visual signoff)
+- blockers: Canonical world screenshot set (`01-06`) is missing; WR-00 baseline references are diagnostic only and cannot satisfy legal cutover criteria.
+- required follow-up packet: WR-01 (structural rollback start) through WR-09 (final screenshot QA + cutover review)
 - cleanup scope unlocked if approved (exact conflicting layer(s) only): none
-- reviewer rationale summary: world truth/copy checks pass, but visual-cutover criteria cannot be legally certified without image evidence.
-- unresolved risks after decision: duplicate-state/layout-shift/fx coherence remain unproven visually until captures land.
+- reviewer rationale summary: WR-00 documents failure baseline and locks preserve-first recovery; cleanup remains illegal until WR-09 evidence gate completion.
+- unresolved risks after decision: composition/ownership, duplication, and quality-tier coherence remain unresolved by design in WR-00 and are routed to WR-01+ packets.
 
 ### Metadata
 

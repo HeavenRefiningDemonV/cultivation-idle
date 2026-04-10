@@ -1,6 +1,6 @@
-# world-main Wave 0 capture
+# world-main baseline/manual reference (non-approval)
 
-- Surface id: `world-main`
+- Surface id: `world-main` (adjacent reference root)
 - Family: `scenic world screen`
 - Capture mechanism: `manual live navigation`
 - Reachability: `live`
@@ -33,6 +33,9 @@ Keep `city.png` + citystate overlay ownership visible; Wave 0 does not authorize
 ## Wave 0 warning
 This folder is for Wave 0 support-art proof only. It grants no cleanup authority and does not allow world repaint.
 
-## P5-11 note (2026-04-10)
-- This folder remains an adjacent baseline/manual reference root only.
-- Canonical Phase 5 World signoff evidence is still owned by `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`.
+## WR-00 recovery note
+- This folder is baseline/manual reference only.
+- This folder grants **no** cleanup approval authority.
+- Preserve-first map + city overlay ownership still applies while recovery is in progress.
+- If failure screenshots are referenced here, they are baseline diagnostics only and are not legal cutover evidence.
+- Canonical legal approval evidence remains owned by `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`.

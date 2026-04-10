@@ -35,7 +35,7 @@ Publish an exact-screen evidence and signoff sweep for the mandatory 10-screen P
 | Path / Life Start | `docs/release/qa/ui-cutover/phase-0-core-screens/01-path-life-start/` | missing | missing | missing (`N/A` allowed with reason) | missing | missing | missing | `DEFERRED` | No six-slot proof set in repo. |
 | Cultivation | `docs/release/qa/ui-cutover/phase-0-core-screens/02-cultivation/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | Missing exact-screen screenshot evidence. |
 | Status | `docs/release/qa/ui-cutover/phase-0-core-screens/03-status/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | Evidence-completeness gap persists. |
-| World | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | Required `01-06` files not present. |
+| World | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | Required `01-06` files not present; WR-00 failure baseline references are diagnostic only (not legal approval evidence). |
 | Manual Pavilion | `docs/release/qa/ui-cutover/phase-0-core-screens/05-manual-pavilion/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | Manual instructions exist; canonical files missing. |
 | Techniques | `docs/release/qa/ui-cutover/phase-0-core-screens/06-techniques/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | No legal gate-ready screenshot pack. |
 | Apothecary | `docs/release/qa/ui-cutover/phase-0-core-screens/07-apothecary/` | missing | missing | missing | missing | missing | missing | `DEFERRED` | Exact-screen proof not captured. |
