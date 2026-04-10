@@ -32,3 +32,7 @@ Keep `city.png` + citystate overlay ownership visible; Wave 0 does not authorize
 
 ## Wave 0 warning
 This folder is for Wave 0 support-art proof only. It grants no cleanup authority and does not allow world repaint.
+
+## P5-11 note (2026-04-10)
+- This folder remains an adjacent baseline/manual reference root only.
+- Canonical Phase 5 World signoff evidence is still owned by `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`.

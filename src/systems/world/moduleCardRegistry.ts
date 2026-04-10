@@ -122,7 +122,7 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     group: 'combat',
     sortOrder: 3,
     roleTag: 'Gate Progress',
-    bestUsedWhen: 'Best used when you are ready to resolve the current milestone gate.',
+    bestUsedWhen: 'Best used when you are ready to resolve the current gate trial.',
     defaultOutputs: [{ key: 'gate_proof', label: 'Gate Proof' }, { key: 'breakthrough', label: 'Breakthrough' }],
     ctaLabel: 'Open Gate Trial',
     allowedChipKinds: ['recommended_now', 'gate_critical'],

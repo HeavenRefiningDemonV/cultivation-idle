@@ -26,7 +26,7 @@ test('runtime module card surfaces stay player-facing and preserve locked outski
   assert.equal(ruins.roleTag, 'Targeted Mats');
   assert.equal(ruins.bestUsedWhen, 'Best used when you need targeted local materials and deterministic support rewards.');
   assert.equal(gate.roleTag, 'Gate Progress');
-  assert.equal(gate.bestUsedWhen, 'Best used when you are ready to resolve the current milestone gate.');
+  assert.equal(gate.bestUsedWhen, 'Best used when you are ready to resolve the current gate trial.');
   assert.equal(manual.roleTag, 'Build Correction');
   assert.equal(manual.bestUsedWhen, 'Best used when you need build correction, manuals, or technique growth.');
   assert.equal(apothecary.roleTag, 'Immediate Readiness');

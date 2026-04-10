@@ -43,3 +43,4 @@ This matrix is the authoritative P2-13 proof classification map for existing sur
 - Screenshot slot files for these roots are currently README-only (`0/6` captured, or `0/5` where truth-state is N/A).
 - BottomTabBar remains bound to dock-visible core-screen captures (no standalone harness surface id).
 - No secondary compact consumer was promoted to primary in this rerun.
+- P5-11 added optional world-only capture/audit CLI filters (`--surface=world`) and npm wrappers to reduce acceptance friction without changing all-surface defaults.

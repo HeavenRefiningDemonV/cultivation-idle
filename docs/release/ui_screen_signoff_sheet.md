@@ -871,26 +871,26 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 - target screen id: `world`
 - human label: World
 - dominant family: scenic world
-- packet id: `P0-COMP-02`
-- touched layers: evidence/signoff only (no runtime edits)
+- packet id: `P5-11`
+- touched layers: world acceptance docs/tooling + stale-copy blocker fix
 - retained old layer(s): all existing scenic/base owners retained
 - screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`
 - implementer: Codex (GPT-5.3-Codex)
 - reviewer: Pending human reviewer
-- review date: 2026-04-05
+- review date: 2026-04-10
 
 ### Legal cutover gate checklist
 
 | criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
 | --- | --- | --- | --- |
-| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are missing in-repo. |
-| G2 | The old scenic/base layer is still present until approval. | PASS | No destructive cleanup performed in this packet. |
-| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Visual proof absent. |
-| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Interaction/truth-state screenshots missing. |
-| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | `04/05/06` captures missing. |
-| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | `02/03` captures missing. |
-| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | No complete screenshot evidence. |
-| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup not unlocked. |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | `01-06` evidence artifacts are still missing in-repo for the canonical world root. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | Preserve-first/additive world ownership remains intact; no destructive cleanup was done. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Could not be certified without the required screenshot set. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Could not be certified without the required screenshot set. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | Could not be certified without `04/05/06` captures. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Could not be certified without interaction/truth-state captures. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | Could not be certified without complete visual evidence. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup remains locked in this packet. |
 
 ### Final decision block
 
@@ -898,6 +898,14 @@ Source of truth for missing evidence: `npm run release:section-c-evidence-audit 
 - `APPROVED FOR CLEANUP`:
 - `REJECTED — REMAIN ADDITIVE`:
 - `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Canonical world screenshot set (`01-06`) is missing; `npm run release:phase0-core-capture:world` is currently blocked here by missing Playwright runtime.
+- required follow-up packet: P5-11R (capture-enabled environment run + reviewer visual signoff)
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+- reviewer rationale summary: world truth/copy checks pass, but visual-cutover criteria cannot be legally certified without image evidence.
+- unresolved risks after decision: duplicate-state/layout-shift/fx coherence remain unproven visually until captures land.
 
 ### Metadata
 

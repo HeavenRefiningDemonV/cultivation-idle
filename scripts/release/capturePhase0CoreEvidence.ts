@@ -16,6 +16,7 @@ interface CaptureArgs {
   viewportHeight: number;
   startupTimeoutMs: number;
   waitAfterLoadMs: number;
+  surfaceIds: string[] | null;
 }
 
 interface CaptureRecord {
@@ -41,6 +42,13 @@ function parseArgs(argv: string[]): CaptureArgs {
   const heightArg = argv.find((arg) => arg.startsWith('--height='));
   const startupTimeoutArg = argv.find((arg) => arg.startsWith('--startup-timeout-ms='));
   const waitArg = argv.find((arg) => arg.startsWith('--wait-after-load-ms='));
+  const surfaceArg = argv.find((arg) => arg.startsWith('--surface='));
+  const surfacesArg = argv.find((arg) => arg.startsWith('--surfaces='));
+  const surfaceCsv = surfacesArg ? surfacesArg.slice('--surfaces='.length) : surfaceArg ? surfaceArg.slice('--surface='.length) : '';
+  const surfaceIds = surfaceCsv
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
 
   return {
     json,
@@ -50,7 +58,18 @@ function parseArgs(argv: string[]): CaptureArgs {
     viewportHeight: heightArg ? Number(heightArg.slice('--height='.length)) : 1080,
     startupTimeoutMs: startupTimeoutArg ? Number(startupTimeoutArg.slice('--startup-timeout-ms='.length)) : 60_000,
     waitAfterLoadMs: waitArg ? Number(waitArg.slice('--wait-after-load-ms='.length)) : 700,
+    surfaceIds: surfaceIds.length > 0 ? [...new Set(surfaceIds)] : null,
   };
+}
+
+function resolveCaptureTargets(surfaceIds: string[] | null) {
+  if (!surfaceIds) return [...PHASE0_CORE_EVIDENCE_TARGETS];
+  const targetById = new Map(PHASE0_CORE_EVIDENCE_TARGETS.map((target) => [target.id, target]));
+  const unknown = surfaceIds.filter((surfaceId) => !targetById.has(surfaceId));
+  if (unknown.length > 0) {
+    throw new Error(`Unknown phase-0 surface id(s): ${unknown.join(', ')}`);
+  }
+  return surfaceIds.map((surfaceId) => targetById.get(surfaceId)!);
 }
 
 function toFxMode(file: Phase0CoreCaptureSlotFile): 'high' | 'low' | 'reduced' {
@@ -91,6 +110,7 @@ async function waitForServerReady(baseUrl: string, timeoutMs: number): Promise<v
 }
 
 async function runCapture(args: CaptureArgs): Promise<CaptureReport> {
+  const captureTargets = resolveCaptureTargets(args.surfaceIds);
   const playwrightModule = await import('playwright').catch(() => null);
   if (!playwrightModule || !('chromium' in playwrightModule)) {
     throw new Error(
@@ -137,7 +157,7 @@ async function runCapture(args: CaptureArgs): Promise<CaptureReport> {
 
     const records: CaptureRecord[] = [];
 
-    for (const target of PHASE0_CORE_EVIDENCE_TARGETS) {
+    for (const target of captureTargets) {
       const evidenceDir = path.resolve(args.rootDir, target.evidenceFolder);
       fs.mkdirSync(evidenceDir, { recursive: true });
 

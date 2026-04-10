@@ -25,8 +25,29 @@ const REQUIRED_BASE_SLOTS = ['01-base.png', '04-high-fx.png', '05-low-fx.png', '
 function parseArgs(argv: string[]) {
   const json = argv.includes('--json');
   const rootArg = argv.find((arg) => arg.startsWith('--root='));
+  const surfaceArg = argv.find((arg) => arg.startsWith('--surface='));
+  const surfacesArg = argv.find((arg) => arg.startsWith('--surfaces='));
+  const surfaceCsv = surfacesArg ? surfacesArg.slice('--surfaces='.length) : surfaceArg ? surfaceArg.slice('--surface='.length) : '';
+  const surfaceIds = surfaceCsv
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
   const rootDir = rootArg ? path.resolve(rootArg.slice('--root='.length)) : process.cwd();
-  return { json, rootDir };
+  return {
+    json,
+    rootDir,
+    surfaceIds: surfaceIds.length > 0 ? [...new Set(surfaceIds)] : null,
+  };
+}
+
+function resolveAuditTargets(surfaceIds: string[] | null): readonly Phase0CoreEvidenceTarget[] {
+  if (!surfaceIds) return PHASE0_CORE_EVIDENCE_TARGETS;
+  const targetById = new Map(PHASE0_CORE_EVIDENCE_TARGETS.map((target) => [target.id, target]));
+  const unknown = surfaceIds.filter((surfaceId) => !targetById.has(surfaceId));
+  if (unknown.length > 0) {
+    throw new Error(`Unknown phase-0 surface id(s): ${unknown.join(', ')}`);
+  }
+  return surfaceIds.map((surfaceId) => targetById.get(surfaceId)!);
 }
 
 function readTextIfExists(filePath: string): string | null {
@@ -54,10 +75,11 @@ function validateRouteShape(target: Phase0CoreEvidenceTarget, findings: Phase0Co
   });
 }
 
-export function auditPhase0CoreEvidence(rootDir: string): Phase0CoreEvidenceAuditReport {
+export function auditPhase0CoreEvidence(rootDir: string, surfaceIds: string[] | null = null): Phase0CoreEvidenceAuditReport {
+  const auditTargets = resolveAuditTargets(surfaceIds);
   const findings: Phase0CoreEvidenceFinding[] = [];
 
-  for (const target of PHASE0_CORE_EVIDENCE_TARGETS) {
+  for (const target of auditTargets) {
     validateRouteShape(target, findings);
 
     const folderPath = path.resolve(rootDir, target.evidenceFolder);
@@ -138,7 +160,7 @@ export function auditPhase0CoreEvidence(rootDir: string): Phase0CoreEvidenceAudi
     schemaVersion: 'phase-0-core-evidence-audit.v1',
     generatedAt: new Date().toISOString(),
     overallPass: findings.length === 0,
-    targetCount: PHASE0_CORE_EVIDENCE_TARGETS.length,
+    targetCount: auditTargets.length,
     findings,
   };
 }
@@ -166,8 +188,8 @@ function renderHumanReport(report: Phase0CoreEvidenceAuditReport): string {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const { json, rootDir } = parseArgs(process.argv.slice(2));
-  const report = auditPhase0CoreEvidence(rootDir);
+  const { json, rootDir, surfaceIds } = parseArgs(process.argv.slice(2));
+  const report = auditPhase0CoreEvidence(rootDir, surfaceIds);
 
   if (json) {
     console.log(JSON.stringify(report, null, 2));
