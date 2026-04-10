@@ -43,13 +43,14 @@ test('World inspector selected-building anatomy is first-class and routes direct
   assert.match(file, /worldCommandSummary--selectedModule/);
   assert.match(file, /worldCommandSummaryLine--primary/);
   assert.match(file, /worldCommandSummaryOutputs/);
-  assert.match(file, /onClick=\{\(\) => handleOpenModule\(selectedInspectorSubject\.moduleKey\)\}/);
+  assert.match(file, /onClick=\{\(\) => handleRouteToModule\(selectedInspectorSubject\.moduleKey\)\}/);
 });
 
 test('World inspector keeps alerts as secondary support surfaces', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
+  assert.match(file, /Shortcuts are available above the map command band\./);
+  assert.match(file, /worldScreenCommandBand/);
   assert.match(file, /aria-label="World support alerts"/);
-  assert.match(file, /No urgent alerts right now\./);
 });
 
 test('WorldScreen resolves city support identity labels from the city package registry source of truth', () => {

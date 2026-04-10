@@ -1,13 +1,7 @@
 import type { LiveWorldModuleKey } from '../../../content/types.js';
 import type { ModulePurposeSourceSurface } from '../../economy/purposeSourceSurface.js';
-
-interface RunCompassPrimaryAction {
-  why: string;
-  target: {
-    kind: 'world_module' | 'tab';
-    moduleKey?: LiveWorldModuleKey;
-  } | null;
-}
+import type { RunCompassActionTarget } from '../runCompass/index.js';
+import { resolveWorldStrongRecommendationModuleKey } from './worldModuleRoutingSurface.js';
 
 export type WorldCommandGroupId = 'combat' | 'preparation' | 'support';
 
@@ -66,36 +60,50 @@ function isVisibleModule(visibleModules: readonly string[], moduleKey: string): 
 
 export function resolveWorldRecommendedModule(input: {
   visibleModules: readonly string[];
-  runCompassPrimaryAction: RunCompassPrimaryAction | null;
+  runCompassPrimaryAction: { why: string; target: RunCompassActionTarget | null } | null;
+  runCompassSecondaryModuleKey?: LiveWorldModuleKey | null;
   economicTopModuleKey: string | null;
   economicReason: string | null;
   trackedBountyModuleKey: string | null;
 }): WorldCommandRecommendation {
-  const { visibleModules, runCompassPrimaryAction, economicTopModuleKey, economicReason, trackedBountyModuleKey } = input;
+  const { visibleModules, runCompassPrimaryAction, runCompassSecondaryModuleKey = null, economicTopModuleKey, economicReason, trackedBountyModuleKey } = input;
+  const visibleLiveModules = visibleModules.filter((moduleKey): moduleKey is LiveWorldModuleKey => isVisibleModule(visibleModules, moduleKey));
+  const primaryModuleKey = runCompassPrimaryAction?.target?.kind === 'world_module' ? runCompassPrimaryAction.target.moduleKey : null;
+  const economicModuleKeys = economicTopModuleKey && isVisibleModule(visibleModules, economicTopModuleKey) ? [economicTopModuleKey] : [];
+  const trackedModuleKey = trackedBountyModuleKey && isVisibleModule(visibleModules, trackedBountyModuleKey) ? trackedBountyModuleKey : null;
 
-  if (
-    runCompassPrimaryAction?.target?.kind === 'world_module'
-    && runCompassPrimaryAction.target.moduleKey
-    && isVisibleModule(visibleModules, runCompassPrimaryAction.target.moduleKey)
-  ) {
+  const moduleKey = resolveWorldStrongRecommendationModuleKey({
+    visibleModules: visibleLiveModules,
+    runCompassPrimaryModuleKey: primaryModuleKey ?? null,
+    runCompassSecondaryModuleKey,
+    economicModuleKeys,
+    trackedBountyModuleKey: trackedModuleKey,
+  });
+
+  if (moduleKey === primaryModuleKey && runCompassPrimaryAction?.target?.kind === 'world_module') {
     return {
-      moduleKey: runCompassPrimaryAction.target.moduleKey,
+      moduleKey,
       reason: runCompassPrimaryAction.why,
       from: 'run_compass',
     };
   }
-
-  if (economicTopModuleKey && isVisibleModule(visibleModules, economicTopModuleKey)) {
+  if (moduleKey === runCompassSecondaryModuleKey) {
     return {
-      moduleKey: economicTopModuleKey,
+      moduleKey,
+      reason: 'Run Compass support route points here.',
+      from: 'run_compass',
+    };
+  }
+  if (moduleKey && economicModuleKeys.includes(moduleKey)) {
+    return {
+      moduleKey,
       reason: economicReason ?? 'Top economic route is in this city.',
       from: 'economic',
     };
   }
-
-  if (trackedBountyModuleKey && isVisibleModule(visibleModules, trackedBountyModuleKey)) {
+  if (moduleKey && trackedModuleKey === moduleKey) {
     return {
-      moduleKey: trackedBountyModuleKey,
+      moduleKey,
       reason: 'Tracked bounty routing points here.',
       from: 'tracked_bounty',
     };
@@ -111,7 +119,8 @@ export function resolveWorldRecommendedModule(input: {
 export function buildWorldCommandSurface(input: {
   visibleModules: readonly string[];
   moduleSurfacesByKey: Partial<Record<string, ModulePurposeSourceSurface>>;
-  runCompassPrimaryAction: RunCompassPrimaryAction | null;
+  runCompassPrimaryAction: { why: string; target: RunCompassActionTarget | null } | null;
+  runCompassSecondaryModuleKey?: LiveWorldModuleKey | null;
   economicTopModuleKey: string | null;
   economicReason: string | null;
   trackedBountyModuleKey: string | null;
@@ -121,6 +130,7 @@ export function buildWorldCommandSurface(input: {
   const recommendation = resolveWorldRecommendedModule({
     visibleModules: input.visibleModules,
     runCompassPrimaryAction: input.runCompassPrimaryAction,
+    runCompassSecondaryModuleKey: input.runCompassSecondaryModuleKey,
     economicTopModuleKey: input.economicTopModuleKey,
     economicReason: input.economicReason,
     trackedBountyModuleKey: input.trackedBountyModuleKey,

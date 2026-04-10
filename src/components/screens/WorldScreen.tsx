@@ -439,7 +439,7 @@ export function WorldScreen() {
           <button
             type="button"
             className="worldScreenModuleButton worldScreenModuleButton--direct"
-            onClick={() => handleOpenModule(selectedInspectorSubject.moduleKey)}
+            onClick={() => handleRouteToModule(selectedInspectorSubject.moduleKey)}
           >
             {selectedInspectorSubject.openLabel}
           </button>
@@ -460,7 +460,7 @@ export function WorldScreen() {
         {cityQuickOpenModules.length > 0 ? (
           <div className="worldCommandQuickOpen" aria-label="City quick open">
             {cityQuickOpenModules.map((moduleKey) => (
-              <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
+              <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleRouteToModule(moduleKey)}>
                 {getWorldModuleLabel(moduleKey)}
               </button>
             ))}
@@ -472,33 +472,13 @@ export function WorldScreen() {
             title="Use World to route the loop"
             body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
             actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
-            onAction={visibleCityModules.includes('outskirts') ? () => handleOpenModule('outskirts') : undefined}
+            onAction={visibleCityModules.includes('outskirts') ? () => handleRouteToModule('outskirts') : undefined}
             onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
           />
         ) : null}
       </section>
 
-      <div className={'worldScreenRunCompassWrapper'}>
-        <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
-      </div>
-
-      {worldCommandSurface.alerts.length > 0 ? (
-        <section className="worldScreenAlerts" aria-label="World support alerts">
-          {worldCommandSurface.alerts.map((alert) => (
-            <div key={alert.id} className="worldScreenAlertCard">
-              <WorldCommandAlert
-                title={alert.title}
-                detail={alert.detail}
-                ctaLabel={alert.ctaLabel}
-                onCta={() => handleOpenModule(alert.ctaModuleKey)}
-              />
-              {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
-            </div>
-          ))}
-        </section>
-      ) : (
-        <div className="worldInspectorAlertEmpty">No urgent alerts right now.</div>
-      )}
+      <div className="worldInspectorAlertEmpty">Shortcuts are available above the map command band.</div>
     </>
   ) : null;
 
@@ -529,7 +509,7 @@ export function WorldScreen() {
     setCurrentCity(city.id);
   };
 
-  const handleOpenModule = useCallback(
+  const handleRouteToModule = useCallback(
     (moduleKey: string) => {
       if (!selectedCity) return;
       if (!visibleCityModules.includes(moduleKey)) return;
@@ -615,10 +595,33 @@ export function WorldScreen() {
                     recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
                     moduleMetadataByKey={moduleMetadataByKey}
                     getModuleLabel={getWorldModuleLabel}
-                    onOpenModule={handleOpenModule}
+                    onOpenModule={handleRouteToModule}
                   />
                 </div>
               </div>
+
+              <section className="worldScreenCommandBand" aria-label="World command band">
+                <div className={'worldScreenRunCompassWrapper'}>
+                  <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
+                </div>
+                {worldCommandSurface.alerts.length > 0 ? (
+                  <section className="worldScreenAlerts worldScreenAlerts--aboveFold" aria-label="World support alerts">
+                    {worldCommandSurface.alerts.map((alert) => (
+                      <div key={alert.id} className="worldScreenAlertCard">
+                        <WorldCommandAlert
+                          title={alert.title}
+                          detail={alert.detail}
+                          ctaLabel={alert.ctaLabel}
+                          onCta={() => handleRouteToModule(alert.ctaModuleKey)}
+                        />
+                        {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
+                      </div>
+                    ))}
+                  </section>
+                ) : (
+                  <div className="worldScreenCommandBandEmpty">No urgent shortcuts right now.</div>
+                )}
+              </section>
 
               <div className="worldCommandDeck worldCommandDeck--subordinate">
                 {worldCommandSurface.groups.map((group) => (
@@ -634,7 +637,7 @@ export function WorldScreen() {
                         chips={card.chips}
                         active={card.active}
                         openLabel={card.openLabel}
-                        onOpen={handleOpenModule as never}
+                        onOpen={handleRouteToModule as never}
                     />
                     ))}
                   </WorldModuleGroup>

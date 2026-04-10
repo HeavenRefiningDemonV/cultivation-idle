@@ -11,6 +11,14 @@ import {
 
 type ChipTone = 'strong' | 'support' | 'neutral';
 
+export interface WorldRoutingPriorityInput {
+  visibleModules: readonly LiveWorldModuleKey[];
+  runCompassPrimaryModuleKey: LiveWorldModuleKey | null;
+  runCompassSecondaryModuleKey: LiveWorldModuleKey | null;
+  economicModuleKeys: LiveWorldModuleKey[];
+  trackedBountyModuleKey: LiveWorldModuleKey | null;
+}
+
 export interface WorldModuleRoutingCard {
   moduleKey: LiveWorldModuleKey;
   label: string;
@@ -45,6 +53,16 @@ function toStrongKind(problemKind: EconomicProblemKind | null): WorldRoutingChip
   return 'recommended_now';
 }
 
+export function resolveWorldStrongRecommendationModuleKey(input: WorldRoutingPriorityInput): LiveWorldModuleKey | null {
+  const visibleSet = new Set(input.visibleModules);
+  return [
+    input.runCompassPrimaryModuleKey,
+    input.runCompassSecondaryModuleKey,
+    input.economicModuleKeys[0] ?? null,
+    input.trackedBountyModuleKey,
+  ].find((moduleKey): moduleKey is LiveWorldModuleKey => moduleKey !== null && visibleSet.has(moduleKey)) ?? null;
+}
+
 export function buildWorldModuleRoutingSurface(input: {
   content: Parameters<typeof buildWorldModuleCardSurface>[0]['content'];
   cityId: string;
@@ -65,17 +83,16 @@ export function buildWorldModuleRoutingSurface(input: {
   alerts: WorldModuleRoutingAlert[];
   strongRecommendationModuleKey: LiveWorldModuleKey | null;
 } {
-  const visibleSet = new Set(input.visibleModules);
-
-  const strongRecommendationModuleKey = [
-    input.runCompassPrimaryModuleKey,
-    input.runCompassSecondaryModuleKey,
-    input.economicModuleKeys[0] ?? null,
-    input.trackedBountyModuleKey,
-  ].find((moduleKey): moduleKey is LiveWorldModuleKey => moduleKey !== null && visibleSet.has(moduleKey)) ?? null;
+  const strongRecommendationModuleKey = resolveWorldStrongRecommendationModuleKey({
+    visibleModules: input.visibleModules,
+    runCompassPrimaryModuleKey: input.runCompassPrimaryModuleKey,
+    runCompassSecondaryModuleKey: input.runCompassSecondaryModuleKey,
+    economicModuleKeys: input.economicModuleKeys,
+    trackedBountyModuleKey: input.trackedBountyModuleKey,
+  });
 
   const supportingRecommendations = input.economicModuleKeys
-    .filter((moduleKey) => moduleKey !== strongRecommendationModuleKey && visibleSet.has(moduleKey))
+    .filter((moduleKey) => moduleKey !== strongRecommendationModuleKey && input.visibleModules.includes(moduleKey))
     .slice(0, 2);
 
   const groups = WORLD_MODULE_GROUP_ORDER.map((groupId) => {

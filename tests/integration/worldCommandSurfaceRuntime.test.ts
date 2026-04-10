@@ -46,5 +46,9 @@ test('world command runtime surface carries tracked bounty and expedition idle a
   assert.equal(surface.recommendation.moduleKey, 'ruins');
   assert.equal(surface.alerts.some((alert) => alert.id === 'tracked_bounty'), true);
   assert.equal(surface.alerts.some((alert) => alert.id === 'expedition_idle'), true);
+  surface.alerts.forEach((alert) => {
+    assert.equal(visibleModules.includes(alert.ctaModuleKey), true);
+    assert.doesNotMatch(alert.ctaModuleKey, /alchemy|talisman/i);
+  });
   assert.doesNotMatch(surface.recommendation.reason, /next|future city/i);
 });
