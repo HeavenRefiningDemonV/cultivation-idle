@@ -557,7 +557,7 @@ export function WorldScreen() {
         variant="world"
         density="compact"
         tone="ink"
-        title={getShellTabLabel('adventure')}
+        title="World"
         endSlot={
           <div className="worldTopRibbon__citySelectWrapper">
             <div

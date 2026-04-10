@@ -87,6 +87,62 @@ Incomplete fields invalidate the review block. Do not mark cleanup approved unti
 
 ---
 
+## WR-09 World cutover review (2026-04-10)
+
+### Metadata
+
+- target screen id: `world`
+- human label: WorldScreen
+- dominant family: scenic command surface
+- packet id: `WR-09`
+- touched layers: World evidence/signoff/docs truth purge + world header copy normalization
+- retained old layer(s): map owner + additive preserve-first runtime stack
+- screenshot evidence folder: `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/`
+- implementer: Codex (GPT-5.3-Codex)
+- reviewer: Pending human reviewer
+- review date: 2026-04-10
+
+### Legal cutover gate checklist
+
+| criterion id | question | status (`PASS`/`FAIL`/`N/A*`) | notes |
+| --- | --- | --- | --- |
+| G1 | A complete screenshot set exists for the exact target screen. | FAIL | Canonical `01-06` screenshots are not committed. |
+| G2 | The old scenic/base layer is still present until approval. | PASS | Preserve-first additive stack remains; no cleanup patch applied. |
+| G3 | No duplicate old/new ribbons, frames, headers, or comparable conflicting systems remain in the reviewed target composition. | FAIL | Cannot be legally certified without canonical screenshot evidence. |
+| G4 | No icons, buttons, or labels are missing compared with the old screen’s live truth. | FAIL | Cannot be legally certified without canonical screenshot evidence. |
+| G5 | High FX, Low FX, and Reduced Motion all remain coherent and readable. | FAIL | Canonical `04/05/06` screenshots missing. |
+| G6 | Hover, selected, recommended, and warning states do not shift layout. | FAIL | Canonical interaction/truth-state captures missing. |
+| G7 | The reviewed screen tells the same gameplay truth as before, only more clearly and more beautifully. | FAIL | Evidence pack incomplete; cannot approve truth parity. |
+| G8 | Only after all prior criteria pass may the old conflicting layer be removed. | FAIL | Cleanup authority remains locked. |
+
+### Screenshot evidence table
+
+| evidence slot | required? | file/path | status | notes |
+| --- | --- | --- | --- | --- |
+| base/default (`01-base.png`) | Yes | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/01-base.png` | MISSING | Canonical proof slot missing. |
+| interaction (`02-interaction.png`) | Yes if interaction exists | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/02-interaction.png` | MISSING | Canonical proof slot missing. |
+| truth states (`03-truth-states.png`) | Yes if truth states exist | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/03-truth-states.png` | MISSING | Canonical proof slot missing. |
+| High FX (`04-high-fx.png`) | Yes | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/04-high-fx.png` | MISSING | Canonical proof slot missing. |
+| Low FX (`05-low-fx.png`) | Yes | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/05-low-fx.png` | MISSING | Canonical proof slot missing. |
+| Reduced Motion (`06-reduced-motion.png`) | Yes | `docs/release/qa/ui-cutover/phase-0-core-screens/04-world/06-reduced-motion.png` | MISSING | Canonical proof slot missing. |
+
+### Final decision block
+
+- `REVIEW READY`: 
+- `APPROVED FOR CLEANUP`: 
+- `REJECTED — REMAIN ADDITIVE`: 
+- `DEFERRED`: **SELECTED**
+
+### Blockers / follow-up
+
+- blockers: Canonical screenshot evidence set missing (`01-06`); cutover gate cannot legally pass.
+- required follow-up packet: WR-09 follow-up evidence recapture + reviewer approval
+- cleanup scope unlocked if approved (exact conflicting layer(s) only): none
+- reviewer rationale summary: Remain additive until canonical World evidence is complete and reviewed.
+- unresolved risks after decision: duplicate/interaction/readability claims remain visually unverified.
+
+---
+
 ## D.10R Hero-screen signoff review (2026-04-09)
 
 ### Metadata

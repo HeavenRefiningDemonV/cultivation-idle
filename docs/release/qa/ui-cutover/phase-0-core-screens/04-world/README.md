@@ -4,6 +4,7 @@
 - Signoff state: `DEFERRED`
 - Cleanup authority: **locked**
 - WR baseline/governance packet: `WR-00`
+- Current acceptance packet: `WR-09`
 
 ## 1) Canonical legal cutover evidence (approval-only)
 
@@ -18,6 +19,21 @@ Required legal slots:
 - `06-reduced-motion.png`
 
 Current status: **missing** (`01-06` not committed).
+
+## 1.1 WR-09 legal cutover gate evaluation (G1–G8)
+
+| criterion id | status | notes |
+| --- | --- | --- |
+| G1 | FAIL | Canonical screenshot set is incomplete (`01-06` missing). |
+| G2 | PASS | Additive preserve-first ownership is still retained; no cleanup performed. |
+| G3 | FAIL | Cannot legally certify duplicate-system absence without canonical screenshot evidence. |
+| G4 | FAIL | Cannot legally certify button/label completeness without canonical screenshot evidence. |
+| G5 | FAIL | High/Low/Reduced readability not certifiable without `04/05/06`. |
+| G6 | FAIL | Layout-shift claims not certifiable without `02/03` interaction/truth-state captures. |
+| G7 | FAIL | Gameplay-truth parity cannot be approved without evidence. |
+| G8 | FAIL | Cleanup remains locked because G1–G7 did not pass. |
+
+WR-09 decision: **DEFERRED**.
 
 ## 2) Failure baseline references (diagnostic-only)
 

@@ -26,10 +26,6 @@
 ## Preserved-owner reminder
 Keep `city.png` + citystate overlay ownership visible; Wave 0 does not authorize world scenic replacement.
 
-## Likely missing-role candidates
-- No reusable diegetic building-label plaque family currently supports readable labels over scenic map ownership.
-- No shared overlay/mask parts currently bridge world scenic owner to right-side inspector plane consistently.
-
 ## Wave 0 warning
 This folder is for Wave 0 support-art proof only. It grants no cleanup authority and does not allow world repaint.
 
