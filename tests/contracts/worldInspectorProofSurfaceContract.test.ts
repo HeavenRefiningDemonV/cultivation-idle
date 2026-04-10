@@ -26,7 +26,7 @@ test('WorldScreen uses a shared world inspector body for both wide and narrow pa
 test('WorldScreen preserves map-owns-page composition with subordinate command deck and shared inspector architecture', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
   assert.match(file, /worldScreenHubPanel/);
-  assert.match(file, /worldCommandDeck worldCommandDeck--subordinate/);
+  assert.match(file, /worldSupportRail/);
   assert.match(file, /worldScreenInspectorRegion/);
 });
 

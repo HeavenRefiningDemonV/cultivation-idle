@@ -78,7 +78,6 @@ export function WorldScreen() {
   const runCompass = useRunCompassSurface();
   const [inspectorDrawerOpen, setInspectorDrawerOpen] = useState(false);
   const [isNarrowInspectorLayout, setIsNarrowInspectorLayout] = useState(false);
-  const [isCommandDeckExpanded, setIsCommandDeckExpanded] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -661,38 +660,27 @@ export function WorldScreen() {
           </div>
 
           <section className="worldScreenSupportSlot" aria-label="World module routing deck">
-            <section className="worldCommandDeckDisclosure" aria-label="World module routing deck">
-              <button
-                type="button"
-                className="worldCommandDeckDisclosureButton uiNoShift"
-                aria-expanded={isCommandDeckExpanded}
-                onClick={() => setIsCommandDeckExpanded((current) => !current)}
-              >
-                {isCommandDeckExpanded ? 'Hide module routing deck' : 'Show module routing deck'}
-              </button>
-              {isCommandDeckExpanded ? (
-                <div className="worldCommandDeck worldCommandDeck--subordinate">
-                  {worldCommandSurface.groups.map((group) => (
-                    <WorldModuleGroup key={group.id} title={group.label}>
-                      {group.cards.map((card) => (
-                        <WorldModuleCard
-                          key={card.moduleKey}
-                          moduleKey={card.moduleKey}
-                          moduleName={card.label}
-                          roleTag={card.roleTag}
-                          bestUsedWhen={card.bestUsedWhen}
-                          outputs={card.outputs}
-                          chips={card.chips}
-                          active={card.active}
-                          openLabel={card.openLabel}
-                          onOpen={handleRouteToModule as never}
-                        />
-                      ))}
-                    </WorldModuleGroup>
+            <div className="worldSupportRail" aria-label="World support routing rail">
+              {worldCommandSurface.groups.map((group) => (
+                <WorldModuleGroup key={group.id} title={group.label} variant="support-rail">
+                  {group.cards.map((card) => (
+                    <WorldModuleCard
+                      key={card.moduleKey}
+                      moduleKey={card.moduleKey}
+                      moduleName={card.label}
+                      roleTag={card.roleTag}
+                      bestUsedWhen={card.bestUsedWhen}
+                      outputs={card.outputs}
+                      chips={card.chips}
+                      active={card.active}
+                      openLabel={card.openLabel}
+                      variant="support-rail"
+                      onOpen={handleRouteToModule as never}
+                    />
                   ))}
-                </div>
-              ) : null}
-            </section>
+                </WorldModuleGroup>
+              ))}
+            </div>
           </section>
 
           <InspectorDrawer

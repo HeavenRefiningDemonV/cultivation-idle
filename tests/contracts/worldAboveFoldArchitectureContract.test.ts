@@ -24,6 +24,6 @@ test('WR-02 keeps full run compass in main flow and keeps support slot subordina
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
   assert.match(worldScreen, /<RunCompass surface=\{runCompass\.full\}/);
   assert.match(worldScreen, /worldScreenSupportSlot/);
-  assert.match(worldScreen, /worldCommandDeckDisclosure/);
+  assert.match(worldScreen, /worldSupportRail/);
   assert.doesNotMatch(worldScreen, /worldScreenHubShellHeader/);
 });

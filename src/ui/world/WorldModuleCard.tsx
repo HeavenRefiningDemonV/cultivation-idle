@@ -20,15 +20,16 @@ export function WorldModuleCard(props: {
   onOpen: (moduleKey: LiveWorldModuleKey) => void;
   openLabel: string;
   cta?: ReactNode;
+  variant?: 'default' | 'support-rail';
 }) {
-  const { moduleKey, moduleName, roleTag, bestUsedWhen, outputs, chips = [], active = false, onOpen, openLabel, cta } = props;
+  const { moduleKey, moduleName, roleTag, bestUsedWhen, outputs, chips = [], active = false, onOpen, openLabel, cta, variant = 'default' } = props;
   const visibleChips = chips.slice(0, 2);
   const chip1 = visibleChips[0] ?? null;
   const chip2 = visibleChips[1] ?? null;
   const hasChip1 = Boolean(chip1);
   const hasChip2 = Boolean(chip2);
   return (
-    <article className={`worldModuleCard ${active ? 'worldModuleCard--active' : ''}`}>
+    <article className={`worldModuleCard ${active ? 'worldModuleCard--active' : ''} ${variant === 'support-rail' ? 'worldModuleCard--supportRail' : ''}`}>
       <div className="worldModuleCard__header">
         <div className="worldModuleCard__title">{moduleName}</div>
         <BadgeSlot preset="moduleMeta" className="worldModuleCard__stateSlot">
@@ -37,11 +38,7 @@ export function WorldModuleCard(props: {
       </div>
       <div className="worldModuleCard__tag">{roleTag}</div>
       <p className="worldModuleCard__when">{bestUsedWhen}</p>
-      <ul className="worldModuleCard__outputs">
-        {outputs.slice(0, 2).map((output) => (
-          <li key={output}>{output}</li>
-        ))}
-      </ul>
+      <div className="worldModuleCard__outputsInline">Outputs: {outputs.slice(0, 2).join(' · ')}</div>
       <div className="worldModuleCard__chips">
         <div className={`worldModuleCard__chipSlot ${hasChip1 ? '' : 'worldModuleCard__chipSlot--empty'}`}>
           {chip1 ? <WorldRouteChip key={chip1.kind} kind={chip1.kind} tone={chip1.tone} /> : null}

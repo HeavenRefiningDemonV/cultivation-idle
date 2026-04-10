@@ -25,10 +25,8 @@ test('WR-01 map hotspots are rollback-compact and do not render guidance or outp
   assert.match(cityMapHub, /stateSlot=\{chipLabel \?\? undefined\}/);
 });
 
-test('WR-01 collapses lower module routing deck behind a disclosure in default world state', () => {
+test('WR-01 preserves lower module routing as a subordinate non-owner support surface', () => {
   const worldScreen = read('src/components/screens/WorldScreen.tsx');
-  assert.match(worldScreen, /worldCommandDeckDisclosure/);
-  assert.match(worldScreen, /isCommandDeckExpanded/);
-  assert.match(worldScreen, /Show module routing deck/);
-  assert.match(worldScreen, /Hide module routing deck/);
+  assert.match(worldScreen, /worldScreenSupportSlot/);
+  assert.match(worldScreen, /worldSupportRail/);
 });
