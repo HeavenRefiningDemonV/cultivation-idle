@@ -14,7 +14,7 @@ import { resolveBountyDestination } from '../../utils/bountyRouting.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
 import { CityMapHub } from './CityMapHub.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
-import { getCityArrivalLesson, getCityArrivalQuickOpenModules } from '../../systems/world/cityArrivalContract.js';
+import { buildCityPhaseTeachingSurface, getCityArrivalQuickOpenModules } from '../../systems/world/cityArrivalContract.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import {
   getProgressionContract,
@@ -67,7 +67,6 @@ export function WorldScreen() {
 
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
-  const acknowledgedArrivalCityIds = useCityStore((state) => state.acknowledgedArrivalCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
   const activeByCityId = useBountyStore((state) => state.activeByCityId);
@@ -223,12 +222,6 @@ export function WorldScreen() {
       : 'Current city ready.';
   }, [alternateUnlockedCityId, currentCityTravelBlocked, selectedCity, travelGuardForOtherCity.reason, worldSelectorEntries]);
 
-  const cityLesson = useMemo(() => {
-    if (!selectedCity) return null;
-    const lesson = getCityArrivalLesson(selectedCity.id);
-    return lesson ? sanitizeLiveCityName(lesson) : null;
-  }, [selectedCity]);
-
   const cityQuickOpenModules = useMemo(() => getCityArrivalQuickOpenModules(visibleCityModules), [visibleCityModules]);
 
   const citySupportIdentity = useMemo(() => {
@@ -297,17 +290,25 @@ export function WorldScreen() {
     };
   }, [expeditionActive, expeditionSlots, selectedCity, visibleCityModules]);
 
-  const newCityAlert = useMemo(() => {
-    if (!selectedCity || acknowledgedArrivalCityIds.includes(selectedCity.id)) return null;
-    return {
-      id: 'new_city' as const,
-      title: `${sanitizeLiveCityName(selectedCity.name)} is newly unlocked`,
-      detail: 'Quick-open the combat learning loop modules in this city.',
-      ctaLabel: 'Open Outskirts',
-      ctaModuleKey: 'outskirts' as const,
-      chipKind: 'new_city' as const,
-    };
-  }, [acknowledgedArrivalCityIds, selectedCity]);
+  const currentCityPhaseTeaching = useMemo(() => {
+    if (!selectedCity) return null;
+    const registryEntry = CITY_PACKAGE_REGISTRY_BY_ID[selectedCity.id] ?? null;
+    const ruinNameRaw = registryEntry?.leadRuinId
+      ? rawContent?.ruins.find((entry) => entry.id === registryEntry.leadRuinId)?.name ?? null
+      : null;
+    const gateTrialNameRaw = registryEntry?.leadGateTrialId
+      ? rawContent?.trials.find((entry) => entry.id === registryEntry.leadGateTrialId)?.name ?? null
+      : null;
+
+    return buildCityPhaseTeachingSurface({
+      cityId: selectedCity.id,
+      cityName: sanitizeLiveCityName(selectedCity.name),
+      modules: selectedCity.modules,
+      ruinName: ruinNameRaw ? sanitizeLiveCityName(ruinNameRaw) : null,
+      gateTrialName: gateTrialNameRaw ? sanitizeLiveCityName(gateTrialNameRaw) : null,
+      supportIdentityLabel: citySupportIdentity,
+    });
+  }, [citySupportIdentity, rawContent?.ruins, rawContent?.trials, selectedCity]);
 
   const worldCommandSurface = useMemo(
     () => {
@@ -328,12 +329,11 @@ export function WorldScreen() {
         trackedBountyModuleKey: trackedDestination?.kind === 'module' ? trackedDestination.moduleKey as never : null,
         trackedBountyAlert: trackedAlert,
         expeditionIdleAlert,
-        newCityAlert,
         readyBountyCount: currentCityId ? (activeByCityId[currentCityId] ?? []).filter((entry) => entry.progress >= entry.target && !entry.claimed).length : 0,
         idleExpeditionSlots: Math.max(0, expeditionSlots - expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length),
       });
     },
-    [activeByCityId, activeModuleKey, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, newCityAlert, rawContent, runCompassPrimaryAction, runCompassSecondaryAction, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
+    [activeByCityId, activeModuleKey, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, rawContent, runCompassPrimaryAction, runCompassSecondaryAction, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
   );
 
   const recommendedHereLine = useMemo(() => {
@@ -454,9 +454,13 @@ export function WorldScreen() {
 
       <section className="worldCommandSummary worldCommandSummary--cityContext">
         <div className="worldCommandSummarySectionLabel">Current city</div>
-        <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
-        {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
-        {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
+        <div className="worldCommandSummaryCity">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity.name)}</div>
+        {currentCityPhaseTeaching?.roleStatement ? <div className="worldCommandSummaryLine">City role: {currentCityPhaseTeaching.roleStatement}</div> : null}
+        {currentCityPhaseTeaching?.lessonShort ? <div className="worldCommandSummaryLine">Phase lesson: {currentCityPhaseTeaching.lessonShort}</div> : null}
+        {currentCityPhaseTeaching?.supportIdentityLabel ? <div className="worldCommandSummaryLine">Support identity: {currentCityPhaseTeaching.supportIdentityLabel}</div> : null}
+        {currentCityPhaseTeaching?.ruinName ? <div className="worldCommandSummaryLine">Lead Ruin: {currentCityPhaseTeaching.ruinName}</div> : null}
+        {currentCityPhaseTeaching?.gateTrialName ? <div className="worldCommandSummaryLine">Gate Trial: {currentCityPhaseTeaching.gateTrialName}</div> : null}
+        {currentCityPhaseTeaching?.expeditionEmphasis ? <div className="worldCommandSummaryLine">Expeditions: {currentCityPhaseTeaching.expeditionEmphasis}</div> : null}
         {cityQuickOpenModules.length > 0 ? (
           <div className="worldCommandQuickOpen" aria-label="City quick open">
             {cityQuickOpenModules.map((moduleKey) => (

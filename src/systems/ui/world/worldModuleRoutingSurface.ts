@@ -37,7 +37,7 @@ export interface WorldModuleRoutingGroup {
 }
 
 export interface WorldModuleRoutingAlert {
-  id: 'tracked_bounty' | 'expedition_idle' | 'new_city';
+  id: 'tracked_bounty' | 'expedition_idle';
   title: string;
   detail: string;
   ctaLabel: string;
@@ -75,7 +75,6 @@ export function buildWorldModuleRoutingSurface(input: {
   trackedBountyModuleKey: LiveWorldModuleKey | null;
   trackedBountyAlert: WorldModuleRoutingAlert | null;
   expeditionIdleAlert: WorldModuleRoutingAlert | null;
-  newCityAlert: WorldModuleRoutingAlert | null;
   readyBountyCount: number;
   idleExpeditionSlots: number;
 }): {
@@ -140,6 +139,6 @@ export function buildWorldModuleRoutingSurface(input: {
   return {
     groups,
     strongRecommendationModuleKey,
-    alerts: [input.newCityAlert, input.trackedBountyAlert, input.expeditionIdleAlert].filter((entry): entry is WorldModuleRoutingAlert => entry !== null),
+    alerts: [input.trackedBountyAlert, input.expeditionIdleAlert].filter((entry): entry is WorldModuleRoutingAlert => entry !== null),
   };
 }

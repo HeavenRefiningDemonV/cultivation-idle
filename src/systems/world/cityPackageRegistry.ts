@@ -15,7 +15,9 @@ import type {
 import { SEMESTER_SLICE_CONTRACT } from '../progression/contract/semesterSlice.js';
 import {
   CITY_ARRIVAL_QUICK_OPEN_ORDER,
+  getCityExpeditionEmphasis,
   getCityArrivalLesson,
+  getCityPhaseRoleStatement,
 } from './cityArrivalContract.js';
 import { LIVE_CITY_MODULE_ORDER } from './liveWorldSchema.js';
 
@@ -43,6 +45,8 @@ export interface CityPackageRegistryEntry {
   defaultQuickOpenOrder: readonly LiveWorldModuleKey[];
   mustExposeModules: readonly LiveWorldModuleKey[];
   lesson: string;
+  phaseRole: string;
+  expeditionEmphasis: string;
 }
 
 export const SUPPORT_IDENTITY_LABELS: Record<CityPackageRegistryEntry['leadSupportIdentity'], string> = {
@@ -57,12 +61,14 @@ export const getSupportIdentityLabel = (identity: CityPackageRegistryEntry['lead
   SUPPORT_IDENTITY_LABELS[identity];
 
 const createRegistryEntry = (
-  spec: Omit<CityPackageRegistryEntry, 'defaultQuickOpenOrder' | 'mustExposeModules' | 'lesson'>,
+  spec: Omit<CityPackageRegistryEntry, 'defaultQuickOpenOrder' | 'mustExposeModules' | 'lesson' | 'phaseRole' | 'expeditionEmphasis'>,
 ): CityPackageRegistryEntry => ({
   ...spec,
   defaultQuickOpenOrder: [...CITY_ARRIVAL_QUICK_OPEN_ORDER],
   mustExposeModules: [...LIVE_CITY_MODULE_ORDER],
   lesson: getCityArrivalLesson(spec.cityId) ?? '',
+  phaseRole: getCityPhaseRoleStatement(spec.cityId) ?? '',
+  expeditionEmphasis: getCityExpeditionEmphasis(spec.cityId) ?? '',
 });
 
 export const CITY_PACKAGE_REGISTRY = [

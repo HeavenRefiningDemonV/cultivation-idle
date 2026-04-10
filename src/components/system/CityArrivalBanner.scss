@@ -39,10 +39,27 @@
   color: rgba(58, 41, 24, 0.84);
 }
 
+.cityArrivalBannerRole {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(51, 35, 18, 0.92);
+}
+
 .cityArrivalBannerSupport {
   font-size: 12px;
   font-weight: 600;
   color: rgba(71, 52, 30, 0.78);
+}
+
+.cityArrivalBannerPhaseDetails {
+  display: grid;
+  gap: 4px;
+  min-height: 56px;
+}
+
+.cityArrivalBannerPhaseDetail {
+  font-size: 12px;
+  color: rgba(71, 52, 30, 0.86);
 }
 
 .cityArrivalBannerActions {

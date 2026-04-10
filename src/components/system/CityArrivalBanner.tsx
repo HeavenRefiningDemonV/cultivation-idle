@@ -3,9 +3,8 @@ import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
 import { useUIStore } from '../../stores/uiStore.js';
 import {
-  getCityArrivalLesson,
+  buildCityPhaseTeachingSurface,
   getCityArrivalQuickOpenLabel,
-  getCityArrivalQuickOpenModules,
 } from '../../systems/world/cityArrivalContract.js';
 import { CITY_PACKAGE_REGISTRY_BY_ID, getSupportIdentityLabel } from '../../systems/world/cityPackageRegistry.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
@@ -22,6 +21,8 @@ export function CityArrivalBanner() {
   const showManualSatchelModal = useUIStore((state) => state.showManualSatchelModal);
   const showTechniqueLearnedModal = useUIStore((state) => state.showTechniqueLearnedModal);
   const citiesById = useContentStore((state) => state.maps.citiesById);
+  const ruinsById = useContentStore((state) => state.maps.ruinsById);
+  const trialsById = useContentStore((state) => state.maps.trialsById);
   const city = pendingCityArrivalId ? citiesById[pendingCityArrivalId] : null;
   const acknowledgeCityArrival = useCityStore((state) => state.acknowledgeCityArrival);
   const clearCityArrival = useUIStore((state) => state.clearCityArrival);
@@ -42,15 +43,25 @@ export function CityArrivalBanner() {
 
   if (blocked) return null;
 
-  const lesson = getCityArrivalLesson(city.id);
-  const quickOpenModules = getCityArrivalQuickOpenModules(city.modules);
   const supportIdentity = CITY_PACKAGE_REGISTRY_BY_ID[city.id]?.leadSupportIdentity ?? null;
   const supportIdentityLabel = supportIdentity ? getSupportIdentityLabel(supportIdentity) : null;
-  const arrivalPrompt = createCityArrivalPrompt({
+  const ruinNameRaw = city.refs?.ruinId ? ruinsById[city.refs.ruinId]?.name ?? null : null;
+  const gateTrialNameRaw = city.refs?.gateTrialId ? trialsById[city.refs.gateTrialId]?.name ?? null : null;
+  const ruinName = ruinNameRaw ? sanitizeLiveCityName(ruinNameRaw) : null;
+  const gateTrialName = gateTrialNameRaw ? sanitizeLiveCityName(gateTrialNameRaw) : null;
+  const phaseTeaching = buildCityPhaseTeachingSurface({
     cityId: city.id,
     cityName: sanitizeLiveCityName(city.name),
+    modules: city.modules,
+    ruinName,
+    gateTrialName,
+    supportIdentityLabel,
+  });
+  const arrivalPrompt = createCityArrivalPrompt({
+    cityId: city.id,
+    cityName: phaseTeaching.cityName,
     supportIdentityLabel: supportIdentityLabel ?? 'City Phase',
-    lesson,
+    lesson: phaseTeaching.lessonShort,
   });
 
   return (
@@ -58,11 +69,25 @@ export function CityArrivalBanner() {
       <div className="cityArrivalBannerCard">
         <div className="cityArrivalBannerEyebrow">{arrivalPrompt.eyebrow}</div>
         <div className="cityArrivalBannerTitle">{arrivalPrompt.title}</div>
-        {supportIdentityLabel ? <div className="cityArrivalBannerSupport">{supportIdentityLabel}</div> : null}
-        {lesson ? <div className="cityArrivalBannerLesson">{sanitizeLiveCityName(lesson)}</div> : null}
+        {phaseTeaching.roleStatement ? <div className="cityArrivalBannerRole">{phaseTeaching.roleStatement}</div> : null}
+        {phaseTeaching.supportIdentityLabel ? <div className="cityArrivalBannerSupport">{phaseTeaching.supportIdentityLabel}</div> : null}
+        {phaseTeaching.lessonShort ? <div className="cityArrivalBannerLesson">{sanitizeLiveCityName(phaseTeaching.lessonShort)}</div> : null}
+        <div className="cityArrivalBannerPhaseDetails">
+          <div className="cityArrivalBannerPhaseDetail">
+            <strong>Ruin:</strong> {phaseTeaching.ruinName ?? 'Available now'}
+          </div>
+          <div className="cityArrivalBannerPhaseDetail">
+            <strong>Gate Trial:</strong> {phaseTeaching.gateTrialName ?? 'Current city trial'}
+          </div>
+          {phaseTeaching.expeditionEmphasis ? (
+            <div className="cityArrivalBannerPhaseDetail">
+              <strong>Expeditions:</strong> {phaseTeaching.expeditionEmphasis}
+            </div>
+          ) : null}
+        </div>
         <div className="cityArrivalBannerActions">
           <div className="cityArrivalBannerQuickOpen">
-          {quickOpenModules.map((moduleKey) => (
+          {phaseTeaching.quickOpenModules.map((moduleKey) => (
             <button
               key={moduleKey}
               type="button"

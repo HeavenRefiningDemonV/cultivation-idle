@@ -4,7 +4,10 @@ import path from 'node:path';
 import test from 'node:test';
 
 import {
+  buildCityPhaseTeachingSurface,
+  getCityExpeditionEmphasis,
   getCityArrivalLesson,
+  getCityPhaseRoleStatement,
   getCityArrivalQuickOpenModules,
   getQueuedCityArrivalCandidate,
   normalizeAcknowledgedArrivalCityIds,
@@ -21,6 +24,32 @@ test('city arrival lesson helper exposes the exact packet 2.6 lesson copy', () =
   assert.equal(getCityArrivalLesson('city_spirit_cavern_city'), 'Build correction starts to matter.');
   assert.equal(getCityArrivalLesson('city_lotusford'), 'Survival prep and reagents matter.');
   assert.equal(getCityArrivalLesson('city_ironpeak_bastion'), 'Final convergence city.');
+});
+
+test('city phase role helper exposes the exact P5-06 role statements', () => {
+  assert.equal(getCityPhaseRoleStatement('city_pinewind_hamlet'), 'Teaches the full loop once.');
+  assert.equal(getCityPhaseRoleStatement('city_stonecrag_town'), 'Forge and ore matter.');
+  assert.equal(getCityPhaseRoleStatement('city_spirit_cavern_city'), 'Build correction and fragment economy matter.');
+  assert.equal(getCityPhaseRoleStatement('city_lotusford'), 'Higher-tier reagents and survival prep matter.');
+  assert.equal(getCityPhaseRoleStatement('city_ironpeak_bastion'), 'Final convergence: forge, ruins, expeditions, and doctrine.');
+});
+
+test('city phase teaching surface carries compact lesson + role + phase detail fields', () => {
+  const surface = buildCityPhaseTeachingSurface({
+    cityId: 'city_stonecrag_town',
+    cityName: 'Stonecrag Town',
+    modules: ['ruins', 'gateTrial', 'outskirts', 'forge'],
+    ruinName: 'Broken Kiln',
+    gateTrialName: 'Stone Core Sanctum',
+    supportIdentityLabel: 'Forge & Ore',
+  });
+
+  assert.equal(surface.lessonShort, 'Forge begins to matter.');
+  assert.equal(surface.roleStatement, 'Forge and ore matter.');
+  assert.equal(surface.ruinName, 'Broken Kiln');
+  assert.equal(surface.gateTrialName, 'Stone Core Sanctum');
+  assert.equal(surface.expeditionEmphasis, getCityExpeditionEmphasis('city_stonecrag_town'));
+  assert.deepEqual(surface.quickOpenModules, ['outskirts', 'ruins', 'gateTrial']);
 });
 
 test('city arrival quick-open helper preserves canonical module order', async () => {

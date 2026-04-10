@@ -22,7 +22,6 @@ test('world module routing surface groups cards and limits strong recommendation
     trackedBountyModuleKey: 'bounties',
     trackedBountyAlert: null,
     expeditionIdleAlert: null,
-    newCityAlert: null,
     readyBountyCount: 1,
     idleExpeditionSlots: 1,
   });

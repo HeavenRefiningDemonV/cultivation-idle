@@ -6,6 +6,22 @@ export const CITY_ARRIVAL_LESSON_BY_ID = {
   city_ironpeak_bastion: 'Final convergence city.',
 } as const;
 
+export const CITY_PHASE_ROLE_BY_ID = {
+  city_pinewind_hamlet: 'Teaches the full loop once.',
+  city_stonecrag_town: 'Forge and ore matter.',
+  city_spirit_cavern_city: 'Build correction and fragment economy matter.',
+  city_lotusford: 'Higher-tier reagents and survival prep matter.',
+  city_ironpeak_bastion: 'Final convergence: forge, ruins, expeditions, and doctrine.',
+} as const;
+
+export const CITY_EXPEDITION_EMPHASIS_BY_ID = {
+  city_pinewind_hamlet: 'Keep one route running for city support.',
+  city_stonecrag_town: 'Keep one ore route running for forge support.',
+  city_spirit_cavern_city: 'Keep one fragment route running for build correction support.',
+  city_lotusford: 'Keep one reagent route running for survival prep.',
+  city_ironpeak_bastion: 'Keep one high-yield route running through final convergence.',
+} as const;
+
 export const CITY_ARRIVAL_QUICK_OPEN_ORDER = ['outskirts', 'ruins', 'gateTrial'] as const;
 export const CITY_ARRIVAL_QUICK_OPEN_LABELS: Record<(typeof CITY_ARRIVAL_QUICK_OPEN_ORDER)[number], string> = {
   outskirts: 'Open Outskirts',
@@ -15,6 +31,43 @@ export const CITY_ARRIVAL_QUICK_OPEN_LABELS: Record<(typeof CITY_ARRIVAL_QUICK_O
 
 export function getCityArrivalLesson(cityId: string): string | null {
   return CITY_ARRIVAL_LESSON_BY_ID[cityId as keyof typeof CITY_ARRIVAL_LESSON_BY_ID] ?? null;
+}
+
+export function getCityPhaseRoleStatement(cityId: string): string | null {
+  return CITY_PHASE_ROLE_BY_ID[cityId as keyof typeof CITY_PHASE_ROLE_BY_ID] ?? null;
+}
+
+export function getCityExpeditionEmphasis(cityId: string): string | null {
+  return CITY_EXPEDITION_EMPHASIS_BY_ID[cityId as keyof typeof CITY_EXPEDITION_EMPHASIS_BY_ID] ?? null;
+}
+
+export function buildCityPhaseTeachingSurface(input: {
+  cityId: string;
+  cityName: string;
+  modules: readonly string[] | null | undefined;
+  ruinName?: string | null;
+  gateTrialName?: string | null;
+  supportIdentityLabel?: string | null;
+}): {
+  cityName: string;
+  lessonShort: string | null;
+  roleStatement: string | null;
+  expeditionEmphasis: string | null;
+  ruinName: string | null;
+  gateTrialName: string | null;
+  supportIdentityLabel: string | null;
+  quickOpenModules: string[];
+} {
+  return {
+    cityName: input.cityName,
+    lessonShort: getCityArrivalLesson(input.cityId),
+    roleStatement: getCityPhaseRoleStatement(input.cityId),
+    expeditionEmphasis: getCityExpeditionEmphasis(input.cityId),
+    ruinName: input.ruinName ?? null,
+    gateTrialName: input.gateTrialName ?? null,
+    supportIdentityLabel: input.supportIdentityLabel ?? null,
+    quickOpenModules: getCityArrivalQuickOpenModules(input.modules),
+  };
 }
 
 export function getCityArrivalQuickOpenModules(modules: readonly string[] | null | undefined): string[] {

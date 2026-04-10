@@ -271,8 +271,11 @@ test('GameLayout mounts the city arrival banner in the global overlay stack with
 test('CityArrivalBanner source uses canonical quick-open routing and blocks on overlay UI guards', async () => {
   const source = await fs.readFile(path.resolve(process.cwd(), 'src/components/system/CityArrivalBanner.tsx'), 'utf8');
 
+  assert.match(source, /buildCityPhaseTeachingSurface/);
   assert.match(source, /openWorldModule/);
   assert.match(source, /getCityArrivalQuickOpenLabel/);
+  assert.match(source, /cityArrivalBannerRole/);
+  assert.match(source, /cityArrivalBannerPhaseDetail/);
   assert.match(source, /showPerkSelectionModal/);
   assert.match(source, /showWorldBuildingModal/);
   assert.match(source, /combatPresentation/);
@@ -283,7 +286,11 @@ test('CityArrivalBanner source uses canonical quick-open routing and blocks on o
 test('WorldScreen source surfaces the city lesson inside the current-city summary area', async () => {
   const source = await fs.readFile(path.resolve(process.cwd(), 'src/components/screens/WorldScreen.tsx'), 'utf8');
 
-  assert.equal(/getCityArrivalLesson|Phase lesson:/.test(source), true);
-  assert.equal(source.includes('worldScreenCitySummary'), true);
+  assert.equal(source.includes('buildCityPhaseTeachingSurface'), true);
+  assert.equal(source.includes('City role:'), true);
   assert.equal(source.includes('Phase lesson:'), true);
+  assert.equal(source.includes('Lead Ruin:'), true);
+  assert.equal(source.includes('Gate Trial:'), true);
+  assert.equal(source.includes('Expeditions:'), true);
+  assert.equal(source.includes('new_city'), false);
 });
