@@ -4038,6 +4038,102 @@
   z-index: 2;
 }
 
+.worldScreenHubAtmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.worldFxScene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.worldFxScene__fog {
+  position: absolute;
+  inset: -8% -6%;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(246, 236, 214, 0.22), rgba(246, 236, 214, 0) 46%),
+    radial-gradient(circle at 74% 72%, rgba(89, 72, 54, 0.2), rgba(89, 72, 54, 0) 56%);
+  opacity: 0.3;
+  animation: worldFxFogDrift 24s linear infinite;
+}
+
+.worldFxScene__mote {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(253, 235, 198, 0.42);
+  box-shadow: 0 0 10px rgba(253, 235, 198, 0.22);
+  animation: worldFxMoteDrift 13s ease-in-out infinite;
+  opacity: 0.52;
+}
+
+.worldFxScene__mote--1 { left: 18%; top: 24%; animation-delay: 0.1s; }
+.worldFxScene__mote--2 { left: 34%; top: 62%; animation-delay: 1.3s; }
+.worldFxScene__mote--3 { left: 57%; top: 36%; animation-delay: 2.2s; }
+.worldFxScene__mote--4 { left: 73%; top: 58%; animation-delay: 3.1s; }
+.worldFxScene__mote--5 { left: 86%; top: 26%; animation-delay: 3.9s; }
+
+.worldFxScene__stateHalo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.worldFxScene__stateHalo--selected {
+  background: radial-gradient(circle at 50% 54%, rgba(242, 212, 156, 0.22), rgba(242, 212, 156, 0) 43%);
+}
+
+.worldFxScene__stateHalo--recommended {
+  background: radial-gradient(circle at 50% 54%, rgba(215, 184, 128, 0.16), rgba(215, 184, 128, 0) 47%);
+}
+
+.worldFxScene[data-has-selected='1'] .worldFxScene__stateHalo--selected {
+  opacity: 0.9;
+}
+
+.worldFxScene[data-has-recommended='1'][data-has-selected='0'] .worldFxScene__stateHalo--recommended {
+  opacity: 0.9;
+}
+
+.worldFxScene[data-has-support-alert='1'] .worldFxScene__fog {
+  opacity: 0.34;
+}
+
+.worldFxScene[data-quality='low'] .worldFxScene__fog {
+  animation: none;
+  opacity: 0.2;
+}
+
+.worldFxScene[data-quality='low'] .worldFxScene__mote {
+  animation: none;
+  opacity: 0.18;
+}
+
+.worldFxScene[data-quality='medium'] .worldFxScene__mote {
+  opacity: 0.38;
+}
+
+.worldFxScene[data-reduced-motion='1'] .worldFxScene__fog {
+  animation: none;
+  opacity: 0.18;
+}
+
+.worldFxScene[data-reduced-motion='1'] .worldFxScene__mote {
+  display: none;
+}
+
+.worldFxScene[data-reduced-motion='1'] .worldFxScene__stateHalo {
+  transition: none;
+}
+
 .worldScreenHubShell {
   display: flex;
   flex-direction: column;
@@ -4447,4 +4543,15 @@
   .worldSupportRail {
     grid-template-columns: 1fr;
   }
+}
+
+@keyframes worldFxFogDrift {
+  0% { transform: translate3d(-1.5%, 0, 0); }
+  50% { transform: translate3d(1.5%, -1%, 0); }
+  100% { transform: translate3d(-1.5%, 0, 0); }
+}
+
+@keyframes worldFxMoteDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -6px, 0); }
 }

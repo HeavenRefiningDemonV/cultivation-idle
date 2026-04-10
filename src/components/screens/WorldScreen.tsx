@@ -44,6 +44,8 @@ import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { InspectorDrawer, InspectorPanel, TopRibbon } from '../../ui/shell/index.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
 import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
+import { WorldFxScene } from '../../ui/fx/scenes/WorldFxScene.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -79,6 +81,7 @@ export function WorldScreen() {
   const runCompass = useRunCompassSurface();
   const [inspectorDrawerOpen, setInspectorDrawerOpen] = useState(false);
   const [isNarrowInspectorLayout, setIsNarrowInspectorLayout] = useState(false);
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -627,10 +630,21 @@ export function WorldScreen() {
             <div className="worldScreenMainRegion">
               <div className="worldScreenHubShell">
                 <div className={'worldScreenPanel worldScreenHubPanel'}>
+                  <div className="worldScreenHubAtmosphere" aria-hidden="true">
+                    <WorldFxScene
+                      effectiveQuality={effectiveQuality}
+                      prefersReducedMotion={prefersReducedMotion}
+                      hasSelectedBuilding={Boolean(activeModuleKey)}
+                      hasRecommendedBuilding={Boolean(worldCommandSurface.strongRecommendationModuleKey && worldCommandSurface.strongRecommendationModuleKey !== activeModuleKey)}
+                      hasSupportAlert={worldCommandSurface.alerts.length > 0}
+                    />
+                  </div>
                   <CityMapHub
                     modules={visibleCityModules}
                     activeModuleKey={activeModuleKey}
                     recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
+                    atmosphereQuality={effectiveQuality}
+                    prefersReducedMotion={prefersReducedMotion}
                     moduleMetadataByKey={moduleMetadataByKey}
                     getModuleLabel={getWorldModuleLabel}
                     onOpenModule={handleRouteToModule}

@@ -14,6 +14,7 @@ import cityManualBg from '../../assets/background/citystates/city_manual.png';
 import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.png';
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
+import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 
 const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const CITY_MAP_HUB_SCENIC_LABEL_VARIANT = 'building' as const;
@@ -66,6 +67,8 @@ export interface CityMapHubProps {
   }>>;
   getModuleLabel: (moduleKey: string) => string;
   onOpenModule: (moduleKey: string) => void;
+  atmosphereQuality?: FxEffectiveQuality;
+  prefersReducedMotion?: boolean;
 }
 
 export function CityMapHub({
@@ -75,6 +78,8 @@ export function CityMapHub({
   moduleMetadataByKey = {},
   getModuleLabel,
   onOpenModule,
+  atmosphereQuality = 'medium',
+  prefersReducedMotion = false,
 }: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
 
@@ -95,6 +100,8 @@ export function CityMapHub({
       <div
         className="cityMapHubMap"
         aria-label="City map"
+        data-atmosphere-quality={atmosphereQuality}
+        data-reduced-motion={prefersReducedMotion ? '1' : '0'}
       >
         {modules.map((moduleKey) => {
           if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
@@ -134,6 +141,13 @@ export function CityMapHub({
                 onFocus={() => handleHover(moduleKey)}
                 onBlur={() => handleHover(null)}
                 title={labelTitle}
+              />
+              <span
+                className={classNames('cityMapHubHotspotGlint', {
+                  'cityMapHubHotspotGlint--active': isActive,
+                  'cityMapHubHotspotGlint--recommended': !isActive && isRecommended,
+                })}
+                aria-hidden="true"
               />
             </div>
           );
