@@ -412,6 +412,35 @@ export function WorldScreen() {
     </div>
   );
 
+  const worldCommandBandCitySummary = selectedCity ? (
+    <section className="worldCommandSummary worldCommandSummary--cityContext worldScreenCommandBandCitySummary">
+      <div className="worldCommandSummarySectionLabel">Current city</div>
+      <div className="worldCommandSummaryCity">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity.name)}</div>
+      {currentCityPhaseTeaching?.roleStatement ? <div className="worldCommandSummaryLine">City role: {currentCityPhaseTeaching.roleStatement}</div> : null}
+      {currentCityPhaseTeaching?.lessonShort ? <div className="worldCommandSummaryLine">Phase lesson: {currentCityPhaseTeaching.lessonShort}</div> : null}
+      <div className="worldCommandSummaryLine">Status: {currentCityStatusLine}</div>
+      {cityQuickOpenModules.length > 0 ? (
+        <div className="worldCommandQuickOpen" aria-label="City quick open">
+          {cityQuickOpenModules.map((moduleKey) => (
+            <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleRouteToModule(moduleKey)}>
+              {getWorldModuleLabel(moduleKey)}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {showWorldInlineHint ? (
+        <InlineOnboardingCallout
+          className="worldCommandSummaryInlineHint"
+          title="Use World to route the loop"
+          body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
+          actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
+          onAction={visibleCityModules.includes('outskirts') ? () => handleRouteToModule('outskirts') : undefined}
+          onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
+        />
+      ) : null}
+    </section>
+  ) : null;
+
   const worldInspectorBody = selectedCity ? (
     <>
       {selectedInspectorSubject ? (
@@ -452,38 +481,7 @@ export function WorldScreen() {
           {selectedInspectorSubject.supportLine ? <div className="worldCommandSummarySupportLine">{selectedInspectorSubject.supportLine}</div> : null}
         </section>
       ) : null}
-
-      <section className="worldCommandSummary worldCommandSummary--cityContext">
-        <div className="worldCommandSummarySectionLabel">Current city</div>
-        <div className="worldCommandSummaryCity">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity.name)}</div>
-        {currentCityPhaseTeaching?.roleStatement ? <div className="worldCommandSummaryLine">City role: {currentCityPhaseTeaching.roleStatement}</div> : null}
-        {currentCityPhaseTeaching?.lessonShort ? <div className="worldCommandSummaryLine">Phase lesson: {currentCityPhaseTeaching.lessonShort}</div> : null}
-        {currentCityPhaseTeaching?.supportIdentityLabel ? <div className="worldCommandSummaryLine">Support identity: {currentCityPhaseTeaching.supportIdentityLabel}</div> : null}
-        {currentCityPhaseTeaching?.ruinName ? <div className="worldCommandSummaryLine">Lead Ruin: {currentCityPhaseTeaching.ruinName}</div> : null}
-        {currentCityPhaseTeaching?.gateTrialName ? <div className="worldCommandSummaryLine">Gate Trial: {currentCityPhaseTeaching.gateTrialName}</div> : null}
-        {currentCityPhaseTeaching?.expeditionEmphasis ? <div className="worldCommandSummaryLine">Expeditions: {currentCityPhaseTeaching.expeditionEmphasis}</div> : null}
-        {cityQuickOpenModules.length > 0 ? (
-          <div className="worldCommandQuickOpen" aria-label="City quick open">
-            {cityQuickOpenModules.map((moduleKey) => (
-              <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleRouteToModule(moduleKey)}>
-                {getWorldModuleLabel(moduleKey)}
-              </button>
-            ))}
-          </div>
-        ) : null}
-        {showWorldInlineHint ? (
-          <InlineOnboardingCallout
-            className="worldCommandSummaryInlineHint"
-            title="Use World to route the loop"
-            body="Outskirts feed gold and common mats. Ruins feed targeted local mats. Gate Trial is the milestone wall."
-            actionLabel={visibleCityModules.includes('outskirts') ? 'Open Outskirts' : null}
-            onAction={visibleCityModules.includes('outskirts') ? () => handleRouteToModule('outskirts') : undefined}
-            onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
-          />
-        ) : null}
-      </section>
-
-      <div className="worldInspectorAlertEmpty">Shortcuts are available above the map command band.</div>
+      <div className="worldInspectorAlertEmpty">Run Compass and city routing are anchored in the command band above the map.</div>
     </>
   ) : null;
 
@@ -576,6 +574,32 @@ export function WorldScreen() {
         <div className={'worldScreenMessage'}>Select a city to view its modules.</div>
       ) : (
         <div className={'worldScreenDetailWrapper'}>
+          <section className="worldScreenCommandBand" aria-label="World command band">
+            <div className="worldScreenCommandBandCore">
+              <div className={'worldScreenRunCompassWrapper'}>
+                <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
+              </div>
+              {worldCommandBandCitySummary}
+            </div>
+            {worldCommandSurface.alerts.length > 0 ? (
+              <section className="worldScreenAlerts worldScreenAlerts--aboveFold" aria-label="World support alerts">
+                {worldCommandSurface.alerts.map((alert) => (
+                  <div key={alert.id} className="worldScreenAlertCard">
+                    <WorldCommandAlert
+                      title={alert.title}
+                      detail={alert.detail}
+                      ctaLabel={alert.ctaLabel}
+                      onCta={() => handleRouteToModule(alert.ctaModuleKey)}
+                    />
+                    {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
+                  </div>
+                ))}
+              </section>
+            ) : (
+              <div className="worldScreenCommandBandEmpty">No urgent shortcuts right now.</div>
+            )}
+          </section>
+
           <div className="worldScreenShellLayout">
             <div className="worldScreenMainRegion">
               <div className="worldScreenHubShell">
@@ -590,62 +614,6 @@ export function WorldScreen() {
                   />
                 </div>
               </div>
-
-              <section className="worldScreenCommandBand" aria-label="World command band">
-                <div className={'worldScreenRunCompassWrapper'}>
-                  <RunCompass surface={runCompass.full} tone="ink" className="worldScreenRunCompass" onAction={performRunCompassAction} />
-                </div>
-                {worldCommandSurface.alerts.length > 0 ? (
-                  <section className="worldScreenAlerts worldScreenAlerts--aboveFold" aria-label="World support alerts">
-                    {worldCommandSurface.alerts.map((alert) => (
-                      <div key={alert.id} className="worldScreenAlertCard">
-                        <WorldCommandAlert
-                          title={alert.title}
-                          detail={alert.detail}
-                          ctaLabel={alert.ctaLabel}
-                          onCta={() => handleRouteToModule(alert.ctaModuleKey)}
-                        />
-                        {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
-                      </div>
-                    ))}
-                  </section>
-                ) : (
-                  <div className="worldScreenCommandBandEmpty">No urgent shortcuts right now.</div>
-                )}
-              </section>
-
-              <section className="worldCommandDeckDisclosure" aria-label="World module routing deck">
-                <button
-                  type="button"
-                  className="worldCommandDeckDisclosureButton uiNoShift"
-                  aria-expanded={isCommandDeckExpanded}
-                  onClick={() => setIsCommandDeckExpanded((current) => !current)}
-                >
-                  {isCommandDeckExpanded ? 'Hide module routing deck' : 'Show module routing deck'}
-                </button>
-                {isCommandDeckExpanded ? (
-                  <div className="worldCommandDeck worldCommandDeck--subordinate">
-                    {worldCommandSurface.groups.map((group) => (
-                      <WorldModuleGroup key={group.id} title={group.label}>
-                        {group.cards.map((card) => (
-                          <WorldModuleCard
-                            key={card.moduleKey}
-                            moduleKey={card.moduleKey}
-                            moduleName={card.label}
-                            roleTag={card.roleTag}
-                            bestUsedWhen={card.bestUsedWhen}
-                            outputs={card.outputs}
-                            chips={card.chips}
-                            active={card.active}
-                            openLabel={card.openLabel}
-                            onOpen={handleRouteToModule as never}
-                          />
-                        ))}
-                      </WorldModuleGroup>
-                    ))}
-                  </div>
-                ) : null}
-              </section>
 
               {isNarrowInspectorLayout ? (
                 <button
@@ -680,6 +648,41 @@ export function WorldScreen() {
               </div>
             ) : null}
           </div>
+
+          <section className="worldScreenSupportSlot" aria-label="World module routing deck">
+            <section className="worldCommandDeckDisclosure" aria-label="World module routing deck">
+              <button
+                type="button"
+                className="worldCommandDeckDisclosureButton uiNoShift"
+                aria-expanded={isCommandDeckExpanded}
+                onClick={() => setIsCommandDeckExpanded((current) => !current)}
+              >
+                {isCommandDeckExpanded ? 'Hide module routing deck' : 'Show module routing deck'}
+              </button>
+              {isCommandDeckExpanded ? (
+                <div className="worldCommandDeck worldCommandDeck--subordinate">
+                  {worldCommandSurface.groups.map((group) => (
+                    <WorldModuleGroup key={group.id} title={group.label}>
+                      {group.cards.map((card) => (
+                        <WorldModuleCard
+                          key={card.moduleKey}
+                          moduleKey={card.moduleKey}
+                          moduleName={card.label}
+                          roleTag={card.roleTag}
+                          bestUsedWhen={card.bestUsedWhen}
+                          outputs={card.outputs}
+                          chips={card.chips}
+                          active={card.active}
+                          openLabel={card.openLabel}
+                          onOpen={handleRouteToModule as never}
+                        />
+                      ))}
+                    </WorldModuleGroup>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          </section>
 
           <InspectorDrawer
             open={isNarrowInspectorLayout && inspectorDrawerOpen}

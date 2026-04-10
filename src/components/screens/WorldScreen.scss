@@ -3889,7 +3889,7 @@
 }
 
 .worldTopRibbon {
-  width: min(680px, 100%);
+  width: min(640px, 100%);
 }
 
 .worldTopRibbon__citySelectWrapper {
@@ -3912,10 +3912,10 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  min-width: 158px;
-  min-block-size: 42px;
+  min-width: 148px;
+  min-block-size: 38px;
   gap: 2px;
-  padding: 5px 8px;
+  padding: 4px 8px;
   border-radius: 10px;
   border: 1px solid rgba(120, 72, 33, 0.35);
   background: rgba(250, 242, 226, 0.92);
@@ -4034,7 +4034,25 @@
 .worldScreenCommandBand {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  border: 1px solid rgba(122, 94, 53, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(251, 245, 233, 0.88), rgba(246, 237, 221, 0.7));
+  padding: 10px;
+}
+
+.worldScreenCommandBandCore {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.worldScreenCommandBandCitySummary {
+  margin: 0;
+  box-shadow: none;
+  background: rgba(252, 246, 235, 0.82);
+  border-color: rgba(122, 94, 53, 0.24);
 }
 
 .worldScreenCommandBandEmpty {
@@ -4219,6 +4237,11 @@
   gap: 6px;
 }
 
+.worldScreenSupportSlot {
+  border-top: 1px solid rgba(122, 94, 53, 0.16);
+  padding-top: 8px;
+}
+
 .worldCommandDeckDisclosureButton {
   align-self: flex-start;
   border: 1px solid rgba(122, 94, 53, 0.28);
@@ -4354,5 +4377,11 @@
 
   .worldScreenHubPanel {
     min-height: 540px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .worldScreenCommandBandCore {
+    grid-template-columns: 1fr;
   }
 }

@@ -17,6 +17,7 @@ test('WorldScreen centralizes inspector fallback breakpoint and keeps wide/narro
 test('WorldScreen uses a shared world inspector body for both wide and narrow paths', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
   assert.match(file, /const worldInspectorBody = selectedCity \?/);
+  assert.match(file, /const worldCommandBandCitySummary = selectedCity \?/);
   assert.match(file, /const selectedInspectorSubject = useMemo\(\(\) =>/);
   const occurrences = Array.from(file.matchAll(/\{worldInspectorBody\}/g)).length;
   assert.equal(occurrences, 2, 'worldInspectorBody should be rendered in wide and narrow inspector paths');
@@ -48,9 +49,19 @@ test('World inspector selected-building anatomy is first-class and routes direct
 
 test('World inspector keeps alerts as secondary support surfaces', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /Shortcuts are available above the map command band\./);
+  assert.match(file, /Run Compass and city routing are anchored in the command band above the map\./);
   assert.match(file, /worldScreenCommandBand/);
   assert.match(file, /aria-label="World support alerts"/);
+});
+
+test('World inspector no longer owns the full RunCompass surface', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  const inspectorBodyStart = file.indexOf('const worldInspectorBody = selectedCity ?');
+  const inspectorBodyEnd = file.indexOf('const handleSelectCity =');
+  assert.ok(inspectorBodyStart >= 0 && inspectorBodyEnd > inspectorBodyStart, 'Expected world inspector body block in WorldScreen');
+  const inspectorBodyBlock = file.slice(inspectorBodyStart, inspectorBodyEnd);
+  assert.doesNotMatch(inspectorBodyBlock, /<RunCompass/);
+  assert.match(file, /<section className="worldScreenCommandBand" aria-label="World command band">/);
 });
 
 test('WorldScreen resolves city support identity labels from the city package registry source of truth', () => {
