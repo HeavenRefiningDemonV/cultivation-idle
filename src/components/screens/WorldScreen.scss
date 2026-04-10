@@ -189,15 +189,23 @@
 
 .worldInspectorStatusLine {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
+}
+
+.worldInspectorStatusSeparator {
+  opacity: 0.58;
 }
 
 .worldInspectorRecommendationLine {
   font-size: 12px;
   color: var(--paper-ink, #1f1a17);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .worldInspectorRecommendationLine--muted {
@@ -205,12 +213,9 @@
 }
 
 .worldInspectorAlertEmpty {
-  border: 1px dashed rgba(122, 94, 53, 0.34);
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 12px;
-  color: var(--paper-ink-muted, rgba(92, 81, 70, 0.92));
-  background: rgba(250, 242, 226, 0.7);
+  font-size: 11px;
+  color: var(--paper-ink-faint, rgba(92, 81, 70, 0.72));
+  padding: 2px 2px 0;
 }
 
 .worldScreenPanel {
@@ -4077,12 +4082,30 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border-color: rgba(122, 94, 53, 0.38);
+  background: rgba(250, 242, 226, 0.9);
+  box-shadow: 0 5px 12px rgba(16, 10, 4, 0.14);
 }
 
 .worldCommandSummary--cityContext {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.worldCommandSummary--cityContextSecondary {
+  border-color: rgba(122, 94, 53, 0.2);
+  background: rgba(252, 246, 235, 0.78);
+  box-shadow: none;
+}
+
+.worldCommandSummary--cityContextSecondary .worldCommandSummaryCity {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.worldCommandSummary--cityContextSecondary .worldCommandSummaryLine {
+  font-size: 12px;
 }
 
 .worldCommandSummarySectionLabel {
@@ -4361,13 +4384,16 @@
 
 .worldScreenInspector .inspectorPanel__frame {
   border-color: rgba(122, 94, 53, 0.2);
-  background: linear-gradient(180deg, rgba(250, 242, 226, 0.86), rgba(243, 233, 214, 0.8));
-  box-shadow: 0 6px 16px rgba(16, 11, 6, 0.12);
+  background: linear-gradient(180deg, rgba(250, 242, 226, 0.82), rgba(244, 235, 217, 0.76));
+  box-shadow: 0 5px 12px rgba(16, 11, 6, 0.1);
 }
 
 .worldScreenInspector .inspectorPanel__statusArea,
 .worldScreenInspector .inspectorPanel__recommendationArea {
-  background: rgba(252, 246, 235, 0.92);
+  min-block-size: 34px;
+  padding: 6px 8px;
+  background: rgba(252, 246, 235, 0.82);
+  border-color: rgba(122, 94, 53, 0.24);
 }
 
 @media (max-width: 1360px) {

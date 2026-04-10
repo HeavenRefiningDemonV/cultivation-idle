@@ -400,12 +400,13 @@ export function WorldScreen() {
   const inspectorStatusArea = (
     <div className="worldInspectorStatusLine">
       <strong>{sanitizeLiveCityName(selectedCity?.name ?? 'City')}</strong>
+      <span className="worldInspectorStatusSeparator" aria-hidden="true">•</span>
       <span>{currentCityStatusLine}</span>
     </div>
   );
 
   const inspectorRecommendationArea = recommendedHereLine ? (
-    <div className="worldInspectorRecommendationLine">{recommendedHereLine}</div>
+    <div className="worldInspectorRecommendationLine">Recommendation: {recommendedHereLine}</div>
   ) : (
     <div className="worldInspectorRecommendationLine worldInspectorRecommendationLine--muted">
       No strong module recommendation right now.
@@ -481,7 +482,16 @@ export function WorldScreen() {
           {selectedInspectorSubject.supportLine ? <div className="worldCommandSummarySupportLine">{selectedInspectorSubject.supportLine}</div> : null}
         </section>
       ) : null}
-      <div className="worldInspectorAlertEmpty">Run Compass and city routing are anchored in the command band above the map.</div>
+
+      <section className="worldCommandSummary worldCommandSummary--cityContext worldCommandSummary--cityContextSecondary">
+        <div className="worldCommandSummarySectionLabel">Current city context</div>
+        <div className="worldCommandSummaryCity">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity.name)}</div>
+        {currentCityPhaseTeaching?.roleStatement ? <div className="worldCommandSummaryLine">City role: {currentCityPhaseTeaching.roleStatement}</div> : null}
+        {currentCityPhaseTeaching?.lessonShort ? <div className="worldCommandSummaryLine">Phase: {currentCityPhaseTeaching.lessonShort}</div> : null}
+        {currentCityPhaseTeaching?.supportIdentityLabel ? <div className="worldCommandSummaryLine">Support identity: {currentCityPhaseTeaching.supportIdentityLabel}</div> : null}
+      </section>
+
+      <div className="worldInspectorAlertEmpty">Shortcut alerts stay in the command band above the map.</div>
     </>
   ) : null;
 
@@ -638,7 +648,8 @@ export function WorldScreen() {
                   className="worldScreenInspector"
                   variant="world"
                   title="World Details"
-                  subtitle="Selected building and city context."
+                  density="compact"
+                  emptyZoneBehavior="collapse"
                   statusArea={inspectorStatusArea}
                   recommendationArea={inspectorRecommendationArea}
                   sticky
@@ -697,7 +708,8 @@ export function WorldScreen() {
               className="worldScreenInspector worldScreenInspector--drawer"
               variant="world"
               title="World Details"
-              subtitle="Selected building and city context."
+              density="compact"
+              emptyZoneBehavior="collapse"
               statusArea={inspectorStatusArea}
               recommendationArea={inspectorRecommendationArea}
             >

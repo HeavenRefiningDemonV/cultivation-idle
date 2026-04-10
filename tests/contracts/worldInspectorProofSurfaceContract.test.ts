@@ -49,7 +49,7 @@ test('World inspector selected-building anatomy is first-class and routes direct
 
 test('World inspector keeps alerts as secondary support surfaces', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
-  assert.match(file, /Run Compass and city routing are anchored in the command band above the map\./);
+  assert.match(file, /Shortcut alerts stay in the command band above the map\./);
   assert.match(file, /worldScreenCommandBand/);
   assert.match(file, /aria-label="World support alerts"/);
 });
@@ -62,6 +62,15 @@ test('World inspector no longer owns the full RunCompass surface', () => {
   const inspectorBodyBlock = file.slice(inspectorBodyStart, inspectorBodyEnd);
   assert.doesNotMatch(inspectorBodyBlock, /<RunCompass/);
   assert.match(file, /<section className="worldScreenCommandBand" aria-label="World command band">/);
+});
+
+test('World inspector keeps selected-building first and city context secondary in shared body', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  const selectedIndex = file.indexOf('worldCommandSummary--selectedModule');
+  const cityIndex = file.indexOf('worldCommandSummary--cityContextSecondary');
+  assert.ok(selectedIndex >= 0 && cityIndex > selectedIndex, 'selected-building block should render before city context');
+  assert.match(file, /density="compact"/);
+  assert.match(file, /emptyZoneBehavior="collapse"/);
 });
 
 test('WorldScreen resolves city support identity labels from the city package registry source of truth', () => {
