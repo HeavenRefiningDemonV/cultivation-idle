@@ -6,6 +6,7 @@ import {
   buildCityPhaseTeachingSurface,
   getCityArrivalQuickOpenLabel,
 } from '../../systems/world/cityArrivalContract.js';
+import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
 import { CITY_PACKAGE_REGISTRY_BY_ID, getSupportIdentityLabel } from '../../systems/world/cityPackageRegistry.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import './CityArrivalBanner.scss';
@@ -66,7 +67,10 @@ export function CityArrivalBanner() {
 
   return (
     <div className="cityArrivalBannerShell" aria-live="polite">
-      <div className="cityArrivalBannerCard">
+      <div
+        className="cityArrivalBannerCard"
+        style={{ backgroundImage: `linear-gradient(180deg, rgba(247, 239, 224, 0.96), rgba(244, 235, 219, 0.96)), url(${WORLD_SUPPORT_ART_ASSET_URLS.cityArrivalBanner})` }}
+      >
         <div className="cityArrivalBannerEyebrow">{arrivalPrompt.eyebrow}</div>
         <div className="cityArrivalBannerTitle">{arrivalPrompt.title}</div>
         {phaseTeaching.roleStatement ? <div className="cityArrivalBannerRole">{phaseTeaching.roleStatement}</div> : null}

@@ -43,6 +43,7 @@ import { WorldRouteChip } from '../../ui/world/WorldRouteChip.js';
 import { InlineOnboardingCallout } from '../system/InlineOnboardingCallout.js';
 import { InspectorDrawer, InspectorPanel, TopRibbon } from '../../ui/shell/index.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../systems/ui/onboardingPromptRegistry.js';
+import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -556,7 +557,11 @@ export function WorldScreen() {
         title={getShellTabLabel('adventure')}
         endSlot={
           <div className="worldTopRibbon__citySelectWrapper">
-            <div className="worldTopRibbon__currentCityStrip" aria-live="polite">
+            <div
+              className="worldTopRibbon__currentCityStrip"
+              aria-live="polite"
+              style={{ backgroundImage: `url(${WORLD_SUPPORT_ART_ASSET_URLS.currentCityPlate})` }}
+            >
               <span className="worldTopRibbon__currentCityLabel">Current city</span>
               <span className="worldTopRibbon__currentCityName">{currentCityPhaseTeaching?.cityName ?? sanitizeLiveCityName(selectedCity?.name ?? 'Unavailable')}</span>
               <span className="worldTopRibbon__currentCityStatus">{currentCityStatusLine}</span>

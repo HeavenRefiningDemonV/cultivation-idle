@@ -16,7 +16,10 @@
   padding: 14px 16px;
   border: 1px solid rgba(67, 52, 35, 0.28);
   border-radius: 16px;
-  background: rgba(247, 239, 224, 0.96);
+  background-color: rgba(247, 239, 224, 0.96);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
   box-shadow: 0 14px 28px rgba(39, 27, 16, 0.18);
   min-height: 170px;
 }

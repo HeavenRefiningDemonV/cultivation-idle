@@ -3911,7 +3911,10 @@
   padding: 4px 8px;
   border: 1px solid rgba(120, 72, 33, 0.3);
   border-radius: 999px;
-  background: rgba(250, 242, 226, 0.82);
+  background-color: rgba(250, 242, 226, 0.82);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
 }
 
 .worldTopRibbon__currentCityLabel {
