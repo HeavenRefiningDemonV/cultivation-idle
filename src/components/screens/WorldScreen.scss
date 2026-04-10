@@ -4008,6 +4008,85 @@
   z-index: 2;
 }
 
+.worldScreenHubAtmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.worldFxScene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.worldFxScene__fog {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background:
+    radial-gradient(circle at 16% 24%, rgba(250, 242, 226, 0.22), rgba(250, 242, 226, 0) 42%),
+    radial-gradient(circle at 86% 18%, rgba(255, 249, 237, 0.13), rgba(255, 249, 237, 0) 36%),
+    radial-gradient(circle at 50% 90%, rgba(17, 24, 37, 0.18), rgba(17, 24, 37, 0) 46%);
+}
+
+.worldFxScene__mote {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(252, 234, 187, 0.55);
+  box-shadow: 0 0 12px rgba(245, 220, 154, 0.5);
+  opacity: 0.45;
+}
+
+.worldFxScene__mote--1 {
+  left: 18%;
+  top: 24%;
+}
+
+.worldFxScene__mote--2 {
+  left: 36%;
+  top: 58%;
+}
+
+.worldFxScene__mote--3 {
+  left: 63%;
+  top: 36%;
+}
+
+.worldFxScene__mote--4 {
+  left: 78%;
+  top: 68%;
+}
+
+.worldFxScene[data-quality='high'][data-reduced-motion='0'] .worldFxScene__fog {
+  animation: worldFxFogDrift 18s ease-in-out infinite;
+}
+
+.worldFxScene[data-quality='medium'][data-reduced-motion='0'] .worldFxScene__fog {
+  animation: worldFxFogDrift 28s ease-in-out infinite;
+}
+
+.worldFxScene[data-quality='high'][data-reduced-motion='0'] .worldFxScene__mote {
+  animation: worldFxMoteDrift 12s ease-in-out infinite;
+}
+
+.worldFxScene[data-quality='medium'][data-reduced-motion='0'] .worldFxScene__mote {
+  animation: worldFxMoteDrift 18s ease-in-out infinite;
+}
+
+.worldFxScene[data-quality='low'] .worldFxScene__mote,
+.worldFxScene[data-quality='reducedMotion'] .worldFxScene__mote {
+  opacity: 0.28;
+}
+
+.worldFxScene[data-quality='low'] .worldFxScene__fog,
+.worldFxScene[data-quality='reducedMotion'] .worldFxScene__fog {
+  opacity: 0.16;
+}
+
 .worldScreenHubShell {
   display: flex;
   flex-direction: column;
@@ -4381,8 +4460,39 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .worldFxScene__fog,
+  .worldFxScene__mote {
+    animation: none !important;
+  }
+
   .worldScreenHubPanel::before,
   .worldScreenHubPanel::after {
     opacity: 0.82;
+  }
+}
+
+@keyframes worldFxFogDrift {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.23;
+    transform: scale(1.01);
+  }
+}
+
+@keyframes worldFxMoteDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.32;
+  }
+
+  50% {
+    transform: translateY(-6px);
+    opacity: 0.52;
   }
 }

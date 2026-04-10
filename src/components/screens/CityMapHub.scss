@@ -33,6 +33,56 @@
   z-index: 1;
 }
 
+.cityMapHubHotspotGlint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 116px;
+  height: 116px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.34;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(circle, rgba(249, 226, 173, 0.44), rgba(249, 226, 173, 0.08) 50%, rgba(249, 226, 173, 0) 74%);
+}
+
+.cityMapHubHotspotGlint--recommended {
+  width: 98px;
+  height: 98px;
+  opacity: 0.24;
+  background:
+    radial-gradient(circle, rgba(245, 212, 138, 0.36), rgba(245, 212, 138, 0.06) 52%, rgba(245, 212, 138, 0) 76%);
+}
+
+.cityMapHubMap[data-atmosphere-quality='high'][data-reduced-motion='0'] .cityMapHubHotspotGlint--active {
+  animation: cityMapHubActiveGlintPulse 5.8s ease-in-out infinite;
+}
+
+.cityMapHubMap[data-atmosphere-quality='high'][data-reduced-motion='0'] .cityMapHubHotspotGlint--recommended {
+  animation: cityMapHubRecommendedGlintPulse 7.2s ease-in-out infinite;
+}
+
+.cityMapHubMap[data-atmosphere-quality='medium'][data-reduced-motion='0'] .cityMapHubHotspotGlint--active {
+  animation: cityMapHubActiveGlintPulse 8.6s ease-in-out infinite;
+}
+
+.cityMapHubMap[data-atmosphere-quality='medium'][data-reduced-motion='0'] .cityMapHubHotspotGlint--recommended {
+  animation: cityMapHubRecommendedGlintPulse 11s ease-in-out infinite;
+}
+
+.cityMapHubMap[data-atmosphere-quality='low'] .cityMapHubHotspotGlint--active,
+.cityMapHubMap[data-atmosphere-quality='reducedMotion'] .cityMapHubHotspotGlint--active {
+  opacity: 0.28;
+}
+
+.cityMapHubMap[data-atmosphere-quality='low'] .cityMapHubHotspotGlint--recommended,
+.cityMapHubMap[data-atmosphere-quality='reducedMotion'] .cityMapHubHotspotGlint--recommended {
+  opacity: 0.2;
+}
+
 .cityMapHubHotspotTrigger {
   max-inline-size: min(34vw, 282px);
   align-items: flex-start;
@@ -147,7 +197,37 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cityMapHubHotspotGlint {
+    animation: none !important;
+  }
+
   .cityMapHubHotspotTrigger::after {
     transition: none;
+  }
+}
+
+@keyframes cityMapHubActiveGlintPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1.03);
+  }
+}
+
+@keyframes cityMapHubRecommendedGlintPulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translate(-50%, -50%) scale(0.99);
+  }
+
+  50% {
+    opacity: 0.29;
+    transform: translate(-50%, -50%) scale(1.02);
   }
 }

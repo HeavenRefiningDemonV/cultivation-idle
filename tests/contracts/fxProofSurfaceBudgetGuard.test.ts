@@ -10,7 +10,7 @@ function read(relPath: string): string {
 test('cultivation scene consumes budget/dormant contract signals explicitly', () => {
   const source = read('src/ui/fx/scenes/CultivationFxScene.tsx');
   assert.match(source, /budget\.allowGlints/);
-  assert.match(source, /budget\.continuousAtmosphere/);
+  assert.match(source, /budget\.particleDensity/);
   assert.match(source, /budget\.allowHeroPulse/);
   assert.match(source, /props\.dormant/);
   assert.match(source, /props\.canAnimateContinuously/);
@@ -29,8 +29,11 @@ test('status scene consumes budget/dormant contract signals explicitly', () => {
   assert.match(source, /data-can-animate=/);
 });
 
-test('world\/forge\/selection scenes remain intentionally null outputs', () => {
-  assert.match(read('src/ui/fx/scenes/WorldFxScene.tsx'), /return null;/);
+test('world scene remains atmospheric-only and subordinate while forge\/selection stay null outputs', () => {
+  const worldSource = read('src/ui/fx/scenes/WorldFxScene.tsx');
+  assert.match(worldSource, /className="worldFxScene"/);
+  assert.match(worldSource, /aria-hidden="true"/);
+  assert.match(worldSource, /resolveMoteCount/);
   assert.match(read('src/ui/fx/scenes/ForgeFxScene.tsx'), /return null;/);
   assert.match(read('src/ui/fx/scenes/SelectionFxScene.tsx'), /return null;/);
 });

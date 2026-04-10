@@ -4,6 +4,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import { ScenicLabel, type ScenicLabelState } from '../../ui/shell/index.js';
 import { getWorldRoutingChipLabel, type WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
+import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -49,6 +50,8 @@ export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
   recommendedModuleKey?: string | null;
+  atmosphereQuality?: FxEffectiveQuality;
+  prefersReducedMotion?: boolean;
   moduleMetadataByKey?: Readonly<Record<string, {
     roleTag: string;
     bestUsedWhen: string;
@@ -63,6 +66,8 @@ export function CityMapHub({
   modules,
   activeModuleKey,
   recommendedModuleKey = null,
+  atmosphereQuality = 'medium',
+  prefersReducedMotion = false,
   moduleMetadataByKey = {},
   getModuleLabel,
   onOpenModule,
@@ -83,7 +88,12 @@ export function CityMapHub({
 
   return (
     <div className="cityMapHub">
-      <div className="cityMapHubMap" aria-label="City map">
+      <div
+        className="cityMapHubMap"
+        aria-label="City map"
+        data-atmosphere-quality={atmosphereQuality}
+        data-reduced-motion={prefersReducedMotion ? '1' : '0'}
+      >
         {modules.map((moduleKey) => {
           if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
           const position = MODULE_POSITIONS[moduleKey];
@@ -114,6 +124,8 @@ export function CityMapHub({
               })}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
+              {isActive ? <span className="cityMapHubHotspotGlint cityMapHubHotspotGlint--active" aria-hidden="true" /> : null}
+              {isRecommended ? <span className="cityMapHubHotspotGlint cityMapHubHotspotGlint--recommended" aria-hidden="true" /> : null}
               <ScenicLabel
                 label={
                   <span className="cityMapHubHotspotLabel">
