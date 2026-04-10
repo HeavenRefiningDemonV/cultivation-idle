@@ -17,6 +17,7 @@ test('WorldScreen centralizes inspector fallback breakpoint and keeps wide/narro
 test('WorldScreen uses a shared world inspector body for both wide and narrow paths', () => {
   const file = read('src/components/screens/WorldScreen.tsx');
   assert.match(file, /const worldInspectorBody = selectedCity \?/);
+  assert.match(file, /const selectedInspectorSubject = useMemo\(\(\) =>/);
   const occurrences = Array.from(file.matchAll(/\{worldInspectorBody\}/g)).length;
   assert.equal(occurrences, 2, 'worldInspectorBody should be rendered in wide and narrow inspector paths');
 });
@@ -33,6 +34,22 @@ test('Narrow world drawer removes duplicate visible title ownership while keepin
   assert.match(file, /title="World Details"/);
   assert.match(file, /headerMode="close-only"/);
   assert.match(file, /title="World Details"/);
+});
+
+test('World inspector selected-building anatomy is first-class and routes directly to selected module', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  assert.match(file, /const cards = worldCommandSurface\.groups\.flatMap\(\(group\) => group\.cards\)/);
+  assert.match(file, /Selected building/);
+  assert.match(file, /worldCommandSummary--selectedModule/);
+  assert.match(file, /worldCommandSummaryLine--primary/);
+  assert.match(file, /worldCommandSummaryOutputs/);
+  assert.match(file, /onClick=\{\(\) => handleOpenModule\(selectedInspectorSubject\.moduleKey\)\}/);
+});
+
+test('World inspector keeps alerts as secondary support surfaces', () => {
+  const file = read('src/components/screens/WorldScreen.tsx');
+  assert.match(file, /aria-label="World support alerts"/);
+  assert.match(file, /No urgent alerts right now\./);
 });
 
 test('WorldScreen resolves city support identity labels from the city package registry source of truth', () => {

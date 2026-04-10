@@ -364,6 +364,38 @@ export function WorldScreen() {
     return byModuleKey;
   }, [worldCommandSurface.groups]);
 
+  const selectedInspectorSubject = useMemo(() => {
+    const cards = worldCommandSurface.groups.flatMap((group) => group.cards);
+    if (cards.length === 0) return null;
+    const activeCard = cards.find((card) => card.moduleKey === activeModuleKey) ?? null;
+    const card = activeCard ?? cards[0] ?? null;
+    if (!card) return null;
+
+    const recommendationCard = worldCommandSurface.strongRecommendationModuleKey
+      ? cards.find((entry) => entry.moduleKey === worldCommandSurface.strongRecommendationModuleKey) ?? null
+      : null;
+
+    let supportLine: string | null = null;
+    if (trackedAlert && trackedAlert.ctaModuleKey === card.moduleKey) {
+      supportLine = trackedAlert.title;
+    } else if (expeditionIdleAlert && expeditionIdleAlert.ctaModuleKey === card.moduleKey) {
+      supportLine = expeditionIdleAlert.title;
+    }
+
+    return {
+      moduleKey: card.moduleKey,
+      label: card.label,
+      roleTag: card.roleTag,
+      bestUsedWhen: card.bestUsedWhen,
+      outputs: card.outputs.slice(0, 2),
+      openLabel: card.openLabel,
+      chips: card.chips.slice(0, 2),
+      isStrongRecommendation: worldCommandSurface.strongRecommendationModuleKey === card.moduleKey,
+      recommendationLabel: recommendationCard ? recommendationCard.label : null,
+      supportLine,
+    };
+  }, [activeModuleKey, expeditionIdleAlert, trackedAlert, worldCommandSurface.groups, worldCommandSurface.strongRecommendationModuleKey]);
+
   const inspectorStatusArea = (
     <div className="worldInspectorStatusLine">
       <strong>{sanitizeLiveCityName(selectedCity?.name ?? 'City')}</strong>
@@ -381,10 +413,59 @@ export function WorldScreen() {
 
   const worldInspectorBody = selectedCity ? (
     <>
-      <section className="worldCommandSummary worldScreenPanel worldScreenCitySummary">
+      {selectedInspectorSubject ? (
+        <section className="worldCommandSummary worldCommandSummary--selectedModule">
+          <div className="worldCommandSummaryHeader">
+            <div>
+              <div className="worldCommandSummarySectionLabel">Selected building</div>
+              <div className="worldCommandSummaryCity">{selectedInspectorSubject.label}</div>
+            </div>
+            <div className="worldCommandSummaryTag">{selectedInspectorSubject.roleTag}</div>
+          </div>
+          <div className="worldCommandSummaryChipRow">
+            <div className="worldCommandSummaryChipSlot">
+              {selectedInspectorSubject.chips[0] ? <WorldRouteChip kind={selectedInspectorSubject.chips[0].kind} tone={selectedInspectorSubject.chips[0].tone} /> : null}
+            </div>
+            <div className="worldCommandSummaryChipSlot">
+              {selectedInspectorSubject.chips[1] ? <WorldRouteChip kind={selectedInspectorSubject.chips[1].kind} tone={selectedInspectorSubject.chips[1].tone} /> : null}
+            </div>
+          </div>
+          <p className="worldCommandSummaryLine worldCommandSummaryLine--primary">{selectedInspectorSubject.bestUsedWhen}</p>
+          <ul className="worldCommandSummaryOutputs">
+            {selectedInspectorSubject.outputs.map((output) => (
+              <li key={output}>{output}</li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="worldScreenModuleButton worldScreenModuleButton--direct"
+            onClick={() => handleOpenModule(selectedInspectorSubject.moduleKey)}
+          >
+            {selectedInspectorSubject.openLabel}
+          </button>
+          {selectedInspectorSubject.isStrongRecommendation ? (
+            <div className="worldCommandSummarySupportLine">Recommended now in this city.</div>
+          ) : selectedInspectorSubject.recommendationLabel ? (
+            <div className="worldCommandSummarySupportLine">Recommended now: {selectedInspectorSubject.recommendationLabel}.</div>
+          ) : null}
+          {selectedInspectorSubject.supportLine ? <div className="worldCommandSummarySupportLine">{selectedInspectorSubject.supportLine}</div> : null}
+        </section>
+      ) : null}
+
+      <section className="worldCommandSummary worldCommandSummary--cityContext">
+        <div className="worldCommandSummarySectionLabel">Current city</div>
         <div className="worldCommandSummaryCity">{sanitizeLiveCityName(selectedCity.name)}</div>
         {cityLesson ? <div className="worldCommandSummaryLine">Phase lesson: {cityLesson}</div> : null}
         {citySupportIdentity ? <div className="worldCommandSummaryLine">City role: {citySupportIdentity}</div> : null}
+        {cityQuickOpenModules.length > 0 ? (
+          <div className="worldCommandQuickOpen" aria-label="City quick open">
+            {cityQuickOpenModules.map((moduleKey) => (
+              <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
+                {getWorldModuleLabel(moduleKey)}
+              </button>
+            ))}
+          </div>
+        ) : null}
         {showWorldInlineHint ? (
           <InlineOnboardingCallout
             className="worldCommandSummaryInlineHint"
@@ -395,15 +476,6 @@ export function WorldScreen() {
             onDismiss={() => dismissOnboardingLifeKey(ONBOARDING_INLINE_LIFE_KEYS.worldLoop)}
           />
         ) : null}
-        {cityQuickOpenModules.length > 0 ? (
-          <div className="worldCommandQuickOpen">
-            {cityQuickOpenModules.map((moduleKey) => (
-              <button key={moduleKey} type="button" className="worldCommandQuickOpenChip" onClick={() => handleOpenModule(moduleKey)}>
-                {getWorldModuleLabel(moduleKey)}
-              </button>
-            ))}
-          </div>
-        ) : null}
       </section>
 
       <div className={'worldScreenRunCompassWrapper'}>
@@ -411,7 +483,7 @@ export function WorldScreen() {
       </div>
 
       {worldCommandSurface.alerts.length > 0 ? (
-        <div className="worldScreenAlerts">
+        <section className="worldScreenAlerts" aria-label="World support alerts">
           {worldCommandSurface.alerts.map((alert) => (
             <div key={alert.id} className="worldScreenAlertCard">
               <WorldCommandAlert
@@ -423,7 +495,7 @@ export function WorldScreen() {
               {alert.chipKind ? <WorldRouteChip kind={alert.chipKind} tone="support" /> : null}
             </div>
           ))}
-        </div>
+        </section>
       ) : (
         <div className="worldInspectorAlertEmpty">No urgent alerts right now.</div>
       )}
@@ -592,7 +664,7 @@ export function WorldScreen() {
                   className="worldScreenInspector"
                   variant="world"
                   title="World Details"
-                  subtitle="Context, compass, and urgent route alerts"
+                  subtitle="Selected building guidance with city support context."
                   statusArea={inspectorStatusArea}
                   recommendationArea={inspectorRecommendationArea}
                   sticky
@@ -616,7 +688,7 @@ export function WorldScreen() {
               className="worldScreenInspector worldScreenInspector--drawer"
               variant="world"
               title="World Details"
-              subtitle="Context, compass, and urgent route alerts"
+              subtitle="Selected building guidance with city support context."
               statusArea={inspectorStatusArea}
               recommendationArea={inspectorRecommendationArea}
             >
