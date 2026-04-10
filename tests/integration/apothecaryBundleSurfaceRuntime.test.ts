@@ -40,7 +40,7 @@ test('buy-surface runtime truth matches the mounted Apothecary bundle copy and c
 
   assert.match(panelSource, /Convenience Bundles/);
   assert.match(panelSource, /Stock Floors/);
-  assert.match(panelSource, /Gate Prep Coverage/);
+  assert.match(panelSource, /Immediate Readiness Coverage/);
   assert.match(panelSource, /Daily caps throttle convenience/);
   assert.equal(before.bundleState.bundle?.name, 'Pinewind Hamlet Readiness Bundle');
   assert.equal(before.bundleState.remainingPurchasesToday, 2);

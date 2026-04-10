@@ -79,3 +79,26 @@ test('world command recommendation copy does not leak adventure wording', () => 
 
   assert.doesNotMatch(recommendation.reason, /adventure/i);
 });
+
+test('world command surface fallback metadata uses canonical world-facing role tags', () => {
+  const surface = buildWorldCommandSurface({
+    visibleModules: ['outskirts', 'gateTrial', 'bounties', 'expeditions'],
+    moduleSurfacesByKey: {},
+    runCompassPrimaryAction: null,
+    economicTopModuleKey: null,
+    economicReason: null,
+    trackedBountyModuleKey: null,
+    trackedBountyAlert: null,
+    expeditionIdleAlert: null,
+  });
+
+  const cards = surface.groups.flatMap((group) => group.cards);
+  assert.equal(cards.some((card) => card.roleTag === 'Gold & Common Mats'), true);
+  assert.equal(cards.some((card) => card.roleTag === 'Gate Progress'), true);
+  assert.equal(cards.some((card) => card.roleTag === 'Merit & Routing'), true);
+  assert.equal(cards.some((card) => card.roleTag === 'Passive Support'), true);
+  cards.forEach((card) => {
+    assert.doesNotMatch(card.moduleLabel, /alchemy|talisman/i);
+    assert.doesNotMatch(card.roleTag, /Milestone Gate|Gate Prep|Support Currency|Passive Supply/i);
+  });
+});

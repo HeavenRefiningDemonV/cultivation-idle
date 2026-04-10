@@ -6,7 +6,7 @@ import { LIVE_SURFACE_MANIFEST } from '../../src/services/diagnostics/release/li
 void test('vocabulary audit report shape is stable and tracked scope has no duplicates', () => {
   const report = runVocabularyAudit();
 
-  assert.equal(report.schemaVersion, '7.5a-vocabulary-audit');
+  assert.equal(report.schemaVersion, '7.5b-vocabulary-audit');
   assert.equal(Array.isArray(report.canonicalTerms), true);
   assert.equal(Array.isArray(report.staleFindings), true);
   assert.equal(Array.isArray(report.placeholderFindings), true);
@@ -28,7 +28,7 @@ void test('vocabulary audit renderers support stable human and json modes', () =
 
   assert.equal(human.includes('Release Vocabulary Audit'), true);
   assert.equal(human.includes('Replacement map:'), true);
-  assert.equal(json.includes('"schemaVersion": "7.5a-vocabulary-audit"'), true);
+  assert.equal(json.includes('"schemaVersion": "7.5b-vocabulary-audit"'), true);
 });
 
 void test('canonical terms and stale findings remain distinct lists', () => {

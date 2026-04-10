@@ -210,7 +210,7 @@ export const createFirstGateAvailablePrompt = (args: {
     title: 'First Gate Available',
     body: 'This is your first real milestone wall. Check readiness before brute-forcing the gate.',
     eyebrow: args.cityName,
-    badgeLabel: 'Milestone Gate',
+    badgeLabel: 'Gate Progress',
     cityId: args.cityId,
     primaryAction: {
       label: 'Open Gate Trial',

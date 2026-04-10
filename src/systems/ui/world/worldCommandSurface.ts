@@ -2,6 +2,9 @@ import type { LiveWorldModuleKey } from '../../../content/types.js';
 import type { ModulePurposeSourceSurface } from '../../economy/purposeSourceSurface.js';
 import type { RunCompassActionTarget } from '../runCompass/index.js';
 import { resolveWorldStrongRecommendationModuleKey } from './worldModuleRoutingSurface.js';
+import { isLiveWorldModule } from '../../world/liveWorldSchema.js';
+import { getWorldModuleCardDefinition } from '../../world/moduleCardRegistry.js';
+import { getWorldModuleLabel } from '../../../ui/text/playerFacingLabels.js';
 
 export type WorldCommandGroupId = 'combat' | 'preparation' | 'support';
 
@@ -55,7 +58,7 @@ const GROUP_MEMBERS: Record<WorldCommandGroupId, readonly LiveWorldModuleKey[]> 
 };
 
 function isVisibleModule(visibleModules: readonly string[], moduleKey: string): moduleKey is LiveWorldModuleKey {
-  return visibleModules.includes(moduleKey);
+  return isLiveWorldModule(moduleKey) && visibleModules.includes(moduleKey);
 }
 
 export function resolveWorldRecommendedModule(input: {
@@ -87,7 +90,7 @@ export function resolveWorldRecommendedModule(input: {
       from: 'run_compass',
     };
   }
-  if (moduleKey === runCompassSecondaryModuleKey) {
+  if (moduleKey && moduleKey === runCompassSecondaryModuleKey) {
     return {
       moduleKey,
       reason: 'Run Compass support route points here.',
@@ -143,9 +146,9 @@ export function buildWorldCommandSurface(input: {
         const surface = input.moduleSurfacesByKey[moduleKey];
         return {
           moduleKey,
-          moduleLabel: surface?.moduleLabel ?? moduleKey,
-          roleTag: surface?.purposeTag ?? 'World Module',
-          bestUsedWhen: surface?.purposeLine ?? 'Open this module for current city progression.',
+          moduleLabel: surface?.moduleLabel ?? getWorldModuleLabel(moduleKey),
+          roleTag: surface?.purposeTag ?? getWorldModuleCardDefinition(moduleKey).roleTag,
+          bestUsedWhen: surface?.purposeLine ?? getWorldModuleCardDefinition(moduleKey).bestUsedWhen,
           outputHint: surface?.outputHint ?? null,
           recommendedNow: recommendation.moduleKey === moduleKey,
         };

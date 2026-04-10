@@ -1,5 +1,5 @@
 export interface LiveSurfaceManifest {
-  schemaVersion: '7.5a-live-surface-manifest';
+  schemaVersion: '7.5b-live-surface-manifest';
   notes: string[];
   trackedSurfaceIds: string[];
   trackedFiles: string[];
@@ -10,7 +10,7 @@ export interface LiveSurfaceManifest {
 }
 
 export const LIVE_SURFACE_MANIFEST: LiveSurfaceManifest = {
-  schemaVersion: '7.5a-live-surface-manifest',
+  schemaVersion: '7.5b-live-surface-manifest',
   notes: [
     'Audit scope is live/reachable semester player-facing surfaces.',
     'Internal ids and code variable names are not audit targets unless rendered to the player.',
@@ -46,8 +46,12 @@ export const LIVE_SURFACE_MANIFEST: LiveSurfaceManifest = {
     'src/components/GameLayout.tsx',
     'src/ui/text/playerFacingLabels.ts',
     'src/ui/text/playerFacingFormatters.ts',
+    'src/components/screens/WorldScreen.tsx',
+    'src/components/screens/CityMapHub.tsx',
     'src/systems/ui/world/worldCommandSurface.ts',
+    'src/systems/ui/world/worldModuleRoutingSurface.ts',
     'src/systems/world/moduleCardRegistry.ts',
+    'src/systems/world/bountyBoardContract.ts',
     'src/features/prestige/prestigeAdvisorSurface.ts',
     'src/components/modals/LifeStartWizardModal.tsx',
     'src/components/modals/DaoHeartModal.tsx',

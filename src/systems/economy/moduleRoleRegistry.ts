@@ -29,7 +29,7 @@ export interface EconomicModuleRoleEntry {
 export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'outskirts',
-    roleTag: 'gold-and-common-mats',
+    roleTag: 'Gold & Common Mats',
     bestUsedWhen: 'You need gold and broad common-material income.',
     economicCategory: 'resource_source',
     moduleKind: 'primary_source',
@@ -37,7 +37,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'ruins',
-    roleTag: 'targeted-material-anchors',
+    roleTag: 'Targeted Mats',
     bestUsedWhen: 'You need deterministic targeted mats or anchor drops.',
     economicCategory: 'targeted_source',
     moduleKind: 'primary_source',
@@ -45,7 +45,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'apothecary',
-    roleTag: 'immediate-readiness',
+    roleTag: 'Immediate Readiness',
     bestUsedWhen: 'You need immediate readiness through buying, brewing, or pouch restock.',
     economicCategory: 'readiness',
     moduleKind: 'conversion_station',
@@ -53,7 +53,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'forge',
-    roleTag: 'permanent-floor',
+    roleTag: 'Permanent Floor',
     bestUsedWhen: 'You need permanent refine, temper, or rune floor progress.',
     economicCategory: 'permanent_floor',
     moduleKind: 'conversion_station',
@@ -61,7 +61,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'bounties',
-    roleTag: 'support-economy-routing',
+    roleTag: 'Merit & Routing',
     bestUsedWhen: 'You need support-economy progress, refreshes, or route guidance.',
     economicCategory: 'support_loop',
     moduleKind: 'support_loop',
@@ -69,7 +69,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'expeditions',
-    roleTag: 'passive-shortage-smoothing',
+    roleTag: 'Passive Support',
     bestUsedWhen: 'You need passive shortage smoothing for herbs, ore, or fragments.',
     economicCategory: 'passive_smoothing',
     moduleKind: 'support_loop',
@@ -77,7 +77,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'manualPavilion',
-    roleTag: 'build-correction',
+    roleTag: 'Build Correction',
     bestUsedWhen: 'You need build correction, manual options, or scout-route support.',
     economicCategory: 'build_correction',
     moduleKind: 'support_loop',
@@ -85,7 +85,7 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'gateTrial',
-    roleTag: 'milestone-check',
+    roleTag: 'Gate Progress',
     bestUsedWhen: 'You are ready to resolve the current milestone gate.',
     economicCategory: 'milestone',
     moduleKind: 'milestone_step',

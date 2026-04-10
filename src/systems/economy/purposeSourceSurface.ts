@@ -37,12 +37,12 @@ const CURRENCY_PURPOSES: Record<string, Pick<PurposeSourceSurface, 'purposeTag' 
     boundaryLine: 'Use Outskirts first when you need a clean gold refill.',
   },
   merit: {
-    purposeTag: 'Support Currency',
+    purposeTag: 'Merit & Routing',
     purposeLine: 'Used for Safety Net support and other bounded reserve spending.',
     boundaryLine: 'Treat Bounties as the first Merit refill route.',
   },
   spiritStones: {
-    purposeTag: 'Support Currency',
+    purposeTag: 'Merit & Routing',
     purposeLine: 'Used for reserve-heavy support spending and late prep pressure.',
     boundaryLine: 'Treat Bounties as the first spirit-stone refill route.',
   },
@@ -133,7 +133,7 @@ function buildItemPurpose(item: ItemDef, itemId: string, context: PurposeSourceC
   }
   if (context.prepItemIds.has(itemId) || itemId.startsWith('gate_')) {
     return {
-      purposeTag: 'Gate Prep',
+      purposeTag: 'Immediate Readiness',
       purposeLine: 'Used to cover breakthrough and gate package requirements for the current progression band.',
       boundaryLine: 'If today\'s shop caps out, use brew or fallback routes only for the honest remainder.',
     };
@@ -231,7 +231,7 @@ export function buildModulePurposeSourceSurface(
   return {
     moduleKey,
     moduleLabel: getWorldModuleLabel(moduleKey),
-    purposeTag: role.roleTag.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+    purposeTag: role.roleTag,
     purposeLine: `Best used when ${role.bestUsedWhen.charAt(0).toLowerCase()}${role.bestUsedWhen.slice(1)}`,
     boundaryLine: role.moduleKey === 'outskirts'
       ? 'Switch away once you need targeted local mats instead of broad farming.'

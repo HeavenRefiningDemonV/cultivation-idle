@@ -12,7 +12,7 @@ export interface VocabularyFinding {
 }
 
 export interface VocabularyAuditReport {
-  schemaVersion: '7.5a-vocabulary-audit';
+  schemaVersion: '7.5b-vocabulary-audit';
   generatedAt: number;
   overallPass: boolean;
   canonicalTerms: string[];
@@ -24,6 +24,14 @@ export interface VocabularyAuditReport {
 }
 
 const STALE_PATTERNS: Array<{ term: string; pattern: RegExp }> = [
+  { term: 'legacy city name: Embermist', pattern: /\bEmbermist\b/ },
+  { term: 'legacy city name: Silverkeep', pattern: /\bSilverkeep\b/ },
+  { term: 'legacy city name: Starsea', pattern: /\bStarsea\b/ },
+  { term: 'stale role tag: Milestone Gate', pattern: /\bMilestone Gate\b/i },
+  { term: 'stale role tag: Gate Prep', pattern: /\bGate Prep\b/i },
+  { term: 'stale role tag: Support Currency', pattern: /\bSupport Currency\b/i },
+  { term: 'stale role tag: Passive Supply', pattern: /\bPassive Supply\b/i },
+  { term: 'stale world shell label: Adventure', pattern: /\bAdventure\b/ },
   { term: 'coming soon', pattern: /coming soon/i },
   { term: 'under development', pattern: /under development/i },
   { term: 'not implemented yet', pattern: /not implemented yet/i },
@@ -95,7 +103,7 @@ export function runVocabularyAudit(): VocabularyAuditReport {
   };
 
   return {
-    schemaVersion: '7.5a-vocabulary-audit',
+    schemaVersion: '7.5b-vocabulary-audit',
     generatedAt: Date.now(),
     overallPass: staleFindings.length === 0,
     canonicalTerms: canonicalTermInventory(),
@@ -109,7 +117,7 @@ export function runVocabularyAudit(): VocabularyAuditReport {
 
 export function renderVocabularyAuditReport(report: VocabularyAuditReport): string {
   const lines: string[] = [];
-  lines.push('=== Release Vocabulary Audit (Packet 7.5a) ===');
+  lines.push('=== Release Vocabulary Audit (Packet 7.5b) ===');
   lines.push(`generatedAt: ${new Date(report.generatedAt).toISOString()}`);
   lines.push(`overallPass: ${report.overallPass ? 'PASS' : 'FAIL'}`);
   lines.push(`trackedFiles: ${report.trackedFiles.length}`);

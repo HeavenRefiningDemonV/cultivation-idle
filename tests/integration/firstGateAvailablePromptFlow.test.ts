@@ -17,6 +17,6 @@ test('first gate available onboarding prompt is queued from honest gate lifecycl
 
   assert.match(registrySource, /title: 'First Gate Available'/);
   assert.match(registrySource, /Open Gate Trial/);
-  assert.match(registrySource, /Milestone Gate/);
+  assert.match(registrySource, /Gate Progress/);
   assert.equal(/Adventure/.test(registrySource), false);
 });

@@ -253,7 +253,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
 
     return (
       <PaperCard className={'apothecarySectionCard'} variant="tray">
-        <div className={'apothecarySectionEyebrow'}>Gate Prep Coverage</div>
+        <div className={'apothecarySectionEyebrow'}>Immediate Readiness Coverage</div>
         <div className={'apothecarySectionTitle'}>{coverage.packageDef.label}</div>
         <div className={'apothecarySectionBody'}>
           Buy covers speed. Brew covers the honest remainder whenever daily caps start throttling convenience.
@@ -411,7 +411,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
         <div className={'apothecaryCardChips'}>
           <ConsumableMetaChips chips={chips} />
         </div>
-        {itemPurpose?.purposeTag === 'Gate Prep' ? (
+        {itemPurpose?.purposeTag === 'Immediate Readiness' ? (
           <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
         ) : null}
         {blockedReason ? <div className={'apothecaryBlockedReason'}>Blocked: {blockedReason}</div> : null}
@@ -563,7 +563,7 @@ export function ApothecaryPanel({ shopId, initialSurface = 'buy' }: ApothecaryPa
           <div className={'apothecaryPackageMeta'}>
             Source: {getPackageSourceStateLabel(entry)} • Fastest action: {entry.routeIntent.label}
           </div>
-          {itemPurpose?.purposeTag === 'Gate Prep' ? (
+          {itemPurpose?.purposeTag === 'Immediate Readiness' ? (
           <PurposeSourceCallout surface={itemPurpose} compact className="apothecaryPurposeSource" />
         ) : null}
           {sourceHints.length > 0 ? (

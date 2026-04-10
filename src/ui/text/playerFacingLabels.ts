@@ -69,6 +69,8 @@ export function getShellTabLabel(tab: GameTab): string {
 }
 
 export function getWorldModuleLabel(moduleKey: string): string {
+  if (moduleKey === 'alchemy') return WORLD_MODULE_LABELS.apothecary;
+  if (moduleKey === 'talismanStudio') return 'Unavailable Module';
   return isLiveWorldModule(moduleKey) ? WORLD_MODULE_LABELS[moduleKey] : toTitleCase(moduleKey);
 }
 
