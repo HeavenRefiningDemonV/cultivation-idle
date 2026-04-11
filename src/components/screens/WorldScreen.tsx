@@ -10,7 +10,7 @@ import { useUIStore } from '../../stores/uiStore.js';
 import './WorldScreen.scss';
 import { resolveBountyDestination } from '../../utils/bountyRouting.js';
 import { buildLiveCraftBountyRouteSupportState } from '../../systems/bounties/liveCraftBountyRouteSupport.js';
-import { CityMapHub } from './CityMapHub.js';
+import { CityMapHub, type WorldHotspotChipKind } from './CityMapHub.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import {
@@ -36,6 +36,24 @@ import '../../ui/world/WorldModuleCard.scss';
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
 const LOCK_REQUIREMENT_UNAVAILABLE = 'Requirement unavailable';
+const HOTSPOT_CUE_PRIORITY: Record<WorldHotspotChipKind, number> = {
+  GATE: 0,
+  NOW: 1,
+  FIX: 2,
+  LOW: 3,
+  CLAIM: 4,
+  IDLE: 5,
+  SOON: 6,
+};
+const ROUTING_CHIP_TO_HOTSPOT_CUE: Partial<Record<WorldRoutingChipKind, WorldHotspotChipKind>> = {
+  recommended_now: 'NOW',
+  useful_soon: 'SOON',
+  claim_ready: 'CLAIM',
+  idle_slot: 'IDLE',
+  build_fix: 'FIX',
+  gate_critical: 'GATE',
+  stock_low: 'LOW',
+};
 
 function deriveCityRequirementText(city: CityDef): string | null {
   if ((city.index ?? 0) <= 0) return null;
@@ -351,19 +369,55 @@ export function WorldScreen() {
     ].filter(Boolean).join(' · ')
     : null;
 
+  const moduleCueByKey = useMemo(() => {
+    const candidatesByModule = new Map<string, Set<WorldHotspotChipKind>>();
+    const pushCandidate = (moduleKey: string | null, cue: WorldHotspotChipKind | null) => {
+      if (!moduleKey || !cue) return;
+      if (!visibleCityModules.includes(moduleKey)) return;
+      const bucket = candidatesByModule.get(moduleKey) ?? new Set<WorldHotspotChipKind>();
+      bucket.add(cue);
+      candidatesByModule.set(moduleKey, bucket);
+    };
+
+    if (worldCommandSurface.strongRecommendationModuleKey) {
+      const strongest = worldCommandSurface.strongRecommendationModuleKey;
+      pushCandidate(strongest, strongest === 'gateTrial' ? 'GATE' : 'NOW');
+    }
+
+    for (const [moduleKey, meta] of Object.entries(moduleMetadataByKey)) {
+      pushCandidate(moduleKey, meta.chipKind ? ROUTING_CHIP_TO_HOTSPOT_CUE[meta.chipKind] ?? null : null);
+    }
+
+    pushCandidate(trackedAlert?.ctaModuleKey ?? null, trackedAlert?.chipKind ? ROUTING_CHIP_TO_HOTSPOT_CUE[trackedAlert.chipKind] ?? null : null);
+    pushCandidate(expeditionIdleAlert?.ctaModuleKey ?? null, 'IDLE');
+
+    const resolved: Partial<Record<string, WorldHotspotChipKind>> = {};
+    for (const [moduleKey, candidates] of candidatesByModule.entries()) {
+      const sorted = [...candidates].sort((a, b) => HOTSPOT_CUE_PRIORITY[a] - HOTSPOT_CUE_PRIORITY[b]);
+      if (sorted[0]) {
+        resolved[moduleKey] = sorted[0];
+      }
+    }
+    return resolved;
+  }, [expeditionIdleAlert, moduleMetadataByKey, trackedAlert, visibleCityModules, worldCommandSurface.strongRecommendationModuleKey]);
+
+  const strongestRecommendationModuleKey = worldCommandSurface.strongRecommendationModuleKey;
+
   const inspectorCard = inspectorModuleKey ? worldCardsByModuleKey.get(inspectorModuleKey) ?? null : null;
   const inspectorLabel = inspectorCard?.label ?? (inspectorModuleKey ? getWorldModuleLabel(inspectorModuleKey) : 'No module selected');
   const inspectorRoleTag = inspectorCard?.roleTag ?? 'Support · Current Selection';
   const inspectorBestUsedWhen = inspectorCard?.bestUsedWhen ?? 'Select a module on the map, then use Open to enter it.';
   const inspectorOutputs = (inspectorCard?.outputs.slice(0, 3) ?? ['Map selection controls World module routing.']) as string[];
-  const inspectorRecommendationLine = worldCommandSurface.strongRecommendationModuleKey === inspectorModuleKey
-    ? 'Recommended here now.'
-    : null;
-  const inspectorSupportLine = trackedAlert?.ctaModuleKey === inspectorModuleKey
-    ? 'Tracked bounty active.'
-    : expeditionIdleAlert?.ctaModuleKey === inspectorModuleKey
-      ? 'Expedition slot idle.'
-      : null;
+  const inspectorCueKind = inspectorModuleKey ? moduleCueByKey[inspectorModuleKey] ?? null : null;
+  const inspectorStateLine = inspectorCueKind ? ({
+    GATE: 'Gate is your next step.',
+    NOW: `Recommended here now: ${inspectorLabel}.`,
+    FIX: 'Build fix points here.',
+    LOW: 'Stock low: route here to recover.',
+    CLAIM: 'Claimable board reward.',
+    IDLE: 'Expedition slot idle.',
+    SOON: 'Useful soon for your next step.',
+  } as const)[inspectorCueKind] : null;
   const inspectorOpenLabel = inspectorCard?.openLabel ?? (inspectorModuleKey ? `Open ${inspectorLabel}` : 'Open');
 
   return (
@@ -379,6 +433,8 @@ export function WorldScreen() {
                 activeModuleKey={lockedModuleKey}
                 recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
                 moduleMetadataByKey={moduleMetadataByKey}
+                moduleCueByKey={moduleCueByKey}
+                glintModuleKey={strongestRecommendationModuleKey}
                 getModuleLabel={getWorldModuleLabel}
                 onOpenModule={handleRouteToModule}
                 onSelectModule={handleSelectModule}
@@ -408,8 +464,7 @@ export function WorldScreen() {
                   roleTag={inspectorRoleTag}
                   bestUsedWhen={inspectorBestUsedWhen}
                   outputs={inspectorOutputs}
-                  recommendationLine={inspectorRecommendationLine}
-                  supportLine={inspectorSupportLine}
+                  stateLine={inspectorStateLine}
                   openLabel={inspectorOpenLabel}
                   onOpen={() => handleRouteToModule(inspectorModuleKey)}
                   cityName={sanitizeLiveCityName(selectedCity.name)}

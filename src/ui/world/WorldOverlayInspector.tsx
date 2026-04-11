@@ -5,8 +5,7 @@ interface WorldOverlayInspectorProps {
   roleTag: string;
   bestUsedWhen: string;
   outputs: string[];
-  recommendationLine?: string | null;
-  supportLine?: string | null;
+  stateLine?: string | null;
   openLabel: string;
   onOpen: () => void;
   cityName: string;
@@ -18,8 +17,7 @@ export function WorldOverlayInspector({
   roleTag,
   bestUsedWhen,
   outputs,
-  recommendationLine = null,
-  supportLine = null,
+  stateLine = null,
   openLabel,
   onOpen,
   cityName,
@@ -43,8 +41,7 @@ export function WorldOverlayInspector({
         ))}
       </ul>
 
-      {recommendationLine ? <p className="worldOverlayInspector__line">{recommendationLine}</p> : null}
-      {supportLine ? <p className="worldOverlayInspector__line">{supportLine}</p> : null}
+      {stateLine ? <p className="worldOverlayInspector__line">{stateLine}</p> : null}
 
       <button type="button" className="worldOverlayInspector__openButton uiNoShift" onClick={onOpen}>
         {openLabel}

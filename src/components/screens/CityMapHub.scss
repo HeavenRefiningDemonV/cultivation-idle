@@ -57,6 +57,15 @@
   cursor: pointer;
 }
 
+.cityMapHubHotspotGlint {
+  position: absolute;
+  inset: -8px -10px;
+  border-radius: 12px;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(235, 201, 142, 0.3), rgba(235, 201, 142, 0) 72%);
+}
+
 .cityMapHubHotspotButton:hover,
 .cityMapHubHotspotButton:focus-visible {
   border-color: rgba(120, 72, 33, 0.72);
@@ -75,6 +84,17 @@
     0 0 0 1px rgba(120, 72, 33, 0.3);
 }
 
+.cityMapHubHotspot--glint .cityMapHubHotspotGlint {
+  opacity: 0.38;
+  animation: cityMapHubHotspotGlintPulse 3.2s ease-in-out infinite;
+}
+
+.cityMapHubHotspot--lowFx .cityMapHubHotspotGlint,
+.cityMapHubHotspot--reducedMotion .cityMapHubHotspotGlint {
+  animation: none;
+  opacity: 0.24;
+}
+
 .cityMapHubHotspotLabel {
   display: inline-flex;
   align-items: center;
@@ -91,12 +111,29 @@
 }
 
 .cityMapHubHotspotStateSlot {
-  display: inline-block;
-  width: 28px;
-  min-width: 28px;
-  height: 12px;
-  border-radius: 6px;
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-width: 44px;
+  height: 14px;
+}
+
+.cityMapHubHotspotStateChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 94, 53, 0.36);
+  background: rgba(252, 244, 226, 0.84);
+  color: rgba(65, 48, 32, 0.9);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  padding: 0 5px;
 }
 
 .cityMapHubHotspot--manualPavilion .cityMapHubHotspotButton {
@@ -107,4 +144,9 @@
   .cityMapHubHotspotButton {
     max-inline-size: min(40vw, 146px);
   }
+}
+
+@keyframes cityMapHubHotspotGlintPulse {
+  0%, 100% { opacity: 0.22; }
+  50% { opacity: 0.42; }
 }

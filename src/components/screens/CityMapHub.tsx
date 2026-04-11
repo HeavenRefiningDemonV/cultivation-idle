@@ -12,6 +12,8 @@ import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 
+export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
+
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
   apothecary: { leftPct: 31, topPct: 41.5 },
@@ -41,6 +43,8 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
 export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
+  moduleCueByKey?: Partial<Record<string, WorldHotspotChipKind>>;
+  glintModuleKey?: string | null;
   recommendedModuleKey?: string | null;
   moduleMetadataByKey?: Readonly<Record<string, {
     roleTag: string;
@@ -62,6 +66,8 @@ export interface CityMapHubProps {
 export function CityMapHub({
   modules,
   activeModuleKey,
+  moduleCueByKey = {},
+  glintModuleKey = null,
   recommendedModuleKey: _recommendedModuleKey = null,
   moduleMetadataByKey: _moduleMetadataByKey = {},
   getModuleLabel,
@@ -93,6 +99,16 @@ export function CityMapHub({
     onSelectModule?.(moduleKey);
   };
 
+  const chipAriaLabelByKind: Record<WorldHotspotChipKind, string> = {
+    NOW: 'Recommended now',
+    SOON: 'Useful soon',
+    CLAIM: 'Claim ready',
+    IDLE: 'Idle slot',
+    FIX: 'Build fix',
+    GATE: 'Gate critical',
+    LOW: 'Stock low',
+  };
+
   return (
     <div className="cityMapHub">
       <div className="cityMapHubMap" aria-label="City map">
@@ -101,11 +117,13 @@ export function CityMapHub({
           if (!position) return null;
 
           const isLockedSelected = activeModuleKey === moduleKey;
+          const chipKind = moduleCueByKey[moduleKey] ?? null;
+          const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
 
           return (
             <div
               key={moduleKey}
-              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''}`}
+              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${prefersReducedMotion ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
               <button
@@ -121,9 +139,16 @@ export function CityMapHub({
               >
                 <span className="cityMapHubHotspotLabel">
                   <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
-                  <span className="cityMapHubHotspotStateSlot" aria-hidden="true" />
+                  <span
+                    className="cityMapHubHotspotStateSlot"
+                    aria-label={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
+                    title={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
+                  >
+                    {chipKind ? <span className="cityMapHubHotspotStateChip">{chipKind}</span> : null}
+                  </span>
                 </span>
               </button>
+              <span className="cityMapHubHotspotGlint" aria-hidden="true" />
             </div>
           );
         })}
