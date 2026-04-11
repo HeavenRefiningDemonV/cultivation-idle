@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import type { CityDef } from '../../content/index.js';
 import { useContentStore } from '../../stores/contentStore.js';
 import { useCityStore } from '../../stores/cityStore.js';
@@ -54,6 +54,7 @@ export function WorldScreen() {
   const currentCityId = useCityStore((state) => state.currentCityId);
   const unlockedCityIds = useCityStore((state) => state.unlockedCityIds);
   const selectedModuleByCity = useCityStore((state) => state.selectedModuleByCity);
+  const setSelectedModule = useCityStore((state) => state.setSelectedModule);
   const setCurrentCity = useCityStore((state) => state.setCurrentCity);
   const activeByCityId = useBountyStore((state) => state.activeByCityId);
   const trackedByCityId = useBountyStore((state) => state.trackedByCityId);
@@ -107,32 +108,26 @@ export function WorldScreen() {
   }, [activeByCityId, currentCityId, trackedByCityId]);
 
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
-  const worldModalKey = useUIStore((state) => state.worldBuildingModalKey);
   const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
+  const [previewModuleKey, setPreviewModuleKey] = useState<string | null>(null);
 
-  const displayedModuleKey = useMemo(() => {
-    if (!selectedCity) return null;
-    const stored = selectedModuleByCity[selectedCity.id];
-    if (stored && visibleCityModules.includes(stored)) return stored;
+  const storedLockedModuleKey = selectedCity ? selectedModuleByCity[selectedCity.id] ?? null : null;
+
+  const lockedModuleFallback = useMemo(() => {
+    if (visibleCityModules.includes('outskirts')) return 'outskirts';
     return visibleCityModules[0] ?? null;
-  }, [selectedCity, selectedModuleByCity, visibleCityModules]);
+  }, [visibleCityModules]);
 
-  const combatModuleKey = useMemo(() => {
-    if (!selectedCity) return null;
-    if (combatPresentation.mode === 'hidden' || !combatPresentation.context) return null;
-    if (combatPresentation.context.cityId && combatPresentation.context.cityId !== selectedCity.id) return null;
-    return combatPresentation.context.moduleKey ?? (combatPresentation.context.type === 'trial' ? 'gateTrial' : combatPresentation.context.type);
-  }, [combatPresentation, selectedCity]);
-
-  const activeModuleKey = useMemo(() => {
-    if (combatModuleKey) return combatModuleKey;
-    if (showWorldBuildingModal && worldModalCityId && worldModalCityId === selectedCity?.id && worldModalKey) {
-      return worldModalKey;
+  const lockedModuleKey = useMemo(() => {
+    if (storedLockedModuleKey && visibleCityModules.includes(storedLockedModuleKey)) {
+      return storedLockedModuleKey;
     }
-    return displayedModuleKey;
-  }, [combatModuleKey, displayedModuleKey, selectedCity?.id, showWorldBuildingModal, worldModalCityId, worldModalKey]);
+    return lockedModuleFallback;
+  }, [lockedModuleFallback, storedLockedModuleKey, visibleCityModules]);
+
+  const inspectorModuleKey = previewModuleKey ?? lockedModuleKey;
 
   const trackedDestination = useMemo(() => {
     if (!selectedCity || !trackedBounty) return null;
@@ -150,6 +145,22 @@ export function WorldScreen() {
       closeWorldBuildingModal();
     }
   }, [closeWorldBuildingModal, selectedCity, showWorldBuildingModal, worldModalCityId]);
+
+  useEffect(() => {
+    if (!selectedCity || !lockedModuleKey) return;
+    if (selectedModuleByCity[selectedCity.id] === lockedModuleKey) return;
+    setSelectedModule(selectedCity.id, lockedModuleKey);
+  }, [lockedModuleKey, selectedCity, selectedModuleByCity, setSelectedModule]);
+
+  useEffect(() => {
+    setPreviewModuleKey(null);
+  }, [currentCityId, selectedCity?.id]);
+
+  useEffect(() => {
+    if (!previewModuleKey) return;
+    if (visibleCityModules.includes(previewModuleKey)) return;
+    setPreviewModuleKey(null);
+  }, [previewModuleKey, visibleCityModules]);
 
   const economicPrimary = useMemo(() => {
     try {
@@ -205,7 +216,7 @@ export function WorldScreen() {
         content: rawContent,
         cityId: selectedCity.id,
         visibleModules: visibleCityModules as never,
-        activeModuleKey,
+        activeModuleKey: lockedModuleKey,
         runCompassPrimaryModuleKey: null,
         runCompassSecondaryModuleKey: null,
         economicModuleKeys: economicPrimary?.cityId === selectedCity.id && economicPrimary.moduleKey ? [economicPrimary.moduleKey] : [],
@@ -217,7 +228,7 @@ export function WorldScreen() {
         idleExpeditionSlots: Math.max(0, expeditionSlots - expeditionActive.filter((entry) => entry.cityId === selectedCity.id && entry.status === 'running').length),
       });
     },
-    [activeByCityId, activeModuleKey, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, rawContent, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
+    [activeByCityId, currentCityId, economicPrimary, expeditionActive, expeditionIdleAlert, expeditionSlots, lockedModuleKey, rawContent, selectedCity, trackedAlert, trackedDestination, visibleCityModules],
   );
 
   const moduleMetadataByKey = useMemo(() => {
@@ -276,6 +287,16 @@ export function WorldScreen() {
     [selectedCity, visibleCityModules],
   );
 
+  const handleSelectModule = useCallback(
+    (moduleKey: string) => {
+      if (!selectedCity) return;
+      if (!visibleCityModules.includes(moduleKey)) return;
+      if (selectedModuleByCity[selectedCity.id] === moduleKey) return;
+      setSelectedModule(selectedCity.id, moduleKey);
+    },
+    [selectedCity, selectedModuleByCity, setSelectedModule, visibleCityModules],
+  );
+
   if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
 
   if (error) {
@@ -299,11 +320,13 @@ export function WorldScreen() {
             <div className="worldScreenMapLayer">
               <CityMapHub
                 modules={visibleCityModules}
-                activeModuleKey={activeModuleKey}
+                activeModuleKey={lockedModuleKey}
                 recommendedModuleKey={worldCommandSurface.strongRecommendationModuleKey}
                 moduleMetadataByKey={moduleMetadataByKey}
                 getModuleLabel={getWorldModuleLabel}
                 onOpenModule={handleRouteToModule}
+                onSelectModule={handleSelectModule}
+                onPreviewModuleChange={setPreviewModuleKey}
               />
             </div>
 
@@ -334,7 +357,25 @@ export function WorldScreen() {
               />
             </div>
 
-            <div className="worldScreenInspectorLayer" aria-hidden="true" />
+            <div className="worldScreenInspectorLayer">
+              <div className="worldScreenPanel" style={{ pointerEvents: 'auto' }}>
+                <h3 className="worldScreenPanelTitle">Selected module</h3>
+                <p className="worldScreenPanelSubtitle">
+                  {inspectorModuleKey ? getWorldModuleLabel(inspectorModuleKey) : 'No module selected.'}
+                </p>
+                <button
+                  type="button"
+                  className="worldScreenModuleButton worldScreenModuleButton--direct uiNoShift"
+                  disabled={!inspectorModuleKey}
+                  onClick={() => {
+                    if (!inspectorModuleKey) return;
+                    handleRouteToModule(inspectorModuleKey);
+                  }}
+                >
+                  Open
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

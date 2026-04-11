@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { useUIStore } from '../../stores/uiStore.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
@@ -72,18 +72,8 @@ export function CityMapHub({
   onPreviewModuleChange,
 }: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
-  const [localLockedSelectedModuleKey, setLocalLockedSelectedModuleKey] = useState<string | null>(activeModuleKey);
-  const [localPreviewModuleKey, setLocalPreviewModuleKey] = useState<string | null>(null);
-  const lastSeenActiveModuleRef = useRef<string | null>(activeModuleKey);
-
-  useEffect(() => {
-    if (lastSeenActiveModuleRef.current === activeModuleKey) return;
-    lastSeenActiveModuleRef.current = activeModuleKey;
-    setLocalLockedSelectedModuleKey(activeModuleKey);
-  }, [activeModuleKey]);
 
   const updatePreview = (moduleKey: string | null) => {
-    setLocalPreviewModuleKey(moduleKey);
     onPreviewModuleChange?.(moduleKey);
     if (moduleKey && MODULE_BACKGROUNDS[moduleKey]) {
       setLayoutBackgroundOverride(MODULE_BACKGROUNDS[moduleKey]);
@@ -100,7 +90,6 @@ export function CityMapHub({
   }, [onPreviewModuleChange, setLayoutBackgroundOverride]);
 
   const handleSelect = (moduleKey: string) => {
-    setLocalLockedSelectedModuleKey(moduleKey);
     onSelectModule?.(moduleKey);
   };
 
@@ -111,13 +100,12 @@ export function CityMapHub({
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
 
-          const isLockedSelected = localLockedSelectedModuleKey === moduleKey;
-          const isPreviewed = localPreviewModuleKey === moduleKey;
+          const isLockedSelected = activeModuleKey === moduleKey;
 
           return (
             <div
               key={moduleKey}
-              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isPreviewed ? 'cityMapHubHotspot--preview' : ''}`}
+              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
               <button
@@ -128,12 +116,6 @@ export function CityMapHub({
                 onMouseLeave={() => updatePreview(null)}
                 onFocus={() => updatePreview(moduleKey)}
                 onBlur={() => updatePreview(null)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    handleSelect(moduleKey);
-                  }
-                }}
                 title={getModuleLabel(moduleKey)}
                 aria-pressed={isLockedSelected}
               >
