@@ -1,0 +1,68 @@
+.worldOverlayInspector {
+  width: clamp(300px, 22vw, 340px);
+  max-height: min(68vh, 560px);
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(122, 94, 53, 0.44);
+  background: linear-gradient(180deg, rgba(251, 245, 235, 0.95), rgba(238, 224, 197, 0.92));
+  box-shadow: 0 16px 34px rgba(20, 14, 9, 0.28);
+  padding: 14px 14px 12px;
+  color: rgba(34, 24, 16, 0.95);
+  pointer-events: auto;
+}
+
+.worldOverlayInspector__header {
+  margin-bottom: 8px;
+}
+
+.worldOverlayInspector__city {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  color: rgba(84, 66, 49, 0.86);
+}
+
+.worldOverlayInspector__title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.worldOverlayInspector__role {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: rgba(86, 66, 45, 0.92);
+}
+
+.worldOverlayInspector__bestUsedWhen {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.worldOverlayInspector__outputs {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.worldOverlayInspector__line {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: rgba(76, 56, 37, 0.9);
+}
+
+.worldOverlayInspector__openButton {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 72, 33, 0.72);
+  background: linear-gradient(180deg, rgba(255, 246, 226, 0.98), rgba(244, 219, 176, 0.96));
+  color: rgba(33, 22, 14, 0.96);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 12px;
+}

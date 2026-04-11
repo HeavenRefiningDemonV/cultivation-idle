@@ -167,10 +167,12 @@
 
 .worldScreenInspectorLayer {
   position: absolute;
-  inset: 0 0 0 auto;
-  width: min(360px, 32vw);
+  inset: 76px 14px auto auto;
   z-index: 40;
   pointer-events: none;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
 }
 
 .worldScreenPanel {

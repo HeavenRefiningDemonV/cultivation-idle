@@ -30,6 +30,7 @@ import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/eco
 import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModuleRoutingSurface.js';
 import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
+import { WorldOverlayInspector } from '../../ui/world/WorldOverlayInspector.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -251,6 +252,30 @@ export function WorldScreen() {
     return byModuleKey;
   }, [worldCommandSurface.groups]);
 
+  const worldCardsByModuleKey = useMemo(() => {
+    const byKey = new Map<string, {
+      moduleKey: string;
+      label: string;
+      roleTag: string;
+      bestUsedWhen: string;
+      outputs: readonly string[];
+      openLabel: string;
+    }>();
+    for (const group of worldCommandSurface.groups) {
+      for (const card of group.cards) {
+        byKey.set(card.moduleKey, {
+          moduleKey: card.moduleKey,
+          label: card.label,
+          roleTag: card.roleTag,
+          bestUsedWhen: card.bestUsedWhen,
+          outputs: card.outputs,
+          openLabel: card.openLabel,
+        });
+      }
+    }
+    return byKey;
+  }, [worldCommandSurface.groups]);
+
   const handleSelectCity = useCallback((city: CityDef) => {
     if (!city || city.id === currentCityId) return;
 
@@ -326,6 +351,21 @@ export function WorldScreen() {
     ].filter(Boolean).join(' · ')
     : null;
 
+  const inspectorCard = inspectorModuleKey ? worldCardsByModuleKey.get(inspectorModuleKey) ?? null : null;
+  const inspectorLabel = inspectorCard?.label ?? (inspectorModuleKey ? getWorldModuleLabel(inspectorModuleKey) : 'No module selected');
+  const inspectorRoleTag = inspectorCard?.roleTag ?? 'Support · Current Selection';
+  const inspectorBestUsedWhen = inspectorCard?.bestUsedWhen ?? 'Select a module on the map, then use Open to enter it.';
+  const inspectorOutputs = (inspectorCard?.outputs.slice(0, 3) ?? ['Map selection controls World module routing.']) as string[];
+  const inspectorRecommendationLine = worldCommandSurface.strongRecommendationModuleKey === inspectorModuleKey
+    ? 'Recommended here now.'
+    : null;
+  const inspectorSupportLine = trackedAlert?.ctaModuleKey === inspectorModuleKey
+    ? 'Tracked bounty active.'
+    : expeditionIdleAlert?.ctaModuleKey === inspectorModuleKey
+      ? 'Expedition slot idle.'
+      : null;
+  const inspectorOpenLabel = inspectorCard?.openLabel ?? (inspectorModuleKey ? `Open ${inspectorLabel}` : 'Open');
+
   return (
     <div className={'worldScreen'}>
       {!selectedCity ? (
@@ -362,23 +402,19 @@ export function WorldScreen() {
             </div>
 
             <div className="worldScreenInspectorLayer">
-              <div className="worldScreenPanel" style={{ pointerEvents: 'auto' }}>
-                <h3 className="worldScreenPanelTitle">Selected module</h3>
-                <p className="worldScreenPanelSubtitle">
-                  {inspectorModuleKey ? getWorldModuleLabel(inspectorModuleKey) : 'No module selected.'}
-                </p>
-                <button
-                  type="button"
-                  className="worldScreenModuleButton worldScreenModuleButton--direct uiNoShift"
-                  disabled={!inspectorModuleKey}
-                  onClick={() => {
-                    if (!inspectorModuleKey) return;
-                    handleRouteToModule(inspectorModuleKey);
-                  }}
-                >
-                  Open
-                </button>
-              </div>
+              {inspectorModuleKey ? (
+                <WorldOverlayInspector
+                  moduleLabel={inspectorLabel}
+                  roleTag={inspectorRoleTag}
+                  bestUsedWhen={inspectorBestUsedWhen}
+                  outputs={inspectorOutputs}
+                  recommendationLine={inspectorRecommendationLine}
+                  supportLine={inspectorSupportLine}
+                  openLabel={inspectorOpenLabel}
+                  onOpen={() => handleRouteToModule(inspectorModuleKey)}
+                  cityName={sanitizeLiveCityName(selectedCity.name)}
+                />
+              ) : null}
             </div>
           </div>
         </div>
