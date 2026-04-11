@@ -29,7 +29,7 @@ import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerF
 import { buildLiveEconomicRecommendationEngine } from '../../systems/economy/economicRecommendationEngine.js';
 import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModuleRoutingSurface.js';
 import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
-import { TopRibbon } from '../../ui/shell/index.js';
+import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -251,7 +251,7 @@ export function WorldScreen() {
     return byModuleKey;
   }, [worldCommandSurface.groups]);
 
-  const handleSelectCity = (city: CityDef) => {
+  const handleSelectCity = useCallback((city: CityDef) => {
     if (!city || city.id === currentCityId) return;
 
     const travelGuard = getWorldTravelGuard({
@@ -276,7 +276,16 @@ export function WorldScreen() {
     }
 
     setCurrentCity(city.id);
-  };
+  }, [activeActivityType, addNotification, cityRequirementById, combatPresentation.mode, currentCityId, inCombat, setCurrentCity, unlockedCityIds]);
+
+  const handleSelectCityById = useCallback(
+    (cityId: string) => {
+      const city = citiesSorted.find((entry) => entry.id === cityId);
+      if (!city) return;
+      handleSelectCity(city);
+    },
+    [citiesSorted, handleSelectCity],
+  );
 
   const handleRouteToModule = useCallback(
     (moduleKey: string) => {
@@ -310,6 +319,13 @@ export function WorldScreen() {
 
   if (!isLoaded || citiesSorted.length === 0) return <div className={'worldScreen worldScreenMessage'}>No cities available.</div>;
 
+  const supportCapsuleText = trackedBounty || expeditionIdleAlert
+    ? [
+      trackedBounty ? '1 Tracked Bounty' : null,
+      expeditionIdleAlert ? 'Expedition Slot Idle' : null,
+    ].filter(Boolean).join(' · ')
+    : null;
+
   return (
     <div className={'worldScreen'}>
       {!selectedCity ? (
@@ -331,29 +347,17 @@ export function WorldScreen() {
             </div>
 
             <div className="worldScreenRibbonLayer">
-              <TopRibbon
-                className="worldTopRibbon worldTopRibbon--overlay"
-                variant="world"
-                density="compact"
-                tone="ink"
-                title="World"
-                endSlot={
-                  <div className="worldTopRibbon__cityList worldTopRibbon__cityList--overlay" role="group" aria-label="City selector">
-                    {worldSelectorEntries.map(({ city, isUnlocked, isCurrent, requirementText }) => (
-                      <button
-                        key={city.id}
-                        type="button"
-                        className={`worldTopRibbon__cityChip uiNoShift ${isCurrent ? 'worldTopRibbon__cityChip--current' : ''} ${!isUnlocked ? 'worldTopRibbon__cityChip--locked' : ''}`}
-                        onClick={() => handleSelectCity(city)}
-                        aria-current={isCurrent ? 'true' : undefined}
-                        aria-disabled={!isUnlocked ? 'true' : undefined}
-                        title={isUnlocked ? `Travel to ${sanitizeLiveCityName(city.name)}` : `${sanitizeLiveCityName(city.name)} locked: ${requirementText ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE}`}
-                      >
-                        <span className="worldTopRibbon__cityChipName">{sanitizeLiveCityName(city.name)}</span>
-                      </button>
-                    ))}
-                  </div>
-                }
+              <WorldOverlayRibbon
+                cityOptions={worldSelectorEntries.map(({ city, isUnlocked, isCurrent, requirementText }) => ({
+                  cityId: city.id,
+                  label: sanitizeLiveCityName(city.name),
+                  isUnlocked,
+                  isCurrent,
+                  requirementText: requirementText ?? deriveCityRequirementText(city) ?? LOCK_REQUIREMENT_UNAVAILABLE,
+                }))}
+                selectedCityId={selectedCity.id}
+                onSelectCity={handleSelectCityById}
+                supportCapsuleText={supportCapsuleText}
               />
             </div>
 

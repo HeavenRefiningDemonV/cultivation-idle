@@ -173,21 +173,6 @@
   pointer-events: none;
 }
 
-.worldTopRibbon--overlay {
-  pointer-events: auto;
-  width: 100%;
-}
-
-.worldTopRibbon__cityList--overlay {
-  justify-content: flex-end;
-  max-width: min(100%, 920px);
-  margin-left: auto;
-}
-
-.worldTopRibbon__cityList--overlay .worldTopRibbon__cityChipMeta {
-  display: none;
-}
-
 .worldScreenPanel {
   overflow: hidden;
 }

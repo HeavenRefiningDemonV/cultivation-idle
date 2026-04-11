@@ -1,0 +1,74 @@
+.worldOverlayRibbon {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  right: 12px;
+  height: 60px;
+  border-radius: 14px;
+  border: 1px solid rgba(115, 87, 55, 0.34);
+  background: linear-gradient(180deg, rgba(250, 243, 231, 0.9), rgba(239, 226, 202, 0.86));
+  box-shadow: 0 8px 24px rgba(24, 16, 10, 0.2);
+  display: grid;
+  grid-template-columns: auto minmax(220px, 340px) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  pointer-events: auto;
+}
+
+.worldOverlayRibbon__left {
+  min-width: 0;
+}
+
+.worldOverlayRibbon__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(46, 35, 26, 0.92);
+}
+
+.worldOverlayRibbon__center {
+  justify-self: center;
+  width: 100%;
+}
+
+.worldOverlayRibbon__citySelect {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 10px;
+  border: 1px solid rgba(122, 94, 53, 0.48);
+  background: rgba(255, 252, 246, 0.92);
+  color: rgba(39, 28, 20, 0.96);
+  font-size: 13px;
+  line-height: 1.2;
+  padding: 8px 10px;
+}
+
+.worldOverlayRibbon__right {
+  justify-self: end;
+}
+
+.worldOverlayRibbon__capsule {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 94, 53, 0.36);
+  background: rgba(255, 247, 233, 0.86);
+  color: rgba(49, 35, 24, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.worldOverlayRibbon__srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
