@@ -32,6 +32,7 @@ import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistr
 import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
 import { WorldOverlayInspector } from '../../ui/world/WorldOverlayInspector.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
+import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -133,6 +134,8 @@ export function WorldScreen() {
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
   const [previewModuleKey, setPreviewModuleKey] = useState<string | null>(null);
+  const [isNarrowWorldLayout, setIsNarrowWorldLayout] = useState(false);
+  const [isNarrowInspectorOpen, setIsNarrowInspectorOpen] = useState(false);
 
   const storedLockedModuleKey = selectedCity ? selectedModuleByCity[selectedCity.id] ?? null : null;
 
@@ -176,6 +179,29 @@ export function WorldScreen() {
   useEffect(() => {
     setPreviewModuleKey(null);
   }, [currentCityId, selectedCity?.id]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia('(max-width: 860px)');
+    const update = () => {
+      setIsNarrowWorldLayout(media.matches);
+    };
+    update();
+    media.addEventListener('change', update);
+    return () => {
+      media.removeEventListener('change', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isNarrowWorldLayout) {
+      setIsNarrowInspectorOpen(false);
+    }
+  }, [isNarrowWorldLayout]);
+
+  useEffect(() => {
+    setIsNarrowInspectorOpen(false);
+  }, [selectedCity?.id, currentCityId]);
 
   useEffect(() => {
     if (!previewModuleKey) return;
@@ -345,10 +371,14 @@ export function WorldScreen() {
     (moduleKey: string) => {
       if (!selectedCity) return;
       if (!visibleCityModules.includes(moduleKey)) return;
-      if (selectedModuleByCity[selectedCity.id] === moduleKey) return;
-      setSelectedModule(selectedCity.id, moduleKey);
+      if (selectedModuleByCity[selectedCity.id] !== moduleKey) {
+        setSelectedModule(selectedCity.id, moduleKey);
+      }
+      if (isNarrowWorldLayout) {
+        setIsNarrowInspectorOpen(true);
+      }
     },
-    [selectedCity, selectedModuleByCity, setSelectedModule, visibleCityModules],
+    [isNarrowWorldLayout, selectedCity, selectedModuleByCity, setSelectedModule, visibleCityModules],
   );
 
   if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
@@ -462,7 +492,7 @@ export function WorldScreen() {
             </div>
 
             <div className="worldScreenInspectorLayer">
-              {inspectorModuleKey ? (
+              {!isNarrowWorldLayout && inspectorModuleKey ? (
                 <WorldOverlayInspector
                   moduleLabel={inspectorLabel}
                   roleTag={inspectorRoleTag}
@@ -475,6 +505,28 @@ export function WorldScreen() {
                 />
               ) : null}
             </div>
+            {isNarrowWorldLayout && inspectorModuleKey ? (
+              <InspectorDrawer
+                open={isNarrowInspectorOpen}
+                onClose={() => setIsNarrowInspectorOpen(false)}
+                title={`${sanitizeLiveCityName(selectedCity.name)} — ${inspectorLabel}`}
+                headerMode="close-only"
+                className="worldScreenInspectorDrawerOverlay"
+                panelClassName="worldScreenInspectorDrawerPanel"
+              >
+                <WorldOverlayInspector
+                  className="worldOverlayInspector--drawer"
+                  moduleLabel={inspectorLabel}
+                  roleTag={inspectorRoleTag}
+                  bestUsedWhen={inspectorBestUsedWhen}
+                  outputs={inspectorOutputs}
+                  stateLine={inspectorStateLine}
+                  openLabel={inspectorOpenLabel}
+                  onOpen={() => handleRouteToModule(inspectorModuleKey)}
+                  cityName={sanitizeLiveCityName(selectedCity.name)}
+                />
+              </InspectorDrawer>
+            ) : null}
           </div>
         </div>
       )}
