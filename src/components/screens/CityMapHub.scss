@@ -28,6 +28,12 @@
 }
 
 .cityMapHubHotspot {
+  --city-hotspot-border: rgba(106, 79, 48, 0.52);
+  --city-hotspot-bg-top: rgba(252, 246, 234, 0.94);
+  --city-hotspot-bg-bottom: rgba(241, 225, 197, 0.92);
+  --city-hotspot-shadow: rgba(18, 10, 4, 0.24);
+  --city-hotspot-ink: #1f1a17;
+
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: 2;
@@ -50,10 +56,10 @@
   min-block-size: 30px;
   padding: 4px 8px;
   border-radius: 10px;
-  border: 1px solid rgba(106, 79, 48, 0.52);
-  background: linear-gradient(180deg, rgba(252, 246, 234, 0.94), rgba(241, 225, 197, 0.92));
-  box-shadow: inset 0 1px 0 rgba(255, 250, 241, 0.62), 0 5px 12px rgba(18, 10, 4, 0.24);
-  color: #1f1a17;
+  border: 1px solid var(--city-hotspot-border);
+  background: linear-gradient(180deg, var(--city-hotspot-bg-top), var(--city-hotspot-bg-bottom));
+  box-shadow: inset 0 1px 0 rgba(255, 250, 241, 0.62), 0 5px 12px var(--city-hotspot-shadow);
+  color: var(--city-hotspot-ink);
   cursor: pointer;
 }
 
@@ -82,6 +88,40 @@
     inset 0 1px 0 rgba(255, 253, 245, 0.72),
     0 7px 15px rgba(28, 16, 6, 0.28),
     0 0 0 1px rgba(120, 72, 33, 0.3);
+}
+
+.cityMapHubHotspot--role-combat {
+  --city-hotspot-border: rgba(125, 73, 52, 0.62);
+  --city-hotspot-bg-top: rgba(252, 239, 231, 0.95);
+  --city-hotspot-bg-bottom: rgba(235, 209, 194, 0.93);
+}
+
+.cityMapHubHotspot--role-preparation {
+  --city-hotspot-border: rgba(113, 90, 54, 0.62);
+  --city-hotspot-bg-top: rgba(252, 245, 232, 0.95);
+  --city-hotspot-bg-bottom: rgba(238, 223, 198, 0.93);
+}
+
+.cityMapHubHotspot--role-support {
+  --city-hotspot-border: rgba(95, 88, 68, 0.62);
+  --city-hotspot-bg-top: rgba(246, 242, 231, 0.94);
+  --city-hotspot-bg-bottom: rgba(230, 220, 202, 0.92);
+}
+
+.cityMapHubHotspot--tone-solemn {
+  --city-hotspot-shadow: rgba(30, 13, 8, 0.3);
+}
+
+.cityMapHubHotspot--tone-forge .cityMapHubHotspotLabelName {
+  color: rgba(112, 45, 32, 0.96);
+}
+
+.cityMapHubHotspot--tone-scholar .cityMapHubHotspotLabelName {
+  color: rgba(75, 61, 42, 0.96);
+}
+
+.cityMapHubHotspot--tone-dispatch .cityMapHubHotspotLabelName {
+  color: rgba(62, 56, 45, 0.94);
 }
 
 .cityMapHubHotspot--glint .cityMapHubHotspotGlint {

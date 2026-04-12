@@ -13,6 +13,8 @@ import cityTalismanBg from '../../assets/background/citystates/city_talisman.png
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 
 export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
+type WorldHotspotRole = 'combat' | 'preparation' | 'support' | 'neutral';
+type WorldHotspotTone = 'neutral' | 'solemn' | 'forge' | 'scholar' | 'dispatch';
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -38,6 +40,25 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
   outskirts: cityOutskirtsBg,
   gateTrial: cityGateBg,
   ruins: cityRuinsBg,
+};
+
+const MODULE_ROLE_BY_KEY: Partial<Record<string, WorldHotspotRole>> = {
+  outskirts: 'combat',
+  ruins: 'combat',
+  gateTrial: 'combat',
+  manualPavilion: 'preparation',
+  apothecary: 'preparation',
+  forge: 'preparation',
+  bounties: 'support',
+  expeditions: 'support',
+};
+
+const MODULE_TONE_BY_KEY: Partial<Record<string, WorldHotspotTone>> = {
+  gateTrial: 'solemn',
+  forge: 'forge',
+  manualPavilion: 'scholar',
+  bounties: 'dispatch',
+  expeditions: 'dispatch',
 };
 
 export interface CityMapHubProps {
@@ -125,11 +146,13 @@ export function CityMapHub({
           const isLockedSelected = activeModuleKey === moduleKey;
           const chipKind = moduleCueByKey[moduleKey] ?? null;
           const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
+          const hotspotRole = MODULE_ROLE_BY_KEY[moduleKey] ?? 'neutral';
+          const hotspotTone = MODULE_TONE_BY_KEY[moduleKey] ?? 'neutral';
 
           return (
             <div
               key={moduleKey}
-              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
+              className={`cityMapHubHotspot cityMapHubHotspot--role-${hotspotRole} cityMapHubHotspot--tone-${hotspotTone} ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
               <button
