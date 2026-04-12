@@ -1,5 +1,6 @@
-import { useEffect, type CSSProperties } from 'react';
+import { useEffect } from 'react';
 import { useUIStore } from '../../stores/uiStore.js';
+import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -11,14 +12,10 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
-import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
-import { ScenicLabel } from '../../ui/shell/ScenicLabel.js';
-import { getWorldModuleCardDefinition, type WorldModuleGroupKey } from '../../systems/world/moduleCardRegistry.js';
-import type { LiveWorldModuleKey } from '../../content/types.js';
 
 export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
-type WorldHotspotGroup = WorldModuleGroupKey | 'neutral';
-type WorldHotspotTone = 'neutral' | 'solemn' | 'forge' | 'scholar' | 'dispatch';
+
+const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -46,27 +43,6 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
   ruins: cityRuinsBg,
 };
 
-const MODULE_TONE_BY_KEY: Partial<Record<string, WorldHotspotTone>> = {
-  gateTrial: 'solemn',
-  forge: 'forge',
-  manualPavilion: 'scholar',
-  bounties: 'dispatch',
-  expeditions: 'dispatch',
-};
-
-const MODULE_GROUP_OVERRIDES: Partial<Record<string, WorldHotspotGroup>> = {
-  alchemy: 'preparation',
-  talismanStudio: 'preparation',
-};
-
-function resolveHotspotGroup(moduleKey: string): WorldHotspotGroup {
-  try {
-    return getWorldModuleCardDefinition(moduleKey as LiveWorldModuleKey).group;
-  } catch {
-    return MODULE_GROUP_OVERRIDES[moduleKey] ?? 'neutral';
-  }
-}
-
 export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
@@ -93,18 +69,16 @@ export interface CityMapHubProps {
 export function CityMapHub({
   modules,
   activeModuleKey,
-  moduleCueByKey = {},
-  glintModuleKey = null,
   getModuleLabel,
+  onOpenModule,
   atmosphereQuality = 'medium',
   prefersReducedMotion = false,
   onSelectModule,
   onPreviewModuleChange,
 }: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
-  const reducedMotionEnabled = prefersReducedMotion ?? false;
 
-  const updatePreview = (moduleKey: string | null) => {
+  const handleHover = (moduleKey: string | null) => {
     onPreviewModuleChange?.(moduleKey);
     if (moduleKey && MODULE_BACKGROUNDS[moduleKey]) {
       setLayoutBackgroundOverride(MODULE_BACKGROUNDS[moduleKey]);
@@ -120,18 +94,9 @@ export function CityMapHub({
     };
   }, [onPreviewModuleChange, setLayoutBackgroundOverride]);
 
-  const handleSelect = (moduleKey: string) => {
+  const handleOpen = (moduleKey: string) => {
     onSelectModule?.(moduleKey);
-  };
-
-  const chipAriaLabelByKind: Record<WorldHotspotChipKind, string> = {
-    NOW: 'Recommended now',
-    SOON: 'Useful soon',
-    CLAIM: 'Claim ready',
-    IDLE: 'Idle slot',
-    FIX: 'Build fix',
-    GATE: 'Gate critical',
-    LOW: 'Stock low',
+    onOpenModule?.(moduleKey);
   };
 
   return (
@@ -140,60 +105,29 @@ export function CityMapHub({
         className="cityMapHubMap"
         aria-label="City map"
         data-atmosphere-quality={atmosphereQuality}
-        data-reduced-motion={reducedMotionEnabled ? '1' : '0'}
+        data-reduced-motion={prefersReducedMotion ? '1' : '0'}
       >
         {modules.map((moduleKey) => {
+          if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
-
-          const isLockedSelected = activeModuleKey === moduleKey;
-          const chipKind = moduleCueByKey[moduleKey] ?? null;
-          const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
-          const scenicState = isLockedSelected ? 'active' : isGlintTarget ? 'recommended' : 'default';
-          const hotspotGroup = resolveHotspotGroup(moduleKey);
-          const hotspotTone = MODULE_TONE_BY_KEY[moduleKey] ?? 'neutral';
-          const hotspotStyle = {
-            left: `${position.leftPct}%`,
-            top: `${position.topPct}%`,
-            '--world-hotspot-plaque-url': `url(${WORLD_SUPPORT_ART_ASSET_URLS.buildingLabelPlaque})`,
-            '--world-hotspot-selected-url': `url(${WORLD_SUPPORT_ART_ASSET_URLS.selectedBuildingPlate})`,
-          } as CSSProperties;
+          const isActive = activeModuleKey === moduleKey;
 
           return (
-            <div
+            <button
               key={moduleKey}
-              className={`cityMapHubHotspot cityMapHubHotspot--group-${hotspotGroup} cityMapHubHotspot--module-${moduleKey} cityMapHubHotspot--tone-${hotspotTone} ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
-              style={hotspotStyle}
+              type="button"
+              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''}`}
+              style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
+              onClick={() => handleOpen(moduleKey)}
+              onMouseEnter={() => handleHover(moduleKey)}
+              onMouseLeave={() => handleHover(null)}
+              onFocus={() => handleHover(moduleKey)}
+              onBlur={() => handleHover(null)}
+              title={`Open ${getModuleLabel(moduleKey)}`}
             >
-              <ScenicLabel
-                variant="building"
-                emphasis="medium"
-                state={scenicState}
-                className="cityMapHubHotspotTrigger uiNoShift"
-                labelClassName="cityMapHubHotspotLabelName"
-                reserveStateSlot={true}
-                stateSlot={
-                  <span
-                    className="cityMapHubHotspotStateSlot"
-                    aria-label={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
-                    title={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
-                  >
-                    {chipKind ? <span className="cityMapHubHotspotStateChip">{chipKind}</span> : <span className="cityMapHubHotspotStatePlaceholder" aria-hidden="true" />}
-                  </span>
-                }
-                label={getModuleLabel(moduleKey)}
-                onClick={() => handleSelect(moduleKey)}
-                onMouseEnter={() => updatePreview(moduleKey)}
-                onMouseLeave={() => updatePreview(null)}
-                onFocus={() => updatePreview(moduleKey)}
-                onBlur={() => updatePreview(null)}
-                title={getModuleLabel(moduleKey)}
-              />
-              <span
-                className={`cityMapHubHotspotGlint ${isLockedSelected ? 'cityMapHubHotspotGlint--active' : ''} ${!isLockedSelected && isGlintTarget ? 'cityMapHubHotspotGlint--recommended' : ''}`}
-                aria-hidden="true"
-              />
-            </div>
+              <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
+            </button>
           );
         })}
       </div>
