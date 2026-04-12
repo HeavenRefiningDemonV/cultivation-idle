@@ -438,7 +438,7 @@ export function WorldScreen() {
                 moduleCueByKey={moduleCueByKey}
                 glintModuleKey={strongestRecommendationModuleKey}
                 getModuleLabel={getWorldModuleLabel}
-                onOpenModule={handleRouteToModule}
+                onOpenModule={handleSelectModule}
                 onSelectModule={handleSelectModule}
                 onPreviewModuleChange={setPreviewModuleKey}
                 atmosphereQuality={effectiveQuality}
