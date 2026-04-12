@@ -1,4 +1,5 @@
 import './WorldOverlayInspector.scss';
+import './WorldActionButton.scss';
 
 interface WorldOverlayInspectorProps {
   moduleLabel: string;
@@ -43,7 +44,7 @@ export function WorldOverlayInspector({
 
       {stateLine ? <p className="worldOverlayInspector__line">{stateLine}</p> : null}
 
-      <button type="button" className="worldOverlayInspector__openButton uiNoShift" onClick={onOpen}>
+      <button type="button" className="worldOverlayInspector__openButton worldActionButton uiNoShift" onClick={onOpen}>
         {openLabel}
       </button>
     </section>

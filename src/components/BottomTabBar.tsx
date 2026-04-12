@@ -60,6 +60,7 @@ export function BottomTabBar() {
   return (
     <BottomNavDock
       items={items}
+      className={activeTab === 'adventure' ? 'bottomNavDock--world' : undefined}
       itemClassName={BOTTOM_TAB_BAR_COMPAT_POLICY.itemClassName}
       preserveLegacyHooks={BOTTOM_TAB_BAR_COMPAT_POLICY.preserveLegacyHooks}
       hostAttrs={BOTTOM_TAB_BAR_COMPAT_POLICY.hostAttrs}

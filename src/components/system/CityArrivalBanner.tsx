@@ -10,6 +10,7 @@ import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_label
 import { CITY_PACKAGE_REGISTRY_BY_ID, getSupportIdentityLabel } from '../../systems/world/cityPackageRegistry.js';
 import { openWorldModule } from '../../systems/world/openWorldModule.js';
 import './CityArrivalBanner.scss';
+import '../../ui/world/WorldActionButton.scss';
 import { getOpenWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { createCityArrivalPrompt } from '../../systems/ui/onboardingPromptRegistry.js';
 
@@ -91,23 +92,23 @@ export function CityArrivalBanner() {
         </div>
         <div className="cityArrivalBannerActions">
           <div className="cityArrivalBannerQuickOpen">
-          {phaseTeaching.quickOpenModules.map((moduleKey) => (
-            <button
-              key={moduleKey}
-              type="button"
-              className="worldScreenModuleButton worldScreenModuleButton--subtle"
-              onClick={() => {
-                acknowledgeCityArrival(city.id);
-                openWorldModule({ cityId: city.id, moduleKey, source: 'city-arrival-banner' });
-              }}
-            >
-              {getCityArrivalQuickOpenLabel(moduleKey) ?? getOpenWorldModuleLabel(moduleKey)}
-            </button>
-          ))}
+            {phaseTeaching.quickOpenModules.map((moduleKey) => (
+              <button
+                key={moduleKey}
+                type="button"
+                className="cityArrivalBannerActionButton worldActionButton worldActionButton--subtle"
+                onClick={() => {
+                  acknowledgeCityArrival(city.id);
+                  openWorldModule({ cityId: city.id, moduleKey, source: 'city-arrival-banner' });
+                }}
+              >
+                {getCityArrivalQuickOpenLabel(moduleKey) ?? getOpenWorldModuleLabel(moduleKey)}
+              </button>
+            ))}
           </div>
           <button
             type="button"
-            className="worldScreenModuleButton"
+            className="cityArrivalBannerActionButton worldActionButton"
             onClick={() => acknowledgeCityArrival(city.id)}
           >
             Continue

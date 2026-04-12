@@ -1,3 +1,5 @@
+import './WorldActionButton.scss';
+
 export function WorldCommandAlert(props: {
   title: string;
   detail: string;
@@ -9,7 +11,7 @@ export function WorldCommandAlert(props: {
     <div className="worldCommandAlert">
       <div className="worldCommandAlertTitle">{title}</div>
       <div className="worldCommandAlertDetail">{detail}</div>
-      <button type="button" className="worldCommandAlertCta" onClick={onCta}>
+      <button type="button" className="worldCommandAlertCta worldActionButton worldActionButton--subtle" onClick={onCta}>
         {ctaLabel}
       </button>
     </div>
