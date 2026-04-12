@@ -89,6 +89,14 @@
   animation: cityMapHubHotspotGlintPulse 3.2s ease-in-out infinite;
 }
 
+.cityMapHubHotspotGlint--active {
+  opacity: 0.28;
+}
+
+.cityMapHubHotspotGlint--recommended {
+  opacity: 0.38;
+}
+
 .cityMapHubHotspot--lowFx .cityMapHubHotspotGlint,
 .cityMapHubHotspot--reducedMotion .cityMapHubHotspotGlint {
   animation: none;

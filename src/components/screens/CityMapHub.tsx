@@ -72,12 +72,13 @@ export function CityMapHub({
   moduleMetadataByKey: _moduleMetadataByKey = {},
   getModuleLabel,
   onOpenModule: _onOpenModule,
-  atmosphereQuality: _atmosphereQuality = 'medium',
-  prefersReducedMotion: _prefersReducedMotion = false,
+  atmosphereQuality = 'medium',
+  prefersReducedMotion = false,
   onSelectModule,
   onPreviewModuleChange,
 }: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
+  const reducedMotionEnabled = prefersReducedMotion ?? false;
 
   const updatePreview = (moduleKey: string | null) => {
     onPreviewModuleChange?.(moduleKey);
@@ -111,7 +112,12 @@ export function CityMapHub({
 
   return (
     <div className="cityMapHub">
-      <div className="cityMapHubMap" aria-label="City map">
+      <div
+        className="cityMapHubMap"
+        aria-label="City map"
+        data-atmosphere-quality={atmosphereQuality}
+        data-reduced-motion={reducedMotionEnabled ? '1' : '0'}
+      >
         {modules.map((moduleKey) => {
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
@@ -123,7 +129,7 @@ export function CityMapHub({
           return (
             <div
               key={moduleKey}
-              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${prefersReducedMotion ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
+              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
               <button
@@ -148,7 +154,10 @@ export function CityMapHub({
                   </span>
                 </span>
               </button>
-              <span className="cityMapHubHotspotGlint" aria-hidden="true" />
+              <span
+                className={`cityMapHubHotspotGlint ${isLockedSelected ? 'cityMapHubHotspotGlint--active' : ''} ${!isLockedSelected && isGlintTarget ? 'cityMapHubHotspotGlint--recommended' : ''}`}
+                aria-hidden="true"
+              />
             </div>
           );
         })}

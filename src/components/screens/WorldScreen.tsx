@@ -31,6 +31,7 @@ import { buildWorldModuleRoutingSurface } from '../../systems/ui/world/worldModu
 import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
 import { WorldOverlayInspector } from '../../ui/world/WorldOverlayInspector.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
@@ -81,6 +82,7 @@ export function WorldScreen() {
   const activeActivityType = useActivityStore((state) => state.active?.type ?? null);
   const expeditionSlots = useExpeditionStore((state) => state.slots);
   const expeditionActive = useExpeditionStore((state) => state.active);
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const selectedCity = useMemo(() => {
     if (!currentCityId) return null;
@@ -439,6 +441,8 @@ export function WorldScreen() {
                 onOpenModule={handleRouteToModule}
                 onSelectModule={handleSelectModule}
                 onPreviewModuleChange={setPreviewModuleKey}
+                atmosphereQuality={effectiveQuality}
+                prefersReducedMotion={prefersReducedMotion}
               />
             </div>
 
