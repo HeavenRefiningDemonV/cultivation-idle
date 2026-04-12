@@ -6,6 +6,7 @@ import {
   WORLD_ROUTING_CHIP_DEFINITIONS,
   getWorldModuleCardDefinitions,
 } from '../../src/systems/world/moduleCardRegistry.js';
+import { COMBAT_TRIO_TRUTH } from '../../src/systems/world/combatTrioTruth.js';
 
 const expectedChipLabels = [
   'Recommended Now',
@@ -59,7 +60,10 @@ test('bounties and manual pavilion metadata lock key player-facing output hints'
   assert.deepEqual(bounties?.defaultOutputs.map((entry) => entry.label), ['Merit', 'Spirit Stones']);
   assert.deepEqual(manual?.defaultOutputs.map((entry) => entry.label), ['Manuals', 'Technique Fragments']);
   assert.deepEqual(apothecary?.defaultOutputs.map((entry) => entry.label), ['Healing Stock', 'Preparation Remedies']);
-  assert.equal(gateTrial?.roleTag, 'Gate Progress');
+  assert.equal(gateTrial?.roleTag, COMBAT_TRIO_TRUTH.gateTrial.roleTag);
+  assert.equal(gateTrial?.bestUsedWhen, COMBAT_TRIO_TRUTH.gateTrial.bestUsedWhenSentence);
   assert.equal(bounties?.roleTag, 'Merit & Routing');
   assert.equal(expeditions?.roleTag, 'Passive Support');
+  assert.equal(definitions.find((entry) => entry.moduleKey === 'outskirts')?.bestUsedWhen, COMBAT_TRIO_TRUTH.outskirts.bestUsedWhenSentence);
+  assert.equal(definitions.find((entry) => entry.moduleKey === 'ruins')?.bestUsedWhen, COMBAT_TRIO_TRUTH.ruins.bestUsedWhenSentence);
 });

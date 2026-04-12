@@ -6,14 +6,15 @@ import {
   getRuinLeadMaterialIds,
 } from './activityRewardRoles.js';
 import { getRuinsDropsConfig } from './activityRewardRuntime.js';
+import { COMBAT_TRIO_TRUTH } from '../world/combatTrioTruth.js';
 
-export const OUTSKIRTS_ROLE_TAG = 'Gold & Common Mats';
-export const OUTSKIRTS_BEST_USED_WHEN = 'Best used when you need gold, common materials, or low-risk combat reps.';
-export const OUTSKIRTS_BOUNDARY_LINE = 'Not the best source for targeted city materials.';
+export const OUTSKIRTS_ROLE_TAG = COMBAT_TRIO_TRUTH.outskirts.roleTag;
+export const OUTSKIRTS_BEST_USED_WHEN = COMBAT_TRIO_TRUTH.outskirts.bestUsedWhenSentence;
+export const OUTSKIRTS_BOUNDARY_LINE = COMBAT_TRIO_TRUTH.outskirts.boundaryLine;
 
-export const RUINS_ROLE_TAG = 'Targeted Mats';
-export const RUINS_BEST_USED_WHEN = 'Best used when you need targeted local materials and deterministic support rewards.';
-export const RUINS_GOLD_SECONDARY_LINE = 'Gold is secondary here; the run is for targeted local materials and support stability.';
+export const RUINS_ROLE_TAG = COMBAT_TRIO_TRUTH.ruins.roleTag;
+export const RUINS_BEST_USED_WHEN = COMBAT_TRIO_TRUTH.ruins.bestUsedWhenSentence;
+export const RUINS_GOLD_SECONDARY_LINE = COMBAT_TRIO_TRUTH.ruins.boundaryLine;
 
 export interface OutskirtsActivityRewardReadModel {
   cityId: string;

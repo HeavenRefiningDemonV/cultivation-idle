@@ -18,12 +18,19 @@ const forbiddenWorldTerms = [
 test('world-facing vocabulary sources keep canonical role tags and world tab label', () => {
   const labels = read('src/ui/text/playerFacingLabels.ts');
   const moduleRegistry = read('src/systems/world/moduleCardRegistry.ts');
+  const combatTrioTruth = read('src/systems/world/combatTrioTruth.ts');
   const worldCommandSurface = read('src/systems/ui/world/worldCommandSurface.ts');
 
   assert.match(labels, /adventure:\s*'World'/);
-  assert.match(moduleRegistry, /roleTag:\s*'Gold & Common Mats'/);
-  assert.match(moduleRegistry, /roleTag:\s*'Targeted Mats'/);
-  assert.match(moduleRegistry, /roleTag:\s*'Gate Progress'/);
+  assert.match(combatTrioTruth, /roleTag:\s*'Gold & Common Mats'/);
+  assert.match(combatTrioTruth, /roleTag:\s*'Targeted Mats'/);
+  assert.match(combatTrioTruth, /roleTag:\s*'Gate Progress'/);
+  assert.match(combatTrioTruth, /bestUsedWhenClause:\s*'you need gold, common materials, or low-risk combat reps\.'/);
+  assert.match(combatTrioTruth, /bestUsedWhenClause:\s*'you need targeted local materials and deterministic support rewards\.'/);
+  assert.match(combatTrioTruth, /bestUsedWhenClause:\s*'you are ready to resolve the current gate trial\.'/);
+  assert.match(moduleRegistry, /COMBAT_TRIO_TRUTH\.outskirts\.roleTag/);
+  assert.match(moduleRegistry, /COMBAT_TRIO_TRUTH\.ruins\.roleTag/);
+  assert.match(moduleRegistry, /COMBAT_TRIO_TRUTH\.gateTrial\.roleTag/);
   assert.match(moduleRegistry, /roleTag:\s*'Build Correction'/);
   assert.match(moduleRegistry, /roleTag:\s*'Immediate Readiness'/);
   assert.match(moduleRegistry, /roleTag:\s*'Permanent Floor'/);
@@ -31,7 +38,7 @@ test('world-facing vocabulary sources keep canonical role tags and world tab lab
   assert.match(moduleRegistry, /roleTag:\s*'Passive Support'/);
   assert.match(worldCommandSurface, /getWorldModuleCardDefinition\(moduleKey\)\.roleTag/);
 
-  [labels, moduleRegistry, worldCommandSurface].forEach((source) => {
+  [labels, moduleRegistry, combatTrioTruth, worldCommandSurface].forEach((source) => {
     forbiddenWorldTerms.forEach((pattern) => {
       assert.doesNotMatch(source, pattern);
     });

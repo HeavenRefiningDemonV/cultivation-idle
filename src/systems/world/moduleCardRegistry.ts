@@ -4,14 +4,11 @@ import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
 import { sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import {
   buildCityActivityRewardReadModel,
-  OUTSKIRTS_BEST_USED_WHEN,
-  OUTSKIRTS_BOUNDARY_LINE,
-  RUINS_BEST_USED_WHEN,
-  RUINS_GOLD_SECONDARY_LINE,
   OUTSKIRTS_CARD_OUTPUT_HINTS,
   RUINS_CARD_OUTPUT_HINTS,
 } from '../economy/activityRewardReadModel.js';
 import { getTrialGateItemId } from '../progression/runtime/gateResolver.js';
+import { COMBAT_TRIO_TRUTH } from './combatTrioTruth.js';
 
 export type WorldModuleGroupKey = 'combat' | 'preparation' | 'support';
 
@@ -93,8 +90,8 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     label: getWorldModuleLabel('outskirts'),
     group: 'combat',
     sortOrder: 1,
-    roleTag: 'Gold & Common Mats',
-    bestUsedWhen: OUTSKIRTS_BEST_USED_WHEN,
+    roleTag: COMBAT_TRIO_TRUTH.outskirts.roleTag,
+    bestUsedWhen: COMBAT_TRIO_TRUTH.outskirts.bestUsedWhenSentence,
     defaultOutputs: [{ key: 'gold', label: OUTSKIRTS_CARD_OUTPUT_HINTS[0] }, { key: 'common_mats', label: OUTSKIRTS_CARD_OUTPUT_HINTS[1] }],
     ctaLabel: 'Open Outskirts',
     allowedChipKinds: ['recommended_now', 'useful_soon'],
@@ -106,8 +103,8 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     label: getWorldModuleLabel('ruins'),
     group: 'combat',
     sortOrder: 2,
-    roleTag: 'Targeted Mats',
-    bestUsedWhen: RUINS_BEST_USED_WHEN,
+    roleTag: COMBAT_TRIO_TRUTH.ruins.roleTag,
+    bestUsedWhen: COMBAT_TRIO_TRUTH.ruins.bestUsedWhenSentence,
     defaultOutputs: [{ key: 'local_mats', label: RUINS_CARD_OUTPUT_HINTS[0] }, { key: 'anchor_drop', label: RUINS_CARD_OUTPUT_HINTS[1] }],
     ctaLabel: 'Open Ruins',
     allowedChipKinds: ['recommended_now', 'useful_soon'],
@@ -119,8 +116,8 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     label: getWorldModuleLabel('gateTrial'),
     group: 'combat',
     sortOrder: 3,
-    roleTag: 'Gate Progress',
-    bestUsedWhen: 'Best used when you are ready to resolve the current gate trial.',
+    roleTag: COMBAT_TRIO_TRUTH.gateTrial.roleTag,
+    bestUsedWhen: COMBAT_TRIO_TRUTH.gateTrial.bestUsedWhenSentence,
     defaultOutputs: [{ key: 'gate_proof', label: 'Gate Proof' }, { key: 'breakthrough', label: 'Breakthrough' }],
     ctaLabel: 'Open Gate Trial',
     allowedChipKinds: ['recommended_now', 'gate_critical'],
@@ -244,7 +241,7 @@ export function buildWorldModuleCardSurface(args: BuildWorldModuleCardSurfaceArg
         roleTag: activityReadModel.outskirts.roleTag,
         bestUsedWhen: activityReadModel.outskirts.bestUsedWhen,
         outputs: asOutputHints(OUTSKIRTS_CARD_OUTPUT_HINTS),
-        boundaryLine: OUTSKIRTS_BOUNDARY_LINE,
+        boundaryLine: COMBAT_TRIO_TRUTH.outskirts.boundaryLine,
         ctaLabel: definition.ctaLabel,
         allowedChipKinds: definition.allowedChipKinds,
       };
@@ -257,7 +254,7 @@ export function buildWorldModuleCardSurface(args: BuildWorldModuleCardSurfaceArg
       roleTag: activityReadModel.ruins.roleTag,
       bestUsedWhen: activityReadModel.ruins.bestUsedWhen,
       outputs: asOutputHints(RUINS_CARD_OUTPUT_HINTS),
-      boundaryLine: RUINS_GOLD_SECONDARY_LINE,
+      boundaryLine: COMBAT_TRIO_TRUTH.ruins.boundaryLine,
       ctaLabel: definition.ctaLabel,
       allowedChipKinds: definition.allowedChipKinds,
     };

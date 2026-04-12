@@ -5,6 +5,7 @@ import { buildCityActivityRewardReadModel, type CityActivityRewardReadModel } fr
 import { getEconomicModuleRoleEntries, type EconomicModuleRoleEntry } from './moduleRoleRegistry.js';
 import { getAllPrepBudgetRegistryEntries } from './prepBudgetRegistry.js';
 import { listVisibleForgeInputItemIds } from './economicSourceAdapters.js';
+import { bestUsedWhenClauseToSentence } from '../world/combatTrioTruth.js';
 
 export interface PurposeSourceSurface {
   purposeTag: string;
@@ -232,7 +233,7 @@ export function buildModulePurposeSourceSurface(
     moduleKey,
     moduleLabel: getWorldModuleLabel(moduleKey),
     purposeTag: role.roleTag,
-    purposeLine: `Best used when ${role.bestUsedWhen.charAt(0).toLowerCase()}${role.bestUsedWhen.slice(1)}`,
+    purposeLine: bestUsedWhenClauseToSentence(role.bestUsedWhen),
     boundaryLine: role.moduleKey === 'outskirts'
       ? 'Switch away once you need targeted local mats instead of broad farming.'
       : role.moduleKey === 'ruins'

@@ -52,9 +52,10 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     const failures = ruinProgress?.bossChestRareFailures ?? 0;
     const summary = ruinsRewardModel.rarePitySummary;
     if (!summary) return 'Boss Chest Rare Progress: not configured.';
-    const threshold = Math.max(summary.pityCap - 1, 0);
-    const guaranteed = threshold > 0 && failures >= threshold;
-    return `Boss Chest Rare Progress: ${failures} / ${threshold || '—'}${guaranteed ? ' • Guaranteed next rare' : ''}`;
+    if (failures > 0) {
+      return `Boss Chest Rare Progress: ${summary} (current failures: ${failures}).`;
+    }
+    return `Boss Chest Rare Progress: ${summary}`;
   }, [ruinProgress?.bossChestRareFailures, ruinsRewardModel.rarePitySummary]);
 
   const runStateLine = activeRun
