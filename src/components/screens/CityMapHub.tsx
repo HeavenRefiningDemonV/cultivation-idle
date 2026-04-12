@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from 'react';
+import { useEffect } from 'react';
 import { useUIStore } from '../../stores/uiStore.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
@@ -11,13 +11,11 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
-import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
-import { getWorldModuleCardDefinition, type WorldModuleGroupKey } from '../../systems/world/moduleCardRegistry.js';
-import type { LiveWorldModuleKey } from '../../content/types.js';
+import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
 
 export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
-type WorldHotspotGroup = WorldModuleGroupKey | 'neutral';
-type WorldHotspotTone = 'neutral' | 'solemn' | 'forge' | 'scholar' | 'dispatch';
+
+const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -45,27 +43,6 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
   ruins: cityRuinsBg,
 };
 
-const MODULE_TONE_BY_KEY: Partial<Record<string, WorldHotspotTone>> = {
-  gateTrial: 'solemn',
-  forge: 'forge',
-  manualPavilion: 'scholar',
-  bounties: 'dispatch',
-  expeditions: 'dispatch',
-};
-
-const MODULE_GROUP_OVERRIDES: Partial<Record<string, WorldHotspotGroup>> = {
-  alchemy: 'preparation',
-  talismanStudio: 'preparation',
-};
-
-function resolveHotspotGroup(moduleKey: string): WorldHotspotGroup {
-  try {
-    return getWorldModuleCardDefinition(moduleKey as LiveWorldModuleKey).group;
-  } catch {
-    return MODULE_GROUP_OVERRIDES[moduleKey] ?? 'neutral';
-  }
-}
-
 export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
@@ -92,8 +69,8 @@ export interface CityMapHubProps {
 export function CityMapHub({
   modules,
   activeModuleKey,
-  moduleCueByKey = {},
-  glintModuleKey = null,
+  moduleCueByKey: _moduleCueByKey = {},
+  glintModuleKey: _glintModuleKey = null,
   recommendedModuleKey: _recommendedModuleKey = null,
   moduleMetadataByKey: _moduleMetadataByKey = {},
   getModuleLabel,
@@ -104,9 +81,8 @@ export function CityMapHub({
   onPreviewModuleChange,
 }: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
-  const reducedMotionEnabled = prefersReducedMotion ?? false;
 
-  const updatePreview = (moduleKey: string | null) => {
+  const handleHover = (moduleKey: string | null) => {
     onPreviewModuleChange?.(moduleKey);
     if (moduleKey && MODULE_BACKGROUNDS[moduleKey]) {
       setLayoutBackgroundOverride(MODULE_BACKGROUNDS[moduleKey]);
@@ -126,73 +102,35 @@ export function CityMapHub({
     onSelectModule?.(moduleKey);
   };
 
-  const chipAriaLabelByKind: Record<WorldHotspotChipKind, string> = {
-    NOW: 'Recommended now',
-    SOON: 'Useful soon',
-    CLAIM: 'Claim ready',
-    IDLE: 'Idle slot',
-    FIX: 'Build fix',
-    GATE: 'Gate critical',
-    LOW: 'Stock low',
-  };
-
   return (
     <div className="cityMapHub">
       <div
         className="cityMapHubMap"
         aria-label="City map"
         data-atmosphere-quality={atmosphereQuality}
-        data-reduced-motion={reducedMotionEnabled ? '1' : '0'}
+        data-reduced-motion={prefersReducedMotion ? '1' : '0'}
       >
         {modules.map((moduleKey) => {
+          if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
-
-          const isLockedSelected = activeModuleKey === moduleKey;
-          const chipKind = moduleCueByKey[moduleKey] ?? null;
-          const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
-          const hotspotGroup = resolveHotspotGroup(moduleKey);
-          const hotspotTone = MODULE_TONE_BY_KEY[moduleKey] ?? 'neutral';
-          const hotspotStyle = {
-            left: `${position.leftPct}%`,
-            top: `${position.topPct}%`,
-            '--world-hotspot-plaque-art': `url(${WORLD_SUPPORT_ART_ASSET_URLS.buildingLabelPlaque})`,
-            '--world-hotspot-selected-plate-art': `url(${WORLD_SUPPORT_ART_ASSET_URLS.selectedBuildingPlate})`,
-          } as CSSProperties;
+          const isActive = activeModuleKey === moduleKey;
 
           return (
-            <div
+            <button
               key={moduleKey}
-              className={`cityMapHubHotspot cityMapHubHotspot--group-${hotspotGroup} cityMapHubHotspot--module-${moduleKey} cityMapHubHotspot--tone-${hotspotTone} ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
-              style={hotspotStyle}
+              type="button"
+              className={`cityMapHubHotspot ${isActive ? 'cityMapHubHotspot--active' : ''}`}
+              style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
+              onClick={() => handleSelect(moduleKey)}
+              onMouseEnter={() => handleHover(moduleKey)}
+              onMouseLeave={() => handleHover(null)}
+              onFocus={() => handleHover(moduleKey)}
+              onBlur={() => handleHover(null)}
+              title={`Open ${getModuleLabel(moduleKey)}`}
             >
-              <button
-                type="button"
-                className="cityMapHubHotspotButton uiNoShift"
-                onClick={() => handleSelect(moduleKey)}
-                onMouseEnter={() => updatePreview(moduleKey)}
-                onMouseLeave={() => updatePreview(null)}
-                onFocus={() => updatePreview(moduleKey)}
-                onBlur={() => updatePreview(null)}
-                title={getModuleLabel(moduleKey)}
-                aria-pressed={isLockedSelected}
-              >
-                <span className="cityMapHubHotspotLabel">
-                  <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
-                  <span
-                    className="cityMapHubHotspotStateSlot"
-                    aria-label={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
-                    title={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
-                  >
-                    {chipKind ? <span className="cityMapHubHotspotStateChip">{chipKind}</span> : null}
-                  </span>
-                </span>
-              </button>
-              <span
-                className={`cityMapHubHotspotGlint ${isLockedSelected ? 'cityMapHubHotspotGlint--active' : ''} ${!isLockedSelected && isGlintTarget ? 'cityMapHubHotspotGlint--recommended' : ''}`}
-                aria-hidden="true"
-              />
-            </div>
+              <span className="cityMapHubHotspotLabel">{getModuleLabel(moduleKey)}</span>
+            </button>
           );
         })}
       </div>
