@@ -33,7 +33,6 @@ import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
 import { WorldOverlayInspector } from '../../ui/world/WorldOverlayInspector.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
-import '../../ui/world/WorldModuleCard.scss';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
