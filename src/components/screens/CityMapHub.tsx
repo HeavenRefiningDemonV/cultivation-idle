@@ -1,9 +1,5 @@
 import { useEffect } from 'react';
-import classNames from 'classnames';
 import { useUIStore } from '../../stores/uiStore.js';
-import { DEFERRED_WORLD_MODULES } from '../../systems/world/liveWorldSchema.js';
-import { ScenicLabel, type ScenicLabelState } from '../../ui/shell/index.js';
-import type { WorldRoutingChipKind } from '../../systems/world/moduleCardRegistry.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
 import cityApothecaryBg from '../../assets/background/citystates/city_apothecary.png';
@@ -16,18 +12,7 @@ import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 
-const HIDDEN_HUB_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
-const CITY_MAP_HUB_SCENIC_LABEL_VARIANT = 'building' as const;
-const CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT = true;
-const WORLD_MAP_CHIP_ABBREVIATIONS = {
-  recommended_now: 'NOW',
-  useful_soon: 'SOON',
-  claim_ready: 'CLAIM',
-  idle_slot: 'IDLE',
-  build_fix: 'FIX',
-  gate_critical: 'GATE',
-  stock_low: 'LOW',
-} as const satisfies Record<WorldRoutingChipKind, string>;
+export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
   manualPavilion: { leftPct: 85.6, topPct: 14.5 },
@@ -58,32 +43,45 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
 export interface CityMapHubProps {
   modules: string[];
   activeModuleKey: string | null;
+  moduleCueByKey?: Partial<Record<string, WorldHotspotChipKind>>;
+  glintModuleKey?: string | null;
   recommendedModuleKey?: string | null;
   moduleMetadataByKey?: Readonly<Record<string, {
     roleTag: string;
     bestUsedWhen: string;
     outputs: readonly string[];
-    chipKind: WorldRoutingChipKind | null;
+    chipKind: string | null;
   }>>;
   getModuleLabel: (moduleKey: string) => string;
-  onOpenModule: (moduleKey: string) => void;
+  /** Deprecated W2 compatibility prop. Do not invoke for direct-open behavior; W3 rewires parent selection contract. */
+  onOpenModule?: (moduleKey: string) => void;
+  /** Deprecated W2 compatibility prop retained to keep WorldScreen unchanged during W2. */
   atmosphereQuality?: FxEffectiveQuality;
+  /** Deprecated W2 compatibility prop retained to keep WorldScreen unchanged during W2. */
   prefersReducedMotion?: boolean;
+  onSelectModule?: (moduleKey: string) => void;
+  onPreviewModuleChange?: (moduleKey: string | null) => void;
 }
 
 export function CityMapHub({
   modules,
   activeModuleKey,
-  recommendedModuleKey = null,
-  moduleMetadataByKey = {},
+  moduleCueByKey = {},
+  glintModuleKey = null,
+  recommendedModuleKey: _recommendedModuleKey = null,
+  moduleMetadataByKey: _moduleMetadataByKey = {},
   getModuleLabel,
-  onOpenModule,
+  onOpenModule: _onOpenModule,
   atmosphereQuality = 'medium',
   prefersReducedMotion = false,
+  onSelectModule,
+  onPreviewModuleChange,
 }: CityMapHubProps) {
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
+  const reducedMotionEnabled = prefersReducedMotion ?? false;
 
-  const handleHover = (moduleKey: string | null) => {
+  const updatePreview = (moduleKey: string | null) => {
+    onPreviewModuleChange?.(moduleKey);
     if (moduleKey && MODULE_BACKGROUNDS[moduleKey]) {
       setLayoutBackgroundOverride(MODULE_BACKGROUNDS[moduleKey]);
       return;
@@ -92,8 +90,25 @@ export function CityMapHub({
   };
 
   useEffect(() => {
-    return () => setLayoutBackgroundOverride(null);
-  }, [setLayoutBackgroundOverride]);
+    return () => {
+      setLayoutBackgroundOverride(null);
+      onPreviewModuleChange?.(null);
+    };
+  }, [onPreviewModuleChange, setLayoutBackgroundOverride]);
+
+  const handleSelect = (moduleKey: string) => {
+    onSelectModule?.(moduleKey);
+  };
+
+  const chipAriaLabelByKind: Record<WorldHotspotChipKind, string> = {
+    NOW: 'Recommended now',
+    SOON: 'Useful soon',
+    CLAIM: 'Claim ready',
+    IDLE: 'Idle slot',
+    FIX: 'Build fix',
+    GATE: 'Gate critical',
+    LOW: 'Stock low',
+  };
 
   return (
     <div className="cityMapHub">
@@ -101,52 +116,46 @@ export function CityMapHub({
         className="cityMapHubMap"
         aria-label="City map"
         data-atmosphere-quality={atmosphereQuality}
-        data-reduced-motion={prefersReducedMotion ? '1' : '0'}
+        data-reduced-motion={reducedMotionEnabled ? '1' : '0'}
       >
         {modules.map((moduleKey) => {
-          if (HIDDEN_HUB_MODULES.has(moduleKey)) return null;
           const position = MODULE_POSITIONS[moduleKey];
           if (!position) return null;
-          const isActive = activeModuleKey === moduleKey;
-          const isRecommended = !isActive && recommendedModuleKey === moduleKey;
-          const labelState: ScenicLabelState = isActive ? 'active' : isRecommended ? 'recommended' : 'default';
-          const moduleMetadata = moduleMetadataByKey[moduleKey];
-          const chipLabel = moduleMetadata?.chipKind ? WORLD_MAP_CHIP_ABBREVIATIONS[moduleMetadata.chipKind] : null;
-          const labelTitle = `Open ${getModuleLabel(moduleKey)}`;
+
+          const isLockedSelected = activeModuleKey === moduleKey;
+          const chipKind = moduleCueByKey[moduleKey] ?? null;
+          const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
 
           return (
             <div
               key={moduleKey}
-              className={classNames('cityMapHubHotspot', `cityMapHubHotspot--${moduleKey}`, {
-                'cityMapHubHotspot--active': isActive,
-                'cityMapHubHotspot--recommended': isRecommended,
-              })}
+              className={`cityMapHubHotspot ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
               style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
             >
-              <ScenicLabel
-                label={
-                  <span className="cityMapHubHotspotLabel">
-                    <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
+              <button
+                type="button"
+                className="cityMapHubHotspotButton uiNoShift"
+                onClick={() => handleSelect(moduleKey)}
+                onMouseEnter={() => updatePreview(moduleKey)}
+                onMouseLeave={() => updatePreview(null)}
+                onFocus={() => updatePreview(moduleKey)}
+                onBlur={() => updatePreview(null)}
+                title={getModuleLabel(moduleKey)}
+                aria-pressed={isLockedSelected}
+              >
+                <span className="cityMapHubHotspotLabel">
+                  <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
+                  <span
+                    className="cityMapHubHotspotStateSlot"
+                    aria-label={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
+                    title={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
+                  >
+                    {chipKind ? <span className="cityMapHubHotspotStateChip">{chipKind}</span> : null}
                   </span>
-                }
-                variant={CITY_MAP_HUB_SCENIC_LABEL_VARIANT}
-                state={labelState}
-                reserveStateSlot={CITY_MAP_HUB_SCENIC_LABEL_RESERVE_STATE_SLOT}
-                stateSlot={chipLabel ?? undefined}
-                emphasis={isActive ? 'medium' : 'quiet'}
-                className="cityMapHubHotspotTrigger uiNoShift"
-                onClick={() => onOpenModule(moduleKey)}
-                onMouseEnter={() => handleHover(moduleKey)}
-                onMouseLeave={() => handleHover(null)}
-                onFocus={() => handleHover(moduleKey)}
-                onBlur={() => handleHover(null)}
-                title={labelTitle}
-              />
+                </span>
+              </button>
               <span
-                className={classNames('cityMapHubHotspotGlint', {
-                  'cityMapHubHotspotGlint--active': isActive,
-                  'cityMapHubHotspotGlint--recommended': !isActive && isRecommended,
-                })}
+                className={`cityMapHubHotspotGlint ${isLockedSelected ? 'cityMapHubHotspotGlint--active' : ''} ${!isLockedSelected && isGlintTarget ? 'cityMapHubHotspotGlint--recommended' : ''}`}
                 aria-hidden="true"
               />
             </div>
