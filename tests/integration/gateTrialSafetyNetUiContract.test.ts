@@ -14,4 +14,6 @@ test('safety net wording is canonical in touched gate trial surfaces', async () 
   assert.doesNotMatch(lifecycle, /Fail-safe/i);
   assert.match(panel, /GATE_SUPPORT_LABELS\.support|Safety Net/);
   assert.match(panel, /Eligible Defeats/);
+  assert.match(panel, /GateTrialSummaryCard/);
+  assert.match(panel, /COMBAT_TRIO_TRUTH\.gateTrial/);
 });

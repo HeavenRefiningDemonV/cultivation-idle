@@ -3,6 +3,7 @@ import { getLiveExpeditionRoutePurposes } from '../world/expeditionRouteContract
 import { LIVE_BOUNTY_BOARD_SLOTS } from '../world/bountyBoardContract.js';
 import { DEFERRED_WORLD_MODULES } from '../world/liveWorldSchema.js';
 import { ECONOMY_FACING_MODULE_KEYS } from './economicConstants.js';
+import { COMBAT_TRIO_TRUTH } from '../world/combatTrioTruth.js';
 
 export type EconomicModuleCategory =
   | 'resource_source'
@@ -29,16 +30,16 @@ export interface EconomicModuleRoleEntry {
 export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'outskirts',
-    roleTag: 'Gold & Common Mats',
-    bestUsedWhen: 'You need gold and broad common-material income.',
+    roleTag: COMBAT_TRIO_TRUTH.outskirts.roleTag,
+    bestUsedWhen: COMBAT_TRIO_TRUTH.outskirts.bestUsedWhenClause,
     economicCategory: 'resource_source',
     moduleKind: 'primary_source',
     activityMode: 'foreground',
   },
   {
     moduleKey: 'ruins',
-    roleTag: 'Targeted Mats',
-    bestUsedWhen: 'You need deterministic targeted mats or anchor drops.',
+    roleTag: COMBAT_TRIO_TRUTH.ruins.roleTag,
+    bestUsedWhen: COMBAT_TRIO_TRUTH.ruins.bestUsedWhenClause,
     economicCategory: 'targeted_source',
     moduleKind: 'primary_source',
     activityMode: 'foreground',
@@ -85,8 +86,8 @@ export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   },
   {
     moduleKey: 'gateTrial',
-    roleTag: 'Gate Progress',
-    bestUsedWhen: 'You are ready to resolve the current milestone gate.',
+    roleTag: COMBAT_TRIO_TRUTH.gateTrial.roleTag,
+    bestUsedWhen: COMBAT_TRIO_TRUTH.gateTrial.bestUsedWhenClause,
     economicCategory: 'milestone',
     moduleKind: 'milestone_step',
     activityMode: 'foreground',

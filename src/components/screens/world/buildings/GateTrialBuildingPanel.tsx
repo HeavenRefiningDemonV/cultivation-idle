@@ -32,6 +32,8 @@ import { GateTrialAttemptCluster } from '../../../../ui/trials/GateTrialAttemptC
 import { performPostFailureFixAction } from '../../../../systems/ui/postFailure/index.js';
 import { InlineOnboardingCallout } from '../../../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../../../systems/ui/onboardingPromptRegistry.js';
+import { COMBAT_TRIO_TRUTH } from '../../../../systems/world/combatTrioTruth.js';
+import { GateTrialSummaryCard } from '../../../../ui/world/GateTrialSummaryCard.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -258,6 +260,12 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 />
               </div>
             ) : null}
+            <div className="ink-combat-shell__section gateTrialPanel__summary">
+              <GateTrialSummaryCard
+                roleTag={COMBAT_TRIO_TRUTH.gateTrial.roleTag}
+                bestUsedWhen={COMBAT_TRIO_TRUTH.gateTrial.bestUsedWhenSentence}
+              />
+            </div>
             {gateReadinessSurface ? (
               <div className="ink-combat-shell__section gateTrialPanel__readiness">
                 <GateTrialReadinessCard surface={gateReadinessSurface} />
