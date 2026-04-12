@@ -183,6 +183,53 @@
   inline-size: min(100vw, 420px);
 }
 
+
+.worldScreenRibbonLayer .worldOverlayRibbon {
+  border: 2px solid transparent;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px;
+  border-radius: 0;
+  background:
+    url('../../assets/menus/bar_long.png') center / 98% 72% no-repeat,
+    linear-gradient(180deg, rgba(250, 243, 231, 0.94), rgba(239, 226, 202, 0.9));
+}
+
+.worldScreenRibbonLayer .worldOverlayRibbon__citySelect {
+  border: 2px solid transparent;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px;
+  border-radius: 0;
+  background:
+    url('../../assets/menus/bar_short.png') center / 100% 100% no-repeat,
+    rgba(255, 252, 246, 0.92);
+}
+
+.worldScreenRibbonLayer .worldOverlayRibbon__capsule {
+  border: 2px solid transparent;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px;
+  border-radius: 0;
+  background:
+    url('../../assets/menus/bar_short.png') center / 100% 100% no-repeat,
+    rgba(255, 247, 233, 0.86);
+}
+
+.worldScreenInspectorLayer .worldOverlayInspector__openButton,
+.worldScreenInspectorDrawerOverlay .worldOverlayInspector__openButton,
+.worldScreenInspectorDrawerOverlay .inspectorDrawerClose {
+  border: 2px solid transparent;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px;
+  border-radius: 0;
+  background:
+    url('../../assets/menus/bar_short.png') center / 100% 100% no-repeat,
+    linear-gradient(180deg, rgba(255, 246, 226, 0.98), rgba(244, 219, 176, 0.96));
+}
+
+.worldScreenInspectorDrawerOverlay .inspectorDrawerClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
 .worldOverlayInspector--drawer {
   width: 100%;
   max-height: none;

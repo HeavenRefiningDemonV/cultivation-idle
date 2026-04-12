@@ -132,7 +132,7 @@ export function WorldScreen() {
   const worldModalCityId = useUIStore((state) => state.worldBuildingModalCityId);
   const showWorldBuildingModal = useUIStore((state) => state.showWorldBuildingModal);
   const combatPresentation = useUIStore((state) => state.combatPresentation);
-  const [previewModuleKey, setPreviewModuleKey] = useState<string | null>(null);
+  const [inspectorFocusByCity, setInspectorFocusByCity] = useState<Record<string, string>>({});
   const [isNarrowWorldLayout, setIsNarrowWorldLayout] = useState(false);
   const [isNarrowInspectorOpen, setIsNarrowInspectorOpen] = useState(false);
 
@@ -150,7 +150,10 @@ export function WorldScreen() {
     return lockedModuleFallback;
   }, [lockedModuleFallback, storedLockedModuleKey, visibleCityModules]);
 
-  const inspectorModuleKey = previewModuleKey ?? lockedModuleKey;
+  const persistedInspectorModuleKey = selectedCity ? inspectorFocusByCity[selectedCity.id] ?? null : null;
+  const inspectorModuleKey = persistedInspectorModuleKey && visibleCityModules.includes(persistedInspectorModuleKey)
+    ? persistedInspectorModuleKey
+    : lockedModuleKey;
 
   const trackedDestination = useMemo(() => {
     if (!selectedCity || !trackedBounty) return null;
@@ -175,9 +178,6 @@ export function WorldScreen() {
     setSelectedModule(selectedCity.id, lockedModuleKey);
   }, [lockedModuleKey, selectedCity, selectedModuleByCity, setSelectedModule]);
 
-  useEffect(() => {
-    setPreviewModuleKey(null);
-  }, [currentCityId, selectedCity?.id]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
@@ -203,10 +203,17 @@ export function WorldScreen() {
   }, [selectedCity?.id, currentCityId]);
 
   useEffect(() => {
-    if (!previewModuleKey) return;
-    if (visibleCityModules.includes(previewModuleKey)) return;
-    setPreviewModuleKey(null);
-  }, [previewModuleKey, visibleCityModules]);
+    if (!selectedCity) return;
+    const cityFocusModuleKey = inspectorFocusByCity[selectedCity.id];
+    if (!cityFocusModuleKey) return;
+    if (visibleCityModules.includes(cityFocusModuleKey)) return;
+    setInspectorFocusByCity((current) => {
+      if (!current[selectedCity.id]) return current;
+      const next = { ...current };
+      delete next[selectedCity.id];
+      return next;
+    });
+  }, [inspectorFocusByCity, selectedCity, visibleCityModules]);
 
   const economicPrimary = useMemo(() => {
     try {
@@ -370,6 +377,7 @@ export function WorldScreen() {
     (moduleKey: string) => {
       if (!selectedCity) return;
       if (!visibleCityModules.includes(moduleKey)) return;
+      setInspectorFocusByCity((current) => (current[selectedCity.id] === moduleKey ? current : { ...current, [selectedCity.id]: moduleKey }));
       if (selectedModuleByCity[selectedCity.id] !== moduleKey) {
         setSelectedModule(selectedCity.id, moduleKey);
       }
@@ -378,6 +386,15 @@ export function WorldScreen() {
       }
     },
     [isNarrowWorldLayout, selectedCity, selectedModuleByCity, setSelectedModule, visibleCityModules],
+  );
+
+  const handlePreviewModuleChange = useCallback(
+    (moduleKey: string | null) => {
+      if (!selectedCity || !moduleKey) return;
+      if (!visibleCityModules.includes(moduleKey)) return;
+      setInspectorFocusByCity((current) => (current[selectedCity.id] === moduleKey ? current : { ...current, [selectedCity.id]: moduleKey }));
+    },
+    [selectedCity, visibleCityModules],
   );
 
   if (isLoading) return <div className={'worldScreen worldScreenMessage'}>Loading content...</div>;
@@ -469,7 +486,7 @@ export function WorldScreen() {
                 getModuleLabel={getWorldModuleLabel}
                 onOpenModule={handleSelectModule}
                 onSelectModule={handleSelectModule}
-                onPreviewModuleChange={setPreviewModuleKey}
+                onPreviewModuleChange={handlePreviewModuleChange}
                 atmosphereQuality={effectiveQuality}
                 prefersReducedMotion={prefersReducedMotion}
               />

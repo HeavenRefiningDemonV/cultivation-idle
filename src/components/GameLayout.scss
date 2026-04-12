@@ -19,6 +19,12 @@
   background-image: url('../assets/background/tech.png');
 }
 
+.gameLayoutRoot--world .gameLayoutTextureOverlay {
+  opacity: 0.08;
+  mix-blend-mode: soft-light;
+}
+
+
 .gameLayoutBackgroundOverlay {
   position: fixed;
   inset: 0;

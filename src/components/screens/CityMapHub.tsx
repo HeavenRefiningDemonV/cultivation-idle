@@ -80,12 +80,16 @@ export function CityMapHub({
   const setLayoutBackgroundOverride = useUIStore((state) => state.setLayoutBackgroundOverride);
   const reducedMotionEnabled = prefersReducedMotion ?? false;
 
-  const updatePreview = (moduleKey: string | null) => {
+  const startPreview = (moduleKey: string) => {
     onPreviewModuleChange?.(moduleKey);
-    if (moduleKey && MODULE_BACKGROUNDS[moduleKey]) {
+    if (MODULE_BACKGROUNDS[moduleKey]) {
       setLayoutBackgroundOverride(MODULE_BACKGROUNDS[moduleKey]);
       return;
     }
+    setLayoutBackgroundOverride(null);
+  };
+
+  const clearPreviewVisual = () => {
     setLayoutBackgroundOverride(null);
   };
 
@@ -136,10 +140,10 @@ export function CityMapHub({
                 type="button"
                 className="cityMapHubHotspotButton uiNoShift"
                 onClick={() => handleSelect(moduleKey)}
-                onMouseEnter={() => updatePreview(moduleKey)}
-                onMouseLeave={() => updatePreview(null)}
-                onFocus={() => updatePreview(moduleKey)}
-                onBlur={() => updatePreview(null)}
+                onMouseEnter={() => startPreview(moduleKey)}
+                onMouseLeave={clearPreviewVisual}
+                onFocus={() => startPreview(moduleKey)}
+                onBlur={clearPreviewVisual}
                 title={getModuleLabel(moduleKey)}
                 aria-pressed={isLockedSelected}
               >
