@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type CSSProperties } from 'react';
 import { useUIStore } from '../../stores/uiStore.js';
 import './CityMapHub.scss';
 import cityAlchemyBg from '../../assets/background/citystates/city_alchemy.png';
@@ -11,9 +11,12 @@ import cityOutskirtsBg from '../../assets/background/citystates/city_outskirts.p
 import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
+import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
+import { getWorldModuleCardDefinition, type WorldModuleGroupKey } from '../../systems/world/moduleCardRegistry.js';
+import type { LiveWorldModuleKey } from '../../content/types.js';
 
 export type WorldHotspotChipKind = 'NOW' | 'SOON' | 'CLAIM' | 'IDLE' | 'FIX' | 'GATE' | 'LOW';
-type WorldHotspotRole = 'combat' | 'preparation' | 'support' | 'neutral';
+type WorldHotspotGroup = WorldModuleGroupKey | 'neutral';
 type WorldHotspotTone = 'neutral' | 'solemn' | 'forge' | 'scholar' | 'dispatch';
 
 const MODULE_POSITIONS: Record<string, { leftPct: number; topPct: number }> = {
@@ -42,17 +45,6 @@ const MODULE_BACKGROUNDS: Record<string, string> = {
   ruins: cityRuinsBg,
 };
 
-const MODULE_ROLE_BY_KEY: Partial<Record<string, WorldHotspotRole>> = {
-  outskirts: 'combat',
-  ruins: 'combat',
-  gateTrial: 'combat',
-  manualPavilion: 'preparation',
-  apothecary: 'preparation',
-  forge: 'preparation',
-  bounties: 'support',
-  expeditions: 'support',
-};
-
 const MODULE_TONE_BY_KEY: Partial<Record<string, WorldHotspotTone>> = {
   gateTrial: 'solemn',
   forge: 'forge',
@@ -60,6 +52,19 @@ const MODULE_TONE_BY_KEY: Partial<Record<string, WorldHotspotTone>> = {
   bounties: 'dispatch',
   expeditions: 'dispatch',
 };
+
+const MODULE_GROUP_OVERRIDES: Partial<Record<string, WorldHotspotGroup>> = {
+  alchemy: 'preparation',
+  talismanStudio: 'preparation',
+};
+
+function resolveHotspotGroup(moduleKey: string): WorldHotspotGroup {
+  try {
+    return getWorldModuleCardDefinition(moduleKey as LiveWorldModuleKey).group;
+  } catch {
+    return MODULE_GROUP_OVERRIDES[moduleKey] ?? 'neutral';
+  }
+}
 
 export interface CityMapHubProps {
   modules: string[];
@@ -146,14 +151,20 @@ export function CityMapHub({
           const isLockedSelected = activeModuleKey === moduleKey;
           const chipKind = moduleCueByKey[moduleKey] ?? null;
           const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
-          const hotspotRole = MODULE_ROLE_BY_KEY[moduleKey] ?? 'neutral';
+          const hotspotGroup = resolveHotspotGroup(moduleKey);
           const hotspotTone = MODULE_TONE_BY_KEY[moduleKey] ?? 'neutral';
+          const hotspotStyle = {
+            left: `${position.leftPct}%`,
+            top: `${position.topPct}%`,
+            '--world-hotspot-plaque-art': `url(${WORLD_SUPPORT_ART_ASSET_URLS.buildingLabelPlaque})`,
+            '--world-hotspot-selected-plate-art': `url(${WORLD_SUPPORT_ART_ASSET_URLS.selectedBuildingPlate})`,
+          } as CSSProperties;
 
           return (
             <div
               key={moduleKey}
-              className={`cityMapHubHotspot cityMapHubHotspot--role-${hotspotRole} cityMapHubHotspot--tone-${hotspotTone} ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
-              style={{ left: `${position.leftPct}%`, top: `${position.topPct}%` }}
+              className={`cityMapHubHotspot cityMapHubHotspot--group-${hotspotGroup} cityMapHubHotspot--module-${moduleKey} cityMapHubHotspot--tone-${hotspotTone} ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
+              style={hotspotStyle}
             >
               <button
                 type="button"
