@@ -28,12 +28,7 @@
 }
 
 .cityMapHubHotspot {
-  --world-hotspot-bg-top: rgba(252, 246, 234, 0.94);
-  --world-hotspot-bg-bottom: rgba(241, 225, 197, 0.92);
-  --world-hotspot-border: rgba(106, 79, 48, 0.52);
   --world-hotspot-ink: #1f1a17;
-  --world-hotspot-shadow: rgba(18, 10, 4, 0.24);
-  --world-hotspot-accent: rgba(120, 72, 33, 0.72);
 
   position: absolute;
   transform: translate(-50%, -50%);
@@ -48,39 +43,63 @@
   z-index: 4;
 }
 
-.cityMapHubHotspotButton {
+.cityMapHubHotspotTrigger,
+.cityMapHubHotspotTrigger.scenicLabel--recommended,
+.cityMapHubHotspotTrigger.scenicLabel--active {
+  --scenic-label-min-inline: 0;
+  --scenic-label-min-block: 0;
+  --scenic-label-pad-inline: 0;
+  --scenic-label-pad-block: 0;
+
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.cityMapHubHotspotTrigger {
   position: relative;
-  z-index: 2;
+  isolation: isolate;
+  overflow: visible;
   display: inline-flex;
   align-items: center;
-  max-inline-size: min(22vw, 152px);
-  min-block-size: 30px;
-  padding: 4px 8px;
-  border-radius: 10px;
-  border: 1px solid var(--world-hotspot-border);
-  background-image:
-    var(--world-hotspot-plaque-art),
-    linear-gradient(180deg, var(--world-hotspot-bg-top), var(--world-hotspot-bg-bottom));
-  background-repeat: no-repeat, no-repeat;
-  background-position: center, center;
-  background-size: 100% 100%, 100% 100%;
-  box-shadow: inset 0 1px 0 rgba(255, 250, 241, 0.62), 0 5px 12px var(--world-hotspot-shadow);
+  justify-content: space-between;
+  gap: 6px;
+  min-inline-size: 132px;
+  max-inline-size: 184px;
+  block-size: 36px;
+  padding-inline: 16px 14px;
   color: var(--world-hotspot-ink);
   cursor: pointer;
 }
 
-.cityMapHubHotspotButton::before {
+.cityMapHubHotspotTrigger::after {
+  content: '';
+  position: absolute;
+  inset: -4px -10px;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--world-hotspot-selected-url);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: 163.057% 392.337%;
+  opacity: 0;
+  transition: opacity var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+}
+
+.cityMapHubHotspotTrigger::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  z-index: 1;
   pointer-events: none;
-  opacity: 0;
-  background-image: var(--world-hotspot-selected-plate-art);
+  /* World plaque binaries are intentionally unmodified; crop/zoom is done in CSS so this fix stays text-only. */
+  background-image: var(--world-hotspot-plaque-url);
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  transition: opacity var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
+  background-position: 50% 50%;
+  background-size: 164.454% 447.162%;
+  filter: brightness(1) saturate(1);
+  transition: filter var(--ui-motion-hover-duration, 140ms) var(--ui-motion-hover-ease, ease);
 }
 
 .cityMapHubHotspotGlint {
@@ -92,61 +111,26 @@
   background: radial-gradient(circle at 50% 50%, rgba(235, 201, 142, 0.3), rgba(235, 201, 142, 0) 72%);
 }
 
-.cityMapHubHotspotButton:hover,
-.cityMapHubHotspotButton:focus-visible {
-  border-color: var(--world-hotspot-accent);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 250, 241, 0.7),
-    0 6px 14px rgba(18, 10, 4, 0.28),
-    0 0 0 2px color-mix(in srgb, var(--world-hotspot-accent) 25%, transparent);
+.cityMapHubHotspotTrigger:hover::before {
+  filter: brightness(1.06) saturate(1.1);
 }
 
-.cityMapHubHotspot--selected .cityMapHubHotspotButton {
-  border-color: color-mix(in srgb, var(--world-hotspot-accent) 84%, #2e2012);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 253, 245, 0.72),
-    0 7px 15px rgba(28, 16, 6, 0.28),
-    0 0 0 1px color-mix(in srgb, var(--world-hotspot-accent) 38%, transparent);
+.cityMapHubHotspotTrigger:focus-visible {
+  outline: 2px solid rgba(120, 72, 33, 0.72);
+  outline-offset: 3px;
 }
 
-.cityMapHubHotspot--selected .cityMapHubHotspotButton::before {
-  opacity: 0.24;
+.cityMapHubHotspotTrigger > * {
+  position: relative;
+  z-index: 2;
 }
 
-.cityMapHubHotspot--glint .cityMapHubHotspotButton::before {
-  opacity: 0.1;
+.cityMapHubHotspotTrigger.scenicLabel--recommended::after {
+  opacity: 0.55;
 }
 
-.cityMapHubHotspot--group-combat {
-  --world-hotspot-border: rgba(125, 73, 52, 0.62);
-  --world-hotspot-bg-top: rgba(252, 239, 231, 0.95);
-  --world-hotspot-bg-bottom: rgba(235, 209, 194, 0.93);
-  --world-hotspot-accent: rgba(146, 63, 52, 0.78);
-}
-
-.cityMapHubHotspot--group-preparation {
-  --world-hotspot-border: rgba(113, 90, 54, 0.62);
-  --world-hotspot-bg-top: rgba(252, 245, 232, 0.95);
-  --world-hotspot-bg-bottom: rgba(238, 223, 198, 0.93);
-  --world-hotspot-accent: rgba(122, 94, 53, 0.78);
-}
-
-.cityMapHubHotspot--group-support {
-  --world-hotspot-border: rgba(95, 88, 68, 0.62);
-  --world-hotspot-bg-top: rgba(246, 242, 231, 0.94);
-  --world-hotspot-bg-bottom: rgba(230, 220, 202, 0.92);
-  --world-hotspot-accent: rgba(94, 84, 63, 0.78);
-}
-
-.cityMapHubHotspot--tone-solemn {
-  --world-hotspot-shadow: rgba(30, 13, 8, 0.3);
-}
-
-.cityMapHubHotspot--module-gateTrial .cityMapHubHotspotButton {
-  box-shadow:
-    inset 0 0 0 1px rgba(62, 36, 28, 0.28),
-    inset 0 1px 0 rgba(255, 250, 241, 0.62),
-    0 5px 12px var(--world-hotspot-shadow);
+.cityMapHubHotspotTrigger.scenicLabel--active::after {
+  opacity: 0.9;
 }
 
 .cityMapHubHotspot--tone-forge .cityMapHubHotspotLabelName {
@@ -159,12 +143,6 @@
 
 .cityMapHubHotspot--tone-dispatch .cityMapHubHotspotLabelName {
   color: rgba(62, 56, 45, 0.94);
-}
-
-.cityMapHubHotspot--module-bounties .cityMapHubHotspotButton,
-.cityMapHubHotspot--module-expeditions .cityMapHubHotspotButton {
-  background-size: 100% 100%, 100% 92%;
-  background-position: center, center 45%;
 }
 
 .cityMapHubHotspot--glint .cityMapHubHotspotGlint {
@@ -186,35 +164,34 @@
   opacity: 0.24;
 }
 
-.cityMapHubHotspotLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
 .cityMapHubHotspotLabelName {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.045em;
+  text-shadow: 0 1px 0 rgba(255, 251, 241, 0.72);
 }
 
 .cityMapHubHotspotStateSlot {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 44px;
-  min-width: 44px;
+  justify-content: flex-end;
+  width: 24px;
+  min-width: 24px;
   height: 14px;
+}
+
+.cityMapHubHotspotStatePlaceholder {
+  width: 24px;
+  height: 1px;
 }
 
 .cityMapHubHotspotStateChip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
+  min-width: 22px;
   height: 14px;
   border-radius: 999px;
   border: 1px solid rgba(122, 94, 53, 0.36);
@@ -227,13 +204,19 @@
   padding: 0 5px;
 }
 
-.cityMapHubHotspot--manualPavilion .cityMapHubHotspotButton {
-  max-inline-size: min(36vw, 320px);
+.cityMapHubHotspot--module-manualPavilion .cityMapHubHotspotTrigger {
+  min-inline-size: 172px;
+  max-inline-size: 220px;
+}
+
+.cityMapHubHotspot--module-expeditions .cityMapHubHotspotTrigger {
+  min-inline-size: 148px;
+  max-inline-size: 188px;
 }
 
 @media (max-width: 980px) {
-  .cityMapHubHotspotButton {
-    max-inline-size: min(40vw, 146px);
+  .cityMapHubHotspotTrigger {
+    max-inline-size: min(56vw, 184px);
   }
 }
 

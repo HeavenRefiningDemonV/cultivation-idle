@@ -12,6 +12,7 @@ import cityRuinsBg from '../../assets/background/citystates/city_ruins.png';
 import cityTalismanBg from '../../assets/background/citystates/city_talisman.png';
 import type { FxEffectiveQuality } from '../../ui/fx/types.js';
 import { WORLD_SUPPORT_ART_ASSET_URLS } from '../../assets/ui/chrome/world_labels/index.js';
+import { ScenicLabel } from '../../ui/shell/ScenicLabel.js';
 import { getWorldModuleCardDefinition, type WorldModuleGroupKey } from '../../systems/world/moduleCardRegistry.js';
 import type { LiveWorldModuleKey } from '../../content/types.js';
 
@@ -94,10 +95,7 @@ export function CityMapHub({
   activeModuleKey,
   moduleCueByKey = {},
   glintModuleKey = null,
-  recommendedModuleKey: _recommendedModuleKey = null,
-  moduleMetadataByKey: _moduleMetadataByKey = {},
   getModuleLabel,
-  onOpenModule: _onOpenModule,
   atmosphereQuality = 'medium',
   prefersReducedMotion = false,
   onSelectModule,
@@ -151,13 +149,14 @@ export function CityMapHub({
           const isLockedSelected = activeModuleKey === moduleKey;
           const chipKind = moduleCueByKey[moduleKey] ?? null;
           const isGlintTarget = glintModuleKey === moduleKey && Boolean(chipKind);
+          const scenicState = isLockedSelected ? 'active' : isGlintTarget ? 'recommended' : 'default';
           const hotspotGroup = resolveHotspotGroup(moduleKey);
           const hotspotTone = MODULE_TONE_BY_KEY[moduleKey] ?? 'neutral';
           const hotspotStyle = {
             left: `${position.leftPct}%`,
             top: `${position.topPct}%`,
-            '--world-hotspot-plaque-art': `url(${WORLD_SUPPORT_ART_ASSET_URLS.buildingLabelPlaque})`,
-            '--world-hotspot-selected-plate-art': `url(${WORLD_SUPPORT_ART_ASSET_URLS.selectedBuildingPlate})`,
+            '--world-hotspot-plaque-url': `url(${WORLD_SUPPORT_ART_ASSET_URLS.buildingLabelPlaque})`,
+            '--world-hotspot-selected-url': `url(${WORLD_SUPPORT_ART_ASSET_URLS.selectedBuildingPlate})`,
           } as CSSProperties;
 
           return (
@@ -166,28 +165,30 @@ export function CityMapHub({
               className={`cityMapHubHotspot cityMapHubHotspot--group-${hotspotGroup} cityMapHubHotspot--module-${moduleKey} cityMapHubHotspot--tone-${hotspotTone} ${isLockedSelected ? 'cityMapHubHotspot--selected' : ''} ${isGlintTarget ? 'cityMapHubHotspot--glint' : ''} ${reducedMotionEnabled ? 'cityMapHubHotspot--reducedMotion' : ''} ${atmosphereQuality === 'low' ? 'cityMapHubHotspot--lowFx' : ''}`}
               style={hotspotStyle}
             >
-              <button
-                type="button"
-                className="cityMapHubHotspotButton uiNoShift"
+              <ScenicLabel
+                variant="building"
+                emphasis="medium"
+                state={scenicState}
+                className="cityMapHubHotspotTrigger uiNoShift"
+                labelClassName="cityMapHubHotspotLabelName"
+                reserveStateSlot={true}
+                stateSlot={
+                  <span
+                    className="cityMapHubHotspotStateSlot"
+                    aria-label={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
+                    title={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
+                  >
+                    {chipKind ? <span className="cityMapHubHotspotStateChip">{chipKind}</span> : <span className="cityMapHubHotspotStatePlaceholder" aria-hidden="true" />}
+                  </span>
+                }
+                label={getModuleLabel(moduleKey)}
                 onClick={() => handleSelect(moduleKey)}
                 onMouseEnter={() => updatePreview(moduleKey)}
                 onMouseLeave={() => updatePreview(null)}
                 onFocus={() => updatePreview(moduleKey)}
                 onBlur={() => updatePreview(null)}
                 title={getModuleLabel(moduleKey)}
-                aria-pressed={isLockedSelected}
-              >
-                <span className="cityMapHubHotspotLabel">
-                  <span className="cityMapHubHotspotLabelName">{getModuleLabel(moduleKey)}</span>
-                  <span
-                    className="cityMapHubHotspotStateSlot"
-                    aria-label={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
-                    title={chipKind ? chipAriaLabelByKind[chipKind] : undefined}
-                  >
-                    {chipKind ? <span className="cityMapHubHotspotStateChip">{chipKind}</span> : null}
-                  </span>
-                </span>
-              </button>
+              />
               <span
                 className={`cityMapHubHotspotGlint ${isLockedSelected ? 'cityMapHubHotspotGlint--active' : ''} ${!isLockedSelected && isGlintTarget ? 'cityMapHubHotspotGlint--recommended' : ''}`}
                 aria-hidden="true"
