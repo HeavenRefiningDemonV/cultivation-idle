@@ -12,8 +12,8 @@
   border-radius: 16px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 18% 14%, rgba(255, 247, 233, 0.16), rgba(255, 247, 233, 0) 34%),
-    radial-gradient(circle at 82% 78%, rgba(10, 12, 20, 0.16), rgba(10, 12, 20, 0) 36%);
+    radial-gradient(circle at 18% 14%, rgba(255, 247, 233, 0.1), rgba(255, 247, 233, 0) 34%),
+    radial-gradient(circle at 82% 78%, rgba(10, 12, 20, 0.08), rgba(10, 12, 20, 0) 36%);
 }
 
 .cityMapHubMap::after {
@@ -22,8 +22,8 @@
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255, 251, 242, 0.08), rgba(20, 16, 12, 0.18)),
-    radial-gradient(circle at 74% 20%, rgba(255, 244, 224, 0.1), rgba(255, 244, 224, 0) 28%);
+    linear-gradient(180deg, rgba(255, 251, 242, 0.04), rgba(20, 16, 12, 0.09)),
+    radial-gradient(circle at 74% 20%, rgba(255, 244, 224, 0.08), rgba(255, 244, 224, 0) 28%);
   z-index: 1;
 }
 
@@ -49,9 +49,12 @@
   max-inline-size: min(22vw, 152px);
   min-block-size: 30px;
   padding: 4px 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(106, 79, 48, 0.52);
-  background: linear-gradient(180deg, rgba(252, 246, 234, 0.94), rgba(241, 225, 197, 0.92));
+  border: 2px solid transparent;
+  border-image: url('../../assets/menus/buttoncorners.png') 60 / 5px / 1px;
+  border-radius: 0;
+  background:
+    url('../../assets/menus/bar_short.png') center / 100% 100% no-repeat,
+    linear-gradient(180deg, rgba(252, 246, 234, 0.94), rgba(241, 225, 197, 0.92));
   box-shadow: inset 0 1px 0 rgba(255, 250, 241, 0.62), 0 5px 12px rgba(18, 10, 4, 0.24);
   color: #1f1a17;
   cursor: pointer;
@@ -76,8 +79,9 @@
 }
 
 .cityMapHubHotspot--selected .cityMapHubHotspotButton {
-  border-color: rgba(120, 72, 33, 0.86);
-  background: linear-gradient(180deg, rgba(255, 250, 238, 0.97), rgba(248, 234, 204, 0.95));
+  background:
+    url('../../assets/menus/bar_short.png') center / 100% 100% no-repeat,
+    linear-gradient(180deg, rgba(255, 250, 238, 0.97), rgba(248, 234, 204, 0.95));
   box-shadow:
     inset 0 1px 0 rgba(255, 253, 245, 0.72),
     0 7px 15px rgba(28, 16, 6, 0.28),
