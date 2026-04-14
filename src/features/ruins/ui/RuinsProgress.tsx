@@ -136,7 +136,7 @@ export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
 
   return (
     <div className="ruins-progress">
-      <div className="ruins-progress__header">
+      <div className="ruins-progress__header combatPathModule__actionZone">
         <div>
           <div className="ruins-progress__title">{ruinDef?.name ?? 'Ruins Run'}</div>
           <div className="ruins-progress__subtitle">
@@ -182,7 +182,7 @@ export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
         </div>
       ) : null}
 
-      <div className="ruins-progress__track">
+      <div className="ruins-progress__track combatPathModule__scene">
         {roomTrack.map((room) => {
           const status = activeRun
             ? room.index < activeRun.roomIndex

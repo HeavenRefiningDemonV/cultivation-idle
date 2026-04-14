@@ -16,9 +16,9 @@ import { buildOutskirtsActivityRewardReadModel } from '../../../../systems/econo
 import { useBountyStore } from '../../../../stores/bountyStore.js';
 import { evaluateCurrentCombatPostureFit } from '../../../../systems/builds/combatPostureFit.js';
 import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
-import { RunCompassCompact } from '../../../../ui/status/RunCompassCompact.js';
 import { OutskirtsSummaryCard } from '../../../../ui/world/OutskirtsSummaryCard.js';
 import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
+import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -334,15 +334,35 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   }
 
   return (
-    <div className={'worldScreenPlaceholder'}>
+    <div className={'worldScreenPlaceholder combatPathModule combatPathModule--outskirts'}>
       <InkCombatShell
         title="Outskirts Combat"
         subtitle={isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
         onClose={closeWorldBuildingModal}
+        suppressHeader
+        sidebarTop={(
+          <CombatModuleTopLane
+            moduleName="Outskirts"
+            roleTag={outskirtsRewardModel.roleTag}
+            bestUsedWhen={outskirtsRewardModel.bestUsedWhen}
+            runCompassSurface={runCompass.compact}
+            variant="outskirts"
+            onClose={closeWorldBuildingModal}
+            chipRow={(
+              <>
+                <span className={`combatPathModule__chip ${isOutskirtsActive ? 'combatPathModule__chip--active' : ''}`}>
+                  {isOutskirtsActive ? 'In Combat' : 'Idle'}
+                </span>
+                <span className={`combatPathModule__chip ${trackedOutskirtsBounty ? 'combatPathModule__chip--recommended' : ''}`}>
+                  {trackedOutskirtsBounty ? 'Tracked Bounty' : 'No Tracked Bounty'}
+                </span>
+              </>
+            )}
+          />
+        )}
         leftSidebar={
           <>
-            <div className="ink-combat-shell__section outskirtsPanel__summary">
-              <RunCompassCompact surface={runCompass.compact} tone="ink" />
+            <div className="ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail">
               <OutskirtsSummaryCard
                 model={outskirtsRewardModel}
                 expectedOutputs={expectedOutputsLine}
@@ -350,7 +370,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 postureHint={postureHint}
               />
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__actionZone">
               <div className="ink-combat-shell__actions">
                 <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>
                   Start
@@ -364,7 +384,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 </button>
               </div>
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__supportCluster">
               <div className="ink-combat-shell__section-title">Boss Cadence</div>
               <div className="ink-combat-shell__meter">
                 <div className="ink-combat-shell__segments">
@@ -383,7 +403,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 </div>
               </div>
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__supportCluster">
               <div className="ink-combat-shell__section-title">Combat Options</div>
               <div className="ink-combat-shell__controls">
                 <label className="ink-combat-shell__control">
@@ -433,7 +453,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 </label>
               </div>
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__routeHints">
               <div className="ink-combat-shell__section-title">Run Options</div>
               <div className="ink-combat-shell__controls">
                 <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
@@ -475,7 +495,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
           </>
         }
         stage={
-          <div className="outskirts-combat__stage" ref={combatMainRef}>
+          <div className="outskirts-combat__stage combatPathModule__scene" ref={combatMainRef}>
             <div className="outskirts-combat__healthbars">
               <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
               <InkHealthBar

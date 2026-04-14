@@ -3,12 +3,12 @@ import { useContentStore } from '../../../../stores/contentStore.js';
 import { useRuinsStore } from '../../../../stores/ruinsStore.js';
 import { resolveModuleRef } from '../worldUtils.js';
 import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
-import { RunCompassCompact } from '../../../../ui/status/RunCompassCompact.js';
 import { buildRuinsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
 import { RuinsProgress } from '../../../../features/ruins/ui/RuinsProgress.js';
 import { useBountyStore } from '../../../../stores/bountyStore.js';
 import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
 import { RuinsSummaryCard } from '../../../../ui/world/RuinsSummaryCard.js';
+import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
 import './CombatStyles.scss';
 
 interface RuinsBuildingPanelProps {
@@ -80,10 +80,28 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     );
   }
 
+  const pityFailures = ruinProgress?.bossChestRareFailures ?? 0;
+
   return (
-    <div className="worldScreenPlaceholder ruinsPanel">
-      <div className="ruinsPanel__summary">
-        <RunCompassCompact surface={runCompass.compact} tone="ink" />
+    <div className="worldScreenPlaceholder ruinsPanel combatPathModule combatPathModule--ruins">
+      <CombatModuleTopLane
+        moduleName="Ruins"
+        roleTag={ruinsRewardModel.roleTag}
+        bestUsedWhen={ruinsRewardModel.bestUsedWhen}
+        runCompassSurface={runCompass.compact}
+        variant="ruins"
+        chipRow={(
+          <>
+            <span className={`combatPathModule__chip ${activeRun ? 'combatPathModule__chip--active' : ''}`}>
+              {activeRun ? 'Run Active' : 'Run Idle'}
+            </span>
+            <span className="combatPathModule__chip combatPathModule__chip--warning">
+              Pity {pityFailures}
+            </span>
+          </>
+        )}
+      />
+      <div className="ruinsPanel__summary combatPathModule__contextRail">
         <RuinsSummaryCard
           ruinName={ruinDef.name ?? 'Ruins'}
           roleTag={ruinsRewardModel.roleTag}
@@ -98,7 +116,9 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
           trackedBountyLine={trackedRuinsBounty ? <TrackedBountyProgressLine bounty={trackedRuinsBounty} /> : undefined}
         />
       </div>
-      <RuinsProgress ruinsId={ruinDef.id} />
+      <div className="combatPathModule__scene">
+        <RuinsProgress ruinsId={ruinDef.id} />
+      </div>
     </div>
   );
 }

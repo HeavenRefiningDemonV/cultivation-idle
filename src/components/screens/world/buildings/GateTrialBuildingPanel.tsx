@@ -32,6 +32,9 @@ import { GateTrialAttemptCluster } from '../../../../ui/trials/GateTrialAttemptC
 import { performPostFailureFixAction } from '../../../../systems/ui/postFailure/index.js';
 import { InlineOnboardingCallout } from '../../../system/InlineOnboardingCallout.js';
 import { ONBOARDING_INLINE_LIFE_KEYS } from '../../../../systems/ui/onboardingPromptRegistry.js';
+import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
+import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
+import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -98,6 +101,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const setSettings = useUIStore((state) => state.setSettings);
   const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
   const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
+  const runCompass = useRunCompassSurface();
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
   const merit = useInventoryStore((state) => state.merit);
@@ -160,6 +164,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     && trialProgress?.lastAttemptSummary
     && (trialProgress?.attempts ?? 0) > 0
     && !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap));
+  const gateTopLaneCopy = useMemo(() => getWorldCombatModuleTopLaneCopy('gateTrial'), []);
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;
@@ -234,32 +239,37 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   }
 
   return (
-    <div className="worldScreenPlaceholder worldScreenPlaceholder--gate-trial">
+    <div className="worldScreenPlaceholder worldScreenPlaceholder--gate-trial combatPathModule combatPathModule--gateTrial">
       <InkCombatShell
         title="Gate Trial"
         subtitle={`Gate state: ${labelForState(lifecycle.state)}`}
         onClose={closeWorldBuildingModal}
         className="ink-combat-shell--gate-trial"
+        suppressHeader
+        sidebarTop={(
+          <CombatModuleTopLane
+            moduleName={gateTopLaneCopy.moduleName}
+            roleTag={gateTopLaneCopy.roleTag}
+            bestUsedWhen={gateTopLaneCopy.bestUsedWhen}
+            runCompassSurface={runCompass.compact}
+            variant="gate-trial"
+            onClose={closeWorldBuildingModal}
+            chipRow={(
+              <>
+                <span className={`combatPathModule__chip ${lifecycle.canStart ? 'combatPathModule__chip--active' : 'combatPathModule__chip--warning'}`}>
+                  {lifecycle.canStart ? 'Ready to Attempt' : 'Build Check'}
+                </span>
+                <span className="combatPathModule__chip combatPathModule__chip--warning">
+                  Eligible Failures {eligibleFailures}/{lifecycle.failSafe.threshold}
+                </span>
+              </>
+            )}
+          />
+        )}
         leftSidebar={
           <>
-            {attemptPresentation ? (
-              <div className="ink-combat-shell__section gateTrialPanel__actions">
-                <GateTrialAttemptCluster
-                  presentation={attemptPresentation}
-                  onPrimary={() => {
-                    if (attemptPresentation.state === 'break_through') {
-                      handleBreakThrough();
-                      return;
-                    }
-                    handleChallengeTrial();
-                  }}
-                  onStop={handleStopTrial}
-                  onBuySafetyNet={handleFailSafePurchase}
-                />
-              </div>
-            ) : null}
             {gateReadinessSurface ? (
-              <div className="ink-combat-shell__section gateTrialPanel__readiness">
+              <div className="ink-combat-shell__section gateTrialPanel__readiness combatPathModule__contextRail">
                 <GateTrialReadinessCard surface={gateReadinessSurface} />
                 <div className="gateTrialPanel__checklists">
                   <GateTrialChecklist title="Minimum Floor" lines={gateReadinessSurface.minimumChecklist} />
@@ -267,7 +277,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 </div>
               </div>
             ) : null}
-            <div className="ink-combat-shell__section gateTrialPanel__support">
+            <div className="ink-combat-shell__section gateTrialPanel__support combatPathModule__supportCluster">
               <GateTrialSafetyNetCard
                 lifecycle={lifecycle}
                 reserveHeadline={supportSurface.reserveHeadline}
@@ -277,7 +287,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 currentSpiritStones={supportSurface.readModel.currentSpiritStones}
               />
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__supportCluster">
               {showFirstFailureStrap ? (
                 <InlineOnboardingCallout
                   className="gateTrialPanel__failure-strap"
@@ -309,7 +319,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 }}
               />
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__routeHints">
               <div className="ink-combat-shell__section-title">Combat Options</div>
               <div className="ink-combat-shell__stat-line">AI Profile: {combatAIProfile}</div>
               <button className="button-standard button-standard--ghost" type="button" onClick={() => setSettings({ combatAIProfile: 'survivor' })} disabled={combatAIProfile === 'survivor'}>
@@ -320,7 +330,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 Enable Consumables
               </button>
             </div>
-            <div className="ink-combat-shell__section">
+            <div className="ink-combat-shell__section combatPathModule__supportCluster">
               <div className="ink-combat-shell__section-title">Gate Facts</div>
               <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
               <div className="ink-combat-shell__stat-line">Gate state: {labelForState(lifecycle.state)}</div>
@@ -340,8 +350,24 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
                 </details>
               ) : null}
             </div>
-            <div className="ink-combat-shell__section">
-              <div className="ink-combat-shell__section-title">Run Options</div>
+            <div className="ink-combat-shell__section combatPathModule__actionZone">
+              <div className="ink-combat-shell__section-title">Attempt</div>
+              {attemptPresentation ? (
+                <GateTrialAttemptCluster
+                  presentation={attemptPresentation}
+                  onPrimary={() => {
+                    if (attemptPresentation.state === 'break_through') {
+                      handleBreakThrough();
+                      return;
+                    }
+                    handleChallengeTrial();
+                  }}
+                  onStop={handleStopTrial}
+                  onBuySafetyNet={handleFailSafePurchase}
+                />
+              ) : (
+                <div className="ink-combat-shell__stat-line">Attempt state unavailable.</div>
+              )}
               <div className="ink-combat-shell__stat-line">Activity: {isTrialActive ? 'Active' : 'Inactive'}</div>
             </div>
             <div className="ink-combat-shell__section ink-combat-shell__section--fill">
@@ -361,7 +387,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
           </>
         }
         stage={
-          <div className="outskirts-combat__stage">
+          <div className="outskirts-combat__stage combatPathModule__scene">
             <div className="outskirts-combat__healthbars">
               <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
               <InkHealthBar
