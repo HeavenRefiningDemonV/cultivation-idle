@@ -32,6 +32,7 @@ import { OnboardingPromptHost } from './system/OnboardingPromptHost.js';
 import { OnboardingPromptRuntime } from './system/OnboardingPromptRuntime.js';
 import { SectionCAuditHarness, isSectionCAuditQueryEnabled } from '../dev/sectionCAudit/SectionCAuditHarness.js';
 import { Phase0CoreAuditHarness, isPhase0CoreAuditQueryEnabled } from '../dev/phase0CoreAudit/Phase0CoreAuditHarness.js';
+import { Phase6CombatAuditHarness, isPhase6CombatAuditQueryEnabled } from '../dev/phase6CombatAudit/Phase6CombatAuditHarness.js';
 import { isLifeStartWizardRequired } from '../systems/ui/lifeStart/lifeStartWizardContract.js';
 import './GameLayout.scss';
 
@@ -177,6 +178,7 @@ export function GameLayout() {
   });
   const showSectionCAuditHarness = isSectionCAuditQueryEnabled();
   const showPhase0CoreAuditHarness = isPhase0CoreAuditQueryEnabled();
+  const showPhase6CombatAuditHarness = isPhase6CombatAuditQueryEnabled();
 
   useEffect(() => {
     setLifeStartWizardOpenForNotifications(lifeStartWizardOpen);
@@ -216,6 +218,7 @@ export function GameLayout() {
         <NotificationToasts />
         {showSectionCAuditHarness ? <SectionCAuditHarness /> : null}
         {showPhase0CoreAuditHarness ? <Phase0CoreAuditHarness /> : null}
+        {showPhase6CombatAuditHarness ? <Phase6CombatAuditHarness /> : null}
       </div>
     </FxQualityProvider>
   );

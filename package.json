@@ -57,7 +57,13 @@
     "release:gate:json": "npm run release:gate -- --json",
     "release:handoff": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildReleaseHandoffBundle.ts",
     "validate:balance-regression": "npm run test:balance-regression && npm run balance:report -- --fail-on-drift",
-    "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js"
+    "validate:balance-telemetry": "tsc --project tsconfig.tests.json && NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node tmp-tests/scripts/validateBalanceTelemetry.js",
+    "release:phase6-combat-capture": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/capturePhase6CombatEvidence.ts",
+    "release:phase6-combat-capture:json": "npm run release:phase6-combat-capture -- --json",
+    "release:phase6-combat-evidence-audit": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/validatePhase6CombatEvidence.ts",
+    "release:phase6-combat-evidence-audit:json": "npm run release:phase6-combat-evidence-audit -- --json",
+    "release:phase6-combat-preflight": "NODE_OPTIONS='--loader=./scripts/relativeJsLoader.mjs' node --experimental-strip-types scripts/release/buildPhase6CombatPreflightReport.ts --write",
+    "release:phase6-combat-preflight:json": "npm run release:phase6-combat-preflight -- --json"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

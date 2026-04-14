@@ -1,0 +1,465 @@
+import { useEffect, useState } from 'react';
+import type { TrialAttemptSummary } from '../../types/index.js';
+import { useActivityStore } from '../../stores/activityStore.js';
+import { useCityStore } from '../../stores/cityStore.js';
+import { useCombatStore } from '../../stores/combatStore.js';
+import { useContentStore } from '../../stores/contentStore.js';
+import { useRuinsStore } from '../../stores/ruinsStore.js';
+import { useTrialStore } from '../../stores/trialStore.js';
+import { useUIStore } from '../../stores/uiStore.js';
+import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
+import type { FxRequestedQuality } from '../../ui/fx/types.js';
+import { pickEnemyFromPool, resolveModuleRef } from '../../components/screens/world/worldUtils.js';
+import {
+  PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE,
+  PHASE6_COMBAT_CAPTURE_SLOT_FILES,
+  PHASE6_COMBAT_SURFACE_IDS,
+  type Phase6CombatCaptureSlotFile,
+  type Phase6CombatSurfaceId,
+} from './phase6CombatSurfaceIds.js';
+import './Phase6CombatAuditHarness.scss';
+
+type AuditFxMode = 'high' | 'medium' | 'low' | 'reduced';
+type AuditSlot = (typeof PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE)[Phase6CombatCaptureSlotFile];
+
+const DEFAULT_CITY_ID = 'city_pinewind_hamlet';
+const DEFAULT_SURFACE: Phase6CombatSurfaceId = 'outskirts';
+const DEFAULT_SLOT: AuditSlot = 'base';
+
+function parseSurfaceFromQuery(): Phase6CombatSurfaceId {
+  const surface = new URLSearchParams(window.location.search).get('surface');
+  if (surface && PHASE6_COMBAT_SURFACE_IDS.includes(surface as Phase6CombatSurfaceId)) {
+    return surface as Phase6CombatSurfaceId;
+  }
+  return DEFAULT_SURFACE;
+}
+
+function parseFxModeFromQuery(): AuditFxMode {
+  const fx = new URLSearchParams(window.location.search).get('fx');
+  return fx === 'medium' || fx === 'low' || fx === 'reduced' ? fx : 'high';
+}
+
+function parseSlotFromQuery(): AuditSlot {
+  const slot = new URLSearchParams(window.location.search).get('slot');
+  if (
+    slot === 'base'
+    || slot === 'interaction'
+    || slot === 'truth-states'
+    || slot === 'high-fx'
+    || slot === 'low-fx'
+    || slot === 'reduced-motion'
+  ) {
+    return slot;
+  }
+  return DEFAULT_SLOT;
+}
+
+function setQuery(next: { surface?: Phase6CombatSurfaceId; fx?: AuditFxMode; slot?: AuditSlot; controls?: '0' | '1' }) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('uiAudit', 'phase-6-combat');
+  if (next.surface) params.set('surface', next.surface);
+  if (next.fx) params.set('fx', next.fx);
+  if (next.slot) params.set('slot', next.slot);
+  if (next.controls) params.set('controls', next.controls);
+  window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}${window.location.hash}`);
+}
+
+function sanitizeUiOverlays() {
+  useUIStore.setState((state) => ({
+    ...state,
+    showOfflineProgressModal: false,
+    showManualSatchelModal: false,
+    showTechniqueLearnedModal: false,
+    showCurrentChapterExhaustedModal: false,
+    showLifeSummaryModal: false,
+    showMigrationIssuesModal: false,
+    notifications: [],
+    pendingNotifications: [],
+    activeOnboardingPrompt: null,
+    queuedOnboardingPrompts: [],
+  }));
+}
+
+function resolveAuditCityId(): string | null {
+  const content = useContentStore.getState();
+  if (!content.citiesSorted.length) return null;
+  return content.maps.citiesById[DEFAULT_CITY_ID] ? DEFAULT_CITY_ID : content.citiesSorted[0]?.id ?? null;
+}
+
+function mapSurfaceToBuildingKey(surface: Phase6CombatSurfaceId): 'outskirts' | 'ruins' | 'gateTrial' {
+  if (surface === 'gate-trial') return 'gateTrial';
+  return surface;
+}
+
+function primeWorldModal(surface: Phase6CombatSurfaceId) {
+  const cityId = resolveAuditCityId();
+  if (!cityId) return;
+  const buildingKey = mapSurfaceToBuildingKey(surface);
+  useCityStore.getState().setCurrentCity(cityId);
+  useCityStore.getState().setSelectedModule(cityId, buildingKey);
+  useUIStore.setState((state) => ({
+    ...state,
+    activeTab: 'adventure',
+    showWorldBuildingModal: true,
+    worldBuildingModalCityId: cityId,
+    worldBuildingModalKey: buildingKey,
+    worldBuildingModalIntent: null,
+  }));
+}
+
+function primeOutskirtsInteractionState() {
+  const cityId = resolveAuditCityId();
+  if (!cityId) return;
+
+  const content = useContentStore.getState();
+  const city = content.maps.citiesById[cityId] ?? null;
+  const outskirtsId = resolveModuleRef(city, 'outskirts');
+  if (!outskirtsId) return;
+  const outskirtsDef = content.maps.outskirtsById[outskirtsId];
+  if (!outskirtsDef) return;
+
+  const enemyId = pickEnemyFromPool(outskirtsDef.enemyPool) ?? outskirtsDef.bossId;
+  const enemy = enemyId ? content.maps.enemiesById[enemyId] : null;
+  if (!enemy) return;
+
+  useActivityStore.setState((state) => ({
+    ...state,
+    active: {
+      type: 'outskirts',
+      cityId,
+      sourceId: outskirtsId,
+      startedAt: Date.now() - 45_000,
+      payload: { cityId, sourceId: outskirtsId },
+    },
+  }));
+  useCombatStore.setState((state) => ({
+    ...state,
+    inCombat: true,
+    combatResolved: false,
+    autoAttack: true,
+    autoCombatAI: true,
+    combatContext: {
+      type: 'outskirts',
+      cityId,
+      sourceId: outskirtsId,
+      cityIndex: content.maps.citiesById[cityId]?.index ?? 0,
+      isBoss: false,
+    },
+    currentEnemy: enemy,
+    playerHP: '780',
+    playerMaxHP: '1020',
+    enemyHP: '325',
+    enemyMaxHP: '900',
+    combatLog: [
+      { timestamp: Date.now() - 6000, type: 'player', text: 'You attacked Wild Boar for 58 damage.' },
+      { timestamp: Date.now() - 5000, type: 'enemy', text: 'Wild Boar attacked you for 19 damage.' },
+      { timestamp: Date.now() - 3500, type: 'system', text: 'Critical hit! You attacked Wild Boar for 121 damage.' },
+    ],
+  }));
+}
+
+function primeRuinsInteractionState() {
+  const cityId = resolveAuditCityId();
+  if (!cityId) return;
+  const content = useContentStore.getState();
+  const city = content.maps.citiesById[cityId] ?? null;
+  const ruinsId = resolveModuleRef(city, 'ruins');
+  if (!ruinsId) return;
+
+  const ruinDef = content.maps.ruinsById[ruinsId];
+  if (!ruinDef) return;
+  const roomCount = Math.max(ruinDef.roomCount ?? 1, 1);
+  const roomIndex = Math.min(1, roomCount - 1);
+  const enemyId = ruinDef.roomPools?.mobs?.[0] ?? ruinDef.roomPools?.miniBoss?.[0] ?? ruinDef.roomPools?.finalBoss?.[0] ?? null;
+  const enemy = enemyId ? content.maps.enemiesById[enemyId] : null;
+  if (!enemy) return;
+
+  useRuinsStore.setState((state) => ({
+    ...state,
+    autoRepeatDefault: true,
+    activeRun: {
+      runId: 'phase6-audit-run',
+      ruinId: ruinsId,
+      cityId,
+      roomIndex,
+      roomCount,
+      startedAt: Date.now() - 70_000,
+      lastTransitionAt: Date.now() - 4_000,
+      autoRepeat: true,
+      goldEarned: 142,
+      stopping: false,
+    },
+    progressByRuinId: {
+      ...state.progressByRuinId,
+      [ruinsId]: {
+        totalRuns: 6,
+        totalRoomsCleared: 19,
+        bossKills: 2,
+        bossChestRareFailures: 3,
+      },
+    },
+  }));
+
+  useActivityStore.setState((state) => ({
+    ...state,
+    active: {
+      type: 'ruins',
+      cityId,
+      sourceId: ruinsId,
+      startedAt: Date.now() - 70_000,
+      payload: { cityId, sourceId: ruinsId },
+    },
+  }));
+
+  useCombatStore.setState((state) => ({
+    ...state,
+    inCombat: true,
+    combatResolved: false,
+    autoAttack: true,
+    autoCombatAI: true,
+    combatContext: {
+      type: 'ruins',
+      cityId,
+      sourceId: ruinsId,
+      ruinsId,
+      runId: 'phase6-audit-run',
+      roomIndex,
+      roomCount,
+      isBoss: roomIndex >= roomCount - 1,
+      cityIndex: content.maps.citiesById[cityId]?.index ?? 0,
+    },
+    currentEnemy: enemy,
+    playerHP: '920',
+    playerMaxHP: '1100',
+    enemyHP: '410',
+    enemyMaxHP: '780',
+    combatLog: [
+      { timestamp: Date.now() - 7000, type: 'player', text: 'You attacked Ruin Stalker for 67 damage.' },
+      { timestamp: Date.now() - 5200, type: 'enemy', text: 'Ruin Stalker attacked you for 21 damage.' },
+    ],
+  }));
+}
+
+function buildTrialAttemptSummary(trialId: string): TrialAttemptSummary {
+  const endedAt = Date.now() - 20_000;
+  return {
+    trialId,
+    startedAt: endedAt - 38_000,
+    endedAt,
+    durationSec: 38,
+    bossHpPct: 52,
+    maxHit: 89,
+    maxHitLabel: '89',
+    suggestions: ['Raise effective HP floor', 'Enable consumables', 'Shift AI profile to survivor'],
+    rollingPlayerDps: 42,
+    rollingEnemyDps: 58,
+    effectiveHp: 560,
+    timeToDieSec: 31,
+    spikeRatio: 1.4,
+    auraPressureSeen: true,
+  };
+}
+
+function primeGateTrialFailureState() {
+  const cityId = resolveAuditCityId();
+  if (!cityId) return;
+  const content = useContentStore.getState();
+  const city = content.maps.citiesById[cityId] ?? null;
+  const trialId = resolveModuleRef(city, 'gateTrial');
+  if (!trialId) return;
+
+  useActivityStore.setState((state) => ({ ...state, active: null }));
+  useCombatStore.getState().exitCombat();
+
+  useTrialStore.setState((state) => ({
+    ...state,
+    progressByTrialId: {
+      ...state.progressByTrialId,
+      [trialId]: {
+        attempts: 3,
+        sessionAttempts: 2,
+        eligibleFailures: 2,
+        resolution: 'none',
+        cleared: false,
+        lastAttemptAt: Date.now() - 20_000,
+        lastClearAt: null,
+        bypassedAt: null,
+        attemptStartAt: null,
+        lastAttemptSummary: buildTrialAttemptSummary(trialId),
+      },
+    },
+  }));
+
+  useUIStore.setState((state) => ({
+    ...state,
+    settings: {
+      ...state.settings,
+      combatAIProfile: 'balanced',
+      useConsumablesInCombat: false,
+    },
+  }));
+}
+
+function applySurfaceState(surface: Phase6CombatSurfaceId, slot: AuditSlot) {
+  sanitizeUiOverlays();
+  primeWorldModal(surface);
+
+  useActivityStore.getState().stopActivity('phase6-combat-audit-reset');
+  useCombatStore.getState().exitCombat();
+
+  if (surface === 'outskirts' && slot === 'interaction') {
+    primeOutskirtsInteractionState();
+    return;
+  }
+
+  if (surface === 'ruins' && slot === 'interaction') {
+    primeRuinsInteractionState();
+    return;
+  }
+
+  if (surface === 'gate-trial' && slot === 'interaction') {
+    primeGateTrialFailureState();
+    return;
+  }
+
+  if (surface === 'gate-trial' && slot === 'truth-states') {
+    primeGateTrialFailureState();
+  }
+}
+
+function mapFxModeToRequestedQuality(fxMode: AuditFxMode): FxRequestedQuality {
+  if (fxMode === 'high') return 'high';
+  if (fxMode === 'medium') return 'medium';
+  if (fxMode === 'low') return 'low';
+  return 'medium';
+}
+
+function toSlotFile(slot: AuditSlot): Phase6CombatCaptureSlotFile {
+  const entry = Object.entries(PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE).find(([, mappedSlot]) => mappedSlot === slot);
+  if (!entry) return '01-base.png';
+  return entry[0] as Phase6CombatCaptureSlotFile;
+}
+
+export function Phase6CombatAuditHarness() {
+  const enabled = import.meta.env.DEV && new URLSearchParams(window.location.search).get('uiAudit') === 'phase-6-combat';
+  const [surface, setSurface] = useState<Phase6CombatSurfaceId>(() => parseSurfaceFromQuery());
+  const [fxMode, setFxMode] = useState<AuditFxMode>(() => parseFxModeFromQuery());
+  const [slot, setSlot] = useState<AuditSlot>(() => parseSlotFromQuery());
+  const [showControls, setShowControls] = useState(() => new URLSearchParams(window.location.search).get('controls') !== '0');
+  const { setRequestedQuality, setReducedMotionOverride } = useFxQuality();
+
+  useEffect(() => {
+    if (!enabled) return;
+    applySurfaceState(surface, slot);
+    document.documentElement.dataset.phase6CombatAuditReady = '1';
+    return () => {
+      delete document.documentElement.dataset.phase6CombatAuditReady;
+    };
+  }, [enabled, slot, surface]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    setRequestedQuality(mapFxModeToRequestedQuality(fxMode));
+    setReducedMotionOverride(fxMode === 'reduced' ? true : false);
+    document.body.classList.toggle('uiAuditReducedMotion', fxMode === 'reduced');
+    return () => {
+      setReducedMotionOverride(null);
+      document.body.classList.remove('uiAuditReducedMotion');
+    };
+  }, [enabled, fxMode, setReducedMotionOverride, setRequestedQuality]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const onPopState = () => {
+      setSurface(parseSurfaceFromQuery());
+      setFxMode(parseFxModeFromQuery());
+      setSlot(parseSlotFromQuery());
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [enabled]);
+
+  if (!enabled) return null;
+
+  const updateSurface = (next: Phase6CombatSurfaceId) => {
+    setSurface(next);
+    setQuery({ surface: next });
+  };
+
+  const updateFxMode = (next: AuditFxMode) => {
+    setFxMode(next);
+    setQuery({ fx: next });
+  };
+
+  const updateSlot = (next: AuditSlot) => {
+    setSlot(next);
+    setQuery({ slot: next });
+  };
+
+  const toggleControls = () => {
+    const next = !showControls;
+    setShowControls(next);
+    setQuery({ controls: next ? '1' : '0' });
+  };
+
+  return (
+    <>
+      <div
+        data-ui="phase6-combat-ready"
+        data-ready="1"
+        data-surface={surface}
+        data-slot={slot}
+        data-slot-file={toSlotFile(slot)}
+        data-fx={fxMode}
+        className="phase6CombatAuditReadyBeacon"
+      />
+
+      {showControls ? (
+        <aside className="phase6CombatAuditPanel" data-ui="phase-6-combat-audit-controls">
+          <div className="phase6CombatAuditPanel__title">Phase 6 Combat Audit Harness</div>
+          <label>
+            Surface
+            <select value={surface} onChange={(event) => updateSurface(event.target.value as Phase6CombatSurfaceId)}>
+              {PHASE6_COMBAT_SURFACE_IDS.map((id) => (
+                <option key={id} value={id}>{id}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Slot
+            <select value={slot} onChange={(event) => updateSlot(event.target.value as AuditSlot)}>
+              {Object.values(PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE).map((slotValue) => (
+                <option key={slotValue} value={slotValue}>{slotValue}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            FX
+            <select value={fxMode} onChange={(event) => updateFxMode(event.target.value as AuditFxMode)}>
+              <option value="high">high</option>
+              <option value="medium">medium</option>
+              <option value="low">low</option>
+              <option value="reduced">reduced</option>
+            </select>
+          </label>
+          <button type="button" className="button-standard" onClick={toggleControls}>Hide Controls</button>
+          <div className="phase6CombatAuditPanel__meta">Route shape: <code>?uiAudit=phase-6-combat&amp;surface=&lt;id&gt;&amp;fx=&lt;mode&gt;&amp;slot=&lt;slot&gt;</code></div>
+          <div className="phase6CombatAuditPanel__meta">City fixture default: <code>{DEFAULT_CITY_ID}</code>.</div>
+        </aside>
+      ) : null}
+    </>
+  );
+}
+
+export function isPhase6CombatAuditQueryEnabled() {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('uiAudit') === 'phase-6-combat';
+}
+
+export function getPhase6CombatSlotFromFile(fileName: Phase6CombatCaptureSlotFile): AuditSlot {
+  return PHASE6_COMBAT_CAPTURE_SLOT_BY_FILE[fileName];
+}
+
+export function getPhase6CombatCaptureSlotFiles() {
+  return [...PHASE6_COMBAT_CAPTURE_SLOT_FILES];
+}

@@ -1,0 +1,426 @@
+{
+  "schemaVersion": "phase-6-combat-preflight.v1",
+  "generatedAt": "2026-04-14T18:38:57.583Z",
+  "packetObjective": "Freeze pre-redesign combat-trio truth (Outskirts/Ruins/Gate Trial) with deterministic screenshots and parity/conflict audit artifacts.",
+  "whyNow": "Phase 6 visual packets depend on a preserve-first baseline that prevents role/copy/routing drift from being masked by shell work.",
+  "dependencies": [
+    "phase0CoreAudit capture + validation pipeline patterns",
+    "sectionCAudit harness lifecycle patterns",
+    "existing world module routing + world building modal ownership"
+  ],
+  "fileTouchpoints": [
+    "src/dev/phase6CombatAudit/*",
+    "scripts/release/capturePhase6CombatEvidence.ts",
+    "scripts/release/validatePhase6CombatEvidence.ts",
+    "scripts/release/buildPhase6CombatPreflightReport.ts",
+    "docs/release/qa/ui-cutover/phase-6-combat-preflight/*",
+    "src/components/GameLayout.tsx"
+  ],
+  "preserveEnhanceDefer": {
+    "preserve": [
+      "Current combat-path scenic owners and panel truth blocks",
+      "World shell routing into Outskirts, Ruins, and Gate Trial",
+      "Current CTA/action semantics and readiness logic"
+    ],
+    "enhance": [
+      "Deterministic screenshot harness coverage and evidence validation",
+      "Audit-level parity/conflict reporting for world-to-panel copy and ownership"
+    ],
+    "defer": [
+      "P6.0B shared combat-shell convergence",
+      "P6.0C world-to-combat handoff normalization",
+      "6.1/6.2/6.3 per-surface visual refinement"
+    ]
+  },
+  "noGoList": [
+    "No redesign/restyle of combat trio surfaces",
+    "No reward/balance/readiness rule mutation",
+    "No world module ordering changes",
+    "No shell refactor crossing packet scope"
+  ],
+  "ownershipMap": {
+    "outskirts": [
+      "src/components/screens/world/buildings/OutskirtsBuildingPanel.tsx",
+      "src/ui/world/OutskirtsSummaryCard.tsx",
+      "src/ui/world/TrackedBountyProgressLine.tsx",
+      "src/ui/status/RunCompassCompact.tsx",
+      "src/components/screens/world/buildings/CombatStyles.scss"
+    ],
+    "ruins": [
+      "src/components/screens/world/buildings/RuinsBuildingPanel.tsx",
+      "src/ui/world/RuinsSummaryCard.tsx",
+      "src/features/ruins/ui/RuinsProgress.tsx",
+      "src/ui/world/TrackedBountyProgressLine.tsx",
+      "src/ui/status/RunCompassCompact.tsx",
+      "src/components/screens/world/buildings/CombatStyles.scss"
+    ],
+    "gate-trial": [
+      "src/components/screens/world/buildings/GateTrialBuildingPanel.tsx",
+      "src/ui/trials/GateTrialReadinessCard.tsx",
+      "src/ui/trials/GateTrialChecklist.tsx",
+      "src/ui/trials/GateTrialSafetyNetCard.tsx",
+      "src/ui/trials/GateTrialTopFixes.tsx",
+      "src/ui/status/PostFailureDiagnosisPanel.tsx",
+      "src/components/screens/world/buildings/CombatStyles.scss"
+    ]
+  },
+  "visibleTruthSurfaceInventory": [
+    {
+      "surfaceId": "outskirts",
+      "screenTitle": "Outskirts",
+      "roleTag": "Gold & Common Mats",
+      "bestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+      "boundaryLine": "Not the best source for targeted city materials.",
+      "runCompassCompact": "Present in summary column above OutskirtsSummaryCard",
+      "scenicOwnerDescription": "Inside-dungeon WorldBuildingModal shell with InkCombatShell combat stage owner",
+      "sidePanelTruthSurfaces": [
+        "OutskirtsSummaryCard",
+        "TrackedBountyProgressLine",
+        "Combat options block",
+        "Combat log excerpt"
+      ],
+      "primaryCta": "Start / Stop",
+      "trackedBountyLine": "Present when tracked bounty kind is OUTSKIRTS_KILL or OUTSKIRTS_BOSS_KILL",
+      "aiPostureHint": "Present as OutskirtsSummaryCard hint line when posture fit emits warning/recommendation",
+      "deterministicAnchorVisibility": "Not applicable for outskirts lane",
+      "pityVisibility": "Not applicable for outskirts lane",
+      "minimumChecklistVisibility": "Not applicable",
+      "recommendedChecklistVisibility": "Not applicable",
+      "failSafeVisibility": "Not applicable",
+      "diagnosisVisibility": "Not applicable",
+      "adjacentRouteCues": "RunCompassCompact action line + tracked bounty destination continuity"
+    },
+    {
+      "surfaceId": "ruins",
+      "screenTitle": "Ruins",
+      "roleTag": "Targeted Mats",
+      "bestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+      "boundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability.",
+      "runCompassCompact": "Present in summary column above RuinsSummaryCard",
+      "scenicOwnerDescription": "Inside-dungeon WorldBuildingModal shell with RuinsSummaryCard + RuinsProgress split owner",
+      "sidePanelTruthSurfaces": [
+        "RuinsSummaryCard",
+        "RuinsProgress room track",
+        "Ruins pity rail",
+        "TrackedBountyProgressLine"
+      ],
+      "primaryCta": "Start / Stop (RuinsProgress controls)",
+      "trackedBountyLine": "Present when tracked bounty kind is RUINS_ROOM_CLEAR or RUINS_RUN_CLEAR",
+      "aiPostureHint": "No dedicated AI hint line in current ruins panel",
+      "deterministicAnchorVisibility": "Explicit final chest anchor line in summary card",
+      "pityVisibility": "Explicit rare pity line and progress bar in RuinsProgress",
+      "minimumChecklistVisibility": "Not applicable",
+      "recommendedChecklistVisibility": "Not applicable",
+      "failSafeVisibility": "Not applicable",
+      "diagnosisVisibility": "Not applicable",
+      "adjacentRouteCues": "RunCompass action continuity + tracked bounty routing line"
+    },
+    {
+      "surfaceId": "gate-trial",
+      "screenTitle": "Gate Trial",
+      "roleTag": null,
+      "bestUsedWhen": null,
+      "boundaryLine": null,
+      "runCompassCompact": "Not rendered in current gate panel; readiness card/checklists are primary truth block",
+      "scenicOwnerDescription": "Inside-dungeon WorldBuildingModal shell with GateTrial InkCombatShell owner and readiness/diagnosis side stack",
+      "sidePanelTruthSurfaces": [
+        "GateTrialAttemptCluster",
+        "GateTrialReadinessCard",
+        "GateTrialChecklist (minimum/recommended)",
+        "GateTrialSafetyNetCard",
+        "GateTrialTopFixes/PostFailureDiagnosisPanel"
+      ],
+      "primaryCta": "Attempt cluster primary action (Challenge / Break Through), optional Stop / Buy Safety Net",
+      "trackedBountyLine": "No tracked bounty line in gate panel",
+      "aiPostureHint": "Indirect via top fixes and combat options section; no dedicated posture hint row",
+      "deterministicAnchorVisibility": "Gate reward label shown in readiness card",
+      "pityVisibility": "No pity system in gate panel",
+      "minimumChecklistVisibility": "Visible in GateTrialChecklist \"Minimum Floor\"",
+      "recommendedChecklistVisibility": "Visible in GateTrialChecklist \"Recommended Floor\"",
+      "failSafeVisibility": "Visible in GateTrialSafetyNetCard and attempt controls",
+      "diagnosisVisibility": "Visible through GateTrialTopFixes/PostFailureDiagnosisPanel integration",
+      "adjacentRouteCues": "Top fixes can route to prep systems through action handlers"
+    }
+  ],
+  "parityTable": [
+    {
+      "surfaceId": "outskirts",
+      "worldRoleTag": "Gold & Common Mats",
+      "worldBestUsedWhen": "Best used when you need gold, common materials, or low-risk combat reps.",
+      "panelRoleOrLead": "Gold & Common Mats",
+      "panelBoundaryLine": "Not the best source for targeted city materials.",
+      "worldCtaLabel": "Open Outskirts",
+      "panelCtaLabel": "Start",
+      "staleOrContradictoryTerms": null,
+      "parityStatus": "aligned"
+    },
+    {
+      "surfaceId": "ruins",
+      "worldRoleTag": "Targeted Mats",
+      "worldBestUsedWhen": "Best used when you need targeted local materials and deterministic support rewards.",
+      "panelRoleOrLead": "Targeted Mats",
+      "panelBoundaryLine": "Gold is secondary here; the run is for targeted local materials and support stability.",
+      "worldCtaLabel": "Open Ruins",
+      "panelCtaLabel": "Start",
+      "staleOrContradictoryTerms": null,
+      "parityStatus": "aligned"
+    },
+    {
+      "surfaceId": "gate-trial",
+      "worldRoleTag": "Gate Progress",
+      "worldBestUsedWhen": "Best used when you are ready to resolve the current gate trial.",
+      "panelRoleOrLead": "Gate state + readiness detail (no explicit role tag)",
+      "panelBoundaryLine": null,
+      "worldCtaLabel": "Open Gate Trial",
+      "panelCtaLabel": "Challenge Trial / Break Through (state-driven)",
+      "staleOrContradictoryTerms": "World card uses static role tag while panel leads with stateful readiness + diagnosis language.",
+      "parityStatus": "drift"
+    }
+  ],
+  "duplicateConflictInventory": [
+    {
+      "surfaceId": "gate-trial",
+      "category": "copy_parity_drift",
+      "summary": "World card role-tag/best-used copy does not appear as a stable role block inside panel.",
+      "details": "Panel prioritizes readiness, checklists, fail-safe, and diagnosis truth clusters instead of repeating world card role tagline."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "duplicate_truth_surface",
+      "summary": "Combat options appear in multiple places (shell controls and summary/context).",
+      "details": "Audit-only note for future shell convergence packet; preserve current redundancy for now."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "routing_ambiguity",
+      "summary": "Top-fix action handlers can route to different systems without explicit route map in panel copy.",
+      "details": "Routing remains functional but implicit; document before handoff normalization packet."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 01-base.png.",
+      "details": "Capture slot 01-base.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 02-interaction.png.",
+      "details": "Capture slot 02-interaction.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 03-truth-states.png.",
+      "details": "Capture slot 03-truth-states.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 04-high-fx.png.",
+      "details": "Capture slot 04-high-fx.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 05-low-fx.png.",
+      "details": "Capture slot 05-low-fx.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts."
+    },
+    {
+      "surfaceId": "outskirts",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 06-reduced-motion.png.",
+      "details": "Capture slot 06-reduced-motion.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts."
+    },
+    {
+      "surfaceId": "ruins",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 01-base.png.",
+      "details": "Capture slot 01-base.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins."
+    },
+    {
+      "surfaceId": "ruins",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 02-interaction.png.",
+      "details": "Capture slot 02-interaction.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins."
+    },
+    {
+      "surfaceId": "ruins",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 03-truth-states.png.",
+      "details": "Capture slot 03-truth-states.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins."
+    },
+    {
+      "surfaceId": "ruins",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 04-high-fx.png.",
+      "details": "Capture slot 04-high-fx.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins."
+    },
+    {
+      "surfaceId": "ruins",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 05-low-fx.png.",
+      "details": "Capture slot 05-low-fx.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins."
+    },
+    {
+      "surfaceId": "ruins",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 06-reduced-motion.png.",
+      "details": "Capture slot 06-reduced-motion.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 01-base.png.",
+      "details": "Capture slot 01-base.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 02-interaction.png.",
+      "details": "Capture slot 02-interaction.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 03-truth-states.png.",
+      "details": "Capture slot 03-truth-states.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 04-high-fx.png.",
+      "details": "Capture slot 04-high-fx.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 05-low-fx.png.",
+      "details": "Capture slot 05-low-fx.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial."
+    },
+    {
+      "surfaceId": "gate-trial",
+      "category": "screenshot_gap",
+      "summary": "Missing required screenshot slot 06-reduced-motion.png.",
+      "details": "Capture slot 06-reduced-motion.png is missing in docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial."
+    }
+  ],
+  "mustPreserve": {
+    "outskirts": [
+      "HP bars + active enemy in interaction state",
+      "Outskirts role/best-used/boundary copy lines",
+      "Tracked bounty and AI hint affordances"
+    ],
+    "ruins": [
+      "Ruins lead-material + anchor + pity truth set",
+      "Run state + auto-repeat truth and room track",
+      "Gold-secondary boundary framing"
+    ],
+    "gate-trial": [
+      "Readiness card + minimum/recommended checklists",
+      "Fail-safe progress and support reserve lines",
+      "Post-failure diagnosis + top fixes integration"
+    ]
+  },
+  "screenshotCoverage": [
+    {
+      "surfaceId": "outskirts",
+      "folder": "docs/release/qa/ui-cutover/phase-6-combat-preflight/01-outskirts",
+      "requiredSlots": [
+        "01-base.png",
+        "02-interaction.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ],
+      "presentSlots": [],
+      "missingSlots": [
+        "01-base.png",
+        "02-interaction.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ]
+    },
+    {
+      "surfaceId": "ruins",
+      "folder": "docs/release/qa/ui-cutover/phase-6-combat-preflight/02-ruins",
+      "requiredSlots": [
+        "01-base.png",
+        "02-interaction.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ],
+      "presentSlots": [],
+      "missingSlots": [
+        "01-base.png",
+        "02-interaction.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ]
+    },
+    {
+      "surfaceId": "gate-trial",
+      "folder": "docs/release/qa/ui-cutover/phase-6-combat-preflight/03-gate-trial",
+      "requiredSlots": [
+        "01-base.png",
+        "02-interaction.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ],
+      "presentSlots": [],
+      "missingSlots": [
+        "01-base.png",
+        "02-interaction.png",
+        "03-truth-states.png",
+        "04-high-fx.png",
+        "05-low-fx.png",
+        "06-reduced-motion.png"
+      ]
+    }
+  ],
+  "ownerFileMatrix": [
+    {
+      "surfaceId": "outskirts",
+      "files": [
+        "moduleCardRegistry.ts",
+        "OutskirtsBuildingPanel.tsx",
+        "OutskirtsSummaryCard.tsx",
+        "TrackedBountyProgressLine.tsx"
+      ]
+    },
+    {
+      "surfaceId": "ruins",
+      "files": [
+        "moduleCardRegistry.ts",
+        "RuinsBuildingPanel.tsx",
+        "RuinsSummaryCard.tsx",
+        "RuinsProgress.tsx"
+      ]
+    },
+    {
+      "surfaceId": "gate-trial",
+      "files": [
+        "moduleCardRegistry.ts",
+        "GateTrialBuildingPanel.tsx",
+        "GateTrialReadinessCard.tsx",
+        "GateTrialTopFixes.tsx"
+      ]
+    }
+  ],
+  "recommendedNextPackets": [
+    "P6.0B shared combat-shell convergence",
+    "P6.0C World-to-combat handoff normalization",
+    "6.1 Outskirts",
+    "6.2 Ruins",
+    "6.3 Gate Trial"
+  ]
+}
