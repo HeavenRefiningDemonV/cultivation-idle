@@ -33,6 +33,7 @@ import { WorldOverlayRibbon } from '../../ui/world/WorldOverlayRibbon.js';
 import { WorldOverlayInspector } from '../../ui/world/WorldOverlayInspector.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
+import { buildWorldCombatHandoffSurface } from '../../systems/world/worldCombatHandoff.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -476,10 +477,19 @@ export function WorldScreen() {
   }, [hoveredModuleKey, lastHoveredModuleKey, lockedModuleKey, visibleCityModules]);
 
   const inspectorCard = inspectorModuleKey ? worldCardsByModuleKey.get(inspectorModuleKey) ?? null : null;
+  const inspectorCombatHandoff = useMemo(() => {
+    if (!rawContent || !selectedCity || !inspectorModuleKey) return null;
+    if (inspectorModuleKey !== 'outskirts' && inspectorModuleKey !== 'ruins' && inspectorModuleKey !== 'gateTrial') return null;
+    return buildWorldCombatHandoffSurface({ content: rawContent, cityId: selectedCity.id, moduleKey: inspectorModuleKey });
+  }, [inspectorModuleKey, rawContent, selectedCity]);
   const inspectorLabel = inspectorCard?.label ?? (inspectorModuleKey ? getWorldModuleLabel(inspectorModuleKey) : 'No module selected');
-  const inspectorRoleTag = inspectorCard?.roleTag ?? 'Support · Current Selection';
-  const inspectorBestUsedWhen = inspectorCard?.bestUsedWhen ?? 'Select a module on the map, then use Open to enter it.';
-  const inspectorOutputs = (inspectorCard?.outputs.slice(0, 3) ?? ['Map selection controls World module routing.']) as string[];
+  const inspectorRoleTag = inspectorCombatHandoff?.roleTag ?? inspectorCard?.roleTag ?? 'Support · Current Selection';
+  const inspectorBestUsedWhen = inspectorCombatHandoff?.bestUsedWhen ?? inspectorCard?.bestUsedWhen ?? 'Select a module on the map, then use Open to enter it.';
+  const inspectorOutputs = (
+    inspectorCombatHandoff?.outputs.map((entry) => entry.label).slice(0, 3)
+    ?? inspectorCard?.outputs.slice(0, 3)
+    ?? ['Map selection controls World module routing.']
+  ) as string[];
   const inspectorCueKind = inspectorModuleKey ? moduleCueByKey[inspectorModuleKey] ?? null : null;
   const inspectorStateLine = inspectorCueKind ? ({
     GATE: 'Gate is your next step.',
@@ -490,7 +500,7 @@ export function WorldScreen() {
     IDLE: 'Expedition slot idle.',
     SOON: 'Useful soon for your next step.',
   } as const)[inspectorCueKind] : null;
-  const inspectorOpenLabel = inspectorCard?.openLabel ?? (inspectorModuleKey ? `Open ${inspectorLabel}` : 'Open');
+  const inspectorOpenLabel = inspectorCombatHandoff?.openLabel ?? inspectorCard?.openLabel ?? (inspectorModuleKey ? `Open ${inspectorLabel}` : 'Open');
 
   return (
     <div className={'worldScreen'}>

@@ -17,6 +17,7 @@ import { RuinsBuildingPanel } from '../screens/world/buildings/RuinsBuildingPane
 import { Modal } from '../../ui/primitives/Modal.js';
 import { formatWorldModuleLabel } from '../../ui/text/playerFacingFormatters.js';
 import { inspectWorldFacingModuleTarget } from '../../systems/world/liveWorldLeakAudit.js';
+import { resolveWorldModalEntrySurface } from '../../systems/ui/world/worldBuildingModalEntrySurface.js';
 
 export interface WorldBuildingModalProps {
   open?: boolean;
@@ -26,22 +27,6 @@ export interface WorldBuildingModalProps {
   children?: ReactNode;
   useStore?: boolean;
 }
-
-type BackgroundVariant = 'manual-pavilion' | 'apothecary' | 'bounty-board' | 'inside-dungeon' | 'forge';
-type WorldModalShellFamily = 'prep-room' | 'support-board' | 'combat-path';
-type WorldModalShellMode = 'context-strip' | 'close-only';
-
-type WorldModalEntrySurface = {
-  title: string;
-  cityLabel: string;
-  moduleLabel: string;
-  contextReason: string | null;
-  backgroundVariant: BackgroundVariant;
-  shellFamily: WorldModalShellFamily;
-  shellMode: WorldModalShellMode;
-  showShellClose: boolean;
-  showContextStrip: boolean;
-};
 
 export const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'manualPavilion',
@@ -53,81 +38,6 @@ export const WORLD_MODAL_LIVE_KEYS: ReadonlyArray<WorldBuildingKey> = [
   'gateTrial',
   'ruins',
 ];
-
-function formatIntentReason(
-  buildingKey: WorldBuildingKey | null | undefined,
-  intent: WorldBuildingModalIntent,
-): string | null {
-  if (buildingKey !== 'apothecary' && buildingKey !== 'alchemy') {
-    return null;
-  }
-
-  switch (intent?.apothecarySurface) {
-    case 'brew':
-      return 'Opened to Brew';
-    case 'pouch':
-      return 'Opened for Medicine Pouch';
-    default:
-      return null;
-  }
-}
-
-function resolveWorldModalEntrySurface(args: {
-  buildingKey: WorldBuildingKey | null | undefined;
-  cityName: string | null | undefined;
-  intent: WorldBuildingModalIntent;
-  controlledTitle?: string;
-  isStoreMode: boolean;
-}): WorldModalEntrySurface {
-  const { buildingKey, cityName, intent, controlledTitle, isStoreMode } = args;
-  const cityLabel = cityName ?? 'City';
-  const moduleLabel = formatWorldModuleLabel(buildingKey);
-  const title = isStoreMode ? `${cityLabel} — ${moduleLabel}` : controlledTitle || 'World Building';
-
-  let backgroundVariant: BackgroundVariant = 'manual-pavilion';
-  let shellFamily: WorldModalShellFamily = 'prep-room';
-  let shellMode: WorldModalShellMode = 'context-strip';
-  let showShellClose = true;
-
-  switch (buildingKey) {
-    case 'apothecary':
-    case 'alchemy':
-      backgroundVariant = 'apothecary';
-      break;
-    case 'bounties':
-    case 'expeditions':
-      backgroundVariant = 'bounty-board';
-      shellFamily = 'support-board';
-      break;
-    case 'forge':
-      backgroundVariant = 'forge';
-      break;
-    case 'outskirts':
-    case 'gateTrial':
-    case 'ruins':
-      backgroundVariant = 'inside-dungeon';
-      shellFamily = 'combat-path';
-      shellMode = 'close-only';
-      showShellClose = buildingKey === 'ruins';
-      break;
-    case 'manualPavilion':
-    default:
-      backgroundVariant = 'manual-pavilion';
-      break;
-  }
-
-  return {
-    title,
-    cityLabel,
-    moduleLabel,
-    contextReason: formatIntentReason(buildingKey, intent),
-    backgroundVariant,
-    shellFamily,
-    shellMode,
-    showShellClose,
-    showContextStrip: shellMode === 'context-strip',
-  };
-}
 
 export function WorldBuildingModal({
   open: controlledOpen,

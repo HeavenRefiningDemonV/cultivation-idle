@@ -6,9 +6,11 @@ import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface
 import { buildRuinsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
 import { RuinsProgress } from '../../../../features/ruins/ui/RuinsProgress.js';
 import { useBountyStore } from '../../../../stores/bountyStore.js';
+import { useUIStore } from '../../../../stores/uiStore.js';
 import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
 import { RuinsSummaryCard } from '../../../../ui/world/RuinsSummaryCard.js';
 import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
+import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 import './CombatStyles.scss';
 
 interface RuinsBuildingPanelProps {
@@ -23,6 +25,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   const activeRun = useRuinsStore((state) => state.activeRun);
   const progressByRuinId = useRuinsStore((state) => state.progressByRuinId);
   const autoRepeatDefault = useRuinsStore((state) => state.autoRepeatDefault);
+  const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const trackedBounty = useBountyStore((state) => state.getTrackedBounty(cityId));
   const runCompass = useRunCompassSurface();
 
@@ -31,6 +34,10 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   const ruinProgress = ruinRefId ? progressByRuinId[ruinRefId] : undefined;
   const ruinsRewardModel = useMemo(
     () => buildRuinsActivityRewardReadModel(contentRaw, cityId),
+    [cityId, contentRaw],
+  );
+  const ruinsTopLaneCopy = useMemo(
+    () => getWorldCombatModuleTopLaneCopy({ moduleKey: 'ruins', content: contentRaw, cityId }),
     [cityId, contentRaw],
   );
 
@@ -85,11 +92,12 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   return (
     <div className="worldScreenPlaceholder ruinsPanel combatPathModule combatPathModule--ruins">
       <CombatModuleTopLane
-        moduleName="Ruins"
-        roleTag={ruinsRewardModel.roleTag}
-        bestUsedWhen={ruinsRewardModel.bestUsedWhen}
+        moduleName={ruinsTopLaneCopy.moduleName}
+        roleTag={ruinsTopLaneCopy.roleTag}
+        bestUsedWhen={ruinsTopLaneCopy.bestUsedWhen}
         runCompassSurface={runCompass.compact}
         variant="ruins"
+        onClose={closeWorldBuildingModal}
         chipRow={(
           <>
             <span className={`combatPathModule__chip ${activeRun ? 'combatPathModule__chip--active' : ''}`}>

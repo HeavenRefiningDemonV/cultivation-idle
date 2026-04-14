@@ -19,6 +19,7 @@ import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface
 import { OutskirtsSummaryCard } from '../../../../ui/world/OutskirtsSummaryCard.js';
 import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
 import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
+import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -157,6 +158,10 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     trackedBounty && (trackedBounty.kind === 'OUTSKIRTS_KILL' || trackedBounty.kind === 'OUTSKIRTS_BOSS_KILL')
       ? trackedBounty
       : null;
+  const outskirtsTopLaneCopy = useMemo(
+    () => getWorldCombatModuleTopLaneCopy({ moduleKey: 'outskirts', content: contentRaw, cityId }),
+    [cityId, contentRaw],
+  );
   const expectedOutputsLine = outskirtsRewardModel.keyExpectedOutputs.length > 0
     ? outskirtsRewardModel.keyExpectedOutputs.slice(0, 2).join(' • ')
     : 'Gold • Common Mats';
@@ -342,9 +347,9 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
         suppressHeader
         sidebarTop={(
           <CombatModuleTopLane
-            moduleName="Outskirts"
-            roleTag={outskirtsRewardModel.roleTag}
-            bestUsedWhen={outskirtsRewardModel.bestUsedWhen}
+            moduleName={outskirtsTopLaneCopy.moduleName}
+            roleTag={outskirtsTopLaneCopy.roleTag}
+            bestUsedWhen={outskirtsTopLaneCopy.bestUsedWhen}
             runCompassSurface={runCompass.compact}
             variant="outskirts"
             onClose={closeWorldBuildingModal}

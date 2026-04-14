@@ -68,6 +68,7 @@ const labelForState = (state: 'locked' | 'available' | 'cleared' | 'bypassed'): 
 
 export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
+  const contentRaw = useContentStore((state) => state.raw);
   const trialsById = useContentStore((state) => state.maps.trialsById);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
   const itemsById = useContentStore((state) => state.maps.itemsById);
@@ -164,7 +165,10 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     && trialProgress?.lastAttemptSummary
     && (trialProgress?.attempts ?? 0) > 0
     && !onboardingLifeKeys.includes(ONBOARDING_INLINE_LIFE_KEYS.firstFailureStrap));
-  const gateTopLaneCopy = useMemo(() => getWorldCombatModuleTopLaneCopy('gateTrial'), []);
+  const gateTopLaneCopy = useMemo(
+    () => getWorldCombatModuleTopLaneCopy({ moduleKey: 'gateTrial', content: contentRaw, cityId }),
+    [cityId, contentRaw],
+  );
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;

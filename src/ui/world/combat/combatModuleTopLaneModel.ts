@@ -1,4 +1,5 @@
-import { getWorldModuleCardDefinition } from '../../../systems/world/moduleCardRegistry.js';
+import type { ValidatedContent } from '../../../content/index.js';
+import { buildWorldCombatHandoffSurface, type WorldCombatHandoffModuleKey } from '../../../systems/world/worldCombatHandoff.js';
 
 export interface CombatModuleTopLaneCopy {
   moduleName: string;
@@ -6,11 +7,15 @@ export interface CombatModuleTopLaneCopy {
   bestUsedWhen: string;
 }
 
-export function getWorldCombatModuleTopLaneCopy(moduleKey: 'outskirts' | 'ruins' | 'gateTrial'): CombatModuleTopLaneCopy {
-  const definition = getWorldModuleCardDefinition(moduleKey);
+export function getWorldCombatModuleTopLaneCopy(args: {
+  moduleKey: WorldCombatHandoffModuleKey;
+  content: ValidatedContent;
+  cityId: string;
+}): CombatModuleTopLaneCopy {
+  const handoff = buildWorldCombatHandoffSurface(args);
   return {
-    moduleName: definition.label,
-    roleTag: definition.roleTag,
-    bestUsedWhen: definition.bestUsedWhen,
+    moduleName: handoff.moduleName,
+    roleTag: handoff.roleTag,
+    bestUsedWhen: handoff.bestUsedWhen,
   };
 }
