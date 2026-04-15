@@ -917,6 +917,21 @@
     background: rgba(30, 41, 59, 0.58);
 }
 
+.ruinsSummaryCard__anchorRewardPlate {
+    min-height: 24px;
+    border: 1px solid rgba(125, 211, 252, 0.22);
+    border-radius: 6px;
+    background:
+        linear-gradient(90deg, rgba(59, 130, 246, 0.16) 0%, rgba(59, 130, 246, 0.02) 72%),
+        rgba(15, 23, 42, 0.3);
+}
+
+.ruinsSummaryCard__anchorRewardPlate--art {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .ruinsSummaryCard__deterministicTitle {
     font-size: 10px;
     text-transform: uppercase;
@@ -1153,6 +1168,23 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: rgba(191, 219, 254, 0.9);
+}
+
+.ruinsPanel__locationPlaque {
+    justify-self: start;
+    width: min(240px, 90%);
+    min-height: 22px;
+    border: 1px solid rgba(125, 211, 252, 0.24);
+    border-radius: 999px;
+    background:
+        linear-gradient(90deg, rgba(59, 130, 246, 0.16) 0%, rgba(59, 130, 246, 0.04) 78%),
+        rgba(15, 23, 42, 0.28);
+}
+
+.ruinsPanel__locationPlaque--art {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .ruinsPanel__scenicTitle {

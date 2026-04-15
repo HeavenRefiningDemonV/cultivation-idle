@@ -35,6 +35,8 @@ export function RuinsSummaryCard(props: {
   roomCountLine: string;
   leadMaterialsLine: string;
   anchorLine: string;
+  anchorRewardPlateArtUrl?: string | null;
+  anchorRewardPlateFallback?: boolean;
   rarePityLine: string;
   goldSecondaryLine?: string;
   autoRepeatLine: string;
@@ -52,6 +54,8 @@ export function RuinsSummaryCard(props: {
     roomCountLine,
     leadMaterialsLine,
     anchorLine,
+    anchorRewardPlateArtUrl,
+    anchorRewardPlateFallback,
     rarePityLine,
     goldSecondaryLine,
     autoRepeatLine,
@@ -75,6 +79,12 @@ export function RuinsSummaryCard(props: {
       <div className="ruinsSummaryCard__purpose">{bestUsedWhen}</div>
       <div className="ruinsSummaryCard__structure">{roomCountLine}</div>
       <div className="ruinsSummaryCard__deterministicBlock" aria-label="Deterministic value preview">
+        <div
+          className={`ruinsSummaryCard__anchorRewardPlate${anchorRewardPlateArtUrl ? ' ruinsSummaryCard__anchorRewardPlate--art' : ''}`}
+          data-support-fallback={anchorRewardPlateFallback ? '1' : '0'}
+          style={anchorRewardPlateArtUrl ? { backgroundImage: `url(${anchorRewardPlateArtUrl})` } : undefined}
+          aria-hidden="true"
+        />
         <div className="ruinsSummaryCard__deterministicTitle">Deterministic value preview</div>
         <div className="ruinsSummaryCard__deterministicLine">{anchorLine}</div>
         <div className="ruinsSummaryCard__deterministicLine ruinsSummaryCard__outputs">{leadMaterialsLine}</div>
