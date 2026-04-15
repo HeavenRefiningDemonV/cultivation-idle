@@ -1046,4 +1046,127 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    height: 100%;
+}
+
+.ruinsPanel__composition {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto minmax(0, auto);
+    gap: 10px;
+}
+
+.ruinsPanel__centerBand {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    gap: 10px;
+}
+
+.ruinsPanel__scenicCenter {
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 10px;
+    background:
+        radial-gradient(120% 100% at 20% 8%, rgba(59, 130, 246, 0.14) 0%, rgba(15, 23, 42, 0.55) 60%, rgba(2, 6, 23, 0.78) 100%);
+    padding: 12px;
+    min-height: 180px;
+    display: grid;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 6px;
+}
+
+.ruinsPanel__scenicBadge {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(191, 219, 254, 0.9);
+}
+
+.ruinsPanel__scenicTitle {
+    font-size: 20px;
+    color: #f8fafc;
+    font-weight: 700;
+}
+
+.ruinsPanel__scenicLine {
+    color: #dbeafe;
+    font-size: 12px;
+    min-height: 18px;
+}
+
+.ruinsPanel__scenicMaterials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
+}
+
+.ruinsPanel__scenicChip {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(15, 23, 42, 0.45);
+    padding: 3px 10px;
+    color: #e2e8f0;
+    font-size: 11px;
+}
+
+.ruinsPanel__inspector {
+    min-height: 0;
+}
+
+.ruinsPanel__progressRail,
+.ruinsPanel__utility {
+    min-height: 0;
+}
+
+.ruinsPanel__ctaZone {
+    min-height: 0;
+}
+
+.ruinsCtaZone {
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.62);
+    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.ruinsCtaZone__primary {
+    min-width: 160px;
+}
+
+.ruinsCtaZone__primary--start {
+    box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.35);
+}
+
+.ruinsCtaZone__primary--stop {
+    box-shadow: inset 0 0 0 1px rgba(251, 146, 60, 0.35);
+}
+
+.ruinsCtaZone__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #dbeafe;
+    font-size: 12px;
+    min-height: 22px;
+}
+
+@media (max-width: 1200px) {
+    .ruinsPanel__centerBand {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .ruinsCtaZone {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ruinsCtaZone__primary {
+        width: 100%;
+    }
 }

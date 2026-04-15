@@ -5,6 +5,7 @@ import { resolveModuleRef } from '../worldUtils.js';
 import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
 import { buildRuinsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
 import { RuinsProgress } from '../../../../features/ruins/ui/RuinsProgress.js';
+import { RuinsCtaZone } from '../../../../features/ruins/ui/RuinsCtaZone.js';
 import { useBountyStore } from '../../../../stores/bountyStore.js';
 import { useUIStore } from '../../../../stores/uiStore.js';
 import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
@@ -112,24 +113,45 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
           </>
         )}
       />
-      <div className="ruinsPanel__summary combatPathModule__contextRail">
-        <RuinsSummaryCard
-          ruinName={ruinsSummarySurface.ruinName}
-          roleTag={ruinsSummarySurface.roleTag}
-          bestUsedWhen={ruinsSummarySurface.bestUsedWhen}
-          roomCountLine={ruinsSummarySurface.roomCountLine}
-          leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
-          anchorLine={ruinsSummarySurface.anchorPreviewLine}
-          rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
-          goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
-          autoRepeatLine={ruinsSummarySurface.autoRepeatLine}
-          runStateLine={ruinsSummarySurface.runStateLine}
-          trackedBountyLine={trackedRuinsBounty ? <TrackedBountyProgressLine bounty={trackedRuinsBounty} /> : undefined}
-          trackedBountyVisible={ruinsSummarySurface.trackedBountyVisible}
-        />
-      </div>
-      <div className="combatPathModule__scene">
-        <RuinsProgress ruinsId={ruinDef.id} />
+      <div className="ruinsPanel__composition">
+        <div className="ruinsPanel__centerBand">
+          <section className="ruinsPanel__scenicCenter" aria-label="Ruins chamber path">
+            <div className="ruinsPanel__scenicBadge">Chamber route</div>
+            <div className="ruinsPanel__scenicTitle">{ruinsSummarySurface.ruinName}</div>
+            <div className="ruinsPanel__scenicLine">{ruinsSummarySurface.roomCountLine}</div>
+            <div className="ruinsPanel__scenicLine">{ruinsSummarySurface.runStateLine}</div>
+            <div className="ruinsPanel__scenicMaterials">
+              {ruinsSummarySurface.leadMaterialsPreview.map((materialName) => (
+                <span key={materialName} className="ruinsPanel__scenicChip">{materialName}</span>
+              ))}
+            </div>
+          </section>
+          <div className="ruinsPanel__inspector combatPathModule__contextRail">
+            <RuinsSummaryCard
+              ruinName={ruinsSummarySurface.ruinName}
+              roleTag={ruinsSummarySurface.roleTag}
+              bestUsedWhen={ruinsSummarySurface.bestUsedWhen}
+              roomCountLine={ruinsSummarySurface.roomCountLine}
+              leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
+              anchorLine={ruinsSummarySurface.anchorPreviewLine}
+              rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
+              goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
+              autoRepeatLine={ruinsSummarySurface.autoRepeatLine}
+              runStateLine={ruinsSummarySurface.runStateLine}
+              trackedBountyLine={trackedRuinsBounty ? <TrackedBountyProgressLine bounty={trackedRuinsBounty} /> : undefined}
+              trackedBountyVisible={ruinsSummarySurface.trackedBountyVisible}
+            />
+          </div>
+        </div>
+        <div className="ruinsPanel__progressRail">
+          <RuinsProgress ruinsId={ruinDef.id} section="rail" />
+        </div>
+        <div className="ruinsPanel__ctaZone">
+          <RuinsCtaZone ruinId={ruinDef.id} runActive={Boolean(activeRun)} />
+        </div>
+        <div className="ruinsPanel__utility">
+          <RuinsProgress ruinsId={ruinDef.id} section="utility" />
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,28 @@ import { pityProgressPercent } from '../../../services/economy/pity.js';
 import { formatNumber } from '../../../utils/numbers.js';
 import './RuinsProgress.scss';
 
+interface RuinsProgressModel {
+  ruinName: string;
+  roomCount: number;
+  totalRuns: number;
+  roomTrack: Array<{ label: string; preview: string; type: 'mob' | 'mini' | 'boss'; index: number }>;
+  activeRun: { roomIndex: number; roomCount: number; startedAt: number } | null;
+  showRareProgress: boolean;
+  baseChance: number;
+  pityCap: number;
+  pityPercent: number;
+  pityTarget: number;
+  bossChestFailures: number;
+  runSummary: RuinsRunSummary | null;
+  history: RuinsRunSummary[];
+  itemsById: Record<string, { name?: string; rarity?: string }>;
+}
+
+export interface RuinsProgressProps {
+  ruinsId?: string;
+  section?: 'full' | 'rail' | 'utility';
+}
+
 function formatDuration(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds <= 0) return '0s';
   if (seconds < 90) return `${seconds.toFixed(1)}s`;
@@ -55,7 +77,7 @@ function summarizeMaterials(
   });
 }
 
-export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
+function useRuinsProgressModel(ruinsId?: string): RuinsProgressModel {
   const activity = useActivityStore((state) => state.active);
   const combatContext = useCombatStore((state) => state.combatContext);
 
@@ -68,27 +90,12 @@ export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
     })),
   );
 
-  const {
-    activeRun,
-    progressByRuinId,
-    autoRestart,
-    autoRepeatDefault,
-    runHistory,
-    lastRunSummary,
-    stopRun,
-    setAutoRepeat,
-    startRun,
-  } = useRuinsStore(
+  const { activeRun, progressByRuinId, runHistory, lastRunSummary } = useRuinsStore(
     useShallow((state) => ({
       activeRun: state.activeRun,
       progressByRuinId: state.progressByRuinId,
-      autoRestart: state.autoRestart,
-      autoRepeatDefault: state.autoRepeatDefault,
       runHistory: state.runHistory,
       lastRunSummary: state.lastRunSummary,
-      stopRun: state.stopRun,
-      setAutoRepeat: state.setAutoRepeat,
-      startRun: state.startRun,
     })),
   );
 
@@ -107,15 +114,12 @@ export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
     [roomCount, ruinDef?.roomPools, enemiesById],
   );
 
-  const currentIndex = activeRun?.roomIndex ?? 0;
-  const autoRestartEnabled = autoRestart ?? autoRepeatDefault;
+  const progress = ruinId ? progressByRuinId[ruinId] : undefined;
   const runSummary = ruinId && lastRunSummary?.ruinId === ruinId ? lastRunSummary : null;
   const history = useMemo(
     () => runHistory.filter((entry) => (ruinId ? entry.ruinId === ruinId : true)).slice(0, 5),
     [runHistory, ruinId],
   );
-  const progress = ruinId ? progressByRuinId[ruinId] : undefined;
-  const rareSummary = runSummary?.bossChestRare;
 
   const pityRule = economy?.tuning?.pityDefaults?.ruinsBossChestRare;
   const pityCap = pityRule?.pityCap ?? 0;
@@ -123,161 +127,171 @@ export function RuinsProgress({ ruinsId }: { ruinsId?: string }) {
   const bossChestFailures = progress?.bossChestRareFailures ?? 0;
   const showRareProgress = baseChance > 0 && pityCap > 1;
   const pityPercent = showRareProgress ? pityProgressPercent(bossChestFailures, pityCap) * 100 : 0;
-  const pityTarget = Math.max(pityCap - 1, 0);
 
-  const handleStart = () => {
-    if (!ruinId) return;
-    startRun(ruinId);
+  return {
+    ruinName: ruinDef?.name ?? 'Ruins Run',
+    roomCount,
+    totalRuns: progress?.totalRuns ?? 0,
+    roomTrack,
+    activeRun: activeRun ? { roomIndex: activeRun.roomIndex, roomCount: activeRun.roomCount, startedAt: activeRun.startedAt } : null,
+    showRareProgress,
+    baseChance,
+    pityCap,
+    pityPercent,
+    pityTarget: Math.max(pityCap - 1, 0),
+    bossChestFailures,
+    runSummary,
+    history,
+    itemsById,
   };
+}
 
-  const handleStop = () => {
-    stopRun();
-  };
+function RuinsProgressRail({ model }: { model: RuinsProgressModel }) {
+  const { roomTrack, activeRun, roomCount, showRareProgress, baseChance, pityCap, pityPercent, pityTarget, bossChestFailures } = model;
+  const currentIndex = activeRun?.roomIndex ?? 0;
 
   return (
-    <div className="ruins-progress">
-      <section className="ruins-progress__primary">
-        <div className="ruins-progress__header combatPathModule__actionZone">
-          <div>
-            <div className="ruins-progress__title">{ruinDef?.name ?? 'Ruins Run'}</div>
-            <div className="ruins-progress__subtitle">
-              Rooms: {roomCount} • Runs cleared: {progress?.totalRuns ?? 0}
-            </div>
+    <section className="ruins-progress__rail" aria-label="Ruins progress rail">
+      <div className="ruins-progress__railHeader">
+        <div className="ruins-progress__title">{model.ruinName}</div>
+        <div className="ruins-progress__subtitle">Rooms: {roomCount} • Runs cleared: {model.totalRuns}</div>
+      </div>
+
+      {showRareProgress ? (
+        <div className="ruins-progress__pity">
+          <div className="ruins-progress__pity-row">
+            <div className="ruins-progress__pity-title">Boss Chest Rare Progress</div>
+            <div className="ruins-progress__pity-subtitle">Base chance {Math.round((baseChance ?? 0) * 100)}% • Pity cap {pityCap}</div>
           </div>
-          <div className="ruins-progress__controls">
-            <button className="button-standard" onClick={handleStart} disabled={!ruinId || Boolean(activeRun)}>
-              Start
-            </button>
-            <button className="button-standard" onClick={handleStop} disabled={!activeRun}>
-              Stop
-            </button>
-            <label className="ruins-progress__toggle">
-              <input
-                type="checkbox"
-                checked={autoRestartEnabled}
-                onChange={(e) => setAutoRepeat(e.target.checked)}
-              />
-              Continue farming ruins
-            </label>
+          <div className="ruins-progress__pity-bar">
+            <div
+              className="ruins-progress__pity-bar-fill"
+              style={{ width: `${Math.min(100, Math.max(0, pityPercent))}%` }}
+            />
+          </div>
+          <div className="ruins-progress__pity-meta">
+            Core shards: {bossChestFailures} / {pityTarget || '—'}
+            {pityTarget > 0 && bossChestFailures >= pityTarget ? ' — Guaranteed on next boss chest' : ''}
           </div>
         </div>
+      ) : (
+        <div className="ruins-progress__pity ruins-progress__pity--inactive">
+          <div className="ruins-progress__pity-title">Boss Chest Rare Progress</div>
+          <div className="ruins-progress__pity-meta">Rare pity is not configured for this ruleset.</div>
+        </div>
+      )}
 
-        {showRareProgress ? (
-          <div className="ruins-progress__pity">
-            <div className="ruins-progress__pity-row">
-              <div className="ruins-progress__pity-title">Boss Chest Rare Progress</div>
-              <div className="ruins-progress__pity-subtitle">
-                Base chance {Math.round((baseChance ?? 0) * 100)}% • Pity cap {pityCap}
-              </div>
+      <div className="ruins-progress__track">
+        {roomTrack.map((room) => {
+          const status = activeRun
+            ? room.index < activeRun.roomIndex
+              ? 'done'
+              : room.index === activeRun.roomIndex
+                ? 'current'
+                : 'upcoming'
+            : 'upcoming';
+          return (
+            <div key={room.index} className={`ruins-progress__room ruins-progress__room--${status}`}>
+              <div className={`ruins-progress__room-chip ruins-progress__room-chip--${room.type}`}>{room.label}</div>
+              <div className="ruins-progress__room-preview">{room.preview}</div>
+              <div className="ruins-progress__room-mod">{room.type === 'boss' ? 'Boss modifiers active' : 'Standard foes'}</div>
             </div>
-            <div className="ruins-progress__pity-bar">
-              <div
-                className="ruins-progress__pity-bar-fill"
-                style={{ width: `${Math.min(100, Math.max(0, pityPercent))}%` }}
-              />
-            </div>
-            <div className="ruins-progress__pity-meta">
-              Core shards: {bossChestFailures} / {pityTarget || '—'}
-              {pityTarget > 0 && bossChestFailures >= pityTarget ? ' — Guaranteed on next boss chest' : ''}
-            </div>
+          );
+        })}
+      </div>
+
+      <div className="ruins-progress__statusSlot">
+        {activeRun ? (
+          <div className="ruins-progress__status">
+            Current room: {currentIndex + 1} / {roomCount} — Started {formatDuration((Date.now() - activeRun.startedAt) / 1000)}
           </div>
         ) : (
-          <div className="ruins-progress__pity ruins-progress__pity--inactive">
-            <div className="ruins-progress__pity-title">Boss Chest Rare Progress</div>
-            <div className="ruins-progress__pity-meta">Rare pity is not configured for this ruleset.</div>
+          <div className="ruins-progress__status ruins-progress__status--idle">Run idle — Start when ready.</div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function RuinsProgressUtility({ model }: { model: RuinsProgressModel }) {
+  const { runSummary, history, itemsById } = model;
+  const rareSummary = runSummary?.bossChestRare;
+
+  return (
+    <section className="ruins-progress__operations" aria-label="Ruins recap and history">
+      <div className="ruins-progress__operations-title">Run recap & history</div>
+      <div className="ruins-progress__operations-grid">
+        {runSummary ? (
+          <div className="ruins-progress__summary">
+            <div className="ruins-progress__summary-title">Run recap</div>
+            <div className="ruins-progress__summary-grid">
+              <div>
+                <div className="ruins-progress__metric">Outcome: {runSummary.victory ? 'Victory' : 'Defeat'}</div>
+                <div className="ruins-progress__metric">Duration: {formatDuration(runSummary.durationSec)}</div>
+                <div className="ruins-progress__metric">Rooms cleared: {runSummary.roomsCleared} / {runSummary.roomCount}</div>
+              </div>
+              <div>
+                <div className="ruins-progress__metric">Gold gained: +{formatNumber(runSummary.goldGained)}</div>
+                <div className="ruins-progress__metric">Rare drops: {runSummary.rareDropCount}</div>
+                <div className="ruins-progress__metric">Drops: {runSummary.drops.length}</div>
+              </div>
+            </div>
+            {rareSummary ? (
+              <div className="ruins-progress__pity-summary">
+                Rare bonus:{' '}
+                {rareSummary.hit
+                  ? `${itemsById['mat_artifact_shard_bundle']?.name ?? 'Artifact Shard Bundle'}${rareSummary.guaranteed ? ' (Guaranteed)' : ''}`
+                  : `Missed (${rareSummary.failuresBefore}/${Math.max(rareSummary.pityCap - 1, 0)})`}
+              </div>
+            ) : null}
+            {runSummary.drops.length > 0 ? (
+              <ul className="ruins-progress__drops">{summarizeMaterials(runSummary.drops, itemsById)}</ul>
+            ) : (
+              <div className="ruins-progress__empty">No notable materials this run.</div>
+            )}
+          </div>
+        ) : (
+          <div className="ruins-progress__summary ruins-progress__summary--empty">
+            <div className="ruins-progress__empty">Run recap appears after your next clear or fail.</div>
           </div>
         )}
 
-        <div className="ruins-progress__track combatPathModule__scene">
-          {roomTrack.map((room) => {
-            const status = activeRun
-              ? room.index < activeRun.roomIndex
-                ? 'done'
-                : room.index === activeRun.roomIndex
-                  ? 'current'
-                  : 'upcoming'
-              : 'upcoming';
-            return (
-              <div key={room.index} className={`ruins-progress__room ruins-progress__room--${status}`}>
-                <div className={`ruins-progress__room-chip ruins-progress__room-chip--${room.type}`}>{room.label}</div>
-                <div className="ruins-progress__room-preview">{room.preview}</div>
-                <div className="ruins-progress__room-mod">{room.type === 'boss' ? 'Boss modifiers active' : 'Standard foes'}</div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="ruins-progress__statusSlot">
-          {activeRun ? (
-            <div className="ruins-progress__status">
-              Current room: {currentIndex + 1} / {roomCount} — Started {formatDuration((Date.now() - activeRun.startedAt) / 1000)}
-            </div>
+        <div className="ruins-progress__history">
+          <div className="ruins-progress__history-title">Recent runs</div>
+          {history.length > 0 ? (
+            <ul>
+              {history.map((entry) => (
+                <li key={entry.runId} className="ruins-progress__history-row">
+                  <span>#{entry.runId}</span>
+                  <span>{entry.victory ? 'Cleared' : 'Defeated'}</span>
+                  <span>{formatDuration(entry.durationSec)}</span>
+                  <span>+{formatNumber(entry.goldGained)} gold</span>
+                  <span>{entry.rareDropCount} rare</span>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <div className="ruins-progress__status ruins-progress__status--idle">Run idle — Start when ready.</div>
+            <div className="ruins-progress__empty">No recent runs yet.</div>
           )}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      <section className="ruins-progress__operations">
-        <div className="ruins-progress__operations-title">Run recap & history</div>
-        <div className="ruins-progress__operations-grid">
-          {runSummary ? (
-            <div className="ruins-progress__summary">
-              <div className="ruins-progress__summary-title">Run recap</div>
-              <div className="ruins-progress__summary-grid">
-                <div>
-                  <div className="ruins-progress__metric">Outcome: {runSummary.victory ? 'Victory' : 'Defeat'}</div>
-                  <div className="ruins-progress__metric">Duration: {formatDuration(runSummary.durationSec)}</div>
-                  <div className="ruins-progress__metric">
-                    Rooms cleared: {runSummary.roomsCleared} / {runSummary.roomCount}
-                  </div>
-                </div>
-                <div>
-                  <div className="ruins-progress__metric">Gold gained: +{formatNumber(runSummary.goldGained)}</div>
-                  <div className="ruins-progress__metric">Rare drops: {runSummary.rareDropCount}</div>
-                  <div className="ruins-progress__metric">Drops: {runSummary.drops.length}</div>
-                </div>
-              </div>
-              {rareSummary ? (
-                <div className="ruins-progress__pity-summary">
-                  Rare bonus:{' '}
-                  {rareSummary.hit
-                    ? `${itemsById['mat_artifact_shard_bundle']?.name ?? 'Artifact Shard Bundle'}${rareSummary.guaranteed ? ' (Guaranteed)' : ''}`
-                    : `Missed (${rareSummary.failuresBefore}/${Math.max(rareSummary.pityCap - 1, 0)})`}
-                </div>
-              ) : null}
-              {runSummary.drops.length > 0 ? (
-                <ul className="ruins-progress__drops">{summarizeMaterials(runSummary.drops, itemsById)}</ul>
-              ) : (
-                <div className="ruins-progress__empty">No notable materials this run.</div>
-              )}
-            </div>
-          ) : (
-            <div className="ruins-progress__summary ruins-progress__summary--empty">
-              <div className="ruins-progress__empty">Run recap appears after your next clear or fail.</div>
-            </div>
-          )}
+export function RuinsProgress({ ruinsId, section = 'full' }: RuinsProgressProps) {
+  const model = useRuinsProgressModel(ruinsId);
+  if (section === 'rail') {
+    return <div className="ruins-progress ruins-progress--railOnly"><RuinsProgressRail model={model} /></div>;
+  }
+  if (section === 'utility') {
+    return <div className="ruins-progress ruins-progress--utilityOnly"><RuinsProgressUtility model={model} /></div>;
+  }
 
-          <div className="ruins-progress__history">
-            <div className="ruins-progress__history-title">Recent runs</div>
-            {history.length > 0 ? (
-              <ul>
-                {history.map((entry) => (
-                  <li key={entry.runId} className="ruins-progress__history-row">
-                    <span>#{entry.runId}</span>
-                    <span>{entry.victory ? 'Cleared' : 'Defeated'}</span>
-                    <span>{formatDuration(entry.durationSec)}</span>
-                    <span>+{formatNumber(entry.goldGained)} gold</span>
-                    <span>{entry.rareDropCount} rare</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="ruins-progress__empty">No recent runs yet.</div>
-            )}
-          </div>
-        </div>
-      </section>
+  return (
+    <div className="ruins-progress">
+      <RuinsProgressRail model={model} />
+      <RuinsProgressUtility model={model} />
     </div>
   );
 }

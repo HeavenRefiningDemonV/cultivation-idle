@@ -177,3 +177,23 @@ test('live bounty template filtering keeps support templates authored for the cu
     assert.match(template.name, /Spirit Cavern|Craft Orders|Expeditions/);
   });
 });
+
+test('ruins panel composition keeps scenic center, deterministic trio inspector, progress rail, and utility tray structure', async () => {
+  const ruinsPanelSource = await readFile(repoPath('src/components/screens/world/buildings/RuinsBuildingPanel.tsx'), 'utf8');
+  const ruinsSummarySource = await readFile(repoPath('src/ui/world/RuinsSummaryCard.tsx'), 'utf8');
+  const ruinsProgressSource = await readFile(repoPath('src/features/ruins/ui/RuinsProgress.tsx'), 'utf8');
+
+  assert.match(ruinsPanelSource, /ruinsPanel__centerBand/);
+  assert.match(ruinsPanelSource, /ruinsPanel__scenicCenter/);
+  assert.match(ruinsPanelSource, /ruinsPanel__progressRail/);
+  assert.match(ruinsPanelSource, /ruinsPanel__ctaZone/);
+  assert.match(ruinsPanelSource, /ruinsPanel__utility/);
+
+  assert.match(ruinsSummarySource, /Deterministic value preview/);
+  assert.match(ruinsSummarySource, /leadMaterialsLine/);
+  assert.match(ruinsSummarySource, /ruinsSummaryCard__boundary/);
+
+  assert.match(ruinsProgressSource, /ruins-progress__rail/);
+  assert.match(ruinsProgressSource, /ruins-progress__operations/);
+  assert.match(ruinsProgressSource, /Run recap & history/);
+});
