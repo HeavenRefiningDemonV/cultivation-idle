@@ -1038,6 +1038,11 @@
     align-items: center;
 }
 
+.ruinsSummaryCard__exitHintAction:focus-visible {
+    outline: 2px solid #bae6fd;
+    outline-offset: 2px;
+}
+
 .ruinsSummaryCard__exitHint--empty {
     opacity: 0;
     pointer-events: none;
@@ -1182,59 +1187,33 @@
 
 .ruinsPanel__ambientOverlay {
     position: absolute !important;
-    background-repeat: no-repeat;
     pointer-events: none;
     z-index: 0 !important;
-    opacity: 0.35;
 }
 
-.ruinsPanel__ambientOverlay--upper {
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 44%;
-    background-position: top center;
-    background-size: cover;
-}
-
-.ruinsPanel__ambientOverlay--mid {
-    left: 0;
-    top: 26%;
-    width: 100%;
-    height: 30%;
-    background-position: center;
-    background-size: cover;
-    opacity: 0.24;
-}
-
-.ruinsPanel__ambientOverlay--lower {
+.ruinsPanel__ambientOverlay--haze {
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 42%;
+    height: 46%;
     background-position: bottom center;
+    background-repeat: no-repeat;
     background-size: cover;
+    opacity: 0.24;
+    transition: opacity 160ms ease;
+}
+
+.ruinsPanel__ambientOverlay--haze[data-quality='high'] {
     opacity: 0.3;
 }
 
-.ruinsPanel__ambientOverlay--left {
-    left: 0;
-    top: 0;
-    width: 30%;
-    height: 100%;
-    background-position: left center;
-    background-size: contain;
-    opacity: 0.32;
+.ruinsPanel__ambientOverlay--haze[data-quality='medium'] {
+    opacity: 0.24;
 }
 
-.ruinsPanel__ambientOverlay--right {
-    right: 0;
-    top: 0;
-    width: 30%;
-    height: 100%;
-    background-position: right center;
-    background-size: contain;
-    opacity: 0.32;
+.ruinsPanel__ambientOverlay--haze[data-quality='low'],
+.ruinsPanel__ambientOverlay--haze[data-quality='reduced'] {
+    opacity: 0.18;
 }
 
 .ruinsPanel__scenicBadge {
@@ -1323,6 +1302,12 @@
 
 .ruinsCtaZone__primary--stop {
     box-shadow: inset 0 0 0 1px rgba(251, 146, 60, 0.35);
+}
+
+.ruinsCtaZone__primary:focus-visible,
+.ruinsCtaZone__toggle input:focus-visible {
+    outline: 2px solid #bae6fd;
+    outline-offset: 2px;
 }
 
 .ruinsCtaZone__toggle {

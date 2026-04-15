@@ -115,6 +115,15 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
 
   const locationPlaqueSupportArt = useMemo(() => resolveRuinsSupportArt('locationPlaque'), []);
   const anchorRewardPlateSupportArt = useMemo(() => resolveRuinsSupportArt('anchorRewardPlateA'), []);
+  const ambientHazeOverlayUrl = useMemo(() => {
+    if (prefersReducedMotion || effectiveQuality === 'low') return RUINS_OVERLAY_ASSET_URLS.fogBankLowerB;
+    if (effectiveQuality === 'medium') return RUINS_OVERLAY_ASSET_URLS.midBandStaleAir;
+    return RUINS_OVERLAY_ASSET_URLS.fogBankLowerA;
+  }, [effectiveQuality, prefersReducedMotion]);
+  const ambientHazeTier = prefersReducedMotion ? 'reduced' : effectiveQuality;
+  const anchorGlowOverlayUrl = prefersReducedMotion || effectiveQuality === 'low'
+    ? null
+    : RUINS_OVERLAY_ASSET_URLS.anchorSoftGlowA;
 
   const supportContext = useMemo(() => {
     return buildRuinsSupportContextSurface({
@@ -231,11 +240,12 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
         <div className="ruinsPanel__composition">
           <div className="ruinsPanel__centerBand">
             <section className="ruinsPanel__scenicCenter" aria-label="Ruins chamber path">
-              <div className="ruinsPanel__ambientOverlay ruinsPanel__ambientOverlay--upper" style={{ backgroundImage: `url(${RUINS_OVERLAY_ASSET_URLS.upperVignette})` }} aria-hidden="true" />
-              <div className="ruinsPanel__ambientOverlay ruinsPanel__ambientOverlay--mid" style={{ backgroundImage: `url(${RUINS_OVERLAY_ASSET_URLS.midBandStaleAir})` }} aria-hidden="true" />
-              <div className="ruinsPanel__ambientOverlay ruinsPanel__ambientOverlay--lower" style={{ backgroundImage: `url(${RUINS_OVERLAY_ASSET_URLS.fogBankLowerA})` }} aria-hidden="true" />
-              <div className="ruinsPanel__ambientOverlay ruinsPanel__ambientOverlay--left" style={{ backgroundImage: `url(${RUINS_OVERLAY_ASSET_URLS.chamberHazeLeft})` }} aria-hidden="true" />
-              <div className="ruinsPanel__ambientOverlay ruinsPanel__ambientOverlay--right" style={{ backgroundImage: `url(${RUINS_OVERLAY_ASSET_URLS.chamberHazeRight})` }} aria-hidden="true" />
+              <div
+                className="ruinsPanel__ambientOverlay ruinsPanel__ambientOverlay--haze"
+                data-quality={ambientHazeTier}
+                style={{ backgroundImage: `url(${ambientHazeOverlayUrl})` }}
+                aria-hidden="true"
+              />
               <div
                 className="ruinsPanel__locationPlaque ruinsPanel__locationPlaque--art"
                 data-support-role={locationPlaqueSupportArt.role}
@@ -261,7 +271,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
                 leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
                 anchorLine={ruinsSummarySurface.anchorPreviewLine}
                 anchorRewardPlateArtUrl={anchorRewardPlateSupportArt.assetUrl}
-                anchorGlowOverlayUrl={RUINS_OVERLAY_ASSET_URLS.anchorSoftGlowA}
+                anchorGlowOverlayUrl={anchorGlowOverlayUrl}
                 rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
                 goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
                 autoRepeatLine={ruinsSummarySurface.autoRepeatLine}

@@ -12,9 +12,9 @@ test('ruins panel consumes location plaque support-art, anchor underplate, and a
   assert.match(panel, /resolveRuinsSupportArt\('locationPlaque'\)/);
   assert.match(panel, /resolveRuinsSupportArt\('anchorRewardPlateA'\)/);
   assert.match(panel, /data-support-role=\{locationPlaqueSupportArt\.role\}/);
-  assert.match(panel, /RUINS_OVERLAY_ASSET_URLS\.upperVignette/);
   assert.match(panel, /RUINS_OVERLAY_ASSET_URLS\.fogBankLowerA/);
-  assert.match(panel, /RUINS_OVERLAY_ASSET_URLS\.chamberHazeLeft/);
+  assert.match(panel, /RUINS_OVERLAY_ASSET_URLS\.fogBankLowerB/);
+  assert.match(panel, /RUINS_OVERLAY_ASSET_URLS\.midBandStaleAir/);
 });
 
 test('ruins summary card keeps deterministic text DOM-first with optional anchor underplate', () => {
