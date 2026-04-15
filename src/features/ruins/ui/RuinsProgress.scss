@@ -1,12 +1,36 @@
 .ruins-progress {
   padding: 12px;
-  background: rgba(20, 24, 30, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(7, 11, 18, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 8px;
   color: #e5e7eb;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.ruins-progress__primary {
+  display: grid;
+  gap: 10px;
+}
+
+.ruins-progress__operations {
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.ruins-progress__operations-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.ruins-progress__operations-grid {
+  display: grid;
+  gap: 8px;
 }
 
 .ruins-progress__header {
@@ -24,7 +48,7 @@
 
 .ruins-progress__subtitle {
   font-size: 13px;
-  color: #9ca3af;
+  color: #cbd5e1;
 }
 
 .ruins-progress__controls {
@@ -98,8 +122,14 @@
 .ruins-progress__summary {
   padding: 10px;
   border-radius: 6px;
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: rgba(15, 23, 42, 0.48);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.ruins-progress__summary--empty {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
 }
 
 .ruins-progress__summary-title {
@@ -154,8 +184,9 @@
 .ruins-progress__history {
   padding: 8px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: 84px;
+  background: rgba(15, 23, 42, 0.42);
+  border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .ruins-progress__history-title {
@@ -178,17 +209,34 @@
 
 .ruins-progress__status {
   font-size: 13px;
-  color: #e5e7eb;
+  color: #dbeafe;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: rgba(30, 41, 59, 0.45);
+}
+
+.ruins-progress__statusSlot {
+  min-height: 34px;
+}
+
+.ruins-progress__status--idle {
+  color: #cbd5e1;
 }
 
 .ruins-progress__pity {
   padding: 8px;
   border-radius: 6px;
-  background: rgba(96, 165, 250, 0.08);
+  min-height: 72px;
+  background: rgba(96, 165, 250, 0.1);
   border: 1px solid rgba(96, 165, 250, 0.4);
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.ruins-progress__pity--inactive {
+  justify-content: center;
 }
 
 .ruins-progress__pity-row {
@@ -234,4 +282,10 @@
   border-radius: 4px;
   color: #bbf7d0;
   font-size: 13px;
+}
+
+@media (min-width: 1160px) {
+  .ruins-progress__operations-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }

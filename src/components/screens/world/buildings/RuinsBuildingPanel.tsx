@@ -11,6 +11,7 @@ import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyPro
 import { RuinsSummaryCard } from '../../../../ui/world/RuinsSummaryCard.js';
 import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
+import { buildRuinsSummarySurface } from '../../../../ui/world/buildRuinsSummarySurface.js';
 import './CombatStyles.scss';
 
 interface RuinsBuildingPanelProps {
@@ -41,37 +42,39 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     [cityId, contentRaw],
   );
 
-  const leadMaterialsLine = useMemo(() => {
-    const names = ruinsRewardModel.leadLocalMaterials
-      .map((id) => itemsById[id]?.name)
-      .filter((name): name is string => Boolean(name))
-      .slice(0, 3);
-    return `Lead materials: ${names.length > 0 ? names.join(' • ') : 'Local support materials'}`;
-  }, [itemsById, ruinsRewardModel.leadLocalMaterials]);
-
-  const anchorLine = useMemo(() => {
-    if (!ruinsRewardModel.deterministicFinalAnchor) return 'Final chest anchor: deterministic support payout.';
-    const name = itemsById[ruinsRewardModel.deterministicFinalAnchor]?.name;
-    return `Final chest anchor: ${name ?? 'Deterministic support payout'}`;
-  }, [itemsById, ruinsRewardModel.deterministicFinalAnchor]);
-
-  const rarePityLine = useMemo(() => {
-    const failures = ruinProgress?.bossChestRareFailures ?? 0;
-    const summary = ruinsRewardModel.rarePitySummary;
-    if (!summary) return 'Boss Chest Rare Progress: not configured.';
-    const threshold = Math.max(summary.pityCap - 1, 0);
-    const guaranteed = threshold > 0 && failures >= threshold;
-    return `Boss Chest Rare Progress: ${failures} / ${threshold || '—'}${guaranteed ? ' • Guaranteed next rare' : ''}`;
-  }, [ruinProgress?.bossChestRareFailures, ruinsRewardModel.rarePitySummary]);
-
-  const runStateLine = activeRun
-    ? `Run state: Active (Room ${activeRun.roomIndex + 1}/${activeRun.roomCount})`
-    : 'Run state: Idle';
-  const autoRepeatLine = `Auto-repeat: ${autoRepeatDefault ? 'On' : 'Off'}`;
   const trackedRuinsBounty =
     trackedBounty && (trackedBounty.kind === 'RUINS_ROOM_CLEAR' || trackedBounty.kind === 'RUINS_RUN_CLEAR')
       ? trackedBounty
       : null;
+  const ruinsSummarySurface = useMemo(() => {
+    const leadMaterialNames = ruinsRewardModel.leadLocalMaterials
+      .map((id) => itemsById[id]?.name ?? null)
+      .filter((name): name is string => Boolean(name));
+    const anchorName = ruinsRewardModel.deterministicFinalAnchor
+      ? itemsById[ruinsRewardModel.deterministicFinalAnchor]?.name ?? null
+      : null;
+    const pityCap = contentRaw.economy?.tuning?.pityDefaults?.ruinsBossChestRare?.pityCap ?? 0;
+    return buildRuinsSummarySurface({
+      rewardModel: ruinsRewardModel,
+      ruinName: ruinDef?.name ?? null,
+      leadMaterialNames,
+      anchorName,
+      bossChestRareFailures: ruinProgress?.bossChestRareFailures ?? 0,
+      pityCap,
+      autoRepeatEnabled: autoRepeatDefault,
+      activeRun: activeRun ? { roomIndex: activeRun.roomIndex, roomCount: activeRun.roomCount } : null,
+      trackedBountyTitle: trackedRuinsBounty?.title ?? null,
+    });
+  }, [
+    activeRun,
+    autoRepeatDefault,
+    contentRaw.economy,
+    itemsById,
+    ruinDef?.name,
+    ruinProgress?.bossChestRareFailures,
+    ruinsRewardModel,
+    trackedRuinsBounty?.title,
+  ]);
 
   if (!ruinDef) {
     return (
@@ -111,17 +114,18 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
       />
       <div className="ruinsPanel__summary combatPathModule__contextRail">
         <RuinsSummaryCard
-          ruinName={ruinDef.name ?? 'Ruins'}
-          roleTag={ruinsRewardModel.roleTag}
-          bestUsedWhen={ruinsRewardModel.bestUsedWhen}
-          roomCount={ruinsRewardModel.roomCount}
-          leadMaterialsLine={leadMaterialsLine}
-          anchorLine={anchorLine}
-          rarePityLine={rarePityLine}
-          goldSecondaryLine={ruinsRewardModel.goldIsSecondary ? ruinsRewardModel.boundaryLine : undefined}
-          autoRepeatLine={autoRepeatLine}
-          runStateLine={runStateLine}
+          ruinName={ruinsSummarySurface.ruinName}
+          roleTag={ruinsSummarySurface.roleTag}
+          bestUsedWhen={ruinsSummarySurface.bestUsedWhen}
+          roomCountLine={ruinsSummarySurface.roomCountLine}
+          leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
+          anchorLine={ruinsSummarySurface.anchorPreviewLine}
+          rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
+          goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
+          autoRepeatLine={ruinsSummarySurface.autoRepeatLine}
+          runStateLine={ruinsSummarySurface.runStateLine}
           trackedBountyLine={trackedRuinsBounty ? <TrackedBountyProgressLine bounty={trackedRuinsBounty} /> : undefined}
+          trackedBountyVisible={ruinsSummarySurface.trackedBountyVisible}
         />
       </div>
       <div className="combatPathModule__scene">

@@ -4,7 +4,7 @@ export function RuinsSummaryCard(props: {
   ruinName: string;
   roleTag: string;
   bestUsedWhen: string;
-  roomCount: number;
+  roomCountLine: string;
   leadMaterialsLine: string;
   anchorLine: string;
   rarePityLine: string;
@@ -12,12 +12,13 @@ export function RuinsSummaryCard(props: {
   autoRepeatLine: string;
   runStateLine: string;
   trackedBountyLine?: ReactNode;
+  trackedBountyVisible: boolean;
 }) {
   const {
     ruinName,
     roleTag,
     bestUsedWhen,
-    roomCount,
+    roomCountLine,
     leadMaterialsLine,
     anchorLine,
     rarePityLine,
@@ -25,28 +26,34 @@ export function RuinsSummaryCard(props: {
     autoRepeatLine,
     runStateLine,
     trackedBountyLine,
+    trackedBountyVisible,
   } = props;
 
   return (
     <section className="ruinsSummaryCard">
       <div className="ruinsSummaryCard__header">
-        <strong>Ruins</strong>
-        <span>{roleTag}</span>
+        <div>
+          <div className="ruinsSummaryCard__label">Ruins</div>
+          <strong className="ruinsSummaryCard__ruinName">{ruinName}</strong>
+        </div>
+        <span className="ruinsSummaryCard__roleTag">{roleTag}</span>
       </div>
-      <div className="ruinsSummaryCard__identity">Ruin: {ruinName}</div>
       <div className="ruinsSummaryCard__purpose">{bestUsedWhen}</div>
-      <div className="ruinsSummaryCard__identity">Rooms: {roomCount}</div>
-      <div className="ruinsSummaryCard__outputs">{leadMaterialsLine}</div>
-      <div className="ruinsSummaryCard__deterministicBlock">
-        <div>{anchorLine}</div>
-        <div>{rarePityLine}</div>
+      <div className="ruinsSummaryCard__structure">{roomCountLine}</div>
+      <div className="ruinsSummaryCard__deterministicBlock" aria-label="Deterministic value preview">
+        <div className="ruinsSummaryCard__deterministicTitle">Deterministic value preview</div>
+        <div className="ruinsSummaryCard__deterministicLine">{anchorLine}</div>
+        <div className="ruinsSummaryCard__deterministicLine ruinsSummaryCard__outputs">{leadMaterialsLine}</div>
+        <div className="ruinsSummaryCard__deterministicLine">{rarePityLine}</div>
       </div>
-      {goldSecondaryLine ? <div className="ruinsSummaryCard__boundary">{goldSecondaryLine}</div> : null}
-      <div className="ruinsSummaryCard__statusRow">{autoRepeatLine}</div>
-      <div className="ruinsSummaryCard__statusRow">{runStateLine}</div>
-      <div className={`ruinsSummaryCard__trackedBounty ${trackedBountyLine ? '' : 'ruinsSummaryCard__trackedBounty--empty'}`}>
+      <div className="ruinsSummaryCard__supportRow">
+        <div className="ruinsSummaryCard__statusRow">{autoRepeatLine}</div>
+        <div className="ruinsSummaryCard__statusRow">{runStateLine}</div>
+      </div>
+      <div className={`ruinsSummaryCard__trackedBounty ${trackedBountyVisible ? '' : 'ruinsSummaryCard__trackedBounty--empty'}`}>
         {trackedBountyLine ?? <span aria-hidden>—</span>}
       </div>
+      {goldSecondaryLine ? <div className="ruinsSummaryCard__boundary">{goldSecondaryLine}</div> : null}
     </section>
   );
 }
