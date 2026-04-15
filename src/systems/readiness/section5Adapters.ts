@@ -46,6 +46,7 @@ export interface GateTrialReadinessSurface {
   requiredItemLabel: string | null;
   readinessLabel: GateTrialReadinessLabel;
   readinessDetail: string;
+  readinessScore: number | null;
   minimumMetCount: number;
   minimumTotalCount: number;
   recommendedMetCount: number;
@@ -63,10 +64,10 @@ export interface GateTrialReadinessSurface {
   lifecycle: TrialLifecycleSnapshot;
 }
 
-export type GateTrialAttemptState = 'not_ready' | 'attempt_gate' | 'attempt_anyway' | 'break_through';
+export type GateTrialAttemptState = 'not_ready' | 'attempt_gate' | 'attempt_anyway' | 'buy_safety_net' | 'break_through';
 export interface GateTrialAttemptPresentation {
   state: GateTrialAttemptState;
-  primaryLabel: 'Not Ready' | 'Attempt Gate' | 'Attempt Anyway' | 'Break Through';
+  primaryLabel: 'Not Ready' | 'Attempt Gate' | 'Attempt Anyway' | 'Buy Safety Net' | 'Break Through';
   primaryDisabled: boolean;
   detail: string;
   tone: 'blocked' | 'warning' | 'ready' | 'resolved';
@@ -488,6 +489,9 @@ export function buildGateTrialReadinessSurface(trialId: string): GateTrialReadin
 
   const minimumMetCount = minimumChecklist.filter((entry) => entry.state === 'met').length;
   const recommendedMetCount = recommendedChecklist.filter((entry) => entry.state === 'met').length;
+  const minimumRatio = minimumChecklist.length > 0 ? minimumMetCount / minimumChecklist.length : 0;
+  const recommendedRatio = recommendedChecklist.length > 0 ? recommendedMetCount / recommendedChecklist.length : 0;
+  const readinessScore = Math.round((minimumRatio * 0.6 + recommendedRatio * 0.4) * 100);
 
   let readinessLabel: GateTrialReadinessLabel = 'Preparing';
   let readinessDetail = lifecycle.reason;
@@ -516,6 +520,7 @@ export function buildGateTrialReadinessSurface(trialId: string): GateTrialReadin
     requiredItemLabel,
     readinessLabel,
     readinessDetail,
+    readinessScore,
     minimumMetCount,
     minimumTotalCount: minimumChecklist.length,
     recommendedMetCount,
@@ -542,6 +547,17 @@ export function buildGateTrialAttemptPresentation(surface: GateTrialReadinessSur
     };
   }
   if (!surface.lifecycle.canStart) {
+    if (surface.lifecycle.failSafe.canPurchase && surface.lifecycle.failSafe.status !== 'resolved') {
+      return {
+        state: 'buy_safety_net',
+        primaryLabel: 'Buy Safety Net',
+        primaryDisabled: false,
+        detail: 'Readiness is blocked. Safety Net is available as a fail-safe path.',
+        tone: 'warning',
+        showBuySafetyNet: false,
+        buySafetyNetEnabled: true,
+      };
+    }
     return {
       state: 'not_ready',
       primaryLabel: 'Not Ready',

@@ -6,9 +6,10 @@ export function GateTrialSafetyNetCard(props: {
   reserveGapLine: string;
   eligibleDefeatRewardLine: string;
   currentMerit: string;
+  currentGold: string;
   currentSpiritStones: string;
 }) {
-  const { lifecycle, reserveHeadline, reserveGapLine, eligibleDefeatRewardLine, currentMerit, currentSpiritStones } = props;
+  const { lifecycle, reserveHeadline, reserveGapLine, eligibleDefeatRewardLine, currentMerit, currentGold, currentSpiritStones } = props;
   const costLine = [
     lifecycle.failSafe.cost?.gold ? `${lifecycle.failSafe.cost.gold} Gold` : null,
     lifecycle.failSafe.cost?.merit ? `${lifecycle.failSafe.cost.merit} Merit` : null,
@@ -16,12 +17,12 @@ export function GateTrialSafetyNetCard(props: {
   ].filter(Boolean).join(' / ');
 
   return (
-    <section className="gateTrialSafetyNetCard">
+    <section className="gateTrialSafetyNetCard" aria-label="Gate Trial safety net status">
       <h4 className="gateTrialSafetyNetCard__title">Safety Net</h4>
-      <div>Eligible Defeats: {lifecycle.failSafe.eligibleFailures} / {lifecycle.failSafe.threshold}</div>
-      <div>Threshold: {lifecycle.failSafe.threshold} eligible defeats.</div>
+      <div>Eligible Failures: {lifecycle.failSafe.eligibleFailures} / {lifecycle.failSafe.threshold}</div>
+      <div>Threshold: {lifecycle.failSafe.threshold} eligible failures.</div>
       <div>Cost: {costLine || 'No cost configured'}</div>
-      <div>Current reserve: Merit {currentMerit} · Spirit Stones {currentSpiritStones}</div>
+      <div>Current reserve: Gold {currentGold} · Merit {currentMerit} · Spirit Stones {currentSpiritStones}</div>
       <div>{reserveHeadline}</div>
       <div>{reserveGapLine}</div>
       <div>{eligibleDefeatRewardLine}</div>

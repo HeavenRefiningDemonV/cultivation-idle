@@ -8,6 +8,7 @@ export function GateTrialReadinessCard({ surface }: { surface: GateTrialReadines
         <span className="gateTrialReadinessCard__label">{surface.readinessLabel}</span>
       </div>
       <div className="gateTrialReadinessCard__detail">{surface.readinessDetail}</div>
+      <div className="gateTrialReadinessCard__score">Readiness Score: {surface.readinessScore ?? '—'} / 100</div>
       <div className="gateTrialReadinessCard__counts">
         <span>Minimum: {surface.minimumMetCount} / {surface.minimumTotalCount} met</span>
         <span>Recommended: {surface.recommendedMetCount} / {surface.recommendedTotalCount} met</span>

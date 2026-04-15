@@ -19,6 +19,7 @@ import {
   buildGateTrialReadinessSurface,
   buildSection5PostFailureSurface,
 } from '../../../systems/readiness/section5Adapters.js';
+import { buildGateTrialScreenContract } from '../../../systems/readiness/gateTrialScreenContract.js';
 import { GateTrialReadinessCard } from '../../../ui/trials/GateTrialReadinessCard.js';
 import { GateTrialChecklist } from '../../../ui/trials/GateTrialChecklist.js';
 import { PostFailureDiagnosisPanel } from '../../../ui/status/PostFailureDiagnosisPanel.js';
@@ -100,6 +101,9 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
     [trialId, lifecycle.state, lifecycle.reasonCode, lifecycle.failSafe.eligibleFailures, playerRealm, requiredItemOwned],
   );
   const attemptPresentation = gateReadinessSurface ? buildGateTrialAttemptPresentation(gateReadinessSurface) : null;
+  const gateScreenContract = gateReadinessSurface && attemptPresentation
+    ? buildGateTrialScreenContract({ readinessSurface: gateReadinessSurface, attemptPresentation, postFailureSurface })
+    : null;
   const showFirstFailureStrap = Boolean(postFailureSurface?.state === 'available'
     && lastSummary
     && (progress?.attempts ?? 0) > 0
@@ -158,6 +162,10 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
         </div>
         <div className="trial-progress__attempts">Attempts: {attemptsThisSession} / {attemptCap}</div>
       </div>
+      <div className="trial-progress__roleFrame">
+        <div className="trial-progress__roleTag">{gateScreenContract?.roleTag ?? 'Milestone Validation'}</div>
+        <div className="trial-progress__roleSummary">{gateScreenContract?.roleSummary ?? 'Use this screen to validate readiness and risk before attempting a breakthrough gate.'}</div>
+      </div>
 
       <div className="trial-progress__requirements">
         <div className="trial-progress__requirement-row">
@@ -195,26 +203,29 @@ function TrialProgressContent({ trialId }: { trialId: string }) {
       </div>
 
       <div className="trial-progress__controls">
-        <button className="button-standard" onClick={handleStart} disabled={attemptPresentation?.primaryDisabled ?? !lifecycle.canStart}>
+        <button
+          className="button-standard"
+          onClick={handleStart}
+          disabled={(attemptPresentation?.primaryDisabled ?? !lifecycle.canStart) || attemptPresentation?.state === 'buy_safety_net'}
+        >
           {attemptPresentation?.primaryLabel ?? 'Attempt Gate'}
         </button>
-        <button className="button-standard" onClick={handleStop}>
-          Stop
-        </button>
+        {combatContext?.type === 'trial' ? <button className="button-standard" onClick={handleStop}>Stop</button> : null}
         {attemptPresentation ? (
           <div className="trial-progress__controls-note">{attemptPresentation.detail}</div>
         ) : null}
       </div>
 
       <div className="trial-progress__controls-note">
-        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} qualifying defeats)`}
+        {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${lifecycle.failSafe.eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Failures)`}
       </div>
 
       {gateReadinessSurface ? (
         <div className="trial-progress__metrics">
+          <div className="trial-progress__score">{gateScreenContract?.readinessScoreLine ?? `Readiness Score: ${gateReadinessSurface.readinessScore ?? '—'} / 100`}</div>
           <GateTrialReadinessCard surface={gateReadinessSurface} />
-          <GateTrialChecklist title="Minimum Floor" lines={gateReadinessSurface.minimumChecklist} />
-          <GateTrialChecklist title="Recommended Floor" lines={gateReadinessSurface.recommendedChecklist} />
+          <GateTrialChecklist title={gateScreenContract?.checklistMinimumTitle ?? 'Minimum Floor'} lines={gateReadinessSurface.minimumChecklist} />
+          <GateTrialChecklist title={gateScreenContract?.checklistRecommendedTitle ?? 'Recommended Floor'} lines={gateReadinessSurface.recommendedChecklist} />
         </div>
       ) : null}
 

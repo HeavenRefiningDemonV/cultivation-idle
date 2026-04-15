@@ -5,16 +5,17 @@ export function GateTrialAttemptCluster(props: {
   onPrimary: () => void;
   onStop: () => void;
   onBuySafetyNet: () => void;
+  showStop: boolean;
 }) {
-  const { presentation, onPrimary, onStop, onBuySafetyNet } = props;
+  const { presentation, onPrimary, onStop, onBuySafetyNet, showStop } = props;
   return (
-    <section className="gateTrialAttemptCluster">
+    <section className="gateTrialAttemptCluster" aria-label="Gate Trial attempt controls">
       <button className={`button-standard gateTrialAttemptCluster__primary gateTrialAttemptCluster__primary--${presentation.tone}`} type="button" onClick={onPrimary} disabled={presentation.primaryDisabled}>
         {presentation.primaryLabel}
       </button>
       <div className="gateTrialAttemptCluster__detail">{presentation.detail}</div>
       <div className="gateTrialAttemptCluster__actions">
-        <button className="button-standard button-standard--ghost" type="button" onClick={onStop}>Stop</button>
+        {showStop ? <button className="button-standard button-standard--ghost" type="button" onClick={onStop}>Stop</button> : null}
         {presentation.showBuySafetyNet ? (
           <button className="button-standard" type="button" onClick={onBuySafetyNet} disabled={!presentation.buySafetyNetEnabled}>Buy Safety Net</button>
         ) : null}

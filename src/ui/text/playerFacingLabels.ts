@@ -52,7 +52,7 @@ export const PRESTIGE_RECOMMENDATION_LABELS = {
 
 export const GATE_SUPPORT_LABELS = {
   support: 'Safety Net',
-  eligibleDefeats: 'Eligible Defeats',
+  eligibleFailures: 'Eligible Failures',
 } as const;
 
 function toTitleCase(key: string): string {

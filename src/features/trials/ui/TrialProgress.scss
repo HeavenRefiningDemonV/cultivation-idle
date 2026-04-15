@@ -30,6 +30,27 @@
   color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
 }
 
+.trial-progress__roleFrame {
+  border: 1px solid var(--paper-shell-border, rgba(65, 45, 25, 0.26));
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  display: grid;
+  gap: 4px;
+}
+
+.trial-progress__roleTag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b45309;
+}
+
+.trial-progress__roleSummary {
+  font-size: 12px;
+  color: var(--paper-ink-muted, rgba(43, 33, 22, 0.7));
+}
+
 .trial-progress__requirements,
 .trial-progress__metrics,
 .trial-progress__intel,
@@ -77,6 +98,11 @@
 
 .trial-progress__metrics {
   gap: 10px;
+}
+
+.trial-progress__score {
+  font-size: 12px;
+  color: var(--paper-ink, #2b2116);
 }
 
 .trial-progress__metric {
