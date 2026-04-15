@@ -694,7 +694,18 @@
     border-radius: 999px;
     border: 1px solid rgba(148, 163, 184, 0.34);
     background: rgba(255, 255, 255, 0.52);
-    padding: 1px 8px;
+    padding: 3px 10px;
+    color: #1e293b;
+    text-align: left;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 1px;
+    cursor: pointer;
+}
+
+.outskirtsSummaryCard__routeHint small {
+    color: #64748b;
+    font-size: 10px;
 }
 
 .outskirtsSummaryCard__context--empty {
@@ -761,7 +772,7 @@
 
 .trackedBountyProgressLine {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 6px;
     border: 1px solid rgba(148, 163, 184, 0.25);
@@ -782,6 +793,12 @@
 .trackedBountyProgressLine__progress {
     color: #92400e;
     white-space: nowrap;
+}
+
+.trackedBountyProgressLine__detail {
+    width: 100%;
+    font-size: 10px;
+    color: #475569;
 }
 
 .trackedBountyProgressLine--compact {

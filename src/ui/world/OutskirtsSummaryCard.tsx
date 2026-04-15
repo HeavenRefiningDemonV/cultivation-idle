@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
 import type { OutskirtsInformationHierarchySurface } from './buildOutskirtsInformationHierarchySurface.js';
+import type { OutskirtsSupportRouteHint } from './buildOutskirtsSupportContextSurface.js';
 
 export function OutskirtsSummaryCard(props: {
   surface: OutskirtsInformationHierarchySurface;
   trackedBountyLine?: ReactNode;
-  secondaryPostureLine?: string | null;
-  routeHintLines?: string[];
+  farmerRecommendationLine?: string | null;
+  routeHints?: OutskirtsSupportRouteHint[];
+  onRouteSelect?: (destination: OutskirtsSupportRouteHint['destination']) => void;
 }) {
-  const { surface, trackedBountyLine, secondaryPostureLine, routeHintLines = [] } = props;
+  const { surface, trackedBountyLine, farmerRecommendationLine, routeHints = [], onRouteSelect } = props;
   return (
     <section className="outskirtsSummaryCard">
       <div className="outskirtsSummaryCard__header">
@@ -25,20 +27,28 @@ export function OutskirtsSummaryCard(props: {
       <div className={`outskirtsSummaryCard__context outskirtsSummaryCard__context--bounty ${trackedBountyLine ? '' : 'outskirtsSummaryCard__context--empty'}`}>
         {trackedBountyLine ?? <span aria-hidden="true"> </span>}
       </div>
-      <div className={`outskirtsSummaryCard__context outskirtsSummaryCard__context--route ${routeHintLines.length > 0 ? '' : 'outskirtsSummaryCard__context--empty'}`}>
-        {routeHintLines.length > 0 ? (
+      <div className={`outskirtsSummaryCard__context outskirtsSummaryCard__context--route ${routeHints.length > 0 ? '' : 'outskirtsSummaryCard__context--empty'}`}>
+        {routeHints.length > 0 ? (
           <div className="outskirtsSummaryCard__routeHints">
-            {routeHintLines.slice(0, 2).map((line) => (
-              <span key={line} className="outskirtsSummaryCard__routeHint">{line}</span>
+            {routeHints.slice(0, 2).map((hint) => (
+              <button
+                key={hint.label}
+                type="button"
+                className="outskirtsSummaryCard__routeHint"
+                onClick={() => onRouteSelect?.(hint.destination)}
+                title={hint.reason}
+              >
+                <span>{hint.label}</span>
+                <small>{hint.reason}</small>
+              </button>
             ))}
           </div>
         ) : <span aria-hidden="true"> </span>}
       </div>
-      <div className={`outskirtsSummaryCard__context outskirtsSummaryCard__context--ai ${surface.recommendedAiLine ? '' : 'outskirtsSummaryCard__context--empty'}`}>
-        {surface.recommendedAiLine ? <span>{surface.recommendedAiLine}</span> : <span aria-hidden="true"> </span>}
+      <div className={`outskirtsSummaryCard__context outskirtsSummaryCard__context--ai ${farmerRecommendationLine ? '' : 'outskirtsSummaryCard__context--empty'}`}>
+        {farmerRecommendationLine ? <span>{farmerRecommendationLine}</span> : <span aria-hidden="true"> </span>}
       </div>
       <div className="outskirtsSummaryCard__boundary">{surface.boundaryLine}</div>
-      {secondaryPostureLine ? <div className="outskirtsSummaryCard__hint">{secondaryPostureLine}</div> : null}
     </section>
   );
 }

@@ -22,6 +22,8 @@ import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTop
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 import { buildOutskirtsInformationHierarchySurface } from '../../../../ui/world/buildOutskirtsInformationHierarchySurface.js';
 import { buildOutskirtsActionStripState } from '../../../../ui/world/buildOutskirtsActionStripState.js';
+import { buildOutskirtsSupportContextSurface } from '../../../../ui/world/buildOutskirtsSupportContextSurface.js';
+import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -173,14 +175,15 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     }),
     [itemsById, killsSinceBoss, killsToBoss, outskirtsRewardModel, postureContext.loadoutSignals.hasFarmTool, postureContext.path, postureFit, trackedOutskirtsBounty, uiSettings.profile],
   );
-  const routeHintLines = useMemo(() => {
-    const actions = runCompass.full?.bestNextActions ?? [];
-    return actions
-      .filter((action) => !action.blocked && !action.destinationLabel.toLowerCase().includes('current focus'))
-      .map((action) => `Better next step: ${action.destinationLabel}`)
-      .filter((line, index, lines) => lines.indexOf(line) === index)
-      .slice(0, 2);
-  }, [runCompass.full?.bestNextActions]);
+  const supportContext = useMemo(
+    () => buildOutskirtsSupportContextSurface({
+      trackedOutskirtsBounty,
+      runCompassActions: runCompass.full?.bestNextActions,
+      farmerRecommendationLine: hierarchySurface.recommendedAiLine,
+      cityId,
+    }),
+    [cityId, hierarchySurface.recommendedAiLine, runCompass.full?.bestNextActions, trackedOutskirtsBounty],
+  );
 
   const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
     const container = combatMainRef.current;
@@ -378,9 +381,19 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
           <div className="ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail">
             <OutskirtsSummaryCard
               surface={hierarchySurface}
-              trackedBountyLine={trackedOutskirtsBounty ? <TrackedBountyProgressLine bounty={trackedOutskirtsBounty} compact /> : undefined}
-              secondaryPostureLine={hierarchySurface.secondaryPostureLine}
-              routeHintLines={routeHintLines}
+              trackedBountyLine={supportContext.trackedBounty ? (
+                <TrackedBountyProgressLine
+                  compact
+                  title={supportContext.trackedBounty.title}
+                  progressText={supportContext.trackedBounty.progressText}
+                  detailLine={supportContext.trackedBounty.rewardSummary}
+                />
+              ) : undefined}
+              farmerRecommendationLine={supportContext.farmerRecommendation?.label ?? null}
+              routeHints={supportContext.routeHints}
+              onRouteSelect={(destination) => {
+                openWorldModule({ cityId, moduleKey: destination, source: 'outskirts-support-route' });
+              }}
             />
           </div>
         }
