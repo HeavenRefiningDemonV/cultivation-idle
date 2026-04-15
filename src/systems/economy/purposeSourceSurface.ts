@@ -1,7 +1,12 @@
 import type { ItemDef, LiveWorldModuleKey, ValidatedContent } from '../../content/index.js';
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { buildBestSourceIndex, type BestSourceIndex, type BestSourceIndexEntry, type BestSourceOption } from './bestSourceIndex.js';
-import { buildCityActivityRewardReadModel, type CityActivityRewardReadModel } from './activityRewardReadModel.js';
+import {
+  OUTSKIRTS_BEST_USED_WHEN,
+  OUTSKIRTS_BOUNDARY_LINE,
+  buildCityActivityRewardReadModel,
+  type CityActivityRewardReadModel,
+} from './activityRewardReadModel.js';
 import { getEconomicModuleRoleEntries, type EconomicModuleRoleEntry } from './moduleRoleRegistry.js';
 import { getAllPrepBudgetRegistryEntries } from './prepBudgetRegistry.js';
 import { listVisibleForgeInputItemIds } from './economicSourceAdapters.js';
@@ -232,9 +237,11 @@ export function buildModulePurposeSourceSurface(
     moduleKey,
     moduleLabel: getWorldModuleLabel(moduleKey),
     purposeTag: role.roleTag,
-    purposeLine: `Best used when ${role.bestUsedWhen.charAt(0).toLowerCase()}${role.bestUsedWhen.slice(1)}`,
+    purposeLine: moduleKey === 'outskirts'
+      ? OUTSKIRTS_BEST_USED_WHEN
+      : `Best used when ${role.bestUsedWhen.charAt(0).toLowerCase()}${role.bestUsedWhen.slice(1)}`,
     boundaryLine: role.moduleKey === 'outskirts'
-      ? 'Switch away once you need targeted local mats instead of broad farming.'
+      ? OUTSKIRTS_BOUNDARY_LINE
       : role.moduleKey === 'ruins'
         ? 'Gold is secondary here; treat Ruins as the targeted-material route.'
         : undefined,

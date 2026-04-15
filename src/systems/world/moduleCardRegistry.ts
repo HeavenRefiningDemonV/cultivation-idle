@@ -4,8 +4,10 @@ import { getWorldModuleLabel } from '../../ui/text/playerFacingLabels.js';
 import { sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import {
   buildCityActivityRewardReadModel,
+  OUTSKIRTS_ROLE_TAG,
   OUTSKIRTS_BEST_USED_WHEN,
   OUTSKIRTS_BOUNDARY_LINE,
+  RUINS_ROLE_TAG,
   RUINS_BEST_USED_WHEN,
   RUINS_GOLD_SECONDARY_LINE,
   OUTSKIRTS_CARD_OUTPUT_HINTS,
@@ -93,7 +95,7 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     label: getWorldModuleLabel('outskirts'),
     group: 'combat',
     sortOrder: 1,
-    roleTag: 'Gold & Common Mats',
+    roleTag: OUTSKIRTS_ROLE_TAG,
     bestUsedWhen: OUTSKIRTS_BEST_USED_WHEN,
     defaultOutputs: [{ key: 'gold', label: OUTSKIRTS_CARD_OUTPUT_HINTS[0] }, { key: 'common_mats', label: OUTSKIRTS_CARD_OUTPUT_HINTS[1] }],
     ctaLabel: 'Open Outskirts',
@@ -106,7 +108,7 @@ const DEFINITION_LIST: readonly WorldModuleCardDefinition[] = [
     label: getWorldModuleLabel('ruins'),
     group: 'combat',
     sortOrder: 2,
-    roleTag: 'Targeted Mats',
+    roleTag: RUINS_ROLE_TAG,
     bestUsedWhen: RUINS_BEST_USED_WHEN,
     defaultOutputs: [{ key: 'local_mats', label: RUINS_CARD_OUTPUT_HINTS[0] }, { key: 'anchor_drop', label: RUINS_CARD_OUTPUT_HINTS[1] }],
     ctaLabel: 'Open Ruins',
@@ -244,7 +246,7 @@ export function buildWorldModuleCardSurface(args: BuildWorldModuleCardSurfaceArg
         roleTag: activityReadModel.outskirts.roleTag,
         bestUsedWhen: activityReadModel.outskirts.bestUsedWhen,
         outputs: asOutputHints(OUTSKIRTS_CARD_OUTPUT_HINTS),
-        boundaryLine: OUTSKIRTS_BOUNDARY_LINE,
+        boundaryLine: activityReadModel.outskirts.boundaryLine,
         ctaLabel: definition.ctaLabel,
         allowedChipKinds: definition.allowedChipKinds,
       };

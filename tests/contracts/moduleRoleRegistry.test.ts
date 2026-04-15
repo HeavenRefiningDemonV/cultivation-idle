@@ -17,8 +17,8 @@ test('module-role registry covers every live economy-facing module with concise 
 
   assert.deepEqual(getEconomicModuleRole('outskirts'), {
     moduleKey: 'outskirts',
-    roleTag: 'gold-and-common-mats',
-    bestUsedWhen: 'You need gold and broad common-material income.',
+    roleTag: 'Gold & Common Mats',
+    bestUsedWhen: 'Best used when you need gold, common materials, or low-risk combat reps.',
     economicCategory: 'resource_source',
     moduleKind: 'primary_source',
     activityMode: 'foreground',

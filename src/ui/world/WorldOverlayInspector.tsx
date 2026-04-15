@@ -5,6 +5,7 @@ interface WorldOverlayInspectorProps {
   moduleLabel: string;
   roleTag: string;
   bestUsedWhen: string;
+  boundaryLine?: string | null;
   outputs: string[];
   stateLine?: string | null;
   openLabel: string;
@@ -17,6 +18,7 @@ export function WorldOverlayInspector({
   moduleLabel,
   roleTag,
   bestUsedWhen,
+  boundaryLine = null,
   outputs,
   stateLine = null,
   openLabel,
@@ -35,6 +37,7 @@ export function WorldOverlayInspector({
       </header>
 
       <p className="worldOverlayInspector__bestUsedWhen">{bestUsedWhen}</p>
+      {boundaryLine ? <p className="worldOverlayInspector__boundary">{boundaryLine}</p> : null}
 
       <ul className="worldOverlayInspector__outputs">
         {outputs.slice(0, 3).map((output) => (

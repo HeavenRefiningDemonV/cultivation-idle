@@ -3,6 +3,7 @@ import { getLiveExpeditionRoutePurposes } from '../world/expeditionRouteContract
 import { LIVE_BOUNTY_BOARD_SLOTS } from '../world/bountyBoardContract.js';
 import { DEFERRED_WORLD_MODULES } from '../world/liveWorldSchema.js';
 import { ECONOMY_FACING_MODULE_KEYS } from './economicConstants.js';
+import { OUTSKIRTS_BEST_USED_WHEN, OUTSKIRTS_ROLE_TAG } from './activityRewardReadModel.js';
 
 export type EconomicModuleCategory =
   | 'resource_source'
@@ -29,8 +30,8 @@ export interface EconomicModuleRoleEntry {
 export const MODULE_ROLE_REGISTRY: readonly EconomicModuleRoleEntry[] = [
   {
     moduleKey: 'outskirts',
-    roleTag: 'Gold & Common Mats',
-    bestUsedWhen: 'You need gold and broad common-material income.',
+    roleTag: OUTSKIRTS_ROLE_TAG,
+    bestUsedWhen: OUTSKIRTS_BEST_USED_WHEN,
     economicCategory: 'resource_source',
     moduleKind: 'primary_source',
     activityMode: 'foreground',

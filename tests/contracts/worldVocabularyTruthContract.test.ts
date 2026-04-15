@@ -21,8 +21,8 @@ test('world-facing vocabulary sources keep canonical role tags and world tab lab
   const worldCommandSurface = read('src/systems/ui/world/worldCommandSurface.ts');
 
   assert.match(labels, /adventure:\s*'World'/);
-  assert.match(moduleRegistry, /roleTag:\s*'Gold & Common Mats'/);
-  assert.match(moduleRegistry, /roleTag:\s*'Targeted Mats'/);
+  assert.match(moduleRegistry, /OUTSKIRTS_ROLE_TAG/);
+  assert.match(moduleRegistry, /RUINS_ROLE_TAG/);
   assert.match(moduleRegistry, /roleTag:\s*'Gate Progress'/);
   assert.match(moduleRegistry, /roleTag:\s*'Build Correction'/);
   assert.match(moduleRegistry, /roleTag:\s*'Immediate Readiness'/);

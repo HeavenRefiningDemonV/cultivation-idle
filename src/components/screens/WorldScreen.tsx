@@ -34,6 +34,7 @@ import { WorldOverlayInspector } from '../../ui/world/WorldOverlayInspector.js';
 import { useFxQuality } from '../../ui/fx/FxQualityProvider.js';
 import { InspectorDrawer } from '../../ui/shell/InspectorDrawer.js';
 import { buildWorldCombatHandoffSurface } from '../../systems/world/worldCombatHandoff.js';
+import { resolveWorldInspectorBoundaryLine } from '../../systems/ui/world/worldInspectorSurface.js';
 
 const WORLD_SCREEN_HIDDEN_MODULES = new Set<string>(DEFERRED_WORLD_MODULES);
 const EMPTY_VISIBLE_CITY_MODULES: readonly string[] = Object.freeze([]);
@@ -490,6 +491,10 @@ export function WorldScreen() {
     ?? inspectorCard?.outputs.slice(0, 3)
     ?? ['Map selection controls World module routing.']
   ) as string[];
+  const inspectorBoundaryLine = resolveWorldInspectorBoundaryLine({
+    moduleKey: inspectorModuleKey,
+    boundaryLineFromHandoff: inspectorCombatHandoff?.boundaryLine ?? null,
+  });
   const inspectorCueKind = inspectorModuleKey ? moduleCueByKey[inspectorModuleKey] ?? null : null;
   const inspectorStateLine = inspectorCueKind ? ({
     GATE: 'Gate is your next step.',
@@ -547,6 +552,7 @@ export function WorldScreen() {
                   moduleLabel={inspectorLabel}
                   roleTag={inspectorRoleTag}
                   bestUsedWhen={inspectorBestUsedWhen}
+                  boundaryLine={inspectorBoundaryLine}
                   outputs={inspectorOutputs}
                   stateLine={inspectorStateLine}
                   openLabel={inspectorOpenLabel}
@@ -569,6 +575,7 @@ export function WorldScreen() {
                   moduleLabel={inspectorLabel}
                   roleTag={inspectorRoleTag}
                   bestUsedWhen={inspectorBestUsedWhen}
+                  boundaryLine={inspectorBoundaryLine}
                   outputs={inspectorOutputs}
                   stateLine={inspectorStateLine}
                   openLabel={inspectorOpenLabel}
