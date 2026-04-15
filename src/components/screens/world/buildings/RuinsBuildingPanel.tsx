@@ -17,6 +17,12 @@ import { buildRuinsSummarySurface } from '../../../../ui/world/buildRuinsSummary
 import { buildRuinsSupportContextSurface } from '../../../../ui/world/buildRuinsSupportContextSurface.js';
 import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 import { buildGateTrialReadinessSurface, buildSection5StatusSurface } from '../../../../systems/readiness/section5Adapters.js';
+import { ScreenFxStage } from '../../../../ui/fx/ScreenFxStage.js';
+import { FX_STAGE_IDS } from '../../../../ui/fx/constants.js';
+import { FxStagePortal } from '../../../../ui/fx/FxStagePortal.js';
+import { useFxQuality, useFxStageSnapshot } from '../../../../ui/fx/FxQualityProvider.js';
+import { buildFxSceneContract } from '../../../../ui/fx/runtime.js';
+import { RuinsFxScene } from '../../../../ui/fx/scenes/RuinsFxScene.js';
 import './CombatStyles.scss';
 
 interface RuinsBuildingPanelProps {
@@ -35,6 +41,8 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   const trackedBounty = useBountyStore((state) => state.getTrackedBounty(cityId));
   const itemCountsById = useInventoryStore((state) => state.items);
   const runCompass = useRunCompassSurface();
+  const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.ruins);
+  const { requestedQuality, effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const ruinRefId = useMemo(() => resolveModuleRef(city ?? null, 'ruins'), [city]);
   const ruinDef = ruinRefId ? ruinsById[ruinRefId] : undefined;
@@ -85,6 +93,22 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
 
   const gateStatus = buildSection5StatusSurface();
   const gateReadiness = gateStatus.currentGateTrialId ? buildGateTrialReadinessSurface(gateStatus.currentGateTrialId) : null;
+  const pityCap = contentRaw.economy?.tuning?.pityDefaults?.ruinsBossChestRare?.pityCap ?? 0;
+  const pityTarget = Math.max(pityCap - 1, 0);
+  const pityNearGuaranteed = pityTarget > 0 && (ruinProgress?.bossChestRareFailures ?? 0) >= Math.max(pityTarget - 1, 0);
+
+  const ruinsFxScene = useMemo(() => {
+    if (!fxStageSnapshot) return null;
+    return buildFxSceneContract({
+      stageId: FX_STAGE_IDS.ruins,
+      sceneKind: 'ruins',
+      snapshot: fxStageSnapshot,
+      requestedQuality,
+      effectiveQuality,
+      prefersReducedMotion,
+      documentHidden: typeof document !== 'undefined' ? document.hidden : false,
+    });
+  }, [effectiveQuality, fxStageSnapshot, prefersReducedMotion, requestedQuality]);
 
   const supportContext = useMemo(() => {
     return buildRuinsSupportContextSurface({
@@ -136,8 +160,26 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   const pityFailures = ruinProgress?.bossChestRareFailures ?? 0;
 
   return (
-    <div className="worldScreenPlaceholder ruinsPanel combatPathModule combatPathModule--ruins">
-      <CombatModuleTopLane
+    <ScreenFxStage
+      stageId={FX_STAGE_IDS.ruins}
+      className="ruinsPanelFxStage"
+      stageClassName="ruinsPanelFxStage__layer"
+      contentClassName="ruinsPanelFxStage__content"
+      stageZIndex={0}
+      contentZIndex={1}
+    >
+      {ruinsFxScene ? (
+        <FxStagePortal stageId={FX_STAGE_IDS.ruins}>
+          <RuinsFxScene
+            {...ruinsFxScene}
+            runActive={Boolean(activeRun)}
+            pityNearGuaranteed={pityNearGuaranteed}
+            trackedBountyVisible={Boolean(supportContext.trackedBounty)}
+          />
+        </FxStagePortal>
+      ) : null}
+      <div className="worldScreenPlaceholder ruinsPanel combatPathModule combatPathModule--ruins">
+        <CombatModuleTopLane
         moduleName={ruinsTopLaneCopy.moduleName}
         roleTag={ruinsTopLaneCopy.roleTag}
         bestUsedWhen={ruinsTopLaneCopy.bestUsedWhen}
@@ -154,57 +196,58 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
             </span>
           </>
         )}
-      />
-      <div className="ruinsPanel__composition">
-        <div className="ruinsPanel__centerBand">
-          <section className="ruinsPanel__scenicCenter" aria-label="Ruins chamber path">
-            <div className="ruinsPanel__scenicBadge">Chamber route</div>
-            <div className="ruinsPanel__scenicTitle">{ruinsSummarySurface.ruinName}</div>
-            <div className="ruinsPanel__scenicLine">{ruinsSummarySurface.roomCountLine}</div>
-            <div className="ruinsPanel__scenicLine">{ruinsSummarySurface.runStateLine}</div>
-            <div className="ruinsPanel__scenicMaterials">
-              {ruinsSummarySurface.leadMaterialsPreview.map((materialName) => (
-                <span key={materialName} className="ruinsPanel__scenicChip">{materialName}</span>
-              ))}
+        />
+        <div className="ruinsPanel__composition">
+          <div className="ruinsPanel__centerBand">
+            <section className="ruinsPanel__scenicCenter" aria-label="Ruins chamber path">
+              <div className="ruinsPanel__scenicBadge">Chamber route</div>
+              <div className="ruinsPanel__scenicTitle">{ruinsSummarySurface.ruinName}</div>
+              <div className="ruinsPanel__scenicLine">{ruinsSummarySurface.roomCountLine}</div>
+              <div className="ruinsPanel__scenicLine">{ruinsSummarySurface.runStateLine}</div>
+              <div className="ruinsPanel__scenicMaterials">
+                {ruinsSummarySurface.leadMaterialsPreview.map((materialName) => (
+                  <span key={materialName} className="ruinsPanel__scenicChip">{materialName}</span>
+                ))}
+              </div>
+            </section>
+            <div className="ruinsPanel__inspector combatPathModule__contextRail">
+              <RuinsSummaryCard
+                ruinName={ruinsSummarySurface.ruinName}
+                roleTag={ruinsSummarySurface.roleTag}
+                bestUsedWhen={ruinsSummarySurface.bestUsedWhen}
+                roomCountLine={ruinsSummarySurface.roomCountLine}
+                leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
+                anchorLine={ruinsSummarySurface.anchorPreviewLine}
+                rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
+                goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
+                autoRepeatLine={ruinsSummarySurface.autoRepeatLine}
+                runStateLine={ruinsSummarySurface.runStateLine}
+                trackedBountyLine={supportContext.trackedBounty ? (
+                  <TrackedBountyProgressLine
+                    compact
+                    title={supportContext.trackedBounty.title}
+                    progressText={supportContext.trackedBounty.progressText}
+                    detailLine={supportContext.trackedBounty.rewardSummary}
+                  />
+                ) : undefined}
+                trackedBountyVisible={ruinsSummarySurface.trackedBountyVisible}
+                primaryExitHint={supportContext.primaryExitHint}
+                secondaryExitHint={supportContext.secondaryExitHint}
+                onExitHintSelect={(destination) => openWorldModule({ cityId, moduleKey: destination, source: 'ruins-support-context' })}
+              />
             </div>
-          </section>
-          <div className="ruinsPanel__inspector combatPathModule__contextRail">
-            <RuinsSummaryCard
-              ruinName={ruinsSummarySurface.ruinName}
-              roleTag={ruinsSummarySurface.roleTag}
-              bestUsedWhen={ruinsSummarySurface.bestUsedWhen}
-              roomCountLine={ruinsSummarySurface.roomCountLine}
-              leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
-              anchorLine={ruinsSummarySurface.anchorPreviewLine}
-              rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
-              goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
-              autoRepeatLine={ruinsSummarySurface.autoRepeatLine}
-              runStateLine={ruinsSummarySurface.runStateLine}
-              trackedBountyLine={supportContext.trackedBounty ? (
-                <TrackedBountyProgressLine
-                  compact
-                  title={supportContext.trackedBounty.title}
-                  progressText={supportContext.trackedBounty.progressText}
-                  detailLine={supportContext.trackedBounty.rewardSummary}
-                />
-              ) : undefined}
-              trackedBountyVisible={ruinsSummarySurface.trackedBountyVisible}
-              primaryExitHint={supportContext.primaryExitHint}
-              secondaryExitHint={supportContext.secondaryExitHint}
-              onExitHintSelect={(destination) => openWorldModule({ cityId, moduleKey: destination, source: 'ruins-support-context' })}
-            />
+          </div>
+          <div className="ruinsPanel__progressRail">
+            <RuinsProgress ruinsId={ruinDef.id} section="rail" />
+          </div>
+          <div className="ruinsPanel__ctaZone">
+            <RuinsCtaZone ruinId={ruinDef.id} runActive={Boolean(activeRun)} />
+          </div>
+          <div className="ruinsPanel__utility">
+            <RuinsProgress ruinsId={ruinDef.id} section="utility" />
           </div>
         </div>
-        <div className="ruinsPanel__progressRail">
-          <RuinsProgress ruinsId={ruinDef.id} section="rail" />
-        </div>
-        <div className="ruinsPanel__ctaZone">
-          <RuinsCtaZone ruinId={ruinDef.id} runActive={Boolean(activeRun)} />
-        </div>
-        <div className="ruinsPanel__utility">
-          <RuinsProgress ruinsId={ruinDef.id} section="utility" />
-        </div>
       </div>
-    </div>
+    </ScreenFxStage>
   );
 }

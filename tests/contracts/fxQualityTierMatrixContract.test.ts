@@ -19,6 +19,7 @@ test('proof-surface policy remains explicit for scene-backed vs static-safe root
     status: 'scene-backed',
     world: 'static-safe-null-scene',
     forge: 'static-safe-null-scene',
+    ruins: 'scene-backed',
     selection: 'legal-null-scene-stub',
   });
 });

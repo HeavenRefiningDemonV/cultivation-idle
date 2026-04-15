@@ -7,6 +7,20 @@
     --combat-accent: #59739a;
 }
 
+.ruinsPanelFxStage {
+    width: 100%;
+    height: 100%;
+}
+
+.ruinsPanelFxStage__layer {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ruinsPanelFxStage__content {
+    position: relative;
+}
+
 .combatPathModule--outskirts {
     --combat-accent: #4c8d6f;
 }

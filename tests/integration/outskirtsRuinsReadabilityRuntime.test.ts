@@ -27,6 +27,8 @@ test('outskirts and ruins panels mount compact run compass + bounded summary sur
   assert.match(ruinsCtaZone, /deriveRuinsActionState/);
   assert.match(ruinsPanel, /buildRuinsSupportContextSurface/);
   assert.match(ruinsPanel, /onExitHintSelect/);
+  assert.match(ruinsPanel, /FX_STAGE_IDS\.ruins/);
+  assert.match(ruinsPanel, /RuinsFxScene/);
 });
 
 test('ruins summary layer avoids raw item id fallback copy leakage', async () => {

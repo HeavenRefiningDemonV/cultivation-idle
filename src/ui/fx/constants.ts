@@ -24,6 +24,7 @@ export const FX_STAGE_IDS = {
   status: 'status',
   world: 'world',
   forge: 'forge',
+  ruins: 'ruins',
 } as const;
 
 export type FxStageId = (typeof FX_STAGE_IDS)[keyof typeof FX_STAGE_IDS];
@@ -89,5 +90,6 @@ export const FX_PROOF_SURFACE_POLICIES = {
   status: 'scene-backed',
   world: 'static-safe-null-scene',
   forge: 'static-safe-null-scene',
+  ruins: 'scene-backed',
   selection: 'legal-null-scene-stub',
 } as const;

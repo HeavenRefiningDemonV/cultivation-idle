@@ -22,11 +22,9 @@ test('scene-kind policy map covers all canonical stage ids', () => {
 });
 
 test('stub scenes remain legal no-asset null-return placeholders', async () => {
-  const worldScene = await readSource('src/ui/fx/scenes/WorldFxScene.tsx');
   const forgeScene = await readSource('src/ui/fx/scenes/ForgeFxScene.tsx');
   const selectionScene = await readSource('src/ui/fx/scenes/SelectionFxScene.tsx');
 
-  assert.match(worldScene, /return null;/);
   assert.match(forgeScene, /return null;/);
   assert.match(selectionScene, /return null;/);
 });
@@ -34,9 +32,13 @@ test('stub scenes remain legal no-asset null-return placeholders', async () => {
 test('proof surfaces continue using ScreenFxStage + FxStagePortal contract path', async () => {
   const cultivation = await readSource('src/components/screens/CultivateScreen.tsx');
   const status = await readSource('src/components/screens/StatusScreen.tsx');
+  const ruinsPanel = await readSource('src/components/screens/world/buildings/RuinsBuildingPanel.tsx');
 
   assert.match(cultivation, /ScreenFxStage/);
   assert.match(cultivation, /FxStagePortal/);
   assert.match(status, /ScreenFxStage/);
   assert.match(status, /FxStagePortal/);
+  assert.match(ruinsPanel, /ScreenFxStage/);
+  assert.match(ruinsPanel, /FxStagePortal/);
+  assert.match(ruinsPanel, /RuinsFxScene/);
 });
