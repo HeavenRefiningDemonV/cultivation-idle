@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useActivityStore } from '../../../../stores/activityStore.js';
 import { useCombatStore } from '../../../../stores/combatStore.js';
@@ -24,6 +25,8 @@ import { buildOutskirtsInformationHierarchySurface } from '../../../../ui/world/
 import { buildOutskirtsActionStripState } from '../../../../ui/world/buildOutskirtsActionStripState.js';
 import { buildOutskirtsSupportContextSurface } from '../../../../ui/world/buildOutskirtsSupportContextSurface.js';
 import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
+import { useFxQuality } from '../../../../ui/fx/FxQualityProvider.js';
+import { buildOutskirtsFxProfile } from '../../../../ui/world/buildOutskirtsFxProfile.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -122,6 +125,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const getProgress = useOutskirtsStore((state) => state.getProgress);
   const trackedBounty = useBountyStore((state) => state.getTrackedBounty(cityId));
   const runCompass = useRunCompassSurface();
+  const { effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const outskirtsRefId = useMemo(() => resolveModuleRef(city ?? null, 'outskirts'), [city]);
   const outskirtsDef = outskirtsRefId ? outskirtsById[outskirtsRefId] : undefined;
@@ -353,6 +357,16 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     [autoContinue, isOutskirtsActive, killsSinceBoss, killsToBoss, stopAtBoss],
   );
   const handlePrimaryAction = isOutskirtsActive ? handleStopOutskirts : handleStartOutskirts;
+  const outskirtsFxProfile = useMemo(
+    () => buildOutskirtsFxProfile({
+      effectiveQuality,
+      prefersReducedMotion,
+      isCombatActive: isOutskirtsActive,
+      isBossReady: killsSinceBoss >= killsToBoss,
+      cityId,
+    }),
+    [cityId, effectiveQuality, isOutskirtsActive, killsSinceBoss, killsToBoss, prefersReducedMotion],
+  );
 
   if (!outskirtsDef) {
     return (
@@ -378,7 +392,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
         sidebarPosition="right"
         suppressHeader
         leftSidebar={
-          <div className="ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail">
+          <div className={`ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail ${supportContext.trackedBounty ? 'outskirtsPanel__summary--bounty' : ''}`.trim()}>
             <OutskirtsSummaryCard
               surface={hierarchySurface}
               trackedBountyLine={supportContext.trackedBounty ? (
@@ -419,6 +433,26 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
             />
             <div className="outskirtsPanel__mainBand">
               <div className="outskirts-combat__stage combatPathModule__scene" ref={combatMainRef}>
+                <div
+                  className="outskirts-combat__atmosphere"
+                  data-quality={outskirtsFxProfile.quality}
+                  data-animate={outskirtsFxProfile.animateContinuously ? '1' : '0'}
+                  data-combat-active={isOutskirtsActive ? '1' : '0'}
+                  data-boss-ready={killsSinceBoss >= killsToBoss ? '1' : '0'}
+                  style={{ '--outskirts-haze-opacity': `${outskirtsFxProfile.hazeOpacity}` } as CSSProperties}
+                  aria-hidden="true"
+                >
+                  <span className="outskirts-combat__haze" />
+                  {Array.from({ length: outskirtsFxProfile.moteCount }).map((_, idx) => (
+                    <span key={idx} className={`outskirts-combat__mote outskirts-combat__mote--${(idx % 6) + 1}`} />
+                  ))}
+                  {Array.from({ length: outskirtsFxProfile.leafCount }).map((_, idx) => (
+                    <span key={`leaf-${idx}`} className={`outskirts-combat__leaf outskirts-combat__leaf--${(idx % 2) + 1}`} />
+                  ))}
+                  {Array.from({ length: outskirtsFxProfile.glintCount }).map((_, idx) => (
+                    <span key={`glint-${idx}`} className="outskirts-combat__glint" />
+                  ))}
+                </div>
                 <div className="outskirts-combat__sceneLabel">Current Encounter</div>
                 <div className="outskirts-combat__healthbars">
                   <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />

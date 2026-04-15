@@ -150,6 +150,98 @@
     position: relative;
     border: 1px solid rgba(148, 163, 184, 0.3);
     background: linear-gradient(to bottom, rgba(238, 250, 239, 0.52), rgba(212, 226, 211, 0.26));
+    --outskirts-haze-opacity: 0.2;
+
+    > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .outskirts-combat__atmosphere {
+        position: absolute;
+        inset: 0;
+        overflow: clip;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .outskirts-combat__haze {
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(120% 90% at 40% 56%, rgba(209, 234, 199, var(--outskirts-haze-opacity)) 0%, rgba(209, 234, 199, 0) 72%),
+            linear-gradient(92deg, rgba(227, 241, 213, calc(var(--outskirts-haze-opacity) * 0.7)) 0%, rgba(227, 241, 213, 0) 78%);
+        transition: opacity 180ms ease;
+    }
+
+    .outskirts-combat__mote,
+    .outskirts-combat__leaf,
+    .outskirts-combat__glint {
+        position: absolute;
+    }
+
+    .outskirts-combat__mote {
+        width: 3px;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(214, 226, 190, 0.52);
+        box-shadow: 0 0 5px rgba(214, 226, 190, 0.22);
+        animation: outskirts-mote-drift 18s linear infinite;
+    }
+
+    .outskirts-combat__mote--1 { left: 8%; top: 72%; animation-delay: 0.4s; }
+    .outskirts-combat__mote--2 { left: 24%; top: 61%; animation-delay: 2.8s; }
+    .outskirts-combat__mote--3 { left: 39%; top: 76%; animation-delay: 1.2s; }
+    .outskirts-combat__mote--4 { left: 56%; top: 66%; animation-delay: 3.4s; }
+    .outskirts-combat__mote--5 { left: 71%; top: 79%; animation-delay: 0.9s; }
+    .outskirts-combat__mote--6 { left: 87%; top: 68%; animation-delay: 2.2s; }
+
+    .outskirts-combat__leaf {
+        width: 10px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(138, 173, 118, 0.26);
+        transform-origin: center;
+        animation: outskirts-leaf-sway 13s ease-in-out infinite;
+    }
+
+    .outskirts-combat__leaf--1 { left: 16%; top: 28%; animation-delay: 0.5s; }
+    .outskirts-combat__leaf--2 { left: 82%; top: 34%; animation-delay: 2.2s; }
+
+    .outskirts-combat__glint {
+        right: 12px;
+        top: 8px;
+        width: 110px;
+        height: 46px;
+        background: radial-gradient(ellipse at 100% 0%, rgba(246, 255, 226, 0.26), rgba(246, 255, 226, 0));
+        opacity: 0.7;
+        transition: opacity 170ms ease;
+    }
+
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__mote,
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__leaf,
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__glint,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__mote,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__leaf,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__glint,
+    .outskirts-combat__atmosphere[data-animate='0'] .outskirts-combat__mote,
+    .outskirts-combat__atmosphere[data-animate='0'] .outskirts-combat__leaf {
+        animation: none;
+    }
+
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__leaf,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__leaf {
+        display: none;
+    }
+
+    .outskirts-combat__atmosphere[data-quality='low'] .outskirts-combat__glint,
+    .outskirts-combat__atmosphere[data-quality='reducedMotion'] .outskirts-combat__glint {
+        display: none;
+    }
+
+    .outskirts-combat__atmosphere[data-combat-active='1'] .outskirts-combat__haze {
+        opacity: 1;
+    }
 
     .outskirts-combat__sceneLabel {
         position: absolute;
@@ -265,6 +357,32 @@
             .enemy-image-wrapper--inactive {
                 visibility: hidden;
             }
+    }
+}
+
+@keyframes outskirts-mote-drift {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateY(-20px) translateX(7px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-42px) translateX(2px);
+        opacity: 0;
+    }
+}
+
+@keyframes outskirts-leaf-sway {
+    0%, 100% {
+        transform: translateX(0) rotate(2deg);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateX(8px) rotate(-4deg);
+        opacity: 0.46;
     }
 }
 
@@ -508,6 +626,12 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.outskirtsPanel__summary--bounty .outskirtsSummaryCard__context--bounty {
+    background: rgba(76, 141, 111, 0.08);
+    border-radius: 6px;
+    padding: 2px 4px;
 }
 
 .ink-combat-shell--outskirts .ink-combat-shell__sidebar {
