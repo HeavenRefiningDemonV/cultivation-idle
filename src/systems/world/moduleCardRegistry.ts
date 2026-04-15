@@ -9,7 +9,6 @@ import {
   OUTSKIRTS_BOUNDARY_LINE,
   RUINS_ROLE_TAG,
   RUINS_BEST_USED_WHEN,
-  RUINS_GOLD_SECONDARY_LINE,
   OUTSKIRTS_CARD_OUTPUT_HINTS,
   RUINS_CARD_OUTPUT_HINTS,
 } from '../economy/activityRewardReadModel.js';
@@ -259,7 +258,7 @@ export function buildWorldModuleCardSurface(args: BuildWorldModuleCardSurfaceArg
       roleTag: activityReadModel.ruins.roleTag,
       bestUsedWhen: activityReadModel.ruins.bestUsedWhen,
       outputs: asOutputHints(RUINS_CARD_OUTPUT_HINTS),
-      boundaryLine: RUINS_GOLD_SECONDARY_LINE,
+      boundaryLine: activityReadModel.ruins.boundaryLine,
       ctaLabel: definition.ctaLabel,
       allowedChipKinds: definition.allowedChipKinds,
     };

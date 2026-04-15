@@ -2,6 +2,8 @@ import type { ItemDef, LiveWorldModuleKey, ValidatedContent } from '../../conten
 import { getWorldModuleLabel, sanitizeLiveCityName } from '../../ui/text/playerFacingLabels.js';
 import { buildBestSourceIndex, type BestSourceIndex, type BestSourceIndexEntry, type BestSourceOption } from './bestSourceIndex.js';
 import {
+  RUINS_BEST_USED_WHEN,
+  RUINS_GOLD_SECONDARY_LINE,
   OUTSKIRTS_BEST_USED_WHEN,
   OUTSKIRTS_BOUNDARY_LINE,
   buildCityActivityRewardReadModel,
@@ -239,11 +241,13 @@ export function buildModulePurposeSourceSurface(
     purposeTag: role.roleTag,
     purposeLine: moduleKey === 'outskirts'
       ? OUTSKIRTS_BEST_USED_WHEN
+      : moduleKey === 'ruins'
+        ? RUINS_BEST_USED_WHEN
       : `Best used when ${role.bestUsedWhen.charAt(0).toLowerCase()}${role.bestUsedWhen.slice(1)}`,
     boundaryLine: role.moduleKey === 'outskirts'
       ? OUTSKIRTS_BOUNDARY_LINE
       : role.moduleKey === 'ruins'
-        ? 'Gold is secondary here; treat Ruins as the targeted-material route.'
+        ? RUINS_GOLD_SECONDARY_LINE
         : undefined,
   };
 }

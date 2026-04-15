@@ -33,16 +33,20 @@ export function RuinsSummaryCard(props: {
         <strong>Ruins</strong>
         <span>{roleTag}</span>
       </div>
-      <div>Ruin: {ruinName}</div>
-      <div>{bestUsedWhen}</div>
-      <div>Rooms: {roomCount}</div>
+      <div className="ruinsSummaryCard__identity">Ruin: {ruinName}</div>
+      <div className="ruinsSummaryCard__purpose">{bestUsedWhen}</div>
+      <div className="ruinsSummaryCard__identity">Rooms: {roomCount}</div>
       <div className="ruinsSummaryCard__outputs">{leadMaterialsLine}</div>
-      <div>{anchorLine}</div>
-      <div>{rarePityLine}</div>
-      {goldSecondaryLine ? <div>{goldSecondaryLine}</div> : null}
-      <div>{autoRepeatLine}</div>
-      <div>{runStateLine}</div>
-      {trackedBountyLine}
+      <div className="ruinsSummaryCard__deterministicBlock">
+        <div>{anchorLine}</div>
+        <div>{rarePityLine}</div>
+      </div>
+      {goldSecondaryLine ? <div className="ruinsSummaryCard__boundary">{goldSecondaryLine}</div> : null}
+      <div className="ruinsSummaryCard__statusRow">{autoRepeatLine}</div>
+      <div className="ruinsSummaryCard__statusRow">{runStateLine}</div>
+      <div className={`ruinsSummaryCard__trackedBounty ${trackedBountyLine ? '' : 'ruinsSummaryCard__trackedBounty--empty'}`}>
+        {trackedBountyLine ?? <span aria-hidden>—</span>}
+      </div>
     </section>
   );
 }

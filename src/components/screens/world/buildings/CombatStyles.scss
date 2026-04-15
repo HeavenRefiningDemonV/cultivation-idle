@@ -863,6 +863,43 @@
     color: #e2e8f0;
 }
 
+.ruinsSummaryCard__identity {
+    color: #f1f5f9;
+}
+
+.ruinsSummaryCard__purpose {
+    min-height: 34px;
+    color: #dbeafe;
+}
+
+.ruinsSummaryCard__deterministicBlock {
+    min-height: 52px;
+    display: grid;
+    gap: 4px;
+}
+
+.ruinsSummaryCard__boundary {
+    border-top: 1px solid rgba(148, 163, 184, 0.32);
+    padding-top: 6px;
+    color: #fde68a;
+    min-height: 24px;
+}
+
+.ruinsSummaryCard__statusRow {
+    min-height: 18px;
+}
+
+.ruinsSummaryCard__trackedBounty {
+    min-height: 34px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.ruinsSummaryCard__trackedBounty--empty {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .outskirtsPanel__secondary {
     display: flex;
     flex-direction: column;

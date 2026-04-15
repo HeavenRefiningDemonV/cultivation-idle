@@ -45,7 +45,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     const names = ruinsRewardModel.leadLocalMaterials
       .map((id) => itemsById[id]?.name)
       .filter((name): name is string => Boolean(name))
-      .slice(0, 2);
+      .slice(0, 3);
     return `Lead materials: ${names.length > 0 ? names.join(' • ') : 'Local support materials'}`;
   }, [itemsById, ruinsRewardModel.leadLocalMaterials]);
 
@@ -114,7 +114,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
           ruinName={ruinDef.name ?? 'Ruins'}
           roleTag={ruinsRewardModel.roleTag}
           bestUsedWhen={ruinsRewardModel.bestUsedWhen}
-          roomCount={ruinDef.roomCount}
+          roomCount={ruinsRewardModel.roomCount}
           leadMaterialsLine={leadMaterialsLine}
           anchorLine={anchorLine}
           rarePityLine={rarePityLine}

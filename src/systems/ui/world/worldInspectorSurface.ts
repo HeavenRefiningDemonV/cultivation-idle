@@ -3,7 +3,7 @@ export function resolveWorldInspectorBoundaryLine(args: {
   boundaryLineFromHandoff: string | null;
 }): string | null {
   const { moduleKey, boundaryLineFromHandoff } = args;
-  if (moduleKey !== 'outskirts') {
+  if (moduleKey !== 'outskirts' && moduleKey !== 'ruins') {
     return null;
   }
   if (typeof boundaryLineFromHandoff !== 'string' || boundaryLineFromHandoff.trim().length === 0) {

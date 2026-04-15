@@ -3,7 +3,12 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
-import { buildRuinsActivityRewardReadModel } from '../../src/systems/economy/activityRewardReadModel.js';
+import {
+  RUINS_BEST_USED_WHEN,
+  RUINS_GOLD_SECONDARY_LINE,
+  RUINS_ROLE_TAG,
+  buildRuinsActivityRewardReadModel,
+} from '../../src/systems/economy/activityRewardReadModel.js';
 import { validateLoadedContent } from '../../src/content/index.js';
 
 const CONTENT_DIR = path.resolve(process.cwd(), 'public', 'cultivation_idle_content_bible_v1_config');
@@ -27,8 +32,10 @@ test('ruins summary surface preserves deterministic targeted-material framing', 
   assert.ok(cityId);
 
   const model = buildRuinsActivityRewardReadModel(content, cityId);
-  assert.equal(model.roleTag, 'Targeted Mats');
-  assert.equal(model.bestUsedWhen, 'Best used when you need targeted local materials and deterministic support rewards.');
+  assert.equal(model.roleTag, RUINS_ROLE_TAG);
+  assert.equal(model.bestUsedWhen, RUINS_BEST_USED_WHEN);
+  assert.equal(model.boundaryLine, RUINS_GOLD_SECONDARY_LINE);
+  assert.equal(model.goldIsSecondary, true);
   assert.ok(model.roomCount > 0);
   assert.ok(model.leadLocalMaterials.length > 0);
   assert.ok(model.deterministicFinalAnchor);
