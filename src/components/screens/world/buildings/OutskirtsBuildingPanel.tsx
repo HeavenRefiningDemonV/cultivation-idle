@@ -21,6 +21,7 @@ import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyPro
 import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 import { buildOutskirtsInformationHierarchySurface } from '../../../../ui/world/buildOutskirtsInformationHierarchySurface.js';
+import { buildOutskirtsActionStripState } from '../../../../ui/world/buildOutskirtsActionStripState.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -180,9 +181,6 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
       .filter((line, index, lines) => lines.indexOf(line) === index)
       .slice(0, 2);
   }, [runCompass.full?.bestNextActions]);
-  const cadenceChipLine = killsSinceBoss >= killsToBoss
-    ? 'Boss ready'
-    : `Boss in ${Math.max(0, killsToBoss - killsSinceBoss)} ${Math.max(0, killsToBoss - killsSinceBoss) === 1 ? 'kill' : 'kills'}`;
 
   const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
     const container = combatMainRef.current;
@@ -341,6 +339,17 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     (activity?.type === 'outskirts' &&
       (activity?.sourceId === outskirtsDef?.id ||
         (activity?.payload as { sourceId?: string } | undefined)?.sourceId === outskirtsDef?.id));
+  const actionStripState = useMemo(
+    () => buildOutskirtsActionStripState({
+      isOutskirtsActive,
+      killsSinceBoss,
+      killsToBoss,
+      autoContinue,
+      stopAtBoss,
+    }),
+    [autoContinue, isOutskirtsActive, killsSinceBoss, killsToBoss, stopAtBoss],
+  );
+  const handlePrimaryAction = isOutskirtsActive ? handleStopOutskirts : handleStartOutskirts;
 
   if (!outskirtsDef) {
     return (
@@ -433,22 +442,49 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
               </div>
             </div>
             <div className="ink-combat-shell__section combatPathModule__actionZone outskirtsPanel__actionStrip">
-              <div className="ink-combat-shell__actions outskirtsPanel__primaryActions">
-                <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>
-                  Start
-                </button>
+              <div className="outskirtsPanel__actionPrimaryLane">
                 <button
-                  className="button-standard button-standard--ghost"
-                  onClick={handleStopOutskirts}
-                  disabled={!isOutskirtsActive}
+                  className={`button-standard outskirtsPanel__primaryAction outskirtsPanel__primaryAction--${actionStripState.primaryActionTone}`}
+                  onClick={handlePrimaryAction}
                 >
-                  Stop
+                  {actionStripState.primaryActionLabel}
                 </button>
+                <div className="outskirtsPanel__cadenceMini">
+                  <div className="outskirtsPanel__cadenceMiniTop">
+                    <span className="outskirtsPanel__cadenceLabel">{actionStripState.progressLabel}</span>
+                    <span className="outskirtsPanel__cadenceStatus">{actionStripState.bossStatusLabel}</span>
+                  </div>
+                  <div className="outskirtsPanel__cadenceSegments" aria-hidden="true">
+                    {Array.from({ length: 8 }).map((_, idx) => {
+                      const threshold = ((idx + 1) / 8) * Math.max(1, killsToBoss);
+                      const filled = killsSinceBoss >= threshold || killsSinceBoss >= killsToBoss;
+                      return (
+                        <span
+                          key={idx}
+                          className={`outskirtsPanel__cadenceSegment ${filled ? 'outskirtsPanel__cadenceSegment--filled' : ''}`}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
               <div className="outskirtsPanel__actionContext">
-                <span className="combatPathModule__chip combatPathModule__chip--warning">{cadenceChipLine}</span>
-                <span className="combatPathModule__chip">{autoContinue ? 'Auto-continue On' : 'Auto-continue Off'}</span>
-                <span className="combatPathModule__chip">{stopAtBoss ? 'Stop at Boss On' : 'Stop at Boss Off'}</span>
+                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox outskirtsPanel__stripToggle">
+                  <input
+                    type="checkbox"
+                    checked={autoContinue}
+                    onChange={(e) => setAutoContinue(e.target.checked)}
+                  />
+                  <span className="ink-combat-shell__control-label">{actionStripState.loopToggleLines[0]}</span>
+                </label>
+                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox outskirtsPanel__stripToggle">
+                  <input
+                    type="checkbox"
+                    checked={stopAtBoss}
+                    onChange={(e) => setStopAtBoss(e.target.checked)}
+                  />
+                  <span className="ink-combat-shell__control-label">{actionStripState.loopToggleLines[1]}</span>
+                </label>
               </div>
             </div>
             <div className="ink-combat-shell__section outskirtsPanel__secondary">
@@ -525,23 +561,8 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 </div>
                 <div className="combatPathModule__routeHints outskirtsPanel__secondaryCard">
                   <div className="ink-combat-shell__section-title">Run Options</div>
-                  <div className="ink-combat-shell__controls">
-                    <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
-                      <input
-                        type="checkbox"
-                        checked={autoContinue}
-                        onChange={(e) => setAutoContinue(e.target.checked)}
-                      />
-                      <span className="ink-combat-shell__control-label">Auto-continue</span>
-                    </label>
-                    <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
-                      <input
-                        type="checkbox"
-                        checked={stopAtBoss}
-                        onChange={(e) => setStopAtBoss(e.target.checked)}
-                      />
-                      <span className="ink-combat-shell__control-label">Stop at boss</span>
-                    </label>
+                  <div className="outskirtsPanel__runOptionsNote">
+                    Loop toggles are now in the action strip for faster Start/Stop flow.
                   </div>
                 </div>
                 <div className="outskirtsPanel__secondaryCard outskirtsPanel__secondaryCard--fill">
