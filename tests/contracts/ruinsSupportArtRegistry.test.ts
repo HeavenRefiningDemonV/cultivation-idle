@@ -1,27 +1,33 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {
-  RUINS_SUPPORT_ART_FILES,
-  RUINS_SUPPORT_ART_ROLE_MAP,
-  resolveRuinsSupportArt,
-} from '../../src/assets/ui/chrome/ruins_support/index.js';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-test('ruins support-art role map is bounded to justified roles', () => {
-  assert.deepEqual(Object.keys(RUINS_SUPPORT_ART_ROLE_MAP).sort(), [
-    'ruin_anchor_reward_plate',
-    'ruin_location_plaque',
-  ]);
-  assert.deepEqual(Object.keys(RUINS_SUPPORT_ART_FILES).sort(), ['anchorRewardPlate', 'locationPlaque']);
+function read(relPath: string): string {
+  return readFileSync(resolve(process.cwd(), relPath), 'utf8');
+}
+
+test('ruins support-art registry includes the full 10-role pack', () => {
+  const registry = read('src/assets/ui/chrome/ruins_support/index.ts');
+
+  assert.match(registry, /ruin_location_plaque/);
+  assert.match(registry, /ruin_sub_identity_plate/);
+  assert.match(registry, /ruin_anchor_reward_underplate_a/);
+  assert.match(registry, /ruin_anchor_reward_underplate_b/);
+  assert.match(registry, /ruin_local_chest_frame_accent_a/);
+  assert.match(registry, /ruin_local_chest_frame_accent_b/);
+  assert.match(registry, /ruin_city_mood_stamp_organic/);
+  assert.match(registry, /ruin_city_mood_stamp_kiln/);
+  assert.match(registry, /ruin_city_mood_stamp_crystal/);
+  assert.match(registry, /ruin_neutral_insignia/);
+  assert.match(registry, /ruins_support_pack_sheet\.svg/);
 });
 
-test('ruins support-art resolver is fallback-safe when generated files are absent', () => {
-  const locationPlaque = resolveRuinsSupportArt('locationPlaque');
-  const anchorRewardPlate = resolveRuinsSupportArt('anchorRewardPlate');
+test('ruins support-art pack files are present and transparent svg assets', () => {
+  const readme = read('src/assets/ui/chrome/ruins_support/README.md');
+  const sheet = read('src/assets/ui/chrome/ruins_support/pack/ruins_support_pack_sheet.svg');
 
-  assert.equal(locationPlaque.assetUrl, null);
-  assert.equal(anchorRewardPlate.assetUrl, null);
-  assert.equal(locationPlaque.usesFallback, true);
-  assert.equal(anchorRewardPlate.usesFallback, true);
-  assert.match(locationPlaque.fileName, /ui_label_ruins_location_default_m\.png/);
-  assert.match(anchorRewardPlate.fileName, /ui_plate_ruins_anchor_reward_default_s\.png/);
+  assert.match(readme, /Included assets/);
+  assert.match(sheet, /<svg/);
+  assert.match(sheet, /fill=\"none\"/);
 });

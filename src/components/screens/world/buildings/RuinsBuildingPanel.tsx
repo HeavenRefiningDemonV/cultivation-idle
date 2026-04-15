@@ -113,7 +113,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   }, [effectiveQuality, fxStageSnapshot, prefersReducedMotion, requestedQuality]);
 
   const locationPlaqueSupportArt = useMemo(() => resolveRuinsSupportArt('locationPlaque'), []);
-  const anchorRewardPlateSupportArt = useMemo(() => resolveRuinsSupportArt('anchorRewardPlate'), []);
+  const anchorRewardPlateSupportArt = useMemo(() => resolveRuinsSupportArt('anchorRewardPlateA'), []);
 
   const supportContext = useMemo(() => {
     return buildRuinsSupportContextSurface({
@@ -231,10 +231,9 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
           <div className="ruinsPanel__centerBand">
             <section className="ruinsPanel__scenicCenter" aria-label="Ruins chamber path">
               <div
-                className={`ruinsPanel__locationPlaque${locationPlaqueSupportArt.assetUrl ? ' ruinsPanel__locationPlaque--art' : ''}`}
+                className="ruinsPanel__locationPlaque ruinsPanel__locationPlaque--art"
                 data-support-role={locationPlaqueSupportArt.role}
-                data-support-fallback={locationPlaqueSupportArt.usesFallback ? '1' : '0'}
-                style={locationPlaqueSupportArt.assetUrl ? { backgroundImage: `url(${locationPlaqueSupportArt.assetUrl})` } : undefined}
+                style={{ backgroundImage: `url(${locationPlaqueSupportArt.assetUrl})` }}
                 aria-hidden="true"
               />
               <div className="ruinsPanel__scenicBadge">Chamber route</div>
@@ -256,7 +255,6 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
                 leadMaterialsLine={ruinsSummarySurface.leadMaterialsLine}
                 anchorLine={ruinsSummarySurface.anchorPreviewLine}
                 anchorRewardPlateArtUrl={anchorRewardPlateSupportArt.assetUrl}
-                anchorRewardPlateFallback={anchorRewardPlateSupportArt.usesFallback}
                 rarePityLine={ruinsSummarySurface.rarePityPreviewLine}
                 goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
                 autoRepeatLine={ruinsSummarySurface.autoRepeatLine}

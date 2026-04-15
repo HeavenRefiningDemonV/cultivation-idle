@@ -7,11 +7,11 @@ function read(relPath: string): string {
   return readFileSync(resolve(process.cwd(), relPath), 'utf8');
 }
 
-test('ruins panel consumes location plaque support-art with fallback marker', () => {
+test('ruins panel consumes location plaque support-art and anchor underplate A', () => {
   const panel = read('src/components/screens/world/buildings/RuinsBuildingPanel.tsx');
   assert.match(panel, /resolveRuinsSupportArt\('locationPlaque'\)/);
+  assert.match(panel, /resolveRuinsSupportArt\('anchorRewardPlateA'\)/);
   assert.match(panel, /data-support-role=\{locationPlaqueSupportArt\.role\}/);
-  assert.match(panel, /data-support-fallback=\{locationPlaqueSupportArt\.usesFallback \? '1' : '0'\}/);
 });
 
 test('ruins summary card keeps deterministic text DOM-first with optional anchor underplate', () => {
