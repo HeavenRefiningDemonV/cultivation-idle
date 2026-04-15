@@ -944,6 +944,59 @@
     pointer-events: none;
 }
 
+
+.ruinsSummaryCard__adjacency {
+    min-height: 84px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+}
+
+.ruinsSummaryCard__exitHint {
+    min-height: 39px;
+    border: 1px solid rgba(125, 211, 252, 0.22);
+    border-radius: 6px;
+    padding: 5px 7px;
+    background: rgba(15, 23, 42, 0.46);
+    display: grid;
+    gap: 2px;
+    align-content: start;
+}
+
+.ruinsSummaryCard__exitHint--primary {
+    border-color: rgba(74, 222, 128, 0.35);
+}
+
+.ruinsSummaryCard__exitHint--secondary {
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
+.ruinsSummaryCard__exitHintTitle {
+    color: #e2e8f0;
+    font-size: 11px;
+}
+
+.ruinsSummaryCard__exitHintReason {
+    color: #93c5fd;
+    font-size: 10px;
+    min-height: 12px;
+}
+
+.ruinsSummaryCard__exitHintAction {
+    justify-self: start;
+    margin-top: 2px;
+    border: 1px solid rgba(125, 211, 252, 0.4);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: #dbeafe;
+    background: rgba(30, 64, 175, 0.25);
+}
+
+.ruinsSummaryCard__exitHint--empty {
+    opacity: 0;
+    pointer-events: none;
+}
 .ruinsSummaryCard__boundary {
     border-top: 1px solid rgba(148, 163, 184, 0.24);
     padding-top: 6px;

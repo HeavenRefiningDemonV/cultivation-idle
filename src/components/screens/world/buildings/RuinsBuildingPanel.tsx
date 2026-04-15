@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useContentStore } from '../../../../stores/contentStore.js';
 import { useRuinsStore } from '../../../../stores/ruinsStore.js';
+import { useInventoryStore } from '../../../../stores/inventoryStore.js';
 import { resolveModuleRef } from '../worldUtils.js';
 import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
 import { buildRuinsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
@@ -13,6 +14,9 @@ import { RuinsSummaryCard } from '../../../../ui/world/RuinsSummaryCard.js';
 import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 import { buildRuinsSummarySurface } from '../../../../ui/world/buildRuinsSummarySurface.js';
+import { buildRuinsSupportContextSurface } from '../../../../ui/world/buildRuinsSupportContextSurface.js';
+import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
+import { buildGateTrialReadinessSurface, buildSection5StatusSurface } from '../../../../systems/readiness/section5Adapters.js';
 import './CombatStyles.scss';
 
 interface RuinsBuildingPanelProps {
@@ -29,6 +33,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
   const autoRepeatDefault = useRuinsStore((state) => state.autoRepeatDefault);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const trackedBounty = useBountyStore((state) => state.getTrackedBounty(cityId));
+  const itemCountsById = useInventoryStore((state) => state.items);
   const runCompass = useRunCompassSurface();
 
   const ruinRefId = useMemo(() => resolveModuleRef(city ?? null, 'ruins'), [city]);
@@ -47,6 +52,7 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     trackedBounty && (trackedBounty.kind === 'RUINS_ROOM_CLEAR' || trackedBounty.kind === 'RUINS_RUN_CLEAR')
       ? trackedBounty
       : null;
+
   const ruinsSummarySurface = useMemo(() => {
     const leadMaterialNames = ruinsRewardModel.leadLocalMaterials
       .map((id) => itemsById[id]?.name ?? null)
@@ -75,6 +81,42 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     ruinProgress?.bossChestRareFailures,
     ruinsRewardModel,
     trackedRuinsBounty?.title,
+  ]);
+
+  const gateStatus = buildSection5StatusSurface();
+  const gateReadiness = gateStatus.currentGateTrialId ? buildGateTrialReadinessSurface(gateStatus.currentGateTrialId) : null;
+
+  const supportContext = useMemo(() => {
+    return buildRuinsSupportContextSurface({
+      trackedBounty: trackedRuinsBounty,
+      runCompassActions: runCompass.full?.bestNextActions,
+      cityId,
+      cityModules: city?.modules ?? [],
+      leadMaterialIds: ruinsRewardModel.leadLocalMaterials,
+      itemCountsById,
+      itemNamesById: Object.fromEntries(Object.entries(itemsById).map(([id, item]) => [id, item?.name])),
+      forgeBlueprints: contentRaw.forge_blueprints,
+      alchemyRecipes: contentRaw.alchemy_recipes,
+      gateReadiness: gateReadiness
+        ? {
+          readinessLabel: gateReadiness.readinessLabel,
+          readinessDetail: gateReadiness.readinessDetail,
+          gateResolved: gateReadiness.lifecycle.isResolved,
+          canStart: gateReadiness.lifecycle.canStart,
+        }
+        : null,
+    });
+  }, [
+    trackedRuinsBounty,
+    runCompass.full?.bestNextActions,
+    cityId,
+    city?.modules,
+    ruinsRewardModel.leadLocalMaterials,
+    itemCountsById,
+    itemsById,
+    contentRaw.forge_blueprints,
+    contentRaw.alchemy_recipes,
+    gateReadiness,
   ]);
 
   if (!ruinDef) {
@@ -138,8 +180,18 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
               goldSecondaryLine={ruinsSummarySurface.goldSecondaryBoundaryLine ?? undefined}
               autoRepeatLine={ruinsSummarySurface.autoRepeatLine}
               runStateLine={ruinsSummarySurface.runStateLine}
-              trackedBountyLine={trackedRuinsBounty ? <TrackedBountyProgressLine bounty={trackedRuinsBounty} /> : undefined}
+              trackedBountyLine={supportContext.trackedBounty ? (
+                <TrackedBountyProgressLine
+                  compact
+                  title={supportContext.trackedBounty.title}
+                  progressText={supportContext.trackedBounty.progressText}
+                  detailLine={supportContext.trackedBounty.rewardSummary}
+                />
+              ) : undefined}
               trackedBountyVisible={ruinsSummarySurface.trackedBountyVisible}
+              primaryExitHint={supportContext.primaryExitHint}
+              secondaryExitHint={supportContext.secondaryExitHint}
+              onExitHintSelect={(destination) => openWorldModule({ cityId, moduleKey: destination, source: 'ruins-support-context' })}
             />
           </div>
         </div>

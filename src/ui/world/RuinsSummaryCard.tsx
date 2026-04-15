@@ -1,4 +1,30 @@
 import type { ReactNode } from 'react';
+import type { RuinsSupportExitHint } from './buildRuinsSupportContextSurface.js';
+
+function ExitHintSlot(props: {
+  hint: RuinsSupportExitHint | null;
+  tone: 'primary' | 'secondary';
+  onSelect?: (destination: RuinsSupportExitHint['destination']) => void;
+}) {
+  const { hint, tone, onSelect } = props;
+  const className = `ruinsSummaryCard__exitHint ruinsSummaryCard__exitHint--${tone}${hint ? '' : ' ruinsSummaryCard__exitHint--empty'}`;
+
+  if (!hint) {
+    return <div className={className}><span aria-hidden="true"> </span></div>;
+  }
+
+  return (
+    <div className={className}>
+      <div className="ruinsSummaryCard__exitHintTitle">{hint.label}</div>
+      <div className="ruinsSummaryCard__exitHintReason">{hint.reason}</div>
+      {hint.routeable ? (
+        <button type="button" className="ruinsSummaryCard__exitHintAction" onClick={() => onSelect?.(hint.destination)}>
+          {hint.ctaLabel}
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 export function RuinsSummaryCard(props: {
   ruinName: string;
@@ -13,6 +39,9 @@ export function RuinsSummaryCard(props: {
   runStateLine: string;
   trackedBountyLine?: ReactNode;
   trackedBountyVisible: boolean;
+  primaryExitHint: RuinsSupportExitHint | null;
+  secondaryExitHint: RuinsSupportExitHint | null;
+  onExitHintSelect?: (destination: RuinsSupportExitHint['destination']) => void;
 }) {
   const {
     ruinName,
@@ -27,6 +56,9 @@ export function RuinsSummaryCard(props: {
     runStateLine,
     trackedBountyLine,
     trackedBountyVisible,
+    primaryExitHint,
+    secondaryExitHint,
+    onExitHintSelect,
   } = props;
 
   return (
@@ -52,6 +84,10 @@ export function RuinsSummaryCard(props: {
       </div>
       <div className={`ruinsSummaryCard__trackedBounty ${trackedBountyVisible ? '' : 'ruinsSummaryCard__trackedBounty--empty'}`}>
         {trackedBountyLine ?? <span aria-hidden>—</span>}
+      </div>
+      <div className="ruinsSummaryCard__adjacency" aria-label="Ruins adjacency hints">
+        <ExitHintSlot hint={primaryExitHint} tone="primary" onSelect={onExitHintSelect} />
+        <ExitHintSlot hint={secondaryExitHint} tone="secondary" onSelect={onExitHintSelect} />
       </div>
       {goldSecondaryLine ? <div className="ruinsSummaryCard__boundary">{goldSecondaryLine}</div> : null}
     </section>
