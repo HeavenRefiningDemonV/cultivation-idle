@@ -43,7 +43,7 @@ export function ProgressPanel({ focus }: { focus?: CombatTheaterFocus }) {
   if (target === 'ruins') {
     return (
       <div className="combat-theater__panel">
-        <RuinsProgress ruinsId={focus?.type === 'ruins' ? focus.id : undefined} />
+        <RuinsProgress ruinsId={focus?.type === 'ruins' ? focus.id : undefined} section="rail" />
       </div>
     );
   }

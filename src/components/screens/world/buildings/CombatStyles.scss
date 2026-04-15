@@ -1155,6 +1155,18 @@
     min-height: 22px;
 }
 
+.ruinsCtaZone__secondary {
+    min-height: 38px;
+    display: grid;
+    gap: 4px;
+}
+
+.ruinsCtaZone__stateLine {
+    font-size: 11px;
+    color: rgba(191, 219, 254, 0.9);
+    min-height: 14px;
+}
+
 @media (max-width: 1200px) {
     .ruinsPanel__centerBand {
         grid-template-columns: minmax(0, 1fr);

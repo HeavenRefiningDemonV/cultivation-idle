@@ -13,6 +13,6 @@ void test('ruins progress keeps first-read and recap/history regions split', asy
   assert.match(source, /Current room:/);
   assert.match(source, /Run recap/);
   assert.match(source, /Recent runs/);
-  assert.match(ctaSource, /Stop Ruins Run|Start Ruins Run/);
+  assert.match(ctaSource, /actionState\.primaryActionLabel/);
   assert.match(ctaSource, /Continue farming ruins/);
 });
