@@ -14,12 +14,13 @@ import { InkCombatShell } from '../../../../ui/combat/InkCombatShell.js';
 import { InkHealthBar } from '../../../../ui/combat/InkHealthBar.js';
 import { buildOutskirtsActivityRewardReadModel } from '../../../../systems/economy/activityRewardReadModel.js';
 import { useBountyStore } from '../../../../stores/bountyStore.js';
-import { evaluateCurrentCombatPostureFit } from '../../../../systems/builds/combatPostureFit.js';
+import { buildCurrentCombatPostureContext, evaluateCurrentCombatPostureFit } from '../../../../systems/builds/combatPostureFit.js';
 import { useRunCompassSurface } from '../../../../ui/status/useRunCompassSurface.js';
 import { OutskirtsSummaryCard } from '../../../../ui/world/OutskirtsSummaryCard.js';
 import { TrackedBountyProgressLine } from '../../../../ui/world/TrackedBountyProgressLine.js';
 import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTopLane.js';
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
+import { buildOutskirtsInformationHierarchySurface } from '../../../../ui/world/buildOutskirtsInformationHierarchySurface.js';
 
 import wildBoar from "../../../../assets/enemies/widboar.png";
 
@@ -77,6 +78,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const outskirtsById = useContentStore((state) => state.maps.outskirtsById);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
+  const itemsById = useContentStore((state) => state.maps.itemsById);
   const contentRaw = useContentStore((state) => state.raw);
 
   const progressByOutskirtsId = useOutskirtsStore((state) => state.progressByOutskirtsId);
@@ -147,13 +149,7 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     [cityId, contentRaw],
   );
   const postureFit = useMemo(() => evaluateCurrentCombatPostureFit('outskirts'), [uiSettings.profile, uiSettings.useConsumablesInCombat]);
-  const postureHint = useMemo(() => {
-    if (postureFit.warnings.length > 0) return postureFit.warnings[0];
-    if (uiSettings.profile === 'farmer' && postureFit.aiFit === 'good') {
-      return 'Farmer AI is a strong fit for repeatable low-risk farming runs.';
-    }
-    return null;
-  }, [postureFit.aiFit, postureFit.warnings, uiSettings.profile]);
+  const postureContext = useMemo(() => buildCurrentCombatPostureContext('outskirts'), [uiSettings.profile, uiSettings.useConsumablesInCombat]);
   const trackedOutskirtsBounty =
     trackedBounty && (trackedBounty.kind === 'OUTSKIRTS_KILL' || trackedBounty.kind === 'OUTSKIRTS_BOSS_KILL')
       ? trackedBounty
@@ -162,9 +158,20 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     () => getWorldCombatModuleTopLaneCopy({ moduleKey: 'outskirts', content: contentRaw, cityId }),
     [cityId, contentRaw],
   );
-  const expectedOutputsLine = outskirtsRewardModel.keyExpectedOutputs.length > 0
-    ? outskirtsRewardModel.keyExpectedOutputs.slice(0, 2).join(' • ')
-    : 'Gold • Common Mats';
+  const hierarchySurface = useMemo(
+    () => buildOutskirtsInformationHierarchySurface({
+      model: outskirtsRewardModel,
+      resolveItemName: (itemId) => itemsById[itemId]?.name ?? null,
+      killsSinceBoss,
+      killsToBoss,
+      postureFit,
+      postureProfile: uiSettings.profile,
+      hasTrackedBounty: Boolean(trackedOutskirtsBounty),
+      hasFarmTool: postureContext.loadoutSignals.hasFarmTool,
+      cultivationPath: postureContext.path,
+    }),
+    [itemsById, killsSinceBoss, killsToBoss, outskirtsRewardModel, postureContext.loadoutSignals.hasFarmTool, postureContext.path, postureFit, trackedOutskirtsBounty, uiSettings.profile],
+  );
 
   const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
     const container = combatMainRef.current;
@@ -369,10 +376,9 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
           <>
             <div className="ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail">
               <OutskirtsSummaryCard
-                model={outskirtsRewardModel}
-                expectedOutputs={expectedOutputsLine}
-                trackedBountyLine={trackedOutskirtsBounty ? <TrackedBountyProgressLine bounty={trackedOutskirtsBounty} /> : undefined}
-                postureHint={postureHint}
+                surface={hierarchySurface}
+                trackedBountyLine={trackedOutskirtsBounty ? <TrackedBountyProgressLine bounty={trackedOutskirtsBounty} compact /> : undefined}
+                secondaryPostureLine={hierarchySurface.secondaryPostureLine}
               />
             </div>
             <div className="ink-combat-shell__section combatPathModule__actionZone">
@@ -389,112 +395,117 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                 </button>
               </div>
             </div>
-            <div className="ink-combat-shell__section combatPathModule__supportCluster">
-              <div className="ink-combat-shell__section-title">Boss Cadence</div>
-              <div className="ink-combat-shell__meter">
-                <div className="ink-combat-shell__segments">
-                  {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
-                    const filled = idx < filledSegments;
-                    return (
-                      <div
-                        key={idx}
-                        className={`ink-combat-shell__segment${filled ? ' ink-combat-shell__segment--filled' : ''}`}
-                      />
-                    );
-                  })}
-                </div>
-                <div className="ink-combat-shell__meter-text">
-                  {killsSinceBoss} / {killsToBoss}
-                </div>
-              </div>
-            </div>
-            <div className="ink-combat-shell__section combatPathModule__supportCluster">
-              <div className="ink-combat-shell__section-title">Combat Options</div>
-              <div className="ink-combat-shell__controls">
-                <label className="ink-combat-shell__control">
-                  <span className="ink-combat-shell__control-label">AI Profile</span>
-                  <select
-                    value={uiSettings.profile}
-                    onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
-                  >
-                    {AI_PROFILE_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="ink-combat-shell__control">
-                  <span className="ink-combat-shell__control-label">Preferred target</span>
-                  <select
-                    value={uiSettings.preferredTarget}
-                    onChange={(e) =>
-                      setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })
-                    }
-                  >
-                    <option value="trash">Trash</option>
-                    <option value="elite">Elite</option>
-                    <option value="boss">Boss</option>
-                  </select>
-                </label>
-
-                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
-                  <input
-                    type="checkbox"
-                    checked={uiSettings.useConsumablesInCombat}
-                    onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
-                  />
-                  <span className="ink-combat-shell__control-label">Auto use items</span>
-                </label>
-
-                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
-                  <input
-                    type="checkbox"
-                    checked={uiSettings.autoRetryOnDeath}
-                    onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
-                  />
-                  <span className="ink-combat-shell__control-label">Auto retry</span>
-                </label>
-              </div>
-            </div>
-            <div className="ink-combat-shell__section combatPathModule__routeHints">
-              <div className="ink-combat-shell__section-title">Run Options</div>
-              <div className="ink-combat-shell__controls">
-                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
-                  <input
-                    type="checkbox"
-                    checked={autoContinue}
-                    onChange={(e) => setAutoContinue(e.target.checked)}
-                  />
-                  <span className="ink-combat-shell__control-label">Auto-continue</span>
-                </label>
-                <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
-                  <input
-                    type="checkbox"
-                    checked={stopAtBoss}
-                    onChange={(e) => setStopAtBoss(e.target.checked)}
-                  />
-                  <span className="ink-combat-shell__control-label">Stop at boss</span>
-                </label>
-              </div>
-            </div>
-            <div className="ink-combat-shell__section ink-combat-shell__section--fill">
-              <div className="ink-combat-shell__section-title">Combat Log</div>
-              <div className="ink-combat-shell__log">
-                {visibleLogEntries.length === 0 ? (
-                  <div className="ink-combat-shell__log-empty">Combat log is empty</div>
-                ) : (
-                  visibleLogEntries.map((entry, index) => (
-                    <div
-                      key={`${entry.timestamp}-${index}`}
-                      className="ink-combat-shell__log-entry"
-                      style={{ color: darkenHexColor(entry.color, 0.7) }}
-                    >
-                      {entry.text}
+            <div className="ink-combat-shell__section outskirtsPanel__secondary">
+              <div className="outskirtsPanel__secondaryTitle">Advanced Details</div>
+              <div className="outskirtsPanel__secondaryGrid">
+                <div className="combatPathModule__supportCluster outskirtsPanel__secondaryCard">
+                  <div className="ink-combat-shell__section-title">Boss Cadence</div>
+                  <div className="ink-combat-shell__meter">
+                    <div className="ink-combat-shell__segments">
+                      {Array.from({ length: SEGMENT_COUNT }).map((_, idx) => {
+                        const filled = idx < filledSegments;
+                        return (
+                          <div
+                            key={idx}
+                            className={`ink-combat-shell__segment${filled ? ' ink-combat-shell__segment--filled' : ''}`}
+                          />
+                        );
+                      })}
                     </div>
-                  ))
-                )}
+                    <div className="ink-combat-shell__meter-text">
+                      {killsSinceBoss} / {killsToBoss}
+                    </div>
+                  </div>
+                </div>
+                <div className="combatPathModule__supportCluster outskirtsPanel__secondaryCard">
+                  <div className="ink-combat-shell__section-title">Combat Options</div>
+                  <div className="ink-combat-shell__controls">
+                    <label className="ink-combat-shell__control">
+                      <span className="ink-combat-shell__control-label">AI Profile</span>
+                      <select
+                        value={uiSettings.profile}
+                        onChange={(e) => setSettings({ combatAIProfile: e.target.value as typeof uiSettings.profile })}
+                      >
+                        {AI_PROFILE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label className="ink-combat-shell__control">
+                      <span className="ink-combat-shell__control-label">Preferred target</span>
+                      <select
+                        value={uiSettings.preferredTarget}
+                        onChange={(e) =>
+                          setSettings({ preferredTarget: e.target.value as typeof uiSettings.preferredTarget })
+                        }
+                      >
+                        <option value="trash">Trash</option>
+                        <option value="elite">Elite</option>
+                        <option value="boss">Boss</option>
+                      </select>
+                    </label>
+
+                    <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                      <input
+                        type="checkbox"
+                        checked={uiSettings.useConsumablesInCombat}
+                        onChange={(e) => setSettings({ useConsumablesInCombat: e.target.checked })}
+                      />
+                      <span className="ink-combat-shell__control-label">Auto use items</span>
+                    </label>
+
+                    <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                      <input
+                        type="checkbox"
+                        checked={uiSettings.autoRetryOnDeath}
+                        onChange={(e) => setSettings({ autoRetryOnDeath: e.target.checked })}
+                      />
+                      <span className="ink-combat-shell__control-label">Auto retry</span>
+                    </label>
+                  </div>
+                </div>
+                <div className="combatPathModule__routeHints outskirtsPanel__secondaryCard">
+                  <div className="ink-combat-shell__section-title">Run Options</div>
+                  <div className="ink-combat-shell__controls">
+                    <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                      <input
+                        type="checkbox"
+                        checked={autoContinue}
+                        onChange={(e) => setAutoContinue(e.target.checked)}
+                      />
+                      <span className="ink-combat-shell__control-label">Auto-continue</span>
+                    </label>
+                    <label className="ink-combat-shell__control ink-combat-shell__control--checkbox">
+                      <input
+                        type="checkbox"
+                        checked={stopAtBoss}
+                        onChange={(e) => setStopAtBoss(e.target.checked)}
+                      />
+                      <span className="ink-combat-shell__control-label">Stop at boss</span>
+                    </label>
+                  </div>
+                </div>
+                <div className="outskirtsPanel__secondaryCard outskirtsPanel__secondaryCard--fill">
+                  <div className="ink-combat-shell__section-title">Combat Log</div>
+                  <div className="ink-combat-shell__log">
+                    {visibleLogEntries.length === 0 ? (
+                      <div className="ink-combat-shell__log-empty">Combat log is empty</div>
+                    ) : (
+                      visibleLogEntries.map((entry, index) => (
+                        <div
+                          key={`${entry.timestamp}-${index}`}
+                          className="ink-combat-shell__log-entry"
+                          style={{ color: darkenHexColor(entry.color, 0.7) }}
+                        >
+                          {entry.text}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </>
