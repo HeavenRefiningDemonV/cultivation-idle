@@ -807,6 +807,16 @@
     padding: 4px 6px;
 }
 
+.outskirtsSummaryCard__context--bounty {
+    min-height: 46px;
+    align-items: flex-start;
+}
+
+.outskirtsSummaryCard__context--route {
+    min-height: 52px;
+    align-items: flex-start;
+}
+
 .outskirtsSummaryCard__routeHints {
     width: 100%;
     display: flex;
