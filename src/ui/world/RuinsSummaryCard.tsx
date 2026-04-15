@@ -17,11 +17,13 @@ function ExitHintSlot(props: {
     <div className={className}>
       <div className="ruinsSummaryCard__exitHintTitle">{hint.label}</div>
       <div className="ruinsSummaryCard__exitHintReason">{hint.reason}</div>
-      {hint.routeable ? (
-        <button type="button" className="ruinsSummaryCard__exitHintAction" onClick={() => onSelect?.(hint.destination)}>
-          {hint.ctaLabel}
-        </button>
-      ) : null}
+      <div className="ruinsSummaryCard__exitHintActionSlot">
+        {hint.routeable ? (
+          <button type="button" className="ruinsSummaryCard__exitHintAction" onClick={() => onSelect?.(hint.destination)}>
+            {hint.ctaLabel}
+          </button>
+        ) : <span aria-hidden="true"> </span>}
+      </div>
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTop
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 import { buildRuinsSummarySurface } from '../../../../ui/world/buildRuinsSummarySurface.js';
 import { buildRuinsSupportContextSurface } from '../../../../ui/world/buildRuinsSupportContextSurface.js';
+import { buildRuinsAcceptanceAudit } from '../../../../ui/world/buildRuinsAcceptanceAudit.js';
 import { openWorldModule } from '../../../../systems/world/openWorldModule.js';
 import { buildGateTrialReadinessSurface, buildSection5StatusSurface } from '../../../../systems/readiness/section5Adapters.js';
 import { ScreenFxStage } from '../../../../ui/fx/ScreenFxStage.js';
@@ -143,6 +144,28 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
     gateReadiness,
   ]);
 
+  const acceptanceAudit = useMemo(() => buildRuinsAcceptanceAudit({
+    ruinName: ruinsSummarySurface.ruinName,
+    roomCountLine: ruinsSummarySurface.roomCountLine,
+    roleTag: ruinsSummarySurface.roleTag,
+    bestUsedWhen: ruinsSummarySurface.bestUsedWhen,
+    anchorLine: ruinsSummarySurface.anchorPreviewLine,
+    leadMaterialsLine: ruinsSummarySurface.leadMaterialsLine,
+    rarePityLine: ruinsSummarySurface.rarePityPreviewLine,
+    trackedBountyVisible: ruinsSummarySurface.trackedBountyVisible,
+    primaryExitHint: supportContext.primaryExitHint,
+  }), [
+    ruinsSummarySurface.ruinName,
+    ruinsSummarySurface.roomCountLine,
+    ruinsSummarySurface.roleTag,
+    ruinsSummarySurface.bestUsedWhen,
+    ruinsSummarySurface.anchorPreviewLine,
+    ruinsSummarySurface.leadMaterialsLine,
+    ruinsSummarySurface.rarePityPreviewLine,
+    ruinsSummarySurface.trackedBountyVisible,
+    supportContext.primaryExitHint,
+  ]);
+
   if (!ruinDef) {
     return (
       <div className={'worldScreenPlaceholder'}>
@@ -178,24 +201,27 @@ export function RuinsBuildingPanel({ cityId }: RuinsBuildingPanelProps) {
           />
         </FxStagePortal>
       ) : null}
-      <div className="worldScreenPlaceholder ruinsPanel combatPathModule combatPathModule--ruins">
+      <div
+        className="worldScreenPlaceholder ruinsPanel combatPathModule combatPathModule--ruins"
+        data-ruins-acceptance={acceptanceAudit.passed ? 'pass' : 'review'}
+      >
         <CombatModuleTopLane
-        moduleName={ruinsTopLaneCopy.moduleName}
-        roleTag={ruinsTopLaneCopy.roleTag}
-        bestUsedWhen={ruinsTopLaneCopy.bestUsedWhen}
-        runCompassSurface={runCompass.compact}
-        variant="ruins"
-        onClose={closeWorldBuildingModal}
-        chipRow={(
-          <>
-            <span className={`combatPathModule__chip ${activeRun ? 'combatPathModule__chip--active' : ''}`}>
-              {activeRun ? 'Run Active' : 'Run Idle'}
-            </span>
-            <span className="combatPathModule__chip combatPathModule__chip--warning">
-              Pity {pityFailures}
-            </span>
-          </>
-        )}
+          moduleName={ruinsTopLaneCopy.moduleName}
+          roleTag={ruinsTopLaneCopy.roleTag}
+          bestUsedWhen={ruinsTopLaneCopy.bestUsedWhen}
+          runCompassSurface={runCompass.compact}
+          variant="ruins"
+          onClose={closeWorldBuildingModal}
+          chipRow={(
+            <>
+              <span className={`combatPathModule__chip ${activeRun ? 'combatPathModule__chip--active' : ''}`}>
+                {activeRun ? 'Run Active' : 'Run Idle'}
+              </span>
+              <span className="combatPathModule__chip combatPathModule__chip--warning">
+                Pity {pityFailures}
+              </span>
+            </>
+          )}
         />
         <div className="ruinsPanel__composition">
           <div className="ruinsPanel__centerBand">
