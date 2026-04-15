@@ -27,7 +27,7 @@ test('ruins support-art pack files are present and transparent svg assets', () =
   const readme = read('src/assets/ui/chrome/ruins_support/README.md');
   const sheet = read('src/assets/ui/chrome/ruins_support/pack/ruins_support_pack_sheet.svg');
 
-  assert.match(readme, /Included assets/);
+  assert.match(readme, /Structural support cutouts/);
   assert.match(sheet, /<svg/);
   assert.match(sheet, /fill=\"none\"/);
 });

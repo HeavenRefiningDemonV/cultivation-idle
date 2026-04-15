@@ -36,6 +36,7 @@ export function RuinsSummaryCard(props: {
   leadMaterialsLine: string;
   anchorLine: string;
   anchorRewardPlateArtUrl?: string | null;
+  anchorGlowOverlayUrl?: string | null;
   rarePityLine: string;
   goldSecondaryLine?: string;
   autoRepeatLine: string;
@@ -54,6 +55,7 @@ export function RuinsSummaryCard(props: {
     leadMaterialsLine,
     anchorLine,
     anchorRewardPlateArtUrl,
+    anchorGlowOverlayUrl,
     rarePityLine,
     goldSecondaryLine,
     autoRepeatLine,
@@ -82,6 +84,13 @@ export function RuinsSummaryCard(props: {
           style={anchorRewardPlateArtUrl ? { backgroundImage: `url(${anchorRewardPlateArtUrl})` } : undefined}
           aria-hidden="true"
         />
+        {anchorGlowOverlayUrl ? (
+          <div
+            className="ruinsSummaryCard__anchorGlowOverlay"
+            style={{ backgroundImage: `url(${anchorGlowOverlayUrl})` }}
+            aria-hidden="true"
+          />
+        ) : null}
         <div className="ruinsSummaryCard__deterministicTitle">Deterministic value preview</div>
         <div className="ruinsSummaryCard__deterministicLine">{anchorLine}</div>
         <div className="ruinsSummaryCard__deterministicLine ruinsSummaryCard__outputs">{leadMaterialsLine}</div>
