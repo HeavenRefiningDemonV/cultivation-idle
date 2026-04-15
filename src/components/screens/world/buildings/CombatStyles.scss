@@ -147,16 +147,35 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: linear-gradient(to bottom, rgba(238, 250, 239, 0.52), rgba(212, 226, 211, 0.26));
+
+    .outskirts-combat__sceneLabel {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 2;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-radius: 999px;
+        border: 1px solid rgba(76, 141, 111, 0.44);
+        color: #1f2937;
+        background: rgba(255, 255, 255, 0.66);
+        padding: 2px 8px;
+    }
 
     .outskirts-combat__healthbars {
         width: 100%;
-        height: 260px;
+        height: 220px;
         display: flex;
+        padding-top: 24px;
     }
 
     .images-div {
         width: 100%;
-        height: 460px;
+        height: 420px;
         display: flex;
 
             .combat-motion {
@@ -491,6 +510,45 @@
     gap: 8px;
 }
 
+.ink-combat-shell--outskirts .ink-combat-shell__sidebar {
+    width: clamp(248px, 22vw, 320px);
+    padding: 12px 10px;
+}
+
+.ink-combat-shell--outskirts .ink-combat-shell__main {
+    width: auto;
+}
+
+.outskirtsPanel__composition {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto minmax(0, auto);
+    gap: 10px;
+}
+
+.outskirtsPanel__mainBand {
+    min-height: 0;
+    display: grid;
+}
+
+.outskirtsPanel__actionStrip {
+    margin-bottom: 0;
+    gap: 8px;
+}
+
+.outskirtsPanel__primaryActions {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.outskirtsPanel__actionContext {
+    min-height: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
 .outskirtsSummaryCard {
     border: 1px solid rgba(148, 163, 184, 0.28);
     border-radius: 8px;
@@ -548,11 +606,32 @@
 }
 
 .outskirtsSummaryCard__context {
-    min-height: 18px;
+    min-height: 24px;
     font-size: 11px;
     color: #334155;
     display: flex;
     align-items: center;
+}
+
+.outskirtsSummaryCard__context--milestone {
+    border-radius: 6px;
+    border: 1px solid rgba(76, 141, 111, 0.3);
+    background: rgba(76, 141, 111, 0.08);
+    padding: 4px 6px;
+}
+
+.outskirtsSummaryCard__routeHints {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.outskirtsSummaryCard__routeHint {
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    background: rgba(255, 255, 255, 0.52);
+    padding: 1px 8px;
 }
 
 .outskirtsSummaryCard__context--empty {
@@ -584,6 +663,7 @@
     border-radius: 10px;
     padding: 8px;
     background: rgba(236, 225, 205, 0.42);
+    min-height: 210px;
 }
 
 .outskirtsPanel__secondaryTitle {
@@ -596,6 +676,7 @@
 .outskirtsPanel__secondaryGrid {
     display: grid;
     gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .outskirtsPanel__secondaryCard {
@@ -607,6 +688,7 @@
 
 .outskirtsPanel__secondaryCard--fill {
     min-height: 130px;
+    grid-column: 1 / -1;
 }
 
 .trackedBountyProgressLine {
@@ -636,6 +718,12 @@
 
 .trackedBountyProgressLine--compact {
     font-size: 11px;
+}
+
+@media (max-width: 1320px) {
+    .outskirtsPanel__secondaryGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 .ruinsPanel {

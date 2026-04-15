@@ -172,6 +172,17 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
     }),
     [itemsById, killsSinceBoss, killsToBoss, outskirtsRewardModel, postureContext.loadoutSignals.hasFarmTool, postureContext.path, postureFit, trackedOutskirtsBounty, uiSettings.profile],
   );
+  const routeHintLines = useMemo(() => {
+    const actions = runCompass.full?.bestNextActions ?? [];
+    return actions
+      .filter((action) => !action.blocked && !action.destinationLabel.toLowerCase().includes('current focus'))
+      .map((action) => `Better next step: ${action.destinationLabel}`)
+      .filter((line, index, lines) => lines.indexOf(line) === index)
+      .slice(0, 2);
+  }, [runCompass.full?.bestNextActions]);
+  const cadenceChipLine = killsSinceBoss >= killsToBoss
+    ? 'Boss ready'
+    : `Boss in ${Math.max(0, killsToBoss - killsSinceBoss)} ${Math.max(0, killsToBoss - killsSinceBoss) === 1 ? 'kill' : 'kills'}`;
 
   const triggerMotion = (target: 'player' | 'enemy', kind: 'attack' | 'dodge') => {
     const container = combatMainRef.current;
@@ -351,38 +362,78 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
         title="Outskirts Combat"
         subtitle={isOutskirtsActive ? 'Live battle in progress.' : 'Ready to start a new run.'}
         onClose={closeWorldBuildingModal}
+        className="ink-combat-shell--outskirts"
+        sidebarPosition="right"
         suppressHeader
-        sidebarTop={(
-          <CombatModuleTopLane
-            moduleName={outskirtsTopLaneCopy.moduleName}
-            roleTag={outskirtsTopLaneCopy.roleTag}
-            bestUsedWhen={outskirtsTopLaneCopy.bestUsedWhen}
-            runCompassSurface={runCompass.compact}
-            variant="outskirts"
-            onClose={closeWorldBuildingModal}
-            chipRow={(
-              <>
-                <span className={`combatPathModule__chip ${isOutskirtsActive ? 'combatPathModule__chip--active' : ''}`}>
-                  {isOutskirtsActive ? 'In Combat' : 'Idle'}
-                </span>
-                <span className={`combatPathModule__chip ${trackedOutskirtsBounty ? 'combatPathModule__chip--recommended' : ''}`}>
-                  {trackedOutskirtsBounty ? 'Tracked Bounty' : 'No Tracked Bounty'}
-                </span>
-              </>
-            )}
-          />
-        )}
         leftSidebar={
-          <>
-            <div className="ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail">
-              <OutskirtsSummaryCard
-                surface={hierarchySurface}
-                trackedBountyLine={trackedOutskirtsBounty ? <TrackedBountyProgressLine bounty={trackedOutskirtsBounty} compact /> : undefined}
-                secondaryPostureLine={hierarchySurface.secondaryPostureLine}
-              />
+          <div className="ink-combat-shell__section outskirtsPanel__summary combatPathModule__contextRail">
+            <OutskirtsSummaryCard
+              surface={hierarchySurface}
+              trackedBountyLine={trackedOutskirtsBounty ? <TrackedBountyProgressLine bounty={trackedOutskirtsBounty} compact /> : undefined}
+              secondaryPostureLine={hierarchySurface.secondaryPostureLine}
+              routeHintLines={routeHintLines}
+            />
+          </div>
+        }
+        stage={
+          <div className="outskirtsPanel__composition">
+            <CombatModuleTopLane
+              moduleName={outskirtsTopLaneCopy.moduleName}
+              roleTag={outskirtsTopLaneCopy.roleTag}
+              bestUsedWhen={outskirtsTopLaneCopy.bestUsedWhen}
+              runCompassSurface={runCompass.compact}
+              variant="outskirts"
+              onClose={closeWorldBuildingModal}
+              chipRow={(
+                <>
+                  <span className={`combatPathModule__chip ${isOutskirtsActive ? 'combatPathModule__chip--active' : ''}`}>
+                    {isOutskirtsActive ? 'In Combat' : 'Idle'}
+                  </span>
+                  <span className={`combatPathModule__chip ${trackedOutskirtsBounty ? 'combatPathModule__chip--recommended' : ''}`}>
+                    {trackedOutskirtsBounty ? 'Tracked Bounty' : 'No Tracked Bounty'}
+                  </span>
+                </>
+              )}
+            />
+            <div className="outskirtsPanel__mainBand">
+              <div className="outskirts-combat__stage combatPathModule__scene" ref={combatMainRef}>
+                <div className="outskirts-combat__sceneLabel">Current Encounter</div>
+                <div className="outskirts-combat__healthbars">
+                  <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
+                  <InkHealthBar
+                    name={enemyName}
+                    current={enemyHP}
+                    max={enemyMaxHP}
+                    label={enemyHpLabel}
+                    fillPercent={enemyHpPct}
+                    inactive={!currentEnemy}
+                  />
+                </div>
+
+                <div className="images-div"> {/* do not touch anything in this div */}
+                  <div className="cultivator-image-wrapper">
+                    <img className="cultivator-image" src={cultivatorFight}></img>
+                  </div>
+                  <div className="enemy-image-wrapper">
+                    <img className="enemy-image" src={wildBoar}></img>
+                    <div className="enemy-stats"></div>
+                    <div className="enemy-hit-overlay" aria-hidden="true">
+                      {floatingHits.map((hit) => (
+                        <span
+                          key={hit.id}
+                          className={`enemy-hit-text enemy-hit-text--${hit.kind}`}
+                          style={{ left: `${hit.x}%`, top: `${hit.y}%` }}
+                        >
+                          {hit.text}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="ink-combat-shell__section combatPathModule__actionZone">
-              <div className="ink-combat-shell__actions">
+            <div className="ink-combat-shell__section combatPathModule__actionZone outskirtsPanel__actionStrip">
+              <div className="ink-combat-shell__actions outskirtsPanel__primaryActions">
                 <button className="button-standard" onClick={handleStartOutskirts} disabled={isOutskirtsActive}>
                   Start
                 </button>
@@ -394,9 +445,14 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                   Stop
                 </button>
               </div>
+              <div className="outskirtsPanel__actionContext">
+                <span className="combatPathModule__chip combatPathModule__chip--warning">{cadenceChipLine}</span>
+                <span className="combatPathModule__chip">{autoContinue ? 'Auto-continue On' : 'Auto-continue Off'}</span>
+                <span className="combatPathModule__chip">{stopAtBoss ? 'Stop at Boss On' : 'Stop at Boss Off'}</span>
+              </div>
             </div>
             <div className="ink-combat-shell__section outskirtsPanel__secondary">
-              <div className="outskirtsPanel__secondaryTitle">Advanced Details</div>
+              <div className="outskirtsPanel__secondaryTitle">Utility Tray</div>
               <div className="outskirtsPanel__secondaryGrid">
                 <div className="combatPathModule__supportCluster outskirtsPanel__secondaryCard">
                   <div className="ink-combat-shell__section-title">Boss Cadence</div>
@@ -505,42 +561,6 @@ export function OutskirtsBuildingPanel({ cityId }: OutskirtsBuildingPanelProps) 
                       ))
                     )}
                   </div>
-                </div>
-              </div>
-            </div>
-          </>
-        }
-        stage={
-          <div className="outskirts-combat__stage combatPathModule__scene" ref={combatMainRef}>
-            <div className="outskirts-combat__healthbars">
-              <InkHealthBar name="You" current={playerHP} max={playerMaxHP} label={playerHpLabel} fillPercent={playerBarPercent} />
-              <InkHealthBar
-                name={enemyName}
-                current={enemyHP}
-                max={enemyMaxHP}
-                label={enemyHpLabel}
-                fillPercent={enemyHpPct}
-                inactive={!currentEnemy}
-              />
-            </div>
-
-            <div className="images-div"> {/* do not touch anything in this div */}
-              <div className="cultivator-image-wrapper">
-                <img className="cultivator-image" src={cultivatorFight}></img>
-              </div>
-              <div className="enemy-image-wrapper">
-                <img className="enemy-image" src={wildBoar}></img>
-                <div className="enemy-stats"></div>
-                <div className="enemy-hit-overlay" aria-hidden="true">
-                  {floatingHits.map((hit) => (
-                    <span
-                      key={hit.id}
-                      className={`enemy-hit-text enemy-hit-text--${hit.kind}`}
-                      style={{ left: `${hit.x}%`, top: `${hit.y}%` }}
-                    >
-                      {hit.text}
-                    </span>
-                  ))}
                 </div>
               </div>
             </div>

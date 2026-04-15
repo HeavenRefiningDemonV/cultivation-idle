@@ -11,12 +11,23 @@ interface InkCombatShellProps {
   className?: string;
   suppressHeader?: boolean;
   sidebarTop?: ReactNode;
+  sidebarPosition?: 'left' | 'right';
 }
 
-export function InkCombatShell({ title, subtitle, leftSidebar, stage, onClose, className, suppressHeader = false, sidebarTop }: InkCombatShellProps) {
+export function InkCombatShell({
+  title,
+  subtitle,
+  leftSidebar,
+  stage,
+  onClose,
+  className,
+  suppressHeader = false,
+  sidebarTop,
+  sidebarPosition = 'left',
+}: InkCombatShellProps) {
   return (
     <div className={`ink-combat-shell${className ? ` ${className}` : ''}`}>
-      <div className="ink-combat-shell__body">
+      <div className={`ink-combat-shell__body ${sidebarPosition === 'right' ? 'ink-combat-shell__body--sidebar-right' : ''}`.trim()}>
         <aside className="ink-combat-shell__sidebar">
           {!suppressHeader ? (
             <div className="ink-combat-shell__header">

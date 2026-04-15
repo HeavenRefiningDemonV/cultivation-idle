@@ -11,6 +11,10 @@
   height: 100%;
 }
 
+.ink-combat-shell__body--sidebar-right {
+  flex-direction: row-reverse;
+}
+
 .ink-combat-shell__sidebar {
   display: flex;
   flex-direction: column;
@@ -182,6 +186,11 @@
   width: 980px;
   display: flex;
   flex-direction: column;
+}
+
+.ink-combat-shell__body--sidebar-right .ink-combat-shell__main {
+  width: auto;
+  flex: 1 1 auto;
 }
 
 .ink-combat-shell--gate-trial .ink-combat-shell__sidebar {
