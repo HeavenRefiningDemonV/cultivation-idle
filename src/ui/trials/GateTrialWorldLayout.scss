@@ -7,8 +7,7 @@
 .gateTrialWorldLayout__identity,
 .gateTrialWorldLayout__rail,
 .gateTrialWorldLayout__center,
-.gateTrialWorldLayout__action,
-.gateTrialWorldLayout__details {
+.gateTrialWorldLayout__action {
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 10px;
   background: rgba(236, 225, 205, 0.72);
@@ -31,9 +30,6 @@
   min-height: 84px;
 }
 
-.gateTrialWorldLayout__details {
-  min-height: 0;
-}
 
 @media (max-width: 1280px) {
   .gateTrialWorldLayout__triad {

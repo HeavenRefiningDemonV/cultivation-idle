@@ -51,38 +51,11 @@ interface GateTrialBuildingPanelProps {
   cityId: string;
 }
 
-function formatEligibility(eligibility: unknown): { summary: string; raw?: string } {
-  if (!eligibility) return { summary: 'No eligibility rule provided' };
-  if (typeof eligibility === 'string') return { summary: eligibility };
-  if (typeof eligibility === 'number' || typeof eligibility === 'boolean') return { summary: String(eligibility) };
-
-  try {
-    const raw = JSON.stringify(eligibility, null, 2);
-    return { summary: 'See requirements', raw };
-  } catch {
-    return { summary: 'See requirements', raw: String(eligibility) };
-  }
-}
-
-const labelForState = (state: 'locked' | 'available' | 'cleared' | 'bypassed'): string => {
-  switch (state) {
-    case 'locked':
-      return 'Locked';
-    case 'available':
-      return 'Available';
-    case 'cleared':
-      return 'Cleared';
-    case 'bypassed':
-      return 'Bypassed';
-  }
-};
-
 export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) {
   const city = useContentStore((state) => state.maps.citiesById[cityId]);
   const contentRaw = useContentStore((state) => state.raw);
   const trialsById = useContentStore((state) => state.maps.trialsById);
   const enemiesById = useContentStore((state) => state.maps.enemiesById);
-  const itemsById = useContentStore((state) => state.maps.itemsById);
 
   const trialProgressById = useTrialStore((state) => state.progressByTrialId);
   const markBypassed = useTrialStore((state) => state.markBypassed);
@@ -90,7 +63,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const activeActivity = useActivityStore((state) => state.active);
   const stopActivity = useActivityStore((state) => state.stopActivity);
 
-  const { combatContext, exitCombat, currentEnemy, playerHP, playerMaxHP, enemyHP, enemyMaxHP, combatLog } =
+  const { combatContext, exitCombat, currentEnemy, playerHP, playerMaxHP, enemyHP, enemyMaxHP } =
     useCombatStore(
       useShallow((state) => ({
         combatContext: state.combatContext,
@@ -100,7 +73,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
         playerMaxHP: state.playerMaxHP,
         enemyHP: state.enemyHP,
         enemyMaxHP: state.enemyMaxHP,
-        combatLog: state.combatLog,
       })),
     );
 
@@ -108,8 +80,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const stopCombatAndClose = useUIStore((state) => state.stopCombatAndClose);
   const closeWorldBuildingModal = useUIStore((state) => state.closeWorldBuildingModal);
   const addNotification = useUIStore((state) => state.addNotification);
-  const combatAIProfile = useUIStore((state) => state.settings.combatAIProfile);
-  const useConsumablesInCombat = useUIStore((state) => state.settings.useConsumablesInCombat);
   const setSettings = useUIStore((state) => state.setSettings);
   const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
   const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
@@ -141,8 +111,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
 
   const isTrialActive = activeActivity?.type === 'trial' && activeActivity.sourceId === trialRefId;
   const trialBossName = trialDef ? enemiesById[trialDef.bossId]?.name ?? trialDef.bossId : null;
-  const gateItemName = lifecycle.gateItemId ? itemsById[lifecycle.gateItemId]?.name ?? lifecycle.gateItemId : null;
-  const requiredItemName = trialDef?.requiredItemId ? itemsById[trialDef.requiredItemId]?.name ?? trialDef.requiredItemId : null;
 
   const isTrialCombat = combatContext.type === 'trial';
   const activeEnemy = isTrialCombat ? currentEnemy : null;
@@ -154,9 +122,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     ? `${formatNumber(enemyHP)} / ${formatNumber(enemyMaxHP)} (${enemyHpPct.toFixed(1)}%)`
     : 'Awaiting trial challenge…';
   const displayEnemyName = activeEnemy?.name ?? trialBossName ?? 'Trial Guardian';
-  const visibleLogEntries = combatLog.slice(-6);
   const eligibleFailures = trialProgress?.eligibleFailures ?? 0;
-  const eligibilitySummary = formatEligibility(trialDef?.eligibilityRule);
   const supportSurface = useMemo(
     () =>
       buildSupportEconomySurfaceModel({
@@ -495,58 +461,6 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
           />
         ) : (
           <div className="ink-combat-shell__stat-line">Attempt state unavailable.</div>
-        )}
-        details={(
-          <details className="gateTrialPanel__adminDetails">
-            <summary>Trial Details</summary>
-            <div className="gateTrialPanel__adminStack">
-              <div className="combatPathModule__routeHints">
-                <div className="ink-combat-shell__section-title">Combat Options</div>
-                <div className="ink-combat-shell__stat-line">AI Profile: {combatAIProfile}</div>
-                <button className="button-standard button-standard--ghost" type="button" onClick={() => setSettings({ combatAIProfile: 'survivor' })} disabled={combatAIProfile === 'survivor'}>
-                  Set AI: Survivor
-                </button>
-                <div className="ink-combat-shell__stat-line">Consumables in combat: {useConsumablesInCombat ? 'Enabled' : 'Disabled'}</div>
-                <button className="button-standard button-standard--ghost" type="button" onClick={() => setSettings({ useConsumablesInCombat: true })} disabled={useConsumablesInCombat}>
-                  Enable Consumables
-                </button>
-              </div>
-              <div className="combatPathModule__supportCluster">
-                <div className="ink-combat-shell__section-title">Gate Facts</div>
-                <div className="ink-combat-shell__stat-line">Trial: {trialDef.name ?? trialDef.id}</div>
-                <div className="ink-combat-shell__stat-line">Gate state: {labelForState(lifecycle.state)}</div>
-                <div className="ink-combat-shell__stat-line">Gate reward: {gateItemName ?? 'Unknown'}</div>
-                <div className="ink-combat-shell__stat-line">Eligibility rule: {eligibilitySummary.summary}</div>
-                {requiredItemName ? (
-                  <div className="ink-combat-shell__stat-line">Required item: {requiredItemName}</div>
-                ) : null}
-                <div className="ink-combat-shell__stat-line">
-                  {GATE_SUPPORT_LABELS.support}: {lifecycle.failSafe.status === 'resolved' ? 'Resolved' : lifecycle.failSafe.canPurchase ? 'Available' : `Locked (${eligibleFailures}/${lifecycle.failSafe.threshold} Eligible Failures)`}
-                </div>
-                {trialProgress?.resolution === 'bypassed' ? <div className="ink-combat-shell__stat-line">Resolved via bypass.</div> : null}
-                {eligibilitySummary.raw ? (
-                  <details className="gate-trial__eligibility-details">
-                    <summary>Show requirements</summary>
-                    <pre>{eligibilitySummary.raw}</pre>
-                  </details>
-                ) : null}
-              </div>
-              <div className="ink-combat-shell__section--fill">
-                <div className="ink-combat-shell__section-title">Combat Log</div>
-                <div className="ink-combat-shell__log gate-trial__log">
-                  {visibleLogEntries.length === 0 ? (
-                    <div className="ink-combat-shell__log-empty">Combat log is empty</div>
-                  ) : (
-                    visibleLogEntries.map((entry, index) => (
-                      <div key={`${entry.timestamp}-${index}`} className="ink-combat-shell__log-entry">
-                        {entry.text}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          </details>
         )}
         />
       </div>

@@ -8,9 +8,8 @@ export function GateTrialWorldLayout(props: {
   centerStage: ReactNode;
   rightRail: ReactNode;
   bottomLane: ReactNode;
-  details?: ReactNode;
 }) {
-  const { topLane, identity, leftRail, centerStage, rightRail, bottomLane, details } = props;
+  const { topLane, identity, leftRail, centerStage, rightRail, bottomLane } = props;
 
   return (
     <div className="gateTrialWorldLayout">
@@ -28,7 +27,6 @@ export function GateTrialWorldLayout(props: {
         </aside>
       </div>
       <section className="gateTrialWorldLayout__action" aria-label="Gate trial attempt lane">{bottomLane}</section>
-      {details ? <section className="gateTrialWorldLayout__details" aria-label="Gate trial details">{details}</section> : null}
     </div>
   );
 }
