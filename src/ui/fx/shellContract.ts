@@ -30,6 +30,7 @@ export const FX_ALLOWED_SCENE_KINDS_BY_STAGE: Readonly<Record<string, readonly F
   [FX_STAGE_IDS.world]: ['world', 'generic'],
   [FX_STAGE_IDS.forge]: ['forge', 'generic'],
   [FX_STAGE_IDS.ruins]: ['ruins', 'generic'],
+  [FX_STAGE_IDS.gateTrial]: ['gateTrial', 'generic'],
 });
 
 export function resolveFxLayerOrder(

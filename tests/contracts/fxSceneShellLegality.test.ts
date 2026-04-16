@@ -33,6 +33,7 @@ test('proof surfaces continue using ScreenFxStage + FxStagePortal contract path'
   const cultivation = await readSource('src/components/screens/CultivateScreen.tsx');
   const status = await readSource('src/components/screens/StatusScreen.tsx');
   const ruinsPanel = await readSource('src/components/screens/world/buildings/RuinsBuildingPanel.tsx');
+  const gateTrialPanel = await readSource('src/components/screens/world/buildings/GateTrialBuildingPanel.tsx');
 
   assert.match(cultivation, /ScreenFxStage/);
   assert.match(cultivation, /FxStagePortal/);
@@ -41,4 +42,7 @@ test('proof surfaces continue using ScreenFxStage + FxStagePortal contract path'
   assert.match(ruinsPanel, /ScreenFxStage/);
   assert.match(ruinsPanel, /FxStagePortal/);
   assert.match(ruinsPanel, /RuinsFxScene/);
+  assert.match(gateTrialPanel, /ScreenFxStage/);
+  assert.match(gateTrialPanel, /FxStagePortal/);
+  assert.match(gateTrialPanel, /GateTrialFxScene/);
 });

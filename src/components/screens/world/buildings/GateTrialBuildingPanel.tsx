@@ -39,6 +39,12 @@ import { CombatModuleTopLane } from '../../../../ui/world/combat/CombatModuleTop
 import { getWorldCombatModuleTopLaneCopy } from '../../../../ui/world/combat/combatModuleTopLaneModel.js';
 import { buildGateTrialScreenContract } from '../../../../systems/readiness/gateTrialScreenContract.js';
 import { GateTrialWorldLayout } from '../../../../ui/trials/GateTrialWorldLayout.js';
+import { ScreenFxStage } from '../../../../ui/fx/ScreenFxStage.js';
+import { FX_STAGE_IDS } from '../../../../ui/fx/constants.js';
+import { FxStagePortal } from '../../../../ui/fx/FxStagePortal.js';
+import { useFxQuality, useFxStageSnapshot } from '../../../../ui/fx/FxQualityProvider.js';
+import { buildFxSceneContract } from '../../../../ui/fx/runtime.js';
+import { GateTrialFxScene } from '../../../../ui/fx/scenes/GateTrialFxScene.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -107,6 +113,8 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   const onboardingLifeKeys = useUIStore((state) => state.dismissedOnboardingLifeKeys);
   const dismissOnboardingLifeKey = useUIStore((state) => state.dismissOnboardingLifeKey);
   const runCompass = useRunCompassSurface();
+  const fxStageSnapshot = useFxStageSnapshot(FX_STAGE_IDS.gateTrial);
+  const { requestedQuality, effectiveQuality, prefersReducedMotion } = useFxQuality();
 
   const getItemCount = useInventoryStore((state) => state.getItemCount);
   const merit = useInventoryStore((state) => state.merit);
@@ -177,6 +185,25 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     () => getWorldCombatModuleTopLaneCopy({ moduleKey: 'gateTrial', content: contentRaw, cityId }),
     [cityId, contentRaw],
   );
+  const gateTrialFxScene = useMemo(() => {
+    if (!fxStageSnapshot || !gateReadinessSurface || !attemptPresentation) return null;
+    return buildFxSceneContract({
+      stageId: FX_STAGE_IDS.gateTrial,
+      sceneKind: 'gateTrial',
+      snapshot: fxStageSnapshot,
+      requestedQuality,
+      effectiveQuality,
+      prefersReducedMotion,
+      documentHidden: typeof document !== 'undefined' ? document.hidden : false,
+    });
+  }, [
+    attemptPresentation,
+    effectiveQuality,
+    fxStageSnapshot,
+    gateReadinessSurface,
+    prefersReducedMotion,
+    requestedQuality,
+  ]);
 
   const handleChallengeTrial = () => {
     if (!city || !trialDef) return;
@@ -251,8 +278,27 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
   }
 
   return (
-    <div className="worldScreenPlaceholder worldScreenPlaceholder--gate-trial combatPathModule combatPathModule--gateTrial">
-      <GateTrialWorldLayout
+    <ScreenFxStage
+      stageId={FX_STAGE_IDS.gateTrial}
+      className="gateTrialPanelFxStage"
+      stageClassName="gateTrialPanelFxStage__layer"
+      contentClassName="gateTrialPanelFxStage__content"
+      stageZIndex={0}
+      contentZIndex={1}
+    >
+      {gateTrialFxScene && gateReadinessSurface && attemptPresentation ? (
+        <FxStagePortal stageId={FX_STAGE_IDS.gateTrial}>
+          <GateTrialFxScene
+            {...gateTrialFxScene}
+            attemptState={attemptPresentation.state}
+            readinessLabel={gateReadinessSurface.readinessLabel}
+            failSafeAvailable={lifecycle.failSafe.canPurchase}
+            combatActive={isTrialCombat}
+          />
+        </FxStagePortal>
+      ) : null}
+      <div className="worldScreenPlaceholder worldScreenPlaceholder--gate-trial combatPathModule combatPathModule--gateTrial">
+        <GateTrialWorldLayout
         topLane={(
           <CombatModuleTopLane
             moduleName={gateTopLaneCopy.moduleName}
@@ -443,7 +489,8 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             </div>
           </details>
         )}
-      />
-    </div>
+        />
+      </div>
+    </ScreenFxStage>
   );
 }

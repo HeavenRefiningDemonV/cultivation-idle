@@ -24,6 +24,7 @@ test('canonical stage-id guard accepts only FX_STAGE_IDS values', () => {
   assert.equal(isFxStageId('world'), true);
   assert.equal(isFxStageId('forge'), true);
   assert.equal(isFxStageId('ruins'), true);
+  assert.equal(isFxStageId('gateTrial'), true);
   assert.equal(isFxStageId('selection'), true);
   assert.equal(isFxStageId('unknown-stage'), false);
 });

@@ -25,6 +25,7 @@ export const FX_STAGE_IDS = {
   world: 'world',
   forge: 'forge',
   ruins: 'ruins',
+  gateTrial: 'gateTrial',
 } as const;
 
 export type FxStageId = (typeof FX_STAGE_IDS)[keyof typeof FX_STAGE_IDS];
@@ -91,5 +92,6 @@ export const FX_PROOF_SURFACE_POLICIES = {
   world: 'static-safe-null-scene',
   forge: 'static-safe-null-scene',
   ruins: 'scene-backed',
+  gateTrial: 'scene-backed',
   selection: 'legal-null-scene-stub',
 } as const;

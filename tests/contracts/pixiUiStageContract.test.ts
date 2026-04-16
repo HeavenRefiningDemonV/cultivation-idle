@@ -88,6 +88,8 @@ test('scene-kind legality is stage-bound for shell-level contract', () => {
   assert.equal(isSceneKindAllowedForStage(FX_STAGE_IDS.status, 'world'), false);
   assert.equal(isSceneKindAllowedForStage(FX_STAGE_IDS.ruins, 'ruins'), true);
   assert.equal(isSceneKindAllowedForStage(FX_STAGE_IDS.ruins, 'status'), false);
+  assert.equal(isSceneKindAllowedForStage(FX_STAGE_IDS.gateTrial, 'gateTrial'), true);
+  assert.equal(isSceneKindAllowedForStage(FX_STAGE_IDS.gateTrial, 'world'), false);
   assert.equal(isSceneKindAllowedForStage('ad-hoc-stage', 'generic'), true);
   assert.equal(isSceneKindAllowedForStage('ad-hoc-stage', 'status'), false);
 });

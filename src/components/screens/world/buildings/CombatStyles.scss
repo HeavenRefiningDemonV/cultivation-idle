@@ -684,6 +684,14 @@
     margin-top: 8px;
 }
 
+.gateTrialPanelFxStage {
+    border-radius: 10px;
+}
+
+.gateTrialPanelFxStage__layer {
+    border-radius: 10px;
+}
+
 .gateTrialStage {
     width: 100%;
     height: 100%;
@@ -716,6 +724,7 @@
     align-content: center;
     justify-items: center;
     gap: 8px;
+    z-index: 1;
 }
 
 .gateTrialStage__idleBackdrop {
@@ -747,6 +756,12 @@
     border-radius: 999px;
     padding: 3px 10px;
     background: rgba(15, 23, 42, 0.55);
+}
+
+.gateTrialStage__healthbars,
+.gateTrialStage__activeScene {
+    position: relative;
+    z-index: 1;
 }
 
 .outskirtsPanel__summary,
