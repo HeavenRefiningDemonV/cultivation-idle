@@ -558,9 +558,22 @@
     gap: 2px;
 }
 
+.gateTrialReadinessCard__detail {
+    min-height: 32px;
+}
+
 .gateTrialReadinessCard__score {
+    min-height: 18px;
     font-size: 12px;
     color: #0f172a;
+}
+
+.gateTrialReadinessCard__counts {
+    min-height: 34px;
+}
+
+.gateTrialReadinessCard__facts {
+    min-height: 56px;
 }
 
 .gateTrialChecklist {
@@ -595,6 +608,7 @@
 }
 
 .gateTrialChecklist__rows {
+    min-height: 104px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -746,6 +760,7 @@
 }
 
 .gateTrialAttemptCluster__detail {
+    min-height: 18px;
     font-size: 12px;
     color: #cbd5e1;
     margin: 6px 0;
@@ -772,6 +787,18 @@
     gap: 8px;
     align-items: start;
     margin-top: 6px;
+}
+
+.gateTrialSafetyNetCard__stack {
+    min-height: 150px;
+    display: grid;
+    gap: 2px;
+    align-content: start;
+}
+
+.gateTrialSafetyNetCard__blockedReason,
+.gateTrialSafetyNetCard__resolved {
+    min-height: 18px;
 }
 
 .gateTrialPanel__adminDetails > summary {

@@ -37,15 +37,17 @@ export function GateTrialSafetyNetCard(props: {
       aria-label="Gate Trial safety net status"
     >
       <h4 className="gateTrialSafetyNetCard__title">Safety Net</h4>
-      <div>Eligible Failures: {lifecycle.failSafe.eligibleFailures} / {lifecycle.failSafe.threshold}</div>
-      <div>Threshold: {lifecycle.failSafe.threshold} eligible failures.</div>
-      <div>Cost: {costLine || 'No cost configured'}</div>
-      <div>Current reserve: Gold {currentGold} · Merit {currentMerit} · Spirit Stones {currentSpiritStones}</div>
-      <div>{reserveHeadline}</div>
-      <div>{reserveGapLine}</div>
-      <div>{eligibleDefeatRewardLine}</div>
-      {!lifecycle.failSafe.canPurchase && lifecycle.failSafe.blockedReason ? <div>{lifecycle.failSafe.blockedReason}</div> : null}
-      {lifecycle.failSafe.status === 'resolved' ? <div>Safety Net resolved for this gate.</div> : null}
+      <div className="gateTrialSafetyNetCard__stack">
+        <div>Eligible Failures: {lifecycle.failSafe.eligibleFailures} / {lifecycle.failSafe.threshold}</div>
+        <div>Threshold: {lifecycle.failSafe.threshold} eligible failures.</div>
+        <div>Cost: {costLine || 'No cost configured'}</div>
+        <div>Current reserve: Gold {currentGold} · Merit {currentMerit} · Spirit Stones {currentSpiritStones}</div>
+        <div>{reserveHeadline}</div>
+        <div>{reserveGapLine}</div>
+        <div>{eligibleDefeatRewardLine}</div>
+      </div>
+      {!lifecycle.failSafe.canPurchase && lifecycle.failSafe.blockedReason ? <div className="gateTrialSafetyNetCard__blockedReason">{lifecycle.failSafe.blockedReason}</div> : null}
+      {lifecycle.failSafe.status === 'resolved' ? <div className="gateTrialSafetyNetCard__resolved">Safety Net resolved for this gate.</div> : null}
     </section>
   );
 }
