@@ -3,6 +3,10 @@
   <rect x="28" y="28" width="584" height="244" rx="18" stroke="url(#rim)" stroke-width="2"/>
   <rect x="48" y="48" width="544" height="204" rx="14" stroke="rgba(125,104,70,0.3)" stroke-width="1.5" stroke-dasharray="6 8"/>
   <path d="M48 150H592" stroke="rgba(120,99,64,0.18)" stroke-width="1"/>
+  <path d="M80 62H560" stroke="rgba(156,132,90,0.22)" stroke-width="2"/>
+  <path d="M80 238H560" stroke="rgba(110,91,60,0.2)" stroke-width="2"/>
+  <path d="M84 84L98 92L112 84" stroke="rgba(148,123,82,0.28)" stroke-width="2"/>
+  <path d="M556 84L542 92L528 84" stroke="rgba(148,123,82,0.28)" stroke-width="2"/>
   <defs>
     <linearGradient id="rim" x1="28" y1="28" x2="612" y2="272" gradientUnits="userSpaceOnUse">
       <stop stop-color="rgba(173,147,99,0.5)"/>

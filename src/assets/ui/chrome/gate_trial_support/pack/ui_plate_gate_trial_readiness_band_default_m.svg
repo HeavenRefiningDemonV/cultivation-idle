@@ -2,12 +2,16 @@
   <rect x="22" y="30" width="756" height="120" rx="22" fill="url(#base)"/>
   <rect x="30" y="38" width="740" height="104" rx="18" stroke="url(#rim)" stroke-width="2"/>
   <path d="M80 90H720" stroke="rgba(135,114,78,0.2)" stroke-width="1"/>
+  <path d="M118 58H682" stroke="rgba(157,133,92,0.24)" stroke-width="2"/>
+  <path d="M118 122H682" stroke="rgba(108,90,61,0.2)" stroke-width="2"/>
   <circle cx="74" cy="90" r="14" fill="rgba(116,96,62,0.35)"/>
   <circle cx="726" cy="90" r="14" fill="rgba(116,96,62,0.35)"/>
+  <path d="M74 76V104M60 90H88" stroke="rgba(186,159,108,0.52)" stroke-width="2"/>
+  <path d="M726 76V104M712 90H740" stroke="rgba(186,159,108,0.52)" stroke-width="2"/>
   <defs>
     <linearGradient id="base" x1="400" y1="30" x2="400" y2="150" gradientUnits="userSpaceOnUse">
-      <stop stop-color="rgba(67,56,40,0.32)"/>
-      <stop offset="1" stop-color="rgba(41,34,25,0.42)"/>
+      <stop stop-color="rgba(67,56,40,0.34)"/>
+      <stop offset="1" stop-color="rgba(41,34,25,0.44)"/>
     </linearGradient>
     <linearGradient id="rim" x1="30" y1="38" x2="770" y2="142" gradientUnits="userSpaceOnUse">
       <stop stop-color="rgba(183,156,105,0.54)"/>

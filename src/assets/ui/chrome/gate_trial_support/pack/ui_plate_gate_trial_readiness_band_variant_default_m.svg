@@ -3,10 +3,14 @@
   <rect x="34" y="42" width="732" height="96" rx="16" stroke="url(#rim)" stroke-width="2"/>
   <path d="M110 58H690" stroke="rgba(170,145,96,0.28)" stroke-width="2"/>
   <path d="M110 122H690" stroke="rgba(112,92,58,0.24)" stroke-width="2"/>
+  <path d="M176 44L196 58L216 44" stroke="rgba(165,139,92,0.34)" stroke-width="2"/>
+  <path d="M624 44L604 58L584 44" stroke="rgba(165,139,92,0.34)" stroke-width="2"/>
+  <path d="M160 136L180 122L200 136" stroke="rgba(128,106,71,0.28)" stroke-width="2"/>
+  <path d="M640 136L620 122L600 136" stroke="rgba(128,106,71,0.28)" stroke-width="2"/>
   <defs>
     <linearGradient id="base" x1="400" y1="34" x2="400" y2="146" gradientUnits="userSpaceOnUse">
-      <stop stop-color="rgba(70,58,41,0.3)"/>
-      <stop offset="1" stop-color="rgba(39,32,24,0.4)"/>
+      <stop stop-color="rgba(70,58,41,0.32)"/>
+      <stop offset="1" stop-color="rgba(39,32,24,0.42)"/>
     </linearGradient>
     <linearGradient id="rim" x1="34" y1="42" x2="766" y2="138" gradientUnits="userSpaceOnUse">
       <stop stop-color="rgba(186,158,106,0.5)"/>

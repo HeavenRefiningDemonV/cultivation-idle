@@ -1,7 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none">
-  <circle cx="90" cy="90" r="64" fill="rgba(99,81,53,0.2)" stroke="rgba(162,136,91,0.52)" stroke-width="2"/>
-  <circle cx="90" cy="90" r="38" stroke="rgba(141,118,80,0.4)" stroke-width="2"/>
-  <path d="M58 90H122" stroke="rgba(160,133,88,0.46)" stroke-width="3"/>
-  <path d="M90 58V122" stroke="rgba(160,133,88,0.46)" stroke-width="3"/>
-  <circle cx="90" cy="90" r="10" fill="rgba(178,150,100,0.45)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="180" viewBox="0 0 260 180" fill="none">
+  <g transform="translate(12 8)">
+    <circle cx="78" cy="82" r="52" fill="rgba(99,81,53,0.18)" stroke="rgba(162,136,91,0.5)" stroke-width="2"/>
+    <circle cx="78" cy="82" r="30" stroke="rgba(141,118,80,0.38)" stroke-width="2"/>
+    <path d="M52 82H104" stroke="rgba(160,133,88,0.44)" stroke-width="3"/>
+    <path d="M78 56V108" stroke="rgba(160,133,88,0.44)" stroke-width="3"/>
+    <circle cx="78" cy="82" r="8" fill="rgba(178,150,100,0.42)"/>
+  </g>
+  <g transform="translate(158 34)" opacity="0.75">
+    <circle cx="36" cy="52" r="26" fill="rgba(104,84,55,0.18)" stroke="rgba(152,127,84,0.44)" stroke-width="1.8"/>
+    <path d="M36 36L42 50L58 52L46 62L48 76L36 69L24 76L26 62L14 52L30 50L36 36Z" fill="rgba(166,140,92,0.36)"/>
+  </g>
 </svg>

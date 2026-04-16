@@ -1,5 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" fill="none">
-  <circle cx="90" cy="90" r="66" fill="rgba(111,90,57,0.22)" stroke="rgba(169,143,95,0.56)" stroke-width="2"/>
-  <circle cx="90" cy="90" r="44" stroke="rgba(149,125,84,0.46)" stroke-width="2"/>
-  <path d="M90 58L102 84L130 88L110 108L114 136L90 122L66 136L70 108L50 88L78 84L90 58Z" fill="rgba(169,143,95,0.4)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="180" viewBox="0 0 260 180" fill="none">
+  <g transform="translate(8 0)">
+    <circle cx="82" cy="90" r="58" fill="rgba(111,90,57,0.2)" stroke="rgba(169,143,95,0.52)" stroke-width="2"/>
+    <circle cx="82" cy="90" r="38" stroke="rgba(149,125,84,0.42)" stroke-width="2"/>
+    <path d="M82 62L92 83L116 86L98 102L102 125L82 114L62 125L66 102L48 86L72 83L82 62Z" fill="rgba(169,143,95,0.38)"/>
+  </g>
+  <g transform="translate(142 52)" opacity="0.78">
+    <circle cx="44" cy="38" r="30" fill="rgba(104,84,55,0.2)" stroke="rgba(158,133,88,0.46)" stroke-width="1.8"/>
+    <path d="M44 22V54M28 38H60" stroke="rgba(165,139,92,0.46)" stroke-width="2"/>
+  </g>
 </svg>

@@ -12,6 +12,9 @@ This registry maps bounded Gate Trial support roles to:
 - attempt lane plates (SVG authored defaults)
 - gate halo / underglow base (PNG override slots reserved)
 
+## Pack sheet
+- `pack/ui_gate_trial_support_pack_sheet.svg` arranges all authored cutouts for quick visual QA/export.
+
 ## Fallback behavior
 - Assets are resolved from `src/assets/Generated assets/` by expected filename.
 - Missing generated files gracefully fall back to authored SVGs where available.

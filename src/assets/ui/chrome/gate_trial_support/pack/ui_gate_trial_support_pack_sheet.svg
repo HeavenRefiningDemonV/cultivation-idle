@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1536" viewBox="0 0 2048 1536" fill="none">
+  <rect width="2048" height="1536" fill="rgba(0,0,0,0)"/>
+  <image href="ui_plate_gate_trial_checklist_minimum_default_m.svg" x="32" y="32" width="640" height="320"/>
+  <image href="ui_plate_gate_trial_checklist_recommended_default_m.svg" x="704" y="32" width="640" height="320"/>
+  <image href="ui_frame_gate_trial_failsafe_default_m.svg" x="1376" y="32" width="640" height="300"/>
+  <image href="ui_plate_gate_trial_readiness_band_default_m.svg" x="32" y="384" width="800" height="180"/>
+  <image href="ui_plate_gate_trial_readiness_band_variant_default_m.svg" x="864" y="384" width="800" height="180"/>
+  <image href="ui_plate_gate_trial_attempt_primary_default_m.svg" x="32" y="608" width="560" height="200"/>
+  <image href="ui_plate_gate_trial_attempt_secondary_default_s.svg" x="624" y="608" width="420" height="150"/>
+  <image href="ui_seal_gate_trial_accent_default_s.svg" x="1080" y="608" width="260" height="180"/>
+  <image href="ui_seal_gate_trial_accent_variant_default_s.svg" x="1376" y="608" width="260" height="180"/>
+</svg>
