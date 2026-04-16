@@ -29,6 +29,7 @@ test('P6.3D support-kit wiring remains fallback-safe and does not require assets
 
   assert.match(panel, /listMissingGateTrialSupportArtFiles\(\)/);
   assert.match(panel, /assetUrl/);
+  assert.match(registry, /DEFAULT_SVG_ASSET_URLS/);
   assert.match(registry, /assetUrl: string \| null/);
   assert.match(registry, /available: boolean/);
   assert.match(registry, /\?\? null/);

@@ -1,18 +1,21 @@
 # Gate Trial support-art intake (P6.3D)
 
-This registry maps optional generated support assets (if present) to bounded Gate Trial support roles.
+This registry maps bounded Gate Trial support roles to:
+- authored local SVG cutouts in `pack/` (default baseline support family), and
+- optional generated PNG overrides from `src/assets/Generated assets/` when present.
 
 ## Supported roles
-- checklist minimum / recommended plates
-- readiness band companions
-- fail-safe frame
-- seal accents
-- attempt lane plates
-- gate halo / underglow base
+- checklist minimum / recommended plates (SVG authored defaults)
+- readiness band companions (SVG authored defaults)
+- fail-safe frame (SVG authored default)
+- seal accents (SVG authored defaults)
+- attempt lane plates (SVG authored defaults)
+- gate halo / underglow base (PNG override slots reserved)
 
 ## Fallback behavior
 - Assets are resolved from `src/assets/Generated assets/` by expected filename.
-- Missing files resolve as `assetUrl: null`.
+- Missing generated files gracefully fall back to authored SVGs where available.
+- Roles without a local fallback (halo/underglow PNG slots) resolve to `assetUrl: null`.
 - Integration code must remain coherent and readable when all files are missing.
 
 ## Constraints

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="200" viewBox="0 0 560 200" fill="none">
+  <rect x="18" y="34" width="524" height="132" rx="24" fill="url(#base)"/>
+  <rect x="28" y="44" width="504" height="112" rx="18" stroke="url(#rim)" stroke-width="2"/>
+  <path d="M70 100H490" stroke="rgba(123,102,67,0.18)" stroke-width="1"/>
+  <ellipse cx="280" cy="100" rx="160" ry="44" fill="rgba(230,214,180,0.08)"/>
+  <defs>
+    <linearGradient id="base" x1="280" y1="34" x2="280" y2="166" gradientUnits="userSpaceOnUse">
+      <stop stop-color="rgba(82,67,47,0.36)"/>
+      <stop offset="1" stop-color="rgba(52,41,29,0.48)"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="28" y1="44" x2="532" y2="156" gradientUnits="userSpaceOnUse">
+      <stop stop-color="rgba(190,161,108,0.62)"/>
+      <stop offset="1" stop-color="rgba(114,92,58,0.5)"/>
+    </linearGradient>
+  </defs>
+</svg>

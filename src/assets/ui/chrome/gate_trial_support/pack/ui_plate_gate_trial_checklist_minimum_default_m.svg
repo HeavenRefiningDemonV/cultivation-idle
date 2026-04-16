@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320" viewBox="0 0 640 320" fill="none">
+  <rect x="22" y="22" width="596" height="276" rx="28" fill="url(#base)"/>
+  <rect x="30" y="30" width="580" height="260" rx="24" stroke="url(#rim)" stroke-width="2"/>
+  <path d="M70 44H570" stroke="rgba(177,149,97,0.35)" stroke-width="2"/>
+  <path d="M94 276H546" stroke="rgba(121,103,69,0.28)" stroke-width="2"/>
+  <path d="M56 160H584" stroke="rgba(88,75,53,0.14)" stroke-width="1"/>
+  <ellipse cx="320" cy="160" rx="240" ry="110" fill="url(#inkFade)"/>
+  <defs>
+    <linearGradient id="base" x1="320" y1="22" x2="320" y2="298" gradientUnits="userSpaceOnUse">
+      <stop stop-color="rgba(69,58,42,0.32)"/>
+      <stop offset="1" stop-color="rgba(38,31,24,0.42)"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="30" y1="30" x2="610" y2="290" gradientUnits="userSpaceOnUse">
+      <stop stop-color="rgba(187,160,108,0.55)"/>
+      <stop offset="1" stop-color="rgba(113,92,57,0.45)"/>
+    </linearGradient>
+    <radialGradient id="inkFade" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(320 160) rotate(90) scale(120 252)">
+      <stop stop-color="rgba(230,217,188,0.16)"/>
+      <stop offset="1" stop-color="rgba(230,217,188,0)"/>
+    </radialGradient>
+  </defs>
+</svg>
