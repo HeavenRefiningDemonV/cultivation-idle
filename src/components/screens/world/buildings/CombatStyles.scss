@@ -568,6 +568,25 @@
     border-radius: 8px;
     padding: 8px;
     background: rgba(236, 225, 205, 0.72);
+    position: relative;
+    overflow: hidden;
+}
+
+.gateTrialChecklist--supported::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--gate-trial-support-art);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.gateTrialChecklist__title,
+.gateTrialChecklist__rows {
+    position: relative;
+    z-index: 1;
 }
 
 .gateTrialChecklist__title {
@@ -637,10 +656,93 @@
     background: rgba(236, 225, 205, 0.75);
 }
 
+.gateTrialReadinessCard,
+.gateTrialSafetyNetCard,
+.gateTrialAttemptCluster {
+    position: relative;
+    overflow: hidden;
+}
+
+.gateTrialReadinessCard--supported::before,
+.gateTrialReadinessCard--supported::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.gateTrialReadinessCard--supported::before {
+    background-image: var(--gate-trial-readiness-art);
+    background-size: cover;
+    opacity: 0.16;
+}
+
+.gateTrialReadinessCard--supported::after {
+    background-image: var(--gate-trial-readiness-art-alt);
+    background-size: contain;
+    opacity: 0.12;
+}
+
+.gateTrialReadinessCard > * {
+    position: relative;
+    z-index: 1;
+}
+
+.gateTrialSafetyNetCard--supported::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--gate-trial-failsafe-art);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.16;
+    pointer-events: none;
+}
+
+.gateTrialSafetyNetCard > * {
+    position: relative;
+    z-index: 1;
+}
+
 .gateTrialAttemptCluster__actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+}
+
+.gateTrialAttemptCluster--supported::before,
+.gateTrialAttemptCluster--supported::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.gateTrialAttemptCluster--supported::before {
+    inset: 0;
+    background-image: var(--gate-trial-attempt-primary-art);
+    background-size: cover;
+    opacity: 0.2;
+}
+
+.gateTrialAttemptCluster--supported::after {
+    right: 8px;
+    bottom: 8px;
+    width: 120px;
+    height: 56px;
+    background-image: var(--gate-trial-attempt-secondary-art);
+    background-size: contain;
+    opacity: 0.18;
+}
+
+.gateTrialAttemptCluster__primary,
+.gateTrialAttemptCluster__detail,
+.gateTrialAttemptCluster__actions {
+    position: relative;
+    z-index: 1;
 }
 
 .gateTrialAttemptCluster__detail {
@@ -736,6 +838,31 @@
     opacity: 0.3;
 }
 
+.gateTrialStage__underglow,
+.gateTrialStage__halo {
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    transform: translate(-50%, -50%);
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+}
+
+.gateTrialStage__underglow {
+    width: min(460px, 92%);
+    height: min(280px, 72%);
+    background-size: contain;
+    opacity: 0.22;
+}
+
+.gateTrialStage__halo {
+    width: min(420px, 84%);
+    height: min(260px, 68%);
+    background-size: contain;
+    opacity: 0.24;
+}
+
 .gateTrialStage__idleGate,
 .gateTrialStage__idleEntry {
     position: relative;
@@ -756,6 +883,43 @@
     border-radius: 999px;
     padding: 3px 10px;
     background: rgba(15, 23, 42, 0.55);
+}
+
+.gateTrialPanel__roleFrame {
+    position: relative;
+    overflow: hidden;
+}
+
+.gateTrialPanel__roleFrameArt {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    opacity: 0.12;
+    pointer-events: none;
+}
+
+.gateTrialPanel__roleFrameArt--alt {
+    background-size: contain;
+    opacity: 0.1;
+}
+
+.gateTrialPanel__sealAccent {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 42px;
+    height: 42px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.gateTrialPanel__supportFallbackNote {
+    font-size: 11px;
+    color: #475569;
 }
 
 .gateTrialStage__healthbars,

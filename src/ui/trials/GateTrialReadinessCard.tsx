@@ -1,8 +1,27 @@
+import type { CSSProperties } from 'react';
 import type { GateTrialReadinessSurface } from '../../systems/readiness/section5Adapters.js';
 
-export function GateTrialReadinessCard({ surface }: { surface: GateTrialReadinessSurface }) {
+export function GateTrialReadinessCard({
+  surface,
+  companionArtUrl = null,
+  companionAltArtUrl = null,
+}: {
+  surface: GateTrialReadinessSurface;
+  companionArtUrl?: string | null;
+  companionAltArtUrl?: string | null;
+}) {
+  const style = (companionArtUrl || companionAltArtUrl)
+    ? ({
+      '--gate-trial-readiness-art': companionArtUrl ? `url(${companionArtUrl})` : 'none',
+      '--gate-trial-readiness-art-alt': companionAltArtUrl ? `url(${companionAltArtUrl})` : 'none',
+    } as CSSProperties)
+    : undefined;
+
   return (
-    <section className="gateTrialReadinessCard">
+    <section
+      className={`gateTrialReadinessCard${companionArtUrl || companionAltArtUrl ? ' gateTrialReadinessCard--supported' : ''}`}
+      style={style}
+    >
       <div className="gateTrialReadinessCard__header">
         <h3 className="gateTrialReadinessCard__title">Gate Readiness</h3>
         <span className="gateTrialReadinessCard__label">{surface.readinessLabel}</span>

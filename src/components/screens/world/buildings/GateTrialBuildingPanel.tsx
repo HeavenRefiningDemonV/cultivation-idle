@@ -45,6 +45,7 @@ import { FxStagePortal } from '../../../../ui/fx/FxStagePortal.js';
 import { useFxQuality, useFxStageSnapshot } from '../../../../ui/fx/FxQualityProvider.js';
 import { buildFxSceneContract } from '../../../../ui/fx/runtime.js';
 import { GateTrialFxScene } from '../../../../ui/fx/scenes/GateTrialFxScene.js';
+import { listMissingGateTrialSupportArtFiles, resolveGateTrialSupportArt } from '../../../../assets/ui/chrome/gate_trial_support/index.js';
 
 interface GateTrialBuildingPanelProps {
   cityId: string;
@@ -185,6 +186,19 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
     () => getWorldCombatModuleTopLaneCopy({ moduleKey: 'gateTrial', content: contentRaw, cityId }),
     [cityId, contentRaw],
   );
+  const gateSupportArt = useMemo(() => ({
+    checklistMinimum: resolveGateTrialSupportArt('checklist_minimum_plate'),
+    checklistRecommended: resolveGateTrialSupportArt('checklist_recommended_plate'),
+    readinessBand: resolveGateTrialSupportArt('readiness_band_companion'),
+    readinessBandAlt: resolveGateTrialSupportArt('readiness_band_companion_alt'),
+    failSafeFrame: resolveGateTrialSupportArt('failsafe_frame'),
+    sealAccent: resolveGateTrialSupportArt('seal_accent'),
+    attemptPrimary: resolveGateTrialSupportArt('attempt_primary_plate'),
+    attemptSecondary: resolveGateTrialSupportArt('attempt_secondary_plate'),
+    gateHaloBase: resolveGateTrialSupportArt('gate_halo_base'),
+    gateUnderglow: resolveGateTrialSupportArt('gate_underglow_soft'),
+  }), []);
+  const missingSupportArt = useMemo(() => listMissingGateTrialSupportArtFiles(), []);
   const gateTrialFxScene = useMemo(() => {
     if (!fxStageSnapshot || !gateReadinessSurface || !attemptPresentation) return null;
     return buildFxSceneContract({
@@ -321,15 +335,42 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
         )}
         identity={(
           <div className="gateTrialPanel__roleFrame">
+            {gateSupportArt.readinessBand.assetUrl ? (
+              <div
+                className="gateTrialPanel__roleFrameArt"
+                style={{ backgroundImage: `url(${gateSupportArt.readinessBand.assetUrl})` }}
+                aria-hidden="true"
+              />
+            ) : null}
+            {gateSupportArt.readinessBandAlt.assetUrl ? (
+              <div
+                className="gateTrialPanel__roleFrameArt gateTrialPanel__roleFrameArt--alt"
+                style={{ backgroundImage: `url(${gateSupportArt.readinessBandAlt.assetUrl})` }}
+                aria-hidden="true"
+              />
+            ) : null}
+            {gateSupportArt.sealAccent.assetUrl ? (
+              <span
+                className="gateTrialPanel__sealAccent"
+                style={{ backgroundImage: `url(${gateSupportArt.sealAccent.assetUrl})` }}
+                aria-hidden="true"
+              />
+            ) : null}
             <div className="gateTrialPanel__roleTag">{gateScreenContract?.roleTag ?? 'Milestone Validation'}</div>
             <div className="gateTrialPanel__roleSummary">{gateScreenContract?.roleSummary ?? 'Use this screen to validate readiness and risk before attempting a breakthrough gate.'}</div>
             {gateReadinessSurface ? (
               <div className="gateTrialPanel__readinessScore">{gateScreenContract?.readinessScoreLine ?? `Readiness Score: ${gateReadinessSurface.readinessScore ?? '—'} / 100`}</div>
             ) : null}
+            {missingSupportArt.length > 0 ? <div className="gateTrialPanel__supportFallbackNote">Support kit fallback active ({missingSupportArt.length} assets missing).</div> : null}
           </div>
         )}
         leftRail={gateReadinessSurface ? (
-          <GateTrialChecklist title={gateScreenContract?.checklistMinimumTitle ?? 'Minimum Floor'} lines={gateReadinessSurface.minimumChecklist} />
+          <GateTrialChecklist
+            title={gateScreenContract?.checklistMinimumTitle ?? 'Minimum Floor'}
+            lines={gateReadinessSurface.minimumChecklist}
+            supportArtUrl={gateSupportArt.checklistMinimum.assetUrl}
+            supportArtRole={gateSupportArt.checklistMinimum.role}
+          />
         ) : (
           <div className="ink-combat-shell__stat-line">Minimum checklist unavailable.</div>
         )}
@@ -360,6 +401,12 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             ) : (
               <div className="gateTrialStage__idleScene">
                 <img className="gateTrialStage__idleBackdrop" src={cityGateBackground} alt="" />
+                {gateSupportArt.gateUnderglow.assetUrl ? (
+                  <div className="gateTrialStage__underglow" style={{ backgroundImage: `url(${gateSupportArt.gateUnderglow.assetUrl})` }} aria-hidden="true" />
+                ) : null}
+                {gateSupportArt.gateHaloBase.assetUrl ? (
+                  <div className="gateTrialStage__halo" style={{ backgroundImage: `url(${gateSupportArt.gateHaloBase.assetUrl})` }} aria-hidden="true" />
+                ) : null}
                 <img className="gateTrialStage__idleGate" src={gateSymbol} alt="" />
                 <img className="gateTrialStage__idleEntry" src={entryGate} alt="" />
                 <div className="gateTrialStage__idleLabel">{trialDef.name ?? trialDef.id}</div>
@@ -371,8 +418,17 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
           <div className="gateTrialPanel__supportRail">
             {gateReadinessSurface ? (
               <>
-                <GateTrialReadinessCard surface={gateReadinessSurface} />
-                <GateTrialChecklist title={gateScreenContract?.checklistRecommendedTitle ?? 'Recommended Floor'} lines={gateReadinessSurface.recommendedChecklist} />
+                <GateTrialReadinessCard
+                  surface={gateReadinessSurface}
+                  companionArtUrl={gateSupportArt.readinessBand.assetUrl}
+                  companionAltArtUrl={gateSupportArt.readinessBandAlt.assetUrl}
+                />
+                <GateTrialChecklist
+                  title={gateScreenContract?.checklistRecommendedTitle ?? 'Recommended Floor'}
+                  lines={gateReadinessSurface.recommendedChecklist}
+                  supportArtUrl={gateSupportArt.checklistRecommended.assetUrl}
+                  supportArtRole={gateSupportArt.checklistRecommended.role}
+                />
               </>
             ) : null}
             <GateTrialSafetyNetCard
@@ -383,6 +439,7 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
               currentMerit={supportSurface.readModel.currentMerit}
               currentGold={gold}
               currentSpiritStones={supportSurface.readModel.currentSpiritStones}
+              frameArtUrl={gateSupportArt.failSafeFrame.assetUrl}
             />
             {showFirstFailureStrap ? (
               <InlineOnboardingCallout
@@ -433,6 +490,8 @@ export function GateTrialBuildingPanel({ cityId }: GateTrialBuildingPanelProps) 
             onStop={handleStopTrial}
             onBuySafetyNet={handleFailSafePurchase}
             showStop={isTrialActive || isTrialCombat}
+            primaryPlateArtUrl={gateSupportArt.attemptPrimary.assetUrl}
+            secondaryPlateArtUrl={gateSupportArt.attemptSecondary.assetUrl}
           />
         ) : (
           <div className="ink-combat-shell__stat-line">Attempt state unavailable.</div>

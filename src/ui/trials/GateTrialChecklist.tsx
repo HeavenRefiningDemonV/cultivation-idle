@@ -1,12 +1,23 @@
+import type { CSSProperties } from 'react';
 import type { GateTrialChecklistLine } from '../../systems/readiness/section5Adapters.js';
 
 export function GateTrialChecklist(props: {
   title: string;
   lines: GateTrialChecklistLine[];
+  supportArtUrl?: string | null;
+  supportArtRole?: string;
 }) {
-  const { title, lines } = props;
+  const { title, lines, supportArtUrl = null, supportArtRole } = props;
+  const style = supportArtUrl
+    ? ({ '--gate-trial-support-art': `url(${supportArtUrl})` } as CSSProperties)
+    : undefined;
+
   return (
-    <section className="gateTrialChecklist">
+    <section
+      className={`gateTrialChecklist${supportArtUrl ? ' gateTrialChecklist--supported' : ''}`}
+      style={style}
+      data-support-role={supportArtRole}
+    >
       <h4 className="gateTrialChecklist__title">{title}</h4>
       <div className="gateTrialChecklist__rows">
         {lines.map((line) => (
