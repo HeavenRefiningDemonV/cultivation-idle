@@ -1,11 +1,13 @@
 .outskirtsExactScreen {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 22px 28px 20px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+  padding: 18px 22px 16px;
   color: #2a2018;
   background: linear-gradient(180deg, rgba(244, 234, 216, 0.9) 0%, rgba(229, 213, 190, 0.86) 100%);
+  overflow: hidden;
 }
 
 .outskirtsExactTop {
@@ -156,28 +158,261 @@
   color: rgba(59, 45, 33, 0.82);
 }
 
-.outskirtsExactScaffold {
-  flex: 1;
-  margin-top: 14px;
+.outskirtsExactLower {
+  min-height: 0;
   display: grid;
-  grid-template-rows: 1fr auto auto;
-  row-gap: 14px;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  gap: 10px;
 }
 
-.outskirtsExactScaffold__lane {
+.outskirtsExactField {
+  min-height: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(98, 75, 53, 0.28);
+  overflow: hidden;
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.outskirtsExactField__plate {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.88) brightness(0.9);
+}
+
+.outskirtsExactField__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(21, 16, 11, 0.12) 0%, rgba(26, 19, 13, 0.58) 100%);
+}
+
+.outskirtsExactField__enemy {
+  position: absolute;
+  image-rendering: auto;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.45));
+}
+
+.outskirtsExactField__enemy--primary {
+  right: 14%;
+  bottom: 9%;
+  width: min(240px, 24%);
+}
+
+.outskirtsExactField__enemy--support {
+  right: 32%;
+  bottom: 12%;
+  width: min(170px, 17%);
+  opacity: 0.82;
+}
+
+.outskirtsExactField__identity {
+  position: absolute;
+  left: 14px;
+  top: 12px;
   border-radius: 8px;
-  border: 1px dashed rgba(98, 75, 53, 0.22);
-  background: rgba(232, 218, 195, 0.18);
+  background: rgba(23, 18, 13, 0.74);
+  border: 1px solid rgba(233, 214, 181, 0.24);
+  color: #f6ead6;
+  padding: 8px 10px;
+  max-width: 48%;
 }
 
-.outskirtsExactScaffold__lane--field {
-  min-height: 260px;
+.outskirtsExactField__zone {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: rgba(240, 222, 189, 0.88);
 }
 
-.outskirtsExactScaffold__lane--cards {
-  min-height: 110px;
+.outskirtsExactField__name {
+  margin: 2px 0 6px;
+  font-size: 20px;
+  line-height: 1.1;
 }
 
-.outskirtsExactScaffold__lane--footer {
-  min-height: 82px;
+.outskirtsExactField__chip {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.outskirtsExactField__chip--safe {
+  background: rgba(72, 115, 66, 0.36);
+  border-color: rgba(191, 230, 182, 0.4);
+}
+
+.outskirtsExactField__chip--watch {
+  background: rgba(142, 121, 66, 0.34);
+  border-color: rgba(244, 224, 173, 0.42);
+}
+
+.outskirtsExactField__chip--risk,
+.outskirtsExactField__chip--critical {
+  background: rgba(148, 76, 57, 0.38);
+  border-color: rgba(247, 196, 177, 0.42);
+}
+
+.outskirtsExactCards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.outskirtsExactCard {
+  border-radius: 8px;
+  border: 1px solid rgba(98, 75, 53, 0.24);
+  background: rgba(246, 237, 224, 0.82);
+  padding: 8px 10px;
+  min-height: 0;
+}
+
+.outskirtsExactCard__title {
+  margin: 0;
+  font-size: 14px;
+}
+
+.outskirtsExactCard__sectionTitle {
+  margin: 7px 0 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(82, 61, 43, 0.78);
+}
+
+.outskirtsExactCard__rows p {
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.outskirtsExactCard__stats,
+.outskirtsExactCard__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.outskirtsExactCard__stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  padding: 2px 0;
+}
+
+.outskirtsExactCard__statLabel {
+  color: rgba(82, 61, 43, 0.78);
+}
+
+.outskirtsExactCard__statValue {
+  color: rgba(34, 24, 16, 0.92);
+}
+
+.outskirtsExactCard__list li {
+  font-size: 12px;
+  padding: 2px 0;
+}
+
+.outskirtsExactActionBar {
+  display: grid;
+  grid-template-columns: 1fr auto minmax(260px, 0.8fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.outskirtsExactEncounterStrip {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(98, 75, 53, 0.24);
+  background: rgba(246, 237, 224, 0.82);
+  padding: 8px;
+}
+
+.outskirtsExactEncounterStrip__arrow {
+  color: rgba(86, 64, 45, 0.7);
+  font-size: 18px;
+}
+
+.outskirtsExactEncounterStrip__nodes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.outskirtsExactEncounterStrip__node {
+  border-radius: 6px;
+  border: 1px solid rgba(98, 75, 53, 0.2);
+  padding: 4px 5px;
+  min-width: 0;
+  background: rgba(255, 250, 241, 0.65);
+}
+
+.outskirtsExactEncounterStrip__node--current,
+.outskirtsExactEncounterStrip__node[data-selected='1'] {
+  border-color: rgba(102, 75, 43, 0.56);
+  background: rgba(243, 230, 206, 0.96);
+}
+
+.outskirtsExactEncounterStrip__name,
+.outskirtsExactEncounterStrip__level {
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 11px;
+}
+
+.outskirtsExactEncounterStrip__level {
+  color: rgba(77, 56, 39, 0.72);
+}
+
+.outskirtsExactPrimaryAction {
+  align-self: stretch;
+  min-width: 140px;
+  border-radius: 8px;
+  border: 1px solid rgba(124, 89, 44, 0.5);
+  background: linear-gradient(180deg, rgba(201, 165, 101, 0.96), rgba(166, 126, 64, 0.98));
+  color: #2b1f13;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0 14px;
+}
+
+.outskirtsExactPrimaryAction:disabled {
+  opacity: 0.5;
+}
+
+.outskirtsExactSummary {
+  border-radius: 8px;
+  border: 1px solid rgba(98, 75, 53, 0.24);
+  background: rgba(246, 237, 224, 0.82);
+  padding: 8px 10px;
+}
+
+.outskirtsExactSummary__title {
+  margin: 0;
+  font-size: 14px;
+}
+
+.outskirtsExactSummary__list {
+  margin: 5px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.outskirtsExactSummary__list li {
+  font-size: 12px;
+  padding: 2px 0;
 }
